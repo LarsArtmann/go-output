@@ -96,8 +96,7 @@ func BenchmarkMarshalYAML(b *testing.B) {
 		UpdatedAt: "2026-03-22T12:00:00Z",
 	}
 
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		_, _ = MarshalYAML(data)
 	}
 }
@@ -116,8 +115,7 @@ active: true
 created_at: "2026-03-22T10:00:00Z"
 updated_at: "2026-03-22T12:00:00Z"`)
 
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		var result yamlBenchmarkStruct
 		_ = UnmarshalYAML(yamlData, &result)
 	}
