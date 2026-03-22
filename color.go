@@ -1,29 +1,33 @@
+// Package output provides consistent output formatting for CLI applications.
 package output
 
 import (
 	"fmt"
 	"os"
+	"slices"
 )
 
+// ColorMode controls terminal color output.
 type ColorMode string
 
+// Terminal color output modes.
 const (
 	ColorModeAuto   ColorMode = "auto"
 	ColorModeAlways ColorMode = "always"
 	ColorModeNever  ColorMode = "never"
 )
 
+//nolint:gochecknoglobals // Global variable used for value iteration.
 var colorModeValues = []ColorMode{
 	ColorModeAuto,
 	ColorModeAlways,
 	ColorModeNever,
 }
 
+// ParseColorMode parses a color mode string.
 func ParseColorMode(s string) (ColorMode, error) {
-	for _, v := range colorModeValues {
-		if string(v) == s {
-			return v, nil
-		}
+	if slices.Contains(colorModeValues, ColorMode(s)) {
+		return ColorMode(s), nil
 	}
 	return "", fmt.Errorf("invalid color mode: %q (allowed: %v)", s, colorModeValues)
 }
@@ -32,6 +36,7 @@ func (c ColorMode) String() string {
 	return string(c)
 }
 
+// AllowedValues returns all valid color mode values.
 func (c ColorMode) AllowedValues() []string {
 	values := make([]string, len(colorModeValues))
 	for i, v := range colorModeValues {
@@ -40,15 +45,12 @@ func (c ColorMode) AllowedValues() []string {
 	return values
 }
 
+// IsValid checks if the color mode is valid.
 func (c ColorMode) IsValid() bool {
-	for _, v := range colorModeValues {
-		if c == v {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(colorModeValues, c)
 }
 
+// ShouldColor returns true if colors should be enabled.
 func (c ColorMode) ShouldColor() bool {
 	switch c {
 	case ColorModeAlways:
@@ -62,6 +64,7 @@ func (c ColorMode) ShouldColor() bool {
 	}
 }
 
+// ToANSI returns the ANSI escape sequence prefix if colors are enabled.
 func (c ColorMode) ToANSI() string {
 	if !c.ShouldColor() {
 		return ""

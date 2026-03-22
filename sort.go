@@ -1,9 +1,15 @@
+// Package output provides consistent output formatting for CLI applications.
 package output
 
-import "fmt"
+import (
+	"fmt"
+	"slices"
+)
 
+// SortBy specifies the field to sort by.
 type SortBy string
 
+// Sort field options.
 const (
 	SortByName       SortBy = "name"
 	SortByImportance SortBy = "importance"
@@ -13,6 +19,7 @@ const (
 	SortByComplexity SortBy = "complexity"
 )
 
+//nolint:gochecknoglobals // Global variable used for value iteration.
 var sortByValues = []SortBy{
 	SortByName,
 	SortByImportance,
@@ -22,11 +29,10 @@ var sortByValues = []SortBy{
 	SortByComplexity,
 }
 
+// ParseSortBy parses a sort field string.
 func ParseSortBy(s string) (SortBy, error) {
-	for _, v := range sortByValues {
-		if string(v) == s {
-			return v, nil
-		}
+	if slices.Contains(sortByValues, SortBy(s)) {
+		return SortBy(s), nil
 	}
 	return "", fmt.Errorf("invalid sort by: %q (allowed: %v)", s, sortByValues)
 }
@@ -35,6 +41,7 @@ func (s SortBy) String() string {
 	return string(s)
 }
 
+// AllowedValues returns all valid sort field values.
 func (s SortBy) AllowedValues() []string {
 	values := make([]string, len(sortByValues))
 	for i, v := range sortByValues {
@@ -43,11 +50,7 @@ func (s SortBy) AllowedValues() []string {
 	return values
 }
 
+// IsValid checks if the sort field is valid.
 func (s SortBy) IsValid() bool {
-	for _, v := range sortByValues {
-		if s == v {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(sortByValues, s)
 }

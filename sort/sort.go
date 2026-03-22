@@ -1,3 +1,4 @@
+// Package sort provides sorting utilities for output data.
 package sort
 
 import (
@@ -8,8 +9,10 @@ import (
 	"github.com/larsartmann/go-output"
 )
 
+// Comparator compares two values, returning -1, 0, or 1.
 type Comparator func(a, b any) int
 
+// CompareString compares two string values.
 func CompareString(a, b any) int {
 	sa, ok := a.(string)
 	if !ok {
@@ -28,6 +31,7 @@ func CompareString(a, b any) int {
 	return 0
 }
 
+// CompareInt compares two integer values.
 func CompareInt(a, b any) int {
 	ia, ok := toInt(a)
 	if !ok {
@@ -46,6 +50,7 @@ func CompareInt(a, b any) int {
 	return 0
 }
 
+// CompareTime compares two time values.
 func CompareTime(a, b any) int {
 	ta, ok := toTime(a)
 	if !ok {
@@ -64,28 +69,29 @@ func CompareTime(a, b any) int {
 	return 0
 }
 
+//nolint:cyclop
 func toInt(v any) (int, bool) {
-	switch val := v.(type) {
+	switch v := v.(type) {
 	case int:
-		return val, true
+		return v, true
 	case int8:
-		return int(val), true
+		return int(v), true
 	case int16:
-		return int(val), true
+		return int(v), true
 	case int32:
-		return int(val), true
+		return int(v), true
 	case int64:
-		return int(val), true
+		return int(v), true
 	case uint:
-		return int(val), true
+		return int(v), true //nolint:gosec // G115: safe truncation for sorting purposes
 	case uint8:
-		return int(val), true
+		return int(v), true
 	case uint16:
-		return int(val), true
+		return int(v), true
 	case uint32:
-		return int(val), true
+		return int(v), true
 	case uint64:
-		return int(val), true
+		return int(v), true //nolint:gosec // G115: safe truncation for sorting purposes
 	default:
 		return 0, false
 	}
@@ -105,6 +111,7 @@ func toTime(v any) (time.Time, bool) {
 	}
 }
 
+// Sorter sorts items by a specified field.
 type Sorter[T any] struct {
 	Items    []T
 	By       output.SortBy
@@ -112,19 +119,23 @@ type Sorter[T any] struct {
 	LessFunc func(a, b T) bool
 }
 
+// New creates a new Sorter.
 func New[T any](items []T, by output.SortBy, desc bool) *Sorter[T] {
 	return &Sorter[T]{
-		Items: items,
-		By:    by,
-		Desc:  desc,
+		Items:    items,
+		By:       by,
+		Desc:     desc,
+		LessFunc: nil,
 	}
 }
 
+// WithLessFunc sets a custom less function.
 func (s *Sorter[T]) WithLessFunc(fn func(a, b T) bool) *Sorter[T] {
 	s.LessFunc = fn
 	return s
 }
 
+// Sort sorts the items.
 func (s *Sorter[T]) Sort() {
 	sort.SliceStable(s.Items, func(i, j int) bool {
 		var result bool
@@ -151,20 +162,28 @@ func (s *Sorter[T]) defaultLess(a, b T) bool {
 		return false
 	}
 
-	switch field.Kind() {
+	return compareFieldValues(field, bVal.FieldByName(fieldName))
+}
+
+func compareFieldValues(a, b reflect.Value) bool {
+	switch a.Kind() {
 	case reflect.String:
-		return field.String() < bVal.FieldByName(fieldName).String()
+		return a.String() < b.String()
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-		return field.Int() < bVal.FieldByName(fieldName).Int()
+		return a.Int() < b.Int()
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-		return field.Uint() < bVal.FieldByName(fieldName).Uint()
+		return a.Uint() < b.Uint()
 	case reflect.Struct:
-		if aTime, ok := field.Interface().(time.Time); ok {
-			if bTime, ok := bVal.FieldByName(fieldName).Interface().(time.Time); ok {
+		if aTime, ok := a.Interface().(time.Time); ok {
+			if bTime, ok := b.Interface().(time.Time); ok {
 				return aTime.Before(bTime)
 			}
 		}
+	case reflect.Invalid, reflect.Bool, reflect.Uintptr, reflect.Float32, reflect.Float64,
+		reflect.Complex64, reflect.Complex128, reflect.Array, reflect.Chan,
+		reflect.Func, reflect.Interface, reflect.Map, reflect.Pointer,
+		reflect.Slice, reflect.UnsafePointer:
+		return false
 	}
-
 	return false
 }
