@@ -10,7 +10,7 @@ import (
 func MarshalYAML(v any) ([]byte, error) {
 	data, err := yaml.Marshal(v)
 	if err != nil {
-		return nil, fmt.Errorf("marshal yaml: %w", err)
+		return nil, fmt.Errorf("marshal yaml (%T): %w", v, err)
 	}
 	return data, nil
 }
@@ -18,7 +18,7 @@ func MarshalYAML(v any) ([]byte, error) {
 // UnmarshalYAML decodes YAML data into v.
 func UnmarshalYAML(data []byte, v any) error {
 	if err := yaml.Unmarshal(data, v); err != nil {
-		return fmt.Errorf("unmarshal yaml: %w", err)
+		return fmt.Errorf("unmarshal yaml into %T: %w", v, err)
 	}
 	return nil
 }

@@ -20,7 +20,7 @@ func NewSortByFlag(value *output.SortBy) *SortByFlag {
 func (f *SortByFlag) Parse(s string) error {
 	parsed, err := output.ParseSortBy(s)
 	if err != nil {
-		return fmt.Errorf("parse sort by: %w", err)
+		return fmt.Errorf("parse sort by %q: %w", s, err)
 	}
 	*f.value = parsed
 	return nil

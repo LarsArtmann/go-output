@@ -20,7 +20,7 @@ func NewOutputFormatFlag(value *output.OutputFormat) *OutputFormatFlag {
 func (f *OutputFormatFlag) Parse(s string) error {
 	parsed, err := output.ParseOutputFormat(s)
 	if err != nil {
-		return fmt.Errorf("parse output format: %w", err)
+		return fmt.Errorf("parse output format %q: %w", s, err)
 	}
 	*f.value = parsed
 	return nil

@@ -10,7 +10,7 @@ import (
 func MarshalJSON(v any) ([]byte, error) {
 	data, err := json.Marshal(v)
 	if err != nil {
-		return nil, fmt.Errorf("marshal json: %w", err)
+		return nil, fmt.Errorf("marshal json (%T): %w", v, err)
 	}
 	return data, nil
 }
@@ -19,7 +19,7 @@ func MarshalJSON(v any) ([]byte, error) {
 func MarshalJSONIndent(v any, prefix, indent string) ([]byte, error) {
 	data, err := json.MarshalIndent(v, prefix, indent)
 	if err != nil {
-		return nil, fmt.Errorf("marshal json indent: %w", err)
+		return nil, fmt.Errorf("marshal json indent (%T, prefix=%q, indent=%q): %w", v, prefix, indent, err)
 	}
 	return data, nil
 }
@@ -27,7 +27,7 @@ func MarshalJSONIndent(v any, prefix, indent string) ([]byte, error) {
 // UnmarshalJSON decodes JSON data into v.
 func UnmarshalJSON(data []byte, v any) error {
 	if err := json.Unmarshal(data, v); err != nil {
-		return fmt.Errorf("unmarshal json: %w", err)
+		return fmt.Errorf("unmarshal json into %T: %w", v, err)
 	}
 	return nil
 }
@@ -47,7 +47,7 @@ func (j *JSONWriter) Encode(v any) error {
 	encoder := json.NewEncoder(j.Writer)
 	encoder.SetIndent("", "  ")
 	if err := encoder.Encode(v); err != nil {
-		return fmt.Errorf("encode json: %w", err)
+		return fmt.Errorf("encode json (%T): %w", v, err)
 	}
 	return nil
 }

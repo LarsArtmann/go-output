@@ -21,7 +21,7 @@ func NewColorModeFlag(value *output.ColorMode) *ColorModeFlag {
 func (f *ColorModeFlag) Parse(s string) error {
 	parsed, err := output.ParseColorMode(s)
 	if err != nil {
-		return fmt.Errorf("parse color mode: %w", err)
+		return fmt.Errorf("parse color mode %q: %w", s, err)
 	}
 	*f.value = parsed
 	return nil

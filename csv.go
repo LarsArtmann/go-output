@@ -21,7 +21,7 @@ func NewCSVWriter(w io.Writer) *CSVWriter {
 // WriteHeader writes the header row.
 func (c *CSVWriter) WriteHeader(cols []string) error {
 	if err := c.writer.Write(cols); err != nil {
-		return fmt.Errorf("write csv header: %w", err)
+		return fmt.Errorf("write csv header %v: %w", cols, err)
 	}
 	return nil
 }
@@ -29,7 +29,7 @@ func (c *CSVWriter) WriteHeader(cols []string) error {
 // WriteRow writes a single row.
 func (c *CSVWriter) WriteRow(values []string) error {
 	if err := c.writer.Write(values); err != nil {
-		return fmt.Errorf("write csv row: %w", err)
+		return fmt.Errorf("write csv row %v: %w", values, err)
 	}
 	return nil
 }
@@ -37,7 +37,7 @@ func (c *CSVWriter) WriteRow(values []string) error {
 // WriteRows writes multiple rows.
 func (c *CSVWriter) WriteRows(values [][]string) error {
 	if err := c.writer.WriteAll(values); err != nil {
-		return fmt.Errorf("write csv rows: %w", err)
+		return fmt.Errorf("write csv rows (count=%d): %w", len(values), err)
 	}
 	return nil
 }
