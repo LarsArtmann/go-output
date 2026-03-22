@@ -2,10 +2,12 @@ module github.com/larsartmann/go-output
 
 go 1.25.0
 
-require go.yaml.in/yaml/v4 v4.0.0-rc.4
+require (
+	charm.land/lipgloss/v2 v2.0.2
+	go.yaml.in/yaml/v4 v4.0.0-rc.4
+)
 
 require (
-	charm.land/lipgloss/v2 v2.0.2 // indirect
 	github.com/charmbracelet/colorprofile v0.4.2 // indirect
 	github.com/charmbracelet/ultraviolet v0.0.0-20251205161215-1948445e3318 // indirect
 	github.com/charmbracelet/x/ansi v0.11.6 // indirect

@@ -24,7 +24,7 @@ func (m *MarkdownTable) SetHeaders(headers []string) *MarkdownTable {
 	return m
 }
 
-func (m *MarkdownTable) SetAlign(col int, alignment int) *MarkdownTable {
+func (m *MarkdownTable) SetAlign(col, alignment int) *MarkdownTable {
 	if col >= 0 && col < len(m.align) {
 		m.align[col] = alignment
 	}
@@ -80,9 +80,9 @@ func (m *MarkdownTable) Render() (string, error) {
 			if i < len(m.align) {
 				switch m.align[i] {
 				case 1:
-					b.WriteString(fmt.Sprintf("%*s", width, cell))
+					fmt.Fprintf(&b, "%*s", width, cell)
 				case 2:
-					b.WriteString(fmt.Sprintf("%-*s", width, cell))
+					fmt.Fprintf(&b, "%-*s", width, cell)
 				default:
 					b.WriteString(cell)
 					b.WriteString(strings.Repeat(" ", width-len(cell)))
@@ -100,7 +100,7 @@ func (m *MarkdownTable) Render() (string, error) {
 }
 
 const (
-	AlignLeft  = 0
-	AlignRight = 1
+	AlignLeft   = 0
+	AlignRight  = 1
 	AlignCenter = 2
 )

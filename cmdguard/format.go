@@ -22,7 +22,7 @@ func (f *OutputFormatFlag) Parse(s string) error {
 }
 
 func (f *OutputFormatFlag) AllowedValues() []string {
-	return (*f.value).AllowedValues()
+	return f.value.AllowedValues()
 }
 
 func (f *OutputFormatFlag) Default() string {

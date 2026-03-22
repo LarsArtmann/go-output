@@ -22,7 +22,7 @@ func (f *ColorModeFlag) Parse(s string) error {
 }
 
 func (f *ColorModeFlag) AllowedValues() []string {
-	return (*f.value).AllowedValues()
+	return f.value.AllowedValues()
 }
 
 func (f *ColorModeFlag) Default() string {

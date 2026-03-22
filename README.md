@@ -11,33 +11,33 @@ Standardizes output formatting across personal Go projects:
 
 ## Supported Formats
 
-| Format | Description |
-|--------|-------------|
-| `table` | Terminal tables with lipgloss styling |
-| `json` | JSON output with indentation |
-| `csv` | CSV export with headers |
-| `markdown` | Markdown tables |
-| `d2` | D2 diagram shapes |
-| `yaml` | YAML serialization |
+| Format     | Description                           |
+| ---------- | ------------------------------------- |
+| `table`    | Terminal tables with lipgloss styling |
+| `json`     | JSON output with indentation          |
+| `csv`      | CSV export with headers               |
+| `markdown` | Markdown tables                       |
+| `d2`       | D2 diagram shapes                     |
+| `yaml`     | YAML serialization                    |
 
 ## Supported Sort Options
 
-| Option | Description |
-|--------|-------------|
-| `name` | Sort by name |
-| `importance` | Sort by importance level |
-| `created_at` | Sort by creation date |
-| `updated_at` | Sort by last update |
-| `health` | Sort by health score |
+| Option       | Description               |
+| ------------ | ------------------------- |
+| `name`       | Sort by name              |
+| `importance` | Sort by importance level  |
+| `created_at` | Sort by creation date     |
+| `updated_at` | Sort by last update       |
+| `health`     | Sort by health score      |
 | `complexity` | Sort by complexity metric |
 
 ## Color Modes
 
-| Mode | Description |
-|------|-------------|
-| `auto` | Respect `NO_COLOR`, CI env vars, TTY detection |
-| `always` | Force ANSI colors |
-| `never` | Disable colors |
+| Mode     | Description                                    |
+| -------- | ---------------------------------------------- |
+| `auto`   | Respect `NO_COLOR`, CI env vars, TTY detection |
+| `always` | Force ANSI colors                              |
+| `never`  | Disable colors                                 |
 
 ## CLI Flag Integration
 

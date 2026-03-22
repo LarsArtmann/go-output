@@ -22,7 +22,7 @@ func (f *SortByFlag) Parse(s string) error {
 }
 
 func (f *SortByFlag) AllowedValues() []string {
-	return (*f.value).AllowedValues()
+	return f.value.AllowedValues()
 }
 
 func (f *SortByFlag) Default() string {
