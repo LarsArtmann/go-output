@@ -9,16 +9,39 @@ Standardizes output formatting across personal Go projects:
 - `/Users/larsartmann/projects/project-meta/`
 - `/Users/larsartmann/projects/projects-management-automation/`
 
+## Quick Start
+
+```go
+import "github.com/larsartmann/go-output"
+
+// JSON output
+data, _ := output.MarshalJSONIndent(projects, "", "  ")
+fmt.Println(string(data))
+
+// Markdown table
+md := output.NewMarkdownTable()
+md.SetHeaders([]string{"Name", "Health", "Complexity"})
+md.AddRow([]string{"Alpha", "90%", "7/10"})
+out, _ := md.Render()
+fmt.Println(out)
+
+// CSV output
+w := output.NewCSVWriter(os.Stdout)
+w.WriteHeader([]string{"Name", "Value"})
+w.WriteRow([]string{"Item", "123"})
+w.Flush()
+```
+
 ## Supported Formats
 
-| Format     | Description                           |
-| ---------- | ------------------------------------- |
-| `table`    | Terminal tables with lipgloss styling |
-| `json`     | JSON output with indentation          |
-| `csv`      | CSV export with headers               |
-| `markdown` | Markdown tables                       |
-| `d2`       | D2 diagram shapes                     |
-| `yaml`     | YAML serialization                    |
+| Format     | Description                           | Package          |
+| ---------- | ------------------------------------- | ---------------- |
+| `table`    | Terminal tables with lipgloss styling  | `github.com/larsartmann/go-output/table` |
+| `json`     | JSON output with indentation          | `github.com/larsartmann/go-output` |
+| `csv`      | CSV export with headers               | `github.com/larsartmann/go-output` |
+| `markdown` | Markdown tables                       | `github.com/larsartmann/go-output` |
+| `d2`       | D2 diagram shapes                     | `github.com/larsartmann/go-output` |
+| `yaml`     | YAML serialization                    | `github.com/larsartmann/go-output` |
 
 ## Supported Sort Options
 
@@ -38,6 +61,26 @@ Standardizes output formatting across personal Go projects:
 | `auto`   | Respect `NO_COLOR`, CI env vars, TTY detection |
 | `always` | Force ANSI colors                              |
 | `never`  | Disable colors                                 |
+
+## Type-Safe Enums
+
+All configuration types provide validation and string conversion:
+
+```go
+// Parse with validation
+format, err := output.ParseOutputFormat("json")
+if err != nil {
+    // handle error
+}
+
+// Check validity
+if format.IsValid() {
+    fmt.Println(format.String()) // "json"
+}
+
+// Get allowed values for CLI help
+allowed := format.AllowedValues() // []string{"table", "json", "csv", ...}
+```
 
 ## CLI Flag Integration
 
@@ -75,12 +118,22 @@ require (
 # Build
 just build
 
-# Test
+# Test (includes benchmarks and fuzz tests)
 just test
 
 # Lint
 just lint
+
+# Full verification
+just verify
+
+# Run example
+go run ./examples/basic/main.go markdown
 ```
+
+## Examples
+
+See [`examples/basic/main.go`](examples/basic/main.go) for a complete example demonstrating all formats.
 
 ## License
 

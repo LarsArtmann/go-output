@@ -74,3 +74,51 @@ func TestUnmarshalYAML(t *testing.T) {
 		})
 	}
 }
+
+type yamlBenchmarkStruct struct {
+	ID        int      `yaml:"id"`
+	Name      string   `yaml:"name"`
+	Items     []string `yaml:"items"`
+	Count     int      `yaml:"count"`
+	Active    bool     `yaml:"active"`
+	CreatedAt string   `yaml:"created_at"`
+	UpdatedAt string   `yaml:"updated_at"`
+}
+
+func BenchmarkMarshalYAML(b *testing.B) {
+	data := yamlBenchmarkStruct{
+		ID:        12345,
+		Name:      "Test Project Alpha",
+		Items:     []string{"item1", "item2", "item3", "item4", "item5"},
+		Count:     100,
+		Active:    true,
+		CreatedAt: "2026-03-22T10:00:00Z",
+		UpdatedAt: "2026-03-22T12:00:00Z",
+	}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_, _ = MarshalYAML(data)
+	}
+}
+
+func BenchmarkUnmarshalYAML(b *testing.B) {
+	yamlData := []byte(`id: 12345
+name: Test Project Alpha
+items:
+  - item1
+  - item2
+  - item3
+  - item4
+  - item5
+count: 100
+active: true
+created_at: "2026-03-22T10:00:00Z"
+updated_at: "2026-03-22T12:00:00Z"`)
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		var result yamlBenchmarkStruct
+		_ = UnmarshalYAML(yamlData, &result)
+	}
+}

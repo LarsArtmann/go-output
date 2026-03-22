@@ -83,15 +83,40 @@ func TestOutputFormatIsValid(t *testing.T) {
 		{OutputFormatMarkdown, true},
 		{OutputFormatD2, true},
 		{OutputFormatYAML, true},
-		{"invalid", false},
-		{"", false},
+		{OutputFormat("invalid"), false},
+		{OutputFormat(""), false},
 	}
 
 	for _, tt := range tests {
 		t.Run(string(tt.format), func(t *testing.T) {
 			if got := tt.format.IsValid(); got != tt.want {
-				t.Errorf("OutputFormat.IsValid() = %v, want %v", got, tt.want)
+				t.Errorf("OutputFormat(%q).IsValid() = %v, want %v", tt.format, got, tt.want)
 			}
 		})
 	}
+}
+
+func FuzzParseOutputFormat(f *testing.F) {
+	f.Add("table")
+	f.Add("json")
+	f.Add("csv")
+	f.Add("markdown")
+	f.Add("d2")
+	f.Add("yaml")
+	f.Add("invalid")
+	f.Add("")
+
+	f.Fuzz(func(t *testing.T, s string) {
+		format, err := ParseOutputFormat(s)
+		if err != nil {
+			if format != "" {
+				t.Errorf("ParseOutputFormat(%q) returned error but non-empty format: %q", s, format)
+			}
+		}
+		if format.IsValid() && err == nil {
+			if string(format) != s {
+				t.Errorf("ParseOutputFormat(%q) = %q, but IsValid() was true", s, format)
+			}
+		}
+	})
 }

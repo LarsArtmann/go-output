@@ -58,16 +58,20 @@ func main() {
 	case output.OutputFormatCSV:
 		w := output.NewCSVWriter(os.Stdout)
 		if err := w.WriteHeader([]string{"Name", "Health", "Complexity"}); err != nil {
-			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+			fmt.Fprintf(os.Stderr, "Error writing header: %v\n", err)
 			os.Exit(1)
 		}
 		for _, p := range projects {
 			if err := w.WriteRow([]string{p.Name, fmt.Sprintf("%d", p.Health), fmt.Sprintf("%d", p.Complexity)}); err != nil {
-				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+				fmt.Fprintf(os.Stderr, "Error writing row: %v\n", err)
 				os.Exit(1)
 			}
 		}
 		w.Flush()
+		if err := w.Error(); err != nil {
+			fmt.Fprintf(os.Stderr, "Error flushing: %v\n", err)
+			os.Exit(1)
+		}
 
 	case output.OutputFormatYAML:
 		data, err := output.MarshalYAML(projects)

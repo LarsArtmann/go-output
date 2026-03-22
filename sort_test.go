@@ -83,15 +83,40 @@ func TestSortByIsValid(t *testing.T) {
 		{SortByUpdatedAt, true},
 		{SortByHealth, true},
 		{SortByComplexity, true},
-		{"invalid", false},
-		{"", false},
+		{SortBy("invalid"), false},
+		{SortBy(""), false},
 	}
 
 	for _, tt := range tests {
 		t.Run(string(tt.sortBy), func(t *testing.T) {
 			if got := tt.sortBy.IsValid(); got != tt.want {
-				t.Errorf("SortBy.IsValid() = %v, want %v", got, tt.want)
+				t.Errorf("SortBy(%q).IsValid() = %v, want %v", tt.sortBy, got, tt.want)
 			}
 		})
 	}
+}
+
+func FuzzParseSortBy(f *testing.F) {
+	f.Add("name")
+	f.Add("importance")
+	f.Add("created_at")
+	f.Add("updated_at")
+	f.Add("health")
+	f.Add("complexity")
+	f.Add("invalid")
+	f.Add("")
+
+	f.Fuzz(func(t *testing.T, s string) {
+		sortBy, err := ParseSortBy(s)
+		if err != nil {
+			if sortBy != "" {
+				t.Errorf("ParseSortBy(%q) returned error but non-empty sortBy: %q", s, sortBy)
+			}
+		}
+		if sortBy.IsValid() && err == nil {
+			if string(sortBy) != s {
+				t.Errorf("ParseSortBy(%q) = %q, but IsValid() was true", s, sortBy)
+			}
+		}
+	})
 }

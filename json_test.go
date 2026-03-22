@@ -120,3 +120,57 @@ func TestNewJSONWriter(t *testing.T) {
 		t.Error("NewJSONWriter() did not set Writer correctly")
 	}
 }
+
+type benchmarkStruct struct {
+	ID        int      `json:"id"`
+	Name      string   `json:"name"`
+	Items     []string `json:"items"`
+	Count     int      `json:"count"`
+	Active    bool     `json:"active"`
+	CreatedAt string   `json:"created_at"`
+	UpdatedAt string   `json:"updated_at"`
+}
+
+func BenchmarkMarshalJSON(b *testing.B) {
+	data := benchmarkStruct{
+		ID:        12345,
+		Name:      "Test Project Alpha",
+		Items:     []string{"item1", "item2", "item3", "item4", "item5"},
+		Count:     100,
+		Active:    true,
+		CreatedAt: "2026-03-22T10:00:00Z",
+		UpdatedAt: "2026-03-22T12:00:00Z",
+	}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_, _ = MarshalJSON(data)
+	}
+}
+
+func BenchmarkMarshalJSONIndent(b *testing.B) {
+	data := benchmarkStruct{
+		ID:        12345,
+		Name:      "Test Project Alpha",
+		Items:     []string{"item1", "item2", "item3", "item4", "item5"},
+		Count:     100,
+		Active:    true,
+		CreatedAt: "2026-03-22T10:00:00Z",
+		UpdatedAt: "2026-03-22T12:00:00Z",
+	}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_, _ = MarshalJSONIndent(data, "", "  ")
+	}
+}
+
+func BenchmarkUnmarshalJSON(b *testing.B) {
+	jsonData := []byte(`{"id":12345,"name":"Test Project Alpha","items":["item1","item2","item3","item4","item5"],"count":100,"active":true,"created_at":"2026-03-22T10:00:00Z","updated_at":"2026-03-22T12:00:00Z"}`)
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		var result benchmarkStruct
+		_ = UnmarshalJSON(jsonData, &result)
+	}
+}
