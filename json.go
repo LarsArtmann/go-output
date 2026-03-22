@@ -19,7 +19,13 @@ func MarshalJSON(v any) ([]byte, error) {
 func MarshalJSONIndent(v any, prefix, indent string) ([]byte, error) {
 	data, err := json.MarshalIndent(v, prefix, indent)
 	if err != nil {
-		return nil, fmt.Errorf("marshal json indent (%T, prefix=%q, indent=%q): %w", v, prefix, indent, err)
+		return nil, fmt.Errorf(
+			"marshal json indent (%T, prefix=%q, indent=%q): %w",
+			v,
+			prefix,
+			indent,
+			err,
+		)
 	}
 	return data, nil
 }

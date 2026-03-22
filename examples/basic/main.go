@@ -46,7 +46,9 @@ func main() {
 		md := output.NewMarkdownTable()
 		md.SetHeaders([]string{"Name", "Health", "Complexity"})
 		for _, p := range projects {
-			md.AddRow([]string{p.Name, fmt.Sprintf("%d%%", p.Health), fmt.Sprintf("%d/10", p.Complexity)})
+			md.AddRow(
+				[]string{p.Name, fmt.Sprintf("%d%%", p.Health), fmt.Sprintf("%d/10", p.Complexity)},
+			)
 		}
 		out, err := md.Render()
 		if err != nil {
@@ -62,7 +64,9 @@ func main() {
 			os.Exit(1)
 		}
 		for _, p := range projects {
-			if err := w.WriteRow([]string{p.Name, fmt.Sprintf("%d", p.Health), fmt.Sprintf("%d", p.Complexity)}); err != nil {
+			if err := w.WriteRow(
+				[]string{p.Name, strconv.Itoa(p.Health), strconv.Itoa(p.Complexity)},
+			); err != nil {
 				fmt.Fprintf(os.Stderr, "Error writing row: %v\n", err)
 				os.Exit(1)
 			}

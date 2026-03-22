@@ -164,7 +164,9 @@ func BenchmarkMarshalJSONIndent(b *testing.B) {
 }
 
 func BenchmarkUnmarshalJSON(b *testing.B) {
-	jsonData := []byte(`{"id":12345,"name":"Test Project Alpha","items":["item1","item2","item3","item4","item5"],"count":100,"active":true,"created_at":"2026-03-22T10:00:00Z","updated_at":"2026-03-22T12:00:00Z"}`)
+	jsonData := []byte(
+		`{"id":12345,"name":"Test Project Alpha","items":["item1","item2","item3","item4","item5"],"count":100,"active":true,"created_at":"2026-03-22T10:00:00Z","updated_at":"2026-03-22T12:00:00Z"}`,
+	)
 
 	for b.Loop() {
 		var result benchmarkStruct

@@ -1,9 +1,0 @@
-# golangci-lint configuration
-version: "2"
-
-linters:
-  settings:
-    revive:
-      rules:
-        - name: var-naming
-          disabled: true
