@@ -34,14 +34,14 @@ w.Flush()
 
 ## Supported Formats
 
-| Format     | Description                           | Package          |
-| ---------- | ------------------------------------- | ---------------- |
-| `table`    | Terminal tables with lipgloss styling  | `github.com/larsartmann/go-output/table` |
-| `json`     | JSON output with indentation          | `github.com/larsartmann/go-output` |
-| `csv`      | CSV export with headers               | `github.com/larsartmann/go-output` |
-| `markdown` | Markdown tables                       | `github.com/larsartmann/go-output` |
-| `d2`       | D2 diagram shapes                     | `github.com/larsartmann/go-output` |
-| `yaml`     | YAML serialization                    | `github.com/larsartmann/go-output` |
+| Format     | Description                           | Package                                  |
+| ---------- | ------------------------------------- | ---------------------------------------- |
+| `table`    | Terminal tables with lipgloss styling | `github.com/larsartmann/go-output/table` |
+| `json`     | JSON output with indentation          | `github.com/larsartmann/go-output`       |
+| `csv`      | CSV export with headers               | `github.com/larsartmann/go-output`       |
+| `markdown` | Markdown tables                       | `github.com/larsartmann/go-output`       |
+| `d2`       | D2 diagram shapes                     | `github.com/larsartmann/go-output`       |
+| `yaml`     | YAML serialization                    | `github.com/larsartmann/go-output`       |
 
 ## Supported Sort Options
 
