@@ -10,29 +10,32 @@ Complete the go-output library to production-ready state with full test coverage
 ## Pareto Analysis
 
 ### 1% → 51% Impact (Critical Path)
+
 Fix doc comments and simplify code - these affect every file and block clean linter output.
 
-| Task | Impact | Effort |
-|------|--------|--------|
+| Task                                     | Impact                       | Effort |
+| ---------------------------------------- | ---------------------------- | ------ |
 | Add doc comments to exported types/funcs | Unblocks 70+ linter warnings | 30 min |
-| Use slices.Contains for IsValid methods | Code quality | 5 min |
+| Use slices.Contains for IsValid methods  | Code quality                 | 5 min  |
 
 ### 4% → 64% Impact (Quality Foundation)
+
 Tests and error handling establish trust and enable future changes.
 
-| Task | Impact | Effort |
-|------|--------|--------|
-| Add tests for all packages | Enables refactoring | 90 min |
-| Fix wrapcheck errors | Proper error handling | 15 min |
+| Task                       | Impact                | Effort |
+| -------------------------- | --------------------- | ------ |
+| Add tests for all packages | Enables refactoring   | 90 min |
+| Fix wrapcheck errors       | Proper error handling | 15 min |
 
 ### 20% → 80% Impact (Production Ready)
+
 Examples, CI/CD, and integration testing ensure real-world usability.
 
-| Task | Impact | Effort |
-|------|--------|--------|
-| Add working examples | User adoption | 30 min |
-| Add GitHub CI workflow | Reliability | 15 min |
-| Dogfood in target projects | Validation | 30 min |
+| Task                       | Impact        | Effort |
+| -------------------------- | ------------- | ------ |
+| Add working examples       | User adoption | 30 min |
+| Add GitHub CI workflow     | Reliability   | 15 min |
+| Dogfood in target projects | Validation    | 30 min |
 
 ---
 
@@ -103,89 +106,89 @@ flowchart TD
 
 #### 1.1 Doc Comments - Root Package (8 tasks)
 
-| # | File | Add Comments To | Est |
-|---|------|-----------------|-----|
-| 1 | format.go | OutputFormat, ParseOutputFormat, String, AllowedValues, IsValid | 15m |
-| 2 | color.go | ColorMode, ParseColorMode, String, AllowedValues, IsValid, ShouldColor, ToANSI | 15m |
-| 3 | sort.go | SortBy, ParseSortBy, String, AllowedValues, IsValid | 15m |
-| 4 | json.go | MarshalJSON, MarshalJSONIndent, UnmarshalJSON, JSONWriter, NewJSONWriter, Encode | 15m |
-| 5 | csv.go | CSVWriter, NewCSVWriter, WriteHeader, WriteRow, WriteRows, Flush, Error | 15m |
-| 6 | markdown.go | MarkdownTable, NewMarkdownTable, SetHeaders, SetAlign, AddRow, Render, AlignLeft/Right/Center | 15m |
-| 7 | yaml.go | MarshalYAML, UnmarshalYAML | 10m |
-| 8 | d2.go | D2Shape, D2Column, D2Diagram, NewD2Diagram, AddTable, Render | 15m |
+| #   | File        | Add Comments To                                                                               | Est |
+| --- | ----------- | --------------------------------------------------------------------------------------------- | --- |
+| 1   | format.go   | OutputFormat, ParseOutputFormat, String, AllowedValues, IsValid                               | 15m |
+| 2   | color.go    | ColorMode, ParseColorMode, String, AllowedValues, IsValid, ShouldColor, ToANSI                | 15m |
+| 3   | sort.go     | SortBy, ParseSortBy, String, AllowedValues, IsValid                                           | 15m |
+| 4   | json.go     | MarshalJSON, MarshalJSONIndent, UnmarshalJSON, JSONWriter, NewJSONWriter, Encode              | 15m |
+| 5   | csv.go      | CSVWriter, NewCSVWriter, WriteHeader, WriteRow, WriteRows, Flush, Error                       | 15m |
+| 6   | markdown.go | MarkdownTable, NewMarkdownTable, SetHeaders, SetAlign, AddRow, Render, AlignLeft/Right/Center | 15m |
+| 7   | yaml.go     | MarshalYAML, UnmarshalYAML                                                                    | 10m |
+| 8   | d2.go       | D2Shape, D2Column, D2Diagram, NewD2Diagram, AddTable, Render                                  | 15m |
 
 #### 1.2 Doc Comments - Sub Packages (3 tasks)
 
-| # | File | Add Comments To | Est |
-|---|------|-----------------|-----|
-| 9 | table/table.go | Table, New, SetHeaders, AddRow, StyleFunc, Render | 15m |
-| 10 | sort/sort.go | Package doc, Comparator, CompareString, CompareInt, CompareTime, Sorter, New, WithLessFunc, Sort | 15m |
-| 11 | cmdguard/*.go | All 3 files: package doc, types, constructors, methods | 15m |
+| #   | File           | Add Comments To                                                                                  | Est |
+| --- | -------------- | ------------------------------------------------------------------------------------------------ | --- |
+| 9   | table/table.go | Table, New, SetHeaders, AddRow, StyleFunc, Render                                                | 15m |
+| 10  | sort/sort.go   | Package doc, Comparator, CompareString, CompareInt, CompareTime, Sorter, New, WithLessFunc, Sort | 15m |
+| 11  | cmdguard/\*.go | All 3 files: package doc, types, constructors, methods                                           | 15m |
 
 #### 1.3 Code Simplification (1 task)
 
-| # | Task | Files | Est |
-|---|------|-------|-----|
-| 12 | Use slices.Contains | format.go, color.go, sort.go (IsValid methods) | 10m |
+| #   | Task                | Files                                          | Est |
+| --- | ------------------- | ---------------------------------------------- | --- |
+| 12  | Use slices.Contains | format.go, color.go, sort.go (IsValid methods) | 10m |
 
 ### Phase 2: Quality (15 tasks, ~3.75 hours)
 
 #### 2.1 Error Wrapping (3 tasks)
 
-| # | Task | Files | Est |
-|---|------|-------|-----|
-| 13 | Wrap json errors | json.go (Marshal, MarshalIndent, Unmarshal, Encode) | 15m |
-| 14 | Wrap csv errors | csv.go (WriteHeader, WriteRow, WriteRows, Error) | 15m |
-| 15 | Wrap cmdguard errors | cmdguard/*.go (Parse methods) | 15m |
+| #   | Task                 | Files                                               | Est |
+| --- | -------------------- | --------------------------------------------------- | --- |
+| 13  | Wrap json errors     | json.go (Marshal, MarshalIndent, Unmarshal, Encode) | 15m |
+| 14  | Wrap csv errors      | csv.go (WriteHeader, WriteRow, WriteRows, Error)    | 15m |
+| 15  | Wrap cmdguard errors | cmdguard/\*.go (Parse methods)                      | 15m |
 
 #### 2.2 Struct Initialization (1 task)
 
-| # | Task | Files | Est |
-|---|------|-------|-----|
-| 16 | Fix exhaustruct | sort/sort.go (Sorter initialization) | 10m |
+| #   | Task            | Files                                | Est |
+| --- | --------------- | ------------------------------------ | --- |
+| 16  | Fix exhaustruct | sort/sort.go (Sorter initialization) | 10m |
 
 #### 2.3 Tests - Root Package (8 tasks)
 
-| # | File | Test Coverage | Est |
-|---|------|---------------|-----|
-| 17 | format_test.go | ParseOutputFormat, String, AllowedValues, IsValid | 15m |
-| 18 | color_test.go | ParseColorMode, ShouldColor (with env mocking), ToANSI | 15m |
-| 19 | sort_test.go | ParseSortBy, String, AllowedValues, IsValid | 15m |
-| 20 | json_test.go | MarshalJSON, MarshalJSONIndent, UnmarshalJSON, JSONWriter | 15m |
-| 21 | csv_test.go | CSVWriter all methods | 15m |
-| 22 | markdown_test.go | MarkdownTable all methods, alignment | 15m |
-| 23 | yaml_test.go | MarshalYAML, UnmarshalYAML | 15m |
-| 24 | d2_test.go | D2Diagram all methods | 15m |
+| #   | File             | Test Coverage                                             | Est |
+| --- | ---------------- | --------------------------------------------------------- | --- |
+| 17  | format_test.go   | ParseOutputFormat, String, AllowedValues, IsValid         | 15m |
+| 18  | color_test.go    | ParseColorMode, ShouldColor (with env mocking), ToANSI    | 15m |
+| 19  | sort_test.go     | ParseSortBy, String, AllowedValues, IsValid               | 15m |
+| 20  | json_test.go     | MarshalJSON, MarshalJSONIndent, UnmarshalJSON, JSONWriter | 15m |
+| 21  | csv_test.go      | CSVWriter all methods                                     | 15m |
+| 22  | markdown_test.go | MarkdownTable all methods, alignment                      | 15m |
+| 23  | yaml_test.go     | MarshalYAML, UnmarshalYAML                                | 15m |
+| 24  | d2_test.go       | D2Diagram all methods                                     | 15m |
 
 #### 2.4 Tests - Sub Packages (3 tasks)
 
-| # | File | Test Coverage | Est |
-|---|------|---------------|-----|
-| 25 | table/table_test.go | Table all methods | 15m |
-| 26 | sort/sort_test.go | Comparator functions, Sorter, WithLessFunc, Sort | 15m |
-| 27 | cmdguard/*_test.go | All flag types | 15m |
+| #   | File                 | Test Coverage                                    | Est |
+| --- | -------------------- | ------------------------------------------------ | --- |
+| 25  | table/table_test.go  | Table all methods                                | 15m |
+| 26  | sort/sort_test.go    | Comparator functions, Sorter, WithLessFunc, Sort | 15m |
+| 27  | cmdguard/\*\_test.go | All flag types                                   | 15m |
 
 ### Phase 3: Production (6 tasks, ~1.5 hours)
 
-| # | Task | Details | Est |
-|---|------|---------|-----|
-| 28 | Create examples/basic | Simple demo of all formats | 15m |
-| 29 | Create examples/advanced | Sort, color modes, custom styles | 15m |
-| 30 | Add dogfood command | justfile: `dogfood` runs examples | 10m |
-| 31 | Add CI workflow | .github/workflows/ci.yml | 15m |
-| 32 | Update README | Add usage examples from code | 15m |
-| 33 | Final lint pass | Fix any remaining issues | 15m |
+| #   | Task                     | Details                           | Est |
+| --- | ------------------------ | --------------------------------- | --- |
+| 28  | Create examples/basic    | Simple demo of all formats        | 15m |
+| 29  | Create examples/advanced | Sort, color modes, custom styles  | 15m |
+| 30  | Add dogfood command      | justfile: `dogfood` runs examples | 10m |
+| 31  | Add CI workflow          | .github/workflows/ci.yml          | 15m |
+| 32  | Update README            | Add usage examples from code      | 15m |
+| 33  | Final lint pass          | Fix any remaining issues          | 15m |
 
 ---
 
 ## Total Estimate
 
-| Phase | Tasks | Time |
-|-------|-------|------|
-| Phase 1: Foundation | 12 | 2.75h |
-| Phase 2: Quality | 15 | 3.75h |
-| Phase 3: Production | 6 | 1.5h |
-| **Total** | **33** | **8h** |
+| Phase               | Tasks  | Time   |
+| ------------------- | ------ | ------ |
+| Phase 1: Foundation | 12     | 2.75h  |
+| Phase 2: Quality    | 15     | 3.75h  |
+| Phase 3: Production | 6      | 1.5h   |
+| **Total**           | **33** | **8h** |
 
 ---
 
@@ -194,11 +197,13 @@ flowchart TD
 Execute sequentially within phases. All tasks are designed to be completable in 15 minutes or less.
 
 ### Start Command
+
 ```bash
 just verify
 ```
 
 ### Success Criteria
+
 - [ ] `just build` passes
 - [ ] `just test` passes with >80% coverage
 - [ ] `just lint` passes with 0 warnings
