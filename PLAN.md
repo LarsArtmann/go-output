@@ -10,11 +10,11 @@ A reusable Go library for CLI applications that provides consistent output forma
 
 ## Core Enums
 
-| Enum | Values | Purpose |
-|------|--------|---------|
-| `OutputFormat` | `table`, `json`, `csv`, `markdown`, `d2`, `yaml` | Output format selection |
-| `SortBy` | `name`, `importance`, `created_at`, `updated_at`, `health`, `complexity` | Sort field selection |
-| `ColorMode` | `auto`, `always`, `never` | Color output control |
+| Enum           | Values                                                                   | Purpose                 |
+| -------------- | ------------------------------------------------------------------------ | ----------------------- |
+| `OutputFormat` | `table`, `json`, `csv`, `markdown`, `d2`, `yaml`                         | Output format selection |
+| `SortBy`       | `name`, `importance`, `created_at`, `updated_at`, `health`, `complexity` | Sort field selection    |
+| `ColorMode`    | `auto`, `always`, `never`                                                | Color output control    |
 
 ---
 
@@ -62,13 +62,13 @@ go-output/
 
 ## Phase 1: Foundation
 
-| Step | Task | Details |
-|------|------|---------|
-| 1.1 | Create repository | `mkdir -p /Users/larsartmann/projects/go-output` |
-| 1.2 | Initialize go.mod | Module: `github.com/larsartmann/go-output` |
-| 1.3 | Create `format.go` | `OutputFormat` enum with Parse, String, AllowedValues |
-| 1.4 | Create `sort.go` | `SortBy` enum with Parse, String, AllowedValues |
-| 1.5 | Create `color.go` | `ColorMode` enum with Parse, ShouldColor, ToANSI |
+| Step | Task               | Details                                               |
+| ---- | ------------------ | ----------------------------------------------------- |
+| 1.1  | Create repository  | `mkdir -p /Users/larsartmann/projects/go-output`      |
+| 1.2  | Initialize go.mod  | Module: `github.com/larsartmann/go-output`            |
+| 1.3  | Create `format.go` | `OutputFormat` enum with Parse, String, AllowedValues |
+| 1.4  | Create `sort.go`   | `SortBy` enum with Parse, String, AllowedValues       |
+| 1.5  | Create `color.go`  | `ColorMode` enum with Parse, ShouldColor, ToANSI      |
 
 ### format.go Specification
 
@@ -129,13 +129,13 @@ func (c ColorMode) ToANSI() string     // Returns escape code or ""
 
 ## Phase 2: Core Formatters
 
-| Step | Task | Details |
-|------|------|---------|
-| 2.1 | Create `json.go` | Marshal/Indent, encoder options |
-| 2.2 | Create `csv.go` | NewWriter, WriteHeader, WriteRow |
-| 2.3 | Create `yaml.go` | Marshal/Unmarshal using go.yaml |
-| 2.4 | Create `markdown.go` | Table generator with alignment |
-| 2.5 | Create `d2.go` | SQL table shape generator |
+| Step | Task                 | Details                          |
+| ---- | -------------------- | -------------------------------- |
+| 2.1  | Create `json.go`     | Marshal/Indent, encoder options  |
+| 2.2  | Create `csv.go`      | NewWriter, WriteHeader, WriteRow |
+| 2.3  | Create `yaml.go`     | Marshal/Unmarshal using go.yaml  |
+| 2.4  | Create `markdown.go` | Table generator with alignment   |
+| 2.5  | Create `d2.go`       | SQL table shape generator        |
 
 ### json.go Specification
 
@@ -160,12 +160,12 @@ func (c *CSVWriter) Flush()
 
 ## Phase 3: Table System
 
-| Step | Task | Details |
-|------|------|---------|
-| 3.1 | Create `table/config.go` | TableConfig interface |
-| 3.2 | Create `table/styles.go` | BorderStyle, Color, Alignment |
-| 3.3 | Create `table/lipgloss.go` | Lipgloss table builder |
-| 3.4 | Create `table/table.go` | Generic table interface |
+| Step | Task                       | Details                       |
+| ---- | -------------------------- | ----------------------------- |
+| 3.1  | Create `table/config.go`   | TableConfig interface         |
+| 3.2  | Create `table/styles.go`   | BorderStyle, Color, Alignment |
+| 3.3  | Create `table/lipgloss.go` | Lipgloss table builder        |
+| 3.4  | Create `table/table.go`    | Generic table interface       |
 
 ### Table Interface
 
@@ -196,11 +196,11 @@ func (t *Table) WithStyleFunc(fn func(row, col int) Style) Table
 
 ## Phase 4: Sorting System
 
-| Step | Task | Details |
-|------|------|---------|
-| 4.1 | Create `sort/comparators.go` | CompareString, CompareInt, CompareTime |
-| 4.2 | Create `sort/sorter.go` | SortFunc adapter |
-| 4.3 | Create `sort/adapter.go` | SortBy to Comparator conversion |
+| Step | Task                         | Details                                |
+| ---- | ---------------------------- | -------------------------------------- |
+| 4.1  | Create `sort/comparators.go` | CompareString, CompareInt, CompareTime |
+| 4.2  | Create `sort/sorter.go`      | SortFunc adapter                       |
+| 4.3  | Create `sort/adapter.go`     | SortBy to Comparator conversion        |
 
 ### Sorting Interface
 
@@ -221,11 +221,11 @@ func (s *Sorter) SortFunc(cmp Comparator) *Sorter
 
 ## Phase 5: cmdguard Integration
 
-| Step | Task | Details |
-|------|------|---------|
-| 5.1 | Create `cmdguard/format.go` | OutputFormat flag tag support |
-| 5.2 | Create `cmdguard/sort.go` | SortBy flag tag support |
-| 5.3 | Create `cmdguard/color.go` | ColorMode flag with auto-detection |
+| Step | Task                        | Details                            |
+| ---- | --------------------------- | ---------------------------------- |
+| 5.1  | Create `cmdguard/format.go` | OutputFormat flag tag support      |
+| 5.2  | Create `cmdguard/sort.go`   | SortBy flag tag support            |
+| 5.3  | Create `cmdguard/color.go`  | ColorMode flag with auto-detection |
 
 ### cmdguard Usage
 
@@ -248,12 +248,12 @@ type MyFlags struct {
 
 ## Phase 6: Polish
 
-| Step | Task | Details |
-|------|------|---------|
-| 6.1 | Create `justfile` | build, test, lint, format |
-| 6.2 | Add tests | Unit tests for all formatters and enums |
-| 6.3 | Create README | Usage documentation with examples |
-| 6.4 | Add examples | Basic, table, and cmdguard usage |
+| Step | Task              | Details                                 |
+| ---- | ----------------- | --------------------------------------- |
+| 6.1  | Create `justfile` | build, test, lint, format               |
+| 6.2  | Add tests         | Unit tests for all formatters and enums |
+| 6.3  | Create README     | Usage documentation with examples       |
+| 6.4  | Add examples      | Basic, table, and cmdguard usage        |
 
 ---
 
@@ -349,13 +349,13 @@ cmd := v2.Command[AppConfig, *ListFlags]{
 
 This library solves the problem of scattered, inconsistent output formatting across CLI applications:
 
-| Before | After |
-|--------|-------|
-| Inline JSON/CSV/Markdown in each command | Shared, tested formatters |
-| String-based format validation | Type-safe enums |
-| Manual color detection | Auto ColorMode with env var support |
-| Custom sorting logic per command | Generic SortBy with Comparator adapter |
-| No cmdguard integration | Flags with validation and completion |
+| Before                                   | After                                  |
+| ---------------------------------------- | -------------------------------------- |
+| Inline JSON/CSV/Markdown in each command | Shared, tested formatters              |
+| String-based format validation           | Type-safe enums                        |
+| Manual color detection                   | Auto ColorMode with env var support    |
+| Custom sorting logic per command         | Generic SortBy with Comparator adapter |
+| No cmdguard integration                  | Flags with validation and completion   |
 
 ---
 
