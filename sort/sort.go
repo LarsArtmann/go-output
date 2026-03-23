@@ -155,7 +155,9 @@ func (s *Sorter[T]) defaultLess(a, b T) bool {
 	aVal := reflect.ValueOf(a)
 	bVal := reflect.ValueOf(b)
 
-	fieldName := string(s.By)
+	// Convert snake_case to PascalCase for field lookup
+	// e.g., "name" -> "Name", "created_at" -> "CreatedAt"
+	fieldName := snakeToPascal(string(s.By))
 	field := aVal.FieldByName(fieldName)
 
 	if !field.IsValid() {
@@ -163,6 +165,33 @@ func (s *Sorter[T]) defaultLess(a, b T) bool {
 	}
 
 	return compareFieldValues(field, bVal.FieldByName(fieldName))
+}
+
+// snakeToPascal converts snake_case to PascalCase.
+func snakeToPascal(s string) string {
+	if s == "" {
+		return ""
+	}
+
+	result := make([]byte, 0, len(s))
+	upper := true
+
+	for i := range len(s) {
+		c := s[i]
+		if c == '_' {
+			upper = true
+			continue
+		}
+		if upper {
+			if c >= 'a' && c <= 'z' {
+				c = c - 'a' + 'A'
+			}
+			upper = false
+		}
+		result = append(result, c)
+	}
+
+	return string(result)
 }
 
 func compareFieldValues(a, b reflect.Value) bool {
