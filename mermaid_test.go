@@ -5,7 +5,9 @@ import (
 	"testing"
 )
 
+//nolint:exhaustruct // Test files use partial struct initialization
 func TestMermaidRenderer(t *testing.T) {
+	t.Parallel()
 	renderer := NewMermaidRenderer()
 	renderer.SetNodes([]GraphNode{
 		{ID: "A", Label: "Node A"},
@@ -34,7 +36,9 @@ func TestMermaidRenderer(t *testing.T) {
 	}
 }
 
+//nolint:exhaustruct // Test files use partial struct initialization
 func TestMermaidRendererWithDiamond(t *testing.T) {
+	t.Parallel()
 	renderer := NewMermaidRenderer()
 	renderer.SetNodes([]GraphNode{
 		{ID: "decision", Label: "Decision", Shape: ShapeDiamond},
@@ -50,6 +54,7 @@ func TestMermaidRendererWithDiamond(t *testing.T) {
 }
 
 func TestMermaidRendererFromTableData(t *testing.T) {
+	t.Parallel()
 	data := NewTableData([]string{"Step", "Description"})
 	data.AddRow([]string{"Start", "Begin process"})
 	data.AddRow([]string{"Step 1", "Do something"})
@@ -70,6 +75,7 @@ func TestMermaidRendererFromTableData(t *testing.T) {
 }
 
 func TestMermaidTreeRenderer(t *testing.T) {
+	t.Parallel()
 	root := NewTreeNode("root", "Root")
 	root.AddChild(NewTreeNode("child1", "Child 1"))
 	root.AddChild(NewTreeNode("child2", "Child 2"))
@@ -89,6 +95,7 @@ func TestMermaidTreeRenderer(t *testing.T) {
 }
 
 func TestMermaidRendererEmpty(t *testing.T) {
+	t.Parallel()
 	renderer := NewMermaidRenderer()
 	output := renderer.Render()
 
@@ -101,6 +108,7 @@ func TestMermaidRendererEmpty(t *testing.T) {
 }
 
 func TestSanitizeMermaidID(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		input string
 		want  string

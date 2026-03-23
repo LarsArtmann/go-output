@@ -3,6 +3,7 @@ package output
 import (
 	"fmt"
 	"slices"
+	"strings"
 )
 
 // Format represents the available output format options for CLI applications.
@@ -101,14 +102,14 @@ func (e *InvalidFormatError) Error() string {
 }
 
 func formatStrings(formats []Format) string {
-	result := ""
+	var b strings.Builder
 	for i, f := range formats {
 		if i > 0 {
-			result += ", "
+			b.WriteString(", ")
 		}
-		result += string(f)
+		b.WriteString(string(f))
 	}
-	return result
+	return b.String()
 }
 
 // Backward compatibility aliases for the renamed type.

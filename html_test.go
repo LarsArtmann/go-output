@@ -6,6 +6,7 @@ import (
 )
 
 func TestHTMLRenderer(t *testing.T) {
+	t.Parallel()
 	renderer := NewHTMLRenderer()
 	renderer.SetHeaders([]string{"Name", "Age"})
 	renderer.AddRow([]string{"Alice", "30"})
@@ -35,6 +36,7 @@ func TestHTMLRenderer(t *testing.T) {
 }
 
 func TestHTMLRendererFullDocument(t *testing.T) {
+	t.Parallel()
 	renderer := NewHTMLRenderer()
 	renderer.SetHeaders([]string{"Col1", "Col2"})
 	renderer.AddRow([]string{"A", "B"})
@@ -53,6 +55,7 @@ func TestHTMLRendererFullDocument(t *testing.T) {
 }
 
 func TestHTMLRendererEmpty(t *testing.T) {
+	t.Parallel()
 	renderer := NewHTMLRenderer()
 	output := renderer.Render()
 
@@ -65,6 +68,7 @@ func TestHTMLRendererEmpty(t *testing.T) {
 }
 
 func TestHTMLRendererEscaping(t *testing.T) {
+	t.Parallel()
 	renderer := NewHTMLRenderer()
 	renderer.SetHeaders([]string{"Name"})
 	renderer.AddRow([]string{"<script>alert('xss')</script>"})
@@ -81,6 +85,7 @@ func TestHTMLRendererEscaping(t *testing.T) {
 }
 
 func TestHTMLTreeRenderer(t *testing.T) {
+	t.Parallel()
 	renderer := NewHTMLTreeRenderer()
 
 	root := NewTreeNode("root", "Root")
@@ -104,6 +109,7 @@ func TestHTMLTreeRenderer(t *testing.T) {
 }
 
 func TestHTMLTreeRendererFullDocument(t *testing.T) {
+	t.Parallel()
 	renderer := NewHTMLTreeRenderer()
 	renderer.SetRoot(NewTreeNode("root", "Test Tree"))
 

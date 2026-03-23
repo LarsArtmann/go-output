@@ -45,3 +45,5 @@ Thumbs.db
 *.log
 # Build artifacts
 /go-output
+/basic
+/basic.exe

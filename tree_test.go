@@ -6,6 +6,7 @@ import (
 )
 
 func TestASCIITreeRenderer(t *testing.T) {
+	t.Parallel()
 	renderer := NewASCIITreeRenderer()
 
 	// Test empty tree
@@ -41,6 +42,7 @@ func TestASCIITreeRenderer(t *testing.T) {
 }
 
 func TestASCIITreeRendererWithMetadata(t *testing.T) {
+	t.Parallel()
 	renderer := NewASCIITreeRenderer()
 
 	node := NewTreeNode("node", "Node with Meta")
@@ -59,6 +61,7 @@ func TestASCIITreeRendererWithMetadata(t *testing.T) {
 }
 
 func TestTreeRendererFromTableData(t *testing.T) {
+	t.Parallel()
 	data := NewTableData([]string{"Name", "Age", "City"})
 	data.AddRow([]string{"Alice", "30", "NYC"})
 	data.AddRow([]string{"Bob", "25", "LA"})
@@ -81,6 +84,7 @@ func TestTreeRendererFromTableData(t *testing.T) {
 }
 
 func TestNewTreeNode(t *testing.T) {
+	t.Parallel()
 	node := NewTreeNode("id1", "Label 1")
 
 	if node.ID != "id1" {
@@ -98,6 +102,7 @@ func TestNewTreeNode(t *testing.T) {
 }
 
 func TestTreeNodeAddChild(t *testing.T) {
+	t.Parallel()
 	parent := NewTreeNode("parent", "Parent")
 	child := NewTreeNode("child", "Child")
 
@@ -112,6 +117,7 @@ func TestTreeNodeAddChild(t *testing.T) {
 }
 
 func TestTreeNodeDepth(t *testing.T) {
+	t.Parallel()
 	root := NewTreeNode("root", "Root")
 	child := NewTreeNode("child", "Child")
 	grandchild := NewTreeNode("grandchild", "Grandchild")

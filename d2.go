@@ -1,6 +1,7 @@
 package output
 
 import (
+	"fmt"
 	"strings"
 )
 
@@ -16,15 +17,82 @@ type D2Column struct {
 	Type string
 }
 
+// D2Node represents a node in a D2 diagram.
+type D2Node struct {
+	ID     string
+	Label  string
+	Shape  D2NodeShape
+	Style  D2NodeStyle
+	Nested string
+}
+
+// D2NodeShape represents the shape of a D2 node.
+type D2NodeShape string
+
+const (
+	D2ShapeRectangle D2NodeShape = "rectangle"
+	D2ShapeSquare   D2NodeShape = "square"
+	D2ShapeCircle    D2NodeShape = "circle"
+	D2ShapeDiamond   D2NodeShape = "diamond"
+	D2ShapeHexagon   D2NodeShape = "hexagon"
+	D2ShapeCloud     D2NodeShape = "cloud"
+	D2ShapeCylinder  D2NodeShape = "cylinder"
+	D2ShapePerson    D2NodeShape = "person"
+	D2ShapeQueue     D2NodeShape = "queue"
+	D2ShapeOval      D2NodeShape = "oval"
+	D2ShapeParallelogram D2NodeShape = "parallelogram"
+)
+
+// D2NodeStyle represents styling for a D2 node.
+type D2NodeStyle struct {
+	Fill        string
+	Stroke      string
+	StrokeWidth int
+	FontSize    int
+}
+
+// D2Edge represents an edge in a D2 diagram.
+type D2Edge struct {
+	From       string
+	To         string
+	Label      string
+	Style      D2EdgeStyle
+	SourceArrow D2ArrowType
+	TargetArrow D2ArrowType
+}
+
+// D2EdgeStyle represents styling for a D2 edge.
+type D2EdgeStyle struct {
+	Stroke        string
+	StrokeWidth   int
+	Animated      bool
+	Dashed        bool
+}
+
+// D2ArrowType represents the type of arrow.
+type D2ArrowType string
+
+const (
+	D2ArrowNone   D2ArrowType = "none"
+	D2ArrowPoint  D2ArrowType = "arrow"
+	D2ArrowTriangle D2ArrowType = "triangle"
+	D2ArrowDiamond D2ArrowType = "diamond"
+	D2ArrowOval   D2ArrowType = "oval"
+)
+
 // D2Diagram builds D2 diagram output.
 type D2Diagram struct {
 	tables []D2Shape
+	nodes  []D2Node
+	edges  []D2Edge
 }
 
 // NewD2Diagram creates a new D2Diagram.
 func NewD2Diagram() *D2Diagram {
 	return &D2Diagram{
 		tables: nil,
+		nodes:  make([]D2Node, 0),
+		edges:  make([]D2Edge, 0),
 	}
 }
 
@@ -37,24 +105,137 @@ func (d *D2Diagram) AddTable(name string, columns []D2Column) *D2Diagram {
 	return d
 }
 
+// AddNode adds a node to the diagram.
+func (d *D2Diagram) AddNode(node D2Node) *D2Diagram {
+	d.nodes = append(d.nodes, node)
+	return d
+}
+
+// AddNodeSimple adds a simple node with just ID and label.
+func (d *D2Diagram) AddNodeSimple(id, label string) *D2Diagram {
+	return d.AddNode(D2Node{ID: id, Label: label, Shape: D2ShapeRectangle})
+}
+
+// AddNodeWithShape adds a node with a specific shape.
+func (d *D2Diagram) AddNodeWithShape(id, label string, shape D2NodeShape) *D2Diagram {
+	return d.AddNode(D2Node{ID: id, Label: label, Shape: shape})
+}
+
+// AddEdge adds an edge between two nodes.
+func (d *D2Diagram) AddEdge(edge D2Edge) *D2Diagram {
+	d.edges = append(d.edges, edge)
+	return d
+}
+
+// AddEdgeSimple adds a simple edge between two nodes.
+func (d *D2Diagram) AddEdgeSimple(from, to string) *D2Diagram {
+	return d.AddEdge(D2Edge{From: from, To: to})
+}
+
+// AddLabeledEdge adds an edge with a label.
+func (d *D2Diagram) AddLabeledEdge(from, to, label string) *D2Diagram {
+	return d.AddEdge(D2Edge{From: from, To: to, Label: label})
+}
+
 // Render returns the D2 diagram string.
 func (d *D2Diagram) Render() string {
 	var b strings.Builder
 
+	// Write tables
 	for _, table := range d.tables {
 		b.WriteString(table.Name)
 		b.WriteString(": {\n")
 
 		for _, col := range table.Columns {
-			b.WriteString("  ")
-			b.WriteString(col.Name)
-			b.WriteString(": ")
-			b.WriteString(col.Type)
-			b.WriteString("\n")
+			fmt.Fprintf(&b, "  %s: %s\n", col.Name, col.Type)
 		}
 
 		b.WriteString("}\n\n")
 	}
 
+	// Write nodes
+	for _, node := range d.nodes {
+		d.renderNode(&b, node)
+	}
+
+	// Write edges
+	for _, edge := range d.edges {
+		d.renderEdge(&b, edge)
+	}
+
 	return b.String()
+}
+
+func (d *D2Diagram) renderNode(b *strings.Builder, node D2Node) {
+	if node.Nested != "" {
+		fmt.Fprintf(b, "%s.%s%s %s {\n", node.ID, node.Label, d.renderShapeAttr(node.Shape), d.renderStyle(node.Style))
+		b.WriteString(node.Nested)
+		b.WriteString("}\n")
+		return
+	}
+
+	shapeAttr := d.renderShapeAttr(node.Shape)
+	styleStr := d.renderStyle(node.Style)
+	fmt.Fprintf(b, "%s%s%s %s\n", node.ID, shapeAttr, node.Label, styleStr)
+}
+
+func (d *D2Diagram) renderShapeAttr(shape D2NodeShape) string {
+	if shape == "" || shape == D2ShapeRectangle {
+		return " "
+	}
+	return fmt.Sprintf(":%s ", shape)
+}
+
+func (d *D2Diagram) renderStyle(style D2NodeStyle) string {
+	var parts []string
+	if style.Fill != "" {
+		parts = append(parts, fmt.Sprintf("fill:%s", style.Fill))
+	}
+	if style.Stroke != "" {
+		parts = append(parts, fmt.Sprintf("stroke:%s", style.Stroke))
+	}
+	if style.StrokeWidth > 0 {
+		parts = append(parts, fmt.Sprintf("stroke-width:%d", style.StrokeWidth))
+	}
+	if style.FontSize > 0 {
+		parts = append(parts, fmt.Sprintf("font-size:%d", style.FontSize))
+	}
+	if len(parts) == 0 {
+		return ""
+	}
+	return "{" + strings.Join(parts, "; ") + "}"
+}
+
+func (d *D2Diagram) renderEdge(b *strings.Builder, edge D2Edge) {
+	sourceArrow := d.renderArrow(edge.SourceArrow)
+	targetArrow := d.renderArrow(edge.TargetArrow)
+
+	if edge.Label != "" {
+		fmt.Fprintf(b, "%s %s-> %s: %s %s\n", edge.From, sourceArrow, edge.To, edge.Label, targetArrow)
+	} else {
+		fmt.Fprintf(b, "%s %s-> %s %s\n", edge.From, sourceArrow, edge.To, targetArrow)
+	}
+}
+
+func (d *D2Diagram) renderArrow(arrow D2ArrowType) string {
+	if arrow == "" || arrow == D2ArrowNone {
+		return ""
+	}
+	return fmt.Sprintf("-%s", arrow)
+}
+
+// D2FromTableData converts TableData to a D2 diagram.
+func D2FromTableData(data *TableData) *D2Diagram {
+	diagram := NewD2Diagram()
+	if data == nil {
+		return diagram
+	}
+
+	columns := make([]D2Column, len(data.Headers))
+	for i, h := range data.Headers {
+		columns[i] = D2Column{Name: h, Type: "string"}
+	}
+	diagram.AddTable(data.Headers[0], columns)
+
+	return diagram
 }
