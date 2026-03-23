@@ -329,7 +329,6 @@ func TestToInt(t *testing.T) {
 
 func TestToTime(t *testing.T) {
 	now := time.Now()
-
 	tests := []struct {
 		name   string
 		input  any
@@ -342,7 +341,6 @@ func TestToTime(t *testing.T) {
 		{"int", 123, false},
 		{"nil", nil, false},
 	}
-
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			_, ok := toTime(tt.input)

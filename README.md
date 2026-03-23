@@ -1,6 +1,6 @@
 # go-output
 
-Reusable Go library for CLI applications providing consistent output formatting across multiple formats with type-safe enum-based configuration.
+A Go library that formats structured data (tables, trees, graphs) into 10 different output formats with type-safe enums and zero-config color support.
 
 ## Purpose
 
@@ -34,14 +34,30 @@ w.Flush()
 
 ## Supported Formats
 
+### Table Formats
+
 | Format     | Description                           | Package                                  |
 | ---------- | ------------------------------------- | ---------------------------------------- |
-| `table`    | Terminal tables with lipgloss styling | `github.com/larsartmann/go-output/table` |
+| `table`    | Terminal tables with lipgloss styling | `github.com/larsartmann/go-output`       |
 | `json`     | JSON output with indentation          | `github.com/larsartmann/go-output`       |
 | `csv`      | CSV export with headers               | `github.com/larsartmann/go-output`       |
 | `markdown` | Markdown tables                       | `github.com/larsartmann/go-output`       |
-| `d2`       | D2 diagram shapes                     | `github.com/larsartmann/go-output`       |
 | `yaml`     | YAML serialization                    | `github.com/larsartmann/go-output`       |
+
+### Tree Formats
+
+| Format | Description                         | Package                                |
+| ------ | ----------------------------------- | -------------------------------------- |
+| `tree` | ASCII tree with box-drawing chars   | `github.com/larsartmann/go-output`     |
+| `html` | HTML tree with collapsible sections | `github.com/larsartmann/go-output`     |
+
+### Graph Formats
+
+| Format     | Description                              | Package                                |
+| ---------- | ---------------------------------------- | -------------------------------------- |
+| `d2`       | D2 diagram shapes                       | `github.com/larsartmann/go-output`     |
+| `mermaid`  | Mermaid flowchart diagrams               | `github.com/larsartmann/go-output`     |
+| `dot`      | DOT/Graphviz directed graphs            | `github.com/larsartmann/go-output`     |
 
 ## Supported Sort Options
 
@@ -88,7 +104,7 @@ Integrates with [cmdguard](https://github.com/larsartmann/cmdguard) for type-saf
 
 ```go
 type ListFlags struct {
-    Format output.OutputFormat `flag:"format" default:"table" help:"Output format (table, json, csv, markdown, d2, yaml)"`
+    Format output.OutputFormat `flag:"format" default:"table" help:"Output format (table, json, csv, markdown, yaml, tree, html, d2, mermaid, dot)"`
     SortBy output.SortBy       `flag:"sort-by" default:"name" help:"Sort by (name, importance, created_at, updated_at, health, complexity)"`
     Color  output.ColorMode    `flag:"color" default:"auto" help:"Color mode (auto, always, never)"`
 }

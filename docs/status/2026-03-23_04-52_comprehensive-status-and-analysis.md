@@ -25,64 +25,64 @@ Last Commit: e51c6e6 (2026-03-22)
 
 ## a) FULLY DONE
 
-| Item | Status | Notes |
-|------|--------|-------|
-| Core library implementation | ✅ | 6 output formats working |
-| Type-safe enums | ✅ | OutputFormat, SortBy, ColorMode |
-| Unit tests for main package | ✅ | 90.8% coverage |
-| Benchmark tests | ✅ | JSON/YAML benchmarks |
-| Fuzz tests | ✅ | Parse function security |
-| CI/CD pipeline | ✅ | GitHub Actions |
-| Interface abstraction | ✅ | Renderer, TableRenderer, MarkdownRenderer |
-| Error context improvements | ✅ | Added input values to error messages |
-| Example application | ✅ | Fixed strconv import bug |
-| Build verification | ✅ | go build ./... passes |
-| Branching-flow: CONTEXT | ✅ | 0 issues |
-| Branching-flow: COMPOSE | ✅ | 100/100 health |
-| Branching-flow: DUPE | ✅ | 0 duplicates |
-| Branching-flow: STRONG-ID | ✅ | 0 issues |
-| Branching-flow: BOOLBLIND | ✅ | 0 issues |
-| Branching-flow: ANTI-PATTERNS | ✅ | 0 issues |
-| Branching-flow: MIXINS | ✅ | 0 issues |
+| Item                          | Status | Notes                                     |
+| ----------------------------- | ------ | ----------------------------------------- |
+| Core library implementation   | ✅     | 6 output formats working                  |
+| Type-safe enums               | ✅     | OutputFormat, SortBy, ColorMode           |
+| Unit tests for main package   | ✅     | 90.8% coverage                            |
+| Benchmark tests               | ✅     | JSON/YAML benchmarks                      |
+| Fuzz tests                    | ✅     | Parse function security                   |
+| CI/CD pipeline                | ✅     | GitHub Actions                            |
+| Interface abstraction         | ✅     | Renderer, TableRenderer, MarkdownRenderer |
+| Error context improvements    | ✅     | Added input values to error messages      |
+| Example application           | ✅     | Fixed strconv import bug                  |
+| Build verification            | ✅     | go build ./... passes                     |
+| Branching-flow: CONTEXT       | ✅     | 0 issues                                  |
+| Branching-flow: COMPOSE       | ✅     | 100/100 health                            |
+| Branching-flow: DUPE          | ✅     | 0 duplicates                              |
+| Branching-flow: STRONG-ID     | ✅     | 0 issues                                  |
+| Branching-flow: BOOLBLIND     | ✅     | 0 issues                                  |
+| Branching-flow: ANTI-PATTERNS | ✅     | 0 issues                                  |
+| Branching-flow: MIXINS        | ✅     | 0 issues                                  |
 
 ---
 
 ## b) PARTIALLY DONE
 
-| Item | Progress | Remaining Work |
-|------|----------|----------------|
-| Subpackage tests | 0% | No test files for cmdguard/, sort/, table/ |
-| Golden file tests | 0% | No output verification tests |
-| Case-insensitive parsing | 0% | "JSON" doesn't work, only "json" |
-| Custom error types | 0% | Using fmt.Errorf instead of typed errors |
+| Item                     | Progress | Remaining Work                             |
+| ------------------------ | -------- | ------------------------------------------ |
+| Subpackage tests         | 0%       | No test files for cmdguard/, sort/, table/ |
+| Golden file tests        | 0%       | No output verification tests               |
+| Case-insensitive parsing | 0%       | "JSON" doesn't work, only "json"           |
+| Custom error types       | 0%       | Using fmt.Errorf instead of typed errors   |
 
 ---
 
 ## c) NOT STARTED
 
-| Item | Priority | Impact | Effort |
-|------|----------|--------|--------|
-| Tests for cmdguard/ package | High | High | Low |
-| Tests for sort/ package | High | High | Low |
-| Tests for table/ package | High | High | Low |
-| Golden file tests for Markdown | Medium | Medium | Medium |
-| Case-insensitive enum parsing | Medium | Medium | Low |
-| Custom error types | Medium | Medium | Low |
-| Generic enum base type | Low | Low | High |
-| Property-based testing | Low | Medium | Medium |
-| Benchmark CI integration | Low | Low | Medium |
-| Streaming JSON writer | Low | Low | High |
-| XML output format | Low | Low | Medium |
-| HTML table output | Low | Low | Medium |
+| Item                           | Priority | Impact | Effort |
+| ------------------------------ | -------- | ------ | ------ |
+| Tests for cmdguard/ package    | High     | High   | Low    |
+| Tests for sort/ package        | High     | High   | Low    |
+| Tests for table/ package       | High     | High   | Low    |
+| Golden file tests for Markdown | Medium   | Medium | Medium |
+| Case-insensitive enum parsing  | Medium   | Medium | Low    |
+| Custom error types             | Medium   | Medium | Low    |
+| Generic enum base type         | Low      | Low    | High   |
+| Property-based testing         | Low      | Medium | Medium |
+| Benchmark CI integration       | Low      | Low    | Medium |
+| Streaming JSON writer          | Low      | Low    | High   |
+| XML output format              | Low      | Low    | Medium |
+| HTML table output              | Low      | Low    | Medium |
 
 ---
 
 ## d) TOTALLY FUCKED UP (Fixed This Session)
 
-| Issue | Severity | Status | Fix |
-|-------|----------|--------|-----|
+| Issue                               | Severity    | Status   | Fix                      |
+| ----------------------------------- | ----------- | -------- | ------------------------ |
 | Missing `strconv` import in example | 🔴 Critical | ✅ Fixed | Added `import "strconv"` |
-| Go build cache corruption | 🟡 Medium | ✅ Fixed | `go clean -cache` |
+| Go build cache corruption           | 🟡 Medium   | ✅ Fixed | `go clean -cache`        |
 
 ---
 
@@ -113,43 +113,43 @@ Last Commit: e51c6e6 (2026-03-22)
 
 ### High Priority (Do First) - Sorted by Impact/Effort
 
-| # | Task | Impact | Effort | Score |
-|---|------|--------|--------|-------|
-| 1 | Add tests for cmdguard/ package | High | Low | ⭐⭐⭐⭐⭐ |
-| 2 | Add tests for sort/ package | High | Low | ⭐⭐⭐⭐⭐ |
-| 3 | Add tests for table/ package | High | Low | ⭐⭐⭐⭐⭐ |
-| 4 | Case-insensitive enum parsing | Medium | Low | ⭐⭐⭐⭐ |
-| 5 | Custom error types (ErrInvalidFormat, etc.) | Medium | Low | ⭐⭐⭐⭐ |
+| #   | Task                                        | Impact | Effort | Score      |
+| --- | ------------------------------------------- | ------ | ------ | ---------- |
+| 1   | Add tests for cmdguard/ package             | High   | Low    | ⭐⭐⭐⭐⭐ |
+| 2   | Add tests for sort/ package                 | High   | Low    | ⭐⭐⭐⭐⭐ |
+| 3   | Add tests for table/ package                | High   | Low    | ⭐⭐⭐⭐⭐ |
+| 4   | Case-insensitive enum parsing               | Medium | Low    | ⭐⭐⭐⭐   |
+| 5   | Custom error types (ErrInvalidFormat, etc.) | Medium | Low    | ⭐⭐⭐⭐   |
 
 ### Medium Priority
 
-| # | Task | Impact | Effort | Score |
-|---|------|--------|--------|-------|
-| 6 | Golden file tests for Markdown output | Medium | Medium | ⭐⭐⭐ |
-| 7 | Golden file tests for D2 output | Medium | Medium | ⭐⭐⭐ |
-| 8 | Property-based tests with rapid | Medium | Medium | ⭐⭐⭐ |
-| 9 | Table convenience wrapper in main package | Medium | Medium | ⭐⭐⭐ |
-| 10 | Add godoc examples (Example functions) | Medium | Low | ⭐⭐⭐ |
+| #   | Task                                      | Impact | Effort | Score  |
+| --- | ----------------------------------------- | ------ | ------ | ------ |
+| 6   | Golden file tests for Markdown output     | Medium | Medium | ⭐⭐⭐ |
+| 7   | Golden file tests for D2 output           | Medium | Medium | ⭐⭐⭐ |
+| 8   | Property-based tests with rapid           | Medium | Medium | ⭐⭐⭐ |
+| 9   | Table convenience wrapper in main package | Medium | Medium | ⭐⭐⭐ |
+| 10  | Add godoc examples (Example functions)    | Medium | Low    | ⭐⭐⭐ |
 
 ### Low Priority
 
-| # | Task | Impact | Effort | Score |
-|---|------|--------|--------|-------|
-| 11 | Generic enum base type | Low | High | ⭐⭐ |
-| 12 | Benchmark CI integration | Low | Medium | ⭐⭐ |
-| 13 | Streaming JSON writer (NDJSON) | Low | High | ⭐⭐ |
-| 14 | CSV dialect configuration | Low | Low | ⭐⭐ |
-| 15 | Markdown alignment options | Low | Low | ⭐⭐ |
-| 16 | D2 shape customization | Low | Medium | ⭐ |
-| 17 | Multi-column sorting | Low | Medium | ⭐ |
-| 18 | Locale-aware sorting | Low | High | ⭐ |
-| 19 | Color theme customization | Low | Medium | ⭐ |
-| 20 | Table column resizing | Low | High | ⭐ |
-| 21 | XML output format | Low | Medium | ⭐ |
-| 22 | HTML table output | Low | Medium | ⭐ |
-| 23 | OpenAPI/ReDoc support | Low | High | ⭐ |
-| 24 | Zero-copy JSON (go-json library) | Low | Medium | ⭐ |
-| 25 | ISO 8601 date parsing in sort | Low | Low | ⭐ |
+| #   | Task                             | Impact | Effort | Score |
+| --- | -------------------------------- | ------ | ------ | ----- |
+| 11  | Generic enum base type           | Low    | High   | ⭐⭐  |
+| 12  | Benchmark CI integration         | Low    | Medium | ⭐⭐  |
+| 13  | Streaming JSON writer (NDJSON)   | Low    | High   | ⭐⭐  |
+| 14  | CSV dialect configuration        | Low    | Low    | ⭐⭐  |
+| 15  | Markdown alignment options       | Low    | Low    | ⭐⭐  |
+| 16  | D2 shape customization           | Low    | Medium | ⭐    |
+| 17  | Multi-column sorting             | Low    | Medium | ⭐    |
+| 18  | Locale-aware sorting             | Low    | High   | ⭐    |
+| 19  | Color theme customization        | Low    | Medium | ⭐    |
+| 20  | Table column resizing            | Low    | High   | ⭐    |
+| 21  | XML output format                | Low    | Medium | ⭐    |
+| 22  | HTML table output                | Low    | Medium | ⭐    |
+| 23  | OpenAPI/ReDoc support            | Low    | High   | ⭐    |
+| 24  | Zero-copy JSON (go-json library) | Low    | Medium | ⭐    |
+| 25  | ISO 8601 date parsing in sort    | Low    | Low    | ⭐    |
 
 ---
 
@@ -201,13 +201,13 @@ Total Issues: 95
 
 ## Test Coverage Breakdown
 
-| Package | Coverage | Status |
-|---------|----------|--------|
-| github.com/larsartmann/go-output | 90.8% | ✅ Good |
-| github.com/larsartmann/go-output/cmdguard | 0.0% | ❌ Missing |
-| github.com/larsartmann/go-output/sort | 0.0% | ❌ Missing |
-| github.com/larsartmann/go-output/table | 0.0% | ❌ Missing |
-| github.com/larsartmann/go-output/examples/basic | 0.0% | ℹ️ N/A |
+| Package                                         | Coverage | Status     |
+| ----------------------------------------------- | -------- | ---------- |
+| github.com/larsartmann/go-output                | 90.8%    | ✅ Good    |
+| github.com/larsartmann/go-output/cmdguard       | 0.0%     | ❌ Missing |
+| github.com/larsartmann/go-output/sort           | 0.0%     | ❌ Missing |
+| github.com/larsartmann/go-output/table          | 0.0%     | ❌ Missing |
+| github.com/larsartmann/go-output/examples/basic | 0.0%     | ℹ️ N/A     |
 
 ---
 
@@ -225,27 +225,27 @@ BenchmarkUnmarshalYAML          25,147 ops   66,599 ns/op 12,112 B/op  142 alloc
 
 ## Code Metrics
 
-| Metric | Value |
-|--------|-------|
+| Metric                 | Value |
+| ---------------------- | ----- |
 | Total lines of Go code | 1,913 |
-| Source files | 13 |
-| Test files | 9 |
-| Packages | 5 |
-| Output formats | 6 |
-| Sort options | 6 |
-| Color modes | 3 |
+| Source files           | 13    |
+| Test files             | 9     |
+| Packages               | 5     |
+| Output formats         | 6     |
+| Sort options           | 6     |
+| Color modes            | 3     |
 
 ---
 
 ## Recent Commit History
 
-| Commit | Message | Date |
-|--------|---------|------|
-| e51c6e6 | Refactoring/formatting: improve code readability | 2026-03-22 |
+| Commit  | Message                                                     | Date       |
+| ------- | ----------------------------------------------------------- | ---------- |
+| e51c6e6 | Refactoring/formatting: improve code readability            | 2026-03-22 |
 | 1c8e6ee | feat(format): add comprehensive custom formatting utilities | 2026-03-22 |
-| 76d11b7 | refactor(benchmark): Replace manual benchmark timer loops | 2026-03-22 |
-| 17f8008 | docs(status): add comprehensive status report | 2026-03-22 |
-| f5103e6 | docs(readme): improve table alignment | 2026-03-22 |
+| 76d11b7 | refactor(benchmark): Replace manual benchmark timer loops   | 2026-03-22 |
+| 17f8008 | docs(status): add comprehensive status report               | 2026-03-22 |
+| f5103e6 | docs(readme): improve table alignment                       | 2026-03-22 |
 
 ---
 
@@ -281,15 +281,15 @@ go run ./examples/basic/main.go markdown
 
 ## Files Modified This Session
 
-| File | Change |
-|------|--------|
-| examples/basic/main.go | Added missing `strconv` import |
-| cmdguard/color.go | Added context to error message |
-| cmdguard/format.go | Added context to error message |
-| cmdguard/sort.go | Added context to error message |
-| csv.go | Added context to error messages |
-| json.go | Added context to error messages |
-| yaml.go | Added context to error messages |
+| File                   | Change                          |
+| ---------------------- | ------------------------------- |
+| examples/basic/main.go | Added missing `strconv` import  |
+| cmdguard/color.go      | Added context to error message  |
+| cmdguard/format.go     | Added context to error message  |
+| cmdguard/sort.go       | Added context to error message  |
+| csv.go                 | Added context to error messages |
+| json.go                | Added context to error messages |
+| yaml.go                | Added context to error messages |
 
 ---
 

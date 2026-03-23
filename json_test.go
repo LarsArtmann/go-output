@@ -131,8 +131,8 @@ type benchmarkStruct struct {
 	UpdatedAt string   `json:"updated_at"`
 }
 
-func BenchmarkMarshalJSON(b *testing.B) {
-	data := benchmarkStruct{
+func newBenchmarkData() benchmarkStruct {
+	return benchmarkStruct{
 		ID:        12345,
 		Name:      "Test Project Alpha",
 		Items:     []string{"item1", "item2", "item3", "item4", "item5"},
@@ -141,6 +141,10 @@ func BenchmarkMarshalJSON(b *testing.B) {
 		CreatedAt: "2026-03-22T10:00:00Z",
 		UpdatedAt: "2026-03-22T12:00:00Z",
 	}
+}
+
+func BenchmarkMarshalJSON(b *testing.B) {
+	data := newBenchmarkData()
 
 	for b.Loop() {
 		_, _ = MarshalJSON(data)
@@ -148,15 +152,7 @@ func BenchmarkMarshalJSON(b *testing.B) {
 }
 
 func BenchmarkMarshalJSONIndent(b *testing.B) {
-	data := benchmarkStruct{
-		ID:        12345,
-		Name:      "Test Project Alpha",
-		Items:     []string{"item1", "item2", "item3", "item4", "item5"},
-		Count:     100,
-		Active:    true,
-		CreatedAt: "2026-03-22T10:00:00Z",
-		UpdatedAt: "2026-03-22T12:00:00Z",
-	}
+	data := newBenchmarkData()
 
 	for b.Loop() {
 		_, _ = MarshalJSONIndent(data, "", "  ")

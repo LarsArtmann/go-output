@@ -17,6 +17,10 @@ func TestParseOutputFormat(t *testing.T) {
 		{"markdown", "markdown", OutputFormatMarkdown, false},
 		{"d2", "d2", OutputFormatD2, false},
 		{"yaml", "yaml", OutputFormatYAML, false},
+		{"html", "html", FormatHTML, false},
+		{"tree", "tree", FormatTree, false},
+		{"mermaid", "mermaid", FormatMermaid, false},
+		{"dot", "dot", FormatDOT, false},
 		{"invalid", "invalid", "", true},
 		{"empty", "", "", true},
 	}
@@ -59,7 +63,7 @@ func TestOutputFormatString(t *testing.T) {
 
 func TestOutputFormatAllowedValues(t *testing.T) {
 	got := OutputFormatTable.AllowedValues()
-	want := []string{"table", "json", "csv", "markdown", "d2", "yaml"}
+	want := []string{"table", "json", "csv", "markdown", "d2", "yaml", "html", "tree", "mermaid", "dot"}
 
 	if len(got) != len(want) {
 		t.Errorf("AllowedValues() returned %d values, want %d", len(got), len(want))
@@ -83,6 +87,10 @@ func TestOutputFormatIsValid(t *testing.T) {
 		{OutputFormatMarkdown, true},
 		{OutputFormatD2, true},
 		{OutputFormatYAML, true},
+		{FormatHTML, true},
+		{FormatTree, true},
+		{FormatMermaid, true},
+		{FormatDOT, true},
 		{OutputFormat("invalid"), false},
 		{OutputFormat(""), false},
 	}
@@ -103,6 +111,10 @@ func FuzzParseOutputFormat(f *testing.F) {
 	f.Add("markdown")
 	f.Add("d2")
 	f.Add("yaml")
+	f.Add("html")
+	f.Add("tree")
+	f.Add("mermaid")
+	f.Add("dot")
 	f.Add("invalid")
 	f.Add("")
 
