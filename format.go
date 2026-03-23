@@ -68,10 +68,11 @@ func (f Format) IsValid() bool {
 // IsTableFormat returns true if this is a table-based format.
 func (f Format) IsTableFormat() bool {
 	switch f {
-	case FormatTable, FormatJSON, FormatCSV, FormatMarkdown, FormatYAML:
+	case FormatTable, FormatJSON, FormatCSV, FormatMarkdown, FormatYAML, FormatD2:
 		return true
+	default:
+		return false
 	}
-	return false
 }
 
 // IsTreeFormat returns true if this is a tree-based format.
@@ -122,6 +123,10 @@ const (
 	OutputFormatMarkdown = FormatMarkdown
 	OutputFormatD2      = FormatD2
 	OutputFormatYAML    = FormatYAML
+	OutputFormatHTML    = FormatHTML
+	OutputFormatTree    = FormatTree
+	OutputFormatMermaid = FormatMermaid
+	OutputFormatDOT     = FormatDOT
 )
 
 // Backward compatibility function.

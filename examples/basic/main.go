@@ -6,13 +6,14 @@ import (
 	"strconv"
 
 	"github.com/larsartmann/go-output"
+	"github.com/larsartmann/go-output/table"
 )
 
 func main() {
 	// Define sample data
 	type Project struct {
 		Name       string
-		Health     int
+		Health    int
 		Complexity int
 	}
 
@@ -22,8 +23,8 @@ func main() {
 		{Name: "Gamma", Health: 85, Complexity: 8},
 	}
 
-	// Parse command line format (default to JSON)
-	format := output.OutputFormatJSON
+	// Parse command line format (default to table)
+	format := output.OutputFormatTable
 	if len(os.Args) > 1 {
 		f, err := output.ParseOutputFormat(os.Args[1])
 		if err != nil {
@@ -35,6 +36,14 @@ func main() {
 
 	// Output in the specified format
 	switch format {
+	case output.OutputFormatTable:
+		tbl := table.New()
+		tbl.SetHeaders("Name", "Health", "Complexity")
+		for _, p := range projects {
+			tbl.AddRow(p.Name, strconv.Itoa(p.Health)+"%", strconv.Itoa(p.Complexity)+"/10")
+		}
+		fmt.Println(tbl.Render())
+
 	case output.OutputFormatJSON:
 		data, err := output.MarshalJSONIndent(projects, "", "  ")
 		if err != nil {
@@ -95,8 +104,60 @@ func main() {
 		})
 		fmt.Println(d2.Render())
 
+	case output.OutputFormatHTML:
+		html := output.NewHTMLRenderer()
+		html.SetHeaders([]string{"Name", "Health", "Complexity"})
+		for _, p := range projects {
+			html.AddRow([]string{
+				p.Name,
+				strconv.Itoa(p.Health) + "%",
+				strconv.Itoa(p.Complexity) + "/10",
+			})
+		}
+		// Output full HTML document
+		fmt.Println(html.RenderFullHTML("Project Health Report"))
+
+	case output.OutputFormatTree:
+		tree := output.NewASCIITreeRenderer()
+		root := output.NewTreeNode("root", "Projects")
+		for _, p := range projects {
+			projNode := output.NewTreeNode("proj-"+p.Name, p.Name)
+			projNode.Metadata["health"] = strconv.Itoa(p.Health) + "%"
+			projNode.Metadata["complexity"] = strconv.Itoa(p.Complexity)
+			root.AddChild(projNode)
+		}
+		tree.SetRoot(root)
+		fmt.Println(tree.Render())
+
+	case output.OutputFormatMermaid:
+		// Create table data for mermaid flowchart
+		data := output.NewTableData([]string{"Name", "Health", "Complexity"})
+		for _, p := range projects {
+			data.AddRow([]string{
+				p.Name,
+				strconv.Itoa(p.Health) + "%",
+				strconv.Itoa(p.Complexity) + "/10",
+			})
+		}
+		mermaid := output.MermaidFlowchartRenderer(data)
+		fmt.Println(mermaid.Render())
+
+	case output.OutputFormatDOT:
+		// Create table data for DOT graph
+		data := output.NewTableData([]string{"Name", "Health", "Complexity"})
+		for _, p := range projects {
+			data.AddRow([]string{
+				p.Name,
+				strconv.Itoa(p.Health) + "%",
+				strconv.Itoa(p.Complexity) + "/10",
+			})
+		}
+		dot := output.DOTFromTableData(data)
+		fmt.Println(dot.Render())
+
 	default:
 		fmt.Fprintf(os.Stderr, "Unsupported format: %s\n", format)
+		fmt.Fprintf(os.Stderr, "Available formats: %v\n", output.FormatTable.AllowedValues())
 		os.Exit(1)
 	}
 }
