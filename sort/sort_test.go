@@ -294,10 +294,10 @@ func TestSorter_Sort_InvalidField(t *testing.T) {
 
 func TestToInt(t *testing.T) {
 	tests := []struct {
-		name    string
-		input   any
-		want    int
-		wantOk  bool
+		name   string
+		input  any
+		want   int
+		wantOk bool
 	}{
 		{"int", int(42), 42, true},
 		{"int8", int8(42), 42, true},
