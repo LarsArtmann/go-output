@@ -7,6 +7,7 @@ import (
 )
 
 func TestColorModeFlag_Parse(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		name    string
 		input   string
@@ -37,6 +38,7 @@ func TestColorModeFlag_Parse(t *testing.T) {
 }
 
 func TestColorModeFlag_AllowedValues(t *testing.T) {
+	t.Parallel()
 	val := output.ColorModeAuto
 	flag := NewColorModeFlag(&val)
 	got := flag.AllowedValues()
@@ -54,6 +56,7 @@ func TestColorModeFlag_AllowedValues(t *testing.T) {
 }
 
 func TestColorModeFlag_Default(t *testing.T) {
+	t.Parallel()
 	val := output.ColorModeAuto
 	flag := NewColorModeFlag(&val)
 	if got := flag.Default(); got != "auto" {
@@ -62,6 +65,7 @@ func TestColorModeFlag_Default(t *testing.T) {
 }
 
 func TestOutputFormatFlag_Parse(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		name    string
 		input   string
@@ -74,6 +78,10 @@ func TestOutputFormatFlag_Parse(t *testing.T) {
 		{"markdown", "markdown", output.OutputFormatMarkdown, false},
 		{"d2", "d2", output.OutputFormatD2, false},
 		{"yaml", "yaml", output.OutputFormatYAML, false},
+		{"html", "html", output.OutputFormatHTML, false},
+		{"tree", "tree", output.OutputFormatTree, false},
+		{"mermaid", "mermaid", output.OutputFormatMermaid, false},
+		{"dot", "dot", output.OutputFormatDOT, false},
 		{"invalid", "invalid", output.OutputFormatTable, true},
 		{"empty", "", output.OutputFormatTable, true},
 	}
@@ -95,6 +103,7 @@ func TestOutputFormatFlag_Parse(t *testing.T) {
 }
 
 func TestOutputFormatFlag_AllowedValues(t *testing.T) {
+	t.Parallel()
 	val := output.OutputFormatTable
 	flag := NewOutputFormatFlag(&val)
 	got := flag.AllowedValues()
@@ -112,6 +121,7 @@ func TestOutputFormatFlag_AllowedValues(t *testing.T) {
 }
 
 func TestOutputFormatFlag_Default(t *testing.T) {
+	t.Parallel()
 	val := output.OutputFormatJSON
 	flag := NewOutputFormatFlag(&val)
 	if got := flag.Default(); got != "json" {
@@ -120,6 +130,7 @@ func TestOutputFormatFlag_Default(t *testing.T) {
 }
 
 func TestSortByFlag_Parse(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		name    string
 		input   string
@@ -153,6 +164,7 @@ func TestSortByFlag_Parse(t *testing.T) {
 }
 
 func TestSortByFlag_AllowedValues(t *testing.T) {
+	t.Parallel()
 	val := output.SortByName
 	flag := NewSortByFlag(&val)
 	got := flag.AllowedValues()
@@ -170,6 +182,7 @@ func TestSortByFlag_AllowedValues(t *testing.T) {
 }
 
 func TestSortByFlag_Default(t *testing.T) {
+	t.Parallel()
 	val := output.SortByName
 	flag := NewSortByFlag(&val)
 	if got := flag.Default(); got != "name" {
@@ -178,6 +191,7 @@ func TestSortByFlag_Default(t *testing.T) {
 }
 
 func TestNewColorModeFlag(t *testing.T) {
+	t.Parallel()
 	val := output.ColorModeAuto
 	flag := NewColorModeFlag(&val)
 	if flag == nil {
@@ -189,6 +203,7 @@ func TestNewColorModeFlag(t *testing.T) {
 }
 
 func TestNewOutputFormatFlag(t *testing.T) {
+	t.Parallel()
 	val := output.OutputFormatTable
 	flag := NewOutputFormatFlag(&val)
 	if flag == nil {
@@ -200,6 +215,7 @@ func TestNewOutputFormatFlag(t *testing.T) {
 }
 
 func TestNewSortByFlag(t *testing.T) {
+	t.Parallel()
 	val := output.SortByName
 	flag := NewSortByFlag(&val)
 	if flag == nil {
