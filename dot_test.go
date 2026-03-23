@@ -5,7 +5,9 @@ import (
 	"testing"
 )
 
+//nolint:exhaustruct // Test files use partial struct initialization
 func TestDOTRenderer(t *testing.T) {
+	t.Parallel()
 	renderer := NewDOTRenderer()
 	renderer.SetNodes([]GraphNode{
 		{ID: "A", Label: "Node A"},
@@ -34,7 +36,9 @@ func TestDOTRenderer(t *testing.T) {
 	}
 }
 
+//nolint:exhaustruct // Test files use partial struct initialization
 func TestDOTUndirectedRenderer(t *testing.T) {
+	t.Parallel()
 	renderer := NewUndirectedDOTRenderer()
 	renderer.SetNodes([]GraphNode{
 		{ID: "A", Label: "Node A"},
@@ -55,6 +59,7 @@ func TestDOTUndirectedRenderer(t *testing.T) {
 }
 
 func TestDOTRendererWithStyles(t *testing.T) {
+	t.Parallel()
 	renderer := NewDOTRenderer()
 	renderer.SetNodes([]GraphNode{
 		{
@@ -62,7 +67,7 @@ func TestDOTRendererWithStyles(t *testing.T) {
 			Label: "Styled Node",
 			Shape: ShapeEllipse,
 			Style: GraphStyle{
-				FillColor: "#ff0000",
+				FillColor:   "#ff0000",
 				StrokeColor: "#000000",
 			},
 		},
@@ -78,7 +83,9 @@ func TestDOTRendererWithStyles(t *testing.T) {
 	}
 }
 
+//nolint:exhaustruct // Test files use partial struct initialization
 func TestDOTRendererWithEdgeLabel(t *testing.T) {
+	t.Parallel()
 	renderer := NewDOTRenderer()
 	renderer.SetEdges([]GraphEdge{
 		{From: "A", To: "B", Label: "uses"},
@@ -92,6 +99,7 @@ func TestDOTRendererWithEdgeLabel(t *testing.T) {
 }
 
 func TestDOTFromTableData(t *testing.T) {
+	t.Parallel()
 	data := NewTableData([]string{"ID", "Name"})
 	data.AddRow([]string{"1", "Alice"})
 	data.AddRow([]string{"2", "Bob"})
@@ -111,6 +119,7 @@ func TestDOTFromTableData(t *testing.T) {
 }
 
 func TestDOTFromTree(t *testing.T) {
+	t.Parallel()
 	root := NewTreeNode("root", "Root")
 	root.AddChild(NewTreeNode("child", "Child"))
 
@@ -129,6 +138,7 @@ func TestDOTFromTree(t *testing.T) {
 }
 
 func TestDOTRendererEmpty(t *testing.T) {
+	t.Parallel()
 	renderer := NewDOTRenderer()
 	output := renderer.Render()
 
@@ -140,7 +150,9 @@ func TestDOTRendererEmpty(t *testing.T) {
 	}
 }
 
+//nolint:exhaustruct // Test files use partial struct initialization
 func TestDOTSetGraphID(t *testing.T) {
+	t.Parallel()
 	renderer := NewDOTRenderer()
 	renderer.SetGraphID("MyGraph")
 	renderer.SetNodes([]GraphNode{{ID: "A", Label: "A"}})

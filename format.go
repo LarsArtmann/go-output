@@ -85,8 +85,9 @@ func (f Format) IsGraphFormat() bool {
 	switch f {
 	case FormatD2, FormatMermaid, FormatDOT:
 		return true
+	default:
+		return false
 	}
-	return false
 }
 
 // InvalidFormatError represents an invalid format error.

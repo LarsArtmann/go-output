@@ -40,7 +40,7 @@ func (r *MermaidRenderer) Render() string {
 	for _, node := range r.nodes {
 		prefix, suffix := r.getMermaidShape(node.Shape)
 		label := r.escapeMermaidLabel(node.Label)
-		b.WriteString(fmt.Sprintf("    %s%s%s%s\n", node.ID, prefix, label, suffix))
+		fmt.Fprintf(&b, "    %s%s%s%s\n", node.ID, prefix, label, suffix)
 	}
 
 	// Write edges
@@ -49,7 +49,7 @@ func (r *MermaidRenderer) Render() string {
 		if edge.Label != "" {
 			label = fmt.Sprintf("|%s|", r.escapeMermaidLabel(edge.Label))
 		}
-		b.WriteString(fmt.Sprintf("    %s -->%s %s\n", edge.From, label, edge.To))
+		fmt.Fprintf(&b, "    %s -->%s %s\n", edge.From, label, edge.To)
 	}
 
 	// Write styling
@@ -76,7 +76,9 @@ func (r *MermaidRenderer) getMermaidShape(shape GraphShape) (string, string) {
 		return "[(", ")]"
 	case ShapeParallelogram:
 		return "[/", "/]"
-	default: // ShapeBox, ShapeRect
+	case ShapeBox, ShapeRect:
+		return "[", "]"
+	default:
 		return "[", "]"
 	}
 }
