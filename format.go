@@ -7,6 +7,7 @@ import (
 )
 
 // Format represents the available output format options for CLI applications.
+//nolint:revive // Type is Format, OutputFormat is the backward-compatible alias
 type Format string
 
 // Output format constants.
