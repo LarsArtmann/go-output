@@ -425,3 +425,21 @@ func TestGraphShapeAllowedValues(t *testing.T) {
 		}
 	}
 }
+
+func FuzzParseGraphShape(f *testing.F) {
+	for _, shape := range ShapeBox.AllowedValues() {
+		f.Add(shape)
+	}
+	f.Fuzz(func(t *testing.T, input string) {
+		got, err := ParseGraphShape(input)
+		if err != nil {
+			if got != "" {
+				t.Errorf("ParseGraphShape(%q) returned error but non-empty shape: %v", input, got)
+			}
+			return
+		}
+		if !got.IsValid() {
+			t.Errorf("ParseGraphShape(%q) returned invalid shape: %v", input, got)
+		}
+	})
+}
