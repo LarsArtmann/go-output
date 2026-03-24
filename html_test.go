@@ -122,3 +122,47 @@ func TestHTMLTreeRendererFullDocument(t *testing.T) {
 		t.Error("Full HTML should contain title")
 	}
 }
+
+func TestHTMLRendererSetData(t *testing.T) {
+	t.Parallel()
+	renderer := NewHTMLRenderer()
+	renderer.SetData(&TableData{
+		Headers: []string{"A", "B"},
+		Rows:    [][]string{{"1", "2"}},
+	})
+
+	output := renderer.Render()
+
+	if !strings.Contains(output, "<th>A") {
+		t.Error("Output should contain header 'A'")
+	}
+	if !strings.Contains(output, "<td>1") {
+		t.Error("Output should contain cell '1'")
+	}
+}
+
+func TestHTMLRendererAddRowWithoutSetHeaders(t *testing.T) {
+	t.Parallel()
+	renderer := NewHTMLRenderer()
+	// Call AddRow without first calling SetHeaders - should initialize data
+	renderer.AddRow([]string{"test"})
+
+	output := renderer.Render()
+	if !strings.Contains(output, "test") {
+		t.Error("Output should contain 'test'")
+	}
+}
+
+func TestHTMLTreeRendererEmpty(t *testing.T) {
+	t.Parallel()
+	renderer := NewHTMLTreeRenderer()
+	// Don't set root - should return empty tree
+	output := renderer.Render()
+
+	if !strings.Contains(output, "<ul") {
+		t.Error("Empty tree should contain <ul>")
+	}
+	if strings.Contains(output, "<li>") {
+		t.Error("Empty tree should not contain <li>")
+	}
+}
