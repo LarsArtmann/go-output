@@ -210,6 +210,7 @@ type TreeNode struct {
 	Label    string
 	Children []*TreeNode
 	Metadata map[string]string
+	parent   *TreeNode
 }
 
 // NewTreeNode creates a new TreeNode with the given ID and label.
@@ -224,6 +225,7 @@ func NewTreeNode(id, label string) *TreeNode {
 
 // AddChild adds a child node to this node.
 func (n *TreeNode) AddChild(child *TreeNode) {
+	child.parent = n
 	n.Children = append(n.Children, child)
 }
 
@@ -240,7 +242,7 @@ func (n *TreeNode) Depth() int {
 
 // Parent returns the parent node (nil for root).
 func (n *TreeNode) Parent() *TreeNode {
-	return nil
+	return n.parent
 }
 
 // GraphRenderer defines the interface for graph format renderers.
