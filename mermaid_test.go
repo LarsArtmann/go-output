@@ -128,3 +128,113 @@ func TestSanitizeMermaidID(t *testing.T) {
 		}
 	}
 }
+
+func TestSanitizeMermaidLabel(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		input string
+		want  string
+	}{
+		{"simple", "simple"},
+		{"has spaces", "has_spaces"},
+		{"has-dash", "has_dash"},
+		{"path/to/file", "path_to_file"},
+		{"multi word test", "multi_word_test"},
+	}
+
+	for _, tt := range tests {
+		got := sanitizeMermaidLabel(tt.input)
+		if got != tt.want {
+			t.Errorf("sanitizeMermaidLabel(%q) = %q, want %q", tt.input, got, tt.want)
+		}
+	}
+}
+
+func TestMermaidRendererAllShapes(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		name      string
+		shape     GraphShape
+		wantLeft  string
+		wantRight string
+	}{
+		{"Box", ShapeBox, "[", "]"},
+		{"Rect", ShapeRect, "[", "]"},
+		{"Diamond", ShapeDiamond, "{", "}"},
+		{"Ellipse", ShapeEllipse, "(", ")"},
+		{"Circle", ShapeCircle, "((", "))"},
+		{"Hexagon", ShapeHexagon, "{{", "}}"},
+		{"Cylinder", ShapeCylinder, "[(", ")]"},
+		{"Parallelogram", ShapeParallelogram, "[/", "/]"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			renderer := NewMermaidRenderer()
+			renderer.SetNodes([]GraphNode{{ID: "n", Label: "Test", Shape: tt.shape}})
+			renderer.SetEdges([]GraphEdge{})
+
+			output := renderer.Render()
+			if !strings.Contains(output, tt.wantLeft) || !strings.Contains(output, tt.wantRight) {
+				t.Errorf("Shape %v should produce %q...%q, got: %s", tt.shape, tt.wantLeft, tt.wantRight, output)
+			}
+		})
+	}
+}
+
+func TestMermaidRendererWithEdgeLabel(t *testing.T) {
+	t.Parallel()
+	renderer := NewMermaidRenderer()
+	renderer.SetNodes([]GraphNode{
+		{ID: "A", Label: "Node A"},
+		{ID: "B", Label: "Node B"},
+	})
+	renderer.SetEdges([]GraphEdge{
+		{From: "A", To: "B", Label: "connects"},
+	})
+
+	output := renderer.Render()
+	if !strings.Contains(output, "|connects|") {
+		t.Error("Output should contain edge label |connects|")
+	}
+}
+
+func TestMermaidTreeRendererNilRoot(t *testing.T) {
+	t.Parallel()
+	renderer := MermaidTreeRenderer(nil)
+	output := renderer.Render()
+
+	if !strings.Contains(output, "flowchart TD") {
+		t.Error("Nil root should still produce valid flowchart")
+	}
+}
+
+func TestMermaidTreeRendererWithEmptyID(t *testing.T) {
+	t.Parallel()
+	// TreeNode with empty ID should use label
+	root := NewTreeNode("", "RootLabel")
+	renderer := MermaidTreeRenderer(root)
+	output := renderer.Render()
+
+	if !strings.Contains(output, "RootLabel") {
+		t.Error("Output should contain label when ID is empty")
+	}
+}
+
+func TestMermaidRendererEscapeLabel(t *testing.T) {
+	t.Parallel()
+	renderer := NewMermaidRenderer()
+	renderer.SetNodes([]GraphNode{
+		{ID: "A", Label: `test "quoted" text`},
+	})
+	renderer.SetEdges([]GraphEdge{})
+
+	output := renderer.Render()
+	if strings.Contains(output, `"quoted"`) {
+		t.Error("Quotes should be escaped")
+	}
+	if !strings.Contains(output, "'quoted'") {
+		t.Error("Quotes should be replaced with single quotes")
+	}
+}
