@@ -2,8 +2,18 @@ package output
 
 import (
 	"bytes"
+	"errors"
+	"io"
 	"testing"
 )
+
+type errorWriter struct{}
+
+func (e *errorWriter) Write(_ []byte) (n int, err error) {
+	return 0, errors.New("write error")
+}
+
+var _ io.Writer = (*errorWriter)(nil)
 
 func TestCSVWriter(t *testing.T) {
 	t.Run("write header and rows", func(t *testing.T) {
@@ -65,10 +75,39 @@ func TestCSVWriter(t *testing.T) {
 }
 
 func TestNewCSVWriter(t *testing.T) {
+	t.Parallel()
+
 	var buf bytes.Buffer
 	w := NewCSVWriter(&buf)
 
 	if w.writer == nil {
 		t.Error("NewCSVWriter() did not initialize writer")
 	}
+}
+
+func TestCSVWriterErrorPaths(t *testing.T) {
+	t.Parallel()
+
+	t.Run("WriteRows error", func(t *testing.T) {
+		t.Parallel()
+
+		w := NewCSVWriter(&errorWriter{})
+		err := w.WriteRows([][]string{{"Name"}, {"Alice"}})
+		if err == nil {
+			t.Error("WriteRows() should return error with failing writer")
+		}
+	})
+
+	t.Run("Error method returns error", func(t *testing.T) {
+		t.Parallel()
+
+		w := NewCSVWriter(&errorWriter{})
+		_ = w.WriteRow([]string{"test"}) // Buffer the write
+		w.Flush()                        // Error occurs on flush
+
+		err := w.Error()
+		if err == nil {
+			t.Error("Error() should return error after failed write")
+		}
+	})
 }
