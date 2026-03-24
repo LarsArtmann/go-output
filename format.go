@@ -69,10 +69,9 @@ func (f Format) IsValid() bool {
 }
 
 // IsTableFormat returns true if this is a table-based format.
-//nolint:exhaustive // Type alias creates duplicate cases; all Format cases covered
 func (f Format) IsTableFormat() bool {
 	switch f {
-	case FormatTable, FormatJSON, FormatCSV, FormatMarkdown, FormatYAML, FormatD2, FormatHTML, FormatTree, FormatMermaid, FormatDOT:
+	case FormatTable, FormatJSON, FormatCSV, FormatMarkdown, FormatYAML, FormatD2:
 		return true
 	default:
 		return false
@@ -85,10 +84,9 @@ func (f Format) IsTreeFormat() bool {
 }
 
 // IsGraphFormat returns true if this is a graph/diagram format.
-//nolint:exhaustive // Type alias creates duplicate cases; all Format cases covered
 func (f Format) IsGraphFormat() bool {
 	switch f {
-	case FormatD2, FormatMermaid, FormatDOT, FormatTable, FormatJSON, FormatCSV, FormatMarkdown, FormatYAML, FormatHTML, FormatTree:
+	case FormatD2, FormatMermaid, FormatDOT:
 		return true
 	default:
 		return false
