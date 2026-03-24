@@ -330,3 +330,98 @@ func TestGraphEdge(t *testing.T) {
 		t.Errorf("To = %q, want %q", edge.To, "to-node")
 	}
 }
+
+func TestParseGraphShape(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		name    string
+		input   string
+		want    GraphShape
+		wantErr bool
+	}{
+		{"box", "box", ShapeBox, false},
+		{"ellipse", "ellipse", ShapeEllipse, false},
+		{"diamond", "diamond", ShapeDiamond, false},
+		{"circle", "circle", ShapeCircle, false},
+		{"cylinder", "cylinder", ShapeCylinder, false},
+		{"hexagon", "hexagon", ShapeHexagon, false},
+		{"parallelogram", "parallelogram", ShapeParallelogram, false},
+		{"rect", "rect", ShapeRect, false},
+		{"invalid", "invalid", "", true},
+		{"empty", "", "", true},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			got, err := ParseGraphShape(tt.input)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("ParseGraphShape() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if got != tt.want {
+				t.Errorf("ParseGraphShape() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestGraphShapeString(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		shape GraphShape
+		want  string
+	}{
+		{ShapeBox, "box"},
+		{ShapeEllipse, "ellipse"},
+		{ShapeDiamond, "diamond"},
+		{ShapeCircle, "circle"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.want, func(t *testing.T) {
+			t.Parallel()
+			if got := tt.shape.String(); got != tt.want {
+				t.Errorf("GraphShape.String() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestGraphShapeIsValid(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		shape GraphShape
+		want  bool
+	}{
+		{ShapeBox, true},
+		{ShapeEllipse, true},
+		{"invalid", false},
+		{"", false},
+	}
+
+	for _, tt := range tests {
+		t.Run(string(tt.shape), func(t *testing.T) {
+			t.Parallel()
+			if got := tt.shape.IsValid(); got != tt.want {
+				t.Errorf("GraphShape.IsValid() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestGraphShapeAllowedValues(t *testing.T) {
+	t.Parallel()
+	got := ShapeBox.AllowedValues()
+	want := []string{"box", "ellipse", "diamond", "circle", "cylinder", "hexagon", "parallelogram", "rect"}
+
+	if len(got) != len(want) {
+		t.Errorf("AllowedValues() returned %d values, want %d", len(got), len(want))
+	}
+
+	for i, v := range got {
+		if v != want[i] {
+			t.Errorf("AllowedValues()[%d] = %v, want %v", i, v, want[i])
+		}
+	}
+}

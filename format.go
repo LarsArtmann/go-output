@@ -278,15 +278,53 @@ func NewGraphNode(id, label string) *GraphNode {
 type GraphShape string
 
 const (
-	ShapeBox       GraphShape = "box"
-	ShapeEllipse   GraphShape = "ellipse"
-	ShapeDiamond   GraphShape = "diamond"
-	ShapeCircle    GraphShape = "circle"
-	ShapeCylinder  GraphShape = "cylinder"
-	ShapeHexagon   GraphShape = "hexagon"
+	ShapeBox           GraphShape = "box"
+	ShapeEllipse       GraphShape = "ellipse"
+	ShapeDiamond       GraphShape = "diamond"
+	ShapeCircle        GraphShape = "circle"
+	ShapeCylinder      GraphShape = "cylinder"
+	ShapeHexagon       GraphShape = "hexagon"
 	ShapeParallelogram GraphShape = "parallelogram"
-	ShapeRect      GraphShape = "rect"
+	ShapeRect          GraphShape = "rect"
 )
+
+//nolint:gochecknoglobals // Global variable used for value iteration.
+var graphShapeValues = []GraphShape{
+	ShapeBox,
+	ShapeEllipse,
+	ShapeDiamond,
+	ShapeCircle,
+	ShapeCylinder,
+	ShapeHexagon,
+	ShapeParallelogram,
+	ShapeRect,
+}
+
+// ParseGraphShape parses a graph shape string.
+func ParseGraphShape(s string) (GraphShape, error) {
+	if slices.Contains(graphShapeValues, GraphShape(s)) {
+		return GraphShape(s), nil
+	}
+	return "", fmt.Errorf("invalid graph shape: %q (allowed: %v)", s, graphShapeValues)
+}
+
+func (s GraphShape) String() string {
+	return string(s)
+}
+
+// AllowedValues returns all valid graph shape values.
+func (s GraphShape) AllowedValues() []string {
+	values := make([]string, len(graphShapeValues))
+	for i, v := range graphShapeValues {
+		values[i] = string(v)
+	}
+	return values
+}
+
+// IsValid checks if the graph shape is valid.
+func (s GraphShape) IsValid() bool {
+	return slices.Contains(graphShapeValues, s)
+}
 
 // GraphStyle represents styling attributes for a graph node.
 type GraphStyle struct {
