@@ -132,3 +132,201 @@ func FuzzParseOutputFormat(f *testing.F) {
 		}
 	})
 }
+
+func TestFormatIsTableFormat(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		format Format
+		want   bool
+	}{
+		{FormatTable, true},
+		{FormatJSON, true},
+		{FormatCSV, true},
+		{FormatMarkdown, true},
+		{FormatD2, true},
+		{FormatYAML, true},
+		{FormatHTML, false},
+		{FormatTree, false},
+		{FormatMermaid, false},
+		{FormatDOT, false},
+	}
+
+	for _, tt := range tests {
+		t.Run(string(tt.format), func(t *testing.T) {
+			t.Parallel()
+			if got := tt.format.IsTableFormat(); got != tt.want {
+				t.Errorf("Format(%q).IsTableFormat() = %v, want %v", tt.format, got, tt.want)
+			}
+		})
+	}
+}
+
+func TestFormatIsTreeFormat(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		format Format
+		want   bool
+	}{
+		{FormatTable, false},
+		{FormatJSON, false},
+		{FormatTree, true},
+		{FormatHTML, true},
+		{FormatMermaid, false},
+	}
+
+	for _, tt := range tests {
+		t.Run(string(tt.format), func(t *testing.T) {
+			t.Parallel()
+			if got := tt.format.IsTreeFormat(); got != tt.want {
+				t.Errorf("Format(%q).IsTreeFormat() = %v, want %v", tt.format, got, tt.want)
+			}
+		})
+	}
+}
+
+func TestFormatIsGraphFormat(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		format Format
+		want   bool
+	}{
+		{FormatTable, false},
+		{FormatJSON, false},
+		{FormatD2, true},
+		{FormatMermaid, true},
+		{FormatDOT, true},
+		{FormatTree, false},
+	}
+
+	for _, tt := range tests {
+		t.Run(string(tt.format), func(t *testing.T) {
+			t.Parallel()
+			if got := tt.format.IsGraphFormat(); got != tt.want {
+				t.Errorf("Format(%q).IsGraphFormat() = %v, want %v", tt.format, got, tt.want)
+			}
+		})
+	}
+}
+
+func TestInvalidFormatError(t *testing.T) {
+	t.Parallel()
+	err := &InvalidFormatError{
+		Value:   "invalid",
+		Allowed: []Format{FormatTable, FormatJSON},
+	}
+
+	got := err.Error()
+	wantContains := []string{"invalid format", "invalid", "table", "json"}
+	for _, want := range wantContains {
+		if !containsString(got, want) {
+			t.Errorf("Error() = %q, should contain %q", got, want)
+		}
+	}
+}
+
+func containsString(s, substr string) bool {
+	return len(s) >= len(substr) && (s == substr || len(s) > 0 && containsSubstring(s, substr))
+}
+
+func containsSubstring(s, substr string) bool {
+	for i := 0; i <= len(s)-len(substr); i++ {
+		if s[i:i+len(substr)] == substr {
+			return true
+		}
+	}
+	return false
+}
+
+func TestTableData(t *testing.T) {
+	t.Parallel()
+	t.Run("RowCount and ColCount", func(t *testing.T) {
+		t.Parallel()
+		data := NewTableData([]string{"Name", "Value", "Count"})
+		if data.ColCount() != 3 {
+			t.Errorf("ColCount() = %d, want 3", data.ColCount())
+		}
+		if data.RowCount() != 0 {
+			t.Errorf("RowCount() = %d, want 0", data.RowCount())
+		}
+
+		data.AddRow([]string{"a", "b", "c"})
+		data.AddRow([]string{"d", "e", "f"})
+		if data.RowCount() != 2 {
+			t.Errorf("RowCount() = %d, want 2", data.RowCount())
+		}
+	})
+
+	t.Run("CreateRowEdges", func(t *testing.T) {
+		t.Parallel()
+		t.Run("nil data", func(t *testing.T) {
+			t.Parallel()
+			var data *TableData
+			if edges := data.CreateRowEdges(); edges != nil {
+				t.Errorf("CreateRowEdges() on nil = %v, want nil", edges)
+			}
+		})
+
+		t.Run("empty rows", func(t *testing.T) {
+			t.Parallel()
+			data := NewTableData([]string{"Name"})
+			if edges := data.CreateRowEdges(); edges != nil {
+				t.Errorf("CreateRowEdges() on empty = %v, want nil", edges)
+			}
+		})
+
+		t.Run("single row", func(t *testing.T) {
+			t.Parallel()
+			data := NewTableData([]string{"Name"})
+			data.AddRow([]string{"a"})
+			if edges := data.CreateRowEdges(); edges != nil {
+				t.Errorf("CreateRowEdges() on single row = %v, want nil", edges)
+			}
+		})
+
+		t.Run("multiple rows", func(t *testing.T) {
+			t.Parallel()
+			data := NewTableData([]string{"Name"})
+			data.AddRow([]string{"a"})
+			data.AddRow([]string{"b"})
+			data.AddRow([]string{"c"})
+			edges := data.CreateRowEdges()
+			if len(edges) != 2 {
+				t.Fatalf("CreateRowEdges() returned %d edges, want 2", len(edges))
+			}
+			if edges[0].From != "row0" || edges[0].To != "row1" {
+				t.Errorf("First edge = {%s, %s}, want {row0, row1}", edges[0].From, edges[0].To)
+			}
+			if edges[1].From != "row1" || edges[1].To != "row2" {
+				t.Errorf("Second edge = {%s, %s}, want {row1, row2}", edges[1].From, edges[1].To)
+			}
+		})
+	})
+}
+
+func TestGraphNode(t *testing.T) {
+	t.Parallel()
+	node := NewGraphNode("test-id", "Test Label")
+	if node.ID != "test-id" {
+		t.Errorf("ID = %q, want %q", node.ID, "test-id")
+	}
+	if node.Label != "Test Label" {
+		t.Errorf("Label = %q, want %q", node.Label, "Test Label")
+	}
+	if node.Shape != ShapeBox {
+		t.Errorf("Shape = %v, want %v", node.Shape, ShapeBox)
+	}
+	if node.Metadata == nil {
+		t.Error("Metadata is nil")
+	}
+}
+
+func TestGraphEdge(t *testing.T) {
+	t.Parallel()
+	edge := NewGraphEdge("from-node", "to-node")
+	if edge.From != "from-node" {
+		t.Errorf("From = %q, want %q", edge.From, "from-node")
+	}
+	if edge.To != "to-node" {
+		t.Errorf("To = %q, want %q", edge.To, "to-node")
+	}
+}
