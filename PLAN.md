@@ -10,11 +10,11 @@ A reusable Go library for CLI applications that provides consistent output forma
 
 ## Core Enums
 
-| Enum           | Values                                                                   | Purpose                 |
-| -------------- | ------------------------------------------------------------------------ | ----------------------- |
-| `OutputFormat` | `table`, `json`, `csv`, `markdown`, `d2`, `yaml`                         | Output format selection |
-| `SortBy`       | `name`, `importance`, `created_at`, `updated_at`, `health`, `complexity` | Sort field selection    |
-| `ColorMode`    | `auto`, `always`, `never`                                                | Color output control    |
+| Enum        | Values                                                                          | Purpose                 |
+| ----------- | ------------------------------------------------------------------------------- | ----------------------- |
+| `Format`    | `table`, `json`, `csv`, `markdown`, `d2`, `yaml`, `html`, `tree`, `mermaid`, `dot` | Output format selection |
+| `SortBy`    | `name`, `importance`, `created_at`, `updated_at`, `health`, `complexity`        | Sort field selection    |
+| `ColorMode` | `auto`, `always`, `never`                                                       | Color output control    |
 
 ---
 
@@ -26,36 +26,35 @@ go-output/
 ├── justfile
 ├── README.md
 │
-├── format.go                    # OutputFormat enum
-├── sort.go                     # SortBy enum + sorting helpers
-├── color.go                    # ColorMode enum + ANSI helpers
+├── format.go                    # Format enum + type definitions
+├── sort.go                      # SortBy enum
+├── color.go                     # ColorMode enum + ANSI helpers
 │
-├── json.go                     # JSON formatter
-├── csv.go                      # CSV formatter
-├── yaml.go                     # YAML formatter
-├── markdown.go                 # Markdown formatter
-├── d2.go                       # D2 diagram formatter
+├── json.go                      # JSON formatter
+├── csv.go                       # CSV formatter
+├── yaml.go                      # YAML formatter
+├── markdown.go                  # Markdown formatter
+├── d2.go                        # D2 diagram formatter
+├── html.go                      # HTML formatter
+├── tree.go                      # ASCII tree formatter
+├── mermaid.go                   # Mermaid diagram formatter
+├── dot.go                       # DOT/Graphviz formatter
 │
 ├── table/
-│   ├── table.go                # Table interface & generic implementation
-│   ├── config.go               # TableConfig interface
-│   ├── lipgloss.go             # Lipgloss-based table builder
-│   └── styles.go               # Pre-defined styles
+│   └── table.go                 # Table implementation using lipgloss
 │
 ├── sort/
-│   ├── sorter.go               # Generic sorting interface
-│   ├── comparators.go          # Type-specific comparators
-│   └── adapter.go              # Sort adapter for cmdguard integration
+│   └── sort.go                  # Generic Sorter[T] + comparators
 │
 ├── cmdguard/
-│   ├── format.go               # OutputFormat flag with validation
-│   ├── sort.go                 # SortBy flag with validation
-│   └── color.go                # ColorMode flag with validation
+│   ├── format.go                # Format flag with validation
+│   ├── sort.go                  # SortBy flag with validation
+│   └── color.go                 # ColorMode flag with validation
 │
-└── examples/
-    ├── basic/main.go
-    ├── table/main.go
-    └── cmdguard/main.go
+├── examples/
+│   └── basic/main.go            # Example demonstrating all formats
+│
+└── benchmarks_test.go           # Performance benchmarks
 ```
 
 ---
@@ -73,21 +72,32 @@ go-output/
 ### format.go Specification
 
 ```go
-type OutputFormat int
+type Format string
 
 const (
-    OutputFormatTable OutputFormat = iota
-    OutputFormatJSON
-    OutputFormatCSV
-    OutputFormatMarkdown
-    OutputFormatD2
-    OutputFormatYAML
+    FormatTable    Format = "table"
+    FormatJSON     Format = "json"
+    FormatCSV      Format = "csv"
+    FormatMarkdown Format = "markdown"
+    FormatD2       Format = "d2"
+    FormatYAML     Format = "yaml"
+    FormatHTML     Format = "html"
+    FormatTree     Format = "tree"
+    FormatMermaid  Format = "mermaid"
+    FormatDOT      Format = "dot"
 )
 
-func ParseOutputFormat(s string) (OutputFormat, error)
-func (f OutputFormat) String() string
-func (f OutputFormat) AllowedValues() []string
-func (f OutputFormat) IsValid() bool
+// Backward compatibility alias
+type OutputFormat = Format
+
+func ParseFormat(s string) (Format, error)
+func ParseOutputFormat(s string) (Format, error) // alias
+func (f Format) String() string
+func (f Format) AllowedValues() []string
+func (f Format) IsValid() bool
+func (f Format) IsTableFormat() bool
+func (f Format) IsTreeFormat() bool
+func (f Format) IsGraphFormat() bool
 ```
 
 ### sort.go Specification
