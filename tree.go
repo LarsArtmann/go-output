@@ -1,6 +1,7 @@
 package output
 
 import (
+	"strconv"
 	"strings"
 )
 
@@ -95,13 +96,13 @@ func TreeRendererFromTableData(data *TableData) *ASCIITreeRenderer {
 
 	rowsNode := NewTreeNode("rows", "Rows")
 	for i, row := range data.Rows {
-		rowNode := NewTreeNode("row-"+string(rune('0'+i)), "Row "+itoa(i+1))
+		rowNode := NewTreeNode("row-"+strconv.Itoa(i), "Row "+strconv.Itoa(i+1))
 		for j, cell := range row {
 			var headerName string
 			if j < len(data.Headers) {
 				headerName = data.Headers[j]
 			} else {
-				headerName = "Col " + itoa(j)
+				headerName = "Col " + strconv.Itoa(j)
 			}
 			rowNode.AddChild(NewTreeNode(headerName, cell))
 		}
@@ -111,17 +112,4 @@ func TreeRendererFromTableData(data *TableData) *ASCIITreeRenderer {
 	root.AddChild(rowsNode)
 	renderer.SetRoot(root)
 	return renderer
-}
-
-// itoa converts an int to string without importing strconv.
-func itoa(i int) string {
-	if i == 0 {
-		return "0"
-	}
-	var b []byte
-	for i > 0 {
-		b = append([]byte{byte('0' + i%10)}, b...)
-		i /= 10
-	}
-	return string(b)
 }
