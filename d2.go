@@ -30,16 +30,16 @@ type D2Node struct {
 type D2NodeShape string
 
 const (
-	D2ShapeRectangle D2NodeShape = "rectangle"
-	D2ShapeSquare   D2NodeShape = "square"
-	D2ShapeCircle    D2NodeShape = "circle"
-	D2ShapeDiamond   D2NodeShape = "diamond"
-	D2ShapeHexagon   D2NodeShape = "hexagon"
-	D2ShapeCloud     D2NodeShape = "cloud"
-	D2ShapeCylinder  D2NodeShape = "cylinder"
-	D2ShapePerson    D2NodeShape = "person"
-	D2ShapeQueue     D2NodeShape = "queue"
-	D2ShapeOval      D2NodeShape = "oval"
+	D2ShapeRectangle     D2NodeShape = "rectangle"
+	D2ShapeSquare        D2NodeShape = "square"
+	D2ShapeCircle        D2NodeShape = "circle"
+	D2ShapeDiamond       D2NodeShape = "diamond"
+	D2ShapeHexagon       D2NodeShape = "hexagon"
+	D2ShapeCloud         D2NodeShape = "cloud"
+	D2ShapeCylinder      D2NodeShape = "cylinder"
+	D2ShapePerson        D2NodeShape = "person"
+	D2ShapeQueue         D2NodeShape = "queue"
+	D2ShapeOval          D2NodeShape = "oval"
 	D2ShapeParallelogram D2NodeShape = "parallelogram"
 )
 
@@ -53,31 +53,31 @@ type D2NodeStyle struct {
 
 // D2Edge represents an edge in a D2 diagram.
 type D2Edge struct {
-	From       string
-	To         string
-	Label      string
-	Style      D2EdgeStyle
+	From        string
+	To          string
+	Label       string
+	Style       D2EdgeStyle
 	SourceArrow D2ArrowType
 	TargetArrow D2ArrowType
 }
 
 // D2EdgeStyle represents styling for a D2 edge.
 type D2EdgeStyle struct {
-	Stroke        string
-	StrokeWidth   int
-	Animated      bool
-	Dashed        bool
+	Stroke      string
+	StrokeWidth int
+	Animated    bool
+	Dashed      bool
 }
 
 // D2ArrowType represents the type of arrow.
 type D2ArrowType string
 
 const (
-	D2ArrowNone   D2ArrowType = "none"
-	D2ArrowPoint  D2ArrowType = "arrow"
+	D2ArrowNone     D2ArrowType = "none"
+	D2ArrowPoint    D2ArrowType = "arrow"
 	D2ArrowTriangle D2ArrowType = "triangle"
-	D2ArrowDiamond D2ArrowType = "diamond"
-	D2ArrowOval   D2ArrowType = "oval"
+	D2ArrowDiamond  D2ArrowType = "diamond"
+	D2ArrowOval     D2ArrowType = "oval"
 )
 
 // D2Diagram builds D2 diagram output.
@@ -168,7 +168,14 @@ func (d *D2Diagram) Render() string {
 
 func (d *D2Diagram) renderNode(b *strings.Builder, node D2Node) {
 	if node.Nested != "" {
-		fmt.Fprintf(b, "%s.%s%s %s {\n", node.ID, node.Label, d.renderShapeAttr(node.Shape), d.renderStyle(node.Style))
+		fmt.Fprintf(
+			b,
+			"%s.%s%s %s {\n",
+			node.ID,
+			node.Label,
+			d.renderShapeAttr(node.Shape),
+			d.renderStyle(node.Style),
+		)
 		b.WriteString(node.Nested)
 		b.WriteString("}\n")
 		return
@@ -189,10 +196,10 @@ func (d *D2Diagram) renderShapeAttr(shape D2NodeShape) string {
 func (d *D2Diagram) renderStyle(style D2NodeStyle) string {
 	var parts []string
 	if style.Fill != "" {
-		parts = append(parts, fmt.Sprintf("fill:%s", style.Fill))
+		parts = append(parts, "fill:"+style.Fill)
 	}
 	if style.Stroke != "" {
-		parts = append(parts, fmt.Sprintf("stroke:%s", style.Stroke))
+		parts = append(parts, "stroke:"+style.Stroke)
 	}
 	if style.StrokeWidth > 0 {
 		parts = append(parts, fmt.Sprintf("stroke-width:%d", style.StrokeWidth))
@@ -211,7 +218,15 @@ func (d *D2Diagram) renderEdge(b *strings.Builder, edge D2Edge) {
 	targetArrow := d.renderArrow(edge.TargetArrow)
 
 	if edge.Label != "" {
-		fmt.Fprintf(b, "%s %s-> %s: %s %s\n", edge.From, sourceArrow, edge.To, edge.Label, targetArrow)
+		fmt.Fprintf(
+			b,
+			"%s %s-> %s: %s %s\n",
+			edge.From,
+			sourceArrow,
+			edge.To,
+			edge.Label,
+			targetArrow,
+		)
 	} else {
 		fmt.Fprintf(b, "%s %s-> %s %s\n", edge.From, sourceArrow, edge.To, targetArrow)
 	}

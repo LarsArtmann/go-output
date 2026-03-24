@@ -107,7 +107,18 @@ func TestOutputFormatFlag_AllowedValues(t *testing.T) {
 	val := output.OutputFormatTable
 	flag := NewOutputFormatFlag(&val)
 	got := flag.AllowedValues()
-	want := []string{"table", "json", "csv", "markdown", "d2", "yaml", "html", "tree", "mermaid", "dot"}
+	want := []string{
+		"table",
+		"json",
+		"csv",
+		"markdown",
+		"d2",
+		"yaml",
+		"html",
+		"tree",
+		"mermaid",
+		"dot",
+	}
 
 	if len(got) != len(want) {
 		t.Errorf("AllowedValues() returned %d values, want %d", len(got), len(want))

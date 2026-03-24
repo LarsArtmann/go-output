@@ -173,7 +173,7 @@ func TestStreamingHTMLRendererMultipleRows(t *testing.T) {
 	r.SetHeaders([]string{"ID", "Name", "Score"})
 
 	for i := range 5 {
-		r.AddRow([]string{string(rune('0'+i)), "Name" + string(rune('A'+i)), "100"})
+		r.AddRow([]string{string(rune('0' + i)), "Name" + string(rune('A'+i)), "100"})
 	}
 
 	got := r.Render()

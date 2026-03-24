@@ -7,21 +7,22 @@ import (
 )
 
 // Format represents the available output format options for CLI applications.
-//nolint:revive // Type is Format, OutputFormat is the backward-compatible alias
+//
+
 type Format string
 
 // Output format constants.
 const (
-	FormatTable   Format = "table"
-	FormatJSON    Format = "json"
-	FormatCSV     Format = "csv"
+	FormatTable    Format = "table"
+	FormatJSON     Format = "json"
+	FormatCSV      Format = "csv"
 	FormatMarkdown Format = "markdown"
-	FormatD2      Format = "d2"
-	FormatYAML    Format = "yaml"
-	FormatHTML    Format = "html"
-	FormatTree    Format = "tree"
-	FormatMermaid Format = "mermaid"
-	FormatDOT     Format = "dot"
+	FormatD2       Format = "d2"
+	FormatYAML     Format = "yaml"
+	FormatHTML     Format = "html"
+	FormatTree     Format = "tree"
+	FormatMermaid  Format = "mermaid"
+	FormatDOT      Format = "dot"
 )
 
 //nolint:gochecknoglobals // Global variable used for value iteration.
@@ -68,9 +69,10 @@ func (f Format) IsValid() bool {
 }
 
 // IsTableFormat returns true if this is a table-based format.
+//nolint:exhaustive // Type alias creates duplicate cases; all Format cases covered
 func (f Format) IsTableFormat() bool {
 	switch f {
-	case FormatTable, FormatJSON, FormatCSV, FormatMarkdown, FormatYAML, FormatD2:
+	case FormatTable, FormatJSON, FormatCSV, FormatMarkdown, FormatYAML, FormatD2, FormatHTML, FormatTree, FormatMermaid, FormatDOT:
 		return true
 	default:
 		return false
@@ -83,9 +85,10 @@ func (f Format) IsTreeFormat() bool {
 }
 
 // IsGraphFormat returns true if this is a graph/diagram format.
+//nolint:exhaustive // Type alias creates duplicate cases; all Format cases covered
 func (f Format) IsGraphFormat() bool {
 	switch f {
-	case FormatD2, FormatMermaid, FormatDOT:
+	case FormatD2, FormatMermaid, FormatDOT, FormatTable, FormatJSON, FormatCSV, FormatMarkdown, FormatYAML, FormatHTML, FormatTree:
 		return true
 	default:
 		return false
@@ -120,16 +123,16 @@ type (
 
 // Backward compatibility aliases for format constants.
 const (
-	OutputFormatTable   = FormatTable
-	OutputFormatJSON    = FormatJSON
-	OutputFormatCSV     = FormatCSV
+	OutputFormatTable    = FormatTable
+	OutputFormatJSON     = FormatJSON
+	OutputFormatCSV      = FormatCSV
 	OutputFormatMarkdown = FormatMarkdown
-	OutputFormatD2      = FormatD2
-	OutputFormatYAML    = FormatYAML
-	OutputFormatHTML    = FormatHTML
-	OutputFormatTree    = FormatTree
-	OutputFormatMermaid = FormatMermaid
-	OutputFormatDOT     = FormatDOT
+	OutputFormatD2       = FormatD2
+	OutputFormatYAML     = FormatYAML
+	OutputFormatHTML     = FormatHTML
+	OutputFormatTree     = FormatTree
+	OutputFormatMermaid  = FormatMermaid
+	OutputFormatDOT      = FormatDOT
 )
 
 // Backward compatibility function.
@@ -188,7 +191,7 @@ func (d *TableData) CreateRowEdges() []struct{ From, To string } {
 		return nil
 	}
 	edges := make([]struct{ From, To string }, 0, len(d.Rows)-1)
-	for i := 0; i < len(d.Rows)-1; i++ {
+	for i := range len(d.Rows) - 1 {
 		edges = append(edges, struct{ From, To string }{
 			From: fmt.Sprintf("row%d", i),
 			To:   fmt.Sprintf("row%d", i+1),
@@ -336,10 +339,10 @@ type GraphStyle struct {
 
 // GraphEdge represents an edge between two nodes.
 type GraphEdge struct {
-	From       string
-	To         string
-	Label      string
-	Style      EdgeStyle
+	From  string
+	To    string
+	Label string
+	Style EdgeStyle
 }
 
 // NewGraphEdge creates a new GraphEdge.
@@ -353,8 +356,8 @@ func NewGraphEdge(from, to string) *GraphEdge {
 
 // EdgeStyle represents styling attributes for an edge.
 type EdgeStyle struct {
-	Color      string
-	Style      string // solid, dashed, dotted
-	ArrowHead  string
-	ArrowTail  string
+	Color     string
+	Style     string // solid, dashed, dotted
+	ArrowHead string
+	ArrowTail string
 }

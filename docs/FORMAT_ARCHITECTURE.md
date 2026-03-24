@@ -7,6 +7,7 @@ This document describes the extensible format architecture for go-output, suppor
 ## Format Categories
 
 ### 1. Table Formats (Flat Data)
+
 - `table` - Terminal tables with lipgloss styling
 - `json` - Formatted JSON
 - `csv` - CSV with headers
@@ -14,10 +15,12 @@ This document describes the extensible format architecture for go-output, suppor
 - `yaml` - YAML output
 
 ### 2. Tree Formats (Hierarchical Data)
+
 - `tree` - ASCII tree representation
 - `html` - HTML with collapsible tree
 
 ### 3. Graph Formats (Network/Diagram Data)
+
 - `d2` - D2 diagram shapes
 - `dot` - DOT/Graphviz format
 - `mermaid` - Mermaid flowchart syntax
@@ -25,7 +28,9 @@ This document describes the extensible format architecture for go-output, suppor
 ## Data Structures
 
 ### TableData
+
 Unified data structure for all tabular outputs:
+
 ```go
 type TableData struct {
     Headers []string
@@ -34,7 +39,9 @@ type TableData struct {
 ```
 
 ### TreeNode
+
 Hierarchical data structure for tree outputs:
+
 ```go
 type TreeNode struct {
     ID       string
@@ -47,7 +54,9 @@ type TreeNode struct {
 ## Interfaces
 
 ### Renderer
+
 Base interface for all renderers:
+
 ```go
 type Renderer interface {
     Render() string
@@ -55,7 +64,9 @@ type Renderer interface {
 ```
 
 ### TableRenderer
+
 For flat tabular data:
+
 ```go
 type TableRenderer interface {
     Renderer
@@ -64,7 +75,9 @@ type TableRenderer interface {
 ```
 
 ### TreeRenderer
+
 For hierarchical tree data:
+
 ```go
 type TreeRenderer interface {
     Renderer
@@ -73,7 +86,9 @@ type TreeRenderer interface {
 ```
 
 ### GraphRenderer
+
 For diagram/graph data:
+
 ```go
 type GraphRenderer interface {
     Renderer

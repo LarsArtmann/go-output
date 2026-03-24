@@ -1,6 +1,7 @@
 package output
 
 import (
+	"slices"
 	"sync"
 	"testing"
 )
@@ -95,13 +96,7 @@ func TestRegisteredFormats(t *testing.T) {
 		t.Fatalf("RegisteredFormats() returned %d formats, want at least 2", len(formats))
 	}
 
-	found := false
-	for _, f := range formats {
-		if f == FormatTable {
-			found = true
-			break
-		}
-	}
+	found := slices.Contains(formats, FormatTable)
 	if !found {
 		t.Error("RegisteredFormats() does not contain FormatTable")
 	}
@@ -133,24 +128,20 @@ func TestRegistryConcurrency(t *testing.T) {
 
 	var wg sync.WaitGroup
 	for range 10 {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
+		wg.Go(func() {
 			for range 100 {
 				Register(FormatCSV, func() Renderer { return &testRenderer{output: "csv"} })
 				Unregister(FormatCSV)
 			}
-		}()
+		})
 	}
 	for range 10 {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
+		wg.Go(func() {
 			for range 100 {
 				IsRegistered(FormatCSV)
 				RegisteredFormats()
 			}
-		}()
+		})
 	}
 	wg.Wait()
 }

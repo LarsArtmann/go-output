@@ -36,28 +36,28 @@ w.Flush()
 
 ### Table Formats
 
-| Format     | Description                           | Package                                  |
-| ---------- | ------------------------------------- | ---------------------------------------- |
-| `table`    | Terminal tables with lipgloss styling | `github.com/larsartmann/go-output`       |
-| `json`     | JSON output with indentation          | `github.com/larsartmann/go-output`       |
-| `csv`      | CSV export with headers               | `github.com/larsartmann/go-output`       |
-| `markdown` | Markdown tables                       | `github.com/larsartmann/go-output`       |
-| `yaml`     | YAML serialization                    | `github.com/larsartmann/go-output`       |
+| Format     | Description                           | Package                            |
+| ---------- | ------------------------------------- | ---------------------------------- |
+| `table`    | Terminal tables with lipgloss styling | `github.com/larsartmann/go-output` |
+| `json`     | JSON output with indentation          | `github.com/larsartmann/go-output` |
+| `csv`      | CSV export with headers               | `github.com/larsartmann/go-output` |
+| `markdown` | Markdown tables                       | `github.com/larsartmann/go-output` |
+| `yaml`     | YAML serialization                    | `github.com/larsartmann/go-output` |
 
 ### Tree Formats
 
-| Format | Description                         | Package                                |
-| ------ | ----------------------------------- | -------------------------------------- |
-| `tree` | ASCII tree with box-drawing chars   | `github.com/larsartmann/go-output`     |
-| `html` | HTML tree with collapsible sections | `github.com/larsartmann/go-output`     |
+| Format | Description                         | Package                            |
+| ------ | ----------------------------------- | ---------------------------------- |
+| `tree` | ASCII tree with box-drawing chars   | `github.com/larsartmann/go-output` |
+| `html` | HTML tree with collapsible sections | `github.com/larsartmann/go-output` |
 
 ### Graph Formats
 
-| Format     | Description                              | Package                                |
-| ---------- | ---------------------------------------- | -------------------------------------- |
-| `d2`       | D2 diagram shapes                       | `github.com/larsartmann/go-output`     |
-| `mermaid`  | Mermaid flowchart diagrams               | `github.com/larsartmann/go-output`     |
-| `dot`      | DOT/Graphviz directed graphs            | `github.com/larsartmann/go-output`     |
+| Format    | Description                  | Package                            |
+| --------- | ---------------------------- | ---------------------------------- |
+| `d2`      | D2 diagram shapes            | `github.com/larsartmann/go-output` |
+| `mermaid` | Mermaid flowchart diagrams   | `github.com/larsartmann/go-output` |
+| `dot`     | DOT/Graphviz directed graphs | `github.com/larsartmann/go-output` |
 
 ## Supported Sort Options
 

@@ -13,7 +13,7 @@ func main() {
 	// Define sample data
 	type Project struct {
 		Name       string
-		Health    int
+		Health     int
 		Complexity int
 	}
 

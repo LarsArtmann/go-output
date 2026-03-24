@@ -63,7 +63,18 @@ func TestOutputFormatString(t *testing.T) {
 
 func TestOutputFormatAllowedValues(t *testing.T) {
 	got := OutputFormatTable.AllowedValues()
-	want := []string{"table", "json", "csv", "markdown", "d2", "yaml", "html", "tree", "mermaid", "dot"}
+	want := []string{
+		"table",
+		"json",
+		"csv",
+		"markdown",
+		"d2",
+		"yaml",
+		"html",
+		"tree",
+		"mermaid",
+		"dot",
+	}
 
 	if len(got) != len(want) {
 		t.Errorf("AllowedValues() returned %d values, want %d", len(got), len(want))
@@ -413,7 +424,16 @@ func TestGraphShapeIsValid(t *testing.T) {
 func TestGraphShapeAllowedValues(t *testing.T) {
 	t.Parallel()
 	got := ShapeBox.AllowedValues()
-	want := []string{"box", "ellipse", "diamond", "circle", "cylinder", "hexagon", "parallelogram", "rect"}
+	want := []string{
+		"box",
+		"ellipse",
+		"diamond",
+		"circle",
+		"cylinder",
+		"hexagon",
+		"parallelogram",
+		"rect",
+	}
 
 	if len(got) != len(want) {
 		t.Errorf("AllowedValues() returned %d values, want %d", len(got), len(want))

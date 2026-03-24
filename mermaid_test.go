@@ -177,7 +177,13 @@ func TestMermaidRendererAllShapes(t *testing.T) {
 
 			output := renderer.Render()
 			if !strings.Contains(output, tt.wantLeft) || !strings.Contains(output, tt.wantRight) {
-				t.Errorf("Shape %v should produce %q...%q, got: %s", tt.shape, tt.wantLeft, tt.wantRight, output)
+				t.Errorf(
+					"Shape %v should produce %q...%q, got: %s",
+					tt.shape,
+					tt.wantLeft,
+					tt.wantRight,
+					output,
+				)
 			}
 		})
 	}

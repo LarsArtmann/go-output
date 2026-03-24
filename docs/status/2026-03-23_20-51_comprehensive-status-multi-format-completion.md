@@ -16,48 +16,48 @@ Successfully implemented a comprehensive multi-format output architecture for go
 
 ### A) FULLY DONE ✅
 
-| Item | Status | Notes |
-|------|--------|-------|
-| Format architecture design | ✅ | Unified data models (TableData, TreeNode, GraphNode/GraphEdge) |
-| OutputFormat type expansion | ✅ | 10 formats total (table, json, csv, markdown, d2, yaml, html, tree, mermaid, dot) |
-| Backward compatibility | ✅ | OutputFormat alias, all original constants preserved |
-| HTML table renderer | ✅ | Complete with full HTML document generation |
-| HTML tree renderer | ✅ | Collapsible tree structure |
-| ASCII tree renderer | ✅ | Box-drawing characters, metadata support |
-| Mermaid flowchart renderer | ✅ | All shapes (box, diamond, circle, ellipse, hexagon, cylinder) |
-| DOT/Graphviz renderer | ✅ | Both directed and undirected graphs |
-| TableData structure | ✅ | Unified data model |
-| TreeNode structure | ✅ | Hierarchical tree with metadata |
-| GraphNode/GraphEdge structures | ✅ | Full graph support |
-| Unit tests (tree) | ✅ | 8 tests passing |
-| Unit tests (html) | ✅ | 8 tests passing |
-| Unit tests (mermaid) | ✅ | 7 tests passing |
-| Unit tests (dot) | ✅ | 10 tests passing |
-| Format tests updated | ✅ | All 10 formats tested |
-| Build verification | ✅ | `go build ./...` passes |
-| Vet verification | ✅ | `go vet ./...` passes |
-| Test verification | ✅ | `go test ./...` passes |
-| README updated | ✅ | New examples, architecture section |
-| Documentation | ✅ | docs/FORMAT_ARCHITECTURE.md |
+| Item                           | Status | Notes                                                                             |
+| ------------------------------ | ------ | --------------------------------------------------------------------------------- |
+| Format architecture design     | ✅     | Unified data models (TableData, TreeNode, GraphNode/GraphEdge)                    |
+| OutputFormat type expansion    | ✅     | 10 formats total (table, json, csv, markdown, d2, yaml, html, tree, mermaid, dot) |
+| Backward compatibility         | ✅     | OutputFormat alias, all original constants preserved                              |
+| HTML table renderer            | ✅     | Complete with full HTML document generation                                       |
+| HTML tree renderer             | ✅     | Collapsible tree structure                                                        |
+| ASCII tree renderer            | ✅     | Box-drawing characters, metadata support                                          |
+| Mermaid flowchart renderer     | ✅     | All shapes (box, diamond, circle, ellipse, hexagon, cylinder)                     |
+| DOT/Graphviz renderer          | ✅     | Both directed and undirected graphs                                               |
+| TableData structure            | ✅     | Unified data model                                                                |
+| TreeNode structure             | ✅     | Hierarchical tree with metadata                                                   |
+| GraphNode/GraphEdge structures | ✅     | Full graph support                                                                |
+| Unit tests (tree)              | ✅     | 8 tests passing                                                                   |
+| Unit tests (html)              | ✅     | 8 tests passing                                                                   |
+| Unit tests (mermaid)           | ✅     | 7 tests passing                                                                   |
+| Unit tests (dot)               | ✅     | 10 tests passing                                                                  |
+| Format tests updated           | ✅     | All 10 formats tested                                                             |
+| Build verification             | ✅     | `go build ./...` passes                                                           |
+| Vet verification               | ✅     | `go vet ./...` passes                                                             |
+| Test verification              | ✅     | `go test ./...` passes                                                            |
+| README updated                 | ✅     | New examples, architecture section                                                |
+| Documentation                  | ✅     | docs/FORMAT_ARCHITECTURE.md                                                       |
 
 ### B) PARTIALLY DONE ⏳
 
-| Item | Status | Notes |
-|------|--------|-------|
-| go.mod cleanup | ⏳ | Has extra dependency changes not related to this work |
-| AGENTS.md | ⏳ | Generic template added, needs customization |
+| Item           | Status | Notes                                                 |
+| -------------- | ------ | ----------------------------------------------------- |
+| go.mod cleanup | ⏳     | Has extra dependency changes not related to this work |
+| AGENTS.md      | ⏳     | Generic template added, needs customization           |
 
 ### C) NOT STARTED 🚫
 
-| Item | Status | Notes |
-|------|--------|-------|
-| Benchmarks | 🚫 | No performance testing implemented |
-| Example for new formats | 🚫 | examples/basic/main.go doesn't demo tree/mermaid/dot |
-| d2 renderer enhancement | 🚫 | Existing d2.go is basic table-shape only |
-| Mermaid CLI integration | 🚫 | No mmdc integration (would need external tool) |
-| DOT CLI integration | 🚫 | No dot integration (would need Graphviz) |
-| Export/import helpers | 🚫 | No CSV→TreeNode, JSON→GraphNode helpers |
-| Lint cleanup | 🚫 | Some lint warnings remain (paralleltest, exhaustruct) |
+| Item                    | Status | Notes                                                 |
+| ----------------------- | ------ | ----------------------------------------------------- |
+| Benchmarks              | 🚫     | No performance testing implemented                    |
+| Example for new formats | 🚫     | examples/basic/main.go doesn't demo tree/mermaid/dot  |
+| d2 renderer enhancement | 🚫     | Existing d2.go is basic table-shape only              |
+| Mermaid CLI integration | 🚫     | No mmdc integration (would need external tool)        |
+| DOT CLI integration     | 🚫     | No dot integration (would need Graphviz)              |
+| Export/import helpers   | 🚫     | No CSV→TreeNode, JSON→GraphNode helpers               |
+| Lint cleanup            | 🚫     | Some lint warnings remain (paralleltest, exhaustruct) |
 
 ### D) TOTALLY FUCKED UP ❌
 
@@ -128,6 +128,7 @@ None identified.
 **How should we handle external tool dependencies for Mermaid and DOT rendering?**
 
 Mermaid requires `mmdc` (Mermaid CLI) and DOT requires `dot` (Graphviz). Options:
+
 1. **Optional dependency** - Document requirement, fail gracefully if not found
 2. **Plugin system** - Auto-detect and use if available
 3. **Embedded rendering** - No external tools, pure Go (limited)
@@ -140,6 +141,7 @@ Which approach aligns best with the project's philosophy of "zero-config" but al
 ## Technical Details
 
 ### New Files
+
 - `tree.go`, `tree_test.go` - ASCII tree rendering
 - `html.go`, `html_test.go` - HTML tables and trees
 - `mermaid.go`, `mermaid_test.go` - Mermaid diagram generation
@@ -147,6 +149,7 @@ Which approach aligns best with the project's philosophy of "zero-config" but al
 - `docs/FORMAT_ARCHITECTURE.md` - Architecture documentation
 
 ### Modified Files
+
 - `format.go` - Extended with new types, 10 formats, data structures
 - `format_test.go` - Updated tests for all formats
 - `cmdguard/cmdguard_test.go` - Updated expected values
@@ -154,6 +157,7 @@ Which approach aligns best with the project's philosophy of "zero-config" but al
 - `go.mod`, `go.sum` - Dependency updates
 
 ### Interface Hierarchy
+
 ```
 Renderer (base)
 ├── TableRenderer (SetHeaders, AddRow)
@@ -162,6 +166,7 @@ Renderer (base)
 ```
 
 ### Data Structures
+
 ```go
 TableData { Headers, Rows }
 TreeNode { ID, Label, Children, Metadata }
@@ -175,7 +180,7 @@ GraphEdge { From, To, Label, Style }
 
 ```
 ✅ go build ./...     - PASS
-✅ go vet ./...       - PASS  
+✅ go vet ./...       - PASS
 ✅ go test ./...      - PASS (all packages)
 ```
 
@@ -189,4 +194,4 @@ GraphEdge { From, To, Label, Style }
 
 ---
 
-*Report generated by Crush AI Assistant*
+_Report generated by Crush AI Assistant_

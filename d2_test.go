@@ -225,11 +225,11 @@ func TestD2EdgeWithArrows(t *testing.T) {
 	t.Parallel()
 	d := NewD2Diagram()
 	d.AddEdge(D2Edge{
-		From:         "a",
-		To:           "b",
-		Label:        "test",
-		SourceArrow:  D2ArrowDiamond,
-		TargetArrow:  D2ArrowTriangle,
+		From:        "a",
+		To:          "b",
+		Label:       "test",
+		SourceArrow: D2ArrowDiamond,
+		TargetArrow: D2ArrowTriangle,
 	})
 	got := d.Render()
 	if !strings.Contains(got, "-diamond") {

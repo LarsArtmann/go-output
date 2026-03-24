@@ -10,11 +10,11 @@ A reusable Go library for CLI applications that provides consistent output forma
 
 ## Core Enums
 
-| Enum        | Values                                                                          | Purpose                 |
-| ----------- | ------------------------------------------------------------------------------- | ----------------------- |
+| Enum        | Values                                                                             | Purpose                 |
+| ----------- | ---------------------------------------------------------------------------------- | ----------------------- |
 | `Format`    | `table`, `json`, `csv`, `markdown`, `d2`, `yaml`, `html`, `tree`, `mermaid`, `dot` | Output format selection |
-| `SortBy`    | `name`, `importance`, `created_at`, `updated_at`, `health`, `complexity`        | Sort field selection    |
-| `ColorMode` | `auto`, `always`, `never`                                                       | Color output control    |
+| `SortBy`    | `name`, `importance`, `created_at`, `updated_at`, `health`, `complexity`           | Sort field selection    |
+| `ColorMode` | `auto`, `always`, `never`                                                          | Color output control    |
 
 ---
 

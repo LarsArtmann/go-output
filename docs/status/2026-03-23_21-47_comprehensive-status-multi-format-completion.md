@@ -17,29 +17,29 @@ The go-output library has been successfully extended with 4 new output formats (
 
 ### Format Support (10 formats total)
 
-| Format | Status | Renderer | Tests |
-|--------|--------|----------|-------|
-| table | ✅ Stable | lipgloss/table | existing |
-| json | ✅ Stable | stdlib | existing |
-| csv | ✅ Stable | stdlib | existing |
-| markdown | ✅ Stable | custom | existing |
-| yaml | ✅ Stable | yaml.v4 | existing |
-| d2 | ✅ Enhanced | custom | existing |
-| html | ✅ NEW | custom | 6 tests |
-| tree | ✅ NEW | custom | 6 tests |
-| mermaid | ✅ NEW | custom | 6 tests |
-| dot | ✅ NEW | custom | 8 tests |
+| Format   | Status      | Renderer       | Tests    |
+| -------- | ----------- | -------------- | -------- |
+| table    | ✅ Stable   | lipgloss/table | existing |
+| json     | ✅ Stable   | stdlib         | existing |
+| csv      | ✅ Stable   | stdlib         | existing |
+| markdown | ✅ Stable   | custom         | existing |
+| yaml     | ✅ Stable   | yaml.v4        | existing |
+| d2       | ✅ Enhanced | custom         | existing |
+| html     | ✅ NEW      | custom         | 6 tests  |
+| tree     | ✅ NEW      | custom         | 6 tests  |
+| mermaid  | ✅ NEW      | custom         | 6 tests  |
+| dot      | ✅ NEW      | custom         | 8 tests  |
 
 ### Quality Metrics
 
-| Metric | Status |
-|--------|--------|
-| `go build ./...` | ✅ Pass |
-| `go vet ./...` | ✅ Pass |
-| `go test ./...` | ✅ Pass |
-| Benchmarks | ✅ 5 benchmarks |
-| Examples | ✅ All 10 formats |
-| Backward Compat | ✅ Aliases maintained |
+| Metric           | Status                |
+| ---------------- | --------------------- |
+| `go build ./...` | ✅ Pass               |
+| `go vet ./...`   | ✅ Pass               |
+| `go test ./...`  | ✅ Pass               |
+| Benchmarks       | ✅ 5 benchmarks       |
+| Examples         | ✅ All 10 formats     |
+| Backward Compat  | ✅ Aliases maintained |
 
 ---
 
@@ -65,7 +65,7 @@ Current logic is ambiguous - D2 could be table-like or graph-like.
 #### 2. Exhaustive Switch Warning
 
 ```
-format.go:10:6 revive: exported: type name will be used as output.OutputFormat 
+format.go:10:6 revive: exported: type name will be used as output.OutputFormat
 by other packages, and that stutters; consider calling this Format
 ```
 
@@ -94,40 +94,40 @@ Modern Go 1.22+ idioms available.
 
 ### High Impact, Low Effort
 
-| # | Task | Effort | Impact | 
-|---|------|--------|--------|
-| 1 | Commit current changes | 2 min | Required |
-| 2 | Fix duplicate tests in cmdguard | 5 min | Maintainability |
-| 3 | Add modern loop idioms | 3 min | Code quality |
+| #   | Task                            | Effort | Impact          |
+| --- | ------------------------------- | ------ | --------------- |
+| 1   | Commit current changes          | 2 min  | Required        |
+| 2   | Fix duplicate tests in cmdguard | 5 min  | Maintainability |
+| 3   | Add modern loop idioms          | 3 min  | Code quality    |
 
 ### Medium Impact, Medium Effort
 
-| # | Task | Effort | Impact |
-|---|------|--------|--------|
-| 4 | Add format registry with plugins | 30 min | Extensibility |
-| 5 | Add streaming renderer interface | 20 min | Performance |
-| 6 | Add theme/styling system | 25 min | UX |
+| #   | Task                             | Effort | Impact        |
+| --- | -------------------------------- | ------ | ------------- |
+| 4   | Add format registry with plugins | 30 min | Extensibility |
+| 5   | Add streaming renderer interface | 20 min | Performance   |
+| 6   | Add theme/styling system         | 25 min | UX            |
 
 ### High Impact, High Effort
 
-| # | Task | Effort | Impact |
-|---|------|--------|--------|
-| 7 | Refactor Format to avoid stutter | 45 min | API quality |
-| 8 | Add generics-based builder | 60 min | Type safety |
-| 9 | Add comprehensive HTTP server example | 90 min | Demo value |
+| #   | Task                                  | Effort | Impact      |
+| --- | ------------------------------------- | ------ | ----------- |
+| 7   | Refactor Format to avoid stutter      | 45 min | API quality |
+| 8   | Add generics-based builder            | 60 min | Type safety |
+| 9   | Add comprehensive HTTP server example | 90 min | Demo value  |
 
 ---
 
 ## Untracked Files Analysis
 
-| File | Purpose | Status |
-|------|---------|--------|
-| `benchmarks_test.go` | Performance tests | ✅ Should commit |
-| `sort/adapter.go` | Sort interface adapter | ❓ Unknown purpose |
-| `table/config.go` | Table config | ❓ Partial work |
-| `table/lipgloss.go` | Styling helpers | ❓ Partial work |
-| `table/styles.go` | Style definitions | ❓ Partial work |
-| `table/table_test.go` | Table tests | ❓ Partial work |
+| File                  | Purpose                | Status             |
+| --------------------- | ---------------------- | ------------------ |
+| `benchmarks_test.go`  | Performance tests      | ✅ Should commit   |
+| `sort/adapter.go`     | Sort interface adapter | ❓ Unknown purpose |
+| `table/config.go`     | Table config           | ❓ Partial work    |
+| `table/lipgloss.go`   | Styling helpers        | ❓ Partial work    |
+| `table/styles.go`     | Style definitions      | ❓ Partial work    |
+| `table/table_test.go` | Table tests            | ❓ Partial work    |
 
 **Note:** `table/` files appear incomplete. The `table/` package already exists with `table.go` - these new files may conflict.
 
@@ -173,12 +173,12 @@ Modern Go 1.22+ idioms available.
 
 ## Files Modified This Session
 
-| File | Lines Changed | Purpose |
-|------|---------------|---------|
-| `examples/basic/main.go` | +50 | All 10 format examples |
-| `format.go` | +9 | Backward compat aliases, exhaustive switches |
-| `d2.go` | +191 | Full shape/node/edge support |
-| `*_test.go` (4 files) | +28 | t.Parallel() additions |
-| `benchmarks_test.go` | NEW | 5 benchmarks |
+| File                     | Lines Changed | Purpose                                      |
+| ------------------------ | ------------- | -------------------------------------------- |
+| `examples/basic/main.go` | +50           | All 10 format examples                       |
+| `format.go`              | +9            | Backward compat aliases, exhaustive switches |
+| `d2.go`                  | +191          | Full shape/node/edge support                 |
+| `*_test.go` (4 files)    | +28           | t.Parallel() additions                       |
+| `benchmarks_test.go`     | NEW           | 5 benchmarks                                 |
 
 **Total:** ~278 lines of meaningful changes
