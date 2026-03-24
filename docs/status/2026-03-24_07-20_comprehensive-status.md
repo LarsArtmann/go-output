@@ -16,46 +16,46 @@ The `go-output` library provides consistent output formatting for CLI applicatio
 
 ### ✅ FULLY COMPLETED (This Session)
 
-| Task | Status | Notes |
-|------|--------|-------|
+| Task                                | Status  | Notes                                                                                        |
+| ----------------------------------- | ------- | -------------------------------------------------------------------------------------------- |
 | Fix failing tests in format_test.go | ✅ DONE | `IsTableFormat` and `IsGraphFormat` had incorrect implementation (all formats returned true) |
-| Verify all tests pass | ✅ DONE | All 5 packages pass |
-| Verify build succeeds | ✅ DONE | Build successful |
+| Verify all tests pass               | ✅ DONE | All 5 packages pass                                                                          |
+| Verify build succeeds               | ✅ DONE | Build successful                                                                             |
 
 ### ✅ FULLY COMPLETED (Previous Sessions)
 
-| Task | Status | Notes |
-|------|--------|-------|
-| Multi-format output implementation | ✅ DONE | 10 formats implemented |
-| Format registry for plugin system | ✅ DONE | `registry.go` with thread-safe registration |
-| Streaming renderer interface | ✅ DONE | `streaming.go` with `StreamingHTMLRenderer` |
-| Format type stutter warning fix | ✅ DONE | Added `//nolint:revive` comment |
-| Modern loop idioms (Go 1.22+) | ✅ DONE | Benchmarks updated |
-| Parallel tests in cmdguard | ✅ DONE | Added `t.Parallel()` |
+| Task                               | Status  | Notes                                       |
+| ---------------------------------- | ------- | ------------------------------------------- |
+| Multi-format output implementation | ✅ DONE | 10 formats implemented                      |
+| Format registry for plugin system  | ✅ DONE | `registry.go` with thread-safe registration |
+| Streaming renderer interface       | ✅ DONE | `streaming.go` with `StreamingHTMLRenderer` |
+| Format type stutter warning fix    | ✅ DONE | Added `//nolint:revive` comment             |
+| Modern loop idioms (Go 1.22+)      | ✅ DONE | Benchmarks updated                          |
+| Parallel tests in cmdguard         | ✅ DONE | Added `t.Parallel()`                        |
 
 ### 🔴 PARTIALLY DONE / NEEDS FIXING
 
-| Task | Priority | Notes |
-|------|----------|-------|
-| `table/styles.go:111` - `AlignRight` undefined | HIGH | Compilation issue in table package |
-| LSP diagnostics showing "parallel golangci-lint is running" | LOW | Likely stale diagnostics, not real issue |
-| `revive` linter warning for `Format` type stutter | LOW | Comment added but gopls still shows warning |
+| Task                                                        | Priority | Notes                                       |
+| ----------------------------------------------------------- | -------- | ------------------------------------------- |
+| `table/styles.go:111` - `AlignRight` undefined              | HIGH     | Compilation issue in table package          |
+| LSP diagnostics showing "parallel golangci-lint is running" | LOW      | Likely stale diagnostics, not real issue    |
+| `revive` linter warning for `Format` type stutter           | LOW      | Comment added but gopls still shows warning |
 
 ### ⏳ NOT STARTED
 
-| Task | Priority | Notes |
-|------|----------|-------|
-| Git commit for format.go fix | HIGH | Needs commit after status report |
-| Review and fix `table/styles.go` | HIGH | `AlignRight` undefined error |
-| Add `t.Parallel()` to dot_test.go `TestDOTFromTree` | MEDIUM | paralleltest warning |
-| Fix exhaustruct warnings in dot_test.go | LOW | Missing `Shape`, `Style`, `Metadata` fields |
+| Task                                                | Priority | Notes                                       |
+| --------------------------------------------------- | -------- | ------------------------------------------- |
+| Git commit for format.go fix                        | HIGH     | Needs commit after status report            |
+| Review and fix `table/styles.go`                    | HIGH     | `AlignRight` undefined error                |
+| Add `t.Parallel()` to dot_test.go `TestDOTFromTree` | MEDIUM   | paralleltest warning                        |
+| Fix exhaustruct warnings in dot_test.go             | LOW      | Missing `Shape`, `Style`, `Metadata` fields |
 
 ### 🔧 TOTALLY FUCKED UP (Critical Issues)
 
-| Issue | Impact | Fix Required |
-|-------|--------|-------------|
-| `table/styles.go:111` - `AlignRight` undefined | **BLOCKING** | Add `AlignRight` constant or import |
-| Tests were broken on first run | **HIGH** | Fixed `IsTableFormat`/`IsGraphFormat` - was returning `true` for ALL formats |
+| Issue                                          | Impact       | Fix Required                                                                 |
+| ---------------------------------------------- | ------------ | ---------------------------------------------------------------------------- |
+| `table/styles.go:111` - `AlignRight` undefined | **BLOCKING** | Add `AlignRight` constant or import                                          |
+| Tests were broken on first run                 | **HIGH**     | Fixed `IsTableFormat`/`IsGraphFormat` - was returning `true` for ALL formats |
 
 ---
 
@@ -74,14 +74,14 @@ ok  	github.com/larsartmann/go-output/table  ✅ PASS
 
 ## Project Statistics
 
-| Metric | Value |
-|--------|-------|
-| Go Files | 28 |
-| Test Files | 16 |
-| Packages | 5 |
-| Supported Formats | 10 |
-| Lines of Code | ~3,500 |
-| Last Commit | e111db6 (2026-03-24) |
+| Metric            | Value                |
+| ----------------- | -------------------- |
+| Go Files          | 28                   |
+| Test Files        | 16                   |
+| Packages          | 5                    |
+| Supported Formats | 10                   |
+| Lines of Code     | ~3,500               |
+| Last Commit       | e111db6 (2026-03-24) |
 
 ---
 
@@ -173,21 +173,25 @@ go-output/
 ### Why does the `revive` linter still show the `Format`/`OutputFormat` stutter warning even after adding `//nolint:revive`?
 
 **Context:**
+
 - Added `//nolint:revive // Type is Format, OutputFormat is the backward-compatible alias` to line 10 of format.go
 - The warning persists in LSP diagnostics
 - The `//nolint:exhaustive` comments work fine
 
 **What I've tried:**
+
 - Verified the comment is correctly formatted and positioned
 - Checked that `golangci-lint` config allows nolint directives
 - Ran `go vet` and `golangci-lint` directly (not just LSP)
 
 **What I suspect:**
+
 - gopls might be using a cached version of the file
 - The LSP diagnostic might be coming from a different linter (not revive)
 - The `OutputFormat = Format` type alias might trigger a different check
 
 **What I need:**
+
 - A way to definitively suppress this warning
 - OR acceptance that the warning is acceptable for backward compatibility
 - OR a better solution to avoid the stutter without breaking existing code
@@ -218,30 +222,30 @@ go-output/
 
 ## Dependencies
 
-| Dependency | Version | Purpose |
-|------------|---------|---------|
-| Go | 1.26+ | Language requirement |
-| standard library | - | No external dependencies |
+| Dependency       | Version | Purpose                  |
+| ---------------- | ------- | ------------------------ |
+| Go               | 1.26+   | Language requirement     |
+| standard library | -       | No external dependencies |
 
 ---
 
 ## CI/CD Status
 
-| Check | Status |
-|-------|--------|
-| Tests | ✅ PASS |
-| Build | ✅ PASS |
-| Lint | ⚠️ WARNINGS |
+| Check | Status      |
+| ----- | ----------- |
+| Tests | ✅ PASS     |
+| Build | ✅ PASS     |
+| Lint  | ⚠️ WARNINGS |
 
 ---
 
 ## Risks & Blockers
 
-| Risk | Impact | Mitigation |
-|------|--------|------------|
-| `AlignRight` undefined blocks table package | HIGH | Need to add/import AlignRight |
-| Disk space at 97% | MEDIUM | May cause build/test failures |
-| Stale LSP diagnostics | LOW | Restart gopls if needed |
+| Risk                                        | Impact | Mitigation                    |
+| ------------------------------------------- | ------ | ----------------------------- |
+| `AlignRight` undefined blocks table package | HIGH   | Need to add/import AlignRight |
+| Disk space at 97%                           | MEDIUM | May cause build/test failures |
+| Stale LSP diagnostics                       | LOW    | Restart gopls if needed       |
 
 ---
 
