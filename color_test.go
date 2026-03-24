@@ -1,8 +1,79 @@
 package output
 
 import (
+	"os"
 	"testing"
 )
+
+func TestIsNoColor(t *testing.T) {
+	t.Parallel()
+
+	orig := os.Getenv("NO_COLOR")
+	defer os.Setenv("NO_COLOR", orig)
+
+	os.Unsetenv("NO_COLOR")
+	if isNoColor() {
+		t.Error("isNoColor() should return false when NO_COLOR is not set")
+	}
+
+	os.Setenv("NO_COLOR", "1")
+	if !isNoColor() {
+		t.Error("isNoColor() should return true when NO_COLOR is set")
+	}
+}
+
+func TestIsCI(t *testing.T) {
+	t.Parallel()
+
+	ciVars := []string{"CI", "GITHUB_ACTIONS", "GITLAB_CI", "JENKINS_URL", "BUILDKITE"}
+	origVals := make(map[string]string)
+	for _, v := range ciVars {
+		origVals[v] = os.Getenv(v)
+		os.Unsetenv(v)
+	}
+	defer func() {
+		for _, v := range ciVars {
+			os.Setenv(v, origVals[v])
+		}
+	}()
+
+	if isCI() {
+		t.Error("isCI() should return false when no CI env vars are set")
+	}
+
+	os.Setenv("CI", "true")
+	if !isCI() {
+		t.Error("isCI() should return true when CI is set")
+	}
+
+	os.Unsetenv("CI")
+	os.Setenv("GITHUB_ACTIONS", "true")
+	if !isCI() {
+		t.Error("isCI() should return true when GITHUB_ACTIONS is set")
+	}
+}
+
+func TestIsTerminalByEnv(t *testing.T) {
+	t.Parallel()
+
+	orig := os.Getenv("FORCE_COLOR")
+	defer os.Setenv("FORCE_COLOR", orig)
+
+	os.Unsetenv("FORCE_COLOR")
+	if isTerminalByEnv("FORCE_COLOR") {
+		t.Error("isTerminalByEnv() should return false when env is not set")
+	}
+
+	os.Setenv("FORCE_COLOR", "0")
+	if isTerminalByEnv("FORCE_COLOR") {
+		t.Error("isTerminalByEnv() should return false when env is '0'")
+	}
+
+	os.Setenv("FORCE_COLOR", "1")
+	if !isTerminalByEnv("FORCE_COLOR") {
+		t.Error("isTerminalByEnv() should return true when env is '1'")
+	}
+}
 
 func TestParseColorMode(t *testing.T) {
 	tests := []struct {
