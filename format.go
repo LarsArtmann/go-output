@@ -73,6 +73,8 @@ func (f Format) IsTableFormat() bool {
 	switch f {
 	case FormatTable, FormatJSON, FormatCSV, FormatMarkdown, FormatYAML, FormatD2:
 		return true
+	case FormatHTML, FormatTree, FormatMermaid, FormatDOT:
+		return false
 	default:
 		return false
 	}
@@ -88,6 +90,8 @@ func (f Format) IsGraphFormat() bool {
 	switch f {
 	case FormatD2, FormatMermaid, FormatDOT:
 		return true
+	case FormatTable, FormatJSON, FormatCSV, FormatMarkdown, FormatYAML, FormatHTML, FormatTree:
+		return false
 	default:
 		return false
 	}

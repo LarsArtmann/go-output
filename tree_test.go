@@ -87,11 +87,11 @@ func TestNewTreeNode(t *testing.T) {
 	t.Parallel()
 	node := NewTreeNode("id1", "Label 1")
 
-	if node.ID != "id1" {
-		t.Errorf("Expected ID 'id1', got '%s'", node.ID)
+	if node.ID.Get() != "id1" {
+		t.Errorf("Expected ID 'id1', got '%s'", node.ID.Get())
 	}
-	if node.Label != "Label 1" {
-		t.Errorf("Expected Label 'Label 1', got '%s'", node.Label)
+	if node.Label.Get() != "Label 1" {
+		t.Errorf("Expected Label 'Label 1', got '%s'", node.Label.Get())
 	}
 	if len(node.Children) != 0 {
 		t.Error("New node should have no children")
