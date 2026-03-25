@@ -1,9 +1,13 @@
 package output
 
 import (
+	"errors"
 	"fmt"
 	"sync"
 )
+
+// ErrFormatAlreadyRegistered is returned when a format is already registered.
+var ErrFormatAlreadyRegistered = errors.New("format already registered")
 
 // RendererFactory is a function that creates a Renderer instance.
 type RendererFactory func() Renderer
@@ -19,7 +23,7 @@ func Register(format Format, factory RendererFactory) error {
 	defer regMu.Unlock()
 
 	if _, exists := registry[format]; exists {
-		return fmt.Errorf("format %q is already registered", format)
+		return fmt.Errorf("format %q is already registered: %w", format, ErrFormatAlreadyRegistered)
 	}
 	registry[format] = factory
 	return nil

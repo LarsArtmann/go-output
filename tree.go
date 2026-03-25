@@ -46,7 +46,7 @@ func (r *ASCIITreeRenderer) renderNode(node *TreeNode, prefix string, isLast boo
 	// Write this node
 	r.builder.WriteString(prefix)
 	r.builder.WriteString(connector)
-	r.builder.WriteString(node.Label)
+	r.builder.WriteString(node.Label.Get())
 
 	// Add metadata summary if present
 	if len(node.Metadata) > 0 {

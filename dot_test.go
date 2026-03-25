@@ -10,11 +10,11 @@ func TestDOTRenderer(t *testing.T) {
 	t.Parallel()
 	renderer := NewDOTRenderer()
 	renderer.SetNodes([]GraphNode{
-		{ID: "A", Label: "Node A"},
-		{ID: "B", Label: "Node B"},
+		{ID: NewBrandedID[GraphNodeIDBrand]("A"), Label: NewBrandedID[GraphNodeLabelBrand]("Node A")},
+		{ID: NewBrandedID[GraphNodeIDBrand]("B"), Label: NewBrandedID[GraphNodeLabelBrand]("Node B")},
 	})
 	renderer.SetEdges([]GraphEdge{
-		{From: "A", To: "B"},
+		{From: NewBrandedID[GraphNodeIDBrand]("A"), To: NewBrandedID[GraphNodeIDBrand]("B")},
 	})
 
 	output := renderer.Render()
@@ -41,11 +41,11 @@ func TestDOTUndirectedRenderer(t *testing.T) {
 	t.Parallel()
 	renderer := NewUndirectedDOTRenderer()
 	renderer.SetNodes([]GraphNode{
-		{ID: "A", Label: "Node A"},
-		{ID: "B", Label: "Node B"},
+		{ID: NewBrandedID[GraphNodeIDBrand]("A"), Label: NewBrandedID[GraphNodeLabelBrand]("Node A")},
+		{ID: NewBrandedID[GraphNodeIDBrand]("B"), Label: NewBrandedID[GraphNodeLabelBrand]("Node B")},
 	})
 	renderer.SetEdges([]GraphEdge{
-		{From: "A", To: "B"},
+		{From: NewBrandedID[GraphNodeIDBrand]("A"), To: NewBrandedID[GraphNodeIDBrand]("B")},
 	})
 
 	output := renderer.Render()
@@ -63,8 +63,8 @@ func TestDOTRendererWithStyles(t *testing.T) {
 	renderer := NewDOTRenderer()
 	renderer.SetNodes([]GraphNode{
 		{
-			ID:    "A",
-			Label: "Styled Node",
+			ID:    NewBrandedID[GraphNodeIDBrand]("A"),
+			Label: NewBrandedID[GraphNodeLabelBrand]("Styled Node"),
 			Shape: ShapeEllipse,
 			Style: GraphStyle{
 				FillColor:   "#ff0000",
@@ -88,7 +88,7 @@ func TestDOTRendererWithEdgeLabel(t *testing.T) {
 	t.Parallel()
 	renderer := NewDOTRenderer()
 	renderer.SetEdges([]GraphEdge{
-		{From: "A", To: "B", Label: "uses"},
+		{From: NewBrandedID[GraphNodeIDBrand]("A"), To: NewBrandedID[GraphNodeIDBrand]("B"), Label: NewBrandedID[GraphNodeLabelBrand]("uses")},
 	})
 
 	output := renderer.Render()
@@ -155,7 +155,7 @@ func TestDOTSetGraphID(t *testing.T) {
 	t.Parallel()
 	renderer := NewDOTRenderer()
 	renderer.SetGraphID("MyGraph")
-	renderer.SetNodes([]GraphNode{{ID: "A", Label: "A"}})
+	renderer.SetNodes([]GraphNode{{ID: NewBrandedID[GraphNodeIDBrand]("A"), Label: NewBrandedID[GraphNodeLabelBrand]("A")}})
 
 	output := renderer.Render()
 

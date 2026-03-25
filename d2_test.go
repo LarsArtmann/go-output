@@ -66,7 +66,7 @@ func TestD2Diagram_AddNode(t *testing.T) {
 	t.Run("AddNode", func(t *testing.T) {
 		t.Parallel()
 		d := NewD2Diagram()
-		result := d.AddNode(D2Node{ID: "server", Label: "Web Server"})
+		result := d.AddNode(D2Node{ID: NewBrandedID[D2NodeIDBrand]("server"), Label: NewBrandedID[D2NodeLabelBrand]("Web Server")})
 		if result != d {
 			t.Error("AddNode should return diagram for chaining")
 		}
@@ -113,7 +113,7 @@ func TestD2Diagram_AddEdge(t *testing.T) {
 		d := NewD2Diagram()
 		d.AddNodeSimple("a", "Node A")
 		d.AddNodeSimple("b", "Node B")
-		result := d.AddEdge(D2Edge{From: "a", To: "b"})
+		result := d.AddEdge(D2Edge{From: NewBrandedID[D2NodeIDBrand]("a"), To: NewBrandedID[D2NodeIDBrand]("b")})
 		if result != d {
 			t.Error("AddEdge should return diagram for chaining")
 		}
@@ -203,8 +203,8 @@ func TestD2NodeWithStyle(t *testing.T) {
 	t.Parallel()
 	d := NewD2Diagram()
 	d.AddNode(D2Node{
-		ID:    "styled",
-		Label: "Styled Node",
+		ID:    NewBrandedID[D2NodeIDBrand]("styled"),
+		Label: NewBrandedID[D2NodeLabelBrand]("Styled Node"),
 		Style: D2NodeStyle{
 			Fill:        "blue",
 			Stroke:      "black",
@@ -225,9 +225,9 @@ func TestD2EdgeWithArrows(t *testing.T) {
 	t.Parallel()
 	d := NewD2Diagram()
 	d.AddEdge(D2Edge{
-		From:        "a",
-		To:          "b",
-		Label:       "test",
+		From:        NewBrandedID[D2NodeIDBrand]("a"),
+		To:          NewBrandedID[D2NodeIDBrand]("b"),
+		Label:       NewBrandedID[D2NodeLabelBrand]("test"),
 		SourceArrow: D2ArrowDiamond,
 		TargetArrow: D2ArrowTriangle,
 	})
@@ -244,8 +244,8 @@ func TestD2NodeNested(t *testing.T) {
 	t.Parallel()
 	d := NewD2Diagram()
 	d.AddNode(D2Node{
-		ID:     "parent",
-		Label:  "Parent",
+		ID:     NewBrandedID[D2NodeIDBrand]("parent"),
+		Label:  NewBrandedID[D2NodeLabelBrand]("Parent"),
 		Nested: "child: inner\n",
 	})
 	got := d.Render()

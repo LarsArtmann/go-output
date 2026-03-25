@@ -19,8 +19,8 @@ type D2Column struct {
 
 // D2Node represents a node in a D2 diagram.
 type D2Node struct {
-	ID     string
-	Label  string
+	ID     D2NodeID
+	Label  D2NodeLabel
 	Shape  D2NodeShape
 	Style  D2NodeStyle
 	Nested string
@@ -53,9 +53,9 @@ type D2NodeStyle struct {
 
 // D2Edge represents an edge in a D2 diagram.
 type D2Edge struct {
-	From        string
-	To          string
-	Label       string
+	From        D2NodeID
+	To          D2NodeID
+	Label       D2NodeLabel
 	Style       D2EdgeStyle
 	SourceArrow D2ArrowType
 	TargetArrow D2ArrowType
@@ -113,12 +113,12 @@ func (d *D2Diagram) AddNode(node D2Node) *D2Diagram {
 
 // AddNodeSimple adds a simple node with just ID and label.
 func (d *D2Diagram) AddNodeSimple(id, label string) *D2Diagram {
-	return d.AddNode(D2Node{ID: id, Label: label, Shape: D2ShapeRectangle})
+	return d.AddNode(D2Node{ID: NewBrandedID[D2NodeIDBrand](id), Label: NewBrandedID[D2NodeLabelBrand](label), Shape: D2ShapeRectangle})
 }
 
 // AddNodeWithShape adds a node with a specific shape.
 func (d *D2Diagram) AddNodeWithShape(id, label string, shape D2NodeShape) *D2Diagram {
-	return d.AddNode(D2Node{ID: id, Label: label, Shape: shape})
+	return d.AddNode(D2Node{ID: NewBrandedID[D2NodeIDBrand](id), Label: NewBrandedID[D2NodeLabelBrand](label), Shape: shape})
 }
 
 // AddEdge adds an edge between two nodes.
@@ -129,12 +129,12 @@ func (d *D2Diagram) AddEdge(edge D2Edge) *D2Diagram {
 
 // AddEdgeSimple adds a simple edge between two nodes.
 func (d *D2Diagram) AddEdgeSimple(from, to string) *D2Diagram {
-	return d.AddEdge(D2Edge{From: from, To: to})
+	return d.AddEdge(D2Edge{From: NewBrandedID[D2NodeIDBrand](from), To: NewBrandedID[D2NodeIDBrand](to)})
 }
 
 // AddLabeledEdge adds an edge with a label.
 func (d *D2Diagram) AddLabeledEdge(from, to, label string) *D2Diagram {
-	return d.AddEdge(D2Edge{From: from, To: to, Label: label})
+	return d.AddEdge(D2Edge{From: NewBrandedID[D2NodeIDBrand](from), To: NewBrandedID[D2NodeIDBrand](to), Label: NewBrandedID[D2NodeLabelBrand](label)})
 }
 
 // Render returns the D2 diagram string.
@@ -168,11 +168,11 @@ func (d *D2Diagram) Render() string {
 
 func (d *D2Diagram) renderNode(b *strings.Builder, node D2Node) {
 	if node.Nested != "" {
-		fmt.Fprintf(
+		_, _ = fmt.Fprintf(
 			b,
 			"%s.%s%s %s {\n",
-			node.ID,
-			node.Label,
+			node.ID.Get(),
+			node.Label.Get(),
 			d.renderShapeAttr(node.Shape),
 			d.renderStyle(node.Style),
 		)
@@ -183,7 +183,7 @@ func (d *D2Diagram) renderNode(b *strings.Builder, node D2Node) {
 
 	shapeAttr := d.renderShapeAttr(node.Shape)
 	styleStr := d.renderStyle(node.Style)
-	fmt.Fprintf(b, "%s%s%s %s\n", node.ID, shapeAttr, node.Label, styleStr)
+	_, _ = fmt.Fprintf(b, "%s%s%s %s\n", node.ID.Get(), shapeAttr, node.Label.Get(), styleStr)
 }
 
 func (d *D2Diagram) renderShapeAttr(shape D2NodeShape) string {
@@ -217,18 +217,18 @@ func (d *D2Diagram) renderEdge(b *strings.Builder, edge D2Edge) {
 	sourceArrow := d.renderArrow(edge.SourceArrow)
 	targetArrow := d.renderArrow(edge.TargetArrow)
 
-	if edge.Label != "" {
-		fmt.Fprintf(
+	if !edge.Label.IsEmpty() {
+		_, _ = fmt.Fprintf(
 			b,
 			"%s %s-> %s: %s %s\n",
-			edge.From,
+			edge.From.Get(),
 			sourceArrow,
-			edge.To,
-			edge.Label,
+			edge.To.Get(),
+			edge.Label.Get(),
 			targetArrow,
 		)
 	} else {
-		fmt.Fprintf(b, "%s %s-> %s %s\n", edge.From, sourceArrow, edge.To, targetArrow)
+		_, _ = fmt.Fprintf(b, "%s %s-> %s %s\n", edge.From.Get(), sourceArrow, edge.To.Get(), targetArrow)
 	}
 }
 

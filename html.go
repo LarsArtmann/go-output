@@ -156,7 +156,7 @@ func (r *HTMLTreeRenderer) Render() string {
 
 func (r *HTMLTreeRenderer) renderNode(b *strings.Builder, node *TreeNode) {
 	b.WriteString("<li>")
-	b.WriteString(html.EscapeString(node.Label))
+	b.WriteString(html.EscapeString(node.Label.Get()))
 
 	if len(node.Children) > 0 {
 		b.WriteString("\n<ul>\n")

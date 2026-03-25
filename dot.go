@@ -95,11 +95,11 @@ func (r *DOTRenderer) Render() string {
 
 func (r *DOTRenderer) writeNode(b *strings.Builder, node GraphNode) {
 	b.WriteString("  \"")
-	b.WriteString(r.escapeDOT(node.ID))
+	b.WriteString(r.escapeDOT(node.ID.Get()))
 	b.WriteString("\" [\n")
 
 	b.WriteString("    label=\"")
-	b.WriteString(r.escapeDOT(node.Label))
+	b.WriteString(r.escapeDOT(node.Label.Get()))
 	b.WriteString("\"\n")
 
 	if node.Shape != "" {
@@ -130,17 +130,17 @@ func (r *DOTRenderer) writeEdge(b *strings.Builder, edge GraphEdge) {
 	}
 
 	b.WriteString("  \"")
-	b.WriteString(r.escapeDOT(edge.From))
+	b.WriteString(r.escapeDOT(edge.From.Get()))
 	b.WriteString("\" ")
 	b.WriteString(op)
 	b.WriteString(" \"")
-	b.WriteString(r.escapeDOT(edge.To))
+	b.WriteString(r.escapeDOT(edge.To.Get()))
 	b.WriteString("\"")
 
 	attrs := make([]string, 0)
 
-	if edge.Label != "" {
-		attrs = append(attrs, fmt.Sprintf("label=\"%s\"", r.escapeDOT(edge.Label)))
+	if !edge.Label.IsEmpty() {
+		attrs = append(attrs, fmt.Sprintf("label=\"%s\"", r.escapeDOT(edge.Label.Get())))
 	}
 
 	if edge.Style.Color != "" {
@@ -185,14 +185,17 @@ func DOTFromTableData(data *TableData) *DOTRenderer {
 		}
 		label := strings.Join(labelParts, "\\n")
 		renderer.nodes = append(renderer.nodes, GraphNode{
-			ID:    fmt.Sprintf("row%d", i),
-			Label: label,
+			ID:    NewBrandedID[GraphNodeIDBrand](fmt.Sprintf("row%d", i)),
+			Label: NewBrandedID[GraphNodeLabelBrand](label),
 		})
 	}
 
 	// Create edges between consecutive rows using shared helper
 	for _, edge := range data.CreateRowEdges() {
-		renderer.edges = append(renderer.edges, GraphEdge{From: edge.From, To: edge.To})
+		renderer.edges = append(renderer.edges, GraphEdge{
+			From: NewBrandedID[GraphNodeIDBrand](edge.From),
+			To:   NewBrandedID[GraphNodeIDBrand](edge.To),
+		})
 	}
 
 	return renderer
@@ -205,25 +208,28 @@ func DOTFromTree(root *TreeNode) *DOTRenderer {
 		return renderer
 	}
 
-	renderer.addTreeNodes(root, "")
+	renderer.addTreeNodes(root, TreeNodeID{})
 	return renderer
 }
 
-func (r *DOTRenderer) addTreeNodes(node *TreeNode, parentID string) {
+func (r *DOTRenderer) addTreeNodes(node *TreeNode, parentID TreeNodeID) {
 	nodeID := node.ID
-	if nodeID == "" {
-		nodeID = strings.ReplaceAll(node.Label, " ", "_")
+	if nodeID.IsEmpty() {
+		nodeID = NewBrandedID[TreeNodeIDBrand](strings.ReplaceAll(node.Label.Get(), " ", "_"))
 	}
 
+	graphNodeID := NewBrandedID[GraphNodeIDBrand](nodeID.Get())
+	graphNodeLabel := NewBrandedID[GraphNodeLabelBrand](node.Label.Get())
+
 	r.nodes = append(r.nodes, GraphNode{
-		ID:    nodeID,
-		Label: node.Label,
+		ID:    graphNodeID,
+		Label: graphNodeLabel,
 	})
 
-	if parentID != "" {
+	if !parentID.IsEmpty() {
 		r.edges = append(r.edges, GraphEdge{
-			From: parentID,
-			To:   nodeID,
+			From: NewBrandedID[GraphNodeIDBrand](parentID.Get()),
+			To:   graphNodeID,
 		})
 	}
 

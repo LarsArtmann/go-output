@@ -207,8 +207,8 @@ type TreeOutputRenderer interface {
 
 // TreeNode represents a node in a tree structure.
 type TreeNode struct {
-	ID       string
-	Label    string
+	ID       TreeNodeID
+	Label    TreeNodeLabel
 	Children []*TreeNode
 	Metadata map[string]string
 	parent   *TreeNode
@@ -217,8 +217,8 @@ type TreeNode struct {
 // NewTreeNode creates a new TreeNode with the given ID and label.
 func NewTreeNode(id, label string) *TreeNode {
 	return &TreeNode{
-		ID:       id,
-		Label:    label,
+		ID:       NewBrandedID[TreeNodeIDBrand](id),
+		Label:    NewBrandedID[TreeNodeLabelBrand](label),
 		Children: make([]*TreeNode, 0),
 		Metadata: make(map[string]string),
 	}
@@ -257,8 +257,8 @@ type GraphRenderer interface {
 
 // GraphNode represents a node in a graph.
 type GraphNode struct {
-	ID       string
-	Label    string
+	ID       GraphNodeID
+	Label    GraphNodeLabel
 	Shape    GraphShape
 	Style    GraphStyle
 	Metadata map[string]string
@@ -267,8 +267,8 @@ type GraphNode struct {
 // NewGraphNode creates a new GraphNode.
 func NewGraphNode(id, label string) *GraphNode {
 	return &GraphNode{
-		ID:       id,
-		Label:    label,
+		ID:       NewBrandedID[GraphNodeIDBrand](id),
+		Label:    NewBrandedID[GraphNodeLabelBrand](label),
 		Shape:    ShapeBox,
 		Style:    GraphStyle{},
 		Metadata: make(map[string]string),
@@ -337,17 +337,17 @@ type GraphStyle struct {
 
 // GraphEdge represents an edge between two nodes.
 type GraphEdge struct {
-	From  string
-	To    string
-	Label string
+	From  GraphNodeID
+	To    GraphNodeID
+	Label GraphNodeLabel
 	Style EdgeStyle
 }
 
 // NewGraphEdge creates a new GraphEdge.
 func NewGraphEdge(from, to string) *GraphEdge {
 	return &GraphEdge{
-		From:  from,
-		To:    to,
+		From:  NewBrandedID[GraphNodeIDBrand](from),
+		To:    NewBrandedID[GraphNodeIDBrand](to),
 		Style: EdgeStyle{},
 	}
 }

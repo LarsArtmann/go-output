@@ -39,17 +39,17 @@ func (r *MermaidRenderer) Render() string {
 	// Write nodes
 	for _, node := range r.nodes {
 		prefix, suffix := r.getMermaidShape(node.Shape)
-		label := r.escapeMermaidLabel(node.Label)
-		fmt.Fprintf(&b, "    %s%s%s%s\n", node.ID, prefix, label, suffix)
+		label := r.escapeMermaidLabel(node.Label.Get())
+		_, _ = fmt.Fprintf(&b, "    %s%s%s%s\n", node.ID.Get(), prefix, label, suffix)
 	}
 
 	// Write edges
 	for _, edge := range r.edges {
 		label := ""
-		if edge.Label != "" {
-			label = fmt.Sprintf("|%s|", r.escapeMermaidLabel(edge.Label))
+		if !edge.Label.IsEmpty() {
+			label = fmt.Sprintf("|%s|", r.escapeMermaidLabel(edge.Label.Get()))
 		}
-		fmt.Fprintf(&b, "    %s -->%s %s\n", edge.From, label, edge.To)
+		_, _ = fmt.Fprintf(&b, "    %s -->%s %s\n", edge.From.Get(), label, edge.To.Get())
 	}
 
 	// Write styling
@@ -113,15 +113,18 @@ func MermaidFlowchartRenderer(data *TableData) *MermaidRenderer {
 		}
 		label := strings.Join(labelParts, "<br>")
 		renderer.nodes = append(renderer.nodes, GraphNode{
-			ID:    fmt.Sprintf("row%d", i),
-			Label: label,
+			ID:    NewBrandedID[GraphNodeIDBrand](fmt.Sprintf("row%d", i)),
+			Label: NewBrandedID[GraphNodeLabelBrand](label),
 			Shape: ShapeBox,
 		})
 	}
 
 	// Create edges between consecutive rows using shared helper
 	for _, edge := range data.CreateRowEdges() {
-		renderer.edges = append(renderer.edges, GraphEdge{From: edge.From, To: edge.To})
+		renderer.edges = append(renderer.edges, GraphEdge{
+			From: NewBrandedID[GraphNodeIDBrand](edge.From),
+			To:   NewBrandedID[GraphNodeIDBrand](edge.To),
+		})
 	}
 
 	return renderer
@@ -139,21 +142,24 @@ func MermaidTreeRenderer(root *TreeNode) *MermaidRenderer {
 }
 
 func (r *MermaidRenderer) addTreeNodes(node *TreeNode, parentID string) {
-	nodeID := sanitizeMermaidID(node.ID)
+	nodeID := sanitizeMermaidID(node.ID.Get())
 	if nodeID == "" {
-		nodeID = sanitizeMermaidLabel(node.Label)
+		nodeID = sanitizeMermaidLabel(node.Label.Get())
 	}
 
+	graphNodeID := NewBrandedID[GraphNodeIDBrand](nodeID)
+	graphNodeLabel := NewBrandedID[GraphNodeLabelBrand](node.Label.Get())
+
 	r.nodes = append(r.nodes, GraphNode{
-		ID:    nodeID,
-		Label: node.Label,
+		ID:    graphNodeID,
+		Label: graphNodeLabel,
 		Shape: ShapeBox,
 	})
 
 	if parentID != "" {
 		r.edges = append(r.edges, GraphEdge{
-			From: parentID,
-			To:   nodeID,
+			From: NewBrandedID[GraphNodeIDBrand](parentID),
+			To:   graphNodeID,
 		})
 	}
 

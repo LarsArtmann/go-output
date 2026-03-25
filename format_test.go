@@ -317,10 +317,10 @@ func TestTableData(t *testing.T) {
 func TestGraphNode(t *testing.T) {
 	t.Parallel()
 	node := NewGraphNode("test-id", "Test Label")
-	if node.ID != "test-id" {
+	if node.ID.Get() != "test-id" {
 		t.Errorf("ID = %q, want %q", node.ID, "test-id")
 	}
-	if node.Label != "Test Label" {
+	if node.Label.Get() != "Test Label" {
 		t.Errorf("Label = %q, want %q", node.Label, "Test Label")
 	}
 	if node.Shape != ShapeBox {
@@ -334,10 +334,10 @@ func TestGraphNode(t *testing.T) {
 func TestGraphEdge(t *testing.T) {
 	t.Parallel()
 	edge := NewGraphEdge("from-node", "to-node")
-	if edge.From != "from-node" {
+	if edge.From.Get() != "from-node" {
 		t.Errorf("From = %q, want %q", edge.From, "from-node")
 	}
-	if edge.To != "to-node" {
+	if edge.To.Get() != "to-node" {
 		t.Errorf("To = %q, want %q", edge.To, "to-node")
 	}
 }
