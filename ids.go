@@ -52,14 +52,14 @@ func (id BrandedID[B]) Format(s fmt.State, verb rune) {
 
 // Brand types for D2 diagram elements.
 type (
-	D2NodeIDBrand     struct{}
-	D2NodeID          = BrandedID[D2NodeIDBrand]
-	D2NodeLabelBrand  struct{}
-	D2NodeLabel       = BrandedID[D2NodeLabelBrand]
-	D2EdgeFromBrand   struct{}
-	D2EdgeToBrand     struct{}
-	D2EdgeLabelBrand  struct{}
-	D2EdgeID          = BrandedID[D2EdgeFromBrand]
+	D2NodeIDBrand    struct{}
+	D2NodeID         = BrandedID[D2NodeIDBrand]
+	D2NodeLabelBrand struct{}
+	D2NodeLabel      = BrandedID[D2NodeLabelBrand]
+	D2EdgeFromBrand  struct{}
+	D2EdgeToBrand    struct{}
+	D2EdgeLabelBrand struct{}
+	D2EdgeID         = BrandedID[D2EdgeFromBrand]
 )
 
 // Brand types for DOT/Graphviz diagram elements.

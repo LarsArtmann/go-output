@@ -9,14 +9,13 @@ func TestIsNoColor(t *testing.T) {
 	t.Parallel()
 
 	orig := os.Getenv("NO_COLOR")
-	defer os.Setenv("NO_COLOR", orig)
-
-	os.Unsetenv("NO_COLOR")
+	defer func() { _ = os.Setenv("NO_COLOR", orig) }() // nolint:errcheck
+	_ = os.Unsetenv("NO_COLOR")                        // nolint:errcheck
 	if isNoColor() {
 		t.Error("isNoColor() should return false when NO_COLOR is not set")
 	}
 
-	os.Setenv("NO_COLOR", "1")
+	_ = os.Setenv("NO_COLOR", "1") // nolint:errcheck
 	if !isNoColor() {
 		t.Error("isNoColor() should return true when NO_COLOR is set")
 	}
@@ -29,11 +28,11 @@ func TestIsCI(t *testing.T) {
 	origVals := make(map[string]string)
 	for _, v := range ciVars {
 		origVals[v] = os.Getenv(v)
-		os.Unsetenv(v)
+		_ = os.Unsetenv(v) // nolint:errcheck
 	}
 	defer func() {
 		for _, v := range ciVars {
-			os.Setenv(v, origVals[v])
+			_ = os.Setenv(v, origVals[v]) // nolint:errcheck
 		}
 	}()
 
@@ -41,13 +40,13 @@ func TestIsCI(t *testing.T) {
 		t.Error("isCI() should return false when no CI env vars are set")
 	}
 
-	os.Setenv("CI", "true")
+	_ = os.Setenv("CI", "true") // nolint:errcheck
 	if !isCI() {
 		t.Error("isCI() should return true when CI is set")
 	}
 
-	os.Unsetenv("CI")
-	os.Setenv("GITHUB_ACTIONS", "true")
+	_ = os.Unsetenv("CI")                   // nolint:errcheck
+	_ = os.Setenv("GITHUB_ACTIONS", "true") // nolint:errcheck
 	if !isCI() {
 		t.Error("isCI() should return true when GITHUB_ACTIONS is set")
 	}
@@ -57,19 +56,18 @@ func TestIsTerminalByEnv(t *testing.T) {
 	t.Parallel()
 
 	orig := os.Getenv("FORCE_COLOR")
-	defer os.Setenv("FORCE_COLOR", orig)
-
-	os.Unsetenv("FORCE_COLOR")
+	defer func() { _ = os.Setenv("FORCE_COLOR", orig) }() // nolint:errcheck
+	_ = os.Unsetenv("FORCE_COLOR")                        // nolint:errcheck
 	if isTerminalByEnv("FORCE_COLOR") {
 		t.Error("isTerminalByEnv() should return false when env is not set")
 	}
 
-	os.Setenv("FORCE_COLOR", "0")
+	_ = os.Setenv("FORCE_COLOR", "0") // nolint:errcheck
 	if isTerminalByEnv("FORCE_COLOR") {
 		t.Error("isTerminalByEnv() should return false when env is '0'")
 	}
 
-	os.Setenv("FORCE_COLOR", "1")
+	_ = os.Setenv("FORCE_COLOR", "1") // nolint:errcheck
 	if !isTerminalByEnv("FORCE_COLOR") {
 		t.Error("isTerminalByEnv() should return true when env is '1'")
 	}

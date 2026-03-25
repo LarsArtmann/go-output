@@ -66,7 +66,12 @@ func TestD2Diagram_AddNode(t *testing.T) {
 	t.Run("AddNode", func(t *testing.T) {
 		t.Parallel()
 		d := NewD2Diagram()
-		result := d.AddNode(D2Node{ID: NewBrandedID[D2NodeIDBrand]("server"), Label: NewBrandedID[D2NodeLabelBrand]("Web Server")})
+		result := d.AddNode(
+			D2Node{
+				ID:    NewBrandedID[D2NodeIDBrand]("server"),
+				Label: NewBrandedID[D2NodeLabelBrand]("Web Server"),
+			},
+		)
 		if result != d {
 			t.Error("AddNode should return diagram for chaining")
 		}
@@ -113,7 +118,9 @@ func TestD2Diagram_AddEdge(t *testing.T) {
 		d := NewD2Diagram()
 		d.AddNodeSimple("a", "Node A")
 		d.AddNodeSimple("b", "Node B")
-		result := d.AddEdge(D2Edge{From: NewBrandedID[D2NodeIDBrand]("a"), To: NewBrandedID[D2NodeIDBrand]("b")})
+		result := d.AddEdge(
+			D2Edge{From: NewBrandedID[D2NodeIDBrand]("a"), To: NewBrandedID[D2NodeIDBrand]("b")},
+		)
 		if result != d {
 			t.Error("AddEdge should return diagram for chaining")
 		}

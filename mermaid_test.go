@@ -10,9 +10,18 @@ func TestMermaidRenderer(t *testing.T) {
 	t.Parallel()
 	renderer := NewMermaidRenderer()
 	renderer.SetNodes([]GraphNode{
-		{ID: NewBrandedID[GraphNodeIDBrand]("A"), Label: NewBrandedID[GraphNodeLabelBrand]("Node A")},
-		{ID: NewBrandedID[GraphNodeIDBrand]("B"), Label: NewBrandedID[GraphNodeLabelBrand]("Node B")},
-		{ID: NewBrandedID[GraphNodeIDBrand]("C"), Label: NewBrandedID[GraphNodeLabelBrand]("Node C")},
+		{
+			ID:    NewBrandedID[GraphNodeIDBrand]("A"),
+			Label: NewBrandedID[GraphNodeLabelBrand]("Node A"),
+		},
+		{
+			ID:    NewBrandedID[GraphNodeIDBrand]("B"),
+			Label: NewBrandedID[GraphNodeLabelBrand]("Node B"),
+		},
+		{
+			ID:    NewBrandedID[GraphNodeIDBrand]("C"),
+			Label: NewBrandedID[GraphNodeLabelBrand]("Node C"),
+		},
 	})
 	renderer.SetEdges([]GraphEdge{
 		{From: NewBrandedID[GraphNodeIDBrand]("A"), To: NewBrandedID[GraphNodeIDBrand]("B")},
@@ -41,7 +50,11 @@ func TestMermaidRendererWithDiamond(t *testing.T) {
 	t.Parallel()
 	renderer := NewMermaidRenderer()
 	renderer.SetNodes([]GraphNode{
-		{ID: NewBrandedID[GraphNodeIDBrand]("decision"), Label: NewBrandedID[GraphNodeLabelBrand]("Decision"), Shape: ShapeDiamond},
+		{
+			ID:    NewBrandedID[GraphNodeIDBrand]("decision"),
+			Label: NewBrandedID[GraphNodeLabelBrand]("Decision"),
+			Shape: ShapeDiamond,
+		},
 	})
 	renderer.SetEdges([]GraphEdge{})
 
@@ -172,7 +185,15 @@ func TestMermaidRendererAllShapes(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			renderer := NewMermaidRenderer()
-			renderer.SetNodes([]GraphNode{{ID: NewBrandedID[GraphNodeIDBrand]("n"), Label: NewBrandedID[GraphNodeLabelBrand]("Test"), Shape: tt.shape}})
+			renderer.SetNodes(
+				[]GraphNode{
+					{
+						ID:    NewBrandedID[GraphNodeIDBrand]("n"),
+						Label: NewBrandedID[GraphNodeLabelBrand]("Test"),
+						Shape: tt.shape,
+					},
+				},
+			)
 			renderer.SetEdges([]GraphEdge{})
 
 			output := renderer.Render()
@@ -193,11 +214,21 @@ func TestMermaidRendererWithEdgeLabel(t *testing.T) {
 	t.Parallel()
 	renderer := NewMermaidRenderer()
 	renderer.SetNodes([]GraphNode{
-		{ID: NewBrandedID[GraphNodeIDBrand]("A"), Label: NewBrandedID[GraphNodeLabelBrand]("Node A")},
-		{ID: NewBrandedID[GraphNodeIDBrand]("B"), Label: NewBrandedID[GraphNodeLabelBrand]("Node B")},
+		{
+			ID:    NewBrandedID[GraphNodeIDBrand]("A"),
+			Label: NewBrandedID[GraphNodeLabelBrand]("Node A"),
+		},
+		{
+			ID:    NewBrandedID[GraphNodeIDBrand]("B"),
+			Label: NewBrandedID[GraphNodeLabelBrand]("Node B"),
+		},
 	})
 	renderer.SetEdges([]GraphEdge{
-		{From: NewBrandedID[GraphNodeIDBrand]("A"), To: NewBrandedID[GraphNodeIDBrand]("B"), Label: NewBrandedID[GraphNodeLabelBrand]("connects")},
+		{
+			From:  NewBrandedID[GraphNodeIDBrand]("A"),
+			To:    NewBrandedID[GraphNodeIDBrand]("B"),
+			Label: NewBrandedID[GraphNodeLabelBrand]("connects"),
+		},
 	})
 
 	output := renderer.Render()
@@ -232,7 +263,10 @@ func TestMermaidRendererEscapeLabel(t *testing.T) {
 	t.Parallel()
 	renderer := NewMermaidRenderer()
 	renderer.SetNodes([]GraphNode{
-		{ID: NewBrandedID[GraphNodeIDBrand]("A"), Label: NewBrandedID[GraphNodeLabelBrand](`test "quoted" text`)},
+		{
+			ID:    NewBrandedID[GraphNodeIDBrand]("A"),
+			Label: NewBrandedID[GraphNodeLabelBrand](`test "quoted" text`),
+		},
 	})
 	renderer.SetEdges([]GraphEdge{})
 

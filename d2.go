@@ -113,12 +113,24 @@ func (d *D2Diagram) AddNode(node D2Node) *D2Diagram {
 
 // AddNodeSimple adds a simple node with just ID and label.
 func (d *D2Diagram) AddNodeSimple(id, label string) *D2Diagram {
-	return d.AddNode(D2Node{ID: NewBrandedID[D2NodeIDBrand](id), Label: NewBrandedID[D2NodeLabelBrand](label), Shape: D2ShapeRectangle})
+	return d.AddNode(
+		D2Node{
+			ID:    NewBrandedID[D2NodeIDBrand](id),
+			Label: NewBrandedID[D2NodeLabelBrand](label),
+			Shape: D2ShapeRectangle,
+		},
+	)
 }
 
 // AddNodeWithShape adds a node with a specific shape.
 func (d *D2Diagram) AddNodeWithShape(id, label string, shape D2NodeShape) *D2Diagram {
-	return d.AddNode(D2Node{ID: NewBrandedID[D2NodeIDBrand](id), Label: NewBrandedID[D2NodeLabelBrand](label), Shape: shape})
+	return d.AddNode(
+		D2Node{
+			ID:    NewBrandedID[D2NodeIDBrand](id),
+			Label: NewBrandedID[D2NodeLabelBrand](label),
+			Shape: shape,
+		},
+	)
 }
 
 // AddEdge adds an edge between two nodes.
@@ -129,12 +141,20 @@ func (d *D2Diagram) AddEdge(edge D2Edge) *D2Diagram {
 
 // AddEdgeSimple adds a simple edge between two nodes.
 func (d *D2Diagram) AddEdgeSimple(from, to string) *D2Diagram {
-	return d.AddEdge(D2Edge{From: NewBrandedID[D2NodeIDBrand](from), To: NewBrandedID[D2NodeIDBrand](to)})
+	return d.AddEdge(
+		D2Edge{From: NewBrandedID[D2NodeIDBrand](from), To: NewBrandedID[D2NodeIDBrand](to)},
+	)
 }
 
 // AddLabeledEdge adds an edge with a label.
 func (d *D2Diagram) AddLabeledEdge(from, to, label string) *D2Diagram {
-	return d.AddEdge(D2Edge{From: NewBrandedID[D2NodeIDBrand](from), To: NewBrandedID[D2NodeIDBrand](to), Label: NewBrandedID[D2NodeLabelBrand](label)})
+	return d.AddEdge(
+		D2Edge{
+			From:  NewBrandedID[D2NodeIDBrand](from),
+			To:    NewBrandedID[D2NodeIDBrand](to),
+			Label: NewBrandedID[D2NodeLabelBrand](label),
+		},
+	)
 }
 
 // Render returns the D2 diagram string.
@@ -228,7 +248,14 @@ func (d *D2Diagram) renderEdge(b *strings.Builder, edge D2Edge) {
 			targetArrow,
 		)
 	} else {
-		_, _ = fmt.Fprintf(b, "%s %s-> %s %s\n", edge.From.Get(), sourceArrow, edge.To.Get(), targetArrow)
+		_, _ = fmt.Fprintf(
+			b,
+			"%s %s-> %s %s\n",
+			edge.From.Get(),
+			sourceArrow,
+			edge.To.Get(),
+			targetArrow,
+		)
 	}
 }
 

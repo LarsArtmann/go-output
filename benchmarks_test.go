@@ -49,13 +49,19 @@ func BenchmarkMermaidRenderer(b *testing.B) {
 	renderer := NewMermaidRenderer()
 	nodes := make([]GraphNode, 100)
 	for i := range nodes {
-		nodes[i] = GraphNode{ID: NewBrandedID[GraphNodeIDBrand]("node"), Label: NewBrandedID[GraphNodeLabelBrand]("Node")}
+		nodes[i] = GraphNode{
+			ID:    NewBrandedID[GraphNodeIDBrand]("node"),
+			Label: NewBrandedID[GraphNodeLabelBrand]("Node"),
+		}
 		_ = i // suppress unused
 	}
 	renderer.SetNodes(nodes)
 	edges := make([]GraphEdge, 99)
 	for i := range edges {
-		edges[i] = GraphEdge{From: NewBrandedID[GraphNodeIDBrand]("node"), To: NewBrandedID[GraphNodeIDBrand]("node")}
+		edges[i] = GraphEdge{
+			From: NewBrandedID[GraphNodeIDBrand]("node"),
+			To:   NewBrandedID[GraphNodeIDBrand]("node"),
+		}
 		_ = i // suppress unused
 	}
 	renderer.SetEdges(edges)
@@ -70,13 +76,19 @@ func BenchmarkDOTRenderer(b *testing.B) {
 	renderer := NewDOTRenderer()
 	nodes := make([]GraphNode, 100)
 	for i := range nodes {
-		nodes[i] = GraphNode{ID: NewBrandedID[GraphNodeIDBrand]("node"), Label: NewBrandedID[GraphNodeLabelBrand]("Node")}
+		nodes[i] = GraphNode{
+			ID:    NewBrandedID[GraphNodeIDBrand]("node"),
+			Label: NewBrandedID[GraphNodeLabelBrand]("Node"),
+		}
 		_ = i // suppress unused
 	}
 	renderer.SetNodes(nodes)
 	edges := make([]GraphEdge, 99)
 	for i := range edges {
-		edges[i] = GraphEdge{From: NewBrandedID[GraphNodeIDBrand]("node"), To: NewBrandedID[GraphNodeIDBrand]("node")}
+		edges[i] = GraphEdge{
+			From: NewBrandedID[GraphNodeIDBrand]("node"),
+			To:   NewBrandedID[GraphNodeIDBrand]("node"),
+		}
 		_ = i // suppress unused
 	}
 	renderer.SetEdges(edges)
