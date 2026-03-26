@@ -29,15 +29,15 @@ func NewGraphNode(id, label string) *GraphNode {
 		ID:       NewBrandedID[GraphNodeIDBrand](id),
 		Label:    NewBrandedID[GraphNodeLabelBrand](label),
 		Shape:    ShapeBox,
-		Style:    GraphStyle{},
+		Style:    GraphStyle{FillColor: "", StrokeColor: "", FontColor: "", FontSize: 0},
 		Metadata: make(map[string]string),
 	}
 }
 
 // GetStyle returns the node's style, initializing if nil.
 func (n *GraphNode) GetStyle() GraphStyle {
-	if n.Style == (GraphStyle{}) {
-		return GraphStyle{}
+	if n.Style == (GraphStyle{FillColor: "", StrokeColor: "", FontColor: "", FontSize: 0}) {
+		return GraphStyle{FillColor: "", StrokeColor: "", FontColor: "", FontSize: 0}
 	}
 	return n.Style
 }
@@ -45,6 +45,7 @@ func (n *GraphNode) GetStyle() GraphStyle {
 // GraphShape represents the shape of a graph node.
 type GraphShape string
 
+// GraphShape constants define the available shapes for graph nodes.
 const (
 	ShapeBox           GraphShape = "box"
 	ShapeEllipse       GraphShape = "ellipse"
@@ -115,8 +116,8 @@ func NewGraphEdge(from, to string) *GraphEdge {
 	return &GraphEdge{
 		From:  NewBrandedID[GraphNodeIDBrand](from),
 		To:    NewBrandedID[GraphNodeIDBrand](to),
-		Label: GraphNodeLabel{},
-		Style: EdgeStyle{},
+		Label: NewBrandedID[GraphNodeLabelBrand](""),
+		Style: EdgeStyle{Color: "", Style: "", ArrowHead: "", ArrowTail: ""},
 	}
 }
 

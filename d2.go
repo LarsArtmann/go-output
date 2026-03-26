@@ -29,6 +29,7 @@ type D2Node struct {
 // D2NodeShape represents the shape of a D2 node.
 type D2NodeShape string
 
+// D2NodeShape constants define the available shapes for D2 nodes.
 const (
 	D2ShapeRectangle     D2NodeShape = "rectangle"
 	D2ShapeSquare        D2NodeShape = "square"
@@ -72,6 +73,7 @@ type D2EdgeStyle struct {
 // D2ArrowType represents the type of arrow.
 type D2ArrowType string
 
+// D2ArrowType constants define the available arrow types for D2 edges.
 const (
 	D2ArrowNone     D2ArrowType = "none"
 	D2ArrowPoint    D2ArrowType = "arrow"

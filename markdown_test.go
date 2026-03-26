@@ -7,10 +7,22 @@ import (
 
 func TestMarkdownTable(t *testing.T) {
 	t.Parallel()
-	t.Run("basic table", testMarkdownBasicTable)
-	t.Run("empty headers", testMarkdownEmptyHeaders)
-	t.Run("alignment", testMarkdownAlignment)
-	t.Run("chaining", testMarkdownChaining)
+	t.Run("basic table", func(t *testing.T) {
+		t.Parallel()
+		testMarkdownBasicTable(t)
+	})
+	t.Run("empty headers", func(t *testing.T) {
+		t.Parallel()
+		testMarkdownEmptyHeaders(t)
+	})
+	t.Run("alignment", func(t *testing.T) {
+		t.Parallel()
+		testMarkdownAlignment(t)
+	})
+	t.Run("chaining", func(t *testing.T) {
+		t.Parallel()
+		testMarkdownChaining(t)
+	})
 }
 
 func testMarkdownBasicTable(t *testing.T) {
@@ -71,7 +83,8 @@ func testMarkdownChaining(t *testing.T) {
 	}
 }
 
-func TestNewMarkdownTable(_ *testing.T) {
+func TestNewMarkdownTable(t *testing.T) {
+	t.Parallel()
 	m := NewMarkdownTable()
 	// Verify table is initialized properly
 	_ = m.headers // Just ensure fields are accessible

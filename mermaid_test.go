@@ -185,6 +185,7 @@ func TestMermaidRendererAllShapes(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			renderer := NewMermaidRenderer()
+			//nolint:exhaustruct // Test uses minimal node fields
 			renderer.SetNodes(
 				[]GraphNode{
 					{
@@ -210,6 +211,7 @@ func TestMermaidRendererAllShapes(t *testing.T) {
 	}
 }
 
+//nolint:exhaustruct // Test files use partial struct initialization
 func TestMermaidRendererWithEdgeLabel(t *testing.T) {
 	t.Parallel()
 	renderer := NewMermaidRenderer()
@@ -259,6 +261,7 @@ func TestMermaidTreeRendererWithEmptyID(t *testing.T) {
 	}
 }
 
+//nolint:exhaustruct // Test files use partial struct initialization
 func TestMermaidRendererEscapeLabel(t *testing.T) {
 	t.Parallel()
 	renderer := NewMermaidRenderer()

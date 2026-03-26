@@ -17,6 +17,25 @@ type Project struct {
 	Complexity int
 }
 
+// rendererFunc is a function that renders projects in a specific format.
+type rendererFunc func([]Project)
+
+// getRenderers returns a map of format to renderer function.
+func getRenderers() map[output.Format]rendererFunc {
+	return map[output.Format]rendererFunc{
+		output.OutputFormatTable:    renderTable,
+		output.OutputFormatJSON:     renderJSON,
+		output.OutputFormatMarkdown: renderMarkdown,
+		output.OutputFormatCSV:      renderCSV,
+		output.OutputFormatYAML:     renderYAML,
+		output.OutputFormatD2:       func(_ []Project) { renderD2() },
+		output.OutputFormatHTML:     renderHTML,
+		output.OutputFormatTree:     renderTree,
+		output.OutputFormatMermaid:  renderMermaid,
+		output.OutputFormatDOT:      renderDOT,
+	}
+}
+
 func main() {
 	projects := []Project{
 		{Name: "Alpha", Health: 90, Complexity: 7},
@@ -40,36 +59,15 @@ func main() {
 }
 
 func renderOutput(format output.Format, projects []Project) {
-	switch format {
-	case output.OutputFormatTable:
-		renderTable(projects)
-	case output.OutputFormatJSON:
-		renderJSON(projects)
-	case output.OutputFormatMarkdown:
-		renderMarkdown(projects)
-	case output.OutputFormatCSV:
-		renderCSV(projects)
-	case output.OutputFormatYAML:
-		renderYAML(projects)
-	case output.OutputFormatD2:
-		renderD2()
-	case output.OutputFormatHTML:
-		renderHTML(projects)
-	case output.OutputFormatTree:
-		renderTree(projects)
-	case output.OutputFormatMermaid:
-		renderMermaid(projects)
-	case output.OutputFormatDOT:
-		renderDOT(projects)
-	default:
-		fmt.Fprintf(
-			os.Stderr,
-			"Unsupported format: %q\n",
-			format,
-		)
-		fmt.Fprintf(os.Stderr, "Available formats: %v\n", output.FormatTable.AllowedValues())
-		os.Exit(1)
+	renderers := getRenderers()
+	if renderer, ok := renderers[format]; ok {
+		renderer(projects)
+		return
 	}
+	// Handle unknown format safely - format is validated by ParseOutputFormat
+	fmt.Fprintf(os.Stderr, "Unsupported format: %s\n", format.String())
+	fmt.Fprintf(os.Stderr, "Available formats: %v\n", output.FormatTable.AllowedValues())
+	os.Exit(1)
 }
 
 func renderTable(projects []Project) {

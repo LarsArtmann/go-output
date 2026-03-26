@@ -1,6 +1,6 @@
 module github.com/larsartmann/go-output
 
-go 1.26
+go 1.25.0
 
 require (
 	charm.land/lipgloss/v2 v2.0.2

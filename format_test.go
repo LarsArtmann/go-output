@@ -245,8 +245,14 @@ func TestInvalidFormatError(t *testing.T) {
 
 func TestTableData(t *testing.T) {
 	t.Parallel()
-	t.Run("RowCount and ColCount", testTableDataRowColCount)
-	t.Run("CreateRowEdges", testTableDataCreateRowEdges)
+	t.Run("RowCount and ColCount", func(t *testing.T) {
+		t.Parallel()
+		testTableDataRowColCount(t)
+	})
+	t.Run("CreateRowEdges", func(t *testing.T) {
+		t.Parallel()
+		testTableDataCreateRowEdges(t)
+	})
 }
 
 func testTableDataRowColCount(t *testing.T) {

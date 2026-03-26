@@ -8,6 +8,7 @@ import (
 )
 
 func TestCompareString(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		name string
 		a, b any
@@ -25,6 +26,7 @@ func TestCompareString(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 			if got := CompareString(tt.a, tt.b); got != tt.want {
 				t.Errorf("CompareString(%v, %v) = %v, want %v", tt.a, tt.b, got, tt.want)
 			}
@@ -33,6 +35,7 @@ func TestCompareString(t *testing.T) {
 }
 
 func TestCompareInt(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		name string
 		a, b any
@@ -60,6 +63,7 @@ func TestCompareInt(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 			if got := CompareInt(tt.a, tt.b); got != tt.want {
 				t.Errorf("CompareInt(%v, %v) = %v, want %v", tt.a, tt.b, got, tt.want)
 			}
@@ -68,6 +72,7 @@ func TestCompareInt(t *testing.T) {
 }
 
 func TestCompareTime(t *testing.T) {
+	t.Parallel()
 	now := time.Now()
 	earlier := now.Add(-time.Hour)
 	later := now.Add(time.Hour)
@@ -90,6 +95,7 @@ func TestCompareTime(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 			if got := CompareTime(tt.a, tt.b); got != tt.want {
 				t.Errorf("CompareTime(%v, %v) = %v, want %v", tt.a, tt.b, got, tt.want)
 			}
@@ -103,10 +109,12 @@ type testItem struct {
 	When  time.Time
 }
 
+//nolint:exhaustruct // Test uses partial struct initialization
 func TestSorter_New(t *testing.T) {
+	t.Parallel()
 	items := []testItem{
-		{Name: "b", Count: 2},
-		{Name: "a", Count: 1},
+		{Name: "b", Count: 2, When: time.Time{}},
+		{Name: "a", Count: 1, When: time.Time{}},
 	}
 	sorter := New(items, output.SortByName, false)
 	if sorter == nil {
@@ -123,10 +131,12 @@ func TestSorter_New(t *testing.T) {
 	}
 }
 
+//nolint:exhaustruct // Test uses partial struct initialization
 func TestSorter_WithLessFunc(t *testing.T) {
+	t.Parallel()
 	items := []testItem{
-		{Name: "b", Count: 2},
-		{Name: "a", Count: 1},
+		{Name: "b", Count: 2, When: time.Time{}},
+		{Name: "a", Count: 1, When: time.Time{}},
 	}
 	sorter := New(items, output.SortByName, false)
 	result := sorter.WithLessFunc(func(a, b testItem) bool {
@@ -140,11 +150,13 @@ func TestSorter_WithLessFunc(t *testing.T) {
 	}
 }
 
+//nolint:exhaustruct // Test uses partial struct initialization
 func TestSorter_Sort_ByName(t *testing.T) {
+	t.Parallel()
 	items := []testItem{
-		{Name: "charlie", Count: 3},
-		{Name: "alpha", Count: 1},
-		{Name: "bravo", Count: 2},
+		{Name: "charlie", Count: 3, When: time.Time{}},
+		{Name: "alpha", Count: 1, When: time.Time{}},
+		{Name: "bravo", Count: 2, When: time.Time{}},
 	}
 
 	sorter := New(items, output.SortByName, false)
@@ -161,11 +173,13 @@ func TestSorter_Sort_ByName(t *testing.T) {
 	}
 }
 
+//nolint:exhaustruct // Test uses partial struct initialization
 func TestSorter_Sort_ByNameDesc(t *testing.T) {
+	t.Parallel()
 	items := []testItem{
-		{Name: "charlie", Count: 3},
-		{Name: "alpha", Count: 1},
-		{Name: "bravo", Count: 2},
+		{Name: "charlie", Count: 3, When: time.Time{}},
+		{Name: "alpha", Count: 1, When: time.Time{}},
+		{Name: "bravo", Count: 2, When: time.Time{}},
 	}
 
 	sorter := New(items, output.SortByName, true)
@@ -182,11 +196,13 @@ func TestSorter_Sort_ByNameDesc(t *testing.T) {
 	}
 }
 
+//nolint:exhaustruct // Test uses partial struct initialization
 func TestSorter_Sort_ByCount(t *testing.T) {
+	t.Parallel()
 	items := []testItem{
-		{Name: "charlie", Count: 30},
-		{Name: "alpha", Count: 10},
-		{Name: "bravo", Count: 20},
+		{Name: "charlie", Count: 30, When: time.Time{}},
+		{Name: "alpha", Count: 10, When: time.Time{}},
+		{Name: "bravo", Count: 20, When: time.Time{}},
 	}
 
 	sorter := New(items, output.SortBy("Count"), false)
@@ -204,14 +220,15 @@ func TestSorter_Sort_ByCount(t *testing.T) {
 }
 
 func TestSorter_Sort_ByTime(t *testing.T) {
+	t.Parallel()
 	now := time.Now()
 	earlier := now.Add(-2 * time.Hour)
 	later := now.Add(2 * time.Hour)
 
 	items := []testItem{
-		{Name: "now", When: now},
-		{Name: "later", When: later},
-		{Name: "earlier", When: earlier},
+		{Name: "now", When: now, Count: 0},
+		{Name: "later", When: later, Count: 0},
+		{Name: "earlier", When: earlier, Count: 0},
 	}
 
 	sorter := New(items, output.SortBy("When"), false)
@@ -228,11 +245,13 @@ func TestSorter_Sort_ByTime(t *testing.T) {
 	}
 }
 
+//nolint:exhaustruct // Test uses partial struct initialization
 func TestSorter_Sort_CustomLessFunc(t *testing.T) {
+	t.Parallel()
 	items := []testItem{
-		{Name: "b", Count: 20},
-		{Name: "a", Count: 10},
-		{Name: "c", Count: 30},
+		{Name: "b", Count: 20, When: time.Time{}},
+		{Name: "a", Count: 10, When: time.Time{}},
+		{Name: "c", Count: 30, When: time.Time{}},
 	}
 
 	sorter := New(items, output.SortByName, false)
@@ -253,6 +272,7 @@ func TestSorter_Sort_CustomLessFunc(t *testing.T) {
 }
 
 func TestSorter_Sort_EmptySlice(t *testing.T) {
+	t.Parallel()
 	items := []testItem{}
 
 	sorter := New(items, output.SortByName, false)
@@ -264,7 +284,8 @@ func TestSorter_Sort_EmptySlice(t *testing.T) {
 }
 
 func TestSorter_Sort_SingleItem(t *testing.T) {
-	items := []testItem{{Name: "only", Count: 1}}
+	t.Parallel()
+	items := []testItem{{Name: "only", Count: 1, When: time.Time{}}}
 
 	sorter := New(items, output.SortByName, false)
 	sorter.Sort()
@@ -277,10 +298,12 @@ func TestSorter_Sort_SingleItem(t *testing.T) {
 	}
 }
 
+//nolint:exhaustruct // Test uses partial struct initialization
 func TestSorter_Sort_InvalidField(t *testing.T) {
+	t.Parallel()
 	items := []testItem{
-		{Name: "b", Count: 2},
-		{Name: "a", Count: 1},
+		{Name: "b", Count: 2, When: time.Time{}},
+		{Name: "a", Count: 1, When: time.Time{}},
 	}
 
 	sorter := New(items, output.SortBy("NonExistentField"), false)
@@ -293,6 +316,7 @@ func TestSorter_Sort_InvalidField(t *testing.T) {
 }
 
 func TestToInt(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		name   string
 		input  any
@@ -316,6 +340,7 @@ func TestToInt(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 			got, ok := toInt(tt.input)
 			if ok != tt.wantOk {
 				t.Errorf("toInt(%v) ok = %v, want %v", tt.input, ok, tt.wantOk)
@@ -328,6 +353,7 @@ func TestToInt(t *testing.T) {
 }
 
 func TestToTime(t *testing.T) {
+	t.Parallel()
 	now := time.Now()
 	tests := []struct {
 		name   string
@@ -343,6 +369,7 @@ func TestToTime(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 			_, ok := toTime(tt.input)
 			if ok != tt.wantOk {
 				t.Errorf("toTime(%v) ok = %v, want %v", tt.input, ok, tt.wantOk)

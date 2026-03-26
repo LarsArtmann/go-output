@@ -7,8 +7,6 @@ import (
 )
 
 // Format represents the available output format options for CLI applications.
-//
-
 type Format string
 
 // Output format constants.
@@ -118,10 +116,8 @@ func formatStrings(formats []Format) string {
 	return b.String()
 }
 
-// Backward compatibility aliases for the renamed type.
-type (
-	OutputFormat = Format
-)
+// OutputFormat is a backward compatibility alias for Format.
+type OutputFormat = Format
 
 // Backward compatibility aliases for format constants.
 const (
@@ -137,7 +133,7 @@ const (
 	OutputFormatDOT      = FormatDOT
 )
 
-// Backward compatibility function.
+// ParseOutputFormat is a backward compatibility function that calls ParseFormat.
 func ParseOutputFormat(s string) (Format, error) {
 	return ParseFormat(s)
 }
@@ -225,7 +221,7 @@ func NewTreeNode(id, label string) *TreeNode {
 		Label:    NewBrandedID[TreeNodeLabelBrand](label),
 		Children: make([]*TreeNode, 0),
 		Metadata: make(map[string]string),
-		// parent is set via AddChild
+		parent:   nil, // parent is set via AddChild
 	}
 }
 

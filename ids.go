@@ -50,7 +50,7 @@ func (id BrandedID[B]) Format(s fmt.State, verb rune) {
 	_, _ = fmt.Fprintf(s, format, id.value)
 }
 
-// Brand types for D2 diagram elements.
+// D2NodeIDBrand and related types are brand types for D2 diagram elements.
 type (
 	D2NodeIDBrand    struct{}
 	D2NodeID         = BrandedID[D2NodeIDBrand]
@@ -62,7 +62,7 @@ type (
 	D2EdgeID         = BrandedID[D2EdgeFromBrand]
 )
 
-// Brand types for DOT/Graphviz diagram elements.
+// DOTGraphIDBrand and related types are brand types for DOT/Graphviz diagram elements.
 type (
 	DOTGraphIDBrand   struct{}
 	DOTGraphID        = BrandedID[DOTGraphIDBrand]

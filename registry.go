@@ -13,8 +13,10 @@ var ErrFormatAlreadyRegistered = errors.New("format already registered")
 type RendererFactory func() Renderer
 
 var (
+	//nolint:gochecknoglobals // Registry map for format-to-renderer factory mapping.
 	registry = make(map[Format]RendererFactory)
-	regMu    sync.RWMutex
+	//nolint:gochecknoglobals // Mutex protects concurrent access to registry.
+	regMu sync.RWMutex
 )
 
 // Register registers a renderer factory for a format.

@@ -50,7 +50,7 @@ func (r *ASCIITreeRenderer) renderNode(node *TreeNode, prefix string, isLast boo
 
 	// Add metadata summary if present
 	if len(node.Metadata) > 0 {
-		var metaParts []string
+		metaParts := make([]string, 0, len(node.Metadata))
 		for k, v := range node.Metadata {
 			metaParts = append(metaParts, k+": "+v)
 		}

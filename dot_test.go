@@ -70,6 +70,7 @@ func TestDOTUndirectedRenderer(t *testing.T) {
 	}
 }
 
+//nolint:exhaustruct // Test files use partial struct initialization
 func TestDOTRendererWithStyles(t *testing.T) {
 	t.Parallel()
 	renderer := NewDOTRenderer()
