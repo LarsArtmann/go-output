@@ -56,52 +56,88 @@ func (r *StreamingHTMLRenderer) Render() string {
 // Stream writes the HTML table incrementally to an io.Writer.
 func (r *StreamingHTMLRenderer) Stream(w io.Writer) error {
 	if r.data == nil {
-		_, err := w.Write([]byte(`<table class="data-table"></table>`))
-		if err != nil {
-			return fmt.Errorf("write empty table: %w", err)
-		}
-		return nil
+		return r.writeEmptyTable(w)
 	}
 
-	// Write table opening
-	if _, err := w.Write([]byte(`<table class="data-table">
+	if err := r.writeTableOpen(w); err != nil {
+		return err
+	}
+	if err := r.writeHeaders(w); err != nil {
+		return err
+	}
+	if err := r.writeTableBodyOpen(w); err != nil {
+		return err
+	}
+	if err := r.writeRows(w); err != nil {
+		return err
+	}
+	return r.writeTableClose(w)
+}
+
+func (r *StreamingHTMLRenderer) writeEmptyTable(w io.Writer) error {
+	_, err := w.Write([]byte(`<table class="data-table"></table>`))
+	if err != nil {
+		return fmt.Errorf("write empty table: %w", err)
+	}
+	return nil
+}
+
+func (r *StreamingHTMLRenderer) writeTableOpen(w io.Writer) error {
+	_, err := w.Write([]byte(`<table class="data-table">
 <thead>
 <tr>
-`)); err != nil {
+`))
+	if err != nil {
 		return fmt.Errorf("write table header: %w", err)
 	}
+	return nil
+}
 
-	// Write headers
+func (r *StreamingHTMLRenderer) writeHeaders(w io.Writer) error {
 	for _, h := range r.data.Headers {
 		if _, err := w.Write([]byte("<th>" + escapeHTML(h) + "</th>\n")); err != nil {
 			return fmt.Errorf("write header cell: %w", err)
 		}
 	}
+	return nil
+}
 
-	// Write table body opening
-	if _, err := w.Write([]byte(`</tr>
+func (r *StreamingHTMLRenderer) writeTableBodyOpen(w io.Writer) error {
+	_, err := w.Write([]byte(`</tr>
 </thead>
 <tbody>
-`)); err != nil {
+`))
+	if err != nil {
 		return fmt.Errorf("write table body: %w", err)
 	}
+	return nil
+}
 
-	// Write rows
+func (r *StreamingHTMLRenderer) writeRows(w io.Writer) error {
 	for _, row := range r.data.Rows {
-		if _, err := w.Write([]byte("<tr>\n")); err != nil {
-			return fmt.Errorf("write row start: %w", err)
-		}
-		for _, cell := range row {
-			if _, err := w.Write([]byte("<td>" + escapeHTML(cell) + "</td>\n")); err != nil {
-				return fmt.Errorf("write cell: %w", err)
-			}
-		}
-		if _, err := w.Write([]byte("</tr>\n")); err != nil {
-			return fmt.Errorf("write row end: %w", err)
+		if err := r.writeRow(w, row); err != nil {
+			return err
 		}
 	}
+	return nil
+}
 
-	// Write table closing
+func (r *StreamingHTMLRenderer) writeRow(w io.Writer, row []string) error {
+	if _, err := w.Write([]byte("<tr>\n")); err != nil {
+		return fmt.Errorf("write row start: %w", err)
+	}
+	for _, cell := range row {
+		if _, err := w.Write([]byte("<td>" + escapeHTML(cell) + "</td>\n")); err != nil {
+			return fmt.Errorf("write cell: %w", err)
+		}
+	}
+	if _, err := w.Write([]byte("</tr>\n")); err != nil {
+		return fmt.Errorf("write row end: %w", err)
+	}
+	return nil
+}
+
+func (r *StreamingHTMLRenderer) writeTableClose(w io.Writer) error {
 	_, err := w.Write([]byte(`</tbody>
 </table>
 `))

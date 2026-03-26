@@ -1,7 +1,6 @@
 package output
 
 import (
-	"strings"
 	"testing"
 )
 
@@ -223,37 +222,4 @@ func TestFormatStrings(t *testing.T) {
 	if got != want {
 		t.Errorf("formatStrings() = %q, want %q", got, want)
 	}
-}
-
-func TestFormatStringsSingle(t *testing.T) {
-	t.Parallel()
-	formats := []Format{FormatTable}
-	got := formatStrings(formats)
-	want := "table"
-
-	if got != want {
-		t.Errorf("formatStrings() = %q, want %q", got, want)
-	}
-}
-
-func TestFormatStringsEmpty(t *testing.T) {
-	t.Parallel()
-	formats := []Format{}
-	got := formatStrings(formats)
-	want := ""
-
-	if got != want {
-		t.Errorf("formatStrings() = %q, want %q", got, want)
-	}
-}
-
-func formatStrings(formats []Format) string {
-	var b strings.Builder
-	for i, f := range formats {
-		if i > 0 {
-			b.WriteString(", ")
-		}
-		b.WriteString(string(f))
-	}
-	return b.String()
 }

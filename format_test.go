@@ -1,6 +1,7 @@
 package output
 
 import (
+	"strings"
 	"testing"
 )
 
@@ -236,23 +237,10 @@ func TestInvalidFormatError(t *testing.T) {
 	got := err.Error()
 	wantContains := []string{"invalid format", "invalid", "table", "json"}
 	for _, want := range wantContains {
-		if !containsString(got, want) {
+		if !strings.Contains(got, want) {
 			t.Errorf("Error() = %q, should contain %q", got, want)
 		}
 	}
-}
-
-func containsString(s, substr string) bool {
-	return len(s) >= len(substr) && (s == substr || len(s) > 0 && containsSubstring(s, substr))
-}
-
-func containsSubstring(s, substr string) bool {
-	for i := 0; i <= len(s)-len(substr); i++ {
-		if s[i:i+len(substr)] == substr {
-			return true
-		}
-	}
-	return false
 }
 
 func TestTableData(t *testing.T) {
@@ -318,155 +306,5 @@ func TestTableData(t *testing.T) {
 				t.Errorf("Second edge = {%s, %s}, want {row1, row2}", edges[1].From, edges[1].To)
 			}
 		})
-	})
-}
-
-func TestGraphNode(t *testing.T) {
-	t.Parallel()
-	node := NewGraphNode("test-id", "Test Label")
-	if node.ID.Get() != "test-id" {
-		t.Errorf("ID = %q, want %q", node.ID, "test-id")
-	}
-	if node.Label.Get() != "Test Label" {
-		t.Errorf("Label = %q, want %q", node.Label, "Test Label")
-	}
-	if node.Shape != ShapeBox {
-		t.Errorf("Shape = %v, want %v", node.Shape, ShapeBox)
-	}
-	if node.Metadata == nil {
-		t.Error("Metadata is nil")
-	}
-}
-
-func TestGraphEdge(t *testing.T) {
-	t.Parallel()
-	edge := NewGraphEdge("from-node", "to-node")
-	if edge.From.Get() != "from-node" {
-		t.Errorf("From = %q, want %q", edge.From, "from-node")
-	}
-	if edge.To.Get() != "to-node" {
-		t.Errorf("To = %q, want %q", edge.To, "to-node")
-	}
-}
-
-func TestParseGraphShape(t *testing.T) {
-	t.Parallel()
-	tests := []struct {
-		name    string
-		input   string
-		want    GraphShape
-		wantErr bool
-	}{
-		{"box", "box", ShapeBox, false},
-		{"ellipse", "ellipse", ShapeEllipse, false},
-		{"diamond", "diamond", ShapeDiamond, false},
-		{"circle", "circle", ShapeCircle, false},
-		{"cylinder", "cylinder", ShapeCylinder, false},
-		{"hexagon", "hexagon", ShapeHexagon, false},
-		{"parallelogram", "parallelogram", ShapeParallelogram, false},
-		{"rect", "rect", ShapeRect, false},
-		{"invalid", "invalid", "", true},
-		{"empty", "", "", true},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-			got, err := ParseGraphShape(tt.input)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("ParseGraphShape() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if got != tt.want {
-				t.Errorf("ParseGraphShape() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestGraphShapeString(t *testing.T) {
-	t.Parallel()
-	tests := []struct {
-		shape GraphShape
-		want  string
-	}{
-		{ShapeBox, "box"},
-		{ShapeEllipse, "ellipse"},
-		{ShapeDiamond, "diamond"},
-		{ShapeCircle, "circle"},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.want, func(t *testing.T) {
-			t.Parallel()
-			if got := tt.shape.String(); got != tt.want {
-				t.Errorf("GraphShape.String() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestGraphShapeIsValid(t *testing.T) {
-	t.Parallel()
-	tests := []struct {
-		shape GraphShape
-		want  bool
-	}{
-		{ShapeBox, true},
-		{ShapeEllipse, true},
-		{"invalid", false},
-		{"", false},
-	}
-
-	for _, tt := range tests {
-		t.Run(string(tt.shape), func(t *testing.T) {
-			t.Parallel()
-			if got := tt.shape.IsValid(); got != tt.want {
-				t.Errorf("GraphShape.IsValid() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestGraphShapeAllowedValues(t *testing.T) {
-	t.Parallel()
-	got := ShapeBox.AllowedValues()
-	want := []string{
-		"box",
-		"ellipse",
-		"diamond",
-		"circle",
-		"cylinder",
-		"hexagon",
-		"parallelogram",
-		"rect",
-	}
-
-	if len(got) != len(want) {
-		t.Errorf("AllowedValues() returned %d values, want %d", len(got), len(want))
-	}
-
-	for i, v := range got {
-		if v != want[i] {
-			t.Errorf("AllowedValues()[%d] = %v, want %v", i, v, want[i])
-		}
-	}
-}
-
-func FuzzParseGraphShape(f *testing.F) {
-	for _, shape := range ShapeBox.AllowedValues() {
-		f.Add(shape)
-	}
-	f.Fuzz(func(t *testing.T, input string) {
-		got, err := ParseGraphShape(input)
-		if err != nil {
-			if got != "" {
-				t.Errorf("ParseGraphShape(%q) returned error but non-empty shape: %v", input, got)
-			}
-			return
-		}
-		if !got.IsValid() {
-			t.Errorf("ParseGraphShape(%q) returned invalid shape: %v", input, got)
-		}
 	})
 }
