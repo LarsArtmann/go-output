@@ -114,25 +114,25 @@ func (r *StreamingHTMLRenderer) writeTableBodyOpen(w io.Writer) error {
 }
 
 func (r *StreamingHTMLRenderer) writeRows(w io.Writer) error {
-	for _, row := range r.data.Rows {
-		if err := r.writeRow(w, row); err != nil {
+	for i, row := range r.data.Rows {
+		if err := r.writeRow(w, row, i); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func (r *StreamingHTMLRenderer) writeRow(w io.Writer, row []string) error {
+func (r *StreamingHTMLRenderer) writeRow(w io.Writer, row []string, rowIndex int) error {
 	if _, err := w.Write([]byte("<tr>\n")); err != nil {
-		return fmt.Errorf("write row start: %w", err)
+		return fmt.Errorf("write row %d start: %w", rowIndex, err)
 	}
-	for _, cell := range row {
+	for colIndex, cell := range row {
 		if _, err := w.Write([]byte("<td>" + escapeHTML(cell) + "</td>\n")); err != nil {
-			return fmt.Errorf("write cell: %w", err)
+			return fmt.Errorf("write row %d cell %d: %w", rowIndex, colIndex, err)
 		}
 	}
 	if _, err := w.Write([]byte("</tr>\n")); err != nil {
-		return fmt.Errorf("write row end: %w", err)
+		return fmt.Errorf("write row %d end: %w", rowIndex, err)
 	}
 	return nil
 }

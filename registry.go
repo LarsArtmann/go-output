@@ -23,7 +23,7 @@ func Register(format Format, factory RendererFactory) error {
 	defer regMu.Unlock()
 
 	if _, exists := registry[format]; exists {
-		return fmt.Errorf("format %q is already registered: %w", format, ErrFormatAlreadyRegistered)
+		return fmt.Errorf("register factory for format %q: %w", format, ErrFormatAlreadyRegistered)
 	}
 	registry[format] = factory
 	return nil

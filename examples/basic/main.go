@@ -62,7 +62,11 @@ func renderOutput(format output.Format, projects []Project) {
 	case output.OutputFormatDOT:
 		renderDOT(projects)
 	default:
-		fmt.Fprintf(os.Stderr, "Unsupported format: %q\n", format) //nolint:gosec // G705: format is validated OutputFormat
+		fmt.Fprintf(
+			os.Stderr,
+			"Unsupported format: %q\n",
+			format,
+		) //nolint:gosec // G705: format is validated OutputFormat
 		fmt.Fprintf(os.Stderr, "Available formats: %v\n", output.FormatTable.AllowedValues())
 		os.Exit(1)
 	}
