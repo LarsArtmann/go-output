@@ -305,7 +305,14 @@ func testCreateRowEdgesMultiple(t *testing.T) {
 	}
 	verifyEdge := func(idx int, from, to string) {
 		if edges[idx].From != from || edges[idx].To != to {
-			t.Errorf("Edge %d = {%s, %s}, want {%s, %s}", idx, edges[idx].From, edges[idx].To, from, to)
+			t.Errorf(
+				"Edge %d = {%s, %s}, want {%s, %s}",
+				idx,
+				edges[idx].From,
+				edges[idx].To,
+				from,
+				to,
+			)
 		}
 	}
 	verifyEdge(0, "row0", "row1")

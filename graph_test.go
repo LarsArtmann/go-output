@@ -92,7 +92,16 @@ func TestGraphShapeString(t *testing.T) {
 func TestGraphShapeAllowedValues(t *testing.T) {
 	t.Parallel()
 	got := ShapeBox.AllowedValues()
-	want := []string{"box", "ellipse", "diamond", "circle", "cylinder", "hexagon", "parallelogram", "rect"}
+	want := []string{
+		"box",
+		"ellipse",
+		"diamond",
+		"circle",
+		"cylinder",
+		"hexagon",
+		"parallelogram",
+		"rect",
+	}
 
 	if len(got) != len(want) {
 		t.Errorf("AllowedValues() returned %d values, want %d", len(got), len(want))
