@@ -26,7 +26,7 @@ func TestRegisterDuplicate(t *testing.T) {
 	t.Parallel()
 	Unregister(FormatCSV)
 
-	Register(FormatCSV, func() Renderer {
+	_ = Register(FormatCSV, func() Renderer {
 		return &testRenderer{output: "csv1"}
 	})
 
@@ -41,7 +41,7 @@ func TestRegisterDuplicate(t *testing.T) {
 func TestUnregister(t *testing.T) {
 	t.Parallel()
 	Unregister(FormatYAML)
-	Register(FormatYAML, func() Renderer {
+	_ = Register(FormatYAML, func() Renderer {
 		return &testRenderer{output: "yaml"}
 	})
 
@@ -88,8 +88,8 @@ func TestRegisteredFormats(t *testing.T) {
 	Unregister(FormatTable)
 	Unregister(FormatJSON)
 
-	Register(FormatTable, func() Renderer { return &testRenderer{} })
-	Register(FormatJSON, func() Renderer { return &testRenderer{} })
+	_ = Register(FormatTable, func() Renderer { return &testRenderer{} })
+	_ = Register(FormatJSON, func() Renderer { return &testRenderer{} })
 
 	formats := RegisteredFormats()
 	if len(formats) < 2 {
@@ -107,7 +107,7 @@ func TestIsRegistered(t *testing.T) {
 	t.Run("registered", func(t *testing.T) {
 		t.Parallel()
 		Unregister(FormatHTML)
-		Register(FormatHTML, func() Renderer { return &testRenderer{} })
+		_ = Register(FormatHTML, func() Renderer { return &testRenderer{} })
 		if !IsRegistered(FormatHTML) {
 			t.Error("IsRegistered(FormatHTML) = false, want true")
 		}
@@ -130,7 +130,7 @@ func TestRegistryConcurrency(t *testing.T) {
 	for range 10 {
 		wg.Go(func() {
 			for range 100 {
-				Register(FormatCSV, func() Renderer { return &testRenderer{output: "csv"} })
+				_ = Register(FormatCSV, func() Renderer { return &testRenderer{output: "csv"} })
 				Unregister(FormatCSV)
 			}
 		})
