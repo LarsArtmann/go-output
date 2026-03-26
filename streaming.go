@@ -1,6 +1,7 @@
 package output
 
 import (
+	"fmt"
 	"io"
 	"strings"
 )
@@ -56,7 +57,10 @@ func (r *StreamingHTMLRenderer) Render() string {
 func (r *StreamingHTMLRenderer) Stream(w io.Writer) error {
 	if r.data == nil {
 		_, err := w.Write([]byte(`<table class="data-table"></table>`))
-		return err
+		if err != nil {
+			return fmt.Errorf("write empty table: %w", err)
+		}
+		return nil
 	}
 
 	// Write table opening
@@ -64,13 +68,13 @@ func (r *StreamingHTMLRenderer) Stream(w io.Writer) error {
 <thead>
 <tr>
 `)); err != nil {
-		return err
+		return fmt.Errorf("write table header: %w", err)
 	}
 
 	// Write headers
 	for _, h := range r.data.Headers {
 		if _, err := w.Write([]byte("<th>" + escapeHTML(h) + "</th>\n")); err != nil {
-			return err
+			return fmt.Errorf("write header cell: %w", err)
 		}
 	}
 
@@ -79,21 +83,21 @@ func (r *StreamingHTMLRenderer) Stream(w io.Writer) error {
 </thead>
 <tbody>
 `)); err != nil {
-		return err
+		return fmt.Errorf("write table body: %w", err)
 	}
 
 	// Write rows
 	for _, row := range r.data.Rows {
 		if _, err := w.Write([]byte("<tr>\n")); err != nil {
-			return err
+			return fmt.Errorf("write row start: %w", err)
 		}
 		for _, cell := range row {
 			if _, err := w.Write([]byte("<td>" + escapeHTML(cell) + "</td>\n")); err != nil {
-				return err
+				return fmt.Errorf("write cell: %w", err)
 			}
 		}
 		if _, err := w.Write([]byte("</tr>\n")); err != nil {
-			return err
+			return fmt.Errorf("write row end: %w", err)
 		}
 	}
 
@@ -101,7 +105,10 @@ func (r *StreamingHTMLRenderer) Stream(w io.Writer) error {
 	_, err := w.Write([]byte(`</tbody>
 </table>
 `))
-	return err
+	if err != nil {
+		return fmt.Errorf("write table end: %w", err)
+	}
+	return nil
 }
 
 // escapeHTML escapes HTML special characters.
@@ -142,5 +149,8 @@ func (a *adapterRenderer) Render() string {
 
 func (a *adapterRenderer) Stream(w io.Writer) error {
 	_, err := w.Write([]byte(a.r.Render()))
-	return err
+	if err != nil {
+		return fmt.Errorf("stream render output: %w", err)
+	}
+	return nil
 }
