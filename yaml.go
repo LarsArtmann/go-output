@@ -3,7 +3,7 @@ package output
 import (
 	"fmt"
 
-	"go.yaml.in/yaml/v4"
+	"github.com/go-faster/yaml"
 )
 
 // MarshalYAML encodes v to YAML.
