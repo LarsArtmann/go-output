@@ -12,15 +12,14 @@ type HTMLRenderer struct {
 
 // NewHTMLRenderer creates a new HTMLRenderer.
 func NewHTMLRenderer() *HTMLRenderer {
-	return &HTMLRenderer{
-		// data is initialized lazily when needed
+	return &HTMLRenderer{ //nolint:exhaustruct // data is initialized lazily when needed
 	}
 }
 
 // SetHeaders sets the column headers.
 func (r *HTMLRenderer) SetHeaders(headers []string) {
 	if r.data == nil {
-		r.data = &TableData{}
+		r.data = &TableData{Headers: nil, Rows: nil}
 	}
 	r.data.Headers = headers
 }
@@ -28,7 +27,7 @@ func (r *HTMLRenderer) SetHeaders(headers []string) {
 // AddRow adds a data row.
 func (r *HTMLRenderer) AddRow(row []string) {
 	if r.data == nil {
-		r.data = &TableData{}
+		r.data = &TableData{Headers: nil, Rows: nil}
 	}
 	r.data.Rows = append(r.data.Rows, row)
 }
@@ -133,8 +132,7 @@ type HTMLTreeRenderer struct {
 
 // NewHTMLTreeRenderer creates a new HTMLTreeRenderer.
 func NewHTMLTreeRenderer() *HTMLTreeRenderer {
-	return &HTMLTreeRenderer{
-		// root is set via SetRoot
+	return &HTMLTreeRenderer{ //nolint:exhaustruct // root is set via SetRoot
 	}
 }
 

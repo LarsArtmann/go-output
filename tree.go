@@ -13,7 +13,7 @@ type ASCIITreeRenderer struct {
 
 // NewASCIITreeRenderer creates a new ASCIITreeRenderer.
 func NewASCIITreeRenderer() *ASCIITreeRenderer {
-	return &ASCIITreeRenderer{}
+	return &ASCIITreeRenderer{} //nolint:exhaustruct // root and builder are initialized lazily
 }
 
 // Ensure ASCIITreeRenderer implements TreeOutputRenderer.

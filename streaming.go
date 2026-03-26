@@ -22,13 +22,13 @@ type StreamingHTMLRenderer struct {
 
 // NewStreamingHTMLRenderer creates a new StreamingHTMLRenderer.
 func NewStreamingHTMLRenderer() *StreamingHTMLRenderer {
-	return &StreamingHTMLRenderer{}
+	return &StreamingHTMLRenderer{} //nolint:exhaustruct // data is initialized lazily
 }
 
 // SetHeaders sets the column headers.
 func (r *StreamingHTMLRenderer) SetHeaders(headers []string) {
 	if r.data == nil {
-		r.data = &TableData{}
+		r.data = &TableData{Headers: nil, Rows: nil}
 	}
 	r.data.Headers = headers
 }
@@ -36,7 +36,7 @@ func (r *StreamingHTMLRenderer) SetHeaders(headers []string) {
 // AddRow adds a data row.
 func (r *StreamingHTMLRenderer) AddRow(row []string) {
 	if r.data == nil {
-		r.data = &TableData{}
+		r.data = &TableData{Headers: nil, Rows: nil}
 	}
 	r.data.Rows = append(r.data.Rows, row)
 }
