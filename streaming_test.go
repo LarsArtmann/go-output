@@ -6,6 +6,8 @@ import (
 	"testing"
 )
 
+const emptyTableHTML = `<table class="data-table"></table>`
+
 func TestStreamingRendererInterface(t *testing.T) {
 	t.Parallel()
 	var _ StreamingRenderer = (*StreamingHTMLRenderer)(nil)
@@ -98,7 +100,7 @@ func TestStreamingHTMLRendererRenderEmpty(t *testing.T) {
 	r := NewStreamingHTMLRenderer()
 
 	got := r.Render()
-	want := `<table class="data-table"></table>`
+	want := emptyTableHTML
 	if got != want {
 		t.Errorf("Render() = %q, want %q", got, want)
 	}
@@ -115,7 +117,7 @@ func TestStreamingHTMLRendererStreamEmpty(t *testing.T) {
 	}
 
 	got := buf.String()
-	want := `<table class="data-table"></table>`
+	want := emptyTableHTML
 	if got != want {
 		t.Errorf("Stream() = %q, want %q", got, want)
 	}

@@ -245,66 +245,69 @@ func TestInvalidFormatError(t *testing.T) {
 
 func TestTableData(t *testing.T) {
 	t.Parallel()
-	t.Run("RowCount and ColCount", func(t *testing.T) {
-		t.Parallel()
-		data := NewTableData([]string{"Name", "Value", "Count"})
-		if data.ColCount() != 3 {
-			t.Errorf("ColCount() = %d, want 3", data.ColCount())
+	t.Run("RowCount and ColCount", testTableDataRowColCount)
+	t.Run("CreateRowEdges", testTableDataCreateRowEdges)
+}
+
+func testTableDataRowColCount(t *testing.T) {
+	data := NewTableData([]string{"Name", "Value", "Count"})
+	if data.ColCount() != 3 {
+		t.Errorf("ColCount() = %d, want 3", data.ColCount())
+	}
+	if data.RowCount() != 0 {
+		t.Errorf("RowCount() = %d, want 0", data.RowCount())
+	}
+
+	data.AddRow([]string{"a", "b", "c"})
+	data.AddRow([]string{"d", "e", "f"})
+	if data.RowCount() != 2 {
+		t.Errorf("RowCount() = %d, want 2", data.RowCount())
+	}
+}
+
+func testTableDataCreateRowEdges(t *testing.T) {
+	t.Run("nil data", testCreateRowEdgesNil)
+	t.Run("empty rows", testCreateRowEdgesEmpty)
+	t.Run("single row", testCreateRowEdgesSingle)
+	t.Run("multiple rows", testCreateRowEdgesMultiple)
+}
+
+func testCreateRowEdgesNil(t *testing.T) {
+	var data *TableData
+	if edges := data.CreateRowEdges(); edges != nil {
+		t.Errorf("CreateRowEdges() on nil = %v, want nil", edges)
+	}
+}
+
+func testCreateRowEdgesEmpty(t *testing.T) {
+	data := NewTableData([]string{"Name"})
+	if edges := data.CreateRowEdges(); edges != nil {
+		t.Errorf("CreateRowEdges() on empty = %v, want nil", edges)
+	}
+}
+
+func testCreateRowEdgesSingle(t *testing.T) {
+	data := NewTableData([]string{"Name"})
+	data.AddRow([]string{"a"})
+	if edges := data.CreateRowEdges(); edges != nil {
+		t.Errorf("CreateRowEdges() on single row = %v, want nil", edges)
+	}
+}
+
+func testCreateRowEdgesMultiple(t *testing.T) {
+	data := NewTableData([]string{"Name"})
+	data.AddRow([]string{"a"})
+	data.AddRow([]string{"b"})
+	data.AddRow([]string{"c"})
+	edges := data.CreateRowEdges()
+	if len(edges) != 2 {
+		t.Fatalf("CreateRowEdges() returned %d edges, want 2", len(edges))
+	}
+	verifyEdge := func(idx int, from, to string) {
+		if edges[idx].From != from || edges[idx].To != to {
+			t.Errorf("Edge %d = {%s, %s}, want {%s, %s}", idx, edges[idx].From, edges[idx].To, from, to)
 		}
-		if data.RowCount() != 0 {
-			t.Errorf("RowCount() = %d, want 0", data.RowCount())
-		}
-
-		data.AddRow([]string{"a", "b", "c"})
-		data.AddRow([]string{"d", "e", "f"})
-		if data.RowCount() != 2 {
-			t.Errorf("RowCount() = %d, want 2", data.RowCount())
-		}
-	})
-
-	t.Run("CreateRowEdges", func(t *testing.T) {
-		t.Parallel()
-		t.Run("nil data", func(t *testing.T) {
-			t.Parallel()
-			var data *TableData
-			if edges := data.CreateRowEdges(); edges != nil {
-				t.Errorf("CreateRowEdges() on nil = %v, want nil", edges)
-			}
-		})
-
-		t.Run("empty rows", func(t *testing.T) {
-			t.Parallel()
-			data := NewTableData([]string{"Name"})
-			if edges := data.CreateRowEdges(); edges != nil {
-				t.Errorf("CreateRowEdges() on empty = %v, want nil", edges)
-			}
-		})
-
-		t.Run("single row", func(t *testing.T) {
-			t.Parallel()
-			data := NewTableData([]string{"Name"})
-			data.AddRow([]string{"a"})
-			if edges := data.CreateRowEdges(); edges != nil {
-				t.Errorf("CreateRowEdges() on single row = %v, want nil", edges)
-			}
-		})
-
-		t.Run("multiple rows", func(t *testing.T) {
-			t.Parallel()
-			data := NewTableData([]string{"Name"})
-			data.AddRow([]string{"a"})
-			data.AddRow([]string{"b"})
-			data.AddRow([]string{"c"})
-			edges := data.CreateRowEdges()
-			if len(edges) != 2 {
-				t.Fatalf("CreateRowEdges() returned %d edges, want 2", len(edges))
-			}
-			if edges[0].From != "row0" || edges[0].To != "row1" {
-				t.Errorf("First edge = {%s, %s}, want {row0, row1}", edges[0].From, edges[0].To)
-			}
-			if edges[1].From != "row1" || edges[1].To != "row2" {
-				t.Errorf("Second edge = {%s, %s}, want {row1, row2}", edges[1].From, edges[1].To)
-			}
-		})
-	})
+	}
+	verifyEdge(0, "row0", "row1")
+	verifyEdge(1, "row1", "row2")
 }
