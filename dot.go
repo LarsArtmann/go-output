@@ -184,6 +184,7 @@ func DOTFromTableData(data *TableData) *DOTRenderer {
 			}
 		}
 		label := strings.Join(labelParts, "\\n")
+		//nolint:exhaustruct // Uses defaults for optional fields
 		renderer.nodes = append(renderer.nodes, GraphNode{
 			ID:    NewBrandedID[GraphNodeIDBrand](fmt.Sprintf("row%d", i)),
 			Label: NewBrandedID[GraphNodeLabelBrand](label),
@@ -192,6 +193,7 @@ func DOTFromTableData(data *TableData) *DOTRenderer {
 
 	// Create edges between consecutive rows using shared helper
 	for _, edge := range data.CreateRowEdges() {
+		//nolint:exhaustruct // Uses defaults for optional fields
 		renderer.edges = append(renderer.edges, GraphEdge{
 			From: NewBrandedID[GraphNodeIDBrand](edge.From),
 			To:   NewBrandedID[GraphNodeIDBrand](edge.To),
@@ -221,12 +223,14 @@ func (r *DOTRenderer) addTreeNodes(node *TreeNode, parentID TreeNodeID) {
 	graphNodeID := NewBrandedID[GraphNodeIDBrand](nodeID.Get())
 	graphNodeLabel := NewBrandedID[GraphNodeLabelBrand](node.Label.Get())
 
+	//nolint:exhaustruct // Uses defaults for optional fields
 	r.nodes = append(r.nodes, GraphNode{
 		ID:    graphNodeID,
 		Label: graphNodeLabel,
 	})
 
 	if !parentID.IsEmpty() {
+		//nolint:exhaustruct // Uses defaults for optional fields
 		r.edges = append(r.edges, GraphEdge{
 			From: NewBrandedID[GraphNodeIDBrand](parentID.Get()),
 			To:   graphNodeID,

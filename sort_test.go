@@ -5,6 +5,7 @@ import (
 )
 
 func TestParseSortBy(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		name    string
 		input   string
@@ -23,6 +24,7 @@ func TestParseSortBy(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 			got, err := ParseSortBy(tt.input)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ParseSortBy() error = %v, wantErr %v", err, tt.wantErr)
@@ -36,6 +38,7 @@ func TestParseSortBy(t *testing.T) {
 }
 
 func TestSortByString(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		sortBy SortBy
 		want   string
@@ -50,6 +53,7 @@ func TestSortByString(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.want, func(t *testing.T) {
+			t.Parallel()
 			if got := tt.sortBy.String(); got != tt.want {
 				t.Errorf("SortBy.String() = %v, want %v", got, tt.want)
 			}
@@ -58,6 +62,7 @@ func TestSortByString(t *testing.T) {
 }
 
 func TestSortByAllowedValues(t *testing.T) {
+	t.Parallel()
 	got := SortByName.AllowedValues()
 	want := []string{"name", "importance", "created_at", "updated_at", "health", "complexity"}
 
@@ -73,6 +78,7 @@ func TestSortByAllowedValues(t *testing.T) {
 }
 
 func TestSortByIsValid(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		sortBy SortBy
 		want   bool
@@ -89,6 +95,7 @@ func TestSortByIsValid(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(string(tt.sortBy), func(t *testing.T) {
+			t.Parallel()
 			if got := tt.sortBy.IsValid(); got != tt.want {
 				t.Errorf("SortBy(%q).IsValid() = %v, want %v", tt.sortBy, got, tt.want)
 			}

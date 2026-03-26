@@ -45,6 +45,7 @@ func BenchmarkHTMLRenderer(b *testing.B) {
 	}
 }
 
+//nolint:exhaustruct // Benchmark uses minimal struct initialization
 func BenchmarkMermaidRenderer(b *testing.B) {
 	renderer := NewMermaidRenderer()
 	nodes := make([]GraphNode, 100)
@@ -72,6 +73,7 @@ func BenchmarkMermaidRenderer(b *testing.B) {
 	}
 }
 
+//nolint:exhaustruct // Benchmark uses minimal struct initialization
 func BenchmarkDOTRenderer(b *testing.B) {
 	renderer := NewDOTRenderer()
 	nodes := make([]GraphNode, 100)

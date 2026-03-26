@@ -16,7 +16,9 @@ func (e *errorWriter) Write(_ []byte) (n int, err error) {
 var _ io.Writer = (*errorWriter)(nil)
 
 func TestCSVWriter(t *testing.T) {
+	t.Parallel()
 	t.Run("write header and rows", func(t *testing.T) {
+		t.Parallel()
 		var buf bytes.Buffer
 		w := NewCSVWriter(&buf)
 
@@ -41,6 +43,7 @@ func TestCSVWriter(t *testing.T) {
 	})
 
 	t.Run("write multiple rows", func(t *testing.T) {
+		t.Parallel()
 		var buf bytes.Buffer
 		w := NewCSVWriter(&buf)
 
@@ -63,6 +66,7 @@ func TestCSVWriter(t *testing.T) {
 	})
 
 	t.Run("flush and error", func(t *testing.T) {
+		t.Parallel()
 		var buf bytes.Buffer
 		w := NewCSVWriter(&buf)
 

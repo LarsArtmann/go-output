@@ -1,79 +1,62 @@
 package output
 
 import (
-	"os"
 	"testing"
 )
 
 func TestIsNoColor(t *testing.T) {
-	t.Parallel()
-
-	orig := os.Getenv("NO_COLOR")
-	defer func() { _ = os.Setenv("NO_COLOR", orig) }() // nolint:errcheck
-	_ = os.Unsetenv("NO_COLOR")                        // nolint:errcheck
+	t.Setenv("NO_COLOR", "") // Clear NO_COLOR
 	if isNoColor() {
 		t.Error("isNoColor() should return false when NO_COLOR is not set")
 	}
 
-	_ = os.Setenv("NO_COLOR", "1") // nolint:errcheck
+	t.Setenv("NO_COLOR", "1")
 	if !isNoColor() {
 		t.Error("isNoColor() should return true when NO_COLOR is set")
 	}
 }
 
 func TestIsCI(t *testing.T) {
-	t.Parallel()
-
 	ciVars := []string{"CI", "GITHUB_ACTIONS", "GITLAB_CI", "JENKINS_URL", "BUILDKITE"}
-	origVals := make(map[string]string)
 	for _, v := range ciVars {
-		origVals[v] = os.Getenv(v)
-		_ = os.Unsetenv(v) // nolint:errcheck
+		t.Setenv(v, "") // Clear CI vars
 	}
-	defer func() {
-		for _, v := range ciVars {
-			_ = os.Setenv(v, origVals[v]) // nolint:errcheck
-		}
-	}()
 
 	if isCI() {
 		t.Error("isCI() should return false when no CI env vars are set")
 	}
 
-	_ = os.Setenv("CI", "true") // nolint:errcheck
+	t.Setenv("CI", "true")
 	if !isCI() {
 		t.Error("isCI() should return true when CI is set")
 	}
 
-	_ = os.Unsetenv("CI")                   // nolint:errcheck
-	_ = os.Setenv("GITHUB_ACTIONS", "true") // nolint:errcheck
+	t.Setenv("CI", "")
+	t.Setenv("GITHUB_ACTIONS", "true")
 	if !isCI() {
 		t.Error("isCI() should return true when GITHUB_ACTIONS is set")
 	}
 }
 
 func TestIsTerminalByEnv(t *testing.T) {
-	t.Parallel()
-
-	orig := os.Getenv("FORCE_COLOR")
-	defer func() { _ = os.Setenv("FORCE_COLOR", orig) }() // nolint:errcheck
-	_ = os.Unsetenv("FORCE_COLOR")                        // nolint:errcheck
+	t.Setenv("FORCE_COLOR", "") // Clear FORCE_COLOR
 	if isTerminalByEnv("FORCE_COLOR") {
 		t.Error("isTerminalByEnv() should return false when env is not set")
 	}
 
-	_ = os.Setenv("FORCE_COLOR", "0") // nolint:errcheck
+	t.Setenv("FORCE_COLOR", "0")
 	if isTerminalByEnv("FORCE_COLOR") {
 		t.Error("isTerminalByEnv() should return false when env is '0'")
 	}
 
-	_ = os.Setenv("FORCE_COLOR", "1") // nolint:errcheck
+	t.Setenv("FORCE_COLOR", "1")
 	if !isTerminalByEnv("FORCE_COLOR") {
 		t.Error("isTerminalByEnv() should return true when env is '1'")
 	}
 }
 
 func TestParseColorMode(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		name    string
 		input   string
@@ -89,6 +72,7 @@ func TestParseColorMode(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 			got, err := ParseColorMode(tt.input)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ParseColorMode() error = %v, wantErr %v", err, tt.wantErr)
@@ -102,6 +86,7 @@ func TestParseColorMode(t *testing.T) {
 }
 
 func TestColorModeString(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		mode ColorMode
 		want string
@@ -113,6 +98,7 @@ func TestColorModeString(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.want, func(t *testing.T) {
+			t.Parallel()
 			if got := tt.mode.String(); got != tt.want {
 				t.Errorf("ColorMode.String() = %v, want %v", got, tt.want)
 			}
@@ -121,6 +107,7 @@ func TestColorModeString(t *testing.T) {
 }
 
 func TestColorModeAllowedValues(t *testing.T) {
+	t.Parallel()
 	got := ColorModeAuto.AllowedValues()
 	want := []string{"auto", "always", "never"}
 
@@ -136,6 +123,7 @@ func TestColorModeAllowedValues(t *testing.T) {
 }
 
 func TestColorModeIsValid(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		mode ColorMode
 		want bool
@@ -149,6 +137,7 @@ func TestColorModeIsValid(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(string(tt.mode), func(t *testing.T) {
+			t.Parallel()
 			if got := tt.mode.IsValid(); got != tt.want {
 				t.Errorf("ColorMode.IsValid() = %v, want %v", got, tt.want)
 			}
@@ -157,6 +146,7 @@ func TestColorModeIsValid(t *testing.T) {
 }
 
 func TestColorModeShouldColor(t *testing.T) {
+	t.Parallel()
 	// Test explicit modes
 	if !ColorModeAlways.ShouldColor() {
 		t.Error("ColorModeAlways.ShouldColor() should return true")
@@ -171,6 +161,7 @@ func TestColorModeShouldColor(t *testing.T) {
 }
 
 func TestColorModeToANSI(t *testing.T) {
+	t.Parallel()
 	// When color is disabled, should return empty string
 	if ColorModeNever.ToANSI() != "" {
 		t.Error("ColorModeNever.ToANSI() should return empty string")

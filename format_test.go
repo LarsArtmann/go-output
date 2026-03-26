@@ -5,6 +5,7 @@ import (
 )
 
 func TestParseOutputFormat(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		name    string
 		input   string
@@ -27,6 +28,7 @@ func TestParseOutputFormat(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 			got, err := ParseOutputFormat(tt.input)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ParseOutputFormat() error = %v, wantErr %v", err, tt.wantErr)
@@ -40,6 +42,7 @@ func TestParseOutputFormat(t *testing.T) {
 }
 
 func TestOutputFormatString(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		format OutputFormat
 		want   string
@@ -54,6 +57,7 @@ func TestOutputFormatString(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.want, func(t *testing.T) {
+			t.Parallel()
 			if got := tt.format.String(); got != tt.want {
 				t.Errorf("OutputFormat.String() = %v, want %v", got, tt.want)
 			}
@@ -62,6 +66,7 @@ func TestOutputFormatString(t *testing.T) {
 }
 
 func TestOutputFormatAllowedValues(t *testing.T) {
+	t.Parallel()
 	got := OutputFormatTable.AllowedValues()
 	want := []string{
 		"table",
@@ -88,6 +93,7 @@ func TestOutputFormatAllowedValues(t *testing.T) {
 }
 
 func TestOutputFormatIsValid(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		format OutputFormat
 		want   bool
@@ -108,6 +114,7 @@ func TestOutputFormatIsValid(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(string(tt.format), func(t *testing.T) {
+			t.Parallel()
 			if got := tt.format.IsValid(); got != tt.want {
 				t.Errorf("OutputFormat(%q).IsValid() = %v, want %v", tt.format, got, tt.want)
 			}

@@ -112,6 +112,7 @@ func MermaidFlowchartRenderer(data *TableData) *MermaidRenderer {
 			}
 		}
 		label := strings.Join(labelParts, "<br>")
+		//nolint:exhaustruct // Uses defaults for optional fields
 		renderer.nodes = append(renderer.nodes, GraphNode{
 			ID:    NewBrandedID[GraphNodeIDBrand](fmt.Sprintf("row%d", i)),
 			Label: NewBrandedID[GraphNodeLabelBrand](label),
@@ -121,6 +122,7 @@ func MermaidFlowchartRenderer(data *TableData) *MermaidRenderer {
 
 	// Create edges between consecutive rows using shared helper
 	for _, edge := range data.CreateRowEdges() {
+		//nolint:exhaustruct // Uses defaults for optional fields
 		renderer.edges = append(renderer.edges, GraphEdge{
 			From: NewBrandedID[GraphNodeIDBrand](edge.From),
 			To:   NewBrandedID[GraphNodeIDBrand](edge.To),
@@ -150,6 +152,7 @@ func (r *MermaidRenderer) addTreeNodes(node *TreeNode, parentID string) {
 	graphNodeID := NewBrandedID[GraphNodeIDBrand](nodeID)
 	graphNodeLabel := NewBrandedID[GraphNodeLabelBrand](node.Label.Get())
 
+	//nolint:exhaustruct // Uses defaults for optional fields
 	r.nodes = append(r.nodes, GraphNode{
 		ID:    graphNodeID,
 		Label: graphNodeLabel,
@@ -157,6 +160,7 @@ func (r *MermaidRenderer) addTreeNodes(node *TreeNode, parentID string) {
 	})
 
 	if parentID != "" {
+		//nolint:exhaustruct // Uses defaults for optional fields
 		r.edges = append(r.edges, GraphEdge{
 			From: NewBrandedID[GraphNodeIDBrand](parentID),
 			To:   graphNodeID,

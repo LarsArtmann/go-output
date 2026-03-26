@@ -225,6 +225,7 @@ func NewTreeNode(id, label string) *TreeNode {
 		Label:    NewBrandedID[TreeNodeLabelBrand](label),
 		Children: make([]*TreeNode, 0),
 		Metadata: make(map[string]string),
+		// parent is set via AddChild
 	}
 }
 
@@ -277,6 +278,14 @@ func NewGraphNode(id, label string) *GraphNode {
 		Style:    GraphStyle{},
 		Metadata: make(map[string]string),
 	}
+}
+
+// GetStyle returns the node's style, initializing if nil.
+func (n *GraphNode) GetStyle() GraphStyle {
+	if n.Style == (GraphStyle{}) {
+		return GraphStyle{}
+	}
+	return n.Style
 }
 
 // GraphShape represents the shape of a graph node.
@@ -352,6 +361,7 @@ func NewGraphEdge(from, to string) *GraphEdge {
 	return &GraphEdge{
 		From:  NewBrandedID[GraphNodeIDBrand](from),
 		To:    NewBrandedID[GraphNodeIDBrand](to),
+		Label: GraphNodeLabel{},
 		Style: EdgeStyle{},
 	}
 }

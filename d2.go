@@ -114,6 +114,7 @@ func (d *D2Diagram) AddNode(node D2Node) *D2Diagram {
 // AddNodeSimple adds a simple node with just ID and label.
 func (d *D2Diagram) AddNodeSimple(id, label string) *D2Diagram {
 	return d.AddNode(
+		//nolint:exhaustruct // Simple node uses defaults for optional fields
 		D2Node{
 			ID:    NewBrandedID[D2NodeIDBrand](id),
 			Label: NewBrandedID[D2NodeLabelBrand](label),
@@ -125,6 +126,7 @@ func (d *D2Diagram) AddNodeSimple(id, label string) *D2Diagram {
 // AddNodeWithShape adds a node with a specific shape.
 func (d *D2Diagram) AddNodeWithShape(id, label string, shape D2NodeShape) *D2Diagram {
 	return d.AddNode(
+		//nolint:exhaustruct // Node with shape uses defaults for optional fields
 		D2Node{
 			ID:    NewBrandedID[D2NodeIDBrand](id),
 			Label: NewBrandedID[D2NodeLabelBrand](label),
@@ -142,6 +144,7 @@ func (d *D2Diagram) AddEdge(edge D2Edge) *D2Diagram {
 // AddEdgeSimple adds a simple edge between two nodes.
 func (d *D2Diagram) AddEdgeSimple(from, to string) *D2Diagram {
 	return d.AddEdge(
+		//nolint:exhaustruct // Simple edge uses defaults for optional fields
 		D2Edge{From: NewBrandedID[D2NodeIDBrand](from), To: NewBrandedID[D2NodeIDBrand](to)},
 	)
 }
@@ -149,6 +152,7 @@ func (d *D2Diagram) AddEdgeSimple(from, to string) *D2Diagram {
 // AddLabeledEdge adds an edge with a label.
 func (d *D2Diagram) AddLabeledEdge(from, to, label string) *D2Diagram {
 	return d.AddEdge(
+		//nolint:exhaustruct // Labeled edge uses defaults for optional fields
 		D2Edge{
 			From:  NewBrandedID[D2NodeIDBrand](from),
 			To:    NewBrandedID[D2NodeIDBrand](to),

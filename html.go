@@ -12,7 +12,9 @@ type HTMLRenderer struct {
 
 // NewHTMLRenderer creates a new HTMLRenderer.
 func NewHTMLRenderer() *HTMLRenderer {
-	return &HTMLRenderer{}
+	return &HTMLRenderer{
+		// data is initialized lazily when needed
+	}
 }
 
 // SetHeaders sets the column headers.
@@ -131,7 +133,9 @@ type HTMLTreeRenderer struct {
 
 // NewHTMLTreeRenderer creates a new HTMLTreeRenderer.
 func NewHTMLTreeRenderer() *HTMLTreeRenderer {
-	return &HTMLTreeRenderer{}
+	return &HTMLTreeRenderer{
+		// root is set via SetRoot
+	}
 }
 
 // SetRoot sets the root node of the tree.

@@ -67,6 +67,7 @@ func TestD2Diagram_AddNode(t *testing.T) {
 		t.Parallel()
 		d := NewD2Diagram()
 		result := d.AddNode(
+			//nolint:exhaustruct // Test uses minimal required fields
 			D2Node{
 				ID:    NewBrandedID[D2NodeIDBrand]("server"),
 				Label: NewBrandedID[D2NodeLabelBrand]("Web Server"),
@@ -119,6 +120,7 @@ func TestD2Diagram_AddEdge(t *testing.T) {
 		d.AddNodeSimple("a", "Node A")
 		d.AddNodeSimple("b", "Node B")
 		result := d.AddEdge(
+			//nolint:exhaustruct // Test uses minimal required fields
 			D2Edge{From: NewBrandedID[D2NodeIDBrand]("a"), To: NewBrandedID[D2NodeIDBrand]("b")},
 		)
 		if result != d {
@@ -197,7 +199,14 @@ func TestD2NodeShapes(t *testing.T) {
 		t.Run(string(shape), func(t *testing.T) {
 			t.Parallel()
 			d := NewD2Diagram()
-			d.AddNodeWithShape("node", "Test", shape)
+			d.AddNode(
+				//nolint:exhaustruct // Test uses minimal required fields
+				D2Node{
+					ID:    NewBrandedID[D2NodeIDBrand]("node"),
+					Label: NewBrandedID[D2NodeLabelBrand]("Test"),
+					Shape: shape,
+				},
+			)
 			got := d.Render()
 			if !strings.Contains(got, "node") {
 				t.Error("Render() should contain node ID")
@@ -209,16 +218,19 @@ func TestD2NodeShapes(t *testing.T) {
 func TestD2NodeWithStyle(t *testing.T) {
 	t.Parallel()
 	d := NewD2Diagram()
-	d.AddNode(D2Node{
-		ID:    NewBrandedID[D2NodeIDBrand]("styled"),
-		Label: NewBrandedID[D2NodeLabelBrand]("Styled Node"),
-		Style: D2NodeStyle{
-			Fill:        "blue",
-			Stroke:      "black",
-			StrokeWidth: 2,
-			FontSize:    14,
-		},
-	})
+	d.AddNode(
+		//nolint:exhaustruct // Test uses minimal required fields
+		D2Node{
+			ID:    NewBrandedID[D2NodeIDBrand]("styled"),
+			Label: NewBrandedID[D2NodeLabelBrand]("Styled Node"),
+			Shape: D2ShapeRectangle,
+			Style: D2NodeStyle{
+				Fill:        "blue",
+				Stroke:      "black",
+				StrokeWidth: 2,
+				FontSize:    14,
+			},
+		})
 	got := d.Render()
 	if !strings.Contains(got, "fill:blue") {
 		t.Error("Render() should contain fill style")
@@ -231,13 +243,16 @@ func TestD2NodeWithStyle(t *testing.T) {
 func TestD2EdgeWithArrows(t *testing.T) {
 	t.Parallel()
 	d := NewD2Diagram()
-	d.AddEdge(D2Edge{
-		From:        NewBrandedID[D2NodeIDBrand]("a"),
-		To:          NewBrandedID[D2NodeIDBrand]("b"),
-		Label:       NewBrandedID[D2NodeLabelBrand]("test"),
-		SourceArrow: D2ArrowDiamond,
-		TargetArrow: D2ArrowTriangle,
-	})
+	d.AddEdge(
+		//nolint:exhaustruct // Test uses minimal required fields
+		D2Edge{
+			From:        NewBrandedID[D2NodeIDBrand]("a"),
+			To:          NewBrandedID[D2NodeIDBrand]("b"),
+			Label:       NewBrandedID[D2NodeLabelBrand]("test"),
+			SourceArrow: D2ArrowDiamond,
+			TargetArrow: D2ArrowTriangle,
+		},
+	)
 	got := d.Render()
 	if !strings.Contains(got, "-diamond") {
 		t.Error("Render() should contain source arrow")
@@ -250,11 +265,15 @@ func TestD2EdgeWithArrows(t *testing.T) {
 func TestD2NodeNested(t *testing.T) {
 	t.Parallel()
 	d := NewD2Diagram()
-	d.AddNode(D2Node{
-		ID:     NewBrandedID[D2NodeIDBrand]("parent"),
-		Label:  NewBrandedID[D2NodeLabelBrand]("Parent"),
-		Nested: "child: inner\n",
-	})
+	d.AddNode(
+		//nolint:exhaustruct // Test uses minimal required fields
+		D2Node{
+			ID:     NewBrandedID[D2NodeIDBrand]("parent"),
+			Label:  NewBrandedID[D2NodeLabelBrand]("Parent"),
+			Shape:  D2ShapeRectangle,
+			Nested: "child: inner\n",
+		},
+	)
 	got := d.Render()
 	if !strings.Contains(got, "child: inner") {
 		t.Error("Render() should contain nested content")

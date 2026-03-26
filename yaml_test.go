@@ -5,6 +5,7 @@ import (
 )
 
 func TestMarshalYAML(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		name    string
 		input   any
@@ -29,6 +30,7 @@ func TestMarshalYAML(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 			got, err := MarshalYAML(tt.input)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("MarshalYAML() error = %v, wantErr %v", err, tt.wantErr)
@@ -42,6 +44,7 @@ func TestMarshalYAML(t *testing.T) {
 }
 
 func TestUnmarshalYAML(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		name    string
 		data    string
@@ -66,6 +69,7 @@ func TestUnmarshalYAML(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 			var got any
 			err := UnmarshalYAML([]byte(tt.data), &got)
 			if (err != nil) != tt.wantErr {

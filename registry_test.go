@@ -57,9 +57,12 @@ func TestCreate(t *testing.T) {
 	t.Run("existing format", func(t *testing.T) {
 		t.Parallel()
 		Unregister(FormatD2)
-		Register(FormatD2, func() Renderer {
+		err := Register(FormatD2, func() Renderer {
 			return &testRenderer{output: "d2-output"}
 		})
+		if err != nil {
+			t.Fatalf("Register() error = %v", err)
+		}
 
 		r, err := Create(FormatD2)
 		if err != nil {
@@ -88,8 +91,14 @@ func TestRegisteredFormats(t *testing.T) {
 	Unregister(FormatTable)
 	Unregister(FormatJSON)
 
-	_ = Register(FormatTable, func() Renderer { return &testRenderer{} })
-	_ = Register(FormatJSON, func() Renderer { return &testRenderer{} })
+	err := Register(FormatTable, func() Renderer { return &testRenderer{output: ""} })
+	if err != nil {
+		t.Fatalf("Register(FormatTable) error = %v", err)
+	}
+	err = Register(FormatJSON, func() Renderer { return &testRenderer{output: ""} })
+	if err != nil {
+		t.Fatalf("Register(FormatJSON) error = %v", err)
+	}
 
 	formats := RegisteredFormats()
 	if len(formats) < 2 {
@@ -107,7 +116,10 @@ func TestIsRegistered(t *testing.T) {
 	t.Run("registered", func(t *testing.T) {
 		t.Parallel()
 		Unregister(FormatHTML)
-		_ = Register(FormatHTML, func() Renderer { return &testRenderer{} })
+		err := Register(FormatHTML, func() Renderer { return &testRenderer{output: ""} })
+		if err != nil {
+			t.Fatalf("Register(FormatHTML) error = %v", err)
+		}
 		if !IsRegistered(FormatHTML) {
 			t.Error("IsRegistered(FormatHTML) = false, want true")
 		}

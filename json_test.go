@@ -6,6 +6,7 @@ import (
 )
 
 func TestMarshalJSON(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		name    string
 		input   any
@@ -34,6 +35,7 @@ func TestMarshalJSON(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 			got, err := MarshalJSON(tt.input)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("MarshalJSON() error = %v, wantErr %v", err, tt.wantErr)
@@ -47,6 +49,7 @@ func TestMarshalJSON(t *testing.T) {
 }
 
 func TestMarshalJSONIndent(t *testing.T) {
+	t.Parallel()
 	input := map[string]int{"a": 1}
 	got, err := MarshalJSONIndent(input, "", "  ")
 	if err != nil {
@@ -60,6 +63,7 @@ func TestMarshalJSONIndent(t *testing.T) {
 }
 
 func TestUnmarshalJSON(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		name    string
 		data    string
@@ -88,6 +92,7 @@ func TestUnmarshalJSON(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 			var got any
 			err := UnmarshalJSON([]byte(tt.data), &got)
 			if (err != nil) != tt.wantErr {
@@ -98,6 +103,7 @@ func TestUnmarshalJSON(t *testing.T) {
 }
 
 func TestJSONWriter(t *testing.T) {
+	t.Parallel()
 	var buf bytes.Buffer
 	w := NewJSONWriter(&buf)
 
@@ -113,6 +119,7 @@ func TestJSONWriter(t *testing.T) {
 }
 
 func TestNewJSONWriter(t *testing.T) {
+	t.Parallel()
 	var buf bytes.Buffer
 	w := NewJSONWriter(&buf)
 
