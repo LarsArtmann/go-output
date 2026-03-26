@@ -210,7 +210,7 @@ func DOTFromTree(root *TreeNode) *DOTRenderer {
 		return renderer
 	}
 
-	renderer.addTreeNodes(root, TreeNodeID{})
+	renderer.addTreeNodes(root, NewBrandedID[TreeNodeIDBrand](""))
 	return renderer
 }
 
