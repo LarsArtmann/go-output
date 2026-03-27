@@ -8,11 +8,11 @@ import (
 
 // OutputFormatFlag parses output format flags.
 type OutputFormatFlag struct {
-	value *output.OutputFormat
+	value *output.Format
 }
 
 // NewOutputFormatFlag creates a new OutputFormatFlag.
-func NewOutputFormatFlag(value *output.OutputFormat) *OutputFormatFlag {
+func NewOutputFormatFlag(value *output.Format) *OutputFormatFlag {
 	return &OutputFormatFlag{value: value}
 }
 

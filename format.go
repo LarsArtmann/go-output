@@ -117,6 +117,10 @@ func formatStrings(formats []Format) string {
 }
 
 // OutputFormat is a backward compatibility alias for Format.
+//
+// Deprecated: Use Format directly instead of OutputFormat.
+//
+//revive:disable-next-line:exported
 type OutputFormat = Format
 
 // Backward compatibility aliases for format constants.

@@ -135,6 +135,7 @@ func TestIsRegistered(t *testing.T) {
 }
 
 func TestRegistryConcurrency(t *testing.T) {
+	t.Parallel()
 	Unregister(FormatCSV)
 	Unregister(FormatJSON)
 

@@ -256,6 +256,7 @@ func TestTableData(t *testing.T) {
 }
 
 func testTableDataRowColCount(t *testing.T) {
+	t.Helper()
 	data := NewTableData([]string{"Name", "Value", "Count"})
 	if data.ColCount() != 3 {
 		t.Errorf("ColCount() = %d, want 3", data.ColCount())
@@ -272,6 +273,7 @@ func testTableDataRowColCount(t *testing.T) {
 }
 
 func testTableDataCreateRowEdges(t *testing.T) {
+	t.Helper()
 	t.Run("nil data", testCreateRowEdgesNil)
 	t.Run("empty rows", testCreateRowEdgesEmpty)
 	t.Run("single row", testCreateRowEdgesSingle)

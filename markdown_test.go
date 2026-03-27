@@ -26,6 +26,7 @@ func TestMarkdownTable(t *testing.T) {
 }
 
 func testMarkdownBasicTable(t *testing.T) {
+	t.Helper()
 	m := NewMarkdownTable()
 	m.SetHeaders([]string{"Name", "Age"}).
 		AddRow([]string{"Alice", "30"}).
@@ -45,6 +46,7 @@ func testMarkdownBasicTable(t *testing.T) {
 }
 
 func testMarkdownEmptyHeaders(t *testing.T) {
+	t.Helper()
 	m := NewMarkdownTable()
 
 	got, err := m.Render()
@@ -58,6 +60,7 @@ func testMarkdownEmptyHeaders(t *testing.T) {
 }
 
 func testMarkdownAlignment(t *testing.T) {
+	t.Helper()
 	m := NewMarkdownTable()
 	m.SetHeaders([]string{"Name", "Age"}).
 		SetAlign(1, AlignRight).
@@ -74,6 +77,7 @@ func testMarkdownAlignment(t *testing.T) {
 }
 
 func testMarkdownChaining(t *testing.T) {
+	t.Helper()
 	m := NewMarkdownTable().
 		SetHeaders([]string{"Name"}).
 		AddRow([]string{"Test"})

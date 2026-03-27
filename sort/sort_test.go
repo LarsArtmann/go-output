@@ -1,3 +1,4 @@
+// Package sort_test provides tests for the sort package.
 package sort
 
 import (
@@ -109,7 +110,6 @@ type testItem struct {
 	When  time.Time
 }
 
-//nolint:exhaustruct // Test uses partial struct initialization
 func TestSorter_New(t *testing.T) {
 	t.Parallel()
 	items := []testItem{
@@ -131,7 +131,6 @@ func TestSorter_New(t *testing.T) {
 	}
 }
 
-//nolint:exhaustruct // Test uses partial struct initialization
 func TestSorter_WithLessFunc(t *testing.T) {
 	t.Parallel()
 	items := []testItem{
@@ -150,7 +149,6 @@ func TestSorter_WithLessFunc(t *testing.T) {
 	}
 }
 
-//nolint:exhaustruct // Test uses partial struct initialization
 func TestSorter_Sort_ByName(t *testing.T) {
 	t.Parallel()
 	items := []testItem{
@@ -173,7 +171,6 @@ func TestSorter_Sort_ByName(t *testing.T) {
 	}
 }
 
-//nolint:exhaustruct // Test uses partial struct initialization
 func TestSorter_Sort_ByNameDesc(t *testing.T) {
 	t.Parallel()
 	items := []testItem{
@@ -196,7 +193,6 @@ func TestSorter_Sort_ByNameDesc(t *testing.T) {
 	}
 }
 
-//nolint:exhaustruct // Test uses partial struct initialization
 func TestSorter_Sort_ByCount(t *testing.T) {
 	t.Parallel()
 	items := []testItem{
@@ -245,7 +241,6 @@ func TestSorter_Sort_ByTime(t *testing.T) {
 	}
 }
 
-//nolint:exhaustruct // Test uses partial struct initialization
 func TestSorter_Sort_CustomLessFunc(t *testing.T) {
 	t.Parallel()
 	items := []testItem{
@@ -298,7 +293,6 @@ func TestSorter_Sort_SingleItem(t *testing.T) {
 	}
 }
 
-//nolint:exhaustruct // Test uses partial struct initialization
 func TestSorter_Sort_InvalidField(t *testing.T) {
 	t.Parallel()
 	items := []testItem{

@@ -70,27 +70,27 @@ func TestOutputFormatFlag_Parse(t *testing.T) {
 	tests := []struct {
 		name    string
 		input   string
-		want    output.OutputFormat
+		want    output.Format
 		wantErr bool
 	}{
-		{"table", "table", output.OutputFormatTable, false},
-		{"json", "json", output.OutputFormatJSON, false},
-		{"csv", "csv", output.OutputFormatCSV, false},
-		{"markdown", "markdown", output.OutputFormatMarkdown, false},
-		{"d2", "d2", output.OutputFormatD2, false},
-		{"yaml", "yaml", output.OutputFormatYAML, false},
-		{"html", "html", output.OutputFormatHTML, false},
-		{"tree", "tree", output.OutputFormatTree, false},
-		{"mermaid", "mermaid", output.OutputFormatMermaid, false},
-		{"dot", "dot", output.OutputFormatDOT, false},
-		{"invalid", "invalid", output.OutputFormatTable, true},
-		{"empty", "", output.OutputFormatTable, true},
+		{"table", "table", output.FormatTable, false},
+		{"json", "json", output.FormatJSON, false},
+		{"csv", "csv", output.FormatCSV, false},
+		{"markdown", "markdown", output.FormatMarkdown, false},
+		{"d2", "d2", output.FormatD2, false},
+		{"yaml", "yaml", output.FormatYAML, false},
+		{"html", "html", output.FormatHTML, false},
+		{"tree", "tree", output.FormatTree, false},
+		{"mermaid", "mermaid", output.FormatMermaid, false},
+		{"dot", "dot", output.FormatDOT, false},
+		{"invalid", "invalid", output.FormatTable, true},
+		{"empty", "", output.FormatTable, true},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			var val output.OutputFormat
+			var val output.Format
 			flag := NewOutputFormatFlag(&val)
 			err := flag.Parse(tt.input)
 			if (err != nil) != tt.wantErr {
@@ -106,7 +106,7 @@ func TestOutputFormatFlag_Parse(t *testing.T) {
 
 func TestOutputFormatFlag_AllowedValues(t *testing.T) {
 	t.Parallel()
-	val := output.OutputFormatTable
+	val := output.FormatTable
 	flag := NewOutputFormatFlag(&val)
 	got := flag.AllowedValues()
 	want := []string{

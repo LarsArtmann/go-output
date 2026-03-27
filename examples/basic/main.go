@@ -23,16 +23,16 @@ type rendererFunc func([]Project)
 // getRenderers returns a map of format to renderer function.
 func getRenderers() map[output.Format]rendererFunc {
 	return map[output.Format]rendererFunc{
-		output.OutputFormatTable:    renderTable,
-		output.OutputFormatJSON:     renderJSON,
-		output.OutputFormatMarkdown: renderMarkdown,
-		output.OutputFormatCSV:      renderCSV,
-		output.OutputFormatYAML:     renderYAML,
-		output.OutputFormatD2:       func(_ []Project) { renderD2() },
-		output.OutputFormatHTML:     renderHTML,
-		output.OutputFormatTree:     renderTree,
-		output.OutputFormatMermaid:  renderMermaid,
-		output.OutputFormatDOT:      renderDOT,
+		output.FormatTable:    renderTable,
+		output.FormatJSON:     renderJSON,
+		output.FormatMarkdown: renderMarkdown,
+		output.FormatCSV:      renderCSV,
+		output.FormatYAML:     renderYAML,
+		output.FormatD2:       func(_ []Project) { renderD2() },
+		output.FormatHTML:     renderHTML,
+		output.FormatTree:     renderTree,
+		output.FormatMermaid:  renderMermaid,
+		output.FormatDOT:      renderDOT,
 	}
 }
 
@@ -44,7 +44,7 @@ func main() {
 	}
 
 	// Parse command line format (default to table)
-	format := output.OutputFormatTable
+	format := output.FormatTable
 	if len(os.Args) > 1 {
 		f, err := output.ParseOutputFormat(os.Args[1])
 		if err != nil {
@@ -65,7 +65,8 @@ func renderOutput(format output.Format, projects []Project) {
 		return
 	}
 	// Handle unknown format safely - format is validated by ParseOutputFormat
-	fmt.Fprintf(os.Stderr, "Unsupported format: %s\n", format.String())
+	//nolint:gosec // format is validated enum type
+	fmt.Fprintf(os.Stderr, "Unsupported format: %s\n", format)
 	fmt.Fprintf(os.Stderr, "Available formats: %v\n", output.FormatTable.AllowedValues())
 	os.Exit(1)
 }
