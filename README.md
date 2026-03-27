@@ -126,9 +126,8 @@ go get github.com/larsartmann/go-output
 
 ```go
 require (
-    github.com/charmbracelet/lipgloss/v2 v2
-    go.yaml.in/yaml/v4 v4
-    github.com/larsartmann/cmdguard/v2 v2
+    charm.land/lipgloss/v2 v2.0.2
+    github.com/go-faster/yaml v0.4.6
 )
 ```
 

@@ -138,9 +138,7 @@ func TestSorter_WithLessFunc(t *testing.T) {
 		{Name: "a", Count: 1, When: time.Time{}},
 	}
 	sorter := New(items, output.SortByName, false)
-	result := sorter.WithLessFunc(func(a, b testItem) bool {
-		return a.Count < b.Count
-	})
+	result := sorter.WithLessFunc(func(a, b testItem) bool { return a.Count < b.Count })
 	if result != sorter {
 		t.Error("WithLessFunc() should return the same sorter")
 	}
@@ -157,39 +155,22 @@ func TestSorter_Sort_ByName(t *testing.T) {
 		{Name: "bravo", Count: 2, When: time.Time{}},
 	}
 
-	sorter := New(items, output.SortByName, false)
-	sorter.Sort()
-
-	if items[0].Name != "alpha" {
-		t.Errorf("Sort() first item = %s, want alpha", items[0].Name)
-	}
-	if items[1].Name != "bravo" {
-		t.Errorf("Sort() second item = %s, want bravo", items[1].Name)
-	}
-	if items[2].Name != "charlie" {
-		t.Errorf("Sort() third item = %s, want charlie", items[2].Name)
-	}
-}
-
-func TestSorter_Sort_ByNameDesc(t *testing.T) {
-	t.Parallel()
-	items := []testItem{
-		{Name: "charlie", Count: 3, When: time.Time{}},
-		{Name: "alpha", Count: 1, When: time.Time{}},
-		{Name: "bravo", Count: 2, When: time.Time{}},
+	// Test ascending
+	New(items, output.SortByName, false).Sort()
+	if items[0].Name != "alpha" || items[1].Name != "bravo" || items[2].Name != "charlie" {
+		t.Errorf(
+			"Sort() asc = %v, want [alpha, bravo, charlie]",
+			[]string{items[0].Name, items[1].Name, items[2].Name},
+		)
 	}
 
-	sorter := New(items, output.SortByName, true)
-	sorter.Sort()
-
-	if items[0].Name != "charlie" {
-		t.Errorf("Sort() desc first item = %s, want charlie", items[0].Name)
-	}
-	if items[1].Name != "bravo" {
-		t.Errorf("Sort() desc second item = %s, want bravo", items[1].Name)
-	}
-	if items[2].Name != "alpha" {
-		t.Errorf("Sort() desc third item = %s, want alpha", items[2].Name)
+	// Test descending
+	New(items, output.SortByName, true).Sort()
+	if items[0].Name != "charlie" || items[1].Name != "bravo" || items[2].Name != "alpha" {
+		t.Errorf(
+			"Sort() desc = %v, want [charlie, bravo, alpha]",
+			[]string{items[0].Name, items[1].Name, items[2].Name},
+		)
 	}
 }
 
@@ -201,17 +182,12 @@ func TestSorter_Sort_ByCount(t *testing.T) {
 		{Name: "bravo", Count: 20, When: time.Time{}},
 	}
 
-	sorter := New(items, output.SortBy("Count"), false)
-	sorter.Sort()
-
-	if items[0].Count != 10 {
-		t.Errorf("Sort() by count first = %d, want 10", items[0].Count)
-	}
-	if items[1].Count != 20 {
-		t.Errorf("Sort() by count second = %d, want 20", items[1].Count)
-	}
-	if items[2].Count != 30 {
-		t.Errorf("Sort() by count third = %d, want 30", items[2].Count)
+	New(items, output.SortBy("Count"), false).Sort()
+	if items[0].Count != 10 || items[1].Count != 20 || items[2].Count != 30 {
+		t.Errorf(
+			"Sort() by count = %v, want [10, 20, 30]",
+			[]int{items[0].Count, items[1].Count, items[2].Count},
+		)
 	}
 }
 
@@ -222,22 +198,17 @@ func TestSorter_Sort_ByTime(t *testing.T) {
 	later := now.Add(2 * time.Hour)
 
 	items := []testItem{
-		{Name: "now", When: now, Count: 0},
-		{Name: "later", When: later, Count: 0},
-		{Name: "earlier", When: earlier, Count: 0},
+		{Name: "now", Count: 0, When: now},
+		{Name: "later", Count: 0, When: later},
+		{Name: "earlier", Count: 0, When: earlier},
 	}
 
-	sorter := New(items, output.SortBy("When"), false)
-	sorter.Sort()
-
-	if items[0].Name != "earlier" {
-		t.Errorf("Sort() by time first = %s, want earlier", items[0].Name)
-	}
-	if items[1].Name != "now" {
-		t.Errorf("Sort() by time second = %s, want now", items[1].Name)
-	}
-	if items[2].Name != "later" {
-		t.Errorf("Sort() by time third = %s, want later", items[2].Name)
+	New(items, output.SortBy("When"), false).Sort()
+	if items[0].Name != "earlier" || items[1].Name != "now" || items[2].Name != "later" {
+		t.Errorf(
+			"Sort() by time = %v, want [earlier, now, later]",
+			[]string{items[0].Name, items[1].Name, items[2].Name},
+		)
 	}
 }
 
@@ -249,62 +220,42 @@ func TestSorter_Sort_CustomLessFunc(t *testing.T) {
 		{Name: "c", Count: 30, When: time.Time{}},
 	}
 
-	sorter := New(items, output.SortByName, false)
-	sorter.WithLessFunc(func(a, b testItem) bool {
+	New(items, output.SortByName, false).WithLessFunc(func(a, b testItem) bool {
 		return a.Count > b.Count // Sort by count descending
-	})
-	sorter.Sort()
+	}).Sort()
 
-	if items[0].Count != 30 {
-		t.Errorf("Custom LessFunc first = %d, want 30", items[0].Count)
-	}
-	if items[1].Count != 20 {
-		t.Errorf("Custom LessFunc second = %d, want 20", items[1].Count)
-	}
-	if items[2].Count != 10 {
-		t.Errorf("Custom LessFunc third = %d, want 10", items[2].Count)
+	if items[0].Count != 30 || items[1].Count != 20 || items[2].Count != 10 {
+		t.Errorf(
+			"Custom LessFunc = %v, want [30, 20, 10]",
+			[]int{items[0].Count, items[1].Count, items[2].Count},
+		)
 	}
 }
 
-func TestSorter_Sort_EmptySlice(t *testing.T) {
+func TestSorter_Sort_EdgeCases(t *testing.T) {
 	t.Parallel()
-	items := []testItem{}
 
-	sorter := New(items, output.SortByName, false)
-	sorter.Sort() // Should not panic
-
-	if len(items) != 0 {
-		t.Errorf("Sort() on empty slice should remain empty, got %d items", len(items))
+	// Empty slice
+	empty := []testItem{}
+	New(empty, output.SortByName, false).Sort()
+	if len(empty) != 0 {
+		t.Errorf("Sort() on empty slice should remain empty")
 	}
-}
 
-func TestSorter_Sort_SingleItem(t *testing.T) {
-	t.Parallel()
-	items := []testItem{{Name: "only", Count: 1, When: time.Time{}}}
-
-	sorter := New(items, output.SortByName, false)
-	sorter.Sort()
-
-	if len(items) != 1 {
-		t.Errorf("Sort() changed slice length")
-	}
-	if items[0].Name != "only" {
+	// Single item
+	single := []testItem{{Name: "only", Count: 1, When: time.Time{}}}
+	New(single, output.SortByName, false).Sort()
+	if len(single) != 1 || single[0].Name != "only" {
 		t.Errorf("Sort() changed single item")
 	}
-}
 
-func TestSorter_Sort_InvalidField(t *testing.T) {
-	t.Parallel()
-	items := []testItem{
-		{Name: "b", Count: 2, When: time.Time{}},
-		{Name: "a", Count: 1, When: time.Time{}},
+	// Invalid field - should be stable
+	invalid := []testItem{
+		{Name: "b", Count: 0, When: time.Time{}},
+		{Name: "a", Count: 0, When: time.Time{}},
 	}
-
-	sorter := New(items, output.SortBy("NonExistentField"), false)
-	sorter.Sort() // Should not panic, order should remain stable
-
-	// Since field doesn't exist, sort should be stable (no change)
-	if items[0].Name != "b" || items[1].Name != "a" {
+	New(invalid, output.SortBy("NonExistentField"), false).Sort()
+	if invalid[0].Name != "b" || invalid[1].Name != "a" {
 		t.Errorf("Sort() with invalid field should be stable")
 	}
 }

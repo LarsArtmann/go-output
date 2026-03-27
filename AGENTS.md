@@ -16,7 +16,7 @@ https://github.com/larsartmann/go-output
 
 - Go 1.26+
 - github.com/charmbracelet/lipgloss/v2 (terminal styling)
-- gopkg.in/yaml.v4 (YAML support)
+- github.com/go-faster/yaml (YAML support)
 - github.com/larsartmann/cmdguard/v2 (CLI flag integration)
 
 ## Project Structure
@@ -111,7 +111,7 @@ go test -fuzz=FuzzParseSortBy -fuzztime=1m .
 See `go.mod` for full list. Key dependencies:
 
 - `github.com/charmbracelet/lipgloss/v2` - Terminal styling
-- `gopkg.in/yaml.v3` - YAML marshaling
+- `github.com/go-faster/yaml` - YAML marshaling
 - `github.com/larsartmann/cmdguard/v2` - CLI integration
 
 ## Notes for AI Agents
