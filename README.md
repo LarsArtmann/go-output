@@ -55,7 +55,7 @@ fmt.Println(string(data))
 | `table`    | Terminal tables with lipgloss styling | `github.com/larsartmann/go-output` |
 | `json`     | JSON output with indentation          | `github.com/larsartmann/go-output` |
 | `csv`      | CSV export with headers               | `github.com/larsartmann/go-output` |
-| `tsv`      | TSV (Tab-Separated Values) export    | `github.com/larsartmann/go-output` |
+| `tsv`      | TSV (Tab-Separated Values) export     | `github.com/larsartmann/go-output` |
 | `xml`      | XML export with table structure       | `github.com/larsartmann/go-output` |
 | `markdown` | Markdown tables                       | `github.com/larsartmann/go-output` |
 | `yaml`     | YAML serialization                    | `github.com/larsartmann/go-output` |

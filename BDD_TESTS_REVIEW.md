@@ -16,12 +16,12 @@ The go-output project has **excellent test coverage** (92.1% main, 100% cmdguard
 
 ### Coverage Metrics
 
-| Package | Coverage |
-|---------|----------|
-| `github.com/larsartmann/go-output` | 92.1% |
-| `github.com/larsartmann/go-output/cmdguard` | 100.0% |
-| `github.com/larsartmann/go-output/sort` | 93.5% |
-| `github.com/larsartmann/go-output/table` | 100.0% |
+| Package                                     | Coverage |
+| ------------------------------------------- | -------- |
+| `github.com/larsartmann/go-output`          | 92.1%    |
+| `github.com/larsartmann/go-output/cmdguard` | 100.0%   |
+| `github.com/larsartmann/go-output/sort`     | 93.5%    |
+| `github.com/larsartmann/go-output/table`    | 100.0%   |
 
 ### Testing Framework
 
@@ -31,12 +31,12 @@ The go-output project has **excellent test coverage** (92.1% main, 100% cmdguard
 
 ### Test Distribution
 
-| Type | Count | Purpose |
-|------|-------|---------|
-| Unit tests | 22 files | Function/method validation |
-| Integration tests | 3 files | End-to-end rendering |
-| Fuzz tests | 2 | Format parsing robustness |
-| Benchmarks | 6 | Performance regression |
+| Type              | Count    | Purpose                    |
+| ----------------- | -------- | -------------------------- |
+| Unit tests        | 22 files | Function/method validation |
+| Integration tests | 3 files  | End-to-end rendering       |
+| Fuzz tests        | 2        | Format parsing robustness  |
+| Benchmarks        | 6        | Performance regression     |
 
 ---
 
@@ -45,6 +45,7 @@ The go-output project has **excellent test coverage** (92.1% main, 100% cmdguard
 ### What Makes Tests "BDD" and User-Centric?
 
 BDD tests should answer:
+
 1. **Who** is the user? (CLI developer using this library)
 2. **What** do they want to accomplish?
 3. **Why** does it matter to them?
@@ -52,17 +53,18 @@ BDD tests should answer:
 
 ### Current Test Characteristics
 
-| Aspect | Current State | BDD Ideal | Gap |
-|--------|---------------|-----------|-----|
-| Perspective | Implementation | End-user | **HIGH** |
-| Naming | `TestParseOutputFormat` | `TestUserCanParseValidFormats` | **MEDIUM** |
-| Structure | Input/Output pairs | Given/When/Then | **HIGH** |
-| Documentation | None | User stories | **HIGH** |
-| Workflows | Single function | Multi-step journeys | **HIGH** |
+| Aspect        | Current State           | BDD Ideal                      | Gap        |
+| ------------- | ----------------------- | ------------------------------ | ---------- |
+| Perspective   | Implementation          | End-user                       | **HIGH**   |
+| Naming        | `TestParseOutputFormat` | `TestUserCanParseValidFormats` | **MEDIUM** |
+| Structure     | Input/Output pairs      | Given/When/Then                | **HIGH**   |
+| Documentation | None                    | User stories                   | **HIGH**   |
+| Workflows     | Single function         | Multi-step journeys            | **HIGH**   |
 
 ### Examples of Current vs. BDD Style
 
 **Current (implementation-focused):**
+
 ```go
 func TestParseOutputFormat(t *testing.T) {
     tests := []struct {
@@ -79,15 +81,16 @@ func TestParseOutputFormat(t *testing.T) {
 ```
 
 **BDD (user-focused):**
+
 ```go
 func TestCLI DeveloperFormatsProjectData(t *testing.T) {
     t.Run("As a CLI developer, I want to output data as JSON", func(t *testing.T) {
         // Given: I have project data
         projects := []Project{{Name: "Alpha", Health: 90}}
-        
+
         // When: I render it as JSON
         output, err := renderAsJSON(projects)
-        
+
         // Then: I get valid JSON that I can pipe to other tools
         assert.NoError(t, err)
         assert.True(t, json.Valid(output))
@@ -123,14 +126,14 @@ func TestCLI DeveloperFormatsProjectData(t *testing.T) {
 
 ### Specific Missing Test Cases
 
-| Scenario | Current Coverage | Priority |
-|----------|------------------|----------|
-| Empty dataset handling | Partial | HIGH |
-| Very large datasets | None | MEDIUM |
-| Unicode/international characters | None | HIGH |
-| Concurrent rendering | None | MEDIUM |
-| Memory efficiency | None | LOW |
-| CLI flag integration | Partial | MEDIUM |
+| Scenario                         | Current Coverage | Priority |
+| -------------------------------- | ---------------- | -------- |
+| Empty dataset handling           | Partial          | HIGH     |
+| Very large datasets              | None             | MEDIUM   |
+| Unicode/international characters | None             | HIGH     |
+| Concurrent rendering             | None             | MEDIUM   |
+| Memory efficiency                | None             | LOW      |
+| CLI flag integration             | Partial          | MEDIUM   |
 
 ---
 
@@ -140,15 +143,15 @@ func TestCLI DeveloperFormatsProjectData(t *testing.T) {
 
 ### Rationale
 
-| Factor | Standard Go | Ginkgo | Winner |
-|--------|-------------|--------|--------|
-| Idiomatic | Yes | No | Go |
-| Learning curve | None | Medium | Go |
-| Dependency count | 0 | +2 | Go |
-| IDE support | Excellent | Good | Go |
-| Stack traces | Clear | Complex | Go |
-| BDD DSL | Manual | Built-in | Ginkgo |
-| Community alignment | High | Declining | Go |
+| Factor              | Standard Go | Ginkgo    | Winner |
+| ------------------- | ----------- | --------- | ------ |
+| Idiomatic           | Yes         | No        | Go     |
+| Learning curve      | None        | Medium    | Go     |
+| Dependency count    | 0           | +2        | Go     |
+| IDE support         | Excellent   | Good      | Go     |
+| Stack traces        | Clear       | Complex   | Go     |
+| BDD DSL             | Manual      | Built-in  | Ginkgo |
+| Community alignment | High        | Declining | Go     |
 
 ### Why Ginkgo is Wrong for This Project
 
@@ -165,16 +168,16 @@ You can achieve BDD benefits without Ginkgo:
 func TestUserCanRenderDataInMultipleFormats(t *testing.T) {
     // User Story: As a CLI developer, I want consistent output across formats
     // so that my users can choose their preferred format.
-    
+
     data := NewTableData([]string{"Name", "Value"})
     data.AddRow([]string{"Test", "42"})
-    
+
     formats := map[string]func() string{
         "JSON":     func() string { return mustRenderJSON(data) },
         "CSV":      func() string { return mustRenderCSV(data) },
         "Markdown": func() string { return mustRenderMarkdown(data) },
     }
-    
+
     for name, render := range formats {
         t.Run(name, func(t *testing.T) {
             output := render()
@@ -192,12 +195,14 @@ func TestUserCanRenderDataInMultipleFormats(t *testing.T) {
 ### Phase 1: Improve Current Tests (No Framework Change)
 
 1. **Rename tests to describe user behavior**
+
    ```go
    // Before: TestParseOutputFormat
    // After:  TestUserCanParseValidFormatStrings
    ```
 
 2. **Add context comments**
+
    ```go
    // TestUserCanParseValidFormatStrings validates that CLI developers
    // can pass user input directly to ParseOutputFormat and receive
@@ -221,7 +226,7 @@ package output_test
 
 import (
     "testing"
-    
+
     "github.com/larsartmann/go-output"
 )
 
@@ -233,7 +238,7 @@ func TestCLI DeveloperJourney(t *testing.T) {
         assert.NoError(t, err)
         assert.Equal(t, output.FormatJSON, format)
     })
-    
+
     t.Run("receives helpful error for invalid format", func(t *testing.T) {
         // Simulating: mytool --format invalid
         _, err := output.ParseOutputFormat("invalid")
@@ -253,11 +258,11 @@ Create `workflow_test.go`:
 func TestTransformDataBetweenFormats(t *testing.T) {
     // Given: Source data in CSV format
     csvData := "Name,Value\nAlpha,90\nBeta,75"
-    
+
     // When: User converts to JSON
     parsed := parseCSV(csvData)
     jsonOutput, err := output.MarshalJSONIndent(parsed, "", "  ")
-    
+
     // Then: JSON is valid and contains same data
     assert.NoError(t, err)
     assert.Contains(t, string(jsonOutput), "Alpha")
@@ -268,14 +273,14 @@ func TestTransformDataBetweenFormats(t *testing.T) {
 
 ## Test Quality Scorecard
 
-| Category | Score | Target | Gap |
-|----------|-------|--------|-----|
-| Coverage | 92% | 90% | Met |
-| User perspective | 20% | 80% | **-60%** |
-| Error scenarios | 60% | 90% | -30% |
-| Integration | 40% | 70% | -30% |
-| Documentation | 10% | 60% | -50% |
-| **Overall** | **44%** | **78%** | **-34%** |
+| Category         | Score   | Target  | Gap      |
+| ---------------- | ------- | ------- | -------- |
+| Coverage         | 92%     | 90%     | Met      |
+| User perspective | 20%     | 80%     | **-60%** |
+| Error scenarios  | 60%     | 90%     | -30%     |
+| Integration      | 40%     | 70%     | -30%     |
+| Documentation    | 10%     | 60%     | -50%     |
+| **Overall**      | **44%** | **78%** | **-34%** |
 
 ---
 
@@ -284,6 +289,7 @@ func TestTransformDataBetweenFormats(t *testing.T) {
 The project has **excellent coverage** but tests are **implementation-focused** rather than **user-focused**. The gap is not in what is tested, but in how tests are structured and named.
 
 **Key Actions:**
+
 1. Do NOT adopt Ginkgo
 2. Rename tests to reflect user behavior
 3. Add user story documentation to test files
@@ -294,4 +300,4 @@ The project has **excellent coverage** but tests are **implementation-focused** 
 
 ---
 
-*Generated by AI Engineering Review - 2026-03-27*
+_Generated by AI Engineering Review - 2026-03-27_
