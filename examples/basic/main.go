@@ -103,37 +103,57 @@ func renderMarkdown(projects []Project) {
 	fmt.Println(out)
 }
 
+// projectHeaders defines the common headers for project data.
+var projectHeaders = []string{"Name", "Health", "Complexity"}
+
+// projectToRow converts a Project to a row slice.
+func projectToRow(p Project) []string {
+	return []string{p.Name, strconv.Itoa(p.Health), strconv.Itoa(p.Complexity)}
+}
+
+// projectToTableDataRow converts a Project to a TableData row with formatting.
+func projectToTableDataRow(p Project) []string {
+	return []string{
+		p.Name,
+		strconv.Itoa(p.Health) + "%",
+		strconv.Itoa(p.Complexity) + "/10",
+	}
+}
+
+// projectsToTableData creates TableData from projects.
+func projectsToTableData(projects []Project) *output.TableData {
+	data := output.NewTableData(projectHeaders)
+	for _, p := range projects {
+		data.AddRow(projectToTableDataRow(p))
+	}
+	return data
+}
+
 func renderCSV(projects []Project) {
 	w := output.NewCSVWriter(os.Stdout)
-	if err := w.WriteHeader([]string{"Name", "Health", "Complexity"}); err != nil {
-		fmt.Fprintf(os.Stderr, "Error writing header: %v\n", err)
-		os.Exit(1)
-	}
-	for _, p := range projects {
-		if err := w.WriteRow(
-			[]string{p.Name, strconv.Itoa(p.Health), strconv.Itoa(p.Complexity)},
-		); err != nil {
-			fmt.Fprintf(os.Stderr, "Error writing row: %v\n", err)
-			os.Exit(1)
-		}
-	}
-	w.Flush()
-	if err := w.Error(); err != nil {
-		fmt.Fprintf(os.Stderr, "Error flushing: %v\n", err)
-		os.Exit(1)
-	}
+	renderDelimited(w, projects)
 }
 
 func renderTSV(projects []Project) {
 	w := output.NewTSVWriter(os.Stdout)
-	if err := w.WriteHeader([]string{"Name", "Health", "Complexity"}); err != nil {
+	renderDelimited(w, projects)
+}
+
+// writer interface matches both CSVWriter and TSVWriter.
+type writer interface {
+	WriteHeader(cols []string) error
+	WriteRow(values []string) error
+	Flush()
+	Error() error
+}
+
+func renderDelimited(w writer, projects []Project) {
+	if err := w.WriteHeader(projectHeaders); err != nil {
 		fmt.Fprintf(os.Stderr, "Error writing header: %v\n", err)
 		os.Exit(1)
 	}
 	for _, p := range projects {
-		if err := w.WriteRow(
-			[]string{p.Name, strconv.Itoa(p.Health), strconv.Itoa(p.Complexity)},
-		); err != nil {
+		if err := w.WriteRow(projectToRow(p)); err != nil {
 			fmt.Fprintf(os.Stderr, "Error writing row: %v\n", err)
 			os.Exit(1)
 		}
@@ -208,27 +228,13 @@ func renderTree(projects []Project) {
 }
 
 func renderMermaid(projects []Project) {
-	data := output.NewTableData([]string{"Name", "Health", "Complexity"})
-	for _, p := range projects {
-		data.AddRow([]string{
-			p.Name,
-			strconv.Itoa(p.Health) + "%",
-			strconv.Itoa(p.Complexity) + "/10",
-		})
-	}
+	data := projectsToTableData(projects)
 	mermaid := output.MermaidFlowchartRenderer(data)
 	fmt.Println(mermaid.Render())
 }
 
 func renderDOT(projects []Project) {
-	data := output.NewTableData([]string{"Name", "Health", "Complexity"})
-	for _, p := range projects {
-		data.AddRow([]string{
-			p.Name,
-			strconv.Itoa(p.Health) + "%",
-			strconv.Itoa(p.Complexity) + "/10",
-		})
-	}
+	data := projectsToTableData(projects)
 	dot := output.DOTFromTableData(data)
 	fmt.Println(dot.Render())
 }

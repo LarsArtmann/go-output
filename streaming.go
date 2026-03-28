@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"io"
 	"strings"
+
+	"github.com/larsartmann/go-output/internal/escape"
 )
 
 // StreamingRenderer is an interface for renderers that support streaming output.
@@ -99,7 +101,7 @@ func (r *StreamingHTMLRenderer) writeTableOpen(w io.Writer) error {
 
 func (r *StreamingHTMLRenderer) writeHeaders(w io.Writer) error {
 	for _, h := range r.data.Headers {
-		if _, err := w.Write([]byte("<th>" + escapeHTML(h) + "</th>\n")); err != nil {
+		if _, err := w.Write([]byte("<th>" + escape.HTML(h) + "</th>\n")); err != nil {
 			return fmt.Errorf("write header cell: %w", err)
 		}
 	}
@@ -131,7 +133,7 @@ func (r *StreamingHTMLRenderer) writeRow(w io.Writer, row []string, rowIndex int
 		return fmt.Errorf("write row %d start: %w", rowIndex, err)
 	}
 	for colIndex, cell := range row {
-		if _, err := w.Write([]byte("<td>" + escapeHTML(cell) + "</td>\n")); err != nil {
+		if _, err := w.Write([]byte("<td>" + escape.HTML(cell) + "</td>\n")); err != nil {
 			return fmt.Errorf("write row %d cell %d: %w", rowIndex, colIndex, err)
 		}
 	}
@@ -149,28 +151,6 @@ func (r *StreamingHTMLRenderer) writeTableClose(w io.Writer) error {
 		return fmt.Errorf("write table end: %w", err)
 	}
 	return nil
-}
-
-// escapeHTML escapes HTML special characters.
-func escapeHTML(s string) string {
-	var b strings.Builder
-	for _, r := range s {
-		switch r {
-		case '<':
-			b.WriteString("&lt;")
-		case '>':
-			b.WriteString("&gt;")
-		case '&':
-			b.WriteString("&amp;")
-		case '"':
-			b.WriteString("&quot;")
-		case '\'':
-			b.WriteString("&#39;")
-		default:
-			b.WriteRune(r)
-		}
-	}
-	return b.String()
 }
 
 // StreamingRendererFromRenderer wraps a standard Renderer to implement StreamingRenderer.

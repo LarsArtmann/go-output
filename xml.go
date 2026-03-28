@@ -4,6 +4,8 @@ import (
 	"encoding/xml"
 	"fmt"
 	"strings"
+
+	"github.com/larsartmann/go-output/internal/escape"
 )
 
 // MarshalXML encodes v to XML.
@@ -45,7 +47,7 @@ func (x *XMLWriter) WriteHeader(cols []string) error {
 	x.writer.WriteString("  <headers>\n")
 	for _, col := range cols {
 		x.writer.WriteString("    <column>")
-		x.writer.WriteString(xmlEscape(col))
+		x.writer.WriteString(escape.XML(col))
 		x.writer.WriteString("</column>\n")
 	}
 	x.writer.WriteString("  </headers>\n")
@@ -58,7 +60,7 @@ func (x *XMLWriter) WriteRow(values []string) error {
 	x.writer.WriteString("    <row>\n")
 	for _, val := range values {
 		x.writer.WriteString("      <cell>")
-		x.writer.WriteString(xmlEscape(val))
+		x.writer.WriteString(escape.XML(val))
 		x.writer.WriteString("</cell>\n")
 	}
 	x.writer.WriteString("    </row>\n")
@@ -97,7 +99,7 @@ func MarshalXMLFromTableData(data *TableData) ([]byte, error) {
 		b.WriteString("  <headers>\n")
 		for _, h := range data.Headers {
 			b.WriteString("    <column>")
-			b.WriteString(xmlEscape(h))
+			b.WriteString(escape.XML(h))
 			b.WriteString("</column>\n")
 		}
 		b.WriteString("  </headers>\n")
@@ -108,7 +110,7 @@ func MarshalXMLFromTableData(data *TableData) ([]byte, error) {
 		b.WriteString("    <row>\n")
 		for _, cell := range row {
 			b.WriteString("      <cell>")
-			b.WriteString(xmlEscape(cell))
+			b.WriteString(escape.XML(cell))
 			b.WriteString("</cell>\n")
 		}
 		b.WriteString("    </row>\n")
@@ -117,26 +119,4 @@ func MarshalXMLFromTableData(data *TableData) ([]byte, error) {
 	b.WriteString("</table>\n")
 
 	return []byte(b.String()), nil
-}
-
-// xmlEscape escapes special XML characters.
-func xmlEscape(s string) string {
-	var b strings.Builder
-	for _, r := range s {
-		switch r {
-		case '<':
-			b.WriteString("&lt;")
-		case '>':
-			b.WriteString("&gt;")
-		case '&':
-			b.WriteString("&amp;")
-		case '"':
-			b.WriteString("&quot;")
-		case '\'':
-			b.WriteString("&apos;")
-		default:
-			b.WriteRune(r)
-		}
-	}
-	return b.String()
 }

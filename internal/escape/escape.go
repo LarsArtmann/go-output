@@ -3,30 +3,24 @@ package escape
 
 import "strings"
 
+type mode struct {
+	apos string
+}
+
+var htmlMode = mode{apos: "&#39;"}
+var xmlMode = mode{apos: "&apos;"}
+
 // HTML escapes HTML special characters.
 func HTML(s string) string {
-	var b strings.Builder
-	for _, r := range s {
-		switch r {
-		case '<':
-			b.WriteString("&lt;")
-		case '>':
-			b.WriteString("&gt;")
-		case '&':
-			b.WriteString("&amp;")
-		case '"':
-			b.WriteString("&quot;")
-		case '\'':
-			b.WriteString("&#39;")
-		default:
-			b.WriteRune(r)
-		}
-	}
-	return b.String()
+	return escape(s, htmlMode)
 }
 
 // XML escapes XML special characters.
 func XML(s string) string {
+	return escape(s, xmlMode)
+}
+
+func escape(s string, m mode) string {
 	var b strings.Builder
 	for _, r := range s {
 		switch r {
@@ -39,7 +33,7 @@ func XML(s string) string {
 		case '"':
 			b.WriteString("&quot;")
 		case '\'':
-			b.WriteString("&apos;")
+			b.WriteString(m.apos)
 		default:
 			b.WriteRune(r)
 		}
