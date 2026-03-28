@@ -115,6 +115,10 @@ func renderProject(format output.Format, projects []TestProject) string {
 		return renderMarkdownFormat(projects)
 	case output.FormatCSV:
 		return renderCSVFormat(projects)
+	case output.FormatTSV:
+		return renderTSVFormat(projects)
+	case output.FormatXML:
+		return renderXMLFormat(projects)
 	case output.FormatYAML:
 		return renderYAMLFormat(projects)
 	case output.FormatHTML:
@@ -165,6 +169,33 @@ func renderCSVFormat(projects []TestProject) string {
 	}
 	w.Flush()
 	return buf.String()
+}
+
+func renderTSVFormat(projects []TestProject) string {
+	var buf bytes.Buffer
+	w := output.NewTSVWriter(&buf)
+	_ = w.WriteHeader([]string{"Name", "Health", "Complexity"})
+	for _, p := range projects {
+		_ = w.WriteRow([]string{p.Name, formatHealth(p.Health), formatComplexity(p.Complexity)})
+	}
+	w.Flush()
+	return buf.String()
+}
+
+func renderXMLFormat(projects []TestProject) string {
+	data, _ := output.MarshalXMLFromTableData(&output.TableData{
+		Headers: []string{"Name", "Health", "Complexity"},
+		Rows:    formatProjectsToRows(projects),
+	})
+	return string(data)
+}
+
+func formatProjectsToRows(projects []TestProject) [][]string {
+	rows := make([][]string, len(projects))
+	for i, p := range projects {
+		rows[i] = []string{p.Name, formatHealth(p.Health), formatComplexity(p.Complexity)}
+	}
+	return rows
 }
 
 func renderYAMLFormat(projects []TestProject) string {

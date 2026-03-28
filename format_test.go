@@ -75,6 +75,7 @@ func TestOutputFormatAllowedValues(t *testing.T) {
 		"csv",
 		"tsv",
 		"markdown",
+		"xml",
 		"d2",
 		"yaml",
 		"html",
@@ -232,15 +233,52 @@ func TestInvalidFormatError(t *testing.T) {
 	t.Parallel()
 	err := &InvalidFormatError{
 		Value:   "invalid",
-		Allowed: []Format{FormatTable, FormatJSON},
+		Allowed: nil,
 	}
 
 	got := err.Error()
-	wantContains := []string{"invalid format", "invalid", "table", "json"}
+	wantContains := []string{"invalid format", "invalid"}
 	for _, want := range wantContains {
 		if !strings.Contains(got, want) {
 			t.Errorf("Error() = %q, should contain %q", got, want)
 		}
+	}
+}
+
+func TestFormatCategory(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		format    Format
+		wantTable bool
+		wantTree  bool
+		wantGraph bool
+	}{
+		{FormatTable, true, false, false},
+		{FormatJSON, true, false, false},
+		{FormatCSV, true, false, false},
+		{FormatTSV, true, false, false},
+		{FormatMarkdown, true, false, false},
+		{FormatYAML, true, false, false},
+		{FormatD2, true, false, true}, // D2 is both table and graph
+		{FormatHTML, false, true, false},
+		{FormatTree, false, true, false},
+		{FormatMermaid, false, false, true},
+		{FormatDOT, false, false, true},
+	}
+
+	for _, tt := range tests {
+		t.Run(string(tt.format), func(t *testing.T) {
+			t.Parallel()
+			if got := tt.format.IsTableFormat(); got != tt.wantTable {
+				t.Errorf("IsTableFormat() = %v, want %v", got, tt.wantTable)
+			}
+			if got := tt.format.IsTreeFormat(); got != tt.wantTree {
+				t.Errorf("IsTreeFormat() = %v, want %v", got, tt.wantTree)
+			}
+			if got := tt.format.IsGraphFormat(); got != tt.wantGraph {
+				t.Errorf("IsGraphFormat() = %v, want %v", got, tt.wantGraph)
+			}
+		})
 	}
 }
 

@@ -209,14 +209,3 @@ func TestContainsString(t *testing.T) {
 		})
 	}
 }
-
-func TestFormatStrings(t *testing.T) {
-	t.Parallel()
-	formats := []Format{FormatTable, FormatJSON, FormatCSV}
-	got := formatStrings(formats)
-	want := "table, json, csv"
-
-	if got != want {
-		t.Errorf("formatStrings() = %q, want %q", got, want)
-	}
-}

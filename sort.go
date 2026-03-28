@@ -3,7 +3,8 @@ package output
 
 import (
 	"fmt"
-	"slices"
+
+	"github.com/larsartmann/go-output/enum"
 )
 
 // SortBy specifies the field to sort by.
@@ -31,10 +32,11 @@ var sortByValues = []SortBy{
 
 // ParseSortBy parses a sort field string.
 func ParseSortBy(s string) (SortBy, error) {
-	if slices.Contains(sortByValues, SortBy(s)) {
-		return SortBy(s), nil
+	v, err := enum.Parse(sortByValues, s, func(s SortBy) string { return string(s) })
+	if err != nil {
+		return "", fmt.Errorf("invalid sort by: %q", s)
 	}
-	return "", fmt.Errorf("invalid sort by: %q (allowed: %v)", s, sortByValues)
+	return v, nil
 }
 
 func (s SortBy) String() string {
@@ -43,14 +45,10 @@ func (s SortBy) String() string {
 
 // AllowedValues returns all valid sort field values.
 func (s SortBy) AllowedValues() []string {
-	values := make([]string, len(sortByValues))
-	for i, v := range sortByValues {
-		values[i] = string(v)
-	}
-	return values
+	return enum.AllowedStrings(sortByValues, func(s SortBy) string { return string(s) })
 }
 
 // IsValid checks if the sort field is valid.
 func (s SortBy) IsValid() bool {
-	return slices.Contains(sortByValues, s)
+	return enum.Contains(sortByValues, s)
 }

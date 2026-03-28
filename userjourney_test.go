@@ -197,7 +197,7 @@ func TestHandleEdgeCases(t *testing.T) {
 
 		// Given: User provides invalid format string
 		// When: I parse it
-		_, err := output.ParseOutputFormat("xml")
+		_, err := output.ParseOutputFormat("invalid_format")
 
 		// Then: I get clear error
 		if err == nil {

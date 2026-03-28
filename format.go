@@ -2,8 +2,9 @@ package output
 
 import (
 	"fmt"
-	"slices"
 	"strings"
+
+	"github.com/larsartmann/go-output/enum"
 )
 
 // Format represents the available output format options for CLI applications.
@@ -16,6 +17,7 @@ const (
 	FormatCSV      Format = "csv"
 	FormatTSV      Format = "tsv"
 	FormatMarkdown Format = "markdown"
+	FormatXML      Format = "xml"
 	FormatD2       Format = "d2"
 	FormatYAML     Format = "yaml"
 	FormatHTML     Format = "html"
@@ -31,6 +33,7 @@ var formatValues = []Format{
 	FormatCSV,
 	FormatTSV,
 	FormatMarkdown,
+	FormatXML,
 	FormatD2,
 	FormatYAML,
 	FormatHTML,
@@ -41,12 +44,11 @@ var formatValues = []Format{
 
 // ParseFormat converts a string to Format, returning an error if invalid.
 func ParseFormat(s string) (Format, error) {
-	for _, v := range formatValues {
-		if string(v) == s {
-			return v, nil
-		}
+	v, err := enum.Parse(formatValues, s, func(f Format) string { return string(f) })
+	if err != nil {
+		return "", &InvalidFormatError{Value: s, Allowed: formatValues}
 	}
-	return "", &InvalidFormatError{Value: s, Allowed: formatValues}
+	return v, nil
 }
 
 // String returns the string representation of the format.
@@ -56,45 +58,74 @@ func (f Format) String() string {
 
 // AllowedValues returns all valid output format values for CLI help text.
 func (f Format) AllowedValues() []string {
-	values := make([]string, len(formatValues))
-	for i, v := range formatValues {
-		values[i] = string(v)
-	}
-	return values
+	return enum.AllowedStrings(formatValues, func(f Format) string { return string(f) })
 }
 
 // IsValid returns true if the format is a valid Format value.
 func (f Format) IsValid() bool {
-	return slices.Contains(formatValues, f)
+	return enum.Contains(formatValues, f)
 }
+
+// Format category for classification.
+type FormatCategory int
+
+const (
+	CategoryTable FormatCategory = iota
+	CategoryTree
+	CategoryGraph
+)
+
+var (
+	//nolint:gochecknoglobals // Map for table format classification.
+	tableFormats = map[Format]bool{
+		FormatTable:    true,
+		FormatJSON:     true,
+		FormatCSV:      true,
+		FormatTSV:      true,
+		FormatXML:      true,
+		FormatMarkdown: true,
+		FormatYAML:     true,
+		FormatD2:       true,
+	}
+
+	//nolint:gochecknoglobals // Map for tree format classification.
+	treeFormats = map[Format]bool{
+		FormatTree: true,
+		FormatHTML: true,
+	}
+
+	//nolint:gochecknoglobals // Map for graph format classification.
+	graphFormats = map[Format]bool{
+		FormatD2:      true,
+		FormatMermaid: true,
+		FormatDOT:     true,
+	}
+)
 
 // IsTableFormat returns true if this is a table-based format.
 func (f Format) IsTableFormat() bool {
-	switch f {
-	case FormatTable, FormatJSON, FormatCSV, FormatTSV, FormatMarkdown, FormatYAML, FormatD2:
-		return true
-	case FormatHTML, FormatTree, FormatMermaid, FormatDOT:
-		return false
-	default:
-		return false
-	}
+	return tableFormats[f]
 }
 
 // IsTreeFormat returns true if this is a tree-based format.
 func (f Format) IsTreeFormat() bool {
-	return f == FormatTree || f == FormatHTML
+	return treeFormats[f]
 }
 
 // IsGraphFormat returns true if this is a graph/diagram format.
 func (f Format) IsGraphFormat() bool {
-	switch f {
-	case FormatD2, FormatMermaid, FormatDOT:
-		return true
-	case FormatTable, FormatJSON, FormatCSV, FormatTSV, FormatMarkdown, FormatYAML, FormatHTML, FormatTree:
-		return false
-	default:
-		return false
+	return graphFormats[f]
+}
+
+// Category returns the category of the format.
+func (f Format) Category() FormatCategory {
+	if treeFormats[f] {
+		return CategoryTree
 	}
+	if graphFormats[f] {
+		return CategoryGraph
+	}
+	return CategoryTable
 }
 
 // InvalidFormatError represents an invalid format error.
@@ -104,17 +135,20 @@ type InvalidFormatError struct {
 }
 
 func (e *InvalidFormatError) Error() string {
-	return "invalid format: " + e.Value + " (allowed: " + formatStrings(e.Allowed) + ")"
-}
-
-func formatStrings(formats []Format) string {
+	if e.Allowed == nil {
+		return "invalid format: " + e.Value
+	}
 	var b strings.Builder
-	for i, f := range formats {
+	b.WriteString("invalid format: ")
+	b.WriteString(e.Value)
+	b.WriteString(" (allowed: ")
+	for i, f := range e.Allowed {
 		if i > 0 {
 			b.WriteString(", ")
 		}
 		b.WriteString(string(f))
 	}
+	b.WriteString(")")
 	return b.String()
 }
 
@@ -131,6 +165,7 @@ const (
 	OutputFormatJSON     = FormatJSON
 	OutputFormatCSV      = FormatCSV
 	OutputFormatTSV      = FormatTSV
+	OutputFormatXML      = FormatXML
 	OutputFormatMarkdown = FormatMarkdown
 	OutputFormatD2       = FormatD2
 	OutputFormatYAML     = FormatYAML

@@ -4,7 +4,7 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/larsartmann/go-output)](https://goreportcard.com/report/github.com/larsartmann/go-output)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A Go library that formats structured data (tables, trees, graphs) into 10 different output formats with type-safe enums and zero-config color support.
+A Go library that formats structured data (tables, trees, graphs) into 12 different output formats with type-safe enums and zero-config color support.
 
 ## Purpose
 
@@ -34,6 +34,16 @@ w := output.NewCSVWriter(os.Stdout)
 w.WriteHeader([]string{"Name", "Value"})
 w.WriteRow([]string{"Item", "123"})
 w.Flush()
+
+// TSV output
+tw := output.NewTSVWriter(os.Stdout)
+tw.WriteHeader([]string{"Name", "Value"})
+tw.WriteRow([]string{"Item", "123"})
+tw.Flush()
+
+// XML output
+data, _ := output.MarshalXMLFromTableData(tableData)
+fmt.Println(string(data))
 ```
 
 ## Supported Formats
@@ -45,8 +55,11 @@ w.Flush()
 | `table`    | Terminal tables with lipgloss styling | `github.com/larsartmann/go-output` |
 | `json`     | JSON output with indentation          | `github.com/larsartmann/go-output` |
 | `csv`      | CSV export with headers               | `github.com/larsartmann/go-output` |
+| `tsv`      | TSV (Tab-Separated Values) export    | `github.com/larsartmann/go-output` |
+| `xml`      | XML export with table structure       | `github.com/larsartmann/go-output` |
 | `markdown` | Markdown tables                       | `github.com/larsartmann/go-output` |
 | `yaml`     | YAML serialization                    | `github.com/larsartmann/go-output` |
+| `d2`       | D2 diagram shapes                     | `github.com/larsartmann/go-output` |
 
 ### Tree Formats
 
@@ -119,7 +132,7 @@ import (
 )
 
 type ListFlags struct {
-    Format output.OutputFormat `flag:"format" default:"table" help:"Output format (table, json, csv, markdown, yaml, tree, html, d2, mermaid, dot)"`
+    Format output.OutputFormat `flag:"format" default:"table" help:"Output format (table, json, csv, tsv, xml, markdown, yaml, tree, html, d2, mermaid, dot)"`
     SortBy output.SortBy       `flag:"sort-by" default:"name" help:"Sort by (name, importance, created_at, updated_at, health, complexity)"`
     Color  output.ColorMode    `flag:"color" default:"auto" help:"Color mode (auto, always, never)"`
 }

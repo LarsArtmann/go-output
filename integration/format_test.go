@@ -36,7 +36,7 @@ func TestInvalidFormatError(t *testing.T) {
 
 	err := &output.InvalidFormatError{
 		Value:   "invalid",
-		Allowed: []output.Format{output.FormatTable},
+		Allowed: nil,
 	}
 	result := err.Error()
 

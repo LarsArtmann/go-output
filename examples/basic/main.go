@@ -27,6 +27,8 @@ func getRenderers() map[output.Format]rendererFunc {
 		output.FormatJSON:     renderJSON,
 		output.FormatMarkdown: renderMarkdown,
 		output.FormatCSV:      renderCSV,
+		output.FormatTSV:      renderTSV,
+		output.FormatXML:      renderXML,
 		output.FormatYAML:     renderYAML,
 		output.FormatD2:       func(_ []Project) { renderD2() },
 		output.FormatHTML:     renderHTML,
@@ -120,6 +122,44 @@ func renderCSV(projects []Project) {
 		fmt.Fprintf(os.Stderr, "Error flushing: %v\n", err)
 		os.Exit(1)
 	}
+}
+
+func renderTSV(projects []Project) {
+	w := output.NewTSVWriter(os.Stdout)
+	if err := w.WriteHeader([]string{"Name", "Health", "Complexity"}); err != nil {
+		fmt.Fprintf(os.Stderr, "Error writing header: %v\n", err)
+		os.Exit(1)
+	}
+	for _, p := range projects {
+		if err := w.WriteRow(
+			[]string{p.Name, strconv.Itoa(p.Health), strconv.Itoa(p.Complexity)},
+		); err != nil {
+			fmt.Fprintf(os.Stderr, "Error writing row: %v\n", err)
+			os.Exit(1)
+		}
+	}
+	w.Flush()
+	if err := w.Error(); err != nil {
+		fmt.Fprintf(os.Stderr, "Error flushing: %v\n", err)
+		os.Exit(1)
+	}
+}
+
+func renderXML(projects []Project) {
+	data := output.NewTableData([]string{"Name", "Health", "Complexity"})
+	for _, p := range projects {
+		data.AddRow([]string{
+			p.Name,
+			strconv.Itoa(p.Health),
+			strconv.Itoa(p.Complexity),
+		})
+	}
+	xmlData, err := output.MarshalXMLFromTableData(data)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+		os.Exit(1)
+	}
+	fmt.Println(string(xmlData))
 }
 
 func renderYAML(projects []Project) {

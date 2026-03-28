@@ -4,7 +4,8 @@ package output
 import (
 	"fmt"
 	"os"
-	"slices"
+
+	"github.com/larsartmann/go-output/enum"
 )
 
 // ColorMode controls terminal color output.
@@ -26,10 +27,11 @@ var colorModeValues = []ColorMode{
 
 // ParseColorMode parses a color mode string.
 func ParseColorMode(s string) (ColorMode, error) {
-	if slices.Contains(colorModeValues, ColorMode(s)) {
-		return ColorMode(s), nil
+	v, err := enum.Parse(colorModeValues, s, func(c ColorMode) string { return string(c) })
+	if err != nil {
+		return "", fmt.Errorf("invalid color mode: %q", s)
 	}
-	return "", fmt.Errorf("invalid color mode: %q (allowed: %v)", s, colorModeValues)
+	return v, nil
 }
 
 func (c ColorMode) String() string {
@@ -38,16 +40,12 @@ func (c ColorMode) String() string {
 
 // AllowedValues returns all valid color mode values.
 func (c ColorMode) AllowedValues() []string {
-	values := make([]string, len(colorModeValues))
-	for i, v := range colorModeValues {
-		values[i] = string(v)
-	}
-	return values
+	return enum.AllowedStrings(colorModeValues, func(c ColorMode) string { return string(c) })
 }
 
 // IsValid checks if the color mode is valid.
 func (c ColorMode) IsValid() bool {
-	return slices.Contains(colorModeValues, c)
+	return enum.Contains(colorModeValues, c)
 }
 
 // ShouldColor returns true if colors should be enabled.
