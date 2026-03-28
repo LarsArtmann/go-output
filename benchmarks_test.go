@@ -1,6 +1,7 @@
 package output
 
 import (
+	"bytes"
 	"testing"
 )
 
@@ -110,5 +111,59 @@ func BenchmarkTableDataCreateRowEdges(b *testing.B) {
 	b.ResetTimer()
 	for b.Loop() {
 		data.CreateRowEdges()
+	}
+}
+
+func BenchmarkCSVWriter(b *testing.B) {
+	var buf bytes.Buffer
+	const headerCell = "Header"
+	const dataCell = "Cell"
+	headers := make([]string, 10)
+	for i := range headers {
+		headers[i] = headerCell
+	}
+	rows := make([][]string, 100)
+	for i := range rows {
+		row := make([]string, 10)
+		for j := range row {
+			row[j] = dataCell
+		}
+		rows[i] = row
+	}
+
+	b.ResetTimer()
+	for b.Loop() {
+		buf.Reset()
+		w := NewCSVWriter(&buf)
+		_ = w.WriteHeader(headers)
+		for _, row := range rows {
+			_ = w.WriteRow(row)
+		}
+		w.Flush()
+	}
+}
+
+func BenchmarkMarkdownTable(b *testing.B) {
+	md := NewMarkdownTable()
+	const headerCell = "Header"
+	const dataCell = "Cell"
+	headers := make([]string, 10)
+	for i := range headers {
+		headers[i] = headerCell
+	}
+	md.SetHeaders(headers)
+	rows := make([][]string, 100)
+	for i := range rows {
+		row := make([]string, 10)
+		for j := range row {
+			row[j] = dataCell
+		}
+		rows[i] = row
+		md.AddRow(row)
+	}
+
+	b.ResetTimer()
+	for b.Loop() {
+		md.Render()
 	}
 }

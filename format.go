@@ -14,6 +14,7 @@ const (
 	FormatTable    Format = "table"
 	FormatJSON     Format = "json"
 	FormatCSV      Format = "csv"
+	FormatTSV      Format = "tsv"
 	FormatMarkdown Format = "markdown"
 	FormatD2       Format = "d2"
 	FormatYAML     Format = "yaml"
@@ -28,6 +29,7 @@ var formatValues = []Format{
 	FormatTable,
 	FormatJSON,
 	FormatCSV,
+	FormatTSV,
 	FormatMarkdown,
 	FormatD2,
 	FormatYAML,
@@ -69,7 +71,7 @@ func (f Format) IsValid() bool {
 // IsTableFormat returns true if this is a table-based format.
 func (f Format) IsTableFormat() bool {
 	switch f {
-	case FormatTable, FormatJSON, FormatCSV, FormatMarkdown, FormatYAML, FormatD2:
+	case FormatTable, FormatJSON, FormatCSV, FormatTSV, FormatMarkdown, FormatYAML, FormatD2:
 		return true
 	case FormatHTML, FormatTree, FormatMermaid, FormatDOT:
 		return false
@@ -88,7 +90,7 @@ func (f Format) IsGraphFormat() bool {
 	switch f {
 	case FormatD2, FormatMermaid, FormatDOT:
 		return true
-	case FormatTable, FormatJSON, FormatCSV, FormatMarkdown, FormatYAML, FormatHTML, FormatTree:
+	case FormatTable, FormatJSON, FormatCSV, FormatTSV, FormatMarkdown, FormatYAML, FormatHTML, FormatTree:
 		return false
 	default:
 		return false
@@ -128,6 +130,7 @@ const (
 	OutputFormatTable    = FormatTable
 	OutputFormatJSON     = FormatJSON
 	OutputFormatCSV      = FormatCSV
+	OutputFormatTSV      = FormatTSV
 	OutputFormatMarkdown = FormatMarkdown
 	OutputFormatD2       = FormatD2
 	OutputFormatYAML     = FormatYAML

@@ -64,10 +64,7 @@ func TestMarkdownTableContent(t *testing.T) {
 	md.SetHeaders([]string{"Name", "Health"})
 	md.AddRow([]string{"Alpha", "90%"})
 
-	result, err := md.Render()
-	if err != nil {
-		t.Fatalf("Markdown render failed: %v", err)
-	}
+	result := md.Render()
 
 	if !strings.Contains(result, "| Name") {
 		t.Error("Markdown should contain header cell")

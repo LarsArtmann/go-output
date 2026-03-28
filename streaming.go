@@ -8,6 +8,10 @@ import (
 
 // StreamingRenderer is an interface for renderers that support streaming output.
 // This is useful for rendering large datasets without loading everything into memory.
+//
+// Note: Not all implementations provide true streaming. The adapter returned by
+// StreamingRendererFromRenderer collects output before writing. Only
+// StreamingHTMLRenderer provides genuine streaming behavior.
 type StreamingRenderer interface {
 	Renderer
 	// Stream writes the rendered output to an io.Writer in chunks.
@@ -170,7 +174,9 @@ func escapeHTML(s string) string {
 }
 
 // StreamingRendererFromRenderer wraps a standard Renderer to implement StreamingRenderer.
-// The Stream method collects all output and writes it at once.
+// Note: This adapter does not provide true streaming behavior - it collects all output
+// via Render() and then writes it at once. It exists to satisfy the StreamingRenderer
+// interface for renderers that don't have native streaming support.
 func StreamingRendererFromRenderer(r Renderer) StreamingRenderer {
 	return &adapterRenderer{r: r}
 }

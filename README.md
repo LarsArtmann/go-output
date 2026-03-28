@@ -104,9 +104,20 @@ allowed := format.AllowedValues() // []string{"table", "json", "csv", ...}
 
 ## CLI Flag Integration
 
-Integrates with [cmdguard](https://github.com/larsartmann/cmdguard) for type-safe flags:
+The `cmdguard/` subpackage provides helper types compatible with [cmdguard](https://github.com/larsartmann/cmdguard) for type-safe flags. Add cmdguard separately to your project:
+
+```bash
+go get github.com/larsartmann/cmdguard/v2
+```
+
+Example with cmdguard:
 
 ```go
+import (
+    "github.com/larsartmann/go-output"
+    "github.com/larsartmann/go-output/cmdguard"
+)
+
 type ListFlags struct {
     Format output.OutputFormat `flag:"format" default:"table" help:"Output format (table, json, csv, markdown, yaml, tree, html, d2, mermaid, dot)"`
     SortBy output.SortBy       `flag:"sort-by" default:"name" help:"Sort by (name, importance, created_at, updated_at, health, complexity)"`

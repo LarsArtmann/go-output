@@ -97,11 +97,7 @@ func renderMarkdown(projects []Project) {
 			[]string{p.Name, fmt.Sprintf("%d%%", p.Health), fmt.Sprintf("%d/10", p.Complexity)},
 		)
 	}
-	out, err := md.Render()
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-		os.Exit(1)
-	}
+	out := md.Render()
 	fmt.Println(out)
 }
 

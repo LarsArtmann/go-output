@@ -113,6 +113,7 @@ func TestOutputFormatFlag_AllowedValues(t *testing.T) {
 		"table",
 		"json",
 		"csv",
+		"tsv",
 		"markdown",
 		"d2",
 		"yaml",

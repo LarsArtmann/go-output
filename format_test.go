@@ -73,6 +73,7 @@ func TestOutputFormatAllowedValues(t *testing.T) {
 		"table",
 		"json",
 		"csv",
+		"tsv",
 		"markdown",
 		"d2",
 		"yaml",

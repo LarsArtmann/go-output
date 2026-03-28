@@ -34,11 +34,8 @@ func NewGraphNode(id, label string) *GraphNode {
 	}
 }
 
-// GetStyle returns the node's style, initializing if nil.
+// GetStyle returns the node's style.
 func (n *GraphNode) GetStyle() GraphStyle {
-	if n.Style == (GraphStyle{FillColor: "", StrokeColor: "", FontColor: "", FontSize: 0}) {
-		return GraphStyle{FillColor: "", StrokeColor: "", FontColor: "", FontSize: 0}
-	}
 	return n.Style
 }
 

@@ -32,10 +32,7 @@ func testMarkdownBasicTable(t *testing.T) {
 		AddRow([]string{"Alice", "30"}).
 		AddRow([]string{"Bob", "25"})
 
-	got, err := m.Render()
-	if err != nil {
-		t.Errorf("Render() error = %v", err)
-	}
+	got := m.Render()
 
 	if !strings.Contains(got, "Name") {
 		t.Error("Render() should contain header text")
@@ -49,10 +46,7 @@ func testMarkdownEmptyHeaders(t *testing.T) {
 	t.Helper()
 	m := NewMarkdownTable()
 
-	got, err := m.Render()
-	if err != nil {
-		t.Errorf("Render() error = %v", err)
-	}
+	got := m.Render()
 
 	if got != "" {
 		t.Error("Render() should return empty string for empty headers")
@@ -66,10 +60,7 @@ func testMarkdownAlignment(t *testing.T) {
 		SetAlign(1, AlignRight).
 		AddRow([]string{"Alice", "30"})
 
-	got, err := m.Render()
-	if err != nil {
-		t.Errorf("Render() error = %v", err)
-	}
+	got := m.Render()
 
 	if !strings.Contains(got, "|--") {
 		t.Error("Render() should contain separator row")

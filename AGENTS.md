@@ -17,7 +17,7 @@ https://github.com/larsartmann/go-output
 - Go 1.26+
 - github.com/charmbracelet/lipgloss/v2 (terminal styling)
 - github.com/go-faster/yaml (YAML support)
-- github.com/larsartmann/cmdguard/v2 (CLI flag integration)
+- github.com/larsartmann/cmdguard/v2 (optional CLI flag integration - add separately)
 
 ## Project Structure
 

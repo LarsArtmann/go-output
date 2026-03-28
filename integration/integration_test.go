@@ -152,7 +152,7 @@ func renderMarkdownFormat(projects []TestProject) string {
 	for _, p := range projects {
 		md.AddRow([]string{p.Name, formatHealth(p.Health), formatComplexity(p.Complexity)})
 	}
-	result, _ := md.Render()
+	result := md.Render()
 	return result
 }
 
