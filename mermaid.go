@@ -7,26 +7,17 @@ import (
 
 // MermaidRenderer implements the GraphRenderer interface for Mermaid diagrams.
 type MermaidRenderer struct {
-	nodes []GraphNode
-	edges []GraphEdge
+	GraphRendererMixin
 }
 
 // NewMermaidRenderer creates a new MermaidRenderer.
 func NewMermaidRenderer() *MermaidRenderer {
 	return &MermaidRenderer{
-		nodes: make([]GraphNode, 0),
-		edges: make([]GraphEdge, 0),
+		GraphRendererMixin: GraphRendererMixin{
+			nodes: make([]GraphNode, 0),
+			edges: make([]GraphEdge, 0),
+		},
 	}
-}
-
-// SetNodes sets the graph nodes.
-func (r *MermaidRenderer) SetNodes(nodes []GraphNode) {
-	r.nodes = nodes
-}
-
-// SetEdges sets the graph edges.
-func (r *MermaidRenderer) SetEdges(edges []GraphEdge) {
-	r.edges = edges
 }
 
 // Render returns the Mermaid diagram as a string.

@@ -110,12 +110,16 @@ type testItem struct {
 	When  time.Time
 }
 
-func TestSorter_New(t *testing.T) {
-	t.Parallel()
-	items := []testItem{
+func testItemsAB() []testItem {
+	return []testItem{
 		{Name: "b", Count: 2, When: time.Time{}},
 		{Name: "a", Count: 1, When: time.Time{}},
 	}
+}
+
+func TestSorter_New(t *testing.T) {
+	t.Parallel()
+	items := testItemsAB()
 	sorter := New(items, output.SortByName, false)
 	if sorter == nil {
 		t.Fatal("New() returned nil")
@@ -133,10 +137,7 @@ func TestSorter_New(t *testing.T) {
 
 func TestSorter_WithLessFunc(t *testing.T) {
 	t.Parallel()
-	items := []testItem{
-		{Name: "b", Count: 2, When: time.Time{}},
-		{Name: "a", Count: 1, When: time.Time{}},
-	}
+	items := testItemsAB()
 	sorter := New(items, output.SortByName, false)
 	result := sorter.WithLessFunc(func(a, b testItem) bool { return a.Count < b.Count })
 	if result != sorter {
@@ -147,88 +148,83 @@ func TestSorter_WithLessFunc(t *testing.T) {
 	}
 }
 
-func TestSorter_Sort_ByName(t *testing.T) {
+func TestSorter_Sort(t *testing.T) {
 	t.Parallel()
-	items := []testItem{
-		{Name: "charlie", Count: 3, When: time.Time{}},
-		{Name: "alpha", Count: 1, When: time.Time{}},
-		{Name: "bravo", Count: 2, When: time.Time{}},
+
+	tests := []struct {
+		name          string
+		items         []testItem
+		sortBy        output.SortBy
+		desc          bool
+		lessFunc      func(a, b testItem) bool
+		expectedNames []string
+		expectedCounts []int
+	}{
+		{
+			name:     "SortByName ascending",
+			items:    []testItem{{Name: "charlie", Count: 3, When: time.Time{}}, {Name: "alpha", Count: 1, When: time.Time{}}, {Name: "bravo", Count: 2, When: time.Time{}}},
+			sortBy:   output.SortByName,
+			desc:     false,
+			expectedNames: []string{"alpha", "bravo", "charlie"},
+		},
+		{
+			name:     "SortByName descending",
+			items:    []testItem{{Name: "charlie", Count: 3, When: time.Time{}}, {Name: "alpha", Count: 1, When: time.Time{}}, {Name: "bravo", Count: 2, When: time.Time{}}},
+			sortBy:   output.SortByName,
+			desc:     true,
+			expectedNames: []string{"charlie", "bravo", "alpha"},
+		},
+		{
+			name:     "SortByCount ascending",
+			items:    []testItem{{Name: "charlie", Count: 30, When: time.Time{}}, {Name: "alpha", Count: 10, When: time.Time{}}, {Name: "bravo", Count: 20, When: time.Time{}}},
+			sortBy:   output.SortBy("Count"),
+			desc:     false,
+			expectedCounts: []int{10, 20, 30},
+		},
+		{
+			name:     "SortByWhen ascending",
+			items:    []testItem{{Name: "now", Count: 0, When: time.Now()}, {Name: "later", Count: 0, When: time.Now().Add(2 * time.Hour)}, {Name: "earlier", Count: 0, When: time.Now().Add(-2 * time.Hour)}},
+			sortBy:   output.SortBy("When"),
+			desc:     false,
+			expectedNames: []string{"earlier", "now", "later"},
+		},
+		{
+			name:     "CustomLessFunc count descending",
+			items:    []testItem{{Name: "b", Count: 20, When: time.Time{}}, {Name: "a", Count: 10, When: time.Time{}}, {Name: "c", Count: 30, When: time.Time{}}},
+			sortBy:   output.SortByName,
+			desc:     false,
+			lessFunc: func(a, b testItem) bool { return a.Count > b.Count },
+			expectedCounts: []int{30, 20, 10},
+		},
 	}
 
-	// Test ascending
-	New(items, output.SortByName, false).Sort()
-	if items[0].Name != "alpha" || items[1].Name != "bravo" || items[2].Name != "charlie" {
-		t.Errorf(
-			"Sort() asc = %v, want [alpha, bravo, charlie]",
-			[]string{items[0].Name, items[1].Name, items[2].Name},
-		)
-	}
+	for _, tt := range tests {
+		tt := tt // capture range variable
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 
-	// Test descending
-	New(items, output.SortByName, true).Sort()
-	if items[0].Name != "charlie" || items[1].Name != "bravo" || items[2].Name != "alpha" {
-		t.Errorf(
-			"Sort() desc = %v, want [charlie, bravo, alpha]",
-			[]string{items[0].Name, items[1].Name, items[2].Name},
-		)
-	}
-}
+			sorter := New(tt.items, tt.sortBy, tt.desc)
+			if tt.lessFunc != nil {
+				sorter.WithLessFunc(tt.lessFunc)
+			}
+			sorter.Sort()
 
-func TestSorter_Sort_ByCount(t *testing.T) {
-	t.Parallel()
-	items := []testItem{
-		{Name: "charlie", Count: 30, When: time.Time{}},
-		{Name: "alpha", Count: 10, When: time.Time{}},
-		{Name: "bravo", Count: 20, When: time.Time{}},
-	}
+			if len(tt.expectedNames) > 0 {
+				for i, expectedName := range tt.expectedNames {
+					if got := sorter.Items[i].Name; got != expectedName {
+						t.Errorf("Items[%d].Name = %v, want %v", i, got, expectedName)
+					}
+				}
+			}
 
-	New(items, output.SortBy("Count"), false).Sort()
-	if items[0].Count != 10 || items[1].Count != 20 || items[2].Count != 30 {
-		t.Errorf(
-			"Sort() by count = %v, want [10, 20, 30]",
-			[]int{items[0].Count, items[1].Count, items[2].Count},
-		)
-	}
-}
-
-func TestSorter_Sort_ByTime(t *testing.T) {
-	t.Parallel()
-	now := time.Now()
-	earlier := now.Add(-2 * time.Hour)
-	later := now.Add(2 * time.Hour)
-
-	items := []testItem{
-		{Name: "now", Count: 0, When: now},
-		{Name: "later", Count: 0, When: later},
-		{Name: "earlier", Count: 0, When: earlier},
-	}
-
-	New(items, output.SortBy("When"), false).Sort()
-	if items[0].Name != "earlier" || items[1].Name != "now" || items[2].Name != "later" {
-		t.Errorf(
-			"Sort() by time = %v, want [earlier, now, later]",
-			[]string{items[0].Name, items[1].Name, items[2].Name},
-		)
-	}
-}
-
-func TestSorter_Sort_CustomLessFunc(t *testing.T) {
-	t.Parallel()
-	items := []testItem{
-		{Name: "b", Count: 20, When: time.Time{}},
-		{Name: "a", Count: 10, When: time.Time{}},
-		{Name: "c", Count: 30, When: time.Time{}},
-	}
-
-	New(items, output.SortByName, false).WithLessFunc(func(a, b testItem) bool {
-		return a.Count > b.Count // Sort by count descending
-	}).Sort()
-
-	if items[0].Count != 30 || items[1].Count != 20 || items[2].Count != 10 {
-		t.Errorf(
-			"Custom LessFunc = %v, want [30, 20, 10]",
-			[]int{items[0].Count, items[1].Count, items[2].Count},
-		)
+			if len(tt.expectedCounts) > 0 {
+				for i, expectedCount := range tt.expectedCounts {
+					if got := sorter.Items[i].Count; got != expectedCount {
+						t.Errorf("Items[%d].Count = %v, want %v", i, got, expectedCount)
+					}
+				}
+			}
+		})
 	}
 }
 

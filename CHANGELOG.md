@@ -13,6 +13,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - `FormatTSV` constant for TSV output format
 - TSV formatter implementation
 - Map-based format classification (replaces switch statements)
+- `FormatXML` constant for XML output format
+- XML formatter implementation (`MarshalXML`, `MarshalXMLIndent`, `XMLWriter`, `MarshalXMLFromTableData`)
 
 ### Changed
 

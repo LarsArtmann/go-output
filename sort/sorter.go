@@ -6,7 +6,7 @@ import (
 	"sort"
 	"time"
 
-	"github.com/larsartmann/go-output"
+	output "github.com/larsartmann/go-output"
 )
 
 // Comparator compares two values, returning -1, 0, or 1.

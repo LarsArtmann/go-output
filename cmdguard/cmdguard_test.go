@@ -76,6 +76,8 @@ func TestOutputFormatFlag_Parse(t *testing.T) {
 		{"table", "table", output.FormatTable, false},
 		{"json", "json", output.FormatJSON, false},
 		{"csv", "csv", output.FormatCSV, false},
+		{"tsv", "tsv", output.FormatTSV, false},
+		{"xml", "xml", output.FormatXML, false},
 		{"markdown", "markdown", output.FormatMarkdown, false},
 		{"d2", "d2", output.FormatD2, false},
 		{"yaml", "yaml", output.FormatYAML, false},

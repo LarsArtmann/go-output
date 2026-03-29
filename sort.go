@@ -7,17 +7,17 @@ import (
 	"github.com/larsartmann/go-output/enum"
 )
 
-// SortBy specifies the field to sort by.
+// SortBy represents the available sort field options for CLI applications.
 type SortBy string
 
-// Sort field options.
+// Sort field constants.
 const (
-	SortByName       SortBy = "name"
-	SortByImportance SortBy = "importance"
-	SortByCreatedAt  SortBy = "created_at"
-	SortByUpdatedAt  SortBy = "updated_at"
-	SortByHealth     SortBy = "health"
-	SortByComplexity SortBy = "complexity"
+	SortByName        SortBy = "name"
+	SortByImportance  SortBy = "importance"
+	SortByCreatedAt   SortBy = "created_at"
+	SortByUpdatedAt   SortBy = "updated_at"
+	SortByHealth      SortBy = "health"
+	SortByComplexity  SortBy = "complexity"
 )
 
 //nolint:gochecknoglobals // Global variable used for value iteration.
@@ -30,7 +30,7 @@ var sortByValues = []SortBy{
 	SortByComplexity,
 }
 
-// ParseSortBy parses a sort field string.
+// ParseSortBy converts a string to SortBy, returning an error if invalid.
 func ParseSortBy(s string) (SortBy, error) {
 	v, err := enum.Parse(sortByValues, s, func(s SortBy) string { return string(s) })
 	if err != nil {
@@ -39,16 +39,17 @@ func ParseSortBy(s string) (SortBy, error) {
 	return v, nil
 }
 
+// String returns the string representation of the sort field.
 func (s SortBy) String() string {
 	return string(s)
 }
 
-// AllowedValues returns all valid sort field values.
+// AllowedValues returns all valid sort field values for CLI help text.
 func (s SortBy) AllowedValues() []string {
 	return enum.AllowedStrings(sortByValues, func(s SortBy) string { return string(s) })
 }
 
-// IsValid checks if the sort field is valid.
+// IsValid returns true if the sort field is a valid SortBy value.
 func (s SortBy) IsValid() bool {
 	return enum.Contains(sortByValues, s)
 }

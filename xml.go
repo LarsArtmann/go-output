@@ -21,7 +21,7 @@ func MarshalXML(v any) ([]byte, error) {
 func MarshalXMLIndent(v any, prefix, indent string) ([]byte, error) {
 	data, err := xml.MarshalIndent(v, prefix, indent)
 	if err != nil {
-		return nil, fmt.Errorf("marshal xml indent (%T): %w", v, err)
+		return nil, fmt.Errorf("marshal xml indent (prefix=%q, indent=%q) for %T: %w", prefix, indent, v, err)
 	}
 	return data, nil
 }
@@ -70,9 +70,9 @@ func (x *XMLWriter) WriteRow(values []string) error {
 
 // WriteRows writes multiple rows.
 func (x *XMLWriter) WriteRows(values [][]string) error {
-	for _, row := range values {
+	for i, row := range values {
 		if err := x.WriteRow(row); err != nil {
-			return err
+			return fmt.Errorf("write xml row %d of %d (values=%v): %w", i, len(values), row, err)
 		}
 	}
 	return nil

@@ -69,20 +69,20 @@ func MarshalTSV(data any) ([]byte, error) {
 	case [][]string:
 		for _, row := range v {
 			if err := w.WriteRow(row); err != nil {
-				return nil, err
+				return nil, fmt.Errorf("write tsv row to %s: %w", b.String()[:min(50, len(b.String()))], err)
 			}
 		}
 	case []string:
 		if err := w.WriteRow(v); err != nil {
-			return nil, err
+			return nil, fmt.Errorf("write tsv single row %v: %w", v, err)
 		}
 	default:
-		return nil, fmt.Errorf("unsupported type %T for TSV marshaling", data)
+		return nil, fmt.Errorf("unsupported type %T for TSV marshaling to %s", data, b.String()[:min(50, len(b.String()))])
 	}
 
 	w.Flush()
 	if err := w.Error(); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("flush tsv writer for %s: %w", b.String()[:min(50, len(b.String()))], err)
 	}
 
 	return []byte(b.String()), nil

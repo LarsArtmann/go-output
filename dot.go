@@ -5,10 +5,25 @@ import (
 	"strings"
 )
 
+// GraphRendererMixin contains shared fields and methods for graph renderers.
+type GraphRendererMixin struct {
+	nodes []GraphNode
+	edges []GraphEdge
+}
+
+// SetNodes sets the graph nodes.
+func (m *GraphRendererMixin) SetNodes(nodes []GraphNode) {
+	m.nodes = nodes
+}
+
+// SetEdges sets the graph edges.
+func (m *GraphRendererMixin) SetEdges(edges []GraphEdge) {
+	m.edges = edges
+}
+
 // DOTRenderer implements the GraphRenderer interface for DOT/Graphviz output.
 type DOTRenderer struct {
-	nodes    []GraphNode
-	edges    []GraphEdge
+	GraphRendererMixin
 	directed bool
 	graphID  string
 }
@@ -16,8 +31,10 @@ type DOTRenderer struct {
 // NewDOTRenderer creates a new DOTRenderer for directed graphs.
 func NewDOTRenderer() *DOTRenderer {
 	return &DOTRenderer{
-		nodes:    make([]GraphNode, 0),
-		edges:    make([]GraphEdge, 0),
+		GraphRendererMixin: GraphRendererMixin{
+			nodes: make([]GraphNode, 0),
+			edges: make([]GraphEdge, 0),
+		},
 		directed: true,
 		graphID:  "G",
 	}
@@ -26,8 +43,10 @@ func NewDOTRenderer() *DOTRenderer {
 // NewUndirectedDOTRenderer creates a new DOTRenderer for undirected graphs.
 func NewUndirectedDOTRenderer() *DOTRenderer {
 	return &DOTRenderer{
-		nodes:    make([]GraphNode, 0),
-		edges:    make([]GraphEdge, 0),
+		GraphRendererMixin: GraphRendererMixin{
+			nodes: make([]GraphNode, 0),
+			edges: make([]GraphEdge, 0),
+		},
 		directed: false,
 		graphID:  "G",
 	}
@@ -36,16 +55,6 @@ func NewUndirectedDOTRenderer() *DOTRenderer {
 // SetGraphID sets the graph ID.
 func (r *DOTRenderer) SetGraphID(id string) {
 	r.graphID = id
-}
-
-// SetNodes sets the graph nodes.
-func (r *DOTRenderer) SetNodes(nodes []GraphNode) {
-	r.nodes = nodes
-}
-
-// SetEdges sets the graph edges.
-func (r *DOTRenderer) SetEdges(edges []GraphEdge) {
-	r.edges = edges
 }
 
 // Render returns the DOT graph as a string.
