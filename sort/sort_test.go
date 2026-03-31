@@ -152,54 +152,62 @@ func TestSorter_Sort(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		name          string
-		items         []testItem
-		sortBy        output.SortBy
-		desc          bool
-		lessFunc      func(a, b testItem) bool
-		expectedNames []string
+		name           string
+		items          []testItem
+		sortBy         output.SortBy
+		desc           bool
+		lessFunc       func(a, b testItem) bool
+		expectedNames  []string
 		expectedCounts []int
 	}{
 		{
-			name:     "SortByName ascending",
-			items:    []testItem{{Name: "charlie", Count: 3, When: time.Time{}}, {Name: "alpha", Count: 1, When: time.Time{}}, {Name: "bravo", Count: 2, When: time.Time{}}},
-			sortBy:   output.SortByName,
-			desc:     false,
-			expectedNames: []string{"alpha", "bravo", "charlie"},
+			name:           "SortByName ascending",
+			items:          []testItem{{Name: "charlie", Count: 3, When: time.Time{}}, {Name: "alpha", Count: 1, When: time.Time{}}, {Name: "bravo", Count: 2, When: time.Time{}}},
+			sortBy:         output.SortByName,
+			desc:           false,
+			lessFunc:       nil,
+			expectedNames:  []string{"alpha", "bravo", "charlie"},
+			expectedCounts: []int{1, 2, 3},
 		},
 		{
-			name:     "SortByName descending",
-			items:    []testItem{{Name: "charlie", Count: 3, When: time.Time{}}, {Name: "alpha", Count: 1, When: time.Time{}}, {Name: "bravo", Count: 2, When: time.Time{}}},
-			sortBy:   output.SortByName,
-			desc:     true,
-			expectedNames: []string{"charlie", "bravo", "alpha"},
+			name:           "SortByName descending",
+			items:          []testItem{{Name: "charlie", Count: 3, When: time.Time{}}, {Name: "alpha", Count: 1, When: time.Time{}}, {Name: "bravo", Count: 2, When: time.Time{}}},
+			sortBy:         output.SortByName,
+			desc:           true,
+			lessFunc:       nil,
+			expectedNames:  []string{"charlie", "bravo", "alpha"},
+			expectedCounts: []int{3, 2, 1},
 		},
 		{
-			name:     "SortByCount ascending",
-			items:    []testItem{{Name: "charlie", Count: 30, When: time.Time{}}, {Name: "alpha", Count: 10, When: time.Time{}}, {Name: "bravo", Count: 20, When: time.Time{}}},
-			sortBy:   output.SortBy("Count"),
-			desc:     false,
+			name:           "SortByCount ascending",
+			items:          []testItem{{Name: "charlie", Count: 30, When: time.Time{}}, {Name: "alpha", Count: 10, When: time.Time{}}, {Name: "bravo", Count: 20, When: time.Time{}}},
+			sortBy:         output.SortBy("Count"),
+			desc:           false,
+			lessFunc:       nil,
+			expectedNames:  []string{"alpha", "bravo", "charlie"},
 			expectedCounts: []int{10, 20, 30},
 		},
 		{
-			name:     "SortByWhen ascending",
-			items:    []testItem{{Name: "now", Count: 0, When: time.Now()}, {Name: "later", Count: 0, When: time.Now().Add(2 * time.Hour)}, {Name: "earlier", Count: 0, When: time.Now().Add(-2 * time.Hour)}},
-			sortBy:   output.SortBy("When"),
-			desc:     false,
-			expectedNames: []string{"earlier", "now", "later"},
+			name:           "SortByWhen ascending",
+			items:          []testItem{{Name: "now", Count: 0, When: time.Now()}, {Name: "later", Count: 0, When: time.Now().Add(2 * time.Hour)}, {Name: "earlier", Count: 0, When: time.Now().Add(-2 * time.Hour)}},
+			sortBy:         output.SortBy("When"),
+			desc:           false,
+			lessFunc:       nil,
+			expectedNames:  []string{"earlier", "now", "later"},
+			expectedCounts: []int{0, 0, 0},
 		},
 		{
-			name:     "CustomLessFunc count descending",
-			items:    []testItem{{Name: "b", Count: 20, When: time.Time{}}, {Name: "a", Count: 10, When: time.Time{}}, {Name: "c", Count: 30, When: time.Time{}}},
-			sortBy:   output.SortByName,
-			desc:     false,
-			lessFunc: func(a, b testItem) bool { return a.Count > b.Count },
+			name:           "CustomLessFunc count descending",
+			items:          []testItem{{Name: "b", Count: 20, When: time.Time{}}, {Name: "a", Count: 10, When: time.Time{}}, {Name: "c", Count: 30, When: time.Time{}}},
+			sortBy:         output.SortByName,
+			desc:           false,
+			lessFunc:       func(a, b testItem) bool { return a.Count > b.Count },
+			expectedNames:  []string{"c", "b", "a"},
 			expectedCounts: []int{30, 20, 10},
 		},
 	}
 
 	for _, tt := range tests {
-		tt := tt // capture range variable
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 

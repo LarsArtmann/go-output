@@ -12,12 +12,12 @@ type SortBy string
 
 // Sort field constants.
 const (
-	SortByName        SortBy = "name"
-	SortByImportance  SortBy = "importance"
-	SortByCreatedAt   SortBy = "created_at"
-	SortByUpdatedAt   SortBy = "updated_at"
-	SortByHealth      SortBy = "health"
-	SortByComplexity  SortBy = "complexity"
+	SortByName       SortBy = "name"
+	SortByImportance SortBy = "importance"
+	SortByCreatedAt  SortBy = "created_at"
+	SortByUpdatedAt  SortBy = "updated_at"
+	SortByHealth     SortBy = "health"
+	SortByComplexity SortBy = "complexity"
 )
 
 //nolint:gochecknoglobals // Global variable used for value iteration.

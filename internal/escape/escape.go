@@ -7,8 +7,10 @@ type mode struct {
 	apos string
 }
 
-var htmlMode = mode{apos: "&#39;"}
-var xmlMode = mode{apos: "&apos;"}
+var (
+	htmlMode = mode{apos: "&#39;"}
+	xmlMode  = mode{apos: "&apos;"}
+)
 
 // HTML escapes HTML special characters.
 func HTML(s string) string {

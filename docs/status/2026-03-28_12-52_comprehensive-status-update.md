@@ -15,13 +15,13 @@
 
 ### Codebase Metrics
 
-| Metric | Value |
-|--------|-------|
-| Total Go Files | 53 |
-| Test Files | 28 |
-| Total Lines | 8,414 |
-| Packages | 7 (root, enum, table, sort, cmdguard, integration, examples) |
-| Formats Supported | 12 |
+| Metric            | Value                                                        |
+| ----------------- | ------------------------------------------------------------ |
+| Total Go Files    | 53                                                           |
+| Test Files        | 28                                                           |
+| Total Lines       | 8,414                                                        |
+| Packages          | 7 (root, enum, table, sort, cmdguard, integration, examples) |
+| Formats Supported | 12                                                           |
 
 ---
 
@@ -29,40 +29,40 @@
 
 ### A) FULLY DONE
 
-| Task | Status | Notes |
-|------|--------|-------|
-| TSV Format Integration | ✅ DONE | FormatTSV added to Format enum, writer implemented |
-| Generic Enum Package | ✅ DONE | `enum/` package with Parse, Contains, AllowedStrings |
-| Format Classification Refactor | ✅ DONE | Switch → map-based lookups |
-| XML Format | ✅ DONE | Full implementation with MarshalXML, XMLWriter |
-| README Update | ✅ DONE | 12 formats documented |
-| Examples Update | ✅ DONE | TSV/XML added to examples/basic |
-| CHANGELOG Maintenance | ✅ DONE | Deprecations documented |
-| Test Suite | ✅ DONE | 28 test files, all passing |
-| Lint Clean | ✅ DONE | 0 golangci-lint issues |
+| Task                           | Status  | Notes                                                |
+| ------------------------------ | ------- | ---------------------------------------------------- |
+| TSV Format Integration         | ✅ DONE | FormatTSV added to Format enum, writer implemented   |
+| Generic Enum Package           | ✅ DONE | `enum/` package with Parse, Contains, AllowedStrings |
+| Format Classification Refactor | ✅ DONE | Switch → map-based lookups                           |
+| XML Format                     | ✅ DONE | Full implementation with MarshalXML, XMLWriter       |
+| README Update                  | ✅ DONE | 12 formats documented                                |
+| Examples Update                | ✅ DONE | TSV/XML added to examples/basic                      |
+| CHANGELOG Maintenance          | ✅ DONE | Deprecations documented                              |
+| Test Suite                     | ✅ DONE | 28 test files, all passing                           |
+| Lint Clean                     | ✅ DONE | 0 golangci-lint issues                               |
 
 ### B) PARTIALLY DONE
 
-| Task | Status | Notes |
-|------|--------|-------|
-| Deprecated Aliases Removal | 🔄 DEFERRED | Scheduled for v2.0 major bump |
-| Configuration Options (M2) | 🔄 DEFERRED | Needs clarification on scope |
-| Hardcoded CSS Extraction (M3) | 🔄 DEFERRED | Low priority |
-| D2 Multi-table Support (M5) | 🔄 DEFERRED | Low priority |
+| Task                          | Status      | Notes                         |
+| ----------------------------- | ----------- | ----------------------------- |
+| Deprecated Aliases Removal    | 🔄 DEFERRED | Scheduled for v2.0 major bump |
+| Configuration Options (M2)    | 🔄 DEFERRED | Needs clarification on scope  |
+| Hardcoded CSS Extraction (M3) | 🔄 DEFERRED | Low priority                  |
+| D2 Multi-table Support (M5)   | 🔄 DEFERRED | Low priority                  |
 
 ### C) NOT STARTED
 
-| Task | Status | Notes |
-|------|--------|-------|
-| go.dev API Documentation | ⏳ PENDING | Ready to publish |
-| v2.0 Breaking Changes | ⏳ FUTURE | Remove OutputFormat aliases |
-| Streaming Improvements | ⏳ PLANNED | Performance optimization |
+| Task                     | Status     | Notes                       |
+| ------------------------ | ---------- | --------------------------- |
+| go.dev API Documentation | ⏳ PENDING | Ready to publish            |
+| v2.0 Breaking Changes    | ⏳ FUTURE  | Remove OutputFormat aliases |
+| Streaming Improvements   | ⏳ PLANNED | Performance optimization    |
 
 ### D) TOTALLY FUCKED UP
 
-| Issue | Status | Resolution |
-|-------|--------|------------|
-| None | ✅ N/A | Clean working state |
+| Issue | Status | Resolution          |
+| ----- | ------ | ------------------- |
+| None  | ✅ N/A | Clean working state |
 
 ### E) WHAT WE SHOULD IMPROVE
 
@@ -123,18 +123,21 @@
 ### Question: How should we handle format-specific configuration options?
 
 **The Problem**:
+
 - CSV/TSV need custom delimiters
 - HTML needs custom CSS classes
 - Markdown needs alignment options
 - D2 needs theme/layout options
 
 **Options Considered**:
+
 1. **Per-formatter options structs** - Type-safe but verbose
 2. **Functional options pattern** - Flexible but complex
 3. **Generic key-value config** - Flexible but not type-safe
 4. **Format-specific interfaces** - Most flexible but inconsistent
 
 **What I Need**:
+
 - User preference on configuration API style
 - Whether type-safety is more important than flexibility
 - If we should have a common `FormatterConfig` interface
@@ -162,13 +165,13 @@ docs/status/2026-03-28_00-00_COMPLETION_PLAN.md
 
 ### Recent Commits
 
-| Hash | Message | Date |
-|------|---------|------|
-| 9b604ba | feat: refactor enum system and add XML format | 2026-03-28 |
+| Hash    | Message                                              | Date       |
+| ------- | ---------------------------------------------------- | ---------- |
+| 9b604ba | feat: refactor enum system and add XML format        | 2026-03-28 |
 | 90db961 | feat: integrate TSV format and improve test coverage | 2026-03-28 |
-| 59f1f44 | docs(status): add completion plan for 2026 | 2026-03-28 |
-| 5a85573 | docs(review): add comprehensive test analysis | 2026-03-28 |
-| eaabefe | chore(test): add linting and integration tests | 2026-03-28 |
+| 59f1f44 | docs(status): add completion plan for 2026           | 2026-03-28 |
+| 5a85573 | docs(review): add comprehensive test analysis        | 2026-03-28 |
+| eaabefe | chore(test): add linting and integration tests       | 2026-03-28 |
 
 ---
 
@@ -189,42 +192,42 @@ ok  	github.com/larsartmann/go-output/table         1.096s
 
 ## 7. PACKAGE INVENTORY
 
-| Package | Files | Purpose |
-|---------|-------|---------|
-| root | 22 | Core formatters (JSON, CSV, TSV, XML, Markdown, YAML, HTML, Tree, D2, DOT, Mermaid) |
-| enum | 2 | Generic enum utilities |
-| table | 2 | Terminal table renderer (lipgloss) |
-| sort | 2 | Sorting utilities |
-| cmdguard | 4 | CLI flag integration |
-| integration | 4 | Integration tests |
-| examples | 1 | Usage examples |
+| Package     | Files | Purpose                                                                             |
+| ----------- | ----- | ----------------------------------------------------------------------------------- |
+| root        | 22    | Core formatters (JSON, CSV, TSV, XML, Markdown, YAML, HTML, Tree, D2, DOT, Mermaid) |
+| enum        | 2     | Generic enum utilities                                                              |
+| table       | 2     | Terminal table renderer (lipgloss)                                                  |
+| sort        | 2     | Sorting utilities                                                                   |
+| cmdguard    | 4     | CLI flag integration                                                                |
+| integration | 4     | Integration tests                                                                   |
+| examples    | 1     | Usage examples                                                                      |
 
 ---
 
 ## 8. FORMAT INVENTORY (12 Total)
 
-| Format | Type | Status | Implementation |
-|--------|------|--------|----------------|
-| table | Table | ✅ | `table/table.go` |
-| json | Table | ✅ | `json.go` |
-| csv | Table | ✅ | `csv.go` |
-| tsv | Table | ✅ | `tsv.go` |
-| xml | Table | ✅ | `xml.go` (NEW) |
-| markdown | Table | ✅ | `markdown.go` |
-| yaml | Table | ✅ | `yaml.go` |
-| d2 | Table+Graph | ✅ | `d2.go` |
-| html | Tree | ✅ | `html.go` |
-| tree | Tree | ✅ | `tree.go` |
-| mermaid | Graph | ✅ | `mermaid.go` |
-| dot | Graph | ✅ | `dot.go` |
+| Format   | Type        | Status | Implementation   |
+| -------- | ----------- | ------ | ---------------- |
+| table    | Table       | ✅     | `table/table.go` |
+| json     | Table       | ✅     | `json.go`        |
+| csv      | Table       | ✅     | `csv.go`         |
+| tsv      | Table       | ✅     | `tsv.go`         |
+| xml      | Table       | ✅     | `xml.go` (NEW)   |
+| markdown | Table       | ✅     | `markdown.go`    |
+| yaml     | Table       | ✅     | `yaml.go`        |
+| d2       | Table+Graph | ✅     | `d2.go`          |
+| html     | Tree        | ✅     | `html.go`        |
+| tree     | Tree        | ✅     | `tree.go`        |
+| mermaid  | Graph       | ✅     | `mermaid.go`     |
+| dot      | Graph       | ✅     | `dot.go`         |
 
 ---
 
 ## 9. KNOWN ISSUES
 
-| Issue | Severity | Workaround |
-|-------|----------|------------|
-| None | - | Clean state |
+| Issue | Severity | Workaround  |
+| ----- | -------- | ----------- |
+| None  | -        | Clean state |
 
 ---
 
@@ -237,6 +240,6 @@ ok  	github.com/larsartmann/go-output/table         1.096s
 
 ---
 
-*Generated: 2026-03-28 12:52*
-*Version: 1.0*
-*Author: AI Assistant (Crush)*
+_Generated: 2026-03-28 12:52_
+_Version: 1.0_
+_Author: AI Assistant (Crush)_
