@@ -21,7 +21,13 @@ func MarshalXML(v any) ([]byte, error) {
 func MarshalXMLIndent(v any, prefix, indent string) ([]byte, error) {
 	data, err := xml.MarshalIndent(v, prefix, indent)
 	if err != nil {
-		return nil, fmt.Errorf("marshal xml indent (prefix=%q, indent=%q) for %T: %w", prefix, indent, v, err)
+		return nil, fmt.Errorf(
+			"marshal xml indent (prefix=%q, indent=%q) for %T: %w",
+			prefix,
+			indent,
+			v,
+			err,
+		)
 	}
 	return data, nil
 }

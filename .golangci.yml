@@ -1,90 +1,137 @@
 version: "2"
 run:
-  timeout: 5m
-  go: 1.26.1
-  build-tags: []
-  allow-parallel-runners: false
-  allow-serial-runners: false
-  issues-exit-code: 1
-  tests: true
+    timeout: 5m
+    go: 1.26.1
+    build-tags: []
+    allow-parallel-runners: true
+    allow-serial-runners: true
+    issues-exit-code: 1
+    tests: true
 output:
-  formats: {}
+    formats: {}
 linters:
-  enable:
-    - contextcheck
-    - gochecknoglobals
-    - unconvert
-    - gochecksumtype
-    - nolintlint
-    - sloglint
-    - misspell
-    - testifylint
-    - recvcheck
-    - exhaustive
-    - revive
-    - zerologlint
-    - wastedassign
-    - errname
-    - nestif
-    - exhaustruct
-    - gocognit
-    - errcheck
-    - copyloopvar
-    - rowserrcheck
-    - cyclop
-    - sqlclosecheck
-    - reassign
-    - ginkgolinter
-    - interfacebloat
-    - protogetter
-    - nilerr
-    - bodyclose
-    - perfsprint
-    - wrapcheck
-    - usetesting
-    - gosmopolitan
-    - govet
-    - spancheck
-    - musttag
-    - nakedret
-    - nilnesserr
-    - gocyclo
-    - ineffassign
-    - thelper
-    - staticcheck
-    - gochecknoinits
-    - noctx
-    - unparam
-    - errchkjson
-    - loggercheck
-    - durationcheck
-    - forcetypeassert
-    - gosec
-    - goconst
-    - dupl
-    - nilnil
-    - gocritic
-    - prealloc
-    - predeclared
-    - paralleltest
-    - mirror
-    - maintidx
-    - unused
-    - funlen
-    - intrange
-    - errorlint
-  settings:
-    revive:
-      rules:
-        - disabled: true
-          name: var-naming
-  exclusions:
-    rules:
-      - path: sort/.*\.go
-        text: package name
-        linters:
-          - revive
+    enable:
+        - exhaustive
+        - nestif
+        - exhaustruct
+        - usetesting
+        - gosmopolitan
+        - musttag
+        - noctx
+        - forcetypeassert
+        - revive
+        - rowserrcheck
+        - govet
+        - ineffassign
+        - intrange
+        - errorlint
+        - nosprintfhostport
+        - promlinter
+        - sloglint
+        - protogetter
+        - perfsprint
+        - dupl
+        - prealloc
+        - godot
+        - inamedparam
+        - tagliatelle
+        - errname
+        - sqlclosecheck
+        - interfacebloat
+        - maintidx
+        - dupword
+        - gocheckcompilerdirectives
+        - godoclint
+        - tagalign
+        - zerologlint
+        - canonicalheader
+        - fatcontext
+        - modernize
+        - grouper
+        - ireturn
+        - whitespace
+        - gochecknoglobals
+        - wastedassign
+        - ginkgolinter
+        - bodyclose
+        - containedctx
+        - embeddedstructfieldcheck
+        - nlreturn
+        - contextcheck
+        - copyloopvar
+        - thelper
+        - unparam
+        - errchkjson
+        - nilnil
+        - depguard
+        - makezero
+        - wrapcheck
+        - gocritic
+        - funlen
+        - nonamedreturns
+        - testableexamples
+        - gochecksumtype
+        - misspell
+        - testifylint
+        - gocyclo
+        - predeclared
+        - exptostd
+        - noinlineerr
+        - tparallel
+        - gocognit
+        - cyclop
+        - reassign
+        - loggercheck
+        - mnd
+        - recvcheck
+        - spancheck
+        - durationcheck
+        - asasalint
+        - gomoddirectives
+        - iface
+        - iotamixing
+        - testpackage
+        - nilerr
+        - nakedret
+        - paralleltest
+        - unused
+        - bidichk
+        - forbidigo
+        - varnamelen
+        - wsl_v5
+        - gosec
+        - mirror
+        - decorder
+        - err113
+        - goprintffuncname
+        - importas
+        - errcheck
+        - nilnesserr
+        - arangolint
+        - asciicheck
+        - godox
+        - goheader
+        - staticcheck
+        - goconst
+        - dogsled
+        - unqueryvet
+        - usestdlibvars
+        - unconvert
+        - nolintlint
+        - gochecknoinits
+        - gomodguard
+    settings:
+        revive:
+            rules:
+                - disabled: true
+                  name: var-naming
+    exclusions:
+        rules:
+            - path: sort/.*\.go
+              text: package name
+              linters:
+                - revive
 formatters:
-  enable:
-    - golines
+    enable:
+        - golines
 issues: {}

@@ -21,7 +21,10 @@ func CreateTestNodesAB() []output.GraphNode {
 // CreateTestEdgeAB creates the common test edge from A to B used in DOT and Mermaid tests
 func CreateTestEdgeAB() []output.GraphEdge {
 	return []output.GraphEdge{
-		{From: output.NewBrandedID[output.GraphNodeIDBrand]("A"), To: output.NewBrandedID[output.GraphNodeIDBrand]("B")},
+		{
+			From: output.NewBrandedID[output.GraphNodeIDBrand]("A"),
+			To:   output.NewBrandedID[output.GraphNodeIDBrand]("B"),
+		},
 	}
 }
 
@@ -46,7 +49,13 @@ func CreateTestNodesABC() []output.GraphNode {
 // CreateTestEdgesABC creates the common test edges A->B and B->C used in Mermaid tests
 func CreateTestEdgesABC() []output.GraphEdge {
 	return []output.GraphEdge{
-		{From: output.NewBrandedID[output.GraphNodeIDBrand]("A"), To: output.NewBrandedID[output.GraphNodeIDBrand]("B")},
-		{From: output.NewBrandedID[output.GraphNodeIDBrand]("B"), To: output.NewBrandedID[output.GraphNodeIDBrand]("C")},
+		{
+			From: output.NewBrandedID[output.GraphNodeIDBrand]("A"),
+			To:   output.NewBrandedID[output.GraphNodeIDBrand]("B"),
+		},
+		{
+			From: output.NewBrandedID[output.GraphNodeIDBrand]("B"),
+			To:   output.NewBrandedID[output.GraphNodeIDBrand]("C"),
+		},
 	}
 }
