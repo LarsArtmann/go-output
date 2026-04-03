@@ -2,7 +2,10 @@ version: "2"
 run:
     timeout: 5m
     go: 1.26.1
-    build-tags: []
+    build-tags:
+        - goexperiment.goroutineleakprofile
+        - goexperiment.jsonv2
+        - goexperiment.simd
     allow-parallel-runners: true
     allow-serial-runners: true
     issues-exit-code: 1
@@ -11,115 +14,115 @@ output:
     formats: {}
 linters:
     enable:
-        - exhaustive
-        - nestif
-        - exhaustruct
-        - usetesting
-        - gosmopolitan
-        - musttag
-        - noctx
-        - forcetypeassert
-        - revive
-        - rowserrcheck
-        - govet
-        - ineffassign
-        - intrange
-        - errorlint
-        - nosprintfhostport
-        - promlinter
-        - sloglint
-        - protogetter
-        - perfsprint
-        - dupl
-        - prealloc
-        - godot
-        - inamedparam
-        - tagliatelle
-        - errname
-        - sqlclosecheck
-        - interfacebloat
-        - maintidx
-        - dupword
-        - gocheckcompilerdirectives
-        - godoclint
-        - tagalign
-        - zerologlint
-        - canonicalheader
-        - fatcontext
-        - modernize
-        - grouper
-        - ireturn
-        - whitespace
-        - gochecknoglobals
-        - wastedassign
-        - ginkgolinter
+        - arangolint
+        - asasalint
+        - asciicheck
+        - bidichk
         - bodyclose
+        - canonicalheader
         - containedctx
-        - embeddedstructfieldcheck
-        - nlreturn
         - contextcheck
         - copyloopvar
-        - thelper
-        - unparam
-        - errchkjson
-        - nilnil
-        - depguard
-        - makezero
-        - wrapcheck
-        - gocritic
-        - funlen
-        - nonamedreturns
-        - testableexamples
-        - gochecksumtype
-        - misspell
-        - testifylint
-        - gocyclo
-        - predeclared
-        - exptostd
-        - noinlineerr
-        - tparallel
-        - gocognit
         - cyclop
-        - reassign
-        - loggercheck
-        - mnd
-        - recvcheck
-        - spancheck
-        - durationcheck
-        - asasalint
-        - gomoddirectives
-        - iface
-        - iotamixing
-        - testpackage
-        - nilerr
-        - nakedret
-        - paralleltest
-        - unused
-        - bidichk
-        - forbidigo
-        - varnamelen
-        - wsl_v5
-        - gosec
-        - mirror
         - decorder
+        - depguard
+        - dogsled
+        - dupl
+        - dupword
+        - durationcheck
+        - embeddedstructfieldcheck
         - err113
-        - goprintffuncname
-        - importas
         - errcheck
-        - nilnesserr
-        - arangolint
-        - asciicheck
+        - errchkjson
+        - errname
+        - errorlint
+        - exhaustive
+        - exhaustruct
+        - exptostd
+        - fatcontext
+        - forbidigo
+        - forcetypeassert
+        - funlen
+        - ginkgolinter
+        - gocheckcompilerdirectives
+        - gochecknoglobals
+        - gochecknoinits
+        - gochecksumtype
+        - gocognit
+        - goconst
+        - gocritic
+        - gocyclo
+        - godoclint
+        - godot
         - godox
         - goheader
-        - staticcheck
-        - goconst
-        - dogsled
-        - unqueryvet
-        - usestdlibvars
-        - unconvert
-        - nolintlint
-        - gochecknoinits
+        - gomoddirectives
         - gomodguard
+        - goprintffuncname
+        - gosec
+        - gosmopolitan
+        - govet
+        - grouper
+        - iface
+        - importas
+        - inamedparam
+        - ineffassign
+        - interfacebloat
+        - intrange
+        - iotamixing
+        - ireturn
+        - loggercheck
+        - maintidx
+        - makezero
+        - mirror
+        - misspell
+        - mnd
+        - modernize
+        - musttag
+        - nakedret
+        - nestif
+        - nilerr
+        - nilnesserr
+        - nilnil
+        - nlreturn
+        - noctx
+        - noinlineerr
+        - nolintlint
+        - nonamedreturns
+        - nosprintfhostport
+        - paralleltest
+        - perfsprint
+        - prealloc
+        - predeclared
+        - promlinter
+        - protogetter
+        - reassign
+        - recvcheck
+        - revive
+        - rowserrcheck
+        - sloglint
+        - spancheck
+        - sqlclosecheck
+        - staticcheck
+        - tagalign
+        - tagliatelle
+        - testableexamples
+        - testifylint
+        - testpackage
+        - thelper
+        - tparallel
+        - unconvert
+        - unparam
+        - unqueryvet
+        - unused
+        - usestdlibvars
+        - usetesting
+        - varnamelen
+        - wastedassign
+        - whitespace
+        - wrapcheck
+        - wsl_v5
+        - zerologlint
     settings:
         revive:
             rules:
@@ -133,5 +136,8 @@ linters:
                 - revive
 formatters:
     enable:
+        - gci
+        - goimports
+        - gofumpt
         - golines
 issues: {}
