@@ -3,20 +3,26 @@ package output
 import (
 	"strings"
 	"testing"
+
+	"github.com/larsartmann/go-output/internal/gentest"
 )
 
 func TestGraphNode(t *testing.T) {
 	t.Parallel()
+
 	node := NewGraphNode("test-id", "Test Label")
 	if node.ID.Get() != "test-id" {
 		t.Errorf("ID = %q, want %q", node.ID, "test-id")
 	}
+
 	if node.Label.Get() != "Test Label" {
 		t.Errorf("Label = %q, want %q", node.Label, "Test Label")
 	}
+
 	if node.Shape != ShapeBox {
 		t.Errorf("Shape = %v, want %v", node.Shape, ShapeBox)
 	}
+
 	if node.Metadata == nil {
 		t.Error("Metadata is nil")
 	}
@@ -24,23 +30,19 @@ func TestGraphNode(t *testing.T) {
 
 func TestGraphEdge(t *testing.T) {
 	t.Parallel()
+
 	edge := NewGraphEdge("from-node", "to-node")
 	if edge.From.Get() != "from-node" {
 		t.Errorf("From = %q, want %q", edge.From, "from-node")
 	}
+
 	if edge.To.Get() != "to-node" {
 		t.Errorf("To = %q, want %q", edge.To, "to-node")
 	}
 }
 
 func TestParseGraphShape(t *testing.T) {
-	t.Parallel()
-	tests := []struct {
-		name    string
-		input   string
-		want    GraphShape
-		wantErr bool
-	}{
+	tests := []parseEnumTestCase[GraphShape]{
 		{"box", "box", ShapeBox, false},
 		{"ellipse", "ellipse", ShapeEllipse, false},
 		{"diamond", "diamond", ShapeDiamond, false},
@@ -52,46 +54,21 @@ func TestParseGraphShape(t *testing.T) {
 		{"invalid", "invalid", "", true},
 		{"empty", "", "", true},
 	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-			got, err := ParseGraphShape(tt.input)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("ParseGraphShape() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if got != tt.want {
-				t.Errorf("ParseGraphShape() = %v, want %v", got, tt.want)
-			}
-		})
-	}
+	testParseEnum(t, "ParseGraphShape", ParseGraphShape, tests, func(a, b GraphShape) bool { return a == b })
 }
 
 func TestGraphShapeString(t *testing.T) {
-	t.Parallel()
-	tests := []struct {
-		shape GraphShape
-		want  string
-	}{
+	tests := []stringEnumTestCase[GraphShape]{
 		{ShapeBox, "box"},
 		{ShapeEllipse, "ellipse"},
 		{ShapeDiamond, "diamond"},
 		{ShapeCircle, "circle"},
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.want, func(t *testing.T) {
-			t.Parallel()
-			if got := tt.shape.String(); got != tt.want {
-				t.Errorf("GraphShape.String() = %v, want %v", got, tt.want)
-			}
-		})
-	}
+	testEnumString(t, "GraphShape.String", tests, func(s GraphShape) string { return s.String() })
 }
 
 func TestGraphShapeAllowedValues(t *testing.T) {
-	t.Parallel()
 	got := ShapeBox.AllowedValues()
 	want := []string{
 		"box",
@@ -104,42 +81,30 @@ func TestGraphShapeAllowedValues(t *testing.T) {
 		"rect",
 	}
 
-	if len(got) != len(want) {
-		t.Errorf("AllowedValues() returned %d values, want %d", len(got), len(want))
-	}
-
-	for i, v := range got {
-		if v != want[i] {
-			t.Errorf("AllowedValues()[%d] = %v, want %v", i, v, want[i])
-		}
-	}
+	testAllowedValues(t, "AllowedValues", got, want)
 }
 
 func TestGraphShapeIsValid(t *testing.T) {
 	t.Parallel()
-	tests := []struct {
-		shape GraphShape
-		want  bool
-	}{
-		{ShapeBox, true},
-		{ShapeEllipse, true},
-		{ShapeDiamond, true},
-		{"invalid", false},
-		{"", false},
-	}
 
-	for _, tt := range tests {
-		t.Run(string(tt.shape), func(t *testing.T) {
-			t.Parallel()
-			if got := tt.shape.IsValid(); got != tt.want {
-				t.Errorf("GraphShape.IsValid() = %v, want %v", got, tt.want)
-			}
-		})
-	}
+	gentest.TestEnumIsValid[GraphShape](t, []GraphShape{
+		ShapeBox,
+		ShapeEllipse,
+		ShapeDiamond,
+		"invalid",
+		"",
+	}, []bool{
+		true,
+		true,
+		true,
+		false,
+		false,
+	})
 }
 
 func TestGraphStyle(t *testing.T) {
 	t.Parallel()
+
 	style := GraphStyle{
 		FillColor:   "red",
 		StrokeColor: "blue",
@@ -147,22 +112,17 @@ func TestGraphStyle(t *testing.T) {
 		FontSize:    12,
 	}
 
-	if style.FillColor != "red" {
-		t.Errorf("FillColor = %q, want %q", style.FillColor, "red")
-	}
-	if style.StrokeColor != "blue" {
-		t.Errorf("StrokeColor = %q, want %q", style.StrokeColor, "blue")
-	}
-	if style.FontColor != "green" {
-		t.Errorf("FontColor = %q, want %q", style.FontColor, "green")
-	}
-	if style.FontSize != 12 {
-		t.Errorf("FontSize = %d, want %d", style.FontSize, 12)
-	}
+	gentest.TestStructFields(t,
+		gentest.StringField("FillColor", style.FillColor, "red"),
+		gentest.StringField("StrokeColor", style.StrokeColor, "blue"),
+		gentest.StringField("FontColor", style.FontColor, "green"),
+		gentest.IntField("FontSize", style.FontSize, 12),
+	)
 }
 
 func TestEdgeStyle(t *testing.T) {
 	t.Parallel()
+
 	style := EdgeStyle{
 		Color:     "black",
 		Style:     "dashed",
@@ -170,22 +130,17 @@ func TestEdgeStyle(t *testing.T) {
 		ArrowTail: "arrow",
 	}
 
-	if style.Color != "black" {
-		t.Errorf("Color = %q, want %q", style.Color, "black")
-	}
-	if style.Style != "dashed" {
-		t.Errorf("Style = %q, want %q", style.Style, "dashed")
-	}
-	if style.ArrowHead != "arrow" {
-		t.Errorf("ArrowHead = %q, want %q", style.ArrowHead, "arrow")
-	}
-	if style.ArrowTail != "arrow" {
-		t.Errorf("ArrowTail = %q, want %q", style.ArrowTail, "arrow")
-	}
+	gentest.TestStructFields(t,
+		gentest.StringField("Color", style.Color, "black"),
+		gentest.StringField("Style", style.Style, "dashed"),
+		gentest.StringField("ArrowHead", style.ArrowHead, "arrow"),
+		gentest.StringField("ArrowTail", style.ArrowTail, "arrow"),
+	)
 }
 
 func TestContainsString(t *testing.T) {
 	t.Parallel()
+
 	tests := []struct {
 		s      string
 		substr string
@@ -203,6 +158,7 @@ func TestContainsString(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.s+"_"+tt.substr, func(t *testing.T) {
 			t.Parallel()
+
 			if got := strings.Contains(tt.s, tt.substr); got != tt.want {
 				t.Errorf("containsString(%q, %q) = %v, want %v", tt.s, tt.substr, got, tt.want)
 			}

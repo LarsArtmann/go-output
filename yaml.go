@@ -1,24 +1,15 @@
 package output
 
 import (
-	"fmt"
-
 	"github.com/go-faster/yaml"
 )
 
 // MarshalYAML encodes v to YAML.
 func MarshalYAML(v any) ([]byte, error) {
-	data, err := yaml.Marshal(v)
-	if err != nil {
-		return nil, fmt.Errorf("marshal yaml (%T): %w", v, err)
-	}
-	return data, nil
+	return marshal("yaml", yaml.Marshal, v)
 }
 
 // UnmarshalYAML decodes YAML data into v.
 func UnmarshalYAML(data []byte, v any) error {
-	if err := yaml.Unmarshal(data, v); err != nil {
-		return fmt.Errorf("unmarshal yaml into %T: %w", v, err)
-	}
-	return nil
+	return unmarshal("yaml", yaml.Unmarshal, data, v)
 }

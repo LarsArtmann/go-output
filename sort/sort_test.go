@@ -8,8 +8,26 @@ import (
 	"github.com/larsartmann/go-output"
 )
 
+func compareTest[T any](t *testing.T, cmpName, testName string, cmp func(a, b T) int, a, b T, want int) {
+	t.Run(testName, func(t *testing.T) {
+		t.Parallel()
+		if got := cmp(a, b); got != want {
+			t.Errorf("%s(%v, %v) = %v, want %v", cmpName, a, b, got, want)
+		}
+	})
+}
+
+func assertItemField[V comparable](t *testing.T, items []testItem, expected []V, accessor func(testItem) V, fieldName string) {
+	for i, expectedVal := range expected {
+		if got := accessor(items[i]); got != expectedVal {
+			t.Errorf("Items[%d].%s = %v, want %v", i, fieldName, got, expectedVal)
+		}
+	}
+}
+
 func TestCompareString(t *testing.T) {
 	t.Parallel()
+
 	tests := []struct {
 		name string
 		a, b any
@@ -26,17 +44,13 @@ func TestCompareString(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-			if got := CompareString(tt.a, tt.b); got != tt.want {
-				t.Errorf("CompareString(%v, %v) = %v, want %v", tt.a, tt.b, got, tt.want)
-			}
-		})
+		compareTest(t, "CompareString", tt.name, CompareString, tt.a, tt.b, tt.want)
 	}
 }
 
 func TestCompareInt(t *testing.T) {
 	t.Parallel()
+
 	tests := []struct {
 		name string
 		a, b any
@@ -63,17 +77,13 @@ func TestCompareInt(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-			if got := CompareInt(tt.a, tt.b); got != tt.want {
-				t.Errorf("CompareInt(%v, %v) = %v, want %v", tt.a, tt.b, got, tt.want)
-			}
-		})
+		compareTest(t, "CompareInt", tt.name, CompareInt, tt.a, tt.b, tt.want)
 	}
 }
 
 func TestCompareTime(t *testing.T) {
 	t.Parallel()
+
 	now := time.Now()
 	earlier := now.Add(-time.Hour)
 	later := now.Add(time.Hour)
@@ -95,12 +105,7 @@ func TestCompareTime(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-			if got := CompareTime(tt.a, tt.b); got != tt.want {
-				t.Errorf("CompareTime(%v, %v) = %v, want %v", tt.a, tt.b, got, tt.want)
-			}
-		})
+		compareTest(t, "CompareTime", tt.name, CompareTime, tt.a, tt.b, tt.want)
 	}
 }
 
@@ -119,17 +124,22 @@ func testItemsAB() []testItem {
 
 func TestSorter_New(t *testing.T) {
 	t.Parallel()
+
 	items := testItemsAB()
+
 	sorter := New(items, output.SortByName, false)
 	if sorter == nil {
 		t.Fatal("New() returned nil")
 	}
+
 	if len(sorter.Items) != 2 {
 		t.Errorf("New() items length = %d, want 2", len(sorter.Items))
 	}
+
 	if sorter.By != output.SortByName {
 		t.Errorf("New() By = %v, want %v", sorter.By, output.SortByName)
 	}
+
 	if sorter.Desc != false {
 		t.Errorf("New() Desc = %v, want false", sorter.Desc)
 	}
@@ -137,14 +147,25 @@ func TestSorter_New(t *testing.T) {
 
 func TestSorter_WithLessFunc(t *testing.T) {
 	t.Parallel()
+
 	items := testItemsAB()
 	sorter := New(items, output.SortByName, false)
+
 	result := sorter.WithLessFunc(func(a, b testItem) bool { return a.Count < b.Count })
 	if result != sorter {
 		t.Error("WithLessFunc() should return the same sorter")
 	}
+
 	if sorter.LessFunc == nil {
 		t.Error("WithLessFunc() did not set LessFunc")
+	}
+}
+
+func testItemsUnsorted() []testItem {
+	return []testItem{
+		{Name: "charlie", Count: 3, When: time.Time{}},
+		{Name: "alpha", Count: 1, When: time.Time{}},
+		{Name: "bravo", Count: 2, When: time.Time{}},
 	}
 }
 
@@ -161,12 +182,8 @@ func TestSorter_Sort(t *testing.T) {
 		expectedCounts []int
 	}{
 		{
-			name: "SortByName ascending",
-			items: []testItem{
-				{Name: "charlie", Count: 3, When: time.Time{}},
-				{Name: "alpha", Count: 1, When: time.Time{}},
-				{Name: "bravo", Count: 2, When: time.Time{}},
-			},
+			name:           "SortByName ascending",
+			items:          testItemsUnsorted(),
 			sortBy:         output.SortByName,
 			desc:           false,
 			lessFunc:       nil,
@@ -174,12 +191,8 @@ func TestSorter_Sort(t *testing.T) {
 			expectedCounts: []int{1, 2, 3},
 		},
 		{
-			name: "SortByName descending",
-			items: []testItem{
-				{Name: "charlie", Count: 3, When: time.Time{}},
-				{Name: "alpha", Count: 1, When: time.Time{}},
-				{Name: "bravo", Count: 2, When: time.Time{}},
-			},
+			name:           "SortByName descending",
+			items:          testItemsUnsorted(),
 			sortBy:         output.SortByName,
 			desc:           true,
 			lessFunc:       nil,
@@ -235,22 +248,15 @@ func TestSorter_Sort(t *testing.T) {
 			if tt.lessFunc != nil {
 				sorter.WithLessFunc(tt.lessFunc)
 			}
+
 			sorter.Sort()
 
 			if len(tt.expectedNames) > 0 {
-				for i, expectedName := range tt.expectedNames {
-					if got := sorter.Items[i].Name; got != expectedName {
-						t.Errorf("Items[%d].Name = %v, want %v", i, got, expectedName)
-					}
-				}
+				assertItemField(t, sorter.Items, tt.expectedNames, func(item testItem) string { return item.Name }, "Name")
 			}
 
 			if len(tt.expectedCounts) > 0 {
-				for i, expectedCount := range tt.expectedCounts {
-					if got := sorter.Items[i].Count; got != expectedCount {
-						t.Errorf("Items[%d].Count = %v, want %v", i, got, expectedCount)
-					}
-				}
+				assertItemField(t, sorter.Items, tt.expectedCounts, func(item testItem) int { return item.Count }, "Count")
 			}
 		})
 	}
@@ -262,6 +268,7 @@ func TestSorter_Sort_EdgeCases(t *testing.T) {
 	// Empty slice
 	empty := []testItem{}
 	New(empty, output.SortByName, false).Sort()
+
 	if len(empty) != 0 {
 		t.Errorf("Sort() on empty slice should remain empty")
 	}
@@ -269,6 +276,7 @@ func TestSorter_Sort_EdgeCases(t *testing.T) {
 	// Single item
 	single := []testItem{{Name: "only", Count: 1, When: time.Time{}}}
 	New(single, output.SortByName, false).Sort()
+
 	if len(single) != 1 || single[0].Name != "only" {
 		t.Errorf("Sort() changed single item")
 	}
@@ -279,6 +287,7 @@ func TestSorter_Sort_EdgeCases(t *testing.T) {
 		{Name: "a", Count: 0, When: time.Time{}},
 	}
 	New(invalid, output.SortBy("NonExistentField"), false).Sort()
+
 	if invalid[0].Name != "b" || invalid[1].Name != "a" {
 		t.Errorf("Sort() with invalid field should be stable")
 	}
@@ -286,6 +295,7 @@ func TestSorter_Sort_EdgeCases(t *testing.T) {
 
 func TestToInt(t *testing.T) {
 	t.Parallel()
+
 	tests := []struct {
 		name   string
 		input  any
@@ -310,10 +320,12 @@ func TestToInt(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
+
 			got, ok := toInt(tt.input)
 			if ok != tt.wantOk {
 				t.Errorf("toInt(%v) ok = %v, want %v", tt.input, ok, tt.wantOk)
 			}
+
 			if got != tt.want {
 				t.Errorf("toInt(%v) = %v, want %v", tt.input, got, tt.want)
 			}
@@ -323,7 +335,9 @@ func TestToInt(t *testing.T) {
 
 func TestToTime(t *testing.T) {
 	t.Parallel()
+
 	now := time.Now()
+
 	tests := []struct {
 		name   string
 		input  any
@@ -339,6 +353,7 @@ func TestToTime(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
+
 			_, ok := toTime(tt.input)
 			if ok != tt.wantOk {
 				t.Errorf("toTime(%v) ok = %v, want %v", tt.input, ok, tt.wantOk)

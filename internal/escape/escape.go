@@ -24,6 +24,7 @@ func XML(s string) string {
 
 func escape(s string, m mode) string {
 	var b strings.Builder
+
 	for _, r := range s {
 		switch r {
 		case '<':
@@ -40,5 +41,6 @@ func escape(s string, m mode) string {
 			b.WriteRune(r)
 		}
 	}
+
 	return b.String()
 }

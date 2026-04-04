@@ -36,6 +36,7 @@ func ParseSortBy(s string) (SortBy, error) {
 	if err != nil {
 		return "", fmt.Errorf("invalid sort by: %q", s)
 	}
+
 	return v, nil
 }
 
@@ -46,7 +47,7 @@ func (s SortBy) String() string {
 
 // AllowedValues returns all valid sort field values for CLI help text.
 func (s SortBy) AllowedValues() []string {
-	return enum.AllowedStrings(sortByValues, func(s SortBy) string { return string(s) })
+	return enum.AllowedValues(sortByValues)
 }
 
 // IsValid returns true if the sort field is a valid SortBy value.

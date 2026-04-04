@@ -8,17 +8,22 @@ import (
 
 func TestRegister(t *testing.T) {
 	t.Parallel()
-	Unregister(FormatJSON)
+	testRegisterAndVerify(t, FormatJSON, "json")
+}
 
-	err := Register(FormatJSON, func() Renderer {
-		return &testRenderer{output: "json"}
+func testRegisterAndVerify(t *testing.T, format OutputFormat, output string) {
+	t.Helper()
+	Unregister(format)
+
+	err := Register(format, func() Renderer {
+		return &testRenderer{output: output}
 	})
 	if err != nil {
-		t.Fatalf("Register() error = %v", err)
+		t.Fatalf("Register(%v) error = %v", format, err)
 	}
 
-	if !IsRegistered(FormatJSON) {
-		t.Error("IsRegistered(FormatJSON) = false, want true")
+	if !IsRegistered(format) {
+		t.Errorf("IsRegistered(%v) = false, want true", format)
 	}
 }
 
@@ -57,6 +62,7 @@ func TestCreate(t *testing.T) {
 	t.Run("existing format", func(t *testing.T) {
 		t.Parallel()
 		Unregister(FormatD2)
+
 		err := Register(FormatD2, func() Renderer {
 			return &testRenderer{output: "d2-output"}
 		})
@@ -68,6 +74,7 @@ func TestCreate(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Create(FormatD2) error = %v", err)
 		}
+
 		if r.Render() != "d2-output" {
 			t.Errorf("Create(FormatD2).Render() = %q, want %q", r.Render(), "d2-output")
 		}
@@ -76,10 +83,12 @@ func TestCreate(t *testing.T) {
 	t.Run("unregistered format", func(t *testing.T) {
 		t.Parallel()
 		Unregister(FormatMermaid)
+
 		r, err := Create(FormatMermaid)
 		if err == nil {
 			t.Error("Create(unregistered) expected error, got nil")
 		}
+
 		if r != nil {
 			t.Errorf("Create(unregistered) = %v, want nil", r)
 		}
@@ -95,6 +104,7 @@ func TestRegisteredFormats(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Register(FormatTable) error = %v", err)
 	}
+
 	err = Register(FormatJSON, func() Renderer { return &testRenderer{output: ""} })
 	if err != nil {
 		t.Fatalf("Register(FormatJSON) error = %v", err)
@@ -115,19 +125,13 @@ func TestIsRegistered(t *testing.T) {
 	t.Parallel()
 	t.Run("registered", func(t *testing.T) {
 		t.Parallel()
-		Unregister(FormatHTML)
-		err := Register(FormatHTML, func() Renderer { return &testRenderer{output: ""} })
-		if err != nil {
-			t.Fatalf("Register(FormatHTML) error = %v", err)
-		}
-		if !IsRegistered(FormatHTML) {
-			t.Error("IsRegistered(FormatHTML) = false, want true")
-		}
+		testRegisterAndVerify(t, FormatHTML, "")
 	})
 
 	t.Run("unregistered", func(t *testing.T) {
 		t.Parallel()
 		Unregister(FormatDOT)
+
 		if IsRegistered(FormatDOT) {
 			t.Error("IsRegistered(FormatDOT) = true, want false")
 		}
@@ -148,6 +152,7 @@ func TestRegistryConcurrency(t *testing.T) {
 			}
 		})
 	}
+
 	for range 10 {
 		wg.Go(func() {
 			for range 100 {
@@ -156,6 +161,7 @@ func TestRegistryConcurrency(t *testing.T) {
 			}
 		})
 	}
+
 	wg.Wait()
 }
 

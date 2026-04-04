@@ -1,37 +1,17 @@
 package cmdguard
 
 import (
-	"fmt"
-
 	"github.com/larsartmann/go-output"
 )
 
-// SortByFlag parses sort by flags.
-type SortByFlag struct {
-	value *output.SortBy
-}
+// SortByFlag is a flag parser for SortBy values.
+//
+// Deprecated: Use NewEnumFlag with output.SortBy instead.
+type SortByFlag = EnumFlag[output.SortBy]
 
 // NewSortByFlag creates a new SortByFlag.
+//
+// Deprecated: Use NewEnumFlag[output.SortBy](value, "sort by", output.ParseSortBy) instead.
 func NewSortByFlag(value *output.SortBy) *SortByFlag {
-	return &SortByFlag{value: value}
-}
-
-// Parse parses the flag value.
-func (f *SortByFlag) Parse(s string) error {
-	parsed, err := output.ParseSortBy(s)
-	if err != nil {
-		return fmt.Errorf("parse sort by %q: %w", s, err)
-	}
-	*f.value = parsed
-	return nil
-}
-
-// AllowedValues returns the allowed flag values.
-func (f *SortByFlag) AllowedValues() []string {
-	return f.value.AllowedValues()
-}
-
-// Default returns the default value.
-func (f *SortByFlag) Default() string {
-	return f.value.String()
+	return NewEnumFlag(value, "sort by", output.ParseSortBy)
 }

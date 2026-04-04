@@ -18,37 +18,19 @@ func testEnumString(v testEnum) string {
 }
 
 func TestParse(t *testing.T) {
-	t.Parallel()
-	tests := []struct {
-		name    string
-		input   string
-		want    testEnum
-		wantErr bool
-	}{
+	tests := []parseEnumTestCase[testEnum]{
 		{"valid_a", "a", testEnumA, false},
 		{"valid_b", "b", testEnumB, false},
 		{"valid_c", "c", testEnumC, false},
 		{"invalid", "x", "", true},
 		{"empty", "", "", true},
 	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-			got, err := Parse(testEnumValues, tt.input, testEnumString)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("Parse() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if got != tt.want {
-				t.Errorf("Parse() = %v, want %v", got, tt.want)
-			}
-		})
-	}
+	testParseEnum(t, "Parse", testEnumValues, testEnumString, tests, func(a, b testEnum) bool { return a == b })
 }
 
 func TestContains(t *testing.T) {
 	t.Parallel()
+
 	if !Contains(testEnumValues, testEnumA) {
 		t.Error("Contains() should return true for valid value")
 	}
@@ -60,6 +42,7 @@ func TestContains(t *testing.T) {
 
 func TestAllowedStrings(t *testing.T) {
 	t.Parallel()
+
 	got := AllowedStrings(testEnumValues, testEnumString)
 	want := []string{"a", "b", "c"}
 
@@ -76,8 +59,10 @@ func TestAllowedStrings(t *testing.T) {
 
 func TestParseError(t *testing.T) {
 	t.Parallel()
+
 	err := &ParseError[testEnum]{Value: "invalid", Values: testEnumValues}
 	got := err.Error()
+
 	want := `invalid value: "invalid"`
 	if got != want {
 		t.Errorf("ParseError.Error() = %q, want %q", got, want)

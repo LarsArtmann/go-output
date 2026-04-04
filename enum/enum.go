@@ -13,6 +13,7 @@ func Parse[T comparable](values []T, s string, toString func(T) string) (T, erro
 			return v, nil
 		}
 	}
+
 	return *new(T), &ParseError[T]{Value: s, Values: values}
 }
 
@@ -27,6 +28,23 @@ func AllowedStrings[T any](values []T, toString func(T) string) []string {
 	for i, v := range values {
 		result[i] = toString(v)
 	}
+
+	return result
+}
+
+// Enum is an interface for string-based enum types.
+type Enum interface {
+	String() string
+}
+
+// AllowedValues returns the string representations of all enum values
+// for types that implement the Enum interface.
+func AllowedValues[T Enum](values []T) []string {
+	result := make([]string, len(values))
+	for i, v := range values {
+		result[i] = v.String()
+	}
+
 	return result
 }
 

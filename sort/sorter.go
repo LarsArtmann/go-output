@@ -18,16 +18,20 @@ func CompareString(a, b any) int {
 	if !ok {
 		return 0
 	}
+
 	sb, ok := b.(string)
 	if !ok {
 		return 0
 	}
+
 	if sa < sb {
 		return -1
 	}
+
 	if sa > sb {
 		return 1
 	}
+
 	return 0
 }
 
@@ -37,16 +41,20 @@ func CompareInt(a, b any) int {
 	if !ok {
 		return 0
 	}
+
 	ib, ok := toInt(b)
 	if !ok {
 		return 0
 	}
+
 	if ia < ib {
 		return -1
 	}
+
 	if ia > ib {
 		return 1
 	}
+
 	return 0
 }
 
@@ -56,16 +64,20 @@ func CompareTime(a, b any) int {
 	if !ok {
 		return 0
 	}
+
 	tb, ok := toTime(b)
 	if !ok {
 		return 0
 	}
+
 	if ta.Before(tb) {
 		return -1
 	}
+
 	if ta.After(tb) {
 		return 1
 	}
+
 	return 0
 }
 
@@ -105,6 +117,7 @@ func toTime(v any) (time.Time, bool) {
 		if val != nil {
 			return *val, true
 		}
+
 		return time.Time{}, false
 	default:
 		return time.Time{}, false
@@ -132,6 +145,7 @@ func New[T any](items []T, by output.SortBy, desc bool) *Sorter[T] {
 // WithLessFunc sets a custom less function.
 func (s *Sorter[T]) WithLessFunc(fn func(a, b T) bool) *Sorter[T] {
 	s.LessFunc = fn
+
 	return s
 }
 
@@ -144,9 +158,11 @@ func (s *Sorter[T]) Sort() {
 		} else {
 			result = s.defaultLess(s.Items[i], s.Items[j])
 		}
+
 		if s.Desc {
 			return !result
 		}
+
 		return result
 	})
 }
@@ -180,14 +196,18 @@ func snakeToPascal(s string) string {
 		c := s[i]
 		if c == '_' {
 			upper = true
+
 			continue
 		}
+
 		if upper {
 			if c >= 'a' && c <= 'z' {
 				c = c - 'a' + 'A'
 			}
+
 			upper = false
 		}
+
 		result = append(result, c)
 	}
 
@@ -198,10 +218,9 @@ func compareFieldValues(a, b reflect.Value) bool {
 	switch a.Kind() {
 	case reflect.String:
 		return a.String() < b.String()
-	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
+		reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 		return a.Int() < b.Int()
-	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-		return a.Uint() < b.Uint()
 	case reflect.Struct:
 		if aTime, ok := a.Interface().(time.Time); ok {
 			if bTime, ok := b.Interface().(time.Time); ok {
@@ -214,5 +233,6 @@ func compareFieldValues(a, b reflect.Value) bool {
 		reflect.Slice, reflect.UnsafePointer:
 		return false
 	}
+
 	return false
 }

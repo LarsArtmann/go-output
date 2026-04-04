@@ -6,8 +6,86 @@ import (
 	"github.com/larsartmann/go-output"
 )
 
+func testParseHelper[T EnumValue](
+	t *testing.T,
+	flagName string,
+	newFlag func(*T) *EnumFlag[T],
+	tests []struct {
+		name    string
+		input   string
+		want    T
+		wantErr bool
+	},
+) {
+	t.Helper()
+
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
+			var val T
+
+			flag := newFlag(&val)
+
+			err := flag.Parse(testCase.input)
+			if (err != nil) != testCase.wantErr {
+				t.Errorf("%s.Parse() error = %v, wantErr %v", flagName, err, testCase.wantErr)
+
+				return
+			}
+
+			if !testCase.wantErr && val != testCase.want {
+				t.Errorf("%s.Parse() = %v, want %v", flagName, val, testCase.want)
+			}
+		})
+	}
+}
+
+func testNewFlagHelper[T EnumValue](
+	t *testing.T,
+	newFlag func(*T) *EnumFlag[T],
+	val *T,
+) {
+	t.Helper()
+
+	flag := newFlag(val)
+	if flag == nil {
+		t.Fatal("NewFlag() returned nil")
+	}
+
+	if flag.value != val {
+		t.Error("NewFlag() did not set value correctly")
+	}
+}
+
+func TestNewFlag(t *testing.T) {
+	t.Parallel()
+
+	t.Run("ColorModeFlag", func(t *testing.T) {
+		t.Parallel()
+
+		var val output.ColorMode
+		testNewFlagHelper(t, NewColorModeFlag, &val)
+	})
+
+	t.Run("OutputFormatFlag", func(t *testing.T) {
+		t.Parallel()
+
+		var val output.Format
+		testNewFlagHelper(t, NewOutputFormatFlag, &val)
+	})
+
+	t.Run("SortByFlag", func(t *testing.T) {
+		t.Parallel()
+
+		var val output.SortBy
+		testNewFlagHelper(t, NewSortByFlag, &val)
+	})
+}
+
 func TestColorModeFlag_Parse(t *testing.T) {
 	t.Parallel()
+
 	tests := []struct {
 		name    string
 		input   string
@@ -21,25 +99,12 @@ func TestColorModeFlag_Parse(t *testing.T) {
 		{"empty", "", output.ColorModeAuto, true},
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-			var val output.ColorMode
-			flag := NewColorModeFlag(&val)
-			err := flag.Parse(tt.input)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("ColorModeFlag.Parse() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !tt.wantErr && val != tt.want {
-				t.Errorf("ColorModeFlag.Parse() = %v, want %v", val, tt.want)
-			}
-		})
-	}
+	testParseHelper(t, "ColorModeFlag", NewColorModeFlag, tests)
 }
 
 func TestColorModeFlag_AllowedValues(t *testing.T) {
 	t.Parallel()
+
 	val := output.ColorModeAuto
 	flag := NewColorModeFlag(&val)
 	got := flag.AllowedValues()
@@ -56,17 +121,27 @@ func TestColorModeFlag_AllowedValues(t *testing.T) {
 	}
 }
 
+func testDefaultHelper[T EnumValue](
+	t *testing.T,
+	newFlag func(*T) *EnumFlag[T],
+	defaultVal T,
+) {
+	t.Helper()
+
+	flag := newFlag(&defaultVal)
+	if got := flag.Default(); got != defaultVal.String() {
+		t.Errorf("Default() = %v, want %v", got, defaultVal.String())
+	}
+}
+
 func TestColorModeFlag_Default(t *testing.T) {
 	t.Parallel()
-	val := output.ColorModeAuto
-	flag := NewColorModeFlag(&val)
-	if got := flag.Default(); got != "auto" {
-		t.Errorf("ColorModeFlag.Default() = %v, want auto", got)
-	}
+	testDefaultHelper(t, NewColorModeFlag, output.ColorModeAuto)
 }
 
 func TestOutputFormatFlag_Parse(t *testing.T) {
 	t.Parallel()
+
 	tests := []struct {
 		name    string
 		input   string
@@ -89,25 +164,12 @@ func TestOutputFormatFlag_Parse(t *testing.T) {
 		{"empty", "", output.FormatTable, true},
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-			var val output.Format
-			flag := NewOutputFormatFlag(&val)
-			err := flag.Parse(tt.input)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("OutputFormatFlag.Parse() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !tt.wantErr && val != tt.want {
-				t.Errorf("OutputFormatFlag.Parse() = %v, want %v", val, tt.want)
-			}
-		})
-	}
+	testParseHelper(t, "OutputFormatFlag", NewOutputFormatFlag, tests)
 }
 
 func TestOutputFormatFlag_AllowedValues(t *testing.T) {
 	t.Parallel()
+
 	val := output.FormatTable
 	flag := NewOutputFormatFlag(&val)
 	got := flag.AllowedValues()
@@ -139,15 +201,12 @@ func TestOutputFormatFlag_AllowedValues(t *testing.T) {
 
 func TestOutputFormatFlag_Default(t *testing.T) {
 	t.Parallel()
-	val := output.OutputFormatJSON
-	flag := NewOutputFormatFlag(&val)
-	if got := flag.Default(); got != "json" {
-		t.Errorf("OutputFormatFlag.Default() = %v, want json", got)
-	}
+	testDefaultHelper(t, NewOutputFormatFlag, output.OutputFormatJSON)
 }
 
 func TestSortByFlag_Parse(t *testing.T) {
 	t.Parallel()
+
 	tests := []struct {
 		name    string
 		input   string
@@ -164,25 +223,12 @@ func TestSortByFlag_Parse(t *testing.T) {
 		{"empty", "", output.SortByName, true},
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-			var val output.SortBy
-			flag := NewSortByFlag(&val)
-			err := flag.Parse(tt.input)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("SortByFlag.Parse() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !tt.wantErr && val != tt.want {
-				t.Errorf("SortByFlag.Parse() = %v, want %v", val, tt.want)
-			}
-		})
-	}
+	testParseHelper(t, "SortByFlag", NewSortByFlag, tests)
 }
 
 func TestSortByFlag_AllowedValues(t *testing.T) {
 	t.Parallel()
+
 	val := output.SortByName
 	flag := NewSortByFlag(&val)
 	got := flag.AllowedValues()
@@ -201,20 +247,19 @@ func TestSortByFlag_AllowedValues(t *testing.T) {
 
 func TestSortByFlag_Default(t *testing.T) {
 	t.Parallel()
-	val := output.SortByName
-	flag := NewSortByFlag(&val)
-	if got := flag.Default(); got != "name" {
-		t.Errorf("SortByFlag.Default() = %v, want name", got)
-	}
+	testDefaultHelper(t, NewSortByFlag, output.SortByName)
 }
 
 func TestNewColorModeFlag(t *testing.T) {
 	t.Parallel()
+
 	val := output.ColorModeAuto
+
 	flag := NewColorModeFlag(&val)
 	if flag == nil {
 		t.Fatal("NewColorModeFlag() returned nil")
 	}
+
 	if flag.value != &val {
 		t.Error("NewColorModeFlag() did not set value correctly")
 	}
@@ -222,11 +267,14 @@ func TestNewColorModeFlag(t *testing.T) {
 
 func TestNewOutputFormatFlag(t *testing.T) {
 	t.Parallel()
+
 	val := output.OutputFormatTable
+
 	flag := NewOutputFormatFlag(&val)
 	if flag == nil {
 		t.Fatal("NewOutputFormatFlag() returned nil")
 	}
+
 	if flag.value != &val {
 		t.Error("NewOutputFormatFlag() did not set value correctly")
 	}
@@ -234,11 +282,14 @@ func TestNewOutputFormatFlag(t *testing.T) {
 
 func TestNewSortByFlag(t *testing.T) {
 	t.Parallel()
+
 	val := output.SortByName
+
 	flag := NewSortByFlag(&val)
 	if flag == nil {
 		t.Fatal("NewSortByFlag() returned nil")
 	}
+
 	if flag.value != &val {
 		t.Error("NewSortByFlag() did not set value correctly")
 	}

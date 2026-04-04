@@ -1,6 +1,7 @@
 package output
 
 import (
+	"io"
 	"strings"
 	"testing"
 )
@@ -9,6 +10,7 @@ func TestTSVWriterHeaderAndRow(t *testing.T) {
 	t.Parallel()
 
 	var buf strings.Builder
+
 	w := NewTSVWriter(&buf)
 
 	err := w.WriteHeader([]string{"Name", "Value"})
@@ -27,9 +29,11 @@ func TestTSVWriterHeaderAndRow(t *testing.T) {
 	if !strings.Contains(result, "Name") {
 		t.Error("TSV should contain header")
 	}
+
 	if !strings.Contains(result, "Alpha") {
 		t.Error("TSV should contain data")
 	}
+
 	if !strings.Contains(result, "\t") {
 		t.Error("TSV should use tabs")
 	}
@@ -39,6 +43,7 @@ func TestTSVWriterMultipleRows(t *testing.T) {
 	t.Parallel()
 
 	var buf strings.Builder
+
 	w := NewTSVWriter(&buf)
 
 	_ = w.WriteHeader([]string{"A", "B"})
@@ -47,6 +52,7 @@ func TestTSVWriterMultipleRows(t *testing.T) {
 	w.Flush()
 
 	result := buf.String()
+
 	lines := strings.Split(strings.TrimSpace(result), "\n")
 	if len(lines) != 3 {
 		t.Errorf("Expected 3 lines, got %d", len(lines))
@@ -71,34 +77,31 @@ func TestMarshalTSV(t *testing.T) {
 	if !strings.Contains(tsv, "Alpha") {
 		t.Error("TSV should contain Alpha")
 	}
+
 	if !strings.Contains(tsv, "\t") {
 		t.Error("TSV should use tabs")
 	}
 }
 
 func BenchmarkTSVWriter(b *testing.B) {
-	var buf strings.Builder
 	headers := make([]string, 10)
 	for i := range headers {
 		headers[i] = "Header"
 	}
+
 	rows := make([][]string, 100)
 	for i := range rows {
 		row := make([]string, 10)
 		for j := range row {
 			row[j] = "Cell"
 		}
+
 		rows[i] = row
 	}
 
 	b.ResetTimer()
-	for b.Loop() {
-		buf.Reset()
-		w := NewTSVWriter(&buf)
-		_ = w.WriteHeader(headers)
-		for _, row := range rows {
-			_ = w.WriteRow(row)
-		}
-		w.Flush()
-	}
+
+	benchmarkTableWriter(b, headers, rows, func(w io.Writer) TableWriter {
+		return NewTSVWriter(w)
+	})
 }

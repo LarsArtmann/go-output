@@ -13,13 +13,11 @@ import (
 func TestTableFormatContent(t *testing.T) {
 	t.Parallel()
 
-	projects := []TestProject{
-		{Name: "Alpha", Health: 90, Complexity: 7},
-		{Name: "Beta", Health: 75, Complexity: 5},
-	}
+	projects := SampleProjects()
 
 	tbl := table.New()
 	tbl.SetHeaders("Name", "Health", "Complexity")
+
 	for _, p := range projects {
 		tbl.AddRow(p.Name, formatHealth(p.Health), formatComplexity(p.Complexity))
 	}
@@ -28,9 +26,11 @@ func TestTableFormatContent(t *testing.T) {
 	if !strings.Contains(result, "Name") {
 		t.Error("Table should contain header 'Name'")
 	}
+
 	if !strings.Contains(result, "Alpha") {
 		t.Error("Table should contain project name 'Alpha'")
 	}
+
 	if !strings.Contains(result, "Beta") {
 		t.Error("Table should contain project name 'Beta'")
 	}
@@ -52,6 +52,7 @@ func TestJSONFormatContent(t *testing.T) {
 	if !strings.Contains(result, "Alpha") {
 		t.Error("JSON should contain project name 'Alpha'")
 	}
+
 	if !strings.Contains(result, "90") {
 		t.Error("JSON should contain health value 90")
 	}
@@ -60,18 +61,16 @@ func TestJSONFormatContent(t *testing.T) {
 func TestMarkdownTableContent(t *testing.T) {
 	t.Parallel()
 
-	md := output.NewMarkdownTable()
-	md.SetHeaders([]string{"Name", "Health"})
-	md.AddRow([]string{"Alpha", "90%"})
-
-	result := md.Render()
+	result := renderMarkdownTable([]string{"Name", "Health"}, [][]string{{"Alpha", "90%"}})
 
 	if !strings.Contains(result, "| Name") {
 		t.Error("Markdown should contain header cell")
 	}
+
 	if !strings.Contains(result, "| Alpha") {
 		t.Error("Markdown should contain row data")
 	}
+
 	if !strings.Contains(result, "|---") {
 		t.Error("Markdown should contain separator row")
 	}
@@ -81,19 +80,25 @@ func TestCSVFormatContent(t *testing.T) {
 	t.Parallel()
 
 	var buf bytes.Buffer
+
 	w := output.NewCSVWriter(&buf)
-	if err := w.WriteHeader([]string{"Name", "Health"}); err != nil {
+	err := w.WriteHeader([]string{"Name", "Health"})
+	if err != nil {
 		t.Fatalf("WriteHeader failed: %v", err)
 	}
-	if err := w.WriteRow([]string{"Alpha", "90"}); err != nil {
+
+	err = w.WriteRow([]string{"Alpha", "90"})
+	if err != nil {
 		t.Fatalf("WriteRow failed: %v", err)
 	}
+
 	w.Flush()
 
 	result := buf.String()
 	if !strings.Contains(result, "Name,Health") {
 		t.Error("CSV should contain header row")
 	}
+
 	if !strings.Contains(result, "Alpha,90") {
 		t.Error("CSV should contain data row")
 	}
@@ -128,6 +133,7 @@ func TestHTMLFormatContent(t *testing.T) {
 	if !strings.Contains(result, "<table") {
 		t.Error("HTML should contain table tag")
 	}
+
 	if !strings.Contains(result, "Alpha") {
 		t.Error("HTML should contain project name 'Alpha'")
 	}
@@ -144,6 +150,7 @@ func TestHTMLFullPage(t *testing.T) {
 	if !strings.Contains(result, "<html") {
 		t.Error("Full HTML should contain html tag")
 	}
+
 	if !strings.Contains(result, "<title>Test Page</title>") {
 		t.Error("Full HTML should contain title")
 	}
@@ -178,30 +185,31 @@ func TestD2FormatContent(t *testing.T) {
 	}
 }
 
-func TestMermaidFormatContent(t *testing.T) {
-	t.Parallel()
+type renderer interface{ Render() string }
+
+// testRendererNotEmpty tests that a renderer produces non-empty output.
+func testRendererNotEmpty[R renderer](t *testing.T, createRenderer func(*output.TableData) R, name string) {
+	t.Helper()
 
 	data := output.NewTableData([]string{"Name", "Health"})
 	data.AddRow([]string{"Alpha", "90%"})
 
-	mermaid := output.MermaidFlowchartRenderer(data)
-	result := mermaid.Render()
+	r := createRenderer(data)
+	result := r.Render()
 
 	if result == "" {
-		t.Error("Mermaid render should not be empty")
+		t.Error(name + " render should not be empty")
 	}
+}
+
+func TestMermaidFormatContent(t *testing.T) {
+	t.Parallel()
+
+	testRendererNotEmpty(t, output.MermaidFlowchartRenderer, "Mermaid")
 }
 
 func TestDOTFormatContent(t *testing.T) {
 	t.Parallel()
 
-	data := output.NewTableData([]string{"Name", "Health"})
-	data.AddRow([]string{"Alpha", "90%"})
-
-	dot := output.DOTFromTableData(data)
-	result := dot.Render()
-
-	if result == "" {
-		t.Error("DOT render should not be empty")
-	}
+	testRendererNotEmpty(t, output.DOTFromTableData, "DOT")
 }

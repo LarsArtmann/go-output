@@ -47,12 +47,14 @@ func main() {
 
 	// Parse command line format (default to table)
 	format := output.FormatTable
+
 	if len(os.Args) > 1 {
 		f, err := output.ParseOutputFormat(os.Args[1])
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Invalid format: %v\n", err)
 			os.Exit(1)
 		}
+
 		format = f
 	}
 
@@ -64,6 +66,7 @@ func renderOutput(format output.Format, projects []Project) {
 	renderers := getRenderers()
 	if renderer, ok := renderers[format]; ok {
 		renderer(projects)
+
 		return
 	}
 	// Handle unknown format safely - format is validated by ParseOutputFormat
@@ -76,9 +79,11 @@ func renderOutput(format output.Format, projects []Project) {
 func renderTable(projects []Project) {
 	tbl := table.New()
 	tbl.SetHeaders("Name", "Health", "Complexity")
+
 	for _, p := range projects {
 		tbl.AddRow(p.Name, strconv.Itoa(p.Health)+"%", strconv.Itoa(p.Complexity)+"/10")
 	}
+
 	fmt.Println(tbl.Render())
 }
 
@@ -88,17 +93,20 @@ func renderJSON(projects []Project) {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		os.Exit(1)
 	}
+
 	fmt.Println(string(data))
 }
 
 func renderMarkdown(projects []Project) {
 	md := output.NewMarkdownTable()
 	md.SetHeaders([]string{"Name", "Health", "Complexity"})
+
 	for _, p := range projects {
 		md.AddRow(
 			[]string{p.Name, fmt.Sprintf("%d%%", p.Health), fmt.Sprintf("%d/10", p.Complexity)},
 		)
 	}
+
 	out := md.Render()
 	fmt.Println(out)
 }
@@ -126,6 +134,7 @@ func projectsToTableData(projects []Project) *output.TableData {
 	for _, p := range projects {
 		data.AddRow(projectToTableDataRow(p))
 	}
+
 	return data
 }
 
@@ -148,18 +157,24 @@ type writer interface {
 }
 
 func renderDelimited(w writer, projects []Project) {
-	if err := w.WriteHeader(projectHeaders); err != nil {
+	err := w.WriteHeader(projectHeaders)
+	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error writing header: %v\n", err)
 		os.Exit(1)
 	}
+
 	for _, p := range projects {
-		if err := w.WriteRow(projectToRow(p)); err != nil {
+		err := w.WriteRow(projectToRow(p))
+		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error writing row: %v\n", err)
 			os.Exit(1)
 		}
 	}
+
 	w.Flush()
-	if err := w.Error(); err != nil {
+
+	err = w.Error()
+	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error flushing: %v\n", err)
 		os.Exit(1)
 	}
@@ -174,11 +189,13 @@ func renderXML(projects []Project) {
 			strconv.Itoa(p.Complexity),
 		})
 	}
+
 	xmlData, err := output.MarshalXMLFromTableData(data)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		os.Exit(1)
 	}
+
 	fmt.Println(string(xmlData))
 }
 
@@ -188,6 +205,7 @@ func renderYAML(projects []Project) {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		os.Exit(1)
 	}
+
 	fmt.Println(string(data))
 }
 
@@ -204,6 +222,7 @@ func renderD2() {
 func renderHTML(projects []Project) {
 	html := output.NewHTMLRenderer()
 	html.SetHeaders([]string{"Name", "Health", "Complexity"})
+
 	for _, p := range projects {
 		html.AddRow([]string{
 			p.Name,
@@ -211,11 +230,13 @@ func renderHTML(projects []Project) {
 			strconv.Itoa(p.Complexity) + "/10",
 		})
 	}
+
 	fmt.Println(html.RenderFullHTML("Project Health Report"))
 }
 
 func renderTree(projects []Project) {
 	tree := output.NewASCIITreeRenderer()
+
 	root := output.NewTreeNode("root", "Projects")
 	for _, p := range projects {
 		projNode := output.NewTreeNode("proj-"+p.Name, p.Name)
@@ -223,18 +244,25 @@ func renderTree(projects []Project) {
 		projNode.Metadata["complexity"] = strconv.Itoa(p.Complexity)
 		root.AddChild(projNode)
 	}
+
 	tree.SetRoot(root)
 	fmt.Println(tree.Render())
 }
 
-func renderMermaid(projects []Project) {
+func renderDiagram(projects []Project, createRenderer func(*output.TableData) output.Renderer) {
 	data := projectsToTableData(projects)
-	mermaid := output.MermaidFlowchartRenderer(data)
-	fmt.Println(mermaid.Render())
+	renderer := createRenderer(data)
+	fmt.Println(renderer.Render())
+}
+
+func renderMermaid(projects []Project) {
+	renderDiagram(projects, func(data *output.TableData) output.Renderer {
+		return output.MermaidFlowchartRenderer(data)
+	})
 }
 
 func renderDOT(projects []Project) {
-	data := projectsToTableData(projects)
-	dot := output.DOTFromTableData(data)
-	fmt.Println(dot.Render())
+	renderDiagram(projects, func(data *output.TableData) output.Renderer {
+		return output.DOTFromTableData(data)
+	})
 }

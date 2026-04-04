@@ -2,37 +2,17 @@
 package cmdguard
 
 import (
-	"fmt"
-
 	"github.com/larsartmann/go-output"
 )
 
-// ColorModeFlag parses color mode flags.
-type ColorModeFlag struct {
-	value *output.ColorMode
-}
+// ColorModeFlag is a flag parser for ColorMode values.
+//
+// Deprecated: Use NewEnumFlag with output.ColorMode instead.
+type ColorModeFlag = EnumFlag[output.ColorMode]
 
 // NewColorModeFlag creates a new ColorModeFlag.
+//
+// Deprecated: Use NewEnumFlag[output.ColorMode](value, "color mode", output.ParseColorMode) instead.
 func NewColorModeFlag(value *output.ColorMode) *ColorModeFlag {
-	return &ColorModeFlag{value: value}
-}
-
-// Parse parses the flag value.
-func (f *ColorModeFlag) Parse(s string) error {
-	parsed, err := output.ParseColorMode(s)
-	if err != nil {
-		return fmt.Errorf("parse color mode %q: %w", s, err)
-	}
-	*f.value = parsed
-	return nil
-}
-
-// AllowedValues returns the allowed flag values.
-func (f *ColorModeFlag) AllowedValues() []string {
-	return f.value.AllowedValues()
-}
-
-// Default returns the default value.
-func (f *ColorModeFlag) Default() string {
-	return f.value.String()
+	return NewEnumFlag(value, "color mode", output.ParseColorMode)
 }

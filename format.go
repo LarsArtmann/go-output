@@ -48,6 +48,7 @@ func ParseFormat(s string) (Format, error) {
 	if err != nil {
 		return "", &InvalidFormatError{Value: s, Allowed: formatValues}
 	}
+
 	return v, nil
 }
 
@@ -58,7 +59,7 @@ func (f Format) String() string {
 
 // AllowedValues returns all valid output format values for CLI help text.
 func (f Format) AllowedValues() []string {
-	return enum.AllowedStrings(formatValues, func(f Format) string { return string(f) })
+	return enum.AllowedValues(formatValues)
 }
 
 // IsValid returns true if the format is a valid Format value.
@@ -122,9 +123,11 @@ func (f Format) Category() FormatCategory {
 	if treeFormats[f] {
 		return CategoryTree
 	}
+
 	if graphFormats[f] {
 		return CategoryGraph
 	}
+
 	return CategoryTable
 }
 
@@ -138,17 +141,22 @@ func (e *InvalidFormatError) Error() string {
 	if e.Allowed == nil {
 		return "invalid format: " + e.Value
 	}
+
 	var b strings.Builder
 	b.WriteString("invalid format: ")
 	b.WriteString(e.Value)
 	b.WriteString(" (allowed: ")
+
 	for i, f := range e.Allowed {
 		if i > 0 {
 			b.WriteString(", ")
 		}
+
 		b.WriteString(string(f))
 	}
+
 	b.WriteString(")")
+
 	return b.String()
 }
 
@@ -230,6 +238,7 @@ func (d *TableData) CreateRowEdges() []struct{ From, To string } {
 	if d == nil || len(d.Rows) < 2 {
 		return nil
 	}
+
 	edges := make([]struct{ From, To string }, 0, len(d.Rows)-1)
 	for i := range len(d.Rows) - 1 {
 		edges = append(edges, struct{ From, To string }{
@@ -237,6 +246,7 @@ func (d *TableData) CreateRowEdges() []struct{ From, To string } {
 			To:   fmt.Sprintf("row%d", i+1),
 		})
 	}
+
 	return edges
 }
 
@@ -276,11 +286,13 @@ func (n *TreeNode) AddChild(child *TreeNode) {
 // Depth returns the depth of this node in the tree (root = 0).
 func (n *TreeNode) Depth() int {
 	depth := 0
+
 	current := n
 	for current.Parent() != nil {
 		depth++
 		current = current.Parent()
 	}
+
 	return depth
 }
 

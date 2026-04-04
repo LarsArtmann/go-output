@@ -7,26 +7,15 @@ import (
 
 func TestMarkdownTable(t *testing.T) {
 	t.Parallel()
-	t.Run("basic table", func(t *testing.T) {
-		t.Parallel()
-		testMarkdownBasicTable(t)
-	})
-	t.Run("empty headers", func(t *testing.T) {
-		t.Parallel()
-		testMarkdownEmptyHeaders(t)
-	})
-	t.Run("alignment", func(t *testing.T) {
-		t.Parallel()
-		testMarkdownAlignment(t)
-	})
-	t.Run("chaining", func(t *testing.T) {
-		t.Parallel()
-		testMarkdownChaining(t)
-	})
+	runSubtest(t, "basic table", testMarkdownBasicTable)
+	runSubtest(t, "empty headers", testMarkdownEmptyHeaders)
+	runSubtest(t, "alignment", testMarkdownAlignment)
+	runSubtest(t, "chaining", testMarkdownChaining)
 }
 
 func testMarkdownBasicTable(t *testing.T) {
 	t.Helper()
+
 	m := NewMarkdownTable()
 	m.SetHeaders([]string{"Name", "Age"}).
 		AddRow([]string{"Alice", "30"}).
@@ -37,6 +26,7 @@ func testMarkdownBasicTable(t *testing.T) {
 	if !strings.Contains(got, "Name") {
 		t.Error("Render() should contain header text")
 	}
+
 	if !strings.Contains(got, "Alice") {
 		t.Error("Render() should contain data row")
 	}
@@ -44,6 +34,7 @@ func testMarkdownBasicTable(t *testing.T) {
 
 func testMarkdownEmptyHeaders(t *testing.T) {
 	t.Helper()
+
 	m := NewMarkdownTable()
 
 	got := m.Render()
@@ -55,6 +46,7 @@ func testMarkdownEmptyHeaders(t *testing.T) {
 
 func testMarkdownAlignment(t *testing.T) {
 	t.Helper()
+
 	m := NewMarkdownTable()
 	m.SetHeaders([]string{"Name", "Age"}).
 		SetAlign(1, AlignRight).
@@ -69,6 +61,7 @@ func testMarkdownAlignment(t *testing.T) {
 
 func testMarkdownChaining(t *testing.T) {
 	t.Helper()
+
 	m := NewMarkdownTable().
 		SetHeaders([]string{"Name"}).
 		AddRow([]string{"Test"})
@@ -80,6 +73,7 @@ func testMarkdownChaining(t *testing.T) {
 
 func TestNewMarkdownTable(t *testing.T) {
 	t.Parallel()
+
 	m := NewMarkdownTable()
 	// Verify table is initialized properly
 	_ = m.headers // Just ensure fields are accessible

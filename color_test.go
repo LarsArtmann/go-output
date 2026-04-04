@@ -2,15 +2,19 @@ package output
 
 import (
 	"testing"
+
+	"github.com/larsartmann/go-output/internal/gentest"
 )
 
 func TestIsNoColor(t *testing.T) {
 	t.Setenv("NO_COLOR", "") // Clear NO_COLOR
+
 	if isNoColor() {
 		t.Error("isNoColor() should return false when NO_COLOR is not set")
 	}
 
 	t.Setenv("NO_COLOR", "1")
+
 	if !isNoColor() {
 		t.Error("isNoColor() should return true when NO_COLOR is set")
 	}
@@ -27,12 +31,14 @@ func TestIsCI(t *testing.T) {
 	}
 
 	t.Setenv("CI", "true")
+
 	if !isCI() {
 		t.Error("isCI() should return true when CI is set")
 	}
 
 	t.Setenv("CI", "")
 	t.Setenv("GITHUB_ACTIONS", "true")
+
 	if !isCI() {
 		t.Error("isCI() should return true when GITHUB_ACTIONS is set")
 	}
@@ -40,109 +46,65 @@ func TestIsCI(t *testing.T) {
 
 func TestIsTerminalByEnv(t *testing.T) {
 	t.Setenv("FORCE_COLOR", "") // Clear FORCE_COLOR
+
 	if isTerminalByEnv("FORCE_COLOR") {
 		t.Error("isTerminalByEnv() should return false when env is not set")
 	}
 
 	t.Setenv("FORCE_COLOR", "0")
+
 	if isTerminalByEnv("FORCE_COLOR") {
 		t.Error("isTerminalByEnv() should return false when env is '0'")
 	}
 
 	t.Setenv("FORCE_COLOR", "1")
+
 	if !isTerminalByEnv("FORCE_COLOR") {
 		t.Error("isTerminalByEnv() should return true when env is '1'")
 	}
 }
 
 func TestParseColorMode(t *testing.T) {
-	t.Parallel()
-	tests := []struct {
-		name    string
-		input   string
-		want    ColorMode
-		wantErr bool
-	}{
+	tests := []parseEnumTestCase[ColorMode]{
 		{"auto", "auto", ColorModeAuto, false},
 		{"always", "always", ColorModeAlways, false},
 		{"never", "never", ColorModeNever, false},
 		{"invalid", "invalid", "", true},
 		{"empty", "", "", true},
 	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-			got, err := ParseColorMode(tt.input)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("ParseColorMode() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if got != tt.want {
-				t.Errorf("ParseColorMode() = %v, want %v", got, tt.want)
-			}
-		})
-	}
+	testParseEnum(t, "ParseColorMode", ParseColorMode, tests, func(a, b ColorMode) bool { return a == b })
 }
 
 func TestColorModeString(t *testing.T) {
-	t.Parallel()
-	tests := []struct {
-		mode ColorMode
-		want string
-	}{
+	tests := []stringEnumTestCase[ColorMode]{
 		{ColorModeAuto, "auto"},
 		{ColorModeAlways, "always"},
 		{ColorModeNever, "never"},
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.want, func(t *testing.T) {
-			t.Parallel()
-			if got := tt.mode.String(); got != tt.want {
-				t.Errorf("ColorMode.String() = %v, want %v", got, tt.want)
-			}
-		})
-	}
+	testEnumString(t, "ColorMode.String", tests, func(m ColorMode) string { return m.String() })
 }
 
 func TestColorModeAllowedValues(t *testing.T) {
-	t.Parallel()
-	got := ColorModeAuto.AllowedValues()
-	want := []string{"auto", "always", "never"}
-
-	if len(got) != len(want) {
-		t.Errorf("AllowedValues() returned %d values, want %d", len(got), len(want))
-	}
-
-	for i, v := range got {
-		if v != want[i] {
-			t.Errorf("AllowedValues()[%d] = %v, want %v", i, v, want[i])
-		}
-	}
+	testAllowedValues(t, "AllowedValues", ColorModeAuto.AllowedValues(), []string{"auto", "always", "never"})
 }
 
 func TestColorModeIsValid(t *testing.T) {
 	t.Parallel()
-	tests := []struct {
-		mode ColorMode
-		want bool
-	}{
-		{ColorModeAuto, true},
-		{ColorModeAlways, true},
-		{ColorModeNever, true},
-		{"invalid", false},
-		{"", false},
-	}
 
-	for _, tt := range tests {
-		t.Run(string(tt.mode), func(t *testing.T) {
-			t.Parallel()
-			if got := tt.mode.IsValid(); got != tt.want {
-				t.Errorf("ColorMode.IsValid() = %v, want %v", got, tt.want)
-			}
-		})
-	}
+	gentest.TestEnumIsValid[ColorMode](t, []ColorMode{
+		ColorModeAuto,
+		ColorModeAlways,
+		ColorModeNever,
+		"invalid",
+		"",
+	}, []bool{
+		true,
+		true,
+		true,
+		false,
+		false,
+	})
 }
 
 func TestColorModeShouldColor(t *testing.T) {

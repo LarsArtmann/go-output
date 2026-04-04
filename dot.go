@@ -21,35 +21,45 @@ func (m *GraphRendererMixin) SetEdges(edges []GraphEdge) {
 	m.edges = edges
 }
 
+// AddRowEdges adds edges from data.CreateRowEdges() to the graph.
+func (m *GraphRendererMixin) AddRowEdges(data *TableData) {
+	for _, edge := range data.CreateRowEdges() {
+		//nolint:exhaustruct // Uses defaults for optional fields
+		m.edges = append(m.edges, GraphEdge{
+			From: NewBrandedID[GraphNodeIDBrand](edge.From),
+			To:   NewBrandedID[GraphNodeIDBrand](edge.To),
+		})
+	}
+}
+
 // DOTRenderer implements the GraphRenderer interface for DOT/Graphviz output.
 type DOTRenderer struct {
 	GraphRendererMixin
+
 	directed bool
 	graphID  string
 }
 
-// NewDOTRenderer creates a new DOTRenderer for directed graphs.
-func NewDOTRenderer() *DOTRenderer {
+// newDOTRenderer creates a new DOTRenderer with the specified direction.
+func newDOTRenderer(directed bool) *DOTRenderer {
 	return &DOTRenderer{
 		GraphRendererMixin: GraphRendererMixin{
 			nodes: make([]GraphNode, 0),
 			edges: make([]GraphEdge, 0),
 		},
-		directed: true,
+		directed: directed,
 		graphID:  "G",
 	}
 }
 
+// NewDOTRenderer creates a new DOTRenderer for directed graphs.
+func NewDOTRenderer() *DOTRenderer {
+	return newDOTRenderer(true)
+}
+
 // NewUndirectedDOTRenderer creates a new DOTRenderer for undirected graphs.
 func NewUndirectedDOTRenderer() *DOTRenderer {
-	return &DOTRenderer{
-		GraphRendererMixin: GraphRendererMixin{
-			nodes: make([]GraphNode, 0),
-			edges: make([]GraphEdge, 0),
-		},
-		directed: false,
-		graphID:  "G",
-	}
+	return newDOTRenderer(false)
 }
 
 // SetGraphID sets the graph ID.
@@ -67,6 +77,7 @@ func (r *DOTRenderer) Render() string {
 	} else {
 		b.WriteString("graph ")
 	}
+
 	b.WriteString(r.graphID)
 	b.WriteString(" {\n")
 
@@ -87,12 +98,14 @@ func (r *DOTRenderer) Render() string {
 
 	// Write nodes
 	b.WriteString("  // Nodes\n")
+
 	for _, node := range r.nodes {
 		r.writeNode(&b, node)
 	}
 
 	// Write edges
 	b.WriteString("\n  // Edges\n")
+
 	for _, edge := range r.edges {
 		r.writeEdge(&b, edge)
 	}
@@ -111,25 +124,21 @@ func (r *DOTRenderer) writeNode(b *strings.Builder, node GraphNode) {
 	b.WriteString(r.escapeDOT(node.Label.Get()))
 	b.WriteString("\"\n")
 
-	if node.Shape != "" {
-		b.WriteString("    shape=")
-		b.WriteString(string(node.Shape))
-		b.WriteString("\n")
-	}
-
-	if node.Style.FillColor != "" {
-		b.WriteString("    fillcolor=")
-		b.WriteString(node.Style.FillColor)
-		b.WriteString("\n")
-	}
-
-	if node.Style.StrokeColor != "" {
-		b.WriteString("    color=")
-		b.WriteString(node.Style.StrokeColor)
-		b.WriteString("\n")
-	}
+	r.writeNodeAttr(b, "shape", string(node.Shape), node.Shape != "")
+	r.writeNodeAttr(b, "fillcolor", node.Style.FillColor, node.Style.FillColor != "")
+	r.writeNodeAttr(b, "color", node.Style.StrokeColor, node.Style.StrokeColor != "")
 
 	b.WriteString("  ];\n")
+}
+
+func (r *DOTRenderer) writeNodeAttr(b *strings.Builder, attrName, attrValue string, condition bool) {
+	if condition {
+		b.WriteString("    ")
+		b.WriteString(attrName)
+		b.WriteString("=")
+		b.WriteString(attrValue)
+		b.WriteString("\n")
+	}
 }
 
 func (r *DOTRenderer) writeEdge(b *strings.Builder, edge GraphEdge) {
@@ -172,6 +181,7 @@ func (r *DOTRenderer) writeEdge(b *strings.Builder, edge GraphEdge) {
 func (r *DOTRenderer) escapeDOT(s string) string {
 	s = strings.ReplaceAll(s, "\"", "\\\"")
 	s = strings.ReplaceAll(s, "\n", "\\n")
+
 	return s
 }
 
@@ -185,6 +195,7 @@ func DOTFromTableData(data *TableData) *DOTRenderer {
 	// Create nodes for each row
 	for i, row := range data.Rows {
 		var labelParts []string
+
 		for j, cell := range row {
 			if j < len(data.Headers) {
 				labelParts = append(labelParts, fmt.Sprintf("%s: %s", data.Headers[j], cell))
@@ -192,6 +203,7 @@ func DOTFromTableData(data *TableData) *DOTRenderer {
 				labelParts = append(labelParts, cell)
 			}
 		}
+
 		label := strings.Join(labelParts, "\\n")
 		//nolint:exhaustruct // Uses defaults for optional fields
 		renderer.nodes = append(renderer.nodes, GraphNode{
@@ -200,14 +212,7 @@ func DOTFromTableData(data *TableData) *DOTRenderer {
 		})
 	}
 
-	// Create edges between consecutive rows using shared helper
-	for _, edge := range data.CreateRowEdges() {
-		//nolint:exhaustruct // Uses defaults for optional fields
-		renderer.edges = append(renderer.edges, GraphEdge{
-			From: NewBrandedID[GraphNodeIDBrand](edge.From),
-			To:   NewBrandedID[GraphNodeIDBrand](edge.To),
-		})
-	}
+	renderer.AddRowEdges(data)
 
 	return renderer
 }
@@ -220,6 +225,7 @@ func DOTFromTree(root *TreeNode) *DOTRenderer {
 	}
 
 	renderer.addTreeNodes(root, NewBrandedID[TreeNodeIDBrand](""))
+
 	return renderer
 }
 

@@ -10,10 +10,12 @@ import (
 
 func TestNew(t *testing.T) {
 	t.Parallel()
+
 	tbl := New()
 	if tbl == nil {
 		t.Fatal("New() returned nil")
 	}
+
 	if tbl.t == nil {
 		t.Error("New() internal table is nil")
 	}
@@ -21,6 +23,7 @@ func TestNew(t *testing.T) {
 
 func TestSetHeaders(t *testing.T) {
 	t.Parallel()
+
 	tbl := New()
 	result := tbl.SetHeaders("Name", "Value", "Count")
 
@@ -32,9 +35,11 @@ func TestSetHeaders(t *testing.T) {
 	if !strings.Contains(output, "Name") {
 		t.Error("Render() should contain header 'Name'")
 	}
+
 	if !strings.Contains(output, "Value") {
 		t.Error("Render() should contain header 'Value'")
 	}
+
 	if !strings.Contains(output, "Count") {
 		t.Error("Render() should contain header 'Count'")
 	}
@@ -42,6 +47,7 @@ func TestSetHeaders(t *testing.T) {
 
 func TestAddRow(t *testing.T) {
 	t.Parallel()
+
 	tbl := New()
 	tbl.SetHeaders("Name", "Value")
 	result := tbl.AddRow("Alice", "30")
@@ -54,6 +60,7 @@ func TestAddRow(t *testing.T) {
 	if !strings.Contains(output, "Alice") {
 		t.Error("Render() should contain row value 'Alice'")
 	}
+
 	if !strings.Contains(output, "30") {
 		t.Error("Render() should contain row value '30'")
 	}
@@ -61,6 +68,7 @@ func TestAddRow(t *testing.T) {
 
 func TestAddRowMultiple(t *testing.T) {
 	t.Parallel()
+
 	tbl := New()
 	tbl.SetHeaders("Name", "Score")
 	tbl.AddRow("Alice", "100")
@@ -71,9 +79,11 @@ func TestAddRowMultiple(t *testing.T) {
 	if !strings.Contains(output, "Alice") {
 		t.Error("Render() should contain 'Alice'")
 	}
+
 	if !strings.Contains(output, "Bob") {
 		t.Error("Render() should contain 'Bob'")
 	}
+
 	if !strings.Contains(output, "Charlie") {
 		t.Error("Render() should contain 'Charlie'")
 	}
@@ -81,11 +91,13 @@ func TestAddRowMultiple(t *testing.T) {
 
 func TestStyleFunc(t *testing.T) {
 	t.Parallel()
+
 	tbl := New()
 	result := tbl.StyleFunc(func(row, _ int) lipgloss.Style {
 		if row == table.HeaderRow {
 			return lipgloss.NewStyle().Bold(true)
 		}
+
 		return lipgloss.NewStyle()
 	})
 
@@ -95,6 +107,7 @@ func TestStyleFunc(t *testing.T) {
 
 	tbl.SetHeaders("Test")
 	tbl.AddRow("Value")
+
 	output := tbl.Render()
 	if !strings.Contains(output, "Test") {
 		t.Error("Render() should contain 'Test'")
@@ -103,6 +116,7 @@ func TestStyleFunc(t *testing.T) {
 
 func TestRender(t *testing.T) {
 	t.Parallel()
+
 	tbl := New()
 	tbl.SetHeaders("Name", "Status")
 	tbl.AddRow("Project A", "Active")
@@ -125,6 +139,7 @@ func TestRender(t *testing.T) {
 
 func TestChaining(t *testing.T) {
 	t.Parallel()
+
 	output := New().
 		SetHeaders("ID", "Name").
 		AddRow("1", "First").
@@ -134,6 +149,7 @@ func TestChaining(t *testing.T) {
 	if !strings.Contains(output, "ID") || !strings.Contains(output, "Name") {
 		t.Error("Chained Render() should contain headers")
 	}
+
 	if !strings.Contains(output, "First") || !strings.Contains(output, "Second") {
 		t.Error("Chained Render() should contain row data")
 	}
@@ -141,6 +157,7 @@ func TestChaining(t *testing.T) {
 
 func TestEmptyTable(t *testing.T) {
 	t.Parallel()
+
 	tbl := New()
 	output := tbl.Render()
 
@@ -152,6 +169,7 @@ func TestEmptyTable(t *testing.T) {
 
 func TestHeadersOnlyNoRows(t *testing.T) {
 	t.Parallel()
+
 	tbl := New()
 	tbl.SetHeaders("Only", "Headers")
 	output := tbl.Render()

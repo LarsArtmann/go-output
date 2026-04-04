@@ -1,7 +1,7 @@
 package output
 
 import (
-	"bytes"
+	"io"
 	"testing"
 )
 
@@ -9,17 +9,23 @@ func BenchmarkASCIITreeRenderer(b *testing.B) {
 	root := NewTreeNode("root", "Root")
 	for i := range 100 {
 		child := NewTreeNode("child", "Child")
+
 		for j := range 10 {
 			_ = j // suppress unused
+
 			child.AddChild(NewTreeNode("leaf", "Leaf"))
 		}
+
 		root.AddChild(child)
+
 		_ = i // suppress unused
 	}
+
 	renderer := NewASCIITreeRenderer()
 	renderer.SetRoot(root)
 
 	b.ResetTimer()
+
 	for b.Loop() {
 		renderer.Render()
 	}
@@ -27,20 +33,56 @@ func BenchmarkASCIITreeRenderer(b *testing.B) {
 
 func BenchmarkHTMLRenderer(b *testing.B) {
 	renderer := NewHTMLRenderer()
-	headers := make([]string, 10)
-	for i := range headers {
-		headers[i] = "Header"
-	}
+
+	headers := FilledStrings(10, "Header")
 	renderer.SetHeaders(headers)
+
 	for range 100 {
-		row := make([]string, 10)
-		for j := range row {
-			row[j] = "Cell"
-		}
+		row := FilledStrings(10, "Cell")
 		renderer.AddRow(row)
 	}
 
 	b.ResetTimer()
+
+	for b.Loop() {
+		renderer.Render()
+	}
+}
+
+// generateBenchmarkNodes creates a slice of GraphNode for benchmarking.
+func generateBenchmarkNodes(n int) []GraphNode {
+	nodes := make([]GraphNode, n)
+	for i := range nodes {
+		nodes[i] = GraphNode{
+			ID:    NewBrandedID[GraphNodeIDBrand]("node"),
+			Label: NewBrandedID[GraphNodeLabelBrand]("Node"),
+		}
+	}
+	return nodes
+}
+
+// generateBenchmarkEdges creates a slice of GraphEdge for benchmarking.
+func generateBenchmarkEdges(n int) []GraphEdge {
+	edges := make([]GraphEdge, n)
+	for i := range edges {
+		edges[i] = GraphEdge{
+			From: NewBrandedID[GraphNodeIDBrand]("node"),
+			To:   NewBrandedID[GraphNodeIDBrand]("node"),
+		}
+	}
+	return edges
+}
+
+// benchmarkGraphRenderer sets up nodes and edges for a graph renderer benchmark.
+func benchmarkGraphRenderer(b *testing.B, renderer GraphRenderer) {
+	nodes := generateBenchmarkNodes(100)
+	renderer.SetNodes(nodes)
+
+	edges := generateBenchmarkEdges(99)
+	renderer.SetEdges(edges)
+
+	b.ResetTimer()
+
 	for b.Loop() {
 		renderer.Render()
 	}
@@ -49,57 +91,13 @@ func BenchmarkHTMLRenderer(b *testing.B) {
 //nolint:exhaustruct // Benchmark uses minimal struct initialization
 func BenchmarkMermaidRenderer(b *testing.B) {
 	renderer := NewMermaidRenderer()
-	nodes := make([]GraphNode, 100)
-	for i := range nodes {
-		nodes[i] = GraphNode{
-			ID:    NewBrandedID[GraphNodeIDBrand]("node"),
-			Label: NewBrandedID[GraphNodeLabelBrand]("Node"),
-		}
-		_ = i // suppress unused
-	}
-	renderer.SetNodes(nodes)
-	edges := make([]GraphEdge, 99)
-	for i := range edges {
-		edges[i] = GraphEdge{
-			From: NewBrandedID[GraphNodeIDBrand]("node"),
-			To:   NewBrandedID[GraphNodeIDBrand]("node"),
-		}
-		_ = i // suppress unused
-	}
-	renderer.SetEdges(edges)
-
-	b.ResetTimer()
-	for b.Loop() {
-		renderer.Render()
-	}
+	benchmarkGraphRenderer(b, renderer)
 }
 
 //nolint:exhaustruct // Benchmark uses minimal struct initialization
 func BenchmarkDOTRenderer(b *testing.B) {
 	renderer := NewDOTRenderer()
-	nodes := make([]GraphNode, 100)
-	for i := range nodes {
-		nodes[i] = GraphNode{
-			ID:    NewBrandedID[GraphNodeIDBrand]("node"),
-			Label: NewBrandedID[GraphNodeLabelBrand]("Node"),
-		}
-		_ = i // suppress unused
-	}
-	renderer.SetNodes(nodes)
-	edges := make([]GraphEdge, 99)
-	for i := range edges {
-		edges[i] = GraphEdge{
-			From: NewBrandedID[GraphNodeIDBrand]("node"),
-			To:   NewBrandedID[GraphNodeIDBrand]("node"),
-		}
-		_ = i // suppress unused
-	}
-	renderer.SetEdges(edges)
-
-	b.ResetTimer()
-	for b.Loop() {
-		renderer.Render()
-	}
+	benchmarkGraphRenderer(b, renderer)
 }
 
 func BenchmarkTableDataCreateRowEdges(b *testing.B) {
@@ -109,61 +107,91 @@ func BenchmarkTableDataCreateRowEdges(b *testing.B) {
 	}
 
 	b.ResetTimer()
+
 	for b.Loop() {
 		data.CreateRowEdges()
 	}
 }
 
 func BenchmarkCSVWriter(b *testing.B) {
-	var buf bytes.Buffer
-	const headerCell = "Header"
-	const dataCell = "Cell"
+	const (
+		headerCell = "Header"
+		dataCell   = "Cell"
+	)
+
 	headers := make([]string, 10)
 	for i := range headers {
 		headers[i] = headerCell
 	}
+
 	rows := make([][]string, 100)
 	for i := range rows {
 		row := make([]string, 10)
 		for j := range row {
 			row[j] = dataCell
 		}
+
 		rows[i] = row
 	}
 
 	b.ResetTimer()
-	for b.Loop() {
-		buf.Reset()
-		w := NewCSVWriter(&buf)
-		_ = w.WriteHeader(headers)
-		for _, row := range rows {
-			_ = w.WriteRow(row)
-		}
-		w.Flush()
-	}
+
+	benchmarkTableWriter(b, headers, rows, func(w io.Writer) TableWriter {
+		return NewCSVWriter(w)
+	})
 }
 
 func BenchmarkMarkdownTable(b *testing.B) {
 	md := NewMarkdownTable()
-	const headerCell = "Header"
-	const dataCell = "Cell"
+
+	const (
+		headerCell = "Header"
+		dataCell   = "Cell"
+	)
+
 	headers := make([]string, 10)
 	for i := range headers {
 		headers[i] = headerCell
 	}
+
 	md.SetHeaders(headers)
+
 	rows := make([][]string, 100)
 	for i := range rows {
 		row := make([]string, 10)
 		for j := range row {
 			row[j] = dataCell
 		}
+
 		rows[i] = row
 		md.AddRow(row)
 	}
 
 	b.ResetTimer()
+
 	for b.Loop() {
 		md.Render()
+	}
+}
+
+type BenchmarkData struct {
+	ID        int
+	Name      string
+	Items     []string
+	Count     int
+	Active    bool
+	CreatedAt string
+	UpdatedAt string
+}
+
+func NewBenchmarkData() BenchmarkData {
+	return BenchmarkData{
+		ID:        12345,
+		Name:      "Test Project Alpha",
+		Items:     []string{"item1", "item2", "item3", "item4", "item5"},
+		Count:     100,
+		Active:    true,
+		CreatedAt: "2026-03-22T10:00:00Z",
+		UpdatedAt: "2026-03-22T12:00:00Z",
 	}
 }

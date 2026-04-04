@@ -7,29 +7,36 @@ import (
 
 // HTMLRenderer implements the Renderer interface for HTML table output.
 type HTMLRenderer struct {
+	tableDataBase
+}
+
+// tableDataBase provides common table data storage for renderers.
+type tableDataBase struct {
 	data *TableData
 }
 
-// NewHTMLRenderer creates a new HTMLRenderer.
-func NewHTMLRenderer() *HTMLRenderer {
-	return &HTMLRenderer{ //nolint:exhaustruct // data is initialized lazily when needed
+// ensureData initializes data if nil.
+func (b *tableDataBase) ensureData() {
+	if b.data == nil {
+		b.data = &TableData{}
 	}
 }
 
 // SetHeaders sets the column headers.
-func (r *HTMLRenderer) SetHeaders(headers []string) {
-	if r.data == nil {
-		r.data = &TableData{Headers: nil, Rows: nil}
-	}
-	r.data.Headers = headers
+func (b *tableDataBase) SetHeaders(headers []string) {
+	b.ensureData()
+	b.data.Headers = headers
 }
 
 // AddRow adds a data row.
-func (r *HTMLRenderer) AddRow(row []string) {
-	if r.data == nil {
-		r.data = &TableData{Headers: nil, Rows: nil}
-	}
-	r.data.Rows = append(r.data.Rows, row)
+func (b *tableDataBase) AddRow(row []string) {
+	b.ensureData()
+	b.data.Rows = append(b.data.Rows, row)
+}
+
+// NewHTMLRenderer creates a new HTMLRenderer.
+func NewHTMLRenderer() *HTMLRenderer {
+	return &HTMLRenderer{}
 }
 
 // SetData sets the table data directly.
@@ -62,13 +69,7 @@ func (r *HTMLRenderer) Render() string {
 `)
 
 	for _, row := range r.data.Rows {
-		b.WriteString("<tr>\n")
-		for _, cell := range row {
-			b.WriteString("<td>")
-			b.WriteString(html.EscapeString(cell))
-			b.WriteString("</td>\n")
-		}
-		b.WriteString("</tr>\n")
+		writeMarkupRow(&b, row, "tr", "td", "", htmlEscape)
 	}
 
 	b.WriteString(`</tbody>
@@ -80,18 +81,7 @@ func (r *HTMLRenderer) Render() string {
 
 // RenderFullHTML returns a complete HTML document with the table.
 func (r *HTMLRenderer) RenderFullHTML(title string) string {
-	return `<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>` + html.EscapeString(title) + `</title>
-<style>
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  margin: 2rem;
-  background: #f5f5f5;
-}
+	return renderFullHTMLDocument(title, `
 .data-table {
   width: 100%;
   border-collapse: collapse;
@@ -116,13 +106,7 @@ body {
 .data-table tr:last-child td {
   border-bottom: none;
 }
-</style>
-</head>
-<body>
-<h1>` + html.EscapeString(title) + `</h1>
-` + r.Render() + `
-</body>
-</html>`
+`, r.Render())
 }
 
 // HTMLTreeRenderer renders a tree structure as HTML with collapsible sections.
@@ -153,6 +137,7 @@ func (r *HTMLTreeRenderer) Render() string {
 	r.renderNode(&b, r.root)
 	b.WriteString(`</ul>
 `)
+
 	return b.String()
 }
 
@@ -162,9 +147,11 @@ func (r *HTMLTreeRenderer) renderNode(b *strings.Builder, node *TreeNode) {
 
 	if len(node.Children) > 0 {
 		b.WriteString("\n<ul>\n")
+
 		for _, child := range node.Children {
 			r.renderNode(b, child)
 		}
+
 		b.WriteString("</ul>\n")
 	}
 
@@ -173,18 +160,7 @@ func (r *HTMLTreeRenderer) renderNode(b *strings.Builder, node *TreeNode) {
 
 // RenderFullHTML returns a complete HTML document with the tree.
 func (r *HTMLTreeRenderer) RenderFullHTML(title string) string {
-	return `<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>` + html.EscapeString(title) + `</title>
-<style>
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  margin: 2rem;
-  background: #f5f5f5;
-}
+	return renderFullHTMLDocument(title, `
 .tree {
   list-style: none;
   padding-left: 1.5rem;
@@ -201,11 +177,29 @@ body {
   padding-left: 1rem;
   margin-top: 0.5rem;
 }
+`, r.Render())
+}
+
+// renderFullHTMLDocument creates a complete HTML document with the given styles and content.
+func renderFullHTMLDocument(title, styles, content string) string {
+	return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>` + html.EscapeString(title) + `</title>
+<style>
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  margin: 2rem;
+  background: #f5f5f5;
+}
+` + styles + `
 </style>
 </head>
 <body>
 <h1>` + html.EscapeString(title) + `</h1>
-` + r.Render() + `
+` + content + `
 </body>
 </html>`
 }

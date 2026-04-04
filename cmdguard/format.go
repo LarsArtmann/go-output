@@ -1,37 +1,17 @@
 package cmdguard
 
 import (
-	"fmt"
-
 	"github.com/larsartmann/go-output"
 )
 
-// OutputFormatFlag parses output format flags.
-type OutputFormatFlag struct {
-	value *output.Format
-}
+// OutputFormatFlag is a flag parser for Format values.
+//
+// Deprecated: Use NewEnumFlag with output.Format instead.
+type OutputFormatFlag = EnumFlag[output.Format]
 
 // NewOutputFormatFlag creates a new OutputFormatFlag.
+//
+// Deprecated: Use NewEnumFlag[output.Format](value, "output format", output.ParseFormat) instead.
 func NewOutputFormatFlag(value *output.Format) *OutputFormatFlag {
-	return &OutputFormatFlag{value: value}
-}
-
-// Parse parses the flag value.
-func (f *OutputFormatFlag) Parse(s string) error {
-	parsed, err := output.ParseOutputFormat(s)
-	if err != nil {
-		return fmt.Errorf("parse output format %q: %w", s, err)
-	}
-	*f.value = parsed
-	return nil
-}
-
-// AllowedValues returns the allowed flag values.
-func (f *OutputFormatFlag) AllowedValues() []string {
-	return f.value.AllowedValues()
-}
-
-// Default returns the default value.
-func (f *OutputFormatFlag) Default() string {
-	return f.value.String()
+	return NewEnumFlag(value, "output format", output.ParseFormat)
 }

@@ -3,6 +3,8 @@ package output
 import (
 	"strings"
 	"testing"
+
+	"github.com/larsartmann/go-output/internal/gentest"
 )
 
 func TestParseOutputFormat(t *testing.T) {
@@ -20,7 +22,13 @@ func TestParseOutputFormat(t *testing.T) {
 		{"invalid", "invalid", "", true},
 		{"empty", "", "", true},
 	}
-	testParseEnum(t, "ParseOutputFormat", ParseOutputFormat, tests, func(a, b Format) bool { return a == b })
+	testParseEnum(
+		t,
+		"ParseOutputFormat",
+		ParseOutputFormat,
+		tests,
+		func(a, b Format) bool { return a == b },
+	)
 }
 
 func TestOutputFormatString(t *testing.T) {
@@ -36,62 +44,57 @@ func TestOutputFormatString(t *testing.T) {
 }
 
 func TestOutputFormatAllowedValues(t *testing.T) {
-	t.Parallel()
-	got := OutputFormatTable.AllowedValues()
-	want := []string{
-		"table",
-		"json",
-		"csv",
-		"tsv",
-		"markdown",
-		"xml",
-		"d2",
-		"yaml",
-		"html",
-		"tree",
-		"mermaid",
-		"dot",
-	}
-
-	if len(got) != len(want) {
-		t.Errorf("AllowedValues() returned %d values, want %d", len(got), len(want))
-	}
-
-	for i, v := range got {
-		if v != want[i] {
-			t.Errorf("AllowedValues()[%d] = %v, want %v", i, v, want[i])
-		}
-	}
+	testAllowedValues(
+		t,
+		"AllowedValues",
+		OutputFormatTable.AllowedValues(),
+		[]string{
+			"table",
+			"json",
+			"csv",
+			"tsv",
+			"markdown",
+			"xml",
+			"d2",
+			"yaml",
+			"html",
+			"tree",
+			"mermaid",
+			"dot",
+		},
+	)
 }
 
 func TestOutputFormatIsValid(t *testing.T) {
 	t.Parallel()
-	tests := []struct {
-		format OutputFormat
-		want   bool
-	}{
-		{OutputFormatTable, true},
-		{OutputFormatJSON, true},
-		{OutputFormatCSV, true},
-		{OutputFormatMarkdown, true},
-		{OutputFormatD2, true},
-		{OutputFormatYAML, true},
-		{FormatHTML, true},
-		{FormatTree, true},
-		{FormatMermaid, true},
-		{FormatDOT, true},
-		{OutputFormat("invalid"), false},
-		{OutputFormat(""), false},
-	}
 
-	for _, tt := range tests {
-		t.Run(string(tt.format), func(t *testing.T) {
-			t.Parallel()
-			if got := tt.format.IsValid(); got != tt.want {
-				t.Errorf("OutputFormat(%q).IsValid() = %v, want %v", tt.format, got, tt.want)
-			}
-		})
-	}
+	gentest.TestEnumIsValid[OutputFormat](t, []OutputFormat{
+		OutputFormatTable,
+		OutputFormatJSON,
+		OutputFormatCSV,
+		OutputFormatMarkdown,
+		OutputFormatD2,
+		OutputFormatYAML,
+		FormatHTML,
+		FormatTree,
+		FormatMermaid,
+		FormatDOT,
+		OutputFormat("invalid"),
+		OutputFormat(""),
+	}, []bool{
+		true,
+		true,
+		true,
+		true,
+		true,
+		true,
+		true,
+		true,
+		true,
+		true,
+		false,
+		false,
+	})
 }
 
 func FuzzParseOutputFormat(f *testing.F) {
@@ -109,103 +112,77 @@ func FuzzParseOutputFormat(f *testing.F) {
 	f.Add("")
 
 	f.Fuzz(func(t *testing.T, s string) {
-		format, err := ParseOutputFormat(s)
-		if err != nil {
-			if format != "" {
-				t.Errorf("ParseOutputFormat(%q) returned error but non-empty format: %q", s, format)
-			}
-		}
-		if format.IsValid() && err == nil {
-			if string(format) != s {
-				t.Errorf("ParseOutputFormat(%q) = %q, but IsValid() was true", s, format)
-			}
-		}
+		fuzzEnumTest(t, s, ParseOutputFormat, "ParseOutputFormat")
 	})
 }
 
 func TestFormatIsTableFormat(t *testing.T) {
-	t.Parallel()
-	tests := []struct {
-		format Format
-		want   bool
-	}{
-		{FormatTable, true},
-		{FormatJSON, true},
-		{FormatCSV, true},
-		{FormatMarkdown, true},
-		{FormatD2, true},
-		{FormatYAML, true},
-		{FormatHTML, false},
-		{FormatTree, false},
-		{FormatMermaid, false},
-		{FormatDOT, false},
-	}
-
-	for _, tt := range tests {
-		t.Run(string(tt.format), func(t *testing.T) {
-			t.Parallel()
-			if got := tt.format.IsTableFormat(); got != tt.want {
-				t.Errorf("Format(%q).IsTableFormat() = %v, want %v", tt.format, got, tt.want)
-			}
-		})
-	}
+	testBoolMethod(
+		t,
+		"Format",
+		"IsTableFormat",
+		[]boolMethodTestCase[Format]{
+			{FormatTable, true},
+			{FormatJSON, true},
+			{FormatCSV, true},
+			{FormatMarkdown, true},
+			{FormatD2, true},
+			{FormatYAML, true},
+			{FormatHTML, false},
+			{FormatTree, false},
+			{FormatMermaid, false},
+			{FormatDOT, false},
+		},
+		func(f Format) bool { return f.IsTableFormat() },
+		func(f Format) string { return string(f) },
+	)
 }
 
 func TestFormatIsTreeFormat(t *testing.T) {
-	t.Parallel()
-	tests := []struct {
-		format Format
-		want   bool
-	}{
-		{FormatTable, false},
-		{FormatJSON, false},
-		{FormatTree, true},
-		{FormatHTML, true},
-		{FormatMermaid, false},
-	}
-
-	for _, tt := range tests {
-		t.Run(string(tt.format), func(t *testing.T) {
-			t.Parallel()
-			if got := tt.format.IsTreeFormat(); got != tt.want {
-				t.Errorf("Format(%q).IsTreeFormat() = %v, want %v", tt.format, got, tt.want)
-			}
-		})
-	}
+	testBoolMethod(
+		t,
+		"Format",
+		"IsTreeFormat",
+		[]boolMethodTestCase[Format]{
+			{FormatTable, false},
+			{FormatJSON, false},
+			{FormatTree, true},
+			{FormatHTML, true},
+			{FormatMermaid, false},
+		},
+		func(f Format) bool { return f.IsTreeFormat() },
+		func(f Format) string { return string(f) },
+	)
 }
 
 func TestFormatIsGraphFormat(t *testing.T) {
-	t.Parallel()
-	tests := []struct {
-		format Format
-		want   bool
-	}{
-		{FormatTable, false},
-		{FormatJSON, false},
-		{FormatD2, true},
-		{FormatMermaid, true},
-		{FormatDOT, true},
-		{FormatTree, false},
-	}
-
-	for _, tt := range tests {
-		t.Run(string(tt.format), func(t *testing.T) {
-			t.Parallel()
-			if got := tt.format.IsGraphFormat(); got != tt.want {
-				t.Errorf("Format(%q).IsGraphFormat() = %v, want %v", tt.format, got, tt.want)
-			}
-		})
-	}
+	testBoolMethod(
+		t,
+		"Format",
+		"IsGraphFormat",
+		[]boolMethodTestCase[Format]{
+			{FormatTable, false},
+			{FormatJSON, false},
+			{FormatD2, true},
+			{FormatMermaid, true},
+			{FormatDOT, true},
+			{FormatTree, false},
+		},
+		func(f Format) bool { return f.IsGraphFormat() },
+		func(f Format) string { return string(f) },
+	)
 }
 
 func TestInvalidFormatError(t *testing.T) {
 	t.Parallel()
+
 	err := &InvalidFormatError{
 		Value:   "invalid",
 		Allowed: nil,
 	}
 
 	got := err.Error()
+
 	wantContains := []string{"invalid format", "invalid"}
 	for _, want := range wantContains {
 		if !strings.Contains(got, want) {
@@ -216,6 +193,7 @@ func TestInvalidFormatError(t *testing.T) {
 
 func TestFormatCategory(t *testing.T) {
 	t.Parallel()
+
 	tests := []struct {
 		format    Format
 		wantTable bool
@@ -238,43 +216,35 @@ func TestFormatCategory(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(string(tt.format), func(t *testing.T) {
 			t.Parallel()
-			if got := tt.format.IsTableFormat(); got != tt.wantTable {
-				t.Errorf("IsTableFormat() = %v, want %v", got, tt.wantTable)
-			}
-			if got := tt.format.IsTreeFormat(); got != tt.wantTree {
-				t.Errorf("IsTreeFormat() = %v, want %v", got, tt.wantTree)
-			}
-			if got := tt.format.IsGraphFormat(); got != tt.wantGraph {
-				t.Errorf("IsGraphFormat() = %v, want %v", got, tt.wantGraph)
-			}
+
+			testBoolValue(t, string(tt.format), "IsTableFormat", tt.format.IsTableFormat(), tt.wantTable)
+			testBoolValue(t, string(tt.format), "IsTreeFormat", tt.format.IsTreeFormat(), tt.wantTree)
+			testBoolValue(t, string(tt.format), "IsGraphFormat", tt.format.IsGraphFormat(), tt.wantGraph)
 		})
 	}
 }
 
 func TestTableData(t *testing.T) {
 	t.Parallel()
-	t.Run("RowCount and ColCount", func(t *testing.T) {
-		t.Parallel()
-		testTableDataRowColCount(t)
-	})
-	t.Run("CreateRowEdges", func(t *testing.T) {
-		t.Parallel()
-		testTableDataCreateRowEdges(t)
-	})
+	runSubtest(t, "RowCount and ColCount", testTableDataRowColCount)
+	runSubtest(t, "CreateRowEdges", testTableDataCreateRowEdges)
 }
 
 func testTableDataRowColCount(t *testing.T) {
 	t.Helper()
+
 	data := NewTableData([]string{"Name", "Value", "Count"})
 	if data.ColCount() != 3 {
 		t.Errorf("ColCount() = %d, want 3", data.ColCount())
 	}
+
 	if data.RowCount() != 0 {
 		t.Errorf("RowCount() = %d, want 0", data.RowCount())
 	}
 
 	data.AddRow([]string{"a", "b", "c"})
 	data.AddRow([]string{"d", "e", "f"})
+
 	if data.RowCount() != 2 {
 		t.Errorf("RowCount() = %d, want 2", data.RowCount())
 	}
@@ -305,6 +275,7 @@ func testCreateRowEdgesEmpty(t *testing.T) {
 func testCreateRowEdgesSingle(t *testing.T) {
 	data := NewTableData([]string{"Name"})
 	data.AddRow([]string{"a"})
+
 	if edges := data.CreateRowEdges(); edges != nil {
 		t.Errorf("CreateRowEdges() on single row = %v, want nil", edges)
 	}
@@ -315,10 +286,12 @@ func testCreateRowEdgesMultiple(t *testing.T) {
 	data.AddRow([]string{"a"})
 	data.AddRow([]string{"b"})
 	data.AddRow([]string{"c"})
+
 	edges := data.CreateRowEdges()
 	if len(edges) != 2 {
 		t.Fatalf("CreateRowEdges() returned %d edges, want 2", len(edges))
 	}
+
 	verifyEdge := func(idx int, from, to string) {
 		if edges[idx].From != from || edges[idx].To != to {
 			t.Errorf(

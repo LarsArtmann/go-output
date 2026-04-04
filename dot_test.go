@@ -8,17 +8,9 @@ import (
 //nolint:exhaustruct // Test files use partial struct initialization
 func TestDOTRenderer(t *testing.T) {
 	t.Parallel()
+
 	renderer := NewDOTRenderer()
-	renderer.SetNodes([]GraphNode{
-		{
-			ID:    NewBrandedID[GraphNodeIDBrand]("A"),
-			Label: NewBrandedID[GraphNodeLabelBrand]("Node A"),
-		},
-		{
-			ID:    NewBrandedID[GraphNodeIDBrand]("B"),
-			Label: NewBrandedID[GraphNodeLabelBrand]("Node B"),
-		},
-	})
+	renderer.SetNodes(testNodesAB())
 	renderer.SetEdges([]GraphEdge{
 		{From: NewBrandedID[GraphNodeIDBrand]("A"), To: NewBrandedID[GraphNodeIDBrand]("B")},
 	})
@@ -28,15 +20,19 @@ func TestDOTRenderer(t *testing.T) {
 	if !strings.Contains(output, "digraph G {") {
 		t.Error("Output should contain digraph declaration")
 	}
+
 	if !strings.Contains(output, "\"A\"") {
 		t.Error("Output should contain node A in quotes")
 	}
+
 	if !strings.Contains(output, "label=\"Node A\"") {
 		t.Error("Output should contain label for node A")
 	}
+
 	if !strings.Contains(output, "\"A\" -> \"B\"") {
 		t.Error("Output should contain directed edge A -> B")
 	}
+
 	if !strings.Contains(output, "}") {
 		t.Error("Output should close with }")
 	}
@@ -45,17 +41,9 @@ func TestDOTRenderer(t *testing.T) {
 //nolint:exhaustruct // Test files use partial struct initialization
 func TestDOTUndirectedRenderer(t *testing.T) {
 	t.Parallel()
+
 	renderer := NewUndirectedDOTRenderer()
-	renderer.SetNodes([]GraphNode{
-		{
-			ID:    NewBrandedID[GraphNodeIDBrand]("A"),
-			Label: NewBrandedID[GraphNodeLabelBrand]("Node A"),
-		},
-		{
-			ID:    NewBrandedID[GraphNodeIDBrand]("B"),
-			Label: NewBrandedID[GraphNodeLabelBrand]("Node B"),
-		},
-	})
+	renderer.SetNodes(testNodesAB())
 	renderer.SetEdges([]GraphEdge{
 		{From: NewBrandedID[GraphNodeIDBrand]("A"), To: NewBrandedID[GraphNodeIDBrand]("B")},
 	})
@@ -65,6 +53,7 @@ func TestDOTUndirectedRenderer(t *testing.T) {
 	if !strings.Contains(output, "graph G {") {
 		t.Error("Undirected graph should use 'graph' keyword")
 	}
+
 	if !strings.Contains(output, "\"A\" -- \"B\"") {
 		t.Error("Undirected edge should use --")
 	}
@@ -73,6 +62,7 @@ func TestDOTUndirectedRenderer(t *testing.T) {
 //nolint:exhaustruct // Test files use partial struct initialization
 func TestDOTRendererWithStyles(t *testing.T) {
 	t.Parallel()
+
 	renderer := NewDOTRenderer()
 	renderer.SetNodes([]GraphNode{
 		{
@@ -91,6 +81,7 @@ func TestDOTRendererWithStyles(t *testing.T) {
 	if !strings.Contains(output, "shape=ellipse") {
 		t.Error("Output should contain shape attribute")
 	}
+
 	if !strings.Contains(output, "fillcolor=#ff0000") {
 		t.Error("Output should contain fillcolor")
 	}
@@ -99,14 +90,9 @@ func TestDOTRendererWithStyles(t *testing.T) {
 //nolint:exhaustruct // Test files use partial struct initialization
 func TestDOTRendererWithEdgeLabel(t *testing.T) {
 	t.Parallel()
+
 	renderer := NewDOTRenderer()
-	renderer.SetEdges([]GraphEdge{
-		{
-			From:  NewBrandedID[GraphNodeIDBrand]("A"),
-			To:    NewBrandedID[GraphNodeIDBrand]("B"),
-			Label: NewBrandedID[GraphNodeLabelBrand]("uses"),
-		},
-	})
+	renderer.SetEdges([]GraphEdge{testEdgeAB("uses")})
 
 	output := renderer.Render()
 
@@ -117,6 +103,7 @@ func TestDOTRendererWithEdgeLabel(t *testing.T) {
 
 func TestDOTFromTableData(t *testing.T) {
 	t.Parallel()
+
 	data := NewTableData([]string{"ID", "Name"})
 	data.AddRow([]string{"1", "Alice"})
 	data.AddRow([]string{"2", "Bob"})
@@ -127,9 +114,11 @@ func TestDOTFromTableData(t *testing.T) {
 	if !strings.Contains(output, "digraph") {
 		t.Error("Output should be a digraph")
 	}
+
 	if !strings.Contains(output, "row0") {
 		t.Error("Output should contain row0 node")
 	}
+
 	if !strings.Contains(output, "\"row0\" -> \"row1\"") {
 		t.Error("Output should contain edge from row0 to row1")
 	}
@@ -137,6 +126,7 @@ func TestDOTFromTableData(t *testing.T) {
 
 func TestDOTFromTree(t *testing.T) {
 	t.Parallel()
+
 	root := NewTreeNode("root", "Root")
 	root.AddChild(NewTreeNode("child", "Child"))
 
@@ -146,9 +136,11 @@ func TestDOTFromTree(t *testing.T) {
 	if !strings.Contains(output, "digraph") {
 		t.Error("Output should be a digraph")
 	}
+
 	if !strings.Contains(output, "Root") {
 		t.Error("Output should contain 'Root' label")
 	}
+
 	if !strings.Contains(output, "Child") {
 		t.Error("Output should contain 'Child' label")
 	}
@@ -156,20 +148,18 @@ func TestDOTFromTree(t *testing.T) {
 
 func TestDOTRendererEmpty(t *testing.T) {
 	t.Parallel()
-	renderer := NewDOTRenderer()
-	output := renderer.Render()
 
-	if !strings.Contains(output, "digraph G {") {
-		t.Error("Empty DOT should still have digraph declaration")
-	}
-	if !strings.Contains(output, "rankdir=TB") {
-		t.Error("Empty DOT should have default attributes")
-	}
+	renderer := NewDOTRenderer()
+	testEmptyRendererOutput(t, renderer, []ExpectedOutput{
+		{Substring: "digraph G {", Message: "Empty DOT should still have digraph declaration"},
+		{Substring: "rankdir=TB", Message: "Empty DOT should have default attributes"},
+	})
 }
 
 //nolint:exhaustruct // Test files use partial struct initialization
 func TestDOTSetGraphID(t *testing.T) {
 	t.Parallel()
+
 	renderer := NewDOTRenderer()
 	renderer.SetGraphID("MyGraph")
 	renderer.SetNodes(

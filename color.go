@@ -31,6 +31,7 @@ func ParseColorMode(s string) (ColorMode, error) {
 	if err != nil {
 		return "", fmt.Errorf("invalid color mode: %q", s)
 	}
+
 	return v, nil
 }
 
@@ -40,7 +41,7 @@ func (c ColorMode) String() string {
 
 // AllowedValues returns all valid color mode values.
 func (c ColorMode) AllowedValues() []string {
-	return enum.AllowedStrings(colorModeValues, func(c ColorMode) string { return string(c) })
+	return enum.AllowedValues(colorModeValues)
 }
 
 // IsValid checks if the color mode is valid.
@@ -67,6 +68,7 @@ func (c ColorMode) ToANSI() string {
 	if !c.ShouldColor() {
 		return ""
 	}
+
 	return "\033["
 }
 
@@ -88,6 +90,7 @@ func isTerminalByEnv(envVars ...string) bool {
 			return true
 		}
 	}
+
 	return false
 }
 

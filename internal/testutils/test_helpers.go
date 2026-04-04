@@ -1,10 +1,12 @@
 package testutils
 
 import (
+	"testing"
+
 	"github.com/larsartmann/go-output"
 )
 
-// CreateTestNodesAB creates the common test nodes A and B used in DOT and Mermaid tests
+// CreateTestNodesAB creates the common test nodes A and B used in DOT and Mermaid tests.
 func CreateTestNodesAB() []output.GraphNode {
 	return []output.GraphNode{
 		{
@@ -18,7 +20,7 @@ func CreateTestNodesAB() []output.GraphNode {
 	}
 }
 
-// CreateTestEdgeAB creates the common test edge from A to B used in DOT and Mermaid tests
+// CreateTestEdgeAB creates the common test edge from A to B used in DOT and Mermaid tests.
 func CreateTestEdgeAB() []output.GraphEdge {
 	return []output.GraphEdge{
 		{
@@ -28,7 +30,7 @@ func CreateTestEdgeAB() []output.GraphEdge {
 	}
 }
 
-// CreateTestNodesABC creates the common test nodes A, B, and C used in Mermaid tests
+// CreateTestNodesABC creates the common test nodes A, B, and C used in Mermaid tests.
 func CreateTestNodesABC() []output.GraphNode {
 	return []output.GraphNode{
 		{
@@ -46,7 +48,7 @@ func CreateTestNodesABC() []output.GraphNode {
 	}
 }
 
-// CreateTestEdgesABC creates the common test edges A->B and B->C used in Mermaid tests
+// CreateTestEdgesABC creates the common test edges A->B and B->C used in Mermaid tests.
 func CreateTestEdgesABC() []output.GraphEdge {
 	return []output.GraphEdge{
 		{
@@ -57,5 +59,14 @@ func CreateTestEdgesABC() []output.GraphEdge {
 			From: output.NewBrandedID[output.GraphNodeIDBrand]("B"),
 			To:   output.NewBrandedID[output.GraphNodeIDBrand]("C"),
 		},
+	}
+}
+
+// AssertEmptyDataRendersJSONWithoutPanic verifies that empty data renders as JSON without panic or error.
+func AssertEmptyDataRendersJSONWithoutPanic(t *testing.T) {
+	data := output.NewTableData([]string{})
+	_, err := output.MarshalJSON(data)
+	if err != nil {
+		t.Errorf("MarshalJSON on empty data should not error: %v", err)
 	}
 }

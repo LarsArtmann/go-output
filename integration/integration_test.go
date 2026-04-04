@@ -17,13 +17,17 @@ type TestProject struct {
 	Complexity int
 }
 
-func TestAllFormatsRender(t *testing.T) {
-	t.Parallel()
-
-	projects := []TestProject{
+func SampleProjects() []TestProject {
+	return []TestProject{
 		{Name: "Alpha", Health: 90, Complexity: 7},
 		{Name: "Beta", Health: 75, Complexity: 5},
 	}
+}
+
+func TestAllFormatsRender(t *testing.T) {
+	t.Parallel()
+
+	projects := SampleProjects()
 
 	formats := []output.Format{
 		output.FormatTable,
@@ -41,6 +45,7 @@ func TestAllFormatsRender(t *testing.T) {
 	for _, format := range formats {
 		t.Run(string(format), func(t *testing.T) {
 			t.Parallel()
+
 			result := renderProject(format, projects)
 			if result == "" {
 				t.Errorf("Format %s returned empty output", format)
@@ -57,7 +62,8 @@ func TestStreamingRenderer(t *testing.T) {
 	html.AddRow([]string{"Alpha"})
 
 	var buf bytes.Buffer
-	if err := html.Stream(&buf); err != nil {
+	err := html.Stream(&buf)
+	if err != nil {
 		t.Fatalf("Stream failed: %v", err)
 	}
 
@@ -94,9 +100,11 @@ func TestTreeNodeDepth(t *testing.T) {
 	if root.Depth() != 0 {
 		t.Errorf("Root depth should be 0, got %d", root.Depth())
 	}
+
 	if child.Depth() != 1 {
 		t.Errorf("Child depth should be 1, got %d", child.Depth())
 	}
+
 	if grandchild.Depth() != 2 {
 		t.Errorf("Grandchild depth should be 2, got %d", grandchild.Depth())
 	}
@@ -139,33 +147,40 @@ func renderProject(format output.Format, projects []TestProject) string {
 func renderTableFormat(projects []TestProject) string {
 	tbl := table.New()
 	tbl.SetHeaders("Name", "Health", "Complexity")
+
 	for _, p := range projects {
 		tbl.AddRow(p.Name, formatHealth(p.Health), formatComplexity(p.Complexity))
 	}
+
 	return tbl.Render()
 }
 
 func renderJSONFormat(projects []TestProject) string {
 	data, _ := output.MarshalJSONIndent(projects, "", "  ")
+
 	return string(data)
 }
 
 func renderMarkdownFormat(projects []TestProject) string {
+	headers := []string{"Name", "Health", "Complexity"}
+	return renderMarkdownTable(headers, formatProjectsToRows(projects))
+}
+
+func renderMarkdownTable(headers []string, rows [][]string) string {
 	md := output.NewMarkdownTable()
-	md.SetHeaders([]string{"Name", "Health", "Complexity"})
-	for _, p := range projects {
-		md.AddRow([]string{p.Name, formatHealth(p.Health), formatComplexity(p.Complexity)})
+	md.SetHeaders(headers)
+	for _, row := range rows {
+		md.AddRow(row)
 	}
-	result := md.Render()
-	return result
+	return md.Render()
 }
 
 func renderCSVFormat(projects []TestProject) string {
 	var buf bytes.Buffer
 	w := output.NewCSVWriter(&buf)
 	_ = w.WriteHeader([]string{"Name", "Health", "Complexity"})
-	for _, p := range projects {
-		_ = w.WriteRow([]string{p.Name, formatHealth(p.Health), formatComplexity(p.Complexity)})
+	for _, row := range formatProjectsToRows(projects) {
+		_ = w.WriteRow(row)
 	}
 	w.Flush()
 	return buf.String()
@@ -175,8 +190,8 @@ func renderTSVFormat(projects []TestProject) string {
 	var buf bytes.Buffer
 	w := output.NewTSVWriter(&buf)
 	_ = w.WriteHeader([]string{"Name", "Health", "Complexity"})
-	for _, p := range projects {
-		_ = w.WriteRow([]string{p.Name, formatHealth(p.Health), formatComplexity(p.Complexity)})
+	for _, row := range formatProjectsToRows(projects) {
+		_ = w.WriteRow(row)
 	}
 	w.Flush()
 	return buf.String()
@@ -187,6 +202,7 @@ func renderXMLFormat(projects []TestProject) string {
 		Headers: []string{"Name", "Health", "Complexity"},
 		Rows:    formatProjectsToRows(projects),
 	})
+
 	return string(data)
 }
 
@@ -195,30 +211,37 @@ func formatProjectsToRows(projects []TestProject) [][]string {
 	for i, p := range projects {
 		rows[i] = []string{p.Name, formatHealth(p.Health), formatComplexity(p.Complexity)}
 	}
+
 	return rows
 }
 
 func renderYAMLFormat(projects []TestProject) string {
 	data, _ := output.MarshalYAML(projects)
+
 	return string(data)
 }
 
 func renderHTMLFormat(projects []TestProject) string {
 	html := output.NewHTMLRenderer()
 	html.SetHeaders([]string{"Name", "Health", "Complexity"})
+
 	for _, p := range projects {
 		html.AddRow([]string{p.Name, formatHealth(p.Health), formatComplexity(p.Complexity)})
 	}
+
 	return html.Render()
 }
 
 func renderTreeFormat(projects []TestProject) string {
 	tree := output.NewASCIITreeRenderer()
+
 	root := output.NewTreeNode("root", "Projects")
 	for _, p := range projects {
 		root.AddChild(output.NewTreeNode(p.Name, p.Name))
 	}
+
 	tree.SetRoot(root)
+
 	return tree.Render()
 }
 
@@ -227,23 +250,24 @@ func renderD2Format() string {
 	d2.AddTable("projects", []output.D2Column{
 		{Name: "name", Type: "string"},
 	})
+
 	return d2.Render()
 }
 
-func renderMermaidFormat(projects []TestProject) string {
+func newGraphTableData(projects []TestProject) *output.TableData {
 	data := output.NewTableData([]string{"Name"})
 	for _, p := range projects {
 		data.AddRow([]string{p.Name})
 	}
-	return output.MermaidFlowchartRenderer(data).Render()
+	return data
 }
 
 func renderDOTFormat(projects []TestProject) string {
-	data := output.NewTableData([]string{"Name"})
-	for _, p := range projects {
-		data.AddRow([]string{p.Name})
-	}
-	return output.DOTFromTableData(data).Render()
+	return output.DOTFromTableData(newGraphTableData(projects)).Render()
+}
+
+func renderMermaidFormat(projects []TestProject) string {
+	return output.MermaidFlowchartRenderer(newGraphTableData(projects)).Render()
 }
 
 func formatHealth(h int) string {

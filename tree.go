@@ -29,8 +29,10 @@ func (r *ASCIITreeRenderer) Render() string {
 	if r.root == nil {
 		return ""
 	}
+
 	r.builder.Reset()
 	r.renderNode(r.root, "", true)
+
 	return r.builder.String()
 }
 
@@ -54,6 +56,7 @@ func (r *ASCIITreeRenderer) renderNode(node *TreeNode, prefix string, isLast boo
 		for k, v := range node.Metadata {
 			metaParts = append(metaParts, k+": "+v)
 		}
+
 		r.builder.WriteString(" (")
 		r.builder.WriteString(strings.Join(metaParts, ", "))
 		r.builder.WriteString(")")
@@ -91,12 +94,14 @@ func TreeRendererFromTableData(data *TableData) *ASCIITreeRenderer {
 		for _, h := range data.Headers {
 			headerNode.AddChild(NewTreeNode(h, h))
 		}
+
 		root.AddChild(headerNode)
 	}
 
 	rowsNode := NewTreeNode("rows", "Rows")
 	for i, row := range data.Rows {
 		rowNode := NewTreeNode("row-"+strconv.Itoa(i), "Row "+strconv.Itoa(i+1))
+
 		for j, cell := range row {
 			var headerName string
 			if j < len(data.Headers) {
@@ -104,12 +109,15 @@ func TreeRendererFromTableData(data *TableData) *ASCIITreeRenderer {
 			} else {
 				headerName = "Col " + strconv.Itoa(j)
 			}
+
 			rowNode.AddChild(NewTreeNode(headerName, cell))
 		}
+
 		rowsNode.AddChild(rowNode)
 	}
 
 	root.AddChild(rowsNode)
 	renderer.SetRoot(root)
+
 	return renderer
 }

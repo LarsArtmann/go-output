@@ -71,6 +71,7 @@ func ParseGraphShape(s string) (GraphShape, error) {
 	if slices.Contains(graphShapeValues, GraphShape(s)) {
 		return GraphShape(s), nil
 	}
+
 	return "", fmt.Errorf("invalid graph shape: %q (allowed: %v)", s, graphShapeValues)
 }
 
@@ -84,6 +85,7 @@ func (s GraphShape) AllowedValues() []string {
 	for i, v := range graphShapeValues {
 		values[i] = string(v)
 	}
+
 	return values
 }
 

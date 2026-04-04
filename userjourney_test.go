@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/larsartmann/go-output"
+	"github.com/larsartmann/go-output/internal/testutils"
 	"github.com/larsartmann/go-output/sort"
 )
 
@@ -20,6 +21,7 @@ func TestCLIDeveloperJourney(t *testing.T) {
 		if err != nil {
 			t.Fatalf("ParseOutputFormat() error = %v", err)
 		}
+
 		if format != output.FormatJSON {
 			t.Errorf("ParseOutputFormat() = %v, want %v", format, output.FormatJSON)
 		}
@@ -92,6 +94,7 @@ func TestRenderDataAsJSON(t *testing.T) {
 	if !strings.Contains(jsonStr, "Alpha") {
 		t.Error("JSON should contain project name")
 	}
+
 	if !strings.Contains(jsonStr, "90%") {
 		t.Error("JSON should contain health value")
 	}
@@ -102,6 +105,7 @@ func TestRenderDataAsCSV(t *testing.T) {
 
 	// When: I render it as CSV
 	var buf strings.Builder
+
 	w := output.NewCSVWriter(&buf)
 	_ = w.WriteHeader([]string{"Name", "Health"})
 	_ = w.WriteRow([]string{"Alpha", "90%"})
@@ -112,27 +116,36 @@ func TestRenderDataAsCSV(t *testing.T) {
 	if !strings.Contains(csvStr, "Name") {
 		t.Error("CSV should contain header")
 	}
+
 	if !strings.Contains(csvStr, "Alpha") {
 		t.Error("CSV should contain data")
 	}
+}
+
+func renderMarkdownTable(headers []string, rows [][]string) string {
+	md := output.NewMarkdownTable()
+	md.SetHeaders(headers)
+	for _, row := range rows {
+		md.AddRow(row)
+	}
+	return md.Render()
 }
 
 func TestRenderDataAsMarkdown(t *testing.T) {
 	t.Parallel()
 
 	// When: I render it as Markdown
-	md := output.NewMarkdownTable()
-	md.SetHeaders([]string{"Name", "Health"})
-	md.AddRow([]string{"Alpha", "90%"})
-	mdStr := md.Render()
+	mdStr := renderMarkdownTable([]string{"Name", "Health"}, [][]string{{"Alpha", "90%"}})
 
 	// Then: I get valid Markdown table
 	if !strings.Contains(mdStr, "| Name") {
 		t.Error("Markdown should contain header row")
 	}
+
 	if !strings.Contains(mdStr, "| Alpha") {
 		t.Error("Markdown should contain data row")
 	}
+
 	if !strings.Contains(mdStr, "|----") {
 		t.Error("Markdown should contain separator")
 	}
@@ -156,6 +169,7 @@ func TestRenderDataAsYAML(t *testing.T) {
 	if !strings.Contains(yamlStr, "Name") {
 		t.Error("YAML should contain field name")
 	}
+
 	if !strings.Contains(yamlStr, "Alpha") {
 		t.Error("YAML should contain data")
 	}
@@ -166,15 +180,7 @@ func TestRenderDataAsYAML(t *testing.T) {
 func TestHandleEdgeCases(t *testing.T) {
 	t.Run("empty data renders without panic", func(t *testing.T) {
 		t.Parallel()
-
-		// Given: User has empty data
-		data := output.NewTableData([]string{})
-
-		// When: I render it as JSON - should not panic
-		_, err := output.MarshalJSON(data)
-		if err != nil {
-			t.Errorf("MarshalJSON() on empty data error = %v", err)
-		}
+		testutils.AssertEmptyDataRendersJSONWithoutPanic(t)
 	})
 
 	t.Run("empty markdown table returns empty string", func(t *testing.T) {
@@ -216,32 +222,30 @@ func TestSortingBehavior(t *testing.T) {
 	t.Run("can sort by name", func(t *testing.T) {
 		t.Parallel()
 
-		// Given: Unordered data
-		data := []Project{{Name: "zebra"}, {Name: "apple"}, {Name: "banana"}}
-
-		// When: I sort by name ascending
-		sorted := sort.New(data, output.SortByName, false)
-		sorted.Sort()
-
-		// Then: Data is sorted correctly
-		if data[0].Name != "apple" {
-			t.Errorf("Expected first item to be 'apple', got %s", data[0].Name)
+		type testCase struct {
+			name     string
+			data     []Project
+			desc     bool
+			expected string
 		}
-	})
 
-	t.Run("can sort by name descending", func(t *testing.T) {
-		t.Parallel()
+		cases := []testCase{
+			{name: "ascending", data: []Project{{Name: "zebra"}, {Name: "apple"}, {Name: "banana"}}, desc: false, expected: "apple"},
+			{name: "descending", data: []Project{{Name: "apple"}, {Name: "zebra"}, {Name: "banana"}}, desc: true, expected: "zebra"},
+		}
 
-		// Given: Unordered data
-		data := []Project{{Name: "apple"}, {Name: "zebra"}, {Name: "banana"}}
+		for _, tc := range cases {
+			tc := tc
+			t.Run(tc.name, func(t *testing.T) {
+				t.Parallel()
 
-		// When: I sort by name descending
-		sorted := sort.New(data, output.SortByName, true)
-		sorted.Sort()
+				sorted := sort.New(tc.data, output.SortByName, tc.desc)
+				sorted.Sort()
 
-		// Then: Data is sorted in reverse
-		if data[0].Name != "zebra" {
-			t.Errorf("Expected first item to be 'zebra', got %s", data[0].Name)
+				if tc.data[0].Name != tc.expected {
+					t.Errorf("Expected first item to be %q, got %s", tc.expected, tc.data[0].Name)
+				}
+			})
 		}
 	})
 

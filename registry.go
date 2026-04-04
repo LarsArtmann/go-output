@@ -32,7 +32,9 @@ func Register(format Format, factory RendererFactory) error {
 			ErrFormatAlreadyRegistered,
 		)
 	}
+
 	registry[format] = factory
+
 	return nil
 }
 
@@ -40,18 +42,22 @@ func Register(format Format, factory RendererFactory) error {
 func Unregister(format Format) {
 	regMu.Lock()
 	defer regMu.Unlock()
+
 	delete(registry, format)
 }
 
 // Create returns a new Renderer instance for the given format.
 func Create(format Format) (Renderer, error) {
 	regMu.RLock()
+
 	factory, exists := registry[format]
+
 	regMu.RUnlock()
 
 	if !exists {
 		return nil, fmt.Errorf("no renderer registered for format %q", format)
 	}
+
 	return factory(), nil
 }
 
@@ -64,6 +70,7 @@ func RegisteredFormats() []Format {
 	for f := range registry {
 		formats = append(formats, f)
 	}
+
 	return formats
 }
 
@@ -71,6 +78,8 @@ func RegisteredFormats() []Format {
 func IsRegistered(format Format) bool {
 	regMu.RLock()
 	defer regMu.RUnlock()
+
 	_, exists := registry[format]
+
 	return exists
 }

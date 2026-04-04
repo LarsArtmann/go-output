@@ -7,10 +7,11 @@ import (
 	"testing"
 
 	"github.com/larsartmann/go-output"
+	"github.com/larsartmann/go-output/internal/testutils"
 	"github.com/larsartmann/go-output/sort"
 )
 
-// TestCSVToTableData tests converting CSV data to TableData
+// TestCSVToTableData tests converting CSV data to TableData.
 func TestCSVToTableData(t *testing.T) {
 	t.Parallel()
 
@@ -32,12 +33,13 @@ func TestCSVToTableData(t *testing.T) {
 	if data.ColCount() != 2 {
 		t.Errorf("Expected 2 columns, got %d", data.ColCount())
 	}
+
 	if data.RowCount() != 3 {
 		t.Errorf("Expected 3 rows, got %d", data.RowCount())
 	}
 }
 
-// TestTableDataToJSON tests rendering TableData as JSON
+// TestTableDataToJSON tests rendering TableData as JSON.
 func TestTableDataToJSON(t *testing.T) {
 	t.Parallel()
 
@@ -48,6 +50,7 @@ func TestTableDataToJSON(t *testing.T) {
 		{"Beta", "200"},
 		{"Gamma", "150"},
 	}
+
 	data := output.NewTableData(headers)
 	for _, row := range rows {
 		data.AddRow(row)
@@ -64,12 +67,13 @@ func TestTableDataToJSON(t *testing.T) {
 	if !strings.Contains(jsonStr, "Alpha") {
 		t.Error("JSON should contain Alpha")
 	}
+
 	if !strings.Contains(jsonStr, "100") {
 		t.Error("JSON should contain 100")
 	}
 }
 
-// TestTableDataToYAML tests rendering TableData as YAML
+// TestTableDataToYAML tests rendering TableData as YAML.
 func TestTableDataToYAML(t *testing.T) {
 	t.Parallel()
 
@@ -80,6 +84,7 @@ func TestTableDataToYAML(t *testing.T) {
 		{"Beta", "200"},
 		{"Gamma", "150"},
 	}
+
 	data := output.NewTableData(headers)
 	for _, row := range rows {
 		data.AddRow(row)
@@ -96,12 +101,13 @@ func TestTableDataToYAML(t *testing.T) {
 	if !strings.Contains(yamlStr, "Name") {
 		t.Error("YAML should contain Name header")
 	}
+
 	if !strings.Contains(yamlStr, "Gamma") {
 		t.Error("YAML should contain Gamma")
 	}
 }
 
-// TestSortAndRenderWorkflow tests sorting before rendering
+// TestSortAndRenderWorkflow tests sorting before rendering.
 func TestSortAndRenderWorkflow(t *testing.T) {
 	t.Parallel()
 
@@ -131,7 +137,9 @@ func TestSortAndRenderWorkflow(t *testing.T) {
 		if !strings.Contains(jsonStr, `"Apple"`) {
 			t.Error("Sorted JSON should contain Apple")
 		}
+
 		appleIdx := strings.Index(jsonStr, `"Apple"`)
+
 		zebraIdx := strings.Index(jsonStr, `"Zebra"`)
 		if appleIdx > zebraIdx {
 			t.Error("Apple should come before Zebra after sorting by name")
@@ -139,7 +147,7 @@ func TestSortAndRenderWorkflow(t *testing.T) {
 	})
 }
 
-// TestLargeDatasetWorkflow tests handling of larger datasets
+// TestLargeDatasetWorkflow tests handling of larger datasets.
 func TestLargeDatasetWorkflow(t *testing.T) {
 	t.Parallel()
 
@@ -169,22 +177,18 @@ func TestLargeDatasetWorkflow(t *testing.T) {
 
 		// Given: Large streaming dataset
 		html := output.NewStreamingHTMLRenderer()
-		headers := make([]string, 10)
-		for i := range headers {
-			headers[i] = "Col"
-		}
+
+		headers := output.FilledStrings(10, "Col")
 		html.SetHeaders(headers)
 
 		for range 100 {
-			row := make([]string, 10)
-			for j := range row {
-				row[j] = "data"
-			}
+			row := output.FilledStrings(10, "data")
 			html.AddRow(row)
 		}
 
 		// When: I stream the output
 		var buf bytes.Buffer
+
 		err := html.Stream(&buf)
 		if err != nil {
 			t.Fatalf("Stream failed: %v", err)
@@ -195,13 +199,14 @@ func TestLargeDatasetWorkflow(t *testing.T) {
 		if !strings.Contains(result, "<table") {
 			t.Error("Should contain table tag")
 		}
+
 		if !strings.Contains(result, "<tr>") {
 			t.Error("Should contain row tags")
 		}
 	})
 }
 
-// TestErrorHandlingWorkflow tests graceful error handling
+// TestErrorHandlingWorkflow tests graceful error handling.
 func TestErrorHandlingWorkflow(t *testing.T) {
 	t.Parallel()
 
@@ -215,6 +220,7 @@ func TestErrorHandlingWorkflow(t *testing.T) {
 		if err == nil {
 			t.Error("Expected error for invalid format")
 		}
+
 		if !strings.Contains(err.Error(), "invalid") {
 			t.Error("Error should mention invalid format")
 		}
@@ -222,14 +228,6 @@ func TestErrorHandlingWorkflow(t *testing.T) {
 
 	t.Run("empty data renders without panic", func(t *testing.T) {
 		t.Parallel()
-
-		// Given: Empty TableData
-		data := output.NewTableData([]string{})
-
-		// When: I render it - should not panic
-		_, err := output.MarshalJSON(data)
-		if err != nil {
-			t.Errorf("MarshalJSON on empty data should not error: %v", err)
-		}
+		testutils.AssertEmptyDataRendersJSONWithoutPanic(t)
 	})
 }

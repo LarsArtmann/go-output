@@ -23,28 +23,12 @@ type StreamingRenderer interface {
 // StreamingHTMLRenderer is a streaming implementation of HTMLRenderer.
 // It writes output incrementally to minimize memory usage.
 type StreamingHTMLRenderer struct {
-	data *TableData
+	tableDataBase
 }
 
 // NewStreamingHTMLRenderer creates a new StreamingHTMLRenderer.
 func NewStreamingHTMLRenderer() *StreamingHTMLRenderer {
-	return &StreamingHTMLRenderer{} //nolint:exhaustruct // data is initialized lazily
-}
-
-// SetHeaders sets the column headers.
-func (r *StreamingHTMLRenderer) SetHeaders(headers []string) {
-	if r.data == nil {
-		r.data = &TableData{Headers: nil, Rows: nil}
-	}
-	r.data.Headers = headers
-}
-
-// AddRow adds a data row.
-func (r *StreamingHTMLRenderer) AddRow(row []string) {
-	if r.data == nil {
-		r.data = &TableData{Headers: nil, Rows: nil}
-	}
-	r.data.Rows = append(r.data.Rows, row)
+	return &StreamingHTMLRenderer{}
 }
 
 // SetData sets the table data directly.
@@ -55,7 +39,9 @@ func (r *StreamingHTMLRenderer) SetData(data *TableData) {
 // Render returns the HTML table as a string.
 func (r *StreamingHTMLRenderer) Render() string {
 	var b strings.Builder
+
 	_ = r.Stream(&b)
+
 	return b.String()
 }
 
@@ -65,18 +51,26 @@ func (r *StreamingHTMLRenderer) Stream(w io.Writer) error {
 		return r.writeEmptyTable(w)
 	}
 
-	if err := r.writeTableOpen(w); err != nil {
+	err := r.writeTableOpen(w)
+	if err != nil {
 		return err
 	}
-	if err := r.writeHeaders(w); err != nil {
+
+	err = r.writeHeaders(w)
+	if err != nil {
 		return err
 	}
-	if err := r.writeTableBodyOpen(w); err != nil {
+
+	err = r.writeTableBodyOpen(w)
+	if err != nil {
 		return err
 	}
-	if err := r.writeRows(w); err != nil {
+
+	err = r.writeRows(w)
+	if err != nil {
 		return err
 	}
+
 	return r.writeTableClose(w)
 }
 
@@ -85,6 +79,7 @@ func (r *StreamingHTMLRenderer) writeEmptyTable(w io.Writer) error {
 	if err != nil {
 		return fmt.Errorf("write empty table: %w", err)
 	}
+
 	return nil
 }
 
@@ -96,6 +91,7 @@ func (r *StreamingHTMLRenderer) writeTableOpen(w io.Writer) error {
 	if err != nil {
 		return fmt.Errorf("write table header: %w", err)
 	}
+
 	return nil
 }
 
@@ -105,6 +101,7 @@ func (r *StreamingHTMLRenderer) writeHeaders(w io.Writer) error {
 			return fmt.Errorf("write header cell: %w", err)
 		}
 	}
+
 	return nil
 }
 
@@ -116,15 +113,18 @@ func (r *StreamingHTMLRenderer) writeTableBodyOpen(w io.Writer) error {
 	if err != nil {
 		return fmt.Errorf("write table body: %w", err)
 	}
+
 	return nil
 }
 
 func (r *StreamingHTMLRenderer) writeRows(w io.Writer) error {
 	for i, row := range r.data.Rows {
-		if err := r.writeRow(w, row, i); err != nil {
+		err := r.writeRow(w, row, i)
+		if err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -132,14 +132,17 @@ func (r *StreamingHTMLRenderer) writeRow(w io.Writer, row []string, rowIndex int
 	if _, err := w.Write([]byte("<tr>\n")); err != nil {
 		return fmt.Errorf("write row %d start: %w", rowIndex, err)
 	}
+
 	for colIndex, cell := range row {
 		if _, err := w.Write([]byte("<td>" + escape.HTML(cell) + "</td>\n")); err != nil {
 			return fmt.Errorf("write row %d cell %d: %w", rowIndex, colIndex, err)
 		}
 	}
+
 	if _, err := w.Write([]byte("</tr>\n")); err != nil {
 		return fmt.Errorf("write row %d end: %w", rowIndex, err)
 	}
+
 	return nil
 }
 
@@ -150,6 +153,7 @@ func (r *StreamingHTMLRenderer) writeTableClose(w io.Writer) error {
 	if err != nil {
 		return fmt.Errorf("write table end: %w", err)
 	}
+
 	return nil
 }
 
@@ -174,5 +178,6 @@ func (a *adapterRenderer) Stream(w io.Writer) error {
 	if err != nil {
 		return fmt.Errorf("stream render output: %w", err)
 	}
+
 	return nil
 }

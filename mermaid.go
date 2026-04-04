@@ -40,6 +40,7 @@ func (r *MermaidRenderer) Render() string {
 		if !edge.Label.IsEmpty() {
 			label = fmt.Sprintf("|%s|", r.escapeMermaidLabel(edge.Label.Get()))
 		}
+
 		_, _ = fmt.Fprintf(&b, "    %s -->%s %s\n", edge.From.Get(), label, edge.To.Get())
 	}
 
@@ -82,6 +83,7 @@ func (r *MermaidRenderer) escapeMermaidLabel(s string) string {
 	s = strings.ReplaceAll(s, "{", "(")
 	s = strings.ReplaceAll(s, "}", ")")
 	s = strings.ReplaceAll(s, "\n", "<br>")
+
 	return s
 }
 
@@ -95,6 +97,7 @@ func MermaidFlowchartRenderer(data *TableData) *MermaidRenderer {
 	// Create nodes for each row
 	for i, row := range data.Rows {
 		var labelParts []string
+
 		for j, cell := range row {
 			if j < len(data.Headers) {
 				labelParts = append(labelParts, data.Headers[j]+": "+cell)
@@ -102,6 +105,7 @@ func MermaidFlowchartRenderer(data *TableData) *MermaidRenderer {
 				labelParts = append(labelParts, cell)
 			}
 		}
+
 		label := strings.Join(labelParts, "<br>")
 		//nolint:exhaustruct // Uses defaults for optional fields
 		renderer.nodes = append(renderer.nodes, GraphNode{
@@ -111,14 +115,7 @@ func MermaidFlowchartRenderer(data *TableData) *MermaidRenderer {
 		})
 	}
 
-	// Create edges between consecutive rows using shared helper
-	for _, edge := range data.CreateRowEdges() {
-		//nolint:exhaustruct // Uses defaults for optional fields
-		renderer.edges = append(renderer.edges, GraphEdge{
-			From: NewBrandedID[GraphNodeIDBrand](edge.From),
-			To:   NewBrandedID[GraphNodeIDBrand](edge.To),
-		})
-	}
+	renderer.AddRowEdges(data)
 
 	return renderer
 }
@@ -131,6 +128,7 @@ func MermaidTreeRenderer(root *TreeNode) *MermaidRenderer {
 	}
 
 	renderer.addTreeNodes(root, "")
+
 	return renderer
 }
 
@@ -165,14 +163,17 @@ func (r *MermaidRenderer) addTreeNodes(node *TreeNode, parentID string) {
 
 func sanitizeMermaidID(id string) string {
 	var result strings.Builder
+
 	for _, r := range id {
 		if (r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') || (r >= '0' && r <= '9') || r == '_' {
 			result.WriteRune(r)
 		}
 	}
+
 	if result.Len() == 0 {
 		return "node"
 	}
+
 	return result.String()
 }
 
@@ -180,5 +181,6 @@ func sanitizeMermaidLabel(label string) string {
 	result := strings.ReplaceAll(label, " ", "_")
 	result = strings.ReplaceAll(result, "-", "_")
 	result = strings.ReplaceAll(result, "/", "_")
+
 	return result
 }

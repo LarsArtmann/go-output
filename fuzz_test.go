@@ -6,6 +6,27 @@ import (
 	"testing"
 )
 
+// stringEnum is a constraint for string-based enum types used in fuzz testing.
+type stringEnum interface {
+	~string
+	IsValid() bool
+}
+
+func fuzzEnumTest[E stringEnum](t *testing.T, s string, parse func(string) (E, error), typeName string) {
+	result, err := parse(s)
+	if err != nil {
+		if result != "" {
+			t.Errorf("%s(%q) returned error but non-empty result: %q", typeName, s, result)
+		}
+	}
+
+	if result.IsValid() && err == nil {
+		if string(result) != s {
+			t.Errorf("%s(%q) = %q, but IsValid() was true", typeName, s, result)
+		}
+	}
+}
+
 func FuzzCSVWriter(f *testing.F) {
 	// Seed corpus with common cases
 	f.Add("Name,Value", "Alice,100")
@@ -24,14 +45,17 @@ func FuzzCSVWriter(f *testing.F) {
 
 		// Test CSV writing
 		var buf bytes.Buffer
+
 		w := NewCSVWriter(&buf)
 
 		if len(headers) > 0 {
 			_ = w.WriteHeader(headers)
 		}
+
 		if len(row) > 0 {
 			_ = w.WriteRow(row)
 		}
+
 		w.Flush()
 
 		// Should not panic and should produce output
@@ -42,11 +66,12 @@ func FuzzCSVWriter(f *testing.F) {
 	})
 }
 
-// parseCSVFuzz parses a simple CSV line for fuzz testing
+// parseCSVFuzz parses a simple CSV line for fuzz testing.
 func parseCSVFuzz(line string) []string {
 	if line == "" {
 		return nil
 	}
+
 	return strings.Split(line, ",")
 }
 

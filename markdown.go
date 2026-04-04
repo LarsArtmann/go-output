@@ -24,10 +24,12 @@ func NewMarkdownTable() *MarkdownTable {
 // SetHeaders sets the table headers.
 func (m *MarkdownTable) SetHeaders(headers []string) *MarkdownTable {
 	m.headers = headers
+
 	m.align = make([]int, len(headers))
 	for i := range m.align {
 		m.align[i] = 0
 	}
+
 	return m
 }
 
@@ -36,12 +38,14 @@ func (m *MarkdownTable) SetAlign(col, alignment int) *MarkdownTable {
 	if col >= 0 && col < len(m.align) {
 		m.align[col] = alignment
 	}
+
 	return m
 }
 
 // AddRow adds a row to the table.
 func (m *MarkdownTable) AddRow(row []string) *MarkdownTable {
 	m.rows = append(m.rows, row)
+
 	return m
 }
 
@@ -52,6 +56,7 @@ func (m *MarkdownTable) Render() string {
 	}
 
 	colWidths := m.calculateColumnWidths()
+
 	var b strings.Builder
 
 	m.writeHeader(&b, colWidths)
@@ -66,6 +71,7 @@ func (m *MarkdownTable) calculateColumnWidths() []int {
 	for i, h := range m.headers {
 		colWidths[i] = len(h)
 	}
+
 	for _, row := range m.rows {
 		for i, cell := range row {
 			if i < len(colWidths) && len(cell) > colWidths[i] {
@@ -73,38 +79,45 @@ func (m *MarkdownTable) calculateColumnWidths() []int {
 			}
 		}
 	}
+
 	return colWidths
 }
 
 func (m *MarkdownTable) writeHeader(b *strings.Builder, colWidths []int) {
 	b.WriteString("|")
+
 	for i, header := range m.headers {
 		b.WriteString(" ")
 		b.WriteString(header)
 		b.WriteString(strings.Repeat(" ", colWidths[i]-len(header)+1))
 		b.WriteString("|")
 	}
+
 	b.WriteString("\n")
 }
 
 func (m *MarkdownTable) writeSeparator(b *strings.Builder, colWidths []int) {
 	b.WriteString("|")
+
 	for _, width := range colWidths {
 		b.WriteString("-")
 		b.WriteString(strings.Repeat("-", width+1))
 		b.WriteString("|")
 	}
+
 	b.WriteString("\n")
 }
 
 func (m *MarkdownTable) writeRows(b *strings.Builder, colWidths []int) {
 	for _, row := range m.rows {
 		b.WriteString("|")
+
 		for i, cell := range row {
 			b.WriteString(" ")
 			m.writeCell(b, i, cell, colWidths)
 			b.WriteString(" |")
 		}
+
 		b.WriteString("\n")
 	}
 }
@@ -128,6 +141,7 @@ func (m *MarkdownTable) getAlignment(col int) int {
 	if col >= 0 && col < len(m.align) {
 		return m.align[col]
 	}
+
 	return AlignLeft
 }
 

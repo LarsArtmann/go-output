@@ -104,25 +104,24 @@ func (d *D2Diagram) AddTable(name string, columns []D2Column) *D2Diagram {
 		Name:    name,
 		Columns: columns,
 	})
+
 	return d
+}
+
+// appendAndReturn appends an item to a slice and returns it for chaining.
+func appendAndReturn[T any](slice *[]T, item T) []T {
+	return append(*slice, item)
 }
 
 // AddNode adds a node to the diagram.
 func (d *D2Diagram) AddNode(node D2Node) *D2Diagram {
-	d.nodes = append(d.nodes, node)
+	d.nodes = appendAndReturn(&d.nodes, node)
 	return d
 }
 
 // AddNodeSimple adds a simple node with just ID and label.
 func (d *D2Diagram) AddNodeSimple(id, label string) *D2Diagram {
-	return d.AddNode(
-		//nolint:exhaustruct // Simple node uses defaults for optional fields
-		D2Node{
-			ID:    NewBrandedID[D2NodeIDBrand](id),
-			Label: NewBrandedID[D2NodeLabelBrand](label),
-			Shape: D2ShapeRectangle,
-		},
-	)
+	return d.AddNodeWithShape(id, label, D2ShapeRectangle)
 }
 
 // AddNodeWithShape adds a node with a specific shape.
@@ -139,7 +138,7 @@ func (d *D2Diagram) AddNodeWithShape(id, label string, shape D2NodeShape) *D2Dia
 
 // AddEdge adds an edge between two nodes.
 func (d *D2Diagram) AddEdge(edge D2Edge) *D2Diagram {
-	d.edges = append(d.edges, edge)
+	d.edges = appendAndReturn(&d.edges, edge)
 	return d
 }
 
@@ -204,6 +203,7 @@ func (d *D2Diagram) renderNode(b *strings.Builder, node D2Node) {
 		)
 		b.WriteString(node.Nested)
 		b.WriteString("}\n")
+
 		return
 	}
 
@@ -216,6 +216,7 @@ func (d *D2Diagram) renderShapeAttr(shape D2NodeShape) string {
 	if shape == "" || shape == D2ShapeRectangle {
 		return " "
 	}
+
 	return fmt.Sprintf(":%s ", shape)
 }
 
@@ -224,18 +225,23 @@ func (d *D2Diagram) renderStyle(style D2NodeStyle) string {
 	if style.Fill != "" {
 		parts = append(parts, "fill:"+style.Fill)
 	}
+
 	if style.Stroke != "" {
 		parts = append(parts, "stroke:"+style.Stroke)
 	}
+
 	if style.StrokeWidth > 0 {
 		parts = append(parts, fmt.Sprintf("stroke-width:%d", style.StrokeWidth))
 	}
+
 	if style.FontSize > 0 {
 		parts = append(parts, fmt.Sprintf("font-size:%d", style.FontSize))
 	}
+
 	if len(parts) == 0 {
 		return ""
 	}
+
 	return "{" + strings.Join(parts, "; ") + "}"
 }
 
@@ -266,10 +272,16 @@ func (d *D2Diagram) renderEdge(b *strings.Builder, edge D2Edge) {
 }
 
 func (d *D2Diagram) renderArrow(arrow D2ArrowType) string {
-	if arrow == "" || arrow == D2ArrowNone {
+	return formatArrowAttr(string(arrow), string(D2ArrowNone), "-%s")
+}
+
+// formatArrowAttr formats arrow/shape attributes with the given prefix.
+// Returns "" if value equals noneVal or is empty, otherwise returns fmt.Sprintf(prefix, value).
+func formatArrowAttr(value, noneVal, prefix string) string {
+	if value == "" || value == noneVal {
 		return ""
 	}
-	return fmt.Sprintf("-%s", arrow)
+	return fmt.Sprintf(prefix, value)
 }
 
 // D2FromTableData converts TableData to a D2 diagram.
@@ -283,6 +295,7 @@ func D2FromTableData(data *TableData) *D2Diagram {
 	for i, h := range data.Headers {
 		columns[i] = D2Column{Name: h, Type: "string"}
 	}
+
 	diagram.AddTable(data.Headers[0], columns)
 
 	return diagram

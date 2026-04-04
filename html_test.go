@@ -7,6 +7,7 @@ import (
 
 func TestHTMLRenderer(t *testing.T) {
 	t.Parallel()
+
 	renderer := NewHTMLRenderer()
 	renderer.SetHeaders([]string{"Name", "Age"})
 	renderer.AddRow([]string{"Alice", "30"})
@@ -18,18 +19,23 @@ func TestHTMLRenderer(t *testing.T) {
 	if !strings.Contains(output, "<table") {
 		t.Error("Output should contain <table>")
 	}
+
 	if !strings.Contains(output, "</table>") {
 		t.Error("Output should contain </table>")
 	}
+
 	if !strings.Contains(output, "<th>") {
 		t.Error("Output should contain <th> for headers")
 	}
+
 	if !strings.Contains(output, "<td>") {
 		t.Error("Output should contain <td> for data cells")
 	}
+
 	if !strings.Contains(output, "Alice") {
 		t.Error("Output should contain 'Alice'")
 	}
+
 	if !strings.Contains(output, "Bob") {
 		t.Error("Output should contain 'Bob'")
 	}
@@ -37,6 +43,7 @@ func TestHTMLRenderer(t *testing.T) {
 
 func TestHTMLRendererFullDocument(t *testing.T) {
 	t.Parallel()
+
 	renderer := NewHTMLRenderer()
 	renderer.SetHeaders([]string{"Col1", "Col2"})
 	renderer.AddRow([]string{"A", "B"})
@@ -46,9 +53,11 @@ func TestHTMLRendererFullDocument(t *testing.T) {
 	if !strings.Contains(output, "<!DOCTYPE html>") {
 		t.Error("Full HTML should contain DOCTYPE")
 	}
+
 	if !strings.Contains(output, "<title>Test Title</title>") {
 		t.Error("Full HTML should contain title")
 	}
+
 	if !strings.Contains(output, "<table") {
 		t.Error("Full HTML should contain table")
 	}
@@ -56,36 +65,48 @@ func TestHTMLRendererFullDocument(t *testing.T) {
 
 func TestHTMLRendererEmpty(t *testing.T) {
 	t.Parallel()
-	renderer := NewHTMLRenderer()
-	output := renderer.Render()
 
-	if !strings.Contains(output, "<table") {
-		t.Error("Empty table should still be valid HTML")
+	renderer := NewHTMLRenderer()
+	testEmptyRendererOutput(t, renderer, []ExpectedOutput{
+		{Substring: "<table", Message: "Empty table should still be valid HTML"},
+		{Substring: "</table>", Message: "Empty table should have closing tag"},
+	})
+}
+
+// htmlEscapeTestRenderer is an interface for HTML renderers that support escaping tests.
+type htmlEscapeTestRenderer interface {
+	SetHeaders([]string)
+	AddRow([]string)
+	Render() string
+}
+
+// testHTMLEscapeShared is a shared helper for testing HTML escaping across renderer implementations.
+func testHTMLEscapeShared(t *testing.T, newRenderer func() htmlEscapeTestRenderer, name string) {
+	t.Helper()
+
+	r := newRenderer()
+	r.SetHeaders([]string{"Name"})
+	r.AddRow([]string{"<script>alert('xss')</script>"})
+
+	got := r.Render()
+
+	if strings.Contains(got, "<script>") {
+		t.Errorf("%s: Render() should escape script tags", name)
 	}
-	if !strings.Contains(output, "</table>") {
-		t.Error("Empty table should have closing tag")
+
+	if !strings.Contains(got, "&lt;script&gt;") {
+		t.Errorf("%s: Render() should contain escaped script tag", name)
 	}
 }
 
 func TestHTMLRendererEscaping(t *testing.T) {
 	t.Parallel()
-	renderer := NewHTMLRenderer()
-	renderer.SetHeaders([]string{"Name"})
-	renderer.AddRow([]string{"<script>alert('xss')</script>"})
-
-	output := renderer.Render()
-
-	// Should escape HTML
-	if strings.Contains(output, "<script>") {
-		t.Error("Output should escape script tags")
-	}
-	if !strings.Contains(output, "&lt;script&gt;") {
-		t.Error("Output should contain escaped script tag")
-	}
+	testHTMLEscapeShared(t, func() htmlEscapeTestRenderer { return NewHTMLRenderer() }, "HTMLRenderer")
 }
 
 func TestHTMLTreeRenderer(t *testing.T) {
 	t.Parallel()
+
 	renderer := NewHTMLTreeRenderer()
 
 	root := NewTreeNode("root", "Root")
@@ -97,12 +118,15 @@ func TestHTMLTreeRenderer(t *testing.T) {
 	if !strings.Contains(output, "<ul") {
 		t.Error("Output should contain <ul>")
 	}
+
 	if !strings.Contains(output, "<li>") {
 		t.Error("Output should contain <li>")
 	}
+
 	if !strings.Contains(output, "Root") {
 		t.Error("Output should contain 'Root'")
 	}
+
 	if !strings.Contains(output, "Child") {
 		t.Error("Output should contain 'Child'")
 	}
@@ -110,6 +134,7 @@ func TestHTMLTreeRenderer(t *testing.T) {
 
 func TestHTMLTreeRendererFullDocument(t *testing.T) {
 	t.Parallel()
+
 	renderer := NewHTMLTreeRenderer()
 	renderer.SetRoot(NewTreeNode("root", "Test Tree"))
 
@@ -118,6 +143,7 @@ func TestHTMLTreeRendererFullDocument(t *testing.T) {
 	if !strings.Contains(output, "<!DOCTYPE html>") {
 		t.Error("Full HTML should contain DOCTYPE")
 	}
+
 	if !strings.Contains(output, "<title>Tree Title</title>") {
 		t.Error("Full HTML should contain title")
 	}
@@ -125,6 +151,7 @@ func TestHTMLTreeRendererFullDocument(t *testing.T) {
 
 func TestHTMLRendererSetData(t *testing.T) {
 	t.Parallel()
+
 	renderer := NewHTMLRenderer()
 	renderer.SetData(&TableData{
 		Headers: []string{"A", "B"},
@@ -136,6 +163,7 @@ func TestHTMLRendererSetData(t *testing.T) {
 	if !strings.Contains(output, "<th>A") {
 		t.Error("Output should contain header 'A'")
 	}
+
 	if !strings.Contains(output, "<td>1") {
 		t.Error("Output should contain cell '1'")
 	}
@@ -143,6 +171,7 @@ func TestHTMLRendererSetData(t *testing.T) {
 
 func TestHTMLRendererAddRowWithoutSetHeaders(t *testing.T) {
 	t.Parallel()
+
 	renderer := NewHTMLRenderer()
 	// Call AddRow without first calling SetHeaders - should initialize data
 	renderer.AddRow([]string{"test"})
@@ -155,6 +184,7 @@ func TestHTMLRendererAddRowWithoutSetHeaders(t *testing.T) {
 
 func TestHTMLTreeRendererEmpty(t *testing.T) {
 	t.Parallel()
+
 	renderer := NewHTMLTreeRenderer()
 	// Don't set root - should return empty tree
 	output := renderer.Render()
@@ -162,6 +192,7 @@ func TestHTMLTreeRendererEmpty(t *testing.T) {
 	if !strings.Contains(output, "<ul") {
 		t.Error("Empty tree should contain <ul>")
 	}
+
 	if strings.Contains(output, "<li>") {
 		t.Error("Empty tree should not contain <li>")
 	}

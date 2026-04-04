@@ -2,6 +2,8 @@ package output
 
 import (
 	"testing"
+
+	"github.com/larsartmann/go-output/internal/gentest"
 )
 
 func TestParseSortBy(t *testing.T) {
@@ -31,45 +33,36 @@ func TestSortByString(t *testing.T) {
 }
 
 func TestSortByAllowedValues(t *testing.T) {
-	t.Parallel()
-	got := SortByName.AllowedValues()
-	want := []string{"name", "importance", "created_at", "updated_at", "health", "complexity"}
-
-	if len(got) != len(want) {
-		t.Errorf("AllowedValues() returned %d values, want %d", len(got), len(want))
-	}
-
-	for i, v := range got {
-		if v != want[i] {
-			t.Errorf("AllowedValues()[%d] = %v, want %v", i, v, want[i])
-		}
-	}
+	testAllowedValues(
+		t,
+		"AllowedValues",
+		SortByName.AllowedValues(),
+		[]string{"name", "importance", "created_at", "updated_at", "health", "complexity"},
+	)
 }
 
 func TestSortByIsValid(t *testing.T) {
 	t.Parallel()
-	tests := []struct {
-		sortBy SortBy
-		want   bool
-	}{
-		{SortByName, true},
-		{SortByImportance, true},
-		{SortByCreatedAt, true},
-		{SortByUpdatedAt, true},
-		{SortByHealth, true},
-		{SortByComplexity, true},
-		{SortBy("invalid"), false},
-		{SortBy(""), false},
-	}
 
-	for _, tt := range tests {
-		t.Run(string(tt.sortBy), func(t *testing.T) {
-			t.Parallel()
-			if got := tt.sortBy.IsValid(); got != tt.want {
-				t.Errorf("SortBy(%q).IsValid() = %v, want %v", tt.sortBy, got, tt.want)
-			}
-		})
-	}
+	gentest.TestEnumIsValid[SortBy](t, []SortBy{
+		SortByName,
+		SortByImportance,
+		SortByCreatedAt,
+		SortByUpdatedAt,
+		SortByHealth,
+		SortByComplexity,
+		SortBy("invalid"),
+		SortBy(""),
+	}, []bool{
+		true,
+		true,
+		true,
+		true,
+		true,
+		true,
+		false,
+		false,
+	})
 }
 
 func FuzzParseSortBy(f *testing.F) {
@@ -83,16 +76,6 @@ func FuzzParseSortBy(f *testing.F) {
 	f.Add("")
 
 	f.Fuzz(func(t *testing.T, s string) {
-		sortBy, err := ParseSortBy(s)
-		if err != nil {
-			if sortBy != "" {
-				t.Errorf("ParseSortBy(%q) returned error but non-empty sortBy: %q", s, sortBy)
-			}
-		}
-		if sortBy.IsValid() && err == nil {
-			if string(sortBy) != s {
-				t.Errorf("ParseSortBy(%q) = %q, but IsValid() was true", s, sortBy)
-			}
-		}
+		fuzzEnumTest(t, s, ParseSortBy, "ParseSortBy")
 	})
 }

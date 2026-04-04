@@ -36,17 +36,20 @@ func (id BrandedID[B]) MarshalText() ([]byte, error) {
 // UnmarshalText implements encoding.TextUnmarshaler.
 func (id *BrandedID[B]) UnmarshalText(text []byte) error {
 	id.value = string(text)
+
 	return nil
 }
 
 // Format implements fmt.Formatter.
 func (id BrandedID[B]) Format(s fmt.State, verb rune) {
 	format := "%s"
+
 	if verb == 'v' {
 		if s.Flag('#') {
 			format = "%s{%q}"
 		}
 	}
+
 	_, _ = fmt.Fprintf(s, format, id.value)
 }
 

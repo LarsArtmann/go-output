@@ -5,9 +5,20 @@ import (
 	"testing"
 )
 
+func testSanitizeFunc(t *testing.T, name string, fn func(string) string, tests []struct{ input, want string }) {
+	t.Helper()
+	for _, tt := range tests {
+		got := fn(tt.input)
+		if got != tt.want {
+			t.Errorf("%s(%q) = %q, want %q", name, tt.input, got, tt.want)
+		}
+	}
+}
+
 //nolint:exhaustruct // Test files use partial struct initialization
 func TestMermaidRenderer(t *testing.T) {
 	t.Parallel()
+
 	renderer := NewMermaidRenderer()
 	renderer.SetNodes([]GraphNode{
 		{
@@ -33,6 +44,7 @@ func TestMermaidRenderer(t *testing.T) {
 	if !strings.Contains(output, "```mermaid") {
 		t.Error("Output should contain mermaid code fence")
 	}
+
 	if !strings.Contains(output, "flowchart TD") {
 		t.Error("Output should contain flowchart declaration")
 	}
@@ -40,6 +52,7 @@ func TestMermaidRenderer(t *testing.T) {
 	if !strings.Contains(output, "A[Node A]") {
 		t.Error("Output should contain node A with label")
 	}
+
 	if !strings.Contains(output, "A --> B") {
 		t.Error("Output should contain edge A --> B")
 	}
@@ -48,6 +61,7 @@ func TestMermaidRenderer(t *testing.T) {
 //nolint:exhaustruct // Test files use partial struct initialization
 func TestMermaidRendererWithDiamond(t *testing.T) {
 	t.Parallel()
+
 	renderer := NewMermaidRenderer()
 	renderer.SetNodes([]GraphNode{
 		{
@@ -68,6 +82,7 @@ func TestMermaidRendererWithDiamond(t *testing.T) {
 
 func TestMermaidRendererFromTableData(t *testing.T) {
 	t.Parallel()
+
 	data := NewTableData([]string{"Step", "Description"})
 	data.AddRow([]string{"Start", "Begin process"})
 	data.AddRow([]string{"Step 1", "Do something"})
@@ -79,9 +94,11 @@ func TestMermaidRendererFromTableData(t *testing.T) {
 	if !strings.Contains(output, "flowchart TD") {
 		t.Error("Output should be a flowchart")
 	}
+
 	if !strings.Contains(output, "Start") {
 		t.Error("Output should contain 'Start'")
 	}
+
 	if !strings.Contains(output, "End") {
 		t.Error("Output should contain 'End'")
 	}
@@ -89,6 +106,7 @@ func TestMermaidRendererFromTableData(t *testing.T) {
 
 func TestMermaidTreeRenderer(t *testing.T) {
 	t.Parallel()
+
 	root := NewTreeNode("root", "Root")
 	root.AddChild(NewTreeNode("child1", "Child 1"))
 	root.AddChild(NewTreeNode("child2", "Child 2"))
@@ -99,9 +117,11 @@ func TestMermaidTreeRenderer(t *testing.T) {
 	if !strings.Contains(output, "flowchart TD") {
 		t.Error("Output should be a flowchart")
 	}
+
 	if !strings.Contains(output, "Child 1") {
 		t.Error("Output should contain 'Child 1'")
 	}
+
 	if !strings.Contains(output, "Child 2") {
 		t.Error("Output should contain 'Child 2'")
 	}
@@ -109,19 +129,17 @@ func TestMermaidTreeRenderer(t *testing.T) {
 
 func TestMermaidRendererEmpty(t *testing.T) {
 	t.Parallel()
-	renderer := NewMermaidRenderer()
-	output := renderer.Render()
 
-	if !strings.Contains(output, "```mermaid") {
-		t.Error("Empty mermaid should still have fence")
-	}
-	if !strings.Contains(output, "flowchart TD") {
-		t.Error("Empty mermaid should still have flowchart declaration")
-	}
+	renderer := NewMermaidRenderer()
+	testEmptyRendererOutput(t, renderer, []ExpectedOutput{
+		{Substring: "```mermaid", Message: "Empty mermaid should still have fence"},
+		{Substring: "flowchart TD", Message: "Empty mermaid should still have flowchart declaration"},
+	})
 }
 
 func TestSanitizeMermaidID(t *testing.T) {
 	t.Parallel()
+
 	tests := []struct {
 		input string
 		want  string
@@ -134,16 +152,12 @@ func TestSanitizeMermaidID(t *testing.T) {
 		{"", "node"},
 	}
 
-	for _, tt := range tests {
-		got := sanitizeMermaidID(tt.input)
-		if got != tt.want {
-			t.Errorf("sanitizeMermaidID(%q) = %q, want %q", tt.input, got, tt.want)
-		}
-	}
+	testSanitizeFunc(t, "sanitizeMermaidID", sanitizeMermaidID, tests)
 }
 
 func TestSanitizeMermaidLabel(t *testing.T) {
 	t.Parallel()
+
 	tests := []struct {
 		input string
 		want  string
@@ -155,16 +169,12 @@ func TestSanitizeMermaidLabel(t *testing.T) {
 		{"multi word test", "multi_word_test"},
 	}
 
-	for _, tt := range tests {
-		got := sanitizeMermaidLabel(tt.input)
-		if got != tt.want {
-			t.Errorf("sanitizeMermaidLabel(%q) = %q, want %q", tt.input, got, tt.want)
-		}
-	}
+	testSanitizeFunc(t, "sanitizeMermaidLabel", sanitizeMermaidLabel, tests)
 }
 
 func TestMermaidRendererAllShapes(t *testing.T) {
 	t.Parallel()
+
 	tests := []struct {
 		name      string
 		shape     GraphShape
@@ -184,6 +194,7 @@ func TestMermaidRendererAllShapes(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
+
 			renderer := NewMermaidRenderer()
 			//nolint:exhaustruct // Test uses minimal node fields
 			renderer.SetNodes(
@@ -214,24 +225,10 @@ func TestMermaidRendererAllShapes(t *testing.T) {
 //nolint:exhaustruct // Test files use partial struct initialization
 func TestMermaidRendererWithEdgeLabel(t *testing.T) {
 	t.Parallel()
+
 	renderer := NewMermaidRenderer()
-	renderer.SetNodes([]GraphNode{
-		{
-			ID:    NewBrandedID[GraphNodeIDBrand]("A"),
-			Label: NewBrandedID[GraphNodeLabelBrand]("Node A"),
-		},
-		{
-			ID:    NewBrandedID[GraphNodeIDBrand]("B"),
-			Label: NewBrandedID[GraphNodeLabelBrand]("Node B"),
-		},
-	})
-	renderer.SetEdges([]GraphEdge{
-		{
-			From:  NewBrandedID[GraphNodeIDBrand]("A"),
-			To:    NewBrandedID[GraphNodeIDBrand]("B"),
-			Label: NewBrandedID[GraphNodeLabelBrand]("connects"),
-		},
-	})
+	renderer.SetNodes(testNodesAB())
+	renderer.SetEdges([]GraphEdge{testEdgeAB("connects")})
 
 	output := renderer.Render()
 	if !strings.Contains(output, "|connects|") {
@@ -241,6 +238,7 @@ func TestMermaidRendererWithEdgeLabel(t *testing.T) {
 
 func TestMermaidTreeRendererNilRoot(t *testing.T) {
 	t.Parallel()
+
 	renderer := MermaidTreeRenderer(nil)
 	output := renderer.Render()
 
@@ -264,6 +262,7 @@ func TestMermaidTreeRendererWithEmptyID(t *testing.T) {
 //nolint:exhaustruct // Test files use partial struct initialization
 func TestMermaidRendererEscapeLabel(t *testing.T) {
 	t.Parallel()
+
 	renderer := NewMermaidRenderer()
 	renderer.SetNodes([]GraphNode{
 		{
@@ -277,6 +276,7 @@ func TestMermaidRendererEscapeLabel(t *testing.T) {
 	if strings.Contains(output, `"quoted"`) {
 		t.Error("Quotes should be escaped")
 	}
+
 	if !strings.Contains(output, "'quoted'") {
 		t.Error("Quotes should be replaced with single quotes")
 	}
