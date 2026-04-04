@@ -5,13 +5,7 @@ import (
 )
 
 func TestParseSortBy(t *testing.T) {
-	t.Parallel()
-	tests := []struct {
-		name    string
-		input   string
-		want    SortBy
-		wantErr bool
-	}{
+	tests := []parseEnumTestCase[SortBy]{
 		{"name", "name", SortByName, false},
 		{"importance", "importance", SortByImportance, false},
 		{"created_at", "created_at", SortByCreatedAt, false},
@@ -21,28 +15,11 @@ func TestParseSortBy(t *testing.T) {
 		{"invalid", "invalid", "", true},
 		{"empty", "", "", true},
 	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-			got, err := ParseSortBy(tt.input)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("ParseSortBy() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if got != tt.want {
-				t.Errorf("ParseSortBy() = %v, want %v", got, tt.want)
-			}
-		})
-	}
+	testParseEnum(t, "ParseSortBy", ParseSortBy, tests, func(a, b SortBy) bool { return a == b })
 }
 
 func TestSortByString(t *testing.T) {
-	t.Parallel()
-	tests := []struct {
-		sortBy SortBy
-		want   string
-	}{
+	tests := []stringEnumTestCase[SortBy]{
 		{SortByName, "name"},
 		{SortByImportance, "importance"},
 		{SortByCreatedAt, "created_at"},
@@ -50,15 +27,7 @@ func TestSortByString(t *testing.T) {
 		{SortByHealth, "health"},
 		{SortByComplexity, "complexity"},
 	}
-
-	for _, tt := range tests {
-		t.Run(tt.want, func(t *testing.T) {
-			t.Parallel()
-			if got := tt.sortBy.String(); got != tt.want {
-				t.Errorf("SortBy.String() = %v, want %v", got, tt.want)
-			}
-		})
-	}
+	testEnumString(t, "SortBy.String", tests, func(s SortBy) string { return s.String() })
 }
 
 func TestSortByAllowedValues(t *testing.T) {

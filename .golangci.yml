@@ -134,6 +134,10 @@ linters:
               text: package name
               linters:
                 - revive
+            - path: testing_test\.go
+              text: package should be
+              linters:
+                - testpackage
 formatters:
     enable:
         - gci

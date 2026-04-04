@@ -6,19 +6,13 @@ import (
 )
 
 func TestParseOutputFormat(t *testing.T) {
-	t.Parallel()
-	tests := []struct {
-		name    string
-		input   string
-		want    OutputFormat
-		wantErr bool
-	}{
-		{"table", "table", OutputFormatTable, false},
-		{"json", "json", OutputFormatJSON, false},
-		{"csv", "csv", OutputFormatCSV, false},
-		{"markdown", "markdown", OutputFormatMarkdown, false},
-		{"d2", "d2", OutputFormatD2, false},
-		{"yaml", "yaml", OutputFormatYAML, false},
+	tests := []parseEnumTestCase[Format]{
+		{"table", "table", FormatTable, false},
+		{"json", "json", FormatJSON, false},
+		{"csv", "csv", FormatCSV, false},
+		{"markdown", "markdown", FormatMarkdown, false},
+		{"d2", "d2", FormatD2, false},
+		{"yaml", "yaml", FormatYAML, false},
 		{"html", "html", FormatHTML, false},
 		{"tree", "tree", FormatTree, false},
 		{"mermaid", "mermaid", FormatMermaid, false},
@@ -26,44 +20,19 @@ func TestParseOutputFormat(t *testing.T) {
 		{"invalid", "invalid", "", true},
 		{"empty", "", "", true},
 	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-			got, err := ParseOutputFormat(tt.input)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("ParseOutputFormat() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if got != tt.want {
-				t.Errorf("ParseOutputFormat() = %v, want %v", got, tt.want)
-			}
-		})
-	}
+	testParseEnum(t, "ParseOutputFormat", ParseOutputFormat, tests, func(a, b Format) bool { return a == b })
 }
 
 func TestOutputFormatString(t *testing.T) {
-	t.Parallel()
-	tests := []struct {
-		format OutputFormat
-		want   string
-	}{
-		{OutputFormatTable, "table"},
-		{OutputFormatJSON, "json"},
-		{OutputFormatCSV, "csv"},
-		{OutputFormatMarkdown, "markdown"},
-		{OutputFormatD2, "d2"},
-		{OutputFormatYAML, "yaml"},
+	tests := []stringEnumTestCase[Format]{
+		{FormatTable, "table"},
+		{FormatJSON, "json"},
+		{FormatCSV, "csv"},
+		{FormatMarkdown, "markdown"},
+		{FormatD2, "d2"},
+		{FormatYAML, "yaml"},
 	}
-
-	for _, tt := range tests {
-		t.Run(tt.want, func(t *testing.T) {
-			t.Parallel()
-			if got := tt.format.String(); got != tt.want {
-				t.Errorf("OutputFormat.String() = %v, want %v", got, tt.want)
-			}
-		})
-	}
+	testEnumString(t, "OutputFormat.String", tests, func(f Format) string { return f.String() })
 }
 
 func TestOutputFormatAllowedValues(t *testing.T) {
