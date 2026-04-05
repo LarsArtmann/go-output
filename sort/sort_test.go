@@ -175,10 +175,14 @@ func TestSorter_WithLessFunc(t *testing.T) {
 }
 
 func testItemsUnsorted() []testItem {
+	return testItemsWithCounts(1, 2, 3)
+}
+
+func testItemsWithCounts(countAlpha, countBravo, countCharlie int) []testItem {
 	return []testItem{
-		{Name: "charlie", Count: 3, When: time.Time{}},
-		{Name: "alpha", Count: 1, When: time.Time{}},
-		{Name: "bravo", Count: 2, When: time.Time{}},
+		{Name: "charlie", Count: countCharlie, When: time.Time{}},
+		{Name: "alpha", Count: countAlpha, When: time.Time{}},
+		{Name: "bravo", Count: countBravo, When: time.Time{}},
 	}
 }
 
@@ -213,12 +217,8 @@ func TestSorter_Sort(t *testing.T) {
 			expectedCounts: []int{3, 2, 1},
 		},
 		{
-			name: "SortByCount ascending",
-			items: []testItem{
-				{Name: "charlie", Count: 30, When: time.Time{}},
-				{Name: "alpha", Count: 10, When: time.Time{}},
-				{Name: "bravo", Count: 20, When: time.Time{}},
-			},
+			name:           "SortByCount ascending",
+			items:          testItemsWithCounts(10, 20, 30),
 			sortBy:         output.SortBy("Count"),
 			desc:           false,
 			lessFunc:       nil,
@@ -239,12 +239,8 @@ func TestSorter_Sort(t *testing.T) {
 			expectedCounts: []int{0, 0, 0},
 		},
 		{
-			name: "CustomLessFunc count descending",
-			items: []testItem{
-				{Name: "b", Count: 20, When: time.Time{}},
-				{Name: "a", Count: 10, When: time.Time{}},
-				{Name: "c", Count: 30, When: time.Time{}},
-			},
+			name:           "CustomLessFunc count descending",
+			items:          testItemsWithCounts(10, 20, 30),
 			sortBy:         output.SortByName,
 			desc:           false,
 			lessFunc:       func(a, b testItem) bool { return a.Count > b.Count },

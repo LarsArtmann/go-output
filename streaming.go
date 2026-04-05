@@ -74,25 +74,24 @@ func (r *StreamingHTMLRenderer) Stream(w io.Writer) error {
 	return r.writeTableClose(w)
 }
 
-func (r *StreamingHTMLRenderer) writeEmptyTable(w io.Writer) error {
-	_, err := w.Write([]byte(`<table class="data-table"></table>`))
+func (r *StreamingHTMLRenderer) writeChunk(w io.Writer, chunk []byte, description string) error {
+	_, err := w.Write(chunk)
 	if err != nil {
-		return fmt.Errorf("write empty table: %w", err)
+		return fmt.Errorf("%s: %w", description, err)
 	}
 
 	return nil
 }
 
+func (r *StreamingHTMLRenderer) writeEmptyTable(w io.Writer) error {
+	return r.writeChunk(w, []byte(`<table class="data-table"></table>`), "write empty table")
+}
+
 func (r *StreamingHTMLRenderer) writeTableOpen(w io.Writer) error {
-	_, err := w.Write([]byte(`<table class="data-table">
+	return r.writeChunk(w, []byte(`<table class="data-table">
 <thead>
 <tr>
-`))
-	if err != nil {
-		return fmt.Errorf("write table header: %w", err)
-	}
-
-	return nil
+`), "write table header")
 }
 
 func (r *StreamingHTMLRenderer) writeHeaders(w io.Writer) error {
@@ -106,15 +105,10 @@ func (r *StreamingHTMLRenderer) writeHeaders(w io.Writer) error {
 }
 
 func (r *StreamingHTMLRenderer) writeTableBodyOpen(w io.Writer) error {
-	_, err := w.Write([]byte(`</tr>
+	return r.writeChunk(w, []byte(`</tr>
 </thead>
 <tbody>
-`))
-	if err != nil {
-		return fmt.Errorf("write table body: %w", err)
-	}
-
-	return nil
+`), "write table body")
 }
 
 func (r *StreamingHTMLRenderer) writeRows(w io.Writer) error {
@@ -147,14 +141,9 @@ func (r *StreamingHTMLRenderer) writeRow(w io.Writer, row []string, rowIndex int
 }
 
 func (r *StreamingHTMLRenderer) writeTableClose(w io.Writer) error {
-	_, err := w.Write([]byte(`</tbody>
+	return r.writeChunk(w, []byte(`</tbody>
 </table>
-`))
-	if err != nil {
-		return fmt.Errorf("write table end: %w", err)
-	}
-
-	return nil
+`), "write table end")
 }
 
 // StreamingRendererFromRenderer wraps a standard Renderer to implement StreamingRenderer.

@@ -1,6 +1,6 @@
 {
   "statistics": {
-    "detectionDate": "2026-04-05T05:14:05.177Z",
+    "detectionDate": "2026-04-05T05:20:58.441Z",
     "formats": {
       "go": {
         "sources": {
@@ -800,6 +800,18 @@
       },
       "markdown": {
         "sources": {
+          "docs/status/2026-04-05_07-08_comprehensive-status-audit.md": {
+            "lines": 265,
+            "tokens": 4808,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
           "docs/status/2026-03-28_14-57_COMPREHENSIVE-STATUS.md": {
             "lines": 359,
             "tokens": 3856,
@@ -1090,9 +1102,9 @@
           }
         },
         "total": {
-          "lines": 6135,
-          "tokens": 60652,
-          "sources": 24,
+          "lines": 6400,
+          "tokens": 65460,
+          "sources": 25,
           "clones": 0,
           "duplicatedLines": 0,
           "duplicatedTokens": 0,
@@ -1168,14 +1180,14 @@
       }
     },
     "total": {
-      "lines": 15768,
-      "tokens": 129952,
-      "sources": 93,
+      "lines": 16033,
+      "tokens": 134760,
+      "sources": 94,
       "clones": 10,
       "duplicatedLines": 118,
       "duplicatedTokens": 960,
-      "percentage": 0.75,
-      "percentageTokens": 0.74,
+      "percentage": 0.74,
+      "percentageTokens": 0.71,
       "newDuplicatedLines": 0,
       "newClones": 0
     }

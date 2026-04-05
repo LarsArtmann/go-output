@@ -112,7 +112,12 @@ func (m *MarkdownTable) writeRows(b *strings.Builder, colWidths []int) {
 	for _, row := range m.rows {
 		b.WriteString("|")
 
-		for i, cell := range row {
+		for i := range m.headers {
+			cell := ""
+			if i < len(row) {
+				cell = row[i]
+			}
+
 			b.WriteString(" ")
 			m.writeCell(b, i, cell, colWidths)
 			b.WriteString(" |")

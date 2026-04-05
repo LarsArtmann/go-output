@@ -128,6 +128,27 @@ linters:
       rules:
         - disabled: true
           name: var-naming
+    depguard:
+      rules:
+        main:
+          allow:
+            - $STDERR
+            - $GITHUB_ACTION
+            - github.com/larsartmann/go-output
+            - github.com/larsartmann/go-output/enum
+            - github.com/larsartmann/go-output/internal/gentest
+            - github.com/larsartmann/go-output/internal/testutils
+            - github.com/larsartmann/go-output/internal/escape
+            - github.com/larsartmann/go-output/table
+            - github.com/larsartmann/go-output/sort
+            - github.com/larsartmann/go-output/pkg/errors
+            - charm.land/lipgloss/v2
+            - charm.land/lipgloss/v2/table
+            - github.com/go-faster/yaml
+        default:
+          allow:
+            - $STDERR
+            - $GITHUB_ACTION
   exclusions:
     rules:
       - path: sort/.*\.go
