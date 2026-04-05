@@ -244,7 +244,7 @@ func TestSorter_Sort(t *testing.T) {
 			sortBy:         output.SortByName,
 			desc:           false,
 			lessFunc:       func(a, b testItem) bool { return a.Count > b.Count },
-			expectedNames:  []string{"c", "b", "a"},
+			expectedNames:  []string{"charlie", "bravo", "alpha"},
 			expectedCounts: []int{30, 20, 10},
 		},
 	}

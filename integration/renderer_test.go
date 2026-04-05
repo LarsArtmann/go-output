@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/larsartmann/go-output"
+	"github.com/larsartmann/go-output/internal/testutils"
 	"github.com/larsartmann/go-output/table"
 )
 
@@ -61,7 +62,7 @@ func TestJSONFormatContent(t *testing.T) {
 func TestMarkdownTableContent(t *testing.T) {
 	t.Parallel()
 
-	result := renderMarkdownTable([]string{"Name", "Health"}, [][]string{{"Alpha", "90%"}})
+	result := testutils.RenderMarkdownTable([]string{"Name", "Health"}, [][]string{{"Alpha", "90%"}})
 
 	if !strings.Contains(result, "| Name") {
 		t.Error("Markdown should contain header cell")

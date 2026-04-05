@@ -64,46 +64,37 @@ func (t *TSVWriter) Error() error {
 
 // MarshalTSV marshals data as TSV.
 func MarshalTSV(data any) ([]byte, error) {
-	var b strings.Builder
+	var builder strings.Builder
 
-	w := NewTSVWriter(&b)
+	tsvWriter := NewTSVWriter(&builder)
 
-	// Handle slices of slices or structs - simplified for common cases
+	if err := writeTSVData(tsvWriter, data); err != nil {
+		return nil, fmt.Errorf("write tsv data: %w", err)
+	}
+
+	tsvWriter.Flush()
+
+	if err := tsvWriter.Error(); err != nil {
+		return nil, fmt.Errorf("flush tsv writer: %w", err)
+	}
+
+	return []byte(builder.String()), nil
+}
+
+func writeTSVData(w *TSVWriter, data any) error {
 	switch v := data.(type) {
 	case [][]string:
 		for _, row := range v {
-			err := w.WriteRow(row)
-			if err != nil {
-				return nil, fmt.Errorf(
-					"write tsv row to %s: %w",
-					b.String()[:min(50, len(b.String()))],
-					err,
-				)
+			if err := w.WriteRow(row); err != nil {
+				return fmt.Errorf("write row: %w", err)
 			}
 		}
 	case []string:
-		err := w.WriteRow(v)
-		if err != nil {
-			return nil, fmt.Errorf("write tsv single row %v: %w", v, err)
+		if err := w.WriteRow(v); err != nil {
+			return fmt.Errorf("write single row: %w", err)
 		}
 	default:
-		return nil, fmt.Errorf(
-			"unsupported type %T for TSV marshaling to %s",
-			data,
-			b.String()[:min(50, len(b.String()))],
-		)
+		return fmt.Errorf("unsupported type %T", data)
 	}
-
-	w.Flush()
-
-	err := w.Error()
-	if err != nil {
-		return nil, fmt.Errorf(
-			"flush tsv writer for %s: %w",
-			b.String()[:min(50, len(b.String()))],
-			err,
-		)
-	}
-
-	return []byte(b.String()), nil
+	return nil
 }

@@ -71,3 +71,15 @@ func AssertEmptyDataRendersJSONWithoutPanic(t *testing.T) {
 		t.Errorf("MarshalJSON on empty data should not error: %v", err)
 	}
 }
+
+// RenderMarkdownTable renders a markdown table with the given headers and rows.
+func RenderMarkdownTable(headers []string, rows [][]string) string {
+	md := output.NewMarkdownTable()
+	md.SetHeaders(headers)
+
+	for _, row := range rows {
+		md.AddRow(row)
+	}
+
+	return md.Render()
+}

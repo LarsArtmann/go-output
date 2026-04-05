@@ -122,22 +122,11 @@ func TestRenderDataAsCSV(t *testing.T) {
 	}
 }
 
-func renderMarkdownTable(headers []string, rows [][]string) string {
-	md := output.NewMarkdownTable()
-	md.SetHeaders(headers)
-
-	for _, row := range rows {
-		md.AddRow(row)
-	}
-
-	return md.Render()
-}
-
 func TestRenderDataAsMarkdown(t *testing.T) {
 	t.Parallel()
 
 	// When: I render it as Markdown
-	mdStr := renderMarkdownTable([]string{"Name", "Health"}, [][]string{{"Alpha", "90%"}})
+	mdStr := testutils.RenderMarkdownTable([]string{"Name", "Health"}, [][]string{{"Alpha", "90%"}})
 
 	// Then: I get valid Markdown table
 	if !strings.Contains(mdStr, "| Name") {

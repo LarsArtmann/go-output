@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/larsartmann/go-output"
+	"github.com/larsartmann/go-output/internal/testutils"
 	"github.com/larsartmann/go-output/table"
 )
 
@@ -165,18 +166,7 @@ func renderJSONFormat(projects []TestProject) string {
 func renderMarkdownFormat(projects []TestProject) string {
 	headers := []string{"Name", "Health", "Complexity"}
 
-	return renderMarkdownTable(headers, formatProjectsToRows(projects))
-}
-
-func renderMarkdownTable(headers []string, rows [][]string) string {
-	md := output.NewMarkdownTable()
-	md.SetHeaders(headers)
-
-	for _, row := range rows {
-		md.AddRow(row)
-	}
-
-	return md.Render()
+	return testutils.RenderMarkdownTable(headers, formatProjectsToRows(projects))
 }
 
 func renderCSVFormat(projects []TestProject) string {

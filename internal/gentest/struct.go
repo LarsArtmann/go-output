@@ -14,20 +14,20 @@ func TestStructFields(t *testing.T, checks ...FieldCheck) {
 	}
 }
 
-// StringField creates a FieldCheck for a string field.
-func StringField(name, got, want string) FieldCheck {
+func equalField[V comparable](name string, got, want V) FieldCheck {
 	return func(t *testing.T) {
 		if got != want {
-			t.Errorf("%s = %q, want %q", name, got, want)
+			t.Errorf("%s = %v, want %v", name, got, want)
 		}
 	}
 }
 
+// StringField creates a FieldCheck for a string field.
+func StringField(name, got, want string) FieldCheck {
+	return equalField(name, got, want)
+}
+
 // IntField creates a FieldCheck for an int field.
 func IntField(name string, got, want int) FieldCheck {
-	return func(t *testing.T) {
-		if got != want {
-			t.Errorf("%s = %d, want %d", name, got, want)
-		}
-	}
+	return equalField(name, got, want)
 }

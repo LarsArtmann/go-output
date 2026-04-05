@@ -145,10 +145,55 @@ linters:
             - charm.land/lipgloss/v2
             - charm.land/lipgloss/v2/table
             - github.com/go-faster/yaml
+            - bytes
+            - encoding/csv
+            - encoding/json
+            - encoding/xml
+            - errors
+            - fmt
+            - html
+            - io
+            - os
+            - slices
+            - sort
+            - strconv
+            - strings
+            - sync
+            - testing
+            - time
+            - reflect
         default:
           allow:
             - $STDERR
             - $GITHUB_ACTION
+            - bytes
+            - encoding/csv
+            - encoding/json
+            - encoding/xml
+            - errors
+            - fmt
+            - html
+            - io
+            - os
+            - slices
+            - sort
+            - strconv
+            - strings
+            - sync
+            - testing
+            - time
+            - reflect
+            - github.com/larsartmann/go-output
+            - github.com/larsartmann/go-output/enum
+            - github.com/larsartmann/go-output/internal/gentest
+            - github.com/larsartmann/go-output/internal/testutils
+            - github.com/larsartmann/go-output/internal/escape
+            - github.com/larsartmann/go-output/table
+            - github.com/larsartmann/go-output/sort
+            - github.com/larsartmann/go-output/pkg/errors
+            - charm.land/lipgloss/v2
+            - charm.land/lipgloss/v2/table
+            - github.com/go-faster/yaml
   exclusions:
     rules:
       - path: sort/.*\.go
