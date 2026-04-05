@@ -6,5 +6,6 @@ func FilledStrings(n int, value string) []string {
 	for i := range slice {
 		slice[i] = value
 	}
+
 	return slice
 }

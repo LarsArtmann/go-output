@@ -58,6 +58,7 @@ func generateBenchmarkNodes(n int) []GraphNode {
 			Label: NewBrandedID[GraphNodeLabelBrand]("Node"),
 		}
 	}
+
 	return nodes
 }
 
@@ -70,6 +71,7 @@ func generateBenchmarkEdges(n int) []GraphEdge {
 			To:   NewBrandedID[GraphNodeIDBrand]("node"),
 		}
 	}
+
 	return edges
 }
 
@@ -88,13 +90,11 @@ func benchmarkGraphRenderer(b *testing.B, renderer GraphRenderer) {
 	}
 }
 
-//nolint:exhaustruct // Benchmark uses minimal struct initialization
 func BenchmarkMermaidRenderer(b *testing.B) {
 	renderer := NewMermaidRenderer()
 	benchmarkGraphRenderer(b, renderer)
 }
 
-//nolint:exhaustruct // Benchmark uses minimal struct initialization
 func BenchmarkDOTRenderer(b *testing.B) {
 	renderer := NewDOTRenderer()
 	benchmarkGraphRenderer(b, renderer)

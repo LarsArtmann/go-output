@@ -101,7 +101,11 @@ func testHTMLEscapeShared(t *testing.T, newRenderer func() htmlEscapeTestRendere
 
 func TestHTMLRendererEscaping(t *testing.T) {
 	t.Parallel()
-	testHTMLEscapeShared(t, func() htmlEscapeTestRenderer { return NewHTMLRenderer() }, "HTMLRenderer")
+	testHTMLEscapeShared(
+		t,
+		func() htmlEscapeTestRenderer { return NewHTMLRenderer() },
+		"HTMLRenderer",
+	)
 }
 
 func TestHTMLTreeRenderer(t *testing.T) {

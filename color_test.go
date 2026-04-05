@@ -72,7 +72,13 @@ func TestParseColorMode(t *testing.T) {
 		{"invalid", "invalid", "", true},
 		{"empty", "", "", true},
 	}
-	testParseEnum(t, "ParseColorMode", ParseColorMode, tests, func(a, b ColorMode) bool { return a == b })
+	testParseEnum(
+		t,
+		"ParseColorMode",
+		ParseColorMode,
+		tests,
+		func(a, b ColorMode) bool { return a == b },
+	)
 }
 
 func TestColorModeString(t *testing.T) {
@@ -86,7 +92,12 @@ func TestColorModeString(t *testing.T) {
 }
 
 func TestColorModeAllowedValues(t *testing.T) {
-	testAllowedValues(t, "AllowedValues", ColorModeAuto.AllowedValues(), []string{"auto", "always", "never"})
+	testAllowedValues(
+		t,
+		"AllowedValues",
+		ColorModeAuto.AllowedValues(),
+		[]string{"auto", "always", "never"},
+	)
 }
 
 func TestColorModeIsValid(t *testing.T) {

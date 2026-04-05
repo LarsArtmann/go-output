@@ -217,9 +217,27 @@ func TestFormatCategory(t *testing.T) {
 		t.Run(string(tt.format), func(t *testing.T) {
 			t.Parallel()
 
-			testBoolValue(t, string(tt.format), "IsTableFormat", tt.format.IsTableFormat(), tt.wantTable)
-			testBoolValue(t, string(tt.format), "IsTreeFormat", tt.format.IsTreeFormat(), tt.wantTree)
-			testBoolValue(t, string(tt.format), "IsGraphFormat", tt.format.IsGraphFormat(), tt.wantGraph)
+			testBoolValue(
+				t,
+				string(tt.format),
+				"IsTableFormat",
+				tt.format.IsTableFormat(),
+				tt.wantTable,
+			)
+			testBoolValue(
+				t,
+				string(tt.format),
+				"IsTreeFormat",
+				tt.format.IsTreeFormat(),
+				tt.wantTree,
+			)
+			testBoolValue(
+				t,
+				string(tt.format),
+				"IsGraphFormat",
+				tt.format.IsGraphFormat(),
+				tt.wantGraph,
+			)
 		})
 	}
 }

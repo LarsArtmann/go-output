@@ -98,6 +98,7 @@ func TestFormatRegistry(t *testing.T) {
 	t.Parallel()
 
 	customFormat := output.Format("custom")
+
 	err := output.Register(customFormat, func() output.Renderer {
 		return nil
 	})

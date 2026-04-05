@@ -125,9 +125,11 @@ func TestRenderDataAsCSV(t *testing.T) {
 func renderMarkdownTable(headers []string, rows [][]string) string {
 	md := output.NewMarkdownTable()
 	md.SetHeaders(headers)
+
 	for _, row := range rows {
 		md.AddRow(row)
 	}
+
 	return md.Render()
 }
 
@@ -230,12 +232,21 @@ func TestSortingBehavior(t *testing.T) {
 		}
 
 		cases := []testCase{
-			{name: "ascending", data: []Project{{Name: "zebra"}, {Name: "apple"}, {Name: "banana"}}, desc: false, expected: "apple"},
-			{name: "descending", data: []Project{{Name: "apple"}, {Name: "zebra"}, {Name: "banana"}}, desc: true, expected: "zebra"},
+			{
+				name:     "ascending",
+				data:     []Project{{Name: "zebra"}, {Name: "apple"}, {Name: "banana"}},
+				desc:     false,
+				expected: "apple",
+			},
+			{
+				name:     "descending",
+				data:     []Project{{Name: "apple"}, {Name: "zebra"}, {Name: "banana"}},
+				desc:     true,
+				expected: "zebra",
+			},
 		}
 
 		for _, tc := range cases {
-			tc := tc
 			t.Run(tc.name, func(t *testing.T) {
 				t.Parallel()
 

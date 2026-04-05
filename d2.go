@@ -116,6 +116,7 @@ func appendAndReturn[T any](slice *[]T, item T) []T {
 // AddNode adds a node to the diagram.
 func (d *D2Diagram) AddNode(node D2Node) *D2Diagram {
 	d.nodes = appendAndReturn(&d.nodes, node)
+
 	return d
 }
 
@@ -139,6 +140,7 @@ func (d *D2Diagram) AddNodeWithShape(id, label string, shape D2NodeShape) *D2Dia
 // AddEdge adds an edge between two nodes.
 func (d *D2Diagram) AddEdge(edge D2Edge) *D2Diagram {
 	d.edges = appendAndReturn(&d.edges, edge)
+
 	return d
 }
 
@@ -281,6 +283,7 @@ func formatArrowAttr(value, noneVal, prefix string) string {
 	if value == "" || value == noneVal {
 		return ""
 	}
+
 	return fmt.Sprintf(prefix, value)
 }
 

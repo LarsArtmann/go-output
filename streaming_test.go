@@ -141,7 +141,11 @@ func TestStreamingHTMLRendererStreamEmpty(t *testing.T) {
 
 func TestStreamingHTMLRendererEscapeHTML(t *testing.T) {
 	t.Parallel()
-	testHTMLEscapeShared(t, func() htmlEscapeTestRenderer { return NewStreamingHTMLRenderer() }, "StreamingHTMLRenderer")
+	testHTMLEscapeShared(
+		t,
+		func() htmlEscapeTestRenderer { return NewStreamingHTMLRenderer() },
+		"StreamingHTMLRenderer",
+	)
 }
 
 func TestStreamingHTMLRendererEscapeAmpersand(t *testing.T) {

@@ -5,8 +5,14 @@ import (
 	"testing"
 )
 
-func testSanitizeFunc(t *testing.T, name string, fn func(string) string, tests []struct{ input, want string }) {
+func testSanitizeFunc(
+	t *testing.T,
+	name string,
+	fn func(string) string,
+	tests []struct{ input, want string },
+) {
 	t.Helper()
+
 	for _, tt := range tests {
 		got := fn(tt.input)
 		if got != tt.want {
@@ -133,7 +139,10 @@ func TestMermaidRendererEmpty(t *testing.T) {
 	renderer := NewMermaidRenderer()
 	testEmptyRendererOutput(t, renderer, []ExpectedOutput{
 		{Substring: "```mermaid", Message: "Empty mermaid should still have fence"},
-		{Substring: "flowchart TD", Message: "Empty mermaid should still have flowchart declaration"},
+		{
+			Substring: "flowchart TD",
+			Message:   "Empty mermaid should still have flowchart declaration",
+		},
 	})
 }
 
@@ -222,7 +231,6 @@ func TestMermaidRendererAllShapes(t *testing.T) {
 	}
 }
 
-//nolint:exhaustruct // Test files use partial struct initialization
 func TestMermaidRendererWithEdgeLabel(t *testing.T) {
 	t.Parallel()
 

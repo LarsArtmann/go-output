@@ -62,6 +62,7 @@ func TestStreamingRenderer(t *testing.T) {
 	html.AddRow([]string{"Alpha"})
 
 	var buf bytes.Buffer
+
 	err := html.Stream(&buf)
 	if err != nil {
 		t.Fatalf("Stream failed: %v", err)
@@ -163,37 +164,48 @@ func renderJSONFormat(projects []TestProject) string {
 
 func renderMarkdownFormat(projects []TestProject) string {
 	headers := []string{"Name", "Health", "Complexity"}
+
 	return renderMarkdownTable(headers, formatProjectsToRows(projects))
 }
 
 func renderMarkdownTable(headers []string, rows [][]string) string {
 	md := output.NewMarkdownTable()
 	md.SetHeaders(headers)
+
 	for _, row := range rows {
 		md.AddRow(row)
 	}
+
 	return md.Render()
 }
 
 func renderCSVFormat(projects []TestProject) string {
 	var buf bytes.Buffer
+
 	w := output.NewCSVWriter(&buf)
+
 	_ = w.WriteHeader([]string{"Name", "Health", "Complexity"})
 	for _, row := range formatProjectsToRows(projects) {
 		_ = w.WriteRow(row)
 	}
+
 	w.Flush()
+
 	return buf.String()
 }
 
 func renderTSVFormat(projects []TestProject) string {
 	var buf bytes.Buffer
+
 	w := output.NewTSVWriter(&buf)
+
 	_ = w.WriteHeader([]string{"Name", "Health", "Complexity"})
 	for _, row := range formatProjectsToRows(projects) {
 		_ = w.WriteRow(row)
 	}
+
 	w.Flush()
+
 	return buf.String()
 }
 
@@ -259,6 +271,7 @@ func newGraphTableData(projects []TestProject) *output.TableData {
 	for _, p := range projects {
 		data.AddRow([]string{p.Name})
 	}
+
 	return data
 }
 

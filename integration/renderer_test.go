@@ -82,6 +82,7 @@ func TestCSVFormatContent(t *testing.T) {
 	var buf bytes.Buffer
 
 	w := output.NewCSVWriter(&buf)
+
 	err := w.WriteHeader([]string{"Name", "Health"})
 	if err != nil {
 		t.Fatalf("WriteHeader failed: %v", err)
@@ -188,7 +189,11 @@ func TestD2FormatContent(t *testing.T) {
 type renderer interface{ Render() string }
 
 // testRendererNotEmpty tests that a renderer produces non-empty output.
-func testRendererNotEmpty[R renderer](t *testing.T, createRenderer func(*output.TableData) R, name string) {
+func testRendererNotEmpty[R renderer](
+	t *testing.T,
+	createRenderer func(*output.TableData) R,
+	name string,
+) {
 	t.Helper()
 
 	data := output.NewTableData([]string{"Name", "Health"})

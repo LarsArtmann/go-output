@@ -5,11 +5,18 @@ import (
 	"testing"
 )
 
-func testUnmarshalError(t *testing.T, name, data string, wantErr bool, unmarshal func([]byte, any) error, funcName string) {
+func testUnmarshalError(
+	t *testing.T,
+	name, data string,
+	wantErr bool,
+	unmarshal func([]byte, any) error,
+	funcName string,
+) {
 	t.Run(name, func(t *testing.T) {
 		t.Parallel()
 
 		var got any
+
 		err := unmarshal([]byte(data), &got)
 		if (err != nil) != wantErr {
 			t.Errorf("%s() error = %v, wantErr %v", funcName, err, wantErr)
@@ -124,6 +131,7 @@ func TestJSONWriter(t *testing.T) {
 	w := NewJSONWriter(&buf)
 
 	data := map[string]int{"test": 42}
+
 	err := w.Encode(data)
 	if err != nil {
 		t.Errorf("JSONWriter.Encode() error = %v", err)

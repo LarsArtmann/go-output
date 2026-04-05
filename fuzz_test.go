@@ -12,7 +12,12 @@ type stringEnum interface {
 	IsValid() bool
 }
 
-func fuzzEnumTest[E stringEnum](t *testing.T, s string, parse func(string) (E, error), typeName string) {
+func fuzzEnumTest[E stringEnum](
+	t *testing.T,
+	s string,
+	parse func(string) (E, error),
+	typeName string,
+) {
 	result, err := parse(s)
 	if err != nil {
 		if result != "" {

@@ -148,7 +148,12 @@ type TableWriter interface {
 	Flush()
 }
 
-func benchmarkTableWriter(b *testing.B, headers []string, rows [][]string, newWriter func(io.Writer) TableWriter) {
+func benchmarkTableWriter(
+	b *testing.B,
+	headers []string,
+	rows [][]string,
+	newWriter func(io.Writer) TableWriter,
+) {
 	var buf strings.Builder
 
 	b.ResetTimer()

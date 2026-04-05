@@ -8,16 +8,29 @@ import (
 	"github.com/larsartmann/go-output"
 )
 
-func compareTest[T any](t *testing.T, cmpName, testName string, cmp func(a, b T) int, a, b T, want int) {
+func compareTest[T any](
+	t *testing.T,
+	cmpName, testName string,
+	cmp func(a, b T) int,
+	a, b T,
+	want int,
+) {
 	t.Run(testName, func(t *testing.T) {
 		t.Parallel()
+
 		if got := cmp(a, b); got != want {
 			t.Errorf("%s(%v, %v) = %v, want %v", cmpName, a, b, got, want)
 		}
 	})
 }
 
-func assertItemField[V comparable](t *testing.T, items []testItem, expected []V, accessor func(testItem) V, fieldName string) {
+func assertItemField[V comparable](
+	t *testing.T,
+	items []testItem,
+	expected []V,
+	accessor func(testItem) V,
+	fieldName string,
+) {
 	for i, expectedVal := range expected {
 		if got := accessor(items[i]); got != expectedVal {
 			t.Errorf("Items[%d].%s = %v, want %v", i, fieldName, got, expectedVal)
@@ -252,11 +265,23 @@ func TestSorter_Sort(t *testing.T) {
 			sorter.Sort()
 
 			if len(tt.expectedNames) > 0 {
-				assertItemField(t, sorter.Items, tt.expectedNames, func(item testItem) string { return item.Name }, "Name")
+				assertItemField(
+					t,
+					sorter.Items,
+					tt.expectedNames,
+					func(item testItem) string { return item.Name },
+					"Name",
+				)
 			}
 
 			if len(tt.expectedCounts) > 0 {
-				assertItemField(t, sorter.Items, tt.expectedCounts, func(item testItem) int { return item.Count }, "Count")
+				assertItemField(
+					t,
+					sorter.Items,
+					tt.expectedCounts,
+					func(item testItem) int { return item.Count },
+					"Count",
+				)
 			}
 		})
 	}

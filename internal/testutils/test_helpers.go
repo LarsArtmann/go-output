@@ -65,6 +65,7 @@ func CreateTestEdgesABC() []output.GraphEdge {
 // AssertEmptyDataRendersJSONWithoutPanic verifies that empty data renders as JSON without panic or error.
 func AssertEmptyDataRendersJSONWithoutPanic(t *testing.T) {
 	data := output.NewTableData([]string{})
+
 	_, err := output.MarshalJSON(data)
 	if err != nil {
 		t.Errorf("MarshalJSON on empty data should not error: %v", err)

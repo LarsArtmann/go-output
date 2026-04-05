@@ -15,7 +15,7 @@ https://github.com/larsartmann/go-output
 ## Key Technologies
 
 - Go 1.26+
-- github.com/charmbracelet/lipgloss/v2 (terminal styling)
+- charm.land/lipgloss/v2 (terminal styling)
 - github.com/go-faster/yaml (YAML support)
 - github.com/larsartmann/cmdguard/v2 (optional CLI flag integration - add separately)
 
@@ -110,7 +110,7 @@ go test -fuzz=FuzzParseSortBy -fuzztime=1m .
 
 See `go.mod` for full list. Key dependencies:
 
-- `github.com/charmbracelet/lipgloss/v2` - Terminal styling
+- `charm.land/lipgloss/v2` - Terminal styling
 - `github.com/go-faster/yaml` - YAML marshaling
 - `github.com/larsartmann/cmdguard/v2` - CLI integration
 

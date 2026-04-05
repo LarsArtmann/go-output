@@ -131,7 +131,11 @@ func (r *DOTRenderer) writeNode(b *strings.Builder, node GraphNode) {
 	b.WriteString("  ];\n")
 }
 
-func (r *DOTRenderer) writeNodeAttr(b *strings.Builder, attrName, attrValue string, condition bool) {
+func (r *DOTRenderer) writeNodeAttr(
+	b *strings.Builder,
+	attrName, attrValue string,
+	condition bool,
+) {
 	if condition {
 		b.WriteString("    ")
 		b.WriteString(attrName)

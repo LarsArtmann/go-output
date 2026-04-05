@@ -54,7 +54,13 @@ func TestParseGraphShape(t *testing.T) {
 		{"invalid", "invalid", "", true},
 		{"empty", "", "", true},
 	}
-	testParseEnum(t, "ParseGraphShape", ParseGraphShape, tests, func(a, b GraphShape) bool { return a == b })
+	testParseEnum(
+		t,
+		"ParseGraphShape",
+		ParseGraphShape,
+		tests,
+		func(a, b GraphShape) bool { return a == b },
+	)
 }
 
 func TestGraphShapeString(t *testing.T) {

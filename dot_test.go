@@ -87,7 +87,6 @@ func TestDOTRendererWithStyles(t *testing.T) {
 	}
 }
 
-//nolint:exhaustruct // Test files use partial struct initialization
 func TestDOTRendererWithEdgeLabel(t *testing.T) {
 	t.Parallel()
 

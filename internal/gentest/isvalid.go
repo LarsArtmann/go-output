@@ -23,6 +23,7 @@ func TestEnumIsValid[T StringEnum](t *testing.T, values []T, expected []bool) {
 		if name == "" {
 			name = "empty"
 		}
+
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 

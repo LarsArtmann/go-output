@@ -47,3 +47,7 @@ Thumbs.db
 /go-output
 /basic
 /basic.exe
+# Test coverage
+/coverage
+# Sensitive files
+*.db

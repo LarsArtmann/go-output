@@ -25,7 +25,14 @@ func TestParse(t *testing.T) {
 		{"invalid", "x", "", true},
 		{"empty", "", "", true},
 	}
-	testParseEnum(t, "Parse", testEnumValues, testEnumString, tests, func(a, b testEnum) bool { return a == b })
+	testParseEnum(
+		t,
+		"Parse",
+		testEnumValues,
+		testEnumString,
+		tests,
+		func(a, b testEnum) bool { return a == b },
+	)
 }
 
 func TestContains(t *testing.T) {
