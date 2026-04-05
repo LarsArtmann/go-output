@@ -1,6 +1,7 @@
 package output
 
 import (
+	"errors"
 	"fmt"
 	"slices"
 )
@@ -66,13 +67,15 @@ var graphShapeValues = []GraphShape{
 	ShapeRect,
 }
 
-// ParseGraphShape parses a graph shape string.
+// ErrInvalidGraphShape is returned when an invalid graph shape is provided.
+var ErrInvalidGraphShape = errors.New("invalid graph shape")
+
 func ParseGraphShape(s string) (GraphShape, error) {
 	if slices.Contains(graphShapeValues, GraphShape(s)) {
 		return GraphShape(s), nil
 	}
 
-	return "", fmt.Errorf("invalid graph shape: %q (allowed: %v)", s, graphShapeValues)
+	return "", fmt.Errorf("%w: %q (allowed: %v)", ErrInvalidGraphShape, s, graphShapeValues)
 }
 
 func (s GraphShape) String() string {

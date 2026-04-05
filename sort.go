@@ -2,6 +2,7 @@
 package output
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/larsartmann/go-output/enum"
@@ -30,11 +31,13 @@ var sortByValues = []SortBy{
 	SortByComplexity,
 }
 
-// ParseSortBy converts a string to SortBy, returning an error if invalid.
+// ErrInvalidSortBy is returned when an invalid sort field is provided.
+var ErrInvalidSortBy = errors.New("invalid sort by")
+
 func ParseSortBy(s string) (SortBy, error) {
 	v, err := enum.Parse(sortByValues, s, func(s SortBy) string { return string(s) })
 	if err != nil {
-		return "", fmt.Errorf("invalid sort by: %q", s)
+		return "", fmt.Errorf("%w: %q", ErrInvalidSortBy, s)
 	}
 
 	return v, nil

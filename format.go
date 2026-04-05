@@ -67,7 +67,7 @@ func (f Format) IsValid() bool {
 	return enum.Contains(formatValues, f)
 }
 
-// Format category for classification.
+// FormatCategory represents a category for format classification.
 type FormatCategory int
 
 const (

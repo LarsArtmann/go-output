@@ -2,6 +2,7 @@
 package output
 
 import (
+	"errors"
 	"fmt"
 	"os"
 
@@ -25,11 +26,13 @@ var colorModeValues = []ColorMode{
 	ColorModeNever,
 }
 
-// ParseColorMode parses a color mode string.
+// ErrInvalidColorMode is returned when an invalid color mode is provided.
+var ErrInvalidColorMode = errors.New("invalid color mode")
+
 func ParseColorMode(s string) (ColorMode, error) {
 	v, err := enum.Parse(colorModeValues, s, func(c ColorMode) string { return string(c) })
 	if err != nil {
-		return "", fmt.Errorf("invalid color mode: %q", s)
+		return "", fmt.Errorf("%w: %q", ErrInvalidColorMode, s)
 	}
 
 	return v, nil

@@ -46,6 +46,9 @@ func Unregister(format Format) {
 	delete(registry, format)
 }
 
+// ErrNoRendererRegistered is returned when no renderer is registered for a format.
+var ErrNoRendererRegistered = errors.New("no renderer registered for format")
+
 // Create returns a new Renderer instance for the given format.
 func Create(format Format) (Renderer, error) {
 	regMu.RLock()
@@ -55,7 +58,7 @@ func Create(format Format) (Renderer, error) {
 	regMu.RUnlock()
 
 	if !exists {
-		return nil, fmt.Errorf("no renderer registered for format %q", format)
+		return nil, fmt.Errorf("%w: %q", ErrNoRendererRegistered, format)
 	}
 
 	return factory(), nil

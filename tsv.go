@@ -2,6 +2,7 @@ package output
 
 import (
 	"encoding/csv"
+	"errors"
 	"fmt"
 	"io"
 	"strings"
@@ -11,6 +12,9 @@ import (
 type TSVWriter struct {
 	writer *csv.Writer
 }
+
+// ErrUnsupportedType is returned when an unsupported type is provided for TSV marshaling.
+var ErrUnsupportedType = errors.New("unsupported type")
 
 // NewTSVWriter creates a new TSVWriter.
 func NewTSVWriter(w io.Writer) *TSVWriter {
@@ -94,7 +98,7 @@ func writeTSVData(w *TSVWriter, data any) error {
 			return fmt.Errorf("write single row: %w", err)
 		}
 	default:
-		return fmt.Errorf("unsupported type %T", data)
+		return fmt.Errorf("%w: %T", ErrUnsupportedType, data)
 	}
 	return nil
 }

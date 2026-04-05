@@ -9,8 +9,11 @@ import (
 
 type errorWriter struct{}
 
-func (e *errorWriter) Write(_ []byte) (n int, err error) {
-	return 0, errors.New("write error")
+// errWrite is a static error for write failures.
+var errWrite = errors.New("write error")
+
+func (e *errorWriter) Write(_ []byte) (int, error) {
+	return 0, errWrite
 }
 
 var _ io.Writer = (*errorWriter)(nil)
