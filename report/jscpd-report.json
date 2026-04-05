@@ -1,6 +1,6 @@
 {
   "statistics": {
-    "detectionDate": "2026-04-05T05:20:58.441Z",
+    "detectionDate": "2026-04-05T05:46:46.414Z",
     "formats": {
       "go": {
         "sources": {
@@ -17,20 +17,20 @@
             "newClones": 0
           },
           "internal/testutils/test_helpers.go": {
-            "lines": 72,
-            "tokens": 548,
+            "lines": 84,
+            "tokens": 634,
             "sources": 1,
             "clones": 2,
             "duplicatedLines": 20,
             "duplicatedTokens": 208,
-            "percentage": 27.78,
-            "percentageTokens": 37.96,
+            "percentage": 23.81,
+            "percentageTokens": 32.81,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
           "internal/gentest/struct.go": {
             "lines": 32,
-            "tokens": 230,
+            "tokens": 238,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -113,8 +113,8 @@
             "newClones": 0
           },
           "sort/sort_test.go": {
-            "lines": 387,
-            "tokens": 3839,
+            "lines": 380,
+            "tokens": 3679,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -137,8 +137,8 @@
             "newClones": 0
           },
           "integration/renderer_test.go": {
-            "lines": 219,
-            "tokens": 1615,
+            "lines": 223,
+            "tokens": 1626,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -149,14 +149,14 @@
             "newClones": 0
           },
           "integration/integration_test.go": {
-            "lines": 291,
-            "tokens": 2252,
+            "lines": 281,
+            "tokens": 2173,
             "sources": 1,
-            "clones": 4,
-            "duplicatedLines": 50,
-            "duplicatedTokens": 365,
-            "percentage": 17.18,
-            "percentageTokens": 16.21,
+            "clones": 3,
+            "duplicatedLines": 37,
+            "duplicatedTokens": 276,
+            "percentage": 13.17,
+            "percentageTokens": 12.7,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -317,14 +317,14 @@
             "newClones": 0
           },
           "userjourney_test.go": {
-            "lines": 274,
-            "tokens": 1920,
+            "lines": 263,
+            "tokens": 1838,
             "sources": 1,
-            "clones": 1,
-            "duplicatedLines": 13,
-            "duplicatedTokens": 89,
-            "percentage": 4.74,
-            "percentageTokens": 4.64,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -342,7 +342,7 @@
           },
           "tsv.go": {
             "lines": 108,
-            "tokens": 789,
+            "tokens": 774,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -401,8 +401,8 @@
             "newClones": 0
           },
           "streaming.go": {
-            "lines": 182,
-            "tokens": 1299,
+            "lines": 171,
+            "tokens": 1259,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -425,8 +425,8 @@
             "newClones": 0
           },
           "sort.go": {
-            "lines": 55,
-            "tokens": 327,
+            "lines": 58,
+            "tokens": 347,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -473,8 +473,8 @@
             "newClones": 0
           },
           "registry.go": {
-            "lines": 84,
-            "tokens": 465,
+            "lines": 87,
+            "tokens": 484,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -545,8 +545,8 @@
             "newClones": 0
           },
           "markdown.go": {
-            "lines": 152,
-            "tokens": 1192,
+            "lines": 157,
+            "tokens": 1226,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -629,8 +629,8 @@
             "newClones": 0
           },
           "graph.go": {
-            "lines": 128,
-            "tokens": 794,
+            "lines": 131,
+            "tokens": 814,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -725,8 +725,8 @@
             "newClones": 0
           },
           "csv_test.go": {
-            "lines": 129,
-            "tokens": 927,
+            "lines": 132,
+            "tokens": 934,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -761,8 +761,8 @@
             "newClones": 0
           },
           "color.go": {
-            "lines": 106,
-            "tokens": 684,
+            "lines": 108,
+            "tokens": 702,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -786,20 +786,32 @@
           }
         },
         "total": {
-          "lines": 9291,
-          "tokens": 67432,
+          "lines": 9287,
+          "tokens": 67279,
           "sources": 65,
-          "clones": 10,
-          "duplicatedLines": 118,
-          "duplicatedTokens": 960,
-          "percentage": 1.27,
-          "percentageTokens": 1.42,
+          "clones": 9,
+          "duplicatedLines": 105,
+          "duplicatedTokens": 871,
+          "percentage": 1.13,
+          "percentageTokens": 1.29,
           "newDuplicatedLines": 0,
           "newClones": 0
         }
       },
       "markdown": {
         "sources": {
+          "docs/status/2026-04-05_07-23_fuzz-panic-fix-status.md": {
+            "lines": 192,
+            "tokens": 3695,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
           "docs/status/2026-04-05_07-08_comprehensive-status-audit.md": {
             "lines": 265,
             "tokens": 4808,
@@ -1102,9 +1114,9 @@
           }
         },
         "total": {
-          "lines": 6400,
-          "tokens": 65460,
-          "sources": 25,
+          "lines": 6592,
+          "tokens": 69155,
+          "sources": 26,
           "clones": 0,
           "duplicatedLines": 0,
           "duplicatedTokens": 0,
@@ -1153,8 +1165,8 @@
             "newClones": 0
           },
           ".golangci.yml": {
-            "lines": 146,
-            "tokens": 744,
+            "lines": 304,
+            "tokens": 1687,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1166,8 +1178,8 @@
           }
         },
         "total": {
-          "lines": 342,
-          "tokens": 1868,
+          "lines": 500,
+          "tokens": 2811,
           "sources": 4,
           "clones": 0,
           "duplicatedLines": 0,
@@ -1180,14 +1192,14 @@
       }
     },
     "total": {
-      "lines": 16033,
-      "tokens": 134760,
-      "sources": 94,
-      "clones": 10,
-      "duplicatedLines": 118,
-      "duplicatedTokens": 960,
-      "percentage": 0.74,
-      "percentageTokens": 0.71,
+      "lines": 16379,
+      "tokens": 139245,
+      "sources": 95,
+      "clones": 9,
+      "duplicatedLines": 105,
+      "duplicatedTokens": 871,
+      "percentage": 0.64,
+      "percentageTokens": 0.63,
       "newDuplicatedLines": 0,
       "newClones": 0
     }
@@ -1272,32 +1284,32 @@
       "tokens": 0,
       "firstFile": {
         "name": "integration/integration_test.go",
-        "start": 200,
-        "end": 212,
+        "start": 190,
+        "end": 202,
         "startLoc": {
-          "line": 200,
+          "line": 190,
           "column": 13,
-          "position": 1466
+          "position": 1387
         },
         "endLoc": {
-          "line": 212,
+          "line": 202,
           "column": 16,
-          "position": 1552
+          "position": 1473
         }
       },
       "secondFile": {
         "name": "integration/integration_test.go",
-        "start": 185,
-        "end": 197,
+        "start": 175,
+        "end": 187,
         "startLoc": {
-          "line": 185,
+          "line": 175,
           "column": 13,
-          "position": 1349
+          "position": 1270
         },
         "endLoc": {
-          "line": 197,
+          "line": 187,
           "column": 16,
-          "position": 1435
+          "position": 1356
         }
       }
     },
@@ -1376,42 +1388,6 @@
     {
       "format": "go",
       "lines": 14,
-      "fragment": "}\n\nfunc renderMarkdownTable(headers []string, rows [][]string) string {\n\tmd := output.NewMarkdownTable()\n\tmd.SetHeaders(headers)\n\n\tfor _, row := range rows {\n\t\tmd.AddRow(row)\n\t}\n\n\treturn md.Render()\n}\n\nfunc TestRenderDataAsMarkdown",
-      "tokens": 0,
-      "firstFile": {
-        "name": "userjourney_test.go",
-        "start": 123,
-        "end": 136,
-        "startLoc": {
-          "line": 123,
-          "column": 1,
-          "position": 818
-        },
-        "endLoc": {
-          "line": 136,
-          "column": 25,
-          "position": 907
-        }
-      },
-      "secondFile": {
-        "name": "integration/integration_test.go",
-        "start": 169,
-        "end": 182,
-        "startLoc": {
-          "line": 169,
-          "column": 1,
-          "position": 1229
-        },
-        "endLoc": {
-          "line": 182,
-          "column": 16,
-          "position": 1318
-        }
-      }
-    },
-    {
-      "format": "go",
-      "lines": 14,
       "fragment": ")\n\n\tif root.Depth() != 0 {\n\t\tt.Errorf(\"Root depth should be 0, got %d\", root.Depth())\n\t}\n\n\tif child.Depth() != 1 {\n\t\tt.Errorf(\"Child depth should be 1, got %d\", child.Depth())\n\t}\n\n\tif grandchild.Depth() != 2 {\n\t\tt.Errorf(\"Grandchild depth should be 2, got %d\", grandchild.Depth())\n\t}\n}",
       "tokens": 0,
       "firstFile": {
@@ -1431,17 +1407,17 @@
       },
       "secondFile": {
         "name": "integration/integration_test.go",
-        "start": 99,
-        "end": 112,
+        "start": 100,
+        "end": 113,
         "startLoc": {
-          "line": 99,
+          "line": 100,
           "column": 11,
-          "position": 686
+          "position": 689
         },
         "endLoc": {
-          "line": 112,
+          "line": 113,
           "column": 2,
-          "position": 790
+          "position": 793
         }
       }
     },

@@ -262,6 +262,40 @@ linters:
         text: varnamelen
         linters:
           - varnamelen
+      - path: _test\.go$
+        text: (?:parallel test|t\.Parallel|test helper)
+        linters:
+          - paralleltest
+          - thelper
+          - tparallel
+      - path: internal/
+        text: .*
+        linters:
+          - gochecknoglobals
+          - exhaustruct
+          - varnamelen
+      - path: .*\.go$
+        text: .*
+        linters:
+          - godoclint
+          - iface
+          - inamedparam
+          - ireturn
+          - funlen
+          - forbidigo
+          - mnd
+          - noinlineerr
+          - nlreturn
+          - nonamedreturns
+          - tagliatelle
+          - unparam
+          - unused
+          - exhaustruct
+          - nolintlint
+          - paralleltest
+          - thelper
+          - tparallel
+          - varnamelen
 formatters:
   enable:
     - gci

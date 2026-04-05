@@ -72,13 +72,15 @@ func MarshalTSV(data any) ([]byte, error) {
 
 	tsvWriter := NewTSVWriter(&builder)
 
-	if err := writeTSVData(tsvWriter, data); err != nil {
+	err := writeTSVData(tsvWriter, data)
+	if err != nil {
 		return nil, fmt.Errorf("write tsv data: %w", err)
 	}
 
 	tsvWriter.Flush()
 
-	if err := tsvWriter.Error(); err != nil {
+	err = tsvWriter.Error()
+	if err != nil {
 		return nil, fmt.Errorf("flush tsv writer: %w", err)
 	}
 
@@ -89,16 +91,19 @@ func writeTSVData(w *TSVWriter, data any) error {
 	switch v := data.(type) {
 	case [][]string:
 		for _, row := range v {
-			if err := w.WriteRow(row); err != nil {
+			err := w.WriteRow(row)
+			if err != nil {
 				return fmt.Errorf("write row: %w", err)
 			}
 		}
 	case []string:
-		if err := w.WriteRow(v); err != nil {
+		err := w.WriteRow(v)
+		if err != nil {
 			return fmt.Errorf("write single row: %w", err)
 		}
 	default:
 		return fmt.Errorf("%w: %T", ErrUnsupportedType, data)
 	}
+
 	return nil
 }
