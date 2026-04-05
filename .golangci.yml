@@ -204,6 +204,64 @@ linters:
         text: package should be
         linters:
           - testpackage
+      - path: _test\.go$
+        text: package should be
+        linters:
+          - testpackage
+      - path: benchmarks_test\.go
+        text: package should be
+        linters:
+          - testpackage
+      - path: fuzz_test\.go
+        text: package should be
+        linters:
+          - testpackage
+      - path: render_helpers_test\.go
+        text: package should be
+        linters:
+          - testpackage
+      - path: sort_test\.go
+        text: package should be
+        linters:
+          - testpackage
+      - path: userjourney_test\.go
+        text: package should be
+        linters:
+          - testpackage
+      - path: integration/
+        text: package should be
+        linters:
+          - testpackage
+      - path: cmdguard/cmdguard_test\.go
+        text: package should be
+        linters:
+          - testpackage
+      - path: enum/enum_test\.go
+        text: package should be
+        linters:
+          - testpackage
+      - path: enum/testing_test\.go
+        text: package should be
+        linters:
+          - testpackage
+      - path: internal/
+        text: (?:gochecknoglobals)
+        linters:
+          - gochecknoglobals
+      - path: examples/
+        text: (?:forbidigo|magic number|global variable)
+        linters:
+          - forbidigo
+          - mnd
+          - gochecknoglobals
+      - path: _test\.go$
+        text: (?:parallel test|t\.Parallel)
+        linters:
+          - paralleltest
+      - path: sort/sorter\.go
+        text: varnamelen
+        linters:
+          - varnamelen
 formatters:
   enable:
     - gci

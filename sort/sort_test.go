@@ -303,10 +303,7 @@ func TestSorter_Sort_EdgeCases(t *testing.T) {
 	}
 
 	// Invalid field - should be stable
-	invalid := []testItem{
-		{Name: "b", Count: 0, When: time.Time{}},
-		{Name: "a", Count: 0, When: time.Time{}},
-	}
+	invalid := testItemsAB()
 	New(invalid, output.SortBy("NonExistentField"), false).Sort()
 
 	if invalid[0].Name != "b" || invalid[1].Name != "a" {
