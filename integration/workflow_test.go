@@ -226,8 +226,5 @@ func TestErrorHandlingWorkflow(t *testing.T) {
 		}
 	})
 
-	t.Run("empty data renders without panic", func(t *testing.T) {
-		t.Parallel()
-		testutils.AssertEmptyDataRendersJSONWithoutPanic(t)
-	})
+	testutils.RunEmptyDataRendersJSONWithoutPanic(t)
 }

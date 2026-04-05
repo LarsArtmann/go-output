@@ -169,10 +169,7 @@ func TestRenderDataAsYAML(t *testing.T) {
 // User Journey: CLI Developer wants to handle edge cases gracefully
 
 func TestHandleEdgeCases(t *testing.T) {
-	t.Run("empty data renders without panic", func(t *testing.T) {
-		t.Parallel()
-		testutils.AssertEmptyDataRendersJSONWithoutPanic(t)
-	})
+	testutils.RunEmptyDataRendersJSONWithoutPanic(t)
 
 	t.Run("empty markdown table returns empty string", func(t *testing.T) {
 		t.Parallel()

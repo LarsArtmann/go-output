@@ -72,6 +72,14 @@ func AssertEmptyDataRendersJSONWithoutPanic(t *testing.T) {
 	}
 }
 
+// RunEmptyDataRendersJSONWithoutPanic runs the "empty data renders without panic" test sub-case.
+func RunEmptyDataRendersJSONWithoutPanic(t *testing.T) {
+	t.Run("empty data renders without panic", func(t *testing.T) {
+		t.Parallel()
+		AssertEmptyDataRendersJSONWithoutPanic(t)
+	})
+}
+
 // RenderMarkdownTable renders a markdown table with the given headers and rows.
 func RenderMarkdownTable(headers []string, rows [][]string) string {
 	md := output.NewMarkdownTable()
