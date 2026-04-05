@@ -1,6 +1,7 @@
 package testutils
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/larsartmann/go-output"
@@ -27,6 +28,15 @@ func CreateTestEdgeAB() []output.GraphEdge {
 			From: output.NewBrandedID[output.GraphNodeIDBrand]("A"),
 			To:   output.NewBrandedID[output.GraphNodeIDBrand]("B"),
 		},
+	}
+}
+
+// CreateTestEdgeABWithLabel creates a test edge from A to B with the given label.
+func CreateTestEdgeABWithLabel(label string) output.GraphEdge {
+	return output.GraphEdge{
+		From:  output.NewBrandedID[output.GraphNodeIDBrand]("A"),
+		To:    output.NewBrandedID[output.GraphNodeIDBrand]("B"),
+		Label: output.NewBrandedID[output.GraphNodeLabelBrand](label),
 	}
 }
 
@@ -90,4 +100,56 @@ func RenderMarkdownTable(headers []string, rows [][]string) string {
 	}
 
 	return md.Render()
+}
+
+// ExpectedOutput contains a substring to check and its corresponding error message.
+type ExpectedOutput struct {
+	Substring string
+	Message   string
+}
+
+// AssertContains checks that output contains substr, failing with msg if not.
+func AssertContains(t *testing.T, output, substr, msg string) {
+	t.Helper()
+	if !strings.Contains(output, substr) {
+		t.Error(msg)
+	}
+}
+
+// AssertEmptyRendererOutput verifies that an empty renderer produces valid output structure.
+func AssertEmptyRendererOutput(t *testing.T, renderer output.Renderer, expectedOutputs []ExpectedOutput) {
+	t.Helper()
+
+	out := renderer.Render()
+	for _, expected := range expectedOutputs {
+		if !strings.Contains(out, expected.Substring) {
+			t.Error(expected.Message)
+		}
+	}
+}
+
+// HTMLEscapeTestRenderer is an interface for HTML renderers that support escaping tests.
+type HTMLEscapeTestRenderer interface {
+	SetHeaders([]string)
+	AddRow([]string)
+	Render() string
+}
+
+// AssertHTMLEscape verifies that a renderer properly escapes HTML content.
+func AssertHTMLEscape(t *testing.T, newRenderer func() HTMLEscapeTestRenderer, name string) {
+	t.Helper()
+
+	r := newRenderer()
+	r.SetHeaders([]string{"Name"})
+	r.AddRow([]string{"<script>alert('xss')</script>"})
+
+	got := r.Render()
+
+	if strings.Contains(got, "<script>") {
+		t.Errorf("%s: Render() should escape script tags", name)
+	}
+
+	if !strings.Contains(got, "&lt;script&gt;") {
+		t.Errorf("%s: Render() should contain escaped script tag", name)
+	}
 }

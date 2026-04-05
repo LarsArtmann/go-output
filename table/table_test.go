@@ -8,6 +8,14 @@ import (
 	"charm.land/lipgloss/v2/table"
 )
 
+// assertTableContains checks that output contains substr, failing with msg if not.
+func assertTableContains(t *testing.T, output, substr, msg string) {
+	t.Helper()
+	if !strings.Contains(output, substr) {
+		t.Error(msg)
+	}
+}
+
 func TestNew(t *testing.T) {
 	t.Parallel()
 
@@ -32,17 +40,9 @@ func TestSetHeaders(t *testing.T) {
 	}
 
 	output := tbl.Render()
-	if !strings.Contains(output, "Name") {
-		t.Error("Render() should contain header 'Name'")
-	}
-
-	if !strings.Contains(output, "Value") {
-		t.Error("Render() should contain header 'Value'")
-	}
-
-	if !strings.Contains(output, "Count") {
-		t.Error("Render() should contain header 'Count'")
-	}
+	assertTableContains(t, output, "Name", "Render() should contain header 'Name'")
+	assertTableContains(t, output, "Value", "Render() should contain header 'Value'")
+	assertTableContains(t, output, "Count", "Render() should contain header 'Count'")
 }
 
 func TestAddRow(t *testing.T) {
@@ -57,13 +57,8 @@ func TestAddRow(t *testing.T) {
 	}
 
 	output := tbl.Render()
-	if !strings.Contains(output, "Alice") {
-		t.Error("Render() should contain row value 'Alice'")
-	}
-
-	if !strings.Contains(output, "30") {
-		t.Error("Render() should contain row value '30'")
-	}
+	assertTableContains(t, output, "Alice", "Render() should contain row value 'Alice'")
+	assertTableContains(t, output, "30", "Render() should contain row value '30'")
 }
 
 func TestAddRowMultiple(t *testing.T) {
@@ -76,17 +71,9 @@ func TestAddRowMultiple(t *testing.T) {
 	tbl.AddRow("Charlie", "85")
 
 	output := tbl.Render()
-	if !strings.Contains(output, "Alice") {
-		t.Error("Render() should contain 'Alice'")
-	}
-
-	if !strings.Contains(output, "Bob") {
-		t.Error("Render() should contain 'Bob'")
-	}
-
-	if !strings.Contains(output, "Charlie") {
-		t.Error("Render() should contain 'Charlie'")
-	}
+	assertTableContains(t, output, "Alice", "Render() should contain 'Alice'")
+	assertTableContains(t, output, "Bob", "Render() should contain 'Bob'")
+	assertTableContains(t, output, "Charlie", "Render() should contain 'Charlie'")
 }
 
 func TestStyleFunc(t *testing.T) {
@@ -109,9 +96,7 @@ func TestStyleFunc(t *testing.T) {
 	tbl.AddRow("Value")
 
 	output := tbl.Render()
-	if !strings.Contains(output, "Test") {
-		t.Error("Render() should contain 'Test'")
-	}
+	assertTableContains(t, output, "Test", "Render() should contain 'Test'")
 }
 
 func TestRender(t *testing.T) {

@@ -15,30 +15,12 @@ func TestHTMLRenderer(t *testing.T) {
 
 	output := renderer.Render()
 
-	// Check for HTML table structure
-	if !strings.Contains(output, "<table") {
-		t.Error("Output should contain <table>")
-	}
-
-	if !strings.Contains(output, "</table>") {
-		t.Error("Output should contain </table>")
-	}
-
-	if !strings.Contains(output, "<th>") {
-		t.Error("Output should contain <th> for headers")
-	}
-
-	if !strings.Contains(output, "<td>") {
-		t.Error("Output should contain <td> for data cells")
-	}
-
-	if !strings.Contains(output, "Alice") {
-		t.Error("Output should contain 'Alice'")
-	}
-
-	if !strings.Contains(output, "Bob") {
-		t.Error("Output should contain 'Bob'")
-	}
+	assertContains(t, output, "<table", "Output should contain <table>")
+	assertContains(t, output, "</table>", "Output should contain </table>")
+	assertContains(t, output, "<th>", "Output should contain <th> for headers")
+	assertContains(t, output, "<td>", "Output should contain <td> for data cells")
+	assertContains(t, output, "Alice", "Output should contain 'Alice'")
+	assertContains(t, output, "Bob", "Output should contain 'Bob'")
 }
 
 func TestHTMLRendererFullDocument(t *testing.T) {
@@ -50,17 +32,9 @@ func TestHTMLRendererFullDocument(t *testing.T) {
 
 	output := renderer.RenderFullHTML("Test Title")
 
-	if !strings.Contains(output, "<!DOCTYPE html>") {
-		t.Error("Full HTML should contain DOCTYPE")
-	}
-
-	if !strings.Contains(output, "<title>Test Title</title>") {
-		t.Error("Full HTML should contain title")
-	}
-
-	if !strings.Contains(output, "<table") {
-		t.Error("Full HTML should contain table")
-	}
+	assertContains(t, output, "<!DOCTYPE html>", "Full HTML should contain DOCTYPE")
+	assertContains(t, output, "<title>Test Title</title>", "Full HTML should contain title")
+	assertContains(t, output, "<table", "Full HTML should contain table")
 }
 
 func TestHTMLRendererEmpty(t *testing.T) {
@@ -119,21 +93,10 @@ func TestHTMLTreeRenderer(t *testing.T) {
 
 	output := renderer.Render()
 
-	if !strings.Contains(output, "<ul") {
-		t.Error("Output should contain <ul>")
-	}
-
-	if !strings.Contains(output, "<li>") {
-		t.Error("Output should contain <li>")
-	}
-
-	if !strings.Contains(output, "Root") {
-		t.Error("Output should contain 'Root'")
-	}
-
-	if !strings.Contains(output, "Child") {
-		t.Error("Output should contain 'Child'")
-	}
+	assertContains(t, output, "<ul", "Output should contain <ul>")
+	assertContains(t, output, "<li>", "Output should contain <li>")
+	assertContains(t, output, "Root", "Output should contain 'Root'")
+	assertContains(t, output, "Child", "Output should contain 'Child'")
 }
 
 func TestHTMLTreeRendererFullDocument(t *testing.T) {
@@ -144,13 +107,8 @@ func TestHTMLTreeRendererFullDocument(t *testing.T) {
 
 	output := renderer.RenderFullHTML("Tree Title")
 
-	if !strings.Contains(output, "<!DOCTYPE html>") {
-		t.Error("Full HTML should contain DOCTYPE")
-	}
-
-	if !strings.Contains(output, "<title>Tree Title</title>") {
-		t.Error("Full HTML should contain title")
-	}
+	assertContains(t, output, "<!DOCTYPE html>", "Full HTML should contain DOCTYPE")
+	assertContains(t, output, "<title>Tree Title</title>", "Full HTML should contain title")
 }
 
 func TestHTMLRendererSetData(t *testing.T) {
@@ -164,13 +122,8 @@ func TestHTMLRendererSetData(t *testing.T) {
 
 	output := renderer.Render()
 
-	if !strings.Contains(output, "<th>A") {
-		t.Error("Output should contain header 'A'")
-	}
-
-	if !strings.Contains(output, "<td>1") {
-		t.Error("Output should contain cell '1'")
-	}
+	assertContains(t, output, "<th>A", "Output should contain header 'A'")
+	assertContains(t, output, "<td>1", "Output should contain cell '1'")
 }
 
 func TestHTMLRendererAddRowWithoutSetHeaders(t *testing.T) {
@@ -193,10 +146,7 @@ func TestHTMLTreeRendererEmpty(t *testing.T) {
 	// Don't set root - should return empty tree
 	output := renderer.Render()
 
-	if !strings.Contains(output, "<ul") {
-		t.Error("Empty tree should contain <ul>")
-	}
-
+	assertContains(t, output, "<ul", "Empty tree should contain <ul>")
 	if strings.Contains(output, "<li>") {
 		t.Error("Empty tree should not contain <li>")
 	}

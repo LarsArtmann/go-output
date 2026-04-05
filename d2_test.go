@@ -18,13 +18,8 @@ func TestD2Diagram(t *testing.T) {
 
 		got := d.Render()
 
-		if !strings.Contains(got, "users:") {
-			t.Error("Render() should contain table name")
-		}
-
-		if !strings.Contains(got, "id: int") {
-			t.Error("Render() should contain column definitions")
-		}
+		assertContains(t, got, "users:", "Render() should contain table name")
+		assertContains(t, got, "id: int", "Render() should contain column definitions")
 	})
 
 	t.Run("chaining", func(t *testing.T) {
@@ -49,13 +44,8 @@ func TestD2Diagram(t *testing.T) {
 
 		got := d.Render()
 
-		if !strings.Contains(got, "users:") {
-			t.Error("Render() should contain users table")
-		}
-
-		if !strings.Contains(got, "posts:") {
-			t.Error("Render() should contain posts table")
-		}
+		assertContains(t, got, "users:", "Render() should contain users table")
+		assertContains(t, got, "posts:", "Render() should contain posts table")
 	})
 }
 
@@ -86,9 +76,7 @@ func TestD2Diagram_AddNode(t *testing.T) {
 		}
 
 		got := d.Render()
-		if !strings.Contains(got, "server") {
-			t.Error("Render() should contain node ID")
-		}
+		assertContains(t, got, "server", "Render() should contain node ID")
 	})
 
 	t.Run("AddNodeSimple", func(t *testing.T) {
@@ -118,13 +106,8 @@ func TestD2Diagram_AddNode(t *testing.T) {
 		}
 
 		got := d.Render()
-		if !strings.Contains(got, "cache") {
-			t.Error("Render() should contain node")
-		}
-
-		if !strings.Contains(got, ":circle") {
-			t.Error("Render() should contain shape attribute")
-		}
+		assertContains(t, got, "cache", "Render() should contain node")
+		assertContains(t, got, ":circle", "Render() should contain shape attribute")
 	})
 }
 
@@ -146,9 +129,7 @@ func TestD2Diagram_AddEdge(t *testing.T) {
 		}
 
 		got := d.Render()
-		if !strings.Contains(got, "->") {
-			t.Error("Render() should contain edge arrow")
-		}
+		assertContains(t, got, "->", "Render() should contain edge arrow")
 	})
 
 	t.Run("AddEdgeSimple", func(t *testing.T) {
@@ -162,9 +143,7 @@ func TestD2Diagram_AddEdge(t *testing.T) {
 		}
 
 		got := d.Render()
-		if !strings.Contains(got, "x -> y") {
-			t.Errorf("Render() should contain 'x -> y', got: %q", got)
-		}
+		assertContains(t, got, "x -> y", "Render() should contain 'x -> y'")
 	})
 
 	t.Run("AddLabeledEdge", func(t *testing.T) {
@@ -178,9 +157,7 @@ func TestD2Diagram_AddEdge(t *testing.T) {
 		}
 
 		got := d.Render()
-		if !strings.Contains(got, "connects") {
-			t.Error("Render() should contain edge label")
-		}
+		assertContains(t, got, "connects", "Render() should contain edge label")
 	})
 }
 
@@ -207,9 +184,7 @@ func TestD2FromTableData(t *testing.T) {
 		}
 
 		got := d.Render()
-		if !strings.Contains(got, "Name") {
-			t.Error("Render() should contain header Name")
-		}
+		assertContains(t, got, "Name", "Render() should contain header Name")
 	})
 }
 
@@ -240,9 +215,7 @@ func TestD2NodeShapes(t *testing.T) {
 			)
 
 			got := d.Render()
-			if !strings.Contains(got, "node") {
-				t.Error("Render() should contain node ID")
-			}
+			assertContains(t, got, "node", "Render() should contain node ID")
 		})
 	}
 }
@@ -266,13 +239,8 @@ func TestD2NodeWithStyle(t *testing.T) {
 		})
 
 	got := d.Render()
-	if !strings.Contains(got, "fill:blue") {
-		t.Error("Render() should contain fill style")
-	}
-
-	if !strings.Contains(got, "stroke:black") {
-		t.Error("Render() should contain stroke style")
-	}
+	assertContains(t, got, "fill:blue", "Render() should contain fill style")
+	assertContains(t, got, "stroke:black", "Render() should contain stroke style")
 }
 
 func TestD2EdgeWithArrows(t *testing.T) {
@@ -291,13 +259,8 @@ func TestD2EdgeWithArrows(t *testing.T) {
 	)
 
 	got := d.Render()
-	if !strings.Contains(got, "-diamond") {
-		t.Error("Render() should contain source arrow")
-	}
-
-	if !strings.Contains(got, "-triangle") {
-		t.Error("Render() should contain target arrow")
-	}
+	assertContains(t, got, "-diamond", "Render() should contain source arrow")
+	assertContains(t, got, "-triangle", "Render() should contain target arrow")
 }
 
 func TestD2NodeNested(t *testing.T) {
@@ -315,7 +278,5 @@ func TestD2NodeNested(t *testing.T) {
 	)
 
 	got := d.Render()
-	if !strings.Contains(got, "child: inner") {
-		t.Error("Render() should contain nested content")
-	}
+	assertContains(t, got, "child: inner", "Render() should contain nested content")
 }

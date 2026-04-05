@@ -1,7 +1,6 @@
 package output
 
 import (
-	"strings"
 	"testing"
 )
 
@@ -23,13 +22,8 @@ func testMarkdownBasicTable(t *testing.T) {
 
 	got := m.Render()
 
-	if !strings.Contains(got, "Name") {
-		t.Error("Render() should contain header text")
-	}
-
-	if !strings.Contains(got, "Alice") {
-		t.Error("Render() should contain data row")
-	}
+	assertContains(t, got, "Name", "Render() should contain header text")
+	assertContains(t, got, "Alice", "Render() should contain data row")
 }
 
 func testMarkdownEmptyHeaders(t *testing.T) {
@@ -54,9 +48,7 @@ func testMarkdownAlignment(t *testing.T) {
 
 	got := m.Render()
 
-	if !strings.Contains(got, "|--") {
-		t.Error("Render() should contain separator row")
-	}
+	assertContains(t, got, "|--", "Render() should contain separator row")
 }
 
 func testMarkdownChaining(t *testing.T) {

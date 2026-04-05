@@ -1,8 +1,9 @@
 package output
 
 import (
-	"strings"
 	"testing"
+
+	"github.com/larsartmann/go-output/internal/testutils"
 )
 
 //nolint:exhaustruct // Test files use partial struct initialization
@@ -17,25 +18,11 @@ func TestDOTRenderer(t *testing.T) {
 
 	output := renderer.Render()
 
-	if !strings.Contains(output, "digraph G {") {
-		t.Error("Output should contain digraph declaration")
-	}
-
-	if !strings.Contains(output, "\"A\"") {
-		t.Error("Output should contain node A in quotes")
-	}
-
-	if !strings.Contains(output, "label=\"Node A\"") {
-		t.Error("Output should contain label for node A")
-	}
-
-	if !strings.Contains(output, "\"A\" -> \"B\"") {
-		t.Error("Output should contain directed edge A -> B")
-	}
-
-	if !strings.Contains(output, "}") {
-		t.Error("Output should close with }")
-	}
+	assertContains(t, output, "digraph G {", "Output should contain digraph declaration")
+	assertContains(t, output, "\"A\"", "Output should contain node A in quotes")
+	assertContains(t, output, "label=\"Node A\"", "Output should contain label for node A")
+	assertContains(t, output, "\"A\" -> \"B\"", "Output should contain directed edge A -> B")
+	assertContains(t, output, "}", "Output should close with }")
 }
 
 //nolint:exhaustruct // Test files use partial struct initialization
@@ -50,13 +37,8 @@ func TestDOTUndirectedRenderer(t *testing.T) {
 
 	output := renderer.Render()
 
-	if !strings.Contains(output, "graph G {") {
-		t.Error("Undirected graph should use 'graph' keyword")
-	}
-
-	if !strings.Contains(output, "\"A\" -- \"B\"") {
-		t.Error("Undirected edge should use --")
-	}
+	assertContains(t, output, "graph G {", "Undirected graph should use 'graph' keyword")
+	assertContains(t, output, "\"A\" -- \"B\"", "Undirected edge should use --")
 }
 
 //nolint:exhaustruct // Test files use partial struct initialization
@@ -78,13 +60,8 @@ func TestDOTRendererWithStyles(t *testing.T) {
 
 	output := renderer.Render()
 
-	if !strings.Contains(output, "shape=ellipse") {
-		t.Error("Output should contain shape attribute")
-	}
-
-	if !strings.Contains(output, "fillcolor=#ff0000") {
-		t.Error("Output should contain fillcolor")
-	}
+	assertContains(t, output, "shape=ellipse", "Output should contain shape attribute")
+	assertContains(t, output, "fillcolor=#ff0000", "Output should contain fillcolor")
 }
 
 func TestDOTRendererWithEdgeLabel(t *testing.T) {
@@ -95,9 +72,7 @@ func TestDOTRendererWithEdgeLabel(t *testing.T) {
 
 	output := renderer.Render()
 
-	if !strings.Contains(output, "label=\"uses\"") {
-		t.Error("Output should contain edge label")
-	}
+	assertContains(t, output, "label=\"uses\"", "Output should contain edge label")
 }
 
 func TestDOTFromTableData(t *testing.T) {
@@ -110,17 +85,9 @@ func TestDOTFromTableData(t *testing.T) {
 	renderer := DOTFromTableData(data)
 	output := renderer.Render()
 
-	if !strings.Contains(output, "digraph") {
-		t.Error("Output should be a digraph")
-	}
-
-	if !strings.Contains(output, "row0") {
-		t.Error("Output should contain row0 node")
-	}
-
-	if !strings.Contains(output, "\"row0\" -> \"row1\"") {
-		t.Error("Output should contain edge from row0 to row1")
-	}
+	assertContains(t, output, "digraph", "Output should be a digraph")
+	assertContains(t, output, "row0", "Output should contain row0 node")
+	assertContains(t, output, "\"row0\" -> \"row1\"", "Output should contain edge from row0 to row1")
 }
 
 func TestDOTFromTree(t *testing.T) {
@@ -132,17 +99,9 @@ func TestDOTFromTree(t *testing.T) {
 	renderer := DOTFromTree(root)
 	output := renderer.Render()
 
-	if !strings.Contains(output, "digraph") {
-		t.Error("Output should be a digraph")
-	}
-
-	if !strings.Contains(output, "Root") {
-		t.Error("Output should contain 'Root' label")
-	}
-
-	if !strings.Contains(output, "Child") {
-		t.Error("Output should contain 'Child' label")
-	}
+	assertContains(t, output, "digraph", "Output should be a digraph")
+	assertContains(t, output, "Root", "Output should contain 'Root' label")
+	assertContains(t, output, "Child", "Output should contain 'Child' label")
 }
 
 func TestDOTRendererEmpty(t *testing.T) {
@@ -172,7 +131,5 @@ func TestDOTSetGraphID(t *testing.T) {
 
 	output := renderer.Render()
 
-	if !strings.Contains(output, "digraph MyGraph {") {
-		t.Error("Output should use custom graph ID")
-	}
+	assertContains(t, output, "digraph MyGraph {", "Output should use custom graph ID")
 }

@@ -26,17 +26,9 @@ func TestTSVWriterHeaderAndRow(t *testing.T) {
 	w.Flush()
 
 	result := buf.String()
-	if !strings.Contains(result, "Name") {
-		t.Error("TSV should contain header")
-	}
-
-	if !strings.Contains(result, "Alpha") {
-		t.Error("TSV should contain data")
-	}
-
-	if !strings.Contains(result, "\t") {
-		t.Error("TSV should use tabs")
-	}
+	assertContains(t, result, "Name", "TSV should contain header")
+	assertContains(t, result, "Alpha", "TSV should contain data")
+	assertContains(t, result, "\t", "TSV should use tabs")
 }
 
 func TestTSVWriterMultipleRows(t *testing.T) {
@@ -74,13 +66,8 @@ func TestMarshalTSV(t *testing.T) {
 	}
 
 	tsv := string(result)
-	if !strings.Contains(tsv, "Alpha") {
-		t.Error("TSV should contain Alpha")
-	}
-
-	if !strings.Contains(tsv, "\t") {
-		t.Error("TSV should use tabs")
-	}
+	assertContains(t, tsv, "Alpha", "TSV should contain Alpha")
+	assertContains(t, tsv, "\t", "TSV should use tabs")
 }
 
 func BenchmarkTSVWriter(b *testing.B) {

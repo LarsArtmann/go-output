@@ -47,21 +47,11 @@ func TestMermaidRenderer(t *testing.T) {
 
 	output := renderer.Render()
 
-	if !strings.Contains(output, "```mermaid") {
-		t.Error("Output should contain mermaid code fence")
-	}
-
-	if !strings.Contains(output, "flowchart TD") {
-		t.Error("Output should contain flowchart declaration")
-	}
+	assertContains(t, output, "```mermaid", "Output should contain mermaid code fence")
+	assertContains(t, output, "flowchart TD", "Output should contain flowchart declaration")
 	// Mermaid output format is: "    A[Node A]\n"
-	if !strings.Contains(output, "A[Node A]") {
-		t.Error("Output should contain node A with label")
-	}
-
-	if !strings.Contains(output, "A --> B") {
-		t.Error("Output should contain edge A --> B")
-	}
+	assertContains(t, output, "A[Node A]", "Output should contain node A with label")
+	assertContains(t, output, "A --> B", "Output should contain edge A --> B")
 }
 
 //nolint:exhaustruct // Test files use partial struct initialization
@@ -81,9 +71,7 @@ func TestMermaidRendererWithDiamond(t *testing.T) {
 	output := renderer.Render()
 
 	// Diamond uses {} syntax: decision{Decision}
-	if !strings.Contains(output, "decision{Decision}") {
-		t.Error("Diamond shape should use {} syntax")
-	}
+	assertContains(t, output, "decision{Decision}", "Diamond shape should use {} syntax")
 }
 
 func TestMermaidRendererFromTableData(t *testing.T) {
@@ -97,17 +85,9 @@ func TestMermaidRendererFromTableData(t *testing.T) {
 	renderer := MermaidFlowchartRenderer(data)
 	output := renderer.Render()
 
-	if !strings.Contains(output, "flowchart TD") {
-		t.Error("Output should be a flowchart")
-	}
-
-	if !strings.Contains(output, "Start") {
-		t.Error("Output should contain 'Start'")
-	}
-
-	if !strings.Contains(output, "End") {
-		t.Error("Output should contain 'End'")
-	}
+	assertContains(t, output, "flowchart TD", "Output should be a flowchart")
+	assertContains(t, output, "Start", "Output should contain 'Start'")
+	assertContains(t, output, "End", "Output should contain 'End'")
 }
 
 func TestMermaidTreeRenderer(t *testing.T) {
@@ -120,17 +100,9 @@ func TestMermaidTreeRenderer(t *testing.T) {
 	renderer := MermaidTreeRenderer(root)
 	output := renderer.Render()
 
-	if !strings.Contains(output, "flowchart TD") {
-		t.Error("Output should be a flowchart")
-	}
-
-	if !strings.Contains(output, "Child 1") {
-		t.Error("Output should contain 'Child 1'")
-	}
-
-	if !strings.Contains(output, "Child 2") {
-		t.Error("Output should contain 'Child 2'")
-	}
+	assertContains(t, output, "flowchart TD", "Output should be a flowchart")
+	assertContains(t, output, "Child 1", "Output should contain 'Child 1'")
+	assertContains(t, output, "Child 2", "Output should contain 'Child 2'")
 }
 
 func TestMermaidRendererEmpty(t *testing.T) {
@@ -239,9 +211,7 @@ func TestMermaidRendererWithEdgeLabel(t *testing.T) {
 	renderer.SetEdges([]GraphEdge{testEdgeAB("connects")})
 
 	output := renderer.Render()
-	if !strings.Contains(output, "|connects|") {
-		t.Error("Output should contain edge label |connects|")
-	}
+	assertContains(t, output, "|connects|", "Output should contain edge label |connects|")
 }
 
 func TestMermaidTreeRendererNilRoot(t *testing.T) {
@@ -250,9 +220,7 @@ func TestMermaidTreeRendererNilRoot(t *testing.T) {
 	renderer := MermaidTreeRenderer(nil)
 	output := renderer.Render()
 
-	if !strings.Contains(output, "flowchart TD") {
-		t.Error("Nil root should still produce valid flowchart")
-	}
+	assertContains(t, output, "flowchart TD", "Nil root should still produce valid flowchart")
 }
 
 func TestMermaidTreeRendererWithEmptyID(t *testing.T) {
@@ -262,9 +230,7 @@ func TestMermaidTreeRendererWithEmptyID(t *testing.T) {
 	renderer := MermaidTreeRenderer(root)
 	output := renderer.Render()
 
-	if !strings.Contains(output, "RootLabel") {
-		t.Error("Output should contain label when ID is empty")
-	}
+	assertContains(t, output, "RootLabel", "Output should contain label when ID is empty")
 }
 
 //nolint:exhaustruct // Test files use partial struct initialization
@@ -285,7 +251,5 @@ func TestMermaidRendererEscapeLabel(t *testing.T) {
 		t.Error("Quotes should be escaped")
 	}
 
-	if !strings.Contains(output, "'quoted'") {
-		t.Error("Quotes should be replaced with single quotes")
-	}
+	assertContains(t, output, "'quoted'", "Quotes should be replaced with single quotes")
 }

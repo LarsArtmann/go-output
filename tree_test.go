@@ -1,7 +1,6 @@
 package output
 
 import (
-	"strings"
 	"testing"
 )
 
@@ -28,21 +27,10 @@ func TestASCIITreeRenderer(t *testing.T) {
 	output := renderer.Render()
 
 	// Verify output contains expected elements
-	if !strings.Contains(output, "Root") {
-		t.Error("Output should contain 'Root'")
-	}
-
-	if !strings.Contains(output, "Child 1") {
-		t.Error("Output should contain 'Child 1'")
-	}
-
-	if !strings.Contains(output, "Child 2") {
-		t.Error("Output should contain 'Child 2'")
-	}
-
-	if !strings.Contains(output, "Leaf 1") {
-		t.Error("Output should contain 'Leaf 1'")
-	}
+	assertContains(t, output, "Root", "Output should contain 'Root'")
+	assertContains(t, output, "Child 1", "Output should contain 'Child 1'")
+	assertContains(t, output, "Child 2", "Output should contain 'Child 2'")
+	assertContains(t, output, "Leaf 1", "Output should contain 'Leaf 1'")
 }
 
 func TestASCIITreeRendererWithMetadata(t *testing.T) {
@@ -57,13 +45,8 @@ func TestASCIITreeRendererWithMetadata(t *testing.T) {
 	renderer.SetRoot(node)
 	output := renderer.Render()
 
-	if !strings.Contains(output, "Node with Meta") {
-		t.Error("Output should contain node label")
-	}
-
-	if !strings.Contains(output, "key: value") {
-		t.Error("Output should contain metadata")
-	}
+	assertContains(t, output, "Node with Meta", "Output should contain node label")
+	assertContains(t, output, "key: value", "Output should contain metadata")
 }
 
 func TestTreeRendererFromTableData(t *testing.T) {
@@ -76,21 +59,10 @@ func TestTreeRendererFromTableData(t *testing.T) {
 	renderer := TreeRendererFromTableData(data)
 	output := renderer.Render()
 
-	if !strings.Contains(output, "Data") {
-		t.Error("Output should contain 'Data' as root")
-	}
-
-	if !strings.Contains(output, "Headers") {
-		t.Error("Output should contain 'Headers' section")
-	}
-
-	if !strings.Contains(output, "Rows") {
-		t.Error("Output should contain 'Rows' section")
-	}
-
-	if !strings.Contains(output, "Alice") {
-		t.Error("Output should contain 'Alice' row")
-	}
+	assertContains(t, output, "Data", "Output should contain 'Data' as root")
+	assertContains(t, output, "Headers", "Output should contain 'Headers' section")
+	assertContains(t, output, "Rows", "Output should contain 'Rows' section")
+	assertContains(t, output, "Alice", "Output should contain 'Alice' row")
 }
 
 func TestNewTreeNode(t *testing.T) {
