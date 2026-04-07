@@ -64,13 +64,8 @@ func TestTableDataToJSON(t *testing.T) {
 
 	// Then: JSON should contain all data
 	jsonStr := string(jsonBytes)
-	if !strings.Contains(jsonStr, "Alpha") {
-		t.Error("JSON should contain Alpha")
-	}
-
-	if !strings.Contains(jsonStr, "100") {
-		t.Error("JSON should contain 100")
-	}
+	testutils.AssertContains(t, jsonStr, "Alpha", "JSON should contain Alpha")
+	testutils.AssertContains(t, jsonStr, "100", "JSON should contain 100")
 }
 
 // TestTableDataToYAML tests rendering TableData as YAML.
@@ -98,13 +93,8 @@ func TestTableDataToYAML(t *testing.T) {
 
 	// Then: YAML should contain all data
 	yamlStr := string(yamlBytes)
-	if !strings.Contains(yamlStr, "Name") {
-		t.Error("YAML should contain Name header")
-	}
-
-	if !strings.Contains(yamlStr, "Gamma") {
-		t.Error("YAML should contain Gamma")
-	}
+	testutils.AssertContains(t, yamlStr, "Name", "YAML should contain Name header")
+	testutils.AssertContains(t, yamlStr, "Gamma", "YAML should contain Gamma")
 }
 
 // TestSortAndRenderWorkflow tests sorting before rendering.
@@ -134,9 +124,7 @@ func TestSortAndRenderWorkflow(t *testing.T) {
 		jsonStr := string(jsonBytes)
 
 		// Then: Apple should come first
-		if !strings.Contains(jsonStr, `"Apple"`) {
-			t.Error("Sorted JSON should contain Apple")
-		}
+		testutils.AssertContains(t, jsonStr, `"Apple"`, "Sorted JSON should contain Apple")
 
 		appleIdx := strings.Index(jsonStr, `"Apple"`)
 
@@ -196,13 +184,8 @@ func TestLargeDatasetWorkflow(t *testing.T) {
 
 		// Then: Output should be valid HTML
 		result := buf.String()
-		if !strings.Contains(result, "<table") {
-			t.Error("Should contain table tag")
-		}
-
-		if !strings.Contains(result, "<tr>") {
-			t.Error("Should contain row tags")
-		}
+		testutils.AssertContains(t, result, "<table", "Should contain table tag")
+		testutils.AssertContains(t, result, "<tr>", "Should contain row tags")
 	})
 }
 

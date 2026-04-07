@@ -91,13 +91,8 @@ func TestRenderDataAsJSON(t *testing.T) {
 
 	// Then: I get valid JSON with the data
 	jsonStr := string(jsonBytes)
-	if !strings.Contains(jsonStr, "Alpha") {
-		t.Error("JSON should contain project name")
-	}
-
-	if !strings.Contains(jsonStr, "90%") {
-		t.Error("JSON should contain health value")
-	}
+	testutils.AssertContains(t, jsonStr, "Alpha", "JSON should contain project name")
+	testutils.AssertContains(t, jsonStr, "90%", "JSON should contain health value")
 }
 
 func TestRenderDataAsCSV(t *testing.T) {
@@ -113,13 +108,8 @@ func TestRenderDataAsCSV(t *testing.T) {
 
 	// Then: I get valid CSV
 	csvStr := buf.String()
-	if !strings.Contains(csvStr, "Name") {
-		t.Error("CSV should contain header")
-	}
-
-	if !strings.Contains(csvStr, "Alpha") {
-		t.Error("CSV should contain data")
-	}
+	testutils.AssertContains(t, csvStr, "Name", "CSV should contain header")
+	testutils.AssertContains(t, csvStr, "Alpha", "CSV should contain data")
 }
 
 func TestRenderDataAsMarkdown(t *testing.T) {
@@ -157,13 +147,8 @@ func TestRenderDataAsYAML(t *testing.T) {
 
 	// Then: I get valid YAML
 	yamlStr := string(yamlBytes)
-	if !strings.Contains(yamlStr, "Name") {
-		t.Error("YAML should contain field name")
-	}
-
-	if !strings.Contains(yamlStr, "Alpha") {
-		t.Error("YAML should contain data")
-	}
+	testutils.AssertContains(t, yamlStr, "Name", "YAML should contain field name")
+	testutils.AssertContains(t, yamlStr, "Alpha", "YAML should contain data")
 }
 
 // User Journey: CLI Developer wants to handle edge cases gracefully

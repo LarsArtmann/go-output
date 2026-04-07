@@ -1,6 +1,7 @@
 package output
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 )
@@ -68,9 +69,7 @@ func testHTMLEscapeShared(t *testing.T, newRenderer func() htmlEscapeTestRendere
 		t.Errorf("%s: Render() should escape script tags", name)
 	}
 
-	if !strings.Contains(got, "&lt;script&gt;") {
-		t.Errorf("%s: Render() should contain escaped script tag", name)
-	}
+	assertContains(t, got, "&lt;script&gt;", fmt.Sprintf("%s: Render() should contain escaped script tag", name))
 }
 
 func TestHTMLRendererEscaping(t *testing.T) {
@@ -134,9 +133,7 @@ func TestHTMLRendererAddRowWithoutSetHeaders(t *testing.T) {
 	renderer.AddRow([]string{"test"})
 
 	output := renderer.Render()
-	if !strings.Contains(output, "test") {
-		t.Error("Output should contain 'test'")
-	}
+	assertContains(t, output, "test", "Output should contain 'test'")
 }
 
 func TestHTMLTreeRendererEmpty(t *testing.T) {

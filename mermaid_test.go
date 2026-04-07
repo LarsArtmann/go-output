@@ -5,22 +5,6 @@ import (
 	"testing"
 )
 
-func testSanitizeFunc(
-	t *testing.T,
-	name string,
-	fn func(string) string,
-	tests []struct{ input, want string },
-) {
-	t.Helper()
-
-	for _, tt := range tests {
-		got := fn(tt.input)
-		if got != tt.want {
-			t.Errorf("%s(%q) = %q, want %q", name, tt.input, got, tt.want)
-		}
-	}
-}
-
 //nolint:exhaustruct // Test files use partial struct initialization
 func TestMermaidRenderer(t *testing.T) {
 	t.Parallel()

@@ -24,17 +24,9 @@ func TestTableFormatContent(t *testing.T) {
 	}
 
 	result := tbl.Render()
-	if !strings.Contains(result, "Name") {
-		t.Error("Table should contain header 'Name'")
-	}
-
-	if !strings.Contains(result, "Alpha") {
-		t.Error("Table should contain project name 'Alpha'")
-	}
-
-	if !strings.Contains(result, "Beta") {
-		t.Error("Table should contain project name 'Beta'")
-	}
+	testutils.AssertContains(t, result, "Name", "Table should contain header 'Name'")
+	testutils.AssertContains(t, result, "Alpha", "Table should contain project name 'Alpha'")
+	testutils.AssertContains(t, result, "Beta", "Table should contain project name 'Beta'")
 }
 
 func TestJSONFormatContent(t *testing.T) {
@@ -50,13 +42,8 @@ func TestJSONFormatContent(t *testing.T) {
 	}
 
 	result := string(data)
-	if !strings.Contains(result, "Alpha") {
-		t.Error("JSON should contain project name 'Alpha'")
-	}
-
-	if !strings.Contains(result, "90") {
-		t.Error("JSON should contain health value 90")
-	}
+	testutils.AssertContains(t, result, "Alpha", "JSON should contain project name 'Alpha'")
+	testutils.AssertContains(t, result, "90", "JSON should contain health value 90")
 }
 
 func TestMarkdownTableContent(t *testing.T) {
@@ -67,17 +54,9 @@ func TestMarkdownTableContent(t *testing.T) {
 		[][]string{{"Alpha", "90%"}},
 	)
 
-	if !strings.Contains(result, "| Name") {
-		t.Error("Markdown should contain header cell")
-	}
-
-	if !strings.Contains(result, "| Alpha") {
-		t.Error("Markdown should contain row data")
-	}
-
-	if !strings.Contains(result, "|---") {
-		t.Error("Markdown should contain separator row")
-	}
+	testutils.AssertContains(t, result, "| Name", "Markdown should contain header cell")
+	testutils.AssertContains(t, result, "| Alpha", "Markdown should contain row data")
+	testutils.AssertContains(t, result, "|---", "Markdown should contain separator row")
 }
 
 func TestCSVFormatContent(t *testing.T) {
@@ -122,9 +101,7 @@ func TestYAMLFormatContent(t *testing.T) {
 	}
 
 	result := string(data)
-	if !strings.Contains(result, "Alpha") {
-		t.Error("YAML should contain project name 'Alpha'")
-	}
+	testutils.AssertContains(t, result, "Alpha", "YAML should contain project name 'Alpha'")
 }
 
 func TestHTMLFormatContent(t *testing.T) {
@@ -135,13 +112,8 @@ func TestHTMLFormatContent(t *testing.T) {
 	html.AddRow([]string{"Alpha", "90%"})
 
 	result := html.Render()
-	if !strings.Contains(result, "<table") {
-		t.Error("HTML should contain table tag")
-	}
-
-	if !strings.Contains(result, "Alpha") {
-		t.Error("HTML should contain project name 'Alpha'")
-	}
+	testutils.AssertContains(t, result, "<table", "HTML should contain table tag")
+	testutils.AssertContains(t, result, "Alpha", "HTML should contain project name 'Alpha'")
 }
 
 func TestHTMLFullPage(t *testing.T) {
@@ -152,13 +124,8 @@ func TestHTMLFullPage(t *testing.T) {
 	html.AddRow([]string{"Test"})
 
 	result := html.RenderFullHTML("Test Page")
-	if !strings.Contains(result, "<html") {
-		t.Error("Full HTML should contain html tag")
-	}
-
-	if !strings.Contains(result, "<title>Test Page</title>") {
-		t.Error("Full HTML should contain title")
-	}
+	testutils.AssertContains(t, result, "<html", "Full HTML should contain html tag")
+	testutils.AssertContains(t, result, "<title>Test Page</title>", "Full HTML should contain title")
 }
 
 func TestTreeFormatContent(t *testing.T) {

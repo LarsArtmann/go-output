@@ -73,13 +73,8 @@ func TestStreamingHTMLRendererRender(t *testing.T) {
 	r.AddRow([]string{"test", "123"})
 
 	got := r.Render()
-	if !strings.Contains(got, "<th>Name</th>") {
-		t.Error("Render() missing header Name")
-	}
-
-	if !strings.Contains(got, "<td>test</td>") {
-		t.Error("Render() missing cell test")
-	}
+	assertContains(t, got, "<th>Name</th>", "Render() missing header Name")
+	assertContains(t, got, "<td>test</td>", "Render() missing cell test")
 }
 
 func TestStreamingHTMLRendererStream(t *testing.T) {
@@ -97,13 +92,8 @@ func TestStreamingHTMLRendererStream(t *testing.T) {
 	}
 
 	got := buf.String()
-	if !strings.Contains(got, "<th>A</th>") {
-		t.Error("Stream() missing header A")
-	}
-
-	if !strings.Contains(got, "<td>1</td>") {
-		t.Error("Stream() missing cell 1")
-	}
+	assertContains(t, got, "<th>A</th>", "Stream() missing header A")
+	assertContains(t, got, "<td>1</td>", "Stream() missing cell 1")
 }
 
 func TestStreamingHTMLRendererRenderEmpty(t *testing.T) {
@@ -156,9 +146,7 @@ func TestStreamingHTMLRendererEscapeAmpersand(t *testing.T) {
 	r.AddRow([]string{"Tom & Jerry"})
 
 	got := r.Render()
-	if !strings.Contains(got, "Tom &amp; Jerry") {
-		t.Error("Render() did not escape ampersand")
-	}
+	assertContains(t, got, "Tom &amp; Jerry", "Render() did not escape ampersand")
 }
 
 func TestStreamingRendererFromRenderer(t *testing.T) {

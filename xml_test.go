@@ -16,13 +16,8 @@ func TestXMLWriterWriteHeader(t *testing.T) {
 	}
 
 	result := x.String()
-	if !strings.Contains(result, "<headers>") {
-		t.Error("XML should contain <headers>")
-	}
-
-	if !strings.Contains(result, "<column>Name</column>") {
-		t.Error("XML should contain <column>Name</column>")
-	}
+	assertContains(t, result, "<headers>", "XML should contain <headers>")
+	assertContains(t, result, "<column>Name</column>", "XML should contain <column>Name</column>")
 }
 
 func TestXMLWriterWriteRow(t *testing.T) {
@@ -37,13 +32,8 @@ func TestXMLWriterWriteRow(t *testing.T) {
 	}
 
 	result := x.String()
-	if !strings.Contains(result, "<row>") {
-		t.Error("XML should contain <row>")
-	}
-
-	if !strings.Contains(result, "<cell>test</cell>") {
-		t.Error("XML should contain <cell>test</cell>")
-	}
+	assertContains(t, result, "<row>", "XML should contain <row>")
+	assertContains(t, result, "<cell>test</cell>", "XML should contain <cell>test</cell>")
 }
 
 func TestXMLWriterWriteRows(t *testing.T) {
@@ -77,10 +67,7 @@ func TestXMLWriterEscape(t *testing.T) {
 	if strings.Contains(result, "<script>") {
 		t.Error("XML should escape <script> tags")
 	}
-
-	if !strings.Contains(result, "&lt;script&gt;") {
-		t.Error("XML should contain escaped &lt;script&gt;")
-	}
+	assertContains(t, result, "&lt;script&gt;", "XML should contain escaped &lt;script&gt;")
 }
 
 func TestMarshalXMLFromTableDataNil(t *testing.T) {
@@ -92,9 +79,7 @@ func TestMarshalXMLFromTableDataNil(t *testing.T) {
 	}
 
 	result := string(data)
-	if !strings.Contains(result, "<?xml") {
-		t.Error("XML should contain XML declaration")
-	}
+	assertContains(t, result, "<?xml", "XML should contain XML declaration")
 }
 
 func TestMarshalXMLFromTableDataWithData(t *testing.T) {
@@ -109,17 +94,9 @@ func TestMarshalXMLFromTableDataWithData(t *testing.T) {
 	}
 
 	output := string(result)
-	if !strings.Contains(output, "<table>") {
-		t.Error("XML should contain <table>")
-	}
-
-	if !strings.Contains(output, "<headers>") {
-		t.Error("XML should contain <headers>")
-	}
-
-	if !strings.Contains(output, "<row>") {
-		t.Error("XML should contain <row>")
-	}
+	assertContains(t, output, "<table>", "XML should contain <table>")
+	assertContains(t, output, "<headers>", "XML should contain <headers>")
+	assertContains(t, output, "<row>", "XML should contain <row>")
 }
 
 func TestMarshalXMLFromTableDataEmpty(t *testing.T) {
@@ -133,9 +110,7 @@ func TestMarshalXMLFromTableDataEmpty(t *testing.T) {
 	}
 
 	output := string(result)
-	if !strings.Contains(output, "</table>") {
-		t.Error("XML should contain closing </table>")
-	}
+	assertContains(t, output, "</table>", "XML should contain closing </table>")
 }
 
 func TestMarshalXML(t *testing.T) {
@@ -175,7 +150,5 @@ func TestMarshalXMLIndent(t *testing.T) {
 	}
 
 	result := string(data)
-	if !strings.Contains(result, "  <name>") {
-		t.Error("Indented XML should contain indentation")
-	}
+	assertContains(t, result, "  <name>", "Indented XML should contain indentation")
 }

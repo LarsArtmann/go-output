@@ -2,8 +2,6 @@ package output
 
 import (
 	"testing"
-
-	"github.com/larsartmann/go-output/internal/testutils"
 )
 
 //nolint:exhaustruct // Test files use partial struct initialization

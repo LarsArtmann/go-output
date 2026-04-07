@@ -4,7 +4,6 @@ package integration
 import (
 	"bytes"
 	"fmt"
-	"strings"
 	"testing"
 
 	"github.com/larsartmann/go-output"
@@ -70,9 +69,7 @@ func TestStreamingRenderer(t *testing.T) {
 	}
 
 	result := buf.String()
-	if !strings.Contains(result, "<table") {
-		t.Error("Streaming HTML should contain table tag")
-	}
+	testutils.AssertContains(t, result, "<table", "Streaming HTML should contain table tag")
 }
 
 func TestTableDataRowEdges(t *testing.T) {
