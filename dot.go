@@ -196,25 +196,17 @@ func DOTFromTableData(data *TableData) *DOTRenderer {
 		return renderer
 	}
 
-	// Create nodes for each row
-	for i, row := range data.Rows {
-		var labelParts []string
-
-		for j, cell := range row {
-			if j < len(data.Headers) {
-				labelParts = append(labelParts, fmt.Sprintf("%s: %s", data.Headers[j], cell))
-			} else {
-				labelParts = append(labelParts, cell)
-			}
-		}
-
-		label := strings.Join(labelParts, "\\n")
-		//nolint:exhaustruct // Uses defaults for optional fields
-		renderer.nodes = append(renderer.nodes, GraphNode{
-			ID:    NewBrandedID[GraphNodeIDBrand](fmt.Sprintf("row%d", i)),
-			Label: NewBrandedID[GraphNodeLabelBrand](label),
-		})
+	// Create nodes for each row using shared helper
+	nodes := NodesFromTableData(data, func(header, cell string) string {
+		return fmt.Sprintf("%s: %s", header, cell)
+	})
+	for i := range nodes {
+		oldLabel := nodes[i].Label.Get()
+		newLabel := strings.ReplaceAll(oldLabel, "\n", "\\n")
+		nodes[i].Label = NewBrandedID[GraphNodeLabelBrand](newLabel)
 	}
+
+	renderer.nodes = append(renderer.nodes, nodes...)
 
 	renderer.AddRowEdges(data)
 

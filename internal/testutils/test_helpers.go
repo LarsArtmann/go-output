@@ -44,11 +44,8 @@ func CreateTestEdgeABWithLabel(label string) output.GraphEdge {
 
 // CreateTestNodesABC creates the common test nodes A, B, and C used in Mermaid tests.
 func CreateTestNodesABC() []output.GraphNode {
-	return []output.GraphNode{
-		CreateTestNode("A", "Node A"),
-		CreateTestNode("B", "Node B"),
-		CreateTestNode("C", "Node C"),
-	}
+	nodes := CreateTestNodesAB()
+	return append(nodes, CreateTestNode("C", "Node C"))
 }
 
 // CreateTestEdgesABC creates the common test edges A->B and B->C used in Mermaid tests.
