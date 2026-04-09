@@ -67,6 +67,7 @@ func TestXMLWriterEscape(t *testing.T) {
 	if strings.Contains(result, "<script>") {
 		t.Error("XML should escape <script> tags")
 	}
+
 	assertContains(t, result, "&lt;script&gt;", "XML should contain escaped &lt;script&gt;")
 }
 

@@ -14,6 +14,7 @@ type ExpectedOutput struct {
 // assertContains checks that output contains substr, failing with msg if not.
 func assertContains(t *testing.T, output, substr, msg string) {
 	t.Helper()
+
 	if !strings.Contains(output, substr) {
 		t.Error(msg)
 	}

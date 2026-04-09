@@ -85,7 +85,12 @@ func TestDOTFromTableData(t *testing.T) {
 
 	assertContains(t, output, "digraph", "Output should be a digraph")
 	assertContains(t, output, "row0", "Output should contain row0 node")
-	assertContains(t, output, "\"row0\" -> \"row1\"", "Output should contain edge from row0 to row1")
+	assertContains(
+		t,
+		output,
+		"\"row0\" -> \"row1\"",
+		"Output should contain edge from row0 to row1",
+	)
 }
 
 func TestDOTFromTree(t *testing.T) {

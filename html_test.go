@@ -1,7 +1,6 @@
 package output
 
 import (
-	"fmt"
 	"strings"
 	"testing"
 )
@@ -69,7 +68,12 @@ func testHTMLEscapeShared(t *testing.T, newRenderer func() htmlEscapeTestRendere
 		t.Errorf("%s: Render() should escape script tags", name)
 	}
 
-	assertContains(t, got, "&lt;script&gt;", fmt.Sprintf("%s: Render() should contain escaped script tag", name))
+	assertContains(
+		t,
+		got,
+		"&lt;script&gt;",
+		name+": Render() should contain escaped script tag",
+	)
 }
 
 func TestHTMLRendererEscaping(t *testing.T) {
@@ -144,6 +148,7 @@ func TestHTMLTreeRendererEmpty(t *testing.T) {
 	output := renderer.Render()
 
 	assertContains(t, output, "<ul", "Empty tree should contain <ul>")
+
 	if strings.Contains(output, "<li>") {
 		t.Error("Empty tree should not contain <li>")
 	}

@@ -84,14 +84,7 @@ func TestStreamingHTMLRendererStream(t *testing.T) {
 	r.SetHeaders([]string{"A", "B"})
 	r.AddRow([]string{"1", "2"})
 
-	var buf bytes.Buffer
-
-	err := r.Stream(&buf)
-	if err != nil {
-		t.Fatalf("Stream() error = %v", err)
-	}
-
-	got := buf.String()
+	got := streamRenderer(t, r)
 	assertContains(t, got, "<th>A</th>", "Stream() missing header A")
 	assertContains(t, got, "<td>1</td>", "Stream() missing cell 1")
 }
@@ -113,6 +106,14 @@ func TestStreamingHTMLRendererStreamEmpty(t *testing.T) {
 	t.Parallel()
 
 	r := NewStreamingHTMLRenderer()
+	got := streamRenderer(t, r)
+
+	assertEmptyStreamingOutput(t, got)
+}
+
+// streamRenderer streams the renderer output and returns the result.
+func streamRenderer(t *testing.T, r *StreamingHTMLRenderer) string {
+	t.Helper()
 
 	var buf bytes.Buffer
 
@@ -121,11 +122,15 @@ func TestStreamingHTMLRendererStreamEmpty(t *testing.T) {
 		t.Fatalf("Stream() error = %v", err)
 	}
 
-	got := buf.String()
+	return buf.String()
+}
 
-	want := emptyTableHTML
-	if got != want {
-		t.Errorf("Stream() = %q, want %q", got, want)
+// assertEmptyStreamingOutput verifies that empty streaming output matches expected.
+func assertEmptyStreamingOutput(t *testing.T, got string) {
+	t.Helper()
+
+	if got != emptyTableHTML {
+		t.Errorf("Stream() = %q, want %q", got, emptyTableHTML)
 	}
 }
 

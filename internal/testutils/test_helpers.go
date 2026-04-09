@@ -7,17 +7,19 @@ import (
 	"github.com/larsartmann/go-output"
 )
 
+// CreateTestNode creates a GraphNode with the given ID and label.
+func CreateTestNode(id, label string) output.GraphNode {
+	return output.GraphNode{
+		ID:    output.NewBrandedID[output.GraphNodeIDBrand](id),
+		Label: output.NewBrandedID[output.GraphNodeLabelBrand](label),
+	}
+}
+
 // CreateTestNodesAB creates the common test nodes A and B used in DOT and Mermaid tests.
 func CreateTestNodesAB() []output.GraphNode {
 	return []output.GraphNode{
-		{
-			ID:    output.NewBrandedID[output.GraphNodeIDBrand]("A"),
-			Label: output.NewBrandedID[output.GraphNodeLabelBrand]("Node A"),
-		},
-		{
-			ID:    output.NewBrandedID[output.GraphNodeIDBrand]("B"),
-			Label: output.NewBrandedID[output.GraphNodeLabelBrand]("Node B"),
-		},
+		CreateTestNode("A", "Node A"),
+		CreateTestNode("B", "Node B"),
 	}
 }
 
@@ -43,18 +45,9 @@ func CreateTestEdgeABWithLabel(label string) output.GraphEdge {
 // CreateTestNodesABC creates the common test nodes A, B, and C used in Mermaid tests.
 func CreateTestNodesABC() []output.GraphNode {
 	return []output.GraphNode{
-		{
-			ID:    output.NewBrandedID[output.GraphNodeIDBrand]("A"),
-			Label: output.NewBrandedID[output.GraphNodeLabelBrand]("Node A"),
-		},
-		{
-			ID:    output.NewBrandedID[output.GraphNodeIDBrand]("B"),
-			Label: output.NewBrandedID[output.GraphNodeLabelBrand]("Node B"),
-		},
-		{
-			ID:    output.NewBrandedID[output.GraphNodeIDBrand]("C"),
-			Label: output.NewBrandedID[output.GraphNodeLabelBrand]("Node C"),
-		},
+		CreateTestNode("A", "Node A"),
+		CreateTestNode("B", "Node B"),
+		CreateTestNode("C", "Node C"),
 	}
 }
 
@@ -111,13 +104,18 @@ type ExpectedOutput struct {
 // AssertContains checks that output contains substr, failing with msg if not.
 func AssertContains(t *testing.T, output, substr, msg string) {
 	t.Helper()
+
 	if !strings.Contains(output, substr) {
 		t.Error(msg)
 	}
 }
 
 // AssertEmptyRendererOutput verifies that an empty renderer produces valid output structure.
-func AssertEmptyRendererOutput(t *testing.T, renderer output.Renderer, expectedOutputs []ExpectedOutput) {
+func AssertEmptyRendererOutput(
+	t *testing.T,
+	renderer output.Renderer,
+	expectedOutputs []ExpectedOutput,
+) {
 	t.Helper()
 
 	out := renderer.Render()

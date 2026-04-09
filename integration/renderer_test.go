@@ -125,7 +125,12 @@ func TestHTMLFullPage(t *testing.T) {
 
 	result := html.RenderFullHTML("Test Page")
 	testutils.AssertContains(t, result, "<html", "Full HTML should contain html tag")
-	testutils.AssertContains(t, result, "<title>Test Page</title>", "Full HTML should contain title")
+	testutils.AssertContains(
+		t,
+		result,
+		"<title>Test Page</title>",
+		"Full HTML should contain title",
+	)
 }
 
 func TestTreeFormatContent(t *testing.T) {

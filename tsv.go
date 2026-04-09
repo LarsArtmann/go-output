@@ -1,7 +1,6 @@
 package output
 
 import (
-	"encoding/csv"
 	"errors"
 	"fmt"
 	"io"
@@ -10,7 +9,7 @@ import (
 
 // TSVWriter writes TSV (Tab-Separated Values) output.
 type TSVWriter struct {
-	writer *csv.Writer
+	writer *DelimitedWriter
 }
 
 // ErrUnsupportedType is returned when an unsupported type is provided for TSV marshaling.
@@ -18,43 +17,24 @@ var ErrUnsupportedType = errors.New("unsupported type")
 
 // NewTSVWriter creates a new TSVWriter.
 func NewTSVWriter(w io.Writer) *TSVWriter {
-	// CSV writer with comma delimiter, but we'll write tabs manually
-	writer := csv.NewWriter(w)
-	writer.Comma = '\t' // Use tab as delimiter
-
 	return &TSVWriter{
-		writer: writer,
+		writer: NewDelimitedWriter(w, '\t', "tsv"),
 	}
-}
-
-// write writes a row with the given description.
-func (t *TSVWriter) write(cols []string, description string) error {
-	err := t.writer.Write(cols)
-	if err != nil {
-		return fmt.Errorf("write %s %s: %w", description, cols, err)
-	}
-
-	return nil
 }
 
 // WriteHeader writes the header row.
 func (t *TSVWriter) WriteHeader(cols []string) error {
-	return t.write(cols, "tsv header")
+	return t.writer.WriteRow(cols, "tsv header")
 }
 
 // WriteRow writes a single row.
 func (t *TSVWriter) WriteRow(values []string) error {
-	return t.write(values, "tsv row")
+	return t.writer.WriteRow(values, "tsv row")
 }
 
 // WriteRows writes multiple rows.
 func (t *TSVWriter) WriteRows(values [][]string) error {
-	err := t.writer.WriteAll(values)
-	if err != nil {
-		return fmt.Errorf("write tsv rows (count=%d): %w", len(values), err)
-	}
-
-	return nil
+	return t.writer.WriteRows(values, "tsv")
 }
 
 // Flush flushes the writer.
@@ -62,8 +42,9 @@ func (t *TSVWriter) Flush() {
 	t.writer.Flush()
 }
 
+// Error returns any error from the writer.
 func (t *TSVWriter) Error() error {
-	return writerError(t.writer, "tsv")
+	return t.writer.Error()
 }
 
 // MarshalTSV marshals data as TSV.
