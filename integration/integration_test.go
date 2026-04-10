@@ -24,6 +24,20 @@ func SampleProjects() []TestProject {
 	}
 }
 
+// SampleProject returns a single sample project for testing.
+func SampleProject() []TestProject {
+	return []TestProject{{Name: "Alpha", Health: 90, Complexity: 7}}
+}
+
+// sharedTestData contains common test data used across workflow tests.
+func sharedTestData() (headers []string, rows [][]string) {
+	return []string{"Name", "Value"}, [][]string{
+		{"Alpha", "100"},
+		{"Beta", "200"},
+		{"Gamma", "150"},
+	}
+}
+
 func TestAllFormatsRender(t *testing.T) {
 	t.Parallel()
 

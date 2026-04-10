@@ -9,13 +9,6 @@ import (
 	"github.com/larsartmann/go-output/internal/testutils"
 )
 
-// sharedAlphaProject returns a test project with default values.
-func sharedAlphaProject() []TestProject {
-	return []TestProject{
-		{Name: "Alpha", Health: 90, Complexity: 7},
-	}
-}
-
 func TestTableFormatContent(t *testing.T) {
 	t.Parallel()
 
