@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/larsartmann/go-output"
+	"github.com/larsartmann/go-output/internal/testutils"
 	"github.com/larsartmann/go-output/sort"
 )
 
@@ -90,8 +91,8 @@ func TestRenderDataAsJSON(t *testing.T) {
 
 	// Then: I get valid JSON with the data
 	jsonStr := string(jsonBytes)
-	assertContains(t, jsonStr, "Alpha", "JSON should contain project name")
-	assertContains(t, jsonStr, "90%", "JSON should contain health value")
+	testutils.AssertContains(t, jsonStr, "Alpha", "JSON should contain project name")
+	testutils.AssertContains(t, jsonStr, "90%", "JSON should contain health value")
 }
 
 func TestRenderDataAsCSV(t *testing.T) {
@@ -107,8 +108,8 @@ func TestRenderDataAsCSV(t *testing.T) {
 
 	// Then: I get valid CSV
 	csvStr := buf.String()
-	assertContains(t, csvStr, "Name", "CSV should contain header")
-	assertContains(t, csvStr, "Alpha", "CSV should contain data")
+	testutils.AssertContains(t, csvStr, "Name", "CSV should contain header")
+	testutils.AssertContains(t, csvStr, "Alpha", "CSV should contain data")
 }
 
 func TestRenderDataAsMarkdown(t *testing.T) {
@@ -118,9 +119,9 @@ func TestRenderDataAsMarkdown(t *testing.T) {
 	mdStr := testutils.RenderMarkdownTable([]string{"Name", "Health"}, [][]string{{"Alpha", "90%"}})
 
 	// Then: I get valid Markdown table
-	assertContains(t, mdStr, "| Name", "Markdown should contain header row")
-	assertContains(t, mdStr, "| Alpha", "Markdown should contain data row")
-	assertContains(t, mdStr, "|----", "Markdown should contain separator")
+	testutils.AssertContains(t, mdStr, "| Name", "Markdown should contain header row")
+	testutils.AssertContains(t, mdStr, "| Alpha", "Markdown should contain data row")
+	testutils.AssertContains(t, mdStr, "|----", "Markdown should contain separator")
 }
 
 func TestRenderDataAsYAML(t *testing.T) {
@@ -138,8 +139,8 @@ func TestRenderDataAsYAML(t *testing.T) {
 
 	// Then: I get valid YAML
 	yamlStr := string(yamlBytes)
-	assertContains(t, yamlStr, "Name", "YAML should contain field name")
-	assertContains(t, yamlStr, "Alpha", "YAML should contain data")
+	testutils.AssertContains(t, yamlStr, "Name", "YAML should contain field name")
+	testutils.AssertContains(t, yamlStr, "Alpha", "YAML should contain data")
 }
 
 // User Journey: CLI Developer wants to handle edge cases gracefully

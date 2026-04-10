@@ -93,6 +93,32 @@ func testSanitizeFunc(
 	}
 }
 
+// htmlEscapeTestRenderer is an interface for HTML renderers that support escaping tests.
+type htmlEscapeTestRenderer interface {
+	SetHeaders([]string)
+	AddRow([]string)
+	Render() string
+}
+
+// testHTMLEscapeShared is a shared helper for testing HTML escaping in renderers.
+func testHTMLEscapeShared(t *testing.T, newRenderer func() htmlEscapeTestRenderer, name string) {
+	t.Helper()
+
+	r := newRenderer()
+	r.SetHeaders([]string{"Name"})
+	r.AddRow([]string{"<script>alert('xss')</script>"})
+
+	got := r.Render()
+
+	if strings.Contains(got, "<script>") {
+		t.Errorf("%s: Render() should escape script tags", name)
+	}
+
+	if !strings.Contains(got, "&lt;script&gt;") {
+		t.Errorf("%s: Render() should contain escaped script tag", name)
+	}
+}
+
 // AssertTreeNodeDepth verifies the depth of tree nodes in a hierarchy.
 func AssertTreeNodeDepth(t *testing.T, root, child, grandchild *TreeNode) {
 	t.Helper()

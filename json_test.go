@@ -3,6 +3,7 @@ package output
 import (
 	"bytes"
 	"testing"
+	"time"
 )
 
 func testUnmarshalError(
@@ -169,6 +170,16 @@ func BenchmarkMarshalJSONIndent(b *testing.B) {
 	for b.Loop() {
 		_, _ = MarshalJSONIndent(data, "", "  ")
 	}
+}
+
+type BenchmarkStruct struct {
+	ID        int       `json:"id"`
+	Name      string    `json:"name"`
+	Items     []string  `json:"items"`
+	Count     int       `json:"count"`
+	Active    bool      `json:"active"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 func BenchmarkUnmarshalJSON(b *testing.B) {
