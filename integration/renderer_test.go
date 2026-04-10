@@ -10,6 +10,13 @@ import (
 	"github.com/larsartmann/go-output/table"
 )
 
+// sharedAlphaProject returns a test project with default values.
+func sharedAlphaProject() []TestProject {
+	return []TestProject{
+		{Name: "Alpha", Health: 90, Complexity: 7},
+	}
+}
+
 func TestTableFormatContent(t *testing.T) {
 	t.Parallel()
 
@@ -31,9 +38,7 @@ func TestTableFormatContent(t *testing.T) {
 func TestJSONFormatContent(t *testing.T) {
 	t.Parallel()
 
-	projects := []TestProject{
-		{Name: "Alpha", Health: 90, Complexity: 7},
-	}
+	projects := sharedAlphaProject()
 
 	data, err := output.MarshalJSONIndent(projects, "", "  ")
 	if err != nil {
@@ -85,9 +90,7 @@ func TestCSVFormatContent(t *testing.T) {
 func TestYAMLFormatContent(t *testing.T) {
 	t.Parallel()
 
-	projects := []TestProject{
-		{Name: "Alpha", Health: 90, Complexity: 7},
-	}
+	projects := sharedAlphaProject()
 
 	data, err := output.MarshalYAML(projects)
 	if err != nil {

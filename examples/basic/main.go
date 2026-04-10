@@ -220,14 +220,10 @@ func renderD2() {
 
 func renderHTML(projects []Project) {
 	html := output.NewHTMLRenderer()
-	html.SetHeaders([]string{"Name", "Health", "Complexity"})
+	html.SetHeaders(projectHeaders)
 
 	for _, p := range projects {
-		html.AddRow([]string{
-			p.Name,
-			strconv.Itoa(p.Health) + "%",
-			strconv.Itoa(p.Complexity) + "/10",
-		})
+		html.AddRow(projectToTableDataRow(p))
 	}
 
 	fmt.Println(html.RenderFullHTML("Project Health Report"))
