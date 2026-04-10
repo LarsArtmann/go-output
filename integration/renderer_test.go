@@ -23,7 +23,7 @@ func TestTableFormatContent(t *testing.T) {
 func TestJSONFormatContent(t *testing.T) {
 	t.Parallel()
 
-	projects := sharedAlphaProject()
+	projects := SampleProject()
 
 	data, err := output.MarshalJSONIndent(projects, "", "  ")
 	if err != nil {
@@ -75,7 +75,7 @@ func TestCSVFormatContent(t *testing.T) {
 func TestYAMLFormatContent(t *testing.T) {
 	t.Parallel()
 
-	projects := sharedAlphaProject()
+	projects := SampleProject()
 
 	data, err := output.MarshalYAML(projects)
 	if err != nil {

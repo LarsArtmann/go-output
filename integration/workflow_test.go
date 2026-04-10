@@ -11,15 +11,6 @@ import (
 	"github.com/larsartmann/go-output/sort"
 )
 
-// sharedTestData contains common test data used across workflow tests.
-func sharedTestData() (headers []string, rows [][]string) {
-	return []string{"Name", "Value"}, [][]string{
-		{"Alpha", "100"},
-		{"Beta", "200"},
-		{"Gamma", "150"},
-	}
-}
-
 // TestCSVToTableData tests converting CSV data to TableData.
 func TestCSVToTableData(t *testing.T) {
 	t.Parallel()
