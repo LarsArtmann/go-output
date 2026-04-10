@@ -114,3 +114,39 @@ func AssertTreeNodeDepth(t *testing.T, root, child, grandchild *TreeNode) {
 		t.Errorf("Grandchild depth should be 2, got %d", grandchild.Depth())
 	}
 }
+
+// testExpectedOutputs builds a []ExpectedOutput from alternating substring/message pairs.
+func testExpectedOutputs(pairs ...string) []ExpectedOutput {
+	if len(pairs)%2 != 0 {
+		panic("testExpectedOutputs requires even number of arguments")
+	}
+	out := make([]ExpectedOutput, 0, len(pairs)/2)
+	for i := 0; i < len(pairs); i += 2 {
+		out = append(out, ExpectedOutput{Substring: pairs[i], Message: pairs[i+1]})
+	}
+	return out
+}
+
+// testDOTEmptyExpected returns the expected substrings for an empty DOT renderer.
+func testDOTEmptyExpected() []ExpectedOutput {
+	return testExpectedOutputs(
+		"digraph G {", "Empty DOT should still have digraph declaration",
+		"rankdir=TB", "Empty DOT should have default attributes",
+	)
+}
+
+// testHTMLEmptyExpected returns the expected substrings for an empty HTML renderer.
+func testHTMLEmptyExpected() []ExpectedOutput {
+	return testExpectedOutputs(
+		"<table", "Empty table should still be valid HTML",
+		"</table>", "Empty table should have closing tag",
+	)
+}
+
+// testMermaidEmptyExpected returns the expected substrings for an empty Mermaid renderer.
+func testMermaidEmptyExpected() []ExpectedOutput {
+	return testExpectedOutputs(
+		"```mermaid", "Empty mermaid should still have fence",
+		"flowchart TD", "Empty mermaid should still have flowchart declaration",
+	)
+}

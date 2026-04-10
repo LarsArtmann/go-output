@@ -77,13 +77,7 @@ func TestMermaidRendererEmpty(t *testing.T) {
 	t.Parallel()
 
 	renderer := NewMermaidRenderer()
-	testEmptyRendererOutput(t, renderer, []ExpectedOutput{
-		{Substring: "```mermaid", Message: "Empty mermaid should still have fence"},
-		{
-			Substring: "flowchart TD",
-			Message:   "Empty mermaid should still have flowchart declaration",
-		},
-	})
+	testEmptyRendererOutput(t, renderer, testMermaidEmptyExpected())
 }
 
 func TestSanitizeMermaidID(t *testing.T) {

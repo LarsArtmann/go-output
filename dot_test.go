@@ -107,10 +107,7 @@ func TestDOTRendererEmpty(t *testing.T) {
 	t.Parallel()
 
 	renderer := NewDOTRenderer()
-	testEmptyRendererOutput(t, renderer, []ExpectedOutput{
-		{Substring: "digraph G {", Message: "Empty DOT should still have digraph declaration"},
-		{Substring: "rankdir=TB", Message: "Empty DOT should have default attributes"},
-	})
+	testEmptyRendererOutput(t, renderer, testDOTEmptyExpected())
 }
 
 //nolint:exhaustruct // Test files use partial struct initialization

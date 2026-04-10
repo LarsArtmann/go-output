@@ -41,10 +41,7 @@ func TestHTMLRendererEmpty(t *testing.T) {
 	t.Parallel()
 
 	renderer := NewHTMLRenderer()
-	testEmptyRendererOutput(t, renderer, []ExpectedOutput{
-		{Substring: "<table", Message: "Empty table should still be valid HTML"},
-		{Substring: "</table>", Message: "Empty table should have closing tag"},
-	})
+	testEmptyRendererOutput(t, renderer, testHTMLEmptyExpected())
 }
 
 func TestHTMLRendererEscaping(t *testing.T) {
