@@ -245,21 +245,21 @@ func testTableDataRowColCount(t *testing.T) {
 	t.Helper()
 
 	data := NewTableData([]string{"Name", "Value", "Count"})
-	if data.ColCount() != 3 {
-		t.Errorf("ColCount() = %d, want 3", data.ColCount())
+	cc := data.ColCount()
+	if cc != 3 {
+		t.Errorf("ColCount() = %d, want 3", cc)
 	}
-
-	testAssertRowCount(t, data, 0)
+	rc := data.RowCount()
+	if rc != 0 {
+		t.Errorf("RowCount() = %d, want 0", rc)
+	}
 
 	data.AddRow([]string{"a", "b", "c"})
 	data.AddRow([]string{"d", "e", "f"})
 
-	testAssertRowCount(t, data, 2)
-}
-
-func testAssertRowCount(t *testing.T, data *TableData, want int) {
-	if data.RowCount() != want {
-		t.Errorf("RowCount() = %d, want %d", data.RowCount(), want)
+	rowCount := data.RowCount()
+	if rowCount != 2 {
+		t.Errorf("RowCount() = %d, want 2", rowCount)
 	}
 }
 

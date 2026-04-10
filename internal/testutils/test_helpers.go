@@ -99,6 +99,11 @@ func RenderMarkdownTable(headers []string, rows [][]string) string {
 	return md.Render()
 }
 
+// RenderSampleMarkdownTable returns a rendered markdown table with sample project data.
+func RenderSampleMarkdownTable() string {
+	return RenderMarkdownTable([]string{"Name", "Health"}, [][]string{{"Alpha", "90%"}})
+}
+
 // AssertEmptyRendererOutput verifies that an empty renderer produces valid output structure.
 func AssertEmptyRendererOutput(
 	t *testing.T,

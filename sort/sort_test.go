@@ -340,9 +340,7 @@ func TestToInt(t *testing.T) {
 			t.Parallel()
 
 			got, ok := toInt(tt.input)
-			if ok != tt.wantOk {
-				t.Errorf("toInt(%v) ok = %v, want %v", tt.input, ok, tt.wantOk)
-			}
+			assertOkBool(t, "toInt", tt.input, ok, tt.wantOk)
 
 			if got != tt.want {
 				t.Errorf("toInt(%v) = %v, want %v", tt.input, got, tt.want)
@@ -373,9 +371,13 @@ func TestToTime(t *testing.T) {
 			t.Parallel()
 
 			_, ok := toTime(tt.input)
-			if ok != tt.wantOk {
-				t.Errorf("toTime(%v) ok = %v, want %v", tt.input, ok, tt.wantOk)
-			}
+			assertOkBool(t, "toTime", tt.input, ok, tt.wantOk)
 		})
+	}
+}
+
+func assertOkBool(t *testing.T, name string, input any, ok, wantOk bool) {
+	if ok != wantOk {
+		t.Errorf("%s(%v) ok = %v, want %v", name, input, ok, wantOk)
 	}
 }

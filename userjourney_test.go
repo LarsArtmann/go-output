@@ -116,7 +116,7 @@ func TestRenderDataAsMarkdown(t *testing.T) {
 	t.Parallel()
 
 	// When: I render it as Markdown
-	mdStr := testutils.RenderMarkdownTable([]string{"Name", "Health"}, [][]string{{"Alpha", "90%"}})
+	mdStr := testutils.RenderSampleMarkdownTable()
 
 	// Then: I get valid Markdown table
 	testutils.AssertContains(t, mdStr, "| Name", "Markdown should contain header row")

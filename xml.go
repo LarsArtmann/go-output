@@ -13,7 +13,7 @@ func MarshalXML(v any) ([]byte, error) {
 
 // MarshalXMLIndent encodes v to indented XML.
 func MarshalXMLIndent(v any, prefix, indent string) ([]byte, error) {
-	return marshalIndent("xml", xml.MarshalIndent, v, prefix, indent)
+	return marshalXMLIndent(v, prefix, indent)
 }
 
 // XMLWriter writes XML output.

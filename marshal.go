@@ -1,6 +1,10 @@
 package output
 
-import "fmt"
+import (
+	"encoding/json"
+	"encoding/xml"
+	"fmt"
+)
 
 // unmarshal decodes data into v using the provided unmarshal function.
 func unmarshal(format string, unmarshalFn func([]byte, any) error, data []byte, v any) error {
@@ -42,4 +46,14 @@ func marshalIndent(
 	}
 
 	return data, nil
+}
+
+// marshalJSONIndent encodes v with indentation using json.MarshalIndent.
+func marshalJSONIndent(v any, prefix, indent string) ([]byte, error) {
+	return marshalIndent("json", json.MarshalIndent, v, prefix, indent)
+}
+
+// marshalXMLIndent encodes v with indentation using xml.MarshalIndent.
+func marshalXMLIndent(v any, prefix, indent string) ([]byte, error) {
+	return marshalIndent("xml", xml.MarshalIndent, v, prefix, indent)
 }

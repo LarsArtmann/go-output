@@ -13,7 +13,7 @@ func MarshalJSON(v any) ([]byte, error) {
 
 // MarshalJSONIndent encodes v to indented JSON.
 func MarshalJSONIndent(v any, prefix, indent string) ([]byte, error) {
-	return marshalIndent("json", json.MarshalIndent, v, prefix, indent)
+	return marshalJSONIndent(v, prefix, indent)
 }
 
 // UnmarshalJSON decodes JSON data into v.

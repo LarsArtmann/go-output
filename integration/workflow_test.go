@@ -25,13 +25,7 @@ func TestCSVToTableData(t *testing.T) {
 	}
 
 	// Then: Data should be properly structured
-	if data.ColCount() != 2 {
-		t.Errorf("Expected 2 columns, got %d", data.ColCount())
-	}
-
-	if data.RowCount() != 3 {
-		t.Errorf("Expected 3 rows, got %d", data.RowCount())
-	}
+	testutils.AssertTableData(t, data, 2, 3)
 }
 
 // TestTableDataToJSON tests rendering TableData as JSON.

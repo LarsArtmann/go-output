@@ -38,10 +38,7 @@ func TestJSONFormatContent(t *testing.T) {
 func TestMarkdownTableContent(t *testing.T) {
 	t.Parallel()
 
-	result := testutils.RenderMarkdownTable(
-		[]string{"Name", "Health"},
-		[][]string{{"Alpha", "90%"}},
-	)
+	result := testutils.RenderSampleMarkdownTable()
 
 	testutils.AssertContains(t, result, "| Name", "Markdown should contain header cell")
 	testutils.AssertContains(t, result, "| Alpha", "Markdown should contain row data")
