@@ -7,7 +7,6 @@ import (
 
 	"github.com/larsartmann/go-output"
 	"github.com/larsartmann/go-output/internal/testutils"
-	"github.com/larsartmann/go-output/table"
 )
 
 // sharedAlphaProject returns a test project with default values.
@@ -22,14 +21,7 @@ func TestTableFormatContent(t *testing.T) {
 
 	projects := SampleProjects()
 
-	tbl := table.New()
-	tbl.SetHeaders("Name", "Health", "Complexity")
-
-	for _, p := range projects {
-		tbl.AddRow(p.Name, formatHealth(p.Health), formatComplexity(p.Complexity))
-	}
-
-	result := tbl.Render()
+	result := renderTableFormat(projects)
 	testutils.AssertContains(t, result, "Name", "Table should contain header 'Name'")
 	testutils.AssertContains(t, result, "Alpha", "Table should contain project name 'Alpha'")
 	testutils.AssertContains(t, result, "Beta", "Table should contain project name 'Beta'")

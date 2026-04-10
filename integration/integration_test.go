@@ -224,8 +224,8 @@ func renderHTMLFormat(projects []TestProject) string {
 	html := output.NewHTMLRenderer()
 	html.SetHeaders([]string{"Name", "Health", "Complexity"})
 
-	for _, p := range projects {
-		html.AddRow([]string{p.Name, formatHealth(p.Health), formatComplexity(p.Complexity)})
+	for _, row := range formatProjectsToRows(projects) {
+		html.AddRow(row)
 	}
 
 	return html.Render()
