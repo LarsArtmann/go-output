@@ -119,17 +119,9 @@ func TestRenderDataAsMarkdown(t *testing.T) {
 	mdStr := testutils.RenderMarkdownTable([]string{"Name", "Health"}, [][]string{{"Alpha", "90%"}})
 
 	// Then: I get valid Markdown table
-	if !strings.Contains(mdStr, "| Name") {
-		t.Error("Markdown should contain header row")
-	}
-
-	if !strings.Contains(mdStr, "| Alpha") {
-		t.Error("Markdown should contain data row")
-	}
-
-	if !strings.Contains(mdStr, "|----") {
-		t.Error("Markdown should contain separator")
-	}
+	testutils.AssertContains(t, mdStr, "| Name", "Markdown should contain header row")
+	testutils.AssertContains(t, mdStr, "| Alpha", "Markdown should contain data row")
+	testutils.AssertContains(t, mdStr, "|----", "Markdown should contain separator")
 }
 
 func TestRenderDataAsYAML(t *testing.T) {

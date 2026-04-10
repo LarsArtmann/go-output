@@ -90,8 +90,7 @@ func renderTable(projects []Project) {
 func renderJSON(projects []Project) {
 	data, err := output.MarshalJSONIndent(projects, "", "  ")
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-		os.Exit(1)
+		handleError(err)
 	}
 
 	fmt.Println(string(data))
@@ -113,6 +112,18 @@ func renderMarkdown(projects []Project) {
 
 // projectHeaders defines the common headers for project data.
 var projectHeaders = []string{"Name", "Health", "Complexity"}
+
+// handleError prints the error to stderr and exits with code 1.
+func handleError(err error) {
+	fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+	os.Exit(1)
+}
+
+// handleErrorWithContext prints the error with context to stderr and exits with code 1.
+func handleErrorWithContext(context string, err error) {
+	fmt.Fprintf(os.Stderr, "%s: %v\n", context, err)
+	os.Exit(1)
+}
 
 // projectToRow converts a Project to a row slice.
 func projectToRow(p Project) []string {
@@ -159,15 +170,13 @@ type writer interface {
 func renderDelimited(w writer, projects []Project) {
 	err := w.WriteHeader(projectHeaders)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error writing header: %v\n", err)
-		os.Exit(1)
+		handleErrorWithContext("Error writing header", err)
 	}
 
 	for _, p := range projects {
 		err := w.WriteRow(projectToRow(p))
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error writing row: %v\n", err)
-			os.Exit(1)
+			handleErrorWithContext("Error writing row", err)
 		}
 	}
 
@@ -175,25 +184,16 @@ func renderDelimited(w writer, projects []Project) {
 
 	err = w.Error()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error flushing: %v\n", err)
-		os.Exit(1)
+		handleErrorWithContext("Error flushing", err)
 	}
 }
 
 func renderXML(projects []Project) {
-	data := output.NewTableData([]string{"Name", "Health", "Complexity"})
-	for _, p := range projects {
-		data.AddRow([]string{
-			p.Name,
-			strconv.Itoa(p.Health),
-			strconv.Itoa(p.Complexity),
-		})
-	}
+	data := projectsToTableData(projects)
 
 	xmlData, err := output.MarshalXMLFromTableData(data)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-		os.Exit(1)
+		handleError(err)
 	}
 
 	fmt.Println(string(xmlData))
@@ -202,8 +202,7 @@ func renderXML(projects []Project) {
 func renderYAML(projects []Project) {
 	data, err := output.MarshalYAML(projects)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-		os.Exit(1)
+		handleError(err)
 	}
 
 	fmt.Println(string(data))

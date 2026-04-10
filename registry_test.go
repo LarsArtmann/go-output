@@ -27,13 +27,17 @@ func testRegisterAndVerify(t *testing.T, format OutputFormat, output string) {
 	}
 }
 
+func registerFormatForTest(format OutputFormat, output string) {
+	_ = Register(format, func() Renderer {
+		return &testRenderer{output: output}
+	})
+}
+
 func TestRegisterDuplicate(t *testing.T) {
 	t.Parallel()
 	Unregister(FormatCSV)
 
-	_ = Register(FormatCSV, func() Renderer {
-		return &testRenderer{output: "csv1"}
-	})
+	registerFormatForTest(FormatCSV, "csv1")
 
 	err := Register(FormatCSV, func() Renderer {
 		return &testRenderer{output: "csv2"}
@@ -46,9 +50,7 @@ func TestRegisterDuplicate(t *testing.T) {
 func TestUnregister(t *testing.T) {
 	t.Parallel()
 	Unregister(FormatYAML)
-	_ = Register(FormatYAML, func() Renderer {
-		return &testRenderer{output: "yaml"}
-	})
+	registerFormatForTest(FormatYAML, "yaml")
 
 	Unregister(FormatYAML)
 
@@ -147,7 +149,7 @@ func TestRegistryConcurrency(t *testing.T) {
 	for range 10 {
 		wg.Go(func() {
 			for range 100 {
-				_ = Register(FormatCSV, func() Renderer { return &testRenderer{output: "csv"} })
+				registerFormatForTest(FormatCSV, "csv")
 				Unregister(FormatCSV)
 			}
 		})

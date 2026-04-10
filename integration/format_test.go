@@ -3,10 +3,10 @@ package integration
 
 import (
 	"slices"
-	"strings"
 	"testing"
 
 	"github.com/larsartmann/go-output"
+	"github.com/larsartmann/go-output/internal/testutils"
 )
 
 func TestFormatParseRoundtrip(t *testing.T) {
@@ -44,13 +44,13 @@ func TestInvalidFormatError(t *testing.T) {
 	}
 	result := err.Error()
 
-	if !strings.Contains(result, "invalid format") {
-		t.Error("Error message should contain 'invalid format'")
-	}
-
-	if !strings.Contains(result, "invalid") {
-		t.Error("Error message should contain the invalid value")
-	}
+	testutils.AssertContains(
+		t,
+		result,
+		"invalid format",
+		"Error message should contain 'invalid format'",
+	)
+	testutils.AssertContains(t, result, "invalid", "Error message should contain the invalid value")
 }
 
 func TestFormatCategories(t *testing.T) {

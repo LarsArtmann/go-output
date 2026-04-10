@@ -11,17 +11,21 @@ import (
 	"github.com/larsartmann/go-output/sort"
 )
 
+// sharedTestData contains common test data used across workflow tests.
+func sharedTestData() (headers []string, rows [][]string) {
+	return []string{"Name", "Value"}, [][]string{
+		{"Alpha", "100"},
+		{"Beta", "200"},
+		{"Gamma", "150"},
+	}
+}
+
 // TestCSVToTableData tests converting CSV data to TableData.
 func TestCSVToTableData(t *testing.T) {
 	t.Parallel()
 
 	// Given: Raw CSV-like data
-	headers := []string{"Name", "Value"}
-	rows := [][]string{
-		{"Alpha", "100"},
-		{"Beta", "200"},
-		{"Gamma", "150"},
-	}
+	headers, rows := sharedTestData()
 
 	// When: I convert CSV data to TableData
 	data := output.NewTableData(headers)
@@ -44,12 +48,7 @@ func TestTableDataToJSON(t *testing.T) {
 	t.Parallel()
 
 	// Given: TableData
-	headers := []string{"Name", "Value"}
-	rows := [][]string{
-		{"Alpha", "100"},
-		{"Beta", "200"},
-		{"Gamma", "150"},
-	}
+	headers, rows := sharedTestData()
 
 	data := output.NewTableData(headers)
 	for _, row := range rows {
@@ -73,12 +72,7 @@ func TestTableDataToYAML(t *testing.T) {
 	t.Parallel()
 
 	// Given: TableData
-	headers := []string{"Name", "Value"}
-	rows := [][]string{
-		{"Alpha", "100"},
-		{"Beta", "200"},
-		{"Gamma", "150"},
-	}
+	headers, rows := sharedTestData()
 
 	data := output.NewTableData(headers)
 	for _, row := range rows {

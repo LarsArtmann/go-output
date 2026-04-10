@@ -102,13 +102,16 @@ func TestColorModeFlag_Parse(t *testing.T) {
 	testParseHelper(t, "ColorModeFlag", NewColorModeFlag, tests)
 }
 
-func TestColorModeFlag_AllowedValues(t *testing.T) {
-	t.Parallel()
+func testAllowedValuesHelper[T EnumValue](
+	t *testing.T,
+	newFlag func(*T) *EnumFlag[T],
+	want []string,
+) {
+	t.Helper()
 
-	val := output.ColorModeAuto
-	flag := NewColorModeFlag(&val)
+	var val T
+	flag := newFlag(&val)
 	got := flag.AllowedValues()
-	want := []string{"auto", "always", "never"}
 
 	if len(got) != len(want) {
 		t.Errorf("AllowedValues() returned %d values, want %d", len(got), len(want))
@@ -119,6 +122,11 @@ func TestColorModeFlag_AllowedValues(t *testing.T) {
 			t.Errorf("AllowedValues()[%d] = %v, want %v", i, v, want[i])
 		}
 	}
+}
+
+func TestColorModeFlag_AllowedValues(t *testing.T) {
+	t.Parallel()
+	testAllowedValuesHelper(t, NewColorModeFlag, []string{"auto", "always", "never"})
 }
 
 func testDefaultHelper[T EnumValue](
@@ -169,11 +177,7 @@ func TestOutputFormatFlag_Parse(t *testing.T) {
 
 func TestOutputFormatFlag_AllowedValues(t *testing.T) {
 	t.Parallel()
-
-	val := output.FormatTable
-	flag := NewOutputFormatFlag(&val)
-	got := flag.AllowedValues()
-	want := []string{
+	testAllowedValuesHelper(t, NewOutputFormatFlag, []string{
 		"table",
 		"json",
 		"csv",
@@ -186,17 +190,7 @@ func TestOutputFormatFlag_AllowedValues(t *testing.T) {
 		"tree",
 		"mermaid",
 		"dot",
-	}
-
-	if len(got) != len(want) {
-		t.Errorf("AllowedValues() returned %d values, want %d", len(got), len(want))
-	}
-
-	for i, v := range got {
-		if v != want[i] {
-			t.Errorf("AllowedValues()[%d] = %v, want %v", i, v, want[i])
-		}
-	}
+	})
 }
 
 func TestOutputFormatFlag_Default(t *testing.T) {
@@ -228,21 +222,11 @@ func TestSortByFlag_Parse(t *testing.T) {
 
 func TestSortByFlag_AllowedValues(t *testing.T) {
 	t.Parallel()
-
-	val := output.SortByName
-	flag := NewSortByFlag(&val)
-	got := flag.AllowedValues()
-	want := []string{"name", "importance", "created_at", "updated_at", "health", "complexity"}
-
-	if len(got) != len(want) {
-		t.Errorf("AllowedValues() returned %d values, want %d", len(got), len(want))
-	}
-
-	for i, v := range got {
-		if v != want[i] {
-			t.Errorf("AllowedValues()[%d] = %v, want %v", i, v, want[i])
-		}
-	}
+	testAllowedValuesHelper(
+		t,
+		NewSortByFlag,
+		[]string{"name", "importance", "created_at", "updated_at", "health", "complexity"},
+	)
 }
 
 func TestSortByFlag_Default(t *testing.T) {

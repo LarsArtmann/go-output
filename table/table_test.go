@@ -114,13 +114,10 @@ func TestRender(t *testing.T) {
 		t.Error("Render() should not return empty string")
 	}
 
-	if !strings.Contains(output, "Name") || !strings.Contains(output, "Status") {
-		t.Error("Render() should contain headers")
-	}
-
-	if !strings.Contains(output, "Project A") || !strings.Contains(output, "Active") {
-		t.Error("Render() should contain row data")
-	}
+	assertTableContains(t, output, "Name", "Render() should contain headers")
+	assertTableContains(t, output, "Status", "Render() should contain headers")
+	assertTableContains(t, output, "Project A", "Render() should contain row data")
+	assertTableContains(t, output, "Active", "Render() should contain row data")
 }
 
 func TestChaining(t *testing.T) {
@@ -132,13 +129,10 @@ func TestChaining(t *testing.T) {
 		AddRow("2", "Second").
 		Render()
 
-	if !strings.Contains(output, "ID") || !strings.Contains(output, "Name") {
-		t.Error("Chained Render() should contain headers")
-	}
-
-	if !strings.Contains(output, "First") || !strings.Contains(output, "Second") {
-		t.Error("Chained Render() should contain row data")
-	}
+	assertTableContains(t, output, "ID", "Chained Render() should contain headers")
+	assertTableContains(t, output, "Name", "Chained Render() should contain headers")
+	assertTableContains(t, output, "First", "Chained Render() should contain row data")
+	assertTableContains(t, output, "Second", "Chained Render() should contain row data")
 }
 
 func TestEmptyTable(t *testing.T) {
@@ -160,7 +154,6 @@ func TestHeadersOnlyNoRows(t *testing.T) {
 	tbl.SetHeaders("Only", "Headers")
 	output := tbl.Render()
 
-	if !strings.Contains(output, "Only") || !strings.Contains(output, "Headers") {
-		t.Error("Render() should contain headers even without rows")
-	}
+	assertTableContains(t, output, "Only", "Render() should contain headers even without rows")
+	assertTableContains(t, output, "Headers", "Render() should contain headers even without rows")
 }

@@ -174,14 +174,26 @@ func BenchmarkMarkdownTable(b *testing.B) {
 	}
 }
 
-type BenchmarkData struct {
-	ID        int
-	Name      string
-	Items     []string
-	Count     int
-	Active    bool
-	CreatedAt string
-	UpdatedAt string
+// BenchmarkStruct is used for JSON unmarshal benchmarks.
+type BenchmarkStruct struct {
+	ID        int      `json:"id"`
+	Name      string   `json:"name"`
+	Items     []string `json:"items"`
+	Count     int      `json:"count"`
+	Active    bool     `json:"active"`
+	CreatedAt string   `json:"created_at"`
+	UpdatedAt string   `json:"updated_at"`
+}
+
+// BenchmarkYAMLStruct is used for YAML unmarshal benchmarks.
+type BenchmarkYAMLStruct struct {
+	ID        int      `yaml:"id"`
+	Name      string   `yaml:"name"`
+	Items     []string `yaml:"items"`
+	Count     int      `yaml:"count"`
+	Active    bool     `yaml:"active"`
+	CreatedAt string   `yaml:"created_at"`
+	UpdatedAt string   `yaml:"updated_at"`
 }
 
 func NewBenchmarkData() BenchmarkData {

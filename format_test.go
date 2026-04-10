@@ -256,15 +256,17 @@ func testTableDataRowColCount(t *testing.T) {
 		t.Errorf("ColCount() = %d, want 3", data.ColCount())
 	}
 
-	if data.RowCount() != 0 {
-		t.Errorf("RowCount() = %d, want 0", data.RowCount())
-	}
+	testAssertRowCount(t, data, 0)
 
 	data.AddRow([]string{"a", "b", "c"})
 	data.AddRow([]string{"d", "e", "f"})
 
-	if data.RowCount() != 2 {
-		t.Errorf("RowCount() = %d, want 2", data.RowCount())
+	testAssertRowCount(t, data, 2)
+}
+
+func testAssertRowCount(t *testing.T, data *TableData, want int) {
+	if data.RowCount() != want {
+		t.Errorf("RowCount() = %d, want %d", data.RowCount(), want)
 	}
 }
 
@@ -276,27 +278,27 @@ func testTableDataCreateRowEdges(t *testing.T) {
 	t.Run("multiple rows", testCreateRowEdgesMultiple)
 }
 
+func testAssertNilRowEdges(t *testing.T, data *TableData, desc string) {
+	if edges := data.CreateRowEdges(); edges != nil {
+		t.Errorf("CreateRowEdges() on %s = %v, want nil", desc, edges)
+	}
+}
+
 func testCreateRowEdgesNil(t *testing.T) {
 	var data *TableData
-	if edges := data.CreateRowEdges(); edges != nil {
-		t.Errorf("CreateRowEdges() on nil = %v, want nil", edges)
-	}
+	testAssertNilRowEdges(t, data, "nil")
 }
 
 func testCreateRowEdgesEmpty(t *testing.T) {
 	data := NewTableData([]string{"Name"})
-	if edges := data.CreateRowEdges(); edges != nil {
-		t.Errorf("CreateRowEdges() on empty = %v, want nil", edges)
-	}
+	testAssertNilRowEdges(t, data, "empty")
 }
 
 func testCreateRowEdgesSingle(t *testing.T) {
 	data := NewTableData([]string{"Name"})
 	data.AddRow([]string{"a"})
 
-	if edges := data.CreateRowEdges(); edges != nil {
-		t.Errorf("CreateRowEdges() on single row = %v, want nil", edges)
-	}
+	testAssertNilRowEdges(t, data, "single row")
 }
 
 func testCreateRowEdgesMultiple(t *testing.T) {

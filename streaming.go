@@ -123,8 +123,8 @@ func (r *StreamingHTMLRenderer) writeRows(w io.Writer) error {
 }
 
 func (r *StreamingHTMLRenderer) writeRow(w io.Writer, row []string, rowIndex int) error {
-	if _, err := w.Write([]byte("<tr>\n")); err != nil {
-		return fmt.Errorf("write row %d start: %w", rowIndex, err)
+	if err := r.writeChunkWithError(w, []byte("<tr>\n"), rowIndex, "start"); err != nil {
+		return err
 	}
 
 	for colIndex, cell := range row {
@@ -133,8 +133,18 @@ func (r *StreamingHTMLRenderer) writeRow(w io.Writer, row []string, rowIndex int
 		}
 	}
 
-	if _, err := w.Write([]byte("</tr>\n")); err != nil {
-		return fmt.Errorf("write row %d end: %w", rowIndex, err)
+	return r.writeChunkWithError(w, []byte("</tr>\n"), rowIndex, "end")
+}
+
+func (r *StreamingHTMLRenderer) writeChunkWithError(
+	w io.Writer,
+	chunk []byte,
+	rowIndex int,
+	location string,
+) error {
+	_, err := w.Write(chunk)
+	if err != nil {
+		return fmt.Errorf("write row %d %s: %w", rowIndex, location, err)
 	}
 
 	return nil

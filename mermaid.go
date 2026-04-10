@@ -13,10 +13,7 @@ type MermaidRenderer struct {
 // NewMermaidRenderer creates a new MermaidRenderer.
 func NewMermaidRenderer() *MermaidRenderer {
 	return &MermaidRenderer{
-		GraphRendererMixin: GraphRendererMixin{
-			nodes: make([]GraphNode, 0),
-			edges: make([]GraphEdge, 0),
-		},
+		GraphRendererMixin: NewGraphRendererMixin(),
 	}
 }
 

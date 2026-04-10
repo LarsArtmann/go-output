@@ -3,7 +3,6 @@ package integration
 
 import (
 	"bytes"
-	"strings"
 	"testing"
 
 	"github.com/larsartmann/go-output"
@@ -79,13 +78,8 @@ func TestCSVFormatContent(t *testing.T) {
 	w.Flush()
 
 	result := buf.String()
-	if !strings.Contains(result, "Name,Health") {
-		t.Error("CSV should contain header row")
-	}
-
-	if !strings.Contains(result, "Alpha,90") {
-		t.Error("CSV should contain data row")
-	}
+	testutils.AssertContains(t, result, "Name,Health", "CSV should contain header row")
+	testutils.AssertContains(t, result, "Alpha,90", "CSV should contain data row")
 }
 
 func TestYAMLFormatContent(t *testing.T) {

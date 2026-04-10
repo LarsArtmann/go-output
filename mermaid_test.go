@@ -3,6 +3,8 @@ package output
 import (
 	"strings"
 	"testing"
+
+	"github.com/larsartmann/go-output/internal/testutils"
 )
 
 //nolint:exhaustruct // Test files use partial struct initialization
@@ -10,24 +12,8 @@ func TestMermaidRenderer(t *testing.T) {
 	t.Parallel()
 
 	renderer := NewMermaidRenderer()
-	renderer.SetNodes([]GraphNode{
-		{
-			ID:    NewBrandedID[GraphNodeIDBrand]("A"),
-			Label: NewBrandedID[GraphNodeLabelBrand]("Node A"),
-		},
-		{
-			ID:    NewBrandedID[GraphNodeIDBrand]("B"),
-			Label: NewBrandedID[GraphNodeLabelBrand]("Node B"),
-		},
-		{
-			ID:    NewBrandedID[GraphNodeIDBrand]("C"),
-			Label: NewBrandedID[GraphNodeLabelBrand]("Node C"),
-		},
-	})
-	renderer.SetEdges([]GraphEdge{
-		{From: NewBrandedID[GraphNodeIDBrand]("A"), To: NewBrandedID[GraphNodeIDBrand]("B")},
-		{From: NewBrandedID[GraphNodeIDBrand]("B"), To: NewBrandedID[GraphNodeIDBrand]("C")},
-	})
+	renderer.SetNodes(testutils.CreateTestNodesABC())
+	renderer.SetEdges(testutils.CreateTestEdgesABC())
 
 	output := renderer.Render()
 

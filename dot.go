@@ -11,6 +11,14 @@ type GraphRendererMixin struct {
 	edges []GraphEdge
 }
 
+// NewGraphRendererMixin creates a new GraphRendererMixin with initialized slices.
+func NewGraphRendererMixin() GraphRendererMixin {
+	return GraphRendererMixin{
+		nodes: make([]GraphNode, 0),
+		edges: make([]GraphEdge, 0),
+	}
+}
+
 // SetNodes sets the graph nodes.
 func (m *GraphRendererMixin) SetNodes(nodes []GraphNode) {
 	m.nodes = nodes
@@ -43,12 +51,9 @@ type DOTRenderer struct {
 // newDOTRenderer creates a new DOTRenderer with the specified direction.
 func newDOTRenderer(directed bool) *DOTRenderer {
 	return &DOTRenderer{
-		GraphRendererMixin: GraphRendererMixin{
-			nodes: make([]GraphNode, 0),
-			edges: make([]GraphEdge, 0),
-		},
-		directed: directed,
-		graphID:  "G",
+		GraphRendererMixin: NewGraphRendererMixin(),
+		directed:           directed,
+		graphID:            "G",
 	}
 }
 

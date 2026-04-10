@@ -85,16 +85,6 @@ func BenchmarkMarshalYAML(b *testing.B) {
 	}
 }
 
-type yamlBenchmarkStruct struct {
-	ID        int      `yaml:"id"`
-	Name      string   `yaml:"name"`
-	Items     []string `yaml:"items"`
-	Count     int      `yaml:"count"`
-	Active    bool     `yaml:"active"`
-	CreatedAt string   `yaml:"created_at"`
-	UpdatedAt string   `yaml:"updated_at"`
-}
-
 func BenchmarkUnmarshalYAML(b *testing.B) {
 	yamlData := []byte(`id: 12345
 name: Test Project Alpha
@@ -110,7 +100,7 @@ created_at: "2026-03-22T10:00:00Z"
 updated_at: "2026-03-22T12:00:00Z"`)
 
 	for b.Loop() {
-		var result yamlBenchmarkStruct
+		var result BenchmarkYAMLStruct
 
 		_ = UnmarshalYAML(yamlData, &result)
 	}

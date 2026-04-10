@@ -155,10 +155,6 @@ func TestNewJSONWriter(t *testing.T) {
 	}
 }
 
-func newBenchmarkData() BenchmarkData {
-	return NewBenchmarkData()
-}
-
 func BenchmarkMarshalJSON(b *testing.B) {
 	data := NewBenchmarkData()
 
@@ -175,23 +171,13 @@ func BenchmarkMarshalJSONIndent(b *testing.B) {
 	}
 }
 
-type jsonBenchmarkStruct struct {
-	ID        int      `json:"id"`
-	Name      string   `json:"name"`
-	Items     []string `json:"items"`
-	Count     int      `json:"count"`
-	Active    bool     `json:"active"`
-	CreatedAt string   `json:"created_at"`
-	UpdatedAt string   `json:"updated_at"`
-}
-
 func BenchmarkUnmarshalJSON(b *testing.B) {
 	jsonData := []byte(
 		`{"id":12345,"name":"Test Project Alpha","items":["item1","item2","item3","item4","item5"],"count":100,"active":true,"created_at":"2026-03-22T10:00:00Z","updated_at":"2026-03-22T12:00:00Z"}`,
 	)
 
 	for b.Loop() {
-		var result jsonBenchmarkStruct
+		var result BenchmarkStruct
 
 		_ = UnmarshalJSON(jsonData, &result)
 	}
