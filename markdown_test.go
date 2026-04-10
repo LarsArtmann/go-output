@@ -2,7 +2,6 @@ package output
 
 import (
 	"testing"
-
 )
 
 func TestMarkdownTable(t *testing.T) {

@@ -26,8 +26,9 @@ const (
 	FormatDOT      Format = "dot"
 )
 
-//nolint:gochecknoglobals // Global variable used for value iteration.
-var formatValues = []Format{
+// AllFormats contains all valid output format values.
+// Use this for testing AllowedValues or generating help text.
+var AllFormats = []Format{
 	FormatTable,
 	FormatJSON,
 	FormatCSV,
@@ -44,9 +45,9 @@ var formatValues = []Format{
 
 // ParseFormat converts a string to Format, returning an error if invalid.
 func ParseFormat(s string) (Format, error) {
-	v, err := enum.Parse(formatValues, s, func(f Format) string { return string(f) })
+	v, err := enum.Parse(AllFormats, s, func(f Format) string { return string(f) })
 	if err != nil {
-		return "", &InvalidFormatError{Value: s, Allowed: formatValues}
+		return "", &InvalidFormatError{Value: s, Allowed: AllFormats}
 	}
 
 	return v, nil
@@ -59,12 +60,12 @@ func (f Format) String() string {
 
 // AllowedValues returns all valid output format values for CLI help text.
 func (f Format) AllowedValues() []string {
-	return enum.AllowedValues(formatValues)
+	return enum.AllowedValues(AllFormats)
 }
 
 // IsValid returns true if the format is a valid Format value.
 func (f Format) IsValid() bool {
-	return enum.Contains(formatValues, f)
+	return enum.Contains(AllFormats, f)
 }
 
 // FormatCategory represents a category for format classification.

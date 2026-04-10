@@ -59,9 +59,8 @@ func TestMarshalJSON(t *testing.T) {
 			t.Parallel()
 
 			got, err := MarshalJSON(tt.input)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("MarshalJSON() error = %v, wantErr %v", err, tt.wantErr)
-
+			assertMarshalError(t, "MarshalJSON", err, tt.wantErr)
+			if tt.wantErr {
 				return
 			}
 

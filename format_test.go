@@ -44,24 +44,17 @@ func TestOutputFormatString(t *testing.T) {
 }
 
 func TestOutputFormatAllowedValues(t *testing.T) {
+	// Generate expected list from AllFormats to avoid hardcoding
+	want := make([]string, len(AllFormats))
+	for i, f := range AllFormats {
+		want[i] = string(f)
+	}
+
 	testAllowedValues(
 		t,
 		"AllowedValues",
 		OutputFormatTable.AllowedValues(),
-		[]string{
-			"table",
-			"json",
-			"csv",
-			"tsv",
-			"markdown",
-			"xml",
-			"d2",
-			"yaml",
-			"html",
-			"tree",
-			"mermaid",
-			"dot",
-		},
+		want,
 	)
 }
 

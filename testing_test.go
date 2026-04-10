@@ -93,17 +93,7 @@ func testAllowedValues(
 	t.Run(name, func(t *testing.T) {
 		t.Parallel()
 
-		if len(got) != len(want) {
-			t.Errorf("AllowedValues() returned %d values, want %d", len(got), len(want))
-
-			return
-		}
-
-		for i, v := range got {
-			if v != want[i] {
-				t.Errorf("AllowedValues()[%d] = %v, want %v", i, v, want[i])
-			}
-		}
+		assertStringSliceEqual(t, name, got, want)
 	})
 }
 

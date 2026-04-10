@@ -5,6 +5,18 @@ import (
 	"testing"
 
 	"github.com/larsartmann/go-output"
+	"github.com/larsartmann/go-output/internal/gentest"
+)
+
+// Re-export generic helpers from gentest for convenience
+type (
+	ExpectedOutput         = gentest.ExpectedOutput
+	HTMLEscapeTestRenderer = gentest.HTMLEscapeTestRenderer
+)
+
+var (
+	AssertContains   = gentest.AssertContains
+	AssertHTMLEscape = gentest.AssertHTMLEscape
 )
 
 // CreateTestNode creates a GraphNode with the given ID and label.
@@ -87,21 +99,6 @@ func RenderMarkdownTable(headers []string, rows [][]string) string {
 	return md.Render()
 }
 
-// ExpectedOutput contains a substring to check and its corresponding error message.
-type ExpectedOutput struct {
-	Substring string
-	Message   string
-}
-
-// AssertContains checks that output contains substr, failing with msg if not.
-func AssertContains(t *testing.T, output, substr, msg string) {
-	t.Helper()
-
-	if !strings.Contains(output, substr) {
-		t.Error(msg)
-	}
-}
-
 // AssertEmptyRendererOutput verifies that an empty renderer produces valid output structure.
 func AssertEmptyRendererOutput(
 	t *testing.T,
@@ -115,31 +112,5 @@ func AssertEmptyRendererOutput(
 		if !strings.Contains(out, expected.Substring) {
 			t.Error(expected.Message)
 		}
-	}
-}
-
-// HTMLEscapeTestRenderer is an interface for HTML renderers that support escaping tests.
-type HTMLEscapeTestRenderer interface {
-	SetHeaders([]string)
-	AddRow([]string)
-	Render() string
-}
-
-// AssertHTMLEscape verifies that a renderer properly escapes HTML content.
-func AssertHTMLEscape(t *testing.T, newRenderer func() HTMLEscapeTestRenderer, name string) {
-	t.Helper()
-
-	r := newRenderer()
-	r.SetHeaders([]string{"Name"})
-	r.AddRow([]string{"<script>alert('xss')</script>"})
-
-	got := r.Render()
-
-	if strings.Contains(got, "<script>") {
-		t.Errorf("%s: Render() should escape script tags", name)
-	}
-
-	if !strings.Contains(got, "&lt;script&gt;") {
-		t.Errorf("%s: Render() should contain escaped script tag", name)
 	}
 }

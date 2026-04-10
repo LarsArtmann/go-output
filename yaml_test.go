@@ -34,9 +34,8 @@ func TestMarshalYAML(t *testing.T) {
 			t.Parallel()
 
 			got, err := MarshalYAML(tt.input)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("MarshalYAML() error = %v, wantErr %v", err, tt.wantErr)
-
+			assertMarshalError(t, "MarshalYAML", err, tt.wantErr)
+			if tt.wantErr {
 				return
 			}
 

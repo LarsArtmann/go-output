@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/larsartmann/go-output"
+	"github.com/larsartmann/go-output/internal/gentest"
 )
 
 func testParseHelper[T EnumValue](
@@ -110,18 +111,11 @@ func testAllowedValuesHelper[T EnumValue](
 	t.Helper()
 
 	var val T
+
 	flag := newFlag(&val)
 	got := flag.AllowedValues()
 
-	if len(got) != len(want) {
-		t.Errorf("AllowedValues() returned %d values, want %d", len(got), len(want))
-	}
-
-	for i, v := range got {
-		if v != want[i] {
-			t.Errorf("AllowedValues()[%d] = %v, want %v", i, v, want[i])
-		}
-	}
+	gentest.AssertStringSliceEqual(t, "AllowedValues", got, want)
 }
 
 func TestColorModeFlag_AllowedValues(t *testing.T) {
@@ -177,20 +171,14 @@ func TestOutputFormatFlag_Parse(t *testing.T) {
 
 func TestOutputFormatFlag_AllowedValues(t *testing.T) {
 	t.Parallel()
-	testAllowedValuesHelper(t, NewOutputFormatFlag, []string{
-		"table",
-		"json",
-		"csv",
-		"tsv",
-		"markdown",
-		"xml",
-		"d2",
-		"yaml",
-		"html",
-		"tree",
-		"mermaid",
-		"dot",
-	})
+
+	// Generate expected list from output.AllFormats to avoid hardcoding
+	want := make([]string, len(output.AllFormats))
+	for i, f := range output.AllFormats {
+		want[i] = string(f)
+	}
+
+	testAllowedValuesHelper(t, NewOutputFormatFlag, want)
 }
 
 func TestOutputFormatFlag_Default(t *testing.T) {

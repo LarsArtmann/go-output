@@ -3,7 +3,6 @@ package output
 import (
 	"strings"
 	"testing"
-
 )
 
 func TestHTMLRenderer(t *testing.T) {

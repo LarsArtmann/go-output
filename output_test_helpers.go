@@ -3,21 +3,26 @@ package output
 import (
 	"strings"
 	"testing"
+
+	"github.com/larsartmann/go-output/internal/gentest"
 )
 
-// ExpectedOutput contains a substring to check and its corresponding error message.
-type ExpectedOutput struct {
-	Substring string
-	Message   string
-}
+// Re-export generic helpers from gentest for use by package output tests.
+// This avoids code duplication while maintaining the unexported API.
+type (
+	ExpectedOutput         = gentest.ExpectedOutput
+	htmlEscapeTestRenderer = gentest.HTMLEscapeTestRenderer
+)
 
-// assertContains checks that output contains substr, failing with msg if not.
-func assertContains(t *testing.T, output, substr, msg string) {
-	t.Helper()
+//nolint:gochecknoglobals // Re-exported test helpers for package-local use
+var (
+	assertContains         = gentest.AssertContains
+	assertMarshalError     = gentest.AssertMarshalError
+	assertStringSliceEqual = gentest.AssertStringSliceEqual
+)
 
-	if !strings.Contains(output, substr) {
-		t.Error(msg)
-	}
+func testHTMLEscapeShared(t *testing.T, newRenderer func() gentest.HTMLEscapeTestRenderer, name string) {
+	gentest.AssertHTMLEscape(t, newRenderer, name)
 }
 
 // testNodesAB returns a slice of GraphNode with nodes A and B for testing.
@@ -65,7 +70,7 @@ func testEdgesABC() []GraphEdge {
 }
 
 // testEmptyRendererOutput verifies that an empty renderer produces valid output structure.
-func testEmptyRendererOutput(t *testing.T, renderer Renderer, expectedOutputs []ExpectedOutput) {
+func testEmptyRendererOutput(t *testing.T, renderer Renderer, expectedOutputs []gentest.ExpectedOutput) {
 	t.Helper()
 
 	output := renderer.Render()
@@ -90,32 +95,6 @@ func testSanitizeFunc(
 		if got != tt.want {
 			t.Errorf("%s(%q) = %q, want %q", name, tt.input, got, tt.want)
 		}
-	}
-}
-
-// htmlEscapeTestRenderer is an interface for HTML renderers that support escaping tests.
-type htmlEscapeTestRenderer interface {
-	SetHeaders([]string)
-	AddRow([]string)
-	Render() string
-}
-
-// testHTMLEscapeShared is a shared helper for testing HTML escaping in renderers.
-func testHTMLEscapeShared(t *testing.T, newRenderer func() htmlEscapeTestRenderer, name string) {
-	t.Helper()
-
-	r := newRenderer()
-	r.SetHeaders([]string{"Name"})
-	r.AddRow([]string{"<script>alert('xss')</script>"})
-
-	got := r.Render()
-
-	if strings.Contains(got, "<script>") {
-		t.Errorf("%s: Render() should escape script tags", name)
-	}
-
-	if !strings.Contains(got, "&lt;script&gt;") {
-		t.Errorf("%s: Render() should contain escaped script tag", name)
 	}
 }
 
