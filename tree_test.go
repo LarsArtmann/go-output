@@ -114,15 +114,5 @@ func TestTreeNodeDepth(t *testing.T) {
 	child.AddChild(grandchild)
 	root.AddChild(child)
 
-	if root.Depth() != 0 {
-		t.Errorf("Root depth should be 0, got %d", root.Depth())
-	}
-
-	if child.Depth() != 1 {
-		t.Errorf("Child depth should be 1, got %d", child.Depth())
-	}
-
-	if grandchild.Depth() != 2 {
-		t.Errorf("Grandchild depth should be 2, got %d", grandchild.Depth())
-	}
+	testTreeNodeDepth(t, root, child, grandchild)
 }
