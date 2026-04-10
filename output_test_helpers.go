@@ -23,14 +23,16 @@ func assertContains(t *testing.T, output, substr, msg string) {
 // testNodesAB returns a slice of GraphNode with nodes A and B for testing.
 func testNodesAB() []GraphNode {
 	return []GraphNode{
-		{
-			ID:    NewBrandedID[GraphNodeIDBrand]("A"),
-			Label: NewBrandedID[GraphNodeLabelBrand]("Node A"),
-		},
-		{
-			ID:    NewBrandedID[GraphNodeIDBrand]("B"),
-			Label: NewBrandedID[GraphNodeLabelBrand]("Node B"),
-		},
+		newTestNode("A", "Node A"),
+		newTestNode("B", "Node B"),
+	}
+}
+
+// newTestNode creates a GraphNode with the given ID and label for testing.
+func newTestNode(id, label string) GraphNode {
+	return GraphNode{
+		ID:    NewBrandedID[GraphNodeIDBrand](id),
+		Label: NewBrandedID[GraphNodeLabelBrand](label),
 	}
 }
 
@@ -40,6 +42,25 @@ func testEdgeAB(label string) GraphEdge {
 		From:  NewBrandedID[GraphNodeIDBrand]("A"),
 		To:    NewBrandedID[GraphNodeIDBrand]("B"),
 		Label: NewBrandedID[GraphNodeLabelBrand](label),
+	}
+}
+
+// testEdgesAB returns a slice with a single edge from A to B.
+func testEdgesAB() []GraphEdge {
+	return []GraphEdge{testEdgeAB("")}
+}
+
+// testNodesABC returns a slice of GraphNode with nodes A, B, and C.
+func testNodesABC() []GraphNode {
+	nodes := testNodesAB()
+	return append(nodes, newTestNode("C", "Node C"))
+}
+
+// testEdgesABC returns edges A->B and B->C.
+func testEdgesABC() []GraphEdge {
+	return []GraphEdge{
+		testEdgeAB(""),
+		{From: NewBrandedID[GraphNodeIDBrand]("B"), To: NewBrandedID[GraphNodeIDBrand]("C")},
 	}
 }
 
@@ -72,8 +93,8 @@ func testSanitizeFunc(
 	}
 }
 
-// testTreeNodeDepth verifies the depth of tree nodes in a hierarchy.
-func testTreeNodeDepth(t *testing.T, root, child, grandchild *TreeNode) {
+// AssertTreeNodeDepth verifies the depth of tree nodes in a hierarchy.
+func AssertTreeNodeDepth(t *testing.T, root, child, grandchild *TreeNode) {
 	t.Helper()
 
 	if root.Depth() != 0 {

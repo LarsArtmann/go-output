@@ -2,6 +2,7 @@ package output
 
 import (
 	"testing"
+
 )
 
 func TestASCIITreeRenderer(t *testing.T) {
@@ -114,5 +115,5 @@ func TestTreeNodeDepth(t *testing.T) {
 	child.AddChild(grandchild)
 	root.AddChild(child)
 
-	testTreeNodeDepth(t, root, child, grandchild)
+	AssertTreeNodeDepth(t, root, child, grandchild)
 }

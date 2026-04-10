@@ -2,8 +2,6 @@ package output
 
 import (
 	"testing"
-
-	"github.com/larsartmann/go-output/internal/testutils"
 )
 
 //nolint:exhaustruct // Test files use partial struct initialization
@@ -11,8 +9,8 @@ func TestDOTRenderer(t *testing.T) {
 	t.Parallel()
 
 	renderer := NewDOTRenderer()
-	renderer.SetNodes(testutils.CreateTestNodesAB())
-	renderer.SetEdges(testutils.CreateTestEdgeAB())
+	renderer.SetNodes(testNodesAB())
+	renderer.SetEdges(testEdgesAB())
 
 	output := renderer.Render()
 
@@ -28,8 +26,8 @@ func TestDOTUndirectedRenderer(t *testing.T) {
 	t.Parallel()
 
 	renderer := NewUndirectedDOTRenderer()
-	renderer.SetNodes(testutils.CreateTestNodesAB())
-	renderer.SetEdges(testutils.CreateTestEdgeAB())
+	renderer.SetNodes(testNodesAB())
+	renderer.SetEdges(testEdgesAB())
 
 	output := renderer.Render()
 

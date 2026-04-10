@@ -51,8 +51,7 @@ func main() {
 	if len(os.Args) > 1 {
 		f, err := output.ParseOutputFormat(os.Args[1])
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Invalid format: %v\n", err)
-			os.Exit(1)
+			handleError(err)
 		}
 
 		format = f

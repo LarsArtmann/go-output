@@ -3,8 +3,6 @@ package output
 import (
 	"strings"
 	"testing"
-
-	"github.com/larsartmann/go-output/internal/testutils"
 )
 
 //nolint:exhaustruct // Test files use partial struct initialization
@@ -12,8 +10,8 @@ func TestMermaidRenderer(t *testing.T) {
 	t.Parallel()
 
 	renderer := NewMermaidRenderer()
-	renderer.SetNodes(testutils.CreateTestNodesABC())
-	renderer.SetEdges(testutils.CreateTestEdgesABC())
+	renderer.SetNodes(testNodesABC())
+	renderer.SetEdges(testEdgesABC())
 
 	output := renderer.Render()
 

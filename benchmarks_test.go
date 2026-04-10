@@ -174,27 +174,19 @@ func BenchmarkMarkdownTable(b *testing.B) {
 	}
 }
 
-// BenchmarkStruct is used for JSON unmarshal benchmarks.
-type BenchmarkStruct struct {
-	ID        int      `json:"id"`
-	Name      string   `json:"name"`
-	Items     []string `json:"items"`
-	Count     int      `json:"count"`
-	Active    bool     `json:"active"`
-	CreatedAt string   `json:"created_at"`
-	UpdatedAt string   `json:"updated_at"`
+// BenchmarkData is used for JSON and YAML marshal/unmarshal benchmarks.
+type BenchmarkData struct {
+	ID        int      `json:"id" yaml:"id"`
+	Name      string   `json:"name" yaml:"name"`
+	Items     []string `json:"items" yaml:"items"`
+	Count     int      `json:"count" yaml:"count"`
+	Active    bool     `json:"active" yaml:"active"`
+	CreatedAt string   `json:"created_at" yaml:"created_at"`
+	UpdatedAt string   `json:"updated_at" yaml:"updated_at"`
 }
 
-// BenchmarkYAMLStruct is used for YAML unmarshal benchmarks.
-type BenchmarkYAMLStruct struct {
-	ID        int      `yaml:"id"`
-	Name      string   `yaml:"name"`
-	Items     []string `yaml:"items"`
-	Count     int      `yaml:"count"`
-	Active    bool     `yaml:"active"`
-	CreatedAt string   `yaml:"created_at"`
-	UpdatedAt string   `yaml:"updated_at"`
-}
+// BenchmarkYAMLStruct is an alias for BenchmarkData for YAML-specific benchmarks.
+type BenchmarkYAMLStruct = BenchmarkData
 
 func NewBenchmarkData() BenchmarkData {
 	return BenchmarkData{

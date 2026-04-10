@@ -3,6 +3,7 @@ package output
 import (
 	"strings"
 	"testing"
+
 )
 
 func TestHTMLRenderer(t *testing.T) {
@@ -45,35 +46,6 @@ func TestHTMLRendererEmpty(t *testing.T) {
 		{Substring: "<table", Message: "Empty table should still be valid HTML"},
 		{Substring: "</table>", Message: "Empty table should have closing tag"},
 	})
-}
-
-// htmlEscapeTestRenderer is an interface for HTML renderers that support escaping tests.
-type htmlEscapeTestRenderer interface {
-	SetHeaders([]string)
-	AddRow([]string)
-	Render() string
-}
-
-// testHTMLEscapeShared is a shared helper for testing HTML escaping across renderer implementations.
-func testHTMLEscapeShared(t *testing.T, newRenderer func() htmlEscapeTestRenderer, name string) {
-	t.Helper()
-
-	r := newRenderer()
-	r.SetHeaders([]string{"Name"})
-	r.AddRow([]string{"<script>alert('xss')</script>"})
-
-	got := r.Render()
-
-	if strings.Contains(got, "<script>") {
-		t.Errorf("%s: Render() should escape script tags", name)
-	}
-
-	assertContains(
-		t,
-		got,
-		"&lt;script&gt;",
-		name+": Render() should contain escaped script tag",
-	)
 }
 
 func TestHTMLRendererEscaping(t *testing.T) {

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"strings"
 	"testing"
+
 )
 
 const emptyTableHTML = `<table class="data-table"></table>`

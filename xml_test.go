@@ -3,6 +3,7 @@ package output
 import (
 	"strings"
 	"testing"
+
 )
 
 func TestXMLWriterWriteHeader(t *testing.T) {

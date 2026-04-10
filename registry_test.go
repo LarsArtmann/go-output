@@ -11,13 +11,16 @@ func TestRegister(t *testing.T) {
 	testRegisterAndVerify(t, FormatJSON, "json")
 }
 
+// testRendererFunc creates a test renderer for the given output string.
+func testRendererFunc(output string) func() Renderer {
+	return func() Renderer { return &testRenderer{output: output} }
+}
+
 func testRegisterAndVerify(t *testing.T, format OutputFormat, output string) {
 	t.Helper()
 	Unregister(format)
 
-	err := Register(format, func() Renderer {
-		return &testRenderer{output: output}
-	})
+	err := Register(format, testRendererFunc(output))
 	if err != nil {
 		t.Fatalf("Register(%v) error = %v", format, err)
 	}
@@ -28,9 +31,7 @@ func testRegisterAndVerify(t *testing.T, format OutputFormat, output string) {
 }
 
 func registerFormatForTest(format OutputFormat, output string) {
-	_ = Register(format, func() Renderer {
-		return &testRenderer{output: output}
-	})
+	_ = Register(format, testRendererFunc(output))
 }
 
 func TestRegisterDuplicate(t *testing.T) {
