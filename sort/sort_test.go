@@ -164,13 +164,23 @@ func TestSorter_WithLessFunc(t *testing.T) {
 	items := testItemsAB()
 	sorter := New(items, output.SortByName, false)
 
-	result := sorter.WithLessFunc(func(a, b testItem) bool { return a.Count < b.Count })
+	result := sorter.WithLessFunc(compareCount(true))
 	if result != sorter {
 		t.Error("WithLessFunc() should return the same sorter")
 	}
 
 	if sorter.LessFunc == nil {
 		t.Error("WithLessFunc() did not set LessFunc")
+	}
+}
+
+func compareCount(ascending bool) func(a, b testItem) bool {
+	return func(a, b testItem) bool {
+		if ascending {
+			return a.Count < b.Count
+		}
+
+		return a.Count > b.Count
 	}
 }
 
@@ -243,7 +253,7 @@ func TestSorter_Sort(t *testing.T) {
 			items:          testItemsWithCounts(10, 20, 30),
 			sortBy:         output.SortByName,
 			desc:           false,
-			lessFunc:       func(a, b testItem) bool { return a.Count > b.Count },
+			lessFunc:       compareCount(false),
 			expectedNames:  []string{"charlie", "bravo", "alpha"},
 			expectedCounts: []int{30, 20, 10},
 		},

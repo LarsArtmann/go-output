@@ -54,7 +54,7 @@ func testNewFlagHelper[T EnumValue](
 		t.Fatal("NewFlag() returned nil")
 	}
 
-	if flag.value != val {
+	if flag.Value != val {
 		t.Error("NewFlag() did not set value correctly")
 	}
 }
@@ -232,7 +232,7 @@ func TestNewColorModeFlag(t *testing.T) {
 		t.Fatal("NewColorModeFlag() returned nil")
 	}
 
-	if flag.value != &val {
+	if flag.Value != &val {
 		t.Error("NewColorModeFlag() did not set value correctly")
 	}
 }
@@ -247,7 +247,7 @@ func TestNewOutputFormatFlag(t *testing.T) {
 		t.Fatal("NewOutputFormatFlag() returned nil")
 	}
 
-	if flag.value != &val {
+	if flag.Value != &val {
 		t.Error("NewOutputFormatFlag() did not set value correctly")
 	}
 }
@@ -262,7 +262,7 @@ func TestNewSortByFlag(t *testing.T) {
 		t.Fatal("NewSortByFlag() returned nil")
 	}
 
-	if flag.value != &val {
+	if flag.Value != &val {
 		t.Error("NewSortByFlag() did not set value correctly")
 	}
 }

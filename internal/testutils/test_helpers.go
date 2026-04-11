@@ -8,7 +8,7 @@ import (
 	"github.com/larsartmann/go-output/internal/gentest"
 )
 
-// Re-export generic helpers from gentest for convenience
+// Re-export generic helpers from gentest for convenience.
 type (
 	ExpectedOutput         = gentest.ExpectedOutput
 	HTMLEscapeTestRenderer = gentest.HTMLEscapeTestRenderer
@@ -52,6 +52,7 @@ func CreateTestEdgeAB() []output.GraphEdge {
 func CreateTestEdgeABWithLabel(label string) output.GraphEdge {
 	edge := CreateTestEdge("A", "B")
 	edge.Label = output.NewBrandedID[output.GraphNodeLabelBrand](label)
+
 	return edge
 }
 
@@ -85,6 +86,24 @@ func RunEmptyDataRendersJSONWithoutPanic(t *testing.T) {
 		t.Parallel()
 		AssertEmptyDataRendersJSONWithoutPanic(t)
 	})
+}
+
+// AssertTableData verifies that the table has the expected number of columns and rows.
+func AssertTableData(t *testing.T, data *output.TableData, expectedCols, expectedRows int) {
+	t.Helper()
+
+	if data == nil {
+		t.Fatal("TableData is nil")
+		return
+	}
+
+	if got := data.ColCount(); got != expectedCols {
+		t.Errorf("TableData has %d columns, want %d", got, expectedCols)
+	}
+
+	if got := data.RowCount(); got != expectedRows {
+		t.Errorf("TableData has %d rows, want %d", got, expectedRows)
+	}
 }
 
 // RenderMarkdownTable renders a markdown table with the given headers and rows.

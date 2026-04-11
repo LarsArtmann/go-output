@@ -2,7 +2,6 @@ package output
 
 import (
 	"testing"
-
 )
 
 func TestASCIITreeRenderer(t *testing.T) {

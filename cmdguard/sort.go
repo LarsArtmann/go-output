@@ -11,7 +11,11 @@ type SortByFlag = EnumFlag[output.SortBy]
 
 // NewSortByFlag creates a new SortByFlag.
 //
-// Deprecated: Use NewEnumFlag[output.SortBy](value, "sort by", output.ParseSortBy) instead.
+// Deprecated: Use NewEnumFlag[output.SortBy] with enumFlagParams instead.
 func NewSortByFlag(value *output.SortBy) *SortByFlag {
-	return NewEnumFlag(value, "sort by", output.ParseSortBy)
+	return NewEnumFlag(enumFlagParams[output.SortBy]{
+		Value:     value,
+		Name:      "sort by",
+		ParseFunc: output.ParseSortBy,
+	})
 }

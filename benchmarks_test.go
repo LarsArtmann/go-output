@@ -176,11 +176,11 @@ func BenchmarkMarkdownTable(b *testing.B) {
 
 // BenchmarkData is used for JSON and YAML marshal/unmarshal benchmarks.
 type BenchmarkData struct {
-	ID        int      `json:"id" yaml:"id"`
-	Name      string   `json:"name" yaml:"name"`
-	Items     []string `json:"items" yaml:"items"`
-	Count     int      `json:"count" yaml:"count"`
-	Active    bool     `json:"active" yaml:"active"`
+	ID        int      `json:"id"         yaml:"id"`
+	Name      string   `json:"name"       yaml:"name"`
+	Items     []string `json:"items"      yaml:"items"`
+	Count     int      `json:"count"      yaml:"count"`
+	Active    bool     `json:"active"     yaml:"active"`
 	CreatedAt string   `json:"created_at" yaml:"created_at"`
 	UpdatedAt string   `json:"updated_at" yaml:"updated_at"`
 }

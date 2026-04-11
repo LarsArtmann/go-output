@@ -12,7 +12,11 @@ type ColorModeFlag = EnumFlag[output.ColorMode]
 
 // NewColorModeFlag creates a new ColorModeFlag.
 //
-// Deprecated: Use NewEnumFlag[output.ColorMode](value, "color mode", output.ParseColorMode) instead.
+// Deprecated: Use NewEnumFlag with enumFlagParams[output.ColorMode] instead.
 func NewColorModeFlag(value *output.ColorMode) *ColorModeFlag {
-	return NewEnumFlag(value, "color mode", output.ParseColorMode)
+	return NewEnumFlag(enumFlagParams[output.ColorMode]{
+		Value:     value,
+		Name:      "color mode",
+		ParseFunc: output.ParseColorMode,
+	})
 }

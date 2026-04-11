@@ -4,7 +4,6 @@ import (
 	"io"
 	"strings"
 	"testing"
-
 )
 
 func TestTSVWriterHeaderAndRow(t *testing.T) {

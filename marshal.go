@@ -2,9 +2,24 @@ package output
 
 import (
 	"encoding/json"
-	"encoding/xml"
+	"errors"
 	"fmt"
 )
+
+var errUnsupportedIndentFormat = errors.New("unsupported indent format")
+
+// MarshalJSONIndent encodes v to indented JSON.
+func MarshalJSONIndent(v any, prefix, indent string) ([]byte, error) {
+	data, err := json.MarshalIndent(v, prefix, indent)
+	if err != nil {
+		return nil, fmt.Errorf(
+			"marshal json indent (prefix=%q, indent=%q) for %T: %w",
+			prefix, indent, v, err,
+		)
+	}
+
+	return data, nil
+}
 
 // unmarshal decodes data into v using the provided unmarshal function.
 func unmarshal(format string, unmarshalFn func([]byte, any) error, data []byte, v any) error {
@@ -24,36 +39,4 @@ func marshal(format string, marshalFn func(any) ([]byte, error), v any) ([]byte,
 	}
 
 	return data, nil
-}
-
-// marshalIndent encodes v with indentation using the provided marshal function.
-func marshalIndent(
-	format string,
-	marshalFn func(any, string, string) ([]byte, error),
-	v any,
-	prefix, indent string,
-) ([]byte, error) {
-	data, err := marshalFn(v, prefix, indent)
-	if err != nil {
-		return nil, fmt.Errorf(
-			"marshal %s indent (prefix=%q, indent=%q) for %T: %w",
-			format,
-			prefix,
-			indent,
-			v,
-			err,
-		)
-	}
-
-	return data, nil
-}
-
-// marshalJSONIndent encodes v with indentation using json.MarshalIndent.
-func marshalJSONIndent(v any, prefix, indent string) ([]byte, error) {
-	return marshalIndent("json", json.MarshalIndent, v, prefix, indent)
-}
-
-// marshalXMLIndent encodes v with indentation using xml.MarshalIndent.
-func marshalXMLIndent(v any, prefix, indent string) ([]byte, error) {
-	return marshalIndent("xml", xml.MarshalIndent, v, prefix, indent)
 }

@@ -5,7 +5,6 @@ import (
 
 	"charm.land/lipgloss/v2"
 	"charm.land/lipgloss/v2/table"
-
 	testutils "github.com/larsartmann/go-output/internal/testutils"
 )
 
@@ -147,5 +146,10 @@ func TestHeadersOnlyNoRows(t *testing.T) {
 	output := tbl.Render()
 
 	testutils.AssertContains(t, output, "Only", "Render() should contain headers even without rows")
-	testutils.AssertContains(t, output, "Headers", "Render() should contain headers even without rows")
+	testutils.AssertContains(
+		t,
+		output,
+		"Headers",
+		"Render() should contain headers even without rows",
+	)
 }

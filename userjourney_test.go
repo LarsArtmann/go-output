@@ -184,6 +184,15 @@ func TestSortingBehavior(t *testing.T) {
 		Name string
 	}
 
+	makeProjects := func(names ...string) []Project {
+		projects := make([]Project, len(names))
+		for i, name := range names {
+			projects[i] = Project{Name: name}
+		}
+
+		return projects
+	}
+
 	t.Run("can sort by name", func(t *testing.T) {
 		t.Parallel()
 
@@ -197,13 +206,13 @@ func TestSortingBehavior(t *testing.T) {
 		cases := []testCase{
 			{
 				name:     "ascending",
-				data:     []Project{{Name: "zebra"}, {Name: "apple"}, {Name: "banana"}},
+				data:     makeProjects("zebra", "apple", "banana"),
 				desc:     false,
 				expected: "apple",
 			},
 			{
 				name:     "descending",
-				data:     []Project{{Name: "apple"}, {Name: "zebra"}, {Name: "banana"}},
+				data:     makeProjects("apple", "zebra", "banana"),
 				desc:     true,
 				expected: "zebra",
 			},

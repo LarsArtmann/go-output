@@ -245,10 +245,12 @@ func testTableDataRowColCount(t *testing.T) {
 	t.Helper()
 
 	data := NewTableData([]string{"Name", "Value", "Count"})
+
 	cc := data.ColCount()
 	if cc != 3 {
 		t.Errorf("ColCount() = %d, want 3", cc)
 	}
+
 	rc := data.RowCount()
 	if rc != 0 {
 		t.Errorf("RowCount() = %d, want 0", rc)

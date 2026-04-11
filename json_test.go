@@ -60,6 +60,7 @@ func TestMarshalJSON(t *testing.T) {
 
 			got, err := MarshalJSON(tt.input)
 			assertMarshalError(t, "MarshalJSON", err, tt.wantErr)
+
 			if tt.wantErr {
 				return
 			}

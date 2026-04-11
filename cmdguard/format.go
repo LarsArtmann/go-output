@@ -11,7 +11,11 @@ type OutputFormatFlag = EnumFlag[output.Format]
 
 // NewOutputFormatFlag creates a new OutputFormatFlag.
 //
-// Deprecated: Use NewEnumFlag[output.Format](value, "output format", output.ParseFormat) instead.
+// Deprecated: Use NewEnumFlag[output.Format] with enumFlagParams instead.
 func NewOutputFormatFlag(value *output.Format) *OutputFormatFlag {
-	return NewEnumFlag(value, "output format", output.ParseFormat)
+	return NewEnumFlag(enumFlagParams[output.Format]{
+		Value:     value,
+		Name:      "output format",
+		ParseFunc: output.ParseFormat,
+	})
 }

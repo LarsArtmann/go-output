@@ -21,7 +21,11 @@ var (
 	assertStringSliceEqual = gentest.AssertStringSliceEqual
 )
 
-func testHTMLEscapeShared(t *testing.T, newRenderer func() gentest.HTMLEscapeTestRenderer, name string) {
+func testHTMLEscapeShared(
+	t *testing.T,
+	newRenderer func() gentest.HTMLEscapeTestRenderer,
+	name string,
+) {
 	gentest.AssertHTMLEscape(t, newRenderer, name)
 }
 
@@ -70,7 +74,11 @@ func testEdgesABC() []GraphEdge {
 }
 
 // testEmptyRendererOutput verifies that an empty renderer produces valid output structure.
-func testEmptyRendererOutput(t *testing.T, renderer Renderer, expectedOutputs []gentest.ExpectedOutput) {
+func testEmptyRendererOutput(
+	t *testing.T,
+	renderer Renderer,
+	expectedOutputs []gentest.ExpectedOutput,
+) {
 	t.Helper()
 
 	output := renderer.Render()
@@ -120,10 +128,13 @@ func testExpectedOutputs(pairs ...string) []ExpectedOutput {
 	if len(pairs)%2 != 0 {
 		panic("testExpectedOutputs requires even number of arguments")
 	}
+
 	out := make([]ExpectedOutput, 0, len(pairs)/2)
 	for i := 0; i < len(pairs); i += 2 {
-		out = append(out, ExpectedOutput{Substring: pairs[i], Message: pairs[i+1]})
+		// gosec G602: Safe - i increments by 2, and len(pairs) is guaranteed even
+		out = append(out, ExpectedOutput{Substring: pairs[i], Message: pairs[i+1]}) //nolint:gosec
 	}
+
 	return out
 }
 

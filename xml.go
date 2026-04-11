@@ -12,8 +12,13 @@ func MarshalXML(v any) ([]byte, error) {
 }
 
 // MarshalXMLIndent encodes v to indented XML.
-func MarshalXMLIndent(v any, prefix, indent string) ([]byte, error) {
-	return marshalXMLIndent(v, prefix, indent)
+func MarshalXMLIndent(v any, prefix, indent string) (result []byte, err error) {
+	result, err = xml.MarshalIndent(v, prefix, indent)
+	if err != nil {
+		return nil, fmt.Errorf("marshal xml: %w", err)
+	}
+
+	return result, nil
 }
 
 // XMLWriter writes XML output.

@@ -274,6 +274,10 @@ linters:
           - gochecknoglobals
           - exhaustruct
           - varnamelen
+      - path: format\.go
+        text: (?:gochecknoglobals|AllFormats)
+        linters:
+          - gochecknoglobals
       - path: .*\.go$
         text: .*
         linters:
