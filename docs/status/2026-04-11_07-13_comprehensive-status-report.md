@@ -19,38 +19,38 @@ go-output is a **mature Go library** for CLI output formatting supporting 12 for
 
 ### Core Library (Production Quality)
 
-| Component | Status | Details |
-|-----------|--------|---------|
-| **12 Output Formats** | ✅ Complete | Table, JSON, CSV, TSV, Markdown, XML, YAML, D2, HTML, Tree, Mermaid, DOT |
-| **3 Data Models** | ✅ Complete | `TableData`, `TreeNode`, `Graph` with cross-format bridges |
-| **Type-Safe Enums** | ✅ Complete | `Format`, `SortBy`, `ColorMode` with `Parse`/`Validate`/`IsValid` |
-| **Branded IDs** | ✅ Complete | `TreeNodeID`, `GraphNodeID`, `GraphNodeLabel` — prevents type confusion |
-| **Format Registry** | ✅ Complete | Thread-safe factory pattern with `Register`/`Create`/`IsRegistered` |
-| **Streaming** | ✅ Complete | `StreamingRenderer` interface + `StreamingHTMLRenderer` (true incremental) |
-| **Error Handling** | ✅ Complete | Typed errors (`InvalidFormatError`, sentinel errors in `pkg/errors`) |
-| **cmdguard Integration** | ✅ Complete | `EnumFlag[T]` generic flag parser for CLI frameworks |
-| **Sorting** | ✅ Complete | Generic `Sorter[T]` with multiple sort fields and custom `LessFunc` |
-| **Internal Helpers** | ✅ Complete | `escape`, `gentest`, `testutils` packages |
+| Component                | Status      | Details                                                                    |
+| ------------------------ | ----------- | -------------------------------------------------------------------------- |
+| **12 Output Formats**    | ✅ Complete | Table, JSON, CSV, TSV, Markdown, XML, YAML, D2, HTML, Tree, Mermaid, DOT   |
+| **3 Data Models**        | ✅ Complete | `TableData`, `TreeNode`, `Graph` with cross-format bridges                 |
+| **Type-Safe Enums**      | ✅ Complete | `Format`, `SortBy`, `ColorMode` with `Parse`/`Validate`/`IsValid`          |
+| **Branded IDs**          | ✅ Complete | `TreeNodeID`, `GraphNodeID`, `GraphNodeLabel` — prevents type confusion    |
+| **Format Registry**      | ✅ Complete | Thread-safe factory pattern with `Register`/`Create`/`IsRegistered`        |
+| **Streaming**            | ✅ Complete | `StreamingRenderer` interface + `StreamingHTMLRenderer` (true incremental) |
+| **Error Handling**       | ✅ Complete | Typed errors (`InvalidFormatError`, sentinel errors in `pkg/errors`)       |
+| **cmdguard Integration** | ✅ Complete | `EnumFlag[T]` generic flag parser for CLI frameworks                       |
+| **Sorting**              | ✅ Complete | Generic `Sorter[T]` with multiple sort fields and custom `LessFunc`        |
+| **Internal Helpers**     | ✅ Complete | `escape`, `gentest`, `testutils` packages                                  |
 
 ### Test Coverage
 
-| Package | Coverage | Tests |
-|---------|----------|-------|
+| Package            | Coverage  | Tests         |
+| ------------------ | --------- | ------------- |
 | `go-output` (root) | **91.5%** | Comprehensive |
-| `cmdguard` | **100%** | Full |
-| `sort` | **94.6%** | Strong |
-| `table` | **100%** | Full |
-| `enum` | **71.4%** | Adequate |
-| `integration` | 🔴 BROKEN | Won't compile |
+| `cmdguard`         | **100%**  | Full          |
+| `sort`             | **94.6%** | Strong        |
+| `table`            | **100%**  | Full          |
+| `enum`             | **71.4%** | Adequate      |
+| `integration`      | 🔴 BROKEN | Won't compile |
 
 ### Test Infrastructure
 
-| Type | Count | Status |
-|------|-------|--------|
-| Unit Tests | ~185+ | ✅ Passing |
-| Benchmarks | 13 | ✅ Present |
-| Fuzz Targets | 3 | ✅ Present (`FuzzParseOutputFormat`, `FuzzParseSortBy`, `FuzzMarkdownTable`) |
-| Integration Tests | 4 files | 🔴 BROKEN |
+| Type              | Count   | Status                                                                       |
+| ----------------- | ------- | ---------------------------------------------------------------------------- |
+| Unit Tests        | ~185+   | ✅ Passing                                                                   |
+| Benchmarks        | 13      | ✅ Present                                                                   |
+| Fuzz Targets      | 3       | ✅ Present (`FuzzParseOutputFormat`, `FuzzParseSortBy`, `FuzzMarkdownTable`) |
+| Integration Tests | 4 files | 🔴 BROKEN                                                                    |
 
 ### Code Quality
 
@@ -67,17 +67,17 @@ go-output is a **mature Go library** for CLI output formatting supporting 12 for
 
 These changes are **in the working tree but not committed** — appears to be an in-progress refactoring session:
 
-| File | Change | Risk |
-|------|--------|------|
-| `cmdguard/flag.go` | `NewEnumFlag` signature changed to use `enumFlagConfig[T]` struct | **Breaking API change** |
-| `cmdguard/color.go` | Updated to new `NewEnumFlag` signature | Depends on flag.go |
-| `cmdguard/format.go` | Updated to new `NewEnumFlag` signature | Depends on flag.go |
-| `cmdguard/sort.go` | Updated to new `NewEnumFlag` signature | Depends on flag.go |
-| `json.go` | Inlined `marshalJSONIndent` → direct `marshalIndent` call | Cleanup |
-| `marshal.go` | Removed `marshalJSONIndent` and `marshalXMLIndent` helpers | Cleanup |
-| `xml.go` | Inlined `marshalXMLIndent` → direct `marshalIndent` call + named returns | Cleanup |
-| `sort/sort_test.go` | Extracted `countLessFunc` helper | Test improvement |
-| `userjourney_test.go` | Extracted `makeProjects` helper, used named test data | Test improvement |
+| File                  | Change                                                                   | Risk                    |
+| --------------------- | ------------------------------------------------------------------------ | ----------------------- |
+| `cmdguard/flag.go`    | `NewEnumFlag` signature changed to use `enumFlagConfig[T]` struct        | **Breaking API change** |
+| `cmdguard/color.go`   | Updated to new `NewEnumFlag` signature                                   | Depends on flag.go      |
+| `cmdguard/format.go`  | Updated to new `NewEnumFlag` signature                                   | Depends on flag.go      |
+| `cmdguard/sort.go`    | Updated to new `NewEnumFlag` signature                                   | Depends on flag.go      |
+| `json.go`             | Inlined `marshalJSONIndent` → direct `marshalIndent` call                | Cleanup                 |
+| `marshal.go`          | Removed `marshalJSONIndent` and `marshalXMLIndent` helpers               | Cleanup                 |
+| `xml.go`              | Inlined `marshalXMLIndent` → direct `marshalIndent` call + named returns | Cleanup                 |
+| `sort/sort_test.go`   | Extracted `countLessFunc` helper                                         | Test improvement        |
+| `userjourney_test.go` | Extracted `makeProjects` helper, used named test data                    | Test improvement        |
 
 **Assessment:** The cmdguard refactoring is a **breaking API change** — `NewEnumFlag` now requires a config struct instead of positional parameters. The marshal cleanup is pure improvement.
 
@@ -108,16 +108,16 @@ These changes are **in the working tree but not committed** — appears to be an
 
 ## C) NOT STARTED ⬜
 
-| Item | Priority | Notes |
-|------|----------|-------|
-| `.goreleaser.yml` | High | Release workflow calls goreleaser but config doesn't exist |
-| CONTRIBUTING.md | Medium | Standard for open-source projects |
-| CI Go version fix | **Critical** | CI is on 1.23, project is 1.26 — will fail |
-| Streaming writers for JSON/CSV/YAML | Low | Adapter exists but not true streaming |
-| API reference (godoc/pkgsite) | Medium | No published docs |
-| Multi-version CI matrix | Low | Only tested on single Go version |
-| Go module caching in CI | Low | Performance optimization |
-| SARIF output format | N/A | Investigated — **not appropriate** for this library |
+| Item                                | Priority     | Notes                                                      |
+| ----------------------------------- | ------------ | ---------------------------------------------------------- |
+| `.goreleaser.yml`                   | High         | Release workflow calls goreleaser but config doesn't exist |
+| CONTRIBUTING.md                     | Medium       | Standard for open-source projects                          |
+| CI Go version fix                   | **Critical** | CI is on 1.23, project is 1.26 — will fail                 |
+| Streaming writers for JSON/CSV/YAML | Low          | Adapter exists but not true streaming                      |
+| API reference (godoc/pkgsite)       | Medium       | No published docs                                          |
+| Multi-version CI matrix             | Low          | Only tested on single Go version                           |
+| Go module caching in CI             | Low          | Performance optimization                                   |
+| SARIF output format                 | N/A          | Investigated — **not appropriate** for this library        |
 
 ---
 
@@ -135,6 +135,7 @@ These changes are **in the working tree but not committed** — appears to be an
 ### 2. CI Will Fail on Every Push
 
 **Both `ci.yml` and `release.yml` use Go `1.23`.** The project requires Go `1.26.0`. This means:
+
 - `go build` will fail (unknown Go version directive)
 - Or if 1.23 is treated as compatible, features like `range` over integers will cause compile errors
 
@@ -149,6 +150,7 @@ The `goreleaser` job references `goreleaser/goreleaser-action@v5` but **no `.gor
 ### 4. golangci-lint Config Issues
 
 Per previous status report (2026-04-05), the `.golangci.yml` has:
+
 - `linters.settings` placed under wrong key — most settings silently ignored
 - Blanket exclusion rules that disable most linters for all `*.go` files
 
@@ -195,53 +197,53 @@ Per previous status report (2026-04-05), the `.golangci.yml` has:
 
 ### Priority 1: STOP THE BLEEDING (Critical Fixes)
 
-| # | Task | Effort | Impact |
-|---|------|--------|--------|
-| 1 | Fix `testutils.AssertTableData` — make integration tests compile | 15min | 🔴 BLOCKER |
-| 2 | Run `go test ./...` and verify ALL tests pass | 5min | 🔴 BLOCKER |
-| 3 | Fix CI Go version: `1.23` → `1.26` in `ci.yml` and `release.yml` | 5min | 🔴 BLOCKER |
-| 4 | Commit or revert the 9 uncommitted files with proper messages | 10min | 🔴 BLOCKER |
-| 5 | Fix or remove goreleaser job from `release.yml` | 15min | 🔴 Broken |
+| #   | Task                                                             | Effort | Impact     |
+| --- | ---------------------------------------------------------------- | ------ | ---------- |
+| 1   | Fix `testutils.AssertTableData` — make integration tests compile | 15min  | 🔴 BLOCKER |
+| 2   | Run `go test ./...` and verify ALL tests pass                    | 5min   | 🔴 BLOCKER |
+| 3   | Fix CI Go version: `1.23` → `1.26` in `ci.yml` and `release.yml` | 5min   | 🔴 BLOCKER |
+| 4   | Commit or revert the 9 uncommitted files with proper messages    | 10min  | 🔴 BLOCKER |
+| 5   | Fix or remove goreleaser job from `release.yml`                  | 15min  | 🔴 Broken  |
 
 ### Priority 2: FIX KNOWN BUGS
 
-| # | Task | Effort | Impact |
-|---|------|--------|--------|
-| 6 | Fix Markdown `AlignCenter` rendering bug | 30min | 🟡 Bug |
-| 7 | Update `examples/basic/main.go` to use `ParseFormat` not `ParseOutputFormat` | 5min | 🟡 Deprecated |
-| 8 | Fix `.golangci.yml` settings placement | 30min | 🟡 Config |
+| #   | Task                                                                         | Effort | Impact        |
+| --- | ---------------------------------------------------------------------------- | ------ | ------------- |
+| 6   | Fix Markdown `AlignCenter` rendering bug                                     | 30min  | 🟡 Bug        |
+| 7   | Update `examples/basic/main.go` to use `ParseFormat` not `ParseOutputFormat` | 5min   | 🟡 Deprecated |
+| 8   | Fix `.golangci.yml` settings placement                                       | 30min  | 🟡 Config     |
 
 ### Priority 3: CLEAN UP
 
-| # | Task | Effort | Impact |
-|---|------|--------|--------|
-| 9 | Archive old status docs (keep only last 2-3) | 10min | 🟢 Hygiene |
-| 10 | Update CHANGELOG.md with recent changes | 30min | 🟢 Documentation |
-| 11 | Add `AssertTableData` to `internal/gentest` properly | 15min | 🟢 Test infra |
-| 12 | Fix 4 files with unnecessary type arguments (gopls warnings) | 10min | 🟢 Cleanup |
-| 13 | Remove `marshalJSONIndent`/`marshalXMLIndent` from marshal.go (already in uncommitted changes) | Done | ✅ |
+| #   | Task                                                                                           | Effort | Impact           |
+| --- | ---------------------------------------------------------------------------------------------- | ------ | ---------------- |
+| 9   | Archive old status docs (keep only last 2-3)                                                   | 10min  | 🟢 Hygiene       |
+| 10  | Update CHANGELOG.md with recent changes                                                        | 30min  | 🟢 Documentation |
+| 11  | Add `AssertTableData` to `internal/gentest` properly                                           | 15min  | 🟢 Test infra    |
+| 12  | Fix 4 files with unnecessary type arguments (gopls warnings)                                   | 10min  | 🟢 Cleanup       |
+| 13  | Remove `marshalJSONIndent`/`marshalXMLIndent` from marshal.go (already in uncommitted changes) | Done   | ✅               |
 
 ### Priority 4: IMPROVE
 
-| # | Task | Effort | Impact |
-|---|------|--------|--------|
-| 14 | Add `CONTRIBUTING.md` | 30min | 🟢 Process |
-| 15 | Review and tighten `.golangci.yml` exclusion rules | 30min | 🟢 Quality |
-| 16 | Add CI Go module caching | 10min | 🟢 Performance |
-| 17 | Split `sort/sort_test.go` (400 lines → under 350) | 15min | 🟢 Standards |
-| 18 | Add CI matrix testing (Go 1.26 + 1.27) | 15min | 🟢 Robustness |
+| #   | Task                                               | Effort | Impact         |
+| --- | -------------------------------------------------- | ------ | -------------- |
+| 14  | Add `CONTRIBUTING.md`                              | 30min  | 🟢 Process     |
+| 15  | Review and tighten `.golangci.yml` exclusion rules | 30min  | 🟢 Quality     |
+| 16  | Add CI Go module caching                           | 10min  | 🟢 Performance |
+| 17  | Split `sort/sort_test.go` (400 lines → under 350)  | 15min  | 🟢 Standards   |
+| 18  | Add CI matrix testing (Go 1.26 + 1.27)             | 15min  | 🟢 Robustness  |
 
 ### Priority 5: STRATEGIC
 
-| # | Task | Effort | Impact |
-|---|------|--------|--------|
-| 19 | Decide on v1.0 release roadmap | Discussion | 🔵 Strategic |
-| 20 | Set deprecation timeline for `OutputFormat` aliases | Discussion | 🔵 Strategic |
-| 21 | Evaluate if true streaming needed for JSON/CSV | Discussion | 🔵 Strategic |
-| 22 | Add `.goreleaser.yml` for proper release automation | 1hr | 🔵 Release |
-| 23 | Publish godoc/pkgsite documentation | 30min | 🔵 Adoption |
-| 24 | Add `go test -race` to CI (already in `test` job but not `verify`) | 5min | 🔵 Quality |
-| 25 | Review cmdguard API stability — is `enumFlagConfig` the right pattern? | Discussion | 🔵 API |
+| #   | Task                                                                   | Effort     | Impact       |
+| --- | ---------------------------------------------------------------------- | ---------- | ------------ |
+| 19  | Decide on v1.0 release roadmap                                         | Discussion | 🔵 Strategic |
+| 20  | Set deprecation timeline for `OutputFormat` aliases                    | Discussion | 🔵 Strategic |
+| 21  | Evaluate if true streaming needed for JSON/CSV                         | Discussion | 🔵 Strategic |
+| 22  | Add `.goreleaser.yml` for proper release automation                    | 1hr        | 🔵 Release   |
+| 23  | Publish godoc/pkgsite documentation                                    | 30min      | 🔵 Adoption  |
+| 24  | Add `go test -race` to CI (already in `test` job but not `verify`)     | 5min       | 🔵 Quality   |
+| 25  | Review cmdguard API stability — is `enumFlagConfig` the right pattern? | Discussion | 🔵 API       |
 
 ---
 
@@ -252,6 +254,7 @@ Per previous status report (2026-04-05), the `.golangci.yml` has:
 The working tree contains a **breaking change** to `NewEnumFlag`:
 
 **Before (committed):**
+
 ```go
 func NewEnumFlag[T EnumValue](
     value *T,
@@ -261,6 +264,7 @@ func NewEnumFlag[T EnumValue](
 ```
 
 **After (uncommitted):**
+
 ```go
 type enumFlagConfig[T EnumValue] struct {
     value     *T
@@ -274,6 +278,7 @@ func NewEnumFlag[T EnumValue](cfg enumFlagConfig[T]) *EnumFlag[T]
 This is a **breaking API change** for any external caller of `NewEnumFlag`. The deprecated wrapper functions (`NewOutputFormatFlag`, `NewColorModeFlag`, `NewSortByFlag`) still work because they construct the config struct internally — but direct callers of `NewEnumFlag` will break.
 
 **Questions only the author can answer:**
+
 1. Is this the intended direction, or was this experimentation?
 2. Should this be a v2 breaking change, or is the API considered unstable?
 3. Is there a plan for functional options instead of a config struct?
@@ -282,18 +287,18 @@ This is a **breaking API change** for any external caller of `NewEnumFlag`. The 
 
 ## Project Metrics Snapshot
 
-| Metric | Value |
-|--------|-------|
-| Total Go Lines | ~9,119 |
-| Go Files | ~50 |
-| Output Formats | 12 |
-| Data Models | 3 (Table, Tree, Graph) |
-| Root Coverage | 91.5% |
-| Test Files | ~20 |
-| Uncommitted Files | 9 |
-| Known Bugs | 2 (AlignCenter, AssertTableData) |
-| CI Status | 🔴 Will fail (Go version mismatch) |
-| Last Release | v0.1.0 (2026-01-01) |
-| Dependencies | 2 direct (lipgloss/v2, go-faster/yaml) |
-| License | Present |
-| Code Owners | AUTHORS file present |
+| Metric            | Value                                  |
+| ----------------- | -------------------------------------- |
+| Total Go Lines    | ~9,119                                 |
+| Go Files          | ~50                                    |
+| Output Formats    | 12                                     |
+| Data Models       | 3 (Table, Tree, Graph)                 |
+| Root Coverage     | 91.5%                                  |
+| Test Files        | ~20                                    |
+| Uncommitted Files | 9                                      |
+| Known Bugs        | 2 (AlignCenter, AssertTableData)       |
+| CI Status         | 🔴 Will fail (Go version mismatch)     |
+| Last Release      | v0.1.0 (2026-01-01)                    |
+| Dependencies      | 2 direct (lipgloss/v2, go-faster/yaml) |
+| License           | Present                                |
+| Code Owners       | AUTHORS file present                   |
