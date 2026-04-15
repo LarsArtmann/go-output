@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/larsartmann/go-output"
+	"github.com/larsartmann/go-output/internal/gentest"
 )
 
 func compareTest[T any](
@@ -351,10 +352,7 @@ func TestToInt(t *testing.T) {
 
 			got, ok := toInt(tt.input)
 			assertOkBool(t, "toInt", tt.input, ok, tt.wantOk)
-
-			if got != tt.want {
-				t.Errorf("toInt(%v) = %v, want %v", tt.input, got, tt.want)
-			}
+			gentest.AssertEqual(t, "toInt", tt.input, got, tt.want)
 		})
 	}
 }

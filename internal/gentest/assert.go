@@ -59,6 +59,7 @@ func AssertStringSliceEqual(t *testing.T, name string, got, want []string) {
 
 	if len(got) != len(want) {
 		t.Errorf("%s returned %d values, want %d", name, len(got), len(want))
+
 		return
 	}
 
@@ -66,5 +67,14 @@ func AssertStringSliceEqual(t *testing.T, name string, got, want []string) {
 		if v != want[i] {
 			t.Errorf("%s[%d] = %v, want %v", name, i, v, want[i])
 		}
+	}
+}
+
+// AssertEqual checks that got equals want, failing with descriptive error.
+func AssertEqual[T comparable](t *testing.T, name string, input any, got, want T) {
+	t.Helper()
+
+	if got != want {
+		t.Errorf("%s(%v) = %v, want %v", name, input, got, want)
 	}
 }

@@ -3,6 +3,8 @@ package output
 import (
 	"strings"
 	"testing"
+
+	"github.com/larsartmann/go-output/internal/gentest"
 )
 
 func TestD2AllNodeShapes(t *testing.T) {
@@ -270,9 +272,7 @@ func TestEscapeD2(t *testing.T) {
 			t.Parallel()
 
 			got := escapeD2(tt.input)
-			if got != tt.want {
-				t.Errorf("escapeD2(%q) = %q, want %q", tt.input, got, tt.want)
-			}
+			gentest.AssertEqual(t, "escapeD2", tt.input, got, tt.want)
 		})
 	}
 }

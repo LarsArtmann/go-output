@@ -57,6 +57,7 @@ func (*D2Diagram) writeStyleEffects(b *strings.Builder, s D2NodeStyle, indent st
 func (d *D2Diagram) writeEdge(b *strings.Builder, edge D2Edge) {
 	from := escapeD2(edge.From.Get())
 	to := escapeD2(edge.To.Get())
+
 	label := ""
 	if !edge.Label.IsEmpty() {
 		label = ": " + escapeD2(edge.Label.Get())
