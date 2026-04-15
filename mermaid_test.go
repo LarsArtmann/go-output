@@ -139,16 +139,7 @@ func TestMermaidRendererAllShapes(t *testing.T) {
 			t.Parallel()
 
 			renderer := NewMermaidRenderer()
-			//nolint:exhaustruct // Test uses minimal node fields
-			renderer.SetNodes(
-				[]GraphNode{
-					{
-						ID:    NewBrandedID[GraphNodeIDBrand]("n"),
-						Label: NewBrandedID[GraphNodeLabelBrand]("Test"),
-						Shape: tt.shape,
-					},
-				},
-			)
+			renderer.SetNodes([]GraphNode{newTestNodeWithShape("n", "Test", tt.shape)})
 			renderer.SetEdges([]GraphEdge{})
 
 			output := renderer.Render()

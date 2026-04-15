@@ -135,6 +135,11 @@ type EdgeStyle struct {
 // GraphNodeLabelFunc is a function that formats a cell value with its header into a label.
 type GraphNodeLabelFunc func(header, cell string) string
 
+// DefaultGraphNodeLabel returns a label in the format "header: cell".
+func DefaultGraphNodeLabel(header, cell string) string {
+	return fmt.Sprintf("%s: %s", header, cell)
+}
+
 // NodesFromTableData creates GraphNodes from TableData using the provided label function.
 func NodesFromTableData(data *TableData, labelFn GraphNodeLabelFunc) []GraphNode {
 	if data == nil {

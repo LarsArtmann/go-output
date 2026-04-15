@@ -172,13 +172,7 @@ func TestD2GraphShapeConversion(t *testing.T) {
 			t.Parallel()
 
 			d := NewD2Diagram()
-			d.SetNodes([]GraphNode{
-				{
-					ID:    NewBrandedID[GraphNodeIDBrand]("node"),
-					Label: NewBrandedID[GraphNodeLabelBrand]("Test"),
-					Shape: tt.shape,
-				},
-			})
+			d.SetNodes([]GraphNode{newTestNodeWithShape("node", "Test", tt.shape)})
 
 			got := d.Render()
 

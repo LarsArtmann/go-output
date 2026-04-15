@@ -1,7 +1,6 @@
 package output
 
 import (
-	"fmt"
 	"strings"
 )
 
@@ -74,9 +73,7 @@ func D2FromTableData(data *TableData) *D2Diagram {
 		return diagram
 	}
 
-	nodes := NodesFromTableData(data, func(header, cell string) string {
-		return fmt.Sprintf("%s: %s", header, cell)
-	})
+	nodes := NodesFromTableData(data, DefaultGraphNodeLabel)
 
 	for _, n := range nodes {
 		diagram.AddNode(graphNodeToD2(n))

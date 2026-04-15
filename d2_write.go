@@ -57,23 +57,17 @@ func (*D2Diagram) writeStyleEffects(b *strings.Builder, s D2NodeStyle, indent st
 func (d *D2Diagram) writeEdge(b *strings.Builder, edge D2Edge) {
 	from := escapeD2(edge.From.Get())
 	to := escapeD2(edge.To.Get())
+	label := ""
+	if !edge.Label.IsEmpty() {
+		label = ": " + escapeD2(edge.Label.Get())
+	}
 
 	if !edge.hasBlockAttrs() {
-		if !edge.Label.IsEmpty() {
-			fmt.Fprintf(b, "%s -> %s: %s\n", from, to, escapeD2(edge.Label.Get()))
-		} else {
-			fmt.Fprintf(b, "%s -> %s\n", from, to)
-		}
-
+		fmt.Fprintf(b, "%s -> %s%s\n", from, to, label)
 		return
 	}
 
-	if !edge.Label.IsEmpty() {
-		fmt.Fprintf(b, "%s -> %s: %s {\n", from, to, escapeD2(edge.Label.Get()))
-	} else {
-		fmt.Fprintf(b, "%s -> %s: {\n", from, to)
-	}
-
+	fmt.Fprintf(b, "%s -> %s%s {\n", from, to, label)
 	d.writeEdgeBlockAttrs(b, edge)
 	b.WriteString("}\n")
 }

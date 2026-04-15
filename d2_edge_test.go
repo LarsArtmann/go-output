@@ -4,17 +4,27 @@ import (
 	"testing"
 )
 
+func newTestD2Edge(opts ...func(*D2Edge)) D2Edge {
+	edge := D2Edge{ //nolint:exhaustruct // Test uses minimal required fields
+		From: NewBrandedID[D2NodeIDBrand]("a"),
+		To:   NewBrandedID[D2NodeIDBrand]("b"),
+	}
+	for _, opt := range opts {
+		opt(&edge)
+	}
+
+	return edge
+}
+
 func TestD2EdgeWithArrows(t *testing.T) {
 	t.Parallel()
 
 	d := NewD2Diagram()
-	d.AddEdge(D2Edge{ //nolint:exhaustruct // Test uses minimal required fields
-		From:        NewBrandedID[D2NodeIDBrand]("a"),
-		To:          NewBrandedID[D2NodeIDBrand]("b"),
-		Label:       NewBrandedID[D2NodeLabelBrand]("test"),
-		SourceArrow: D2ArrowDiamond,
-		TargetArrow: D2ArrowTriangle,
-	})
+	d.AddEdge(newTestD2Edge(func(e *D2Edge) {
+		e.Label = NewBrandedID[D2NodeLabelBrand]("test")
+		e.SourceArrow = D2ArrowDiamond
+		e.TargetArrow = D2ArrowTriangle
+	}))
 
 	got := d.Render()
 	assertContains(t, got, "source-arrowhead.shape: diamond", "should contain source arrow")
@@ -43,11 +53,9 @@ func TestD2AllArrowTypes(t *testing.T) {
 			t.Parallel()
 
 			d := NewD2Diagram()
-			d.AddEdge(D2Edge{ //nolint:exhaustruct // Test uses minimal required fields
-				From:        NewBrandedID[D2NodeIDBrand]("a"),
-				To:          NewBrandedID[D2NodeIDBrand]("b"),
-				TargetArrow: arrow,
-			})
+			d.AddEdge(newTestD2Edge(func(e *D2Edge) {
+				e.TargetArrow = arrow
+			}))
 
 			got := d.Render()
 			assertContains(t, got, "target-arrowhead.shape: "+string(arrow),
@@ -60,11 +68,9 @@ func TestD2EdgeWithFilledArrow(t *testing.T) {
 	t.Parallel()
 
 	d := NewD2Diagram()
-	d.AddEdge(D2Edge{ //nolint:exhaustruct // Test uses minimal required fields
-		From:        NewBrandedID[D2NodeIDBrand]("a"),
-		To:          NewBrandedID[D2NodeIDBrand]("b"),
-		TargetArrow: D2ArrowFilled,
-	})
+	d.AddEdge(newTestD2Edge(func(e *D2Edge) {
+		e.TargetArrow = D2ArrowFilled
+	}))
 
 	got := d.Render()
 	assertContains(t, got, "target-arrowhead.shape: filled", "should contain filled arrow")

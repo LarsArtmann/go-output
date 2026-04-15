@@ -92,9 +92,7 @@ func MermaidFlowchartRenderer(data *TableData) *MermaidRenderer {
 	}
 
 	// Create nodes for each row using shared helper
-	nodes := NodesFromTableData(data, func(header, cell string) string {
-		return header + ": " + cell
-	})
+	nodes := NodesFromTableData(data, DefaultGraphNodeLabel)
 	for i := range nodes {
 		nodes[i].Shape = ShapeBox
 		oldLabel := nodes[i].Label.Get()

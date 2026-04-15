@@ -202,9 +202,7 @@ func DOTFromTableData(data *TableData) *DOTRenderer {
 	}
 
 	// Create nodes for each row using shared helper
-	nodes := NodesFromTableData(data, func(header, cell string) string {
-		return fmt.Sprintf("%s: %s", header, cell)
-	})
+	nodes := NodesFromTableData(data, DefaultGraphNodeLabel)
 	for i := range nodes {
 		oldLabel := nodes[i].Label.Get()
 		newLabel := strings.ReplaceAll(oldLabel, "\n", "\\n")

@@ -335,15 +335,18 @@ func renderHTMLFormat(projects []TestProject) string {
 	return html.Render()
 }
 
-func renderTreeFormat(projects []TestProject) string {
-	tree := output.NewASCIITreeRenderer()
-
+func buildProjectTree(projects []TestProject) *output.TreeNode {
 	root := output.NewTreeNode("root", "Projects")
 	for _, p := range projects {
 		root.AddChild(output.NewTreeNode(p.Name, p.Name))
 	}
 
-	tree.SetRoot(root)
+	return root
+}
+
+func renderTreeFormat(projects []TestProject) string {
+	tree := output.NewASCIITreeRenderer()
+	tree.SetRoot(buildProjectTree(projects))
 
 	return tree.Render()
 }
@@ -367,12 +370,7 @@ func renderD2FromTableData(projects []TestProject) string {
 }
 
 func renderD2FromTree(projects []TestProject) string {
-	root := output.NewTreeNode("root", "Projects")
-	for _, p := range projects {
-		root.AddChild(output.NewTreeNode(p.Name, p.Name))
-	}
-
-	return output.D2FromTree(root).Render()
+	return output.D2FromTree(buildProjectTree(projects)).Render()
 }
 
 func newGraphTableData(projects []TestProject) *output.TableData {

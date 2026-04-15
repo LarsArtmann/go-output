@@ -45,6 +45,15 @@ func newTestNode(id, label string) GraphNode {
 	}
 }
 
+// newTestNodeWithShape creates a GraphNode with the given ID, label, and shape for testing.
+func newTestNodeWithShape(id, label string, shape GraphShape) GraphNode {
+	return GraphNode{
+		ID:    NewBrandedID[GraphNodeIDBrand](id),
+		Label: NewBrandedID[GraphNodeLabelBrand](label),
+		Shape: shape,
+	}
+}
+
 // testEdgeAB returns a GraphEdge connecting A to B with the given label for testing.
 func testEdgeAB(label string) GraphEdge {
 	return GraphEdge{
