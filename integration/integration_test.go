@@ -128,12 +128,22 @@ func TestD2ArrowTypesIntegration(t *testing.T) {
 		From:        output.NewBrandedID[output.D2NodeIDBrand]("a"),
 		To:          output.NewBrandedID[output.D2NodeIDBrand]("b"),
 		TargetArrow: output.D2ArrowDiamond,
-		SourceArrow:  output.D2ArrowCFMany,
+		SourceArrow: output.D2ArrowCFMany,
 	})
 
 	result := d2.Render()
-	testutils.AssertContains(t, result, "source-arrowhead.shape: cf-many", "should contain cf-many arrow")
-	testutils.AssertContains(t, result, "target-arrowhead.shape: diamond", "should contain diamond arrow")
+	testutils.AssertContains(
+		t,
+		result,
+		"source-arrowhead.shape: cf-many",
+		"should contain cf-many arrow",
+	)
+	testutils.AssertContains(
+		t,
+		result,
+		"target-arrowhead.shape: diamond",
+		"should contain diamond arrow",
+	)
 }
 
 func TestD2GridAndNearIntegration(t *testing.T) {
