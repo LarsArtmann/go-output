@@ -68,6 +68,26 @@ func TestAllFormatsRender(t *testing.T) {
 	}
 }
 
+func TestD2FromTableDataIntegration(t *testing.T) {
+	t.Parallel()
+
+	projects := SampleProjects()
+	result := renderD2FromTableData(projects)
+	testutils.AssertContains(t, result, "row0", "D2 from table data should contain row nodes")
+	testutils.AssertContains(t, result, "->", "D2 from table data should contain edges")
+	testutils.AssertContains(t, result, "Alpha", "D2 from table data should contain project names")
+}
+
+func TestD2FromTreeIntegration(t *testing.T) {
+	t.Parallel()
+
+	projects := SampleProjects()
+	result := renderD2FromTree(projects)
+	testutils.AssertContains(t, result, "Projects", "D2 from tree should contain root label")
+	testutils.AssertContains(t, result, "->", "D2 from tree should contain edges")
+	testutils.AssertContains(t, result, "Alpha", "D2 from tree should contain child labels")
+}
+
 func TestStreamingRenderer(t *testing.T) {
 	t.Parallel()
 
@@ -137,7 +157,7 @@ func renderProject(format output.Format, projects []TestProject) string {
 	case output.FormatTree:
 		return renderTreeFormat(projects)
 	case output.FormatD2:
-		return renderD2Format()
+		return renderD2Format(projects)
 	case output.FormatMermaid:
 		return renderMermaidFormat(projects)
 	case output.FormatDOT:
@@ -248,13 +268,31 @@ func renderTreeFormat(projects []TestProject) string {
 	return tree.Render()
 }
 
-func renderD2Format() string {
+func renderD2Format(projects []TestProject) string {
 	d2 := output.NewD2Diagram()
 	d2.AddTable("projects", []output.D2Column{
 		{Name: "name", Type: "string"},
 	})
 
+	for _, p := range projects {
+		d2.AddNodeWithShape(p.Name, p.Name, output.D2ShapeCircle)
+	}
+
 	return d2.Render()
+}
+
+func renderD2FromTableData(projects []TestProject) string {
+	data := newGraphTableData(projects)
+	return output.D2FromTableData(data).Render()
+}
+
+func renderD2FromTree(projects []TestProject) string {
+	root := output.NewTreeNode("root", "Projects")
+	for _, p := range projects {
+		root.AddChild(output.NewTreeNode(p.Name, p.Name))
+	}
+
+	return output.D2FromTree(root).Render()
 }
 
 func newGraphTableData(projects []TestProject) *output.TableData {

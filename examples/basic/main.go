@@ -30,7 +30,7 @@ func getRenderers() map[output.Format]rendererFunc {
 		output.FormatTSV:      renderTSV,
 		output.FormatXML:      renderXML,
 		output.FormatYAML:     renderYAML,
-		output.FormatD2:       func(_ []Project) { renderD2() },
+		output.FormatD2:       renderD2,
 		output.FormatHTML:     renderHTML,
 		output.FormatTree:     renderTree,
 		output.FormatMermaid:  renderMermaid,
@@ -207,13 +207,26 @@ func renderYAML(projects []Project) {
 	fmt.Println(string(data))
 }
 
-func renderD2() {
-	d2 := output.NewD2Diagram()
-	d2.AddTable("projects", []output.D2Column{
-		{Name: "name", Type: "string"},
-		{Name: "health", Type: "int"},
-		{Name: "complexity", Type: "int"},
-	})
+func renderD2(projects []Project) {
+	d2 := output.NewD2Diagram().
+		SetDirection(output.D2DirRight).
+		SetTitle("Project Architecture").
+		AddTable("projects", []output.D2Column{
+			{Name: "name", Type: "string"},
+			{Name: "health", Type: "int"},
+			{Name: "complexity", Type: "int"},
+		})
+
+	for _, p := range projects {
+		d2.AddNode(output.D2Node{
+			ID:    output.NewBrandedID[output.D2NodeIDBrand](p.Name),
+			Label: output.NewBrandedID[output.D2NodeLabelBrand](p.Name),
+			Shape: output.D2ShapeCircle,
+			Style: output.D2NodeStyle{Fill: "lightblue"},
+		})
+		d2.AddEdgeSimple("projects", p.Name)
+	}
+
 	fmt.Println(d2.Render())
 }
 
