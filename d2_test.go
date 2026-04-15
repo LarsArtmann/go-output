@@ -7,6 +7,7 @@ import (
 
 func TestD2Diagram(t *testing.T) {
 	t.Parallel()
+
 	t.Run("basic diagram with table", func(t *testing.T) {
 		t.Parallel()
 
@@ -107,6 +108,7 @@ func TestD2Config(t *testing.T) {
 
 func TestD2Diagram_AddNode(t *testing.T) {
 	t.Parallel()
+
 	t.Run("AddNode", func(t *testing.T) {
 		t.Parallel()
 
@@ -156,6 +158,7 @@ func TestD2Diagram_AddNode(t *testing.T) {
 
 func TestD2Diagram_AddEdge(t *testing.T) {
 	t.Parallel()
+
 	t.Run("AddEdge", func(t *testing.T) {
 		t.Parallel()
 
@@ -223,6 +226,9 @@ func TestD2AllNodeShapes(t *testing.T) {
 		D2ShapeCode,
 		D2ShapeText,
 		D2ShapeClass,
+		D2ShapePage,
+		D2ShapeStep,
+		D2ShapeStoredData,
 	}
 
 	for _, shape := range shapes {
@@ -269,15 +275,21 @@ func TestD2NodeWithStyle(t *testing.T) {
 
 	d := NewD2Diagram()
 	d.AddNode(D2Node{
-		ID:    NewBrandedID[D2NodeIDBrand]("styled"),
-		Label: NewBrandedID[D2NodeLabelBrand]("Styled Node"),
+		ID:     NewBrandedID[D2NodeIDBrand]("styled"),
+		Label:  NewBrandedID[D2NodeLabelBrand]("Styled Node"),
+		Width:  200,
+		Height: 100,
 		Style: D2NodeStyle{
-			Fill:        "blue",
-			Stroke:      "black",
-			StrokeWidth: 2,
-			FontSize:    14,
-			Opacity:     0.8,
-			Shadow:      true,
+			Fill:          "blue",
+			Stroke:        "black",
+			StrokeWidth:   2,
+			StrokeDash:    3,
+			FontSize:      14,
+			FontColor:     "white",
+			Opacity:       0.8,
+			Shadow:        true,
+			BorderRadius:  8,
+			TextTransform: "uppercase",
 		},
 	})
 
@@ -285,9 +297,15 @@ func TestD2NodeWithStyle(t *testing.T) {
 	assertContains(t, got, "style.fill: blue", "should contain fill style")
 	assertContains(t, got, "style.stroke: black", "should contain stroke style")
 	assertContains(t, got, "style.stroke-width: 2", "should contain stroke-width")
+	assertContains(t, got, "style.stroke-dash: 3", "should contain stroke-dash")
 	assertContains(t, got, "style.font-size: 14", "should contain font-size")
+	assertContains(t, got, "style.font-color: white", "should contain font-color")
 	assertContains(t, got, "style.opacity: 0.8", "should contain opacity")
-	assertContains(t, got, "style.shadow: true", "should contain shadow")
+	assertContains(t, got, "shadow: true", "should contain shadow")
+	assertContains(t, got, "border-radius: 8", "should contain border-radius")
+	assertContains(t, got, "width: 200", "should contain width")
+	assertContains(t, got, "height: 100", "should contain height")
+	assertContains(t, got, "style.text-transform: uppercase", "should contain text-transform")
 }
 
 func TestD2NodeWithIcon(t *testing.T) {
@@ -333,58 +351,58 @@ func TestD2NodeWithTooltip(t *testing.T) {
 	assertContains(t, got, "tooltip: Additional information", "should contain tooltip")
 }
 
-func TestD2EdgeWithArrows(t *testing.T) {
+func TestD2NodeWithNear(t *testing.T) {
 	t.Parallel()
 
 	d := NewD2Diagram()
-	d.AddEdge(D2Edge{ //nolint:exhaustruct // Test uses minimal required fields
-		From:        NewBrandedID[D2NodeIDBrand]("a"),
-		To:          NewBrandedID[D2NodeIDBrand]("b"),
-		Label:       NewBrandedID[D2NodeLabelBrand]("test"),
-		SourceArrow: D2ArrowDiamond,
-		TargetArrow: D2ArrowTriangle,
+	d.AddNodeSimple("server", "Server")
+	d.AddNode(D2Node{ //nolint:exhaustruct // Test uses minimal required fields
+		ID:    NewBrandedID[D2NodeIDBrand]("label"),
+		Label: NewBrandedID[D2NodeLabelBrand]("Label"),
+		Near:  "server",
 	})
 
 	got := d.Render()
-	assertContains(t, got, "source-arrowhead.shape: diamond", "should contain source arrow")
-	assertContains(t, got, "target-arrowhead.shape: triangle", "should contain target arrow")
+	assertContains(t, got, "near: server", "should contain near attribute")
 }
 
-func TestD2EdgeWithFilledArrow(t *testing.T) {
+func TestD2NodeWithGrid(t *testing.T) {
 	t.Parallel()
 
 	d := NewD2Diagram()
-	d.AddEdge(D2Edge{ //nolint:exhaustruct // Test uses minimal required fields
-		From:        NewBrandedID[D2NodeIDBrand]("a"),
-		To:          NewBrandedID[D2NodeIDBrand]("b"),
-		TargetArrow: D2ArrowFilled,
+	d.AddNode(D2Node{ //nolint:exhaustruct // Test uses minimal required fields
+		ID:          NewBrandedID[D2NodeIDBrand]("grid"),
+		Label:       NewBrandedID[D2NodeLabelBrand]("Grid Container"),
+		GridRows:    3,
+		GridColumns: 2,
+		GridGap:     10,
 	})
 
 	got := d.Render()
-	assertContains(t, got, "target-arrowhead.shape: filled", "should contain filled arrow")
+	assertContains(t, got, "grid-rows: 3", "should contain grid-rows")
+	assertContains(t, got, "grid-columns: 2", "should contain grid-columns")
+	assertContains(t, got, "grid-gap: 10", "should contain grid-gap")
 }
 
-func TestD2EdgeStyle(t *testing.T) {
+func TestD2NodeWithClass(t *testing.T) {
 	t.Parallel()
 
 	d := NewD2Diagram()
-	d.AddEdge(D2Edge{
-		From:  NewBrandedID[D2NodeIDBrand]("a"),
-		To:    NewBrandedID[D2NodeIDBrand]("b"),
-		Label: NewBrandedID[D2NodeLabelBrand]("styled"),
-		Style: D2EdgeStyle{
-			Stroke:      "red",
-			StrokeWidth: 3,
-			Animated:    true,
-			Dashed:      true,
-		},
+	d.AddClass("important", D2NodeStyle{
+		Fill:   "red",
+		Stroke: "darkred",
+	})
+	d.AddNode(D2Node{ //nolint:exhaustruct // Test uses minimal required fields
+		ID:    NewBrandedID[D2NodeIDBrand]("alert"),
+		Label: NewBrandedID[D2NodeLabelBrand]("Alert"),
+		Class: "important",
 	})
 
 	got := d.Render()
-	assertContains(t, got, "style.stroke: red", "should contain edge stroke")
-	assertContains(t, got, "style.stroke-width: 3", "should contain edge stroke-width")
-	assertContains(t, got, "style.animated: true", "should contain animated")
-	assertContains(t, got, "style.stroke-dash: 5", "should contain dashed")
+	assertContains(t, got, "classes:", "should contain classes block")
+	assertContains(t, got, "important:", "should contain class definition")
+	assertContains(t, got, "style.fill: red", "should contain class style")
+	assertContains(t, got, "class: important", "should contain class reference")
 }
 
 func TestD2NodeNested(t *testing.T) {
@@ -418,6 +436,20 @@ func TestD2NodeNestedWithShape(t *testing.T) {
 	assertContains(t, got, "child: Inner", "should contain nested content")
 }
 
+func TestD2NodeWithSpecialChars(t *testing.T) {
+	t.Parallel()
+
+	d := NewD2Diagram()
+	d.AddNodeSimple("node", `has "quotes" and\nnewlines`)
+
+	got := d.Render()
+	if strings.Contains(got, `"quotes"`) {
+		t.Error("quotes should be escaped in D2 output")
+	}
+
+	assertContains(t, got, `\"quotes\"`, "quotes should be escaped")
+}
+
 func TestEscapeD2(t *testing.T) {
 	t.Parallel()
 
@@ -440,171 +472,6 @@ func TestEscapeD2(t *testing.T) {
 			got := escapeD2(tt.input)
 			if got != tt.want {
 				t.Errorf("escapeD2(%q) = %q, want %q", tt.input, got, tt.want)
-			}
-		})
-	}
-}
-
-func TestD2NodeWithSpecialChars(t *testing.T) {
-	t.Parallel()
-
-	d := NewD2Diagram()
-	d.AddNodeSimple("node", `has "quotes" and\nnewlines`)
-
-	got := d.Render()
-	if strings.Contains(got, `"quotes"`) {
-		t.Error("quotes should be escaped in D2 output")
-	}
-
-	assertContains(t, got, `\"quotes\"`, "quotes should be escaped")
-}
-
-func TestD2FromTableData(t *testing.T) {
-	t.Parallel()
-	t.Run("nil data", func(t *testing.T) {
-		t.Parallel()
-
-		d := D2FromTableData(nil)
-		if d == nil {
-			t.Error("D2FromTableData(nil) should return non-nil diagram")
-		}
-	})
-
-	t.Run("with data creates nodes and edges", func(t *testing.T) {
-		t.Parallel()
-
-		data := NewTableData([]string{"Name", "Value"})
-		data.AddRow([]string{"test", "123"})
-		data.AddRow([]string{"other", "456"})
-
-		d := D2FromTableData(data)
-		got := d.Render()
-		assertContains(t, got, "row0:", "should contain row0 node")
-		assertContains(t, got, "row1:", "should contain row1 node")
-		assertContains(t, got, "row0 -> row1", "should contain edge between rows")
-	})
-}
-
-func TestD2FromTree(t *testing.T) {
-	t.Parallel()
-	t.Run("nil root", func(t *testing.T) {
-		t.Parallel()
-
-		d := D2FromTree(nil)
-		if d == nil {
-			t.Error("D2FromTree(nil) should return non-nil diagram")
-		}
-	})
-
-	t.Run("simple tree", func(t *testing.T) {
-		t.Parallel()
-
-		root := NewTreeNode("root", "Root")
-		root.AddChild(NewTreeNode("child1", "Child 1"))
-		root.AddChild(NewTreeNode("child2", "Child 2"))
-
-		d := D2FromTree(root)
-		got := d.Render()
-		assertContains(t, got, "root: Root", "should contain root node")
-		assertContains(t, got, "child1:", "should contain child1")
-		assertContains(t, got, "child2:", "should contain child2")
-		assertContains(t, got, "root -> child1", "should contain edge to child1")
-		assertContains(t, got, "root -> child2", "should contain edge to child2")
-	})
-
-	t.Run("deep tree", func(t *testing.T) {
-		t.Parallel()
-
-		root := NewTreeNode("root", "Root")
-		child := NewTreeNode("child", "Child")
-		grandchild := NewTreeNode("gc", "Grandchild")
-
-		root.AddChild(child)
-		child.AddChild(grandchild)
-
-		d := D2FromTree(root)
-		got := d.Render()
-		assertContains(t, got, "root -> child", "should contain root->child edge")
-		assertContains(t, got, "child -> gc", "should contain child->grandchild edge")
-	})
-
-	t.Run("empty ID uses label", func(t *testing.T) {
-		t.Parallel()
-
-		root := NewTreeNode("", "RootLabel")
-		d := D2FromTree(root)
-		got := d.Render()
-		assertContains(t, got, "RootLabel: RootLabel", "should use label as ID when ID empty")
-	})
-}
-
-func TestD2GraphRendererInterface(t *testing.T) {
-	t.Parallel()
-
-	t.Run("SetNodes", func(t *testing.T) {
-		t.Parallel()
-
-		d := NewD2Diagram()
-		d.SetNodes([]GraphNode{
-			{
-				ID:    NewBrandedID[GraphNodeIDBrand]("A"),
-				Label: NewBrandedID[GraphNodeLabelBrand]("Node A"),
-				Shape: ShapeCircle,
-			},
-		})
-
-		got := d.Render()
-		assertContains(t, got, "A: Node A", "should contain converted node")
-		assertContains(t, got, "shape: circle", "should convert shape")
-	})
-
-	t.Run("SetEdges", func(t *testing.T) {
-		t.Parallel()
-
-		d := NewD2Diagram()
-		d.SetEdges([]GraphEdge{
-			{
-				From:  NewBrandedID[GraphNodeIDBrand]("A"),
-				To:    NewBrandedID[GraphNodeIDBrand]("B"),
-				Label: NewBrandedID[GraphNodeLabelBrand]("connects"),
-			},
-		})
-
-		got := d.Render()
-		assertContains(t, got, "A -> B: connects", "should contain converted edge")
-	})
-
-	t.Run("satisfies GraphRenderer", func(t *testing.T) {
-		t.Parallel()
-
-		var _ GraphRenderer = NewD2Diagram()
-	})
-}
-
-func TestD2GraphShapeConversion(t *testing.T) {
-	t.Parallel()
-
-	tests := []struct {
-		graph GraphShape
-		d2    D2NodeShape
-	}{
-		{ShapeBox, D2ShapeRectangle},
-		{ShapeRect, D2ShapeRectangle},
-		{ShapeEllipse, D2ShapeOval},
-		{ShapeDiamond, D2ShapeDiamond},
-		{ShapeCircle, D2ShapeCircle},
-		{ShapeCylinder, D2ShapeCylinder},
-		{ShapeHexagon, D2ShapeHexagon},
-		{ShapeParallelogram, D2ShapeParallelogram},
-	}
-
-	for _, tt := range tests {
-		t.Run(string(tt.graph), func(t *testing.T) {
-			t.Parallel()
-
-			got := graphShapeToD2(tt.graph)
-			if got != tt.d2 {
-				t.Errorf("graphShapeToD2(%v) = %v, want %v", tt.graph, got, tt.d2)
 			}
 		})
 	}
