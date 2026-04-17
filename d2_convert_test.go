@@ -179,7 +179,7 @@ func TestD2GraphShapeConversion(t *testing.T) {
 			if tt.want == "" {
 				if strings.Contains(got, "shape:") {
 					t.Errorf(
-						"shape %q should be implicit (not rendered), but got shape in output",
+						"shape %q should be implicit, got shape in output",
 						tt.shape,
 					)
 				}
