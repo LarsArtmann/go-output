@@ -42,15 +42,12 @@ func (id *BrandedID[B]) UnmarshalText(text []byte) error {
 
 // Format implements fmt.Formatter.
 func (id BrandedID[B]) Format(s fmt.State, verb rune) {
-	format := "%s"
-
-	if verb == 'v' {
-		if s.Flag('#') {
-			format = "%s{%q}"
-		}
+	switch {
+	case verb == 'v' && s.Flag('#'):
+		_, _ = fmt.Fprintf(s, "BrandedID{%q}", id.value)
+	default:
+		_, _ = fmt.Fprintf(s, "%s", id.value)
 	}
-
-	_, _ = fmt.Fprintf(s, format, id.value)
 }
 
 // D2NodeIDBrand is the brand type for D2 node IDs.

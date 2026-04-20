@@ -144,6 +144,25 @@ func TestEdgeStyle(t *testing.T) {
 	)
 }
 
+func TestGetStyle(t *testing.T) {
+	t.Parallel()
+
+	node := &GraphNode{
+		ID:    NewBrandedID[GraphNodeIDBrand]("id"),
+		Label: NewBrandedID[GraphNodeLabelBrand]("label"),
+		Style: GraphStyle{FillColor: "red", StrokeColor: "blue", FontColor: "green", FontSize: 14},
+	}
+
+	style := node.GetStyle()
+
+	gentest.TestStructFields(t,
+		gentest.StringField("FillColor", style.FillColor, "red"),
+		gentest.StringField("StrokeColor", style.StrokeColor, "blue"),
+		gentest.StringField("FontColor", style.FontColor, "green"),
+		gentest.IntField("FontSize", style.FontSize, 14),
+	)
+}
+
 func TestContainsString(t *testing.T) {
 	t.Parallel()
 

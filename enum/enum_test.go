@@ -21,6 +21,10 @@ func testEnumString(v testEnum) string {
 	return string(v)
 }
 
+func (e testEnum) String() string {
+	return string(e)
+}
+
 func TestParse(t *testing.T) {
 	tests := []parseEnumTestCase[testEnum]{
 		{"valid_a", "a", testEnumA, false},
@@ -58,6 +62,15 @@ func TestAllowedStrings(t *testing.T) {
 	want := []string{"a", "b", "c"}
 
 	gentest.AssertStringSliceEqual(t, "AllowedStrings", got, want)
+}
+
+func TestAllowedValues(t *testing.T) {
+	t.Parallel()
+
+	got := AllowedValues(testEnumValues)
+	want := []string{"a", "b", "c"}
+
+	gentest.AssertStringSliceEqual(t, "AllowedValues", got, want)
 }
 
 func TestParseError(t *testing.T) {
