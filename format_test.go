@@ -235,6 +235,36 @@ func TestFormatCategory(t *testing.T) {
 	}
 }
 
+func TestFormatCategoryMethod(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		format Format
+		want   FormatCategory
+	}{
+		{FormatTable, CategoryTable},
+		{FormatJSON, CategoryTable},
+		{FormatCSV, CategoryTable},
+		{FormatYAML, CategoryTable},
+		{FormatHTML, CategoryTree},
+		{FormatTree, CategoryTree},
+		{FormatD2, CategoryGraph},
+		{FormatMermaid, CategoryGraph},
+		{FormatDOT, CategoryGraph},
+	}
+
+	for _, tt := range tests {
+		t.Run(string(tt.format), func(t *testing.T) {
+			t.Parallel()
+
+			got := tt.format.Category()
+			if got != tt.want {
+				t.Errorf("Format(%q).Category() = %v, want %v", tt.format, got, tt.want)
+			}
+		})
+	}
+}
+
 func TestTableData(t *testing.T) {
 	t.Parallel()
 	runSubtest(t, "RowCount and ColCount", testTableDataRowColCount)
