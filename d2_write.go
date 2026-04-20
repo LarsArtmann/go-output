@@ -3,6 +3,8 @@ package output
 import (
 	"fmt"
 	"strings"
+
+	"github.com/larsartmann/go-output/internal/escape"
 )
 
 func (d *D2Diagram) writeStyleAttrs(b *strings.Builder, s D2NodeStyle, indent string) {
@@ -55,12 +57,12 @@ func (*D2Diagram) writeStyleEffects(b *strings.Builder, s D2NodeStyle, indent st
 }
 
 func (d *D2Diagram) writeEdge(b *strings.Builder, edge D2Edge) {
-	from := escapeD2(edge.From.Get())
-	to := escapeD2(edge.To.Get())
+	from := escape.D2(edge.From.Get())
+	to := escape.D2(edge.To.Get())
 
 	label := ""
 	if !edge.Label.IsEmpty() {
-		label = ": " + escapeD2(edge.Label.Get())
+		label = ": " + escape.D2(edge.Label.Get())
 	}
 
 	if !edge.hasBlockAttrs() {
@@ -106,13 +108,4 @@ func (*D2Diagram) writeEdgeBlockAttrs(b *strings.Builder, edge D2Edge) {
 	if edge.TargetArrow != "" {
 		fmt.Fprintf(b, "  target-arrowhead.shape: %s\n", edge.TargetArrow)
 	}
-}
-
-// escapeD2 escapes special characters for safe inclusion in D2 output.
-func escapeD2(s string) string {
-	s = strings.ReplaceAll(s, `"`, `\"`)
-	s = strings.ReplaceAll(s, "\n", `\n`)
-	s = strings.ReplaceAll(s, "\t", `\t`)
-
-	return s
 }

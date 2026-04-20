@@ -3,6 +3,8 @@ package output
 import (
 	"fmt"
 	"strings"
+
+	"github.com/larsartmann/go-output/internal/escape"
 )
 
 // D2Diagram builds D2 diagram output with full support for nodes, edges,
@@ -137,7 +139,7 @@ func (d *D2Diagram) writeConfig(b *strings.Builder) {
 	}
 
 	if d.title != "" {
-		fmt.Fprintf(b, "title: {\n  label: %s\n}\n", escapeD2(d.title))
+		fmt.Fprintf(b, "title: {\n  label: %s\n}\n", escape.D2(d.title))
 	}
 
 	if d.layout != "" {
@@ -151,7 +153,7 @@ func (d *D2Diagram) writeClasses(b *strings.Builder) {
 	b.WriteString("classes: {\n")
 
 	for name, style := range d.classes {
-		b.WriteString("  " + escapeD2(name) + ": {\n")
+		b.WriteString("  " + escape.D2(name) + ": {\n")
 		d.writeStyleAttrs(b, style, "    ")
 		b.WriteString("  }\n")
 	}
@@ -160,7 +162,7 @@ func (d *D2Diagram) writeClasses(b *strings.Builder) {
 }
 
 func (d *D2Diagram) writeTable(b *strings.Builder, table D2Table) {
-	fmt.Fprintf(b, "%s: {\n  shape: sql_table\n", escapeD2(table.Name))
+	fmt.Fprintf(b, "%s: {\n  shape: sql_table\n", escape.D2(table.Name))
 
 	for _, col := range table.Columns {
 		d.writeColumn(b, col)
@@ -172,9 +174,9 @@ func (d *D2Diagram) writeTable(b *strings.Builder, table D2Table) {
 func (*D2Diagram) writeColumn(b *strings.Builder, col D2Column) {
 	if col.Constraint != "" {
 		fmt.Fprintf(b, "  %s: %s {constraint: %s}\n",
-			escapeD2(col.Name), escapeD2(col.Type), string(col.Constraint))
+			escape.D2(col.Name), escape.D2(col.Type), string(col.Constraint))
 	} else {
-		fmt.Fprintf(b, "  %s: %s\n", escapeD2(col.Name), escapeD2(col.Type))
+		fmt.Fprintf(b, "  %s: %s\n", escape.D2(col.Name), escape.D2(col.Type))
 	}
 }
 
@@ -185,16 +187,16 @@ func (d *D2Diagram) writeNode(b *strings.Builder, node D2Node) {
 	}
 
 	if node.hasBlockAttrs() {
-		fmt.Fprintf(b, "%s: %s {\n", escapeD2(node.ID.Get()), escapeD2(node.Label.Get()))
+		fmt.Fprintf(b, "%s: %s {\n", escape.D2(node.ID.Get()), escape.D2(node.Label.Get()))
 		d.writeNodeAttrs(b, node)
 		b.WriteString("}\n")
 	} else {
-		fmt.Fprintf(b, "%s: %s\n", escapeD2(node.ID.Get()), escapeD2(node.Label.Get()))
+		fmt.Fprintf(b, "%s: %s\n", escape.D2(node.ID.Get()), escape.D2(node.Label.Get()))
 	}
 }
 
 func (d *D2Diagram) writeNestedNode(b *strings.Builder, node D2Node) {
-	fmt.Fprintf(b, "%s: %s {\n", escapeD2(node.ID.Get()), escapeD2(node.Label.Get()))
+	fmt.Fprintf(b, "%s: %s {\n", escape.D2(node.ID.Get()), escape.D2(node.Label.Get()))
 	d.writeNodeAttrs(b, node)
 	b.WriteString(node.Nested)
 	b.WriteString("}\n")
@@ -223,7 +225,7 @@ func (*D2Diagram) writeNodeSize(b *strings.Builder, node D2Node) {
 
 func (*D2Diagram) writeNodeLayout(b *strings.Builder, node D2Node) {
 	if node.Near != "" {
-		fmt.Fprintf(b, "  near: %s\n", escapeD2(node.Near))
+		fmt.Fprintf(b, "  near: %s\n", escape.D2(node.Near))
 	}
 
 	if node.GridRows > 0 {
@@ -241,7 +243,7 @@ func (*D2Diagram) writeNodeLayout(b *strings.Builder, node D2Node) {
 
 func (*D2Diagram) writeNodeRefs(b *strings.Builder, node D2Node) {
 	if node.Class != "" {
-		fmt.Fprintf(b, "  class: %s\n", escapeD2(node.Class))
+		fmt.Fprintf(b, "  class: %s\n", escape.D2(node.Class))
 	}
 
 	if node.Icon != "" {
@@ -253,6 +255,6 @@ func (*D2Diagram) writeNodeRefs(b *strings.Builder, node D2Node) {
 	}
 
 	if node.Tooltip != "" {
-		fmt.Fprintf(b, "  tooltip: %s\n", escapeD2(node.Tooltip))
+		fmt.Fprintf(b, "  tooltip: %s\n", escape.D2(node.Tooltip))
 	}
 }

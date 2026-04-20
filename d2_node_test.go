@@ -4,6 +4,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/larsartmann/go-output/internal/escape"
 	"github.com/larsartmann/go-output/internal/gentest"
 )
 
@@ -271,8 +272,8 @@ func TestEscapeD2(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			got := escapeD2(tt.input)
-			gentest.AssertEqual(t, "escapeD2", tt.input, got, tt.want)
+			got := escape.D2(tt.input)
+			gentest.AssertEqual(t, "escape.D2", tt.input, got, tt.want)
 		})
 	}
 }

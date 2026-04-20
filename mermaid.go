@@ -3,6 +3,8 @@ package output
 import (
 	"fmt"
 	"strings"
+
+	"github.com/larsartmann/go-output/internal/escape"
 )
 
 // MermaidRenderer implements the GraphRenderer interface for Mermaid diagrams.
@@ -27,7 +29,7 @@ func (r *MermaidRenderer) Render() string {
 	// Write nodes
 	for _, node := range r.nodes {
 		prefix, suffix := r.getMermaidShape(node.Shape)
-		label := r.escapeMermaidLabel(node.Label.Get())
+		label := escape.MermaidText(node.Label.Get())
 		_, _ = fmt.Fprintf(&b, "    %s%s%s%s\n", node.ID.Get(), prefix, label, suffix)
 	}
 
@@ -35,7 +37,7 @@ func (r *MermaidRenderer) Render() string {
 	for _, edge := range r.edges {
 		label := ""
 		if !edge.Label.IsEmpty() {
-			label = fmt.Sprintf("|%s|", r.escapeMermaidLabel(edge.Label.Get()))
+			label = fmt.Sprintf("|%s|", escape.MermaidText(edge.Label.Get()))
 		}
 
 		_, _ = fmt.Fprintf(&b, "    %s -->%s %s\n", edge.From.Get(), label, edge.To.Get())
@@ -70,18 +72,6 @@ func (r *MermaidRenderer) getMermaidShape(shape GraphShape) (string, string) {
 	default:
 		return "[", "]"
 	}
-}
-
-func (r *MermaidRenderer) escapeMermaidLabel(s string) string {
-	// Escape quotes and brackets for Mermaid
-	s = strings.ReplaceAll(s, "\"", "'")
-	s = strings.ReplaceAll(s, "[", "(")
-	s = strings.ReplaceAll(s, "]", ")")
-	s = strings.ReplaceAll(s, "{", "(")
-	s = strings.ReplaceAll(s, "}", ")")
-	s = strings.ReplaceAll(s, "\n", "<br>")
-
-	return s
 }
 
 // MermaidFlowchartRenderer creates a Mermaid flowchart from table data.
@@ -120,9 +110,9 @@ func MermaidTreeRenderer(root *TreeNode) *MermaidRenderer {
 }
 
 func (r *MermaidRenderer) addTreeNodes(node *TreeNode, parentID string) {
-	nodeID := sanitizeMermaidID(node.ID.Get())
+	nodeID := escape.MermaidID(node.ID.Get())
 	if nodeID == "" {
-		nodeID = sanitizeMermaidLabel(node.Label.Get())
+		nodeID = escape.MermaidSlug(node.Label.Get())
 	}
 
 	graphNodeID := NewBrandedID[GraphNodeIDBrand](nodeID)
@@ -146,28 +136,4 @@ func (r *MermaidRenderer) addTreeNodes(node *TreeNode, parentID string) {
 	for _, child := range node.Children {
 		r.addTreeNodes(child, nodeID)
 	}
-}
-
-func sanitizeMermaidID(id string) string {
-	var result strings.Builder
-
-	for _, r := range id {
-		if (r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') || (r >= '0' && r <= '9') || r == '_' {
-			result.WriteRune(r)
-		}
-	}
-
-	if result.Len() == 0 {
-		return "node"
-	}
-
-	return result.String()
-}
-
-func sanitizeMermaidLabel(label string) string {
-	result := strings.ReplaceAll(label, " ", "_")
-	result = strings.ReplaceAll(result, "-", "_")
-	result = strings.ReplaceAll(result, "/", "_")
-
-	return result
 }

@@ -3,6 +3,8 @@ package output
 import (
 	"strings"
 	"testing"
+
+	"github.com/larsartmann/go-output/internal/escape"
 )
 
 //nolint:exhaustruct // Test files use partial struct initialization
@@ -95,7 +97,7 @@ func TestSanitizeMermaidID(t *testing.T) {
 		{"", "node"},
 	}
 
-	testSanitizeFunc(t, "sanitizeMermaidID", sanitizeMermaidID, tests)
+	testSanitizeFunc(t, "escape.MermaidID", escape.MermaidID, tests)
 }
 
 func TestSanitizeMermaidLabel(t *testing.T) {
@@ -112,7 +114,7 @@ func TestSanitizeMermaidLabel(t *testing.T) {
 		{"multi word test", "multi_word_test"},
 	}
 
-	testSanitizeFunc(t, "sanitizeMermaidLabel", sanitizeMermaidLabel, tests)
+	testSanitizeFunc(t, "escape.MermaidSlug", escape.MermaidSlug, tests)
 }
 
 func TestMermaidRendererAllShapes(t *testing.T) {

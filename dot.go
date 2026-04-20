@@ -3,6 +3,8 @@ package output
 import (
 	"fmt"
 	"strings"
+
+	"github.com/larsartmann/go-output/internal/escape"
 )
 
 // GraphRendererMixin contains shared fields and methods for graph renderers.
@@ -122,11 +124,11 @@ func (r *DOTRenderer) Render() string {
 
 func (r *DOTRenderer) writeNode(b *strings.Builder, node GraphNode) {
 	b.WriteString("  \"")
-	b.WriteString(r.escapeDOT(node.ID.Get()))
+	b.WriteString(escape.DOT(node.ID.Get()))
 	b.WriteString("\" [\n")
 
 	b.WriteString("    label=\"")
-	b.WriteString(r.escapeDOT(node.Label.Get()))
+	b.WriteString(escape.DOT(node.Label.Get()))
 	b.WriteString("\"\n")
 
 	r.writeNodeAttr(b, "shape", string(node.Shape), node.Shape != "")
@@ -157,17 +159,17 @@ func (r *DOTRenderer) writeEdge(b *strings.Builder, edge GraphEdge) {
 	}
 
 	b.WriteString("  \"")
-	b.WriteString(r.escapeDOT(edge.From.Get()))
+	b.WriteString(escape.DOT(edge.From.Get()))
 	b.WriteString("\" ")
 	b.WriteString(op)
 	b.WriteString(" \"")
-	b.WriteString(r.escapeDOT(edge.To.Get()))
+	b.WriteString(escape.DOT(edge.To.Get()))
 	b.WriteString("\"")
 
 	attrs := make([]string, 0)
 
 	if !edge.Label.IsEmpty() {
-		attrs = append(attrs, fmt.Sprintf("label=\"%s\"", r.escapeDOT(edge.Label.Get())))
+		attrs = append(attrs, fmt.Sprintf("label=\"%s\"", escape.DOT(edge.Label.Get())))
 	}
 
 	if edge.Style.Color != "" {
@@ -185,13 +187,6 @@ func (r *DOTRenderer) writeEdge(b *strings.Builder, edge GraphEdge) {
 	}
 
 	b.WriteString(";\n")
-}
-
-func (r *DOTRenderer) escapeDOT(s string) string {
-	s = strings.ReplaceAll(s, "\"", "\\\"")
-	s = strings.ReplaceAll(s, "\n", "\\n")
-
-	return s
 }
 
 // DOTFromTableData converts TableData to a DOT graph.

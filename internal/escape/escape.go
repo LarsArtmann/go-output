@@ -44,3 +44,59 @@ func escape(s string, m mode) string {
 
 	return b.String()
 }
+
+// D2 escapes special characters for D2 diagram strings.
+func D2(s string) string {
+	s = strings.ReplaceAll(s, `"`, `\"`)
+	s = strings.ReplaceAll(s, "\n", `\n`)
+	s = strings.ReplaceAll(s, "\t", `\t`)
+
+	return s
+}
+
+// DOT escapes special characters for DOT/Graphviz strings.
+func DOT(s string) string {
+	s = strings.ReplaceAll(s, `"`, `\"`)
+	s = strings.ReplaceAll(s, "\n", `\n`)
+
+	return s
+}
+
+// MermaidID sanitizes a string for use as a Mermaid node identifier.
+func MermaidID(id string) string {
+	var result strings.Builder
+
+	for _, r := range id {
+		if (r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') ||
+			(r >= '0' && r <= '9') || r == '_' {
+			result.WriteRune(r)
+		}
+	}
+
+	if result.Len() == 0 {
+		return "node"
+	}
+
+	return result.String()
+}
+
+// MermaidSlug sanitizes a string for use as a Mermaid node identifier fallback.
+func MermaidSlug(label string) string {
+	s := strings.ReplaceAll(label, " ", "_")
+	s = strings.ReplaceAll(s, "-", "_")
+	s = strings.ReplaceAll(s, "/", "_")
+
+	return s
+}
+
+// MermaidText escapes special characters for Mermaid display labels.
+func MermaidText(s string) string {
+	s = strings.ReplaceAll(s, `"`, "'")
+	s = strings.ReplaceAll(s, "[", "(")
+	s = strings.ReplaceAll(s, "]", ")")
+	s = strings.ReplaceAll(s, "{", "(")
+	s = strings.ReplaceAll(s, "}", ")")
+	s = strings.ReplaceAll(s, "\n", "<br>")
+
+	return s
+}
