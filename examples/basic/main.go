@@ -211,8 +211,10 @@ func renderD2(projects []Project) {
 	d2 := output.NewD2Diagram().
 		SetDirection(output.D2DirRight).
 		SetTitle("Project Architecture").
+		AddClass("service", output.D2NodeStyle{Fill: "lightblue", Stroke: "navy", FontSize: 16}).
 		AddTable("projects", []output.D2Column{
-			{Name: "name", Type: "string"},
+			{Name: "id", Type: "serial", Constraint: output.D2ConstraintPrimary},
+			{Name: "name", Type: "varchar(255)"},
 			{Name: "health", Type: "int"},
 			{Name: "complexity", Type: "int"},
 		})
@@ -222,9 +224,13 @@ func renderD2(projects []Project) {
 			ID:    output.NewBrandedID[output.D2NodeIDBrand](p.Name),
 			Label: output.NewBrandedID[output.D2NodeLabelBrand](p.Name),
 			Shape: output.D2ShapeCircle,
-			Style: output.D2NodeStyle{Fill: "lightblue"},
+			Class: "service",
 		})
-		d2.AddEdgeSimple("projects", p.Name)
+		d2.AddEdge(output.D2Edge{
+			From:        output.NewBrandedID[output.D2NodeIDBrand]("projects"),
+			To:          output.NewBrandedID[output.D2NodeIDBrand](p.Name),
+			TargetArrow: output.D2ArrowCFMany,
+		})
 	}
 
 	fmt.Println(d2.Render())
