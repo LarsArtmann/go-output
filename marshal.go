@@ -2,11 +2,8 @@ package output
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 )
-
-var errUnsupportedIndentFormat = errors.New("unsupported indent format")
 
 // MarshalJSONIndent encodes v to indented JSON.
 func MarshalJSONIndent(v any, prefix, indent string) ([]byte, error) {
