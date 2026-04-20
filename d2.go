@@ -1,5 +1,11 @@
 package output
 
+import (
+	"errors"
+	"fmt"
+	"slices"
+)
+
 // D2Direction constants for diagram layout direction.
 type D2Direction string
 
@@ -9,6 +15,40 @@ const (
 	D2DirLeft  D2Direction = "left"
 	D2DirUp    D2Direction = "up"
 )
+
+var d2DirectionValues = []D2Direction{
+	D2DirDown,
+	D2DirRight,
+	D2DirLeft,
+	D2DirUp,
+}
+
+var ErrInvalidD2Direction = errors.New("invalid D2 direction")
+
+func ParseD2Direction(s string) (D2Direction, error) {
+	if slices.Contains(d2DirectionValues, D2Direction(s)) {
+		return D2Direction(s), nil
+	}
+
+	return "", fmt.Errorf("%w: %q (allowed: %v)", ErrInvalidD2Direction, s, d2DirectionValues)
+}
+
+func (d D2Direction) IsValid() bool {
+	return slices.Contains(d2DirectionValues, d)
+}
+
+func (d D2Direction) AllowedValues() []string {
+	values := make([]string, len(d2DirectionValues))
+	for i, v := range d2DirectionValues {
+		values[i] = string(v)
+	}
+
+	return values
+}
+
+func (d D2Direction) String() string {
+	return string(d)
+}
 
 // D2NodeShape represents the shape of a D2 node.
 type D2NodeShape string
@@ -36,6 +76,56 @@ const (
 	D2ShapeStep          D2NodeShape = "step"
 	D2ShapeStoredData    D2NodeShape = "stored_data"
 )
+
+var d2NodeShapeValues = []D2NodeShape{
+	D2ShapeRectangle,
+	D2ShapeSquare,
+	D2ShapeCircle,
+	D2ShapeDiamond,
+	D2ShapeHexagon,
+	D2ShapeCloud,
+	D2ShapeCylinder,
+	D2ShapePerson,
+	D2ShapeQueue,
+	D2ShapeOval,
+	D2ShapeParallelogram,
+	D2ShapeTriangle,
+	D2ShapeSQLTable,
+	D2ShapeImage,
+	D2ShapeCode,
+	D2ShapeText,
+	D2ShapeClass,
+	D2ShapePage,
+	D2ShapeStep,
+	D2ShapeStoredData,
+}
+
+var ErrInvalidD2NodeShape = errors.New("invalid D2 node shape")
+
+func ParseD2NodeShape(s string) (D2NodeShape, error) {
+	if slices.Contains(d2NodeShapeValues, D2NodeShape(s)) {
+		return D2NodeShape(s), nil
+	}
+
+	return "", fmt.Errorf("%w: %q (allowed: %v)", ErrInvalidD2NodeShape, s, d2NodeShapeValues)
+}
+
+func (s D2NodeShape) IsValid() bool {
+	return slices.Contains(d2NodeShapeValues, s)
+}
+
+func (s D2NodeShape) AllowedValues() []string {
+	values := make([]string, len(d2NodeShapeValues))
+	for i, v := range d2NodeShapeValues {
+		values[i] = string(v)
+	}
+
+	return values
+}
+
+func (s D2NodeShape) String() string {
+	return string(s)
+}
 
 // D2NodeStyle represents styling for a D2 node.
 type D2NodeStyle struct {
@@ -152,6 +242,47 @@ const D2ArrowPoint = D2ArrowArrow
 
 // Deprecated: Use D2ArrowCircle instead.
 const D2ArrowOval = D2ArrowCircle
+
+var d2ArrowTypeValues = []D2ArrowType{
+	D2ArrowArrow,
+	D2ArrowTriangle,
+	D2ArrowDiamond,
+	D2ArrowCircle,
+	D2ArrowFilled,
+	D2ArrowBox,
+	D2ArrowCross,
+	D2ArrowCFOne,
+	D2ArrowCFMany,
+	D2ArrowCFOneRequired,
+	D2ArrowCFManyRequired,
+}
+
+var ErrInvalidD2ArrowType = errors.New("invalid D2 arrow type")
+
+func ParseD2ArrowType(s string) (D2ArrowType, error) {
+	if slices.Contains(d2ArrowTypeValues, D2ArrowType(s)) {
+		return D2ArrowType(s), nil
+	}
+
+	return "", fmt.Errorf("%w: %q (allowed: %v)", ErrInvalidD2ArrowType, s, d2ArrowTypeValues)
+}
+
+func (a D2ArrowType) IsValid() bool {
+	return a == D2ArrowNone || slices.Contains(d2ArrowTypeValues, a)
+}
+
+func (a D2ArrowType) AllowedValues() []string {
+	values := make([]string, len(d2ArrowTypeValues))
+	for i, v := range d2ArrowTypeValues {
+		values[i] = string(v)
+	}
+
+	return values
+}
+
+func (a D2ArrowType) String() string {
+	return string(a)
+}
 
 // D2Constraint represents a SQL constraint on a table column.
 type D2Constraint string
