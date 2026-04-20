@@ -97,11 +97,9 @@ func TestD2FromTree(t *testing.T) {
 		t.Parallel()
 
 		root := NewTreeNode("root", "Root")
-		child1 := NewTreeNode("child1", "Child 1")
-		child2 := NewTreeNode("child2", "Child 2")
 
-		root.AddChild(child1)
-		root.AddChild(child2)
+		root.AddChild(NewTreeNode("child1", "Child 1"))
+		root.AddChild(NewTreeNode("child2", "Child 2"))
 
 		d := D2FromTree(root)
 		got := d.Render()
@@ -116,11 +114,9 @@ func TestD2FromTree(t *testing.T) {
 		t.Parallel()
 
 		root := NewTreeNode("root", "Root")
-		child := NewTreeNode("child", "Child")
-		grandchild := NewTreeNode("grandchild", "Grandchild")
 
-		root.AddChild(child)
-		child.AddChild(grandchild)
+		root.AddChild(NewTreeNode("child", "Child"))
+		root.Children[0].AddChild(NewTreeNode("grandchild", "Grandchild"))
 
 		d := D2FromTree(root)
 		got := d.Render()
@@ -178,10 +174,7 @@ func TestD2GraphShapeConversion(t *testing.T) {
 
 			if tt.want == "" {
 				if strings.Contains(got, "shape:") {
-					t.Errorf(
-						"shape %q should be implicit, got shape in output",
-						tt.shape,
-					)
+					t.Errorf("shape %q implicit but got shape in output", tt.shape)
 				}
 			} else {
 				msg := "should convert " + tt.shape.String() + " to " + tt.want
