@@ -170,8 +170,8 @@ type D2Column struct {
 	Constraint D2Constraint
 }
 
-// D2Shape represents a SQL table shape in D2 diagrams.
-type D2Shape struct {
+// D2Table represents a SQL table shape in D2 diagrams.
+type D2Table struct {
 	Name    string
 	Columns []D2Column
 }

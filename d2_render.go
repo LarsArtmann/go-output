@@ -12,7 +12,7 @@ type D2Diagram struct {
 	layout    string
 	title     string
 	classes   map[string]D2NodeStyle
-	tables    []D2Shape
+	tables    []D2Table
 	nodes     []D2Node
 	edges     []D2Edge
 }
@@ -52,7 +52,7 @@ func (d *D2Diagram) AddClass(name string, style D2NodeStyle) *D2Diagram {
 
 // AddTable adds a SQL table shape to the diagram.
 func (d *D2Diagram) AddTable(name string, columns []D2Column) *D2Diagram {
-	d.tables = append(d.tables, D2Shape{Name: name, Columns: columns})
+	d.tables = append(d.tables, D2Table{Name: name, Columns: columns})
 	return d
 }
 
@@ -159,7 +159,7 @@ func (d *D2Diagram) writeClasses(b *strings.Builder) {
 	b.WriteString("}\n\n")
 }
 
-func (d *D2Diagram) writeTable(b *strings.Builder, table D2Shape) {
+func (d *D2Diagram) writeTable(b *strings.Builder, table D2Table) {
 	fmt.Fprintf(b, "%s: {\n  shape: sql_table\n", escapeD2(table.Name))
 
 	for _, col := range table.Columns {
