@@ -62,39 +62,6 @@ type D2NodeLabelBrand struct{}
 // D2NodeLabel is a branded identifier for D2 diagram node labels.
 type D2NodeLabel = BrandedID[D2NodeLabelBrand]
 
-// D2EdgeFromBrand is the brand type for D2 edge source IDs.
-type D2EdgeFromBrand struct{}
-
-// D2EdgeToBrand is the brand type for D2 edge target IDs.
-type D2EdgeToBrand struct{}
-
-// D2EdgeLabelBrand is the brand type for D2 edge labels.
-type D2EdgeLabelBrand struct{}
-
-// D2EdgeID is a branded identifier for D2 diagram edges.
-type D2EdgeID = BrandedID[D2EdgeFromBrand]
-
-// DOTGraphIDBrand is the brand type for DOT graph IDs.
-type DOTGraphIDBrand struct{}
-
-// DOTGraphID is a branded identifier for DOT/Graphviz graphs.
-type DOTGraphID = BrandedID[DOTGraphIDBrand]
-
-// DOTNodeIDBrand is the brand type for DOT node IDs.
-type DOTNodeIDBrand struct{}
-
-// DOTNodeID is a branded identifier for DOT diagram nodes.
-type DOTNodeID = BrandedID[DOTNodeIDBrand]
-
-// DOTEdgeFromBrand is the brand type for DOT edge source IDs.
-type DOTEdgeFromBrand struct{}
-
-// DOTEdgeToBrand is the brand type for DOT edge target IDs.
-type DOTEdgeToBrand struct{}
-
-// DOTEdgeLabelBrand is the brand type for DOT edge labels.
-type DOTEdgeLabelBrand struct{}
-
 // TreeNodeIDBrand is the brand type for tree node IDs.
 type TreeNodeIDBrand struct{}
 
@@ -107,12 +74,6 @@ type TreeNodeLabelBrand struct{}
 // TreeNodeLabel is a branded identifier for tree node labels.
 type TreeNodeLabel = BrandedID[TreeNodeLabelBrand]
 
-// TreeParentIDBrand is the brand type for tree parent IDs.
-type TreeParentIDBrand struct{}
-
-// TreeParentID is a branded identifier for tree parent nodes.
-type TreeParentID = BrandedID[TreeParentIDBrand]
-
 // GraphNodeIDBrand is the brand type for graph node IDs.
 type GraphNodeIDBrand struct{}
 
@@ -124,30 +85,3 @@ type GraphNodeLabelBrand struct{}
 
 // GraphNodeLabel is a branded identifier for graph node labels.
 type GraphNodeLabel = BrandedID[GraphNodeLabelBrand]
-
-// GraphEdgeFromBrand is the brand type for graph edge source IDs.
-type GraphEdgeFromBrand struct{}
-
-// GraphEdgeToBrand is the brand type for graph edge target IDs.
-type GraphEdgeToBrand struct{}
-
-// GraphEdgeLabelBrand is the brand type for graph edge labels.
-type GraphEdgeLabelBrand struct{}
-
-// MermaidNodeIDBrand is the brand type for Mermaid node IDs.
-type MermaidNodeIDBrand struct{}
-
-// MermaidNodeID is a branded identifier for Mermaid diagram nodes.
-type MermaidNodeID = BrandedID[MermaidNodeIDBrand]
-
-// MermaidParentIDBrand is the brand type for Mermaid parent IDs.
-type MermaidParentIDBrand struct{}
-
-// MermaidParentID is a branded identifier for Mermaid parent nodes.
-type MermaidParentID = BrandedID[MermaidParentIDBrand]
-
-// HTMLTitleBrand is the brand type for HTML title IDs.
-type HTMLTitleBrand struct{}
-
-// HTMLTitle is a branded identifier for HTML titles.
-type HTMLTitle = BrandedID[HTMLTitleBrand]
