@@ -87,6 +87,7 @@ func TestD2(t *testing.T) {
 		{"quotes", `"hi"`, `\"hi\"`},
 		{"newline", "a\nb", `a\nb`},
 		{"tab", "a\tb", `a\tb`},
+		{"backslash", `a\b`, `a\\b`},
 		{"empty", "", ""},
 	}
 
@@ -111,6 +112,7 @@ func TestDOT(t *testing.T) {
 		{"no escaping", "hello", "hello"},
 		{"quotes", `"hi"`, `\"hi\"`},
 		{"newline", "a\nb", `a\nb`},
+		{"backslash", `a\b`, `a\\b`},
 		{"empty", "", ""},
 	}
 

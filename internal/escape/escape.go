@@ -47,6 +47,7 @@ func escape(s string, m mode) string {
 
 // D2 escapes special characters for D2 diagram strings.
 func D2(s string) string {
+	s = strings.ReplaceAll(s, `\`, `\\`)
 	s = strings.ReplaceAll(s, `"`, `\"`)
 	s = strings.ReplaceAll(s, "\n", `\n`)
 	s = strings.ReplaceAll(s, "\t", `\t`)
@@ -56,6 +57,7 @@ func D2(s string) string {
 
 // DOT escapes special characters for DOT/Graphviz strings.
 func DOT(s string) string {
+	s = strings.ReplaceAll(s, `\`, `\\`)
 	s = strings.ReplaceAll(s, `"`, `\"`)
 	s = strings.ReplaceAll(s, "\n", `\n`)
 

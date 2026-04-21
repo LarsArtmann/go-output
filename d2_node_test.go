@@ -265,7 +265,7 @@ func TestEscapeD2(t *testing.T) {
 		{"quotes", `"quoted"`, `\"quoted\"`},
 		{"newline", "line1\nline2", `line1\nline2`},
 		{"tab", "col1\tcol2", `col1\tcol2`},
-		{"mixed", `"hello"\nworld`, `\"hello\"\nworld`},
+		{"mixed", "\"hello\"\nworld", `\"hello\"\nworld`},
 	}
 
 	for _, tt := range tests {
