@@ -3,7 +3,8 @@ package output
 import (
 	"errors"
 	"fmt"
-	"slices"
+
+	"github.com/larsartmann/go-output/enum"
 )
 
 // D2Direction constants for diagram layout direction.
@@ -29,26 +30,21 @@ var ErrInvalidD2Direction = errors.New("invalid D2 direction")
 
 func ParseD2Direction(s string) (D2Direction, error) {
 	values := d2DirectionValues()
-	if slices.Contains(values, D2Direction(s)) {
-		return D2Direction(s), nil
+
+	v, err := enum.Parse(values, s, func(d D2Direction) string { return string(d) })
+	if err != nil {
+		return "", fmt.Errorf("%w: %q", ErrInvalidD2Direction, s)
 	}
 
-	return "", fmt.Errorf("%w: %q (allowed: %v)", ErrInvalidD2Direction, s, values)
+	return v, nil
 }
 
 func (d D2Direction) IsValid() bool {
-	return slices.Contains(d2DirectionValues(), d)
+	return enum.Contains(d2DirectionValues(), d)
 }
 
 func (d D2Direction) AllowedValues() []string {
-	values := d2DirectionValues()
-
-	result := make([]string, len(values))
-	for i, v := range values {
-		result[i] = string(v)
-	}
-
-	return result
+	return enum.AllowedValues(d2DirectionValues())
 }
 
 func (d D2Direction) String() string {
@@ -111,26 +107,21 @@ var ErrInvalidD2NodeShape = errors.New("invalid D2 node shape")
 
 func ParseD2NodeShape(s string) (D2NodeShape, error) {
 	values := d2NodeShapeValues()
-	if slices.Contains(values, D2NodeShape(s)) {
-		return D2NodeShape(s), nil
+
+	v, err := enum.Parse(values, s, func(ns D2NodeShape) string { return string(ns) })
+	if err != nil {
+		return "", fmt.Errorf("%w: %q", ErrInvalidD2NodeShape, s)
 	}
 
-	return "", fmt.Errorf("%w: %q (allowed: %v)", ErrInvalidD2NodeShape, s, values)
+	return v, nil
 }
 
 func (s D2NodeShape) IsValid() bool {
-	return slices.Contains(d2NodeShapeValues(), s)
+	return enum.Contains(d2NodeShapeValues(), s)
 }
 
 func (s D2NodeShape) AllowedValues() []string {
-	values := d2NodeShapeValues()
-
-	result := make([]string, len(values))
-	for i, v := range values {
-		result[i] = string(v)
-	}
-
-	return result
+	return enum.AllowedValues(d2NodeShapeValues())
 }
 
 func (s D2NodeShape) String() string {
@@ -273,26 +264,21 @@ var ErrInvalidD2ArrowType = errors.New("invalid D2 arrow type")
 
 func ParseD2ArrowType(s string) (D2ArrowType, error) {
 	values := d2ArrowTypeValues()
-	if slices.Contains(values, D2ArrowType(s)) {
-		return D2ArrowType(s), nil
+
+	v, err := enum.Parse(values, s, func(a D2ArrowType) string { return string(a) })
+	if err != nil {
+		return "", fmt.Errorf("%w: %q", ErrInvalidD2ArrowType, s)
 	}
 
-	return "", fmt.Errorf("%w: %q (allowed: %v)", ErrInvalidD2ArrowType, s, values)
+	return v, nil
 }
 
 func (a D2ArrowType) IsValid() bool {
-	return a == D2ArrowNone || slices.Contains(d2ArrowTypeValues(), a)
+	return a == D2ArrowNone || enum.Contains(d2ArrowTypeValues(), a)
 }
 
 func (a D2ArrowType) AllowedValues() []string {
-	values := d2ArrowTypeValues()
-
-	result := make([]string, len(values))
-	for i, v := range values {
-		result[i] = string(v)
-	}
-
-	return result
+	return enum.AllowedValues(d2ArrowTypeValues())
 }
 
 func (a D2ArrowType) String() string {
