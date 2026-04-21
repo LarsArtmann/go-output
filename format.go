@@ -218,6 +218,18 @@ func (d *TableData) ColCount() int {
 	return len(d.Headers)
 }
 
+// GetHeaders returns the column headers.
+// Satisfies the table.TableDataProvider interface.
+func (d *TableData) GetHeaders() []string {
+	return d.Headers
+}
+
+// GetRows returns the data rows.
+// Satisfies the table.TableDataProvider interface.
+func (d *TableData) GetRows() [][]string {
+	return d.Rows
+}
+
 // RowEdge represents a directed edge between two row identifiers.
 type RowEdge struct {
 	From string

@@ -6,6 +6,13 @@ import (
 	"charm.land/lipgloss/v2/table"
 )
 
+// TableDataProvider defines the interface for types that provide tabular data.
+// The root package's TableData satisfies this interface implicitly.
+type TableDataProvider interface {
+	GetHeaders() []string
+	GetRows() [][]string
+}
+
 // Table renders formatted tables using lipgloss.
 type Table struct {
 	t *table.Table
@@ -61,4 +68,16 @@ func (t *Table) StyleFunc(fn func(row, col int) lipgloss.Style) *Table {
 // Render returns the rendered table string.
 func (t *Table) Render() string {
 	return t.t.String()
+}
+
+// FromTableData creates a new Table populated from a TableDataProvider.
+func FromTableData(data TableDataProvider) *Table {
+	t := New()
+	t.SetHeaders(data.GetHeaders()...)
+
+	for _, row := range data.GetRows() {
+		t.AddRow(row...)
+	}
+
+	return t
 }

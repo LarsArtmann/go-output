@@ -153,3 +153,50 @@ func TestHeadersOnlyNoRows(t *testing.T) {
 		"Render() should contain headers even without rows",
 	)
 }
+
+type testTableData struct {
+	headers []string
+	rows    [][]string
+}
+
+func (d *testTableData) GetHeaders() []string { return d.headers }
+func (d *testTableData) GetRows() [][]string  { return d.rows }
+
+func TestFromTableData(t *testing.T) {
+	t.Parallel()
+
+	data := &testTableData{
+		headers: []string{"Name", "Status"},
+		rows: [][]string{
+			{"Project A", "Active"},
+			{"Project B", "Inactive"},
+		},
+	}
+
+	tbl := FromTableData(data)
+	if tbl == nil {
+		t.Fatal("FromTableData() returned nil")
+	}
+
+	output := tbl.Render()
+	testutils.AssertContains(t, output, "Name", "should contain header 'Name'")
+	testutils.AssertContains(t, output, "Status", "should contain header 'Status'")
+	testutils.AssertContains(t, output, "Project A", "should contain row 'Project A'")
+	testutils.AssertContains(t, output, "Active", "should contain row 'Active'")
+}
+
+func TestFromTableDataEmpty(t *testing.T) {
+	t.Parallel()
+
+	data := &testTableData{
+		headers: []string{},
+		rows:    nil,
+	}
+
+	tbl := FromTableData(data)
+	output := tbl.Render()
+
+	if output != "" {
+		t.Errorf("FromTableData with empty data should render empty, got %q", output)
+	}
+}
