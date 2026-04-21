@@ -72,3 +72,31 @@ func TestNewMarkdownTable(t *testing.T) {
 	_ = m.rows
 	_ = m.align
 }
+
+func TestNewMarkdownTableFromData(t *testing.T) {
+	t.Parallel()
+
+	data := NewTableData([]string{"Name", "Status"})
+	data.AddRow([]string{"Project A", "Active"})
+	data.AddRow([]string{"Project B", "Inactive"})
+
+	m := NewMarkdownTableFromData(data)
+	got := m.Render()
+
+	assertContains(t, got, "Name", "should contain header 'Name'")
+	assertContains(t, got, "Status", "should contain header 'Status'")
+	assertContains(t, got, "Project A", "should contain row 'Project A'")
+	assertContains(t, got, "Active", "should contain row 'Active'")
+}
+
+func TestNewMarkdownTableFromDataEmpty(t *testing.T) {
+	t.Parallel()
+
+	data := NewTableData(nil)
+	m := NewMarkdownTableFromData(data)
+
+	got := m.Render()
+	if got != "" {
+		t.Errorf("FromData with empty data should render empty, got %q", got)
+	}
+}

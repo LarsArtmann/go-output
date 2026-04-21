@@ -21,6 +21,18 @@ func NewMarkdownTable() *MarkdownTable {
 	}
 }
 
+// NewMarkdownTableFromData creates a MarkdownTable populated from TableData.
+func NewMarkdownTableFromData(data *TableData) *MarkdownTable {
+	m := NewMarkdownTable()
+	m.SetHeaders(data.Headers)
+
+	for _, row := range data.Rows {
+		m.AddRow(row)
+	}
+
+	return m
+}
+
 // SetHeaders sets the table headers.
 func (m *MarkdownTable) SetHeaders(headers []string) *MarkdownTable {
 	m.headers = headers
