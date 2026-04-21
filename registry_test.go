@@ -6,9 +6,22 @@ import (
 	"testing"
 )
 
+// testRegistryFormat avoids collisions with real format constants in parallel tests.
+const testRegistryFormat Format = "__test_registry__"
+
+const testOutput = "test-output"
+
 func TestRegister(t *testing.T) {
-	t.Parallel()
-	testRegisterAndVerify(t, FormatJSON, "json")
+	Unregister(testRegistryFormat)
+
+	err := Register(testRegistryFormat, testRendererFunc("test"))
+	if err != nil {
+		t.Fatalf("Register(%v) error = %v", testRegistryFormat, err)
+	}
+
+	if !IsRegistered(testRegistryFormat) {
+		t.Errorf("IsRegistered(%v) = false, want true", testRegistryFormat)
+	}
 }
 
 // testRendererFunc creates a test renderer for the given output string.
@@ -16,32 +29,14 @@ func testRendererFunc(output string) func() Renderer {
 	return func() Renderer { return &testRenderer{output: output} }
 }
 
-func testRegisterAndVerify(t *testing.T, format OutputFormat, output string) {
-	t.Helper()
+func TestRegisterDuplicate(t *testing.T) {
+	format := Format("__test_dup__")
 	Unregister(format)
 
-	err := Register(format, testRendererFunc(output))
-	if err != nil {
-		t.Fatalf("Register(%v) error = %v", format, err)
-	}
+	_ = Register(format, testRendererFunc("1"))
 
-	if !IsRegistered(format) {
-		t.Errorf("IsRegistered(%v) = false, want true", format)
-	}
-}
-
-func registerFormatForTest(format OutputFormat, output string) {
-	_ = Register(format, testRendererFunc(output))
-}
-
-func TestRegisterDuplicate(t *testing.T) {
-	t.Parallel()
-	Unregister(FormatCSV)
-
-	registerFormatForTest(FormatCSV, "csv1")
-
-	err := Register(FormatCSV, func() Renderer {
-		return &testRenderer{output: "csv2"}
+	err := Register(format, func() Renderer {
+		return &testRenderer{output: "2"}
 	})
 	if err == nil {
 		t.Error("Register() expected error for duplicate registration")
@@ -49,45 +44,44 @@ func TestRegisterDuplicate(t *testing.T) {
 }
 
 func TestUnregister(t *testing.T) {
-	t.Parallel()
-	Unregister(FormatYAML)
-	registerFormatForTest(FormatYAML, "yaml")
+	format := Format("__test_unreg__")
+	Unregister(format)
+	_ = Register(format, testRendererFunc("yaml"))
 
-	Unregister(FormatYAML)
+	Unregister(format)
 
-	if IsRegistered(FormatYAML) {
-		t.Error("IsRegistered(FormatYAML) = true, want false after Unregister")
+	if IsRegistered(format) {
+		t.Errorf("IsRegistered(%v) = true, want false after Unregister", format)
 	}
 }
 
 func TestCreate(t *testing.T) {
-	t.Parallel()
 	t.Run("existing format", func(t *testing.T) {
-		t.Parallel()
-		Unregister(FormatD2)
+		format := Format("__test_create__")
+		Unregister(format)
 
-		err := Register(FormatD2, func() Renderer {
-			return &testRenderer{output: "d2-output"}
+		err := Register(format, func() Renderer {
+			return &testRenderer{output: testOutput}
 		})
 		if err != nil {
 			t.Fatalf("Register() error = %v", err)
 		}
 
-		r, err := Create(FormatD2)
+		r, err := Create(format)
 		if err != nil {
-			t.Fatalf("Create(FormatD2) error = %v", err)
+			t.Fatalf("Create() error = %v", err)
 		}
 
-		if r.Render() != "d2-output" {
-			t.Errorf("Create(FormatD2).Render() = %q, want %q", r.Render(), "d2-output")
+		if r.Render() != testOutput {
+			t.Errorf("Create().Render() = %q, want %q", r.Render(), testOutput)
 		}
 	})
 
 	t.Run("unregistered format", func(t *testing.T) {
-		t.Parallel()
-		Unregister(FormatMermaid)
+		format := Format("__test_missing__")
+		Unregister(format)
 
-		r, err := Create(FormatMermaid)
+		r, err := Create(format)
 		if err == nil {
 			t.Error("Create(unregistered) expected error, got nil")
 		}
@@ -99,18 +93,20 @@ func TestCreate(t *testing.T) {
 }
 
 func TestRegisteredFormats(t *testing.T) {
-	t.Parallel()
-	Unregister(FormatTable)
-	Unregister(FormatJSON)
+	formatA := Format("__test_fmt_a__")
+	formatB := Format("__test_fmt_b__")
 
-	err := Register(FormatTable, func() Renderer { return &testRenderer{output: ""} })
+	Unregister(formatA)
+	Unregister(formatB)
+
+	err := Register(formatA, func() Renderer { return &testRenderer{output: ""} })
 	if err != nil {
-		t.Fatalf("Register(FormatTable) error = %v", err)
+		t.Fatalf("Register(A) error = %v", err)
 	}
 
-	err = Register(FormatJSON, func() Renderer { return &testRenderer{output: ""} })
+	err = Register(formatB, func() Renderer { return &testRenderer{output: ""} })
 	if err != nil {
-		t.Fatalf("Register(FormatJSON) error = %v", err)
+		t.Fatalf("Register(B) error = %v", err)
 	}
 
 	formats := RegisteredFormats()
@@ -118,40 +114,46 @@ func TestRegisteredFormats(t *testing.T) {
 		t.Fatalf("RegisteredFormats() returned %d formats, want at least 2", len(formats))
 	}
 
-	found := slices.Contains(formats, FormatTable)
-	if !found {
-		t.Error("RegisteredFormats() does not contain FormatTable")
+	if !slices.Contains(formats, formatA) {
+		t.Error("RegisteredFormats() does not contain format A")
 	}
 }
 
 func TestIsRegistered(t *testing.T) {
-	t.Parallel()
 	t.Run("registered", func(t *testing.T) {
-		t.Parallel()
-		testRegisterAndVerify(t, FormatHTML, "")
+		format := Format("__test_isreg__")
+		Unregister(format)
+
+		err := Register(format, testRendererFunc(""))
+		if err != nil {
+			t.Fatalf("Register() error = %v", err)
+		}
+
+		if !IsRegistered(format) {
+			t.Errorf("IsRegistered(%v) = false, want true", format)
+		}
 	})
 
 	t.Run("unregistered", func(t *testing.T) {
-		t.Parallel()
-		Unregister(FormatDOT)
+		format := Format("__test_unreg2__")
+		Unregister(format)
 
-		if IsRegistered(FormatDOT) {
-			t.Error("IsRegistered(FormatDOT) = true, want false")
+		if IsRegistered(format) {
+			t.Errorf("IsRegistered(%v) = true, want false", format)
 		}
 	})
 }
 
 func TestRegistryConcurrency(t *testing.T) {
-	t.Parallel()
-	Unregister(FormatCSV)
-	Unregister(FormatJSON)
+	format := Format("__test_concurrent__")
+	Unregister(format)
 
 	var wg sync.WaitGroup
 	for range 10 {
 		wg.Go(func() {
 			for range 100 {
-				registerFormatForTest(FormatCSV, "csv")
-				Unregister(FormatCSV)
+				_ = Register(format, testRendererFunc("x"))
+				Unregister(format)
 			}
 		})
 	}
@@ -159,7 +161,7 @@ func TestRegistryConcurrency(t *testing.T) {
 	for range 10 {
 		wg.Go(func() {
 			for range 100 {
-				IsRegistered(FormatCSV)
+				IsRegistered(format)
 				RegisteredFormats()
 			}
 		})
