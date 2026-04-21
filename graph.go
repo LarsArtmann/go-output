@@ -32,7 +32,6 @@ func NewGraphNode(id, label string) *GraphNode {
 		ID:       NewBrandedID[GraphNodeIDBrand](id),
 		Label:    NewBrandedID[GraphNodeLabelBrand](label),
 		Shape:    ShapeBox,
-		Style:    GraphStyle{FillColor: "", StrokeColor: "", FontColor: "", FontSize: 0},
 		Metadata: make(map[string]string),
 	}
 }
@@ -117,7 +116,6 @@ func NewGraphEdge(from, to string) *GraphEdge {
 		From:  NewBrandedID[GraphNodeIDBrand](from),
 		To:    NewBrandedID[GraphNodeIDBrand](to),
 		Label: NewBrandedID[GraphNodeLabelBrand](""),
-		Style: EdgeStyle{Color: "", Style: "", ArrowHead: "", ArrowTail: ""},
 	}
 }
 
