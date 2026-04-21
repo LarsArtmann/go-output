@@ -81,16 +81,10 @@ func MermaidFlowchartRenderer(data *TableData) *MermaidRenderer {
 		return renderer
 	}
 
-	// Create nodes for each row using shared helper
-	nodes := NodesFromTableData(data, DefaultGraphNodeLabel)
-	for i := range nodes {
-		nodes[i].Shape = ShapeBox
-		nodes[i].Label = NewBrandedID[GraphNodeLabelBrand](escape.MermaidText(nodes[i].Label.Get()))
-	}
-
-	renderer.nodes = append(renderer.nodes, nodes...)
-
-	renderer.AddRowEdges(data)
+	renderer.SetNodesFromTableData(data, func(_ int, n *GraphNode) {
+		n.Shape = ShapeBox
+		n.Label = NewBrandedID[GraphNodeLabelBrand](escape.MermaidText(n.Label.Get()))
+	})
 
 	return renderer
 }

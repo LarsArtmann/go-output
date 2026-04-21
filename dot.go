@@ -42,6 +42,21 @@ func (m *GraphRendererMixin) AddRowEdges(data *TableData) {
 	}
 }
 
+// SetNodesFromTableData creates nodes from TableData, applies per-node modifications,
+// adds them to the graph, and adds row edges.
+func (m *GraphRendererMixin) SetNodesFromTableData(
+	data *TableData,
+	modifyNode func(i int, n *GraphNode),
+) {
+	nodes := NodesFromTableData(data, DefaultGraphNodeLabel)
+	for i := range nodes {
+		modifyNode(i, &nodes[i])
+	}
+
+	m.nodes = append(m.nodes, nodes...)
+	m.AddRowEdges(data)
+}
+
 // DOTRenderer implements the GraphRenderer interface for DOT/Graphviz output.
 type DOTRenderer struct {
 	GraphRendererMixin
@@ -196,15 +211,9 @@ func DOTFromTableData(data *TableData) *DOTRenderer {
 		return renderer
 	}
 
-	// Create nodes for each row using shared helper
-	nodes := NodesFromTableData(data, DefaultGraphNodeLabel)
-	for i := range nodes {
-		nodes[i].Label = NewBrandedID[GraphNodeLabelBrand](escape.DOT(nodes[i].Label.Get()))
-	}
-
-	renderer.nodes = append(renderer.nodes, nodes...)
-
-	renderer.AddRowEdges(data)
+	renderer.SetNodesFromTableData(data, func(_ int, n *GraphNode) {
+		n.Label = NewBrandedID[GraphNodeLabelBrand](escape.DOT(n.Label.Get()))
+	})
 
 	return renderer
 }
