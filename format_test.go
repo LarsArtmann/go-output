@@ -61,7 +61,7 @@ func TestOutputFormatAllowedValues(t *testing.T) {
 func TestOutputFormatIsValid(t *testing.T) {
 	t.Parallel()
 
-	gentest.TestEnumIsValid[OutputFormat](t, []OutputFormat{
+	gentest.TestEnumIsValid(t, []OutputFormat{
 		OutputFormatTable,
 		OutputFormatJSON,
 		OutputFormatCSV,

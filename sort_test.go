@@ -44,7 +44,7 @@ func TestSortByAllowedValues(t *testing.T) {
 func TestSortByIsValid(t *testing.T) {
 	t.Parallel()
 
-	gentest.TestEnumIsValid[SortBy](t, []SortBy{
+	gentest.TestEnumIsValid(t, []SortBy{
 		SortByName,
 		SortByImportance,
 		SortByCreatedAt,

@@ -103,7 +103,7 @@ func TestColorModeAllowedValues(t *testing.T) {
 func TestColorModeIsValid(t *testing.T) {
 	t.Parallel()
 
-	gentest.TestEnumIsValid[ColorMode](t, []ColorMode{
+	gentest.TestEnumIsValid(t, []ColorMode{
 		ColorModeAuto,
 		ColorModeAlways,
 		ColorModeNever,

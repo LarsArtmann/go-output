@@ -95,7 +95,7 @@ func TestGraphShapeAllowedValues(t *testing.T) {
 func TestGraphShapeIsValid(t *testing.T) {
 	t.Parallel()
 
-	gentest.TestEnumIsValid[GraphShape](t, []GraphShape{
+	gentest.TestEnumIsValid(t, []GraphShape{
 		ShapeBox,
 		ShapeEllipse,
 		ShapeDiamond,
