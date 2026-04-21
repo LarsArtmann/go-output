@@ -9,6 +9,7 @@ func TestMarkdownTable(t *testing.T) {
 	runSubtest(t, "basic table", testMarkdownBasicTable)
 	runSubtest(t, "empty headers", testMarkdownEmptyHeaders)
 	runSubtest(t, "alignment", testMarkdownAlignment)
+	runSubtest(t, "center alignment", testMarkdownCenterAlignment)
 	runSubtest(t, "chaining", testMarkdownChaining)
 }
 
@@ -61,6 +62,22 @@ func testMarkdownChaining(t *testing.T) {
 	if m == nil {
 		t.Error("Method chaining should return non-nil")
 	}
+}
+
+func testMarkdownCenterAlignment(t *testing.T) {
+	t.Helper()
+
+	m := NewMarkdownTable()
+	m.SetHeaders([]string{"Name", "Age"}).
+		SetAlign(0, AlignCenter).
+		SetAlign(1, AlignCenter).
+		AddRow([]string{"A", "30"})
+
+	got := m.Render()
+
+	assertContains(t, got, "|", "Render() should contain pipe delimiters")
+	assertContains(t, got, "A", "Render() should contain cell value 'A'")
+	assertContains(t, got, "30", "Render() should contain cell value '30'")
 }
 
 func TestNewMarkdownTable(t *testing.T) {

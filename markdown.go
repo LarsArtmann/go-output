@@ -147,7 +147,11 @@ func (m *MarkdownTable) writeCell(b *strings.Builder, i int, cell string, colWid
 	case AlignRight:
 		fmt.Fprintf(b, "%*s", width, cell)
 	case AlignCenter:
-		fmt.Fprintf(b, "%-*s", width, cell)
+		leftPad := (width - len(cell)) / 2
+		rightPad := width - len(cell) - leftPad
+		b.WriteString(strings.Repeat(" ", leftPad))
+		b.WriteString(cell)
+		b.WriteString(strings.Repeat(" ", rightPad))
 	default:
 		b.WriteString(cell)
 		b.WriteString(strings.Repeat(" ", width-len(cell)))
