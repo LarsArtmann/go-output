@@ -199,9 +199,7 @@ func DOTFromTableData(data *TableData) *DOTRenderer {
 	// Create nodes for each row using shared helper
 	nodes := NodesFromTableData(data, DefaultGraphNodeLabel)
 	for i := range nodes {
-		oldLabel := nodes[i].Label.Get()
-		newLabel := strings.ReplaceAll(oldLabel, "\n", "\\n")
-		nodes[i].Label = NewBrandedID[GraphNodeLabelBrand](newLabel)
+		nodes[i].Label = NewBrandedID[GraphNodeLabelBrand](escape.DOT(nodes[i].Label.Get()))
 	}
 
 	renderer.nodes = append(renderer.nodes, nodes...)

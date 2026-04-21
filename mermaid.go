@@ -85,9 +85,7 @@ func MermaidFlowchartRenderer(data *TableData) *MermaidRenderer {
 	nodes := NodesFromTableData(data, DefaultGraphNodeLabel)
 	for i := range nodes {
 		nodes[i].Shape = ShapeBox
-		oldLabel := nodes[i].Label.Get()
-		newLabel := strings.ReplaceAll(oldLabel, "\n", "<br>")
-		nodes[i].Label = NewBrandedID[GraphNodeLabelBrand](newLabel)
+		nodes[i].Label = NewBrandedID[GraphNodeLabelBrand](escape.MermaidText(nodes[i].Label.Get()))
 	}
 
 	renderer.nodes = append(renderer.nodes, nodes...)
