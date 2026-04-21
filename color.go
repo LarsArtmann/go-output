@@ -75,15 +75,11 @@ func (c ColorMode) ToANSI() string {
 }
 
 func isTerminal() bool {
-	return isStdoutTerminal() || isStderrTerminal()
+	return isStdoutTerminal()
 }
 
 func isStdoutTerminal() bool {
 	return isTerminalByEnv("GO_OUTPUT_FORCE_COLOR", "FORCE_COLOR")
-}
-
-func isStderrTerminal() bool {
-	return false
 }
 
 func isTerminalByEnv(envVars ...string) bool {
