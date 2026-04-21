@@ -3,6 +3,7 @@ package output
 import (
 	"errors"
 	"fmt"
+	"slices"
 	"sync"
 )
 
@@ -64,7 +65,7 @@ func Create(format Format) (Renderer, error) {
 	return factory(), nil
 }
 
-// RegisteredFormats returns a list of all registered formats.
+// RegisteredFormats returns a sorted list of all registered formats.
 func RegisteredFormats() []Format {
 	regMu.RLock()
 	defer regMu.RUnlock()
@@ -73,6 +74,18 @@ func RegisteredFormats() []Format {
 	for f := range registry {
 		formats = append(formats, f)
 	}
+
+	slices.SortFunc(formats, func(a, b Format) int {
+		if a.String() < b.String() {
+			return -1
+		}
+
+		if a.String() > b.String() {
+			return 1
+		}
+
+		return 0
+	})
 
 	return formats
 }
