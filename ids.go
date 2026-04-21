@@ -1,6 +1,9 @@
 package output
 
-import "fmt"
+import (
+	"fmt"
+	"io"
+)
 
 // BrandedID is a type-safe identifier with a phantom brand type.
 // This provides compile-time safety to prevent mixing different ID types.
@@ -46,7 +49,7 @@ func (id BrandedID[B]) Format(s fmt.State, verb rune) {
 	case verb == 'v' && s.Flag('#'):
 		_, _ = fmt.Fprintf(s, "BrandedID{%q}", id.value)
 	default:
-		_, _ = fmt.Fprintf(s, "%s", id.value)
+		_, _ = io.WriteString(s, id.value)
 	}
 }
 
