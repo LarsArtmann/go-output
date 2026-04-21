@@ -13,7 +13,10 @@ func TestHTML(t *testing.T) {
 		{"ampersand", "a&b", "a&amp;b"},
 		{"quotes", `"hello"`, "&quot;hello&quot;"},
 		{"apostrophe", "it's", "it&#39;s"},
-		{"combined", `<a>it's</a>`, "&lt;a&gt;it&#39;s&lt;/a&gt;"},
+		{
+			"combined", `<a>it's</a>`,
+			"&lt;a&gt;it&#39;s&lt;/a&gt;",
+		},
 		{"empty", "", ""},
 	}
 

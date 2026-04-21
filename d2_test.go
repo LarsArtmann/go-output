@@ -210,10 +210,12 @@ func TestParseD2NodeShape(t *testing.T) {
 	t.Run("valid shapes", func(t *testing.T) {
 		t.Parallel()
 
-		shapes := []string{"rectangle", "circle", "diamond", "hexagon", "cloud",
-			"cylinder", "person", "queue", "oval", "parallelogram", "triangle",
-			"sql_table", "image", "code", "text", "class", "page", "step",
-			"stored_data", "square"}
+		shapes := []string{
+			"rectangle", "circle", "diamond", "hexagon", "cloud",
+			"cylinder", "person", "queue", "oval", "parallelogram",
+			"triangle", "sql_table", "image", "code", "text", "class",
+			"page", "step", "stored_data", "square",
+		}
 
 		for _, s := range shapes {
 			got, err := ParseD2NodeShape(s)
@@ -261,8 +263,11 @@ func TestParseD2ArrowType(t *testing.T) {
 	t.Run("valid arrows", func(t *testing.T) {
 		t.Parallel()
 
-		arrows := []string{"arrow", "triangle", "diamond", "circle", "filled",
-			"box", "cross", "cf-one", "cf-many", "cf-one-required", "cf-many-required"}
+		arrows := []string{
+			"arrow", "triangle", "diamond", "circle", "filled",
+			"box", "cross", "cf-one", "cf-many",
+			"cf-one-required", "cf-many-required",
+		}
 
 		for _, s := range arrows {
 			got, err := ParseD2ArrowType(s)

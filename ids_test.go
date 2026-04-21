@@ -8,9 +8,9 @@ import (
 func TestBrandedIDString(t *testing.T) {
 	t.Parallel()
 
-	id := NewBrandedID[GraphNodeIDBrand]("test-id")
-	if got := id.String(); got != "test-id" {
-		t.Errorf("String() = %q, want %q", got, "test-id")
+	id := NewBrandedID[GraphNodeIDBrand](testGraphNodeID)
+	if got := id.String(); got != testGraphNodeID {
+		t.Errorf("String() = %q, want %q", got, testGraphNodeID)
 	}
 
 	empty := NewBrandedID[GraphNodeIDBrand]("")
@@ -25,7 +25,6 @@ func TestBrandedIDMarshalText(t *testing.T) {
 	id := NewBrandedID[GraphNodeIDBrand]("hello")
 
 	data, err := id.MarshalText()
-
 	if err != nil {
 		t.Fatalf("MarshalText() error = %v", err)
 	}
@@ -51,14 +50,14 @@ func TestBrandedIDUnmarshalText(t *testing.T) {
 func TestBrandedIDFormat(t *testing.T) {
 	t.Parallel()
 
-	id := NewBrandedID[GraphNodeIDBrand]("test-id")
+	id := NewBrandedID[GraphNodeIDBrand](testGraphNodeID)
 
 	t.Run("%s", func(t *testing.T) {
 		t.Parallel()
 
 		got := fmt.Sprintf("%s", id)
-		if got != "test-id" {
-			t.Errorf("%%s = %q, want %q", got, "test-id")
+		if got != testGraphNodeID {
+			t.Errorf("%%s = %q, want %q", got, testGraphNodeID)
 		}
 	})
 
@@ -67,6 +66,7 @@ func TestBrandedIDFormat(t *testing.T) {
 
 		got := fmt.Sprintf("%#v", id)
 		want := `BrandedID{"test-id"}`
+
 		if got != want {
 			t.Errorf("%%#v = %q, want %q", got, want)
 		}
@@ -76,8 +76,8 @@ func TestBrandedIDFormat(t *testing.T) {
 		t.Parallel()
 
 		got := fmt.Sprintf("%v", id)
-		if got != "test-id" {
-			t.Errorf("%%v = %q, want %q", got, "test-id")
+		if got != testGraphNodeID {
+			t.Errorf("%%v = %q, want %q", got, testGraphNodeID)
 		}
 	})
 }

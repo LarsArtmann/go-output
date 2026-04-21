@@ -16,34 +16,39 @@ const (
 	D2DirUp    D2Direction = "up"
 )
 
-var d2DirectionValues = []D2Direction{
-	D2DirDown,
-	D2DirRight,
-	D2DirLeft,
-	D2DirUp,
+func d2DirectionValues() []D2Direction {
+	return []D2Direction{
+		D2DirDown,
+		D2DirRight,
+		D2DirLeft,
+		D2DirUp,
+	}
 }
 
 var ErrInvalidD2Direction = errors.New("invalid D2 direction")
 
 func ParseD2Direction(s string) (D2Direction, error) {
-	if slices.Contains(d2DirectionValues, D2Direction(s)) {
+	values := d2DirectionValues()
+	if slices.Contains(values, D2Direction(s)) {
 		return D2Direction(s), nil
 	}
 
-	return "", fmt.Errorf("%w: %q (allowed: %v)", ErrInvalidD2Direction, s, d2DirectionValues)
+	return "", fmt.Errorf("%w: %q (allowed: %v)", ErrInvalidD2Direction, s, values)
 }
 
 func (d D2Direction) IsValid() bool {
-	return slices.Contains(d2DirectionValues, d)
+	return slices.Contains(d2DirectionValues(), d)
 }
 
 func (d D2Direction) AllowedValues() []string {
-	values := make([]string, len(d2DirectionValues))
-	for i, v := range d2DirectionValues {
-		values[i] = string(v)
+	values := d2DirectionValues()
+
+	result := make([]string, len(values))
+	for i, v := range values {
+		result[i] = string(v)
 	}
 
-	return values
+	return result
 }
 
 func (d D2Direction) String() string {
@@ -77,50 +82,55 @@ const (
 	D2ShapeStoredData    D2NodeShape = "stored_data"
 )
 
-var d2NodeShapeValues = []D2NodeShape{
-	D2ShapeRectangle,
-	D2ShapeSquare,
-	D2ShapeCircle,
-	D2ShapeDiamond,
-	D2ShapeHexagon,
-	D2ShapeCloud,
-	D2ShapeCylinder,
-	D2ShapePerson,
-	D2ShapeQueue,
-	D2ShapeOval,
-	D2ShapeParallelogram,
-	D2ShapeTriangle,
-	D2ShapeSQLTable,
-	D2ShapeImage,
-	D2ShapeCode,
-	D2ShapeText,
-	D2ShapeClass,
-	D2ShapePage,
-	D2ShapeStep,
-	D2ShapeStoredData,
+func d2NodeShapeValues() []D2NodeShape {
+	return []D2NodeShape{
+		D2ShapeRectangle,
+		D2ShapeSquare,
+		D2ShapeCircle,
+		D2ShapeDiamond,
+		D2ShapeHexagon,
+		D2ShapeCloud,
+		D2ShapeCylinder,
+		D2ShapePerson,
+		D2ShapeQueue,
+		D2ShapeOval,
+		D2ShapeParallelogram,
+		D2ShapeTriangle,
+		D2ShapeSQLTable,
+		D2ShapeImage,
+		D2ShapeCode,
+		D2ShapeText,
+		D2ShapeClass,
+		D2ShapePage,
+		D2ShapeStep,
+		D2ShapeStoredData,
+	}
 }
 
 var ErrInvalidD2NodeShape = errors.New("invalid D2 node shape")
 
 func ParseD2NodeShape(s string) (D2NodeShape, error) {
-	if slices.Contains(d2NodeShapeValues, D2NodeShape(s)) {
+	values := d2NodeShapeValues()
+	if slices.Contains(values, D2NodeShape(s)) {
 		return D2NodeShape(s), nil
 	}
 
-	return "", fmt.Errorf("%w: %q (allowed: %v)", ErrInvalidD2NodeShape, s, d2NodeShapeValues)
+	return "", fmt.Errorf("%w: %q (allowed: %v)", ErrInvalidD2NodeShape, s, values)
 }
 
 func (s D2NodeShape) IsValid() bool {
-	return slices.Contains(d2NodeShapeValues, s)
+	return slices.Contains(d2NodeShapeValues(), s)
 }
 
 func (s D2NodeShape) AllowedValues() []string {
-	values := make([]string, len(d2NodeShapeValues))
-	for i, v := range d2NodeShapeValues {
-		values[i] = string(v)
+	values := d2NodeShapeValues()
+
+	result := make([]string, len(values))
+	for i, v := range values {
+		result[i] = string(v)
 	}
 
-	return values
+	return result
 }
 
 func (s D2NodeShape) String() string {
@@ -243,41 +253,46 @@ const D2ArrowPoint = D2ArrowArrow
 // Deprecated: Use D2ArrowCircle instead.
 const D2ArrowOval = D2ArrowCircle
 
-var d2ArrowTypeValues = []D2ArrowType{
-	D2ArrowArrow,
-	D2ArrowTriangle,
-	D2ArrowDiamond,
-	D2ArrowCircle,
-	D2ArrowFilled,
-	D2ArrowBox,
-	D2ArrowCross,
-	D2ArrowCFOne,
-	D2ArrowCFMany,
-	D2ArrowCFOneRequired,
-	D2ArrowCFManyRequired,
+func d2ArrowTypeValues() []D2ArrowType {
+	return []D2ArrowType{
+		D2ArrowArrow,
+		D2ArrowTriangle,
+		D2ArrowDiamond,
+		D2ArrowCircle,
+		D2ArrowFilled,
+		D2ArrowBox,
+		D2ArrowCross,
+		D2ArrowCFOne,
+		D2ArrowCFMany,
+		D2ArrowCFOneRequired,
+		D2ArrowCFManyRequired,
+	}
 }
 
 var ErrInvalidD2ArrowType = errors.New("invalid D2 arrow type")
 
 func ParseD2ArrowType(s string) (D2ArrowType, error) {
-	if slices.Contains(d2ArrowTypeValues, D2ArrowType(s)) {
+	values := d2ArrowTypeValues()
+	if slices.Contains(values, D2ArrowType(s)) {
 		return D2ArrowType(s), nil
 	}
 
-	return "", fmt.Errorf("%w: %q (allowed: %v)", ErrInvalidD2ArrowType, s, d2ArrowTypeValues)
+	return "", fmt.Errorf("%w: %q (allowed: %v)", ErrInvalidD2ArrowType, s, values)
 }
 
 func (a D2ArrowType) IsValid() bool {
-	return a == D2ArrowNone || slices.Contains(d2ArrowTypeValues, a)
+	return a == D2ArrowNone || slices.Contains(d2ArrowTypeValues(), a)
 }
 
 func (a D2ArrowType) AllowedValues() []string {
-	values := make([]string, len(d2ArrowTypeValues))
-	for i, v := range d2ArrowTypeValues {
-		values[i] = string(v)
+	values := d2ArrowTypeValues()
+
+	result := make([]string, len(values))
+	for i, v := range values {
+		result[i] = string(v)
 	}
 
-	return values
+	return result
 }
 
 func (a D2ArrowType) String() string {

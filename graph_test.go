@@ -7,12 +7,14 @@ import (
 	"github.com/larsartmann/go-output/internal/gentest"
 )
 
+const testGraphNodeID = "test-id"
+
 func TestGraphNode(t *testing.T) {
 	t.Parallel()
 
-	node := NewGraphNode("test-id", "Test Label")
-	if node.ID.Get() != "test-id" {
-		t.Errorf("ID = %q, want %q", node.ID, "test-id")
+	node := NewGraphNode(testGraphNodeID, "Test Label")
+	if node.ID.Get() != testGraphNodeID {
+		t.Errorf("ID = %q, want %q", node.ID, testGraphNodeID)
 	}
 
 	if node.Label.Get() != "Test Label" {
