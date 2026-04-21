@@ -32,7 +32,7 @@ func unmarshal(format string, unmarshalFn func([]byte, any) error, data []byte, 
 func marshal(format string, marshalFn func(any) ([]byte, error), v any) ([]byte, error) {
 	data, err := marshalFn(v)
 	if err != nil {
-		return nil, fmt.Errorf("marshal %s (%T): %w", format, v, err)
+		return nil, fmt.Errorf("marshal %s %T: %w", format, v, err)
 	}
 
 	return data, nil
