@@ -171,8 +171,10 @@ func (s *Sorter[T]) defaultLess(a, b T) bool {
 	aVal := reflect.ValueOf(a)
 	bVal := reflect.ValueOf(b)
 
-	// Convert snake_case to PascalCase for field lookup
-	// e.g., "name" -> "Name", "created_at" -> "CreatedAt"
+	if aVal.Kind() != reflect.Struct || bVal.Kind() != reflect.Struct {
+		return false
+	}
+
 	fieldName := snakeToPascal(string(s.By))
 	field := aVal.FieldByName(fieldName)
 
