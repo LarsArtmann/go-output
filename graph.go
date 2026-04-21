@@ -140,6 +140,39 @@ func DefaultGraphNodeLabel(header, cell string) string {
 	return fmt.Sprintf("%s: %s", header, cell)
 }
 
+// TreeNodeIDFunc resolves a TreeNode's ID for a specific graph format.
+type TreeNodeIDFunc func(*TreeNode) string
+
+// AddTreeNodes recursively adds tree nodes and edges to the provided graph slices.
+func AddTreeNodes(
+	nodes *[]GraphNode, edges *[]GraphEdge,
+	node *TreeNode, parentID string,
+	idFunc TreeNodeIDFunc, shape GraphShape,
+) {
+	nodeID := idFunc(node)
+	graphNodeID := NewBrandedID[GraphNodeIDBrand](nodeID)
+	graphNodeLabel := NewBrandedID[GraphNodeLabelBrand](node.Label.Get())
+
+	//nolint:exhaustruct // Uses defaults for optional fields
+	*nodes = append(*nodes, GraphNode{
+		ID:    graphNodeID,
+		Label: graphNodeLabel,
+		Shape: shape,
+	})
+
+	if parentID != "" {
+		//nolint:exhaustruct // Uses defaults for optional fields
+		*edges = append(*edges, GraphEdge{
+			From: NewBrandedID[GraphNodeIDBrand](parentID),
+			To:   graphNodeID,
+		})
+	}
+
+	for _, child := range node.Children {
+		AddTreeNodes(nodes, edges, child, nodeID, idFunc, shape)
+	}
+}
+
 // NodesFromTableData creates GraphNodes from TableData using the provided label function.
 func NodesFromTableData(data *TableData, labelFn GraphNodeLabelFunc) []GraphNode {
 	if data == nil {

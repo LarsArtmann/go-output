@@ -221,30 +221,14 @@ func DOTFromTree(root *TreeNode) *DOTRenderer {
 	return renderer
 }
 
+func dotTreeNodeID(node *TreeNode) string {
+	if !node.ID.IsEmpty() {
+		return node.ID.Get()
+	}
+
+	return strings.ReplaceAll(node.Label.Get(), " ", "_")
+}
+
 func (r *DOTRenderer) addTreeNodes(node *TreeNode, parentID TreeNodeID) {
-	nodeID := node.ID
-	if nodeID.IsEmpty() {
-		nodeID = NewBrandedID[TreeNodeIDBrand](strings.ReplaceAll(node.Label.Get(), " ", "_"))
-	}
-
-	graphNodeID := NewBrandedID[GraphNodeIDBrand](nodeID.Get())
-	graphNodeLabel := NewBrandedID[GraphNodeLabelBrand](node.Label.Get())
-
-	//nolint:exhaustruct // Uses defaults for optional fields
-	r.nodes = append(r.nodes, GraphNode{
-		ID:    graphNodeID,
-		Label: graphNodeLabel,
-	})
-
-	if !parentID.IsEmpty() {
-		//nolint:exhaustruct // Uses defaults for optional fields
-		r.edges = append(r.edges, GraphEdge{
-			From: NewBrandedID[GraphNodeIDBrand](parentID.Get()),
-			To:   graphNodeID,
-		})
-	}
-
-	for _, child := range node.Children {
-		r.addTreeNodes(child, nodeID)
-	}
+	AddTreeNodes(&r.nodes, &r.edges, node, parentID.Get(), dotTreeNodeID, "")
 }

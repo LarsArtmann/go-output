@@ -107,31 +107,14 @@ func MermaidTreeRenderer(root *TreeNode) *MermaidRenderer {
 	return renderer
 }
 
+func mermaidTreeNodeID(node *TreeNode) string {
+	if id := escape.MermaidID(node.ID.Get()); id != "" {
+		return id
+	}
+
+	return escape.MermaidSlug(node.Label.Get())
+}
+
 func (r *MermaidRenderer) addTreeNodes(node *TreeNode, parentID string) {
-	nodeID := escape.MermaidID(node.ID.Get())
-	if nodeID == "" {
-		nodeID = escape.MermaidSlug(node.Label.Get())
-	}
-
-	graphNodeID := NewBrandedID[GraphNodeIDBrand](nodeID)
-	graphNodeLabel := NewBrandedID[GraphNodeLabelBrand](node.Label.Get())
-
-	//nolint:exhaustruct // Uses defaults for optional fields
-	r.nodes = append(r.nodes, GraphNode{
-		ID:    graphNodeID,
-		Label: graphNodeLabel,
-		Shape: ShapeBox,
-	})
-
-	if parentID != "" {
-		//nolint:exhaustruct // Uses defaults for optional fields
-		r.edges = append(r.edges, GraphEdge{
-			From: NewBrandedID[GraphNodeIDBrand](parentID),
-			To:   graphNodeID,
-		})
-	}
-
-	for _, child := range node.Children {
-		r.addTreeNodes(child, nodeID)
-	}
+	AddTreeNodes(&r.nodes, &r.edges, node, parentID, mermaidTreeNodeID, ShapeBox)
 }
