@@ -31,11 +31,6 @@ func NewStreamingHTMLRenderer() *StreamingHTMLRenderer {
 	return &StreamingHTMLRenderer{}
 }
 
-// SetData sets the table data directly.
-func (r *StreamingHTMLRenderer) SetData(data *TableData) {
-	r.data = data
-}
-
 // Render returns the HTML table as a string.
 func (r *StreamingHTMLRenderer) Render() string {
 	var b strings.Builder

@@ -35,14 +35,14 @@ func (b *tableDataBase) AddRow(row []string) {
 	b.data.Rows = append(b.data.Rows, row)
 }
 
+// SetData sets the table data directly.
+func (b *tableDataBase) SetData(data *TableData) {
+	b.data = data
+}
+
 // NewHTMLRenderer creates a new HTMLRenderer.
 func NewHTMLRenderer() *HTMLRenderer {
 	return &HTMLRenderer{}
-}
-
-// SetData sets the table data directly.
-func (r *HTMLRenderer) SetData(data *TableData) {
-	r.data = data
 }
 
 // Render returns the HTML table as a string.
