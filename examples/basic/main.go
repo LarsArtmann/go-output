@@ -49,7 +49,7 @@ func main() {
 	format := output.FormatTable
 
 	if len(os.Args) > 1 {
-		f, err := output.ParseOutputFormat(os.Args[1])
+		f, err := output.ParseFormat(os.Args[1])
 		if err != nil {
 			handleError(err)
 		}
@@ -68,7 +68,7 @@ func renderOutput(format output.Format, projects []Project) {
 
 		return
 	}
-	// Handle unknown format safely - format is validated by ParseOutputFormat
+	// Handle unknown format safely - format is validated by ParseFormat
 	//nolint:gosec // format is validated enum type
 	fmt.Fprintf(os.Stderr, "Unsupported format: %s\n", format)
 	fmt.Fprintf(os.Stderr, "Available formats: %v\n", output.FormatTable.AllowedValues())

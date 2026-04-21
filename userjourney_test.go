@@ -17,13 +17,13 @@ func TestCLIDeveloperJourney(t *testing.T) {
 		t.Parallel()
 
 		// As a CLI developer, I want to parse user input directly
-		format, err := output.ParseOutputFormat("json")
+		format, err := output.ParseFormat("json")
 		if err != nil {
-			t.Fatalf("ParseOutputFormat() error = %v", err)
+			t.Fatalf("ParseFormat() error = %v", err)
 		}
 
 		if format != output.FormatJSON {
-			t.Errorf("ParseOutputFormat() = %v, want %v", format, output.FormatJSON)
+			t.Errorf("ParseFormat() = %v, want %v", format, output.FormatJSON)
 		}
 	})
 
@@ -31,9 +31,9 @@ func TestCLIDeveloperJourney(t *testing.T) {
 		t.Parallel()
 
 		// As a CLI developer, I want to give users helpful feedback
-		_, err := output.ParseOutputFormat("invalid")
+		_, err := output.ParseFormat("invalid")
 		if err == nil {
-			t.Fatal("ParseOutputFormat() expected error for invalid input")
+			t.Fatal("ParseFormat() expected error for invalid input")
 		}
 
 		// Error should guide user to valid options
@@ -168,7 +168,7 @@ func TestHandleEdgeCases(t *testing.T) {
 
 		// Given: User provides invalid format string
 		// When: I parse it
-		_, err := output.ParseOutputFormat("invalid_format")
+		_, err := output.ParseFormat("invalid_format")
 
 		// Then: I get clear error
 		if err == nil {

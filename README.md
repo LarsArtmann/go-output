@@ -101,7 +101,7 @@ All configuration types provide validation and string conversion:
 
 ```go
 // Parse with validation
-format, err := output.ParseOutputFormat("json")
+format, err := output.ParseFormat("json")
 if err != nil {
     // handle error
 }

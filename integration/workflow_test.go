@@ -176,7 +176,7 @@ func TestErrorHandlingWorkflow(t *testing.T) {
 		t.Parallel()
 
 		// When: I parse an invalid format
-		_, err := output.ParseOutputFormat("not_a_format")
+		_, err := output.ParseFormat("not_a_format")
 
 		// Then: Error should be descriptive
 		if err == nil {
