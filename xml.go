@@ -25,15 +25,13 @@ func MarshalXMLIndent(v any, prefix, indent string) (result []byte, err error) {
 
 // XMLWriter writes XML output.
 type XMLWriter struct {
-	writer   *strings.Builder
-	rowCount int
+	writer *strings.Builder
 }
 
 // NewXMLWriter creates a new XMLWriter.
 func NewXMLWriter() *XMLWriter {
 	return &XMLWriter{
-		writer:   new(strings.Builder),
-		rowCount: 0,
+		writer: new(strings.Builder),
 	}
 }
 
@@ -54,7 +52,6 @@ func (x *XMLWriter) WriteHeader(cols []string) error {
 // WriteRow writes a single row.
 func (x *XMLWriter) WriteRow(values []string) error {
 	writeMarkupRow(x.writer, values, "row", "cell", "    ", escape.XML)
-	x.rowCount++
 
 	return nil
 }
