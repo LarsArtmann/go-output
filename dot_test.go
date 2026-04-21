@@ -117,12 +117,7 @@ func TestDOTSetGraphID(t *testing.T) {
 	renderer := NewDOTRenderer()
 	renderer.SetGraphID("MyGraph")
 	renderer.SetNodes(
-		[]GraphNode{
-			{
-				ID:    NewBrandedID[GraphNodeIDBrand]("A"),
-				Label: NewBrandedID[GraphNodeLabelBrand]("A"),
-			},
-		},
+		[]GraphNode{newTestNode("A", "A")},
 	)
 
 	output := renderer.Render()

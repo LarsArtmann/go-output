@@ -29,13 +29,7 @@ func TestMermaidRendererWithDiamond(t *testing.T) {
 	t.Parallel()
 
 	renderer := NewMermaidRenderer()
-	renderer.SetNodes([]GraphNode{
-		{
-			ID:    NewBrandedID[GraphNodeIDBrand]("decision"),
-			Label: NewBrandedID[GraphNodeLabelBrand]("Decision"),
-			Shape: ShapeDiamond,
-		},
-	})
+	renderer.SetNodes([]GraphNode{newTestNodeWithShape("decision", "Decision", ShapeDiamond)})
 	renderer.SetEdges([]GraphEdge{})
 
 	output := renderer.Render()
@@ -193,12 +187,7 @@ func TestMermaidRendererEscapeLabel(t *testing.T) {
 	t.Parallel()
 
 	renderer := NewMermaidRenderer()
-	renderer.SetNodes([]GraphNode{
-		{
-			ID:    NewBrandedID[GraphNodeIDBrand]("A"),
-			Label: NewBrandedID[GraphNodeLabelBrand](`test "quoted" text`),
-		},
-	})
+	renderer.SetNodes([]GraphNode{newTestNode("A", `test "quoted" text`)})
 	renderer.SetEdges([]GraphEdge{})
 
 	output := renderer.Render()
