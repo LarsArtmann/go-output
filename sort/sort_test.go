@@ -8,22 +8,6 @@ import (
 	"github.com/larsartmann/go-output"
 )
 
-func compareTest[T any](
-	t *testing.T,
-	cmpName, testName string,
-	cmp func(a, b T) int,
-	a, b T,
-	want int,
-) {
-	t.Run(testName, func(t *testing.T) {
-		t.Parallel()
-
-		if got := cmp(a, b); got != want {
-			t.Errorf("%s(%v, %v) = %v, want %v", cmpName, a, b, got, want)
-		}
-	})
-}
-
 func assertItemField[V comparable](
 	t *testing.T,
 	items []testItem,
