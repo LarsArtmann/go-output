@@ -70,7 +70,7 @@ func (r *HTMLRenderer) Render() string {
 `)
 
 	for _, row := range r.data.Rows {
-		writeMarkupRow(&b, row, "tr", "td", "", htmlEscape)
+		writeMarkupRow(&b, row, "tr", "td", "", escape.HTML)
 	}
 
 	b.WriteString(`</tbody>

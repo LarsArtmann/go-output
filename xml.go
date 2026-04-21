@@ -4,6 +4,8 @@ import (
 	"encoding/xml"
 	"fmt"
 	"strings"
+
+	"github.com/larsartmann/go-output/internal/escape"
 )
 
 // MarshalXML encodes v to XML.
@@ -41,7 +43,7 @@ func (x *XMLWriter) WriteHeader(cols []string) error {
 	x.writer.WriteString("<table>\n")
 	x.writer.WriteString("  <headers>\n")
 
-	writeMarkupColumns(x.writer, cols, "    ", xmlEscape)
+	writeMarkupColumns(x.writer, cols, "    ", escape.XML)
 
 	x.writer.WriteString("  </headers>\n")
 	x.writer.WriteString("  <rows>\n")
@@ -51,7 +53,7 @@ func (x *XMLWriter) WriteHeader(cols []string) error {
 
 // WriteRow writes a single row.
 func (x *XMLWriter) WriteRow(values []string) error {
-	writeMarkupRow(x.writer, values, "row", "cell", "    ", xmlEscape)
+	writeMarkupRow(x.writer, values, "row", "cell", "    ", escape.XML)
 	x.rowCount++
 
 	return nil
@@ -90,7 +92,7 @@ func MarshalXMLFromTableData(data *TableData) ([]byte, error) {
 	if len(data.Headers) > 0 {
 		b.WriteString("  <headers>\n")
 
-		writeMarkupColumns(&b, data.Headers, "    ", xmlEscape)
+		writeMarkupColumns(&b, data.Headers, "    ", escape.XML)
 
 		b.WriteString("  </headers>\n")
 	}
@@ -98,7 +100,7 @@ func MarshalXMLFromTableData(data *TableData) ([]byte, error) {
 	b.WriteString("  <rows>\n")
 
 	for _, row := range data.Rows {
-		writeMarkupRow(&b, row, "row", "cell", "    ", xmlEscape)
+		writeMarkupRow(&b, row, "row", "cell", "    ", escape.XML)
 	}
 
 	b.WriteString("  </rows>\n")

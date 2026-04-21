@@ -1,10 +1,6 @@
 package output
 
-import (
-	"strings"
-
-	"github.com/larsartmann/go-output/internal/escape"
-)
+import "strings"
 
 func writeMarkupRow(
 	b *strings.Builder,
@@ -34,12 +30,4 @@ func writeMarkupColumns(
 		b.WriteString(escapeFn(col))
 		b.WriteString("</column>\n")
 	}
-}
-
-func htmlEscape(s string) string {
-	return escape.HTML(s)
-}
-
-func xmlEscape(s string) string {
-	return escape.XML(s)
 }
