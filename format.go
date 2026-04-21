@@ -218,16 +218,22 @@ func (d *TableData) ColCount() int {
 	return len(d.Headers)
 }
 
+// RowEdge represents a directed edge between two row identifiers.
+type RowEdge struct {
+	From string
+	To   string
+}
+
 // CreateRowEdges generates edge data connecting consecutive rows.
 // Used by graph renderers to create edges between table rows.
-func (d *TableData) CreateRowEdges() []struct{ From, To string } {
+func (d *TableData) CreateRowEdges() []RowEdge {
 	if d == nil || len(d.Rows) < 2 {
 		return nil
 	}
 
-	edges := make([]struct{ From, To string }, 0, len(d.Rows)-1)
+	edges := make([]RowEdge, 0, len(d.Rows)-1)
 	for i := range len(d.Rows) - 1 {
-		edges = append(edges, struct{ From, To string }{
+		edges = append(edges, RowEdge{
 			From: fmt.Sprintf("row%d", i),
 			To:   fmt.Sprintf("row%d", i+1),
 		})
