@@ -295,6 +295,45 @@ const (
 	D2ConstraintUnique  D2Constraint = "unique"
 )
 
+var ErrInvalidD2Constraint = errors.New("invalid D2 constraint")
+
+//nolint:gochecknoglobals // Allowed values for D2Constraint validation.
+var allD2Constraints = []D2Constraint{
+	D2ConstraintPrimary,
+	D2ConstraintForeign,
+	D2ConstraintUnique,
+}
+
+// AllD2Constraints returns all valid D2Constraint values.
+func AllD2Constraints() []D2Constraint {
+	return allD2Constraints
+}
+
+// ParseD2Constraint converts a string to D2Constraint, returning an error if invalid.
+func ParseD2Constraint(s string) (D2Constraint, error) {
+	values := allD2Constraints
+
+	v, err := enum.Parse(values, s, func(d D2Constraint) string { return string(d) })
+	if err != nil {
+		return "", fmt.Errorf("%w: %q", ErrInvalidD2Constraint, s)
+	}
+
+	return v, nil
+}
+
+// String returns the string representation of the constraint.
+func (c D2Constraint) String() string { return string(c) }
+
+// AllowedValues returns all valid D2Constraint values for CLI help text.
+func (c D2Constraint) AllowedValues() []string {
+	return enum.AllowedValues(allD2Constraints)
+}
+
+// IsValid returns true if the constraint is a valid D2Constraint value.
+func (c D2Constraint) IsValid() bool {
+	return enum.Contains(allD2Constraints, c)
+}
+
 // D2Column represents a column in a D2 SQL table shape.
 type D2Column struct {
 	Name       string
