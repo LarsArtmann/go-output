@@ -3,8 +3,9 @@ package output
 import (
 	"errors"
 	"fmt"
-	"slices"
 	"strings"
+
+	"github.com/larsartmann/go-output/enum"
 )
 
 // GraphRenderer defines the interface for graph format renderers.
@@ -72,11 +73,12 @@ var graphShapeValues = []GraphShape{
 var ErrInvalidGraphShape = errors.New("invalid graph shape")
 
 func ParseGraphShape(s string) (GraphShape, error) {
-	if slices.Contains(graphShapeValues, GraphShape(s)) {
-		return GraphShape(s), nil
+	v, err := enum.Parse(graphShapeValues, s, func(g GraphShape) string { return string(g) })
+	if err != nil {
+		return "", fmt.Errorf("%w: %q", ErrInvalidGraphShape, s)
 	}
 
-	return "", fmt.Errorf("%w: %q (allowed: %v)", ErrInvalidGraphShape, s, graphShapeValues)
+	return v, nil
 }
 
 func (s GraphShape) String() string {
@@ -85,17 +87,12 @@ func (s GraphShape) String() string {
 
 // AllowedValues returns all valid graph shape values.
 func (s GraphShape) AllowedValues() []string {
-	values := make([]string, len(graphShapeValues))
-	for i, v := range graphShapeValues {
-		values[i] = string(v)
-	}
-
-	return values
+	return enum.AllowedValues(graphShapeValues)
 }
 
 // IsValid checks if the graph shape is valid.
 func (s GraphShape) IsValid() bool {
-	return slices.Contains(graphShapeValues, s)
+	return enum.Contains(graphShapeValues, s)
 }
 
 // GraphStyle represents styling attributes for a graph node.
