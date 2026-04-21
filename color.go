@@ -59,7 +59,7 @@ func (c ColorMode) ShouldColor() bool {
 	case ColorModeNever:
 		return false
 	case ColorModeAuto:
-		return isTerminal() && !isNoColor() && !isCI()
+		return isStdoutTerminal() && !isNoColor() && !isCI()
 	default:
 		return false
 	}
@@ -72,10 +72,6 @@ func (c ColorMode) ToANSI() string {
 	}
 
 	return "\033["
-}
-
-func isTerminal() bool {
-	return isStdoutTerminal()
 }
 
 func isStdoutTerminal() bool {
