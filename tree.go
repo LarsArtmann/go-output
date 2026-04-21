@@ -7,8 +7,7 @@ import (
 
 // ASCIITreeRenderer implements the TreeOutputRenderer interface for ASCII tree output.
 type ASCIITreeRenderer struct {
-	root    *TreeNode
-	builder strings.Builder
+	root *TreeNode
 }
 
 // NewASCIITreeRenderer creates a new ASCIITreeRenderer.
@@ -30,13 +29,18 @@ func (r *ASCIITreeRenderer) Render() string {
 		return ""
 	}
 
-	r.builder.Reset()
-	r.renderNode(r.root, "", true)
+	var b strings.Builder
+	r.renderNode(&b, r.root, "", true)
 
-	return r.builder.String()
+	return b.String()
 }
 
-func (r *ASCIITreeRenderer) renderNode(node *TreeNode, prefix string, isLast bool) {
+func (r *ASCIITreeRenderer) renderNode(
+	b *strings.Builder,
+	node *TreeNode,
+	prefix string,
+	isLast bool,
+) {
 	// Determine connector characters
 	var connector string
 	if isLast {
@@ -46,9 +50,9 @@ func (r *ASCIITreeRenderer) renderNode(node *TreeNode, prefix string, isLast boo
 	}
 
 	// Write this node
-	r.builder.WriteString(prefix)
-	r.builder.WriteString(connector)
-	r.builder.WriteString(node.Label.Get())
+	b.WriteString(prefix)
+	b.WriteString(connector)
+	b.WriteString(node.Label.Get())
 
 	// Add metadata summary if present
 	if len(node.Metadata) > 0 {
@@ -57,12 +61,12 @@ func (r *ASCIITreeRenderer) renderNode(node *TreeNode, prefix string, isLast boo
 			metaParts = append(metaParts, k+": "+v)
 		}
 
-		r.builder.WriteString(" (")
-		r.builder.WriteString(strings.Join(metaParts, ", "))
-		r.builder.WriteString(")")
+		b.WriteString(" (")
+		b.WriteString(strings.Join(metaParts, ", "))
+		b.WriteString(")")
 	}
 
-	r.builder.WriteString("\n")
+	b.WriteString("\n")
 
 	// Prepare prefix for children
 	var childPrefix string
@@ -75,7 +79,7 @@ func (r *ASCIITreeRenderer) renderNode(node *TreeNode, prefix string, isLast boo
 	// Render children
 	for i, child := range node.Children {
 		isLastChild := i == len(node.Children)-1
-		r.renderNode(child, childPrefix, isLastChild)
+		r.renderNode(b, child, childPrefix, isLastChild)
 	}
 }
 
