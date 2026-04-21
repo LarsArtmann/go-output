@@ -1,8 +1,9 @@
 package output
 
 import (
-	"html"
 	"strings"
+
+	"github.com/larsartmann/go-output/internal/escape"
 )
 
 // HTMLRenderer implements the Renderer interface for HTML table output.
@@ -59,7 +60,7 @@ func (r *HTMLRenderer) Render() string {
 
 	for _, h := range r.data.Headers {
 		b.WriteString("<th>")
-		b.WriteString(html.EscapeString(h))
+		b.WriteString(escape.HTML(h))
 		b.WriteString("</th>\n")
 	}
 
@@ -143,7 +144,7 @@ func (r *HTMLTreeRenderer) Render() string {
 
 func (r *HTMLTreeRenderer) renderNode(b *strings.Builder, node *TreeNode) {
 	b.WriteString("<li>")
-	b.WriteString(html.EscapeString(node.Label.Get()))
+	b.WriteString(escape.HTML(node.Label.Get()))
 
 	if len(node.Children) > 0 {
 		b.WriteString("\n<ul>\n")
@@ -187,7 +188,7 @@ func renderFullHTMLDocument(title, styles, content string) string {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>` + html.EscapeString(title) + `</title>
+<title>` + escape.HTML(title) + `</title>
 <style>
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -198,7 +199,7 @@ body {
 </style>
 </head>
 <body>
-<h1>` + html.EscapeString(title) + `</h1>
+<h1>` + escape.HTML(title) + `</h1>
 ` + content + `
 </body>
 </html>`
