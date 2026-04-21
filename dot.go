@@ -8,6 +8,10 @@ import (
 )
 
 // GraphRendererMixin contains shared fields and methods for graph renderers.
+//
+// D2 does not use this mixin because it has richer domain-specific types
+// (D2Node, D2Edge with classes, SQL tables, shapes, arrow types, etc.)
+// that do not map to the simpler GraphNode/GraphEdge model.
 type GraphRendererMixin struct {
 	nodes []GraphNode
 	edges []GraphEdge
