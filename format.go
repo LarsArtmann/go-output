@@ -77,6 +77,19 @@ const (
 	CategoryGraph
 )
 
+func (c FormatCategory) String() string {
+	switch c {
+	case CategoryTable:
+		return "table"
+	case CategoryTree:
+		return "tree"
+	case CategoryGraph:
+		return "graph"
+	default:
+		return "unknown"
+	}
+}
+
 var (
 	//nolint:gochecknoglobals // Map for table format classification.
 	tableFormats = map[Format]bool{
