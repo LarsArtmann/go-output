@@ -75,30 +75,18 @@ func (d *D2Diagram) writeEdge(b *strings.Builder, edge D2Edge) {
 	b.WriteString("}\n")
 }
 
-func (*D2Diagram) writeEdgeBlockAttrs(b *strings.Builder, edge D2Edge) {
-	s := edge.Style
-	if s.Stroke != "" {
-		fmt.Fprintf(b, "  style.stroke: %s\n", s.Stroke)
-	}
+func (d *D2Diagram) writeEdgeBlockAttrs(b *strings.Builder, edge D2Edge) {
+	//nolint:exhaustruct // Only common style fields; edge-specific attrs written below
+	d.writeStyleColors(b, D2NodeStyle{
+		Stroke:      edge.Style.Stroke,
+		StrokeWidth: edge.Style.StrokeWidth,
+		StrokeDash:  edge.Style.StrokeDash,
+		FontSize:    edge.Style.FontSize,
+		FontColor:   edge.Style.FontColor,
+	}, "  ")
 
-	if s.StrokeWidth > 0 {
-		fmt.Fprintf(b, "  style.stroke-width: %d\n", s.StrokeWidth)
-	}
-
-	if s.StrokeDash > 0 {
-		fmt.Fprintf(b, "  style.stroke-dash: %d\n", s.StrokeDash)
-	}
-
-	if s.Animated {
+	if edge.Style.Animated {
 		b.WriteString("  style.animated: true\n")
-	}
-
-	if s.FontColor != "" {
-		fmt.Fprintf(b, "  style.font-color: %s\n", s.FontColor)
-	}
-
-	if s.FontSize > 0 {
-		fmt.Fprintf(b, "  style.font-size: %d\n", s.FontSize)
 	}
 
 	if edge.SourceArrow != "" {
