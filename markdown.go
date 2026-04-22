@@ -8,11 +8,28 @@ import (
 // Compile-time interface check.
 var _ Renderer = (*MarkdownTable)(nil)
 
+// Alignment represents text alignment within a table cell.
+type Alignment int
+
+// Column alignment constants.
+const (
+	AlignLeft   Alignment = AlignmentLeft
+	AlignRight  Alignment = AlignmentRight
+	AlignCenter Alignment = AlignmentCenter
+)
+
+// Column alignment iota values (unexported).
+const (
+	AlignmentLeft Alignment = iota
+	AlignmentRight
+	AlignmentCenter
+)
+
 // MarkdownTable builds Markdown tables.
 type MarkdownTable struct {
 	headers []string
 	rows    [][]string
-	align   []int
+	align   []Alignment
 }
 
 // NewMarkdownTable creates a new MarkdownTable.
@@ -40,16 +57,16 @@ func NewMarkdownTableFromData(data *TableData) *MarkdownTable {
 func (m *MarkdownTable) SetHeaders(headers []string) *MarkdownTable {
 	m.headers = headers
 
-	m.align = make([]int, len(headers))
+	m.align = make([]Alignment, len(headers))
 	for i := range m.align {
-		m.align[i] = 0
+		m.align[i] = AlignmentLeft
 	}
 
 	return m
 }
 
-// SetAlign sets column alignment: 0=left, 1=right, 2=center.
-func (m *MarkdownTable) SetAlign(col, alignment int) *MarkdownTable {
+// SetAlign sets column alignment.
+func (m *MarkdownTable) SetAlign(col int, alignment Alignment) *MarkdownTable {
 	if col >= 0 && col < len(m.align) {
 		m.align[col] = alignment
 	}
@@ -147,31 +164,26 @@ func (m *MarkdownTable) writeCell(b *strings.Builder, i int, cell string, colWid
 	alignment := m.getAlignment(i)
 
 	switch alignment {
-	case AlignRight:
+	case AlignmentRight:
 		fmt.Fprintf(b, "%*s", width, cell)
-	case AlignCenter:
+	case AlignmentCenter:
 		leftPad := (width - len(cell)) / 2
 		rightPad := width - len(cell) - leftPad
 		b.WriteString(strings.Repeat(" ", leftPad))
 		b.WriteString(cell)
 		b.WriteString(strings.Repeat(" ", rightPad))
+	case AlignmentLeft:
+		fallthrough
 	default:
 		b.WriteString(cell)
 		b.WriteString(strings.Repeat(" ", width-len(cell)))
 	}
 }
 
-func (m *MarkdownTable) getAlignment(col int) int {
+func (m *MarkdownTable) getAlignment(col int) Alignment {
 	if col >= 0 && col < len(m.align) {
 		return m.align[col]
 	}
 
-	return AlignLeft
+	return AlignmentLeft
 }
-
-// Column alignment constants.
-const (
-	AlignLeft   = 0
-	AlignRight  = 1
-	AlignCenter = 2
-)
