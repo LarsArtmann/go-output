@@ -91,54 +91,60 @@ func (c FormatCategory) String() string {
 }
 
 var (
-	//nolint:gochecknoglobals // Map for table format classification.
-	tableFormats = map[Format]bool{
-		FormatTable:    true,
-		FormatJSON:     true,
-		FormatCSV:      true,
-		FormatTSV:      true,
-		FormatXML:      true,
-		FormatMarkdown: true,
-		FormatYAML:     true,
-		FormatD2:       true,
+	//nolint:gochecknoglobals // Set for table format classification.
+	tableFormats = map[Format]struct{}{
+		FormatTable:    {},
+		FormatJSON:     {},
+		FormatCSV:      {},
+		FormatTSV:      {},
+		FormatXML:      {},
+		FormatMarkdown: {},
+		FormatYAML:     {},
+		FormatD2:       {},
 	}
 
-	//nolint:gochecknoglobals // Map for tree format classification.
-	treeFormats = map[Format]bool{
-		FormatTree: true,
-		FormatHTML: true,
+	//nolint:gochecknoglobals // Set for tree format classification.
+	treeFormats = map[Format]struct{}{
+		FormatTree: {},
+		FormatHTML: {},
 	}
 
-	//nolint:gochecknoglobals // Map for graph format classification.
-	graphFormats = map[Format]bool{
-		FormatD2:      true,
-		FormatMermaid: true,
-		FormatDOT:     true,
+	//nolint:gochecknoglobals // Set for graph format classification.
+	graphFormats = map[Format]struct{}{
+		FormatD2:      {},
+		FormatMermaid: {},
+		FormatDOT:     {},
 	}
 )
 
 // IsTableFormat returns true if this is a table-based format.
 func (f Format) IsTableFormat() bool {
-	return tableFormats[f]
+	_, ok := tableFormats[f]
+
+	return ok
 }
 
 // IsTreeFormat returns true if this is a tree-based format.
 func (f Format) IsTreeFormat() bool {
-	return treeFormats[f]
+	_, ok := treeFormats[f]
+
+	return ok
 }
 
 // IsGraphFormat returns true if this is a graph/diagram format.
 func (f Format) IsGraphFormat() bool {
-	return graphFormats[f]
+	_, ok := graphFormats[f]
+
+	return ok
 }
 
 // Category returns the category of the format.
 func (f Format) Category() FormatCategory {
-	if treeFormats[f] {
+	if _, ok := treeFormats[f]; ok {
 		return CategoryTree
 	}
 
-	if graphFormats[f] {
+	if _, ok := graphFormats[f]; ok {
 		return CategoryGraph
 	}
 
