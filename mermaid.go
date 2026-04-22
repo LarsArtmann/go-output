@@ -7,6 +7,12 @@ import (
 	"github.com/larsartmann/go-output/internal/escape"
 )
 
+// Compile-time interface checks.
+var (
+	_ Renderer      = (*MermaidRenderer)(nil)
+	_ GraphRenderer = (*MermaidRenderer)(nil)
+)
+
 // MermaidRenderer implements the GraphRenderer interface for Mermaid diagrams.
 type MermaidRenderer struct {
 	GraphRendererMixin

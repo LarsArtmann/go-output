@@ -4,7 +4,11 @@ package table
 import (
 	"charm.land/lipgloss/v2"
 	"charm.land/lipgloss/v2/table"
+	"github.com/larsartmann/go-output"
 )
+
+// Compile-time interface check.
+var _ output.Renderer = (*Table)(nil)
 
 // TableDataProvider defines the interface for types that provide tabular data.
 // The root package's TableData satisfies this interface implicitly.

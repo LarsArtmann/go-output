@@ -5,6 +5,9 @@ import (
 	"strings"
 )
 
+// Compile-time interface check.
+var _ Renderer = (*MarkdownTable)(nil)
+
 // MarkdownTable builds Markdown tables.
 type MarkdownTable struct {
 	headers []string

@@ -7,6 +7,12 @@ import (
 	"github.com/larsartmann/go-output/internal/escape"
 )
 
+// Compile-time interface checks.
+var (
+	_ Renderer      = (*DOTRenderer)(nil)
+	_ GraphRenderer = (*DOTRenderer)(nil)
+)
+
 // GraphRendererMixin contains shared fields and methods for graph renderers.
 //
 // D2 does not use this mixin because it has richer domain-specific types

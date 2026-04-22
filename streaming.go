@@ -8,6 +8,14 @@ import (
 	"github.com/larsartmann/go-output/internal/escape"
 )
 
+// Compile-time interface checks.
+var (
+	_ Renderer          = (*StreamingHTMLRenderer)(nil)
+	_ TableRenderer     = (*StreamingHTMLRenderer)(nil)
+	_ StreamingRenderer = (*StreamingHTMLRenderer)(nil)
+	_ StreamingRenderer = (*adapterRenderer)(nil)
+)
+
 // StreamingRenderer is an interface for renderers that support streaming output.
 // This is useful for rendering large datasets without loading everything into memory.
 //

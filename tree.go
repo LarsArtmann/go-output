@@ -15,8 +15,11 @@ func NewASCIITreeRenderer() *ASCIITreeRenderer {
 	return &ASCIITreeRenderer{} //nolint:exhaustruct // root and builder are initialized lazily
 }
 
-// Ensure ASCIITreeRenderer implements TreeOutputRenderer.
-var _ TreeOutputRenderer = (*ASCIITreeRenderer)(nil)
+// Compile-time interface checks.
+var (
+	_ Renderer           = (*ASCIITreeRenderer)(nil)
+	_ TreeOutputRenderer = (*ASCIITreeRenderer)(nil)
+)
 
 // SetRoot sets the root node of the tree.
 func (r *ASCIITreeRenderer) SetRoot(node *TreeNode) {

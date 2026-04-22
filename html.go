@@ -6,6 +6,13 @@ import (
 	"github.com/larsartmann/go-output/internal/escape"
 )
 
+// Compile-time interface checks.
+var (
+	_ Renderer      = (*HTMLRenderer)(nil)
+	_ Renderer      = (*HTMLTreeRenderer)(nil)
+	_ TableRenderer = (*HTMLRenderer)(nil)
+)
+
 // HTMLRenderer implements the Renderer interface for HTML table output.
 type HTMLRenderer struct {
 	tableDataBase

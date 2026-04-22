@@ -7,6 +7,12 @@ import (
 	"github.com/larsartmann/go-output/internal/escape"
 )
 
+// Compile-time interface checks.
+var (
+	_ Renderer      = (*D2Diagram)(nil)
+	_ GraphRenderer = (*D2Diagram)(nil)
+)
+
 // D2Diagram builds D2 diagram output with full support for nodes, edges,
 // SQL table shapes, styling, nesting, icons, links, tooltips, classes, and layout configuration.
 type D2Diagram struct {
