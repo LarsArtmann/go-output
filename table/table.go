@@ -71,7 +71,12 @@ func (t *Table) Render() string {
 }
 
 // FromTableData creates a new Table populated from a TableDataProvider.
+// If data is nil, returns an empty table.
 func FromTableData(data TableDataProvider) *Table {
+	if data == nil {
+		return New()
+	}
+
 	t := New()
 	t.SetHeaders(data.GetHeaders()...)
 

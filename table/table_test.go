@@ -185,6 +185,20 @@ func TestFromTableData(t *testing.T) {
 	testutils.AssertContains(t, output, "Active", "should contain row 'Active'")
 }
 
+func TestFromTableDataNil(t *testing.T) {
+	t.Parallel()
+
+	tbl := FromTableData(nil)
+	if tbl == nil {
+		t.Fatal("FromTableData(nil) should not return nil")
+	}
+
+	output := tbl.Render()
+	if output != "" {
+		t.Errorf("FromTableData(nil) should render empty, got %q", output)
+	}
+}
+
 func TestFromTableDataEmpty(t *testing.T) {
 	t.Parallel()
 
