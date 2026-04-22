@@ -46,6 +46,122 @@ data, _ := output.MarshalXMLFromTableData(tableData)
 fmt.Println(string(data))
 ```
 
+## Format Categories
+
+Formats are classified into three categories for programmatic filtering:
+
+| Category | Formats | Use Case |
+| -------- | ------- | -------- |
+| **Table** | `table`, `json`, `csv`, `tsv`, `xml`, `markdown`, `yaml`, `d2` | Tabular data with rows and columns |
+| **Tree** | `tree`, `html` | Hierarchical structures |
+| **Graph** | `d2`, `mermaid`, `dot` | Network diagrams and flowcharts |
+
+```go
+// Check format category
+format, _ := output.ParseFormat("d2")
+fmt.Println(format.IsTableFormat()) // true (D2 supports SQL tables)
+fmt.Println(format.IsGraphFormat()) // true (D2 supports node-edge diagrams)
+fmt.Println(format.Category())      // graph (graph takes precedence)
+
+// Filter formats by category
+for _, f := range output.AllFormats {
+    if f.IsTableFormat() {
+        fmt.Println(f) // table, json, csv, tsv, xml, markdown, yaml, d2
+    }
+}
+```
+
+## Streaming Renderer
+
+For large datasets, use streaming output to minimize memory usage:
+
+```go
+// Streaming HTML output - writes incrementally
+renderer := output.NewStreamingHTMLRenderer()
+renderer.SetData(tableData)
+
+// Stream directly to stdout
+_ = renderer.Stream(os.Stdout)
+
+// Wrap any renderer for streaming interface compliance
+streamable := output.StreamingRendererFromRenderer(renderer)
+_ = streamable.Stream(writer)
+```
+
+## Registry System
+
+Register custom renderers for extensibility:
+
+```go
+// Register a custom format
+err := output.Register(output.Format("custom"), func() output.Renderer {
+    return &myCustomRenderer{}
+})
+
+// Create renderer by format
+renderer, err := output.Create(output.FormatTable)
+
+// Check what's registered
+formats := output.RegisteredFormats()
+isRegistered := output.IsRegistered(output.FormatJSON)
+```
+
+## Branded IDs
+
+Type-safe identifiers prevent mixing different ID types:
+
+```go
+// D2 diagram nodes
+nodeID := output.NewBrandedID[output.D2NodeIDBrand]("node-1")
+nodeLabel := output.NewBrandedID[output.D2NodeLabelBrand]("My Node")
+
+// Tree nodes
+treeID := output.NewBrandedID[output.TreeNodeIDBrand]("root")
+treeLabel := output.NewBrandedID[output.TreeNodeLabelBrand]("Root Node")
+
+// Graph nodes
+graphID := output.NewBrandedID[output.GraphNodeIDBrand]("vertex-a")
+graphLabel := output.NewBrandedID[output.GraphNodeLabelBrand]("Vertex A")
+
+// Generic branded ID
+type ProjectIDBrand struct{}
+projectID := output.NewBrandedID[ProjectIDBrand]("proj-123")
+
+// Type safety - these won't compile:
+// nodeID = treeID  // ERROR: cannot use treeID (type BrandedID[TreeNodeIDBrand]) as type BrandedID[D2NodeIDBrand]
+```
+
+## D2 Advanced Features
+
+D2 diagrams support SQL tables, constraints, grid layouts, and nested containers:
+
+```go
+// SQL table with constraints
+table := output.D2Table{
+    Name: "users",
+    Columns: []output.D2Column{
+        {Name: "id", Type: "INT", Constraint: output.D2ConstraintPrimary},
+        {Name: "email", Type: "VARCHAR(255)", Constraint: output.D2ConstraintUnique},
+        {Name: "manager_id", Type: "INT", Constraint: output.D2ConstraintForeign},
+    },
+}
+
+// Node with grid layout
+node := output.D2Node{
+    ID:          output.NewBrandedID[output.D2NodeIDBrand]("dashboard"),
+    Label:       output.NewBrandedID[output.D2NodeLabelBrand]("Dashboard"),
+    GridRows:    3,
+    GridColumns: 2,
+    GridGap:     8,
+}
+
+// Nested container
+nestedNode := output.D2Node{
+    ID:      output.NewBrandedID[output.D2NodeIDBrand]("container"),
+    Nested:  "inner.nested.node",
+}
+```
+
 ## Supported Formats
 
 ### Table Formats
@@ -155,6 +271,32 @@ require (
 )
 ```
 
+## Escape Functions
+
+Safe escaping for various output formats:
+
+| Function | Purpose | Used By |
+| -------- | ------- | ------- |
+| `escape.HTML` | HTML special characters | HTML, StreamingHTML |
+| `escape.XML` | XML special characters | XML |
+| `escape.D2` | D2 diagram identifiers | D2 |
+| `escape.DOT` | DOT graph identifiers | DOT |
+| `escape.MermaidID` | Mermaid node IDs | Mermaid |
+| `escape.MermaidSlug` | Mermaid text (URL-safe) | Mermaid |
+| `escape.MermaidText` | Mermaid labels | Mermaid |
+
+```go
+import "github.com/larsartmann/go-output/escape"
+
+// Escape HTML content
+safe := escape.HTML("<script>alert('xss')</script>")
+// Result: "&lt;script&gt;alert(&#39;xss&#39;)&lt;/script&gt;"
+
+// Escape D2 node ID
+safeID := escape.D2("my-node.with.dots")
+// Result: "my-node.with.dots" (dots preserved for D2 nesting)
+```
+
 ## Development
 
 ```bash
@@ -172,6 +314,9 @@ just verify
 
 # Run example
 go run ./examples/basic/main.go markdown
+
+# Pre-commit hooks (install once)
+pre-commit install
 ```
 
 ## Examples
