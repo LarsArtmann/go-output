@@ -1,33 +1,60 @@
 package output
 
-import "strings"
+import (
+	"fmt"
+	"io"
+)
 
 func writeMarkupRow(
-	b *strings.Builder,
+	w io.Writer,
 	row []string,
 	rowTag, cellTag, indent string,
 	escapeFn func(string) string,
-) {
-	b.WriteString(indent + "<" + rowTag + ">\n")
-
-	for _, cell := range row {
-		b.WriteString(indent + indent + "<" + cellTag + ">")
-		b.WriteString(escapeFn(cell))
-		b.WriteString("</" + cellTag + ">\n")
+) error {
+	if _, err := io.WriteString(w, indent+"<"+rowTag+">\n"); err != nil {
+		return fmt.Errorf("write row tag open: %w", err)
 	}
 
-	b.WriteString(indent + "</" + rowTag + ">\n")
+	for _, cell := range row {
+		if _, err := io.WriteString(w, indent+indent+"<"+cellTag+">"); err != nil {
+			return fmt.Errorf("write cell tag open: %w", err)
+		}
+
+		if _, err := io.WriteString(w, escapeFn(cell)); err != nil {
+			return fmt.Errorf("write cell content: %w", err)
+		}
+
+		if _, err := io.WriteString(w, "</"+cellTag+">\n"); err != nil {
+			return fmt.Errorf("write cell tag close: %w", err)
+		}
+	}
+
+	if _, err := io.WriteString(w, indent+"</"+rowTag+">\n"); err != nil {
+		return fmt.Errorf("write row tag close: %w", err)
+	}
+
+	return nil
 }
 
 func writeMarkupColumns(
-	b *strings.Builder,
+	w io.Writer,
 	cols []string,
 	indent string,
 	escapeFn func(string) string,
-) {
+) error {
 	for _, col := range cols {
-		b.WriteString(indent + "<column>")
-		b.WriteString(escapeFn(col))
-		b.WriteString("</column>\n")
+		if _, err := io.WriteString(w, indent+"<column>"); err != nil {
+			return fmt.Errorf("write column tag open: %w", err)
+		}
+
+		if _, err := io.WriteString(w, escapeFn(col)); err != nil {
+			return fmt.Errorf("write column content: %w", err)
+		}
+
+		if _, err := io.WriteString(w, "</column>\n"); err != nil {
+			return fmt.Errorf("write column tag close: %w", err)
+		}
 	}
+
+	return nil
 }

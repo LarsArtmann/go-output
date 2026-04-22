@@ -8,14 +8,21 @@ import (
 func TestXMLWriterWriteHeader(t *testing.T) {
 	t.Parallel()
 
-	x := NewXMLWriter()
+	var buf strings.Builder
+
+	x := NewXMLWriter(&buf)
 
 	err := x.WriteHeader([]string{"Name", "Value"})
 	if err != nil {
 		t.Fatalf("WriteHeader() error = %v", err)
 	}
 
-	result := x.String()
+	err = x.WriteFooter()
+	if err != nil {
+		t.Fatalf("WriteFooter() error = %v", err)
+	}
+
+	result := buf.String()
 	assertContains(t, result, "<headers>", "XML should contain <headers>")
 	assertContains(t, result, "<column>Name</column>", "XML should contain <column>Name</column>")
 }
@@ -23,7 +30,10 @@ func TestXMLWriterWriteHeader(t *testing.T) {
 func TestXMLWriterWriteRow(t *testing.T) {
 	t.Parallel()
 
-	x := NewXMLWriter()
+	var buf strings.Builder
+
+	x := NewXMLWriter(&buf)
+
 	_ = x.WriteHeader([]string{"Name", "Value"})
 
 	err := x.WriteRow([]string{"test", "123"})
@@ -31,7 +41,12 @@ func TestXMLWriterWriteRow(t *testing.T) {
 		t.Fatalf("WriteRow() error = %v", err)
 	}
 
-	result := x.String()
+	err = x.WriteFooter()
+	if err != nil {
+		t.Fatalf("WriteFooter() error = %v", err)
+	}
+
+	result := buf.String()
 	assertContains(t, result, "<row>", "XML should contain <row>")
 	assertContains(t, result, "<cell>test</cell>", "XML should contain <cell>test</cell>")
 }
@@ -39,7 +54,10 @@ func TestXMLWriterWriteRow(t *testing.T) {
 func TestXMLWriterWriteRows(t *testing.T) {
 	t.Parallel()
 
-	x := NewXMLWriter()
+	var buf strings.Builder
+
+	x := NewXMLWriter(&buf)
+
 	_ = x.WriteHeader([]string{"Name", "Value"})
 
 	err := x.WriteRows([][]string{
@@ -50,7 +68,12 @@ func TestXMLWriterWriteRows(t *testing.T) {
 		t.Fatalf("WriteRows() error = %v", err)
 	}
 
-	result := x.String()
+	err = x.WriteFooter()
+	if err != nil {
+		t.Fatalf("WriteFooter() error = %v", err)
+	}
+
+	result := buf.String()
 	if strings.Count(result, "<row>") != 2 {
 		t.Errorf("XML should contain 2 <row> elements")
 	}
@@ -59,11 +82,15 @@ func TestXMLWriterWriteRows(t *testing.T) {
 func TestXMLWriterEscape(t *testing.T) {
 	t.Parallel()
 
-	x := NewXMLWriter()
+	var buf strings.Builder
+
+	x := NewXMLWriter(&buf)
+
 	_ = x.WriteHeader([]string{"Name"})
 	_ = x.WriteRow([]string{"<script>alert('xss')</script>"})
+	_ = x.WriteFooter()
 
-	result := x.String()
+	result := buf.String()
 	if strings.Contains(result, "<script>") {
 		t.Error("XML should escape <script> tags")
 	}

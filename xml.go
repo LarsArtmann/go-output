@@ -3,6 +3,7 @@ package output
 import (
 	"encoding/xml"
 	"fmt"
+	"io"
 	"strings"
 
 	"github.com/larsartmann/go-output/internal/escape"
@@ -23,35 +24,55 @@ func MarshalXMLIndent(v any, prefix, indent string) (result []byte, err error) {
 	return result, nil
 }
 
-// XMLWriter writes XML output.
+// XMLWriter writes XML output to an io.Writer.
 type XMLWriter struct {
-	writer *strings.Builder
+	Writer io.Writer
 }
 
 // NewXMLWriter creates a new XMLWriter.
-func NewXMLWriter() *XMLWriter {
-	return &XMLWriter{
-		writer: new(strings.Builder),
-	}
+func NewXMLWriter(w io.Writer) *XMLWriter {
+	return &XMLWriter{Writer: w}
 }
 
 // WriteHeader writes the XML header and opening tags.
 func (x *XMLWriter) WriteHeader(cols []string) error {
-	x.writer.WriteString("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
-	x.writer.WriteString("<table>\n")
-	x.writer.WriteString("  <headers>\n")
+	_, err := x.Writer.Write([]byte("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"))
+	if err != nil {
+		return fmt.Errorf("write xml header: %w", err)
+	}
 
-	writeMarkupColumns(x.writer, cols, "    ", escape.XML)
+	_, err = x.Writer.Write([]byte("<table>\n"))
+	if err != nil {
+		return fmt.Errorf("write table open: %w", err)
+	}
 
-	x.writer.WriteString("  </headers>\n")
-	x.writer.WriteString("  <rows>\n")
+	_, err = x.Writer.Write([]byte("  <headers>\n"))
+	if err != nil {
+		return fmt.Errorf("write headers open: %w", err)
+	}
+
+	if err := writeMarkupColumns(x.Writer, cols, "    ", escape.XML); err != nil {
+		return fmt.Errorf("write columns: %w", err)
+	}
+
+	_, err = x.Writer.Write([]byte("  </headers>\n"))
+	if err != nil {
+		return fmt.Errorf("write headers close: %w", err)
+	}
+
+	_, err = x.Writer.Write([]byte("  <rows>\n"))
+	if err != nil {
+		return fmt.Errorf("write rows open: %w", err)
+	}
 
 	return nil
 }
 
 // WriteRow writes a single row.
 func (x *XMLWriter) WriteRow(values []string) error {
-	writeMarkupRow(x.writer, values, "row", "cell", "    ", escape.XML)
+	if err := writeMarkupRow(x.Writer, values, "row", "cell", "    ", escape.XML); err != nil {
+		return fmt.Errorf("write row: %w", err)
+	}
 
 	return nil
 }
@@ -68,12 +89,19 @@ func (x *XMLWriter) WriteRows(values [][]string) error {
 	return nil
 }
 
-// String returns the XML output.
-func (x *XMLWriter) String() string {
-	x.writer.WriteString("  </rows>\n")
-	x.writer.WriteString("</table>\n")
+// WriteFooter writes the closing tags.
+func (x *XMLWriter) WriteFooter() error {
+	_, err := x.Writer.Write([]byte("  </rows>\n"))
+	if err != nil {
+		return fmt.Errorf("write rows close: %w", err)
+	}
 
-	return x.writer.String()
+	_, err = x.Writer.Write([]byte("</table>\n"))
+	if err != nil {
+		return fmt.Errorf("write table close: %w", err)
+	}
+
+	return nil
 }
 
 // MarshalXMLFromTableData marshals TableData to XML.
@@ -89,7 +117,9 @@ func MarshalXMLFromTableData(data *TableData) ([]byte, error) {
 	if len(data.Headers) > 0 {
 		b.WriteString("  <headers>\n")
 
-		writeMarkupColumns(&b, data.Headers, "    ", escape.XML)
+		if err := writeMarkupColumns(&b, data.Headers, "    ", escape.XML); err != nil {
+			return nil, fmt.Errorf("write columns: %w", err)
+		}
 
 		b.WriteString("  </headers>\n")
 	}
@@ -97,7 +127,9 @@ func MarshalXMLFromTableData(data *TableData) ([]byte, error) {
 	b.WriteString("  <rows>\n")
 
 	for _, row := range data.Rows {
-		writeMarkupRow(&b, row, "row", "cell", "    ", escape.XML)
+		if err := writeMarkupRow(&b, row, "row", "cell", "    ", escape.XML); err != nil {
+			return nil, fmt.Errorf("write row: %w", err)
+		}
 	}
 
 	b.WriteString("  </rows>\n")
