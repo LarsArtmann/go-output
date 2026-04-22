@@ -11,39 +11,39 @@
 
 ## A. FULLY DONE (22 tasks completed)
 
-| # | Task | Commit |
-|---|------|--------|
-| 1 | Fix gofumpt formatting in d2_test.go and ids_test.go | `8b6f4c3` |
-| 2 | Fix wsl_v5 warning in ids_test.go | `8b6f4c3` |
-| 3 | Extract test-id string constant in graph_test.go | `8b6f4c3` |
-| 4 | Fix gochecknoglobals: move D2 enum slices inside AllowedValues() | `8b6f4c3` |
-| 5 | Remove dead pkg/errors/ package | `ede4889` |
-| 6 | Replace deprecated ParseOutputFormat in examples/basic/main.go | `6e605c8` |
-| 7 | Replace deprecated ParseOutputFormat in userjourney_test.go | `6e605c8` |
-| 8 | Replace deprecated ParseOutputFormat in integration/workflow_test.go | `6e605c8` |
-| 9 | Fix README.md to show Format.Parse API | prior session |
-| 10 | Split integration_test.go (399→≤350) | `f80ea72` |
-| 11 | Split d2_test.go (362→≤350) | `7e2c71d` |
-| 12 | Split sort_test.go (391→≤350) | `03a6049` |
-| 13 | Split format_test.go (354→≤350) | `6e69a01` |
-| 14 | Migrate html.go to escape.HTML | `84a6c3d` |
-| 15 | Replace inline escape logic in mermaid.go and dot.go | `5b8ade7` |
-| 16 | Extract deprecated format aliases → format_deprecated.go | `2f5bea4` |
-| 17 | Extract shared AddTreeNodes helper | `e9fd2dd` |
-| 18 | Deduplicate graph test helpers | `7630fb0` |
-| 19 | Fix registry test isolation | `45dc766` |
-| 20 | Extract shared SetNodesFromTableData on GraphRendererMixin | `0321d68` |
-| 21 | Reduce d2_write.go style duplication | `69552b2` |
-| 22 | Add D2 showcase to examples | `1d5282c` |
-| 23 | Document GraphRendererMixin not shared with D2 | `b416e42` |
+| #   | Task                                                                 | Commit        |
+| --- | -------------------------------------------------------------------- | ------------- |
+| 1   | Fix gofumpt formatting in d2_test.go and ids_test.go                 | `8b6f4c3`     |
+| 2   | Fix wsl_v5 warning in ids_test.go                                    | `8b6f4c3`     |
+| 3   | Extract test-id string constant in graph_test.go                     | `8b6f4c3`     |
+| 4   | Fix gochecknoglobals: move D2 enum slices inside AllowedValues()     | `8b6f4c3`     |
+| 5   | Remove dead pkg/errors/ package                                      | `ede4889`     |
+| 6   | Replace deprecated ParseOutputFormat in examples/basic/main.go       | `6e605c8`     |
+| 7   | Replace deprecated ParseOutputFormat in userjourney_test.go          | `6e605c8`     |
+| 8   | Replace deprecated ParseOutputFormat in integration/workflow_test.go | `6e605c8`     |
+| 9   | Fix README.md to show Format.Parse API                               | prior session |
+| 10  | Split integration_test.go (399→≤350)                                 | `f80ea72`     |
+| 11  | Split d2_test.go (362→≤350)                                          | `7e2c71d`     |
+| 12  | Split sort_test.go (391→≤350)                                        | `03a6049`     |
+| 13  | Split format_test.go (354→≤350)                                      | `6e69a01`     |
+| 14  | Migrate html.go to escape.HTML                                       | `84a6c3d`     |
+| 15  | Replace inline escape logic in mermaid.go and dot.go                 | `5b8ade7`     |
+| 16  | Extract deprecated format aliases → format_deprecated.go             | `2f5bea4`     |
+| 17  | Extract shared AddTreeNodes helper                                   | `e9fd2dd`     |
+| 18  | Deduplicate graph test helpers                                       | `7630fb0`     |
+| 19  | Fix registry test isolation                                          | `45dc766`     |
+| 20  | Extract shared SetNodesFromTableData on GraphRendererMixin           | `0321d68`     |
+| 21  | Reduce d2_write.go style duplication                                 | `69552b2`     |
+| 22  | Add D2 showcase to examples                                          | `1d5282c`     |
+| 23  | Document GraphRendererMixin not shared with D2                       | `b416e42`     |
 
 ---
 
 ## B. PARTIALLY DONE
 
-| Item | Status | What's Left |
-|------|--------|-------------|
-| `.gitignore` | Fixed malformed merge on line 55, not yet committed | Commit the fix |
+| Item             | Status                                                                                              | What's Left                                                                                |
+| ---------------- | --------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| `.gitignore`     | Fixed malformed merge on line 55, not yet committed                                                 | Commit the fix                                                                             |
 | LSP warnings (3) | `golangci-lint` clean, but LSP still flags: `ids_test.go:26,67` wsl_v5; `escape_test.go:16` golines | These are LSP-only, not caught by `golangci-lint run`. May need fixing if LSP rules align. |
 
 ---
@@ -114,33 +114,33 @@ No regressions, no broken tests, no merge conflicts, no failing builds.
 
 Sorted by **impact × (1 / work_required)** — high impact, low effort first.
 
-| # | Task | Impact | Work | Score |
-|---|------|--------|------|-------|
-| 1 | **Migrate GraphShape to `enum` package** — eliminates the most visible enum inconsistency | High | Low | ★★★★★ |
-| 2 | **Migrate D2 enums to `enum` package** (D2Direction, D2NodeShape, D2ArrowType) — removes 3 more hand-rolled patterns | High | Low | ★★★★★ |
-| 3 | **Remove unused branded types from ids.go** (DOTGraphID, DOTNodeID, MermaidNodeID, etc.) — reduces dead code | Med | Low | ★★★★☆ |
-| 4 | **Fix `RegisteredFormats` to return sorted** — deterministic output | Med | Trivial | ★★★★☆ |
-| 5 | **Add `String()` to `FormatCategory`** — minimal fix for bare iota | Med | Trivial | ★★★★☆ |
-| 6 | **Name the `CreateRowEdges` return type** — replace anonymous struct with `RowEdge` | Med | Low | ★★★★☆ |
-| 7 | **Replace `fmt.Fprintf(b, "%s", x)` with `b.WriteString(x)`** in ids.go | Low | Trivial | ★★★☆☆ |
-| 8 | **Replace `fmt.Sprintf` with string concat** where no formatting needed (mermaid, dot, d2_write) | Low | Low | ★★★☆☆ |
-| 9 | **Remove trivial `htmlEscape`/`xmlEscape` wrappers** — call `escape.HTML`/`escape.XML` directly | Low | Trivial | ★★★☆☆ |
-| 10 | **Fix `.gitignore` formatting** and commit | Low | Trivial | ★★★☆☆ |
-| 11 | **Consolidate error wrapping in marshal.go** — single consistent pattern | Med | Low | ★★★☆☆ |
-| 12 | **Delete deprecated cmdguard files** (format.go, sort.go, color.go) — they just wrap `NewEnumFlag` | Med | Trivial | ★★★☆☆ |
-| 13 | **Fix `ASCIITreeRenderer` goroutine safety** — localize `builder` in `Render()` | Med | Low | ★★★☆☆ |
-| 14 | **Add `D2Constraint` Parse/IsValid** — only enum missing validation | Low | Low | ★★★☆☆ |
-| 15 | **Bridge `table/` subpackage to `TableData`** — add `RenderFromTableData(data *TableData) string` | High | Med | ★★★☆☆ |
-| 16 | **Make `MarkdownTable` accept `TableData`** — reduce data model duplication | Med | Med | ★★☆☆☆ |
-| 17 | **Refactor `StreamingHTMLRenderer` to compose with HTMLRenderer** — eliminate duplicate rendering | Med | Med | ★★☆☆☆ |
-| 18 | **Integrate `color.go` with lipgloss** — remove duplicate terminal detection | Med | Med | ★★☆☆☆ |
-| 19 | **Remove `isStderrTerminal()` dead code** in color.go | Low | Trivial | ★★☆☆☆ |
-| 20 | **Add missing escape characters** (D2 `\\`/`$`, DOT `\\`/`|`) | Med | Low | ★★☆☆☆ |
-| 21 | **Update README** — add streaming, D2, Mermaid/DOT, tree, sort, branded IDs sections | High | Med | ★★☆☆☆ |
-| 22 | **Parameterize `writeMarkupColumns`** tag name (like `writeMarkupRow`) | Low | Low | ★★☆☆☆ |
-| 23 | **Add `CONTRIBUTING.md`** | Med | Med | ★☆☆☆☆ |
-| 24 | **Fix `HTMLTreeRenderer` CSS** — remove "collapsible" claim or add JS | Low | Low | ★☆☆☆☆ |
-| 25 | **Sorter error returns** — add error return instead of silent mis-sort | Med | High | ★☆☆☆☆ |
+| #   | Task                                                                                                                 | Impact | Work    | Score |
+| --- | -------------------------------------------------------------------------------------------------------------------- | ------ | ------- | ----- | ----- |
+| 1   | **Migrate GraphShape to `enum` package** — eliminates the most visible enum inconsistency                            | High   | Low     | ★★★★★ |
+| 2   | **Migrate D2 enums to `enum` package** (D2Direction, D2NodeShape, D2ArrowType) — removes 3 more hand-rolled patterns | High   | Low     | ★★★★★ |
+| 3   | **Remove unused branded types from ids.go** (DOTGraphID, DOTNodeID, MermaidNodeID, etc.) — reduces dead code         | Med    | Low     | ★★★★☆ |
+| 4   | **Fix `RegisteredFormats` to return sorted** — deterministic output                                                  | Med    | Trivial | ★★★★☆ |
+| 5   | **Add `String()` to `FormatCategory`** — minimal fix for bare iota                                                   | Med    | Trivial | ★★★★☆ |
+| 6   | **Name the `CreateRowEdges` return type** — replace anonymous struct with `RowEdge`                                  | Med    | Low     | ★★★★☆ |
+| 7   | **Replace `fmt.Fprintf(b, "%s", x)` with `b.WriteString(x)`** in ids.go                                              | Low    | Trivial | ★★★☆☆ |
+| 8   | **Replace `fmt.Sprintf` with string concat** where no formatting needed (mermaid, dot, d2_write)                     | Low    | Low     | ★★★☆☆ |
+| 9   | **Remove trivial `htmlEscape`/`xmlEscape` wrappers** — call `escape.HTML`/`escape.XML` directly                      | Low    | Trivial | ★★★☆☆ |
+| 10  | **Fix `.gitignore` formatting** and commit                                                                           | Low    | Trivial | ★★★☆☆ |
+| 11  | **Consolidate error wrapping in marshal.go** — single consistent pattern                                             | Med    | Low     | ★★★☆☆ |
+| 12  | **Delete deprecated cmdguard files** (format.go, sort.go, color.go) — they just wrap `NewEnumFlag`                   | Med    | Trivial | ★★★☆☆ |
+| 13  | **Fix `ASCIITreeRenderer` goroutine safety** — localize `builder` in `Render()`                                      | Med    | Low     | ★★★☆☆ |
+| 14  | **Add `D2Constraint` Parse/IsValid** — only enum missing validation                                                  | Low    | Low     | ★★★☆☆ |
+| 15  | **Bridge `table/` subpackage to `TableData`** — add `RenderFromTableData(data *TableData) string`                    | High   | Med     | ★★★☆☆ |
+| 16  | **Make `MarkdownTable` accept `TableData`** — reduce data model duplication                                          | Med    | Med     | ★★☆☆☆ |
+| 17  | **Refactor `StreamingHTMLRenderer` to compose with HTMLRenderer** — eliminate duplicate rendering                    | Med    | Med     | ★★☆☆☆ |
+| 18  | **Integrate `color.go` with lipgloss** — remove duplicate terminal detection                                         | Med    | Med     | ★★☆☆☆ |
+| 19  | **Remove `isStderrTerminal()` dead code** in color.go                                                                | Low    | Trivial | ★★☆☆☆ |
+| 20  | **Add missing escape characters** (D2 `\\`/`$`, DOT `\\`/`                                                           | `)     | Med     | Low   | ★★☆☆☆ |
+| 21  | **Update README** — add streaming, D2, Mermaid/DOT, tree, sort, branded IDs sections                                 | High   | Med     | ★★☆☆☆ |
+| 22  | **Parameterize `writeMarkupColumns`** tag name (like `writeMarkupRow`)                                               | Low    | Low     | ★★☆☆☆ |
+| 23  | **Add `CONTRIBUTING.md`**                                                                                            | Med    | Med     | ★☆☆☆☆ |
+| 24  | **Fix `HTMLTreeRenderer` CSS** — remove "collapsible" claim or add JS                                                | Low    | Low     | ★☆☆☆☆ |
+| 25  | **Sorter error returns** — add error return instead of silent mis-sort                                               | Med    | High    | ★☆☆☆☆ |
 
 ---
 
@@ -157,18 +157,18 @@ Sorted by **impact × (1 / work_required)** — high impact, low effort first.
 
 ## Architecture Health Summary
 
-| Dimension | Rating | Notes |
-|-----------|--------|-------|
-| Test coverage | ✅ 94.7% | Strong; target 95%+ |
-| Lint cleanliness | ✅ 0 issues | golangci-lint clean |
-| Enum consistency | 🟡 Mixed | 3 patterns coexist |
-| Dead code | 🟡 ~10% of ids.go | Unused brands |
-| API documentation | 🔴 Sparse | README missing many APIs |
-| Type safety | ✅ Strong | Branded IDs, generic enum |
-| Renderer architecture | ✅ Clean | Interface-based, composable |
-| Streaming | 🟡 Limited | Only HTML streams; others buffer |
-| Thread safety | 🟡 1 issue | ASCIITreeRenderer.builder race |
-| Escape completeness | 🟡 Gaps | D2/DOT/Mermaid incomplete |
+| Dimension             | Rating            | Notes                            |
+| --------------------- | ----------------- | -------------------------------- |
+| Test coverage         | ✅ 94.7%          | Strong; target 95%+              |
+| Lint cleanliness      | ✅ 0 issues       | golangci-lint clean              |
+| Enum consistency      | 🟡 Mixed          | 3 patterns coexist               |
+| Dead code             | 🟡 ~10% of ids.go | Unused brands                    |
+| API documentation     | 🔴 Sparse         | README missing many APIs         |
+| Type safety           | ✅ Strong         | Branded IDs, generic enum        |
+| Renderer architecture | ✅ Clean          | Interface-based, composable      |
+| Streaming             | 🟡 Limited        | Only HTML streams; others buffer |
+| Thread safety         | 🟡 1 issue        | ASCIITreeRenderer.builder race   |
+| Escape completeness   | 🟡 Gaps           | D2/DOT/Mermaid incomplete        |
 
 ---
 

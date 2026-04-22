@@ -50,11 +50,11 @@ fmt.Println(string(data))
 
 Formats are classified into three categories for programmatic filtering:
 
-| Category | Formats | Use Case |
-| -------- | ------- | -------- |
+| Category  | Formats                                                        | Use Case                           |
+| --------- | -------------------------------------------------------------- | ---------------------------------- |
 | **Table** | `table`, `json`, `csv`, `tsv`, `xml`, `markdown`, `yaml`, `d2` | Tabular data with rows and columns |
-| **Tree** | `tree`, `html` | Hierarchical structures |
-| **Graph** | `d2`, `mermaid`, `dot` | Network diagrams and flowcharts |
+| **Tree**  | `tree`, `html`                                                 | Hierarchical structures            |
+| **Graph** | `d2`, `mermaid`, `dot`                                         | Network diagrams and flowcharts    |
 
 ```go
 // Check format category
@@ -275,15 +275,15 @@ require (
 
 Safe escaping for various output formats:
 
-| Function | Purpose | Used By |
-| -------- | ------- | ------- |
-| `escape.HTML` | HTML special characters | HTML, StreamingHTML |
-| `escape.XML` | XML special characters | XML |
-| `escape.D2` | D2 diagram identifiers | D2 |
-| `escape.DOT` | DOT graph identifiers | DOT |
-| `escape.MermaidID` | Mermaid node IDs | Mermaid |
-| `escape.MermaidSlug` | Mermaid text (URL-safe) | Mermaid |
-| `escape.MermaidText` | Mermaid labels | Mermaid |
+| Function             | Purpose                 | Used By             |
+| -------------------- | ----------------------- | ------------------- |
+| `escape.HTML`        | HTML special characters | HTML, StreamingHTML |
+| `escape.XML`         | XML special characters  | XML                 |
+| `escape.D2`          | D2 diagram identifiers  | D2                  |
+| `escape.DOT`         | DOT graph identifiers   | DOT                 |
+| `escape.MermaidID`   | Mermaid node IDs        | Mermaid             |
+| `escape.MermaidSlug` | Mermaid text (URL-safe) | Mermaid             |
+| `escape.MermaidText` | Mermaid labels          | Mermaid             |
 
 ```go
 import "github.com/larsartmann/go-output/escape"

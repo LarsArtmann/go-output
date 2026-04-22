@@ -12,6 +12,7 @@
 ## a) FULLY DONE
 
 ### D2 Diagram Support (Complete Rewrite)
+
 - **Commits:** `e10aeba` → `0dab0b4` → `855ef43` → `4600ff4` → `a4e7c1c` → `f0afedc` → `764cb30` → `bc75fb9`
 - **Files:** `d2.go` (177L), `d2_render.go` (258L), `d2_write.go` (118L), `d2_convert.go` (119L)
 - **Types:** 20 shapes, 12 arrow types, 3 constraints, D2Diagram struct with 15+ public methods
@@ -21,6 +22,7 @@
 - **Coverage:** 100% on every D2 function except `addTreeNodes` at 87.5%
 
 ### Core Library (Stable)
+
 - 12 output formats: table, json, csv, tsv, markdown, xml, d2, yaml, html, tree, mermaid, dot
 - Branded IDs (`ids.go`): 20+ phantom-type brands for compile-time type safety
 - Generic enum utilities (`enum/`): Parse, Contains, AllowedStrings, AllowedValues
@@ -29,6 +31,7 @@
 - Streaming (`streaming.go`): Streaming output support
 
 ### Test Infrastructure
+
 - `internal/gentest/assert.go`: Exported generic helpers (AssertContains, AssertEqual, AssertHTMLEscape, etc.)
 - `output_test_helpers.go`: Package-internal re-exports + graph/tree test data factories
 - `internal/testutils/`: Additional test utilities
@@ -37,6 +40,7 @@
 - Fuzz tests: `fuzz_test.go`
 
 ### CI/CD & Quality
+
 - `.golangci.yml`: 60+ linters configured (wsl_v5, cyclop, exhaustruct, etc.)
 - `.pre-commit-config.yaml`: Pre-commit hooks
 - `justfile`: build, test, lint, verify, run-example targets
@@ -47,6 +51,7 @@
 ## b) PARTIALLY DONE
 
 ### LSP Warnings in d2_convert_test.go (3 warnings, golangci-lint CLI passes)
+
 The gopls language server reports 3 warnings that `golangci-lint run ./...` does NOT report:
 
 1. **Line 102:** `wsl_v5: missing whitespace above this line (no shared variables above expr)` — before `root.AddChild(child1)`
@@ -56,11 +61,13 @@ The gopls language server reports 3 warnings that `golangci-lint run ./...` does
 **Status:** Previous session attempted `multiedit` which failed. A later attempt with `multiedit` reported success for all 3 edits, but LSP still shows the same warnings. The file content appears unchanged visually — the edits may have been no-ops (old_string matched but the change was identical to existing content). The wsl_v5 rule wants a blank line between variable declarations and method calls, but there already IS a blank line there. This may be a false positive from gopls running a different wsl_v5 config than golangci-lint CLI.
 
 ### D2Shape → D2Table Rename (Not started)
+
 - `D2Shape` struct (`d2.go:~163`) represents a SQL table definition (Name + Columns), NOT a visual shape
 - Naming collides conceptually with `D2NodeShape` (visual shapes like circle, diamond)
 - All references identified but not yet renamed
 
 ### Escaping Consolidation (Not started)
+
 - `escapeD2` in `d2_write.go`, `escapeDOT` in `dot.go`, `sanitizeMermaidID`/`sanitizeMermaidLabel` in `mermaid.go`, `htmlEscape`/`xmlEscape` in `markup.go`, `escape.HTML`/`escape.XML` in `internal/escape/escape.go`
 - Plan: consolidate format-specific escapers into `internal/escape/` as `D2()`, `DOT()`, `MermaidID()`, `MermaidLabel()`
 
@@ -69,12 +76,14 @@ The gopls language server reports 3 warnings that `golangci-lint run ./...` does
 ## c) NOT STARTED
 
 ### D2 Validation Functions
+
 - `ParseD2NodeShape(string) (D2NodeShape, error)`
 - `ParseD2ArrowType(string) (D2ArrowType, error)`
 - `ParseD2Direction(string) (D2Direction, error)`
 - Following the `ParseGraphShape` pattern in `graph.go`
 
 ### 0% Coverage Functions
+
 - `enum/enum.go:AllowedValues` — 0%
 - `format.go:Category` — 0%
 - `graph.go:GetStyle` — 0%
@@ -86,14 +95,17 @@ The gopls language server reports 3 warnings that `golangci-lint run ./...` does
 - `examples/basic/*` — 0%
 
 ### Test Helper Consolidation
+
 - `output_test_helpers.go` has unexported helpers (`assertContains`, `assertOkBool`)
 - `internal/gentest/assert.go` has exported helpers (`AssertContains`, `AssertEqual`)
 - Overlap is confusing — need to decide: one location or two
 
 ### Update examples/basic/main.go
+
 - Add SQL constraints, classes, crow's foot arrows, grid layout, near positioning, edge styles
 
 ### Planning Document
+
 - Previous session was asked to create `docs/planning/<date>_PLAN.md` with mermaid.js execution graph
 - Not yet created
 
@@ -102,6 +114,7 @@ The gopls language server reports 3 warnings that `golangci-lint run ./...` does
 ## d) TOTALLY FUCKED UP
 
 ### Go Build Cache Corruption
+
 - The Go build cache at `~/Library/Caches/go-build/` is corrupted
 - `go build ./...` fails with "cannot open file" / "could not import" errors for stdlib packages
 - `go clean -cache` fails with "directory not empty"
@@ -111,11 +124,13 @@ The gopls language server reports 3 warnings that `golangci-lint run ./...` does
 - **Fix:** User needs to run `rm -rf ~/Library/Caches/go-build` manually or restart machine
 
 ### LSP vs CLI Linter Discrepancy
+
 - gopls reports 3 warnings that `golangci-lint run ./...` does not
 - This means either gopls is wrong or the CLI is missing issues
 - Creates uncertainty about code quality
 
 ### Unused Code
+
 - `marshal.go:errUnsupportedIndentFormat` — declared but never used (gopls warning)
 - This is dead code that should be removed
 
@@ -146,33 +161,33 @@ The gopls language server reports 3 warnings that `golangci-lint run ./...` does
 
 Sorted by impact × effort (highest first):
 
-| # | Task | Impact | Effort | Type |
-|---|------|--------|--------|------|
-| 1 | **Fix Go build cache** (environmental, blocks everything) | Critical | 5min | Fix |
-| 2 | **Remove unused `errUnsupportedIndentFormat`** | Low | 2min | Cleanup |
-| 3 | **Fix 3 LSP warnings in d2_convert_test.go** | Medium | 5min | Lint |
-| 4 | **Rename D2Shape → D2Table** (all references) | High | 30min | Clarity |
-| 5 | **Add ParseD2NodeShape, ParseD2ArrowType, ParseD2Direction** | High | 30min | API |
-| 6 | **Add tests for enum.AllowedValues** | Medium | 10min | Coverage |
-| 7 | **Add tests for format.Category** | Medium | 10min | Coverage |
-| 8 | **Add tests for graph.GetStyle** | Medium | 10min | Coverage |
-| 9 | **Add tests for ids.go (String, MarshalText, UnmarshalText, Format)** | Medium | 15min | Coverage |
-| 10 | **Add tests for slices.FilledStrings** | Medium | 10min | Coverage |
-| 11 | **Add tests for internal/escape** | Medium | 15min | Coverage |
-| 12 | **Consolidate escaping to internal/escape/** | High | 45min | Architecture |
-| 13 | **Consolidate test helpers** (pick one location) | Medium | 30min | Architecture |
-| 14 | **Update examples/basic/main.go with D2 showcase** | Medium | 30min | Docs |
-| 15 | **Register graph renderers in registry** | Medium | 45min | Architecture |
-| 16 | **Create planning doc with mermaid execution graph** | Low | 20min | Docs |
-| 17 | **Verify golangci-lint passes on all files** | High | 5min | Quality |
-| 18 | **Run full test suite with coverage report** | High | 10min | Quality |
-| 19 | **Clean up stale status reports** (keep latest, archive rest) | Low | 10min | Cleanup |
-| 20 | **Add D2 diagram validation (Validate method)** | Medium | 20min | API |
-| 21 | **Remove deprecated D2ArrowType aliases** | Low | 10min | Cleanup |
-| 22 | **Add integration test for D2FromTableData end-to-end** | Medium | 15min | Coverage |
-| 23 | **Document public API with godoc examples** | High | 60min | Docs |
-| 24 | **Consider GraphRendererMixin for D2** (or document why not) | Low | 20min | Architecture |
-| 25 | **Add CHANGELOG entry for D2 rewrite** | Medium | 10min | Docs |
+| #   | Task                                                                  | Impact   | Effort | Type         |
+| --- | --------------------------------------------------------------------- | -------- | ------ | ------------ |
+| 1   | **Fix Go build cache** (environmental, blocks everything)             | Critical | 5min   | Fix          |
+| 2   | **Remove unused `errUnsupportedIndentFormat`**                        | Low      | 2min   | Cleanup      |
+| 3   | **Fix 3 LSP warnings in d2_convert_test.go**                          | Medium   | 5min   | Lint         |
+| 4   | **Rename D2Shape → D2Table** (all references)                         | High     | 30min  | Clarity      |
+| 5   | **Add ParseD2NodeShape, ParseD2ArrowType, ParseD2Direction**          | High     | 30min  | API          |
+| 6   | **Add tests for enum.AllowedValues**                                  | Medium   | 10min  | Coverage     |
+| 7   | **Add tests for format.Category**                                     | Medium   | 10min  | Coverage     |
+| 8   | **Add tests for graph.GetStyle**                                      | Medium   | 10min  | Coverage     |
+| 9   | **Add tests for ids.go (String, MarshalText, UnmarshalText, Format)** | Medium   | 15min  | Coverage     |
+| 10  | **Add tests for slices.FilledStrings**                                | Medium   | 10min  | Coverage     |
+| 11  | **Add tests for internal/escape**                                     | Medium   | 15min  | Coverage     |
+| 12  | **Consolidate escaping to internal/escape/**                          | High     | 45min  | Architecture |
+| 13  | **Consolidate test helpers** (pick one location)                      | Medium   | 30min  | Architecture |
+| 14  | **Update examples/basic/main.go with D2 showcase**                    | Medium   | 30min  | Docs         |
+| 15  | **Register graph renderers in registry**                              | Medium   | 45min  | Architecture |
+| 16  | **Create planning doc with mermaid execution graph**                  | Low      | 20min  | Docs         |
+| 17  | **Verify golangci-lint passes on all files**                          | High     | 5min   | Quality      |
+| 18  | **Run full test suite with coverage report**                          | High     | 10min  | Quality      |
+| 19  | **Clean up stale status reports** (keep latest, archive rest)         | Low      | 10min  | Cleanup      |
+| 20  | **Add D2 diagram validation (Validate method)**                       | Medium   | 20min  | API          |
+| 21  | **Remove deprecated D2ArrowType aliases**                             | Low      | 10min  | Cleanup      |
+| 22  | **Add integration test for D2FromTableData end-to-end**               | Medium   | 15min  | Coverage     |
+| 23  | **Document public API with godoc examples**                           | High     | 60min  | Docs         |
+| 24  | **Consider GraphRendererMixin for D2** (or document why not)          | Low      | 20min  | Architecture |
+| 25  | **Add CHANGELOG entry for D2 rewrite**                                | Medium   | 10min  | Docs         |
 
 ---
 
@@ -187,6 +202,7 @@ The cache at `~/Library/Caches/go-build/` is corrupted. `go clean -cache` fails,
 - Build cache references files in `~/Library/Caches/go-build/` that don't exist
 
 **Possible fixes I need the user to try:**
+
 1. `rm -rf ~/Library/Caches/go-build` (may need Finder or sudo)
 2. Restart the machine (release file handles)
 3. `nix-store --repair` if the Nix store itself is corrupted
@@ -198,41 +214,41 @@ The cache at `~/Library/Caches/go-build/` is corrupted. `go clean -cache` fails,
 
 ## Current TODO List State
 
-| # | Task | Status |
-|---|------|--------|
-| 1 | Fix LSP warnings in d2_convert_test.go | In Progress (stuck) |
-| 2 | Rename D2Shape → D2Table | Not Started |
-| 3 | Consolidate escaping to internal/escape/ | Not Started |
-| 4 | Fix 0% coverage functions | Not Started |
-| 5 | Consolidate test helpers | Not Started |
-| 6 | Update examples/basic/main.go D2 showcase | Not Started |
-| 7 | Add D2 validation functions | Not Started |
-| 8 | Final verification + commit + push | Not Started (blocked by cache) |
+| #   | Task                                      | Status                         |
+| --- | ----------------------------------------- | ------------------------------ |
+| 1   | Fix LSP warnings in d2_convert_test.go    | In Progress (stuck)            |
+| 2   | Rename D2Shape → D2Table                  | Not Started                    |
+| 3   | Consolidate escaping to internal/escape/  | Not Started                    |
+| 4   | Fix 0% coverage functions                 | Not Started                    |
+| 5   | Consolidate test helpers                  | Not Started                    |
+| 6   | Update examples/basic/main.go D2 showcase | Not Started                    |
+| 7   | Add D2 validation functions               | Not Started                    |
+| 8   | Final verification + commit + push        | Not Started (blocked by cache) |
 
 ---
 
 ## Key File Map
 
-| File | Lines | Role |
-|------|-------|------|
-| `format.go` | 303 | Format enum, Renderer/TableRenderer/TreeOutputRenderer interfaces, TableData, TreeNode |
-| `graph.go` | 170 | GraphRenderer interface, GraphNode, GraphEdge, GraphShape, GraphStyle |
-| `d2.go` | 177 | D2 domain types (shapes, arrows, constraints, nodes, edges, styles) |
-| `d2_render.go` | 258 | D2Diagram struct, 15 public methods, rendering logic |
-| `d2_write.go` | 118 | Style writers, edge writers, escapeD2 |
-| `d2_convert.go` | 119 | GraphRenderer impl, D2FromTableData, D2FromTree |
-| `dot.go` | 257 | DOT renderer, GraphRendererMixin |
-| `mermaid.go` | 173 | Mermaid renderer |
-| `registry.go` | 88 | Format→renderer factory registry |
-| `ids.go` | 156 | BrandedID phantom types (20+ brands) |
-| `enum/enum.go` | 59 | Generic enum utilities (Parse, Contains, AllowedValues) |
-| `marshal.go` | 42 | JSON marshaling helpers (has unused var) |
-| `markup.go` | 45 | HTML/XML shared helpers |
-| `slices.go` | 11 | FilledStrings utility |
-| `tree.go` | 123 | TreeNode implementation |
-| `streaming.go` | 182 | Streaming output support |
-| `html.go` | 205 | HTML renderer |
-| `output_test_helpers.go` | 172 | Package test helpers (re-exports + factories) |
+| File                     | Lines | Role                                                                                   |
+| ------------------------ | ----- | -------------------------------------------------------------------------------------- |
+| `format.go`              | 303   | Format enum, Renderer/TableRenderer/TreeOutputRenderer interfaces, TableData, TreeNode |
+| `graph.go`               | 170   | GraphRenderer interface, GraphNode, GraphEdge, GraphShape, GraphStyle                  |
+| `d2.go`                  | 177   | D2 domain types (shapes, arrows, constraints, nodes, edges, styles)                    |
+| `d2_render.go`           | 258   | D2Diagram struct, 15 public methods, rendering logic                                   |
+| `d2_write.go`            | 118   | Style writers, edge writers, escapeD2                                                  |
+| `d2_convert.go`          | 119   | GraphRenderer impl, D2FromTableData, D2FromTree                                        |
+| `dot.go`                 | 257   | DOT renderer, GraphRendererMixin                                                       |
+| `mermaid.go`             | 173   | Mermaid renderer                                                                       |
+| `registry.go`            | 88    | Format→renderer factory registry                                                       |
+| `ids.go`                 | 156   | BrandedID phantom types (20+ brands)                                                   |
+| `enum/enum.go`           | 59    | Generic enum utilities (Parse, Contains, AllowedValues)                                |
+| `marshal.go`             | 42    | JSON marshaling helpers (has unused var)                                               |
+| `markup.go`              | 45    | HTML/XML shared helpers                                                                |
+| `slices.go`              | 11    | FilledStrings utility                                                                  |
+| `tree.go`                | 123   | TreeNode implementation                                                                |
+| `streaming.go`           | 182   | Streaming output support                                                               |
+| `html.go`                | 205   | HTML renderer                                                                          |
+| `output_test_helpers.go` | 172   | Package test helpers (re-exports + factories)                                          |
 
 ---
 

@@ -16,25 +16,26 @@ The D2 implementation was rewritten from a broken, partial state to a fully-feat
 
 **Production code (4 files, 672 lines):**
 
-| File | Lines | Purpose |
-|------|-------|---------|
-| `d2.go` | 177 | Types, 20 shape constants, 12 arrow constants, 3 constraint constants, helper methods |
-| `d2_render.go` | 258 | D2Diagram struct, API (15 public methods), node/table/config rendering |
-| `d2_write.go` | 118 | Style writers (colors, effects), edge writers, escapeD2 |
-| `d2_convert.go` | 119 | GraphRenderer interface, D2FromTableData, D2FromTree, shape/style mapping |
+| File            | Lines | Purpose                                                                               |
+| --------------- | ----- | ------------------------------------------------------------------------------------- |
+| `d2.go`         | 177   | Types, 20 shape constants, 12 arrow constants, 3 constraint constants, helper methods |
+| `d2_render.go`  | 258   | D2Diagram struct, API (15 public methods), node/table/config rendering                |
+| `d2_write.go`   | 118   | Style writers (colors, effects), edge writers, escapeD2                               |
+| `d2_convert.go` | 119   | GraphRenderer interface, D2FromTableData, D2FromTree, shape/style mapping             |
 
 **Test code (4 files, 813 lines):**
 
-| File | Lines | Purpose |
-|------|-------|---------|
-| `d2_test.go` | 205 | Diagram, config, AddNode/AddEdge API tests |
-| `d2_node_test.go` | 278 | 20 shapes, 10 style properties, icon/link/tooltip, grid/near/class, nesting, escaping |
-| `d2_edge_test.go` | 116 | 12 arrow types, 6 edge styles, deprecated aliases |
-| `d2_convert_test.go` | 214 | Constraints, D2FromTableData, D2FromTree, GraphRenderer interface, 8 shape conversions |
+| File                 | Lines | Purpose                                                                                |
+| -------------------- | ----- | -------------------------------------------------------------------------------------- |
+| `d2_test.go`         | 205   | Diagram, config, AddNode/AddEdge API tests                                             |
+| `d2_node_test.go`    | 278   | 20 shapes, 10 style properties, icon/link/tooltip, grid/near/class, nesting, escaping  |
+| `d2_edge_test.go`    | 116   | 12 arrow types, 6 edge styles, deprecated aliases                                      |
+| `d2_convert_test.go` | 214   | Constraints, D2FromTableData, D2FromTree, GraphRenderer interface, 8 shape conversions |
 
 **Coverage: 100% on every D2 function.** All functions in d2.go, d2_render.go, d2_write.go, d2_convert.go have 100% coverage (the only gap: `addTreeNodes` at 87.5%).
 
 **Features implemented:**
+
 - 20 node shapes (rectangle through stored_data)
 - 12 arrow types (arrow through cf-many-required) + 2 deprecated aliases with `// Deprecated:` comments
 - 10 node style properties (fill, stroke, stroke-width, stroke-dash, font-size, font-color, opacity, shadow, border-radius, text-transform)
@@ -128,6 +129,7 @@ Nothing is partially done. All committed work is complete and verified.
 ## d) TOTALLY FUCKED UP
 
 Nothing is fucked up. The codebase is in a clean, verified state:
+
 - Working tree clean
 - All tests pass
 - Zero lint issues
@@ -162,33 +164,33 @@ Nothing is fucked up. The codebase is in a clean, verified state:
 
 Sorted by **impact × effort** (highest ROI first):
 
-| # | Impact | Effort | Task |
-|---|--------|--------|------|
-| 1 | HIGH | LOW | **Consolidate test helpers** — move all helpers to `internal/gentest` or keep all in-package. Eliminate the confusing split. |
-| 2 | HIGH | LOW | **Add `D2Shape` rename** — rename `D2Shape` struct to `D2Table` (it's a SQL table definition, not a shape). Update all references. |
-| 3 | HIGH | LOW | **Move escaping to `internal/escape/`** — add `D2()`, `DOT()`, `MermaidID()`, `MermaidLabel()` functions. Remove scattered `escapeD2`/`escapeDOT`/`sanitize*`. |
-| 4 | MED | LOW | **Fix 0% coverage on `enum.AllowedValues`** — add test. |
-| 5 | MED | LOW | **Fix 0% coverage on `format.go:Category`** — add test. |
-| 6 | MED | LOW | **Fix 0% coverage on `graph.go:GetStyle`** — add test. |
-| 7 | MED | LOW | **Fix 0% coverage on `ids.go` methods** — String, MarshalText, UnmarshalText, Format. |
-| 8 | MED | LOW | **Fix 0% coverage on `slices.go:FilledStrings`** — add test or remove if unused. |
-| 9 | MED | MED | **Update `examples/basic/main.go` D2** — showcase SQL constraints, classes, arrows, grid. |
-| 10 | MED | MED | **Add godoc Example functions** for D2Diagram — at least `ExampleNewD2Diagram` and `ExampleD2Diagram_AddTable`. |
-| 11 | MED | LOW | **Add D2 validation** — `ParseD2NodeShape(string)` with error return, like `ParseGraphShape`. |
-| 12 | MED | LOW | **Add D2 benchmarks** to `benchmarks_test.go` — at least `BenchmarkD2Render` and `BenchmarkEscapeD2`. |
-| 13 | MED | MED | **Fix `internal/escape` 0% coverage** — add tests for HTML/XML escape package. |
-| 14 | MED | MED | **Fix `internal/gentest` 0% coverage** — these ARE test helpers but themselves untested. |
-| 15 | MED | LOW | **Support multiple constraints per column** — change `D2Column.Constraint` from `D2Constraint` to `[]D2Constraint` and render as `{constraint: [pk; unique]}`. |
-| 16 | MED | LOW | **Add arrowhead `style.filled` sub-property** — new field on D2Edge or D2ArrowType. |
-| 17 | LOW | LOW | **Create CHANGELOG.md** — document breaking changes in D2 rewrite. |
-| 18 | LOW | MED | **Add smoke test for examples/basic** — `TestExampleOutput` that runs each renderer. |
-| 19 | LOW | MED | **Registry integration for graph formats** — register D2/DOT/Mermaid factories or document why they're excluded. |
-| 20 | LOW | MED | **Cross-renderer consistency audit** — ensure DOT/Mermaid/D2 use parallel patterns. |
-| 21 | LOW | HIGH | **D2 layers/boards support** — scoped sub-diagrams. |
-| 22 | LOW | MED | **D2 import/include syntax** — `...@file` references. |
-| 23 | LOW | MED | **D2 variables/constants** — `vars: { ... }` block. |
-| 24 | LOW | LOW | **cmdguard D2 flags** — direction, layout engine. |
-| 25 | LOW | LOW | **Review and update README.md** for D2 features. |
+| #   | Impact | Effort | Task                                                                                                                                                           |
+| --- | ------ | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | HIGH   | LOW    | **Consolidate test helpers** — move all helpers to `internal/gentest` or keep all in-package. Eliminate the confusing split.                                   |
+| 2   | HIGH   | LOW    | **Add `D2Shape` rename** — rename `D2Shape` struct to `D2Table` (it's a SQL table definition, not a shape). Update all references.                             |
+| 3   | HIGH   | LOW    | **Move escaping to `internal/escape/`** — add `D2()`, `DOT()`, `MermaidID()`, `MermaidLabel()` functions. Remove scattered `escapeD2`/`escapeDOT`/`sanitize*`. |
+| 4   | MED    | LOW    | **Fix 0% coverage on `enum.AllowedValues`** — add test.                                                                                                        |
+| 5   | MED    | LOW    | **Fix 0% coverage on `format.go:Category`** — add test.                                                                                                        |
+| 6   | MED    | LOW    | **Fix 0% coverage on `graph.go:GetStyle`** — add test.                                                                                                         |
+| 7   | MED    | LOW    | **Fix 0% coverage on `ids.go` methods** — String, MarshalText, UnmarshalText, Format.                                                                          |
+| 8   | MED    | LOW    | **Fix 0% coverage on `slices.go:FilledStrings`** — add test or remove if unused.                                                                               |
+| 9   | MED    | MED    | **Update `examples/basic/main.go` D2** — showcase SQL constraints, classes, arrows, grid.                                                                      |
+| 10  | MED    | MED    | **Add godoc Example functions** for D2Diagram — at least `ExampleNewD2Diagram` and `ExampleD2Diagram_AddTable`.                                                |
+| 11  | MED    | LOW    | **Add D2 validation** — `ParseD2NodeShape(string)` with error return, like `ParseGraphShape`.                                                                  |
+| 12  | MED    | LOW    | **Add D2 benchmarks** to `benchmarks_test.go` — at least `BenchmarkD2Render` and `BenchmarkEscapeD2`.                                                          |
+| 13  | MED    | MED    | **Fix `internal/escape` 0% coverage** — add tests for HTML/XML escape package.                                                                                 |
+| 14  | MED    | MED    | **Fix `internal/gentest` 0% coverage** — these ARE test helpers but themselves untested.                                                                       |
+| 15  | MED    | LOW    | **Support multiple constraints per column** — change `D2Column.Constraint` from `D2Constraint` to `[]D2Constraint` and render as `{constraint: [pk; unique]}`. |
+| 16  | MED    | LOW    | **Add arrowhead `style.filled` sub-property** — new field on D2Edge or D2ArrowType.                                                                            |
+| 17  | LOW    | LOW    | **Create CHANGELOG.md** — document breaking changes in D2 rewrite.                                                                                             |
+| 18  | LOW    | MED    | **Add smoke test for examples/basic** — `TestExampleOutput` that runs each renderer.                                                                           |
+| 19  | LOW    | MED    | **Registry integration for graph formats** — register D2/DOT/Mermaid factories or document why they're excluded.                                               |
+| 20  | LOW    | MED    | **Cross-renderer consistency audit** — ensure DOT/Mermaid/D2 use parallel patterns.                                                                            |
+| 21  | LOW    | HIGH   | **D2 layers/boards support** — scoped sub-diagrams.                                                                                                            |
+| 22  | LOW    | MED    | **D2 import/include syntax** — `...@file` references.                                                                                                          |
+| 23  | LOW    | MED    | **D2 variables/constants** — `vars: { ... }` block.                                                                                                            |
+| 24  | LOW    | LOW    | **cmdguard D2 flags** — direction, layout engine.                                                                                                              |
+| 25  | LOW    | LOW    | **Review and update README.md** for D2 features.                                                                                                               |
 
 ---
 
@@ -197,6 +199,7 @@ Sorted by **impact × effort** (highest ROI first):
 **Should we consolidate `D2Shape` (SQL table definition struct) + `D2Column` + `D2Constraint` into a dedicated `d2_sql.go` file, or keep them in `d2.go` with all other types?**
 
 Context:
+
 - `D2Shape` is currently just `type D2Shape struct { Name string; Columns []D2Column }` — 2 fields, lives in `d2.go` alongside 20 node shape constants, 12 arrow constants, etc.
 - The name `D2Shape` collides conceptually with `D2NodeShape` (which represents visual shapes like circle, diamond, etc.)
 - SQL tables are a distinct D2 feature (they render as `shape: sql_table` with column definitions)
@@ -220,6 +223,7 @@ go test -cover ./...   ✅ 92.6% main, 100% cmdguard, 94.6% sort, 100% table
 ## D2 Per-Function Coverage (all 100%)
 
 Every function in every D2 production file has 100% coverage:
+
 - `d2.go`: isSet, hasBlockAttrs, hasVisualAttrs, hasLayoutAttrs, hasGrid, hasSize — all 100%
 - `d2_render.go`: all 15 public methods + all write helpers — all 100%
 - `d2_write.go`: writeStyleAttrs, writeStyleColors, writeStyleEffects, writeEdge, writeEdgeBlockAttrs, escapeD2 — all 100%

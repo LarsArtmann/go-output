@@ -3,22 +3,22 @@
 **Date:** 2026-04-15 (resumed)  
 **Branch:** `master`  
 **Commits ahead of origin:** 9 (all pushed this session)  
-**Working tree:** Clean  
+**Working tree:** Clean
 
 ---
 
 ## Session 7 Commits (9 total, all pushed)
 
-| Commit | Description |
-|--------|-------------|
-| `8e95081` | Remove deprecated D2ArrowPoint/D2ArrowOval aliases |
-| `0960b72` | Add nil check to table.FromTableData |
-| `099a1cc` | Improve ParseError.Error() to show allowed values |
-| `ec891fb` | Add compile-time interface checks for renderers |
-| `b7035ee` | Remove stale report/ directory and gitignore entry |
-| `c599cb8` | Make Alignment a named type in markdown.go |
-| `ee8fb9f` | Change XMLWriter to accept io.Writer (BREAKING) |
-| `1027072` | Fix misleading HTMLTreeRenderer comment |
+| Commit    | Description                                                      |
+| --------- | ---------------------------------------------------------------- |
+| `8e95081` | Remove deprecated D2ArrowPoint/D2ArrowOval aliases               |
+| `0960b72` | Add nil check to table.FromTableData                             |
+| `099a1cc` | Improve ParseError.Error() to show allowed values                |
+| `ec891fb` | Add compile-time interface checks for renderers                  |
+| `b7035ee` | Remove stale report/ directory and gitignore entry               |
+| `c599cb8` | Make Alignment a named type in markdown.go                       |
+| `ee8fb9f` | Change XMLWriter to accept io.Writer (BREAKING)                  |
+| `1027072` | Fix misleading HTMLTreeRenderer comment                          |
 | `fe3d0e1` | Update FORMAT_ARCHITECTURE.md with accurate interface signatures |
 
 ---
@@ -28,6 +28,7 @@
 ### 1. Update README.md ✅
 
 Added missing features documentation:
+
 - **Format Categories** - `IsTableFormat()`, `IsTreeFormat()`, `IsGraphFormat()`, `Category()` methods
 - **Streaming Renderer** - `StreamingHTMLRenderer`, `StreamingRenderer` interface, `StreamingRendererFromRenderer()` adapter
 - **Registry System** - `Register()`, `Create()`, `RegisteredFormats()`, `IsRegistered()` functions
@@ -39,6 +40,7 @@ Added missing features documentation:
 ### 2. Add CONTRIBUTING.md ✅
 
 Created standard open source contributing guidelines:
+
 - Development setup instructions
 - Commit message conventions
 - Testing requirements
@@ -52,6 +54,7 @@ Documentation is **correct** - it says "ANSI escape sequence prefix" and returns
 ### 4. Consolidate Status Reports ✅
 
 Deleted 17 duplicate/redundant status reports, keeping 5 most recent:
+
 - `2026-04-22_05-04_session6-status-report.md`
 - `2026-04-22_01-08_comprehensive-status-report.md`
 - `2026-04-21_05-46_comprehensive-audit-and-next-steps.md`
@@ -76,10 +79,10 @@ Deleted 17 duplicate/redundant status reports, keeping 5 most recent:
 
 ## Remaining Original Tasks
 
-| # | Task | Status |
-|---|------|--------|
-| 12 | Fix D2 dual-category membership | **PENDING** - Needs owner decision |
-| 19 | Remove exported AllFormats var | **PENDING** - Breaking change |
+| #   | Task                            | Status                             |
+| --- | ------------------------------- | ---------------------------------- |
+| 12  | Fix D2 dual-category membership | **PENDING** - Needs owner decision |
+| 19  | Remove exported AllFormats var  | **PENDING** - Breaking change      |
 
 ---
 

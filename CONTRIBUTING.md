@@ -51,6 +51,7 @@ type(scope): description
 Types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `perf`, `ci`
 
 Examples:
+
 - `feat(table): add streaming renderer support`
 - `fix(d2): correct SQL table constraint rendering`
 - `docs(readme): add registry system documentation`
@@ -92,6 +93,7 @@ go test -fuzz=FuzzParseSortBy -fuzztime=1m .
 ## Reporting Issues
 
 When reporting issues, include:
+
 - Go version (`go version`)
 - Library version (git commit or tag)
 - Minimal reproduction case
