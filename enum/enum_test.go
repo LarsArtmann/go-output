@@ -76,10 +76,10 @@ func TestAllowedValues(t *testing.T) {
 func TestParseError(t *testing.T) {
 	t.Parallel()
 
-	err := &ParseError[testEnum]{Value: "invalid", Values: testEnumValues}
+	err := &ParseError{Value: "invalid", Values: []string{"a", "b", "c"}}
 	got := err.Error()
 
-	want := `invalid value: "invalid"`
+	want := `invalid value: "invalid" (allowed: a, b, c)`
 	if got != want {
 		t.Errorf("ParseError.Error() = %q, want %q", got, want)
 	}

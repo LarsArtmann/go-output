@@ -14,7 +14,7 @@ func Parse[T comparable](values []T, s string, toString func(T) string) (T, erro
 		}
 	}
 
-	return *new(T), &ParseError[T]{Value: s, Values: values}
+	return *new(T), &ParseError{Value: s, Values: AllowedStrings(values, toString)}
 }
 
 // Contains checks if a value is in the list of allowed values.
@@ -49,11 +49,23 @@ func AllowedValues[T Enum](values []T) []string {
 }
 
 // ParseError represents a parse error for enum types.
-type ParseError[T any] struct {
+type ParseError struct {
 	Value  string
-	Values []T
+	Values []string
 }
 
-func (e *ParseError[T]) Error() string {
-	return fmt.Sprintf("invalid value: %q", e.Value)
+func (e *ParseError) Error() string {
+	return fmt.Sprintf("invalid value: %q (allowed: %s)", e.Value, joinStrings(e.Values))
+}
+
+func joinStrings(ss []string) string {
+	if len(ss) == 0 {
+		return ""
+	}
+
+	if len(ss) == 1 {
+		return ss[0]
+	}
+
+	return fmt.Sprintf("%s, %s", joinStrings(ss[:len(ss)-1]), ss[len(ss)-1])
 }
