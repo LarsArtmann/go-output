@@ -117,7 +117,7 @@ func (r *HTMLRenderer) RenderFullHTML(title string) string {
 `, r.Render())
 }
 
-// HTMLTreeRenderer renders a tree structure as HTML with collapsible sections.
+// HTMLTreeRenderer renders a tree structure as HTML with nested lists.
 type HTMLTreeRenderer struct {
 	root *TreeNode
 }
