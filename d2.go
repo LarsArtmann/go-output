@@ -238,12 +238,6 @@ const (
 	D2ArrowCFManyRequired D2ArrowType = "cf-many-required"
 )
 
-// Deprecated: Use D2ArrowArrow instead.
-const D2ArrowPoint = D2ArrowArrow
-
-// Deprecated: Use D2ArrowCircle instead.
-const D2ArrowOval = D2ArrowCircle
-
 func d2ArrowTypeValues() []D2ArrowType {
 	return []D2ArrowType{
 		D2ArrowArrow,

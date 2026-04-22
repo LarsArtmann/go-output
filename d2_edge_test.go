@@ -102,15 +102,3 @@ func TestD2EdgeStyle(t *testing.T) {
 	assertContains(t, got, "style.font-color: blue", "should contain edge font-color")
 	assertContains(t, got, "style.font-size: 12", "should contain edge font-size")
 }
-
-func TestD2DeprecatedArrows(t *testing.T) {
-	t.Parallel()
-
-	if D2ArrowPoint != D2ArrowArrow {
-		t.Error("D2ArrowPoint should alias D2ArrowArrow")
-	}
-
-	if D2ArrowOval != D2ArrowCircle {
-		t.Error("D2ArrowOval should alias D2ArrowCircle")
-	}
-}
