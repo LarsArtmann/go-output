@@ -131,13 +131,28 @@ func (m *MarkdownTable) writeHeader(b *strings.Builder, colWidths []int) {
 func (m *MarkdownTable) writeSeparator(b *strings.Builder, colWidths []int) {
 	b.WriteString("|")
 
-	for _, width := range colWidths {
-		b.WriteString("-")
+	for i, width := range colWidths {
+		prefix, suffix := m.getAlignmentMarkers(i)
+		b.WriteString(prefix)
 		b.WriteString(strings.Repeat("-", width+1))
+		b.WriteString(suffix)
 		b.WriteString("|")
 	}
 
 	b.WriteString("\n")
+}
+
+func (m *MarkdownTable) getAlignmentMarkers(col int) (prefix, suffix string) {
+	switch m.getAlignment(col) {
+	case AlignmentRight:
+		return "", ":"
+	case AlignmentCenter:
+		return ":", ":"
+	case AlignmentLeft:
+		fallthrough
+	default:
+		return "", ""
+	}
 }
 
 func (m *MarkdownTable) writeRows(b *strings.Builder, colWidths []int) {

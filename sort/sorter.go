@@ -61,13 +61,14 @@ func (s *Sorter[T]) defaultLess(a, b T) bool {
 	}
 
 	fieldName := snakeToPascal(string(s.By))
-	field := aVal.FieldByName(fieldName)
+	fieldA := aVal.FieldByName(fieldName)
+	fieldB := bVal.FieldByName(fieldName)
 
-	if !field.IsValid() {
+	if !fieldA.IsValid() || !fieldB.IsValid() {
 		return false
 	}
 
-	return compareFieldValues(field, bVal.FieldByName(fieldName))
+	return compareFieldValues(fieldA, fieldB)
 }
 
 // snakeToPascal converts snake_case to PascalCase.
@@ -105,9 +106,10 @@ func compareFieldValues(a, b reflect.Value) bool {
 	switch a.Kind() {
 	case reflect.String:
 		return a.String() < b.String()
-	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
-		reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		return a.Int() < b.Int()
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+		return a.Uint() < b.Uint()
 	case reflect.Struct:
 		if aTime, ok := a.Interface().(time.Time); ok {
 			if bTime, ok := b.Interface().(time.Time); ok {

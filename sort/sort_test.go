@@ -220,3 +220,32 @@ func TestSorter_Sort_EdgeCases(t *testing.T) {
 		t.Errorf("Sort() with invalid field should be stable")
 	}
 }
+
+type unsignedItem struct {
+	Name string
+	Size uint64
+}
+
+func TestSorter_Sort_UnsignedInt(t *testing.T) {
+	t.Parallel()
+
+	items := []unsignedItem{
+		{Name: "large", Size: 18_446_744_073_709_551_615}, // max uint64
+		{Name: "small", Size: 1},
+		{Name: "medium", Size: 100},
+	}
+
+	New(items, output.SortBy("Size"), false).Sort()
+
+	if items[0].Name != "small" {
+		t.Errorf("Sort() unsigned first = %s, want small", items[0].Name)
+	}
+
+	if items[1].Name != "medium" {
+		t.Errorf("Sort() unsigned second = %s, want medium", items[1].Name)
+	}
+
+	if items[2].Name != "large" {
+		t.Errorf("Sort() unsigned third = %s, want large", items[2].Name)
+	}
+}

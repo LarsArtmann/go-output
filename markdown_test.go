@@ -1,6 +1,7 @@
 package output
 
 import (
+	"strings"
 	"testing"
 )
 
@@ -50,6 +51,43 @@ func testMarkdownAlignment(t *testing.T) {
 	got := m.Render()
 
 	assertContains(t, got, "|--", "Render() should contain separator row")
+	assertContains(t, got, "--:|", "Render() should contain right-align marker")
+}
+
+func TestMarkdownAlignmentMarkers(t *testing.T) {
+	t.Parallel()
+
+	t.Run("left align marker", func(t *testing.T) {
+		t.Parallel()
+
+		m := NewMarkdownTable()
+		m.SetHeaders([]string{"A"}).SetAlign(0, AlignLeft).AddRow([]string{"x"})
+		got := m.Render()
+
+		if strings.Contains(got, ":--") {
+			t.Error("Left align should not have colon prefix in separator")
+		}
+	})
+
+	t.Run("right align marker", func(t *testing.T) {
+		t.Parallel()
+
+		m := NewMarkdownTable()
+		m.SetHeaders([]string{"A"}).SetAlign(0, AlignRight).AddRow([]string{"x"})
+		got := m.Render()
+
+		assertContains(t, got, "--:|", "Right align should have colon suffix")
+	})
+
+	t.Run("center align marker", func(t *testing.T) {
+		t.Parallel()
+
+		m := NewMarkdownTable()
+		m.SetHeaders([]string{"A"}).SetAlign(0, AlignCenter).AddRow([]string{"x"})
+		got := m.Render()
+
+		assertContains(t, got, ":--:", "Center align should have colons on both sides")
+	})
 }
 
 func testMarkdownChaining(t *testing.T) {

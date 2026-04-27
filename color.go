@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/larsartmann/go-output/enum"
+	"golang.org/x/term"
 )
 
 // ColorMode controls terminal color output.
@@ -75,7 +76,12 @@ func (c ColorMode) ToANSI() string {
 }
 
 func isStdoutTerminal() bool {
-	return isTerminalByEnv("GO_OUTPUT_FORCE_COLOR", "FORCE_COLOR")
+	if isTerminalByEnv("GO_OUTPUT_FORCE_COLOR", "FORCE_COLOR") {
+		return true
+	}
+
+	//nolint:gosec // File descriptors are always small positive integers.
+	return term.IsTerminal(int(os.Stdout.Fd()))
 }
 
 func isTerminalByEnv(envVars ...string) bool {

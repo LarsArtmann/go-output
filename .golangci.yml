@@ -145,6 +145,7 @@ linters:
             - charm.land/lipgloss/v2
             - charm.land/lipgloss/v2/table
             - github.com/go-faster/yaml
+            - golang.org/x/term
             - bytes
             - encoding/csv
             - encoding/json
@@ -194,6 +195,7 @@ linters:
             - charm.land/lipgloss/v2
             - charm.land/lipgloss/v2/table
             - github.com/go-faster/yaml
+            - golang.org/x/term
   exclusions:
     rules:
       - path: sort/.*\.go

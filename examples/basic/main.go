@@ -118,19 +118,8 @@ func handleError(err error) {
 	os.Exit(1)
 }
 
-// handleErrorWithContext prints the error with context to stderr and exits with code 1.
-func handleErrorWithContext(context string, err error) {
-	fmt.Fprintf(os.Stderr, "%s: %v\n", context, err)
-	os.Exit(1)
-}
-
-// projectToRow converts a Project to a row slice.
+// projectToRow converts a Project to a formatted row slice.
 func projectToRow(p Project) []string {
-	return []string{p.Name, strconv.Itoa(p.Health), strconv.Itoa(p.Complexity)}
-}
-
-// projectToTableDataRow converts a Project to a TableData row with formatting.
-func projectToTableDataRow(p Project) []string {
 	return []string{
 		p.Name,
 		strconv.Itoa(p.Health) + "%",
@@ -142,7 +131,7 @@ func projectToTableDataRow(p Project) []string {
 func projectsToTableData(projects []Project) *output.TableData {
 	data := output.NewTableData(projectHeaders)
 	for _, p := range projects {
-		data.AddRow(projectToTableDataRow(p))
+		data.AddRow(projectToRow(p))
 	}
 
 	return data
@@ -169,13 +158,13 @@ type writer interface {
 func renderDelimited(w writer, projects []Project) {
 	err := w.WriteHeader(projectHeaders)
 	if err != nil {
-		handleErrorWithContext("Error writing header", err)
+		handleError(err)
 	}
 
 	for _, p := range projects {
 		err := w.WriteRow(projectToRow(p))
 		if err != nil {
-			handleErrorWithContext("Error writing row", err)
+			handleError(err)
 		}
 	}
 
@@ -183,7 +172,7 @@ func renderDelimited(w writer, projects []Project) {
 
 	err = w.Error()
 	if err != nil {
-		handleErrorWithContext("Error flushing", err)
+		handleError(err)
 	}
 }
 
@@ -241,7 +230,7 @@ func renderHTML(projects []Project) {
 	html.SetHeaders(projectHeaders)
 
 	for _, p := range projects {
-		html.AddRow(projectToTableDataRow(p))
+		html.AddRow(projectToRow(p))
 	}
 
 	fmt.Println(html.RenderFullHTML("Project Health Report"))

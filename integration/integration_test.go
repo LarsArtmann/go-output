@@ -48,6 +48,8 @@ func TestAllFormatsRender(t *testing.T) {
 		output.FormatJSON,
 		output.FormatMarkdown,
 		output.FormatCSV,
+		output.FormatTSV,
+		output.FormatXML,
 		output.FormatYAML,
 		output.FormatHTML,
 		output.FormatTree,
