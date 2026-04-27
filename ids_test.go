@@ -52,14 +52,24 @@ func TestBrandedIDFormat(t *testing.T) {
 
 	id := NewBrandedID[GraphNodeIDBrand](testGraphNodeID)
 
-	t.Run("%s", func(t *testing.T) {
-		t.Parallel()
+	formatTests := []struct {
+		format string
+		want   string
+	}{
+		{"%s", testGraphNodeID},
+		{"%v", testGraphNodeID},
+	}
 
-		got := fmt.Sprintf("%s", id)
-		if got != testGraphNodeID {
-			t.Errorf("%%s = %q, want %q", got, testGraphNodeID)
-		}
-	})
+	for _, tc := range formatTests {
+		t.Run(tc.format, func(t *testing.T) {
+			t.Parallel()
+
+			got := fmt.Sprintf(tc.format, id)
+			if got != tc.want {
+				t.Errorf("%s = %q, want %q", tc.format, got, tc.want)
+			}
+		})
+	}
 
 	t.Run("%#v", func(t *testing.T) {
 		t.Parallel()
@@ -69,15 +79,6 @@ func TestBrandedIDFormat(t *testing.T) {
 
 		if got != want {
 			t.Errorf("%%#v = %q, want %q", got, want)
-		}
-	})
-
-	t.Run("%v", func(t *testing.T) {
-		t.Parallel()
-
-		got := fmt.Sprintf("%v", id)
-		if got != testGraphNodeID {
-			t.Errorf("%%v = %q, want %q", got, testGraphNodeID)
 		}
 	})
 }

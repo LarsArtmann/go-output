@@ -35,9 +35,7 @@ func TestRegisterDuplicate(t *testing.T) {
 
 	_ = Register(format, testRendererFunc("1"))
 
-	err := Register(format, func() Renderer {
-		return &testRenderer{output: "2"}
-	})
+	err := Register(format, testRendererFunc("2"))
 	if err == nil {
 		t.Error("Register() expected error for duplicate registration")
 	}
@@ -60,9 +58,7 @@ func TestCreate(t *testing.T) {
 		format := Format("__test_create__")
 		Unregister(format)
 
-		err := Register(format, func() Renderer {
-			return &testRenderer{output: testOutput}
-		})
+		err := Register(format, testRendererFunc(testOutput))
 		if err != nil {
 			t.Fatalf("Register() error = %v", err)
 		}

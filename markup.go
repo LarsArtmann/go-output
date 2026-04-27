@@ -5,14 +5,34 @@ import (
 	"io"
 )
 
+// writeRowTag writes a row opening or closing tag.
+func writeRowTag(w io.Writer, indent, tag string, isClose bool) error {
+	var content string
+	if isClose {
+		content = indent + "</" + tag + ">\n"
+	} else {
+		content = indent + "<" + tag + ">\n"
+	}
+
+	if _, err := io.WriteString(w, content); err != nil {
+		return fmt.Errorf(
+			"write row tag %s: %w",
+			map[bool]string{true: "close", false: "open"}[isClose],
+			err,
+		)
+	}
+
+	return nil
+}
+
 func writeMarkupRow(
 	w io.Writer,
 	row []string,
 	rowTag, cellTag, indent string,
 	escapeFn func(string) string,
 ) error {
-	if _, err := io.WriteString(w, indent+"<"+rowTag+">\n"); err != nil {
-		return fmt.Errorf("write row tag open: %w", err)
+	if err := writeRowTag(w, indent, rowTag, false); err != nil {
+		return err
 	}
 
 	for _, cell := range row {
@@ -29,8 +49,8 @@ func writeMarkupRow(
 		}
 	}
 
-	if _, err := io.WriteString(w, indent+"</"+rowTag+">\n"); err != nil {
-		return fmt.Errorf("write row tag close: %w", err)
+	if err := writeRowTag(w, indent, rowTag, true); err != nil {
+		return err
 	}
 
 	return nil

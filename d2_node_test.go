@@ -11,28 +11,7 @@ import (
 func TestD2AllNodeShapes(t *testing.T) {
 	t.Parallel()
 
-	shapes := []D2NodeShape{
-		D2ShapeRectangle,
-		D2ShapeSquare,
-		D2ShapeCircle,
-		D2ShapeDiamond,
-		D2ShapeHexagon,
-		D2ShapeCloud,
-		D2ShapeCylinder,
-		D2ShapePerson,
-		D2ShapeQueue,
-		D2ShapeOval,
-		D2ShapeParallelogram,
-		D2ShapeTriangle,
-		D2ShapeSQLTable,
-		D2ShapeImage,
-		D2ShapeCode,
-		D2ShapeText,
-		D2ShapeClass,
-		D2ShapePage,
-		D2ShapeStep,
-		D2ShapeStoredData,
-	}
+	shapes := d2NodeShapeValues()
 
 	for _, shape := range shapes {
 		t.Run(string(shape), func(t *testing.T) {

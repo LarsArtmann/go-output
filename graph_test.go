@@ -120,12 +120,7 @@ func TestGraphStyle(t *testing.T) {
 		FontSize:    12,
 	}
 
-	gentest.TestStructFields(t,
-		gentest.StringField("FillColor", style.FillColor, "red"),
-		gentest.StringField("StrokeColor", style.StrokeColor, "blue"),
-		gentest.StringField("FontColor", style.FontColor, "green"),
-		gentest.IntField("FontSize", style.FontSize, 12),
-	)
+	testGraphStyleFields(t, style, 12)
 }
 
 func TestEdgeStyle(t *testing.T) {
@@ -156,12 +151,16 @@ func TestGetStyle(t *testing.T) {
 	}
 
 	style := node.GetStyle()
+	testGraphStyleFields(t, style, 14)
+}
 
+// testGraphStyleFields tests the common GraphStyle fields.
+func testGraphStyleFields(t *testing.T, style GraphStyle, wantFontSize int) {
 	gentest.TestStructFields(t,
 		gentest.StringField("FillColor", style.FillColor, "red"),
 		gentest.StringField("StrokeColor", style.StrokeColor, "blue"),
 		gentest.StringField("FontColor", style.FontColor, "green"),
-		gentest.IntField("FontSize", style.FontSize, 14),
+		gentest.IntField("FontSize", style.FontSize, wantFontSize),
 	)
 }
 

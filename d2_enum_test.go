@@ -4,6 +4,34 @@ import (
 	"testing"
 )
 
+// assertParseEqual verifies that parsing a valid value returns the expected result.
+func assertParseEqual[T any](
+	t *testing.T,
+	fn func(string) (T, error),
+	fnName, input string,
+	toStr func(T) string,
+) {
+	t.Helper()
+
+	got, err := fn(input)
+	if err != nil {
+		t.Errorf("%s(%q) unexpected error: %v", fnName, input, err)
+	}
+
+	if toStr(got) != input {
+		t.Errorf("%s(%q) = %v, want %q", fnName, input, got, input)
+	}
+}
+
+// assertAllowedValueCount verifies AllowedValues returns the expected number of values.
+func assertAllowedValueCount(t *testing.T, values []string, want int) {
+	t.Helper()
+
+	if len(values) != want {
+		t.Errorf("AllowedValues() returned %d values, want %d", len(values), want)
+	}
+}
+
 func TestParseD2NodeShape(t *testing.T) {
 	t.Parallel()
 
@@ -18,14 +46,13 @@ func TestParseD2NodeShape(t *testing.T) {
 		}
 
 		for _, s := range shapes {
-			got, err := ParseD2NodeShape(s)
-			if err != nil {
-				t.Errorf("ParseD2NodeShape(%q) unexpected error: %v", s, err)
-			}
-
-			if string(got) != s {
-				t.Errorf("ParseD2NodeShape(%q) = %q, want %q", s, got, s)
-			}
+			assertParseEqual(
+				t,
+				ParseD2NodeShape,
+				"ParseD2NodeShape",
+				s,
+				func(v D2NodeShape) string { return string(v) },
+			)
 		}
 	})
 
@@ -52,9 +79,7 @@ func TestD2NodeShapeValidation(t *testing.T) {
 	}
 
 	values := D2ShapeRectangle.AllowedValues()
-	if len(values) != 20 {
-		t.Errorf("AllowedValues() returned %d values, want 20", len(values))
-	}
+	assertAllowedValueCount(t, values, 20)
 }
 
 func TestParseD2ArrowType(t *testing.T) {
@@ -70,14 +95,13 @@ func TestParseD2ArrowType(t *testing.T) {
 		}
 
 		for _, s := range arrows {
-			got, err := ParseD2ArrowType(s)
-			if err != nil {
-				t.Errorf("ParseD2ArrowType(%q) unexpected error: %v", s, err)
-			}
-
-			if string(got) != s {
-				t.Errorf("ParseD2ArrowType(%q) = %q, want %q", s, got, s)
-			}
+			assertParseEqual(
+				t,
+				ParseD2ArrowType,
+				"ParseD2ArrowType",
+				s,
+				func(v D2ArrowType) string { return string(v) },
+			)
 		}
 	})
 
@@ -108,9 +132,7 @@ func TestD2ArrowTypeValidation(t *testing.T) {
 	}
 
 	values := D2ArrowArrow.AllowedValues()
-	if len(values) != 11 {
-		t.Errorf("AllowedValues() returned %d values, want 11", len(values))
-	}
+	assertAllowedValueCount(t, values, 11)
 }
 
 func TestParseD2Direction(t *testing.T) {
@@ -161,7 +183,5 @@ func TestD2DirectionValidation(t *testing.T) {
 	}
 
 	values := D2DirRight.AllowedValues()
-	if len(values) != 4 {
-		t.Errorf("AllowedValues() returned %d values, want 4", len(values))
-	}
+	assertAllowedValueCount(t, values, 4)
 }
