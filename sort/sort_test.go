@@ -249,3 +249,86 @@ func TestSorter_Sort_UnsignedInt(t *testing.T) {
 		t.Errorf("Sort() unsigned third = %s, want large", items[2].Name)
 	}
 }
+
+type stableItem struct {
+	Name  string
+	Order int
+}
+
+func TestSorter_Sort_DescStability(t *testing.T) {
+	t.Parallel()
+
+	items := []stableItem{
+		{Name: "a", Order: 1},
+		{Name: "a", Order: 2},
+		{Name: "a", Order: 3},
+		{Name: "b", Order: 4},
+	}
+
+	New(items, output.SortByName, true).Sort()
+
+	if items[0].Name != "b" {
+		t.Fatalf("desc sort first = %s, want b", items[0].Name)
+	}
+
+	// Equal-name items must preserve original insertion order
+	if items[1].Order != 1 || items[2].Order != 2 || items[3].Order != 3 {
+		t.Errorf("desc stable sort: orders = [%d, %d, %d], want [1, 2, 3]",
+			items[1].Order, items[2].Order, items[3].Order)
+	}
+}
+
+func TestSorter_Sort_DescCount(t *testing.T) {
+	t.Parallel()
+
+	items := testItemsWithCounts(10, 20, 30)
+
+	New(items, output.SortBy("Count"), true).Sort()
+
+	if items[0].Name != "charlie" {
+		t.Errorf("desc sort first = %s, want charlie", items[0].Name)
+	}
+
+	if items[2].Name != "alpha" {
+		t.Errorf("desc sort last = %s, want alpha", items[2].Name)
+	}
+}
+
+func TestSorter_Sort_NonStructInput(t *testing.T) {
+	t.Parallel()
+
+	items := []string{"b", "a", "c"}
+
+	New(items, output.SortByName, false).Sort()
+
+	if items[0] != "b" {
+		t.Errorf("non-struct sort should be stable (no-op), got %s", items[0])
+	}
+}
+
+func TestSnakeToPascal(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		input string
+		want  string
+	}{
+		{"", ""},
+		{"name", "Name"},
+		{"created_at", "CreatedAt"},
+		{"a_b_c", "ABC"},
+		{"_leading", "Leading"},
+		{"trailing_", "Trailing"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.input, func(t *testing.T) {
+			t.Parallel()
+
+			got := snakeToPascal(tt.input)
+			if got != tt.want {
+				t.Errorf("snakeToPascal(%q) = %q, want %q", tt.input, got, tt.want)
+			}
+		})
+	}
+}

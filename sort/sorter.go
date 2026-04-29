@@ -37,18 +37,16 @@ func (s *Sorter[T]) WithLessFunc(fn func(a, b T) bool) *Sorter[T] {
 // Sort sorts the items.
 func (s *Sorter[T]) Sort() {
 	sort.SliceStable(s.Items, func(i, j int) bool {
-		var result bool
-		if s.LessFunc != nil {
-			result = s.LessFunc(s.Items[i], s.Items[j])
-		} else {
-			result = s.defaultLess(s.Items[i], s.Items[j])
-		}
-
+		a, b := s.Items[i], s.Items[j]
 		if s.Desc {
-			return !result
+			a, b = b, a
 		}
 
-		return result
+		if s.LessFunc != nil {
+			return s.LessFunc(a, b)
+		}
+
+		return s.defaultLess(a, b)
 	})
 }
 
