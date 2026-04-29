@@ -1,6 +1,17 @@
+// Package output provides a registry for dynamically registering renderer factories.
+//
+// The registry is an opt-in plugin system. By default, formats are used directly
+// via their constructors (NewMarkdownTable, NewD2Diagram, etc.). Use Register/Create
+// when you need runtime-dispatchable format selection, e.g.:
+//
+//	output.Register(output.FormatJSON, func() output.Renderer { return myCustomJSONRenderer })
+//	renderer, _ := output.Create(output.FormatJSON)
+//
+// The registry is thread-safe.
 package output
 
 import (
+	"cmp"
 	"errors"
 	"fmt"
 	"slices"
@@ -76,15 +87,7 @@ func RegisteredFormats() []Format {
 	}
 
 	slices.SortFunc(formats, func(a, b Format) int {
-		if a.String() < b.String() {
-			return -1
-		}
-
-		if a.String() > b.String() {
-			return 1
-		}
-
-		return 0
+		return cmp.Compare(a.String(), b.String())
 	})
 
 	return formats
