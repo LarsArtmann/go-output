@@ -10,7 +10,12 @@ func TestASCIITreeRenderer(t *testing.T) {
 	renderer := NewASCIITreeRenderer()
 
 	// Test empty tree
-	if got := renderer.Render(); got != "" {
+	got, err := renderer.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
+	if got != "" {
 		t.Errorf("Empty tree should return empty string, got: %s", got)
 	}
 
@@ -24,7 +29,11 @@ func TestASCIITreeRenderer(t *testing.T) {
 	root.AddChild(child2)
 
 	renderer.SetRoot(root)
-	output := renderer.Render()
+
+	output, err := renderer.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
 
 	// Verify output contains expected elements
 	assertContains(t, output, "Root", "Output should contain 'Root'")
@@ -43,7 +52,11 @@ func TestASCIITreeRendererWithMetadata(t *testing.T) {
 	node.Metadata["count"] = "42"
 
 	renderer.SetRoot(node)
-	output := renderer.Render()
+
+	output, err := renderer.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
 
 	assertContains(t, output, "Node with Meta", "Output should contain node label")
 	assertContains(t, output, "key: value", "Output should contain metadata")
@@ -57,7 +70,11 @@ func TestTreeRendererFromTableData(t *testing.T) {
 	data.AddRow([]string{"Bob", "25", "LA"})
 
 	renderer := TreeRendererFromTableData(data)
-	output := renderer.Render()
+
+	output, err := renderer.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
 
 	assertContains(t, output, "Data", "Output should contain 'Data' as root")
 	assertContains(t, output, "Headers", "Output should contain 'Headers' section")

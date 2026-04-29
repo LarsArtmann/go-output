@@ -26,7 +26,7 @@ func NewMermaidRenderer() *MermaidRenderer {
 }
 
 // Render returns the Mermaid diagram as a string.
-func (r *MermaidRenderer) Render() string {
+func (r *MermaidRenderer) Render() (string, error) {
 	var b strings.Builder
 
 	b.WriteString("```mermaid\n")
@@ -55,7 +55,7 @@ func (r *MermaidRenderer) Render() string {
 
 	b.WriteString("```\n")
 
-	return b.String()
+	return b.String(), nil
 }
 
 // getMermaidShape returns the prefix and suffix for a Mermaid shape.

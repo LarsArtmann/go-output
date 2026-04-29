@@ -40,12 +40,15 @@ func NewStreamingHTMLRenderer() *StreamingHTMLRenderer {
 }
 
 // Render returns the HTML table as a string.
-func (r *StreamingHTMLRenderer) Render() string {
+func (r *StreamingHTMLRenderer) Render() (string, error) {
 	var b strings.Builder
 
-	_ = r.Stream(&b)
+	err := r.Stream(&b)
+	if err != nil {
+		return "", fmt.Errorf("stream to string: %w", err)
+	}
 
-	return b.String()
+	return b.String(), nil
 }
 
 // Stream writes the HTML table incrementally to an io.Writer.
@@ -171,12 +174,22 @@ type adapterRenderer struct {
 	r Renderer
 }
 
-func (a *adapterRenderer) Render() string {
-	return a.r.Render()
+func (a *adapterRenderer) Render() (string, error) {
+	out, err := a.r.Render()
+	if err != nil {
+		return "", fmt.Errorf("adapter render: %w", err)
+	}
+
+	return out, nil
 }
 
 func (a *adapterRenderer) Stream(w io.Writer) error {
-	_, err := w.Write([]byte(a.r.Render()))
+	out, err := a.r.Render()
+	if err != nil {
+		return fmt.Errorf("render for streaming: %w", err)
+	}
+
+	_, err = w.Write([]byte(out))
 	if err != nil {
 		return fmt.Errorf("stream render output: %w", err)
 	}

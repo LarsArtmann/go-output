@@ -26,7 +26,11 @@ func TestD2EdgeWithArrows(t *testing.T) {
 		e.TargetArrow = D2ArrowTriangle
 	}))
 
-	got := d.Render()
+	got, err := d.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
 	assertContains(t, got, "source-arrowhead.shape: diamond", "should contain source arrow")
 	assertContains(t, got, "target-arrowhead.shape: triangle", "should contain target arrow")
 }
@@ -57,7 +61,11 @@ func TestD2AllArrowTypes(t *testing.T) {
 				e.TargetArrow = arrow
 			}))
 
-			got := d.Render()
+			got, err := d.Render()
+			if err != nil {
+				t.Fatalf("Render() error = %v", err)
+			}
+
 			assertContains(t, got, "target-arrowhead.shape: "+string(arrow),
 				"should contain arrow type "+string(arrow))
 		})
@@ -72,7 +80,11 @@ func TestD2EdgeWithFilledArrow(t *testing.T) {
 		e.TargetArrow = D2ArrowFilled
 	}))
 
-	got := d.Render()
+	got, err := d.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
 	assertContains(t, got, "target-arrowhead.shape: filled", "should contain filled arrow")
 }
 
@@ -94,7 +106,11 @@ func TestD2EdgeStyle(t *testing.T) {
 		},
 	})
 
-	got := d.Render()
+	got, err := d.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
 	assertContains(t, got, "style.stroke: red", "should contain edge stroke")
 	assertContains(t, got, "style.stroke-width: 3", "should contain edge stroke-width")
 	assertContains(t, got, "style.stroke-dash: 5", "should contain stroke-dash")

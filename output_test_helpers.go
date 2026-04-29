@@ -90,7 +90,11 @@ func testEmptyRendererOutput(
 ) {
 	t.Helper()
 
-	output := renderer.Render()
+	output, err := renderer.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
 	for _, expected := range expectedOutputs {
 		if !strings.Contains(output, expected.Substring) {
 			t.Error(expected.Message)

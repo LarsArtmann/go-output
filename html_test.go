@@ -13,7 +13,10 @@ func TestHTMLRenderer(t *testing.T) {
 	renderer.AddRow([]string{"Alice", "30"})
 	renderer.AddRow([]string{"Bob", "25"})
 
-	output := renderer.Render()
+	output, err := renderer.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
 
 	assertContains(t, output, "<table", "Output should contain <table>")
 	assertContains(t, output, "</table>", "Output should contain </table>")
@@ -30,7 +33,10 @@ func TestHTMLRendererFullDocument(t *testing.T) {
 	renderer.SetHeaders([]string{"Col1", "Col2"})
 	renderer.AddRow([]string{"A", "B"})
 
-	output := renderer.RenderFullHTML("Test Title")
+	output, err := renderer.RenderFullHTML("Test Title")
+	if err != nil {
+		t.Fatalf("RenderFullHTML() error = %v", err)
+	}
 
 	assertContains(t, output, "<!DOCTYPE html>", "Full HTML should contain DOCTYPE")
 	assertContains(t, output, "<title>Test Title</title>", "Full HTML should contain title")
@@ -62,7 +68,10 @@ func TestHTMLTreeRenderer(t *testing.T) {
 	root.AddChild(NewTreeNode("child", "Child"))
 	renderer.SetRoot(root)
 
-	output := renderer.Render()
+	output, err := renderer.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
 
 	assertContains(t, output, "<ul", "Output should contain <ul>")
 	assertContains(t, output, "<li>", "Output should contain <li>")
@@ -76,7 +85,10 @@ func TestHTMLTreeRendererFullDocument(t *testing.T) {
 	renderer := NewHTMLTreeRenderer()
 	renderer.SetRoot(NewTreeNode("root", "Test Tree"))
 
-	output := renderer.RenderFullHTML("Tree Title")
+	output, err := renderer.RenderFullHTML("Tree Title")
+	if err != nil {
+		t.Fatalf("RenderFullHTML() error = %v", err)
+	}
 
 	assertContains(t, output, "<!DOCTYPE html>", "Full HTML should contain DOCTYPE")
 	assertContains(t, output, "<title>Tree Title</title>", "Full HTML should contain title")
@@ -91,7 +103,10 @@ func TestHTMLRendererSetData(t *testing.T) {
 		Rows:    [][]string{{"1", "2"}},
 	})
 
-	output := renderer.Render()
+	output, err := renderer.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
 
 	assertContains(t, output, "<th>A", "Output should contain header 'A'")
 	assertContains(t, output, "<td>1", "Output should contain cell '1'")
@@ -104,7 +119,11 @@ func TestHTMLRendererAddRowWithoutSetHeaders(t *testing.T) {
 	// Call AddRow without first calling SetHeaders - should initialize data
 	renderer.AddRow([]string{"test"})
 
-	output := renderer.Render()
+	output, err := renderer.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
 	assertContains(t, output, "test", "Output should contain 'test'")
 }
 
@@ -113,7 +132,10 @@ func TestHTMLTreeRendererEmpty(t *testing.T) {
 
 	renderer := NewHTMLTreeRenderer()
 	// Don't set root - should return empty tree
-	output := renderer.Render()
+	output, err := renderer.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
 
 	assertContains(t, output, "<ul", "Empty tree should contain <ul>")
 

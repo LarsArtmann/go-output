@@ -24,7 +24,7 @@ func AssertContains(t *testing.T, output, substr, msg string) {
 type HTMLEscapeTestRenderer interface {
 	SetHeaders([]string)
 	AddRow([]string)
-	Render() string
+	Render() (string, error)
 }
 
 // AssertHTMLEscape verifies that a renderer properly escapes HTML content.
@@ -35,7 +35,10 @@ func AssertHTMLEscape(t *testing.T, newRenderer func() HTMLEscapeTestRenderer, n
 	r.SetHeaders([]string{"Name"})
 	r.AddRow([]string{"<script>alert('xss')</script>"})
 
-	got := r.Render()
+	got, err := r.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
 
 	if strings.Contains(got, "<script>") {
 		t.Errorf("%s: Render() should escape script tags", name)

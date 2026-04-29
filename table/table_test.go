@@ -31,7 +31,11 @@ func TestSetHeaders(t *testing.T) {
 		t.Error("SetHeaders() should return the same table for chaining")
 	}
 
-	output := tbl.Render()
+	output, err := tbl.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
 	testutils.AssertContains(t, output, "Name", "Render() should contain header 'Name'")
 	testutils.AssertContains(t, output, "Value", "Render() should contain header 'Value'")
 	testutils.AssertContains(t, output, "Count", "Render() should contain header 'Count'")
@@ -48,7 +52,11 @@ func TestAddRow(t *testing.T) {
 		t.Error("AddRow() should return the same table for chaining")
 	}
 
-	output := tbl.Render()
+	output, err := tbl.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
 	testutils.AssertContains(t, output, "Alice", "Render() should contain row value 'Alice'")
 	testutils.AssertContains(t, output, "30", "Render() should contain row value '30'")
 }
@@ -62,7 +70,11 @@ func TestAddRowMultiple(t *testing.T) {
 	tbl.AddRow("Bob", "90")
 	tbl.AddRow("Charlie", "85")
 
-	output := tbl.Render()
+	output, err := tbl.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
 	testutils.AssertContains(t, output, "Alice", "Render() should contain 'Alice'")
 	testutils.AssertContains(t, output, "Bob", "Render() should contain 'Bob'")
 	testutils.AssertContains(t, output, "Charlie", "Render() should contain 'Charlie'")
@@ -87,7 +99,11 @@ func TestStyleFunc(t *testing.T) {
 	tbl.SetHeaders("Test")
 	tbl.AddRow("Value")
 
-	output := tbl.Render()
+	output, err := tbl.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
 	testutils.AssertContains(t, output, "Test", "Render() should contain 'Test'")
 }
 
@@ -99,7 +115,10 @@ func TestRender(t *testing.T) {
 	tbl.AddRow("Project A", "Active")
 	tbl.AddRow("Project B", "Inactive")
 
-	output := tbl.Render()
+	output, err := tbl.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
 
 	if output == "" {
 		t.Error("Render() should not return empty string")
@@ -114,11 +133,14 @@ func TestRender(t *testing.T) {
 func TestChaining(t *testing.T) {
 	t.Parallel()
 
-	output := New().
+	output, err := New().
 		SetHeaders("ID", "Name").
 		AddRow("1", "First").
 		AddRow("2", "Second").
 		Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
 
 	testutils.AssertContains(t, output, "ID", "Chained Render() should contain headers")
 	testutils.AssertContains(t, output, "Name", "Chained Render() should contain headers")
@@ -130,7 +152,11 @@ func TestEmptyTable(t *testing.T) {
 	t.Parallel()
 
 	tbl := New()
-	output := tbl.Render()
+
+	output, err := tbl.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
 
 	// Empty table (no headers, no rows) returns empty string
 	if output != "" {
@@ -143,7 +169,11 @@ func TestHeadersOnlyNoRows(t *testing.T) {
 
 	tbl := New()
 	tbl.SetHeaders("Only", "Headers")
-	output := tbl.Render()
+
+	output, err := tbl.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
 
 	testutils.AssertContains(t, output, "Only", "Render() should contain headers even without rows")
 	testutils.AssertContains(
@@ -178,7 +208,11 @@ func TestFromTableData(t *testing.T) {
 		t.Fatal("FromTableData() returned nil")
 	}
 
-	output := tbl.Render()
+	output, err := tbl.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
 	testutils.AssertContains(t, output, "Name", "should contain header 'Name'")
 	testutils.AssertContains(t, output, "Status", "should contain header 'Status'")
 	testutils.AssertContains(t, output, "Project A", "should contain row 'Project A'")
@@ -193,7 +227,11 @@ func TestFromTableDataNil(t *testing.T) {
 		t.Fatal("FromTableData(nil) should not return nil")
 	}
 
-	output := tbl.Render()
+	output, err := tbl.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
 	if output != "" {
 		t.Errorf("FromTableData(nil) should render empty, got %q", output)
 	}
@@ -208,7 +246,11 @@ func TestFromTableDataEmpty(t *testing.T) {
 	}
 
 	tbl := FromTableData(data)
-	output := tbl.Render()
+
+	output, err := tbl.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
 
 	if output != "" {
 		t.Errorf("FromTableData with empty data should render empty, got %q", output)

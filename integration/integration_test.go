@@ -155,7 +155,12 @@ func renderTableFormat(projects []TestProject) string {
 		tbl.AddRow(p.Name, formatHealth(p.Health), formatComplexity(p.Complexity))
 	}
 
-	return tbl.Render()
+	out, err := tbl.Render()
+	if err != nil {
+		return ""
+	}
+
+	return out
 }
 
 func renderJSONFormat(projects []TestProject) string {
@@ -232,7 +237,12 @@ func renderHTMLFormat(projects []TestProject) string {
 		html.AddRow(row)
 	}
 
-	return html.Render()
+	out, err := html.Render()
+	if err != nil {
+		return ""
+	}
+
+	return out
 }
 
 func buildProjectTree(projects []TestProject) *output.TreeNode {
@@ -248,7 +258,12 @@ func renderTreeFormat(projects []TestProject) string {
 	tree := output.NewASCIITreeRenderer()
 	tree.SetRoot(buildProjectTree(projects))
 
-	return tree.Render()
+	out, err := tree.Render()
+	if err != nil {
+		return ""
+	}
+
+	return out
 }
 
 func renderD2Format(projects []TestProject) string {
@@ -261,16 +276,32 @@ func renderD2Format(projects []TestProject) string {
 		d2.AddNodeWithShape(p.Name, p.Name, output.D2ShapeCircle)
 	}
 
-	return d2.Render()
+	out, err := d2.Render()
+	if err != nil {
+		return ""
+	}
+
+	return out
 }
 
 func renderD2FromTableData(projects []TestProject) string {
 	data := newGraphTableData(projects)
-	return output.D2FromTableData(data).Render()
+
+	out, err := output.D2FromTableData(data).Render()
+	if err != nil {
+		return ""
+	}
+
+	return out
 }
 
 func renderD2FromTree(projects []TestProject) string {
-	return output.D2FromTree(buildProjectTree(projects)).Render()
+	out, err := output.D2FromTree(buildProjectTree(projects)).Render()
+	if err != nil {
+		return ""
+	}
+
+	return out
 }
 
 func newGraphTableData(projects []TestProject) *output.TableData {
@@ -283,11 +314,21 @@ func newGraphTableData(projects []TestProject) *output.TableData {
 }
 
 func renderDOTFormat(projects []TestProject) string {
-	return output.DOTFromTableData(newGraphTableData(projects)).Render()
+	out, err := output.DOTFromTableData(newGraphTableData(projects)).Render()
+	if err != nil {
+		return ""
+	}
+
+	return out
 }
 
 func renderMermaidFormat(projects []TestProject) string {
-	return output.MermaidFlowchartRenderer(newGraphTableData(projects)).Render()
+	out, err := output.MermaidFlowchartRenderer(newGraphTableData(projects)).Render()
+	if err != nil {
+		return ""
+	}
+
+	return out
 }
 
 func formatHealth(h int) string {

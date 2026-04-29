@@ -70,8 +70,8 @@ func (t *Table) StyleFunc(fn func(row, col int) lipgloss.Style) *Table {
 }
 
 // Render returns the rendered table string.
-func (t *Table) Render() string {
-	return t.t.String()
+func (t *Table) Render() (string, error) {
+	return t.t.String(), nil
 }
 
 // FromTableData creates a new Table populated from a TableDataProvider.

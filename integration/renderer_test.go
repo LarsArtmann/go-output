@@ -90,7 +90,11 @@ func TestHTMLFormatContent(t *testing.T) {
 	html.SetHeaders([]string{"Name", "Health"})
 	html.AddRow([]string{"Alpha", "90%"})
 
-	result := html.Render()
+	result, err := html.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
 	testutils.AssertContains(t, result, "<table", "HTML should contain table tag")
 	testutils.AssertContains(t, result, "Alpha", "HTML should contain project name 'Alpha'")
 }
@@ -102,7 +106,11 @@ func TestHTMLFullPage(t *testing.T) {
 	html.SetHeaders([]string{"Name"})
 	html.AddRow([]string{"Test"})
 
-	result := html.RenderFullHTML("Test Page")
+	result, err := html.RenderFullHTML("Test Page")
+	if err != nil {
+		t.Fatalf("RenderFullHTML() error = %v", err)
+	}
+
 	testutils.AssertContains(t, result, "<html", "Full HTML should contain html tag")
 	testutils.AssertContains(
 		t,
@@ -121,7 +129,11 @@ func TestTreeFormatContent(t *testing.T) {
 	root.AddChild(child)
 	tree.SetRoot(root)
 
-	result := tree.Render()
+	result, err := tree.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
 	if result == "" {
 		t.Error("Tree render should not be empty")
 	}
@@ -135,13 +147,17 @@ func TestD2FormatContent(t *testing.T) {
 		{Name: "name", Type: "string"},
 	})
 
-	result := d2.Render()
+	result, err := d2.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
 	if result == "" {
 		t.Error("D2 render should not be empty")
 	}
 }
 
-type renderer interface{ Render() string }
+type renderer interface{ Render() (string, error) }
 
 // testRendererNotEmpty tests that a renderer produces non-empty output.
 func testRendererNotEmpty[R renderer](
@@ -155,7 +171,11 @@ func testRendererNotEmpty[R renderer](
 	data.AddRow([]string{"Alpha", "90%"})
 
 	r := createRenderer(data)
-	result := r.Render()
+
+	result, err := r.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
 
 	if result == "" {
 		t.Error(name + " render should not be empty")

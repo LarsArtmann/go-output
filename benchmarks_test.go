@@ -27,7 +27,7 @@ func BenchmarkASCIITreeRenderer(b *testing.B) {
 	b.ResetTimer()
 
 	for b.Loop() {
-		renderer.Render()
+		_, _ = renderer.Render()
 	}
 }
 
@@ -45,7 +45,7 @@ func BenchmarkHTMLRenderer(b *testing.B) {
 	b.ResetTimer()
 
 	for b.Loop() {
-		renderer.Render()
+		_, _ = renderer.Render()
 	}
 }
 
@@ -86,7 +86,7 @@ func benchmarkGraphRenderer(b *testing.B, renderer GraphRenderer) {
 	b.ResetTimer()
 
 	for b.Loop() {
-		renderer.Render()
+		_, _ = renderer.Render()
 	}
 }
 
@@ -170,7 +170,7 @@ func BenchmarkMarkdownTable(b *testing.B) {
 	b.ResetTimer()
 
 	for b.Loop() {
-		md.Render()
+		_, _ = md.Render()
 	}
 }
 

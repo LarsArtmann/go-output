@@ -12,7 +12,10 @@ func TestDOTRenderer(t *testing.T) {
 	renderer.SetNodes(testNodesAB())
 	renderer.SetEdges(testEdgesAB())
 
-	output := renderer.Render()
+	output, err := renderer.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
 
 	assertContains(t, output, "digraph G {", "Output should contain digraph declaration")
 	assertContains(t, output, "\"A\"", "Output should contain node A in quotes")
@@ -29,7 +32,10 @@ func TestDOTUndirectedRenderer(t *testing.T) {
 	renderer.SetNodes(testNodesAB())
 	renderer.SetEdges(testEdgesAB())
 
-	output := renderer.Render()
+	output, err := renderer.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
 
 	assertContains(t, output, "graph G {", "Undirected graph should use 'graph' keyword")
 	assertContains(t, output, "\"A\" -- \"B\"", "Undirected edge should use --")
@@ -52,7 +58,10 @@ func TestDOTRendererWithStyles(t *testing.T) {
 		},
 	})
 
-	output := renderer.Render()
+	output, err := renderer.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
 
 	assertContains(t, output, "shape=ellipse", "Output should contain shape attribute")
 	assertContains(t, output, "fillcolor=#ff0000", "Output should contain fillcolor")
@@ -64,7 +73,10 @@ func TestDOTRendererWithEdgeLabel(t *testing.T) {
 	renderer := NewDOTRenderer()
 	renderer.SetEdges([]GraphEdge{testEdgeAB("uses")})
 
-	output := renderer.Render()
+	output, err := renderer.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
 
 	assertContains(t, output, "label=\"uses\"", "Output should contain edge label")
 }
@@ -77,7 +89,11 @@ func TestDOTFromTableData(t *testing.T) {
 	data.AddRow([]string{"2", "Bob"})
 
 	renderer := DOTFromTableData(data)
-	output := renderer.Render()
+
+	output, err := renderer.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
 
 	assertContains(t, output, "digraph", "Output should be a digraph")
 	assertContains(t, output, "row0", "Output should contain row0 node")
@@ -96,7 +112,11 @@ func TestDOTFromTree(t *testing.T) {
 	root.AddChild(NewTreeNode("child", "Child"))
 
 	renderer := DOTFromTree(root)
-	output := renderer.Render()
+
+	output, err := renderer.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
 
 	assertContains(t, output, "digraph", "Output should be a digraph")
 	assertContains(t, output, "Root", "Output should contain 'Root' label")
@@ -120,7 +140,10 @@ func TestDOTSetGraphID(t *testing.T) {
 		[]GraphNode{newTestNode("A", "A")},
 	)
 
-	output := renderer.Render()
+	output, err := renderer.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
 
 	assertContains(t, output, "digraph MyGraph {", "Output should use custom graph ID")
 }

@@ -100,7 +100,7 @@ func (r *DOTRenderer) SetGraphID(id string) {
 }
 
 // Render returns the DOT graph as a string.
-func (r *DOTRenderer) Render() string {
+func (r *DOTRenderer) Render() (string, error) {
 	var b strings.Builder
 
 	// Write header
@@ -144,7 +144,7 @@ func (r *DOTRenderer) Render() string {
 
 	b.WriteString("}\n")
 
-	return b.String()
+	return b.String(), nil
 }
 
 func (r *DOTRenderer) writeNode(b *strings.Builder, node GraphNode) {

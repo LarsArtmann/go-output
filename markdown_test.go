@@ -22,7 +22,10 @@ func testMarkdownBasicTable(t *testing.T) {
 		AddRow([]string{"Alice", "30"}).
 		AddRow([]string{"Bob", "25"})
 
-	got := m.Render()
+	got, err := m.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
 
 	assertContains(t, got, "Name", "Render() should contain header text")
 	assertContains(t, got, "Alice", "Render() should contain data row")
@@ -33,7 +36,10 @@ func testMarkdownEmptyHeaders(t *testing.T) {
 
 	m := NewMarkdownTable()
 
-	got := m.Render()
+	got, err := m.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
 
 	if got != "" {
 		t.Error("Render() should return empty string for empty headers")
@@ -48,7 +54,10 @@ func testMarkdownAlignment(t *testing.T) {
 		SetAlign(1, AlignRight).
 		AddRow([]string{"Alice", "30"})
 
-	got := m.Render()
+	got, err := m.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
 
 	assertContains(t, got, "|--", "Render() should contain separator row")
 	assertContains(t, got, "--:|", "Render() should contain right-align marker")
@@ -62,7 +71,11 @@ func TestMarkdownAlignmentMarkers(t *testing.T) {
 
 		m := NewMarkdownTable()
 		m.SetHeaders([]string{"A"}).SetAlign(0, AlignLeft).AddRow([]string{"x"})
-		got := m.Render()
+
+		got, err := m.Render()
+		if err != nil {
+			t.Fatalf("Render() error = %v", err)
+		}
 
 		if strings.Contains(got, ":--") {
 			t.Error("Left align should not have colon prefix in separator")
@@ -74,7 +87,11 @@ func TestMarkdownAlignmentMarkers(t *testing.T) {
 
 		m := NewMarkdownTable()
 		m.SetHeaders([]string{"A"}).SetAlign(0, AlignRight).AddRow([]string{"x"})
-		got := m.Render()
+
+		got, err := m.Render()
+		if err != nil {
+			t.Fatalf("Render() error = %v", err)
+		}
 
 		assertContains(t, got, "--:|", "Right align should have colon suffix")
 	})
@@ -84,7 +101,11 @@ func TestMarkdownAlignmentMarkers(t *testing.T) {
 
 		m := NewMarkdownTable()
 		m.SetHeaders([]string{"A"}).SetAlign(0, AlignCenter).AddRow([]string{"x"})
-		got := m.Render()
+
+		got, err := m.Render()
+		if err != nil {
+			t.Fatalf("Render() error = %v", err)
+		}
 
 		assertContains(t, got, ":--:", "Center align should have colons on both sides")
 	})
@@ -111,7 +132,10 @@ func testMarkdownCenterAlignment(t *testing.T) {
 		SetAlign(1, AlignCenter).
 		AddRow([]string{"A", "30"})
 
-	got := m.Render()
+	got, err := m.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
 
 	assertContains(t, got, "|", "Render() should contain pipe delimiters")
 	assertContains(t, got, "A", "Render() should contain cell value 'A'")
@@ -136,7 +160,11 @@ func TestNewMarkdownTableFromData(t *testing.T) {
 	data.AddRow([]string{"Project B", "Inactive"})
 
 	m := NewMarkdownTableFromData(data)
-	got := m.Render()
+
+	got, err := m.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
 
 	assertContains(t, got, "Name", "should contain header 'Name'")
 	assertContains(t, got, "Status", "should contain header 'Status'")
@@ -150,7 +178,11 @@ func TestNewMarkdownTableFromDataEmpty(t *testing.T) {
 	data := NewTableData(nil)
 	m := NewMarkdownTableFromData(data)
 
-	got := m.Render()
+	got, err := m.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
 	if got != "" {
 		t.Errorf("FromData with empty data should render empty, got %q", got)
 	}

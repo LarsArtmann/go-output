@@ -115,7 +115,12 @@ func RenderMarkdownTable(headers []string, rows [][]string) string {
 		md.AddRow(row)
 	}
 
-	return md.Render()
+	out, err := md.Render()
+	if err != nil {
+		return ""
+	}
+
+	return out
 }
 
 // RenderSampleMarkdownTable returns a rendered markdown table with sample project data.
@@ -131,7 +136,11 @@ func AssertEmptyRendererOutput(
 ) {
 	t.Helper()
 
-	out := renderer.Render()
+	out, err := renderer.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
 	for _, expected := range expectedOutputs {
 		if !strings.Contains(out, expected.Substring) {
 			t.Error(expected.Message)

@@ -24,7 +24,11 @@ func TestD2AllNodeShapes(t *testing.T) {
 				Shape: shape,
 			})
 
-			got := d.Render()
+			got, err := d.Render()
+			if err != nil {
+				t.Fatalf("Render() error = %v", err)
+			}
+
 			assertContains(t, got, "node:", "should contain node ID")
 
 			if shape != D2ShapeRectangle {
@@ -44,7 +48,11 @@ func TestD2NodeRectangleImplicit(t *testing.T) {
 		Shape: D2ShapeRectangle,
 	})
 
-	got := d.Render()
+	got, err := d.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
 	if strings.Contains(got, "shape:") {
 		t.Error("rectangle shape should be implicit, not explicitly rendered")
 	}
@@ -75,7 +83,11 @@ func TestD2NodeWithStyle(t *testing.T) {
 		},
 	})
 
-	got := d.Render()
+	got, err := d.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
 	assertContains(t, got, "style.fill: blue", "should contain fill style")
 	assertContains(t, got, "style.stroke: black", "should contain stroke style")
 	assertContains(t, got, "style.stroke-width: 2", "should contain stroke-width")
@@ -100,7 +112,11 @@ func TestD2NodeWithIcon(t *testing.T) {
 		Icon:  "https://icons.terrastruct.com/essentials/004-cloud.svg",
 	})
 
-	got := d.Render()
+	got, err := d.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
 	assertContains(t, got, "icon:", "should contain icon attribute")
 	assertContains(t, got, "004-cloud.svg", "should contain icon URL")
 }
@@ -115,7 +131,11 @@ func TestD2NodeWithLink(t *testing.T) {
 		Link:  "https://example.com/docs",
 	})
 
-	got := d.Render()
+	got, err := d.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
 	assertContains(t, got, "link: https://example.com/docs", "should contain link")
 }
 
@@ -129,7 +149,11 @@ func TestD2NodeWithTooltip(t *testing.T) {
 		Tooltip: "Additional information",
 	})
 
-	got := d.Render()
+	got, err := d.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
 	assertContains(t, got, "tooltip: Additional information", "should contain tooltip")
 }
 
@@ -144,7 +168,11 @@ func TestD2NodeWithNear(t *testing.T) {
 		Near:  "server",
 	})
 
-	got := d.Render()
+	got, err := d.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
 	assertContains(t, got, "near: server", "should contain near attribute")
 }
 
@@ -160,7 +188,11 @@ func TestD2NodeWithGrid(t *testing.T) {
 		GridGap:     10,
 	})
 
-	got := d.Render()
+	got, err := d.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
 	assertContains(t, got, "grid-rows: 3", "should contain grid-rows")
 	assertContains(t, got, "grid-columns: 2", "should contain grid-columns")
 	assertContains(t, got, "grid-gap: 10", "should contain grid-gap")
@@ -180,7 +212,11 @@ func TestD2NodeWithClass(t *testing.T) {
 		Class: "important",
 	})
 
-	got := d.Render()
+	got, err := d.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
 	assertContains(t, got, "classes:", "should contain classes block")
 	assertContains(t, got, "important:", "should contain class definition")
 	assertContains(t, got, "style.fill: red", "should contain class style")
@@ -197,7 +233,11 @@ func TestD2NodeNested(t *testing.T) {
 		Nested: "  child: Inner\n",
 	})
 
-	got := d.Render()
+	got, err := d.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
 	assertContains(t, got, "child: Inner", "should contain nested content")
 	assertContains(t, got, "parent: Parent {", "should contain parent block")
 }
@@ -213,7 +253,11 @@ func TestD2NodeNestedWithShape(t *testing.T) {
 		Nested: "  child: Inner\n",
 	})
 
-	got := d.Render()
+	got, err := d.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
 	assertContains(t, got, "shape: circle", "nested node should support shape")
 	assertContains(t, got, "child: Inner", "should contain nested content")
 }
@@ -224,7 +268,11 @@ func TestD2NodeWithSpecialChars(t *testing.T) {
 	d := NewD2Diagram()
 	d.AddNodeSimple("node", `has "quotes" and\nnewlines`)
 
-	got := d.Render()
+	got, err := d.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
 	if strings.Contains(got, `"quotes"`) {
 		t.Error("quotes should be escaped in D2 output")
 	}

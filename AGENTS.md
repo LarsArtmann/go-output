@@ -106,7 +106,7 @@ go test -bench=. -benchmem ./...  # Benchmarks
 
 1. **Type-safe enums**: String constants with Parse/Validate via `enum` package
 2. **Branded IDs**: Phantom types prevent mixing D2NodeID/TreeNodeID/etc
-3. **Interface-based design**: Renderer, GraphRenderer, TableRenderer interfaces
+3. **Interface-based design**: Renderer, GraphRenderer, TableRenderer interfaces — `Render() (string, error)`
 4. **Composition**: GraphRendererMixin shared by DOT/Mermaid, tableDataBase shared by HTML/Streaming
 5. **Registry is opt-in**: Use constructors directly by default. Register/Create for runtime dispatch.
 

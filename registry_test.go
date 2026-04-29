@@ -68,8 +68,13 @@ func TestCreate(t *testing.T) {
 			t.Fatalf("Create() error = %v", err)
 		}
 
-		if r.Render() != testOutput {
-			t.Errorf("Create().Render() = %q, want %q", r.Render(), testOutput)
+		got, err := r.Render()
+		if err != nil {
+			t.Fatalf("Render() error = %v", err)
+		}
+
+		if got != testOutput {
+			t.Errorf("Create().Render() = %q, want %q", got, testOutput)
 		}
 	})
 
@@ -170,6 +175,6 @@ type testRenderer struct {
 	output string
 }
 
-func (r *testRenderer) Render() string {
-	return r.output
+func (r *testRenderer) Render() (string, error) {
+	return r.output, nil
 }

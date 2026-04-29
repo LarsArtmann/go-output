@@ -1,6 +1,7 @@
 package output
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/larsartmann/go-output/internal/escape"
@@ -53,9 +54,9 @@ func NewHTMLRenderer() *HTMLRenderer {
 }
 
 // Render returns the HTML table as a string.
-func (r *HTMLRenderer) Render() string {
+func (r *HTMLRenderer) Render() (string, error) {
 	if r.data == nil {
-		return "<table class=\"data-table\"></table>"
+		return "<table class=\"data-table\"></table>", nil
 	}
 
 	var b strings.Builder
@@ -84,11 +85,16 @@ func (r *HTMLRenderer) Render() string {
 </table>
 `)
 
-	return b.String()
+	return b.String(), nil
 }
 
 // RenderFullHTML returns a complete HTML document with the table.
-func (r *HTMLRenderer) RenderFullHTML(title string) string {
+func (r *HTMLRenderer) RenderFullHTML(title string) (string, error) {
+	content, err := r.Render()
+	if err != nil {
+		return "", fmt.Errorf("render html table: %w", err)
+	}
+
 	return renderFullHTMLDocument(title, `
 .data-table {
   width: 100%;
@@ -114,7 +120,7 @@ func (r *HTMLRenderer) RenderFullHTML(title string) string {
 .data-table tr:last-child td {
   border-bottom: none;
 }
-`, r.Render())
+`, content), nil
 }
 
 // HTMLTreeRenderer renders a tree structure as HTML with nested lists.
@@ -134,9 +140,9 @@ func (r *HTMLTreeRenderer) SetRoot(node *TreeNode) {
 }
 
 // Render returns the tree as an HTML string.
-func (r *HTMLTreeRenderer) Render() string {
+func (r *HTMLTreeRenderer) Render() (string, error) {
 	if r.root == nil {
-		return "<ul class=\"tree\"></ul>"
+		return "<ul class=\"tree\"></ul>", nil
 	}
 
 	var b strings.Builder
@@ -146,7 +152,7 @@ func (r *HTMLTreeRenderer) Render() string {
 	b.WriteString(`</ul>
 `)
 
-	return b.String()
+	return b.String(), nil
 }
 
 func (r *HTMLTreeRenderer) renderNode(b *strings.Builder, node *TreeNode) {
@@ -167,7 +173,12 @@ func (r *HTMLTreeRenderer) renderNode(b *strings.Builder, node *TreeNode) {
 }
 
 // RenderFullHTML returns a complete HTML document with the tree.
-func (r *HTMLTreeRenderer) RenderFullHTML(title string) string {
+func (r *HTMLTreeRenderer) RenderFullHTML(title string) (string, error) {
+	content, err := r.Render()
+	if err != nil {
+		return "", fmt.Errorf("render html tree: %w", err)
+	}
+
 	return renderFullHTMLDocument(title, `
 .tree {
   list-style: none;
@@ -185,7 +196,7 @@ func (r *HTMLTreeRenderer) RenderFullHTML(title string) string {
   padding-left: 1rem;
   margin-top: 0.5rem;
 }
-`, r.Render())
+`, content), nil
 }
 
 // renderFullHTMLDocument creates a complete HTML document with the given styles and content.

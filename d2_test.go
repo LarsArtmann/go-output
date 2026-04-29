@@ -16,7 +16,11 @@ func TestD2Diagram(t *testing.T) {
 			{Name: "name", Type: "string"},
 		})
 
-		got := d.Render()
+		got, err := d.Render()
+		if err != nil {
+			t.Fatalf("Render() error = %v", err)
+		}
+
 		assertContains(t, got, "users:", "should contain table name")
 		assertContains(t, got, "shape: sql_table", "should contain sql_table shape")
 		assertContains(t, got, "id: int", "should contain column definitions")
@@ -40,7 +44,11 @@ func TestD2Diagram(t *testing.T) {
 		d.AddTable("users", []D2Column{{Name: "id", Type: "int"}})
 		d.AddTable("posts", []D2Column{{Name: "id", Type: "int"}})
 
-		got := d.Render()
+		got, err := d.Render()
+		if err != nil {
+			t.Fatalf("Render() error = %v", err)
+		}
+
 		assertContains(t, got, "users:", "should contain users table")
 		assertContains(t, got, "posts:", "should contain posts table")
 	})
@@ -50,7 +58,11 @@ func TestD2Diagram(t *testing.T) {
 
 		d := NewD2Diagram()
 
-		got := d.Render()
+		got, err := d.Render()
+		if err != nil {
+			t.Fatalf("Render() error = %v", err)
+		}
+
 		if got != "" {
 			t.Errorf("empty diagram should render empty string, got %q", got)
 		}
@@ -73,7 +85,12 @@ func TestD2Config(t *testing.T) {
 		t.Parallel()
 
 		d := NewD2Diagram().SetDirection(D2DirRight)
-		got := d.Render()
+
+		got, err := d.Render()
+		if err != nil {
+			t.Fatalf("Render() error = %v", err)
+		}
+
 		assertContains(t, got, "direction: right", "should contain direction")
 	})
 
@@ -81,7 +98,12 @@ func TestD2Config(t *testing.T) {
 		t.Parallel()
 
 		d := NewD2Diagram().SetTitle("My Diagram")
-		got := d.Render()
+
+		got, err := d.Render()
+		if err != nil {
+			t.Fatalf("Render() error = %v", err)
+		}
+
 		assertContains(t, got, "title:", "should contain title block")
 		assertContains(t, got, "My Diagram", "should contain title value")
 	})
@@ -90,7 +112,12 @@ func TestD2Config(t *testing.T) {
 		t.Parallel()
 
 		d := NewD2Diagram().SetLayout("elk")
-		got := d.Render()
+
+		got, err := d.Render()
+		if err != nil {
+			t.Fatalf("Render() error = %v", err)
+		}
+
 		assertContains(t, got, "layout: elk", "should contain layout engine")
 	})
 
@@ -98,7 +125,12 @@ func TestD2Config(t *testing.T) {
 		t.Parallel()
 
 		d := NewD2Diagram().SetDirection(D2DirRight).SetLayout("elk").SetTitle("Architecture")
-		got := d.Render()
+
+		got, err := d.Render()
+		if err != nil {
+			t.Fatalf("Render() error = %v", err)
+		}
+
 		assertContains(t, got, "direction: right", "should contain direction")
 		assertContains(t, got, "layout: elk", "should contain layout")
 		assertContains(t, got, "Architecture", "should contain title")
@@ -121,7 +153,11 @@ func TestD2Diagram_AddNode(t *testing.T) {
 			t.Error("AddNode should return diagram for chaining")
 		}
 
-		got := d.Render()
+		got, err := d.Render()
+		if err != nil {
+			t.Fatalf("Render() error = %v", err)
+		}
+
 		assertContains(t, got, "server: Web Server", "should contain node")
 	})
 
@@ -135,7 +171,11 @@ func TestD2Diagram_AddNode(t *testing.T) {
 			t.Error("AddNodeSimple should return diagram for chaining")
 		}
 
-		got := d.Render()
+		got, err := d.Render()
+		if err != nil {
+			t.Fatalf("Render() error = %v", err)
+		}
+
 		assertContains(t, got, "db: Database", "should contain simple node")
 	})
 
@@ -149,7 +189,11 @@ func TestD2Diagram_AddNode(t *testing.T) {
 			t.Error("AddNodeWithShape should return diagram for chaining")
 		}
 
-		got := d.Render()
+		got, err := d.Render()
+		if err != nil {
+			t.Fatalf("Render() error = %v", err)
+		}
+
 		assertContains(t, got, "cache: Cache {", "should use block syntax for shaped node")
 		assertContains(t, got, "shape: circle", "should contain shape attribute")
 	})
@@ -171,7 +215,11 @@ func TestD2Diagram_AddEdge(t *testing.T) {
 			t.Error("AddEdge should return diagram for chaining")
 		}
 
-		got := d.Render()
+		got, err := d.Render()
+		if err != nil {
+			t.Fatalf("Render() error = %v", err)
+		}
+
 		assertContains(t, got, "a -> b", "should contain edge")
 	})
 
@@ -185,7 +233,11 @@ func TestD2Diagram_AddEdge(t *testing.T) {
 			t.Error("AddEdgeSimple should return diagram for chaining")
 		}
 
-		got := d.Render()
+		got, err := d.Render()
+		if err != nil {
+			t.Fatalf("Render() error = %v", err)
+		}
+
 		assertContains(t, got, "x -> y", "should contain simple edge")
 	})
 
@@ -199,7 +251,11 @@ func TestD2Diagram_AddEdge(t *testing.T) {
 			t.Error("AddLabeledEdge should return diagram for chaining")
 		}
 
-		got := d.Render()
+		got, err := d.Render()
+		if err != nil {
+			t.Fatalf("Render() error = %v", err)
+		}
+
 		assertContains(t, got, "src -> dst: connects", "should contain labeled edge")
 	})
 }

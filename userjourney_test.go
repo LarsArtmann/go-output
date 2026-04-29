@@ -155,7 +155,10 @@ func TestHandleEdgeCases(t *testing.T) {
 		md := output.NewMarkdownTable()
 
 		// When: I render it
-		result := md.Render()
+		result, err := md.Render()
+		if err != nil {
+			t.Fatalf("Render() error = %v", err)
+		}
 
 		// Then: I get empty string (not panic)
 		if result != "" {

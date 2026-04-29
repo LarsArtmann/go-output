@@ -27,15 +27,15 @@ func (r *ASCIITreeRenderer) SetRoot(node *TreeNode) {
 }
 
 // Render returns the tree as a string.
-func (r *ASCIITreeRenderer) Render() string {
+func (r *ASCIITreeRenderer) Render() (string, error) {
 	if r.root == nil {
-		return ""
+		return "", nil
 	}
 
 	var b strings.Builder
 	r.renderNode(&b, r.root, "", true)
 
-	return b.String()
+	return b.String(), nil
 }
 
 func (r *ASCIITreeRenderer) renderNode(

@@ -183,7 +183,7 @@ func (e *InvalidFormatError) Error() string {
 // Renderer defines the interface for output format renderers.
 type Renderer interface {
 	// Render returns the formatted output as a string.
-	Render() string
+	Render() (string, error)
 }
 
 // TableRenderer defines the interface for table format renderers.

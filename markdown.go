@@ -82,9 +82,9 @@ func (m *MarkdownTable) AddRow(row []string) *MarkdownTable {
 }
 
 // Render returns the Markdown table string.
-func (m *MarkdownTable) Render() string {
+func (m *MarkdownTable) Render() (string, error) {
 	if len(m.headers) == 0 {
-		return ""
+		return "", nil
 	}
 
 	colWidths := m.calculateColumnWidths()
@@ -95,7 +95,7 @@ func (m *MarkdownTable) Render() string {
 	m.writeSeparator(&b, colWidths)
 	m.writeRows(&b, colWidths)
 
-	return b.String()
+	return b.String(), nil
 }
 
 func (m *MarkdownTable) calculateColumnWidths() []int {

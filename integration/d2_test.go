@@ -38,7 +38,11 @@ func TestD2ConstraintsIntegration(t *testing.T) {
 		{Name: "org_id", Type: "int", Constraint: output.D2ConstraintForeign},
 	})
 
-	result := d2.Render()
+	result, err := d2.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
 	testutils.AssertContains(t, result, "constraint: primary_key", "should contain primary key")
 	testutils.AssertContains(t, result, "constraint: unique", "should contain unique constraint")
 	testutils.AssertContains(t, result, "constraint: foreign_key", "should contain foreign key")
@@ -55,7 +59,11 @@ func TestD2ClassesIntegration(t *testing.T) {
 		Class: "server",
 	})
 
-	result := d2.Render()
+	result, err := d2.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
 	testutils.AssertContains(t, result, "classes:", "should contain classes block")
 	testutils.AssertContains(t, result, "class: server", "should contain class reference")
 }
@@ -71,7 +79,11 @@ func TestD2ArrowTypesIntegration(t *testing.T) {
 		SourceArrow: output.D2ArrowCFMany,
 	})
 
-	result := d2.Render()
+	result, err := d2.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
 	testutils.AssertContains(
 		t,
 		result,
@@ -102,7 +114,11 @@ func TestD2GridAndNearIntegration(t *testing.T) {
 		Near:  "grid",
 	})
 
-	result := d2.Render()
+	result, err := d2.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
 	testutils.AssertContains(t, result, "grid-rows: 2", "should contain grid-rows")
 	testutils.AssertContains(t, result, "grid-columns: 3", "should contain grid-columns")
 	testutils.AssertContains(t, result, "near: grid", "should contain near")

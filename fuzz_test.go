@@ -99,7 +99,11 @@ func FuzzMarkdownTable(f *testing.F) {
 		md := NewMarkdownTable()
 		md.SetHeaders(headers)
 		md.AddRow(row)
-		result := md.Render()
+
+		result, err := md.Render()
+		if err != nil {
+			t.Fatalf("Render() error = %v", err)
+		}
 
 		// Should not panic and should produce output
 		if result == "" && len(headers) > 0 {

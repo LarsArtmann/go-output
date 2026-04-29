@@ -110,7 +110,7 @@ func (d *D2Diagram) AddLabeledEdge(from, to, label string) *D2Diagram {
 }
 
 // Render returns the D2 diagram as a valid D2 language string.
-func (d *D2Diagram) Render() string {
+func (d *D2Diagram) Render() (string, error) {
 	var b strings.Builder
 
 	d.writeConfig(&b)
@@ -131,7 +131,7 @@ func (d *D2Diagram) Render() string {
 		d.writeEdge(&b, edge)
 	}
 
-	return strings.TrimRight(b.String(), "\n")
+	return strings.TrimRight(b.String(), "\n"), nil
 }
 
 func (d *D2Diagram) writeConfig(b *strings.Builder) {

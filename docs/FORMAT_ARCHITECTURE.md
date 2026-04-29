@@ -92,7 +92,7 @@ Base interface for all renderers:
 
 ```go
 type Renderer interface {
-    Render() string
+    Render() (string, error)
 }
 ```
 

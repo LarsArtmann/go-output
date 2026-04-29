@@ -15,7 +15,10 @@ func TestMermaidRenderer(t *testing.T) {
 	renderer.SetNodes(testNodesABC())
 	renderer.SetEdges(testEdgesABC())
 
-	output := renderer.Render()
+	output, err := renderer.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
 
 	assertContains(t, output, "```mermaid", "Output should contain mermaid code fence")
 	assertContains(t, output, "flowchart TD", "Output should contain flowchart declaration")
@@ -32,7 +35,10 @@ func TestMermaidRendererWithDiamond(t *testing.T) {
 	renderer.SetNodes([]GraphNode{newTestNodeWithShape("decision", "Decision", ShapeDiamond)})
 	renderer.SetEdges([]GraphEdge{})
 
-	output := renderer.Render()
+	output, err := renderer.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
 
 	// Diamond uses {} syntax: decision{Decision}
 	assertContains(t, output, "decision{Decision}", "Diamond shape should use {} syntax")
@@ -47,7 +53,11 @@ func TestMermaidRendererFromTableData(t *testing.T) {
 	data.AddRow([]string{"End", "Finish"})
 
 	renderer := MermaidFlowchartRenderer(data)
-	output := renderer.Render()
+
+	output, err := renderer.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
 
 	assertContains(t, output, "flowchart TD", "Output should be a flowchart")
 	assertContains(t, output, "Start", "Output should contain 'Start'")
@@ -62,7 +72,11 @@ func TestMermaidTreeRenderer(t *testing.T) {
 	root.AddChild(NewTreeNode("child2", "Child 2"))
 
 	renderer := MermaidTreeRenderer(root)
-	output := renderer.Render()
+
+	output, err := renderer.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
 
 	assertContains(t, output, "flowchart TD", "Output should be a flowchart")
 	assertContains(t, output, "Child 1", "Output should contain 'Child 1'")
@@ -138,7 +152,11 @@ func TestMermaidRendererAllShapes(t *testing.T) {
 			renderer.SetNodes([]GraphNode{newTestNodeWithShape("n", "Test", tt.shape)})
 			renderer.SetEdges([]GraphEdge{})
 
-			output := renderer.Render()
+			output, err := renderer.Render()
+			if err != nil {
+				t.Fatalf("Render() error = %v", err)
+			}
+
 			if !strings.Contains(output, tt.wantLeft) || !strings.Contains(output, tt.wantRight) {
 				t.Errorf(
 					"Shape %v should produce %q...%q, got: %s",
@@ -159,7 +177,11 @@ func TestMermaidRendererWithEdgeLabel(t *testing.T) {
 	renderer.SetNodes(testNodesAB())
 	renderer.SetEdges([]GraphEdge{testEdgeAB("connects")})
 
-	output := renderer.Render()
+	output, err := renderer.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
 	assertContains(t, output, "|connects|", "Output should contain edge label |connects|")
 }
 
@@ -167,7 +189,11 @@ func TestMermaidTreeRendererNilRoot(t *testing.T) {
 	t.Parallel()
 
 	renderer := MermaidTreeRenderer(nil)
-	output := renderer.Render()
+
+	output, err := renderer.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
 
 	assertContains(t, output, "flowchart TD", "Nil root should still produce valid flowchart")
 }
@@ -177,7 +203,11 @@ func TestMermaidTreeRendererWithEmptyID(t *testing.T) {
 	// TreeNode with empty ID should use label
 	root := NewTreeNode("", "RootLabel")
 	renderer := MermaidTreeRenderer(root)
-	output := renderer.Render()
+
+	output, err := renderer.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
 
 	assertContains(t, output, "RootLabel", "Output should contain label when ID is empty")
 }
@@ -190,7 +220,11 @@ func TestMermaidRendererEscapeLabel(t *testing.T) {
 	renderer.SetNodes([]GraphNode{newTestNode("A", `test "quoted" text`)})
 	renderer.SetEdges([]GraphEdge{})
 
-	output := renderer.Render()
+	output, err := renderer.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
 	if strings.Contains(output, `"quoted"`) {
 		t.Error("Quotes should be escaped")
 	}

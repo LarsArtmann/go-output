@@ -16,7 +16,11 @@ func TestD2TableWithConstraints(t *testing.T) {
 		{Name: "name", Type: "string"},
 	})
 
-	got := d.Render()
+	got, err := d.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
 	assertContains(t, got, "id: int {constraint: primary_key}", "should contain primary key")
 	assertContains(t, got, "email: string {constraint: unique}", "should contain unique")
 	assertContains(t, got, "org_id: int {constraint: foreign_key}", "should contain foreign key")
@@ -54,7 +58,11 @@ func TestD2FromTableData(t *testing.T) {
 			t.Fatal("D2FromTableData(nil) should return non-nil diagram")
 		}
 
-		got := d.Render()
+		got, err := d.Render()
+		if err != nil {
+			t.Fatalf("Render() error = %v", err)
+		}
+
 		if got != "" {
 			t.Errorf("nil data should render empty diagram, got %q", got)
 		}
@@ -68,7 +76,12 @@ func TestD2FromTableData(t *testing.T) {
 		data.AddRow([]string{"Beta", "200"})
 
 		d := D2FromTableData(data)
-		got := d.Render()
+
+		got, err := d.Render()
+		if err != nil {
+			t.Fatalf("Render() error = %v", err)
+		}
+
 		assertContains(t, got, "row0", "should contain first row node")
 		assertContains(t, got, "row1", "should contain second row node")
 		assertContains(t, got, "->", "should contain edges")
@@ -87,7 +100,11 @@ func TestD2FromTree(t *testing.T) {
 			t.Fatal("D2FromTree(nil) should return non-nil diagram")
 		}
 
-		got := d.Render()
+		got, err := d.Render()
+		if err != nil {
+			t.Fatalf("Render() error = %v", err)
+		}
+
 		if got != "" {
 			t.Errorf("nil root should render empty diagram, got %q", got)
 		}
@@ -102,7 +119,12 @@ func TestD2FromTree(t *testing.T) {
 		root.AddChild(NewTreeNode("child2", "Child 2"))
 
 		d := D2FromTree(root)
-		got := d.Render()
+
+		got, err := d.Render()
+		if err != nil {
+			t.Fatalf("Render() error = %v", err)
+		}
+
 		assertContains(t, got, "root: Root", "should contain root node")
 		assertContains(t, got, "child1: Child 1", "should contain first child")
 		assertContains(t, got, "child2: Child 2", "should contain second child")
@@ -119,7 +141,12 @@ func TestD2FromTree(t *testing.T) {
 		root.Children[0].AddChild(NewTreeNode("grandchild", "Grandchild"))
 
 		d := D2FromTree(root)
-		got := d.Render()
+
+		got, err := d.Render()
+		if err != nil {
+			t.Fatalf("Render() error = %v", err)
+		}
+
 		assertContains(t, got, "root -> child", "should contain root->child edge")
 		assertContains(t, got, "child -> grandchild", "should contain child->grandchild edge")
 	})
@@ -139,7 +166,11 @@ func TestD2GraphRendererInterface(t *testing.T) {
 		*NewGraphEdge("a", "b"),
 	})
 
-	got := d.Render()
+	got, err := d.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
 	assertContains(t, got, "a: Node A", "should contain node A")
 	assertContains(t, got, "b: Node B", "should contain node B")
 	assertContains(t, got, "a -> b", "should contain edge")
@@ -170,7 +201,10 @@ func TestD2GraphShapeConversion(t *testing.T) {
 			d := NewD2Diagram()
 			d.SetNodes([]GraphNode{newTestNodeWithShape("node", "Test", tt.shape)})
 
-			got := d.Render()
+			got, err := d.Render()
+			if err != nil {
+				t.Fatalf("Render() error = %v", err)
+			}
 
 			if tt.want == "" {
 				if strings.Contains(got, "shape:") {
@@ -200,7 +234,11 @@ func TestD2GraphStyleConversion(t *testing.T) {
 		},
 	})
 
-	got := d.Render()
+	got, err := d.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
 	assertContains(t, got, "style.fill: blue", "should convert fill color")
 	assertContains(t, got, "style.stroke: black", "should convert stroke color")
 	assertContains(t, got, "style.font-size: 14", "should convert font size")

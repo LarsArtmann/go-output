@@ -72,7 +72,11 @@ func TestStreamingHTMLRendererRender(t *testing.T) {
 	r.SetHeaders([]string{"Name", "Value"})
 	r.AddRow([]string{"test", "123"})
 
-	got := r.Render()
+	got, err := r.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
 	assertContains(t, got, "<th>Name</th>", "Render() missing header Name")
 	assertContains(t, got, "<td>test</td>", "Render() missing cell test")
 }
@@ -94,7 +98,10 @@ func TestStreamingHTMLRendererRenderEmpty(t *testing.T) {
 
 	r := NewStreamingHTMLRenderer()
 
-	got := r.Render()
+	got, err := r.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
 
 	want := emptyTableHTML
 	if got != want {
@@ -150,7 +157,11 @@ func TestStreamingHTMLRendererEscapeAmpersand(t *testing.T) {
 	r.SetHeaders([]string{"Name"})
 	r.AddRow([]string{"Tom & Jerry"})
 
-	got := r.Render()
+	got, err := r.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
 	assertContains(t, got, "Tom &amp; Jerry", "Render() did not escape ampersand")
 }
 
@@ -160,13 +171,18 @@ func TestStreamingRendererFromRenderer(t *testing.T) {
 	original := &testRenderer{output: "test-output"}
 	adapter := StreamingRendererFromRenderer(original)
 
-	if adapter.Render() != "test-output" {
-		t.Errorf("Render() = %q, want %q", adapter.Render(), "test-output")
+	got, err := adapter.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
+	if got != "test-output" {
+		t.Errorf("Render() = %q, want %q", got, "test-output")
 	}
 
 	var buf bytes.Buffer
 
-	err := adapter.Stream(&buf)
+	err = adapter.Stream(&buf)
 	if err != nil {
 		t.Fatalf("Stream() error = %v", err)
 	}
@@ -186,7 +202,11 @@ func TestStreamingHTMLRendererMultipleRows(t *testing.T) {
 		r.AddRow([]string{string(rune('0' + i)), "Name" + string(rune('A'+i)), "100"})
 	}
 
-	got := r.Render()
+	got, err := r.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
 	for i := range 5 {
 		if !strings.Contains(got, "Name"+string(rune('A'+i))) {
 			t.Errorf("Render() missing row %d", i)
