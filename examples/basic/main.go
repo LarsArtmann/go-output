@@ -83,7 +83,12 @@ func renderTable(projects []Project) {
 		tbl.AddRow(p.Name, strconv.Itoa(p.Health)+"%", strconv.Itoa(p.Complexity)+"/10")
 	}
 
-	fmt.Println(tbl.Render())
+	out, err := tbl.Render()
+	if err != nil {
+		handleError(err)
+	}
+
+	fmt.Println(out)
 }
 
 func renderJSON(projects []Project) {
@@ -105,7 +110,11 @@ func renderMarkdown(projects []Project) {
 		)
 	}
 
-	out := md.Render()
+	out, err := md.Render()
+	if err != nil {
+		handleError(err)
+	}
+
 	fmt.Println(out)
 }
 
@@ -222,7 +231,12 @@ func renderD2(projects []Project) {
 		})
 	}
 
-	fmt.Println(d2.Render())
+	out, err := d2.Render()
+	if err != nil {
+		handleError(err)
+	}
+
+	fmt.Println(out)
 }
 
 func renderHTML(projects []Project) {
@@ -248,13 +262,25 @@ func renderTree(projects []Project) {
 	}
 
 	tree.SetRoot(root)
-	fmt.Println(tree.Render())
+
+	out, err := tree.Render()
+	if err != nil {
+		handleError(err)
+	}
+
+	fmt.Println(out)
 }
 
 func renderDiagram(projects []Project, createRenderer func(*output.TableData) output.Renderer) {
 	data := projectsToTableData(projects)
 	renderer := createRenderer(data)
-	fmt.Println(renderer.Render())
+
+	out, err := renderer.Render()
+	if err != nil {
+		handleError(err)
+	}
+
+	fmt.Println(out)
 }
 
 func renderMermaid(projects []Project) {

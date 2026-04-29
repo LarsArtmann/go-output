@@ -26,7 +26,10 @@ fmt.Println(string(data))
 md := output.NewMarkdownTable()
 md.SetHeaders([]string{"Name", "Health", "Complexity"})
 md.AddRow([]string{"Alpha", "90%", "7/10"})
-out, _ := md.Render()
+out, err := md.Render()
+if err != nil {
+    log.Fatal(err)
+}
 fmt.Println(out)
 
 // CSV output

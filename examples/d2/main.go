@@ -3,6 +3,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/larsartmann/go-output"
 )
@@ -59,5 +60,11 @@ func main() {
 			Label:       output.NewBrandedID[output.D2NodeLabelBrand]("stores"),
 		})
 
-	fmt.Println(diagram.Render())
+	out, err := diagram.Render()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+		os.Exit(1)
+	}
+
+	fmt.Println(out)
 }

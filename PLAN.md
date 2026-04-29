@@ -95,19 +95,19 @@ w.Flush()
 md := output.NewMarkdownTable()
 md.SetHeaders([]string{"Name", "Age"})
 md.AddRow([]string{"Alice", "30"})
-fmt.Println(md.Render())
+fmt.Println(output.MustRender(md))
 
 // Terminal table
 t := table.FromTableData(output.NewTableData([]string{"Name"}))
 t.AddRow("Alice")
-fmt.Println(t.Render())
+fmt.Println(output.MustRender(t))
 
 // D2 diagram
 d := output.NewD2Diagram()
 d.AddNodeSimple("server", "Server")
 d.AddNodeSimple("db", "Database")
 d.AddEdgeSimple("server", "db")
-fmt.Println(d.Render())
+fmt.Println(output.MustRender(d))
 ```
 
 ## Dependencies
