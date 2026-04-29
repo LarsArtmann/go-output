@@ -17,21 +17,18 @@ const (
 	D2DirUp    D2Direction = "up"
 )
 
-func d2DirectionValues() []D2Direction {
-	return []D2Direction{
-		D2DirDown,
-		D2DirRight,
-		D2DirLeft,
-		D2DirUp,
-	}
+//nolint:gochecknoglobals // Global variable used for value iteration.
+var d2DirectionValues = []D2Direction{
+	D2DirDown,
+	D2DirRight,
+	D2DirLeft,
+	D2DirUp,
 }
 
 var ErrInvalidD2Direction = errors.New("invalid D2 direction")
 
 func ParseD2Direction(s string) (D2Direction, error) {
-	values := d2DirectionValues()
-
-	v, err := enum.Parse(values, s, func(d D2Direction) string { return string(d) })
+	v, err := enum.Parse(d2DirectionValues, s, func(d D2Direction) string { return string(d) })
 	if err != nil {
 		return "", fmt.Errorf("%w: %q", ErrInvalidD2Direction, s)
 	}
@@ -40,11 +37,11 @@ func ParseD2Direction(s string) (D2Direction, error) {
 }
 
 func (d D2Direction) IsValid() bool {
-	return enum.Contains(d2DirectionValues(), d)
+	return enum.Contains(d2DirectionValues, d)
 }
 
 func (d D2Direction) AllowedValues() []string {
-	return enum.AllowedValues(d2DirectionValues())
+	return enum.AllowedValues(d2DirectionValues)
 }
 
 func (d D2Direction) String() string {
@@ -78,37 +75,34 @@ const (
 	D2ShapeStoredData    D2NodeShape = "stored_data"
 )
 
-func d2NodeShapeValues() []D2NodeShape {
-	return []D2NodeShape{
-		D2ShapeRectangle,
-		D2ShapeSquare,
-		D2ShapeCircle,
-		D2ShapeDiamond,
-		D2ShapeHexagon,
-		D2ShapeCloud,
-		D2ShapeCylinder,
-		D2ShapePerson,
-		D2ShapeQueue,
-		D2ShapeOval,
-		D2ShapeParallelogram,
-		D2ShapeTriangle,
-		D2ShapeSQLTable,
-		D2ShapeImage,
-		D2ShapeCode,
-		D2ShapeText,
-		D2ShapeClass,
-		D2ShapePage,
-		D2ShapeStep,
-		D2ShapeStoredData,
-	}
+//nolint:gochecknoglobals // Global variable used for value iteration.
+var d2NodeShapeValues = []D2NodeShape{
+	D2ShapeRectangle,
+	D2ShapeSquare,
+	D2ShapeCircle,
+	D2ShapeDiamond,
+	D2ShapeHexagon,
+	D2ShapeCloud,
+	D2ShapeCylinder,
+	D2ShapePerson,
+	D2ShapeQueue,
+	D2ShapeOval,
+	D2ShapeParallelogram,
+	D2ShapeTriangle,
+	D2ShapeSQLTable,
+	D2ShapeImage,
+	D2ShapeCode,
+	D2ShapeText,
+	D2ShapeClass,
+	D2ShapePage,
+	D2ShapeStep,
+	D2ShapeStoredData,
 }
 
 var ErrInvalidD2NodeShape = errors.New("invalid D2 node shape")
 
 func ParseD2NodeShape(s string) (D2NodeShape, error) {
-	values := d2NodeShapeValues()
-
-	v, err := enum.Parse(values, s, func(ns D2NodeShape) string { return string(ns) })
+	v, err := enum.Parse(d2NodeShapeValues, s, func(ns D2NodeShape) string { return string(ns) })
 	if err != nil {
 		return "", fmt.Errorf("%w: %q", ErrInvalidD2NodeShape, s)
 	}
@@ -117,11 +111,11 @@ func ParseD2NodeShape(s string) (D2NodeShape, error) {
 }
 
 func (s D2NodeShape) IsValid() bool {
-	return enum.Contains(d2NodeShapeValues(), s)
+	return enum.Contains(d2NodeShapeValues, s)
 }
 
 func (s D2NodeShape) AllowedValues() []string {
-	return enum.AllowedValues(d2NodeShapeValues())
+	return enum.AllowedValues(d2NodeShapeValues)
 }
 
 func (s D2NodeShape) String() string {
@@ -238,28 +232,25 @@ const (
 	D2ArrowCFManyRequired D2ArrowType = "cf-many-required"
 )
 
-func d2ArrowTypeValues() []D2ArrowType {
-	return []D2ArrowType{
-		D2ArrowArrow,
-		D2ArrowTriangle,
-		D2ArrowDiamond,
-		D2ArrowCircle,
-		D2ArrowFilled,
-		D2ArrowBox,
-		D2ArrowCross,
-		D2ArrowCFOne,
-		D2ArrowCFMany,
-		D2ArrowCFOneRequired,
-		D2ArrowCFManyRequired,
-	}
+//nolint:gochecknoglobals // Global variable used for value iteration.
+var d2ArrowTypeValues = []D2ArrowType{
+	D2ArrowArrow,
+	D2ArrowTriangle,
+	D2ArrowDiamond,
+	D2ArrowCircle,
+	D2ArrowFilled,
+	D2ArrowBox,
+	D2ArrowCross,
+	D2ArrowCFOne,
+	D2ArrowCFMany,
+	D2ArrowCFOneRequired,
+	D2ArrowCFManyRequired,
 }
 
 var ErrInvalidD2ArrowType = errors.New("invalid D2 arrow type")
 
 func ParseD2ArrowType(s string) (D2ArrowType, error) {
-	values := d2ArrowTypeValues()
-
-	v, err := enum.Parse(values, s, func(a D2ArrowType) string { return string(a) })
+	v, err := enum.Parse(d2ArrowTypeValues, s, func(a D2ArrowType) string { return string(a) })
 	if err != nil {
 		return "", fmt.Errorf("%w: %q", ErrInvalidD2ArrowType, s)
 	}
@@ -268,11 +259,11 @@ func ParseD2ArrowType(s string) (D2ArrowType, error) {
 }
 
 func (a D2ArrowType) IsValid() bool {
-	return a == D2ArrowNone || enum.Contains(d2ArrowTypeValues(), a)
+	return a == D2ArrowNone || enum.Contains(d2ArrowTypeValues, a)
 }
 
 func (a D2ArrowType) AllowedValues() []string {
-	return enum.AllowedValues(d2ArrowTypeValues())
+	return enum.AllowedValues(d2ArrowTypeValues)
 }
 
 func (a D2ArrowType) String() string {

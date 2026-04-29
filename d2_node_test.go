@@ -11,7 +11,7 @@ import (
 func TestD2AllNodeShapes(t *testing.T) {
 	t.Parallel()
 
-	shapes := d2NodeShapeValues()
+	shapes := d2NodeShapeValues
 
 	for _, shape := range shapes {
 		t.Run(string(shape), func(t *testing.T) {
