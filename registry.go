@@ -11,7 +11,6 @@
 package output
 
 import (
-	"cmp"
 	"errors"
 	"fmt"
 	"slices"
@@ -87,7 +86,15 @@ func RegisteredFormats() []Format {
 	}
 
 	slices.SortFunc(formats, func(a, b Format) int {
-		return cmp.Compare(a.String(), b.String())
+		if a.String() < b.String() {
+			return -1
+		}
+
+		if a.String() > b.String() {
+			return 1
+		}
+
+		return 0
 	})
 
 	return formats
