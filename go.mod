@@ -5,6 +5,7 @@ go 1.26.0
 require (
 	charm.land/lipgloss/v2 v2.0.3
 	github.com/go-faster/yaml v0.4.6
+	golang.org/x/term v0.42.0
 )
 
 require (
@@ -27,5 +28,4 @@ require (
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/sync v0.20.0 // indirect
 	golang.org/x/sys v0.43.0 // indirect
-	golang.org/x/term v0.42.0 // indirect
 )

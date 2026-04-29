@@ -4,6 +4,7 @@ package enum
 import (
 	"fmt"
 	"slices"
+	"strings"
 )
 
 // Parse parses a string into an enum value, returning an error if invalid.
@@ -59,13 +60,5 @@ func (e *ParseError) Error() string {
 }
 
 func joinStrings(ss []string) string {
-	if len(ss) == 0 {
-		return ""
-	}
-
-	if len(ss) == 1 {
-		return ss[0]
-	}
-
-	return fmt.Sprintf("%s, %s", joinStrings(ss[:len(ss)-1]), ss[len(ss)-1])
+	return strings.Join(ss, ", ")
 }
