@@ -1,388 +1,130 @@
-# go-output Library Plan
+# go-output Library
 
-## Overview
-
-A reusable Go library for CLI applications that provides consistent output formatting across multiple formats (JSON, CSV, Markdown, D2, YAML, Table) with type-safe enum-based configuration and optional cmdguard integration.
-
-**Location:** `/Users/larsartmann/projects/go-output/`
-
----
-
-## Core Enums
-
-| Enum        | Values                                                                             | Purpose                 |
-| ----------- | ---------------------------------------------------------------------------------- | ----------------------- |
-| `Format`    | `table`, `json`, `csv`, `markdown`, `d2`, `yaml`, `html`, `tree`, `mermaid`, `dot` | Output format selection |
-| `SortBy`    | `name`, `importance`, `created_at`, `updated_at`, `health`, `complexity`           | Sort field selection    |
-| `ColorMode` | `auto`, `always`, `never`                                                          | Color output control    |
-
----
+A reusable Go library for CLI applications providing consistent output formatting across multiple formats with type-safe enum-based configuration.
 
 ## Package Structure
 
 ```
 go-output/
-├── go.mod
-├── justfile
-├── README.md
+├── format.go              # Format enum + type definitions (Renderer, TableData, TreeNode, etc.)
+├── format_deprecated.go   # Backward compatibility aliases (OutputFormat)
+├── sort.go                # SortBy enum
+├── color.go               # ColorMode enum + terminal detection
+├── ids.go                 # BrandedID phantom types for type-safe IDs
 │
-├── format.go                    # Format enum + type definitions
-├── sort.go                      # SortBy enum
-├── color.go                     # ColorMode enum + ANSI helpers
+├── json.go                # JSON marshal/unmarshal + JSONWriter
+├── csv.go                 # CSV writer
+├── tsv.go                 # TSV writer + MarshalTSV
+├── yaml.go                # YAML marshal/unmarshal
+├── xml.go                 # XML writer + MarshalXMLFromTableData
+├── markdown.go            # Markdown table builder with alignment
+├── html.go                # HTML table + tree renderers
+├── tree.go                # ASCII tree renderer
 │
-├── json.go                      # JSON formatter
-├── csv.go                       # CSV formatter
-├── yaml.go                      # YAML formatter
-├── markdown.go                  # Markdown formatter
-├── d2.go                        # D2 diagram formatter
-├── html.go                      # HTML formatter
-├── tree.go                      # ASCII tree formatter
-├── mermaid.go                   # Mermaid diagram formatter
-├── dot.go                       # DOT/Graphviz formatter
+├── d2.go                  # D2 domain types (D2Node, D2Edge, D2Table, etc.)
+├── d2_render.go           # D2Diagram builder + Render()
+├── d2_write.go            # D2 style/edge writing helpers
+├── d2_convert.go          # TableData/Tree → D2 conversion
 │
-├── table/
-│   └── table.go                 # Table implementation using lipgloss
+├── graph.go               # Generic graph types (GraphNode, GraphEdge, GraphShape)
+├── dot.go                 # DOT/Graphviz renderer + GraphRendererMixin
+├── mermaid.go             # Mermaid diagram renderer
 │
-├── sort/
-│   └── sort.go                  # Generic Sorter[T] + comparators
+├── delimited.go           # Shared CSV/TSV DelimitedWriter
+├── markup.go              # Shared XML/HTML row writing helpers
+├── marshal.go             # Shared marshal/unmarshal error wrapping
+├── streaming.go           # Streaming HTML renderer + adapter
+├── slices.go              # Slice utilities
+├── registry.go            # Opt-in renderer registry (plugin system)
 │
-├── cmdguard/
-│   ├── format.go                # Format flag with validation
-│   ├── sort.go                  # SortBy flag with validation
-│   └── color.go                 # ColorMode flag with validation
-│
-├── examples/
-│   └── basic/main.go            # Example demonstrating all formats
-│
-└── benchmarks_test.go           # Performance benchmarks
+├── enum/                  # Generic enum utilities (Parse, Contains, AllowedValues)
+├── table/                 # Lipgloss-based terminal table renderer
+├── sort/                  # Generic Sorter[T] with reflect-based field comparison
+├── cmdguard/              # Generic EnumFlag[T] for cmdguard integration
+├── internal/escape/       # Format-specific escaping (HTML, XML, D2, DOT, Mermaid)
+├── internal/gentest/      # Test assertion helpers
+└── internal/testutils/    # Test helper utilities
 ```
 
----
+## Supported Formats
 
-## Phase 1: Foundation
+| Format | Constant | Category | Renderer |
+|--------|----------|----------|----------|
+| Table | `FormatTable` | table | `table.Table` (lipgloss) |
+| JSON | `FormatJSON` | table | `MarshalJSON` / `JSONWriter` |
+| CSV | `FormatCSV` | table | `CSVWriter` |
+| TSV | `FormatTSV` | table | `TSVWriter` |
+| Markdown | `FormatMarkdown` | table | `MarkdownTable` |
+| XML | `FormatXML` | table | `XMLWriter` |
+| YAML | `FormatYAML` | table | `MarshalYAML` |
+| HTML | `FormatHTML` | tree | `HTMLRenderer` / `StreamingHTMLRenderer` |
+| Tree | `FormatTree` | tree | `ASCIITreeRenderer` |
+| D2 | `FormatD2` | graph | `D2Diagram` |
+| Mermaid | `FormatMermaid` | graph | `MermaidRenderer` |
+| DOT | `FormatDOT` | graph | `DOTRenderer` |
 
-| Step | Task               | Details                                               |
-| ---- | ------------------ | ----------------------------------------------------- |
-| 1.1  | Create repository  | `mkdir -p /Users/larsartmann/projects/go-output`      |
-| 1.2  | Initialize go.mod  | Module: `github.com/larsartmann/go-output`            |
-| 1.3  | Create `format.go` | `OutputFormat` enum with Parse, String, AllowedValues |
-| 1.4  | Create `sort.go`   | `SortBy` enum with Parse, String, AllowedValues       |
-| 1.5  | Create `color.go`  | `ColorMode` enum with Parse, ShouldColor, ToANSI      |
+## Core Enums
 
-### format.go Specification
+| Enum | Values | Purpose |
+|------|--------|---------|
+| `Format` | 12 formats | Output format selection |
+| `SortBy` | name, importance, created_at, updated_at, health, complexity | Sort field selection |
+| `ColorMode` | auto, always, never | Color output control |
+
+All enums provide `ParseX()`, `String()`, `AllowedValues()`, `IsValid()` methods.
+
+## Quick Start
 
 ```go
-type Format string
-
-const (
-    FormatTable    Format = "table"
-    FormatJSON     Format = "json"
-    FormatCSV      Format = "csv"
-    FormatMarkdown Format = "markdown"
-    FormatD2       Format = "d2"
-    FormatYAML     Format = "yaml"
-    FormatHTML     Format = "html"
-    FormatTree     Format = "tree"
-    FormatMermaid  Format = "mermaid"
-    FormatDOT      Format = "dot"
+import (
+    "fmt"
+    "github.com/larsartmann/go-output"
+    "github.com/larsartmann/go-output/table"
 )
 
-// Backward compatibility alias
-type OutputFormat = Format
+// JSON
+jsonBytes, _ := output.MarshalJSONIndent(data, "", "  ")
 
-func ParseFormat(s string) (Format, error)
-func ParseOutputFormat(s string) (Format, error) // alias
-func (f Format) String() string
-func (f Format) AllowedValues() []string
-func (f Format) IsValid() bool
-func (f Format) IsTableFormat() bool
-func (f Format) IsTreeFormat() bool
-func (f Format) IsGraphFormat() bool
+// CSV
+w := output.NewCSVWriter(os.Stdout)
+w.WriteHeader([]string{"Name", "Age"})
+w.WriteRow([]string{"Alice", "30"})
+w.Flush()
+
+// Markdown
+md := output.NewMarkdownTable()
+md.SetHeaders([]string{"Name", "Age"})
+md.AddRow([]string{"Alice", "30"})
+fmt.Println(md.Render())
+
+// Terminal table
+t := table.FromTableData(output.NewTableData([]string{"Name"}))
+t.AddRow("Alice")
+fmt.Println(t.Render())
+
+// D2 diagram
+d := output.NewD2Diagram()
+d.AddNodeSimple("server", "Server")
+d.AddNodeSimple("db", "Database")
+d.AddEdgeSimple("server", "db")
+fmt.Println(d.Render())
 ```
-
-### sort.go Specification
-
-```go
-type SortBy string
-
-const (
-    SortByName SortBy = "name"
-    SortByImportance SortBy = "importance"
-    SortByCreatedAt SortBy = "created_at"
-    SortByUpdatedAt SortBy = "updated_at"
-    SortByHealth SortBy = "health"
-    SortByComplexity SortBy = "complexity"
-)
-
-func ParseSortBy(s string) (SortBy, error)
-func (s SortBy) String() string
-func (s SortBy) AllowedValues() []string
-```
-
-### color.go Specification
-
-```go
-type ColorMode string
-
-const (
-    ColorModeAuto ColorMode = "auto"
-    ColorModeAlways ColorMode = "always"
-    ColorModeNever ColorMode = "never"
-)
-
-func ParseColorMode(s string) (ColorMode, error)
-func (c ColorMode) ShouldColor() bool  // Respects NO_COLOR, CI env vars, TTY
-func (c ColorMode) ToANSI() string     // Returns escape code or ""
-```
-
----
-
-## Phase 2: Core Formatters
-
-| Step | Task                 | Details                          |
-| ---- | -------------------- | -------------------------------- |
-| 2.1  | Create `json.go`     | Marshal/Indent, encoder options  |
-| 2.2  | Create `csv.go`      | NewWriter, WriteHeader, WriteRow |
-| 2.3  | Create `yaml.go`     | Marshal/Unmarshal using go.yaml  |
-| 2.4  | Create `markdown.go` | Table generator with alignment   |
-| 2.5  | Create `d2.go`       | SQL table shape generator        |
-
-### json.go Specification
-
-```go
-func MarshalJSON(v any) ([]byte, error)
-func MarshalJSONIndent(v any, prefix, indent string) ([]byte, error)
-type JSONWriter struct { Writer io.Writer }
-func (j *JSONWriter) Encode(v any) error
-```
-
-### csv.go Specification
-
-```go
-type CSVWriter struct { Writer io.Writer }
-func NewCSVWriter(w io.Writer) *CSVWriter
-func (c *CSVWriter) WriteHeader(cols []string) error
-func (c *CSVWriter) WriteRow(values []string) error
-func (c *CSVWriter) Flush()
-```
-
----
-
-## Phase 3: Table System
-
-| Step | Task                       | Details                       |
-| ---- | -------------------------- | ----------------------------- |
-| 3.1  | Create `table/config.go`   | TableConfig interface         |
-| 3.2  | Create `table/styles.go`   | BorderStyle, Color, Alignment |
-| 3.3  | Create `table/lipgloss.go` | Lipgloss table builder        |
-| 3.4  | Create `table/table.go`    | Generic table interface       |
-
-### Table Interface
-
-```go
-type TableConfig interface {
-    GetBorderStyle() BorderStyle
-    GetHeaderStyle() TableCellStyle
-    GetRowStyle() TableCellStyle
-    GetAlternateRowStyle() TableCellStyle
-    ShouldUseAlternateRows() bool
-    GetColumnConfigs() []TableColumnConfig
-    GetBorderColor() Color
-    GetPadding() (int, int)
-    ShouldShowBorders() bool
-}
-
-type Table interface {
-    SetHeaders([]string) error
-    AddRow([]string) error
-    Render() (string, error)
-}
-
-func NewTable(config TableConfig) Table
-func (t *Table) WithStyleFunc(fn func(row, col int) Style) Table
-```
-
----
-
-## Phase 4: Sorting System
-
-| Step | Task                         | Details                                |
-| ---- | ---------------------------- | -------------------------------------- |
-| 4.1  | Create `sort/comparators.go` | CompareString, CompareInt, CompareTime |
-| 4.2  | Create `sort/sorter.go`      | SortFunc adapter                       |
-| 4.3  | Create `sort/adapter.go`     | SortBy to Comparator conversion        |
-
-### Sorting Interface
-
-```go
-type Comparator func(a, b any) int
-
-type Sorter struct {
-    Items any       // slice to sort
-    By    SortBy    // sort field
-    Desc  bool      // descending order
-}
-
-func (s *Sorter) Sort() error
-func (s *Sorter) SortFunc(cmp Comparator) *Sorter
-```
-
----
-
-## Phase 5: cmdguard Integration
-
-| Step | Task                        | Details                            |
-| ---- | --------------------------- | ---------------------------------- |
-| 5.1  | Create `cmdguard/format.go` | OutputFormat flag tag support      |
-| 5.2  | Create `cmdguard/sort.go`   | SortBy flag tag support            |
-| 5.3  | Create `cmdguard/color.go`  | ColorMode flag with auto-detection |
-
-### cmdguard Usage
-
-```go
-import "github.com/larsartmann/go-output/cmdguard"
-
-type MyFlags struct {
-    Format output.OutputFormat `flag:"format" default:"table"`
-    SortBy output.SortBy       `flag:"sort-by" default:"name" help:"Sort by (name, importance)"`
-    Color  output.ColorMode    `flag:"color" default:"auto"`
-}
-
-// Flag registry automatically:
-// - Validates against allowed values
-// - Provides bash/zsh completion
-// - Shows help with all options
-```
-
----
-
-## Phase 6: Polish
-
-| Step | Task              | Details                                 |
-| ---- | ----------------- | --------------------------------------- |
-| 6.1  | Create `justfile` | build, test, lint, format               |
-| 6.2  | Add tests         | Unit tests for all formatters and enums |
-| 6.3  | Create README     | Usage documentation with examples       |
-| 6.4  | Add examples      | Basic, table, and cmdguard usage        |
-
----
 
 ## Dependencies
 
-```go
-require (
-    github.com/charmbracelet/lipgloss/v2 v2
-    go.yaml.in/yaml/v4 v4
-    github.com/larsartmann/cmdguard/v2 v2
-)
+- `charm.land/lipgloss/v2` — Terminal styling and table rendering
+- `github.com/go-faster/yaml` — YAML marshaling
+- `golang.org/x/term` — Terminal detection
+
+## Build Commands
+
+```bash
+just build    # go build ./...
+just test     # go test ./...
+just lint     # golangci-lint run --fix ./...
+just verify   # build + test + lint
 ```
-
----
-
-## Usage Examples
-
-### Basic Usage
-
-```go
-import "github.com/larsartmann/go-output"
-
-func main() {
-    data := []User{{Name: "Alice", Age: 30}, {Name: "Bob", Age: 25}}
-
-    // JSON
-    jsonBytes, _ := output.MarshalJSONIndent(data, "", "  ")
-    fmt.Println(string(jsonBytes))
-
-    // CSV
-    writer := output.NewCSVWriter(os.Stdout)
-    writer.WriteHeader([]string{"Name", "Age"})
-    writer.WriteRow([]string{"Alice", "30"})
-    writer.Flush()
-
-    // Markdown
-    md := output.MarkdownTable([]string{"Name", "Age"}, data)
-    fmt.Println(md)
-}
-```
-
-### Table with Sorting
-
-```go
-table := output.NewTable(config).
-    SetHeaders([]string{"Name", "Importance", "Health"})
-
-for _, p := range projects {
-    table.AddRow([]string{p.Name, p.Importance.String(), p.Health.String()})
-}
-
-sorted, _ := table.Render()
-fmt.Println(sorted)
-```
-
-### cmdguard Integration
-
-```go
-import "github.com/larsartmann/go-output/cmdguard"
-
-type ListFlags struct {
-    Format output.OutputFormat `flag:"format" default:"table"`
-    SortBy output.SortBy       `flag:"sort-by" default:"name"`
-    Color  output.ColorMode    `flag:"color" default:"auto"`
-}
-
-cmd := v2.Command[AppConfig, *ListFlags]{
-    Use:   "list",
-    Short: "List projects",
-    Flags: &ListFlags{},
-    RunE: func(ctx context.Context, cfg *AppConfig, flags *ListFlags) error {
-        projects := getProjects()
-
-        sorter := output.Sort(projects, flags.SortBy, true)
-        sorter.Sort()
-
-        table := output.NewTable(tableConfig).
-            SetHeaders([]string{"Name", "Importance"})
-
-        for _, p := range projects {
-            table.AddRow([]string{p.Name, p.Importance.String()})
-        }
-
-        output.Print(table, flags.Format, flags.Color.ShouldColor())
-        return nil
-    },
-}
-```
-
----
-
-## Motivation
-
-This library solves the problem of scattered, inconsistent output formatting across CLI applications:
-
-| Before                                   | After                                  |
-| ---------------------------------------- | -------------------------------------- |
-| Inline JSON/CSV/Markdown in each command | Shared, tested formatters              |
-| String-based format validation           | Type-safe enums                        |
-| Manual color detection                   | Auto ColorMode with env var support    |
-| Custom sorting logic per command         | Generic SortBy with Comparator adapter |
-| No cmdguard integration                  | Flags with validation and completion   |
-
----
-
-## Migration Path
-
-1. **Phase 1-2:** Extract formatters from `projects-management-automation` and `project-meta`
-2. **Phase 3-4:** Add table system with sorting
-3. **Phase 5:** Integrate with cmdguard for type-safe flags
-4. **Phase 6:** Polish and document
-
----
 
 ## Status
 
-- [x] Phase 1: Foundation
-- [x] Phase 2: Core Formatters
-- [x] Phase 3: Table System
-- [x] Phase 4: Sorting System
-- [x] Phase 5: cmdguard Integration
-- [x] Phase 6: Polish
+All phases complete. Library is production-ready.
