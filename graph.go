@@ -36,11 +36,6 @@ func NewGraphNode(id, label string) *GraphNode {
 	}
 }
 
-// GetStyle returns the node's style.
-func (n *GraphNode) GetStyle() GraphStyle {
-	return n.Style
-}
-
 // GraphShape represents the shape of a graph node.
 type GraphShape string
 

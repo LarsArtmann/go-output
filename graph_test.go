@@ -141,7 +141,7 @@ func TestEdgeStyle(t *testing.T) {
 	)
 }
 
-func TestGetStyle(t *testing.T) {
+func TestGraphNodeStyle(t *testing.T) {
 	t.Parallel()
 
 	node := &GraphNode{
@@ -150,8 +150,7 @@ func TestGetStyle(t *testing.T) {
 		Style: GraphStyle{FillColor: "red", StrokeColor: "blue", FontColor: "green", FontSize: 14},
 	}
 
-	style := node.GetStyle()
-	testGraphStyleFields(t, style, 14)
+	testGraphStyleFields(t, node.Style, 14)
 }
 
 // testGraphStyleFields tests the common GraphStyle fields.

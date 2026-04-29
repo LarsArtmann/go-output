@@ -132,16 +132,3 @@ func TestColorModeShouldColor(t *testing.T) {
 	// Auto mode depends on environment
 	_ = ColorModeAuto.ShouldColor() // Just ensure it doesn't panic
 }
-
-func TestColorModeToANSI(t *testing.T) {
-	t.Parallel()
-	// When color is disabled, should return empty string
-	if ColorModeNever.ToANSI() != "" {
-		t.Error("ColorModeNever.ToANSI() should return empty string")
-	}
-
-	// When color is enabled, should return ANSI prefix
-	if ColorModeAlways.ToANSI() != "\033[" {
-		t.Error("ColorModeAlways.ToANSI() should return ANSI prefix")
-	}
-}

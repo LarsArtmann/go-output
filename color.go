@@ -66,15 +66,6 @@ func (c ColorMode) ShouldColor() bool {
 	}
 }
 
-// ToANSI returns the ANSI escape sequence prefix if colors are enabled.
-func (c ColorMode) ToANSI() string {
-	if !c.ShouldColor() {
-		return ""
-	}
-
-	return "\033["
-}
-
 func isStdoutTerminal() bool {
 	if isTerminalByEnv("GO_OUTPUT_FORCE_COLOR", "FORCE_COLOR") {
 		return true
