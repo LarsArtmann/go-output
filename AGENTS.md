@@ -2,11 +2,13 @@
 
 ## Project Overview
 
-A reusable Go library for CLI applications providing consistent output formatting across multiple formats (JSON, CSV, Markdown, D2, YAML, Table) with type-safe enum-based configuration.
+A reusable Go library for CLI applications providing consistent output formatting across 12 formats (Table, JSON, CSV, TSV, Markdown, XML, YAML, HTML, Tree, D2, Mermaid, DOT) with type-safe enum-based configuration.
+
+**Updated:** 2026-04-29
 
 ## Location
 
-`/Users/larsartmann/projects/go-output/`
+`/home/lars/projects/go-output/`
 
 ## Repository
 
@@ -17,46 +19,59 @@ https://github.com/larsartmann/go-output
 - Go 1.26+
 - charm.land/lipgloss/v2 (terminal styling)
 - github.com/go-faster/yaml (YAML support)
+- golang.org/x/term (terminal detection)
 - github.com/larsartmann/cmdguard/v2 (optional CLI flag integration - add separately)
 
 ## Project Structure
 
 ```
 go-output/
-├── format.go           # OutputFormat enum
-├── sort.go            # SortBy enum
-├── color.go           # ColorMode enum
-├── json.go            # JSON formatter
-├── csv.go             # CSV formatter
-├── yaml.go            # YAML formatter
-├── markdown.go        # Markdown formatter
-├── d2.go              # D2 diagram formatter
-├── dot.go             # DOT graph formatter
-├── mermaid.go         # Mermaid diagram formatter
-├── tree.go            # Tree rendering
-├── table/             # Table interface & implementation
-├── sort/              # Sorting utilities
-├── cmdguard/          # cmdguard flag integration
-└── examples/          # Usage examples
+├── format.go              # Format enum + Renderer/TableData/TreeNode types
+├── format_deprecated.go   # OutputFormat backward compat aliases
+├── sort.go                # SortBy enum
+├── color.go               # ColorMode enum + terminal detection
+├── ids.go                 # BrandedID phantom types
+├── registry.go            # Opt-in renderer registry (plugin system)
+│
+├── json.go                # JSON marshal/unmarshal + JSONWriter
+├── csv.go                 # CSV writer
+├── tsv.go                 # TSV writer + MarshalTSV
+├── yaml.go                # YAML marshal/unmarshal
+├── xml.go                 # XML writer + MarshalXMLFromTableData
+├── markdown.go            # Markdown table builder with alignment
+├── html.go                # HTML table + tree renderers + tableDataBase
+├── tree.go                # ASCII tree renderer
+├── delimited.go           # Shared CSV/TSV DelimitedWriter
+├── markup.go              # Shared XML/HTML row writing helpers
+├── marshal.go             # Shared marshal/unmarshal error wrapping
+├── streaming.go           # Streaming HTML renderer + adapter
+├── slices.go              # FilledStrings utility
+│
+├── d2.go                  # D2 domain types (D2Node, D2Edge, D2Table)
+├── d2_enum.go             # D2 enums (Direction, NodeShape, ArrowType, Constraint)
+├── d2_render.go           # D2Diagram builder + Render()
+├── d2_write.go            # D2 style/edge writing helpers
+├── d2_convert.go          # TableData/Tree → D2 conversion
+│
+├── graph.go               # Generic graph types (GraphNode, GraphEdge, GraphShape)
+├── dot.go                 # DOT/Graphviz renderer + GraphRendererMixin
+├── mermaid.go             # Mermaid diagram renderer
+│
+├── enum/                  # Generic enum utilities (Parse, Contains, AllowedValues)
+├── table/                 # Lipgloss-based terminal table renderer
+├── sort/                  # Generic Sorter[T] with reflect-based field comparison
+├── cmdguard/              # Generic EnumFlag[T] for cmdguard integration
+├── internal/escape/       # Format-specific escaping (HTML, XML, D2, DOT, Mermaid)
+└── examples/              # Usage examples
 ```
 
 ## Build Commands
 
 ```bash
-# Build
-just build
-
-# Test
-just test
-
-# Lint
-just lint
-
-# Full verification
-just verify
-
-# BuildFlow (comprehensive)
-buildflow --semantic --fix
+just build     # go build ./...
+just test      # go test ./...
+just lint      # golangci-lint run --fix ./...
+just verify    # build + test + lint
 ```
 
 ## Code Quality Standards
@@ -67,62 +82,53 @@ buildflow --semantic --fix
 - File size limit: 350 lines per file
 - No code duplication (threshold: 30 tokens)
 
+## Current Coverage
+
+| Package | Coverage |
+|---------|----------|
+| output (root) | 91.0% |
+| cmdguard | 100% |
+| enum | 100% |
+| internal/escape | 100% |
+| sort | 95.5% |
+| table | 100% |
+
 ## Testing
 
 ```bash
-# Unit tests
-go test ./...
-
-# Race detector
-go test -race ./...
-
-# Coverage
-go test -cover ./...
-
-# Fuzz tests
-go test -fuzz=FuzzParseOutputFormat -fuzztime=1m .
-go test -fuzz=FuzzParseSortBy -fuzztime=1m .
+go test ./...              # Unit tests
+go test -race ./...        # Race detector
+go test -cover ./...       # Coverage
+go test -bench=. -benchmem ./...  # Benchmarks
 ```
 
 ## Key Design Patterns
 
-1. **Type-safe enums**: Use string/int constants with Parse/Validate methods
-2. **Functional options**: For optional configuration
-3. **Interface-based design**: Table, Renderer interfaces
-4. **Generic functions**: Sort utilities use Go 1.18+ generics
+1. **Type-safe enums**: String constants with Parse/Validate via `enum` package
+2. **Branded IDs**: Phantom types prevent mixing D2NodeID/TreeNodeID/etc
+3. **Interface-based design**: Renderer, GraphRenderer, TableRenderer interfaces
+4. **Composition**: GraphRendererMixin shared by DOT/Mermaid, tableDataBase shared by HTML/Streaming
+5. **Registry is opt-in**: Use constructors directly by default. Register/Create for runtime dispatch.
 
 ## Common Tasks
 
 ### Adding a New Output Format
 
 1. Add format constant to `format.go`
-2. Implement formatter function in new file
-3. Add tests with >90% coverage
-4. Update cmdguard integration if needed
+2. Implement formatter — embed Renderer interface
+3. Add to format category maps if table/tree/graph
+4. Add tests with >90% coverage
+5. Update cmdguard if needed (EnumFlag already generic)
 
-### Adding a New Sort Field
+### Adding a New D2 Enum
 
-1. Add constant to `sort.go`
-2. Add comparator in `sort/sort.go` if needed
-3. Update tests
+1. Add type + constants to `d2_enum.go`
+2. Add values slice + Parse/IsValid/AllowedValues/String methods
+3. Add tests to `d2_enum_test.go`
 
-## Dependencies
+## Architecture Notes
 
-See `go.mod` for full list. Key dependencies:
-
-- `charm.land/lipgloss/v2` - Terminal styling
-- `github.com/go-faster/yaml` - YAML marshaling
-- `github.com/larsartmann/cmdguard/v2` - CLI integration
-
-## Notes for AI Agents
-
-- This is a library, not an application - no main function
-- Focus on clean APIs over implementation complexity
-- Prefer composition over inheritance
-- All exported functions must have documentation comments
-- Follow Go conventions (gofumpt, goimports formatting)
-- Consider backward compatibility when changing APIs
-
-## Contact
-
-For questions or issues, refer to the repository or project documentation.
+- D2 has richer types than generic graph (shapes, arrows, SQL tables, classes) — intentional split
+- Tree conversion has renderer-specific addTreeNodes in d2_convert, dot, mermaid — the generic AddTreeNodes in graph.go handles the common case
+- Depguard config restricts imports — `cmp` is blocked, use manual comparison
+- CI uses Go 1.26 (must match go.mod)

@@ -266,8 +266,9 @@ go get github.com/larsartmann/go-output
 
 ```go
 require (
-    charm.land/lipgloss/v2 v2.0.2
+    charm.land/lipgloss/v2 v2.0.3
     github.com/go-faster/yaml v0.4.6
+    golang.org/x/term v0.42.0
 )
 ```
 
@@ -286,7 +287,7 @@ Safe escaping for various output formats:
 | `escape.MermaidText` | Mermaid labels          | Mermaid             |
 
 ```go
-import "github.com/larsartmann/go-output/escape"
+import "github.com/larsartmann/go-output/internal/escape"
 
 // Escape HTML content
 safe := escape.HTML("<script>alert('xss')</script>")
