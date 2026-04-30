@@ -226,6 +226,7 @@ func TestSortingBehavior(t *testing.T) {
 				t.Parallel()
 
 				sorted := sort.New(tc.data, output.SortByName, tc.desc)
+				sorted.WithLessFunc(func(a, b Project) bool { return a.Name < b.Name })
 				sorted.Sort()
 
 				if tc.data[0].Name != tc.expected {
@@ -245,6 +246,6 @@ func TestSortingBehavior(t *testing.T) {
 		sorted := sort.New(data, output.SortBy("invalid"), false)
 		sorted.Sort()
 
-		// Then: No panic occurred
+		// Then: No panic occurred (no LessFunc = no-op)
 	})
 }

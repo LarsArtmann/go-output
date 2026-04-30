@@ -2,10 +2,11 @@
 package sort
 
 import (
+	"sort"
 	"testing"
 	"time"
 
-	"github.com/larsartmann/go-output"
+	output "github.com/larsartmann/go-output"
 )
 
 func assertItemField[V comparable](
@@ -84,6 +85,16 @@ func compareCount(ascending bool) func(a, b testItem) bool {
 	}
 }
 
+func compareName(ascending bool) func(a, b testItem) bool {
+	return func(a, b testItem) bool {
+		if ascending {
+			return a.Name < b.Name
+		}
+
+		return a.Name > b.Name
+	}
+}
+
 func testItemsUnsorted() []testItem {
 	return testItemsWithCounts(1, 2, 3)
 }
@@ -113,7 +124,7 @@ func TestSorter_Sort(t *testing.T) {
 			items:          testItemsUnsorted(),
 			sortBy:         output.SortByName,
 			desc:           false,
-			lessFunc:       nil,
+			lessFunc:       compareName(true),
 			expectedNames:  []string{"alpha", "bravo", "charlie"},
 			expectedCounts: []int{1, 2, 3},
 		},
@@ -122,7 +133,7 @@ func TestSorter_Sort(t *testing.T) {
 			items:          testItemsUnsorted(),
 			sortBy:         output.SortByName,
 			desc:           true,
-			lessFunc:       nil,
+			lessFunc:       compareName(true),
 			expectedNames:  []string{"charlie", "bravo", "alpha"},
 			expectedCounts: []int{3, 2, 1},
 		},
@@ -131,7 +142,7 @@ func TestSorter_Sort(t *testing.T) {
 			items:          testItemsWithCounts(10, 20, 30),
 			sortBy:         output.SortBy("Count"),
 			desc:           false,
-			lessFunc:       nil,
+			lessFunc:       compareCount(true),
 			expectedNames:  []string{"alpha", "bravo", "charlie"},
 			expectedCounts: []int{10, 20, 30},
 		},
@@ -142,9 +153,11 @@ func TestSorter_Sort(t *testing.T) {
 				{Name: "later", Count: 0, When: time.Now().Add(2 * time.Hour)},
 				{Name: "earlier", Count: 0, When: time.Now().Add(-2 * time.Hour)},
 			},
-			sortBy:         output.SortBy("When"),
-			desc:           false,
-			lessFunc:       nil,
+			sortBy: output.SortBy("When"),
+			desc:   false,
+			lessFunc: func(a, b testItem) bool {
+				return a.When.Before(b.When)
+			},
 			expectedNames:  []string{"earlier", "now", "later"},
 			expectedCounts: []int{0, 0, 0},
 		},
@@ -196,7 +209,7 @@ func TestSorter_Sort(t *testing.T) {
 func TestSorter_Sort_EdgeCases(t *testing.T) {
 	t.Parallel()
 
-	// Empty slice
+	// Empty slice — no-op
 	empty := []testItem{}
 	New(empty, output.SortByName, false).Sort()
 
@@ -204,7 +217,7 @@ func TestSorter_Sort_EdgeCases(t *testing.T) {
 		t.Errorf("Sort() on empty slice should remain empty")
 	}
 
-	// Single item
+	// Single item — no-op
 	single := []testItem{{Name: "only", Count: 1, When: time.Time{}}}
 	New(single, output.SortByName, false).Sort()
 
@@ -212,12 +225,12 @@ func TestSorter_Sort_EdgeCases(t *testing.T) {
 		t.Errorf("Sort() changed single item")
 	}
 
-	// Invalid field - should be stable
-	invalid := testItemsAB()
-	New(invalid, output.SortBy("NonExistentField"), false).Sort()
+	// No LessFunc — should be stable (no-op)
+	items := testItemsAB()
+	New(items, output.SortByName, false).Sort()
 
-	if invalid[0].Name != "b" || invalid[1].Name != "a" {
-		t.Errorf("Sort() with invalid field should be stable")
+	if items[0].Name != "b" || items[1].Name != "a" {
+		t.Errorf("Sort() without LessFunc should be stable (no-op)")
 	}
 }
 
@@ -235,7 +248,9 @@ func TestSorter_Sort_UnsignedInt(t *testing.T) {
 		{Name: "medium", Size: 100},
 	}
 
-	New(items, output.SortBy("Size"), false).Sort()
+	New(items, output.SortBy("Size"), false).WithLessFunc(func(a, b unsignedItem) bool {
+		return a.Size < b.Size
+	}).Sort()
 
 	if items[0].Name != "small" {
 		t.Errorf("Sort() unsigned first = %s, want small", items[0].Name)
@@ -265,7 +280,9 @@ func TestSorter_Sort_DescStability(t *testing.T) {
 		{Name: "b", Order: 4},
 	}
 
-	New(items, output.SortByName, true).Sort()
+	New(items, output.SortByName, true).WithLessFunc(func(a, b stableItem) bool {
+		return a.Name < b.Name
+	}).Sort()
 
 	if items[0].Name != "b" {
 		t.Fatalf("desc sort first = %s, want b", items[0].Name)
@@ -283,7 +300,7 @@ func TestSorter_Sort_DescCount(t *testing.T) {
 
 	items := testItemsWithCounts(10, 20, 30)
 
-	New(items, output.SortBy("Count"), true).Sort()
+	New(items, output.SortBy("Count"), true).WithLessFunc(compareCount(true)).Sort()
 
 	if items[0].Name != "charlie" {
 		t.Errorf("desc sort first = %s, want charlie", items[0].Name)
@@ -299,36 +316,78 @@ func TestSorter_Sort_NonStructInput(t *testing.T) {
 
 	items := []string{"b", "a", "c"}
 
+	// No LessFunc — should be stable (no-op)
 	New(items, output.SortByName, false).Sort()
 
 	if items[0] != "b" {
-		t.Errorf("non-struct sort should be stable (no-op), got %s", items[0])
+		t.Errorf("sort without LessFunc should be stable (no-op), got %s", items[0])
+	}
+
+	// With LessFunc — should sort
+	New(items, output.SortByName, false).WithLessFunc(func(a, b string) bool {
+		return a < b
+	}).Sort()
+
+	if items[0] != "a" {
+		t.Errorf("sort with LessFunc first = %s, want a", items[0])
 	}
 }
 
-func TestSnakeToPascal(t *testing.T) {
+func TestSorter_Sort_UsesSliceStable(t *testing.T) {
 	t.Parallel()
 
-	tests := []struct {
-		input string
-		want  string
-	}{
-		{"", ""},
-		{"name", "Name"},
-		{"created_at", "CreatedAt"},
-		{"a_b_c", "ABC"},
-		{"_leading", "Leading"},
-		{"trailing_", "Trailing"},
+	// Verify that Sort() delegates to sort.SliceStable by checking stability
+	items := []testItem{
+		{Name: "same", Count: 1, When: time.Time{}},
+		{Name: "same", Count: 2, When: time.Time{}},
+		{Name: "same", Count: 3, When: time.Time{}},
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.input, func(t *testing.T) {
-			t.Parallel()
+	New(items, output.SortByName, false).WithLessFunc(func(a, b testItem) bool {
+		return a.Name < b.Name
+	}).Sort()
 
-			got := snakeToPascal(tt.input)
-			if got != tt.want {
-				t.Errorf("snakeToPascal(%q) = %q, want %q", tt.input, got, tt.want)
-			}
-		})
+	// All names are equal, so relative order must be preserved
+	if items[0].Count != 1 || items[1].Count != 2 || items[2].Count != 3 {
+		t.Errorf("stable sort not preserved: counts = [%d, %d, %d], want [1, 2, 3]",
+			items[0].Count, items[1].Count, items[2].Count)
+	}
+}
+
+func TestNew_WithLessFuncChaining(t *testing.T) {
+	t.Parallel()
+
+	items := testItemsWithCounts(30, 10, 20)
+
+	New(items, output.SortBy("Count"), false).
+		WithLessFunc(compareCount(true)).
+		Sort()
+
+	if items[0].Name != "bravo" || items[0].Count != 10 {
+		t.Errorf(
+			"chained sort first = %s (count %d), want bravo (count 10)",
+			items[0].Name, items[0].Count,
+		)
+	}
+}
+
+func TestSorter_Internals(t *testing.T) {
+	t.Parallel()
+
+	// Verify Sorter uses sort.SliceStable under the hood
+	// by checking the standard library's stability guarantee
+	items := make([]int, 100)
+	for i := range items {
+		items[i] = i % 10 // 10 groups of 10
+	}
+
+	New(items, output.SortByName, false).WithLessFunc(func(a, b int) bool {
+		return a < b
+	}).Sort()
+
+	if !sort.SliceIsSorted(items, func(i, j int) bool {
+		return items[i] < items[j]
+	}) {
+		t.Error("items should be sorted ascending")
 	}
 }

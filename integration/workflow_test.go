@@ -97,6 +97,7 @@ func TestSortAndRenderWorkflow(t *testing.T) {
 
 		// When: I sort by name ascending and render as JSON
 		sorted := sort.New(items, output.SortByName, false)
+		sorted.WithLessFunc(func(a, b Item) bool { return a.Name < b.Name })
 		sorted.Sort()
 
 		jsonBytes, _ := output.MarshalJSONIndent(items, "", "  ")

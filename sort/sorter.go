@@ -2,14 +2,12 @@
 package sort
 
 import (
-	"reflect"
 	"sort"
-	"time"
 
 	output "github.com/larsartmann/go-output"
 )
 
-// Sorter sorts items by a specified field.
+// Sorter sorts items by a specified field using a provided comparison function.
 type Sorter[T any] struct {
 	Items    []T
 	By       output.SortBy
@@ -17,7 +15,8 @@ type Sorter[T any] struct {
 	LessFunc func(a, b T) bool
 }
 
-// New creates a new Sorter.
+// New creates a new Sorter with the given items, sort field, and direction.
+// A LessFunc must be provided via WithLessFunc before calling Sort.
 func New[T any](items []T, by output.SortBy, desc bool) *Sorter[T] {
 	return &Sorter[T]{
 		Items:    items,
@@ -27,99 +26,27 @@ func New[T any](items []T, by output.SortBy, desc bool) *Sorter[T] {
 	}
 }
 
-// WithLessFunc sets a custom less function.
+// WithLessFunc sets the comparison function and returns the sorter for chaining.
+// This must be called before Sort.
 func (s *Sorter[T]) WithLessFunc(fn func(a, b T) bool) *Sorter[T] {
 	s.LessFunc = fn
 
 	return s
 }
 
-// Sort sorts the items.
+// Sort sorts the items using the provided LessFunc.
+// If no LessFunc is set, Sort is a no-op (items remain in original order).
 func (s *Sorter[T]) Sort() {
+	if s.LessFunc == nil {
+		return
+	}
+
 	sort.SliceStable(s.Items, func(i, j int) bool {
 		a, b := s.Items[i], s.Items[j]
 		if s.Desc {
 			a, b = b, a
 		}
 
-		if s.LessFunc != nil {
-			return s.LessFunc(a, b)
-		}
-
-		return s.defaultLess(a, b)
+		return s.LessFunc(a, b)
 	})
-}
-
-func (s *Sorter[T]) defaultLess(a, b T) bool {
-	aVal := reflect.ValueOf(a)
-	bVal := reflect.ValueOf(b)
-
-	if aVal.Kind() != reflect.Struct || bVal.Kind() != reflect.Struct {
-		return false
-	}
-
-	fieldName := snakeToPascal(string(s.By))
-	fieldA := aVal.FieldByName(fieldName)
-	fieldB := bVal.FieldByName(fieldName)
-
-	if !fieldA.IsValid() || !fieldB.IsValid() {
-		return false
-	}
-
-	return compareFieldValues(fieldA, fieldB)
-}
-
-// snakeToPascal converts snake_case to PascalCase.
-func snakeToPascal(s string) string {
-	if s == "" {
-		return ""
-	}
-
-	result := make([]byte, 0, len(s))
-	upper := true
-
-	for i := range len(s) {
-		c := s[i]
-		if c == '_' {
-			upper = true
-
-			continue
-		}
-
-		if upper {
-			if c >= 'a' && c <= 'z' {
-				c = c - 'a' + 'A'
-			}
-
-			upper = false
-		}
-
-		result = append(result, c)
-	}
-
-	return string(result)
-}
-
-func compareFieldValues(a, b reflect.Value) bool {
-	switch a.Kind() {
-	case reflect.String:
-		return a.String() < b.String()
-	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-		return a.Int() < b.Int()
-	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-		return a.Uint() < b.Uint()
-	case reflect.Struct:
-		if aTime, ok := a.Interface().(time.Time); ok {
-			if bTime, ok := b.Interface().(time.Time); ok {
-				return aTime.Before(bTime)
-			}
-		}
-	case reflect.Invalid, reflect.Bool, reflect.Uintptr, reflect.Float32, reflect.Float64,
-		reflect.Complex64, reflect.Complex128, reflect.Array, reflect.Chan,
-		reflect.Func, reflect.Interface, reflect.Map, reflect.Pointer,
-		reflect.Slice, reflect.UnsafePointer:
-		return false
-	}
-
-	return false
 }
