@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/larsartmann/go-output/internal/escape"
+	"github.com/larsartmann/go-output/escape"
 )
 
 // Compile-time interface checks.

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/larsartmann/go-output/internal/escape"
+	"github.com/larsartmann/go-output/escape"
 )
 
 func (d *D2Diagram) writeStyleAttrs(b *strings.Builder, s D2NodeStyle, indent string) {

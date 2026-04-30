@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/larsartmann/go-output/internal/escape"
+	"github.com/larsartmann/go-output/escape"
 )
 
 //nolint:exhaustruct // Test files use partial struct initialization

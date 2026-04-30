@@ -8,8 +8,10 @@ type mode struct {
 }
 
 var (
+	//nolint:gochecknoglobals // Mode constant for HTML escaping.
 	htmlMode = mode{apos: "&#39;"}
-	xmlMode  = mode{apos: "&apos;"}
+	//nolint:gochecknoglobals // Mode constant for XML escaping.
+	xmlMode = mode{apos: "&apos;"}
 )
 
 // HTML escapes HTML special characters.

@@ -6,7 +6,7 @@ import (
 	"io"
 	"strings"
 
-	"github.com/larsartmann/go-output/internal/escape"
+	"github.com/larsartmann/go-output/escape"
 )
 
 // MarshalXML encodes v to XML.

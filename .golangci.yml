@@ -138,7 +138,7 @@ linters:
             - github.com/larsartmann/go-output/enum
             - github.com/larsartmann/go-output/internal/gentest
             - github.com/larsartmann/go-output/internal/testutils
-            - github.com/larsartmann/go-output/internal/escape
+            - github.com/larsartmann/go-output/escape
             - github.com/larsartmann/go-output/table
             - github.com/larsartmann/go-output/sort
             - github.com/larsartmann/go-output/pkg/errors
@@ -162,7 +162,6 @@ linters:
             - sync
             - testing
             - time
-            - reflect
         default:
           allow:
             - $STDERR
@@ -183,12 +182,11 @@ linters:
             - sync
             - testing
             - time
-            - reflect
             - github.com/larsartmann/go-output
             - github.com/larsartmann/go-output/enum
             - github.com/larsartmann/go-output/internal/gentest
             - github.com/larsartmann/go-output/internal/testutils
-            - github.com/larsartmann/go-output/internal/escape
+            - github.com/larsartmann/go-output/escape
             - github.com/larsartmann/go-output/table
             - github.com/larsartmann/go-output/sort
             - github.com/larsartmann/go-output/pkg/errors
@@ -250,6 +248,10 @@ linters:
         text: (?:gochecknoglobals)
         linters:
           - gochecknoglobals
+      - path: escape/
+        text: (?:gochecknoglobals)
+        linters:
+          - gochecknoglobals
       - path: examples/
         text: (?:forbidigo|magic number|global variable)
         linters:
@@ -271,6 +273,12 @@ linters:
           - thelper
           - tparallel
       - path: internal/
+        text: .*
+        linters:
+          - gochecknoglobals
+          - exhaustruct
+          - varnamelen
+      - path: escape/
         text: .*
         linters:
           - gochecknoglobals
