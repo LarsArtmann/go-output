@@ -4,7 +4,7 @@
 
 A reusable Go library for CLI applications providing consistent output formatting across 12 formats (Table, JSON, CSV, TSV, Markdown, XML, YAML, HTML, Tree, D2, Mermaid, DOT) with type-safe enum-based configuration.
 
-**Updated:** 2026-04-29
+**Updated:** 2026-04-30
 
 ## Location
 
@@ -59,9 +59,9 @@ go-output/
 │
 ├── enum/                  # Generic enum utilities (Parse, Contains, AllowedValues)
 ├── table/                 # Lipgloss-based terminal table renderer
-├── sort/                  # Generic Sorter[T] with reflect-based field comparison
+├── sort/                  # Generic Sorter[T] with ByField[T, F cmp.Ordered] helper
 ├── cmdguard/              # Generic EnumFlag[T] for cmdguard integration
-├── internal/escape/       # Format-specific escaping (HTML, XML, D2, DOT, Mermaid)
+├── escape/                # Public format-specific escaping (HTML, XML, D2, DOT, Mermaid)
 └── examples/              # Usage examples
 ```
 
@@ -89,7 +89,7 @@ just verify    # build + test + lint
 | output (root) | 91.0% |
 | cmdguard | 100% |
 | enum | 100% |
-| internal/escape | 100% |
+| escape | 100% |
 | sort | 95.5% |
 | table | 100% |
 
@@ -130,5 +130,7 @@ go test -bench=. -benchmem ./...  # Benchmarks
 
 - D2 has richer types than generic graph (shapes, arrows, SQL tables, classes) — intentional split
 - Tree conversion has renderer-specific addTreeNodes in d2_convert, dot, mermaid — the generic AddTreeNodes in graph.go handles the common case
-- Depguard config restricts imports — `cmp` is blocked, use manual comparison
+- Depguard config restricts imports — `cmp` is allowed for sort.ByField
 - CI uses Go 1.26 (must match go.mod)
+- escape/ is a public package (moved from internal/escape/ on 2026-04-30)
+- Sorter requires explicit LessFunc; use sort.ByField for field comparison
