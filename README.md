@@ -206,6 +206,25 @@ nestedNode := output.D2Node{
 | `health`     | Sort by health score      |
 | `complexity` | Sort by complexity metric |
 
+```go
+import "github.com/larsartmann/go-output/sort"
+
+type Project struct {
+    Name       string
+    Complexity int
+}
+
+items := []Project{
+    {Name: "zebra", Complexity: 8},
+    {Name: "apple", Complexity: 3},
+}
+
+// Sort by name using ByField for type-safe field comparison
+sort.New(items, output.SortByName, false).
+    WithLessFunc(sort.ByField(func(p Project) string { return p.Name })).
+    Sort()
+```
+
 ## Color Modes
 
 | Mode     | Description                                    |
@@ -290,7 +309,7 @@ Safe escaping for various output formats:
 | `escape.MermaidText` | Mermaid labels          | Mermaid             |
 
 ```go
-import "github.com/larsartmann/go-output/internal/escape"
+import "github.com/larsartmann/go-output/escape"
 
 // Escape HTML content
 safe := escape.HTML("<script>alert('xss')</script>")
