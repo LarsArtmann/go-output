@@ -147,6 +147,7 @@ linters:
             - github.com/go-faster/yaml
             - golang.org/x/term
             - bytes
+            - cmp
             - encoding/csv
             - encoding/json
             - encoding/xml
@@ -167,6 +168,7 @@ linters:
             - $STDERR
             - $GITHUB_ACTION
             - bytes
+            - cmp
             - encoding/csv
             - encoding/json
             - encoding/xml

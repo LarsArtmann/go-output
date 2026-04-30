@@ -85,14 +85,8 @@ func compareCount(ascending bool) func(a, b testItem) bool {
 	}
 }
 
-func compareName(ascending bool) func(a, b testItem) bool {
-	return func(a, b testItem) bool {
-		if ascending {
-			return a.Name < b.Name
-		}
-
-		return a.Name > b.Name
-	}
+func compareName(_ bool) func(a, b testItem) bool {
+	return ByField(func(item testItem) string { return item.Name })
 }
 
 func testItemsUnsorted() []testItem {
@@ -142,7 +136,7 @@ func TestSorter_Sort(t *testing.T) {
 			items:          testItemsWithCounts(10, 20, 30),
 			sortBy:         output.SortBy("Count"),
 			desc:           false,
-			lessFunc:       compareCount(true),
+			lessFunc:       ByField(func(item testItem) int { return item.Count }),
 			expectedNames:  []string{"alpha", "bravo", "charlie"},
 			expectedCounts: []int{10, 20, 30},
 		},
@@ -248,9 +242,9 @@ func TestSorter_Sort_UnsignedInt(t *testing.T) {
 		{Name: "medium", Size: 100},
 	}
 
-	New(items, output.SortBy("Size"), false).WithLessFunc(func(a, b unsignedItem) bool {
-		return a.Size < b.Size
-	}).Sort()
+	New(items, output.SortBy("Size"), false).
+		WithLessFunc(ByField(func(item unsignedItem) uint64 { return item.Size })).
+		Sort()
 
 	if items[0].Name != "small" {
 		t.Errorf("Sort() unsigned first = %s, want small", items[0].Name)
@@ -280,9 +274,9 @@ func TestSorter_Sort_DescStability(t *testing.T) {
 		{Name: "b", Order: 4},
 	}
 
-	New(items, output.SortByName, true).WithLessFunc(func(a, b stableItem) bool {
-		return a.Name < b.Name
-	}).Sort()
+	New(items, output.SortByName, true).
+		WithLessFunc(ByField(func(item stableItem) string { return item.Name })).
+		Sort()
 
 	if items[0].Name != "b" {
 		t.Fatalf("desc sort first = %s, want b", items[0].Name)
@@ -343,9 +337,9 @@ func TestSorter_Sort_UsesSliceStable(t *testing.T) {
 		{Name: "same", Count: 3, When: time.Time{}},
 	}
 
-	New(items, output.SortByName, false).WithLessFunc(func(a, b testItem) bool {
-		return a.Name < b.Name
-	}).Sort()
+	New(items, output.SortByName, false).
+		WithLessFunc(ByField(func(item testItem) string { return item.Name })).
+		Sort()
 
 	// All names are equal, so relative order must be preserved
 	if items[0].Count != 1 || items[1].Count != 2 || items[2].Count != 3 {
@@ -360,7 +354,7 @@ func TestNew_WithLessFuncChaining(t *testing.T) {
 	items := testItemsWithCounts(30, 10, 20)
 
 	New(items, output.SortBy("Count"), false).
-		WithLessFunc(compareCount(true)).
+		WithLessFunc(ByField(func(item testItem) int { return item.Count })).
 		Sort()
 
 	if items[0].Name != "bravo" || items[0].Count != 10 {
@@ -381,13 +375,56 @@ func TestSorter_Internals(t *testing.T) {
 		items[i] = i % 10 // 10 groups of 10
 	}
 
-	New(items, output.SortByName, false).WithLessFunc(func(a, b int) bool {
-		return a < b
-	}).Sort()
+	New(items, output.SortByName, false).WithLessFunc(ByField(
+		func(item int) int { return item },
+	)).Sort()
 
 	if !sort.SliceIsSorted(items, func(i, j int) bool {
 		return items[i] < items[j]
 	}) {
 		t.Error("items should be sorted ascending")
 	}
+}
+
+func TestByField(t *testing.T) {
+	t.Parallel()
+
+	t.Run("string field", func(t *testing.T) {
+		t.Parallel()
+
+		items := testItemsUnsorted()
+		New(items, output.SortByName, false).
+			WithLessFunc(ByField(func(item testItem) string { return item.Name })).
+			Sort()
+
+		if items[0].Name != "alpha" {
+			t.Errorf("ByField string first = %s, want alpha", items[0].Name)
+		}
+	})
+
+	t.Run("int field", func(t *testing.T) {
+		t.Parallel()
+
+		items := testItemsWithCounts(30, 10, 20)
+		New(items, output.SortBy("Count"), false).
+			WithLessFunc(ByField(func(item testItem) int { return item.Count })).
+			Sort()
+
+		if items[0].Name != "bravo" {
+			t.Errorf("ByField int first = %s, want bravo", items[0].Name)
+		}
+	})
+
+	t.Run("with desc", func(t *testing.T) {
+		t.Parallel()
+
+		items := testItemsWithCounts(10, 20, 30)
+		New(items, output.SortBy("Count"), true).
+			WithLessFunc(ByField(func(item testItem) int { return item.Count })).
+			Sort()
+
+		if items[0].Name != "charlie" {
+			t.Errorf("ByField desc first = %s, want charlie", items[0].Name)
+		}
+	})
 }

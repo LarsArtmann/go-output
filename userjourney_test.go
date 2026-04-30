@@ -226,7 +226,7 @@ func TestSortingBehavior(t *testing.T) {
 				t.Parallel()
 
 				sorted := sort.New(tc.data, output.SortByName, tc.desc)
-				sorted.WithLessFunc(func(a, b Project) bool { return a.Name < b.Name })
+				sorted.WithLessFunc(sort.ByField(func(p Project) string { return p.Name }))
 				sorted.Sort()
 
 				if tc.data[0].Name != tc.expected {
