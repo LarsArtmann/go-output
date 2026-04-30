@@ -39,9 +39,9 @@ go-output/
 │
 ├── enum/                  # Generic enum utilities (Parse, Contains, AllowedValues)
 ├── table/                 # Lipgloss-based terminal table renderer
-├── sort/                  # Generic Sorter[T] with reflect-based field comparison
+├── sort/                  # Generic Sorter[T] with ByField[T, F cmp.Ordered] helper
 ├── cmdguard/              # Generic EnumFlag[T] for cmdguard integration
-├── internal/escape/       # Format-specific escaping (HTML, XML, D2, DOT, Mermaid)
+├── escape/                # Public format-specific escaping (HTML, XML, D2, DOT, Mermaid)
 ├── internal/gentest/      # Test assertion helpers
 └── internal/testutils/    # Test helper utilities
 ```

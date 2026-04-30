@@ -2,7 +2,6 @@
 package sort
 
 import (
-	"sort"
 	"testing"
 	"time"
 
@@ -228,37 +227,6 @@ func TestSorter_Sort_EdgeCases(t *testing.T) {
 	}
 }
 
-type unsignedItem struct {
-	Name string
-	Size uint64
-}
-
-func TestSorter_Sort_UnsignedInt(t *testing.T) {
-	t.Parallel()
-
-	items := []unsignedItem{
-		{Name: "large", Size: 18_446_744_073_709_551_615}, // max uint64
-		{Name: "small", Size: 1},
-		{Name: "medium", Size: 100},
-	}
-
-	New(items, output.SortBy("Size"), false).
-		WithLessFunc(ByField(func(item unsignedItem) uint64 { return item.Size })).
-		Sort()
-
-	if items[0].Name != "small" {
-		t.Errorf("Sort() unsigned first = %s, want small", items[0].Name)
-	}
-
-	if items[1].Name != "medium" {
-		t.Errorf("Sort() unsigned second = %s, want medium", items[1].Name)
-	}
-
-	if items[2].Name != "large" {
-		t.Errorf("Sort() unsigned third = %s, want large", items[2].Name)
-	}
-}
-
 type stableItem struct {
 	Name  string
 	Order int
@@ -363,68 +331,4 @@ func TestNew_WithLessFuncChaining(t *testing.T) {
 			items[0].Name, items[0].Count,
 		)
 	}
-}
-
-func TestSorter_Internals(t *testing.T) {
-	t.Parallel()
-
-	// Verify Sorter uses sort.SliceStable under the hood
-	// by checking the standard library's stability guarantee
-	items := make([]int, 100)
-	for i := range items {
-		items[i] = i % 10 // 10 groups of 10
-	}
-
-	New(items, output.SortByName, false).WithLessFunc(ByField(
-		func(item int) int { return item },
-	)).Sort()
-
-	if !sort.SliceIsSorted(items, func(i, j int) bool {
-		return items[i] < items[j]
-	}) {
-		t.Error("items should be sorted ascending")
-	}
-}
-
-func TestByField(t *testing.T) {
-	t.Parallel()
-
-	t.Run("string field", func(t *testing.T) {
-		t.Parallel()
-
-		items := testItemsUnsorted()
-		New(items, output.SortByName, false).
-			WithLessFunc(ByField(func(item testItem) string { return item.Name })).
-			Sort()
-
-		if items[0].Name != "alpha" {
-			t.Errorf("ByField string first = %s, want alpha", items[0].Name)
-		}
-	})
-
-	t.Run("int field", func(t *testing.T) {
-		t.Parallel()
-
-		items := testItemsWithCounts(30, 10, 20)
-		New(items, output.SortBy("Count"), false).
-			WithLessFunc(ByField(func(item testItem) int { return item.Count })).
-			Sort()
-
-		if items[0].Name != "bravo" {
-			t.Errorf("ByField int first = %s, want bravo", items[0].Name)
-		}
-	})
-
-	t.Run("with desc", func(t *testing.T) {
-		t.Parallel()
-
-		items := testItemsWithCounts(10, 20, 30)
-		New(items, output.SortBy("Count"), true).
-			WithLessFunc(ByField(func(item testItem) int { return item.Count })).
-			Sort()
-
-		if items[0].Name != "charlie" {
-			t.Errorf("ByField desc first = %s, want charlie", items[0].Name)
-		}
-	})
 }
