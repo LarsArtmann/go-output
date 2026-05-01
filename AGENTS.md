@@ -84,14 +84,14 @@ just verify    # build + test + lint
 
 ## Current Coverage
 
-| Package | Coverage |
-|---------|----------|
-| output (root) | 91.0% |
-| cmdguard | 100% |
-| enum | 100% |
-| escape | 100% |
-| sort | 95.5% |
-| table | 100% |
+| Package       | Coverage |
+| ------------- | -------- |
+| output (root) | 91.0%    |
+| cmdguard      | 100%     |
+| enum          | 100%     |
+| escape        | 100%     |
+| sort          | 95.5%    |
+| table         | 100%     |
 
 ## Testing
 

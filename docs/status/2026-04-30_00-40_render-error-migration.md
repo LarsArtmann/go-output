@@ -50,12 +50,12 @@ Added `output.MustRender(r Renderer) string` — calls `Render()` and panics on 
 
 ## Verification
 
-| Check | Result |
-|-------|--------|
-| `go build ./...` | ✅ Clean |
-| `go test ./...` | ✅ All pass |
-| `go test -race ./...` | ✅ No races |
-| `golangci-lint run` | ✅ 0 issues |
-| Coverage (root) | 90.5% |
-| Coverage (all avg) | 95.5% |
+| Check                  | Result      |
+| ---------------------- | ----------- |
+| `go build ./...`       | ✅ Clean    |
+| `go test ./...`        | ✅ All pass |
+| `go test -race ./...`  | ✅ No races |
+| `golangci-lint run`    | ✅ 0 issues |
+| Coverage (root)        | 90.5%       |
+| Coverage (all avg)     | 95.5%       |
 | Examples run correctly | ✅ Verified |

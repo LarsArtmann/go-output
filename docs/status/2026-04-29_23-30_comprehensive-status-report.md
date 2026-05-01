@@ -12,47 +12,47 @@
 
 ### Bug Fixes (Critical)
 
-| # | Fix | Severity | Commit |
-|---|-----|----------|--------|
-| 1 | Sort descending stability violation — `!result` for equal elements broke strict weak ordering | CRITICAL | `e882804` |
-| 2 | CI Go version mismatch — 1.23 in CI vs 1.26 in go.mod (build-breaking) | CRITICAL | `bf543fb` |
-| 3 | `golang.org/x/term` listed as indirect but imported directly in color.go | HIGH | `fe79fec` |
-| 4 | Recursive `joinStrings` in enum — stack overflow risk on large lists | HIGH | `fe79fec` |
+| #   | Fix                                                                                           | Severity | Commit    |
+| --- | --------------------------------------------------------------------------------------------- | -------- | --------- |
+| 1   | Sort descending stability violation — `!result` for equal elements broke strict weak ordering | CRITICAL | `e882804` |
+| 2   | CI Go version mismatch — 1.23 in CI vs 1.26 in go.mod (build-breaking)                        | CRITICAL | `bf543fb` |
+| 3   | `golang.org/x/term` listed as indirect but imported directly in color.go                      | HIGH     | `fe79fec` |
+| 4   | Recursive `joinStrings` in enum — stack overflow risk on large lists                          | HIGH     | `fe79fec` |
 
 ### Architecture Improvements
 
-| # | Change | Impact | Commit |
-|---|--------|--------|--------|
-| 5 | D2 enums: per-call allocating functions → package-level vars | Consistency + perf | `4aa86a8` |
-| 6 | Split d2.go (333 lines) → d2.go (105) + d2_enum.go (226) | File size limit | `6f274fa` |
-| 7 | Remove dead `ColorMode.ToANSI()` — zero production callers | API surface reduction | `3b1aeea` |
-| 8 | Remove dead `GraphNode.GetStyle()` — zero production callers | API surface reduction | `3b1aeea` |
-| 9 | Document Registry as opt-in plugin system | Clarify ghost system | `b7d5cdf` |
+| #   | Change                                                       | Impact                | Commit    |
+| --- | ------------------------------------------------------------ | --------------------- | --------- |
+| 5   | D2 enums: per-call allocating functions → package-level vars | Consistency + perf    | `4aa86a8` |
+| 6   | Split d2.go (333 lines) → d2.go (105) + d2_enum.go (226)     | File size limit       | `6f274fa` |
+| 7   | Remove dead `ColorMode.ToANSI()` — zero production callers   | API surface reduction | `3b1aeea` |
+| 8   | Remove dead `GraphNode.GetStyle()` — zero production callers | API surface reduction | `3b1aeea` |
+| 9   | Document Registry as opt-in plugin system                    | Clarify ghost system  | `b7d5cdf` |
 
 ### CI/CD
 
-| # | Change | Commit |
-|---|--------|--------|
-| 10 | Fix Go 1.23→1.26 in ci.yml AND release.yml | `bf543fb` |
-| 11 | Consolidate 3 duplicated CI jobs → 1 single job | `bf543fb` |
-| 12 | Remove goreleaser job (no .goreleaser.yml exists, library has no binaries) | `bf543fb` |
+| #   | Change                                                                     | Commit    |
+| --- | -------------------------------------------------------------------------- | --------- |
+| 10  | Fix Go 1.23→1.26 in ci.yml AND release.yml                                 | `bf543fb` |
+| 11  | Consolidate 3 duplicated CI jobs → 1 single job                            | `bf543fb` |
+| 12  | Remove goreleaser job (no .goreleaser.yml exists, library has no binaries) | `bf543fb` |
 
 ### Documentation
 
-| # | Change | Lines Removed | Commit |
-|---|--------|---------------|--------|
-| 13 | Delete 15 stale docs (root + docs/planning + docs/status) | -4,693 | `1e36a4d` |
-| 14 | Rewrite PLAN.md to match reality | -258 | `2c91e7e` |
-| 15 | Update AGENTS.md (full rewrite with architecture notes) | rewrite | `9a943a8` |
-| 16 | Fix README.md (deps version, escape import path) | fix | `9a943a8` |
-| 17 | Add comprehensive improvement plan with mermaid graph | +143 | `2bffa7f` |
+| #   | Change                                                    | Lines Removed | Commit    |
+| --- | --------------------------------------------------------- | ------------- | --------- |
+| 13  | Delete 15 stale docs (root + docs/planning + docs/status) | -4,693        | `1e36a4d` |
+| 14  | Rewrite PLAN.md to match reality                          | -258          | `2c91e7e` |
+| 15  | Update AGENTS.md (full rewrite with architecture notes)   | rewrite       | `9a943a8` |
+| 16  | Fix README.md (deps version, escape import path)          | fix           | `9a943a8` |
+| 17  | Add comprehensive improvement plan with mermaid graph     | +143          | `2bffa7f` |
 
 ### Test Coverage Improvements
 
-| Package | Before | After | New Tests Added |
-|---------|--------|-------|-----------------|
-| sort | 86.7% | **95.5%** | 5 (DescStability, DescCount, NonStructInput, SnakeToPascal×6) |
-| enum | 94.7% | **100%** | 0 (fixed by joinStrings refactor) |
+| Package | Before | After     | New Tests Added                                               |
+| ------- | ------ | --------- | ------------------------------------------------------------- |
+| sort    | 86.7%  | **95.5%** | 5 (DescStability, DescCount, NonStructInput, SnakeToPascal×6) |
+| enum    | 94.7%  | **100%**  | 0 (fixed by joinStrings refactor)                             |
 
 ---
 
@@ -61,6 +61,7 @@
 ### Tree Conversion Split Brain
 
 **Status:** Identified but not fixed. Three renderer-specific `addTreeNodes()` implementations exist:
+
 - `d2_convert.go::addTreeNodes()` — D2-specific ID resolution
 - `dot.go::addTreeNodes()` — DOT-specific ID resolution (via `dotTreeNodeID`)
 - `mermaid.go::addTreeNodes()` — Mermaid-specific ID resolution (via `mermaidTreeNodeID`)
@@ -72,6 +73,7 @@ There's also a generic `graph.go::AddTreeNodes()` that the specific versions don
 ### nolint Directives
 
 **Status:** 47 remain. Breakdown:
+
 - 25 `exhaustruct` — intentional partial struct initialization
 - 13 `gochecknoglobals` — legitimate global enum value slices
 - 4 `gosec` — acceptable (file descriptor from int, test indices)
@@ -83,20 +85,20 @@ The `exhaustruct` ones indicate structs with many optional fields. Proper fix wo
 
 ## C) NOT STARTED
 
-| # | Task | Impact | Effort | Notes |
-|---|------|--------|--------|-------|
-| 1 | Unify tree conversion (eliminate 3-way split brain) | Medium | High | May not be worth the complexity |
-| 2 | Add functional option constructors for D2Node/D2Edge/D2NodeStyle | Medium | High | Would eliminate 25 exhaustruct nolints |
-| 3 | Add godoc examples (Example functions) | Medium | Medium | Improves pkg.go.dev documentation |
-| 4 | Add property-based/fuzz tests for escape functions | Medium | Medium | Current fuzz tests only cover ParseFormat |
-| 5 | D2 diagram map ordering (deterministic output) | Low | Medium | Go maps are unordered |
-| 6 | DOT attribute quoting robustness | Low | Low | Special chars in attribute values |
-| 7 | Mermaid ID sanitization edge cases | Low | Low | Unicode, reserved words |
-| 8 | Markdown table captions | Low | Low | Nice-to-have feature |
-| 9 | `TableData.RemoveRow()` | Low | Low | No consumer requesting it |
-| 10 | `Format.AutoDetect()` (from content sniffing) | Low | Medium | Questionable value |
-| 11 | CSV/TSV reading (currently write-only) | Medium | Medium | Would expand library scope |
-| 12 | Add `format_deprecated.go` removal timeline | Low | Low | Breaking change, needs major version bump |
+| #   | Task                                                             | Impact | Effort | Notes                                     |
+| --- | ---------------------------------------------------------------- | ------ | ------ | ----------------------------------------- |
+| 1   | Unify tree conversion (eliminate 3-way split brain)              | Medium | High   | May not be worth the complexity           |
+| 2   | Add functional option constructors for D2Node/D2Edge/D2NodeStyle | Medium | High   | Would eliminate 25 exhaustruct nolints    |
+| 3   | Add godoc examples (Example functions)                           | Medium | Medium | Improves pkg.go.dev documentation         |
+| 4   | Add property-based/fuzz tests for escape functions               | Medium | Medium | Current fuzz tests only cover ParseFormat |
+| 5   | D2 diagram map ordering (deterministic output)                   | Low    | Medium | Go maps are unordered                     |
+| 6   | DOT attribute quoting robustness                                 | Low    | Low    | Special chars in attribute values         |
+| 7   | Mermaid ID sanitization edge cases                               | Low    | Low    | Unicode, reserved words                   |
+| 8   | Markdown table captions                                          | Low    | Low    | Nice-to-have feature                      |
+| 9   | `TableData.RemoveRow()`                                          | Low    | Low    | No consumer requesting it                 |
+| 10  | `Format.AutoDetect()` (from content sniffing)                    | Low    | Medium | Questionable value                        |
+| 11  | CSV/TSV reading (currently write-only)                           | Medium | Medium | Would expand library scope                |
+| 12  | Add `format_deprecated.go` removal timeline                      | Low    | Low    | Breaking change, needs major version bump |
 
 ---
 
@@ -116,21 +118,25 @@ Nothing is fucked up. The codebase is in the healthiest state it's ever been:
 ## E) WHAT WE SHOULD IMPROVE
 
 ### Architecture
+
 1. **Renderer interface returns `string` not `(string, error)`** — limits error propagation. Every Render() caller must trust the output. Changing this is a breaking API change requiring v2.
 2. **Exhaustruct as a design smell** — 25 nolint directives for `exhaustruct` suggest D2Node/D2Edge/D2NodeStyle have too many optional fields. Functional option pattern would be better.
 3. **GraphRendererMixin embedding vs D2 parallel types** — D2 has richer types but can't use the mixin. This is intentional but creates a parallel hierarchy.
 
 ### Testing
+
 4. **No integration test for round-trip marshal/unmarshal** — MarshalJSON → UnmarshalJSON should produce equal data.
 5. **Benchmarks cover most renderers but not XML, Tree, or HTML tree** — coverage gaps.
 6. **Escape functions lack adversarial input testing** — fuzz tests would catch edge cases.
 
 ### Developer Experience
+
 7. **No godoc examples** — pkg.go.dev shows no example usage for any type.
 8. **cmdguard integration not shown in examples** — examples/basic uses raw os.Args.
 9. **No CHANGELOG entries for recent fixes** — CHANGELOG.md has 40 lines, hasn't been updated.
 
 ### Operational
+
 10. **No .goreleaser.yml** — release.yml referenced it but it was removed. Release workflow may need adjustment.
 11. **Depguard blocks `cmp`** — should be added to allowed list for modern Go patterns.
 
@@ -140,33 +146,33 @@ Nothing is fucked up. The codebase is in the healthiest state it's ever been:
 
 Sorted by impact × effort (highest first):
 
-| # | Task | Impact | Effort | Category |
-|---|------|--------|--------|----------|
-| 1 | Add godoc Example functions for top 5 types | High | Low | DX |
-| 2 | Add round-trip marshal/unmarshal integration tests | High | Low | Testing |
-| 3 | Update CHANGELOG.md with recent fixes | Medium | Low | Docs |
-| 4 | Add `cmp` to depguard allowed list | Medium | Low | Tooling |
-| 5 | Add fuzz tests for escape.D2, escape.DOT, escape.Mermaid | High | Medium | Testing |
-| 6 | Add benchmarks for XML, Tree, HTML tree renderers | Medium | Low | Testing |
-| 7 | Add cmdguard usage example to examples/ | Medium | Low | DX |
-| 8 | Remove `format_deprecated.go` (assess breaking change) | Medium | Low | Cleanup |
-| 9 | Add functional options for D2Node (reduce exhaustruct nolints) | Medium | High | Architecture |
-| 10 | Add deterministic output ordering for D2 diagrams | Medium | Medium | Correctness |
-| 11 | Add `Renderer.Render() (string, error)` as v2 proposal | High | High | Architecture |
-| 12 | Unify tree conversion pattern (if complexity warrants) | Medium | High | Architecture |
-| 13 | Add DOT attribute quoting for special characters | Low | Low | Robustness |
-| 14 | Add Mermaid Unicode ID handling | Low | Low | Robustness |
-| 15 | Add `MarshalTSVFromTableData` (like `MarshalXMLFromTableData`) | Medium | Low | Feature parity |
-| 16 | Add `MarshalCSVFromTableData` | Medium | Low | Feature parity |
-| 17 | Add CSV/TSV reader support | Medium | Medium | Feature expansion |
-| 18 | Add `TableData.RemoveRow()` | Low | Low | Feature |
-| 19 | Add Markdown table caption support | Low | Low | Feature |
-| 20 | Add `Format.AutoDetect()` from content sniffing | Low | Medium | Feature |
-| 21 | Create .goreleaser.yml (if releasing binaries ever needed) | Low | Low | CI |
-| 22 | Add pre-commit hook to CI | Low | Low | CI |
-| 23 | Add `go vet` as explicit CI step | Low | Low | CI |
-| 24 | Explore Nix flake migration (if approved) | Low | High | Tooling |
-| 25 | Add D2 theme/style preset support | Low | Medium | Feature |
+| #   | Task                                                           | Impact | Effort | Category          |
+| --- | -------------------------------------------------------------- | ------ | ------ | ----------------- |
+| 1   | Add godoc Example functions for top 5 types                    | High   | Low    | DX                |
+| 2   | Add round-trip marshal/unmarshal integration tests             | High   | Low    | Testing           |
+| 3   | Update CHANGELOG.md with recent fixes                          | Medium | Low    | Docs              |
+| 4   | Add `cmp` to depguard allowed list                             | Medium | Low    | Tooling           |
+| 5   | Add fuzz tests for escape.D2, escape.DOT, escape.Mermaid       | High   | Medium | Testing           |
+| 6   | Add benchmarks for XML, Tree, HTML tree renderers              | Medium | Low    | Testing           |
+| 7   | Add cmdguard usage example to examples/                        | Medium | Low    | DX                |
+| 8   | Remove `format_deprecated.go` (assess breaking change)         | Medium | Low    | Cleanup           |
+| 9   | Add functional options for D2Node (reduce exhaustruct nolints) | Medium | High   | Architecture      |
+| 10  | Add deterministic output ordering for D2 diagrams              | Medium | Medium | Correctness       |
+| 11  | Add `Renderer.Render() (string, error)` as v2 proposal         | High   | High   | Architecture      |
+| 12  | Unify tree conversion pattern (if complexity warrants)         | Medium | High   | Architecture      |
+| 13  | Add DOT attribute quoting for special characters               | Low    | Low    | Robustness        |
+| 14  | Add Mermaid Unicode ID handling                                | Low    | Low    | Robustness        |
+| 15  | Add `MarshalTSVFromTableData` (like `MarshalXMLFromTableData`) | Medium | Low    | Feature parity    |
+| 16  | Add `MarshalCSVFromTableData`                                  | Medium | Low    | Feature parity    |
+| 17  | Add CSV/TSV reader support                                     | Medium | Medium | Feature expansion |
+| 18  | Add `TableData.RemoveRow()`                                    | Low    | Low    | Feature           |
+| 19  | Add Markdown table caption support                             | Low    | Low    | Feature           |
+| 20  | Add `Format.AutoDetect()` from content sniffing                | Low    | Medium | Feature           |
+| 21  | Create .goreleaser.yml (if releasing binaries ever needed)     | Low    | Low    | CI                |
+| 22  | Add pre-commit hook to CI                                      | Low    | Low    | CI                |
+| 23  | Add `go vet` as explicit CI step                               | Low    | Low    | CI                |
+| 24  | Explore Nix flake migration (if approved)                      | Low    | High   | Tooling           |
+| 25  | Add D2 theme/style preset support                              | Low    | Medium | Feature           |
 
 ---
 
@@ -189,23 +195,23 @@ This is the single most consequential architectural decision remaining:
 
 ## Codebase Health Metrics
 
-| Metric | Value |
-|--------|-------|
-| Production code | 4,558 lines |
-| Test code | 6,424 lines |
-| Test:Code ratio | 1.41:1 |
-| Packages | 10 (7 with tests) |
-| Exported types | ~30 |
-| Exported functions | ~80 |
-| CI jobs | 1 (consolidated from 3) |
-| Lint issues | 0 |
-| Race issues | 0 |
-| Build errors | 0 |
-| Coverage (root) | 91.0% |
-| Coverage (all) | 95.5% avg |
-| Largest file | sort/sort_test.go (334 lines) |
-| Largest prod file | format.go (312 lines) |
-| nolint directives | 47 (25 exhaustruct, 13 gochecknoglobals) |
+| Metric             | Value                                    |
+| ------------------ | ---------------------------------------- |
+| Production code    | 4,558 lines                              |
+| Test code          | 6,424 lines                              |
+| Test:Code ratio    | 1.41:1                                   |
+| Packages           | 10 (7 with tests)                        |
+| Exported types     | ~30                                      |
+| Exported functions | ~80                                      |
+| CI jobs            | 1 (consolidated from 3)                  |
+| Lint issues        | 0                                        |
+| Race issues        | 0                                        |
+| Build errors       | 0                                        |
+| Coverage (root)    | 91.0%                                    |
+| Coverage (all)     | 95.5% avg                                |
+| Largest file       | sort/sort_test.go (334 lines)            |
+| Largest prod file  | format.go (312 lines)                    |
+| nolint directives  | 47 (25 exhaustruct, 13 gochecknoglobals) |
 
 ---
 

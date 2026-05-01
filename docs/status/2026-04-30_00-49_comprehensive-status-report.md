@@ -67,6 +67,7 @@ got := output.MustRender(x)
 ```
 
 This is safe for tests because:
+
 - No current renderer actually returns an error
 - Tests would catch regressions via `MustRender` panicking on unexpected errors
 - Benchmarks would still need the verbose pattern (to avoid panic overhead in hot loops)
@@ -209,6 +210,7 @@ The `(string, error)` interface is future-proof, but no renderer currently exerc
    - Memory allocation failure? (Go doesn't expose this)
 
 Should we:
+
 - **A)** Leave renderers returning `nil` errors until real failure modes emerge? (current state)
 - **B)** Add validation (e.g., UTF-8 checking) that could return errors? (more defensive)
 - **C)** Accept that the `error` return is primarily for streaming/I/O and the interface is correctly forward-looking?

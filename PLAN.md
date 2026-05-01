@@ -48,28 +48,28 @@ go-output/
 
 ## Supported Formats
 
-| Format | Constant | Category | Renderer |
-|--------|----------|----------|----------|
-| Table | `FormatTable` | table | `table.Table` (lipgloss) |
-| JSON | `FormatJSON` | table | `MarshalJSON` / `JSONWriter` |
-| CSV | `FormatCSV` | table | `CSVWriter` |
-| TSV | `FormatTSV` | table | `TSVWriter` |
-| Markdown | `FormatMarkdown` | table | `MarkdownTable` |
-| XML | `FormatXML` | table | `XMLWriter` |
-| YAML | `FormatYAML` | table | `MarshalYAML` |
-| HTML | `FormatHTML` | tree | `HTMLRenderer` / `StreamingHTMLRenderer` |
-| Tree | `FormatTree` | tree | `ASCIITreeRenderer` |
-| D2 | `FormatD2` | graph | `D2Diagram` |
-| Mermaid | `FormatMermaid` | graph | `MermaidRenderer` |
-| DOT | `FormatDOT` | graph | `DOTRenderer` |
+| Format   | Constant         | Category | Renderer                                 |
+| -------- | ---------------- | -------- | ---------------------------------------- |
+| Table    | `FormatTable`    | table    | `table.Table` (lipgloss)                 |
+| JSON     | `FormatJSON`     | table    | `MarshalJSON` / `JSONWriter`             |
+| CSV      | `FormatCSV`      | table    | `CSVWriter`                              |
+| TSV      | `FormatTSV`      | table    | `TSVWriter`                              |
+| Markdown | `FormatMarkdown` | table    | `MarkdownTable`                          |
+| XML      | `FormatXML`      | table    | `XMLWriter`                              |
+| YAML     | `FormatYAML`     | table    | `MarshalYAML`                            |
+| HTML     | `FormatHTML`     | tree     | `HTMLRenderer` / `StreamingHTMLRenderer` |
+| Tree     | `FormatTree`     | tree     | `ASCIITreeRenderer`                      |
+| D2       | `FormatD2`       | graph    | `D2Diagram`                              |
+| Mermaid  | `FormatMermaid`  | graph    | `MermaidRenderer`                        |
+| DOT      | `FormatDOT`      | graph    | `DOTRenderer`                            |
 
 ## Core Enums
 
-| Enum | Values | Purpose |
-|------|--------|---------|
-| `Format` | 12 formats | Output format selection |
-| `SortBy` | name, importance, created_at, updated_at, health, complexity | Sort field selection |
-| `ColorMode` | auto, always, never | Color output control |
+| Enum        | Values                                                       | Purpose                 |
+| ----------- | ------------------------------------------------------------ | ----------------------- |
+| `Format`    | 12 formats                                                   | Output format selection |
+| `SortBy`    | name, importance, created_at, updated_at, health, complexity | Sort field selection    |
+| `ColorMode` | auto, always, never                                          | Color output control    |
 
 All enums provide `ParseX()`, `String()`, `AllowedValues()`, `IsValid()` methods.
 
