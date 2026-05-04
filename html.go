@@ -90,12 +90,7 @@ func (r *HTMLRenderer) Render() (string, error) {
 
 // RenderFullHTML returns a complete HTML document with the table.
 func (r *HTMLRenderer) RenderFullHTML(title string) (string, error) {
-	content, err := r.Render()
-	if err != nil {
-		return "", fmt.Errorf("render html table: %w", err)
-	}
-
-	return renderFullHTMLDocument(title, `
+	return r.renderFullHTMLWithStyles(title, `
 .data-table {
   width: 100%;
   border-collapse: collapse;
@@ -120,7 +115,17 @@ func (r *HTMLRenderer) RenderFullHTML(title string) (string, error) {
 .data-table tr:last-child td {
   border-bottom: none;
 }
-`, content), nil
+`)
+}
+
+// renderFullHTMLWithStyles renders the HTML content with the given styles.
+func (r *HTMLRenderer) renderFullHTMLWithStyles(title, styles string) (string, error) {
+	content, err := r.Render()
+	if err != nil {
+		return "", fmt.Errorf("render html table: %w", err)
+	}
+
+	return renderFullHTMLDocument(title, styles, content), nil
 }
 
 // HTMLTreeRenderer renders a tree structure as HTML with nested lists.
@@ -174,12 +179,7 @@ func (r *HTMLTreeRenderer) renderNode(b *strings.Builder, node *TreeNode) {
 
 // RenderFullHTML returns a complete HTML document with the tree.
 func (r *HTMLTreeRenderer) RenderFullHTML(title string) (string, error) {
-	content, err := r.Render()
-	if err != nil {
-		return "", fmt.Errorf("render html tree: %w", err)
-	}
-
-	return renderFullHTMLDocument(title, `
+	return r.renderFullHTMLWithStyles(title, `
 .tree {
   list-style: none;
   padding-left: 1.5rem;
@@ -196,7 +196,17 @@ func (r *HTMLTreeRenderer) RenderFullHTML(title string) (string, error) {
   padding-left: 1rem;
   margin-top: 0.5rem;
 }
-`, content), nil
+`)
+}
+
+// renderFullHTMLWithStyles renders the HTML content with the given styles.
+func (r *HTMLTreeRenderer) renderFullHTMLWithStyles(title, styles string) (string, error) {
+	content, err := r.Render()
+	if err != nil {
+		return "", fmt.Errorf("render html tree: %w", err)
+	}
+
+	return renderFullHTMLDocument(title, styles, content), nil
 }
 
 // renderFullHTMLDocument creates a complete HTML document with the given styles and content.
