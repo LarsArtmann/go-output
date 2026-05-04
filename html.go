@@ -118,14 +118,19 @@ func (r *HTMLRenderer) RenderFullHTML(title string) (string, error) {
 `)
 }
 
-// renderFullHTMLWithStyles renders the HTML content with the given styles.
-func (r *HTMLRenderer) renderFullHTMLWithStyles(title, styles string) (string, error) {
+// renderHTMLWithStyles renders HTML content with given styles, handling errors with context.
+func renderHTMLWithStyles(r Renderer, title, styles, errContext string) (string, error) {
 	content, err := r.Render()
 	if err != nil {
-		return "", fmt.Errorf("render html table: %w", err)
+		return "", fmt.Errorf("%s: %w", errContext, err)
 	}
 
 	return renderFullHTMLDocument(title, styles, content), nil
+}
+
+// renderFullHTMLWithStyles renders the HTML content with the given styles.
+func (r *HTMLRenderer) renderFullHTMLWithStyles(title, styles string) (string, error) {
+	return renderHTMLWithStyles(r, title, styles, "render html table")
 }
 
 // HTMLTreeRenderer renders a tree structure as HTML with nested lists.
@@ -201,12 +206,7 @@ func (r *HTMLTreeRenderer) RenderFullHTML(title string) (string, error) {
 
 // renderFullHTMLWithStyles renders the HTML content with the given styles.
 func (r *HTMLTreeRenderer) renderFullHTMLWithStyles(title, styles string) (string, error) {
-	content, err := r.Render()
-	if err != nil {
-		return "", fmt.Errorf("render html tree: %w", err)
-	}
-
-	return renderFullHTMLDocument(title, styles, content), nil
+	return renderHTMLWithStyles(r, title, styles, "render html tree")
 }
 
 // renderFullHTMLDocument creates a complete HTML document with the given styles and content.

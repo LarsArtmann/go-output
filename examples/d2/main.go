@@ -8,6 +8,12 @@ import (
 	"github.com/larsartmann/go-output"
 )
 
+// handleError prints the error to stderr and exits with code 1.
+func handleError(err error) {
+	fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+	os.Exit(1)
+}
+
 func main() {
 	diagram := output.NewD2Diagram().
 		SetDirection(output.D2DirRight).
@@ -62,8 +68,7 @@ func main() {
 
 	out, err := diagram.Render()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-		os.Exit(1)
+		handleError(err)
 	}
 
 	fmt.Println(out)
