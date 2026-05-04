@@ -3,26 +3,13 @@ package main
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/larsartmann/go-output"
+	"github.com/larsartmann/go-output/examples/shared"
 )
 
-// handleError prints the error to stderr and exits with code 1.
-func handleError(err error) {
-	fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-	os.Exit(1)
-}
-
 func main() {
-	diagram := output.NewD2Diagram().
-		SetDirection(output.D2DirRight).
-		SetTitle("Microservice Architecture").
-		AddClass("service", output.D2NodeStyle{
-			Fill:     "lightblue",
-			Stroke:   "navy",
-			FontSize: 16,
-		}).
+	diagram := shared.NewServiceD2Diagram("Microservice Architecture").
 		AddClass("database", output.D2NodeStyle{
 			Fill:   "lightyellow",
 			Stroke: "goldenrod",
@@ -68,7 +55,7 @@ func main() {
 
 	out, err := diagram.Render()
 	if err != nil {
-		handleError(err)
+		shared.HandleError(err)
 	}
 
 	fmt.Println(out)

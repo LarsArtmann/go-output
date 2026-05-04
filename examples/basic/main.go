@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/larsartmann/go-output"
+	"github.com/larsartmann/go-output/examples/shared"
 	"github.com/larsartmann/go-output/table"
 )
 
@@ -51,7 +52,7 @@ func main() {
 	if len(os.Args) > 1 {
 		f, err := output.ParseFormat(os.Args[1])
 		if err != nil {
-			handleError(err)
+			shared.HandleError(err)
 		}
 
 		format = f
@@ -85,7 +86,7 @@ func renderTable(projects []Project) {
 
 	out, err := tbl.Render()
 	if err != nil {
-		handleError(err)
+		shared.HandleError(err)
 	}
 
 	fmt.Println(out)
@@ -94,7 +95,7 @@ func renderTable(projects []Project) {
 func renderJSON(projects []Project) {
 	data, err := output.MarshalJSONIndent(projects, "", "  ")
 	if err != nil {
-		handleError(err)
+		shared.HandleError(err)
 	}
 
 	fmt.Println(string(data))
@@ -112,7 +113,7 @@ func renderMarkdown(projects []Project) {
 
 	out, err := md.Render()
 	if err != nil {
-		handleError(err)
+		shared.HandleError(err)
 	}
 
 	fmt.Println(out)
@@ -120,12 +121,6 @@ func renderMarkdown(projects []Project) {
 
 // projectHeaders defines the common headers for project data.
 var projectHeaders = []string{"Name", "Health", "Complexity"}
-
-// handleError prints the error to stderr and exits with code 1.
-func handleError(err error) {
-	fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-	os.Exit(1)
-}
 
 // projectToRow converts a Project to a formatted row slice.
 func projectToRow(p Project) []string {
@@ -167,13 +162,13 @@ type writer interface {
 func renderDelimited(w writer, projects []Project) {
 	err := w.WriteHeader(projectHeaders)
 	if err != nil {
-		handleError(err)
+		shared.HandleError(err)
 	}
 
 	for _, p := range projects {
 		err := w.WriteRow(projectToRow(p))
 		if err != nil {
-			handleError(err)
+			shared.HandleError(err)
 		}
 	}
 
@@ -181,7 +176,7 @@ func renderDelimited(w writer, projects []Project) {
 
 	err = w.Error()
 	if err != nil {
-		handleError(err)
+		shared.HandleError(err)
 	}
 }
 
@@ -190,7 +185,7 @@ func renderXML(projects []Project) {
 
 	xmlData, err := output.MarshalXMLFromTableData(data)
 	if err != nil {
-		handleError(err)
+		shared.HandleError(err)
 	}
 
 	fmt.Println(string(xmlData))
@@ -199,17 +194,14 @@ func renderXML(projects []Project) {
 func renderYAML(projects []Project) {
 	data, err := output.MarshalYAML(projects)
 	if err != nil {
-		handleError(err)
+		shared.HandleError(err)
 	}
 
 	fmt.Println(string(data))
 }
 
 func renderD2(projects []Project) {
-	d2 := output.NewD2Diagram().
-		SetDirection(output.D2DirRight).
-		SetTitle("Project Architecture").
-		AddClass("service", output.D2NodeStyle{Fill: "lightblue", Stroke: "navy", FontSize: 16}).
+	d2 := shared.NewServiceD2Diagram("Project Architecture").
 		AddTable("projects", []output.D2Column{
 			{Name: "id", Type: "serial", Constraint: output.D2ConstraintPrimary},
 			{Name: "name", Type: "varchar(255)"},
@@ -233,7 +225,7 @@ func renderD2(projects []Project) {
 
 	out, err := d2.Render()
 	if err != nil {
-		handleError(err)
+		shared.HandleError(err)
 	}
 
 	fmt.Println(out)
@@ -265,7 +257,7 @@ func renderTree(projects []Project) {
 
 	out, err := tree.Render()
 	if err != nil {
-		handleError(err)
+		shared.HandleError(err)
 	}
 
 	fmt.Println(out)
@@ -277,7 +269,7 @@ func renderDiagram(projects []Project, createRenderer func(*output.TableData) ou
 
 	out, err := renderer.Render()
 	if err != nil {
-		handleError(err)
+		shared.HandleError(err)
 	}
 
 	fmt.Println(out)

@@ -8,6 +8,13 @@ import (
 	output "github.com/larsartmann/go-output"
 )
 
+// sortByNameField sorts items by the Name field using ByField.
+func sortByNameField[T any](items []T, getName func(T) string) {
+	New(items, output.SortByName, false).
+		WithLessFunc(ByField(getName)).
+		Sort()
+}
+
 func assertItemField[V comparable](
 	t *testing.T,
 	items []testItem,
@@ -19,6 +26,93 @@ func assertItemField[V comparable](
 		if got := accessor(items[i]); got != expectedVal {
 			t.Errorf("Items[%d].%s = %v, want %v", i, fieldName, got, expectedVal)
 		}
+	}
+}
+
+// assertOrderSequence checks that consecutive items have expected order values.
+func assertOrderSequence(t *testing.T, items []stableItem, startIdx int, expected ...int) {
+	for i, exp := range expected {
+		idx := startIdx + i
+		if idx >= len(items) {
+			t.Errorf("assertOrderSequence: index %d out of bounds", idx)
+			return
+		}
+
+		if items[idx].Order != exp {
+			t.Errorf("items[%d].Order = %d, want %d", idx, items[idx].Order, exp)
+		}
+	}
+}
+
+// assertItemByName asserts the item at the given position matches.
+func assertItemByName(t *testing.T, items []testItem, pos string, idx int, expected string) {
+	l := len(items)
+	if idx < 0 || idx >= l {
+		t.Fatalf("assertItemByName: index %d out of bounds for length %d", idx, l)
+		return
+	}
+
+	if items[idx].Name != expected {
+		t.Errorf("%s item = %s, want %s", pos, items[idx].Name, expected)
+	}
+}
+
+// assertLastItemByName asserts the last item's name matches.
+func assertLastItemByName(t *testing.T, items []testItem, expected string) {
+	assertItemByName(t, items, "last", len(items)-1, expected)
+}
+
+// assertFirstAndLast checks both first and last items in a single call.
+func assertFirstAndLast[T any](
+	t *testing.T,
+	items []T,
+	firstExpected string,
+	lastExpected string,
+	getVal func(T) string,
+) {
+	l := len(items)
+	if l < 2 {
+		t.Fatalf("assertFirstAndLast: slice length %d < 2", l)
+		return
+	}
+
+	if got := getVal(items[0]); got != firstExpected {
+		t.Errorf("first item = %s, want %s", got, firstExpected)
+	}
+
+	if got := getVal(items[l-1]); got != lastExpected {
+		t.Errorf("last item = %s, want %s", got, lastExpected)
+	}
+}
+
+// assertItemAt checks item at specific index.
+func assertItemAt[T any](
+	t *testing.T,
+	items []T,
+	pos string,
+	idx int,
+	getVal func(T) string,
+	expected string,
+) {
+	if idx < 0 || idx >= len(items) {
+		t.Errorf("assertItemAt: index %d out of bounds for slice length %d", idx, len(items))
+		return
+	}
+
+	if got := getVal(items[idx]); got != expected {
+		t.Errorf("%s item = %s, want %s", pos, got, expected)
+	}
+}
+
+func sortByCount(items []testItem, desc bool) {
+	New(items, output.SortBy("Count"), desc).
+		WithLessFunc(ByField(lessByCount)).
+		Sort()
+}
+
+func assertFirstItem[T comparable](t *testing.T, items []T, expected T) {
+	if items[0] != expected {
+		t.Errorf("first item = %v, want %v", items[0], expected)
 	}
 }
 
@@ -85,8 +179,12 @@ func compareCount(ascending bool) func(a, b testItem) bool {
 }
 
 func compareName(_ bool) func(a, b testItem) bool {
-	return ByField(func(item testItem) string { return item.Name })
+	return ByField(lessByName)
 }
+
+func lessByName(item testItem) string         { return item.Name }
+func lessByCount(item testItem) int           { return item.Count }
+func lessByNameStable(item stableItem) string { return item.Name }
 
 func testItemsUnsorted() []testItem {
 	return testItemsWithCounts(1, 2, 3)
@@ -135,7 +233,7 @@ func TestSorter_Sort(t *testing.T) {
 			items:          testItemsWithCounts(10, 20, 30),
 			sortBy:         output.SortBy("Count"),
 			desc:           false,
-			lessFunc:       ByField(func(item testItem) int { return item.Count }),
+			lessFunc:       ByField(lessByCount),
 			expectedNames:  []string{"alpha", "bravo", "charlie"},
 			expectedCounts: []int{10, 20, 30},
 		},
@@ -243,7 +341,7 @@ func TestSorter_Sort_DescStability(t *testing.T) {
 	}
 
 	New(items, output.SortByName, true).
-		WithLessFunc(ByField(func(item stableItem) string { return item.Name })).
+		WithLessFunc(ByField(lessByNameStable)).
 		Sort()
 
 	if items[0].Name != "b" {
@@ -251,10 +349,7 @@ func TestSorter_Sort_DescStability(t *testing.T) {
 	}
 
 	// Equal-name items must preserve original insertion order
-	if items[1].Order != 1 || items[2].Order != 2 || items[3].Order != 3 {
-		t.Errorf("desc stable sort: orders = [%d, %d, %d], want [1, 2, 3]",
-			items[1].Order, items[2].Order, items[3].Order)
-	}
+	assertOrderSequence(t, items, 1, 1, 2, 3)
 }
 
 func TestSorter_Sort_DescCount(t *testing.T) {
@@ -264,13 +359,8 @@ func TestSorter_Sort_DescCount(t *testing.T) {
 
 	New(items, output.SortBy("Count"), true).WithLessFunc(compareCount(true)).Sort()
 
-	if items[0].Name != "charlie" {
-		t.Errorf("desc sort first = %s, want charlie", items[0].Name)
-	}
-
-	if items[2].Name != "alpha" {
-		t.Errorf("desc sort last = %s, want alpha", items[2].Name)
-	}
+	assertItemByName(t, items, "first", 0, "charlie")
+	assertLastItemByName(t, items, "alpha")
 }
 
 func TestSorter_Sort_NonStructInput(t *testing.T) {
@@ -280,19 +370,13 @@ func TestSorter_Sort_NonStructInput(t *testing.T) {
 
 	// No LessFunc — should be stable (no-op)
 	New(items, output.SortByName, false).Sort()
-
-	if items[0] != "b" {
-		t.Errorf("sort without LessFunc should be stable (no-op), got %s", items[0])
-	}
+	assertFirstItem(t, items, "b")
 
 	// With LessFunc — should sort
 	New(items, output.SortByName, false).WithLessFunc(func(a, b string) bool {
 		return a < b
 	}).Sort()
-
-	if items[0] != "a" {
-		t.Errorf("sort with LessFunc first = %s, want a", items[0])
-	}
+	assertFirstItem(t, items, "a")
 }
 
 func TestSorter_Sort_UsesSliceStable(t *testing.T) {
@@ -305,9 +389,7 @@ func TestSorter_Sort_UsesSliceStable(t *testing.T) {
 		{Name: "same", Count: 3, When: time.Time{}},
 	}
 
-	New(items, output.SortByName, false).
-		WithLessFunc(ByField(func(item testItem) string { return item.Name })).
-		Sort()
+	sortByNameField(items, lessByName)
 
 	// All names are equal, so relative order must be preserved
 	if items[0].Count != 1 || items[1].Count != 2 || items[2].Count != 3 {
@@ -321,9 +403,7 @@ func TestNew_WithLessFuncChaining(t *testing.T) {
 
 	items := testItemsWithCounts(30, 10, 20)
 
-	New(items, output.SortBy("Count"), false).
-		WithLessFunc(ByField(func(item testItem) int { return item.Count })).
-		Sort()
+	sortByCount(items, false)
 
 	if items[0].Name != "bravo" || items[0].Count != 10 {
 		t.Errorf(
