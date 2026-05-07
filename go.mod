@@ -5,7 +5,15 @@ go 1.26.2
 require (
 	charm.land/lipgloss/v2 v2.0.3
 	github.com/go-faster/yaml v0.4.6
+	github.com/larsartmann/go-output/enum v0.0.0
+	github.com/larsartmann/go-output/escape v0.0.0
 	golang.org/x/term v0.42.0
+)
+
+replace (
+	github.com/larsartmann/go-output/cmdguard => ./cmdguard
+	github.com/larsartmann/go-output/enum => ./enum
+	github.com/larsartmann/go-output/escape => ./escape
 )
 
 require (
