@@ -124,6 +124,12 @@ linters:
     - wsl_v5
     - zerologlint
   settings:
+    gomoddirectives:
+      replace-local: true
+      replace-allow-list:
+        - github.com/larsartmann/go-output/cmdguard
+        - github.com/larsartmann/go-output/enum
+        - github.com/larsartmann/go-output/escape
     revive:
       rules:
         - disabled: true

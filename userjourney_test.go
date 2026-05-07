@@ -7,7 +7,7 @@ import (
 
 	"github.com/larsartmann/go-output"
 	"github.com/larsartmann/go-output/internal/testutils"
-	"github.com/larsartmann/go-output/sort"
+	"github.com/larsartmann/go-output/sort" //nolint:staticcheck // intentionally testing deprecated package
 )
 
 // User Journey: CLI Developer wants to add output formatting to their tool
