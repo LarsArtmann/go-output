@@ -101,9 +101,9 @@ func TestHTML(t *testing.T) {
 		{"no escaping", "hello", "hello"},
 		{"angle brackets", "<div>", "&lt;div&gt;"},
 		{"ampersand", "a&b", "a&amp;b"},
-		{"quotes", `"hello"`, "&quot;hello&quot;"},
+		{"quotes", `"hello"`, "&#34;hello&#34;"},
 		{"apostrophe", "it's", "it&#39;s"},
-		{"combined", `<a>it's</a>`, "&lt;a&gt;it&#39;s&lt;/a&gt;"},
+		{"combined", "<a>it's</a>", "&lt;a&gt;it&#39;s&lt;/a&gt;"},
 		{"empty", "", ""},
 	}
 

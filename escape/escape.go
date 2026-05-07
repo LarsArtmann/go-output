@@ -1,50 +1,20 @@
 // Package escape provides string escaping utilities for various output formats.
 package escape
 
-import "strings"
-
-type mode struct {
-	apos string
-}
-
-var (
-	//nolint:gochecknoglobals // Mode constant for HTML escaping.
-	htmlMode = mode{apos: "&#39;"}
-	//nolint:gochecknoglobals // Mode constant for XML escaping.
-	xmlMode = mode{apos: "&apos;"}
+import (
+	"html"
+	"strings"
 )
 
-// HTML escapes HTML special characters.
-func HTML(s string) string {
-	return escape(s, htmlMode)
-}
-
 // XML escapes XML special characters.
+// Uses &apos; for apostrophe (canonical XML entity) instead of &#39; from html.EscapeString.
 func XML(s string) string {
-	return escape(s, xmlMode)
+	return strings.ReplaceAll(html.EscapeString(s), "&#39;", "&apos;")
 }
 
-func escape(s string, m mode) string {
-	var b strings.Builder
-
-	for _, r := range s {
-		switch r {
-		case '<':
-			b.WriteString("&lt;")
-		case '>':
-			b.WriteString("&gt;")
-		case '&':
-			b.WriteString("&amp;")
-		case '"':
-			b.WriteString("&quot;")
-		case '\'':
-			b.WriteString(m.apos)
-		default:
-			b.WriteRune(r)
-		}
-	}
-
-	return b.String()
+// HTML escapes HTML special characters using html.EscapeString from the standard library.
+func HTML(s string) string {
+	return html.EscapeString(s)
 }
 
 // D2 escapes special characters for D2 diagram strings.
