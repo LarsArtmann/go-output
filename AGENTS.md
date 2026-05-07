@@ -4,7 +4,7 @@
 
 A reusable Go library for CLI applications providing consistent output formatting across 12 formats (Table, JSON, CSV, TSV, Markdown, XML, YAML, HTML, Tree, D2, Mermaid, DOT) with type-safe enum-based configuration.
 
-**Updated:** 2026-04-30
+**Updated:** 2026-05-07
 
 ## Location
 
@@ -17,62 +17,69 @@ https://github.com/larsartmann/go-output
 ## Key Technologies
 
 - Go 1.26+
-- charm.land/lipgloss/v2 (terminal styling)
+- charm.land/lipgloss/v2 (terminal styling — **in table/ module only, not root**)
 - github.com/go-faster/yaml (YAML support)
 - golang.org/x/term (terminal detection)
-- github.com/larsartmann/cmdguard/v2 (optional CLI flag integration - add separately)
+
+## Multi-Module Workspace
+
+This project uses Go workspace modules. Each sub-package with its own `go.mod` is an independent module:
+
+| Module | go.mod | Deps | Notes |
+|---|---|---|---|
+| Root (`package output`) | ✅ | enum, escape, yaml, x/term | Core types + formatters |
+| `enum/` | ✅ | None | Generic enum utilities |
+| `escape/` | ✅ | None | Format-specific escaping |
+| `cmdguard/` | ✅ | None | CLI flag parsing |
+| `table/` | ✅ | root, lipgloss | **Lipgloss isolated from root** |
+| `sort/` | ✅ | root | **Deprecated** — use stdlib |
+| `integration/` | ✅ | root, sort, table | Cross-module tests |
+| `examples/` | ✅ | root, table | Usage examples |
+
+`go.work` is gitignored (local dev only). Each module uses `replace` directives for standalone development.
+
+**Key benefit:** `go get github.com/larsartmann/go-output` pulls ZERO lipgloss deps. Users who need terminal tables import `go-output/table` explicitly.
 
 ## Project Structure
 
 ```
-go-output/
-├── format.go              # Format enum + Renderer/TableData/TreeNode types
-├── format_deprecated.go   # OutputFormat backward compat aliases
-├── sort.go                # SortBy enum
-├── color.go               # ColorMode enum + terminal detection
-├── ids.go                 # BrandedID phantom types
-├── registry.go            # Opt-in renderer registry (plugin system)
+go-output/                    # Root module (package output) — types, interfaces, formatters
+├── format.go                 # Format enum + Renderer/TableData/TreeNode types
+├── format_deprecated.go      # OutputFormat backward compat aliases
+├── sort.go                   # SortBy enum
+├── color.go                  # ColorMode enum + terminal detection
+├── ids.go                    # BrandedID phantom types
+├── registry.go               # Opt-in renderer registry
+├── slices.go                 # FilledStrings utility
+├── json.go, csv.go, tsv.go, yaml.go, xml.go, markdown.go
+├── html.go, tree.go, streaming.go
+├── graph.go                  # GraphNode, GraphEdge, GraphRenderer, AddTreeNodes
+├── dot.go                    # DOT/Graphviz renderer + GraphRendererMixin
+├── mermaid.go                # Mermaid diagram renderer
+├── delimited.go, markup.go, marshal.go
+├── d2.go, d2_enum.go, d2_render.go, d2_write.go, d2_convert.go
+├── internal/gentest/         # Generic test helpers
+├── internal/testutils/       # Domain-aware test helpers
 │
-├── json.go                # JSON marshal/unmarshal + JSONWriter
-├── csv.go                 # CSV writer
-├── tsv.go                 # TSV writer + MarshalTSV
-├── yaml.go                # YAML marshal/unmarshal
-├── xml.go                 # XML writer + MarshalXMLFromTableData
-├── markdown.go            # Markdown table builder with alignment
-├── html.go                # HTML table + tree renderers + tableDataBase
-├── tree.go                # ASCII tree renderer
-├── delimited.go           # Shared CSV/TSV DelimitedWriter
-├── markup.go              # Shared XML/HTML row writing helpers
-├── marshal.go             # Shared marshal/unmarshal error wrapping
-├── streaming.go           # Streaming HTML renderer + adapter
-├── slices.go              # FilledStrings utility
-│
-├── d2.go                  # D2 domain types (D2Node, D2Edge, D2Table)
-├── d2_enum.go             # D2 enums (Direction, NodeShape, ArrowType, Constraint)
-├── d2_render.go           # D2Diagram builder + Render()
-├── d2_write.go            # D2 style/edge writing helpers
-├── d2_convert.go          # TableData/Tree → D2 conversion
-│
-├── graph.go               # Generic graph types (GraphNode, GraphEdge, GraphShape)
-├── dot.go                 # DOT/Graphviz renderer + GraphRendererMixin
-├── mermaid.go             # Mermaid diagram renderer
-│
-├── enum/                  # Generic enum utilities (Parse, Contains, AllowedValues)
-├── table/                 # Lipgloss-based terminal table renderer
-├── sort/                  # Generic Sorter[T] with ByField[T, F cmp.Ordered] helper
-├── cmdguard/              # Generic EnumFlag[T] for cmdguard integration
-├── escape/                # Public format-specific escaping (HTML, XML, D2, DOT, Mermaid)
-└── examples/              # Usage examples
+├── enum/                     # MODULE: Generic enum utilities (zero deps)
+├── escape/                   # MODULE: Format-specific escaping (zero deps)
+├── cmdguard/                 # MODULE: CLI flag parsing (zero deps)
+├── table/                    # MODULE: Lipgloss terminal tables (lipgloss isolated)
+├── sort/                     # MODULE: Generic sorting (DEPRECATED — use stdlib)
+├── integration/              # MODULE: Cross-module integration tests
+└── examples/                 # MODULE: Usage examples
 ```
 
 ## Build Commands
 
 ```bash
-just build     # go build ./...
-just test      # go test ./...
-just lint      # golangci-lint run --fix ./...
-just verify    # build + test + lint
+go build ./...                  # Build all workspace modules
+go test ./...                   # Test all workspace modules
+golangci-lint run --fix ./...   # Lint all modules
+go mod tidy                     # Tidy root module (run in each submodule too)
 ```
+
+**Note:** `go.work` is gitignored. Run from project root to use workspace mode.
 
 ## Code Quality Standards
 
@@ -81,17 +88,18 @@ just verify    # build + test + lint
 - 90%+ test coverage target
 - File size limit: 350 lines per file
 - No code duplication (threshold: 30 tokens)
+- Each module's `go.mod` must have `replace` directives for sibling deps
 
 ## Current Coverage
 
-| Package       | Coverage |
-| ------------- | -------- |
-| output (root) | 91.0%    |
-| cmdguard      | 100%     |
-| enum          | 100%     |
-| escape        | 100%     |
-| sort          | 95.5%    |
-| table         | 100%     |
+| Package       | Coverage | Module |
+| ------------- | -------- | ------ |
+| output (root) | 90.3%    | root   |
+| cmdguard      | 100%     | own    |
+| enum          | 100%     | own    |
+| escape        | 100%     | own    |
+| sort          | 100%     | own    |
+| table         | 100%     | own    |
 
 ## Testing
 
@@ -131,6 +139,8 @@ go test -bench=. -benchmem ./...  # Benchmarks
 - D2 has richer types than generic graph (shapes, arrows, SQL tables, classes) — intentional split
 - Tree conversion has renderer-specific addTreeNodes in d2_convert, dot, mermaid — the generic AddTreeNodes in graph.go handles the common case
 - Depguard config restricts imports — `cmp` is allowed for sort.ByField
-- CI uses Go 1.26 (must match go.mod)
-- escape/ is a public package (moved from internal/escape/ on 2026-04-30)
-- Sorter requires explicit LessFunc; use sort.ByField for field comparison
+- escape/ uses `html.EscapeString()` from stdlib for HTML, with `strings.ReplaceAll` for XML `&apos;`
+- sort/ is **deprecated** — use `slices.SortStableFunc` + `cmp.Compare` (stdlib, Go 1.21+)
+- SortBy enum kept in root — used by cmdguard tests as example enum type
+- Multi-module workspace with 7 independent modules (see ADR 001)
+- GraphRendererMixin defined in dot.go — should move to graph.go or own file when graph/ is extracted as module
