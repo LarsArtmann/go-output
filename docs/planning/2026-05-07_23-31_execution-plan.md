@@ -10,33 +10,33 @@
 
 Each task is self-contained, takes ≤12 min, and leaves the project in a working, committable state.
 
-| # | Task | Effort | Impact | Category | Prereq |
-|---|---|---|---|---|---|
-| **1** | Create `go.work` at root with `use .` | 3 min | 🔴 Critical | Multi-module | — |
-| **2** | Add `go.mod` to `enum/` (zero deps) | 5 min | 🔴 High | Multi-module | #1 |
-| **3** | Add `go.mod` to `escape/` (zero deps) | 5 min | 🔴 High | Multi-module | #1 |
-| **4** | Add `go.mod` to `cmdguard/` (zero deps) | 5 min | 🔴 High | Multi-module | #1 |
-| **5** | Update root `go.mod` with `replace` for enum/escape/cmdguard | 5 min | 🔴 High | Multi-module | #2-4 |
-| **6** | Replace `escape.HTML()` body with `html.EscapeString()` | 5 min | 🟡 Medium | Reinvention | — |
-| **7** | Replace `escape.XML()` body with stdlib or fix `&apos;` | 5 min | 🟡 Medium | Reinvention | — |
-| **8** | Add deprecation notice to `sort/sorter.go` | 3 min | 🟡 Medium | Reinvention | — |
-| **9** | Add deprecation notice to `sort/compare.go` | 2 min | 🟡 Medium | Reinvention | — |
-| **10** | Add `go.mod` to `table/` with replace → root + lipgloss | 8 min | 🔴 High | Multi-module | #1 |
-| **11** | Audit `SortBy` enum: find all consumers, decide keep/deprecate | 10 min | 🟡 Medium | Reinvention | #8 |
-| **12** | Fix depguard violations: add `examples/shared` to allowlist in `.golangci.yml` | 5 min | 🟢 Low | Quality | — |
-| **13** | Inline `FilledStrings`, remove `slices.go` | 8 min | 🟢 Low | Quality | — |
-| **14** | Unify `stringEnum` in fuzz_test.go → use `gentest.StringEnum` | 5 min | 🟢 Low | DRY | — |
-| **15** | Create `d2/` dir + `go.mod` (depends: root, enum, escape) | 5 min | 🔴 High | Multi-module | #1 |
-| **16** | Move `d2*.go` files from root → `d2/`, change `package output` → `package d2` | 10 min | 🔴 High | Multi-module | #15 |
-| **17** | Update d2 file imports: same-package refs → `output "github.com/larsartmann/go-output"` | 10 min | 🔴 High | Multi-module | #16 |
-| **18** | Move d2 test files to `d2/` + update imports | 10 min | 🟡 Medium | Multi-module | #17 |
-| **19** | Create `graph/` dir + `go.mod` (depends: root, escape) | 5 min | 🔴 High | Multi-module | #1 |
-| **20** | Move `dot.go`+`mermaid.go` → `graph/`, extract `GraphRendererMixin` into `graph_mixin.go` | 10 min | 🔴 High | Multi-module | #19 |
-| **21** | Update graph file imports: same-package → `output`, change package name | 10 min | 🔴 High | Multi-module | #20 |
-| **22** | Move graph test files to `graph/` + update imports | 10 min | 🟡 Medium | Multi-module | #21 |
-| **23** | Write ADR 001: `docs/adr/001-multi-module-split.md` | 10 min | 🟡 Medium | Docs | #5 |
-| **24** | Update `AGENTS.md` with final multi-module structure | 8 min | 🟡 Medium | Docs | #22 |
-| **25** | Update `README.md` with module paths and new examples | 10 min | 🟡 Medium | Docs | #24 |
+| #      | Task                                                                                      | Effort | Impact      | Category     | Prereq |
+| ------ | ----------------------------------------------------------------------------------------- | ------ | ----------- | ------------ | ------ |
+| **1**  | Create `go.work` at root with `use .`                                                     | 3 min  | 🔴 Critical | Multi-module | —      |
+| **2**  | Add `go.mod` to `enum/` (zero deps)                                                       | 5 min  | 🔴 High     | Multi-module | #1     |
+| **3**  | Add `go.mod` to `escape/` (zero deps)                                                     | 5 min  | 🔴 High     | Multi-module | #1     |
+| **4**  | Add `go.mod` to `cmdguard/` (zero deps)                                                   | 5 min  | 🔴 High     | Multi-module | #1     |
+| **5**  | Update root `go.mod` with `replace` for enum/escape/cmdguard                              | 5 min  | 🔴 High     | Multi-module | #2-4   |
+| **6**  | Replace `escape.HTML()` body with `html.EscapeString()`                                   | 5 min  | 🟡 Medium   | Reinvention  | —      |
+| **7**  | Replace `escape.XML()` body with stdlib or fix `&apos;`                                   | 5 min  | 🟡 Medium   | Reinvention  | —      |
+| **8**  | Add deprecation notice to `sort/sorter.go`                                                | 3 min  | 🟡 Medium   | Reinvention  | —      |
+| **9**  | Add deprecation notice to `sort/compare.go`                                               | 2 min  | 🟡 Medium   | Reinvention  | —      |
+| **10** | Add `go.mod` to `table/` with replace → root + lipgloss                                   | 8 min  | 🔴 High     | Multi-module | #1     |
+| **11** | Audit `SortBy` enum: find all consumers, decide keep/deprecate                            | 10 min | 🟡 Medium   | Reinvention  | #8     |
+| **12** | Fix depguard violations: add `examples/shared` to allowlist in `.golangci.yml`            | 5 min  | 🟢 Low      | Quality      | —      |
+| **13** | Inline `FilledStrings`, remove `slices.go`                                                | 8 min  | 🟢 Low      | Quality      | —      |
+| **14** | Unify `stringEnum` in fuzz_test.go → use `gentest.StringEnum`                             | 5 min  | 🟢 Low      | DRY          | —      |
+| **15** | Create `d2/` dir + `go.mod` (depends: root, enum, escape)                                 | 5 min  | 🔴 High     | Multi-module | #1     |
+| **16** | Move `d2*.go` files from root → `d2/`, change `package output` → `package d2`             | 10 min | 🔴 High     | Multi-module | #15    |
+| **17** | Update d2 file imports: same-package refs → `output "github.com/larsartmann/go-output"`   | 10 min | 🔴 High     | Multi-module | #16    |
+| **18** | Move d2 test files to `d2/` + update imports                                              | 10 min | 🟡 Medium   | Multi-module | #17    |
+| **19** | Create `graph/` dir + `go.mod` (depends: root, escape)                                    | 5 min  | 🔴 High     | Multi-module | #1     |
+| **20** | Move `dot.go`+`mermaid.go` → `graph/`, extract `GraphRendererMixin` into `graph_mixin.go` | 10 min | 🔴 High     | Multi-module | #19    |
+| **21** | Update graph file imports: same-package → `output`, change package name                   | 10 min | 🔴 High     | Multi-module | #20    |
+| **22** | Move graph test files to `graph/` + update imports                                        | 10 min | 🟡 Medium   | Multi-module | #21    |
+| **23** | Write ADR 001: `docs/adr/001-multi-module-split.md`                                       | 10 min | 🟡 Medium   | Docs         | #5     |
+| **24** | Update `AGENTS.md` with final multi-module structure                                      | 8 min  | 🟡 Medium   | Docs         | #22    |
+| **25** | Update `README.md` with module paths and new examples                                     | 10 min | 🟡 Medium   | Docs         | #24    |
 
 ---
 
@@ -111,15 +111,15 @@ Each task is self-contained, takes ≤12 min, and leaves the project in a workin
 
 ## Total Estimate
 
-| Phase | Tasks | Time | Commits |
-|---|---|---|---|
-| Phase 1: Quick Wins | 6 | 30 min | 3 |
-| Phase 2: Leaf Modules | 6 | 31 min | 2 |
-| Phase 3: D2 Extraction | 4 | 35 min | 2 |
-| Phase 4: Graph Extraction | 4 | 35 min | 2 |
-| Phase 5: Code Quality | 2 | 13 min | 2 |
-| Phase 6: Documentation | 3 | 28 min | 1 |
-| **Total** | **25** | **~3 hours** | **12 commits** |
+| Phase                     | Tasks  | Time         | Commits        |
+| ------------------------- | ------ | ------------ | -------------- |
+| Phase 1: Quick Wins       | 6      | 30 min       | 3              |
+| Phase 2: Leaf Modules     | 6      | 31 min       | 2              |
+| Phase 3: D2 Extraction    | 4      | 35 min       | 2              |
+| Phase 4: Graph Extraction | 4      | 35 min       | 2              |
+| Phase 5: Code Quality     | 2      | 13 min       | 2              |
+| Phase 6: Documentation    | 3      | 28 min       | 1              |
+| **Total**                 | **25** | **~3 hours** | **12 commits** |
 
 ---
 

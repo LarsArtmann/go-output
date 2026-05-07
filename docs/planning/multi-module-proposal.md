@@ -23,15 +23,15 @@
 
 ## Self-Critique of Previous Versions
 
-| Issue | Version | Why it matters | Resolution |
-|---|---|---|---|
-| `enum/` and `escape/` shown with no .go files | v1 | They already have `.go` files — proposal was misleading | They just need `go.mod` added |
-| Missed reverse dependencies | v1 | `sort/sorter.go` → root (`SortBy`), `table/table.go` → root (`Renderer`) | Must update import paths |
-| Missed unexported type coupling | v1 | `streaming.go` embeds unexported `tableDataBase` from `html.go` | These files must stay together (in root) |
-| `GraphRendererMixin` defined in wrong file | v1 | In `dot.go` but used by `mermaid.go` | Extract to `graph_mixin.go` in graph module |
-| No `replace` directives | v1 | Needed for standalone module development | Added, following go-cqrs-lite pattern |
-| **Created unnecessary `core/` directory** | v2 | Moving 28 files and renaming `package output` → `package core` is massive churn for zero user benefit | **Root IS the core module.** Keep `package output`, keep all formatters in root |
-| **Kept `sort/` package** | v2 | `Sorter[T]` is a thin wrapper over `sort.SliceStable` (stdlib has `slices.SortStableFunc` since Go 1.21). `ByField[T]` is literally `cmp.Less(extract(a), extract(b))` — two lines. The `SortBy` enum is stored but **never used in sort logic** — dead metadata. | **Deprecate `sort/` entirely.** Stdlib does the same job |
+| Issue                                         | Version | Why it matters                                                                                                                                                                                                                                                    | Resolution                                                                      |
+| --------------------------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| `enum/` and `escape/` shown with no .go files | v1      | They already have `.go` files — proposal was misleading                                                                                                                                                                                                           | They just need `go.mod` added                                                   |
+| Missed reverse dependencies                   | v1      | `sort/sorter.go` → root (`SortBy`), `table/table.go` → root (`Renderer`)                                                                                                                                                                                          | Must update import paths                                                        |
+| Missed unexported type coupling               | v1      | `streaming.go` embeds unexported `tableDataBase` from `html.go`                                                                                                                                                                                                   | These files must stay together (in root)                                        |
+| `GraphRendererMixin` defined in wrong file    | v1      | In `dot.go` but used by `mermaid.go`                                                                                                                                                                                                                              | Extract to `graph_mixin.go` in graph module                                     |
+| No `replace` directives                       | v1      | Needed for standalone module development                                                                                                                                                                                                                          | Added, following go-cqrs-lite pattern                                           |
+| **Created unnecessary `core/` directory**     | v2      | Moving 28 files and renaming `package output` → `package core` is massive churn for zero user benefit                                                                                                                                                             | **Root IS the core module.** Keep `package output`, keep all formatters in root |
+| **Kept `sort/` package**                      | v2      | `Sorter[T]` is a thin wrapper over `sort.SliceStable` (stdlib has `slices.SortStableFunc` since Go 1.21). `ByField[T]` is literally `cmp.Less(extract(a), extract(b))` — two lines. The `SortBy` enum is stored but **never used in sort logic** — dead metadata. | **Deprecate `sort/` entirely.** Stdlib does the same job                        |
 
 ---
 
@@ -40,6 +40,7 @@
 ### 1. Root IS the core module — no `core/` directory
 
 Moving 28 files into a `core/` subdirectory and renaming `package output` to `package core` is massive, risky churn:
+
 - Every file changes package declaration
 - Every internal import path changes
 - Users must change `import "github.com/larsartmann/go-output"` to `import "github.com/larsartmann/go-output/core"`
@@ -73,29 +74,29 @@ slices.SortStableFunc(items, func(a, b Project) int {
 
 ### Existing Sub-Packages
 
-| Package | Files | Imports from root | External deps |
-|---|---|---|---|
-| `enum/` | `enum.go` | **None** | None |
-| `escape/` | `escape.go` | **None** | None |
-| `sort/` | `sorter.go`, `compare.go` | `output.SortBy` | None — **DEPRECATE** |
-| `table/` | `table.go` | `output.Renderer` (interface check) | `lipgloss/v2` |
-| `cmdguard/` | `flag.go` | **None** | None |
+| Package     | Files                     | Imports from root                   | External deps        |
+| ----------- | ------------------------- | ----------------------------------- | -------------------- |
+| `enum/`     | `enum.go`                 | **None**                            | None                 |
+| `escape/`   | `escape.go`               | **None**                            | None                 |
+| `sort/`     | `sorter.go`, `compare.go` | `output.SortBy`                     | None — **DEPRECATE** |
+| `table/`    | `table.go`                | `output.Renderer` (interface check) | `lipgloss/v2`        |
+| `cmdguard/` | `flag.go`                 | **None**                            | None                 |
 
 ### Third-Party Dependencies (only 3!)
 
-| Dependency | Used by | Heavy? |
-|---|---|---|
-| `charm.land/lipgloss/v2` | `table/table.go` only | **Yes** — many transitive deps |
-| `github.com/go-faster/yaml` | `yaml.go` only | Medium |
-| `golang.org/x/term` | `color.go` only | Light |
+| Dependency                  | Used by               | Heavy?                         |
+| --------------------------- | --------------------- | ------------------------------ |
+| `charm.land/lipgloss/v2`    | `table/table.go` only | **Yes** — many transitive deps |
+| `github.com/go-faster/yaml` | `yaml.go` only        | Medium                         |
+| `golang.org/x/term`         | `color.go` only       | Light                          |
 
 ### Unexported Coupling in Root (forces files to stay together)
 
-| Unexported symbol | Used by | Must stay in same package |
-|---|---|---|
-| `tableDataBase` (struct) | `html.go`, `streaming.go` | Yes — `StreamingHTMLRenderer` embeds it |
-| `marshal()` / `unmarshal()` | `json.go`, `yaml.go` | Yes |
-| `writeMarkupRow()` / `writeMarkupColumns()` | `xml.go`, `html.go` | Yes |
+| Unexported symbol                           | Used by                   | Must stay in same package               |
+| ------------------------------------------- | ------------------------- | --------------------------------------- |
+| `tableDataBase` (struct)                    | `html.go`, `streaming.go` | Yes — `StreamingHTMLRenderer` embeds it |
+| `marshal()` / `unmarshal()`                 | `json.go`, `yaml.go`      | Yes                                     |
+| `writeMarkupRow()` / `writeMarkupColumns()` | `xml.go`, `html.go`       | Yes                                     |
 
 ---
 
@@ -205,95 +206,95 @@ go-output/
 
 ### Root Module — `github.com/larsartmann/go-output`
 
-| | |
-|---|---|
-| **Package** | `package output` (unchanged) |
-| **Deps** | `enum`, `escape`, `go-faster/yaml`, `x/term` |
-| **What stays** | All types, interfaces, text/structured formatters, graph types, tree, HTML, streaming |
-| **What moves out** | `d2*.go` → `d2/`, `dot.go`+`mermaid.go` → `graph/` |
-| **`internal/`** | Stays in root — test helpers are for root package |
+|                    |                                                                                       |
+| ------------------ | ------------------------------------------------------------------------------------- |
+| **Package**        | `package output` (unchanged)                                                          |
+| **Deps**           | `enum`, `escape`, `go-faster/yaml`, `x/term`                                          |
+| **What stays**     | All types, interfaces, text/structured formatters, graph types, tree, HTML, streaming |
+| **What moves out** | `d2*.go` → `d2/`, `dot.go`+`mermaid.go` → `graph/`                                    |
+| **`internal/`**    | Stays in root — test helpers are for root package                                     |
 
 **No changes to package name, no file renames for root files.** Root stays `package output`.
 
 ### Module: `enum/` — Generic Enum Utilities
 
-| | |
-|---|---|
+|                 |                                         |
+| --------------- | --------------------------------------- |
 | **Module path** | `github.com/larsartmann/go-output/enum` |
-| **Deps** | None (stdlib only) |
-| **Change** | Just add `go.mod` |
+| **Deps**        | None (stdlib only)                      |
+| **Change**      | Just add `go.mod`                       |
 
 ### Module: `escape/` — Format-Specific Escaping
 
-| | |
-|---|---|
+|                 |                                           |
+| --------------- | ----------------------------------------- |
 | **Module path** | `github.com/larsartmann/go-output/escape` |
-| **Deps** | None (stdlib only) |
-| **Change** | Just add `go.mod` |
+| **Deps**        | None (stdlib only)                        |
+| **Change**      | Just add `go.mod`                         |
 
 ### Module: `cmdguard/` — CLI Flag Integration
 
-| | |
-|---|---|
-| **Module path** | `github.com/larsartmann/go-output/cmdguard` |
-| **Deps** | None (stdlib only) |
-| **Change** | Just add `go.mod` |
-| **Note** | Generic `EnumFlag[T]` works with ANY enum type — fully isolated |
+|                 |                                                                 |
+| --------------- | --------------------------------------------------------------- |
+| **Module path** | `github.com/larsartmann/go-output/cmdguard`                     |
+| **Deps**        | None (stdlib only)                                              |
+| **Change**      | Just add `go.mod`                                               |
+| **Note**        | Generic `EnumFlag[T]` works with ANY enum type — fully isolated |
 
 ### Module: `d2/` — D2 Diagram Subsystem
 
-| | |
-|---|---|
-| **Module path** | `github.com/larsartmann/go-output/d2` |
-| **Deps** | root (`output`), `enum`, `escape` |
+|                           |                                                                       |
+| ------------------------- | --------------------------------------------------------------------- |
+| **Module path**           | `github.com/larsartmann/go-output/d2`                                 |
+| **Deps**                  | root (`output`), `enum`, `escape`                                     |
 | **Files moved from root** | `d2.go`, `d2_enum.go`, `d2_render.go`, `d2_write.go`, `d2_convert.go` |
-| **Package name** | `package d2` (changed from `package output`) |
+| **Package name**          | `package d2` (changed from `package output`)                          |
 
 `d2_convert.go` converts `output.TableData`/`output.TreeNode`/`output.GraphNode` → D2 types. One-way dependency: `d2 → root`. Clean.
 
 ### Module: `graph/` — DOT + Mermaid Graph Renderers
 
-| | |
-|---|---|
-| **Module path** | `github.com/larsartmann/go-output/graph` |
-| **Deps** | root (`output`), `escape` |
-| **Files moved from root** | `dot.go`, `mermaid.go` |
-| **New file** | `graph_mixin.go` (extract `GraphRendererMixin` from `dot.go`) |
-| **Package name** | `package graph` (changed from `package output`) |
+|                           |                                                               |
+| ------------------------- | ------------------------------------------------------------- |
+| **Module path**           | `github.com/larsartmann/go-output/graph`                      |
+| **Deps**                  | root (`output`), `escape`                                     |
+| **Files moved from root** | `dot.go`, `mermaid.go`                                        |
+| **New file**              | `graph_mixin.go` (extract `GraphRendererMixin` from `dot.go`) |
+| **Package name**          | `package graph` (changed from `package output`)               |
 
 `GraphNode`/`GraphEdge`/`GraphRenderer` types stay in root (shared by d2). The `graph/` module contains only the DOT and Mermaid renderers plus the `GraphRendererMixin` they share.
 
 ### Module: `table/` — Lipgloss Terminal Tables
 
-| | |
-|---|---|
+|                 |                                          |
+| --------------- | ---------------------------------------- |
 | **Module path** | `github.com/larsartmann/go-output/table` |
-| **Deps** | root (`output`), `lipgloss` |
-| **Change** | Add `go.mod`, update import path |
+| **Deps**        | root (`output`), `lipgloss`              |
+| **Change**      | Add `go.mod`, update import path         |
 
 **Biggest win:** Only module pulling in heavy lipgloss dependency. Users who don't need terminal tables skip it entirely.
 
 ### Module: `integration/` — Cross-Module Integration Tests
 
-| | |
-|---|---|
+|                 |                                                |
+| --------------- | ---------------------------------------------- |
 | **Module path** | `github.com/larsartmann/go-output/integration` |
-| **Deps** | root, `d2`, `graph`, `table` |
+| **Deps**        | root, `d2`, `graph`, `table`                   |
 
 ### Module: `examples/` — Usage Examples
 
-| | |
-|---|---|
+|                 |                                             |
+| --------------- | ------------------------------------------- |
 | **Module path** | `github.com/larsartmann/go-output/examples` |
-| **Deps** | root, `d2`, `graph`, `table`, `cmdguard` |
+| **Deps**        | root, `d2`, `graph`, `table`, `cmdguard`    |
 
 ### Package: `sort/` — **DEPRECATED**
 
-| | |
-|---|---|
-| **Action** | Add deprecation notice, remove in next major version |
-| **Reason** | `slices.SortStableFunc` + `cmp.Compare` (stdlib, Go 1.21+) does the same job |
-| **`SortBy` enum** | Evaluate if it has consumers outside `sort/`. If not, deprecate too |
+|                   |                                                                              |
+| ----------------- | ---------------------------------------------------------------------------- |
+| **Action**        | Add deprecation notice, remove in next major version                         |
+| **Reason**        | `slices.SortStableFunc` + `cmp.Compare` (stdlib, Go 1.21+) does the same job |
+| **`SortBy` enum** | Evaluate if it has consumers outside `sort/`. If not, deprecate too          |
 
 ---
 
@@ -301,15 +302,15 @@ go-output/
 
 ### Files that MOVE to a new module (package name changes)
 
-| From root | To module | New package |
-|---|---|---|
-| `d2.go` | `d2/` | `package d2` |
-| `d2_enum.go` | `d2/` | `package d2` |
-| `d2_render.go` | `d2/` | `package d2` |
-| `d2_write.go` | `d2/` | `package d2` |
-| `d2_convert.go` | `d2/` | `package d2` |
-| `dot.go` | `graph/` | `package graph` |
-| `mermaid.go` | `graph/` | `package graph` |
+| From root       | To module | New package     |
+| --------------- | --------- | --------------- |
+| `d2.go`         | `d2/`     | `package d2`    |
+| `d2_enum.go`    | `d2/`     | `package d2`    |
+| `d2_render.go`  | `d2/`     | `package d2`    |
+| `d2_write.go`   | `d2/`     | `package d2`    |
+| `d2_convert.go` | `d2/`     | `package d2`    |
+| `dot.go`        | `graph/`  | `package graph` |
+| `mermaid.go`    | `graph/`  | `package graph` |
 
 ### Files that STAY in root (no changes)
 
@@ -317,10 +318,10 @@ All other root `.go` files. `package output` stays. No renames, no moves.
 
 ### Test files that move
 
-| From root | To module |
-|---|---|
-| `d2_test.go`, `d2_enum_test.go`, `d2_edge_test.go`, `d2_node_test.go`, `d2_convert_test.go` | `d2/` |
-| `dot_test.go`, `mermaid_test.go`, `graph_test.go` | `graph/` |
+| From root                                                                                   | To module |
+| ------------------------------------------------------------------------------------------- | --------- |
+| `d2_test.go`, `d2_enum_test.go`, `d2_edge_test.go`, `d2_node_test.go`, `d2_convert_test.go` | `d2/`     |
+| `dot_test.go`, `mermaid_test.go`, `graph_test.go`                                           | `graph/`  |
 
 ---
 
@@ -438,72 +439,72 @@ Each step is self-contained and leaves the project in a working, committed state
 
 ### Phase 1: Leaf Modules (zero risk, immediate value)
 
-| Step | What | Effort | Impact |
-|------|------|--------|--------|
-| **1.1** | Create `go.work` at root | 5 min | Foundation |
-| **1.2** | Add `go.mod` to `enum/` | 5 min | Isolates zero-dep leaf |
-| **1.3** | Add `go.mod` to `escape/` | 5 min | Isolates zero-dep leaf |
-| **1.4** | Add `go.mod` to `cmdguard/` | 5 min | Isolates zero-dep leaf |
-| **1.5** | Update root `go.mod` with `replace` for enum/escape/cmdguard | 5 min | Root still works |
-| **1.6** | Verify: `go build ./...` + `go test ./...` pass | 5 min | Confidence |
+| Step    | What                                                         | Effort | Impact                 |
+| ------- | ------------------------------------------------------------ | ------ | ---------------------- |
+| **1.1** | Create `go.work` at root                                     | 5 min  | Foundation             |
+| **1.2** | Add `go.mod` to `enum/`                                      | 5 min  | Isolates zero-dep leaf |
+| **1.3** | Add `go.mod` to `escape/`                                    | 5 min  | Isolates zero-dep leaf |
+| **1.4** | Add `go.mod` to `cmdguard/`                                  | 5 min  | Isolates zero-dep leaf |
+| **1.5** | Update root `go.mod` with `replace` for enum/escape/cmdguard | 5 min  | Root still works       |
+| **1.6** | Verify: `go build ./...` + `go test ./...` pass              | 5 min  | Confidence             |
 
 ### Phase 2: Deprecate `sort/` (low risk, removes dead code)
 
-| Step | What | Effort | Impact |
-|------|------|--------|--------|
-| **2.1** | Add deprecation notice to `sort/sorter.go` and `sort/compare.go` | 5 min | Users know to migrate |
-| **2.2** | Audit `SortBy` enum consumers — deprecate if only used by sort/ | 10 min | Remove dead enum |
-| **2.3** | Update integration tests that use sort/ to use stdlib directly | 15 min | Tests don't depend on deprecated code |
-| **2.4** | Verify: `go test ./...` passes | 5 min | Confidence |
+| Step    | What                                                             | Effort | Impact                                |
+| ------- | ---------------------------------------------------------------- | ------ | ------------------------------------- |
+| **2.1** | Add deprecation notice to `sort/sorter.go` and `sort/compare.go` | 5 min  | Users know to migrate                 |
+| **2.2** | Audit `SortBy` enum consumers — deprecate if only used by sort/  | 10 min | Remove dead enum                      |
+| **2.3** | Update integration tests that use sort/ to use stdlib directly   | 15 min | Tests don't depend on deprecated code |
+| **2.4** | Verify: `go test ./...` passes                                   | 5 min  | Confidence                            |
 
 ### Phase 3: Extract `table/` as module (medium risk, biggest dep win)
 
-| Step | What | Effort | Impact |
-|------|------|--------|--------|
-| **3.1** | Add `go.mod` to `table/` with replace directive pointing to root | 5 min | Lipgloss becomes opt-in |
-| **3.2** | Update root `go.mod` with `replace` for table | 5 min | Root works with table as module |
-| **3.3** | Verify: `go test ./table/...` and `go test ./...` pass | 5 min | Confidence |
+| Step    | What                                                             | Effort | Impact                          |
+| ------- | ---------------------------------------------------------------- | ------ | ------------------------------- |
+| **3.1** | Add `go.mod` to `table/` with replace directive pointing to root | 5 min  | Lipgloss becomes opt-in         |
+| **3.2** | Update root `go.mod` with `replace` for table                    | 5 min  | Root works with table as module |
+| **3.3** | Verify: `go test ./table/...` and `go test ./...` pass           | 5 min  | Confidence                      |
 
 ### Phase 4: Extract `d2/` as module (medium effort, clean domain boundary)
 
-| Step | What | Effort | Impact |
-|------|------|--------|--------|
-| **4.1** | Create `d2/` directory + `go.mod` | 5 min | Foundation |
-| **4.2** | Move `d2*.go` files from root to `d2/` | 5 min | D2 isolated |
-| **4.3** | Change `package output` → `package d2` in moved files | 10 min | Package rename |
+| Step    | What                                                                            | Effort | Impact          |
+| ------- | ------------------------------------------------------------------------------- | ------ | --------------- |
+| **4.1** | Create `d2/` directory + `go.mod`                                               | 5 min  | Foundation      |
+| **4.2** | Move `d2*.go` files from root to `d2/`                                          | 5 min  | D2 isolated     |
+| **4.3** | Change `package output` → `package d2` in moved files                           | 10 min | Package rename  |
 | **4.4** | Update imports: same-package refs → `output "github.com/larsartmann/go-output"` | 15 min | Fix compilation |
-| **4.5** | Move d2 test files to `d2/` + update their imports | 10 min | Tests follow |
-| **4.6** | Verify: `go test ./d2/...` passes | 5 min | Confidence |
+| **4.5** | Move d2 test files to `d2/` + update their imports                              | 10 min | Tests follow    |
+| **4.6** | Verify: `go test ./d2/...` passes                                               | 5 min  | Confidence      |
 
 ### Phase 5: Extract `graph/` as module (medium effort, DOT/Mermaid isolation)
 
-| Step | What | Effort | Impact |
-|------|------|--------|--------|
-| **5.1** | Create `graph/` directory + `go.mod` | 5 min | Foundation |
-| **5.2** | Move `dot.go` and `mermaid.go` to `graph/` | 5 min | DOT/Mermaid isolated |
-| **5.3** | Extract `GraphRendererMixin` from `dot.go` into `graph_mixin.go` | 10 min | Clean separation |
-| **5.4** | Change `package output` → `package graph` + fix imports | 15 min | Compilation |
-| **5.5** | Move graph test files (`dot_test.go`, `mermaid_test.go`, `graph_test.go`) | 10 min | Tests follow |
-| **5.6** | Verify: `go test ./graph/...` passes | 5 min | Confidence |
+| Step    | What                                                                      | Effort | Impact               |
+| ------- | ------------------------------------------------------------------------- | ------ | -------------------- |
+| **5.1** | Create `graph/` directory + `go.mod`                                      | 5 min  | Foundation           |
+| **5.2** | Move `dot.go` and `mermaid.go` to `graph/`                                | 5 min  | DOT/Mermaid isolated |
+| **5.3** | Extract `GraphRendererMixin` from `dot.go` into `graph_mixin.go`          | 10 min | Clean separation     |
+| **5.4** | Change `package output` → `package graph` + fix imports                   | 15 min | Compilation          |
+| **5.5** | Move graph test files (`dot_test.go`, `mermaid_test.go`, `graph_test.go`) | 10 min | Tests follow         |
+| **5.6** | Verify: `go test ./graph/...` passes                                      | 5 min  | Confidence           |
 
 ### Phase 6: Integration & Examples (low effort, high confidence)
 
-| Step | What | Effort | Impact |
-|------|------|--------|--------|
-| **6.1** | Add `go.mod` to `integration/` with all module deps | 10 min | Integration tests work |
-| **6.2** | Update integration test imports for new module paths | 15 min | Fix compilation |
-| **6.3** | Add `go.mod` to `examples/` + update imports | 15 min | Examples work |
-| **6.4** | Full workspace verify: `go build ./...` + `go test ./...` | 10 min | Complete confidence |
+| Step    | What                                                      | Effort | Impact                 |
+| ------- | --------------------------------------------------------- | ------ | ---------------------- |
+| **6.1** | Add `go.mod` to `integration/` with all module deps       | 10 min | Integration tests work |
+| **6.2** | Update integration test imports for new module paths      | 15 min | Fix compilation        |
+| **6.3** | Add `go.mod` to `examples/` + update imports              | 15 min | Examples work          |
+| **6.4** | Full workspace verify: `go build ./...` + `go test ./...` | 10 min | Complete confidence    |
 
 ### Phase 7: Polish
 
-| Step | What | Effort | Impact |
-|------|------|--------|--------|
+| Step    | What                                            | Effort | Impact            |
+| ------- | ----------------------------------------------- | ------ | ----------------- |
 | **7.1** | Write ADR: `docs/adr/001-multi-module-split.md` | 15 min | Document decision |
-| **7.2** | Update justfile for multi-module commands | 10 min | Dev workflow |
-| **7.3** | Update AGENTS.md with new structure | 10 min | AI context |
-| **7.4** | Update README.md with new module paths | 10 min | User-facing docs |
-| **7.5** | Final verify: build + test + lint | 10 min | Done |
+| **7.2** | Update justfile for multi-module commands       | 10 min | Dev workflow      |
+| **7.3** | Update AGENTS.md with new structure             | 10 min | AI context        |
+| **7.4** | Update README.md with new module paths          | 10 min | User-facing docs  |
+| **7.5** | Final verify: build + test + lint               | 10 min | Done              |
 
 ---
 
@@ -521,15 +522,15 @@ Each step is self-contained and leaves the project in a working, committed state
 
 ## Key Benefits Summary
 
-| User wants... | They import... | Transitive deps |
-|---|---|---|
-| JSON/YAML/CSV/XML/Markdown/HTML/Tree | `go-output` (root) | enum, escape, yaml, x/term |
-| Terminal tables | `go-output` + `go-output/table` | + lipgloss (heavy) |
-| D2 diagrams | `go-output` + `go-output/d2` | + enum, escape |
-| DOT/Mermaid graphs | `go-output` + `go-output/graph` | + escape |
-| CLI flag parsing | `go-output/cmdguard` | **ZERO** transitive deps |
-| Enum utilities | `go-output/enum` | **ZERO** transitive deps |
-| HTML escaping | `go-output/escape` | **ZERO** transitive deps |
+| User wants...                        | They import...                  | Transitive deps            |
+| ------------------------------------ | ------------------------------- | -------------------------- |
+| JSON/YAML/CSV/XML/Markdown/HTML/Tree | `go-output` (root)              | enum, escape, yaml, x/term |
+| Terminal tables                      | `go-output` + `go-output/table` | + lipgloss (heavy)         |
+| D2 diagrams                          | `go-output` + `go-output/d2`    | + enum, escape             |
+| DOT/Mermaid graphs                   | `go-output` + `go-output/graph` | + escape                   |
+| CLI flag parsing                     | `go-output/cmdguard`            | **ZERO** transitive deps   |
+| Enum utilities                       | `go-output/enum`                | **ZERO** transitive deps   |
+| HTML escaping                        | `go-output/escape`              | **ZERO** transitive deps   |
 
 **Biggest win: `table/` isolation.** Lipgloss is by far the heaviest dependency. Most CLI apps using go-output for JSON/YAML/CSV don't need it at all.
 

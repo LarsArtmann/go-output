@@ -25,16 +25,16 @@ https://github.com/larsartmann/go-output
 
 This project uses Go workspace modules. Each sub-package with its own `go.mod` is an independent module:
 
-| Module | go.mod | Deps | Notes |
-|---|---|---|---|
-| Root (`package output`) | ✅ | enum, escape, yaml, x/term | Core types + formatters |
-| `enum/` | ✅ | None | Generic enum utilities |
-| `escape/` | ✅ | None | Format-specific escaping |
-| `cmdguard/` | ✅ | None | CLI flag parsing |
-| `table/` | ✅ | root, lipgloss | **Lipgloss isolated from root** |
-| `sort/` | ✅ | root | **Deprecated** — use stdlib |
-| `integration/` | ✅ | root, sort, table | Cross-module tests |
-| `examples/` | ✅ | root, table | Usage examples |
+| Module                  | go.mod | Deps                       | Notes                           |
+| ----------------------- | ------ | -------------------------- | ------------------------------- |
+| Root (`package output`) | ✅     | enum, escape, yaml, x/term | Core types + formatters         |
+| `enum/`                 | ✅     | None                       | Generic enum utilities          |
+| `escape/`               | ✅     | None                       | Format-specific escaping        |
+| `cmdguard/`             | ✅     | None                       | CLI flag parsing                |
+| `table/`                | ✅     | root, lipgloss             | **Lipgloss isolated from root** |
+| `sort/`                 | ✅     | root                       | **Deprecated** — use stdlib     |
+| `integration/`          | ✅     | root, sort, table          | Cross-module tests              |
+| `examples/`             | ✅     | root, table                | Usage examples                  |
 
 `go.work` is gitignored (local dev only). Each module uses `replace` directives for standalone development.
 

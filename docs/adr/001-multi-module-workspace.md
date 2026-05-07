@@ -7,6 +7,7 @@
 ## Context
 
 go-output has a single `go.mod` with 3 third-party dependencies:
+
 - `charm.land/lipgloss/v2` (heavy — many transitive deps, used only by `table/`)
 - `github.com/go-faster/yaml` (medium, used only by `yaml.go`)
 - `golang.org/x/term` (light, used only by `color.go`)
@@ -20,16 +21,16 @@ Several sub-packages (enum, escape, cmdguard) have zero dependencies and are reu
 
 Split into 7 independent Go modules using `go.work` for local development:
 
-| Module | Deps | Isolation benefit |
-|---|---|---|
-| Root (`go-output`) | enum, escape, yaml, x/term | Core formatters, no lipgloss |
-| `enum/` | None | Reusable enum utilities |
-| `escape/` | None | Reusable escaping (D2, DOT, Mermaid) |
-| `cmdguard/` | None | Generic CLI flag parsing |
-| `table/` | root, lipgloss | **Lipgloss isolated** — biggest win |
-| `sort/` | root | Deprecated — points to stdlib |
-| `integration/` | root, sort, table | Cross-module tests |
-| `examples/` | root, table | Usage examples |
+| Module             | Deps                       | Isolation benefit                    |
+| ------------------ | -------------------------- | ------------------------------------ |
+| Root (`go-output`) | enum, escape, yaml, x/term | Core formatters, no lipgloss         |
+| `enum/`            | None                       | Reusable enum utilities              |
+| `escape/`          | None                       | Reusable escaping (D2, DOT, Mermaid) |
+| `cmdguard/`        | None                       | Generic CLI flag parsing             |
+| `table/`           | root, lipgloss             | **Lipgloss isolated** — biggest win  |
+| `sort/`            | root                       | Deprecated — points to stdlib        |
+| `integration/`     | root, sort, table          | Cross-module tests                   |
+| `examples/`        | root, table                | Usage examples                       |
 
 Root stays as `package output` — no core/ directory, no package rename.
 
@@ -44,12 +45,14 @@ Root stays as `package output` — no core/ directory, no package rename.
 ## Consequences
 
 **Positive:**
+
 - Users who only need JSON/YAML/CSV get zero lipgloss deps
 - enum, escape, cmdguard can be imported independently
 - Each module can be versioned independently (future)
 - Follows go-cqrs-lite workspace pattern
 
 **Negative:**
+
 - More go.mod files to maintain
 - Replace directives needed in every consuming module for standalone dev
 - d2/ and graph/ modules not yet extracted (future work)
