@@ -191,6 +191,7 @@ linters:
             - github.com/larsartmann/go-output/escape
             - github.com/larsartmann/go-output/table
             - github.com/larsartmann/go-output/sort
+            - github.com/larsartmann/go-output/examples/shared
             - github.com/larsartmann/go-output/pkg/errors
             - charm.land/lipgloss/v2
             - charm.land/lipgloss/v2/table
