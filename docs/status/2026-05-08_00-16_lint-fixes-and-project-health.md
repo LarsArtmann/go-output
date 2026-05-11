@@ -16,16 +16,16 @@ The multi-module workspace migration is **live and functional** — 8 independen
 
 ### Multi-Module Workspace — 8 Modules Live
 
-| Module       | go.mod | Tests | Coverage | Status      |
-| ------------ | ------ | ----- | -------- | ----------- |
-| Root         | ✅     | ✅    | 90.3%    | Stable      |
-| `enum/`      | ✅     | ✅    | 100%     | Zero deps   |
-| `escape/`    | ✅     | ✅    | 100%     | Zero deps   |
-| `cmdguard/`  | ✅     | ✅    | 100%     | Zero deps   |
-| `table/`     | ✅     | ✅    | 100%     | Lipgloss isolated |
-| `sort/`      | ✅     | ✅    | 100%     | Deprecated  |
-| `integration/` | ✅  | ✅    | n/a      | Cross-module tests |
-| `examples/`  | ✅     | ⚠️    | 0%       | **BROKEN** — see section d |
+| Module         | go.mod | Tests | Coverage | Status                     |
+| -------------- | ------ | ----- | -------- | -------------------------- |
+| Root           | ✅     | ✅    | 90.3%    | Stable                     |
+| `enum/`        | ✅     | ✅    | 100%     | Zero deps                  |
+| `escape/`      | ✅     | ✅    | 100%     | Zero deps                  |
+| `cmdguard/`    | ✅     | ✅    | 100%     | Zero deps                  |
+| `table/`       | ✅     | ✅    | 100%     | Lipgloss isolated          |
+| `sort/`        | ✅     | ✅    | 100%     | Deprecated                 |
+| `integration/` | ✅     | ✅    | n/a      | Cross-module tests         |
+| `examples/`    | ✅     | ⚠️    | 0%       | **BROKEN** — see section d |
 
 ### Lint & Quality Gates
 
@@ -39,31 +39,31 @@ The multi-module workspace migration is **live and functional** — 8 independen
 
 ### Execution Plan Phase 1 — Quick Wins
 
-| # | Task | Status |
-|---|------|--------|
-| #6 | `escape.HTML()` → `html.EscapeString()` stdlib | ✅ Done (commit d2ba200) |
-| #7 | `escape.XML()` → stdlib `&apos;` fix | ✅ Done (commit d2ba200) |
-| #8 | `sort/sorter.go` deprecation notice | ✅ Done (commit f527f10) |
-| #9 | `sort/compare.go` deprecation notice | ✅ Done (commit f527f10) |
-| #11 | SortBy audit — keep (cmdguard_test uses it) | ✅ Done |
+| #   | Task                                             | Status                   |
+| --- | ------------------------------------------------ | ------------------------ |
+| #6  | `escape.HTML()` → `html.EscapeString()` stdlib   | ✅ Done (commit d2ba200) |
+| #7  | `escape.XML()` → stdlib `&apos;` fix             | ✅ Done (commit d2ba200) |
+| #8  | `sort/sorter.go` deprecation notice              | ✅ Done (commit f527f10) |
+| #9  | `sort/compare.go` deprecation notice             | ✅ Done (commit f527f10) |
+| #11 | SortBy audit — keep (cmdguard_test uses it)      | ✅ Done                  |
 | #12 | Fix depguard: add `examples/shared` to allowlist | ✅ Done (commit 56c57ea) |
 
 ### Execution Plan Phase 2 — Leaf Modules
 
-| # | Task | Status |
-|---|------|--------|
-| #1 | Create `go.work` at root | ✅ Done (commit c0a250a) |
-| #2 | `enum/go.mod` (zero deps) | ✅ Done (commit c0a250a) |
-| #3 | `escape/go.mod` (zero deps) | ✅ Done (commit c0a250a) |
-| #4 | `cmdguard/go.mod` (zero deps) | ✅ Done (commit c0a250a) |
-| #5 | Root `go.mod` replace directives | ✅ Done (commit 0027642) |
+| #   | Task                                   | Status                   |
+| --- | -------------------------------------- | ------------------------ |
+| #1  | Create `go.work` at root               | ✅ Done (commit c0a250a) |
+| #2  | `enum/go.mod` (zero deps)              | ✅ Done (commit c0a250a) |
+| #3  | `escape/go.mod` (zero deps)            | ✅ Done (commit c0a250a) |
+| #4  | `cmdguard/go.mod` (zero deps)          | ✅ Done (commit c0a250a) |
+| #5  | Root `go.mod` replace directives       | ✅ Done (commit 0027642) |
 | #10 | `table/go.mod` with lipgloss + replace | ✅ Done (commit a493e06) |
 
 ### Execution Plan Phase 6 — Documentation
 
-| # | Task | Status |
-|---|------|--------|
-| #23 | Write ADR 001 | ✅ Done (commit c43938b) |
+| #   | Task             | Status                   |
+| --- | ---------------- | ------------------------ |
+| #23 | Write ADR 001    | ✅ Done (commit c43938b) |
 | #24 | Update AGENTS.md | ✅ Done (commit c43938b) |
 
 ### This Session's Fixes
@@ -78,6 +78,7 @@ The multi-module workspace migration is **live and functional** — 8 independen
 ### README.md Update (#25)
 
 **Status:** Not started, but critical issues identified:
+
 - **Lines 13-14** leak local macOS paths (`/Users/larsartmann/...`) — must remove
 - **Dependencies section** still shows lipgloss as root dependency — contradicts multi-module isolation story
 - **Development section** references `just` commands but AGENTS.md says justfile is deprecated
@@ -95,28 +96,28 @@ The multi-module workspace migration is **live and functional** — 8 independen
 
 ### Execution Plan Phase 3 — D2 Module Extraction (35 min)
 
-| # | Task | Effort | Impact |
-|---|------|--------|--------|
-| #15 | Create `d2/` dir + `go.mod` (deps: root, enum, escape) | 5 min | 🔴 High |
-| #16 | Move `d2*.go` files from root → `d2/`, change package | 10 min | 🔴 High |
-| #17 | Update d2 file imports | 10 min | 🔴 High |
-| #18 | Move d2 test files + update imports | 10 min | 🟡 Medium |
+| #   | Task                                                   | Effort | Impact    |
+| --- | ------------------------------------------------------ | ------ | --------- |
+| #15 | Create `d2/` dir + `go.mod` (deps: root, enum, escape) | 5 min  | 🔴 High   |
+| #16 | Move `d2*.go` files from root → `d2/`, change package  | 10 min | 🔴 High   |
+| #17 | Update d2 file imports                                 | 10 min | 🔴 High   |
+| #18 | Move d2 test files + update imports                    | 10 min | 🟡 Medium |
 
 ### Execution Plan Phase 4 — Graph Module Extraction (35 min)
 
-| # | Task | Effort | Impact |
-|---|------|--------|--------|
-| #19 | Create `graph/` dir + `go.mod` | 5 min | 🔴 High |
-| #20 | Move `dot.go` + `mermaid.go` → `graph/`, extract mixin | 10 min | 🔴 High |
-| #21 | Fix graph imports | 10 min | 🔴 High |
-| #22 | Move graph test files | 10 min | 🟡 Medium |
+| #   | Task                                                   | Effort | Impact    |
+| --- | ------------------------------------------------------ | ------ | --------- |
+| #19 | Create `graph/` dir + `go.mod`                         | 5 min  | 🔴 High   |
+| #20 | Move `dot.go` + `mermaid.go` → `graph/`, extract mixin | 10 min | 🔴 High   |
+| #21 | Fix graph imports                                      | 10 min | 🔴 High   |
+| #22 | Move graph test files                                  | 10 min | 🟡 Medium |
 
 ### Execution Plan Phase 5 — Code Quality DRY (15 min)
 
-| # | Task | Effort | Impact |
-|---|------|--------|--------|
-| #13 | Inline `FilledStrings`, remove `slices.go` | 8 min | 🟢 Low |
-| #14 | Unify `stringEnum` in fuzz_test.go → `gentest.StringEnum` | 5 min | 🟢 Low |
+| #   | Task                                                      | Effort | Impact |
+| --- | --------------------------------------------------------- | ------ | ------ |
+| #13 | Inline `FilledStrings`, remove `slices.go`                | 8 min  | 🟢 Low |
+| #14 | Unify `stringEnum` in fuzz_test.go → `gentest.StringEnum` | 5 min  | 🟢 Low |
 
 ### Other Not Started Items
 
@@ -137,26 +138,31 @@ The multi-module workspace migration is **live and functional** — 8 independen
 **Root cause:** `examples/go.mod` is missing the `table` dependency.
 
 `examples/basic/main.go:11` imports `github.com/larsartmann/go-output/table`, but:
+
 - No `require github.com/larsartmann/go-output/table` in `examples/go.mod`
 - No `replace github.com/larsartmann/go-output/table => ../table` directive
 
 This cascades into **84+ missing dependency errors** (lipgloss, charmbracelet, clipperhouse transitive deps).
 
 **Fix:** Add to `examples/go.mod`:
+
 ```
 require github.com/larsartmann/go-output/table v0.0.0
 
 replace github.com/larsartmann/go-output/table => ../table
 ```
+
 Then `cd examples && go mod tidy`.
 
 ### README.md Leaks Local Paths
 
 **Lines 13-14:**
+
 ```markdown
 - `/Users/larsartmann/projects/project-meta/`
 - `/Users/larsartmann/projects/projects-management-automation/`
 ```
+
 These are developer-specific macOS paths that expose local filesystem structure in a public GitHub repo. Must be removed or made generic.
 
 ### README.md Claims `just` for Development
@@ -197,33 +203,33 @@ The Development section references `just build`, `just test`, `just lint`, `just
 
 Sorted by impact ÷ effort:
 
-| # | Task | Effort | Impact | Category |
-|---|------|--------|--------|----------|
-| **1** | Fix `examples/go.mod` — add `table` dep + replace directive | 3 min | 🔴 Critical | Fix |
-| **2** | Remove leaked local paths from `README.md` | 2 min | 🔴 Critical | Fix |
-| **3** | Update README.md dependencies section (lipgloss not in root) | 5 min | 🔴 High | Docs |
-| **4** | Update README.md development section (remove `just` refs) | 3 min | 🟡 Medium | Docs |
-| **5** | Add sub-module installation examples to README.md | 5 min | 🟡 Medium | Docs |
-| **6** | Create `d2/` dir + `go.mod` + move 7 d2*.go files | 30 min | 🔴 High | Arch |
-| **7** | Create `graph/` dir + `go.mod` + move dot.go + mermaid.go | 30 min | 🔴 High | Arch |
-| **8** | Consolidate `addTreeNodes` implementations (d2/dot/mermaid) | 15 min | 🟡 Medium | DRY |
-| **9** | Move `GraphRendererMixin` from `dot.go` to `graph.go` or own file | 5 min | 🟡 Medium | Arch |
-| **10** | Inline `FilledStrings`, remove `slices.go` | 8 min | 🟢 Low | Quality |
-| **11** | Unify `stringEnum` in fuzz_test.go → use `gentest.StringEnum` | 5 min | 🟢 Low | DRY |
-| **12** | Deduplicate test helpers: `output_test_helpers.go` vs `testutils` | 15 min | 🟢 Low | DRY |
-| **13** | Split `sort/sort_test.go` under 350 lines | 10 min | 🟢 Low | Quality |
-| **14** | Create `.github/workflows/ci.yml` (build + test + lint) | 15 min | 🟡 Medium | CI |
-| **15** | Create `flake.nix` for build automation (per AGENTS.md mandate) | 30 min | 🟡 Medium | DevEx |
-| **16** | Add CHANGELOG.md with multi-module migration notes | 10 min | 🟡 Medium | Docs |
-| **17** | Audit registry system — confirm usage or document as opt-in | 10 min | 🟢 Low | Audit |
-| **18** | Decide fate of `format_deprecated.go` — keep with date or remove | 5 min | 🟢 Low | Cleanup |
-| **19** | Add `golangci-lint` config to each sub-module or use root config | 5 min | 🟢 Low | Quality |
-| **20** | Verify `go.work.sum` is in `.gitignore` (currently untracked) | 2 min | 🟢 Low | Config |
-| **21** | Add integration test that imports each sub-module from a clean GOPATH | 15 min | 🟡 Medium | Testing |
-| **22** | Refactor `format.go` (323 lines) — extract format category logic | 15 min | 🟢 Low | Quality |
-| **23** | Add Go doc comments to all public APIs | 20 min | 🟡 Medium | Docs |
-| **24** | Add `html` format to Supported Formats table in README (missing from tree section) | 2 min | 🟢 Low | Docs |
-| **25** | Create `CONTRIBUTING.md` with development setup instructions | 15 min | 🟢 Low | Docs |
+| #      | Task                                                                               | Effort | Impact      | Category |
+| ------ | ---------------------------------------------------------------------------------- | ------ | ----------- | -------- |
+| **1**  | Fix `examples/go.mod` — add `table` dep + replace directive                        | 3 min  | 🔴 Critical | Fix      |
+| **2**  | Remove leaked local paths from `README.md`                                         | 2 min  | 🔴 Critical | Fix      |
+| **3**  | Update README.md dependencies section (lipgloss not in root)                       | 5 min  | 🔴 High     | Docs     |
+| **4**  | Update README.md development section (remove `just` refs)                          | 3 min  | 🟡 Medium   | Docs     |
+| **5**  | Add sub-module installation examples to README.md                                  | 5 min  | 🟡 Medium   | Docs     |
+| **6**  | Create `d2/` dir + `go.mod` + move 7 d2\*.go files                                 | 30 min | 🔴 High     | Arch     |
+| **7**  | Create `graph/` dir + `go.mod` + move dot.go + mermaid.go                          | 30 min | 🔴 High     | Arch     |
+| **8**  | Consolidate `addTreeNodes` implementations (d2/dot/mermaid)                        | 15 min | 🟡 Medium   | DRY      |
+| **9**  | Move `GraphRendererMixin` from `dot.go` to `graph.go` or own file                  | 5 min  | 🟡 Medium   | Arch     |
+| **10** | Inline `FilledStrings`, remove `slices.go`                                         | 8 min  | 🟢 Low      | Quality  |
+| **11** | Unify `stringEnum` in fuzz_test.go → use `gentest.StringEnum`                      | 5 min  | 🟢 Low      | DRY      |
+| **12** | Deduplicate test helpers: `output_test_helpers.go` vs `testutils`                  | 15 min | 🟢 Low      | DRY      |
+| **13** | Split `sort/sort_test.go` under 350 lines                                          | 10 min | 🟢 Low      | Quality  |
+| **14** | Create `.github/workflows/ci.yml` (build + test + lint)                            | 15 min | 🟡 Medium   | CI       |
+| **15** | Create `flake.nix` for build automation (per AGENTS.md mandate)                    | 30 min | 🟡 Medium   | DevEx    |
+| **16** | Add CHANGELOG.md with multi-module migration notes                                 | 10 min | 🟡 Medium   | Docs     |
+| **17** | Audit registry system — confirm usage or document as opt-in                        | 10 min | 🟢 Low      | Audit    |
+| **18** | Decide fate of `format_deprecated.go` — keep with date or remove                   | 5 min  | 🟢 Low      | Cleanup  |
+| **19** | Add `golangci-lint` config to each sub-module or use root config                   | 5 min  | 🟢 Low      | Quality  |
+| **20** | Verify `go.work.sum` is in `.gitignore` (currently untracked)                      | 2 min  | 🟢 Low      | Config   |
+| **21** | Add integration test that imports each sub-module from a clean GOPATH              | 15 min | 🟡 Medium   | Testing  |
+| **22** | Refactor `format.go` (323 lines) — extract format category logic                   | 15 min | 🟢 Low      | Quality  |
+| **23** | Add Go doc comments to all public APIs                                             | 20 min | 🟡 Medium   | Docs     |
+| **24** | Add `html` format to Supported Formats table in README (missing from tree section) | 2 min  | 🟢 Low      | Docs     |
+| **25** | Create `CONTRIBUTING.md` with development setup instructions                       | 15 min | 🟢 Low      | Docs     |
 
 ---
 
@@ -253,18 +259,18 @@ d2.NewDiagram(...)
 
 ## Metrics Snapshot
 
-| Metric | Value |
-|--------|-------|
-| Go files | 81 (40 test files) |
-| Root module coverage | 90.3% |
-| Sub-module coverage | 100% (enum, escape, cmdguard, table, sort) |
-| Lint issues | 0 |
-| go vet issues | 0 |
-| Files over 350 lines | 1 (`sort/sort_test.go` at 414) |
-| TODO/FIXME comments | 0 |
-| Modules in workspace | 8 |
-| Total lines of Go code | ~8,241 |
-| Uncommitted changes | 2 files (`.golangci.yml`, `userjourney_test.go`) |
+| Metric                 | Value                                            |
+| ---------------------- | ------------------------------------------------ |
+| Go files               | 81 (40 test files)                               |
+| Root module coverage   | 90.3%                                            |
+| Sub-module coverage    | 100% (enum, escape, cmdguard, table, sort)       |
+| Lint issues            | 0                                                |
+| go vet issues          | 0                                                |
+| Files over 350 lines   | 1 (`sort/sort_test.go` at 414)                   |
+| TODO/FIXME comments    | 0                                                |
+| Modules in workspace   | 8                                                |
+| Total lines of Go code | ~8,241                                           |
+| Uncommitted changes    | 2 files (`.golangci.yml`, `userjourney_test.go`) |
 
 ---
 
