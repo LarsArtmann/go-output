@@ -42,7 +42,7 @@ func (r *MermaidRenderer) Render() (string, error) {
 	// Write edges
 	for _, edge := range r.edges {
 		label := ""
-		if !edge.Label.IsEmpty() {
+		if !edge.Label.IsZero() {
 			label = fmt.Sprintf("|%s|", escape.MermaidText(edge.Label.Get()))
 		}
 

@@ -193,7 +193,7 @@ func (r *DOTRenderer) writeEdge(b *strings.Builder, edge GraphEdge) {
 
 	attrs := make([]string, 0)
 
-	if !edge.Label.IsEmpty() {
+	if !edge.Label.IsZero() {
 		attrs = append(attrs, fmt.Sprintf("label=\"%s\"", escape.DOT(edge.Label.Get())))
 	}
 
@@ -241,7 +241,7 @@ func DOTFromTree(root *TreeNode) *DOTRenderer {
 }
 
 func dotTreeNodeID(node *TreeNode) string {
-	if !node.ID.IsEmpty() {
+	if !node.ID.IsZero() {
 		return node.ID.Get()
 	}
 

@@ -61,7 +61,7 @@ func (d *D2Diagram) writeEdge(b *strings.Builder, edge D2Edge) {
 	to := escape.D2(edge.To.Get())
 
 	label := ""
-	if !edge.Label.IsEmpty() {
+	if !edge.Label.IsZero() {
 		label = ": " + escape.D2(edge.Label.Get())
 	}
 

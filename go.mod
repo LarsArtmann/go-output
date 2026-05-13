@@ -4,6 +4,7 @@ go 1.26.2
 
 require (
 	github.com/go-faster/yaml v0.4.6
+	github.com/larsartmann/go-branded-id v0.1.0
 	github.com/larsartmann/go-output/enum v0.0.0
 	github.com/larsartmann/go-output/escape v0.0.0
 	github.com/larsartmann/go-output/sort v0.0.0-20260507215750-c2091663ee59
