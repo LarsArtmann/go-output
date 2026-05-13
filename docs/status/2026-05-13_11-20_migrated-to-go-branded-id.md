@@ -10,60 +10,60 @@
 
 ### go-branded-id Migration — EXECUTED TODAY
 
-| What | Status | Details |
-| ---- | ------ | ------- |
-| Add dependency | ✅ | `github.com/larsartmann/go-branded-id v0.1.0` in root `go.mod` |
-| Rewrite `ids.go` | ✅ | 90 lines → 50 lines. `BrandedID[Brand]` is now `= id.ID[Brand, string]` |
-| Constructor | ✅ | `NewBrandedID` uses `id.NewID[Brand, string](value)` |
-| All 6 type aliases | ✅ | `D2NodeID`, `TreeNodeID`, `GraphNodeID` etc. now alias `id.ID[..., string]` |
-| `IsEmpty` → `IsZero` | ✅ | Updated in `d2_write.go:64`, `dot.go:196,244`, `mermaid.go:45` |
-| Tests updated | ✅ | `%#v` expectation changed: `BrandedID{"test-id"}` → `id(test-id)` |
-| `.golangci.yml` | ✅ | depguard allowlist updated for `go-branded-id` (main + default rules) |
-| `go mod tidy` | ✅ | Root + `integration/` tidied |
-| Lint | ✅ | `golangci-lint run --fix ./...` → **0 issues** |
-| All tests | ✅ | Root 90.2% + all submodules PASSED. Race detector: PASSED. |
-| Integration tests | ✅ | `integration/` tests compiled fine (0.003s) |
-| Examples build | ✅ | `examples/basic` and `examples/d2` compile |
+| What                 | Status | Details                                                                     |
+| -------------------- | ------ | --------------------------------------------------------------------------- |
+| Add dependency       | ✅     | `github.com/larsartmann/go-branded-id v0.1.0` in root `go.mod`              |
+| Rewrite `ids.go`     | ✅     | 90 lines → 50 lines. `BrandedID[Brand]` is now `= id.ID[Brand, string]`     |
+| Constructor          | ✅     | `NewBrandedID` uses `id.NewID[Brand, string](value)`                        |
+| All 6 type aliases   | ✅     | `D2NodeID`, `TreeNodeID`, `GraphNodeID` etc. now alias `id.ID[..., string]` |
+| `IsEmpty` → `IsZero` | ✅     | Updated in `d2_write.go:64`, `dot.go:196,244`, `mermaid.go:45`              |
+| Tests updated        | ✅     | `%#v` expectation changed: `BrandedID{"test-id"}` → `id(test-id)`           |
+| `.golangci.yml`      | ✅     | depguard allowlist updated for `go-branded-id` (main + default rules)       |
+| `go mod tidy`        | ✅     | Root + `integration/` tidied                                                |
+| Lint                 | ✅     | `golangci-lint run --fix ./...` → **0 issues**                              |
+| All tests            | ✅     | Root 90.2% + all submodules PASSED. Race detector: PASSED.                  |
+| Integration tests    | ✅     | `integration/` tests compiled fine (0.003s)                                 |
+| Examples build       | ✅     | `examples/basic` and `examples/d2` compile                                  |
 
 ### Multi-Module Workspace — STABLE SINCE 2026-05-07
 
-| Module | go.mod | Coverage | Status |
-| ------ | ------ | -------- | ------ |
-| Root | ✅ | 90.2% | go-branded-id now integrated |
-| `enum/` | ✅ | 100% | Zero-dep leaf (**stealth primitives lib**) |
-| `escape/` | ✅ | 100% | Zero-dep leaf |
-| `cmdguard/` | ✅ | 100% | Zero-dep leaf |
-| `table/` | ✅ | 100% | Lipgloss isolated |
-| `sort/` | ✅ | 100% | Deprecated per ADR |
-| `integration/` | ✅ | N/A (tests) | Cross-module validation |
-| `examples/` | ✅ | N/A | Usage demos |
+| Module         | go.mod | Coverage    | Status                                     |
+| -------------- | ------ | ----------- | ------------------------------------------ |
+| Root           | ✅     | 90.2%       | go-branded-id now integrated               |
+| `enum/`        | ✅     | 100%        | Zero-dep leaf (**stealth primitives lib**) |
+| `escape/`      | ✅     | 100%        | Zero-dep leaf                              |
+| `cmdguard/`    | ✅     | 100%        | Zero-dep leaf                              |
+| `table/`       | ✅     | 100%        | Lipgloss isolated                          |
+| `sort/`        | ✅     | 100%        | Deprecated per ADR                         |
+| `integration/` | ✅     | N/A (tests) | Cross-module validation                    |
+| `examples/`    | ✅     | N/A         | Usage demos                                |
 
 **Total:** 60 `.go` files (8,501 lines), 40 test files. All pass.
 
 ### Documentation — CURRENT
 
-| Doc | Status | Last Updated |
-| --- | ------ | ------------ |
-| README.md | ✅ | Describes 12 formats + quick start |
-| PLAN.md | ✅ | Package structure reference |
-| AGENTS.md | ✅ | Multi-module workspace detailed |
-| ADR 001 | ✅ | Multi-module decision documented |
-| CHANGELOG.md | ✅ | Version history |
-| CONTRIBUTING.md | ✅ | Exists |
-| Previous status reports (8) | ✅ | `docs/status/` |
+| Doc                         | Status | Last Updated                       |
+| --------------------------- | ------ | ---------------------------------- |
+| README.md                   | ✅     | Describes 12 formats + quick start |
+| PLAN.md                     | ✅     | Package structure reference        |
+| AGENTS.md                   | ✅     | Multi-module workspace detailed    |
+| ADR 001                     | ✅     | Multi-module decision documented   |
+| CHANGELOG.md                | ✅     | Version history                    |
+| CONTRIBUTING.md             | ✅     | Exists                             |
+| Previous status reports (8) | ✅     | `docs/status/`                     |
 
 ---
 
 ## b) PARTIALLY DONE 🟡
 
-| Item | What's Done | What's Left |
-| ---- | ----------- | ----------- |
-| Stealth utility libraries | `enum/`, `escape/`, `cmdguard/` extracted as Go modules | Still hidden under `github.com/larsartmann/go-output/` import path. Nobody looking for enum utilities finds them here. |
-| sort/ module | Marked deprecated with `gomoddirectives` lint suppression | **Still exists.** Should be deleted, not deprecated. |
-| GraphRendererMixin | Defined in `dot.go` (cross-cutting concern) | Should move to `graph.go` or its own file |
-| go.work workflow | `go.work` is gitignored | CI and local dev workflows not documented. LSP shows 84 false-positive diagnostics. |
-| BrandedID backward compat | Type alias preserves API surface | Test expectations changed (`%#v` format). Downstream repos using `fmt.Sprintf("%#v", id)` need migration. |
-| `examples/go.mod` | Goes through `go.work` | Has module drift from `table/` update path |
+| Item                      | What's Done                                               | What's Left                                                                                                            |
+| ------------------------- | --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| Stealth utility libraries | `enum/`, `escape/`, `cmdguard/` extracted as Go modules   | Still hidden under `github.com/larsartmann/go-output/` import path. Nobody looking for enum utilities finds them here. |
+| sort/ module              | Marked deprecated with `gomoddirectives` lint suppression | **Still exists.** Should be deleted, not deprecated.                                                                   |
+| GraphRendererMixin        | Defined in `dot.go` (cross-cutting concern)               | Should move to `graph.go` or its own file                                                                              |
+| go.work workflow          | `go.work` is gitignored                                   | CI and local dev workflows not documented. LSP shows 84 false-positive diagnostics.                                    |
+| BrandedID backward compat | Type alias preserves API surface                          | Test expectations changed (`%#v` format). Downstream repos using `fmt.Sprintf("%#v", id)` need migration.              |
+| `examples/go.mod`         | Goes through `go.work`                                    | Has module drift from `table/` update path                                                                             |
 
 ---
 
@@ -94,10 +94,10 @@
 
 ## d) TOTALLY FUCKED UP! 🔴
 
-| Issue | File/Location | Root Cause | Severity |
-| ----- | ------------- | ---------- | -------- |
-| **84 LSP false-positive diagnostics** | `examples/basic/main.go` + others | `go.work` is gitignored; LSP doesn't resolve cross-module imports via workspace | LOW — cosmetic; everything compiles and tests pass |
-| **Integration `go.mod` has `replace` but no `go.work`** | `integration/go.mod` | Needs `go.work` or explicit `replace` for development | LOW — works with `go.work` |
+| Issue                                                   | File/Location                     | Root Cause                                                                      | Severity                                           |
+| ------------------------------------------------------- | --------------------------------- | ------------------------------------------------------------------------------- | -------------------------------------------------- |
+| **84 LSP false-positive diagnostics**                   | `examples/basic/main.go` + others | `go.work` is gitignored; LSP doesn't resolve cross-module imports via workspace | LOW — cosmetic; everything compiles and tests pass |
+| **Integration `go.mod` has `replace` but no `go.work`** | `integration/go.mod`              | Needs `go.work` or explicit `replace` for development                           | LOW — works with `go.work`                         |
 
 **Note:** Neither of these is actually "fucked up" — they are architectural consequences of the multi-module design. The LSP warnings are noise; CI passes. But they create friction for new contributors.
 
@@ -125,33 +125,33 @@
 
 ## f) Top #25 Things We Should Get Done Next! 🎯
 
-| # | Task | Impact | Effort | Priority |
-|---| ---- | ------ | ------ | -------- |
-| 1 | **Delete `sort/` module** (deprecated) | Remove dead code | 1 hour | HIGH |
-| 2 | **Move `GraphRendererMixin`** to `graph.go` | Clean architecture | 2 hours | HIGH |
-| 3 | **Extract `enum/` to standalone repo** | Fix branding, enable discovery | 4 hours | HIGH |
-| 4 | **Add benchmarks** for all 12 renderers | Performance visibility | 6 hours | HIGH |
-| 5 | **Write BrandedID migration guide** | Help 17 downstream repos | 3 hours | MEDIUM |
-| 6 | **Add BrandedID serialization tests** | Cover JSON/Binary/Gob/SQL | 3 hours | MEDIUM |
-| 7 | **Fix file size violations** (>350 lines) | Maintain code quality | 4 hours | MEDIUM |
-| 8 | **Document `go.work` dev workflow** | Reduce contributor friction | 1 hour | MEDIUM |
-| 9 | **Fix 84 LSP false-positives** | Developer experience | 2 hours | LOW |
-| 10 | **Extract `escape/` to standalone repo** | Clean boundaries | 4 hours | LOW |
-| 11 | **Extract `cmdguard/` to standalone repo** | Clean boundaries | 3 hours | LOW |
-| 12 | **Extract `d2/` as module** | Per ADR 001 | 4 hours | LOW |
-| 13 | **Extract `graph/` as module** | DOT + Mermaid | 4 hours | LOW |
-| 14 | **Add README section** for go-branded-id | Public visibility | 1 hour | LOW |
-| 15 | **Add ADR for branded ID decision** | Document tradeoffs | 2 hours | LOW |
-| 16 | **Fuzz tests** for Format enum | Robustness | 2 hours | LOW |
-| 17 | **Verify downstream compilation** | Confident release | 4 hours | LOW |
-| 18 | **Add `Or()`/`Compare()` usage examples** | Feature discovery | 1 hour | LOW |
-| 19 | **Benchmark: old vs new BrandedID** | Verify no regression | 2 hours | LOW |
-| 20 | **Consider `int`-valued branded IDs** | Richer type usage | 3 hours | LOW |
-| 21 | **Codify `go.sum` update rules** | Multi-module hygiene | 1 hour | LOW |
-| 22 | **Tidy `examples/go.mod`** | Remove drift | 1 hour | LOW |
-| 23 | **Add CONTRIBUTING.md** multi-module PR section | Process clarity | 1 hour | LOW |
-| 24 | **Extract `internal/gentest/`** as public package | Reuse downstream | 2 hours | LOW |
-| 25 | **Add `go test -count=1` CI flag** | Prevent test caching false-positives | 1 hour | LOW |
+| #   | Task                                              | Impact                               | Effort  | Priority |
+| --- | ------------------------------------------------- | ------------------------------------ | ------- | -------- |
+| 1   | **Delete `sort/` module** (deprecated)            | Remove dead code                     | 1 hour  | HIGH     |
+| 2   | **Move `GraphRendererMixin`** to `graph.go`       | Clean architecture                   | 2 hours | HIGH     |
+| 3   | **Extract `enum/` to standalone repo**            | Fix branding, enable discovery       | 4 hours | HIGH     |
+| 4   | **Add benchmarks** for all 12 renderers           | Performance visibility               | 6 hours | HIGH     |
+| 5   | **Write BrandedID migration guide**               | Help 17 downstream repos             | 3 hours | MEDIUM   |
+| 6   | **Add BrandedID serialization tests**             | Cover JSON/Binary/Gob/SQL            | 3 hours | MEDIUM   |
+| 7   | **Fix file size violations** (>350 lines)         | Maintain code quality                | 4 hours | MEDIUM   |
+| 8   | **Document `go.work` dev workflow**               | Reduce contributor friction          | 1 hour  | MEDIUM   |
+| 9   | **Fix 84 LSP false-positives**                    | Developer experience                 | 2 hours | LOW      |
+| 10  | **Extract `escape/` to standalone repo**          | Clean boundaries                     | 4 hours | LOW      |
+| 11  | **Extract `cmdguard/` to standalone repo**        | Clean boundaries                     | 3 hours | LOW      |
+| 12  | **Extract `d2/` as module**                       | Per ADR 001                          | 4 hours | LOW      |
+| 13  | **Extract `graph/` as module**                    | DOT + Mermaid                        | 4 hours | LOW      |
+| 14  | **Add README section** for go-branded-id          | Public visibility                    | 1 hour  | LOW      |
+| 15  | **Add ADR for branded ID decision**               | Document tradeoffs                   | 2 hours | LOW      |
+| 16  | **Fuzz tests** for Format enum                    | Robustness                           | 2 hours | LOW      |
+| 17  | **Verify downstream compilation**                 | Confident release                    | 4 hours | LOW      |
+| 18  | **Add `Or()`/`Compare()` usage examples**         | Feature discovery                    | 1 hour  | LOW      |
+| 19  | **Benchmark: old vs new BrandedID**               | Verify no regression                 | 2 hours | LOW      |
+| 20  | **Consider `int`-valued branded IDs**             | Richer type usage                    | 3 hours | LOW      |
+| 21  | **Codify `go.sum` update rules**                  | Multi-module hygiene                 | 1 hour  | LOW      |
+| 22  | **Tidy `examples/go.mod`**                        | Remove drift                         | 1 hour  | LOW      |
+| 23  | **Add CONTRIBUTING.md** multi-module PR section   | Process clarity                      | 1 hour  | LOW      |
+| 24  | **Extract `internal/gentest/`** as public package | Reuse downstream                     | 2 hours | LOW      |
+| 25  | **Add `go test -count=1` CI flag**                | Prevent test caching false-positives | 1 hour  | LOW      |
 
 ---
 
@@ -161,25 +161,25 @@
 >
 > **Should we wrap `id.ID` in a struct with explicit method forwarding to create a compatibility/shield layer, or do we accept the coupling and commit to tracking go-branded-id's evolution?**
 >
-> *(A wrapper would add ~30 lines of boilerplate but gives us full control over the exported API. A type alias is DRY but makes go-output's public API a function of go-branded-id's changelog.)*
+> _(A wrapper would add ~30 lines of boilerplate but gives us full control over the exported API. A type alias is DRY but makes go-output's public API a function of go-branded-id's changelog.)_
 
 ---
 
 ## Summary Metrics
 
-| Metric | Value |
-| ------ | ----- |
-| Total Go files | 60 (8,501 lines) |
-| Test files | 40 |
-| Modules | 8 |
-| Test coverage (root) | 90.2% |
-| Test coverage (submodules) | 100% each |
-| Lint issues | **0** |
-| Race condition issues | **0** |
-| Uncommitted changes | 10 files (go-branded-id migration) |
-| Downstream dependents | **17 repos** |
-| Zero-dep leaf modules | enum, escape, cmdguard |
+| Metric                     | Value                              |
+| -------------------------- | ---------------------------------- |
+| Total Go files             | 60 (8,501 lines)                   |
+| Test files                 | 40                                 |
+| Modules                    | 8                                  |
+| Test coverage (root)       | 90.2%                              |
+| Test coverage (submodules) | 100% each                          |
+| Lint issues                | **0**                              |
+| Race condition issues      | **0**                              |
+| Uncommitted changes        | 10 files (go-branded-id migration) |
+| Downstream dependents      | **17 repos**                       |
+| Zero-dep leaf modules      | enum, escape, cmdguard             |
 
 ---
 
-*Report generated by Parakletos. Waiting for instructions.*
+_Report generated by Parakletos. Waiting for instructions._
