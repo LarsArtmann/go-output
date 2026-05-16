@@ -59,11 +59,20 @@ fmt.Println(format.Category())           // table
 
 ## Supported Formats
 
-| Category  | Formats                                                        | Use Case                           |
-| --------- | -------------------------------------------------------------- | ---------------------------------- |
-| **Table** | `table`, `json`, `csv`, `tsv`, `xml`, `markdown`, `yaml`, `d2` | Tabular data with rows and columns |
-| **Tree**  | `tree`, `html`                                                 | Hierarchical structures            |
-| **Graph** | `d2`, `mermaid`, `dot`                                         | Network diagrams and flowcharts    |
+| Format | Table | Tree | Graph | Notes |
+| ------ | :---: | :--: | :---: | ----- |
+| `table` | ✅ | | | Terminal tables with lipgloss styling (separate `table/` module) |
+| `json` | ✅ | ✅ | ✅ | Shape-agnostic serialization |
+| `csv` | ✅ | | | Comma-separated export |
+| `tsv` | ✅ | | | Tab-separated export |
+| `xml` | ✅ | | | XML with table structure |
+| `markdown` | ✅ | | | Markdown tables |
+| `yaml` | ✅ | ✅ | ✅ | Shape-agnostic serialization |
+| `d2` | ✅ | | ✅ | SQL tables + node-edge diagrams |
+| `html` | ✅ | ✅ | | HTML tables + collapsible tree |
+| `tree` | | ✅ | | ASCII tree with box-drawing chars |
+| `mermaid` | ✅ | | ✅ | Mermaid flowchart diagrams |
+| `dot` | ✅ | | ✅ | DOT/Graphviz directed graphs |
 
 All formats implement the `Renderer` interface:
 
@@ -147,20 +156,25 @@ d2.AddNode(output.D2Node{
 out, _ := d2.Render()
 ```
 
-## Format Categories
+## Data Shapes
 
-Formats are classified into three categories for programmatic filtering:
+Every format declares which data shapes it supports via the capability matrix:
 
 ```go
+// Check if a format supports a specific data shape
 format, _ := output.ParseFormat("d2")
-fmt.Println(format.IsTableFormat()) // true (D2 supports SQL tables)
-fmt.Println(format.IsGraphFormat()) // true (D2 supports node-edge diagrams)
-fmt.Println(format.Category())      // graph (graph takes precedence)
+fmt.Println(format.Supports(output.ShapeTable)) // true (D2 supports SQL tables)
+fmt.Println(format.Supports(output.ShapeGraph)) // true (D2 supports node-edge diagrams)
+fmt.Println(format.Supports(output.ShapeTree))  // false
 
-for _, f := range output.AllFormats {
-    if f.IsTableFormat() {
-        fmt.Println(f) // table, json, csv, tsv, xml, markdown, yaml, d2
-    }
+// Get all shapes a format supports
+for _, shape := range format.Shapes() {
+    fmt.Println(shape) // "table", "graph"
+}
+
+// Find all formats that can render graph data
+for _, f := range output.FormatsForShape(output.ShapeGraph) {
+    fmt.Println(f) // json, yaml, d2, mermaid, dot
 }
 ```
 

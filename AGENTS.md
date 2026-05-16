@@ -117,14 +117,15 @@ go test -bench=. -benchmem ./...  # Benchmarks
 3. **Interface-based design**: Renderer, GraphRenderer, TableRenderer interfaces — `Render() (string, error)`. Use `MustRender(r)` helper for tests/examples.
 4. **Composition**: GraphRendererMixin shared by DOT/Mermaid, tableDataBase shared by HTML/Streaming
 5. **Registry is opt-in**: Use constructors directly by default. Register/Create for runtime dispatch.
+6. **Shape capability matrix**: Each format declares supported data shapes (ShapeTable/ShapeTree/ShapeGraph) via `formatCapabilities` map. Use `f.Supports(shape)` instead of deprecated `f.Is*Format()` methods.
 
 ## Common Tasks
 
 ### Adding a New Output Format
 
 1. Add format constant to `format.go`
-2. Implement formatter — embed Renderer interface
-3. Add to format category maps if table/tree/graph
+2. Add to `formatCapabilities` map with supported shapes
+3. Implement formatter — embed Renderer interface
 4. Add tests with >90% coverage
 5. Update cmdguard if needed (EnumFlag already generic)
 
@@ -144,3 +145,4 @@ go test -bench=. -benchmem ./...  # Benchmarks
 - SortBy enum kept in root — used by cmdguard tests as example enum type
 - Multi-module workspace with 7 independent modules (see ADR 001)
 - GraphRendererMixin defined in dot.go — should move to graph.go or own file when graph/ is extracted as module
+- Shape capability matrix (ADR 002) replaces FormatCategory — `IsTableFormat()`/`IsTreeFormat()`/`IsGraphFormat()`/`Category()` are deprecated, use `Supports(Shape)` instead

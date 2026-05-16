@@ -2,6 +2,7 @@ package output
 
 import (
 	"fmt"
+	"slices"
 	"strings"
 
 	"github.com/larsartmann/go-output/enum"
@@ -68,10 +69,79 @@ func (f Format) IsValid() bool {
 	return enum.Contains(AllFormats, f)
 }
 
+// Shape represents a data shape that a format can render.
+type Shape string
+
+// Data shape constants for format capability classification.
+const (
+	ShapeTable Shape = "table" // Tabular data with headers and rows
+	ShapeTree  Shape = "tree"  // Hierarchical data with parent-child nodes
+	ShapeGraph Shape = "graph" // Network data with nodes and edges
+)
+
+// AllShapes contains all valid data shape values.
+//
+//nolint:gochecknoglobals // Global variable used for value iteration.
+var AllShapes = []Shape{
+	ShapeTable,
+	ShapeTree,
+	ShapeGraph,
+}
+
+// formatCapabilities maps each format to the data shapes it supports.
+//
+//nolint:gochecknoglobals // Capability matrix is the single source of truth.
+var formatCapabilities = map[Format][]Shape{
+	FormatTable:    {ShapeTable},
+	FormatJSON:     {ShapeTable, ShapeTree, ShapeGraph},
+	FormatCSV:      {ShapeTable},
+	FormatTSV:      {ShapeTable},
+	FormatXML:      {ShapeTable},
+	FormatMarkdown: {ShapeTable},
+	FormatD2:       {ShapeTable, ShapeGraph},
+	FormatYAML:     {ShapeTable, ShapeTree, ShapeGraph},
+	FormatHTML:     {ShapeTable, ShapeTree},
+	FormatTree:     {ShapeTree},
+	FormatMermaid:  {ShapeTable, ShapeGraph},
+	FormatDOT:      {ShapeTable, ShapeGraph},
+}
+
+// Supports returns true if the format can render the given data shape.
+func (f Format) Supports(s Shape) bool {
+	shapes, ok := formatCapabilities[f]
+	if !ok {
+		return false
+	}
+
+	return slices.Contains(shapes, s)
+}
+
+// Shapes returns all data shapes this format supports.
+func (f Format) Shapes() []Shape {
+	return formatCapabilities[f]
+}
+
+// FormatsForShape returns all formats that support the given data shape.
+func FormatsForShape(s Shape) []Format {
+	var result []Format
+
+	for _, f := range AllFormats {
+		if f.Supports(s) {
+			result = append(result, f)
+		}
+	}
+
+	return result
+}
+
 // FormatCategory represents a category for format classification.
+//
+// Deprecated: Use Shape instead. FormatCategory will be removed in a future version.
 type FormatCategory int
 
 // Format category constants for classifying output formats.
+//
+// Deprecated: Use ShapeTable, ShapeTree, ShapeGraph instead.
 const (
 	CategoryTable FormatCategory = iota
 	CategoryTree
@@ -79,6 +149,8 @@ const (
 )
 
 // String returns the string representation of the format category.
+//
+// Deprecated: Use Shape.String() instead.
 func (c FormatCategory) String() string {
 	switch c {
 	case CategoryTable:
@@ -92,62 +164,37 @@ func (c FormatCategory) String() string {
 	}
 }
 
-var (
-	//nolint:gochecknoglobals // Set for table format classification.
-	tableFormats = map[Format]struct{}{
-		FormatTable:    {},
-		FormatJSON:     {},
-		FormatCSV:      {},
-		FormatTSV:      {},
-		FormatXML:      {},
-		FormatMarkdown: {},
-		FormatYAML:     {},
-		FormatD2:       {},
-	}
-
-	//nolint:gochecknoglobals // Set for tree format classification.
-	treeFormats = map[Format]struct{}{
-		FormatTree: {},
-		FormatHTML: {},
-	}
-
-	//nolint:gochecknoglobals // Set for graph format classification.
-	graphFormats = map[Format]struct{}{
-		FormatD2:      {},
-		FormatMermaid: {},
-		FormatDOT:     {},
-	}
-)
-
 // IsTableFormat returns true if this is a table-based format.
+//
+// Deprecated: Use f.Supports(ShapeTable) instead.
 func (f Format) IsTableFormat() bool {
-	_, ok := tableFormats[f]
-
-	return ok
+	return f.Supports(ShapeTable)
 }
 
 // IsTreeFormat returns true if this is a tree-based format.
+//
+// Deprecated: Use f.Supports(ShapeTree) instead.
 func (f Format) IsTreeFormat() bool {
-	_, ok := treeFormats[f]
-
-	return ok
+	return f.Supports(ShapeTree)
 }
 
 // IsGraphFormat returns true if this is a graph/diagram format.
+//
+// Deprecated: Use f.Supports(ShapeGraph) instead.
 func (f Format) IsGraphFormat() bool {
-	_, ok := graphFormats[f]
-
-	return ok
+	return f.Supports(ShapeGraph)
 }
 
 // Category returns the category of the format.
+//
+// Deprecated: Use f.Shapes() instead. Category returns the primary shape.
 func (f Format) Category() FormatCategory {
-	if _, ok := treeFormats[f]; ok {
-		return CategoryTree
+	if f.Supports(ShapeGraph) {
+		return CategoryGraph
 	}
 
-	if _, ok := graphFormats[f]; ok {
-		return CategoryGraph
+	if f.Supports(ShapeTree) {
+		return CategoryTree
 	}
 
 	return CategoryTable

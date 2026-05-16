@@ -60,24 +60,32 @@ func TestFormatCategories(t *testing.T) {
 		output.FormatTable,
 		output.FormatJSON,
 		output.FormatCSV,
+		output.FormatTSV,
+		output.FormatXML,
 		output.FormatMarkdown,
 		output.FormatYAML,
+		output.FormatD2,
+		output.FormatHTML,
+		output.FormatMermaid,
+		output.FormatDOT,
 	}
 
 	for _, f := range tableFormats {
-		if !f.IsTableFormat() {
-			t.Errorf("Format %s should be a table format", f)
+		if !f.Supports(output.ShapeTable) {
+			t.Errorf("Format %s should support ShapeTable", f)
 		}
 	}
 
 	treeFormats := []output.Format{
 		output.FormatTree,
 		output.FormatHTML,
+		output.FormatJSON,
+		output.FormatYAML,
 	}
 
 	for _, f := range treeFormats {
-		if !f.IsTreeFormat() {
-			t.Errorf("Format %s should be a tree format", f)
+		if !f.Supports(output.ShapeTree) {
+			t.Errorf("Format %s should support ShapeTree", f)
 		}
 	}
 
@@ -85,11 +93,13 @@ func TestFormatCategories(t *testing.T) {
 		output.FormatD2,
 		output.FormatMermaid,
 		output.FormatDOT,
+		output.FormatJSON,
+		output.FormatYAML,
 	}
 
 	for _, f := range graphFormats {
-		if !f.IsGraphFormat() {
-			t.Errorf("Format %s should be a graph format", f)
+		if !f.Supports(output.ShapeGraph) {
+			t.Errorf("Format %s should support ShapeGraph", f)
 		}
 	}
 }

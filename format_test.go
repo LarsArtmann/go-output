@@ -1,6 +1,7 @@
 package output
 
 import (
+	"slices"
 	"strings"
 	"testing"
 
@@ -118,13 +119,15 @@ func TestFormatIsTableFormat(t *testing.T) {
 			{FormatTable, true},
 			{FormatJSON, true},
 			{FormatCSV, true},
+			{FormatTSV, true},
 			{FormatMarkdown, true},
+			{FormatXML, true},
 			{FormatD2, true},
 			{FormatYAML, true},
-			{FormatHTML, false},
+			{FormatHTML, true},
+			{FormatMermaid, true},
+			{FormatDOT, true},
 			{FormatTree, false},
-			{FormatMermaid, false},
-			{FormatDOT, false},
 		},
 		func(f Format) bool { return f.IsTableFormat() },
 		func(f Format) string { return string(f) },
@@ -137,10 +140,12 @@ func TestFormatIsTreeFormat(t *testing.T) {
 		"Format",
 		"IsTreeFormat",
 		[]boolMethodTestCase[Format]{
-			{FormatTable, false},
-			{FormatJSON, false},
 			{FormatTree, true},
 			{FormatHTML, true},
+			{FormatJSON, true},
+			{FormatYAML, true},
+			{FormatTable, false},
+			{FormatCSV, false},
 			{FormatMermaid, false},
 		},
 		func(f Format) bool { return f.IsTreeFormat() },
@@ -154,12 +159,14 @@ func TestFormatIsGraphFormat(t *testing.T) {
 		"Format",
 		"IsGraphFormat",
 		[]boolMethodTestCase[Format]{
-			{FormatTable, false},
-			{FormatJSON, false},
 			{FormatD2, true},
 			{FormatMermaid, true},
 			{FormatDOT, true},
+			{FormatJSON, true},
+			{FormatYAML, true},
+			{FormatTable, false},
 			{FormatTree, false},
+			{FormatCSV, false},
 		},
 		func(f Format) bool { return f.IsGraphFormat() },
 		func(f Format) string { return string(f) },
@@ -194,16 +201,17 @@ func TestFormatCategory(t *testing.T) {
 		wantGraph bool
 	}{
 		{FormatTable, true, false, false},
-		{FormatJSON, true, false, false},
+		{FormatJSON, true, true, true},
 		{FormatCSV, true, false, false},
 		{FormatTSV, true, false, false},
 		{FormatMarkdown, true, false, false},
-		{FormatYAML, true, false, false},
-		{FormatD2, true, false, true}, // D2 is both table and graph
-		{FormatHTML, false, true, false},
+		{FormatXML, true, false, false},
+		{FormatYAML, true, true, true},
+		{FormatD2, true, false, true},
+		{FormatHTML, true, true, false},
 		{FormatTree, false, true, false},
-		{FormatMermaid, false, false, true},
-		{FormatDOT, false, false, true},
+		{FormatMermaid, true, false, true},
+		{FormatDOT, true, false, true},
 	}
 
 	for _, tt := range tests {
@@ -238,14 +246,18 @@ func TestFormatCategory(t *testing.T) {
 func TestFormatCategoryMethod(t *testing.T) {
 	t.Parallel()
 
+	// Category() returns graph > tree > table priority for multi-shape formats
 	tests := []struct {
 		format Format
 		want   FormatCategory
 	}{
 		{FormatTable, CategoryTable},
-		{FormatJSON, CategoryTable},
+		{FormatJSON, CategoryGraph},
 		{FormatCSV, CategoryTable},
-		{FormatYAML, CategoryTable},
+		{FormatTSV, CategoryTable},
+		{FormatXML, CategoryTable},
+		{FormatMarkdown, CategoryTable},
+		{FormatYAML, CategoryGraph},
 		{FormatHTML, CategoryTree},
 		{FormatTree, CategoryTree},
 		{FormatD2, CategoryGraph},
@@ -262,5 +274,110 @@ func TestFormatCategoryMethod(t *testing.T) {
 				t.Errorf("Format(%q).Category() = %v, want %v", tt.format, got, tt.want)
 			}
 		})
+	}
+}
+
+func TestFormatSupports(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		format Format
+		shape  Shape
+		want   bool
+	}{
+		{FormatJSON, ShapeTable, true},
+		{FormatJSON, ShapeTree, true},
+		{FormatJSON, ShapeGraph, true},
+		{FormatCSV, ShapeTable, true},
+		{FormatCSV, ShapeTree, false},
+		{FormatCSV, ShapeGraph, false},
+		{FormatD2, ShapeTable, true},
+		{FormatD2, ShapeTree, false},
+		{FormatD2, ShapeGraph, true},
+		{FormatTree, ShapeTree, true},
+		{FormatTree, ShapeTable, false},
+		{FormatTable, ShapeTable, true},
+		{FormatTable, ShapeTree, false},
+		{Format("invalid"), ShapeTable, false},
+	}
+	for _, tt := range tests {
+		t.Run(string(tt.format)+"_"+string(tt.shape), func(t *testing.T) {
+			t.Parallel()
+
+			got := tt.format.Supports(tt.shape)
+			if got != tt.want {
+				t.Errorf("Format(%q).Supports(%v) = %v, want %v", tt.format, tt.shape, got, tt.want)
+			}
+		})
+	}
+}
+
+func TestFormatShapes(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		format Format
+		want   []Shape
+	}{
+		{FormatJSON, []Shape{ShapeTable, ShapeTree, ShapeGraph}},
+		{FormatCSV, []Shape{ShapeTable}},
+		{FormatD2, []Shape{ShapeTable, ShapeGraph}},
+		{FormatTree, []Shape{ShapeTree}},
+		{FormatTable, []Shape{ShapeTable}},
+		{FormatYAML, []Shape{ShapeTable, ShapeTree, ShapeGraph}},
+	}
+	for _, tt := range tests {
+		t.Run(string(tt.format), func(t *testing.T) {
+			t.Parallel()
+
+			got := tt.format.Shapes()
+			if len(got) != len(tt.want) {
+				t.Errorf("Format(%q).Shapes() = %v, want %v", tt.format, got, tt.want)
+
+				return
+			}
+
+			for i, s := range got {
+				if s != tt.want[i] {
+					t.Errorf("Format(%q).Shapes()[%d] = %v, want %v", tt.format, i, s, tt.want[i])
+				}
+			}
+		})
+	}
+}
+
+func TestFormatsForShape(t *testing.T) {
+	t.Parallel()
+
+	assertContainsAll(t, "graph", FormatsForShape(ShapeGraph),
+		FormatJSON, FormatYAML, FormatD2, FormatMermaid, FormatDOT)
+	assertContainsAll(t, "tree", FormatsForShape(ShapeTree),
+		FormatJSON, FormatYAML, FormatHTML, FormatTree)
+	assertContainsAll(t, "table", FormatsForShape(ShapeTable),
+		FormatTable, FormatJSON, FormatCSV, FormatD2, FormatMermaid, FormatDOT)
+}
+
+func assertContainsAll(t *testing.T, label string, formats []Format, required ...Format) {
+	t.Helper()
+
+	for _, f := range required {
+		if !slices.Contains(formats, f) {
+			t.Errorf("FormatsForShape(%s) missing %v", label, f)
+		}
+	}
+}
+
+func TestAllShapes(t *testing.T) {
+	t.Parallel()
+
+	want := []Shape{ShapeTable, ShapeTree, ShapeGraph}
+	if len(AllShapes) != len(want) {
+		t.Errorf("AllShapes length = %d, want %d", len(AllShapes), len(want))
+	}
+
+	for i, s := range AllShapes {
+		if s != want[i] {
+			t.Errorf("AllShapes[%d] = %v, want %v", i, s, want[i])
+		}
 	}
 }
