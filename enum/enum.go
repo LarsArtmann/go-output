@@ -55,6 +55,7 @@ type ParseError struct {
 	Values []string
 }
 
+// Error returns a descriptive error message including the invalid value and allowed values.
 func (e *ParseError) Error() string {
 	return fmt.Sprintf("invalid value: %q (allowed: %s)", e.Value, joinStrings(e.Values))
 }

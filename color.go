@@ -29,6 +29,7 @@ var colorModeValues = []ColorMode{
 // ErrInvalidColorMode is returned when an invalid color mode is provided.
 var ErrInvalidColorMode = errors.New("invalid color mode")
 
+// ParseColorMode converts a string to ColorMode, returning an error if invalid.
 func ParseColorMode(s string) (ColorMode, error) {
 	v, err := enum.Parse(colorModeValues, s, func(c ColorMode) string { return string(c) })
 	if err != nil {
@@ -38,6 +39,7 @@ func ParseColorMode(s string) (ColorMode, error) {
 	return v, nil
 }
 
+// String returns the string representation of the color mode.
 func (c ColorMode) String() string {
 	return string(c)
 }

@@ -66,6 +66,7 @@ var graphShapeValues = []GraphShape{
 // ErrInvalidGraphShape is returned when an invalid graph shape is provided.
 var ErrInvalidGraphShape = errors.New("invalid graph shape")
 
+// ParseGraphShape converts a string to GraphShape, returning an error if invalid.
 func ParseGraphShape(s string) (GraphShape, error) {
 	v, err := enum.Parse(graphShapeValues, s, func(g GraphShape) string { return string(g) })
 	if err != nil {
@@ -75,6 +76,7 @@ func ParseGraphShape(s string) (GraphShape, error) {
 	return v, nil
 }
 
+// String returns the string representation of the graph shape.
 func (s GraphShape) String() string {
 	return string(s)
 }

@@ -10,6 +10,7 @@ import (
 // D2Direction constants for diagram layout direction.
 type D2Direction string
 
+// D2 direction constants.
 const (
 	D2DirDown  D2Direction = ""
 	D2DirRight D2Direction = "right"
@@ -25,8 +26,10 @@ var d2DirectionValues = []D2Direction{
 	D2DirUp,
 }
 
+// ErrInvalidD2Direction is returned when an invalid D2 direction is provided.
 var ErrInvalidD2Direction = errors.New("invalid D2 direction")
 
+// ParseD2Direction converts a string to D2Direction, returning an error if invalid.
 func ParseD2Direction(s string) (D2Direction, error) {
 	v, err := enum.Parse(d2DirectionValues, s, func(d D2Direction) string { return string(d) })
 	if err != nil {
@@ -36,14 +39,17 @@ func ParseD2Direction(s string) (D2Direction, error) {
 	return v, nil
 }
 
+// IsValid returns true if the direction is a valid D2Direction value.
 func (d D2Direction) IsValid() bool {
 	return enum.Contains(d2DirectionValues, d)
 }
 
+// AllowedValues returns all valid D2 direction values for CLI help text.
 func (d D2Direction) AllowedValues() []string {
 	return enum.AllowedValues(d2DirectionValues)
 }
 
+// String returns the string representation of the direction.
 func (d D2Direction) String() string {
 	return string(d)
 }
@@ -99,8 +105,10 @@ var d2NodeShapeValues = []D2NodeShape{
 	D2ShapeStoredData,
 }
 
+// ErrInvalidD2NodeShape is returned when an invalid D2 node shape is provided.
 var ErrInvalidD2NodeShape = errors.New("invalid D2 node shape")
 
+// ParseD2NodeShape converts a string to D2NodeShape, returning an error if invalid.
 func ParseD2NodeShape(s string) (D2NodeShape, error) {
 	v, err := enum.Parse(d2NodeShapeValues, s, func(ns D2NodeShape) string { return string(ns) })
 	if err != nil {
@@ -110,14 +118,17 @@ func ParseD2NodeShape(s string) (D2NodeShape, error) {
 	return v, nil
 }
 
+// IsValid returns true if the shape is a valid D2NodeShape value.
 func (s D2NodeShape) IsValid() bool {
 	return enum.Contains(d2NodeShapeValues, s)
 }
 
+// AllowedValues returns all valid D2 node shape values for CLI help text.
 func (s D2NodeShape) AllowedValues() []string {
 	return enum.AllowedValues(d2NodeShapeValues)
 }
 
+// String returns the string representation of the node shape.
 func (s D2NodeShape) String() string {
 	return string(s)
 }
@@ -156,8 +167,10 @@ var d2ArrowTypeValues = []D2ArrowType{
 	D2ArrowCFManyRequired,
 }
 
+// ErrInvalidD2ArrowType is returned when an invalid D2 arrow type is provided.
 var ErrInvalidD2ArrowType = errors.New("invalid D2 arrow type")
 
+// ParseD2ArrowType converts a string to D2ArrowType, returning an error if invalid.
 func ParseD2ArrowType(s string) (D2ArrowType, error) {
 	v, err := enum.Parse(d2ArrowTypeValues, s, func(a D2ArrowType) string { return string(a) })
 	if err != nil {
@@ -167,14 +180,17 @@ func ParseD2ArrowType(s string) (D2ArrowType, error) {
 	return v, nil
 }
 
+// IsValid returns true if the arrow type is a valid D2ArrowType value.
 func (a D2ArrowType) IsValid() bool {
 	return a == D2ArrowNone || enum.Contains(d2ArrowTypeValues, a)
 }
 
+// AllowedValues returns all valid D2 arrow type values for CLI help text.
 func (a D2ArrowType) AllowedValues() []string {
 	return enum.AllowedValues(d2ArrowTypeValues)
 }
 
+// String returns the string representation of the arrow type.
 func (a D2ArrowType) String() string {
 	return string(a)
 }
@@ -189,6 +205,7 @@ const (
 	D2ConstraintUnique  D2Constraint = "unique"
 )
 
+// ErrInvalidD2Constraint is returned when an invalid D2 constraint is provided.
 var ErrInvalidD2Constraint = errors.New("invalid D2 constraint")
 
 //nolint:gochecknoglobals // Allowed values for D2Constraint validation.
@@ -213,6 +230,7 @@ func ParseD2Constraint(s string) (D2Constraint, error) {
 	return v, nil
 }
 
+// String returns the string representation of the constraint.
 func (c D2Constraint) String() string { return string(c) }
 
 // AllowedValues returns all valid D2Constraint values for CLI help text.

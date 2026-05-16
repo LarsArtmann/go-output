@@ -71,12 +71,14 @@ func (f Format) IsValid() bool {
 // FormatCategory represents a category for format classification.
 type FormatCategory int
 
+// Format category constants for classifying output formats.
 const (
 	CategoryTable FormatCategory = iota
 	CategoryTree
 	CategoryGraph
 )
 
+// String returns the string representation of the format category.
 func (c FormatCategory) String() string {
 	switch c {
 	case CategoryTable:
@@ -157,6 +159,7 @@ type InvalidFormatError struct {
 	Allowed []Format
 }
 
+// Error returns a descriptive error message including allowed values.
 func (e *InvalidFormatError) Error() string {
 	if e.Allowed == nil {
 		return "invalid format: " + e.Value

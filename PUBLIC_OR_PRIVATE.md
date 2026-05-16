@@ -127,10 +127,10 @@ The `docs/status/` and `docs/planning/` directories contain internal status repo
 
 ### Go public after completing these steps:
 
-- [ ] **Replace LICENSE file** with MIT license text
-- [ ] **Remove hardcoded paths** from README.md (lines 13-14)
-- [ ] **Reframe README purpose** from "personal project utility" to "general-purpose Go library"
-- [ ] **Verify all exported symbols have Go doc comments** (for pkg.go.dev)
+- [x] **Replace LICENSE file** with MIT license text
+- [x] **Remove hardcoded paths** from README.md (lines 13-14)
+- [x] **Reframe README purpose** from "personal project utility" to "general-purpose Go library"
+- [x] **Verify all exported symbols have Go doc comments** (for pkg.go.dev)
 - [ ] **Tag v0.2.0** to mark the public release milestone
 
 ### Then pursue visibility:

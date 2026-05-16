@@ -2,53 +2,62 @@
 
 [![CI](https://github.com/larsartmann/go-output/actions/workflows/ci.yml/badge.svg)](https://github.com/larsartmann/go-output/actions/workflows/ci.yml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/larsartmann/go-output)](https://goreportcard.com/report/github.com/larsartmann/go-output)
+[![GoDoc](https://godoc.org/github.com/larsartmann/go-output?status.svg)](https://godoc.org/github.com/larsartmann/go-output)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A Go library that formats structured data (tables, trees, graphs) into 12 different output formats with type-safe enums and zero-config color support.
-
-## Purpose
-
-A unified output formatting library for Go CLI applications — write your data once, render it in any of 12 formats.
-
-## Quick Start
+A Go library that formats structured data into **12 output formats** — tables, trees, and diagrams — with type-safe enums, branded IDs, and zero-config color support. Write your data once, render it anywhere.
 
 ```go
 import "github.com/larsartmann/go-output"
+```
 
-// JSON output
-data, _ := output.MarshalJSONIndent(projects, "", "  ")
-fmt.Println(string(data))
+## Quick Start
+
+Build tabular data once, render it in any format:
+
+```go
+data := output.NewTableData([]string{"Name", "Health", "Complexity"})
+data.AddRow([]string{"Alpha", "90%", "7/10"})
+data.AddRow([]string{"Beta", "75%", "5/10"})
 
 // Markdown table
 md := output.NewMarkdownTable()
-md.SetHeaders([]string{"Name", "Health", "Complexity"})
-md.AddRow([]string{"Alpha", "90%", "7/10"})
-out, err := md.Render()
-if err != nil {
-    log.Fatal(err)
+md.SetHeaders(data.GetHeaders())
+for _, row := range data.GetRows() {
+    md.AddRow(row)
 }
-fmt.Println(out)
+out, _ := md.Render()
 
-// CSV output
+// JSON
+json, _ := output.MarshalJSONIndent(projects, "", "  ")
+
+// CSV
 w := output.NewCSVWriter(os.Stdout)
-w.WriteHeader([]string{"Name", "Value"})
-w.WriteRow([]string{"Item", "123"})
+w.WriteHeader(data.GetHeaders())
+for _, row := range data.GetRows() {
+    w.WriteRow(row)
+}
 w.Flush()
-
-// TSV output
-tw := output.NewTSVWriter(os.Stdout)
-tw.WriteHeader([]string{"Name", "Value"})
-tw.WriteRow([]string{"Item", "123"})
-tw.Flush()
-
-// XML output
-data, _ := output.MarshalXMLFromTableData(tableData)
-fmt.Println(string(data))
 ```
 
-## Format Categories
+Use the `Format` enum for runtime format selection — perfect for CLI flags:
 
-Formats are classified into three categories for programmatic filtering:
+```go
+format, _ := output.ParseFormat("json") // validates input
+fmt.Println(format.IsTableFormat())      // true
+fmt.Println(format.Category())           // table
+```
+
+## Why go-output?
+
+- **12 formats, one API** — Same data, different renderers. No format-specific code paths.
+- **Type-safe enums** — `Format`, `ColorMode`, `SortBy` — all validated at parse time, never raw strings.
+- **Zero lipgloss in root module** — `go get go-output` pulls only `go-faster/yaml` and `x/term`. Lipgloss is isolated in the `table/` submodule.
+- **Branded IDs** — Phantom types prevent mixing D2NodeID, TreeNodeID, GraphNodeID at compile time.
+- **Streaming** — `StreamingHTMLRenderer` for large datasets with minimal memory.
+- **Extensible registry** — Register custom renderers for runtime dispatch.
+
+## Supported Formats
 
 | Category  | Formats                                                        | Use Case                           |
 | --------- | -------------------------------------------------------------- | ---------------------------------- |
@@ -56,14 +65,98 @@ Formats are classified into three categories for programmatic filtering:
 | **Tree**  | `tree`, `html`                                                 | Hierarchical structures            |
 | **Graph** | `d2`, `mermaid`, `dot`                                         | Network diagrams and flowcharts    |
 
+All formats implement the `Renderer` interface:
+
 ```go
-// Check format category
+type Renderer interface {
+    Render() (string, error)
+}
+```
+
+### Table Formats
+
+```go
+// JSON
+data, _ := output.MarshalJSONIndent(projects, "", "  ")
+
+// CSV
+w := output.NewCSVWriter(os.Stdout)
+w.WriteHeader([]string{"Name", "Value"})
+w.WriteRow([]string{"Item", "123"})
+w.Flush()
+
+// TSV
+tw := output.NewTSVWriter(os.Stdout)
+tw.WriteHeader([]string{"Name", "Value"})
+tw.WriteRow([]string{"Item", "123"})
+tw.Flush()
+
+// XML
+data, _ := output.MarshalXMLFromTableData(tableData)
+
+// YAML
+data, _ := output.MarshalYAML(projects)
+
+// Markdown table
+md := output.NewMarkdownTable()
+md.SetHeaders([]string{"Name", "Health"})
+md.AddRow([]string{"Alpha", "90%"})
+out, _ := md.Render()
+
+// Terminal table with lipgloss styling (requires go-output/table)
+tbl := table.New()
+tbl.SetHeaders("Name", "Health")
+tbl.AddRow("Alpha", "90%")
+out, _ := tbl.Render()
+```
+
+### Tree Formats
+
+```go
+tree := output.NewASCIITreeRenderer()
+
+root := output.NewTreeNode("root", "Projects")
+root.AddChild(output.NewTreeNode("alpha", "Alpha"))
+root.AddChild(output.NewTreeNode("beta", "Beta"))
+
+tree.SetRoot(root)
+out, _ := tree.Render()
+// Projects
+// ├── Alpha
+// └── Beta
+```
+
+### Graph Formats
+
+```go
+// DOT / Graphviz
+renderer := output.DOTFromTableData(data)
+out, _ := renderer.Render()
+
+// Mermaid flowchart
+renderer := output.MermaidFlowchartRenderer(data)
+out, _ := renderer.Render()
+
+// D2 diagrams (shapes, SQL tables, grid layouts, nested containers)
+d2 := output.NewD2Renderer("Architecture")
+d2.AddNode(output.D2Node{
+    ID:    output.NewBrandedID[output.D2NodeIDBrand]("api"),
+    Label: output.NewBrandedID[output.D2NodeLabelBrand]("API Gateway"),
+    Shape: output.D2ShapeHexagon,
+})
+out, _ := d2.Render()
+```
+
+## Format Categories
+
+Formats are classified into three categories for programmatic filtering:
+
+```go
 format, _ := output.ParseFormat("d2")
 fmt.Println(format.IsTableFormat()) // true (D2 supports SQL tables)
 fmt.Println(format.IsGraphFormat()) // true (D2 supports node-edge diagrams)
 fmt.Println(format.Category())      // graph (graph takes precedence)
 
-// Filter formats by category
 for _, f := range output.AllFormats {
     if f.IsTableFormat() {
         fmt.Println(f) // table, json, csv, tsv, xml, markdown, yaml, d2
@@ -71,64 +164,34 @@ for _, f := range output.AllFormats {
 }
 ```
 
-## Streaming Renderer
+## Installation
 
-For large datasets, use streaming output to minimize memory usage:
-
-```go
-// Streaming HTML output - writes incrementally
-renderer := output.NewStreamingHTMLRenderer()
-renderer.SetData(tableData)
-
-// Stream directly to stdout
-_ = renderer.Stream(os.Stdout)
-
-// Wrap any renderer for streaming interface compliance
-streamable := output.StreamingRendererFromRenderer(renderer)
-_ = streamable.Stream(writer)
+```bash
+go get github.com/larsartmann/go-output
 ```
 
-## Registry System
+For terminal table styling with lipgloss:
 
-Register custom renderers for extensibility:
-
-```go
-// Register a custom format
-err := output.Register(output.Format("custom"), func() output.Renderer {
-    return &myCustomRenderer{}
-})
-
-// Create renderer by format
-renderer, err := output.Create(output.FormatTable)
-
-// Check what's registered
-formats := output.RegisteredFormats()
-isRegistered := output.IsRegistered(output.FormatJSON)
+```bash
+go get github.com/larsartmann/go-output/table
 ```
 
 ## Branded IDs
 
-Type-safe identifiers prevent mixing different ID types:
+Type-safe identifiers prevent mixing different ID types at compile time:
 
 ```go
-// D2 diagram nodes
 nodeID := output.NewBrandedID[output.D2NodeIDBrand]("node-1")
-nodeLabel := output.NewBrandedID[output.D2NodeLabelBrand]("My Node")
-
-// Tree nodes
 treeID := output.NewBrandedID[output.TreeNodeIDBrand]("root")
-treeLabel := output.NewBrandedID[output.TreeNodeLabelBrand]("Root Node")
 
-// Graph nodes
-graphID := output.NewBrandedID[output.GraphNodeIDBrand]("vertex-a")
-graphLabel := output.NewBrandedID[output.GraphNodeLabelBrand]("Vertex A")
+// nodeID = treeID  // COMPILE ERROR: different branded types
+```
 
-// Generic branded ID
+Define your own branded types:
+
+```go
 type ProjectIDBrand struct{}
 projectID := output.NewBrandedID[ProjectIDBrand]("proj-123")
-
-// Type safety - these won't compile:
-// nodeID = treeID  // ERROR: cannot use treeID (type BrandedID[TreeNodeIDBrand]) as type BrandedID[D2NodeIDBrand]
 ```
 
 ## D2 Advanced Features
@@ -136,7 +199,6 @@ projectID := output.NewBrandedID[ProjectIDBrand]("proj-123")
 D2 diagrams support SQL tables, constraints, grid layouts, and nested containers:
 
 ```go
-// SQL table with constraints
 table := output.D2Table{
     Name: "users",
     Columns: []output.D2Column{
@@ -146,7 +208,6 @@ table := output.D2Table{
     },
 }
 
-// Node with grid layout
 node := output.D2Node{
     ID:          output.NewBrandedID[output.D2NodeIDBrand]("dashboard"),
     Label:       output.NewBrandedID[output.D2NodeLabelBrand]("Dashboard"),
@@ -154,72 +215,29 @@ node := output.D2Node{
     GridColumns: 2,
     GridGap:     8,
 }
-
-// Nested container
-nestedNode := output.D2Node{
-    ID:      output.NewBrandedID[output.D2NodeIDBrand]("container"),
-    Nested:  "inner.nested.node",
-}
 ```
 
-## Supported Formats
+## Registry System
 
-### Table Formats
-
-| Format     | Description                           | Package                            |
-| ---------- | ------------------------------------- | ---------------------------------- |
-| `table`    | Terminal tables with lipgloss styling | `github.com/larsartmann/go-output` |
-| `json`     | JSON output with indentation          | `github.com/larsartmann/go-output` |
-| `csv`      | CSV export with headers               | `github.com/larsartmann/go-output` |
-| `tsv`      | TSV (Tab-Separated Values) export     | `github.com/larsartmann/go-output` |
-| `xml`      | XML export with table structure       | `github.com/larsartmann/go-output` |
-| `markdown` | Markdown tables                       | `github.com/larsartmann/go-output` |
-| `yaml`     | YAML serialization                    | `github.com/larsartmann/go-output` |
-| `d2`       | D2 diagram shapes                     | `github.com/larsartmann/go-output` |
-
-### Tree Formats
-
-| Format | Description                         | Package                            |
-| ------ | ----------------------------------- | ---------------------------------- |
-| `tree` | ASCII tree with box-drawing chars   | `github.com/larsartmann/go-output` |
-| `html` | HTML tree with collapsible sections | `github.com/larsartmann/go-output` |
-
-### Graph Formats
-
-| Format    | Description                  | Package                            |
-| --------- | ---------------------------- | ---------------------------------- |
-| `d2`      | D2 diagram shapes            | `github.com/larsartmann/go-output` |
-| `mermaid` | Mermaid flowchart diagrams   | `github.com/larsartmann/go-output` |
-| `dot`     | DOT/Graphviz directed graphs | `github.com/larsartmann/go-output` |
-
-## Supported Sort Options
-
-| Option       | Description               |
-| ------------ | ------------------------- |
-| `name`       | Sort by name              |
-| `importance` | Sort by importance level  |
-| `created_at` | Sort by creation date     |
-| `updated_at` | Sort by last update       |
-| `health`     | Sort by health score      |
-| `complexity` | Sort by complexity metric |
+Register custom renderers for runtime dispatch:
 
 ```go
-import "github.com/larsartmann/go-output/sort"
+output.Register(output.Format("custom"), func() output.Renderer {
+    return &myCustomRenderer{}
+})
 
-type Project struct {
-    Name       string
-    Complexity int
-}
+renderer, _ := output.Create(output.FormatTable)
+formats := output.RegisteredFormats()
+```
 
-items := []Project{
-    {Name: "zebra", Complexity: 8},
-    {Name: "apple", Complexity: 3},
-}
+## Streaming Renderer
 
-// Sort by name using ByField for type-safe field comparison
-sort.New(items, output.SortByName, false).
-    WithLessFunc(sort.ByField(func(p Project) string { return p.Name })).
-    Sort()
+For large datasets, stream output incrementally:
+
+```go
+renderer := output.NewStreamingHTMLRenderer()
+renderer.SetData(tableData)
+_ = renderer.Stream(os.Stdout)
 ```
 
 ## Color Modes
@@ -235,30 +253,16 @@ sort.New(items, output.SortByName, false).
 All configuration types provide validation and string conversion:
 
 ```go
-// Parse with validation
 format, err := output.ParseFormat("json")
-if err != nil {
-    // handle error
-}
-
-// Check validity
 if format.IsValid() {
     fmt.Println(format.String()) // "json"
 }
-
-// Get allowed values for CLI help
 allowed := format.AllowedValues() // []string{"table", "json", "csv", ...}
 ```
 
 ## CLI Flag Integration
 
-The `cmdguard/` subpackage provides helper types compatible with [cmdguard](https://github.com/larsartmann/cmdguard) for type-safe flags. Add cmdguard separately to your project:
-
-```bash
-go get github.com/larsartmann/cmdguard/v2
-```
-
-Example with cmdguard:
+The `cmdguard/` subpackage provides types compatible with [cmdguard](https://github.com/larsartmann/cmdguard) for type-safe CLI flags:
 
 ```go
 import (
@@ -267,23 +271,34 @@ import (
 )
 
 type ListFlags struct {
-    Format output.OutputFormat `flag:"format" default:"table" help:"Output format (table, json, csv, tsv, xml, markdown, yaml, tree, html, d2, mermaid, dot)"`
-    SortBy output.SortBy       `flag:"sort-by" default:"name" help:"Sort by (name, importance, created_at, updated_at, health, complexity)"`
+    Format output.OutputFormat `flag:"format" default:"table" help:"Output format (table, json, csv, ...)"`
+    SortBy output.SortBy       `flag:"sort-by" default:"name" help:"Sort field"`
     Color  output.ColorMode    `flag:"color" default:"auto" help:"Color mode (auto, always, never)"`
 }
 ```
 
-Flags validate against allowed values and provide bash/zsh completion.
+## Escape Functions
 
-## Installation
+The `escape/` subpackage provides safe escaping for each format:
 
-```bash
-go get github.com/larsartmann/go-output
+```go
+import "github.com/larsartmann/go-output/escape"
+
+safe := escape.HTML("<script>alert('xss')</script>")
+safeID := escape.D2("my-node.with.dots")
 ```
+
+| Function           | Purpose                 |
+| ------------------ | ----------------------- |
+| `escape.HTML`      | HTML special characters |
+| `escape.XML`       | XML special characters  |
+| `escape.D2`        | D2 diagram identifiers  |
+| `escape.DOT`       | DOT graph identifiers   |
+| `escape.MermaidID` | Mermaid node IDs        |
 
 ## Dependencies
 
-Root module (zero lipgloss dependencies):
+Root module — zero lipgloss dependencies:
 
 ```go
 require (
@@ -292,7 +307,7 @@ require (
 )
 ```
 
-Terminal table module (install separately: `go get github.com/larsartmann/go-output/table`):
+Terminal table module (install separately):
 
 ```go
 require (
@@ -300,58 +315,24 @@ require (
 )
 ```
 
-## Escape Functions
+## Examples
 
-Safe escaping for various output formats:
+See [`examples/basic/main.go`](examples/basic/main.go) for a complete example demonstrating all 12 formats:
 
-| Function             | Purpose                 | Used By             |
-| -------------------- | ----------------------- | ------------------- |
-| `escape.HTML`        | HTML special characters | HTML, StreamingHTML |
-| `escape.XML`         | XML special characters  | XML                 |
-| `escape.D2`          | D2 diagram identifiers  | D2                  |
-| `escape.DOT`         | DOT graph identifiers   | DOT                 |
-| `escape.MermaidID`   | Mermaid node IDs        | Mermaid             |
-| `escape.MermaidSlug` | Mermaid text (URL-safe) | Mermaid             |
-| `escape.MermaidText` | Mermaid labels          | Mermaid             |
-
-```go
-import "github.com/larsartmann/go-output/escape"
-
-// Escape HTML content
-safe := escape.HTML("<script>alert('xss')</script>")
-// Result: "&lt;script&gt;alert(&#39;xss&#39;)&lt;/script&gt;"
-
-// Escape D2 node ID
-safeID := escape.D2("my-node.with.dots")
-// Result: "my-node.with.dots" (dots preserved for D2 nesting)
+```bash
+go run ./examples/basic/main.go markdown
 ```
 
 ## Development
 
 ```bash
-# Build
-just build
-
-# Test (includes benchmarks and fuzz tests)
-just test
-
-# Lint
-just lint
-
-# Full verification
-just verify
-
-# Run example
-go run ./examples/basic/main.go markdown
-
-# Pre-commit hooks (install once)
-pre-commit install
+go build ./...                  # Build all workspace modules
+go test ./...                   # Test all modules
+go test -race ./...             # Race detector
+go test -cover ./...            # Coverage report
+golangci-lint run --fix ./...   # Lint
 ```
-
-## Examples
-
-See [`examples/basic/main.go`](examples/basic/main.go) for a complete example demonstrating all formats.
 
 ## License
 
-See [LICENSE](LICENSE) file for details.
+[MIT](LICENSE)

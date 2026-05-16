@@ -34,6 +34,7 @@ var sortByValues = []SortBy{
 // ErrInvalidSortBy is returned when an invalid sort field is provided.
 var ErrInvalidSortBy = errors.New("invalid sort by")
 
+// ParseSortBy converts a string to SortBy, returning an error if invalid.
 func ParseSortBy(s string) (SortBy, error) {
 	v, err := enum.Parse(sortByValues, s, func(s SortBy) string { return string(s) })
 	if err != nil {
