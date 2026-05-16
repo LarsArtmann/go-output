@@ -8,10 +8,7 @@ A Go library that formats structured data (tables, trees, graphs) into 12 differ
 
 ## Purpose
 
-Standardizes output formatting across personal Go projects:
-
-- `/Users/larsartmann/projects/project-meta/`
-- `/Users/larsartmann/projects/projects-management-automation/`
+A unified output formatting library for Go CLI applications — write your data once, render it in any of 12 formats.
 
 ## Quick Start
 
@@ -286,11 +283,20 @@ go get github.com/larsartmann/go-output
 
 ## Dependencies
 
+Root module (zero lipgloss dependencies):
+
+```go
+require (
+    github.com/go-faster/yaml v0.4.6
+    golang.org/x/term v0.42.0
+)
+```
+
+Terminal table module (install separately: `go get github.com/larsartmann/go-output/table`):
+
 ```go
 require (
     charm.land/lipgloss/v2 v2.0.3
-    github.com/go-faster/yaml v0.4.6
-    golang.org/x/term v0.42.0
 )
 ```
 
