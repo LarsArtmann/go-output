@@ -122,7 +122,7 @@ func (r *HTMLRenderer) RenderFullHTML(title string) (string, error) {
 func renderHTMLWithStyles(r Renderer, title, styles, errContext string) (string, error) {
 	content, err := r.Render()
 	if err != nil {
-		return "", fmt.Errorf("%s: %w", errContext, err)
+		return "", fmt.Errorf("%s for title=%q styles=%q: %w", errContext, title, styles, err)
 	}
 
 	return renderFullHTMLDocument(title, styles, content), nil
