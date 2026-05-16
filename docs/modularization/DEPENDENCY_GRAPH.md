@@ -12,7 +12,7 @@
                                       │
                     ┌─────────────────▼───────────────────────────┐
                     │         root (package output)               │
-                    │         3,515 production LOC                │
+                    │         3,587 production LOC                │
                     │                                             │
                     │  Core: Format, Renderer, TableData,         │
                     │         TreeNode, GraphNode, GraphEdge      │
@@ -37,7 +37,7 @@
     │   table/       │     │ integration/ │     │   examples/   │
     │   92 LOC       │     │ tests only   │     │  examples     │
     │ →root, lipgloss│     │→root,sort,   │     │ →root, table  │
-    │               │     │  table       │     │               │
+    │               │     │  table       │     │ (go.mod buggy)│
     └───────────────┘     └──────────────┘     └───────────────┘
 
     ┌───────────────┐
@@ -73,7 +73,7 @@ Level 2 — Core module
 ━━━━━━━━━━━━━━━━━━━━━
     ┌─────────────────────────────────────────────┐
     │        root (package output)                │
-    │        ~2,130 production LOC                │
+    │        ~2,183 production LOC                │
     │                                             │
     │  External: go-faster/yaml, x/term,          │
     │            go-branded-id                     │
@@ -92,7 +92,7 @@ Level 3 — Format modules (depend on root core types)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     ┌──────────┐  ┌──────────┐  ┌───────────┐
     │   d2/     │  │  graph/   │  │  table/    │
-    │  815 LOC  │  │  566 LOC  │  │  92 LOC   │
+    │  833 LOC  │  │  568 LOC  │  │  92 LOC   │
     │→root,enum, │  │→root,enum, │  │→root,     │
     │  escape   │  │  escape   │  │  lipgloss  │
     └──────────┘  └──────────┘  └───────────┘
@@ -102,7 +102,7 @@ Level 5 — Consumers
     ┌───────────────┐  ┌──────────────┐  ┌──────────┐
     │ integration/   │  │  examples/   │  │ cmdguard/ │
     │→root,sort,     │  │ →root, table │  │ 53 LOC    │
-    │  table,d2,graph│  │              │  │ zero deps │
+    │  table,d2,graph│  │  d2, graph   │  │ zero deps │
     └───────────────┘  └──────────────┘  └──────────┘
 
     ┌──────────┐

@@ -7,13 +7,33 @@
 
 ## Overview
 
-Extract `d2/` and `graph/` as independent Go modules from the root `package output`. Four ordered steps, each independently committable and buildable.
+Extract `d2/` and `graph/` as independent Go modules from the root `package output`. Five ordered steps, each independently committable and buildable.
+
+---
+
+## Step 0: Fix Pre-Existing `examples/go.mod` Bug
+
+**Impact:** Prerequisite — `examples/go.mod` is missing the `table` dependency that `examples/basic/main.go` imports.
+
+**Effort:** 1 minute
+
+### Actions
+
+1. **Fix `examples/go.mod`**
+   ```bash
+   cd examples && go mod tidy
+   ```
+   This adds the missing `github.com/larsartmann/go-output/table` require and replace directives.
+
+### Verification
+- [ ] `cd examples && go build ./...` passes
+- [ ] `cd examples && go test ./...` passes (if examples have tests)
 
 ---
 
 ## Step 1: Extract D2 Module
 
-**Impact:** 1% → 51% — Removes the largest single concern (815 LOC) from root.
+**Impact:** 1% → 51% — Removes the largest single concern (833 LOC) from root.
 
 **Effort:** 20–30 minutes
 
@@ -31,9 +51,7 @@ Extract `d2/` and `graph/` as independent Go modules from the root `package outp
 
 3. **Move D2 test files**
    ```bash
-   git mv d2_test.go d2_node_test.go d2_enum_test.go d2_render_test.go d2_convert_test.go d2_edge_test.go userjourney_test.go d2/
-   ```
-   Note: `userjourney_test.go` uses `sort` and tests D2 user journeys. Verify it only tests D2 functionality.
+
 
 4. **Create `d2/go.mod`**
    ```
@@ -61,19 +79,26 @@ Extract `d2/` and `graph/` as independent Go modules from the root `package outp
    - `enum` stays as direct import
    - `escape` stays as direct import
 
-7. **Update `examples/shared/shared.go`**
-   - Change `output.NewD2Diagram()` → `d2.NewD2Diagram()`
-   - Add `d2` import to `examples/go.mod` and `examples/shared/`
+7. **Update examples**
+   - `examples/basic/main.go`: Change `output.NewD2Diagram()` → `d2.NewD2Diagram()`, update D2 type references
+   - `examples/d2/main.go`: Update all `output.D2*` references to `d2.*`
+   - `examples/shared/shared.go`: Change `output.NewD2Diagram()` → `d2.NewD2Diagram()`, update return type to `*d2.D2Diagram`
+   - Add `d2` to `examples/go.mod` require and replace blocks
 
-8. **Update `integration/go.mod`**
-   - Add replace directive for `d2`
+8. **Update integration tests**
+   - `integration/d2_test.go`: Change `output.NewD2Diagram()` → `d2.NewD2Diagram()`
+   - Update `integration/go.mod`: add `d2` to require and replace blocks
+   - Add `"github.com/larsartmann/go-output/d2"` import to affected files
 
-9. **Run in d2 directory:**
-   ```bash
-   cd d2 && go mod tidy && go build ./... && go test ./...
-   ```
+9. **Update `benchmarks_test.go`**
+   - No D2 benchmarks currently — skip for this step
 
-10. **Run workspace-wide:**
+10. **Run in d2 directory:**
+    ```bash
+    cd d2 && go mod tidy && go build ./... && go test ./...
+    ```
+
+11. **Run workspace-wide:**
     ```bash
     go build ./... && go test ./...
     ```
@@ -102,7 +127,7 @@ git revert HEAD
 
 ## Step 2: Extract Graph Module
 
-**Impact:** 4% → 64% — Removes graph rendering (DOT + Mermaid, 566 LOC) from root.
+**Impact:** 4% → 64% — Removes graph rendering (DOT + Mermaid, 568 LOC) from root.
 
 **Effort:** 20–30 minutes
 
@@ -117,12 +142,12 @@ git revert HEAD
    ```bash
    git mv dot.go mermaid.go graph/
    ```
-   Note: `graph.go` is SPLIT — types stay in root, only `GraphRendererMixin` and renderer-specific code moves.
+   Note: `graph.go` stays entirely in root — it contains only core types (`GraphNode`, `GraphEdge`, `GraphRenderer` interface) and utility functions. `GraphRendererMixin` is in `dot.go`, so it moves with `dot.go` to `graph/`.
 
-3. **Split `graph.go`:**
-   - **Stay in root:** `GraphRenderer` interface, `GraphNode`, `GraphEdge`, `GraphShape`, `GraphStyle`, `NewGraphNode`, `NewGraphEdge`, `EdgeStyle`, `GraphNodeLabelFunc`, `DefaultGraphNodeLabel`, `TreeNodeIDFunc`, `AddTreeNodes`, `NodesFromTableData`
-   - **Move to `graph/`:** `GraphRendererMixin`, `NewGraphRendererMixin`
-   - Create `graph/mixin.go` with the moved mixin code
+3. **Extract `GraphRendererMixin` from `dot.go` (optional)**
+   - `GraphRendererMixin` is currently at `dot.go:21` and moves with `dot.go` to `graph/`
+   - Optionally extract into `graph/mixin.go` for organization — not required, purely cosmetic
+   - No changes to `graph.go` needed — it stays in root as-is
 
 4. **Move graph test files**
    ```bash
@@ -151,27 +176,36 @@ git revert HEAD
 6. **Rename package** in moved files: `package output` → `package graph`
 
 7. **Update imports in moved files:**
-   - Root types: `output.GraphNode`, `output.GraphEdge`, `output.TableData`, `output.TreeNode`, `output.NewBrandedID`, `output.GraphRenderer`, `output.Renderer`, `output.AddTreeNodes`, `output.NodesFromTableData`, `output.DefaultGraphNodeLabel`, `output.GraphShape`, `output.GraphStyle`, `output.GraphNodeIDBrand`, `output.GraphNodeLabelBrand`, `output.TreeNodeID`, `output.TreeNodeLabelBrand`
-   - DOT convenience constructors (`DOTFlowchartRenderer`, `DOTTreeRenderer`) move to `graph/`
-   - Mermaid convenience constructors (`MermaidFlowchartRenderer`, `MermaidTreeRenderer`) move to `graph/`
+   - Root types: `output.GraphNode`, `output.GraphEdge`, `output.TableData`, `output.TreeNode`, `output.NewBrandedID`, `output.GraphRenderer`, `output.Renderer`, `output.GraphShape`, `output.GraphStyle`, `output.GraphNodeIDBrand`, `output.GraphNodeLabelBrand`, `output.TreeNodeID`, `output.TreeNodeLabelBrand`
+   - DOT convenience constructors that move: `NewDOTRenderer`, `NewUndirectedDOTRenderer`, `DOTFromTableData`, `DOTFromTree`
+   - Mermaid convenience constructors that move: `NewMermaidRenderer`, `MermaidFlowchartRenderer`, `MermaidTreeRenderer`
 
 8. **Split `output_test_helpers.go`:**
    - **Move to `graph/`:** `testDOTEmptyExpected`, `testMermaidEmptyExpected`, `testNodesAB`, `testNodesABC`, `newTestNode`, `newTestNodeWithShape`, `testEdgeAB`, `testEdgesAB`, `testEdgesABC`
    - **Stay in root:** `testHTMLEscapeShared`, `testEmptyRendererOutput`, `testSanitizeFunc`, `AssertTreeNodeDepth`, `testExpectedOutputs`, `testHTMLEmptyExpected`, gentest re-exports
 
-9. **Update `examples/basic/main.go`**
-   - Change `output.MermaidFlowchartRenderer()` → `graph.MermaidFlowchartRenderer()`
-   - Update `examples/go.mod` with graph replace directive
+9. **Update `benchmarks_test.go`**
+   - Change `NewMermaidRenderer()` → `graph.NewMermaidRenderer()`
+   - Change `NewDOTRenderer()` → `graph.NewDOTRenderer()`
+   - Add `\"github.com/larsartmann/go-output/graph\"` import
 
-10. **Update `integration/go.mod`**
-    - Add replace directive for `graph`
+10. **Update `examples/basic/main.go`**
+    - Change `output.MermaidFlowchartRenderer()` → `graph.MermaidFlowchartRenderer()`
+    - Change `output.DOTFromTableData()` → `graph.DOTFromTableData()`
+    - Update `examples/go.mod` with `graph` (and `d2`) replace directives
 
-11. **Run in graph directory:**
+11. **Update integration tests**
+    - `integration/renderer_test.go`: Change `output.MermaidFlowchartRenderer` → `graph.MermaidFlowchartRenderer`, `output.DOTFromTableData` → `graph.DOTFromTableData`
+    - `integration/integration_test.go`: Same updates for DOT/Mermaid calls
+    - Update `integration/go.mod`: add `graph` to require and replace blocks
+    - Add `\"github.com/larsartmann/go-output/graph\"` import to affected files
+
+12. **Run in graph directory:**
     ```bash
     cd graph && go mod tidy && go build ./... && go test ./...
     ```
 
-12. **Run workspace-wide:**
+13. **Run workspace-wide:**
     ```bash
     go build ./... && go test ./...
     ```
@@ -201,9 +235,8 @@ git revert HEAD
 
 ### Actions
 
-1. **Check if `userjourney_test.go` moved to d2/** (Step 1 may have moved it)
-   - If still in root: its `sort` import is test-only
-   - If moved to d2/: d2's go.mod may need sort as test dep
+1. **`userjourney_test.go` stays in root** (not moved in Step 1 — it tests JSON/CSV/Markdown/YAML/sort, not D2)
+   - Its `sort` import is test-only
 
 2. **Remove sort from root's production go.mod**
    - Currently listed as: `github.com/larsartmann/go-output/sort v0.0.0-20260507215750-c2091663ee59`
@@ -248,7 +281,11 @@ git revert HEAD
    - Note that DOT/Mermaid are now in `graph/` module
    - Core types remain in root
 
-3. **Verify `README.md`** (if it mentions module structure)
+3. **Update `README.md`**
+   - Change `output.NewD2Diagram()` → `d2.NewD2Diagram()` (and all `output.D2*` types)
+   - Change `output.DOTFromTableData()` → `graph.DOTFromTableData()`
+   - Change `output.MermaidFlowchartRenderer()` → `graph.MermaidFlowchartRenderer()`
+   - Add `d2` and `graph` import examples
 
 ### Verification
 - [ ] AGENTS.md reflects 10-module workspace (root + enum + escape + cmdguard + sort + table + integration + examples + **d2** + **graph**)
