@@ -381,3 +381,88 @@ func TestAllShapes(t *testing.T) {
 		}
 	}
 }
+
+func TestParseShape(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		input string
+		want  Shape
+		err   bool
+	}{
+		{"table", ShapeTable, false},
+		{"tree", ShapeTree, false},
+		{"graph", ShapeGraph, false},
+		{"invalid", "", true},
+		{"", "", true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.input, func(t *testing.T) {
+			t.Parallel()
+
+			got, err := ParseShape(tt.input)
+			if tt.err {
+				if err == nil {
+					t.Errorf("ParseShape(%q) expected error, got nil", tt.input)
+				}
+
+				return
+			}
+
+			if err != nil {
+				t.Errorf("ParseShape(%q) unexpected error: %v", tt.input, err)
+
+				return
+			}
+
+			if got != tt.want {
+				t.Errorf("ParseShape(%q) = %v, want %v", tt.input, got, tt.want)
+			}
+		})
+	}
+}
+
+func TestShapeIsValid(t *testing.T) {
+	t.Parallel()
+
+	gentest.TestEnumIsValid(t, []Shape{
+		ShapeTable,
+		ShapeTree,
+		ShapeGraph,
+	}, []bool{true, true, true})
+}
+
+func TestShapeAllowedValues(t *testing.T) {
+	t.Parallel()
+
+	got := ShapeTable.AllowedValues()
+	want := []string{"table", "tree", "graph"}
+
+	if len(got) != len(want) {
+		t.Errorf("Shape.AllowedValues() length = %d, want %d", len(got), len(want))
+
+		return
+	}
+
+	for i, v := range got {
+		if v != want[i] {
+			t.Errorf("Shape.AllowedValues()[%d] = %q, want %q", i, v, want[i])
+		}
+	}
+}
+
+func TestShapeString(t *testing.T) {
+	t.Parallel()
+
+	if ShapeTable.String() != "table" {
+		t.Errorf("ShapeTable.String() = %q, want %q", ShapeTable.String(), "table")
+	}
+
+	if ShapeTree.String() != "tree" {
+		t.Errorf("ShapeTree.String() = %q, want %q", ShapeTree.String(), "tree")
+	}
+
+	if ShapeGraph.String() != "graph" {
+		t.Errorf("ShapeGraph.String() = %q, want %q", ShapeGraph.String(), "graph")
+	}
+}

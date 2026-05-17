@@ -1,6 +1,7 @@
 package output
 
 import (
+	"errors"
 	"fmt"
 	"slices"
 	"strings"
@@ -86,6 +87,39 @@ var AllShapes = []Shape{
 	ShapeTable,
 	ShapeTree,
 	ShapeGraph,
+}
+
+// String returns the string representation of the data shape.
+func (s Shape) String() string {
+	return string(s)
+}
+
+// IsValid returns true if the shape is a valid Shape value.
+func (s Shape) IsValid() bool {
+	return enum.Contains(AllShapes, s)
+}
+
+// AllowedValues returns all valid data shape values for CLI help text.
+func (s Shape) AllowedValues() []string {
+	return enum.AllowedValues(AllShapes)
+}
+
+// ErrInvalidShape is returned when an invalid data shape is provided.
+var ErrInvalidShape = errors.New("invalid shape")
+
+// ParseShape converts a string to Shape, returning an error if invalid.
+func ParseShape(s string) (Shape, error) {
+	v, err := enum.Parse(AllShapes, s, func(sh Shape) string { return string(sh) })
+	if err != nil {
+		return "", fmt.Errorf(
+			"%w: %q (allowed: %s)",
+			ErrInvalidShape,
+			s,
+			enum.AllowedValues(AllShapes),
+		)
+	}
+
+	return v, nil
 }
 
 // formatCapabilities maps each format to the data shapes it supports.
