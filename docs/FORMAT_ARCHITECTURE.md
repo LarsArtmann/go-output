@@ -10,20 +10,20 @@ Formats are classified by the data shapes they support. Each format may support 
 
 ### Shape Capability Matrix
 
-| Format | ShapeTable | ShapeTree | ShapeGraph |
-| ------ | :--------: | :-------: | :--------: |
-| table  | Y          |           |            |
-| json   | Y          | Y         | Y          |
-| csv    | Y          |           |            |
-| tsv    | Y          |           |            |
-| xml    | Y          |           |            |
-| markdown | Y        |           |            |
-| yaml   | Y          | Y         | Y          |
-| html   | Y          | Y         |            |
-| tree   |            | Y         |            |
-| d2     | Y          |           | Y          |
-| mermaid | Y         |           | Y          |
-| dot    | Y          |           | Y          |
+| Format   | ShapeTable | ShapeTree | ShapeGraph |
+| -------- | :--------: | :-------: | :--------: |
+| table    |     Y      |           |            |
+| json     |     Y      |     Y     |     Y      |
+| csv      |     Y      |           |            |
+| tsv      |     Y      |           |            |
+| xml      |     Y      |           |            |
+| markdown |     Y      |           |            |
+| yaml     |     Y      |     Y     |     Y      |
+| html     |     Y      |     Y     |            |
+| tree     |            |     Y     |            |
+| d2       |     Y      |           |     Y      |
+| mermaid  |     Y      |           |     Y      |
+| dot      |     Y      |           |     Y      |
 
 ### Querying Capabilities
 

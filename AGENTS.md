@@ -26,17 +26,17 @@ https://github.com/larsartmann/go-output
 
 This project uses Go workspace modules. Each sub-package with its own `go.mod` is an independent module:
 
-| Module                  | go.mod | Deps                                   | Notes                                   |
-| ----------------------- | ------ | -------------------------------------- | --------------------------------------- |
+| Module                  | go.mod | Deps                                                | Notes                                   |
+| ----------------------- | ------ | --------------------------------------------------- | --------------------------------------- |
 | Root (`package output`) | ✅     | enum, escape, yaml, x/term, branded-id, testhelpers | Core types + formatters                 |
-| `enum/`                 | ✅     | testhelpers (tests only)               | Generic enum utilities                  |
-| `escape/`               | ✅     | None                                   | Format-specific escaping                |
-| `testhelpers/`          | ✅     | None                                   | Shared test assertions (non-internal)   |
-| `cmdguard/`             | ✅     | root (tests only), testhelpers (tests) | CLI flag parsing (prod standalone)      |
-| `table/`                | ✅     | root, lipgloss                         | **Lipgloss isolated from root**         |
-| `sort/`                 | ✅     | None                                   | **Deprecated** — only `ByField` remains |
-| `integration/`          | ✅     | root, table                            | Cross-module tests                      |
-| `examples/`             | ✅     | root, table                            | Usage examples                          |
+| `enum/`                 | ✅     | testhelpers (tests only)                            | Generic enum utilities                  |
+| `escape/`               | ✅     | None                                                | Format-specific escaping                |
+| `testhelpers/`          | ✅     | None                                                | Shared test assertions (non-internal)   |
+| `cmdguard/`             | ✅     | root (tests only), testhelpers (tests)              | CLI flag parsing (prod standalone)      |
+| `table/`                | ✅     | root, lipgloss                                      | **Lipgloss isolated from root**         |
+| `sort/`                 | ✅     | None                                                | **Deprecated** — only `ByField` remains |
+| `integration/`          | ✅     | root, table                                         | Cross-module tests                      |
+| `examples/`             | ✅     | root, table                                         | Usage examples                          |
 
 `go.work` is gitignored (local dev only). Each module uses `replace` directives for standalone development.
 

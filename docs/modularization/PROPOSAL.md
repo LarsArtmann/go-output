@@ -66,16 +66,16 @@ This proposal extracts the remaining natural module boundaries while preserving 
 
 ### 2.1 Existing Module Landscape
 
-| Module                  | Path             | Internal Deps               | External Deps                         | Replace Directives | State                                              |
-| ----------------------- | ---------------- | --------------------------- | ------------------------------------- | ------------------ | -------------------------------------------------- |
-| Root (`package output`) | `./`             | enum, escape, sort          | go-faster/yaml, x/term, go-branded-id | 5 replace          | **Leaky** — sort is test-only dep listed as prod   |
-| `enum/`                 | `./enum/`        | None                        | None                                  | None               | Clean                                              |
-| `escape/`               | `./escape/`      | None                        | None                                  | None               | Clean                                              |
-| `cmdguard/`             | `./cmdguard/`    | None (tests: root, gentest) | None                                  | None               | Clean                                              |
-| `sort/`                 | `./sort/`        | root                        | None                                  | 2 replace          | Deprecated                                         |
-| `table/`                | `./table/`       | root                        | lipgloss/v2                           | 3 replace          | Clean                                              |
-| `integration/`          | `./integration/` | root, sort, table           | None (transitive)                     | 5 replace          | Clean                                              |
-| `examples/`             | `./examples/`    | root, table                 | lipgloss (transitive)                 | 4 replace          | Clean                                              |
+| Module                  | Path             | Internal Deps               | External Deps                         | Replace Directives | State                                            |
+| ----------------------- | ---------------- | --------------------------- | ------------------------------------- | ------------------ | ------------------------------------------------ |
+| Root (`package output`) | `./`             | enum, escape, sort          | go-faster/yaml, x/term, go-branded-id | 5 replace          | **Leaky** — sort is test-only dep listed as prod |
+| `enum/`                 | `./enum/`        | None                        | None                                  | None               | Clean                                            |
+| `escape/`               | `./escape/`      | None                        | None                                  | None               | Clean                                            |
+| `cmdguard/`             | `./cmdguard/`    | None (tests: root, gentest) | None                                  | None               | Clean                                            |
+| `sort/`                 | `./sort/`        | root                        | None                                  | 2 replace          | Deprecated                                       |
+| `table/`                | `./table/`       | root                        | lipgloss/v2                           | 3 replace          | Clean                                            |
+| `integration/`          | `./integration/` | root, sort, table           | None (transitive)                     | 5 replace          | Clean                                            |
+| `examples/`             | `./examples/`    | root, table                 | lipgloss (transitive)                 | 4 replace          | Clean                                            |
 
 ### 2.2 Root Module Concern Clusters
 
