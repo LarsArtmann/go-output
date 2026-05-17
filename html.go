@@ -19,35 +19,6 @@ type HTMLRenderer struct {
 	tableDataBase
 }
 
-// tableDataBase provides common table data storage for renderers.
-type tableDataBase struct {
-	data *TableData
-}
-
-// ensureData initializes data if nil.
-func (b *tableDataBase) ensureData() {
-	if b.data == nil {
-		b.data = &TableData{}
-	}
-}
-
-// SetHeaders sets the column headers.
-func (b *tableDataBase) SetHeaders(headers []string) {
-	b.ensureData()
-	b.data.Headers = headers
-}
-
-// AddRow adds a data row.
-func (b *tableDataBase) AddRow(row []string) {
-	b.ensureData()
-	b.data.Rows = append(b.data.Rows, row)
-}
-
-// SetData sets the table data directly.
-func (b *tableDataBase) SetData(data *TableData) {
-	b.data = data
-}
-
 // NewHTMLRenderer creates a new HTMLRenderer.
 func NewHTMLRenderer() *HTMLRenderer {
 	return &HTMLRenderer{}
