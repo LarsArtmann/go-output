@@ -6,6 +6,12 @@ import (
 	"io"
 )
 
+// Compile-time interface checks.
+var (
+	_ Renderer      = (*JSONTableRenderer)(nil)
+	_ TableRenderer = (*JSONTableRenderer)(nil)
+)
+
 // MarshalJSON encodes v to JSON.
 func MarshalJSON(v any) ([]byte, error) {
 	return marshal("json", json.Marshal, v)
@@ -37,4 +43,31 @@ func (j *JSONWriter) Encode(v any) error {
 	}
 
 	return nil
+}
+
+// JSONTableRenderer renders TableData as a JSON array of objects.
+// Each row becomes a JSON object with headers as keys.
+type JSONTableRenderer struct {
+	tableDataBase
+}
+
+// NewJSONTableRenderer creates a new JSONTableRenderer.
+func NewJSONTableRenderer() *JSONTableRenderer {
+	return &JSONTableRenderer{}
+}
+
+// Render returns the table data as a JSON string.
+func (r *JSONTableRenderer) Render() (string, error) {
+	if r.data == nil || len(r.data.Headers) == 0 {
+		return "[]", nil
+	}
+
+	rows := r.data.ToMapSlice()
+
+	data, err := json.MarshalIndent(rows, "", "  ")
+	if err != nil {
+		return "", fmt.Errorf("marshal json table (%d rows): %w", len(rows), err)
+	}
+
+	return string(data), nil
 }

@@ -1,6 +1,7 @@
 package output
 
 import (
+	"strings"
 	"testing"
 )
 
@@ -75,6 +76,76 @@ func TestUnmarshalYAML(t *testing.T) {
 	for _, tt := range tests {
 		testUnmarshalError(t, tt.name, tt.data, tt.wantErr, UnmarshalYAML, "UnmarshalYAML")
 	}
+}
+
+func TestYAMLTableRenderer(t *testing.T) {
+	t.Parallel()
+
+	t.Run("renders table as YAML sequence", func(t *testing.T) {
+		t.Parallel()
+
+		r := NewYAMLTableRenderer()
+		r.SetHeaders([]string{"Name", "Age"})
+		r.AddRow([]string{"Alice", "30"})
+		r.AddRow([]string{"Bob", "25"})
+
+		got, err := r.Render()
+		if err != nil {
+			t.Fatalf("Render() error = %v", err)
+		}
+
+		if !strings.Contains(got, "Name: Alice") {
+			t.Errorf("Render() = %q, want Alice row", got)
+		}
+
+		if !strings.Contains(got, "Age: \"25\"") {
+			t.Errorf("Render() = %q, want Age 25 row", got)
+		}
+	})
+
+	t.Run("nil data returns empty array", func(t *testing.T) {
+		t.Parallel()
+
+		r := NewYAMLTableRenderer()
+
+		got, err := r.Render()
+		if err != nil {
+			t.Fatalf("Render() error = %v", err)
+		}
+
+		if got != "[]\n" {
+			t.Errorf("Render() = %q, want []\\n", got)
+		}
+	})
+
+	t.Run("no headers returns empty array", func(t *testing.T) {
+		t.Parallel()
+
+		r := NewYAMLTableRenderer()
+		r.AddRow([]string{"a"})
+
+		got, err := r.Render()
+		if err != nil {
+			t.Fatalf("Render() error = %v", err)
+		}
+
+		if got != "[]\n" {
+			t.Errorf("Render() = %q, want []\\n", got)
+		}
+	})
+
+	t.Run("must render helper", func(t *testing.T) {
+		t.Parallel()
+
+		r := NewYAMLTableRenderer()
+		r.SetHeaders([]string{"X"})
+		r.AddRow([]string{"1"})
+
+		got := MustRender(r)
+		if !strings.Contains(got, "X: \"1\"") {
+			t.Errorf("MustRender() = %q, want X=1", got)
+		}
+	})
 }
 
 func BenchmarkMarshalYAML(b *testing.B) {

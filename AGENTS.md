@@ -2,9 +2,9 @@
 
 ## Project Overview
 
-A reusable Go library for CLI applications providing consistent output formatting across 12 formats (Table, JSON, CSV, TSV, Markdown, XML, YAML, HTML, Tree, D2, Mermaid, DOT) with type-safe enum-based configuration.
+A reusable Go library for CLI applications providing consistent output formatting across 12 formats (Table, JSON, CSV, TSV, Markdown, XML, YAML, HTML, Tree, D2, Mermaid, DOT) with type-safe enum-based configuration and a Shape capability matrix.
 
-**Updated:** 2026-05-07
+**Updated:** 2026-05-17
 
 ## Location
 
@@ -20,6 +20,7 @@ https://github.com/larsartmann/go-output
 - charm.land/lipgloss/v2 (terminal styling — **in table/ module only, not root**)
 - github.com/go-faster/yaml (YAML support)
 - golang.org/x/term (terminal detection)
+- github.com/larsartmann/go-branded-id (phantom types for type-safe IDs)
 
 ## Multi-Module Workspace
 
@@ -27,45 +28,62 @@ This project uses Go workspace modules. Each sub-package with its own `go.mod` i
 
 | Module                  | go.mod | Deps                       | Notes                           |
 | ----------------------- | ------ | -------------------------- | ------------------------------- |
-| Root (`package output`) | ✅     | enum, escape, yaml, x/term | Core types + formatters         |
+| Root (`package output`) | ✅     | enum, escape, yaml, x/term, branded-id | Core types + formatters |
 | `enum/`                 | ✅     | None                       | Generic enum utilities          |
 | `escape/`               | ✅     | None                       | Format-specific escaping        |
-| `cmdguard/`             | ✅     | None                       | CLI flag parsing                |
+| `cmdguard/`             | ✅     | root (tests only)          | CLI flag parsing (prod standalone) |
 | `table/`                | ✅     | root, lipgloss             | **Lipgloss isolated from root** |
-| `sort/`                 | ✅     | root                       | **Deprecated** — use stdlib     |
-| `integration/`          | ✅     | root, sort, table          | Cross-module tests              |
+| `sort/`                 | ✅     | None                       | **Deprecated** — only `ByField` remains |
+| `integration/`          | ✅     | root, table                | Cross-module tests              |
 | `examples/`             | ✅     | root, table                | Usage examples                  |
 
 `go.work` is gitignored (local dev only). Each module uses `replace` directives for standalone development.
 
 **Key benefit:** `go get github.com/larsartmann/go-output` pulls ZERO lipgloss deps. Users who need terminal tables import `go-output/table` explicitly.
 
+### Dependency Graph
+
+```
+root (output) → enum, escape, yaml, x/term, go-branded-id
+enum          → (none)
+escape        → (none)
+sort          → (none) — zero deps, only ByField helper
+cmdguard      → root (tests only; prod code is standalone)
+table         → root, lipgloss/v2
+integration   → root, table
+examples      → root, table
+```
+
+**No circular dependencies.** The sort/ → root cycle was eliminated in v0.4.0 by removing `Sorter[T]`.
+
 ## Project Structure
 
 ```
 go-output/                    # Root module (package output) — types, interfaces, formatters
-├── format.go                 # Format enum + Renderer/TableData/TreeNode types
-├── format_deprecated.go      # OutputFormat backward compat aliases
+├── format.go                 # Format enum, Shape enum, capability matrix, Renderer/TableRenderer interfaces
+├── format_deprecated.go      # FormatCategory/OutputFormat backward compat (deprecated)
 ├── sort.go                   # SortBy enum
 ├── color.go                  # ColorMode enum + terminal detection
 ├── ids.go                    # BrandedID phantom types
 ├── registry.go               # Opt-in renderer registry
 ├── slices.go                 # FilledStrings utility
+├── tabledata.go              # TableData, RowEdge, tableDataBase (extracted from format.go/html.go)
+├── tree.go                   # TreeNode, TreeOutputRenderer (extracted from format.go)
 ├── json.go, csv.go, tsv.go, yaml.go, xml.go, markdown.go
-├── html.go, tree.go, streaming.go
-├── graph.go                  # GraphNode, GraphEdge, GraphRenderer, AddTreeNodes, GraphRendererMixin
+├── html.go, streaming.go
+├── graph.go                  # GraphNode, GraphEdge, GraphRenderer, GraphRendererMixin, AddTreeNodes
 ├── dot.go                    # DOT/Graphviz renderer
 ├── mermaid.go                # Mermaid diagram renderer
 ├── delimited.go, markup.go, marshal.go
 ├── d2.go, d2_enum.go, d2_render.go, d2_write.go, d2_convert.go
-├── internal/gentest/         # Generic test helpers
+├── internal/gentest/         # Generic test helpers (root module only, not importable by sub-modules)
 ├── internal/testutils/       # Domain-aware test helpers
 │
 ├── enum/                     # MODULE: Generic enum utilities (zero deps)
 ├── escape/                   # MODULE: Format-specific escaping (zero deps)
-├── cmdguard/                 # MODULE: CLI flag parsing (zero deps)
+├── cmdguard/                 # MODULE: CLI flag parsing (prod standalone, tests import root)
 ├── table/                    # MODULE: Lipgloss terminal tables (lipgloss isolated)
-├── sort/                     # MODULE: Generic sorting (DEPRECATED — use stdlib)
+├── sort/                     # MODULE: Deprecated — only ByField helper remains (zero deps)
 ├── integration/              # MODULE: Cross-module integration tests
 └── examples/                 # MODULE: Usage examples
 ```
@@ -73,13 +91,35 @@ go-output/                    # Root module (package output) — types, interfac
 ## Build Commands
 
 ```bash
-go build ./...                  # Build all workspace modules
-go test ./...                   # Test all workspace modules
-golangci-lint run --fix ./...   # Lint all modules
-go mod tidy                     # Tidy root module (run in each submodule too)
+go build ./...                  # Build root module
+go test ./...                   # Test root module
+golangci-lint run ./...         # Lint root module
+go mod tidy                     # Tidy root module
+
+# Per-module (required since go.work is gitignored)
+for mod in . enum escape sort cmdguard table integration; do
+  (cd $mod && go test ./...)
+done
 ```
 
-**Note:** `go.work` is gitignored. Run from project root to use workspace mode.
+**Note:** `go.work` is gitignored. Run per-module commands or create a local `go.work`:
+
+```bash
+cat > go.work << 'EOF'
+go 1.26.2
+
+use (
+  .
+  ./enum
+  ./escape
+  ./cmdguard
+  ./sort
+  ./table
+  ./integration
+  ./examples
+)
+EOF
+```
 
 ## Code Quality Standards
 
@@ -89,6 +129,7 @@ go mod tidy                     # Tidy root module (run in each submodule too)
 - File size limit: 350 lines per file
 - No code duplication (threshold: 30 tokens)
 - Each module's `go.mod` must have `replace` directives for sibling deps
+- Sub-modules must NOT import `internal/` packages from root (Go restriction)
 
 ## Current Coverage
 
@@ -104,7 +145,7 @@ go mod tidy                     # Tidy root module (run in each submodule too)
 ## Testing
 
 ```bash
-go test ./...              # Unit tests
+go test ./...              # Unit tests (root module)
 go test -race ./...        # Race detector
 go test -cover ./...       # Coverage
 go test -bench=. -benchmem ./...  # Benchmarks
@@ -112,12 +153,12 @@ go test -bench=. -benchmem ./...  # Benchmarks
 
 ## Key Design Patterns
 
-1. **Type-safe enums**: String constants with Parse/Validate via `enum` package
-2. **Branded IDs**: Phantom types prevent mixing D2NodeID/TreeNodeID/etc
-3. **Interface-based design**: Renderer, GraphRenderer, TableRenderer interfaces — `Render() (string, error)`. Use `MustRender(r)` helper for tests/examples.
-4. **Composition**: GraphRendererMixin in graph.go shared by DOT/Mermaid, tableDataBase in tabledata.go shared by HTML/Streaming
-5. **Registry is opt-in**: Use constructors directly by default. Register/Create for runtime dispatch.
-6. **Shape capability matrix**: Each format declares supported data shapes (ShapeTable/ShapeTree/ShapeGraph) via `formatCapabilities` map. Use `f.Supports(shape)` instead of deprecated `f.Is*Format()` methods.
+1. **Type-safe enums**: String constants with Parse/Validate via `enum` package. Every enum has `Parse()`, `String()`, `IsValid()`, `AllowedValues()`.
+2. **Shape capability matrix**: Each format declares supported data shapes via `formatCapabilities` map[Format][]Shape. Use `f.Supports(shape)` to query.
+3. **Branded IDs**: Phantom types prevent mixing D2NodeID/TreeNodeID/etc via `go-branded-id`.
+4. **Interface-based design**: Renderer, GraphRenderer, TableRenderer, TreeOutputRenderer interfaces — all have `Render() (string, error)`. Use `MustRender(r)` for tests/examples.
+5. **Composition**: GraphRendererMixin in graph.go shared by DOT/Mermaid, tableDataBase in tabledata.go shared by HTML/Streaming.
+6. **Registry is opt-in**: Use constructors directly by default. Register/Create for runtime dispatch.
 
 ## Common Tasks
 
@@ -128,7 +169,7 @@ go test -bench=. -benchmem ./...  # Benchmarks
 3. Implement formatter — embed Renderer interface
 4. Add tests with >90% coverage
 5. Update cmdguard if needed (EnumFlag already generic)
-6. Update README.md with capability matrix entry
+6. Update CHANGELOG.md and README.md
 
 ### Adding a New D2 Enum
 
@@ -140,10 +181,12 @@ go test -bench=. -benchmem ./...  # Benchmarks
 
 - D2 has richer types than generic graph (shapes, arrows, SQL tables, classes) — intentional split
 - Tree conversion has renderer-specific addTreeNodes in d2_convert, dot, mermaid — the generic AddTreeNodes in graph.go handles the common case
-- Depguard config restricts imports — `cmp` is allowed for sort.ByField
+- Depguard config restricts imports
 - escape/ uses `html.EscapeString()` from stdlib for HTML, with `strings.ReplaceAll` for XML `&apos;`
-- sort/ is **deprecated** — use `slices.SortStableFunc` + `cmp.Compare` (stdlib, Go 1.21+)
+- sort/ is **deprecated** — `Sorter[T]` deleted, only `ByField` helper remains (zero deps). Use `slices.SortStableFunc` + `cmp.Compare` (stdlib)
 - SortBy enum kept in root — used by cmdguard tests as example enum type
 - Multi-module workspace with 7 independent modules (see ADR 001)
-- GraphRendererMixin now in graph.go (was in dot.go, moved for correct placement)
-- Shape capability matrix (ADR 002) replaces FormatCategory — `IsTableFormat()`/`IsTreeFormat()`/`IsGraphFormat()`/`Category()` are deprecated, use `Supports(Shape)` instead
+- GraphRendererMixin in `graph.go` — shared by DOT and Mermaid renderers
+- Shape capability matrix (ADR 002) replaces FormatCategory — deprecated methods redirect to `Supports(Shape)`
+- `internal/gentest` and `internal/testutils` are root-only — sub-modules must inline helpers or create their own
+- cmdguard prod code (`flag.go`) has zero external deps — only tests import root

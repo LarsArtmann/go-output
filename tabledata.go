@@ -43,6 +43,30 @@ func (d *TableData) GetRows() [][]string {
 	return d.Rows
 }
 
+// ToMapSlice converts TableData to a slice of maps (header→cell).
+// Returns nil if data is nil or has no headers.
+func (d *TableData) ToMapSlice() []map[string]string {
+	if d == nil || len(d.Headers) == 0 {
+		return nil
+	}
+
+	result := make([]map[string]string, 0, len(d.Rows))
+
+	for _, row := range d.Rows {
+		m := make(map[string]string, len(d.Headers))
+
+		for i, header := range d.Headers {
+			if i < len(row) {
+				m[header] = row[i]
+			}
+		}
+
+		result = append(result, m)
+	}
+
+	return result
+}
+
 // RowEdge represents a directed edge between two row identifiers.
 type RowEdge struct {
 	From string

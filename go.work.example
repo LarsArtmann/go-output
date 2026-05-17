@@ -1,0 +1,12 @@
+go 1.26.2
+
+use (
+	.
+	./enum
+	./escape
+	./cmdguard
+	./sort
+	./table
+	./integration
+	./examples
+)

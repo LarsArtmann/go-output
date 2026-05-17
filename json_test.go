@@ -2,6 +2,7 @@ package output
 
 import (
 	"bytes"
+	"strings"
 	"testing"
 	"time"
 )
@@ -153,6 +154,97 @@ func TestNewJSONWriter(t *testing.T) {
 
 	if w.Writer != &buf {
 		t.Error("NewJSONWriter() did not set Writer correctly")
+	}
+}
+
+func TestJSONTableRenderer(t *testing.T) {
+	t.Parallel()
+
+	t.Run("renders table as JSON array of objects", func(t *testing.T) {
+		t.Parallel()
+
+		r := NewJSONTableRenderer()
+		r.SetHeaders([]string{"Name", "Age"})
+		r.AddRow([]string{"Alice", "30"})
+		r.AddRow([]string{"Bob", "25"})
+
+		got, err := r.Render()
+		if err != nil {
+			t.Fatalf("Render() error = %v", err)
+		}
+
+		if !strings.Contains(got, `"Name": "Alice"`) {
+			t.Errorf("Render() = %q, want Alice row", got)
+		}
+
+		if !strings.Contains(got, `"Age": "25"`) {
+			t.Errorf("Render() = %q, want Bob row", got)
+		}
+	})
+
+	t.Run("nil data returns empty array", func(t *testing.T) {
+		t.Parallel()
+
+		r := NewJSONTableRenderer()
+
+		got, err := r.Render()
+		if err != nil {
+			t.Fatalf("Render() error = %v", err)
+		}
+
+		if got != "[]" {
+			t.Errorf("Render() = %q, want []", got)
+		}
+	})
+
+	t.Run("short row omits missing cells", func(t *testing.T) {
+		t.Parallel()
+
+		r := NewJSONTableRenderer()
+		r.SetHeaders([]string{"A", "B", "C"})
+		r.AddRow([]string{"1"})
+
+		got, err := r.Render()
+		if err != nil {
+			t.Fatalf("Render() error = %v", err)
+		}
+
+		if !strings.Contains(got, `"A": "1"`) {
+			t.Errorf("Render() = %q, want A=1", got)
+		}
+
+		if strings.Contains(got, `"B"`) {
+			t.Errorf("Render() = %q, want B absent for short row", got)
+		}
+	})
+}
+
+func TestJSONTableRendererMustRender(t *testing.T) {
+	t.Parallel()
+
+	r := NewJSONTableRenderer()
+	r.SetHeaders([]string{"X"})
+	r.AddRow([]string{"1"})
+
+	got := MustRender(r)
+	if !strings.Contains(got, `"X": "1"`) {
+		t.Errorf("MustRender() = %q, want X=1", got)
+	}
+}
+
+func TestJSONTableRendererNoHeaders(t *testing.T) {
+	t.Parallel()
+
+	r := NewJSONTableRenderer()
+	r.AddRow([]string{"a"})
+
+	got, err := r.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
+	if got != "[]" {
+		t.Errorf("Render() = %q, want []", got)
 	}
 }
 

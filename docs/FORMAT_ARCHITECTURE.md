@@ -2,36 +2,56 @@
 
 ## Overview
 
-This document describes the extensible format architecture for go-output, supporting multiple output formats in a unified way.
+This document describes the extensible format architecture for go-output, supporting 12 output formats across 3 data shapes in a unified way.
 
-## Format Categories
+## Data Shapes
 
-### 1. Table Formats (Flat Data)
+Formats are classified by the data shapes they support. Each format may support multiple shapes.
 
-- `table` - Terminal tables with lipgloss styling
-- `json` - Formatted JSON
-- `csv` - CSV with headers
-- `tsv` - TSV (Tab-Separated Values) with headers
-- `xml` - XML with headers and rows
-- `markdown` - Markdown tables
-- `yaml` - YAML output
+### Shape Capability Matrix
 
-### 2. Tree Formats (Hierarchical Data)
+| Format | ShapeTable | ShapeTree | ShapeGraph |
+| ------ | :--------: | :-------: | :--------: |
+| table  | Y          |           |            |
+| json   | Y          | Y         | Y          |
+| csv    | Y          |           |            |
+| tsv    | Y          |           |            |
+| xml    | Y          |           |            |
+| markdown | Y        |           |            |
+| yaml   | Y          | Y         | Y          |
+| html   | Y          | Y         |            |
+| tree   |            | Y         |            |
+| d2     | Y          |           | Y          |
+| mermaid | Y         |           | Y          |
+| dot    | Y          |           | Y          |
 
-- `tree` - ASCII tree representation
-- `html` - HTML with nested lists (see HTMLTreeRenderer)
+### Querying Capabilities
 
-### 3. Graph Formats (Network/Diagram Data)
+```go
+// Check if a format supports a specific shape
+output.FormatJSON.Supports(output.ShapeTable) // true
 
-- `d2` - D2 diagram shapes
-- `dot` - DOT/Graphviz format
-- `mermaid` - Mermaid flowchart syntax
+// Get all shapes a format supports
+output.FormatD2.Shapes() // [ShapeTable, ShapeGraph]
+
+// Get all formats that support a shape
+output.FormatsForShape(output.ShapeGraph) // [json, yaml, d2, mermaid, dot]
+```
+
+### Deprecated Methods
+
+The following are deprecated and redirect to the Shape API:
+
+- `f.IsTableFormat()` → `f.Supports(ShapeTable)`
+- `f.IsTreeFormat()` → `f.Supports(ShapeTree)`
+- `f.IsGraphFormat()` → `f.Supports(ShapeGraph)`
+- `f.Category()` → `f.Shapes()`
 
 ## Data Structures
 
 ### TableData
 
-Unified data structure for all tabular outputs:
+Unified data structure for all tabular outputs (defined in `tabledata.go`):
 
 ```go
 type TableData struct {
@@ -53,7 +73,7 @@ type TableDataProvider interface {
 
 ### TreeNode
 
-Hierarchical data structure for tree outputs:
+Hierarchical data structure for tree outputs (defined in `tree.go`):
 
 ```go
 type TreeNode struct {
@@ -66,7 +86,7 @@ type TreeNode struct {
 
 ### GraphNode and GraphEdge
 
-Data structures for graph/diagram outputs:
+Data structures for graph/diagram outputs (defined in `graph.go`):
 
 ```go
 type GraphNode struct {
@@ -146,21 +166,31 @@ type StreamingRenderer interface {
 
 ## Implementation Strategy
 
-1. **Format Registry**: Central place to get format renderers via `GetRenderer(format Format) (Renderer, error)`
-2. **Adapter Pattern**: Each format implements its specific rendering
-3. **Unified Data Model**: TableData works across all table formats
-4. **Tree-specific Model**: TreeNode for tree/graph formats
-5. **Graph-specific Model**: GraphNode/GraphEdge for diagram formats
+1. **Shape capability matrix**: `formatCapabilities` map in `format.go` is the single source of truth
+2. **Format Registry**: Opt-in runtime dispatch via `GetRenderer(format Format) (Renderer, error)`
+3. **Adapter Pattern**: Each format implements its specific rendering
+4. **Unified Data Model**: TableData works across all table-capable formats
+5. **Tree-specific Model**: TreeNode for tree-capable formats
+6. **Graph-specific Model**: GraphNode/GraphEdge for graph-capable formats
+7. **Composition**: `GraphRendererMixin` (in `graph.go`) shared by DOT/Mermaid, `tableDataBase` (in `tabledata.go`) shared by HTML/Streaming
 
 ## Format-Specific Notes
 
+### JSON and YAML
+
+JSON and YAML declare support for all three shapes (Table, Tree, Graph) via `MarshalJSON`/`MarshalYAML`. These work as generic serialization functions — pass any data structure. For typed table rendering, use `MarshalJSONFromTableData`.
+
 ### D2
 
-D2 diagrams support both flat data (via `D2FromTableData`) and hierarchical data (via `D2FromTree`). D2 is categorized as a Graph format but can render table-like data.
+D2 supports both table data (via `D2FromTableData`) and graph data (via `D2FromTree` or `GraphNode`/`GraphEdge`). D2 has richer types than generic graph (shapes, arrows, SQL tables, classes, user journeys).
+
+### HTML
+
+HTML supports both table data (via `HTMLRenderer`) and tree data (via `HTMLTreeRenderer`). The `StreamingHTMLRenderer` provides true streaming for large datasets.
 
 ### XMLWriter
 
-XMLWriter requires an `io.Writer` in its constructor (v2.0.0+). For string output, use with a `strings.Builder`:
+XMLWriter requires an `io.Writer` in its constructor. For string output, use with a `strings.Builder`:
 
 ```go
 var buf strings.Builder

@@ -11,21 +11,66 @@ Thank you for your interest in contributing to go-output!
 
 ## Development Setup
 
+This project uses a Go multi-module workspace with 7 independent modules.
+
+### Initial Setup
+
 ```bash
-# Install dependencies
-go mod download
+# Create go.work for local development (gitignored)
+cat > go.work << 'EOF'
+go 1.26.2
 
-# Run tests
-just test
+use (
+  .
+  ./enum
+  ./escape
+  ./cmdguard
+  ./sort
+  ./table
+  ./integration
+  ./examples
+)
+EOF
+```
 
-# Run linter
-just lint
+### Build & Test
 
-# Run full verification
-just verify
+```bash
+# Build all modules (from project root with go.work)
+go build ./...
 
-# Install pre-commit hooks
-pre-commit install
+# Test all modules
+go test ./...
+
+# Test a specific module
+go test ./enum/...
+
+# Test with race detector
+go test -race ./...
+
+# Test with coverage
+go test -cover ./...
+
+# Lint all modules
+golangci-lint run ./...
+```
+
+### Per-Module Commands (without go.work)
+
+Each module is standalone and can be built/tested independently:
+
+```bash
+cd table && go test ./... && cd ..
+cd cmdguard && go test ./... && cd ..
+```
+
+### Tidy Dependencies
+
+After changing imports, tidy each affected module:
+
+```bash
+go mod tidy                    # Root module
+cd enum && go mod tidy && cd ..    # Sub-module
 ```
 
 ## Making Changes
@@ -81,6 +126,7 @@ go test -fuzz=FuzzParseSortBy -fuzztime=1m .
 - File size limit: 350 lines
 - Test coverage target: 90%+
 - No code duplication (threshold: 30 tokens)
+- Sub-modules must not import `internal/` packages from root
 
 ## Pull Request Process
 
