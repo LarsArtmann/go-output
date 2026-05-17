@@ -1,78 +1,118 @@
 package sort
 
 import (
+	"cmp"
+	"slices"
 	"testing"
-
-	output "github.com/larsartmann/go-output"
 )
-
-type compareTestUnsignedItem struct {
-	Name string
-	Size uint64
-}
 
 func TestByField(t *testing.T) {
 	t.Parallel()
 
-	t.Run("string field", func(t *testing.T) {
+	t.Run("string field ascending", func(t *testing.T) {
 		t.Parallel()
 
-		items := testItemsUnsorted()
-		sortByNameField(items, func(item testItem) string { return item.Name })
+		items := []struct{ Name string }{
+			{Name: "charlie"},
+			{Name: "alpha"},
+			{Name: "bravo"},
+		}
 
-		assertItemByName(t, items, "first", 0, "alpha")
+		slices.SortStableFunc(items, ByField(
+			func(item struct{ Name string }) string { return item.Name },
+		))
+
+		if items[0].Name != "alpha" || items[1].Name != "bravo" || items[2].Name != "charlie" {
+			t.Errorf("sorted order = %v, want [alpha, bravo, charlie]",
+				[]string{items[0].Name, items[1].Name, items[2].Name})
+		}
 	})
 
-	t.Run("int field", func(t *testing.T) {
+	t.Run("int field ascending", func(t *testing.T) {
 		t.Parallel()
 
-		items := testItemsWithCounts(30, 10, 20)
-		sortByCount(items, false)
+		type item struct {
+			Name  string
+			Count int
+		}
 
-		assertItemByName(t, items, "first", 0, "bravo")
-	})
+		items := []item{
+			{Name: "charlie", Count: 30},
+			{Name: "alpha", Count: 10},
+			{Name: "bravo", Count: 20},
+		}
 
-	t.Run("with desc", func(t *testing.T) {
-		t.Parallel()
+		slices.SortStableFunc(items, ByField(func(i item) int {
+			return i.Count
+		}))
 
-		items := testItemsWithCounts(10, 20, 30)
-		New(items, output.SortBy("Count"), true).
-			WithLessFunc(ByField(lessByCount)).
-			Sort()
-
-		assertItemByName(t, items, "first", 0, "charlie")
+		if items[0].Name != "alpha" || items[2].Name != "charlie" {
+			t.Errorf("sorted order = %v, want [alpha, bravo, charlie]",
+				[]string{items[0].Name, items[1].Name, items[2].Name})
+		}
 	})
 
 	t.Run("uint64 field", func(t *testing.T) {
 		t.Parallel()
 
-		items := []compareTestUnsignedItem{
+		type item struct {
+			Name string
+			Size uint64
+		}
+
+		items := []item{
 			{Name: "large", Size: 18_446_744_073_709_551_615},
 			{Name: "small", Size: 1},
 			{Name: "medium", Size: 100},
 		}
 
-		New(items, output.SortBy("Size"), false).
-			WithLessFunc(ByField(func(item compareTestUnsignedItem) uint64 { return item.Size })).
-			Sort()
+		slices.SortStableFunc(items, ByField(func(i item) uint64 {
+			return i.Size
+		}))
 
-		assertFirstAndLast(t, items, "small", "large",
-			func(item compareTestUnsignedItem) string { return item.Name })
+		if items[0].Name != "small" || items[2].Name != "large" {
+			t.Errorf("sorted order = %v, want [small, medium, large]",
+				[]string{items[0].Name, items[1].Name, items[2].Name})
+		}
 	})
 
 	t.Run("stability preserved", func(t *testing.T) {
 		t.Parallel()
 
-		items := []stableItem{
+		type item struct {
+			Name  string
+			Order int
+		}
+
+		items := []item{
 			{Name: "a", Order: 1},
 			{Name: "a", Order: 2},
 			{Name: "b", Order: 3},
 		}
 
-		New(items, output.SortByName, false).
-			WithLessFunc(ByField(func(item stableItem) string { return item.Name })).
-			Sort()
+		slices.SortStableFunc(items, ByField(func(i item) string { return i.Name }))
 
-		assertOrderSequence(t, items, 0, 1, 2)
+		if items[0].Order != 1 || items[1].Order != 2 {
+			t.Errorf("stability not preserved: orders = [%d, %d], want [1, 2]",
+				items[0].Order, items[1].Order)
+		}
 	})
+}
+
+func TestByFieldMatchesCompare(t *testing.T) {
+	t.Parallel()
+
+	type p struct{ Name string }
+
+	byName := ByField(func(i p) string { return i.Name })
+
+	if byName(p{"a"}, p{"b"}) != cmp.Compare("a", "b") {
+		t.Error("ByField should match cmp.Compare")
+	}
+
+	byNameDesc := func(a, b p) int { return cmp.Compare(b.Name, a.Name) }
+
+	if byNameDesc(p{"a"}, p{"b"}) != 1 {
+		t.Error("descending comparison should return positive")
+	}
 }

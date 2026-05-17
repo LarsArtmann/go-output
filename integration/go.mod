@@ -4,7 +4,6 @@ go 1.26.2
 
 require (
 	github.com/larsartmann/go-output v0.0.0
-	github.com/larsartmann/go-output/sort v0.0.0
 	github.com/larsartmann/go-output/table v0.0.0
 )
 
@@ -40,6 +39,5 @@ replace (
 	github.com/larsartmann/go-output => ../
 	github.com/larsartmann/go-output/enum => ../enum
 	github.com/larsartmann/go-output/escape => ../escape
-	github.com/larsartmann/go-output/sort => ../sort
 	github.com/larsartmann/go-output/table => ../table
 )

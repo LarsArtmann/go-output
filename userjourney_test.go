@@ -1,13 +1,13 @@
 package output_test
 
 import (
+	"cmp"
 	"slices"
 	"strings"
 	"testing"
 
 	"github.com/larsartmann/go-output"
 	"github.com/larsartmann/go-output/internal/testutils"
-	"github.com/larsartmann/go-output/sort" //nolint:staticcheck // intentionally testing deprecated package
 )
 
 // User Journey: CLI Developer wants to add output formatting to their tool
@@ -225,9 +225,13 @@ func TestSortingBehavior(t *testing.T) {
 			t.Run(tc.name, func(t *testing.T) {
 				t.Parallel()
 
-				sorted := sort.New(tc.data, output.SortByName, tc.desc)
-				sorted.WithLessFunc(sort.ByField(func(p Project) string { return p.Name }))
-				sorted.Sort()
+				slices.SortStableFunc(tc.data, func(a, b Project) int {
+					if tc.desc {
+						return cmp.Compare(b.Name, a.Name)
+					}
+
+					return cmp.Compare(a.Name, b.Name)
+				})
 
 				if tc.data[0].Name != tc.expected {
 					t.Errorf("Expected first item to be %q, got %s", tc.expected, tc.data[0].Name)
@@ -236,16 +240,14 @@ func TestSortingBehavior(t *testing.T) {
 		}
 	})
 
-	t.Run("invalid sort field sorts without panic", func(t *testing.T) {
+	t.Run("sorting with no comparator is a no-op", func(t *testing.T) {
 		t.Parallel()
 
-		// Given: Data with invalid sort field
 		data := []Project{{Name: "test"}}
+		slices.SortStableFunc(data, nil)
 
-		// When: I try to sort by invalid field - should not panic
-		sorted := sort.New(data, output.SortBy("invalid"), false)
-		sorted.Sort()
-
-		// Then: No panic occurred (no LessFunc = no-op)
+		if data[0].Name != "test" {
+			t.Errorf("Expected item to remain unchanged, got %s", data[0].Name)
+		}
 	})
 }

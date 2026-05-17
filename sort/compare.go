@@ -1,16 +1,23 @@
+// Package sort provides sorting utilities for output data.
+//
+// Deprecated: Use the standard library instead. Go 1.21+ provides:
+//
+//	slices.SortStableFunc(items, func(a, b T) int {
+//	    return cmp.Compare(a.Field, b.Field) // ascending
+//	})
+//
+// For descending, swap the operands: cmp.Compare(b.Field, a.Field).
 package sort
 
 import "cmp"
 
-// ByField returns a LessFunc that extracts a comparable field from each item
-// and compares using cmp.Less. This eliminates boilerplate for the common case
-// of sorting by a single field.
+// ByField returns a comparison function that extracts a comparable field from
+// each item and returns cmp.Compare(extract(a), extract(b)). Use with
+// slices.SortStableFunc:
 //
-// Usage:
-//
-//	sorter.WithLessFunc(sort.ByField(func(p Project) string { return p.Name }))
-func ByField[T any, F cmp.Ordered](extract func(T) F) func(a, b T) bool {
-	return func(a, b T) bool {
-		return cmp.Less(extract(a), extract(b))
+//	slices.SortStableFunc(items, sort.ByField(func(p T) string { return p.Name }))
+func ByField[T any, F cmp.Ordered](extract func(T) F) func(a, b T) int {
+	return func(a, b T) int {
+		return cmp.Compare(extract(a), extract(b))
 	}
 }

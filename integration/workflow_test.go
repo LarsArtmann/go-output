@@ -3,12 +3,13 @@ package integration
 
 import (
 	"bytes"
+	"cmp"
+	"slices"
 	"strings"
 	"testing"
 
 	"github.com/larsartmann/go-output"
 	"github.com/larsartmann/go-output/internal/testutils"
-	"github.com/larsartmann/go-output/sort"
 )
 
 // TestCSVToTableData tests converting CSV data to TableData.
@@ -96,9 +97,9 @@ func TestSortAndRenderWorkflow(t *testing.T) {
 		}
 
 		// When: I sort by name ascending and render as JSON
-		sorted := sort.New(items, output.SortByName, false)
-		sorted.WithLessFunc(sort.ByField(func(item Item) string { return item.Name }))
-		sorted.Sort()
+		slices.SortStableFunc(items, func(a, b Item) int {
+			return cmp.Compare(a.Name, b.Name)
+		})
 
 		jsonBytes, _ := output.MarshalJSONIndent(items, "", "  ")
 		jsonStr := string(jsonBytes)

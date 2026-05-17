@@ -7,7 +7,6 @@ require (
 	github.com/larsartmann/go-branded-id v0.1.0
 	github.com/larsartmann/go-output/enum v0.0.0
 	github.com/larsartmann/go-output/escape v0.0.0
-	github.com/larsartmann/go-output/sort v0.0.0-20260507215750-c2091663ee59
 	golang.org/x/term v0.42.0
 )
 
@@ -16,7 +15,6 @@ replace (
 	github.com/larsartmann/go-output/cmdguard => ./cmdguard
 	github.com/larsartmann/go-output/enum => ./enum
 	github.com/larsartmann/go-output/escape => ./escape
-	github.com/larsartmann/go-output/sort => ./sort
 )
 
 require (
