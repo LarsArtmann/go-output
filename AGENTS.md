@@ -53,8 +53,8 @@ go-output/                    # Root module (package output) — types, interfac
 ├── slices.go                 # FilledStrings utility
 ├── json.go, csv.go, tsv.go, yaml.go, xml.go, markdown.go
 ├── html.go, tree.go, streaming.go
-├── graph.go                  # GraphNode, GraphEdge, GraphRenderer, AddTreeNodes
-├── dot.go                    # DOT/Graphviz renderer + GraphRendererMixin
+├── graph.go                  # GraphNode, GraphEdge, GraphRenderer, AddTreeNodes, GraphRendererMixin
+├── dot.go                    # DOT/Graphviz renderer
 ├── mermaid.go                # Mermaid diagram renderer
 ├── delimited.go, markup.go, marshal.go
 ├── d2.go, d2_enum.go, d2_render.go, d2_write.go, d2_convert.go
@@ -115,7 +115,7 @@ go test -bench=. -benchmem ./...  # Benchmarks
 1. **Type-safe enums**: String constants with Parse/Validate via `enum` package
 2. **Branded IDs**: Phantom types prevent mixing D2NodeID/TreeNodeID/etc
 3. **Interface-based design**: Renderer, GraphRenderer, TableRenderer interfaces — `Render() (string, error)`. Use `MustRender(r)` helper for tests/examples.
-4. **Composition**: GraphRendererMixin shared by DOT/Mermaid, tableDataBase shared by HTML/Streaming
+4. **Composition**: GraphRendererMixin in graph.go shared by DOT/Mermaid, tableDataBase in tabledata.go shared by HTML/Streaming
 5. **Registry is opt-in**: Use constructors directly by default. Register/Create for runtime dispatch.
 6. **Shape capability matrix**: Each format declares supported data shapes (ShapeTable/ShapeTree/ShapeGraph) via `formatCapabilities` map. Use `f.Supports(shape)` instead of deprecated `f.Is*Format()` methods.
 
@@ -128,6 +128,7 @@ go test -bench=. -benchmem ./...  # Benchmarks
 3. Implement formatter — embed Renderer interface
 4. Add tests with >90% coverage
 5. Update cmdguard if needed (EnumFlag already generic)
+6. Update README.md with capability matrix entry
 
 ### Adding a New D2 Enum
 
@@ -144,5 +145,5 @@ go test -bench=. -benchmem ./...  # Benchmarks
 - sort/ is **deprecated** — use `slices.SortStableFunc` + `cmp.Compare` (stdlib, Go 1.21+)
 - SortBy enum kept in root — used by cmdguard tests as example enum type
 - Multi-module workspace with 7 independent modules (see ADR 001)
-- GraphRendererMixin defined in dot.go — should move to graph.go or own file when graph/ is extracted as module
+- GraphRendererMixin now in graph.go (was in dot.go, moved for correct placement)
 - Shape capability matrix (ADR 002) replaces FormatCategory — `IsTableFormat()`/`IsTreeFormat()`/`IsGraphFormat()`/`Category()` are deprecated, use `Supports(Shape)` instead
