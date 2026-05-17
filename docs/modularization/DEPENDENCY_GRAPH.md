@@ -125,7 +125,7 @@ Level 5 — Consumers
 | **sort**        | —    | —      | ✅   | —   | —     | —     | —    | —        |
 | **cmdguard**    | —    | —      | —    | —   | —     | —     | —    | —        |
 | **integration** | —    | —      | ✅   | ✅  | ✅    | ✅    | ✅   | —        |
-| **examples**    | —    | —      | ✅   | —   | —     | ✅    | —    | —        |
+| **examples**    | —    | —      | ✅   | ✅  | ✅    | ✅    | —    | —        |
 
 **Cycles:** None. All dependencies point downward (higher row → lower column).
 
@@ -139,7 +139,9 @@ enum < root < graph
 enum < root < table < integration
 root < sort < integration
 root < integration
-root < examples
+root < d2 < examples
+root < graph < examples
+root < table < examples
 ```
 
 No module appears on both sides of `<` in any chain. Therefore the graph is a DAG.

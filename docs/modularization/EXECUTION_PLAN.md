@@ -345,7 +345,8 @@ git revert HEAD
 
 ### Updated `examples/go.mod`
 
-- Add: `d2` and/or `graph` to `require` and `replace` blocks (if examples use them)
+- Fix: Add missing `table` to `require` and `replace` blocks (pre-existing bug)
+- Add: `d2` and `graph` to `require` and `replace` blocks
 
 ---
 

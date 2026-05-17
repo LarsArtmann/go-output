@@ -35,8 +35,8 @@ At 151 LOC and 149 LOC respectively, extracting test helpers as full modules add
 
 Extract only 2 new modules:
 
-1. **`d2/`** — D2 diagram rendering (815 LOC → 5 files)
-2. **`graph/`** — DOT + Mermaid rendering (566 LOC → 3 files)
+1. **`d2/`** — D2 diagram rendering (833 LOC → 5 files)
+2. **`graph/`** — DOT + Mermaid rendering (568 LOC → 3 files)
 
 Keep `internal/gentest` and `internal/testutils` in root. Fix the sort dependency.
 
@@ -56,7 +56,7 @@ This proposal extracts the remaining natural module boundaries while preserving 
 
 - D2 users get an independent module (833 LOC with zero coupling to root formatters)
 - Graph (DOT + Mermaid) users get an independent module (568 LOC, only needs root core types)
-- Root module shrinks from 3,587 → ~2,186 production LOC
+- Root module shrinks from 3,587 → ~2,183 production LOC
 - Clean DAG: `d2/` and `graph/` depend on root, never the reverse
 - Each new module can be versioned independently
 
@@ -81,11 +81,11 @@ This proposal extracts the remaining natural module boundaries while preserving 
 
 | Cluster                        | Files                                                                                               | LOC | External Deps               | Internal Deps                               |
 | ------------------------------ | --------------------------------------------------------------------------------------------------- | --- | --------------------------- | ------------------------------------------- |
-| **Core types + interfaces**    | format.go, ids.go, color.go, sort.go, slices.go, registry.go, format_deprecated.go                  | 681 | enum, go-branded-id, x/term | —                                           |
+| **Core types + interfaces**    | format.go, ids.go, color.go, sort.go, slices.go, registry.go, format_deprecated.go                  | 734 | enum, go-branded-id, x/term | —                                           |
 | **Table formatters**           | json.go, csv.go, tsv.go, markdown.go, html.go, yaml.go, xml.go, delimited.go, markup.go, marshal.go | 945 | escape, go-faster/yaml      | Core types                                  |
 | **Tree formatter**             | tree.go                                                                                             | 130 | —                           | Core types                                  |
-| **Graph formatters (generic)** | graph.go, dot.go, mermaid.go                                                                        | 566 | enum, escape                | Core types                                  |
-| **D2 (specialized graph)**     | d2.go, d2_enum.go, d2_render.go, d2_write.go, d2_convert.go                                         | 815 | enum, escape                | Core types (GraphNode, TreeNode, BrandedID) |
+| **Graph formatters (generic)** | graph.go, dot.go, mermaid.go                                                                        | 568 | enum, escape                | Core types                                  |
+| **D2 (specialized graph)**     | d2.go, d2_enum.go, d2_render.go, d2_write.go, d2_convert.go                                         | 833 | enum, escape                | Core types (GraphNode, TreeNode, BrandedID) |
 | **Streaming**                  | streaming.go                                                                                        | 198 | escape                      | Core types                                  |
 | **Test helpers**               | output_test_helpers.go                                                                              | 176 | —                           | All formatters                              |
 
