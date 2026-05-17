@@ -75,7 +75,7 @@ This proposal extracts the remaining natural module boundaries while preserving 
 | `sort/`                 | `./sort/`        | root                        | None                                  | 2 replace          | Deprecated                                         |
 | `table/`                | `./table/`       | root                        | lipgloss/v2                           | 3 replace          | Clean                                              |
 | `integration/`          | `./integration/` | root, sort, table           | None (transitive)                     | 5 replace          | Clean                                              |
-| `examples/`             | `./examples/`    | root, table                 | lipgloss (transitive)                 | 4 replace          | **Leaky** — go.mod missing table replace directive |
+| `examples/`             | `./examples/`    | root, table                 | lipgloss (transitive)                 | 4 replace          | Clean                                              |
 
 ### 2.2 Root Module Concern Clusters
 
@@ -158,7 +158,7 @@ All concerns are cohesive internally but coupled through `package output` — th
 | `sort/`        | `./sort/`        | Deprecated sorting       | root              |
 | `table/`       | `./table/`       | Lipgloss terminal tables | root, lipgloss    |
 | `integration/` | `./integration/` | Cross-module tests       | root, sort, table |
-| `examples/`    | `./examples/`    | Usage examples           | root              |
+| `examples/`    | `./examples/`    | Usage examples           | root, table       |
 
 #### New Modules
 
@@ -291,7 +291,7 @@ Each step is independently committable and leaves the project buildable.
 
 #### Step 2: Extract `graph/` module
 
-- Move `graph.go`, `dot.go`, `mermaid.go` → `graph/`
+- Move `dot.go`, `mermaid.go` → `graph/` (`graph.go` stays in root — core types used by D2 too)
 - Rename package from `output` to `graph`
 - Create `graph/go.mod` (depends on root, enum, escape)
 - Move `graph_test.go`, `dot_test.go`, `mermaid_test.go` → `graph/`
@@ -366,3 +366,31 @@ Each step is independently committable and leaves the project buildable.
 - All 7 table formatters — still in root
 - Streaming — still in root
 - Registry — still in root
+
+---
+
+## 9. Future Improvements (Post-Extraction)
+
+These are not in scope for the extraction but surfaced during review.
+
+### Type Model Improvements
+
+1. **Duplicated tree→graph conversion** — `DOTRenderer.addTreeNodes()` uses the shared `AddTreeNodes()` function, but `D2Diagram.addTreeNodes()` re-implements the tree walk because it uses `D2Node`/`D2Edge` instead of `GraphNode`/`GraphEdge`. Could use `AddTreeNodes()` + `graphNodeToD2()` conversion to eliminate the duplication.
+
+2. **`EdgeStyle.Style` field naming** — `edge.Style.Style` is confusing (field name repeats type name). Consider renaming to `LineStyle` or `DashStyle` in a future major version.
+
+3. **`GraphRendererMixin` is value-embedded** in `DOTRenderer` but methods have pointer receivers. If someone copies a `DOTRenderer` value, they'd share the mixin's slices. Consider pointer embedding or documenting the requirement.
+
+4. **`RowEdge` uses plain `string` for `From`/`To`** while `GraphEdge` uses branded IDs — inconsistent when `RowEdge` data flows into `GraphEdge`.
+
+5. **`AddTreeNodes` mutates via pointer params** (`*[]GraphNode`, `*[]GraphEdge`) — an imperative pattern unusual for Go public APIs. Returning slices would be cleaner.
+
+### Enum Code Generation
+
+6. Every string enum (`Format`, `GraphShape`, `D2Direction`, `D2NodeShape`, `D2ArrowType`, `D2Constraint`) repeats ~15-20 lines of identical boilerplate (`Parse*`, `String`, `IsValid`, `AllowedValues`, `ErrInvalid*`). The `enum/` package already provides the generic functions. A `go generate` step with `stringer` or a custom generator could eliminate this entirely. Low priority — the boilerplate is small and explicit.
+
+### Potential Library Replacements
+
+7. **DOT generation** — Currently hand-rolled string builder. `github.com/emicklei/dot` is a mature DOT library with a fluent API. Would reduce `dot.go` significantly but adds an external dependency. Evaluate if DOT rendering needs grow beyond the current feature set.
+
+8. **`BrandedID` re-export** — `ids.go` re-exports `go-branded-id` as `BrandedID`. Its own comment says "Use `id.ID[Brand, string]` for new code". Consider removing the re-export in the next major version.

@@ -37,7 +37,7 @@
     │   table/       │     │ integration/ │     │   examples/   │
     │   92 LOC       │     │ tests only   │     │  examples     │
     │ →root, lipgloss│     │→root,sort,   │     │ →root, table  │
-    │               │     │  table       │     │ (go.mod buggy)│
+    │               │     │  table       │     │               │
     └───────────────┘     └──────────────┘     └───────────────┘
 
     ┌───────────────┐

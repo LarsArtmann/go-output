@@ -11,9 +11,11 @@ Extract `d2/` and `graph/` as independent Go modules from the root `package outp
 
 ---
 
-## Step 0: Fix Pre-Existing `examples/go.mod` Bug
+## Step 0: ~~Fix Pre-Existing `examples/go.mod` Bug~~ (DONE)
 
-**Impact:** Prerequisite — `examples/go.mod` is missing the `table` dependency that `examples/basic/main.go` imports.
+**Status:** Completed — `examples/go.mod` now has the `table` dependency and replace directive.
+
+~~**Impact:** Prerequisite — `examples/go.mod` is missing the `table` dependency that `examples/basic/main.go` imports.~~
 
 **Effort:** 1 minute
 
@@ -55,8 +57,10 @@ Extract `d2/` and `graph/` as independent Go modules from the root `package outp
 3. **Move D2 test files**
 
    ```bash
-
+   git mv d2_test.go d2_node_test.go d2_enum_test.go d2_render_test.go d2_convert_test.go d2_edge_test.go d2/
    ```
+
+   Note: `userjourney_test.go` stays in root — it tests JSON/CSV/Markdown/YAML/sort user journeys, not D2.
 
 4. **Create `d2/go.mod`**
 
