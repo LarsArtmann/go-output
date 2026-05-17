@@ -59,20 +59,20 @@ fmt.Println(format.Category())           // table
 
 ## Supported Formats
 
-| Format | Table | Tree | Graph | Notes |
-| ------ | :---: | :--: | :---: | ----- |
-| `table` | ✅ | | | Terminal tables with lipgloss styling (separate `table/` module) |
-| `json` | ✅ | ✅ | ✅ | Shape-agnostic serialization |
-| `csv` | ✅ | | | Comma-separated export |
-| `tsv` | ✅ | | | Tab-separated export |
-| `xml` | ✅ | | | XML with table structure |
-| `markdown` | ✅ | | | Markdown tables |
-| `yaml` | ✅ | ✅ | ✅ | Shape-agnostic serialization |
-| `d2` | ✅ | | ✅ | SQL tables + node-edge diagrams |
-| `html` | ✅ | ✅ | | HTML tables + collapsible tree |
-| `tree` | | ✅ | | ASCII tree with box-drawing chars |
-| `mermaid` | ✅ | | ✅ | Mermaid flowchart diagrams |
-| `dot` | ✅ | | ✅ | DOT/Graphviz directed graphs |
+| Format     | Table | Tree | Graph | Notes                                                            |
+| ---------- | :---: | :--: | :---: | ---------------------------------------------------------------- |
+| `table`    |  ✅   |      |       | Terminal tables with lipgloss styling (separate `table/` module) |
+| `json`     |  ✅   |  ✅  |  ✅   | Shape-agnostic serialization                                     |
+| `csv`      |  ✅   |      |       | Comma-separated export                                           |
+| `tsv`      |  ✅   |      |       | Tab-separated export                                             |
+| `xml`      |  ✅   |      |       | XML with table structure                                         |
+| `markdown` |  ✅   |      |       | Markdown tables                                                  |
+| `yaml`     |  ✅   |  ✅  |  ✅   | Shape-agnostic serialization                                     |
+| `d2`       |  ✅   |      |  ✅   | SQL tables + node-edge diagrams                                  |
+| `html`     |  ✅   |  ✅  |       | HTML tables + collapsible tree                                   |
+| `tree`     |       |  ✅  |       | ASCII tree with box-drawing chars                                |
+| `mermaid`  |  ✅   |      |  ✅   | Mermaid flowchart diagrams                                       |
+| `dot`      |  ✅   |      |  ✅   | DOT/Graphviz directed graphs                                     |
 
 All formats implement the `Renderer` interface:
 

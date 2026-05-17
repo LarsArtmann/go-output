@@ -13,6 +13,7 @@ The current category system (`FormatCategory` with `CategoryTable`, `CategoryTre
 4. **HTML already has two separate renderers** (`HTMLRenderer` for tables, `HTMLTreeRenderer` for trees).
 
 The concept of "category" conflates two independent axes:
+
 - **Data Shape**: What kind of data do you have? (table, tree, graph)
 - **Format**: How do you want to render it? (json, csv, d2, ...)
 
@@ -111,24 +112,25 @@ This is out of scope for the initial refactor but the API design enables it.
 
 ## Capability Matrix (truth table)
 
-| Format | Table | Tree | Graph | Notes |
-|--------|:-----:|:----:|:-----:|-------|
-| `table` | ✅ | ❌ | ❌ | Terminal table only |
-| `json` | ✅ | ✅ | ✅ | Shape-agnostic serializer |
-| `csv` | ✅ | ❌ | ❌ | Flat rows only |
-| `tsv` | ✅ | ❌ | ❌ | Flat rows only |
-| `xml` | ✅ | ❌ | ❌ | Currently table-only |
-| `markdown` | ✅ | ❌ | ❌ | Tables only (no tree syntax) |
-| `d2` | ✅ | ❌ | ✅ | SQL tables + diagrams |
-| `yaml` | ✅ | ✅ | ✅ | Shape-agnostic serializer |
-| `html` | ✅ | ✅ | ❌ | Tables + collapsible trees |
-| `tree` | ❌ | ✅ | ❌ | ASCII tree only |
-| `mermaid` | ✅ | ❌ | ✅ | Flowcharts (has FromTableData) |
-| `dot` | ✅ | ❌ | ✅ | Graphs (has FromTableData) |
+| Format     | Table | Tree | Graph | Notes                          |
+| ---------- | :---: | :--: | :---: | ------------------------------ |
+| `table`    |  ✅   |  ❌  |  ❌   | Terminal table only            |
+| `json`     |  ✅   |  ✅  |  ✅   | Shape-agnostic serializer      |
+| `csv`      |  ✅   |  ❌  |  ❌   | Flat rows only                 |
+| `tsv`      |  ✅   |  ❌  |  ❌   | Flat rows only                 |
+| `xml`      |  ✅   |  ❌  |  ❌   | Currently table-only           |
+| `markdown` |  ✅   |  ❌  |  ❌   | Tables only (no tree syntax)   |
+| `d2`       |  ✅   |  ❌  |  ✅   | SQL tables + diagrams          |
+| `yaml`     |  ✅   |  ✅  |  ✅   | Shape-agnostic serializer      |
+| `html`     |  ✅   |  ✅  |  ❌   | Tables + collapsible trees     |
+| `tree`     |  ❌   |  ✅  |  ❌   | ASCII tree only                |
+| `mermaid`  |  ✅   |  ❌  |  ✅   | Flowcharts (has FromTableData) |
+| `dot`      |  ✅   |  ❌  |  ✅   | Graphs (has FromTableData)     |
 
 ## Consequences
 
 **Positive:**
+
 - Correctly models reality (formats support multiple shapes)
 - `f.Supports(ShapeTable)` reads better than `f.IsTableFormat()`
 - Enables `FormatsForShape(ShapeGraph)` — "give me all formats I can use for graph data"
@@ -136,5 +138,6 @@ This is out of scope for the initial refactor but the API design enables it.
 - Clean path to future shape-specific renderers
 
 **Negative:**
+
 - `FormatCategory` and `Category()` stay around until next major version
 - Marginally more code in format.go (but removes the three separate maps)

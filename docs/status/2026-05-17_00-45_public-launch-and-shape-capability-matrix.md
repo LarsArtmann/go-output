@@ -15,45 +15,45 @@ go-output went from **private PROPRIETARY repo** to **public MIT-licensed librar
 
 ### Public Launch Prerequisites (from PUBLIC_OR_PRIVATE.md)
 
-| # | Task | Status |
-|---|------|--------|
-| 1 | Replace LICENSE from PROPRIETARY to MIT | ✅ Done |
-| 2 | Remove hardcoded local paths (`/Users/larsartmann/...`) from README | ✅ Done |
-| 3 | Reframe README purpose from "personal project utility" to "general-purpose Go library" | ✅ Done |
-| 4 | Verify all exported symbols have Go doc comments (27 added) | ✅ Done |
-| 5 | Fix misleading Dependencies section (lipgloss not in root) | ✅ Done |
-| 6 | Push commits to remote | ✅ Done |
-| 7 | Tag v0.4.0 and create GitHub release | ✅ Done |
-| 8 | Update PUBLIC_OR_PRIVATE.md checklist | ✅ Done |
+| #   | Task                                                                                   | Status  |
+| --- | -------------------------------------------------------------------------------------- | ------- |
+| 1   | Replace LICENSE from PROPRIETARY to MIT                                                | ✅ Done |
+| 2   | Remove hardcoded local paths (`/Users/larsartmann/...`) from README                    | ✅ Done |
+| 3   | Reframe README purpose from "personal project utility" to "general-purpose Go library" | ✅ Done |
+| 4   | Verify all exported symbols have Go doc comments (27 added)                            | ✅ Done |
+| 5   | Fix misleading Dependencies section (lipgloss not in root)                             | ✅ Done |
+| 6   | Push commits to remote                                                                 | ✅ Done |
+| 7   | Tag v0.4.0 and create GitHub release                                                   | ✅ Done |
+| 8   | Update PUBLIC_OR_PRIVATE.md checklist                                                  | ✅ Done |
 
 ### Shape Capability Matrix Redesign (ADR 002)
 
-| # | Task | Status |
-|---|------|--------|
-| 1 | Deep research: read all formatters, understand which support which data shapes | ✅ Done |
-| 2 | Write ADR 002: Shape capability matrix design doc | ✅ Done |
-| 3 | Add `Shape` type with `ShapeTable`, `ShapeTree`, `ShapeGraph` constants | ✅ Done |
-| 4 | Add `formatCapabilities` map (single source of truth) | ✅ Done |
-| 5 | Add `Supports(Shape)`, `Shapes()`, `FormatsForShape(Shape)` methods | ✅ Done |
-| 6 | Deprecate `IsTableFormat()`, `IsTreeFormat()`, `IsGraphFormat()`, `Category()` | ✅ Done |
-| 7 | Add 4 new test functions for Shape API | ✅ Done |
-| 8 | Update existing tests for new capability truth table | ✅ Done |
-| 9 | Update integration tests to use `Supports()` | ✅ Done |
-| 10 | Update README with capability matrix table + new "Data Shapes" section | ✅ Done |
-| 11 | Update AGENTS.md with new architecture notes | ✅ Done |
-| 12 | Lint clean (0 issues), build clean, vet clean, race clean | ✅ Done |
+| #   | Task                                                                           | Status  |
+| --- | ------------------------------------------------------------------------------ | ------- |
+| 1   | Deep research: read all formatters, understand which support which data shapes | ✅ Done |
+| 2   | Write ADR 002: Shape capability matrix design doc                              | ✅ Done |
+| 3   | Add `Shape` type with `ShapeTable`, `ShapeTree`, `ShapeGraph` constants        | ✅ Done |
+| 4   | Add `formatCapabilities` map (single source of truth)                          | ✅ Done |
+| 5   | Add `Supports(Shape)`, `Shapes()`, `FormatsForShape(Shape)` methods            | ✅ Done |
+| 6   | Deprecate `IsTableFormat()`, `IsTreeFormat()`, `IsGraphFormat()`, `Category()` | ✅ Done |
+| 7   | Add 4 new test functions for Shape API                                         | ✅ Done |
+| 8   | Update existing tests for new capability truth table                           | ✅ Done |
+| 9   | Update integration tests to use `Supports()`                                   | ✅ Done |
+| 10  | Update README with capability matrix table + new "Data Shapes" section         | ✅ Done |
+| 11  | Update AGENTS.md with new architecture notes                                   | ✅ Done |
+| 12  | Lint clean (0 issues), build clean, vet clean, race clean                      | ✅ Done |
 
 ### Code Quality Metrics
 
-| Metric | Value |
-|--------|-------|
-| Build | ✅ Clean |
-| Tests | ✅ All pass |
-| Coverage | 90.2% (root) |
-| Lint | 0 issues |
-| Race detector | ✅ Clean |
-| Vet | ✅ Clean |
-| Total lines of Go | 11,095 |
+| Metric            | Value        |
+| ----------------- | ------------ |
+| Build             | ✅ Clean     |
+| Tests             | ✅ All pass  |
+| Coverage          | 90.2% (root) |
+| Lint              | 0 issues     |
+| Race detector     | ✅ Clean     |
+| Vet               | ✅ Clean     |
+| Total lines of Go | 11,095       |
 
 ---
 
@@ -61,11 +61,11 @@ go-output went from **private PROPRIETARY repo** to **public MIT-licensed librar
 
 ### Visibility / Marketing (from PUBLIC_OR_PRIVATE.md)
 
-| Task | Status |
-|------|--------|
-| Post to r/golang | ❌ Not started |
-| Submit to Awesome Go | ❌ Not started |
-| Share in Go Discord / Gophers Slack | ❌ Not started |
+| Task                                                 | Status         |
+| ---------------------------------------------------- | -------------- |
+| Post to r/golang                                     | ❌ Not started |
+| Submit to Awesome Go                                 | ❌ Not started |
+| Share in Go Discord / Gophers Slack                  | ❌ Not started |
 | Write blog post: "One Go library, 12 output formats" | ❌ Not started |
 
 **These are manual marketing tasks — not code.**
@@ -78,33 +78,33 @@ go-output went from **private PROPRIETARY repo** to **public MIT-licensed librar
 
 These are enabled by the new Shape API but not implemented:
 
-| Renderer | Description | Effort |
-|----------|-------------|--------|
-| `NewJSONTableRenderer(data *TableData) Renderer` | JSON wrapping TableData | Small |
-| `NewJSONTreeRenderer(root *TreeNode) Renderer` | JSON wrapping TreeNode | Small |
-| `NewJSONGraphRenderer(nodes, edges) Renderer` | JSON wrapping graph data | Small |
-| `NewYAMLTableRenderer(data *TableData) Renderer` | YAML wrapping TableData | Small |
-| `NewYAMLTreeRenderer(root *TreeNode) Renderer` | YAML wrapping TreeNode | Small |
-| `NewYAMLGraphRenderer(nodes, edges) Renderer` | YAML wrapping graph data | Small |
-| `NewMarkdownTreeRenderer(root *TreeNode) Renderer` | Markdown nested bullet lists | Small |
+| Renderer                                           | Description                  | Effort |
+| -------------------------------------------------- | ---------------------------- | ------ |
+| `NewJSONTableRenderer(data *TableData) Renderer`   | JSON wrapping TableData      | Small  |
+| `NewJSONTreeRenderer(root *TreeNode) Renderer`     | JSON wrapping TreeNode       | Small  |
+| `NewJSONGraphRenderer(nodes, edges) Renderer`      | JSON wrapping graph data     | Small  |
+| `NewYAMLTableRenderer(data *TableData) Renderer`   | YAML wrapping TableData      | Small  |
+| `NewYAMLTreeRenderer(root *TreeNode) Renderer`     | YAML wrapping TreeNode       | Small  |
+| `NewYAMLGraphRenderer(nodes, edges) Renderer`      | YAML wrapping graph data     | Small  |
+| `NewMarkdownTreeRenderer(root *TreeNode) Renderer` | Markdown nested bullet lists | Small  |
 
 ### New Formats (from earlier discussion)
 
-| Format | Category | Status |
-|--------|----------|--------|
-| TOML | Table | Not started |
-| JSONL | Table | Not started |
-| PlantUML | Graph | Not started |
-| AsciiDoc | Table | Not started |
+| Format   | Category | Status      |
+| -------- | -------- | ----------- |
+| TOML     | Table    | Not started |
+| JSONL    | Table    | Not started |
+| PlantUML | Graph    | Not started |
+| AsciiDoc | Table    | Not started |
 
 ### Docs / Process
 
-| Task | Status |
-|------|--------|
-| Add Shape to escape/ module docs | Not started |
+| Task                                            | Status      |
+| ----------------------------------------------- | ----------- |
+| Add Shape to escape/ module docs                | Not started |
 | Add capability matrix to FORMAT_ARCHITECTURE.md | Not started |
-| Update examples to demonstrate `Supports()` | Not started |
-| Add CHANGELOG.md entries for v0.4.0 | Not started |
+| Update examples to demonstrate `Supports()`     | Not started |
+| Add CHANGELOG.md entries for v0.4.0             | Not started |
 
 ---
 
@@ -206,6 +206,7 @@ integration/integration_test.go: missing go.sum entry
 The current design deliberately gitignores `go.work` so each module is independently developable. But this causes 85 phantom LSP errors and means contributors cloning the repo don't get workspace mode automatically. The AGENTS.md says "Run from project root to use workspace mode" but there's no `go.work` file to use.
 
 Options:
+
 - A) Un-gitignore `go.work` (breaks independence of modules, fixes LSP)
 - B) Add a `Makefile`/`just` target to generate `go.work` locally (preserves independence, adds dev friction)
 - C) Add `go.work` to the repo but with a note that it's for development only (middle ground)
@@ -217,16 +218,16 @@ Options:
 
 ## Session Stats
 
-| Metric | Value |
-|--------|-------|
-| Files modified | 6 |
-| Files created | 1 (ADR) |
-| Lines added | 269 |
-| Lines removed | 79 |
-| Net change | +190 lines |
-| Doc comments added | 27 |
-| New exported types | 1 (`Shape`) |
-| New exported methods | 3 (`Supports`, `Shapes`, `FormatsForShape`) |
-| Deprecated methods | 4 (`IsTableFormat`, `IsTreeFormat`, `IsGraphFormat`, `Category`) |
-| New test functions | 4 |
-| Lint issues remaining | 0 |
+| Metric                | Value                                                            |
+| --------------------- | ---------------------------------------------------------------- |
+| Files modified        | 6                                                                |
+| Files created         | 1 (ADR)                                                          |
+| Lines added           | 269                                                              |
+| Lines removed         | 79                                                               |
+| Net change            | +190 lines                                                       |
+| Doc comments added    | 27                                                               |
+| New exported types    | 1 (`Shape`)                                                      |
+| New exported methods  | 3 (`Supports`, `Shapes`, `FormatsForShape`)                      |
+| Deprecated methods    | 4 (`IsTableFormat`, `IsTreeFormat`, `IsGraphFormat`, `Category`) |
+| New test functions    | 4                                                                |
+| Lint issues remaining | 0                                                                |

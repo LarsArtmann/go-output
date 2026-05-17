@@ -114,18 +114,18 @@ Level 5 — Consumers
 
 ## Module Dependency Matrix (Proposed)
 
-| ↓ depends on → | enum | escape | root | d2 | graph | table | sort | lipgloss |
-|---|---|---|---|---|---|---|---|---|
-| **enum** | — | — | — | — | — | — | — | — |
-| **escape** | — | — | — | — | — | — | — | — |
-| **root** | ✅ | ✅ | — | — | — | — | — | — |
-| **d2** | ✅ | ✅ | ✅ | — | — | — | — | — |
-| **graph** | ✅ | ✅ | ✅ | — | — | — | — | — |
-| **table** | — | — | ✅ | — | — | — | — | ✅ |
-| **sort** | — | — | ✅ | — | — | — | — | — |
-| **cmdguard** | — | — | — | — | — | — | — | — |
-| **integration** | — | — | ✅ | ✅ | ✅ | ✅ | ✅ | — |
-| **examples** | — | — | ✅ | — | — | ✅ | — | — |
+| ↓ depends on →  | enum | escape | root | d2  | graph | table | sort | lipgloss |
+| --------------- | ---- | ------ | ---- | --- | ----- | ----- | ---- | -------- |
+| **enum**        | —    | —      | —    | —   | —     | —     | —    | —        |
+| **escape**      | —    | —      | —    | —   | —     | —     | —    | —        |
+| **root**        | ✅   | ✅     | —    | —   | —     | —     | —    | —        |
+| **d2**          | ✅   | ✅     | ✅   | —   | —     | —     | —    | —        |
+| **graph**       | ✅   | ✅     | ✅   | —   | —     | —     | —    | —        |
+| **table**       | —    | —      | ✅   | —   | —     | —     | —    | ✅       |
+| **sort**        | —    | —      | ✅   | —   | —     | —     | —    | —        |
+| **cmdguard**    | —    | —      | —    | —   | —     | —     | —    | —        |
+| **integration** | —    | —      | ✅   | ✅  | ✅    | ✅    | ✅   | —        |
+| **examples**    | —    | —      | ✅   | —   | —     | ✅    | —    | —        |
 
 **Cycles:** None. All dependencies point downward (higher row → lower column).
 

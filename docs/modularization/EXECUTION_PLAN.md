@@ -26,6 +26,7 @@ Extract `d2/` and `graph/` as independent Go modules from the root `package outp
    This adds the missing `github.com/larsartmann/go-output/table` require and replace directives.
 
 ### Verification
+
 - [ ] `cd examples && go build ./...` passes
 - [ ] `cd examples && go test ./...` passes (if examples have tests)
 
@@ -40,20 +41,25 @@ Extract `d2/` and `graph/` as independent Go modules from the root `package outp
 ### Actions
 
 1. **Create `d2/` directory**
+
    ```bash
    mkdir d2
    ```
 
 2. **Move D2 production files** (preserve git history)
+
    ```bash
    git mv d2.go d2_enum.go d2_render.go d2_write.go d2_convert.go d2/
    ```
 
 3. **Move D2 test files**
+
    ```bash
 
+   ```
 
 4. **Create `d2/go.mod`**
+
    ```
    module github.com/larsartmann/go-output/d2
 
@@ -94,6 +100,7 @@ Extract `d2/` and `graph/` as independent Go modules from the root `package outp
    - No D2 benchmarks currently — skip for this step
 
 10. **Run in d2 directory:**
+
     ```bash
     cd d2 && go mod tidy && go build ./... && go test ./...
     ```
@@ -104,6 +111,7 @@ Extract `d2/` and `graph/` as independent Go modules from the root `package outp
     ```
 
 ### Verification
+
 - [ ] `cd d2 && go build ./...` passes
 - [ ] `cd d2 && go test ./...` passes
 - [ ] `cd d2 && go vet ./...` reports no issues
@@ -113,11 +121,13 @@ Extract `d2/` and `graph/` as independent Go modules from the root `package outp
 - [ ] No production dependency on d2 from root module
 
 ### Rollback
+
 ```bash
 git revert HEAD
 ```
 
 ### What stays in root after this step
+
 - D2 format constant (`FormatD2`) stays in `format.go`
 - D2 is in `tableFormats` and `graphFormats` maps in `format.go`
 - D2 branded ID brands (`D2NodeIDBrand`, `D2NodeLabelBrand`) stay in `ids.go` — they're type definitions used by d2 module through root import
@@ -134,14 +144,17 @@ git revert HEAD
 ### Actions
 
 1. **Create `graph/` directory**
+
    ```bash
    mkdir graph
    ```
 
 2. **Move graph production files**
+
    ```bash
    git mv dot.go mermaid.go graph/
    ```
+
    Note: `graph.go` stays entirely in root — it contains only core types (`GraphNode`, `GraphEdge`, `GraphRenderer` interface) and utility functions. `GraphRendererMixin` is in `dot.go`, so it moves with `dot.go` to `graph/`.
 
 3. **Extract `GraphRendererMixin` from `dot.go` (optional)**
@@ -150,11 +163,13 @@ git revert HEAD
    - No changes to `graph.go` needed — it stays in root as-is
 
 4. **Move graph test files**
+
    ```bash
    git mv dot_test.go mermaid_test.go graph_test.go graph/
    ```
 
 5. **Create `graph/go.mod`**
+
    ```
    module github.com/larsartmann/go-output/graph
 
@@ -201,6 +216,7 @@ git revert HEAD
     - Add `\"github.com/larsartmann/go-output/graph\"` import to affected files
 
 12. **Run in graph directory:**
+
     ```bash
     cd graph && go mod tidy && go build ./... && go test ./...
     ```
@@ -211,6 +227,7 @@ git revert HEAD
     ```
 
 ### Verification
+
 - [ ] `cd graph && go build ./...` passes
 - [ ] `cd graph && go test ./...` passes
 - [ ] `cd graph && go vet ./...` reports no issues
@@ -221,6 +238,7 @@ git revert HEAD
 - [ ] D2 module still builds and passes tests (it uses root's GraphNode etc., not graph/)
 
 ### Rollback
+
 ```bash
 git revert HEAD
 ```
@@ -250,12 +268,14 @@ git revert HEAD
    ```
 
 ### Verification
+
 - [ ] Root `go.mod` no longer lists `sort` as direct production dependency
 - [ ] `go build ./...` passes
 - [ ] `go test ./...` passes
 - [ ] `go mod tidy` changes nothing (already clean)
 
 ### Rollback
+
 ```bash
 git revert HEAD
 ```
@@ -288,11 +308,13 @@ git revert HEAD
    - Add `d2` and `graph` import examples
 
 ### Verification
+
 - [ ] AGENTS.md reflects 10-module workspace (root + enum + escape + cmdguard + sort + table + integration + examples + **d2** + **graph**)
 - [ ] Build/test commands still accurate
 - [ ] No references to old `output.D2Diagram` etc. without noting the module change
 
 ### Rollback
+
 ```bash
 git revert HEAD
 ```
@@ -302,40 +324,45 @@ git revert HEAD
 ## Dependency Changes Summary
 
 ### New `d2/go.mod`
+
 - `require`: root, enum, escape
 - `replace`: root → `../`, enum → `../enum`, escape → `../escape`
 
 ### New `graph/go.mod`
+
 - `require`: root, enum, escape
 - `replace`: root → `../`, enum → `../enum`, escape → `../escape`
 
 ### Updated `root/go.mod`
+
 - Remove: d2.go, d2_enum.go, d2_render.go, d2_write.go, d2_convert.go, dot.go, mermaid.go from root package
 - Remove: `sort` from production requires (test-only)
 - Keep: all current `replace` directives
 
 ### Updated `integration/go.mod`
+
 - Add: `d2` and `graph` to `require` and `replace` blocks
 
 ### Updated `examples/go.mod`
+
 - Add: `d2` and/or `graph` to `require` and `replace` blocks (if examples use them)
 
 ---
 
 ## Final Module Count
 
-| # | Module | Status |
-|---|---|---|
-| 1 | `root` (package output) | Existing, slimmed |
-| 2 | `enum/` | Existing, unchanged |
-| 3 | `escape/` | Existing, unchanged |
-| 4 | `cmdguard/` | Existing, unchanged |
-| 5 | `sort/` | Existing, unchanged (deprecated) |
-| 6 | `table/` | Existing, unchanged |
-| 7 | `integration/` | Existing, updated deps |
-| 8 | `examples/` | Existing, updated deps |
-| 9 | `d2/` | **NEW** |
-| 10 | `graph/` | **NEW** |
+| #   | Module                  | Status                           |
+| --- | ----------------------- | -------------------------------- |
+| 1   | `root` (package output) | Existing, slimmed                |
+| 2   | `enum/`                 | Existing, unchanged              |
+| 3   | `escape/`               | Existing, unchanged              |
+| 4   | `cmdguard/`             | Existing, unchanged              |
+| 5   | `sort/`                 | Existing, unchanged (deprecated) |
+| 6   | `table/`                | Existing, unchanged              |
+| 7   | `integration/`          | Existing, updated deps           |
+| 8   | `examples/`             | Existing, updated deps           |
+| 9   | `d2/`                   | **NEW**                          |
+| 10  | `graph/`                | **NEW**                          |
 
 ---
 
