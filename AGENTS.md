@@ -26,16 +26,17 @@ https://github.com/larsartmann/go-output
 
 This project uses Go workspace modules. Each sub-package with its own `go.mod` is an independent module:
 
-| Module                  | go.mod | Deps                       | Notes                           |
-| ----------------------- | ------ | -------------------------- | ------------------------------- |
-| Root (`package output`) | ✅     | enum, escape, yaml, x/term, branded-id | Core types + formatters |
-| `enum/`                 | ✅     | None                       | Generic enum utilities          |
-| `escape/`               | ✅     | None                       | Format-specific escaping        |
-| `cmdguard/`             | ✅     | root (tests only)          | CLI flag parsing (prod standalone) |
-| `table/`                | ✅     | root, lipgloss             | **Lipgloss isolated from root** |
-| `sort/`                 | ✅     | None                       | **Deprecated** — only `ByField` remains |
-| `integration/`          | ✅     | root, table                | Cross-module tests              |
-| `examples/`             | ✅     | root, table                | Usage examples                  |
+| Module                  | go.mod | Deps                                   | Notes                                   |
+| ----------------------- | ------ | -------------------------------------- | --------------------------------------- |
+| Root (`package output`) | ✅     | enum, escape, yaml, x/term, branded-id, testhelpers | Core types + formatters                 |
+| `enum/`                 | ✅     | testhelpers (tests only)               | Generic enum utilities                  |
+| `escape/`               | ✅     | None                                   | Format-specific escaping                |
+| `testhelpers/`          | ✅     | None                                   | Shared test assertions (non-internal)   |
+| `cmdguard/`             | ✅     | root (tests only), testhelpers (tests) | CLI flag parsing (prod standalone)      |
+| `table/`                | ✅     | root, lipgloss                         | **Lipgloss isolated from root**         |
+| `sort/`                 | ✅     | None                                   | **Deprecated** — only `ByField` remains |
+| `integration/`          | ✅     | root, table                            | Cross-module tests                      |
+| `examples/`             | ✅     | root, table                            | Usage examples                          |
 
 `go.work` is gitignored (local dev only). Each module uses `replace` directives for standalone development.
 
@@ -44,11 +45,12 @@ This project uses Go workspace modules. Each sub-package with its own `go.mod` i
 ### Dependency Graph
 
 ```
-root (output) → enum, escape, yaml, x/term, go-branded-id
-enum          → (none)
+root (output) → enum, escape, yaml, x/term, go-branded-id, testhelpers
+enum          → testhelpers (tests only)
 escape        → (none)
+testhelpers   → (none) — zero deps, shared test assertions
 sort          → (none) — zero deps, only ByField helper
-cmdguard      → root (tests only; prod code is standalone)
+cmdguard      → root (tests only), testhelpers (tests); prod code standalone
 table         → root, lipgloss/v2
 integration   → root, table
 examples      → root, table
@@ -69,7 +71,7 @@ go-output/                    # Root module (package output) — types, interfac
 ├── slices.go                 # FilledStrings utility
 ├── tabledata.go              # TableData, RowEdge, tableDataBase (extracted from format.go/html.go)
 ├── tree.go                   # TreeNode, TreeOutputRenderer (extracted from format.go)
-├── json.go, csv.go, tsv.go, yaml.go, xml.go, markdown.go
+├── json.go, json_renderers.go, csv.go, tsv.go, yaml.go, yaml_renderers.go, xml.go, markdown.go
 ├── html.go, streaming.go
 ├── graph.go                  # GraphNode, GraphEdge, GraphRenderer, GraphRendererMixin, AddTreeNodes
 ├── dot.go                    # DOT/Graphviz renderer
@@ -81,6 +83,7 @@ go-output/                    # Root module (package output) — types, interfac
 │
 ├── enum/                     # MODULE: Generic enum utilities (zero deps)
 ├── escape/                   # MODULE: Format-specific escaping (zero deps)
+├── testhelpers/              # MODULE: Shared test assertions (non-internal, zero deps)
 ├── cmdguard/                 # MODULE: CLI flag parsing (prod standalone, tests import root)
 ├── table/                    # MODULE: Lipgloss terminal tables (lipgloss isolated)
 ├── sort/                     # MODULE: Deprecated — only ByField helper remains (zero deps)
@@ -97,7 +100,7 @@ golangci-lint run ./...         # Lint root module
 go mod tidy                     # Tidy root module
 
 # Per-module (required since go.work is gitignored)
-for mod in . enum escape sort cmdguard table integration; do
+for mod in . enum escape testhelpers sort cmdguard table integration; do
   (cd $mod && go test ./...)
 done
 ```
@@ -135,12 +138,13 @@ EOF
 
 | Package       | Coverage | Module |
 | ------------- | -------- | ------ |
-| output (root) | 90.3%    | root   |
+| output (root) | 90%+     | root   |
 | cmdguard      | 100%     | own    |
 | enum          | 100%     | own    |
 | escape        | 100%     | own    |
 | sort          | 100%     | own    |
 | table         | 100%     | own    |
+| testhelpers   | 100%     | own    |
 
 ## Testing
 

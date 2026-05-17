@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/larsartmann/go-output"
+	"github.com/larsartmann/go-output/testhelpers"
 )
 
 func testParseHelper[T EnumValue](
@@ -126,22 +127,6 @@ func TestColorModeFlag_Parse(t *testing.T) {
 	testParseHelper(t, "ColorModeFlag", newColorModeFlag, tests)
 }
 
-func assertStringSliceEqual(t *testing.T, name string, got, want []string) {
-	t.Helper()
-
-	if len(got) != len(want) {
-		t.Errorf("%s returned %d values, want %d", name, len(got), len(want))
-
-		return
-	}
-
-	for i, v := range got {
-		if v != want[i] {
-			t.Errorf("%s[%d] = %v, want %v", name, i, v, want[i])
-		}
-	}
-}
-
 func testAllowedValuesHelper[T EnumValue](
 	t *testing.T,
 	newFlag func(*T) *EnumFlag[T],
@@ -154,7 +139,7 @@ func testAllowedValuesHelper[T EnumValue](
 	flag := newFlag(&val)
 	got := flag.AllowedValues()
 
-	assertStringSliceEqual(t, "AllowedValues", got, want)
+	testhelpers.AssertStringSliceEqual(t, "AllowedValues", got, want)
 }
 
 func TestColorModeFlag_AllowedValues(t *testing.T) {

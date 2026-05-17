@@ -11,7 +11,7 @@ Thank you for your interest in contributing to go-output!
 
 ## Development Setup
 
-This project uses a Go multi-module workspace with 7 independent modules.
+This project uses a Go multi-module workspace with 8 independent modules.
 
 ### Initial Setup
 
@@ -24,6 +24,7 @@ use (
   .
   ./enum
   ./escape
+  ./testhelpers
   ./cmdguard
   ./sort
   ./table
@@ -131,7 +132,7 @@ go test -fuzz=FuzzParseSortBy -fuzztime=1m .
 ## Pull Request Process
 
 1. Update the README.md if you add new features
-2. Update CHANGELOG.md with your changes
+2. Update CHANGELOG.md with your changes (following [Keep a Changelog](https://keepachangelog.com/) format)
 3. Ensure all tests pass and linter is clean
 4. Push your branch and create a pull request
 5. Respond to review feedback

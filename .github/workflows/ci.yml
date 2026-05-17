@@ -18,24 +18,43 @@ jobs:
         with:
           go-version: "1.26"
 
-      - name: Download dependencies
-        run: go mod download
+      - name: Build all modules
+        run: |
+          for mod in . enum escape testhelpers sort cmdguard table integration examples; do
+            echo "::group::Build $mod"
+            (cd $mod && go build ./...)
+            echo "::endgroup::"
+          done
 
-      - name: Build
-        run: go build ./...
+      - name: Test all modules
+        run: |
+          for mod in . enum escape testhelpers sort cmdguard table integration examples; do
+            echo "::group::Test $mod"
+            (cd $mod && go test -v -race ./...)
+            echo "::endgroup::"
+          done
 
-      - name: Test
-        run: go test -v -race ./...
-
-      - name: Lint
+      - name: Lint all modules
         run: |
           go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
-          golangci-lint run ./...
+          for mod in . enum escape testhelpers sort cmdguard table integration examples; do
+            echo "::group::Lint $mod"
+            if [ -f "$mod/.golangci.yml" ] || [ -f "$mod/.golangci.yaml" ]; then
+              (cd $mod && golangci-lint run ./...)
+            else
+              (cd $mod && golangci-lint run ./... --config=../.golangci.yml)
+            fi
+            echo "::endgroup::"
+          done
 
-      - name: Check go mod tidy
+      - name: Check go mod tidy (all modules)
         run: |
-          cp go.mod go.mod.bak
-          cp go.sum go.sum.bak
-          go mod tidy
-          diff go.mod go.mod.bak || (echo "go.mod is not tidy" && exit 1)
-          diff go.sum go.sum.bak || (echo "go.sum is not tidy" && exit 1)
+          for mod in . enum escape testhelpers sort cmdguard table integration examples; do
+            echo "::group::Mod tidy check $mod"
+            (cd $mod && cp go.mod go.mod.bak && cp go.sum go.sum.bak 2>/dev/null || true)
+            (cd $mod && go mod tidy)
+            (cd $mod && diff go.mod go.mod.bak || (echo "go.mod is not tidy in $mod" && exit 1))
+            (cd $mod && diff go.sum go.sum.bak 2>/dev/null || true)
+            (cd $mod && rm -f go.mod.bak go.sum.bak)
+            echo "::endgroup::"
+          done

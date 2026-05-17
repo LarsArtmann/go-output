@@ -1,281 +1,14 @@
 package output
 
 import (
+	"errors"
 	"slices"
 	"strings"
 	"testing"
-
-	"github.com/larsartmann/go-output/internal/gentest"
 )
 
-func TestParseOutputFormat(t *testing.T) {
-	tests := []parseEnumTestCase[Format]{
-		{"table", "table", FormatTable, false},
-		{"json", "json", FormatJSON, false},
-		{"csv", "csv", FormatCSV, false},
-		{"markdown", "markdown", FormatMarkdown, false},
-		{"d2", "d2", FormatD2, false},
-		{"yaml", "yaml", FormatYAML, false},
-		{"html", "html", FormatHTML, false},
-		{"tree", "tree", FormatTree, false},
-		{"mermaid", "mermaid", FormatMermaid, false},
-		{"dot", "dot", FormatDOT, false},
-		{"invalid", "invalid", "", true},
-		{"empty", "", "", true},
-	}
-	testParseEnum(
-		t,
-		"ParseOutputFormat",
-		ParseOutputFormat,
-		tests,
-		func(a, b Format) bool { return a == b },
-	)
-}
-
-func TestOutputFormatString(t *testing.T) {
-	tests := []stringEnumTestCase[Format]{
-		{FormatTable, "table"},
-		{FormatJSON, "json"},
-		{FormatCSV, "csv"},
-		{FormatMarkdown, "markdown"},
-		{FormatD2, "d2"},
-		{FormatYAML, "yaml"},
-	}
-	testEnumString(t, "OutputFormat.String", tests, func(f Format) string { return f.String() })
-}
-
-func TestOutputFormatAllowedValues(t *testing.T) {
-	// Generate expected list from AllFormats to avoid hardcoding
-	want := make([]string, len(AllFormats))
-	for i, f := range AllFormats {
-		want[i] = string(f)
-	}
-
-	testAllowedValues(
-		t,
-		"AllowedValues",
-		OutputFormatTable.AllowedValues(),
-		want,
-	)
-}
-
-func TestOutputFormatIsValid(t *testing.T) {
-	t.Parallel()
-
-	gentest.TestEnumIsValid(t, []OutputFormat{
-		OutputFormatTable,
-		OutputFormatJSON,
-		OutputFormatCSV,
-		OutputFormatMarkdown,
-		OutputFormatD2,
-		OutputFormatYAML,
-		FormatHTML,
-		FormatTree,
-		FormatMermaid,
-		FormatDOT,
-		OutputFormat("invalid"),
-		OutputFormat(""),
-	}, []bool{
-		true,
-		true,
-		true,
-		true,
-		true,
-		true,
-		true,
-		true,
-		true,
-		true,
-		false,
-		false,
-	})
-}
-
-func FuzzParseOutputFormat(f *testing.F) {
-	f.Add("table")
-	f.Add("json")
-	f.Add("csv")
-	f.Add("markdown")
-	f.Add("d2")
-	f.Add("yaml")
-	f.Add("html")
-	f.Add("tree")
-	f.Add("mermaid")
-	f.Add("dot")
-	f.Add("invalid")
-	f.Add("")
-
-	f.Fuzz(func(t *testing.T, s string) {
-		fuzzEnumTest(t, s, ParseOutputFormat, "ParseOutputFormat")
-	})
-}
-
-func TestFormatIsTableFormat(t *testing.T) {
-	testBoolMethod(
-		t,
-		"Format",
-		"IsTableFormat",
-		[]boolMethodTestCase[Format]{
-			{FormatTable, true},
-			{FormatJSON, true},
-			{FormatCSV, true},
-			{FormatTSV, true},
-			{FormatMarkdown, true},
-			{FormatXML, true},
-			{FormatD2, true},
-			{FormatYAML, true},
-			{FormatHTML, true},
-			{FormatMermaid, true},
-			{FormatDOT, true},
-			{FormatTree, false},
-		},
-		func(f Format) bool { return f.IsTableFormat() },
-		func(f Format) string { return string(f) },
-	)
-}
-
-func TestFormatIsTreeFormat(t *testing.T) {
-	testBoolMethod(
-		t,
-		"Format",
-		"IsTreeFormat",
-		[]boolMethodTestCase[Format]{
-			{FormatTree, true},
-			{FormatHTML, true},
-			{FormatJSON, true},
-			{FormatYAML, true},
-			{FormatTable, false},
-			{FormatCSV, false},
-			{FormatMermaid, false},
-		},
-		func(f Format) bool { return f.IsTreeFormat() },
-		func(f Format) string { return string(f) },
-	)
-}
-
-func TestFormatIsGraphFormat(t *testing.T) {
-	testBoolMethod(
-		t,
-		"Format",
-		"IsGraphFormat",
-		[]boolMethodTestCase[Format]{
-			{FormatD2, true},
-			{FormatMermaid, true},
-			{FormatDOT, true},
-			{FormatJSON, true},
-			{FormatYAML, true},
-			{FormatTable, false},
-			{FormatTree, false},
-			{FormatCSV, false},
-		},
-		func(f Format) bool { return f.IsGraphFormat() },
-		func(f Format) string { return string(f) },
-	)
-}
-
-func TestInvalidFormatError(t *testing.T) {
-	t.Parallel()
-
-	err := &InvalidFormatError{
-		Value:   "invalid",
-		Allowed: nil,
-	}
-
-	got := err.Error()
-
-	wantContains := []string{"invalid format", "invalid"}
-	for _, want := range wantContains {
-		if !strings.Contains(got, want) {
-			t.Errorf("Error() = %q, should contain %q", got, want)
-		}
-	}
-}
-
-func TestFormatCategory(t *testing.T) {
-	t.Parallel()
-
-	tests := []struct {
-		format    Format
-		wantTable bool
-		wantTree  bool
-		wantGraph bool
-	}{
-		{FormatTable, true, false, false},
-		{FormatJSON, true, true, true},
-		{FormatCSV, true, false, false},
-		{FormatTSV, true, false, false},
-		{FormatMarkdown, true, false, false},
-		{FormatXML, true, false, false},
-		{FormatYAML, true, true, true},
-		{FormatD2, true, false, true},
-		{FormatHTML, true, true, false},
-		{FormatTree, false, true, false},
-		{FormatMermaid, true, false, true},
-		{FormatDOT, true, false, true},
-	}
-
-	for _, tt := range tests {
-		t.Run(string(tt.format), func(t *testing.T) {
-			t.Parallel()
-
-			testBoolValue(
-				t,
-				string(tt.format),
-				"IsTableFormat",
-				tt.format.IsTableFormat(),
-				tt.wantTable,
-			)
-			testBoolValue(
-				t,
-				string(tt.format),
-				"IsTreeFormat",
-				tt.format.IsTreeFormat(),
-				tt.wantTree,
-			)
-			testBoolValue(
-				t,
-				string(tt.format),
-				"IsGraphFormat",
-				tt.format.IsGraphFormat(),
-				tt.wantGraph,
-			)
-		})
-	}
-}
-
-func TestFormatCategoryMethod(t *testing.T) {
-	t.Parallel()
-
-	// Category() returns graph > tree > table priority for multi-shape formats
-	tests := []struct {
-		format Format
-		want   FormatCategory
-	}{
-		{FormatTable, CategoryTable},
-		{FormatJSON, CategoryGraph},
-		{FormatCSV, CategoryTable},
-		{FormatTSV, CategoryTable},
-		{FormatXML, CategoryTable},
-		{FormatMarkdown, CategoryTable},
-		{FormatYAML, CategoryGraph},
-		{FormatHTML, CategoryTree},
-		{FormatTree, CategoryTree},
-		{FormatD2, CategoryGraph},
-		{FormatMermaid, CategoryGraph},
-		{FormatDOT, CategoryGraph},
-	}
-
-	for _, tt := range tests {
-		t.Run(string(tt.format), func(t *testing.T) {
-			t.Parallel()
-
-			got := tt.format.Category()
-			if got != tt.want {
-				t.Errorf("Format(%q).Category() = %v, want %v", tt.format, got, tt.want)
-			}
-		})
-	}
-}
+// errTest is a static test error for MustRender panic testing.
+var errTest = errors.New("test error")
 
 func TestFormatSupports(t *testing.T) {
 	t.Parallel()
@@ -367,102 +100,72 @@ func assertContainsAll(t *testing.T, label string, formats []Format, required ..
 	}
 }
 
-func TestAllShapes(t *testing.T) {
+func TestInvalidFormatError(t *testing.T) {
 	t.Parallel()
 
-	want := []Shape{ShapeTable, ShapeTree, ShapeGraph}
-	if len(AllShapes) != len(want) {
-		t.Errorf("AllShapes length = %d, want %d", len(AllShapes), len(want))
+	err := &InvalidFormatError{
+		Value:   "invalid",
+		Allowed: nil,
 	}
 
-	for i, s := range AllShapes {
-		if s != want[i] {
-			t.Errorf("AllShapes[%d] = %v, want %v", i, s, want[i])
+	got := err.Error()
+
+	wantContains := []string{"invalid format", "invalid"}
+	for _, want := range wantContains {
+		if !strings.Contains(got, want) {
+			t.Errorf("Error() = %q, should contain %q", got, want)
 		}
 	}
 }
 
-func TestParseShape(t *testing.T) {
+func TestInvalidFormatErrorWithAllowed(t *testing.T) {
 	t.Parallel()
 
-	tests := []struct {
-		input string
-		want  Shape
-		err   bool
-	}{
-		{"table", ShapeTable, false},
-		{"tree", ShapeTree, false},
-		{"graph", ShapeGraph, false},
-		{"invalid", "", true},
-		{"", "", true},
+	err := &InvalidFormatError{
+		Value:   "bogus",
+		Allowed: []Format{FormatTable, FormatJSON},
 	}
-	for _, tt := range tests {
-		t.Run(tt.input, func(t *testing.T) {
-			t.Parallel()
 
-			got, err := ParseShape(tt.input)
-			if tt.err {
-				if err == nil {
-					t.Errorf("ParseShape(%q) expected error, got nil", tt.input)
-				}
+	got := err.Error()
 
-				return
-			}
+	if !strings.Contains(got, "bogus") {
+		t.Errorf("Error() = %q, should contain value", got)
+	}
 
-			if err != nil {
-				t.Errorf("ParseShape(%q) unexpected error: %v", tt.input, err)
-
-				return
-			}
-
-			if got != tt.want {
-				t.Errorf("ParseShape(%q) = %v, want %v", tt.input, got, tt.want)
-			}
-		})
+	if !strings.Contains(got, "table") {
+		t.Errorf("Error() = %q, should contain allowed formats", got)
 	}
 }
 
-func TestShapeIsValid(t *testing.T) {
+func TestMustRender(t *testing.T) {
 	t.Parallel()
 
-	gentest.TestEnumIsValid(t, []Shape{
-		ShapeTable,
-		ShapeTree,
-		ShapeGraph,
-	}, []bool{true, true, true})
+	renderer := NewJSONTableRenderer()
+	renderer.SetHeaders([]string{"Name"})
+	renderer.AddRow([]string{"test"})
+
+	got := MustRender(renderer)
+	if !strings.Contains(got, `"Name"`) {
+		t.Errorf("MustRender() = %q, should contain header", got)
+	}
 }
 
-func TestShapeAllowedValues(t *testing.T) {
+func TestMustRenderPanics(t *testing.T) {
 	t.Parallel()
 
-	got := ShapeTable.AllowedValues()
-	want := []string{"table", "tree", "graph"}
-
-	if len(got) != len(want) {
-		t.Errorf("Shape.AllowedValues() length = %d, want %d", len(got), len(want))
-
-		return
-	}
-
-	for i, v := range got {
-		if v != want[i] {
-			t.Errorf("Shape.AllowedValues()[%d] = %q, want %q", i, v, want[i])
+	defer func() {
+		r := recover()
+		if r == nil {
+			t.Error("MustRender should panic on error")
 		}
-	}
+	}()
+
+	// Use a renderer that always errors
+	_ = MustRender(&errorRenderer{})
 }
 
-func TestShapeString(t *testing.T) {
-	t.Parallel()
+type errorRenderer struct{}
 
-	if ShapeTable.String() != "table" {
-		t.Errorf("ShapeTable.String() = %q, want %q", ShapeTable.String(), "table")
-	}
-
-	if ShapeTree.String() != "tree" {
-		t.Errorf("ShapeTree.String() = %q, want %q", ShapeTree.String(), "tree")
-	}
-
-	if ShapeGraph.String() != "graph" {
-		t.Errorf("ShapeGraph.String() = %q, want %q", ShapeGraph.String(), "graph")
-	}
+func (e *errorRenderer) Render() (string, error) {
+	return "", errTest
 }

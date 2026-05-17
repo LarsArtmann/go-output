@@ -5,10 +5,10 @@ import (
 	"testing"
 
 	"github.com/larsartmann/go-output/internal/gentest"
+	"github.com/larsartmann/go-output/testhelpers"
 )
 
-// Re-export generic helpers from gentest for use by package output tests.
-// This avoids code duplication while maintaining the unexported API.
+// Re-export generic helpers for use by package output tests.
 type (
 	ExpectedOutput         = gentest.ExpectedOutput
 	htmlEscapeTestRenderer = gentest.HTMLEscapeTestRenderer
@@ -16,10 +16,14 @@ type (
 
 //nolint:gochecknoglobals // Re-exported test helpers for package-local use
 var (
-	assertContains         = gentest.AssertContains
-	assertMarshalError     = gentest.AssertMarshalError
-	assertStringSliceEqual = gentest.AssertStringSliceEqual
+	assertContains     = gentest.AssertContains
+	assertMarshalError = gentest.AssertMarshalError
 )
+
+// Re-export shared test helpers from testhelpers package.
+//
+//nolint:gochecknoglobals // Re-exported test helper for package-local use
+var assertStringSliceEqual = testhelpers.AssertStringSliceEqual
 
 func testHTMLEscapeShared(
 	t *testing.T,

@@ -85,7 +85,20 @@ type Renderer interface {
 ### Table Formats
 
 ```go
-// JSON
+// JSON table (array of objects)
+jt := output.NewJSONTableRenderer()
+jt.SetHeaders([]string{"Name", "Health"})
+jt.AddRow([]string{"Alpha", "90%"})
+out, _ := jt.Render()
+// [{"Name": "Alpha", "Health": "90%"}]
+
+// YAML table (sequence of mappings)
+yt := output.NewYAMLTableRenderer()
+yt.SetHeaders([]string{"Name", "Health"})
+yt.AddRow([]string{"Alpha", "90%"})
+out, _ := yt.Render()
+
+// JSON (any data)
 data, _ := output.MarshalJSONIndent(projects, "", "  ")
 
 // CSV
@@ -103,7 +116,7 @@ tw.Flush()
 // XML
 data, _ := output.MarshalXMLFromTableData(tableData)
 
-// YAML
+// YAML (any data)
 data, _ := output.MarshalYAML(projects)
 
 // Markdown table
@@ -122,22 +135,49 @@ out, _ := tbl.Render()
 ### Tree Formats
 
 ```go
-tree := output.NewASCIITreeRenderer()
-
 root := output.NewTreeNode("root", "Projects")
 root.AddChild(output.NewTreeNode("alpha", "Alpha"))
 root.AddChild(output.NewTreeNode("beta", "Beta"))
 
+// ASCII tree
+tree := output.NewASCIITreeRenderer()
 tree.SetRoot(root)
 out, _ := tree.Render()
 // Projects
 // ├── Alpha
 // └── Beta
+
+// JSON tree
+jt := output.NewJSONTreeRenderer()
+jt.SetRoot(root)
+out, _ := jt.Render()
+// {"id": "root", "label": "Projects", "children": [...]}
+
+// YAML tree
+yt := output.NewYAMLTreeRenderer()
+yt.SetRoot(root)
+out, _ := yt.Render()
+// id: root
+// label: Projects
+// children: ...
+
+// HTML tree (collapsible)
+ht := output.NewHTMLTreeRenderer()
+ht.SetRoot(root)
+out, _ := ht.Render()
 ```
 
 ### Graph Formats
 
 ```go
+nodes := []output.GraphNode{
+    output.NewGraphNode("a", "API Gateway"),
+    output.NewGraphNode("b", "Backend"),
+}
+edges := []output.GraphEdge{
+    output.NewGraphEdge("a", "b"),
+}
+
 // DOT / Graphviz
 renderer := output.DOTFromTableData(data)
 out, _ := renderer.Render()
@@ -145,6 +185,19 @@ out, _ := renderer.Render()
 // Mermaid flowchart
 renderer := output.MermaidFlowchartRenderer(data)
 out, _ := renderer.Render()
+
+// JSON graph
+jg := output.NewJSONGraphRenderer()
+jg.SetNodes(nodes)
+jg.SetEdges(edges)
+out, _ := jg.Render()
+// {"nodes": [...], "edges": [...]}
+
+// YAML graph
+yg := output.NewYAMLGraphRenderer()
+yg.SetNodes(nodes)
+yg.SetEdges(edges)
+out, _ := yg.Render()
 
 // D2 diagrams (shapes, SQL tables, grid layouts, nested containers)
 d2 := output.NewD2Renderer("Architecture")
