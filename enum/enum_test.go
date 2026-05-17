@@ -2,8 +2,6 @@ package enum
 
 import (
 	"testing"
-
-	"github.com/larsartmann/go-output/internal/gentest"
 )
 
 type testEnum string
@@ -23,6 +21,22 @@ func testEnumString(v testEnum) string {
 
 func (e testEnum) String() string {
 	return string(e)
+}
+
+func assertStringSliceEqual(t *testing.T, name string, got, want []string) {
+	t.Helper()
+
+	if len(got) != len(want) {
+		t.Errorf("%s returned %d values, want %d", name, len(got), len(want))
+
+		return
+	}
+
+	for i, v := range got {
+		if v != want[i] {
+			t.Errorf("%s[%d] = %v, want %v", name, i, v, want[i])
+		}
+	}
 }
 
 func TestParse(t *testing.T) {
@@ -61,7 +75,7 @@ func TestAllowedStrings(t *testing.T) {
 	got := AllowedStrings(testEnumValues, testEnumString)
 	want := []string{"a", "b", "c"}
 
-	gentest.AssertStringSliceEqual(t, "AllowedStrings", got, want)
+	assertStringSliceEqual(t, "AllowedStrings", got, want)
 }
 
 func TestAllowedValues(t *testing.T) {
@@ -70,7 +84,7 @@ func TestAllowedValues(t *testing.T) {
 	got := AllowedValues(testEnumValues)
 	want := []string{"a", "b", "c"}
 
-	gentest.AssertStringSliceEqual(t, "AllowedValues", got, want)
+	assertStringSliceEqual(t, "AllowedValues", got, want)
 }
 
 func TestParseError(t *testing.T) {
