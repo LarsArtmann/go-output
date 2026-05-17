@@ -193,3 +193,57 @@ func NodesFromTableData(data *TableData, labelFn GraphNodeLabelFunc) []GraphNode
 
 	return nodes
 }
+
+// GraphRendererMixin contains shared fields and methods for graph renderers.
+//
+// D2 does not use this mixin because it has richer domain-specific types
+// (D2Node, D2Edge with classes, SQL tables, shapes, arrow types, etc.)
+// that do not map to the simpler GraphNode/GraphEdge model.
+type GraphRendererMixin struct {
+	nodes []GraphNode
+	edges []GraphEdge
+}
+
+// NewGraphRendererMixin creates a new GraphRendererMixin with initialized slices.
+func NewGraphRendererMixin() GraphRendererMixin {
+	return GraphRendererMixin{
+		nodes: make([]GraphNode, 0),
+		edges: make([]GraphEdge, 0),
+	}
+}
+
+// SetNodes sets the graph nodes.
+func (m *GraphRendererMixin) SetNodes(nodes []GraphNode) {
+	m.nodes = nodes
+}
+
+// SetEdges sets the graph edges.
+func (m *GraphRendererMixin) SetEdges(edges []GraphEdge) {
+	m.edges = edges
+}
+
+// AddRowEdges adds edges from data.CreateRowEdges() to the graph.
+func (m *GraphRendererMixin) AddRowEdges(data *TableData) {
+	for _, edge := range data.CreateRowEdges() {
+		//nolint:exhaustruct // Uses defaults for optional fields
+		m.edges = append(m.edges, GraphEdge{
+			From: NewBrandedID[GraphNodeIDBrand](edge.From),
+			To:   NewBrandedID[GraphNodeIDBrand](edge.To),
+		})
+	}
+}
+
+// SetNodesFromTableData creates nodes from TableData, applies per-node modifications,
+// adds them to the graph, and adds row edges.
+func (m *GraphRendererMixin) SetNodesFromTableData(
+	data *TableData,
+	modifyNode func(i int, n *GraphNode),
+) {
+	nodes := NodesFromTableData(data, DefaultGraphNodeLabel)
+	for i := range nodes {
+		modifyNode(i, &nodes[i])
+	}
+
+	m.nodes = append(m.nodes, nodes...)
+	m.AddRowEdges(data)
+}
