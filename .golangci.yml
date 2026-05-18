@@ -291,6 +291,10 @@ linters:
         text: (?:parallel test|t\.Parallel)
         linters:
           - paralleltest
+      - path: _test\.go$
+        text: (?:make it a constant|but such constant)
+        linters:
+          - goconst
       - path: sort/sorter\.go
         text: varnamelen
         linters:
@@ -317,6 +321,10 @@ linters:
         text: (?:gochecknoglobals|AllFormats)
         linters:
           - gochecknoglobals
+      - path: format\.go
+        text: (?:already exists|make it a constant)
+        linters:
+          - goconst
       - path: .*\.go$
         text: .*
         linters:
