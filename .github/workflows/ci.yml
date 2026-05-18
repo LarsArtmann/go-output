@@ -36,7 +36,7 @@ jobs:
 
       - name: Lint all modules
         run: |
-          go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+          go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest
           for mod in . enum escape testhelpers sort cmdguard table integration examples; do
             echo "::group::Lint $mod"
             if [ -f "$mod/.golangci.yml" ] || [ -f "$mod/.golangci.yaml" ]; then

@@ -148,6 +148,7 @@ linters:
             - github.com/larsartmann/go-output/table
             - github.com/larsartmann/go-output/sort
             - github.com/larsartmann/go-output/testhelpers
+            - github.com/larsartmann/go-output/examples/shared
             - github.com/larsartmann/go-branded-id
             - charm.land/lipgloss/v2
             - charm.land/lipgloss/v2/table
@@ -206,6 +207,22 @@ linters:
             - charm.land/lipgloss/v2/table
             - github.com/go-faster/yaml
             - golang.org/x/term
+        examples:
+          files:
+            - "examples/**/*.go"
+          allow:
+            - $STDERR
+            - $GITHUB_ACTION
+            - bytes
+            - fmt
+            - io
+            - os
+            - strconv
+            - strings
+            - github.com/larsartmann/go-output
+            - github.com/larsartmann/go-output/examples/shared
+            - github.com/larsartmann/go-output/table
+            - github.com/larsartmann/go-branded-id
   exclusions:
     rules:
       - path: sort/.*\.go
