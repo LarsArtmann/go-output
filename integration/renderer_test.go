@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/larsartmann/go-output"
-	"github.com/larsartmann/go-output/internal/testutils"
 )
 
 func TestTableFormatContent(t *testing.T) {
@@ -15,9 +14,9 @@ func TestTableFormatContent(t *testing.T) {
 	projects := SampleProjects()
 
 	result := renderTableFormat(projects)
-	testutils.AssertContains(t, result, "Name", "Table should contain header 'Name'")
-	testutils.AssertContains(t, result, "Alpha", "Table should contain project name 'Alpha'")
-	testutils.AssertContains(t, result, "Beta", "Table should contain project name 'Beta'")
+	assertContains(t, result, "Name", "Table should contain header 'Name'")
+	assertContains(t, result, "Alpha", "Table should contain project name 'Alpha'")
+	assertContains(t, result, "Beta", "Table should contain project name 'Beta'")
 }
 
 func TestJSONFormatContent(t *testing.T) {
@@ -31,18 +30,18 @@ func TestJSONFormatContent(t *testing.T) {
 	}
 
 	result := string(data)
-	testutils.AssertContains(t, result, "Alpha", "JSON should contain project name 'Alpha'")
-	testutils.AssertContains(t, result, "90", "JSON should contain health value 90")
+	assertContains(t, result, "Alpha", "JSON should contain project name 'Alpha'")
+	assertContains(t, result, "90", "JSON should contain health value 90")
 }
 
 func TestMarkdownTableContent(t *testing.T) {
 	t.Parallel()
 
-	result := testutils.RenderSampleMarkdownTable()
+	result := renderSampleMarkdownTable()
 
-	testutils.AssertContains(t, result, "| Name", "Markdown should contain header cell")
-	testutils.AssertContains(t, result, "| Alpha", "Markdown should contain row data")
-	testutils.AssertContains(t, result, "|---", "Markdown should contain separator row")
+	assertContains(t, result, "| Name", "Markdown should contain header cell")
+	assertContains(t, result, "| Alpha", "Markdown should contain row data")
+	assertContains(t, result, "|---", "Markdown should contain separator row")
 }
 
 func TestCSVFormatContent(t *testing.T) {
@@ -65,8 +64,8 @@ func TestCSVFormatContent(t *testing.T) {
 	w.Flush()
 
 	result := buf.String()
-	testutils.AssertContains(t, result, "Name,Health", "CSV should contain header row")
-	testutils.AssertContains(t, result, "Alpha,90", "CSV should contain data row")
+	assertContains(t, result, "Name,Health", "CSV should contain header row")
+	assertContains(t, result, "Alpha,90", "CSV should contain data row")
 }
 
 func TestYAMLFormatContent(t *testing.T) {
@@ -80,7 +79,7 @@ func TestYAMLFormatContent(t *testing.T) {
 	}
 
 	result := string(data)
-	testutils.AssertContains(t, result, "Alpha", "YAML should contain project name 'Alpha'")
+	assertContains(t, result, "Alpha", "YAML should contain project name 'Alpha'")
 }
 
 func TestHTMLFormatContent(t *testing.T) {
@@ -95,8 +94,8 @@ func TestHTMLFormatContent(t *testing.T) {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	testutils.AssertContains(t, result, "<table", "HTML should contain table tag")
-	testutils.AssertContains(t, result, "Alpha", "HTML should contain project name 'Alpha'")
+	assertContains(t, result, "<table", "HTML should contain table tag")
+	assertContains(t, result, "Alpha", "HTML should contain project name 'Alpha'")
 }
 
 func TestHTMLFullPage(t *testing.T) {
@@ -111,8 +110,8 @@ func TestHTMLFullPage(t *testing.T) {
 		t.Fatalf("RenderFullHTML() error = %v", err)
 	}
 
-	testutils.AssertContains(t, result, "<html", "Full HTML should contain html tag")
-	testutils.AssertContains(
+	assertContains(t, result, "<html", "Full HTML should contain html tag")
+	assertContains(
 		t,
 		result,
 		"<title>Test Page</title>",

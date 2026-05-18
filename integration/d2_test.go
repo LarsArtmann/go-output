@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/larsartmann/go-output"
-	"github.com/larsartmann/go-output/internal/testutils"
 )
 
 func TestD2FromTableDataIntegration(t *testing.T) {
@@ -13,9 +12,9 @@ func TestD2FromTableDataIntegration(t *testing.T) {
 
 	projects := SampleProjects()
 	result := renderD2FromTableData(projects)
-	testutils.AssertContains(t, result, "row0", "D2 from table data should contain row nodes")
-	testutils.AssertContains(t, result, "->", "D2 from table data should contain edges")
-	testutils.AssertContains(t, result, "Alpha", "D2 from table data should contain project names")
+	assertContains(t, result, "row0", "D2 from table data should contain row nodes")
+	assertContains(t, result, "->", "D2 from table data should contain edges")
+	assertContains(t, result, "Alpha", "D2 from table data should contain project names")
 }
 
 func TestD2FromTreeIntegration(t *testing.T) {
@@ -23,9 +22,9 @@ func TestD2FromTreeIntegration(t *testing.T) {
 
 	projects := SampleProjects()
 	result := renderD2FromTree(projects)
-	testutils.AssertContains(t, result, "Projects", "D2 from tree should contain root label")
-	testutils.AssertContains(t, result, "->", "D2 from tree should contain edges")
-	testutils.AssertContains(t, result, "Alpha", "D2 from tree should contain child labels")
+	assertContains(t, result, "Projects", "D2 from tree should contain root label")
+	assertContains(t, result, "->", "D2 from tree should contain edges")
+	assertContains(t, result, "Alpha", "D2 from tree should contain child labels")
 }
 
 func TestD2ConstraintsIntegration(t *testing.T) {
@@ -43,9 +42,9 @@ func TestD2ConstraintsIntegration(t *testing.T) {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	testutils.AssertContains(t, result, "constraint: primary_key", "should contain primary key")
-	testutils.AssertContains(t, result, "constraint: unique", "should contain unique constraint")
-	testutils.AssertContains(t, result, "constraint: foreign_key", "should contain foreign key")
+	assertContains(t, result, "constraint: primary_key", "should contain primary key")
+	assertContains(t, result, "constraint: unique", "should contain unique constraint")
+	assertContains(t, result, "constraint: foreign_key", "should contain foreign key")
 }
 
 func TestD2ClassesIntegration(t *testing.T) {
@@ -64,8 +63,8 @@ func TestD2ClassesIntegration(t *testing.T) {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	testutils.AssertContains(t, result, "classes:", "should contain classes block")
-	testutils.AssertContains(t, result, "class: server", "should contain class reference")
+	assertContains(t, result, "classes:", "should contain classes block")
+	assertContains(t, result, "class: server", "should contain class reference")
 }
 
 func TestD2ArrowTypesIntegration(t *testing.T) {
@@ -84,13 +83,13 @@ func TestD2ArrowTypesIntegration(t *testing.T) {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	testutils.AssertContains(
+	assertContains(
 		t,
 		result,
 		"source-arrowhead.shape: cf-many",
 		"should contain cf-many arrow",
 	)
-	testutils.AssertContains(
+	assertContains(
 		t,
 		result,
 		"target-arrowhead.shape: diamond",
@@ -119,7 +118,7 @@ func TestD2GridAndNearIntegration(t *testing.T) {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	testutils.AssertContains(t, result, "grid-rows: 2", "should contain grid-rows")
-	testutils.AssertContains(t, result, "grid-columns: 3", "should contain grid-columns")
-	testutils.AssertContains(t, result, "near: grid", "should contain near")
+	assertContains(t, result, "grid-rows: 2", "should contain grid-rows")
+	assertContains(t, result, "grid-columns: 3", "should contain grid-columns")
+	assertContains(t, result, "near: grid", "should contain near")
 }

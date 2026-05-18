@@ -7,7 +7,6 @@ import (
 	"testing"
 
 	"github.com/larsartmann/go-output"
-	"github.com/larsartmann/go-output/internal/testutils"
 	"github.com/larsartmann/go-output/table"
 )
 
@@ -83,7 +82,7 @@ func TestStreamingRenderer(t *testing.T) {
 	}
 
 	result := buf.String()
-	testutils.AssertContains(t, result, "<table", "Streaming HTML should contain table tag")
+	assertContains(t, result, "<table", "Streaming HTML should contain table tag")
 }
 
 func TestTableDataRowEdges(t *testing.T) {
@@ -172,7 +171,7 @@ func renderJSONFormat(projects []TestProject) string {
 func renderMarkdownFormat(projects []TestProject) string {
 	headers := []string{"Name", "Health", "Complexity"}
 
-	return testutils.RenderMarkdownTable(headers, formatProjectsToRows(projects))
+	return renderMarkdownTable(headers, formatProjectsToRows(projects))
 }
 
 func renderCSVFormat(projects []TestProject) string {

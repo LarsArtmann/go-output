@@ -9,7 +9,6 @@ import (
 	"testing"
 
 	"github.com/larsartmann/go-output"
-	"github.com/larsartmann/go-output/internal/testutils"
 )
 
 // TestCSVToTableData tests converting CSV data to TableData.
@@ -26,7 +25,7 @@ func TestCSVToTableData(t *testing.T) {
 	}
 
 	// Then: Data should be properly structured
-	testutils.AssertTableData(t, data, 2, 3)
+	assertTableData(t, data, 2, 3)
 }
 
 // TestTableDataToJSON tests rendering TableData as JSON.
@@ -49,8 +48,8 @@ func TestTableDataToJSON(t *testing.T) {
 
 	// Then: JSON should contain all data
 	jsonStr := string(jsonBytes)
-	testutils.AssertContains(t, jsonStr, "Alpha", "JSON should contain Alpha")
-	testutils.AssertContains(t, jsonStr, "100", "JSON should contain 100")
+	assertContains(t, jsonStr, "Alpha", "JSON should contain Alpha")
+	assertContains(t, jsonStr, "100", "JSON should contain 100")
 }
 
 // TestTableDataToYAML tests rendering TableData as YAML.
@@ -73,8 +72,8 @@ func TestTableDataToYAML(t *testing.T) {
 
 	// Then: YAML should contain all data
 	yamlStr := string(yamlBytes)
-	testutils.AssertContains(t, yamlStr, "Name", "YAML should contain Name header")
-	testutils.AssertContains(t, yamlStr, "Gamma", "YAML should contain Gamma")
+	assertContains(t, yamlStr, "Name", "YAML should contain Name header")
+	assertContains(t, yamlStr, "Gamma", "YAML should contain Gamma")
 }
 
 // TestSortAndRenderWorkflow tests sorting before rendering.
@@ -105,7 +104,7 @@ func TestSortAndRenderWorkflow(t *testing.T) {
 		jsonStr := string(jsonBytes)
 
 		// Then: Apple should come first
-		testutils.AssertContains(t, jsonStr, `"Apple"`, "Sorted JSON should contain Apple")
+		assertContains(t, jsonStr, `"Apple"`, "Sorted JSON should contain Apple")
 
 		appleIdx := strings.Index(jsonStr, `"Apple"`)
 
@@ -165,8 +164,8 @@ func TestLargeDatasetWorkflow(t *testing.T) {
 
 		// Then: Output should be valid HTML
 		result := buf.String()
-		testutils.AssertContains(t, result, "<table", "Should contain table tag")
-		testutils.AssertContains(t, result, "<tr>", "Should contain row tags")
+		assertContains(t, result, "<table", "Should contain table tag")
+		assertContains(t, result, "<tr>", "Should contain row tags")
 	})
 }
 
@@ -190,5 +189,5 @@ func TestErrorHandlingWorkflow(t *testing.T) {
 		}
 	})
 
-	testutils.RunEmptyDataRendersJSONWithoutPanic(t)
+	runEmptyDataRendersJSONWithoutPanic(t)
 }

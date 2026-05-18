@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/larsartmann/go-output"
-	"github.com/larsartmann/go-output/internal/testutils"
+	"github.com/larsartmann/go-output/internal/gentest"
 )
 
 // User Journey: CLI Developer wants to add output formatting to their tool
@@ -91,8 +91,8 @@ func TestRenderDataAsJSON(t *testing.T) {
 
 	// Then: I get valid JSON with the data
 	jsonStr := string(jsonBytes)
-	testutils.AssertContains(t, jsonStr, "Alpha", "JSON should contain project name")
-	testutils.AssertContains(t, jsonStr, "90%", "JSON should contain health value")
+	gentest.AssertContains(t, jsonStr, "Alpha", "JSON should contain project name")
+	gentest.AssertContains(t, jsonStr, "90%", "JSON should contain health value")
 }
 
 func TestRenderDataAsCSV(t *testing.T) {
@@ -108,20 +108,26 @@ func TestRenderDataAsCSV(t *testing.T) {
 
 	// Then: I get valid CSV
 	csvStr := buf.String()
-	testutils.AssertContains(t, csvStr, "Name", "CSV should contain header")
-	testutils.AssertContains(t, csvStr, "Alpha", "CSV should contain data")
+	gentest.AssertContains(t, csvStr, "Name", "CSV should contain header")
+	gentest.AssertContains(t, csvStr, "Alpha", "CSV should contain data")
 }
 
 func TestRenderDataAsMarkdown(t *testing.T) {
 	t.Parallel()
 
 	// When: I render it as Markdown
-	mdStr := testutils.RenderSampleMarkdownTable()
+	md := output.NewMarkdownTable()
+	md.SetHeaders([]string{"Name", "Health"})
+	md.AddRow([]string{"Alpha", "90%"})
+	mdStr, err := md.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
 
 	// Then: I get valid Markdown table
-	testutils.AssertContains(t, mdStr, "| Name", "Markdown should contain header row")
-	testutils.AssertContains(t, mdStr, "| Alpha", "Markdown should contain data row")
-	testutils.AssertContains(t, mdStr, "|----", "Markdown should contain separator")
+	gentest.AssertContains(t, mdStr, "| Name", "Markdown should contain header row")
+	gentest.AssertContains(t, mdStr, "| Alpha", "Markdown should contain data row")
+	gentest.AssertContains(t, mdStr, "|----", "Markdown should contain separator")
 }
 
 func TestRenderDataAsYAML(t *testing.T) {
@@ -139,14 +145,21 @@ func TestRenderDataAsYAML(t *testing.T) {
 
 	// Then: I get valid YAML
 	yamlStr := string(yamlBytes)
-	testutils.AssertContains(t, yamlStr, "Name", "YAML should contain field name")
-	testutils.AssertContains(t, yamlStr, "Alpha", "YAML should contain data")
+		gentest.AssertContains(t, yamlStr, "Name", "YAML should contain field name")
+	gentest.AssertContains(t, yamlStr, "Alpha", "YAML should contain data")
 }
 
 // User Journey: CLI Developer wants to handle edge cases gracefully
 
 func TestHandleEdgeCases(t *testing.T) {
-	testutils.RunEmptyDataRendersJSONWithoutPanic(t)
+	t.Run("empty data renders JSON without panic", func(t *testing.T) {
+		t.Parallel()
+
+		data := output.NewTableData([]string{})
+		if _, err := output.MarshalJSON(data); err != nil {
+			t.Errorf("MarshalJSON on empty data should not error: %v", err)
+		}
+	})
 
 	t.Run("empty markdown table returns empty string", func(t *testing.T) {
 		t.Parallel()
