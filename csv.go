@@ -50,6 +50,7 @@ func MarshalCSVFromTableData(data *TableData) ([]byte, error) {
 	}
 
 	var builder strings.Builder
+
 	csvWriter := NewCSVWriter(&builder)
 
 	if len(data.Headers) > 0 {

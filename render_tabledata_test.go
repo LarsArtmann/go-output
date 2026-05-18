@@ -2,6 +2,7 @@ package output
 
 import (
 	"bytes"
+	"errors"
 	"strings"
 	"testing"
 )
@@ -16,6 +17,7 @@ func testTableData() *TableData {
 
 func TestRenderTableData_CSV(t *testing.T) {
 	var buf bytes.Buffer
+
 	data := testTableData()
 
 	err := RenderTableData(data, FormatCSV, RenderOptions{Writer: &buf})
@@ -36,6 +38,7 @@ func TestRenderTableData_CSV(t *testing.T) {
 
 func TestRenderTableData_TSV(t *testing.T) {
 	var buf bytes.Buffer
+
 	data := testTableData()
 
 	err := RenderTableData(data, FormatTSV, RenderOptions{Writer: &buf})
@@ -55,6 +58,7 @@ func TestRenderTableData_TSV(t *testing.T) {
 
 func TestRenderTableData_Markdown(t *testing.T) {
 	var buf bytes.Buffer
+
 	data := testTableData()
 
 	err := RenderTableData(data, FormatMarkdown, RenderOptions{Writer: &buf, Title: "Test"})
@@ -74,6 +78,7 @@ func TestRenderTableData_Markdown(t *testing.T) {
 
 func TestRenderTableData_XML(t *testing.T) {
 	var buf bytes.Buffer
+
 	data := testTableData()
 
 	err := RenderTableData(data, FormatXML, RenderOptions{Writer: &buf})
@@ -89,6 +94,7 @@ func TestRenderTableData_XML(t *testing.T) {
 
 func TestRenderTableData_YAML(t *testing.T) {
 	var buf bytes.Buffer
+
 	data := testTableData()
 
 	err := RenderTableData(data, FormatYAML, RenderOptions{Writer: &buf})
@@ -104,6 +110,7 @@ func TestRenderTableData_YAML(t *testing.T) {
 
 func TestRenderTableData_D2(t *testing.T) {
 	var buf bytes.Buffer
+
 	data := testTableData()
 
 	err := RenderTableData(data, FormatD2, RenderOptions{Writer: &buf})
@@ -119,6 +126,7 @@ func TestRenderTableData_D2(t *testing.T) {
 
 func TestRenderTableData_Mermaid(t *testing.T) {
 	var buf bytes.Buffer
+
 	data := testTableData()
 
 	err := RenderTableData(data, FormatMermaid, RenderOptions{Writer: &buf})
@@ -134,6 +142,7 @@ func TestRenderTableData_Mermaid(t *testing.T) {
 
 func TestRenderTableData_DOT(t *testing.T) {
 	var buf bytes.Buffer
+
 	data := testTableData()
 
 	err := RenderTableData(data, FormatDOT, RenderOptions{Writer: &buf, GraphID: "test_graph"})
@@ -149,6 +158,7 @@ func TestRenderTableData_DOT(t *testing.T) {
 
 func TestRenderTableData_HTML(t *testing.T) {
 	var buf bytes.Buffer
+
 	data := testTableData()
 
 	err := RenderTableData(data, FormatHTML, RenderOptions{Writer: &buf, Title: "My Data"})
@@ -164,6 +174,7 @@ func TestRenderTableData_HTML(t *testing.T) {
 
 func TestRenderTableData_Tree(t *testing.T) {
 	var buf bytes.Buffer
+
 	data := testTableData()
 
 	err := RenderTableData(data, FormatTree, RenderOptions{Writer: &buf})
@@ -182,19 +193,22 @@ func TestRenderTableData_UnsupportedFormats(t *testing.T) {
 
 	for _, f := range []Format{FormatTable, FormatJSON} {
 		var buf bytes.Buffer
+
 		err := RenderTableData(data, f, RenderOptions{Writer: &buf})
 		if err == nil {
 			t.Errorf("expected error for format %q, got nil", f)
 		}
 
-		if _, ok := err.(*ErrUnsupportedFormat); !ok {
-			t.Errorf("expected ErrUnsupportedFormat for %q, got %T: %v", f, err, err)
+		var unsupportedErr *UnsupportedFormatError
+		if !errors.As(err, &unsupportedErr) {
+			t.Errorf("expected UnsupportedFormatError for %q, got %T: %v", f, err, err)
 		}
 	}
 }
 
 func TestRenderTableData_NilData(t *testing.T) {
 	var buf bytes.Buffer
+
 	err := RenderTableData(nil, FormatCSV, RenderOptions{Writer: &buf})
 	if err != nil {
 		t.Fatalf("RenderTableData with nil data should not error: %v", err)
@@ -207,6 +221,7 @@ func TestRenderTableData_NilData(t *testing.T) {
 
 func TestRenderTableData_EmptyRows(t *testing.T) {
 	var buf bytes.Buffer
+
 	data := NewTableData([]string{"A", "B"})
 
 	err := RenderTableData(data, FormatCSV, RenderOptions{Writer: &buf})

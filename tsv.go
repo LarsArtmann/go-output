@@ -96,6 +96,7 @@ func MarshalTSVFromTableData(data *TableData) ([]byte, error) {
 	}
 
 	var builder strings.Builder
+
 	tsvWriter := NewTSVWriter(&builder)
 
 	if len(data.Headers) > 0 {

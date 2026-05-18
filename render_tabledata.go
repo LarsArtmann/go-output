@@ -23,7 +23,9 @@ type RenderOptions struct {
 // Table and JSON formats are NOT handled — those require per-command customization
 // (table for lipgloss styling, json for full struct marshaling).
 //
-// Returns ErrUnsupportedFormat if the format is table or json (caller should handle those).
+// Returns UnsupportedFormatError if the format is table or json (caller should handle those).
+//
+//nolint:cyclop,exhaustive // Dispatcher function with many format cases.
 func RenderTableData(data *TableData, format Format, opts ...RenderOptions) error {
 	if data == nil {
 		return nil
@@ -61,17 +63,18 @@ func RenderTableData(data *TableData, format Format, opts ...RenderOptions) erro
 	case FormatTree:
 		return renderTreeTableData(w, data)
 	default:
-		return &ErrUnsupportedFormat{Format: format}
+		return &UnsupportedFormatError{Format: format}
 	}
 }
 
-// ErrUnsupportedFormat is returned when RenderTableData cannot handle a format.
-type ErrUnsupportedFormat struct {
+// UnsupportedFormatError is returned when RenderTableData cannot handle a format.
+type UnsupportedFormatError struct {
 	Format Format
 }
 
-func (e *ErrUnsupportedFormat) Error() string {
-	return fmt.Sprintf("render table data: format %q not supported (handle table/json in caller)", e.Format)
+func (e *UnsupportedFormatError) Error() string {
+	return fmt.Sprintf("render table data: format %q not supported (handle table/json in caller)",
+		e.Format)
 }
 
 func renderCSVTableData(w io.Writer, data *TableData) error {
@@ -81,8 +84,11 @@ func renderCSVTableData(w io.Writer, data *TableData) error {
 	}
 
 	_, err = w.Write(b)
+	if err != nil {
+		return fmt.Errorf("write csv bytes: %w", err)
+	}
 
-	return err
+	return nil
 }
 
 func renderTSVTableData(w io.Writer, data *TableData) error {
@@ -92,23 +98,37 @@ func renderTSVTableData(w io.Writer, data *TableData) error {
 	}
 
 	_, err = w.Write(b)
+	if err != nil {
+		return fmt.Errorf("write tsv bytes: %w", err)
+	}
 
-	return err
+	return nil
 }
 
 func renderMarkdownTableData(w io.Writer, data *TableData, opts RenderOptions) error {
 	if opts.Title != "" {
-		fmt.Fprintf(w, "# %s\n\n", opts.Title)
-		fmt.Fprintf(w, "%d rows\n\n", data.RowCount())
+		_, err := fmt.Fprintf(w, "# %s\n\n", opts.Title)
+		if err != nil {
+			return fmt.Errorf("write markdown title: %w", err)
+		}
+
+		_, err = fmt.Fprintf(w, "%d rows\n\n", data.RowCount())
+		if err != nil {
+			return fmt.Errorf("write markdown row count: %w", err)
+		}
 	}
 
 	mdTable := NewMarkdownTableFromData(data)
+
 	out, err := mdTable.Render()
 	if err != nil {
 		return fmt.Errorf("render markdown: %w", err)
 	}
 
-	fmt.Fprintln(w, out)
+	_, err = fmt.Fprintln(w, out)
+	if err != nil {
+		return fmt.Errorf("write markdown output: %w", err)
+	}
 
 	return nil
 }
@@ -119,7 +139,10 @@ func renderXMLTableData(w io.Writer, data *TableData) error {
 		return fmt.Errorf("render xml: %w", err)
 	}
 
-	fmt.Fprintln(w, string(b))
+	_, err = fmt.Fprintln(w, string(b))
+	if err != nil {
+		return fmt.Errorf("write xml output: %w", err)
+	}
 
 	return nil
 }
@@ -133,31 +156,42 @@ func renderYAMLTableData(w io.Writer, data *TableData) error {
 		return fmt.Errorf("render yaml: %w", err)
 	}
 
-	fmt.Fprint(w, out)
+	_, err = fmt.Fprint(w, out)
+	if err != nil {
+		return fmt.Errorf("write yaml output: %w", err)
+	}
 
 	return nil
 }
 
 func renderD2TableData(w io.Writer, data *TableData) error {
 	diagram := D2FromTableData(data)
+
 	out, err := diagram.Render()
 	if err != nil {
 		return fmt.Errorf("render d2: %w", err)
 	}
 
-	fmt.Fprintln(w, out)
+	_, err = fmt.Fprintln(w, out)
+	if err != nil {
+		return fmt.Errorf("write d2 output: %w", err)
+	}
 
 	return nil
 }
 
 func renderMermaidTableData(w io.Writer, data *TableData) error {
 	renderer := MermaidFlowchartRenderer(data)
+
 	out, err := renderer.Render()
 	if err != nil {
 		return fmt.Errorf("render mermaid: %w", err)
 	}
 
-	fmt.Fprintln(w, out)
+	_, err = fmt.Fprintln(w, out)
+	if err != nil {
+		return fmt.Errorf("write mermaid output: %w", err)
+	}
 
 	return nil
 }
@@ -173,7 +207,10 @@ func renderDOTTableData(w io.Writer, data *TableData, opts RenderOptions) error 
 		return fmt.Errorf("render dot: %w", err)
 	}
 
-	fmt.Fprintln(w, out)
+	_, err = fmt.Fprintln(w, out)
+	if err != nil {
+		return fmt.Errorf("write dot output: %w", err)
+	}
 
 	return nil
 }
@@ -192,19 +229,26 @@ func renderHTMLTableData(w io.Writer, data *TableData, opts RenderOptions) error
 		return fmt.Errorf("render html: %w", err)
 	}
 
-	fmt.Fprintln(w, out)
+	_, err = fmt.Fprintln(w, out)
+	if err != nil {
+		return fmt.Errorf("write html output: %w", err)
+	}
 
 	return nil
 }
 
 func renderTreeTableData(w io.Writer, data *TableData) error {
 	renderer := TreeRendererFromTableData(data)
+
 	out, err := renderer.Render()
 	if err != nil {
 		return fmt.Errorf("render tree: %w", err)
 	}
 
-	fmt.Fprintln(w, out)
+	_, err = fmt.Fprintln(w, out)
+	if err != nil {
+		return fmt.Errorf("write tree output: %w", err)
+	}
 
 	return nil
 }
