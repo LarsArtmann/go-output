@@ -53,3 +53,7 @@ Thumbs.db
 *.db
 # Copy/paste detection report
 /report/jscpd-report.json
+
+# Nix
+result
+.direnv/
