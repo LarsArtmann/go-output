@@ -145,8 +145,6 @@ func TestGraphNodeStyle(t *testing.T) {
 	t.Parallel()
 
 	node := &GraphNode{
-		ID:    NewBrandedID[GraphNodeIDBrand]("id"),
-		Label: NewBrandedID[GraphNodeLabelBrand]("label"),
 		Style: GraphStyle{FillColor: "red", StrokeColor: "blue", FontColor: "green", FontSize: 14},
 	}
 
