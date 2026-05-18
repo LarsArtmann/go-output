@@ -4,7 +4,7 @@ go 1.26.2
 
 require (
 	github.com/larsartmann/go-output v0.0.0
-	github.com/larsartmann/go-output/table v0.0.0-20260517005722-44c71fb707b7
+	github.com/larsartmann/go-output/table v0.0.0
 )
 
 require (
