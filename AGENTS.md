@@ -121,6 +121,7 @@ use (
   .
   ./enum
   ./escape
+  ./testhelpers
   ./cmdguard
   ./sort
   ./table
