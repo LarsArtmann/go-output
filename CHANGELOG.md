@@ -11,13 +11,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - `JSONTableRenderer` — renders `TableData` as a JSON array of objects (implements `Renderer` + `TableRenderer`)
 - `YAMLTableRenderer` — renders `TableData` as a YAML sequence of mappings (implements `Renderer` + `TableRenderer`)
 - `TableData.ToMapSlice()` — converts tabular data to `[]map[string]string` for serialization
-- `sort.ByField` returns `func(a, b T) int` (for `slices.SortStableFunc`) instead of `func(a, b T) bool`
-- `cmdguard/go.mod` now has proper dependencies and replace directives (was empty)
-- `cmdguard/go.sum` generated for reproducible builds
-- `table/go.mod` now includes `go-branded-id` dependency
+- `UnsupportedFormatError` — renamed from `ErrUnsupportedFormat` (follows Go naming conventions)
+- `flake.nix` — Nix flake with devShell (Go 1.26.2, golangci-lint, gopls), treefmt-nix formatter, git-hooks.nix
+- `.envrc` — direnv integration for automatic `nix develop` on cd
+- `MIGRATION_TO_NIX_FLAKES_PROPOSAL.md` — migration plan from justfile to nix flakes
+- Depguard whitelist for `examples/` module (scoped `examples/**/*.go` rule)
+- CI: golangci-lint v2 (`github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest`)
 
 ### Changed
 
+- `RenderTableData` — all writer errors now wrapped with `fmt.Errorf("write X: %w", err)` for pinpoint failure reporting
+- `FilledStrings` — uses `slices.Repeat` (Go 1.26 stdlib) instead of manual make+for loop
+- `NewBrandedID` — simplified from `id.NewID[Brand, string](value)` to `id.NewID[Brand](value)` (inferred type arg)
 - `sort/` module no longer depends on root — circular dependency eliminated
 - `sort/sorter.go` (`Sorter[T]`, `New`, `WithLessFunc`, `Sort`) deleted — use stdlib `slices.SortStableFunc`
 - `sort/sort_test.go` deleted (415 lines of tests for removed deprecated type)
@@ -30,9 +35,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - `integration/go.mod` no longer requires or replaces `sort/` module
 - `userjourney_test.go` uses stdlib `slices.SortStableFunc` + `cmp.Compare`
 - `integration/workflow_test.go` uses stdlib sort instead of deprecated `sort.New`
+- `.gitignore` — added `result` and `.direnv/` for Nix artifacts
 
 ### Removed
 
+- `ErrUnsupportedFormat` — renamed to `UnsupportedFormatError` (breaking change)
 - `sort/sorter.go` — deprecated `Sorter[T]` type (circular dependency with root)
 - `sort/sort_test.go` — tests for deleted type
 - `sort/go.sum` — no longer needed (zero deps)
