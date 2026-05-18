@@ -350,8 +350,11 @@ linters:
           - varnamelen
 formatters:
   enable:
-    - gci
-    - goimports
     - gofumpt
+    - goimports
     - golines
+  settings:
+    goimports:
+      local-prefixes:
+        - github.com/larsartmann/go-output
 issues: {}
