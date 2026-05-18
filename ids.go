@@ -10,7 +10,7 @@ type BrandedID[Brand any] = id.ID[Brand, string]
 
 // NewBrandedID creates a new branded ID from a string value.
 func NewBrandedID[Brand any](value string) id.ID[Brand, string] {
-	return id.NewID[Brand, string](value)
+	return id.NewID[Brand](value)
 }
 
 // D2NodeID is a branded identifier for D2 diagram nodes.
