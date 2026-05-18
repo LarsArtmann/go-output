@@ -392,6 +392,16 @@ go run ./examples/basic/main.go markdown
 
 ## Development
 
+### Nix (recommended)
+
+```bash
+nix develop                    # Enter dev shell (Go 1.26, golangci-lint, gopls)
+nix fmt                        # Format .nix files
+nix flake check                # Verify formatting + pre-commit hooks
+```
+
+### Go toolchain (manual)
+
 ```bash
 go build ./...                  # Build all workspace modules
 go test ./...                   # Test all modules
