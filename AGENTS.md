@@ -94,6 +94,12 @@ go-output/                    # Root module (package output) — types, interfac
 ## Build Commands
 
 ```bash
+# Nix (recommended)
+nix develop                    # Enter dev shell (Go 1.26.2, golangci-lint, gopls)
+nix fmt                        # Format .nix files
+nix flake check                # Verify formatting + pre-commit hooks
+
+# Inside nix develop (or with Go installed):
 go build ./...                  # Build root module
 go test ./...                   # Test root module
 golangci-lint run ./...         # Lint root module
@@ -194,3 +200,6 @@ go test -bench=. -benchmem ./...  # Benchmarks
 - Shape capability matrix (ADR 002) replaces FormatCategory — deprecated methods redirect to `Supports(Shape)`
 - `internal/gentest` and `internal/testutils` are root-only — sub-modules must inline helpers or create their own
 - cmdguard prod code (`flag.go`) has zero external deps — only tests import root
+- Nix flake uses `flake-parts` + `treefmt-nix` + `git-hooks.nix` — no `gomod2nix` (library, 9 modules, no binary)
+- Go checks (build/test/lint) NOT in flake — Nix sandbox blocks `go mod download`; CI handles these reliably
+- `.pre-commit-config.yaml` exists for non-Nix users; `git-hooks.nix` auto-installs hooks for Nix users via `nix develop`
