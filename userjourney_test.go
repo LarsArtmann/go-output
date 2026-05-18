@@ -119,6 +119,7 @@ func TestRenderDataAsMarkdown(t *testing.T) {
 	md := output.NewMarkdownTable()
 	md.SetHeaders([]string{"Name", "Health"})
 	md.AddRow([]string{"Alpha", "90%"})
+
 	mdStr, err := md.Render()
 	if err != nil {
 		t.Fatalf("Render() error = %v", err)
@@ -145,7 +146,7 @@ func TestRenderDataAsYAML(t *testing.T) {
 
 	// Then: I get valid YAML
 	yamlStr := string(yamlBytes)
-		gentest.AssertContains(t, yamlStr, "Name", "YAML should contain field name")
+	gentest.AssertContains(t, yamlStr, "Name", "YAML should contain field name")
 	gentest.AssertContains(t, yamlStr, "Alpha", "YAML should contain data")
 }
 

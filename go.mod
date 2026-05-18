@@ -8,7 +8,7 @@ require (
 	github.com/larsartmann/go-output/enum v0.0.0
 	github.com/larsartmann/go-output/escape v0.0.0
 	github.com/larsartmann/go-output/testhelpers v0.0.0
-	golang.org/x/term v0.42.0
+	golang.org/x/term v0.43.0
 )
 
 replace (
@@ -27,5 +27,5 @@ require (
 	github.com/segmentio/asm v1.2.1 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/exp v0.0.0-20260312153236-7ab1446f8b90 // indirect
-	golang.org/x/sys v0.43.0 // indirect
+	golang.org/x/sys v0.44.0 // indirect
 )

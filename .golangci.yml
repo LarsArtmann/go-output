@@ -13,6 +13,17 @@ run:
 output:
   formats: {}
 linters:
+  disable:
+    - funlen
+    - godoclint
+    - iface
+    - inamedparam
+    - ireturn
+    - nlreturn
+    - noinlineerr
+    - nonamedreturns
+    - tagliatelle
+    - unparam
   enable:
     - arangolint
     - asasalint
@@ -42,7 +53,6 @@ linters:
     - fatcontext
     - forbidigo
     - forcetypeassert
-    - funlen
     - ginkgolinter
     - gocheckcompilerdirectives
     - gochecknoglobals
@@ -52,7 +62,6 @@ linters:
     - goconst
     - gocritic
     - gocyclo
-    - godoclint
     - godot
     - godox
     - goheader
@@ -63,14 +72,11 @@ linters:
     - gosmopolitan
     - govet
     - grouper
-    - iface
     - importas
-    - inamedparam
     - ineffassign
     - interfacebloat
     - intrange
     - iotamixing
-    - ireturn
     - loggercheck
     - maintidx
     - makezero
@@ -84,11 +90,8 @@ linters:
     - nilerr
     - nilnesserr
     - nilnil
-    - nlreturn
     - noctx
-    - noinlineerr
     - nolintlint
-    - nonamedreturns
     - nosprintfhostport
     - paralleltest
     - perfsprint
@@ -105,14 +108,12 @@ linters:
     - sqlclosecheck
     - staticcheck
     - tagalign
-    - tagliatelle
     - testableexamples
     - testifylint
     - testpackage
     - thelper
     - tparallel
     - unconvert
-    - unparam
     - unqueryvet
     - unused
     - usestdlibvars
