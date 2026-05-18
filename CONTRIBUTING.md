@@ -25,7 +25,6 @@ use (
   ./enum
   ./escape
   ./testhelpers
-  ./cmdguard
   ./sort
   ./table
   ./integration
@@ -62,7 +61,6 @@ Each module is standalone and can be built/tested independently:
 
 ```bash
 cd table && go test ./... && cd ..
-cd cmdguard && go test ./... && cd ..
 ```
 
 ### Tidy Dependencies

@@ -327,23 +327,6 @@ if format.IsValid() {
 allowed := format.AllowedValues() // []string{"table", "json", "csv", ...}
 ```
 
-## CLI Flag Integration
-
-The `cmdguard/` subpackage provides types compatible with [cmdguard](https://github.com/larsartmann/cmdguard) for type-safe CLI flags:
-
-```go
-import (
-    "github.com/larsartmann/go-output"
-    "github.com/larsartmann/go-output/cmdguard"
-)
-
-type ListFlags struct {
-    Format output.OutputFormat `flag:"format" default:"table" help:"Output format (table, json, csv, ...)"`
-    SortBy output.SortBy       `flag:"sort-by" default:"name" help:"Sort field"`
-    Color  output.ColorMode    `flag:"color" default:"auto" help:"Color mode (auto, always, never)"`
-}
-```
-
 ## Escape Functions
 
 The `escape/` subpackage provides safe escaping for each format:

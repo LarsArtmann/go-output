@@ -66,7 +66,6 @@ nix flake check      # Formatting check + pre-commit validation
 ./enum          (zero deps) — generic enum utilities
 ./escape        (zero deps) — format-specific escaping
 ./testhelpers   (zero docs) — shared test assertions
-./cmdguard      (prod standalone) — CLI flag parsing
 ./sort          (zero deps, deprecated) — ByField helper only
 ./table         (lipgloss/v2) — terminal table rendering
 ./integration   (root + table) — cross-module integration tests
@@ -80,7 +79,7 @@ nix flake check      # Formatting check + pre-commit validation
 | Enter dev environment | `nix develop` |
 | Format Nix files | `nix fmt` |
 | Check formatting + hooks | `nix flake check` |
-| Build all modules | `nix develop --command bash -c "for m in . enum escape testhelpers sort cmdguard table integration examples; do (cd \$m && go build ./...); done"` |
-| Test all modules | `nix develop --command bash -c "for m in . enum escape testhelpers sort cmdguard table integration examples; do (cd \$m && go test -race ./...); done"` |
+| Build all modules | `nix develop --command bash -c "for m in . enum escape testhelpers sort table integration examples; do (cd \$m && go build ./...); done"` |
+| Test all modules | `nix develop --command bash -c "for m in . enum escape testhelpers sort table integration examples; do (cd \$m && go test -race ./...); done"` |
 | Lint | `nix develop --command golangci-lint run ./...` |
-| Format Go code | `nix develop --command bash -c "for m in . enum escape testhelpers sort cmdguard table integration examples; do (cd \$m && go fmt ./...); done"` |
+| Format Go code | `nix develop --command bash -c "for m in . enum escape testhelpers sort table integration examples; do (cd \$m && go fmt ./...); done"` |
