@@ -128,7 +128,6 @@ linters:
     gomoddirectives:
       replace-local: true
       replace-allow-list:
-        - github.com/larsartmann/go-output/cmdguard
         - github.com/larsartmann/go-output/enum
         - github.com/larsartmann/go-output/escape
     revive:
@@ -259,10 +258,6 @@ linters:
         linters:
           - testpackage
       - path: integration/
-        text: package should be
-        linters:
-          - testpackage
-      - path: cmdguard/cmdguard_test\.go
         text: package should be
         linters:
           - testpackage

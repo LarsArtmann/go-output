@@ -13,7 +13,6 @@ require (
 
 replace (
 	github.com/larsartmann/go-output => ./
-	github.com/larsartmann/go-output/cmdguard => ./cmdguard
 	github.com/larsartmann/go-output/enum => ./enum
 	github.com/larsartmann/go-output/escape => ./escape
 	github.com/larsartmann/go-output/testhelpers => ./testhelpers

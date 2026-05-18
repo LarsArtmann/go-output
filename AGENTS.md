@@ -32,7 +32,6 @@ This project uses Go workspace modules. Each sub-package with its own `go.mod` i
 | `enum/`                 | ✅     | testhelpers (tests only)                            | Generic enum utilities                  |
 | `escape/`               | ✅     | None                                                | Format-specific escaping                |
 | `testhelpers/`          | ✅     | None                                                | Shared test assertions (non-internal)   |
-| `cmdguard/`             | ✅     | root (tests only), testhelpers (tests)              | CLI flag parsing (prod standalone)      |
 | `table/`                | ✅     | root, lipgloss                                      | **Lipgloss isolated from root**         |
 | `sort/`                 | ✅     | None                                                | **Deprecated** — only `ByField` remains |
 | `integration/`          | ✅     | root, table                                         | Cross-module tests                      |
@@ -50,7 +49,6 @@ enum          → testhelpers (tests only)
 escape        → (none)
 testhelpers   → (none) — zero deps, shared test assertions
 sort          → (none) — zero deps, only ByField helper
-cmdguard      → root (tests only), testhelpers (tests); prod code standalone
 table         → root, lipgloss/v2
 integration   → root, table
 examples      → root, table
@@ -84,7 +82,6 @@ go-output/                    # Root module (package output) — types, interfac
 ├── enum/                     # MODULE: Generic enum utilities (zero deps)
 ├── escape/                   # MODULE: Format-specific escaping (zero deps)
 ├── testhelpers/              # MODULE: Shared test assertions (non-internal, zero deps)
-├── cmdguard/                 # MODULE: CLI flag parsing (prod standalone, tests import root)
 ├── table/                    # MODULE: Lipgloss terminal tables (lipgloss isolated)
 ├── sort/                     # MODULE: Deprecated — only ByField helper remains (zero deps)
 ├── integration/              # MODULE: Cross-module integration tests
@@ -106,7 +103,7 @@ golangci-lint run ./...         # Lint root module
 go mod tidy                     # Tidy root module
 
 # Per-module (required since go.work is gitignored)
-for mod in . enum escape testhelpers sort cmdguard table integration; do
+for mod in . enum escape testhelpers sort table integration; do
   (cd $mod && go test ./...)
 done
 ```
@@ -122,7 +119,6 @@ use (
   ./enum
   ./escape
   ./testhelpers
-  ./cmdguard
   ./sort
   ./table
   ./integration
@@ -146,7 +142,6 @@ EOF
 | Package       | Coverage | Module |
 | ------------- | -------- | ------ |
 | output (root) | 90%+     | root   |
-| cmdguard      | 100%     | own    |
 | enum          | 100%     | own    |
 | escape        | 100%     | own    |
 | sort          | 100%     | own    |
@@ -179,8 +174,7 @@ go test -bench=. -benchmem ./...  # Benchmarks
 2. Add to `formatCapabilities` map with supported shapes
 3. Implement formatter — embed Renderer interface
 4. Add tests with >90% coverage
-5. Update cmdguard if needed (EnumFlag already generic)
-6. Update CHANGELOG.md and README.md
+5. Update CHANGELOG.md and README.md
 
 ### Adding a New D2 Enum
 
@@ -195,12 +189,10 @@ go test -bench=. -benchmem ./...  # Benchmarks
 - Depguard config restricts imports
 - escape/ uses `html.EscapeString()` from stdlib for HTML, with `strings.ReplaceAll` for XML `&apos;`
 - sort/ is **deprecated** — `Sorter[T]` deleted, only `ByField` helper remains (zero deps). Use `slices.SortStableFunc` + `cmp.Compare` (stdlib)
-- SortBy enum kept in root — used by cmdguard tests as example enum type
 - Multi-module workspace with 7 independent modules (see ADR 001)
 - GraphRendererMixin in `graph.go` — shared by DOT and Mermaid renderers
 - Shape capability matrix (ADR 002) replaces FormatCategory — deprecated methods redirect to `Supports(Shape)`
 - `internal/gentest` and `internal/testutils` are root-only — sub-modules must inline helpers or create their own
-- cmdguard prod code (`flag.go`) has zero external deps — only tests import root
-- Nix flake uses `flake-parts` + `treefmt-nix` + `git-hooks.nix` — no `gomod2nix` (library, 9 modules, no binary)
+- Nix flake uses `flake-parts` + `treefmt-nix` + `git-hooks.nix` — no `gomod2nix` (library, 8 modules, no binary)
 - Go checks (build/test/lint) NOT in flake — Nix sandbox blocks `go mod download`; CI handles these reliably
 - `.pre-commit-config.yaml` exists for non-Nix users; `git-hooks.nix` auto-installs hooks for Nix users via `nix develop`
