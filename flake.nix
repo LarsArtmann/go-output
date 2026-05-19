@@ -4,14 +4,20 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
-    flake-parts.url = "github:hercules-ci/flake-parts";
-    flake-parts.inputs.nixpkgs-lib.follows = "nixpkgs";
+    flake-parts = {
+      url = "github:hercules-ci/flake-parts";
+      inputs.nixpkgs-lib.follows = "nixpkgs";
+    };
 
-    treefmt-nix.url = "github:numtide/treefmt-nix";
-    treefmt-nix.inputs.nixpkgs.follows = "nixpkgs";
+    treefmt-nix = {
+      url = "github:numtide/treefmt-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
-    git-hooks.url = "github:cachix/git-hooks.nix";
-    git-hooks.inputs.nixpkgs.follows = "nixpkgs";
+    git-hooks = {
+      url = "github:cachix/git-hooks.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -39,26 +45,22 @@
           go = pkgs.go_1_26;
         in
         {
-          # ── Formatter (nix fmt) ──────────────────────────────
           treefmt.config = {
             projectRootFile = "flake.nix";
 
             programs = {
-              # Nix
               nixfmt.enable = true;
               deadnix.enable = true;
               statix.enable = true;
             };
           };
 
-          # ── Pre-commit hooks ─────────────────────────────────
           pre-commit.settings = {
             hooks = {
               treefmt.enable = true;
             };
           };
 
-          # ── Dev Shell (nix develop) ──────────────────────────
           devShells.default = pkgs.mkShellNoCC {
             name = "go-output";
 
@@ -72,6 +74,13 @@
               export GOWORK=off
             '';
           };
+
+          checks.build = pkgs.runCommand "go-output-build" { nativeBuildInputs = [ go ]; } ''
+            export GOWORK=off
+            cp -r ${./.} src && chmod -R u+w src && cd src
+            go build ./...
+            touch $out
+          '';
         };
     };
 }
