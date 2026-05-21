@@ -5,6 +5,8 @@ import (
 	"slices"
 	"strings"
 	"testing"
+
+	"github.com/larsartmann/go-output/internal/gentest"
 )
 
 // errTest is a static test error for MustRender panic testing.
@@ -128,13 +130,9 @@ func TestInvalidFormatErrorWithAllowed(t *testing.T) {
 
 	got := err.Error()
 
-	if !strings.Contains(got, "bogus") {
-		t.Errorf("Error() = %q, should contain value", got)
-	}
+	gentest.AssertOutputContains(t, got, "bogus")
 
-	if !strings.Contains(got, "table") {
-		t.Errorf("Error() = %q, should contain allowed formats", got)
-	}
+	gentest.AssertOutputContains(t, got, "table")
 }
 
 func TestMustRender(t *testing.T) {
@@ -145,9 +143,7 @@ func TestMustRender(t *testing.T) {
 	renderer.AddRow([]string{"test"})
 
 	got := MustRender(renderer)
-	if !strings.Contains(got, `"Name"`) {
-		t.Errorf("MustRender() = %q, should contain header", got)
-	}
+	gentest.AssertOutputContains(t, got, `"Name"`)
 }
 
 func TestMustRenderPanics(t *testing.T) {

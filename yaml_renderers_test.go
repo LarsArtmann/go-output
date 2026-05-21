@@ -1,10 +1,9 @@
 package output
 
 import (
-	"strings"
 	"testing"
 
-	"github.com/go-faster/yaml"
+	"github.com/larsartmann/go-output/internal/gentest"
 )
 
 func TestYAMLTreeRenderer_Empty(t *testing.T) {
@@ -34,13 +33,9 @@ func TestYAMLTreeRenderer_Single(t *testing.T) {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	if !strings.Contains(got, "id: root") {
-		t.Errorf("should contain node id, got %q", got)
-	}
+	gentest.AssertOutputContains(t, got, "id: root")
 
-	if !strings.Contains(got, "label: Root") {
-		t.Errorf("should contain node label, got %q", got)
-	}
+	gentest.AssertOutputContains(t, got, "label: Root")
 }
 
 func TestYAMLTreeRenderer_WithChildren(t *testing.T) {
@@ -57,13 +52,9 @@ func TestYAMLTreeRenderer_WithChildren(t *testing.T) {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	if !strings.Contains(got, "children") {
-		t.Errorf("should contain children, got %q", got)
-	}
+	gentest.AssertOutputContains(t, got, "children")
 
-	if !strings.Contains(got, "id: child") {
-		t.Errorf("should contain child id, got %q", got)
-	}
+	gentest.AssertOutputContains(t, got, "id: child")
 }
 
 func TestYAMLTreeRenderer_WithMetadata(t *testing.T) {
@@ -79,13 +70,9 @@ func TestYAMLTreeRenderer_WithMetadata(t *testing.T) {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	if !strings.Contains(got, "metadata") {
-		t.Errorf("should contain metadata, got %q", got)
-	}
+	gentest.AssertOutputContains(t, got, "metadata")
 
-	if !strings.Contains(got, "key: value") {
-		t.Errorf("should contain metadata key/value, got %q", got)
-	}
+	gentest.AssertOutputContains(t, got, "key: value")
 }
 
 func TestYAMLTreeRenderer_ValidYAML(t *testing.T) {
@@ -105,11 +92,7 @@ func TestYAMLTreeRenderer_ValidYAML(t *testing.T) {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	var result map[string]any
-
-	if unmarshalErr := yaml.Unmarshal([]byte(got), &result); unmarshalErr != nil {
-		t.Errorf("output should be valid YAML: %v, got %q", unmarshalErr, got)
-	}
+	gentest.AssertValidYAML(t, got)
 }
 
 func TestYAMLTreeRenderer_DeepNesting(t *testing.T) {
@@ -128,9 +111,7 @@ func TestYAMLTreeRenderer_DeepNesting(t *testing.T) {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	if !strings.Contains(got, "id: grandchild") {
-		t.Errorf("should contain deeply nested node, got %q", got)
-	}
+	gentest.AssertOutputContains(t, got, "id: grandchild")
 }
 
 func TestYAMLGraphRenderer_Empty(t *testing.T) {
@@ -143,13 +124,9 @@ func TestYAMLGraphRenderer_Empty(t *testing.T) {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	if !strings.Contains(got, "nodes:") {
-		t.Errorf("should contain nodes key, got %q", got)
-	}
+	gentest.AssertOutputContains(t, got, "nodes:")
 
-	if !strings.Contains(got, "edges:") {
-		t.Errorf("should contain edges key, got %q", got)
-	}
+	gentest.AssertOutputContains(t, got, "edges:")
 }
 
 func TestYAMLGraphRenderer_WithNodesAndEdges(t *testing.T) {
@@ -164,13 +141,9 @@ func TestYAMLGraphRenderer_WithNodesAndEdges(t *testing.T) {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	if !strings.Contains(got, "id: A") {
-		t.Errorf("should contain node A, got %q", got)
-	}
+	gentest.AssertOutputContains(t, got, "id: A")
 
-	if !strings.Contains(got, "from: A") {
-		t.Errorf("should contain edge from A, got %q", got)
-	}
+	gentest.AssertOutputContains(t, got, "from: A")
 }
 
 func TestYAMLGraphRenderer_EdgeWithLabel(t *testing.T) {
@@ -185,9 +158,7 @@ func TestYAMLGraphRenderer_EdgeWithLabel(t *testing.T) {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	if !strings.Contains(got, "label: connects") {
-		t.Errorf("should contain edge label, got %q", got)
-	}
+	gentest.AssertOutputContains(t, got, "label: connects")
 }
 
 func TestYAMLGraphRenderer_NodeWithShape(t *testing.T) {
@@ -202,9 +173,7 @@ func TestYAMLGraphRenderer_NodeWithShape(t *testing.T) {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	if !strings.Contains(got, "shape: diamond") {
-		t.Errorf("should contain node shape, got %q", got)
-	}
+	gentest.AssertOutputContains(t, got, "shape: diamond")
 }
 
 func TestYAMLGraphRenderer_NodeWithMetadata(t *testing.T) {
@@ -221,9 +190,7 @@ func TestYAMLGraphRenderer_NodeWithMetadata(t *testing.T) {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	if !strings.Contains(got, "type: service") {
-		t.Errorf("should contain node metadata, got %q", got)
-	}
+	gentest.AssertOutputContains(t, got, "type: service")
 }
 
 func TestYAMLGraphRenderer_ValidYAML(t *testing.T) {
@@ -238,11 +205,7 @@ func TestYAMLGraphRenderer_ValidYAML(t *testing.T) {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	var result map[string]any
-
-	if unmarshalErr := yaml.Unmarshal([]byte(got), &result); unmarshalErr != nil {
-		t.Errorf("output should be valid YAML: %v, got %q", unmarshalErr, got)
-	}
+	gentest.AssertValidYAML(t, got)
 }
 
 func TestYAMLTreeRendererMustRender(t *testing.T) {
@@ -253,9 +216,7 @@ func TestYAMLTreeRendererMustRender(t *testing.T) {
 	r.SetRoot(root)
 
 	got := MustRender(r)
-	if !strings.Contains(got, "id: root") {
-		t.Errorf("MustRender should work, got %q", got)
-	}
+	gentest.AssertOutputContains(t, got, "id: root")
 }
 
 func TestYAMLGraphRendererMustRender(t *testing.T) {
@@ -265,7 +226,5 @@ func TestYAMLGraphRendererMustRender(t *testing.T) {
 	r.SetNodes(testNodesAB())
 
 	got := MustRender(r)
-	if !strings.Contains(got, "id: A") {
-		t.Errorf("MustRender should work, got %q", got)
-	}
+	gentest.AssertOutputContains(t, got, "id: A")
 }

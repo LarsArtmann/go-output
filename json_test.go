@@ -5,6 +5,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/larsartmann/go-output/internal/gentest"
 )
 
 func testUnmarshalError(
@@ -173,13 +175,9 @@ func TestJSONTableRenderer(t *testing.T) {
 			t.Fatalf("Render() error = %v", err)
 		}
 
-		if !strings.Contains(got, `"Name": "Alice"`) {
-			t.Errorf("Render() = %q, want Alice row", got)
-		}
+		gentest.AssertOutputContains(t, got, `"Name": "Alice"`)
 
-		if !strings.Contains(got, `"Age": "25"`) {
-			t.Errorf("Render() = %q, want Bob row", got)
-		}
+		gentest.AssertOutputContains(t, got, `"Age": "25"`)
 	})
 
 	t.Run("nil data returns empty array", func(t *testing.T) {
@@ -209,9 +207,7 @@ func TestJSONTableRenderer(t *testing.T) {
 			t.Fatalf("Render() error = %v", err)
 		}
 
-		if !strings.Contains(got, `"A": "1"`) {
-			t.Errorf("Render() = %q, want A=1", got)
-		}
+		gentest.AssertOutputContains(t, got, `"A": "1"`)
 
 		if strings.Contains(got, `"B"`) {
 			t.Errorf("Render() = %q, want B absent for short row", got)
@@ -227,9 +223,7 @@ func TestJSONTableRendererMustRender(t *testing.T) {
 	r.AddRow([]string{"1"})
 
 	got := MustRender(r)
-	if !strings.Contains(got, `"X": "1"`) {
-		t.Errorf("MustRender() = %q, want X=1", got)
-	}
+	gentest.AssertOutputContains(t, got, `"X": "1"`)
 }
 
 func TestJSONTableRendererNoHeaders(t *testing.T) {

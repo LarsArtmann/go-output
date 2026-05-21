@@ -1,8 +1,11 @@
 package gentest
 
 import (
+	"encoding/json"
 	"strings"
 	"testing"
+
+	"github.com/go-faster/yaml"
 )
 
 // ExpectedOutput contains a substring to check and its corresponding error message.
@@ -17,6 +20,35 @@ func AssertContains(t *testing.T, output, substr, msg string) {
 
 	if !strings.Contains(output, substr) {
 		t.Error(msg)
+	}
+}
+
+// AssertOutputContains checks that output contains substr, failing with a descriptive error.
+func AssertOutputContains(t *testing.T, output, substr string) {
+	t.Helper()
+
+	if !strings.Contains(output, substr) {
+		t.Errorf("output should contain %q, got %q", substr, output)
+	}
+}
+
+// AssertValidJSON checks that output is valid JSON by unmarshaling it.
+func AssertValidJSON(t *testing.T, output string) {
+	t.Helper()
+
+	var result map[string]any
+	if err := json.Unmarshal([]byte(output), &result); err != nil {
+		t.Errorf("output should be valid JSON: %v, got %q", err, output)
+	}
+}
+
+// AssertValidYAML checks that output is valid YAML by unmarshaling it.
+func AssertValidYAML(t *testing.T, output string) {
+	t.Helper()
+
+	var result map[string]any
+	if err := yaml.Unmarshal([]byte(output), &result); err != nil {
+		t.Errorf("output should be valid YAML: %v, got %q", err, output)
 	}
 }
 

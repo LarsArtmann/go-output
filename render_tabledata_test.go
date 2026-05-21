@@ -5,6 +5,8 @@ import (
 	"errors"
 	"strings"
 	"testing"
+
+	"github.com/larsartmann/go-output/internal/gentest"
 )
 
 func testTableData() *TableData {
@@ -47,9 +49,7 @@ func TestRenderTableData_TSV(t *testing.T) {
 	}
 
 	out := buf.String()
-	if !strings.Contains(out, "Alice") {
-		t.Errorf("tsv output missing expected content: %q", out)
-	}
+	gentest.AssertOutputContains(t, out, "Alice")
 
 	if !strings.Contains(out, "\t") {
 		t.Error("tsv output should contain tabs")
@@ -67,13 +67,9 @@ func TestRenderTableData_Markdown(t *testing.T) {
 	}
 
 	out := buf.String()
-	if !strings.Contains(out, "# Test") {
-		t.Errorf("markdown output missing title: %q", out)
-	}
+	gentest.AssertOutputContains(t, out, "# Test")
 
-	if !strings.Contains(out, "| Name") {
-		t.Errorf("markdown output missing table header: %q", out)
-	}
+	gentest.AssertOutputContains(t, out, "| Name")
 }
 
 func TestRenderTableData_XML(t *testing.T) {
@@ -103,9 +99,7 @@ func TestRenderTableData_YAML(t *testing.T) {
 	}
 
 	out := buf.String()
-	if !strings.Contains(out, "Alice") {
-		t.Errorf("yaml output missing expected content: %q", out)
-	}
+	gentest.AssertOutputContains(t, out, "Alice")
 }
 
 func TestRenderTableData_D2(t *testing.T) {
@@ -119,9 +113,7 @@ func TestRenderTableData_D2(t *testing.T) {
 	}
 
 	out := buf.String()
-	if !strings.Contains(out, "Alice") {
-		t.Errorf("d2 output missing expected content: %q", out)
-	}
+	gentest.AssertOutputContains(t, out, "Alice")
 }
 
 func TestRenderTableData_Mermaid(t *testing.T) {
@@ -183,9 +175,7 @@ func TestRenderTableData_Tree(t *testing.T) {
 	}
 
 	out := buf.String()
-	if !strings.Contains(out, "Alice") {
-		t.Errorf("tree output missing expected content: %q", out)
-	}
+	gentest.AssertOutputContains(t, out, "Alice")
 }
 
 func TestRenderTableData_UnsupportedFormats(t *testing.T) {
@@ -230,9 +220,7 @@ func TestRenderTableData_EmptyRows(t *testing.T) {
 	}
 
 	out := buf.String()
-	if !strings.Contains(out, "A") {
-		t.Errorf("expected header in output, got %q", out)
-	}
+	gentest.AssertOutputContains(t, out, "A")
 }
 
 func TestMarshalCSVFromTableData(t *testing.T) {
