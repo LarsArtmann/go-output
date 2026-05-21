@@ -133,7 +133,8 @@ func TestEdgeStyle(t *testing.T) {
 		ArrowTail: "arrow",
 	}
 
-	gentest.TestStructFields(t,
+	gentest.TestStructFields(
+		t,
 		gentest.StringField("Color", style.Color, "black"),
 		gentest.StringField("Style", style.Style, "dashed"),
 		gentest.StringField("ArrowHead", style.ArrowHead, "arrow"),
@@ -153,7 +154,8 @@ func TestGraphNodeStyle(t *testing.T) {
 
 // testGraphStyleFields tests the common GraphStyle fields.
 func testGraphStyleFields(t *testing.T, style GraphStyle, wantFontSize int) {
-	gentest.TestStructFields(t,
+	gentest.TestStructFields(
+		t,
 		gentest.StringField("FillColor", style.FillColor, "red"),
 		gentest.StringField("StrokeColor", style.StrokeColor, "blue"),
 		gentest.StringField("FontColor", style.FontColor, "green"),

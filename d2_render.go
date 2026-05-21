@@ -96,7 +96,8 @@ func (d *D2Diagram) AddEdge(edge D2Edge) *D2Diagram {
 // AddEdgeSimple adds a simple edge between two nodes.
 func (d *D2Diagram) AddEdgeSimple(from, to string) *D2Diagram {
 	return d.AddEdge( //nolint:exhaustruct // Simple edge uses defaults for optional fields
-		D2Edge{From: NewBrandedID[D2NodeIDBrand](from), To: NewBrandedID[D2NodeIDBrand](to)})
+		D2Edge{From: NewBrandedID[D2NodeIDBrand](from), To: NewBrandedID[D2NodeIDBrand](to)},
+	)
 }
 
 // AddLabeledEdge adds an edge with a label.
@@ -106,7 +107,8 @@ func (d *D2Diagram) AddLabeledEdge(from, to, label string) *D2Diagram {
 			From:  NewBrandedID[D2NodeIDBrand](from),
 			To:    NewBrandedID[D2NodeIDBrand](to),
 			Label: NewBrandedID[D2NodeLabelBrand](label),
-		})
+		},
+	)
 }
 
 // Render returns the D2 diagram as a valid D2 language string.

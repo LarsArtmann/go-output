@@ -46,7 +46,8 @@ func TestTestEnumIsValidEmptyString(t *testing.T) {
 func TestTestStructFields(t *testing.T) {
 	t.Parallel()
 
-	TestStructFields(t,
+	TestStructFields(
+		t,
 		StringField("name", "same", "same"),
 		IntField("count", 5, 5),
 	)
