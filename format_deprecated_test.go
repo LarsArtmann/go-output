@@ -3,7 +3,7 @@ package output
 import (
 	"testing"
 
-	"github.com/larsartmann/go-output/internal/gentest"
+	"github.com/larsartmann/go-output/testhelpers"
 )
 
 func TestParseOutputFormat(t *testing.T) {
@@ -59,7 +59,7 @@ func TestOutputFormatAllowedValues(t *testing.T) {
 func TestOutputFormatIsValid(t *testing.T) {
 	t.Parallel()
 
-	gentest.TestEnumIsValid(t, []OutputFormat{
+	testhelpers.TestEnumIsValid(t, []OutputFormat{
 		OutputFormatTable,
 		OutputFormatJSON,
 		OutputFormatCSV,

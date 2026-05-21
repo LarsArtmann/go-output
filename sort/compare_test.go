@@ -6,6 +6,22 @@ import (
 	"testing"
 )
 
+func assertSortedOrder(t *testing.T, got []string, want []string) {
+	t.Helper()
+
+	if len(got) != len(want) {
+		t.Fatalf("assertSortedOrder: len(got)=%d != len(want)=%d", len(got), len(want))
+	}
+
+	for i := range got {
+		if got[i] != want[i] {
+			t.Errorf("sorted order = %v, want %v", got, want)
+
+			return
+		}
+	}
+}
+
 func TestByField(t *testing.T) {
 	t.Parallel()
 
@@ -22,10 +38,8 @@ func TestByField(t *testing.T) {
 			func(item struct{ Name string }) string { return item.Name },
 		))
 
-		if items[0].Name != "alpha" || items[1].Name != "bravo" || items[2].Name != "charlie" {
-			t.Errorf("sorted order = %v, want [alpha, bravo, charlie]",
-				[]string{items[0].Name, items[1].Name, items[2].Name})
-		}
+		assertSortedOrder(t, []string{items[0].Name, items[1].Name, items[2].Name},
+			[]string{"alpha", "bravo", "charlie"})
 	})
 
 	t.Run("int field ascending", func(t *testing.T) {
@@ -46,10 +60,8 @@ func TestByField(t *testing.T) {
 			return i.Count
 		}))
 
-		if items[0].Name != "alpha" || items[2].Name != "charlie" {
-			t.Errorf("sorted order = %v, want [alpha, bravo, charlie]",
-				[]string{items[0].Name, items[1].Name, items[2].Name})
-		}
+		assertSortedOrder(t, []string{items[0].Name, items[1].Name, items[2].Name},
+			[]string{"alpha", "bravo", "charlie"})
 	})
 
 	t.Run("uint64 field", func(t *testing.T) {
@@ -70,10 +82,8 @@ func TestByField(t *testing.T) {
 			return i.Size
 		}))
 
-		if items[0].Name != "small" || items[2].Name != "large" {
-			t.Errorf("sorted order = %v, want [small, medium, large]",
-				[]string{items[0].Name, items[1].Name, items[2].Name})
-		}
+		assertSortedOrder(t, []string{items[0].Name, items[1].Name, items[2].Name},
+			[]string{"small", "medium", "large"})
 	})
 
 	t.Run("stability preserved", func(t *testing.T) {

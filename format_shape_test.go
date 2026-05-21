@@ -3,7 +3,7 @@ package output
 import (
 	"testing"
 
-	"github.com/larsartmann/go-output/internal/gentest"
+	"github.com/larsartmann/go-output/testhelpers"
 )
 
 func TestAllShapes(t *testing.T) {
@@ -64,7 +64,7 @@ func TestParseShape(t *testing.T) {
 func TestShapeIsValid(t *testing.T) {
 	t.Parallel()
 
-	gentest.TestEnumIsValid(t, []Shape{
+	testhelpers.TestEnumIsValid(t, []Shape{
 		ShapeTable,
 		ShapeTree,
 		ShapeGraph,

@@ -16,7 +16,7 @@ type (
 
 //nolint:gochecknoglobals // Re-exported test helpers for package-local use
 var (
-	assertContains     = gentest.AssertContains
+	assertContains     = testhelpers.AssertContains
 	assertMarshalError = gentest.AssertMarshalError
 )
 

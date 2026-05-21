@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/larsartmann/go-output/escape"
-	"github.com/larsartmann/go-output/internal/gentest"
+	"github.com/larsartmann/go-output/testhelpers"
 )
 
 func TestD2AllNodeShapes(t *testing.T) {
@@ -300,7 +300,7 @@ func TestEscapeD2(t *testing.T) {
 			t.Parallel()
 
 			got := escape.D2(tt.input)
-			gentest.AssertEqual(t, "escape.D2", tt.input, got, tt.want)
+			testhelpers.AssertEqual(t, "escape.D2", tt.input, got, tt.want)
 		})
 	}
 }

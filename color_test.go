@@ -3,7 +3,7 @@ package output
 import (
 	"testing"
 
-	"github.com/larsartmann/go-output/internal/gentest"
+	"github.com/larsartmann/go-output/testhelpers"
 )
 
 func TestIsNoColor(t *testing.T) {
@@ -103,7 +103,7 @@ func TestColorModeAllowedValues(t *testing.T) {
 func TestColorModeIsValid(t *testing.T) {
 	t.Parallel()
 
-	gentest.TestEnumIsValid(t, []ColorMode{
+	testhelpers.TestEnumIsValid(t, []ColorMode{
 		ColorModeAuto,
 		ColorModeAlways,
 		ColorModeNever,

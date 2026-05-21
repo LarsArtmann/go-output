@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/larsartmann/go-output/internal/gentest"
+	"github.com/larsartmann/go-output/testhelpers"
 )
 
 const testGraphNodeID = "test-id"
@@ -95,7 +95,7 @@ func TestGraphShapeAllowedValues(t *testing.T) {
 func TestGraphShapeIsValid(t *testing.T) {
 	t.Parallel()
 
-	gentest.TestEnumIsValid(t, []GraphShape{
+	testhelpers.TestEnumIsValid(t, []GraphShape{
 		ShapeBox,
 		ShapeEllipse,
 		ShapeDiamond,
@@ -133,12 +133,12 @@ func TestEdgeStyle(t *testing.T) {
 		ArrowTail: "arrow",
 	}
 
-	gentest.TestStructFields(
+	testhelpers.TestStructFields(
 		t,
-		gentest.StringField("Color", style.Color, "black"),
-		gentest.StringField("Style", style.Style, "dashed"),
-		gentest.StringField("ArrowHead", style.ArrowHead, "arrow"),
-		gentest.StringField("ArrowTail", style.ArrowTail, "arrow"),
+		testhelpers.StringField("Color", style.Color, "black"),
+		testhelpers.StringField("Style", style.Style, "dashed"),
+		testhelpers.StringField("ArrowHead", style.ArrowHead, "arrow"),
+		testhelpers.StringField("ArrowTail", style.ArrowTail, "arrow"),
 	)
 }
 
@@ -154,12 +154,12 @@ func TestGraphNodeStyle(t *testing.T) {
 
 // testGraphStyleFields tests the common GraphStyle fields.
 func testGraphStyleFields(t *testing.T, style GraphStyle, wantFontSize int) {
-	gentest.TestStructFields(
+	testhelpers.TestStructFields(
 		t,
-		gentest.StringField("FillColor", style.FillColor, "red"),
-		gentest.StringField("StrokeColor", style.StrokeColor, "blue"),
-		gentest.StringField("FontColor", style.FontColor, "green"),
-		gentest.IntField("FontSize", style.FontSize, wantFontSize),
+		testhelpers.StringField("FillColor", style.FillColor, "red"),
+		testhelpers.StringField("StrokeColor", style.StrokeColor, "blue"),
+		testhelpers.StringField("FontColor", style.FontColor, "green"),
+		testhelpers.IntField("FontSize", style.FontSize, wantFontSize),
 	)
 }
 

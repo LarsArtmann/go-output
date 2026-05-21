@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/larsartmann/go-output"
-	"github.com/larsartmann/go-output/internal/gentest"
+	"github.com/larsartmann/go-output/testhelpers"
 )
 
 // User Journey: CLI Developer wants to add output formatting to their tool
@@ -91,8 +91,8 @@ func TestRenderDataAsJSON(t *testing.T) {
 
 	// Then: I get valid JSON with the data
 	jsonStr := string(jsonBytes)
-	gentest.AssertContains(t, jsonStr, "Alpha", "JSON should contain project name")
-	gentest.AssertContains(t, jsonStr, "90%", "JSON should contain health value")
+	testhelpers.AssertContains(t, jsonStr, "Alpha", "JSON should contain project name")
+	testhelpers.AssertContains(t, jsonStr, "90%", "JSON should contain health value")
 }
 
 func TestRenderDataAsCSV(t *testing.T) {
@@ -108,8 +108,8 @@ func TestRenderDataAsCSV(t *testing.T) {
 
 	// Then: I get valid CSV
 	csvStr := buf.String()
-	gentest.AssertContains(t, csvStr, "Name", "CSV should contain header")
-	gentest.AssertContains(t, csvStr, "Alpha", "CSV should contain data")
+	testhelpers.AssertContains(t, csvStr, "Name", "CSV should contain header")
+	testhelpers.AssertContains(t, csvStr, "Alpha", "CSV should contain data")
 }
 
 func TestRenderDataAsMarkdown(t *testing.T) {
@@ -126,9 +126,9 @@ func TestRenderDataAsMarkdown(t *testing.T) {
 	}
 
 	// Then: I get valid Markdown table
-	gentest.AssertContains(t, mdStr, "| Name", "Markdown should contain header row")
-	gentest.AssertContains(t, mdStr, "| Alpha", "Markdown should contain data row")
-	gentest.AssertContains(t, mdStr, "|----", "Markdown should contain separator")
+	testhelpers.AssertContains(t, mdStr, "| Name", "Markdown should contain header row")
+	testhelpers.AssertContains(t, mdStr, "| Alpha", "Markdown should contain data row")
+	testhelpers.AssertContains(t, mdStr, "|----", "Markdown should contain separator")
 }
 
 func TestRenderDataAsYAML(t *testing.T) {
@@ -146,8 +146,8 @@ func TestRenderDataAsYAML(t *testing.T) {
 
 	// Then: I get valid YAML
 	yamlStr := string(yamlBytes)
-	gentest.AssertContains(t, yamlStr, "Name", "YAML should contain field name")
-	gentest.AssertContains(t, yamlStr, "Alpha", "YAML should contain data")
+	testhelpers.AssertContains(t, yamlStr, "Name", "YAML should contain field name")
+	testhelpers.AssertContains(t, yamlStr, "Alpha", "YAML should contain data")
 }
 
 // User Journey: CLI Developer wants to handle edge cases gracefully

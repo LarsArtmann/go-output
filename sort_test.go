@@ -3,7 +3,7 @@ package output
 import (
 	"testing"
 
-	"github.com/larsartmann/go-output/internal/gentest"
+	"github.com/larsartmann/go-output/testhelpers"
 )
 
 func TestParseSortBy(t *testing.T) {
@@ -44,7 +44,7 @@ func TestSortByAllowedValues(t *testing.T) {
 func TestSortByIsValid(t *testing.T) {
 	t.Parallel()
 
-	gentest.TestEnumIsValid(t, []SortBy{
+	testhelpers.TestEnumIsValid(t, []SortBy{
 		SortByName,
 		SortByImportance,
 		SortByCreatedAt,
