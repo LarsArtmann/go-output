@@ -82,7 +82,7 @@ func TestStreamingRenderer(t *testing.T) {
 	}
 
 	result := buf.String()
-	assertContains(t, result, "<table", "Streaming HTML should contain table tag")
+	testhelpers.AssertContains(t, result, "<table", "Streaming HTML should contain table tag")
 }
 
 func TestTableDataRowEdges(t *testing.T) {

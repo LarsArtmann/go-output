@@ -17,6 +17,13 @@ func testTableData() *TableData {
 	return data
 }
 
+func assertOutputContainsBoth(t *testing.T, out, a, b, format string) {
+	t.Helper()
+	if !strings.Contains(out, a) || !strings.Contains(out, b) {
+		t.Errorf("%s output missing expected content: %q", format, out)
+	}
+}
+
 func TestRenderTableData_CSV(t *testing.T) {
 	var buf bytes.Buffer
 
@@ -28,9 +35,7 @@ func TestRenderTableData_CSV(t *testing.T) {
 	}
 
 	out := buf.String()
-	if !strings.Contains(out, "Name") || !strings.Contains(out, "Alice") {
-		t.Errorf("csv output missing expected content: %q", out)
-	}
+	assertOutputContainsBoth(t, out, "Name", "Alice", "csv")
 
 	lines := strings.Split(strings.TrimSpace(out), "\n")
 	if len(lines) != 3 {
@@ -83,9 +88,7 @@ func TestRenderTableData_XML(t *testing.T) {
 	}
 
 	out := buf.String()
-	if !strings.Contains(out, "Alice") || !strings.Contains(out, "<") {
-		t.Errorf("xml output missing expected content: %q", out)
-	}
+	assertOutputContainsBoth(t, out, "Alice", "<", "xml")
 }
 
 func TestRenderTableData_YAML(t *testing.T) {
@@ -143,9 +146,7 @@ func TestRenderTableData_DOT(t *testing.T) {
 	}
 
 	out := buf.String()
-	if !strings.Contains(out, "digraph") || !strings.Contains(out, "test_graph") {
-		t.Errorf("dot output missing expected content: %q", out)
-	}
+	assertOutputContainsBoth(t, out, "digraph", "test_graph", "dot")
 }
 
 func TestRenderTableData_HTML(t *testing.T) {
@@ -159,9 +160,7 @@ func TestRenderTableData_HTML(t *testing.T) {
 	}
 
 	out := buf.String()
-	if !strings.Contains(out, "<!DOCTYPE html>") || !strings.Contains(out, "Alice") {
-		t.Errorf("html output missing expected content: %q", out)
-	}
+	assertOutputContainsBoth(t, out, "<!DOCTYPE html>", "Alice", "html")
 }
 
 func TestRenderTableData_Tree(t *testing.T) {
@@ -231,9 +230,7 @@ func TestMarshalCSVFromTableData(t *testing.T) {
 		t.Fatalf("MarshalCSVFromTableData: %v", err)
 	}
 
-	if !strings.Contains(string(b), "Alice") {
-		t.Errorf("csv missing Alice: %q", string(b))
-	}
+	gentest.AssertOutputContains(t, string(b), "Alice")
 }
 
 func TestMarshalCSVFromTableData_Nil(t *testing.T) {
@@ -255,9 +252,7 @@ func TestMarshalTSVFromTableData(t *testing.T) {
 		t.Fatalf("MarshalTSVFromTableData: %v", err)
 	}
 
-	if !strings.Contains(string(b), "Alice") {
-		t.Errorf("tsv missing Alice: %q", string(b))
-	}
+	gentest.AssertOutputContains(t, string(b), "Alice")
 
 	if !strings.Contains(string(b), "\t") {
 		t.Error("tsv should contain tabs")

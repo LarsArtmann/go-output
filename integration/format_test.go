@@ -43,13 +43,13 @@ func TestInvalidFormatError(t *testing.T) {
 	}
 	result := err.Error()
 
-	assertContains(
+	testhelpers.AssertContains(
 		t,
 		result,
 		"invalid format",
 		"Error message should contain 'invalid format'",
 	)
-	assertContains(t, result, "invalid", "Error message should contain the invalid value")
+	testhelpers.AssertContains(t, result, "invalid", "Error message should contain the invalid value")
 }
 
 func TestFormatCategories(t *testing.T) {

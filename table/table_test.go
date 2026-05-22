@@ -1,21 +1,12 @@
 package table
 
 import (
-	"strings"
 	"testing"
 
 	"charm.land/lipgloss/v2"
 	"charm.land/lipgloss/v2/table"
+	"github.com/larsartmann/go-output/testhelpers"
 )
-
-// assertContains checks that output contains substr.
-func assertContains(t *testing.T, output, substr, msg string) {
-	t.Helper()
-
-	if !strings.Contains(output, substr) {
-		t.Error(msg)
-	}
-}
 
 func TestNew(t *testing.T) {
 	t.Parallel()
@@ -45,9 +36,9 @@ func TestSetHeaders(t *testing.T) {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	assertContains(t, output, "Name", "Render() should contain header 'Name'")
-	assertContains(t, output, "Value", "Render() should contain header 'Value'")
-	assertContains(t, output, "Count", "Render() should contain header 'Count'")
+	testhelpers.AssertContains(t, output, "Name", "Render() should contain header 'Name'")
+	testhelpers.AssertContains(t, output, "Value", "Render() should contain header 'Value'")
+	testhelpers.AssertContains(t, output, "Count", "Render() should contain header 'Count'")
 }
 
 func TestAddRow(t *testing.T) {
@@ -66,8 +57,8 @@ func TestAddRow(t *testing.T) {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	assertContains(t, output, "Alice", "Render() should contain row value 'Alice'")
-	assertContains(t, output, "30", "Render() should contain row value '30'")
+	testhelpers.AssertContains(t, output, "Alice", "Render() should contain row value 'Alice'")
+	testhelpers.AssertContains(t, output, "30", "Render() should contain row value '30'")
 }
 
 func TestAddRowMultiple(t *testing.T) {
@@ -84,9 +75,9 @@ func TestAddRowMultiple(t *testing.T) {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	assertContains(t, output, "Alice", "Render() should contain 'Alice'")
-	assertContains(t, output, "Bob", "Render() should contain 'Bob'")
-	assertContains(t, output, "Charlie", "Render() should contain 'Charlie'")
+	testhelpers.AssertContains(t, output, "Alice", "Render() should contain 'Alice'")
+	testhelpers.AssertContains(t, output, "Bob", "Render() should contain 'Bob'")
+	testhelpers.AssertContains(t, output, "Charlie", "Render() should contain 'Charlie'")
 }
 
 func TestStyleFunc(t *testing.T) {
@@ -113,7 +104,7 @@ func TestStyleFunc(t *testing.T) {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	assertContains(t, output, "Test", "Render() should contain 'Test'")
+	testhelpers.AssertContains(t, output, "Test", "Render() should contain 'Test'")
 }
 
 func TestRender(t *testing.T) {
@@ -133,10 +124,10 @@ func TestRender(t *testing.T) {
 		t.Error("Render() should not return empty string")
 	}
 
-	assertContains(t, output, "Name", "Render() should contain headers")
-	assertContains(t, output, "Status", "Render() should contain headers")
-	assertContains(t, output, "Project A", "Render() should contain row data")
-	assertContains(t, output, "Active", "Render() should contain row data")
+	testhelpers.AssertContains(t, output, "Name", "Render() should contain headers")
+	testhelpers.AssertContains(t, output, "Status", "Render() should contain headers")
+	testhelpers.AssertContains(t, output, "Project A", "Render() should contain row data")
+	testhelpers.AssertContains(t, output, "Active", "Render() should contain row data")
 }
 
 func TestChaining(t *testing.T) {
@@ -151,10 +142,10 @@ func TestChaining(t *testing.T) {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	assertContains(t, output, "ID", "Chained Render() should contain headers")
-	assertContains(t, output, "Name", "Chained Render() should contain headers")
-	assertContains(t, output, "First", "Chained Render() should contain row data")
-	assertContains(t, output, "Second", "Chained Render() should contain row data")
+	testhelpers.AssertContains(t, output, "ID", "Chained Render() should contain headers")
+	testhelpers.AssertContains(t, output, "Name", "Chained Render() should contain headers")
+	testhelpers.AssertContains(t, output, "First", "Chained Render() should contain row data")
+	testhelpers.AssertContains(t, output, "Second", "Chained Render() should contain row data")
 }
 
 func TestEmptyTable(t *testing.T) {
@@ -184,8 +175,8 @@ func TestHeadersOnlyNoRows(t *testing.T) {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	assertContains(t, output, "Only", "Render() should contain headers even without rows")
-	assertContains(
+	testhelpers.AssertContains(t, output, "Only", "Render() should contain headers even without rows")
+	testhelpers.AssertContains(
 		t,
 		output,
 		"Headers",
@@ -222,10 +213,10 @@ func TestFromTableData(t *testing.T) {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	assertContains(t, output, "Name", "should contain header 'Name'")
-	assertContains(t, output, "Status", "should contain header 'Status'")
-	assertContains(t, output, "Project A", "should contain row 'Project A'")
-	assertContains(t, output, "Active", "should contain row 'Active'")
+	testhelpers.AssertContains(t, output, "Name", "should contain header 'Name'")
+	testhelpers.AssertContains(t, output, "Status", "should contain header 'Status'")
+	testhelpers.AssertContains(t, output, "Project A", "should contain row 'Project A'")
+	testhelpers.AssertContains(t, output, "Active", "should contain row 'Active'")
 }
 
 func TestFromTableDataNil(t *testing.T) {

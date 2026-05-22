@@ -134,11 +134,9 @@ func (r *JSONGraphRenderer) Render() (string, error) {
 
 	for _, edge := range r.edges {
 		e := jsonGraphEdge{
-			From: edge.From.Get(),
-			To:   edge.To.Get(),
-		}
-		if !edge.Label.IsZero() {
-			e.Label = edge.Label.Get()
+			From:  edge.From.Get(),
+			To:    edge.To.Get(),
+			Label: brandedValue(edge.Label),
 		}
 
 		graph.Edges = append(graph.Edges, e)
