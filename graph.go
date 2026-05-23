@@ -222,6 +222,26 @@ func (m *GraphRendererMixin) SetEdges(edges []GraphEdge) {
 	m.edges = edges
 }
 
+// Nodes returns the graph nodes.
+func (m *GraphRendererMixin) Nodes() []GraphNode {
+	return m.nodes
+}
+
+// Edges returns the graph edges.
+func (m *GraphRendererMixin) Edges() []GraphEdge {
+	return m.edges
+}
+
+// NodesPtr returns a pointer to the graph nodes slice for mutation.
+func (m *GraphRendererMixin) NodesPtr() *[]GraphNode {
+	return &m.nodes
+}
+
+// EdgesPtr returns a pointer to the graph edges slice for mutation.
+func (m *GraphRendererMixin) EdgesPtr() *[]GraphEdge {
+	return &m.edges
+}
+
 // AddRowEdges adds edges from data.CreateRowEdges() to the graph.
 func (m *GraphRendererMixin) AddRowEdges(data *TableData) {
 	for _, edge := range data.CreateRowEdges() {

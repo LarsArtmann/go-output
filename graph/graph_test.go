@@ -1,6 +1,7 @@
-package output
+package graph
 
 import (
+	"github.com/larsartmann/go-output"
 	"strings"
 	"testing"
 
@@ -12,7 +13,7 @@ const testGraphNodeID = "test-id"
 func TestGraphNode(t *testing.T) {
 	t.Parallel()
 
-	node := NewGraphNode(testGraphNodeID, "Test Label")
+	node := output.NewGraphNode(testGraphNodeID, "Test Label")
 	if node.ID.Get() != testGraphNodeID {
 		t.Errorf("ID = %q, want %q", node.ID, testGraphNodeID)
 	}
@@ -21,8 +22,8 @@ func TestGraphNode(t *testing.T) {
 		t.Errorf("Label = %q, want %q", node.Label, "Test Label")
 	}
 
-	if node.Shape != ShapeBox {
-		t.Errorf("Shape = %v, want %v", node.Shape, ShapeBox)
+	if node.Shape != output.ShapeBox {
+		t.Errorf("Shape = %v, want %v", node.Shape, output.ShapeBox)
 	}
 
 	if node.Metadata == nil {
@@ -33,7 +34,7 @@ func TestGraphNode(t *testing.T) {
 func TestGraphEdge(t *testing.T) {
 	t.Parallel()
 
-	edge := NewGraphEdge("from-node", "to-node")
+	edge := output.NewGraphEdge("from-node", "to-node")
 	if edge.From.Get() != "from-node" {
 		t.Errorf("From = %q, want %q", edge.From, "from-node")
 	}
@@ -44,40 +45,40 @@ func TestGraphEdge(t *testing.T) {
 }
 
 func TestParseGraphShape(t *testing.T) {
-	tests := []parseEnumTestCase[GraphShape]{
-		{"box", "box", ShapeBox, false},
-		{"ellipse", "ellipse", ShapeEllipse, false},
-		{"diamond", "diamond", ShapeDiamond, false},
-		{"circle", "circle", ShapeCircle, false},
-		{"cylinder", "cylinder", ShapeCylinder, false},
-		{"hexagon", "hexagon", ShapeHexagon, false},
-		{"parallelogram", "parallelogram", ShapeParallelogram, false},
-		{"rect", "rect", ShapeRect, false},
+	tests := []parseEnumTestCase[output.GraphShape]{
+		{"box", "box", output.ShapeBox, false},
+		{"ellipse", "ellipse", output.ShapeEllipse, false},
+		{"diamond", "diamond", output.ShapeDiamond, false},
+		{"circle", "circle", output.ShapeCircle, false},
+		{"cylinder", "cylinder", output.ShapeCylinder, false},
+		{"hexagon", "hexagon", output.ShapeHexagon, false},
+		{"parallelogram", "parallelogram", output.ShapeParallelogram, false},
+		{"rect", "rect", output.ShapeRect, false},
 		{"invalid", "invalid", "", true},
 		{"empty", "", "", true},
 	}
 	testParseEnum(
 		t,
-		"ParseGraphShape",
-		ParseGraphShape,
+		"output.ParseGraphShape",
+		output.ParseGraphShape,
 		tests,
-		func(a, b GraphShape) bool { return a == b },
+		func(a, b output.GraphShape) bool { return a == b },
 	)
 }
 
 func TestGraphShapeString(t *testing.T) {
-	tests := []stringEnumTestCase[GraphShape]{
-		{ShapeBox, "box"},
-		{ShapeEllipse, "ellipse"},
-		{ShapeDiamond, "diamond"},
-		{ShapeCircle, "circle"},
+	tests := []stringEnumTestCase[output.GraphShape]{
+		{output.ShapeBox, "box"},
+		{output.ShapeEllipse, "ellipse"},
+		{output.ShapeDiamond, "diamond"},
+		{output.ShapeCircle, "circle"},
 	}
 
-	testEnumString(t, "GraphShape.String", tests, func(s GraphShape) string { return s.String() })
+	testEnumString(t, "output.GraphShape.String", tests, func(s output.GraphShape) string { return s.String() })
 }
 
 func TestGraphShapeAllowedValues(t *testing.T) {
-	got := ShapeBox.AllowedValues()
+	got := output.ShapeBox.AllowedValues()
 	want := []string{
 		"box",
 		"ellipse",
@@ -95,10 +96,10 @@ func TestGraphShapeAllowedValues(t *testing.T) {
 func TestGraphShapeIsValid(t *testing.T) {
 	t.Parallel()
 
-	testhelpers.TestEnumIsValid(t, []GraphShape{
-		ShapeBox,
-		ShapeEllipse,
-		ShapeDiamond,
+	testhelpers.TestEnumIsValid(t, []output.GraphShape{
+		output.ShapeBox,
+		output.ShapeEllipse,
+		output.ShapeDiamond,
 		"invalid",
 		"",
 	}, []bool{
@@ -113,7 +114,7 @@ func TestGraphShapeIsValid(t *testing.T) {
 func TestGraphStyle(t *testing.T) {
 	t.Parallel()
 
-	style := GraphStyle{
+	style := output.GraphStyle{
 		FillColor:   "red",
 		StrokeColor: "blue",
 		FontColor:   "green",
@@ -126,7 +127,7 @@ func TestGraphStyle(t *testing.T) {
 func TestEdgeStyle(t *testing.T) {
 	t.Parallel()
 
-	style := EdgeStyle{
+	style := output.EdgeStyle{
 		Color:     "black",
 		Style:     "dashed",
 		ArrowHead: "arrow",
@@ -145,15 +146,15 @@ func TestEdgeStyle(t *testing.T) {
 func TestGraphNodeStyle(t *testing.T) {
 	t.Parallel()
 
-	node := &GraphNode{
-		Style: GraphStyle{FillColor: "red", StrokeColor: "blue", FontColor: "green", FontSize: 14},
+	node := &output.GraphNode{
+		Style: output.GraphStyle{FillColor: "red", StrokeColor: "blue", FontColor: "green", FontSize: 14},
 	}
 
 	testGraphStyleFields(t, node.Style, 14)
 }
 
-// testGraphStyleFields tests the common GraphStyle fields.
-func testGraphStyleFields(t *testing.T, style GraphStyle, wantFontSize int) {
+// testGraphStyleFields tests the common output.GraphStyle fields.
+func testGraphStyleFields(t *testing.T, style output.GraphStyle, wantFontSize int) {
 	testhelpers.TestStructFields(
 		t,
 		testhelpers.StringField("FillColor", style.FillColor, "red"),

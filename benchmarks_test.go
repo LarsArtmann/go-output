@@ -90,16 +90,6 @@ func benchmarkGraphRenderer(b *testing.B, renderer GraphRenderer) {
 	}
 }
 
-func BenchmarkMermaidRenderer(b *testing.B) {
-	renderer := NewMermaidRenderer()
-	benchmarkGraphRenderer(b, renderer)
-}
-
-func BenchmarkDOTRenderer(b *testing.B) {
-	renderer := NewDOTRenderer()
-	benchmarkGraphRenderer(b, renderer)
-}
-
 func BenchmarkTableDataCreateRowEdges(b *testing.B) {
 	data := NewTableData([]string{"A", "B", "C", "D", "E"})
 	for range 1000 {

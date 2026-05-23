@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/larsartmann/go-output"
+	"github.com/larsartmann/go-output/graph"
 	"github.com/larsartmann/go-output/d2"
 	"github.com/larsartmann/go-output/testhelpers"
 )
@@ -186,11 +187,11 @@ func testRendererNotEmpty[R renderer](
 func TestMermaidFormatContent(t *testing.T) {
 	t.Parallel()
 
-	testRendererNotEmpty(t, output.MermaidFlowchartRenderer, "Mermaid")
+	testRendererNotEmpty(t, graph.MermaidFlowchartRenderer, "Mermaid")
 }
 
 func TestDOTFormatContent(t *testing.T) {
 	t.Parallel()
 
-	testRendererNotEmpty(t, output.DOTFromTableData, "DOT")
+	testRendererNotEmpty(t, graph.DOTFromTableData, "DOT")
 }

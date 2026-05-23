@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/larsartmann/go-output"
+	"github.com/larsartmann/go-output/graph"
 	"github.com/larsartmann/go-output/d2"
 	"github.com/larsartmann/go-output/table"
 	"github.com/larsartmann/go-output/testhelpers"
@@ -315,7 +316,7 @@ func newGraphTableData(projects []TestProject) *output.TableData {
 }
 
 func renderDOTFormat(projects []TestProject) string {
-	out, err := output.DOTFromTableData(newGraphTableData(projects)).Render()
+	out, err := graph.DOTFromTableData(newGraphTableData(projects)).Render()
 	if err != nil {
 		return ""
 	}
@@ -324,7 +325,7 @@ func renderDOTFormat(projects []TestProject) string {
 }
 
 func renderMermaidFormat(projects []TestProject) string {
-	out, err := output.MermaidFlowchartRenderer(newGraphTableData(projects)).Render()
+	out, err := graph.MermaidFlowchartRenderer(newGraphTableData(projects)).Render()
 	if err != nil {
 		return ""
 	}

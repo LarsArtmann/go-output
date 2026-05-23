@@ -1,21 +1,22 @@
-package output
+package graph
 
 import (
 	"fmt"
 	"strings"
 
+	"github.com/larsartmann/go-output"
 	"github.com/larsartmann/go-output/escape"
 )
 
 // Compile-time interface checks.
 var (
-	_ Renderer      = (*DOTRenderer)(nil)
-	_ GraphRenderer = (*DOTRenderer)(nil)
+	_ output.Renderer      = (*DOTRenderer)(nil)
+	_ output.GraphRenderer = (*DOTRenderer)(nil)
 )
 
 // DOTRenderer implements the GraphRenderer interface for DOT/Graphviz output.
 type DOTRenderer struct {
-	GraphRendererMixin
+	output.GraphRendererMixin
 
 	directed bool
 	graphID  string
@@ -24,7 +25,7 @@ type DOTRenderer struct {
 // newDOTRenderer creates a new DOTRenderer with the specified direction.
 func newDOTRenderer(directed bool) *DOTRenderer {
 	return &DOTRenderer{
-		GraphRendererMixin: NewGraphRendererMixin(),
+		GraphRendererMixin: output.NewGraphRendererMixin(),
 		directed:           directed,
 		graphID:            "G",
 	}
@@ -49,7 +50,6 @@ func (r *DOTRenderer) SetGraphID(id string) {
 func (r *DOTRenderer) Render() (string, error) {
 	var b strings.Builder
 
-	// Write header
 	if r.directed {
 		b.WriteString("digraph ")
 	} else {
@@ -59,14 +59,12 @@ func (r *DOTRenderer) Render() (string, error) {
 	b.WriteString(r.graphID)
 	b.WriteString(" {\n")
 
-	// Graph attributes
 	b.WriteString("  // Graph attributes\n")
 	b.WriteString("  rankdir=TB;\n")
 	b.WriteString("  splines=ortho;\n")
 	b.WriteString("  nodesep=0.5;\n")
 	b.WriteString("  ranksep=0.5;\n\n")
 
-	// Default node attributes
 	b.WriteString("  // Default node attributes\n")
 	b.WriteString("  node [\n")
 	b.WriteString("    shape=box\n")
@@ -74,17 +72,15 @@ func (r *DOTRenderer) Render() (string, error) {
 	b.WriteString("    fontsize=12\n")
 	b.WriteString("  ];\n\n")
 
-	// Write nodes
 	b.WriteString("  // Nodes\n")
 
-	for _, node := range r.nodes {
+	for _, node := range r.Nodes() {
 		r.writeNode(&b, node)
 	}
 
-	// Write edges
 	b.WriteString("\n  // Edges\n")
 
-	for _, edge := range r.edges {
+	for _, edge := range r.Edges() {
 		r.writeEdge(&b, edge)
 	}
 
@@ -93,7 +89,7 @@ func (r *DOTRenderer) Render() (string, error) {
 	return b.String(), nil
 }
 
-func (r *DOTRenderer) writeNode(b *strings.Builder, node GraphNode) {
+func (r *DOTRenderer) writeNode(b *strings.Builder, node output.GraphNode) {
 	b.WriteString("  \"")
 	b.WriteString(escape.DOT(node.ID.Get()))
 	b.WriteString("\" [\n")
@@ -123,7 +119,7 @@ func (r *DOTRenderer) writeNodeAttr(
 	}
 }
 
-func (r *DOTRenderer) writeEdge(b *strings.Builder, edge GraphEdge) {
+func (r *DOTRenderer) writeEdge(b *strings.Builder, edge output.GraphEdge) {
 	op := "->"
 	if !r.directed {
 		op = "--"
@@ -161,32 +157,32 @@ func (r *DOTRenderer) writeEdge(b *strings.Builder, edge GraphEdge) {
 }
 
 // DOTFromTableData converts TableData to a DOT graph.
-func DOTFromTableData(data *TableData) *DOTRenderer {
+func DOTFromTableData(data *output.TableData) *DOTRenderer {
 	renderer := NewDOTRenderer()
 	if data == nil {
 		return renderer
 	}
 
-	renderer.SetNodesFromTableData(data, func(_ int, n *GraphNode) {
-		n.Label = NewBrandedID[GraphNodeLabelBrand](escape.DOT(n.Label.Get()))
+	renderer.SetNodesFromTableData(data, func(_ int, n *output.GraphNode) {
+		n.Label = output.NewBrandedID[output.GraphNodeLabelBrand](escape.DOT(n.Label.Get()))
 	})
 
 	return renderer
 }
 
 // DOTFromTree converts a TreeNode to DOT format.
-func DOTFromTree(root *TreeNode) *DOTRenderer {
+func DOTFromTree(root *output.TreeNode) *DOTRenderer {
 	renderer := NewDOTRenderer()
 	if root == nil {
 		return renderer
 	}
 
-	renderer.addTreeNodes(root, NewBrandedID[TreeNodeIDBrand](""))
+	renderer.addTreeNodes(root, output.NewBrandedID[output.TreeNodeIDBrand](""))
 
 	return renderer
 }
 
-func dotTreeNodeID(node *TreeNode) string {
+func dotTreeNodeID(node *output.TreeNode) string {
 	if !node.ID.IsZero() {
 		return node.ID.Get()
 	}
@@ -194,6 +190,6 @@ func dotTreeNodeID(node *TreeNode) string {
 	return strings.ReplaceAll(node.Label.Get(), " ", "_")
 }
 
-func (r *DOTRenderer) addTreeNodes(node *TreeNode, parentID TreeNodeID) {
-	AddTreeNodes(&r.nodes, &r.edges, node, parentID.Get(), dotTreeNodeID, "")
+func (r *DOTRenderer) addTreeNodes(node *output.TreeNode, parentID output.TreeNodeID) {
+	output.AddTreeNodes(r.NodesPtr(), r.EdgesPtr(), node, parentID.Get(), dotTreeNodeID, "")
 }

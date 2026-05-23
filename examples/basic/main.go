@@ -9,6 +9,7 @@ import (
 	"github.com/larsartmann/go-output"
 	"github.com/larsartmann/go-output/d2"
 	"github.com/larsartmann/go-output/examples/shared"
+	"github.com/larsartmann/go-output/graph"
 	"github.com/larsartmann/go-output/table"
 )
 
@@ -278,12 +279,12 @@ func renderDiagram(projects []Project, createRenderer func(*output.TableData) ou
 
 func renderMermaid(projects []Project) {
 	renderDiagram(projects, func(data *output.TableData) output.Renderer {
-		return output.MermaidFlowchartRenderer(data)
+		return graph.MermaidFlowchartRenderer(data)
 	})
 }
 
 func renderDOT(projects []Project) {
 	renderDiagram(projects, func(data *output.TableData) output.Renderer {
-		return output.DOTFromTableData(data)
+				return graph.DOTFromTableData(data)
 	})
 }

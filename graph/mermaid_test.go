@@ -1,6 +1,7 @@
-package output
+package graph
 
 import (
+	"github.com/larsartmann/go-output"
 	"strings"
 	"testing"
 
@@ -15,16 +16,16 @@ func TestMermaidRenderer(t *testing.T) {
 	renderer.SetNodes(testNodesABC())
 	renderer.SetEdges(testEdgesABC())
 
-	output, err := renderer.Render()
+	out, err := renderer.Render()
 	if err != nil {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	assertContains(t, output, "```mermaid", "Output should contain mermaid code fence")
-	assertContains(t, output, "flowchart TD", "Output should contain flowchart declaration")
+	assertContains(t, out, "```mermaid", "Output should contain mermaid code fence")
+	assertContains(t, out, "flowchart TD", "Output should contain flowchart declaration")
 	// Mermaid output format is: "    A[Node A]\n"
-	assertContains(t, output, "A[Node A]", "Output should contain node A with label")
-	assertContains(t, output, "A --> B", "Output should contain edge A --> B")
+	assertContains(t, out, "A[Node A]", "Output should contain node A with label")
+	assertContains(t, out, "A --> B", "Output should contain edge A --> B")
 }
 
 //nolint:exhaustruct // Test files use partial struct initialization
@@ -32,55 +33,55 @@ func TestMermaidRendererWithDiamond(t *testing.T) {
 	t.Parallel()
 
 	renderer := NewMermaidRenderer()
-	renderer.SetNodes([]GraphNode{newTestNodeWithShape("decision", "Decision", ShapeDiamond)})
-	renderer.SetEdges([]GraphEdge{})
+	renderer.SetNodes([]output.GraphNode{newTestNodeWithShape("decision", "Decision", output.ShapeDiamond)})
+	renderer.SetEdges([]output.GraphEdge{})
 
-	output, err := renderer.Render()
+	out, err := renderer.Render()
 	if err != nil {
 		t.Fatalf("Render() error = %v", err)
 	}
 
 	// Diamond uses {} syntax: decision{Decision}
-	assertContains(t, output, "decision{Decision}", "Diamond shape should use {} syntax")
+	assertContains(t, out, "decision{Decision}", "Diamond shape should use {} syntax")
 }
 
 func TestMermaidRendererFromTableData(t *testing.T) {
 	t.Parallel()
 
-	data := NewTableData([]string{"Step", "Description"})
+	data := output.NewTableData([]string{"Step", "Description"})
 	data.AddRow([]string{"Start", "Begin process"})
 	data.AddRow([]string{"Step 1", "Do something"})
 	data.AddRow([]string{"End", "Finish"})
 
 	renderer := MermaidFlowchartRenderer(data)
 
-	output, err := renderer.Render()
+	out, err := renderer.Render()
 	if err != nil {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	assertContains(t, output, "flowchart TD", "Output should be a flowchart")
-	assertContains(t, output, "Start", "Output should contain 'Start'")
-	assertContains(t, output, "End", "Output should contain 'End'")
+	assertContains(t, out, "flowchart TD", "Output should be a flowchart")
+	assertContains(t, out, "Start", "Output should contain 'Start'")
+	assertContains(t, out, "End", "Output should contain 'End'")
 }
 
 func TestMermaidTreeRenderer(t *testing.T) {
 	t.Parallel()
 
-	root := NewTreeNode("root", "Root")
-	root.AddChild(NewTreeNode("child1", "Child 1"))
-	root.AddChild(NewTreeNode("child2", "Child 2"))
+	root := output.NewTreeNode("root", "Root")
+	root.AddChild(output.NewTreeNode("child1", "Child 1"))
+	root.AddChild(output.NewTreeNode("child2", "Child 2"))
 
 	renderer := MermaidTreeRenderer(root)
 
-	output, err := renderer.Render()
+	out, err := renderer.Render()
 	if err != nil {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	assertContains(t, output, "flowchart TD", "Output should be a flowchart")
-	assertContains(t, output, "Child 1", "Output should contain 'Child 1'")
-	assertContains(t, output, "Child 2", "Output should contain 'Child 2'")
+	assertContains(t, out, "flowchart TD", "Output should be a flowchart")
+	assertContains(t, out, "Child 1", "Output should contain 'Child 1'")
+	assertContains(t, out, "Child 2", "Output should contain 'Child 2'")
 }
 
 func TestMermaidRendererEmpty(t *testing.T) {
@@ -130,18 +131,18 @@ func TestMermaidRendererAllShapes(t *testing.T) {
 
 	tests := []struct {
 		name      string
-		shape     GraphShape
+		shape     output.GraphShape
 		wantLeft  string
 		wantRight string
 	}{
-		{"Box", ShapeBox, "[", "]"},
-		{"Rect", ShapeRect, "[", "]"},
-		{"Diamond", ShapeDiamond, "{", "}"},
-		{"Ellipse", ShapeEllipse, "(", ")"},
-		{"Circle", ShapeCircle, "((", "))"},
-		{"Hexagon", ShapeHexagon, "{{", "}}"},
-		{"Cylinder", ShapeCylinder, "[(", ")]"},
-		{"Parallelogram", ShapeParallelogram, "[/", "/]"},
+		{"Box", output.ShapeBox, "[", "]"},
+		{"Rect", output.ShapeRect, "[", "]"},
+		{"Diamond", output.ShapeDiamond, "{", "}"},
+		{"Ellipse", output.ShapeEllipse, "(", ")"},
+		{"Circle", output.ShapeCircle, "((", "))"},
+		{"Hexagon", output.ShapeHexagon, "{{", "}}"},
+		{"Cylinder", output.ShapeCylinder, "[(", ")]"},
+		{"Parallelogram", output.ShapeParallelogram, "[/", "/]"},
 	}
 
 	for _, tt := range tests {
@@ -149,21 +150,21 @@ func TestMermaidRendererAllShapes(t *testing.T) {
 			t.Parallel()
 
 			renderer := NewMermaidRenderer()
-			renderer.SetNodes([]GraphNode{newTestNodeWithShape("n", "Test", tt.shape)})
-			renderer.SetEdges([]GraphEdge{})
+			renderer.SetNodes([]output.GraphNode{newTestNodeWithShape("n", "Test", tt.shape)})
+			renderer.SetEdges([]output.GraphEdge{})
 
-			output, err := renderer.Render()
+			out, err := renderer.Render()
 			if err != nil {
 				t.Fatalf("Render() error = %v", err)
 			}
 
-			if !strings.Contains(output, tt.wantLeft) || !strings.Contains(output, tt.wantRight) {
+			if !strings.Contains(out, tt.wantLeft) || !strings.Contains(out, tt.wantRight) {
 				t.Errorf(
 					"Shape %v should produce %q...%q, got: %s",
 					tt.shape,
 					tt.wantLeft,
 					tt.wantRight,
-					output,
+					out,
 				)
 			}
 		})
@@ -175,14 +176,14 @@ func TestMermaidRendererWithEdgeLabel(t *testing.T) {
 
 	renderer := NewMermaidRenderer()
 	renderer.SetNodes(testNodesAB())
-	renderer.SetEdges([]GraphEdge{testEdgeAB("connects")})
+	renderer.SetEdges([]output.GraphEdge{testEdgeAB("connects")})
 
-	output, err := renderer.Render()
+	out, err := renderer.Render()
 	if err != nil {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	assertContains(t, output, "|connects|", "Output should contain edge label |connects|")
+	assertContains(t, out, "|connects|", "Output should contain edge label |connects|")
 }
 
 func TestMermaidTreeRendererNilRoot(t *testing.T) {
@@ -190,26 +191,26 @@ func TestMermaidTreeRendererNilRoot(t *testing.T) {
 
 	renderer := MermaidTreeRenderer(nil)
 
-	output, err := renderer.Render()
+	out, err := renderer.Render()
 	if err != nil {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	assertContains(t, output, "flowchart TD", "Nil root should still produce valid flowchart")
+	assertContains(t, out, "flowchart TD", "Nil root should still produce valid flowchart")
 }
 
 func TestMermaidTreeRendererWithEmptyID(t *testing.T) {
 	t.Parallel()
 	// TreeNode with empty ID should use label
-	root := NewTreeNode("", "RootLabel")
+	root := output.NewTreeNode("", "RootLabel")
 	renderer := MermaidTreeRenderer(root)
 
-	output, err := renderer.Render()
+	out, err := renderer.Render()
 	if err != nil {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	assertContains(t, output, "RootLabel", "Output should contain label when ID is empty")
+	assertContains(t, out, "RootLabel", "Output should contain label when ID is empty")
 }
 
 //nolint:exhaustruct // Test files use partial struct initialization
@@ -217,17 +218,17 @@ func TestMermaidRendererEscapeLabel(t *testing.T) {
 	t.Parallel()
 
 	renderer := NewMermaidRenderer()
-	renderer.SetNodes([]GraphNode{newTestNode("A", `test "quoted" text`)})
-	renderer.SetEdges([]GraphEdge{})
+	renderer.SetNodes([]output.GraphNode{newTestNode("A", `test "quoted" text`)})
+	renderer.SetEdges([]output.GraphEdge{})
 
-	output, err := renderer.Render()
+	out, err := renderer.Render()
 	if err != nil {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	if strings.Contains(output, `"quoted"`) {
+	if strings.Contains(out, `"quoted"`) {
 		t.Error("Quotes should be escaped")
 	}
 
-	assertContains(t, output, "'quoted'", "Quotes should be replaced with single quotes")
+	assertContains(t, out, "'quoted'", "Quotes should be replaced with single quotes")
 }

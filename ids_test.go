@@ -5,6 +5,8 @@ import (
 	"testing"
 )
 
+const testGraphNodeID = "test-id"
+
 func TestBrandedIDString(t *testing.T) {
 	t.Parallel()
 
