@@ -33,7 +33,7 @@ This project uses Go workspace modules. Each sub-package with its own `go.mod` i
 | `escape/`               | ✅     | None                                                | Format-specific escaping                |
 | `testhelpers/`          | ✅     | None                                                | Shared test assertions (non-internal)   |
 | `d2/`                   | ✅     | root, escape, testhelpers                           | D2 diagram renderer (rich domain model) |
-| `graph/`                | ✅     | root, escape, testhelpers                           | DOT + Mermaid renderers                  |
+| `graph/`                | ✅     | root, escape, testhelpers                           | DOT + Mermaid renderers                 |
 | `table/`                | ✅     | root, lipgloss                                      | **Lipgloss isolated from root**         |
 | `sort/`                 | ✅     | None                                                | **Deprecated** — only `ByField` remains |
 | `integration/`          | ✅     | root, table, d2, graph                              | Cross-module tests                      |
