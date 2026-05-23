@@ -11,6 +11,7 @@ func extractNames[T any](items []T, name func(T) string) []string {
 	for i, item := range items {
 		names[i] = name(item)
 	}
+
 	return names
 }
 

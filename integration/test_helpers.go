@@ -6,6 +6,13 @@ import (
 	"github.com/larsartmann/go-output"
 )
 
+const (
+	headerName   = "Name"
+	headerHealth = "Health"
+	sampleHealth = "90%"
+	sampleAlpha  = "Alpha"
+)
+
 // assertTableData verifies that the table has the expected number of columns and rows.
 func assertTableData(t *testing.T, data *output.TableData, expectedCols, expectedRows int) {
 	t.Helper()
@@ -45,8 +52,8 @@ func renderMarkdownTable(headers []string, rows [][]string) string {
 // renderSampleMarkdownTable returns a rendered markdown table with sample project data.
 func renderSampleMarkdownTable() string {
 	md := output.NewMarkdownTable()
-	md.SetHeaders([]string{"Name", "Health"})
-	md.AddRow([]string{"Alpha", "90%"})
+	md.SetHeaders([]string{headerName, headerHealth})
+	md.AddRow([]string{sampleAlpha, sampleHealth})
 
 	out, err := md.Render()
 	if err != nil {
