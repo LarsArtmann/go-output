@@ -52,7 +52,7 @@ fmt.Println(format.Category())           // table
 
 - **12 formats, one API** — Same data, different renderers. No format-specific code paths.
 - **Type-safe enums** — `Format`, `ColorMode`, `SortBy` — all validated at parse time, never raw strings.
-- **Zero lipgloss in root module** — `go get go-output` pulls only `go-faster/yaml` and `x/term`. Lipgloss is isolated in the `table/` submodule.
+- **Zero heavy deps in root module** — `go get go-output` pulls only `go-faster/yaml` and `x/term`. Lipgloss is isolated in `table/`, D2 and graph renderers in their own modules.
 - **Branded IDs** — Phantom types prevent mixing D2NodeID, TreeNodeID, GraphNodeID at compile time.
 - **Streaming** — `StreamingHTMLRenderer` for large datasets with minimal memory.
 - **Extensible registry** — Register custom renderers for runtime dispatch.
@@ -68,11 +68,11 @@ fmt.Println(format.Category())           // table
 | `xml`      |  ✅   |      |       | XML with table structure                                         |
 | `markdown` |  ✅   |      |       | Markdown tables                                                  |
 | `yaml`     |  ✅   |  ✅  |  ✅   | Shape-agnostic serialization                                     |
-| `d2`       |  ✅   |      |  ✅   | SQL tables + node-edge diagrams                                  |
+| `d2`       |  ✅   |      |  ✅   | SQL tables + node-edge diagrams (separate `d2/` module)         |
 | `html`     |  ✅   |  ✅  |       | HTML tables + collapsible tree                                   |
 | `tree`     |       |  ✅  |       | ASCII tree with box-drawing chars                                |
-| `mermaid`  |  ✅   |      |  ✅   | Mermaid flowchart diagrams                                       |
-| `dot`      |  ✅   |      |  ✅   | DOT/Graphviz directed graphs                                     |
+| `mermaid`  |  ✅   |      |  ✅   | Mermaid flowchart diagrams (separate `graph/` module)            |
+| `dot`      |  ✅   |      |  ✅   | DOT/Graphviz directed graphs (separate `graph/` module)          |
 
 All formats implement the `Renderer` interface:
 
@@ -170,6 +170,12 @@ out, _ := ht.Render()
 ### Graph Formats
 
 ```go
+import (
+    "github.com/larsartmann/go-output"
+    "github.com/larsartmann/go-output/d2"
+    "github.com/larsartmann/go-output/graph"
+)
+
 nodes := []output.GraphNode{
     output.NewGraphNode("a", "API Gateway"),
     output.NewGraphNode("b", "Backend"),
@@ -178,12 +184,12 @@ edges := []output.GraphEdge{
     output.NewGraphEdge("a", "b"),
 }
 
-// DOT / Graphviz
-renderer := output.DOTFromTableData(data)
+// DOT / Graphviz (requires go-output/graph)
+renderer := graph.DOTFromTableData(data)
 out, _ := renderer.Render()
 
-// Mermaid flowchart
-renderer := output.MermaidFlowchartRenderer(data)
+// Mermaid flowchart (requires go-output/graph)
+renderer := graph.MermaidFlowchartRenderer(data)
 out, _ := renderer.Render()
 
 // JSON graph
@@ -199,14 +205,11 @@ yg.SetNodes(nodes)
 yg.SetEdges(edges)
 out, _ := yg.Render()
 
-// D2 diagrams (shapes, SQL tables, grid layouts, nested containers)
-d2 := output.NewD2Renderer("Architecture")
-d2.AddNode(output.D2Node{
-    ID:    output.NewBrandedID[output.D2NodeIDBrand]("api"),
-    Label: output.NewBrandedID[output.D2NodeLabelBrand]("API Gateway"),
-    Shape: output.D2ShapeHexagon,
-})
-out, _ := d2.Render()
+// D2 diagrams (requires go-output/d2)
+diagram := d2.NewD2Diagram().
+    AddNodeWithShape("api", "API Gateway", d2.D2ShapeHexagon).
+    AddEdgeSimple("api", "backend")
+out, _ := diagram.Render()
 ```
 
 ## Data Shapes
@@ -237,10 +240,12 @@ for _, f := range output.FormatsForShape(output.ShapeGraph) {
 go get github.com/larsartmann/go-output
 ```
 
-For terminal table styling with lipgloss:
+Sub-modules for specific formats:
 
 ```bash
-go get github.com/larsartmann/go-output/table
+go get github.com/larsartmann/go-output/table   # Terminal tables with lipgloss
+go get github.com/larsartmann/go-output/d2     # D2 diagrams
+go get github.com/larsartmann/go-output/graph  # DOT + Mermaid renderers
 ```
 
 ## Branded IDs
@@ -266,16 +271,16 @@ projectID := output.NewBrandedID[ProjectIDBrand]("proj-123")
 D2 diagrams support SQL tables, constraints, grid layouts, and nested containers:
 
 ```go
-table := output.D2Table{
+table := d2.D2Table{
     Name: "users",
-    Columns: []output.D2Column{
-        {Name: "id", Type: "INT", Constraint: output.D2ConstraintPrimary},
-        {Name: "email", Type: "VARCHAR(255)", Constraint: output.D2ConstraintUnique},
-        {Name: "manager_id", Type: "INT", Constraint: output.D2ConstraintForeign},
+    Columns: []d2.D2Column{
+        {Name: "id", Type: "INT", Constraint: d2.D2ConstraintPrimary},
+        {Name: "email", Type: "VARCHAR(255)", Constraint: d2.D2ConstraintUnique},
+        {Name: "manager_id", Type: "INT", Constraint: d2.D2ConstraintForeign},
     },
 }
 
-node := output.D2Node{
+node := d2.D2Node{
     ID:          output.NewBrandedID[output.D2NodeIDBrand]("dashboard"),
     Label:       output.NewBrandedID[output.D2NodeLabelBrand]("Dashboard"),
     GridRows:    3,
@@ -363,6 +368,18 @@ Terminal table module (install separately):
 require (
     charm.land/lipgloss/v2 v2.0.3
 )
+```
+
+D2 diagram module (install separately):
+
+```go
+require github.com/larsartmann/go-output/d2 v0.0.0
+```
+
+DOT + Mermaid graph module (install separately):
+
+```go
+require github.com/larsartmann/go-output/graph v0.0.0
 ```
 
 ## Examples
