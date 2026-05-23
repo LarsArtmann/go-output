@@ -194,6 +194,84 @@ func TestXMLWriterWriteHeaderError(t *testing.T) {
 	assertContains(t, err.Error(), "xml header", "error should mention xml header")
 }
 
+func TestXMLWriterWriteHeaderTableOpenError(t *testing.T) {
+	t.Parallel()
+
+	x := NewXMLWriter(&writeNThenFailWriter{remaining: 1})
+
+	err := x.WriteHeader([]string{"Name"})
+	if err == nil {
+		t.Fatal("expected error on table open")
+	}
+
+	assertContains(t, err.Error(), "table open", "error should mention table open")
+}
+
+func TestXMLWriterWriteHeaderHeadersOpenError(t *testing.T) {
+	t.Parallel()
+
+	x := NewXMLWriter(&writeNThenFailWriter{remaining: 2})
+
+	err := x.WriteHeader([]string{"Name"})
+	if err == nil {
+		t.Fatal("expected error on headers open")
+	}
+
+	assertContains(t, err.Error(), "headers open", "error should mention headers open")
+}
+
+func TestXMLWriterWriteHeaderColumnsError(t *testing.T) {
+	t.Parallel()
+
+	x := NewXMLWriter(&writeNThenFailWriter{remaining: 3})
+
+	err := x.WriteHeader([]string{"Name"})
+	if err == nil {
+		t.Fatal("expected error on columns")
+	}
+
+	assertContains(t, err.Error(), "columns", "error should mention columns")
+}
+
+func TestXMLWriterWriteHeaderHeadersCloseError(t *testing.T) {
+	t.Parallel()
+
+	x := NewXMLWriter(&writeNThenFailWriter{remaining: 6})
+
+	err := x.WriteHeader([]string{"Name"})
+	if err == nil {
+		t.Fatal("expected error on headers close")
+	}
+
+	assertContains(t, err.Error(), "headers close", "error should mention headers close")
+}
+
+func TestXMLWriterWriteHeaderRowsOpenError(t *testing.T) {
+	t.Parallel()
+
+	x := NewXMLWriter(&writeNThenFailWriter{remaining: 7})
+
+	err := x.WriteHeader([]string{"Name"})
+	if err == nil {
+		t.Fatal("expected error on rows open")
+	}
+
+	assertContains(t, err.Error(), "rows open", "error should mention rows open")
+}
+
+func TestXMLWriterWriteFooterTableCloseError(t *testing.T) {
+	t.Parallel()
+
+	x := NewXMLWriter(&writeNThenFailWriter{remaining: 1})
+
+	err := x.WriteFooter()
+	if err == nil {
+		t.Fatal("expected error on table close")
+	}
+
+	assertContains(t, err.Error(), "table close", "error should mention table close")
+}
+
 func TestXMLWriterWriteRowError(t *testing.T) {
 	t.Parallel()
 

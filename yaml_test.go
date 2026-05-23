@@ -151,6 +151,18 @@ func BenchmarkMarshalYAML(b *testing.B) {
 	}
 }
 
+func TestMarshalYAMLError(t *testing.T) {
+	t.Parallel()
+
+	defer func() {
+		if r := recover(); r == nil {
+			t.Error("expected panic for unmarshalable type")
+		}
+	}()
+
+	_, _ = MarshalYAML(make(chan int))
+}
+
 func BenchmarkUnmarshalYAML(b *testing.B) {
 	yamlData := []byte(`id: 12345
 name: Test Project Alpha

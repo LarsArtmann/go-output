@@ -259,6 +259,28 @@ func TestMarshalJSONIndentError(t *testing.T) {
 	}
 }
 
+func TestJSONWriterEncodeError(t *testing.T) {
+	t.Parallel()
+
+	w := NewJSONWriter(&errorWriter{})
+
+	err := w.Encode(map[string]string{"k": "v"})
+	if err == nil {
+		t.Fatal("expected error from errorWriter")
+	}
+
+	assertContains(t, err.Error(), "encode json", "error should mention encode json")
+}
+
+func TestMarshalJSONError(t *testing.T) {
+	t.Parallel()
+
+	_, err := MarshalJSON(make(chan int))
+	if err == nil {
+		t.Fatal("expected error for unmarshalable type")
+	}
+}
+
 func BenchmarkMarshalJSONIndent(b *testing.B) {
 	data := NewBenchmarkData()
 

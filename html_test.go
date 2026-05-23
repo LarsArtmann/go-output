@@ -143,3 +143,16 @@ func TestHTMLTreeRendererEmpty(t *testing.T) {
 		t.Error("Empty tree should not contain <li>")
 	}
 }
+
+func TestRenderHTMLWithStylesError(t *testing.T) {
+	t.Parallel()
+
+	_, err := renderHTMLWithStyles(
+		&errorRenderer{}, "title", "styles", "test context",
+	)
+	if err == nil {
+		t.Fatal("expected error from errorRenderer")
+	}
+
+	assertContains(t, err.Error(), "test context", "error should mention context")
+}

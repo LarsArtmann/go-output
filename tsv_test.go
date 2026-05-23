@@ -95,6 +95,56 @@ func TestMarshalTSVUnsupportedType(t *testing.T) {
 	}
 }
 
+func TestTSVWriterRowError(t *testing.T) {
+	t.Parallel()
+
+	w := NewTSVWriter(&errorWriter{})
+	_ = w.WriteRow([]string{"test"})
+	w.Flush()
+
+	err := w.Error()
+	if err == nil {
+		t.Fatal("expected error from errorWriter after flush")
+	}
+}
+
+func TestTSVWriterHeaderError(t *testing.T) {
+	t.Parallel()
+
+	w := NewTSVWriter(&errorWriter{})
+	_ = w.WriteHeader([]string{"Name"})
+	w.Flush()
+
+	err := w.Error()
+	if err == nil {
+		t.Fatal("expected error from errorWriter after flush")
+	}
+}
+
+func TestTSVWriterRowsError(t *testing.T) {
+	t.Parallel()
+
+	w := NewTSVWriter(&errorWriter{})
+
+	err := w.WriteRows([][]string{{"a"}, {"b"}})
+	if err == nil {
+		t.Fatal("expected error from errorWriter")
+	}
+}
+
+func TestTSVWriterError(t *testing.T) {
+	t.Parallel()
+
+	w := NewTSVWriter(&errorWriter{})
+	_ = w.WriteRow([]string{"test"})
+	w.Flush()
+
+	err := w.Error()
+	if err == nil {
+		t.Error("Error() should return error after failed write")
+	}
+}
+
 func BenchmarkTSVWriter(b *testing.B) {
 	headers := make([]string, 10)
 	for i := range headers {

@@ -292,3 +292,27 @@ func TestRenderTableData_TreeWriterError(t *testing.T) {
 		t.Fatal("expected error from errorWriter")
 	}
 }
+
+func TestRenderTableData_MarkdownTitleWriteError(t *testing.T) {
+	data := testTableData()
+
+	err := RenderTableData(data, FormatMarkdown, RenderOptions{
+		Writer: &writeNThenFailWriter{remaining: 0},
+		Title:  "Test",
+	})
+	if err == nil {
+		t.Fatal("expected error on title write")
+	}
+}
+
+func TestRenderTableData_MarkdownRowCountWriteError(t *testing.T) {
+	data := testTableData()
+
+	err := RenderTableData(data, FormatMarkdown, RenderOptions{
+		Writer: &writeNThenFailWriter{remaining: 1},
+		Title:  "Test",
+	})
+	if err == nil {
+		t.Fatal("expected error on row count write")
+	}
+}

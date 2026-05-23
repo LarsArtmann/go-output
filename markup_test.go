@@ -93,6 +93,62 @@ func TestWriteMarkupRow(t *testing.T) {
 
 		assertContains(t, err.Error(), "open row", "error should mention open row")
 	})
+
+	t.Run("error on cell tag open", func(t *testing.T) {
+		t.Parallel()
+
+		err := writeMarkupRow(
+			&writeNThenFailWriter{remaining: 1}, []string{"A"}, "row", "cell", "  ",
+			func(s string) string { return s },
+		)
+		if err == nil {
+			t.Fatal("expected error on cell tag open")
+		}
+
+		assertContains(t, err.Error(), "cell tag open", "error should mention cell tag open")
+	})
+
+	t.Run("error on cell content", func(t *testing.T) {
+		t.Parallel()
+
+		err := writeMarkupRow(
+			&writeNThenFailWriter{remaining: 2}, []string{"A"}, "row", "cell", "  ",
+			func(s string) string { return s },
+		)
+		if err == nil {
+			t.Fatal("expected error on cell content")
+		}
+
+		assertContains(t, err.Error(), "cell content", "error should mention cell content")
+	})
+
+	t.Run("error on cell tag close", func(t *testing.T) {
+		t.Parallel()
+
+		err := writeMarkupRow(
+			&writeNThenFailWriter{remaining: 3}, []string{"A"}, "row", "cell", "  ",
+			func(s string) string { return s },
+		)
+		if err == nil {
+			t.Fatal("expected error on cell tag close")
+		}
+
+		assertContains(t, err.Error(), "cell tag close", "error should mention cell tag close")
+	})
+
+	t.Run("error on close row tag", func(t *testing.T) {
+		t.Parallel()
+
+		err := writeMarkupRow(
+			&writeNThenFailWriter{remaining: 4}, []string{"A"}, "row", "cell", "  ",
+			func(s string) string { return s },
+		)
+		if err == nil {
+			t.Fatal("expected error on close row tag")
+		}
+
+		assertContains(t, err.Error(), "close row", "error should mention close row")
+	})
 }
 
 func TestWriteMarkupColumns(t *testing.T) {
@@ -128,5 +184,33 @@ func TestWriteMarkupColumns(t *testing.T) {
 		}
 
 		assertContains(t, err.Error(), "column tag open", "error should mention column tag open")
+	})
+
+	t.Run("error on column content", func(t *testing.T) {
+		t.Parallel()
+
+		err := writeMarkupColumns(
+			&writeNThenFailWriter{remaining: 1}, []string{"A"}, "  ",
+			func(s string) string { return s },
+		)
+		if err == nil {
+			t.Fatal("expected error on column content")
+		}
+
+		assertContains(t, err.Error(), "column content", "error should mention column content")
+	})
+
+	t.Run("error on column close", func(t *testing.T) {
+		t.Parallel()
+
+		err := writeMarkupColumns(
+			&writeNThenFailWriter{remaining: 2}, []string{"A"}, "  ",
+			func(s string) string { return s },
+		)
+		if err == nil {
+			t.Fatal("expected error on column close")
+		}
+
+		assertContains(t, err.Error(), "column tag close", "error should mention column tag close")
 	})
 }
