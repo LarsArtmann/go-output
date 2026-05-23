@@ -9,6 +9,9 @@ import (
 )
 
 // SortBy represents the available sort field options for CLI applications.
+//
+// Deprecated: SortBy is application-specific business logic that does not belong
+// in a general-purpose output library. Define your own sort enum in your application.
 type SortBy string
 
 // Sort field constants.
