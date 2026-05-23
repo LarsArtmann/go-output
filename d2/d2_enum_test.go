@@ -185,3 +185,59 @@ func TestD2DirectionValidation(t *testing.T) {
 	values := D2DirRight.AllowedValues()
 	assertAllowedValueCount(t, values, 4)
 }
+
+func TestD2Constraint(t *testing.T) {
+	t.Parallel()
+
+	t.Run("all constraints", func(t *testing.T) {
+		t.Parallel()
+
+		all := AllD2Constraints()
+		if len(all) != 3 {
+			t.Errorf("AllD2Constraints() returned %d, want 3", len(all))
+		}
+	})
+
+	t.Run("string", func(t *testing.T) {
+		t.Parallel()
+
+		if D2ConstraintPrimary.String() != "primary_key" {
+			t.Errorf("D2ConstraintPrimary.String() = %q, want %q", D2ConstraintPrimary.String(), "primary_key")
+		}
+	})
+
+	t.Run("allowed values", func(t *testing.T) {
+		t.Parallel()
+
+		values := D2ConstraintPrimary.AllowedValues()
+		if len(values) != 3 {
+			t.Errorf("AllowedValues() returned %d, want 3", len(values))
+		}
+	})
+
+	t.Run("parse valid", func(t *testing.T) {
+		t.Parallel()
+
+		got, err := ParseD2Constraint("unique")
+		if err != nil {
+			t.Fatalf("ParseD2Constraint(unique) error: %v", err)
+		}
+
+		if got != D2ConstraintUnique {
+			t.Errorf("ParseD2Constraint(unique) = %v, want %v", got, D2ConstraintUnique)
+		}
+	})
+
+	t.Run("is valid", func(t *testing.T) {
+		t.Parallel()
+
+		if !D2ConstraintForeign.IsValid() {
+			t.Error("D2ConstraintForeign should be valid")
+		}
+
+		invalid := D2Constraint("cascade")
+		if invalid.IsValid() {
+			t.Error("invalid constraint should not be valid")
+		}
+	})
+}
