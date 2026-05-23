@@ -173,6 +173,27 @@ func TestD2FromTree(t *testing.T) {
 			"should contain child->grandchild edge",
 		)
 	})
+
+	t.Run("empty ID uses label slug", func(t *testing.T) {
+		t.Parallel()
+
+		root := &output.TreeNode{
+			Label: output.NewBrandedID[output.TreeNodeLabelBrand]("My Root"),
+			Children: []*output.TreeNode{
+				{Label: output.NewBrandedID[output.TreeNodeLabelBrand]("Child Node")},
+			},
+		}
+
+		d := D2FromTree(root)
+
+		got, err := d.Render()
+		if err != nil {
+			t.Fatalf("Render() error = %v", err)
+		}
+
+		testhelpers.AssertContains(t, got, "My_Root: My Root", "should use slug for empty ID")
+		testhelpers.AssertContains(t, got, "My_Root -> Child_Node", "should use slug in edge")
+	})
 }
 
 func TestD2GraphRendererInterface(t *testing.T) {
