@@ -24,9 +24,24 @@ func TestD2TableWithConstraints(t *testing.T) {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	testhelpers.AssertContains(t, got, "id: int {constraint: primary_key}", "should contain primary key")
-	testhelpers.AssertContains(t, got, "email: string {constraint: unique}", "should contain unique")
-	testhelpers.AssertContains(t, got, "org_id: int {constraint: foreign_key}", "should contain foreign key")
+	testhelpers.AssertContains(
+		t,
+		got,
+		"id: int {constraint: primary_key}",
+		"should contain primary key",
+	)
+	testhelpers.AssertContains(
+		t,
+		got,
+		"email: string {constraint: unique}",
+		"should contain unique",
+	)
+	testhelpers.AssertContains(
+		t,
+		got,
+		"org_id: int {constraint: foreign_key}",
+		"should contain foreign key",
+	)
 	testhelpers.AssertContains(t, got, "name: string\n", "should contain column without constraint")
 
 	if strings.Contains(got, "name: string {constraint") {
@@ -151,7 +166,12 @@ func TestD2FromTree(t *testing.T) {
 		}
 
 		testhelpers.AssertContains(t, got, "root -> child", "should contain root->child edge")
-		testhelpers.AssertContains(t, got, "child -> grandchild", "should contain child->grandchild edge")
+		testhelpers.AssertContains(
+			t,
+			got,
+			"child -> grandchild",
+			"should contain child->grandchild edge",
+		)
 	})
 }
 

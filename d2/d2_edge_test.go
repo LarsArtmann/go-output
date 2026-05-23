@@ -34,8 +34,18 @@ func TestD2EdgeWithArrows(t *testing.T) {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	testhelpers.AssertContains(t, got, "source-arrowhead.shape: diamond", "should contain source arrow")
-	testhelpers.AssertContains(t, got, "target-arrowhead.shape: triangle", "should contain target arrow")
+	testhelpers.AssertContains(
+		t,
+		got,
+		"source-arrowhead.shape: diamond",
+		"should contain source arrow",
+	)
+	testhelpers.AssertContains(
+		t,
+		got,
+		"target-arrowhead.shape: triangle",
+		"should contain target arrow",
+	)
 }
 
 func TestD2AllArrowTypes(t *testing.T) {
@@ -88,7 +98,12 @@ func TestD2EdgeWithFilledArrow(t *testing.T) {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	testhelpers.AssertContains(t, got, "target-arrowhead.shape: filled", "should contain filled arrow")
+	testhelpers.AssertContains(
+		t,
+		got,
+		"target-arrowhead.shape: filled",
+		"should contain filled arrow",
+	)
 }
 
 func TestD2EdgeStyle(t *testing.T) {

@@ -66,9 +66,9 @@ func TestD2NodeWithStyle(t *testing.T) {
 
 	d := NewD2Diagram()
 	d.AddNode(D2Node{
-		ID:    output.NewBrandedID[output.D2NodeIDBrand]("styled"),
-		Label: output.NewBrandedID[output.D2NodeLabelBrand]("Styled Node"),
-		Width: 200,
+		ID:     output.NewBrandedID[output.D2NodeIDBrand]("styled"),
+		Label:  output.NewBrandedID[output.D2NodeLabelBrand]("Styled Node"),
+		Width:  200,
 		Height: 100,
 		Style: D2NodeStyle{
 			Fill:          "blue",
@@ -100,7 +100,12 @@ func TestD2NodeWithStyle(t *testing.T) {
 	testhelpers.AssertContains(t, got, "border-radius: 8", "should contain border-radius")
 	testhelpers.AssertContains(t, got, "width: 200", "should contain width")
 	testhelpers.AssertContains(t, got, "height: 100", "should contain height")
-	testhelpers.AssertContains(t, got, "style.text-transform: uppercase", "should contain text-transform")
+	testhelpers.AssertContains(
+		t,
+		got,
+		"style.text-transform: uppercase",
+		"should contain text-transform",
+	)
 }
 
 func TestD2NodeWithIcon(t *testing.T) {

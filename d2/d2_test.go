@@ -197,7 +197,12 @@ func TestD2Diagram_AddNode(t *testing.T) {
 			t.Fatalf("Render() error = %v", err)
 		}
 
-		testhelpers.AssertContains(t, got, "cache: Cache {", "should use block syntax for shaped node")
+		testhelpers.AssertContains(
+			t,
+			got,
+			"cache: Cache {",
+			"should use block syntax for shaped node",
+		)
 		testhelpers.AssertContains(t, got, "shape: circle", "should contain shape attribute")
 	})
 }
