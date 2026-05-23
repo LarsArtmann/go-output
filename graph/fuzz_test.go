@@ -70,6 +70,19 @@ func FuzzMermaidID(f *testing.F) {
 	})
 }
 
+func fuzzTestNodes(idA, labelA, idB, labelB string) []output.GraphNode {
+	return []output.GraphNode{
+		{
+			ID:    output.NewBrandedID[output.GraphNodeIDBrand](idA),
+			Label: output.NewBrandedID[output.GraphNodeLabelBrand](labelA),
+		},
+		{
+			ID:    output.NewBrandedID[output.GraphNodeIDBrand](idB),
+			Label: output.NewBrandedID[output.GraphNodeLabelBrand](labelB),
+		},
+	}
+}
+
 func FuzzDOTRendererRender(f *testing.F) {
 	f.Add("A", "Node A", "B", "Node B")
 	f.Add("", "", "", "")
@@ -77,16 +90,7 @@ func FuzzDOTRendererRender(f *testing.F) {
 
 	f.Fuzz(func(t *testing.T, idA, labelA, idB, labelB string) {
 		renderer := NewDOTRenderer()
-		renderer.SetNodes([]output.GraphNode{
-			{
-				ID:    output.NewBrandedID[output.GraphNodeIDBrand](idA),
-				Label: output.NewBrandedID[output.GraphNodeLabelBrand](labelA),
-			},
-			{
-				ID:    output.NewBrandedID[output.GraphNodeIDBrand](idB),
-				Label: output.NewBrandedID[output.GraphNodeLabelBrand](labelB),
-			},
-		})
+		renderer.SetNodes(fuzzTestNodes(idA, labelA, idB, labelB))
 
 		got, err := renderer.Render()
 		if err != nil {
@@ -106,16 +110,7 @@ func FuzzMermaidRendererRender(f *testing.F) {
 
 	f.Fuzz(func(t *testing.T, idA, labelA, idB, labelB string) {
 		renderer := NewMermaidRenderer()
-		renderer.SetNodes([]output.GraphNode{
-			{
-				ID:    output.NewBrandedID[output.GraphNodeIDBrand](idA),
-				Label: output.NewBrandedID[output.GraphNodeLabelBrand](labelA),
-			},
-			{
-				ID:    output.NewBrandedID[output.GraphNodeIDBrand](idB),
-				Label: output.NewBrandedID[output.GraphNodeLabelBrand](labelB),
-			},
-		})
+		renderer.SetNodes(fuzzTestNodes(idA, labelA, idB, labelB))
 
 		got, err := renderer.Render()
 		if err != nil {

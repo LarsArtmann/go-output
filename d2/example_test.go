@@ -7,6 +7,7 @@ import (
 	"github.com/larsartmann/go-output/d2"
 )
 
+//nolint:testableexamples // Demonstration example, output is dynamic
 func ExampleNewD2Diagram() {
 	diagram := d2.NewD2Diagram().
 		SetDirection(d2.D2DirRight).
@@ -28,6 +29,7 @@ func ExampleNewD2Diagram() {
 	fmt.Println(result)
 }
 
+//nolint:testableexamples // Demonstration example, output is dynamic
 func ExampleNewD2Diagram_tables() {
 	diagram := d2.NewD2Diagram()
 
@@ -55,6 +57,7 @@ func ExampleNewD2Diagram_tables() {
 	fmt.Println(result)
 }
 
+//nolint:testableexamples // Demonstration example, output is dynamic
 func ExampleNewD2Diagram_styledNodes() {
 	diagram := d2.NewD2Diagram()
 	diagram.AddNode(d2.D2Node{

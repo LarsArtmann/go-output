@@ -39,7 +39,6 @@ func FuzzParseD2Direction(f *testing.F) {
 
 	f.Fuzz(func(t *testing.T, input string) {
 		got, err := ParseD2Direction(input)
-
 		if err != nil {
 			if got != "" {
 				t.Errorf("ParseD2Direction(%q) returned non-empty on error: %q", input, got)
@@ -64,7 +63,6 @@ func FuzzParseD2NodeShape(f *testing.F) {
 
 	f.Fuzz(func(t *testing.T, input string) {
 		got, err := ParseD2NodeShape(input)
-
 		if err != nil {
 			if got != "" {
 				t.Errorf("ParseD2NodeShape(%q) returned non-empty on error: %q", input, got)
@@ -89,7 +87,6 @@ func FuzzParseD2ArrowType(f *testing.F) {
 
 	f.Fuzz(func(t *testing.T, input string) {
 		got, err := ParseD2ArrowType(input)
-
 		if err != nil {
 			if got != "" {
 				t.Errorf("ParseD2ArrowType(%q) returned non-empty on error: %q", input, got)
@@ -114,7 +111,6 @@ func FuzzParseD2Constraint(f *testing.F) {
 
 	f.Fuzz(func(t *testing.T, input string) {
 		got, err := ParseD2Constraint(input)
-
 		if err != nil {
 			if got != "" {
 				t.Errorf("ParseD2Constraint(%q) returned non-empty on error: %q", input, got)

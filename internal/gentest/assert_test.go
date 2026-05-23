@@ -3,8 +3,11 @@ package gentest
 import (
 	"errors"
 	"html"
+	"strings"
 	"testing"
 )
+
+var errTest = errors.New("test error")
 
 type mockHTMLRenderer struct {
 	headers []string
@@ -16,20 +19,27 @@ func (m *mockHTMLRenderer) SetHeaders(h []string) { m.headers = h }
 func (m *mockHTMLRenderer) AddRow(r []string) { m.rows = append(m.rows, r) }
 
 func (m *mockHTMLRenderer) Render() (string, error) {
-	result := "<table>"
+	var b strings.Builder
+
+	b.WriteString("<table>")
+
 	for _, h := range m.headers {
-		result += "<th>" + html.EscapeString(h) + "</th>"
+		b.WriteString("<th>")
+		b.WriteString(html.EscapeString(h))
+		b.WriteString("</th>")
 	}
 
 	for _, row := range m.rows {
 		for _, cell := range row {
-			result += "<td>" + html.EscapeString(cell) + "</td>"
+			b.WriteString("<td>")
+			b.WriteString(html.EscapeString(cell))
+			b.WriteString("</td>")
 		}
 	}
 
-	result += "</table>"
+	b.WriteString("</table>")
 
-	return result, nil
+	return b.String(), nil
 }
 
 func TestAssertOutputContains(t *testing.T) {
@@ -104,7 +114,7 @@ func TestAssertMarshalError(t *testing.T) {
 	t.Run("error expected and occurred", func(t *testing.T) {
 		t.Parallel()
 
-		AssertMarshalError(t, "test", errors.New("err"), true)
+		AssertMarshalError(t, "test", errTest, true)
 	})
 
 	t.Run("no error expected and none occurred", func(t *testing.T) {
@@ -130,7 +140,7 @@ func TestAssertMarshalError(t *testing.T) {
 
 		mock := &testing.T{}
 
-		AssertMarshalError(mock, "test", errors.New("err"), false)
+		AssertMarshalError(mock, "test", errTest, false)
 
 		if !mock.Failed() {
 			t.Error("expected test to fail when error not expected but occurred")

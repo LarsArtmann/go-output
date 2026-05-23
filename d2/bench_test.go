@@ -101,7 +101,7 @@ func BenchmarkD2DiagramStyledNodes(b *testing.B) {
 					Fill:     "#f0f0f0",
 					Stroke:   "#333333",
 					FontSize: 14,
-					Shadow:  true,
+					Shadow:   true,
 				},
 				Tooltip: fmt.Sprintf("Tooltip for node %d", i),
 				Link:    fmt.Sprintf("https://example.com/node/%d", i),

@@ -7,6 +7,7 @@ import (
 	"github.com/larsartmann/go-output/graph"
 )
 
+//nolint:testableexamples // Demonstration example, output is dynamic
 func ExampleDOTFromTableData() {
 	data := &output.TableData{
 		Headers: []string{"Name", "Role"},
@@ -17,6 +18,7 @@ func ExampleDOTFromTableData() {
 	}
 
 	renderer := graph.DOTFromTableData(data)
+
 	result, err := renderer.Render()
 	if err != nil {
 		fmt.Printf("error: %v\n", err)
@@ -27,6 +29,7 @@ func ExampleDOTFromTableData() {
 	fmt.Println(result)
 }
 
+//nolint:testableexamples // Demonstration example, output is dynamic
 func ExampleMermaidFlowchartRenderer() {
 	data := &output.TableData{
 		Headers: []string{"Step", "Action"},
@@ -38,6 +41,7 @@ func ExampleMermaidFlowchartRenderer() {
 	}
 
 	renderer := graph.MermaidFlowchartRenderer(data)
+
 	result, err := renderer.Render()
 	if err != nil {
 		fmt.Printf("error: %v\n", err)
@@ -48,6 +52,7 @@ func ExampleMermaidFlowchartRenderer() {
 	fmt.Println(result)
 }
 
+//nolint:testableexamples // Demonstration example, output is dynamic
 func ExampleDOTFromTree() {
 	root := &output.TreeNode{
 		Label: output.NewBrandedID[output.TreeNodeLabelBrand]("Root"),
@@ -62,6 +67,7 @@ func ExampleDOTFromTree() {
 	}
 
 	renderer := graph.DOTFromTree(root)
+
 	result, err := renderer.Render()
 	if err != nil {
 		fmt.Printf("error: %v\n", err)

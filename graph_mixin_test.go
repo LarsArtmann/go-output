@@ -9,7 +9,6 @@ func TestParseGraphShape(t *testing.T) {
 	t.Parallel()
 
 	got, err := ParseGraphShape("rect")
-
 	if err != nil {
 		t.Fatalf("ParseGraphShape error: %v", err)
 	}
@@ -23,7 +22,6 @@ func TestParseGraphShape_Invalid(t *testing.T) {
 	t.Parallel()
 
 	_, err := ParseGraphShape("invalid")
-
 	if err == nil {
 		t.Error("expected error for invalid shape")
 	}
@@ -85,9 +83,11 @@ func TestAddTreeNodes(t *testing.T) {
 	root.AddChild(child)
 
 	var nodes []GraphNode
+
 	var edges []GraphEdge
 
-	AddTreeNodes(&nodes, &edges, root, "",
+	AddTreeNodes(
+		&nodes, &edges, root, "",
 		func(n *TreeNode) string { return n.ID.Get() },
 		ShapeRect,
 	)
@@ -271,10 +271,10 @@ func TestTSVWriter_WriteRows(t *testing.T) {
 	t.Parallel()
 
 	var buf strings.Builder
+
 	w := NewTSVWriter(&buf)
 
 	err := w.WriteRows([][]string{{"1", "2"}, {"3", "4"}})
-
 	if err != nil {
 		t.Fatalf("WriteRows error: %v", err)
 	}
