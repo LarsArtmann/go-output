@@ -106,23 +106,6 @@ func testEmptyRendererOutput(
 	}
 }
 
-// testSanitizeFunc is a shared helper for testing sanitization functions.
-func testSanitizeFunc(
-	t *testing.T,
-	name string,
-	fn func(string) string,
-	tests []struct{ input, want string },
-) {
-	t.Helper()
-
-	for _, tt := range tests {
-		got := fn(tt.input)
-		if got != tt.want {
-			t.Errorf("%s(%q) = %q, want %q", name, tt.input, got, tt.want)
-		}
-	}
-}
-
 // AssertTreeNodeDepth verifies the depth of tree nodes in a hierarchy.
 func AssertTreeNodeDepth(t *testing.T, root, child, grandchild *TreeNode) {
 	t.Helper()
@@ -155,14 +138,6 @@ func testExpectedOutputs(pairs ...string) []ExpectedOutput {
 	return out
 }
 
-// testDOTEmptyExpected returns the expected substrings for an empty DOT renderer.
-func testDOTEmptyExpected() []ExpectedOutput {
-	return testExpectedOutputs(
-		"digraph G {", "Empty DOT should still have digraph declaration",
-		"rankdir=TB", "Empty DOT should have default attributes",
-	)
-}
-
 // testHTMLEmptyExpected returns the expected substrings for an empty HTML renderer.
 func testHTMLEmptyExpected() []ExpectedOutput {
 	return testExpectedOutputs(
@@ -171,10 +146,3 @@ func testHTMLEmptyExpected() []ExpectedOutput {
 	)
 }
 
-// testMermaidEmptyExpected returns the expected substrings for an empty Mermaid renderer.
-func testMermaidEmptyExpected() []ExpectedOutput {
-	return testExpectedOutputs(
-		"```mermaid", "Empty mermaid should still have fence",
-		"flowchart TD", "Empty mermaid should still have flowchart declaration",
-	)
-}
