@@ -1,7 +1,7 @@
 # ADR: Data Shape × Format Capability Matrix
 
 **Date:** 2026-05-16
-**Status:** PROPOSED
+**Status:** ACCEPTED & IMPLEMENTED
 
 ## Context
 
