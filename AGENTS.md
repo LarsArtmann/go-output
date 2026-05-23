@@ -4,7 +4,7 @@
 
 A reusable Go library for CLI applications providing consistent output formatting across 12 formats (Table, JSON, CSV, TSV, Markdown, XML, YAML, HTML, Tree, D2, Mermaid, DOT) with type-safe enum-based configuration and a Shape capability matrix.
 
-**Updated:** 2026-05-17
+**Updated:** 2026-05-23
 
 ## Location
 
@@ -32,14 +32,16 @@ This project uses Go workspace modules. Each sub-package with its own `go.mod` i
 | `enum/`                 | ✅     | testhelpers (tests only)                            | Generic enum utilities                  |
 | `escape/`               | ✅     | None                                                | Format-specific escaping                |
 | `testhelpers/`          | ✅     | None                                                | Shared test assertions (non-internal)   |
+| `d2/`                   | ✅     | root, escape, testhelpers                           | D2 diagram renderer (rich domain model) |
+| `graph/`                | ✅     | root, escape, testhelpers                           | DOT + Mermaid renderers                  |
 | `table/`                | ✅     | root, lipgloss                                      | **Lipgloss isolated from root**         |
 | `sort/`                 | ✅     | None                                                | **Deprecated** — only `ByField` remains |
-| `integration/`          | ✅     | root, table                                         | Cross-module tests                      |
-| `examples/`             | ✅     | root, table                                         | Usage examples                          |
+| `integration/`          | ✅     | root, table, d2, graph                              | Cross-module tests                      |
+| `examples/`             | ✅     | root, table, d2, graph                              | Usage examples                          |
 
 `go.work` is gitignored (local dev only). Each module uses `replace` directives for standalone development.
 
-**Key benefit:** `go get github.com/larsartmann/go-output` pulls ZERO lipgloss deps. Users who need terminal tables import `go-output/table` explicitly.
+**Key benefit:** `go get github.com/larsartmann/go-output` pulls ZERO lipgloss deps and ZERO d2/graph deps. Users import only the modules they need.
 
 ### Dependency Graph
 
@@ -49,12 +51,14 @@ enum          → testhelpers (tests only)
 escape        → (none)
 testhelpers   → (none) — zero deps, shared test assertions
 sort          → (none) — zero deps, only ByField helper
+d2            → root, escape, testhelpers
+graph         → root, escape, testhelpers
 table         → root, lipgloss/v2
-integration   → root, table
-examples      → root, table
+integration   → root, table, d2, graph
+examples      → root, table, d2, graph
 ```
 
-**No circular dependencies.** The sort/ → root cycle was eliminated in v0.4.0 by removing `Sorter[T]`.
+**No circular dependencies.** Root has zero imports from d2/, graph/, table/, or any sub-module.
 
 ## Project Structure
 
@@ -72,11 +76,11 @@ go-output/                    # Root module (package output) — types, interfac
 ├── json.go, json_renderers.go, csv.go, tsv.go, yaml.go, yaml_renderers.go, xml.go, markdown.go
 ├── html.go, streaming.go
 ├── graph.go                  # GraphNode, GraphEdge, GraphRenderer, GraphRendererMixin, AddTreeNodes
-├── dot.go                    # DOT/Graphviz renderer
-├── mermaid.go                # Mermaid diagram renderer
-├── delimited.go, markup.go, marshal.go
-├── d2.go, d2_enum.go, d2_render.go, d2_write.go, d2_convert.go
+├── delimited.go, markup.go, marshal.go, render_tabledata.go
 ├── internal/gentest/         # Generic test helpers (root module only, not importable by sub-modules)
+│
+├── d2/                       # MODULE: D2 diagram renderer (rich domain model)
+├── graph/                    # MODULE: DOT + Mermaid renderers
 ├── internal/testutils/       # Domain-aware test helpers
 │
 ├── enum/                     # MODULE: Generic enum utilities (zero deps)
@@ -103,7 +107,7 @@ golangci-lint run ./...         # Lint root module
 go mod tidy                     # Tidy root module
 
 # Per-module (required since go.work is gitignored)
-for mod in . enum escape testhelpers sort table integration; do
+for mod in . d2 graph enum escape testhelpers sort table integration examples; do
   (cd $mod && go test ./...)
 done
 ```
@@ -116,8 +120,10 @@ go 1.26.2
 
 use (
   .
+  ./d2
   ./enum
   ./escape
+  ./graph
   ./testhelpers
   ./sort
   ./table
@@ -142,6 +148,8 @@ EOF
 | Package       | Coverage | Module |
 | ------------- | -------- | ------ |
 | output (root) | 90%+     | root   |
+| d2            | 90%+     | own    |
+| graph         | 90%+     | own    |
 | enum          | 100%     | own    |
 | escape        | 100%     | own    |
 | sort          | 100%     | own    |
@@ -163,7 +171,7 @@ go test -bench=. -benchmem ./...  # Benchmarks
 2. **Shape capability matrix**: Each format declares supported data shapes via `formatCapabilities` map[Format][]Shape. Use `f.Supports(shape)` to query.
 3. **Branded IDs**: Phantom types prevent mixing D2NodeID/TreeNodeID/etc via `go-branded-id`.
 4. **Interface-based design**: Renderer, GraphRenderer, TableRenderer, TreeOutputRenderer interfaces — all have `Render() (string, error)`. Use `MustRender(r)` for tests/examples.
-5. **Composition**: GraphRendererMixin in graph.go shared by DOT/Mermaid, tableDataBase in tabledata.go shared by HTML/Streaming.
+5. **Composition**: GraphRendererMixin in graph.go (root) provides shared state for DOT/Mermaid via accessor methods (Nodes/Edges/NodesPtr/EdgesPtr). tableDataBase in tabledata.go shared by HTML/Streaming.
 6. **Registry is opt-in**: Use constructors directly by default. Register/Create for runtime dispatch.
 
 ## Common Tasks
@@ -178,21 +186,29 @@ go test -bench=. -benchmem ./...  # Benchmarks
 
 ### Adding a New D2 Enum
 
-1. Add type + constants to `d2_enum.go`
+1. Add type + constants to `d2/d2_enum.go`
 2. Add values slice + Parse/IsValid/AllowedValues/String methods
-3. Add tests to `d2_enum_test.go`
+3. Add tests to `d2/d2_enum_test.go`
+
+### Adding a New Graph Renderer
+
+1. Create renderer in `graph/` module
+2. Embed `output.GraphRendererMixin` for shared node/edge state
+3. Implement `output.GraphRenderer` interface
+4. Add tests with >90% coverage
 
 ## Architecture Notes
 
-- D2 has richer types than generic graph (shapes, arrows, SQL tables, classes) — intentional split
-- Tree conversion has renderer-specific addTreeNodes in d2_convert, dot, mermaid — the generic AddTreeNodes in graph.go handles the common case
+- D2 has richer types than generic graph (shapes, arrows, SQL tables, classes) — lives in `d2/` module
+- DOT and Mermaid renderers live in `graph/` module, sharing `GraphRendererMixin` from root via accessor methods
+- Tree conversion has renderer-specific addTreeNodes in d2_convert, graph/dot, graph/mermaid — the generic AddTreeNodes in graph.go handles the common case
 - Depguard config restricts imports
 - escape/ uses `html.EscapeString()` from stdlib for HTML, with `strings.ReplaceAll` for XML `&apos;`
 - sort/ is **deprecated** — `Sorter[T]` deleted, only `ByField` helper remains (zero deps). Use `slices.SortStableFunc` + `cmp.Compare` (stdlib)
-- Multi-module workspace with 7 independent modules (see ADR 001)
-- GraphRendererMixin in `graph.go` — shared by DOT and Mermaid renderers
+- Multi-module workspace with 10 independent modules (see ADR 001)
 - Shape capability matrix (ADR 002) replaces FormatCategory — deprecated methods redirect to `Supports(Shape)`
+- `render_tabledata.go` returns `UnsupportedFormatError` for D2/DOT/Mermaid (these live in separate modules)
 - `internal/gentest` and `internal/testutils` are root-only — sub-modules must inline helpers or create their own
-- Nix flake uses `flake-parts` + `treefmt-nix` + `git-hooks.nix` — no `gomod2nix` (library, 8 modules, no binary)
+- Nix flake uses `flake-parts` + `treefmt-nix` + `git-hooks.nix` — no `gomod2nix` (library, 10 modules, no binary)
 - Go checks (build/test/lint) NOT in flake — Nix sandbox blocks `go mod download`; CI handles these reliably
 - `.pre-commit-config.yaml` exists for non-Nix users; `git-hooks.nix` auto-installs hooks for Nix users via `nix develop`

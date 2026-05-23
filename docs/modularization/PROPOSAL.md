@@ -1,7 +1,7 @@
 # Go Modularization Proposal — go-output (v2)
 
 **Date:** 2026-05-23
-**Status:** DRAFT
+**Status:** ACCEPTED & IMPLEMENTED
 **Deciders:** Lars Artmann
 **Supersedes:** 2026-05-16 proposal (stale — referenced deleted cmdguard/, internal/testutils/)
 
