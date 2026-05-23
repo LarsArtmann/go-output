@@ -147,14 +147,14 @@ EOF
 
 | Package       | Coverage | Module |
 | ------------- | -------- | ------ |
-| output (root) | 90%+     | root   |
-| d2            | 90%+     | own    |
-| graph         | 90%+     | own    |
+| output (root) | 88.7%    | root   |
+| d2            | 95.4%    | own    |
+| graph         | 94.4%    | own    |
 | enum          | 100%     | own    |
 | escape        | 100%     | own    |
 | sort          | 100%     | own    |
 | table         | 100%     | own    |
-| testhelpers   | 100%     | own    |
+| testhelpers   | 93.8%    | own    |
 
 ## Testing
 
@@ -197,9 +197,37 @@ go test -bench=. -benchmem ./...  # Benchmarks
 3. Implement `output.GraphRenderer` interface
 4. Add tests with >90% coverage
 
+### Using the Registry for Runtime Dispatch
+
+The registry is opt-in — use constructors directly by default:
+
+```go
+// Direct constructor (recommended for known formats)
+d := d2.NewD2Diagram()
+
+// Registry for runtime dispatch (e.g., CLI --format flag)
+output.Register(output.FormatJSON, func() output.Renderer { return output.NewJSONRenderer() })
+renderer, err := output.Create(formatFromFlag)
+```
+
+Sub-modules (d2, graph, table) are NOT pre-registered. Users call `Register()` explicitly to avoid importing unused dependencies.
+
+### Sub-Module Usage Pattern
+
+Each sub-module is independently versioned. Users import only what they need:
+
+```go
+import "github.com/larsartmann/go-output"                  // core types + basic formatters
+import "github.com/larsartmann/go-output/d2"               // D2 diagrams (optional)
+import "github.com/larsartmann/go-output/graph"            // DOT + Mermaid (optional)
+import "github.com/larsartmann/go-output/table"            // Lipgloss tables (optional)
+```
+
 ## Architecture Notes
 
-- D2 has richer types than generic graph (shapes, arrows, SQL tables, classes) — lives in `d2/` module
+- **Root has ZERO sub-module imports** — verified via `go mod graph`. Users get zero transitive deps from sub-modules they don't import.
+- D2 has richer types than generic graph (shapes, arrows, SQL tables, classes) — lives in `d2/` module with its own `D2Node`/`D2Edge` types
+- D2 re-exports `D2NodeID`/`D2NodeLabel` from root so users don't need to import both `d2` and `output` for ID construction
 - DOT and Mermaid renderers live in `graph/` module, sharing `GraphRendererMixin` from root via accessor methods
 - Tree conversion has renderer-specific addTreeNodes in d2_convert, graph/dot, graph/mermaid — the generic AddTreeNodes in graph.go handles the common case
 - Depguard config restricts imports
