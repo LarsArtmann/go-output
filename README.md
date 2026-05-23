@@ -410,6 +410,15 @@ go test -cover ./...            # Coverage report
 golangci-lint run --fix ./...   # Lint
 ```
 
+## API Stability
+
+This library is pre-v1. The following guarantees apply:
+
+- **Root module** (`github.com/larsartmann/go-output`): Public API is stable. Breaking changes will be documented in CHANGELOG.md.
+- **Sub-modules** (`d2`, `graph`, `table`): May evolve independently. Import them explicitly to opt in.
+- **`Renderer` interface**: Stable — all formats implement `Render() (string, error)`.
+- **`internal/` packages**: No stability guarantee. Do not import these.
+
 ## License
 
 [MIT](LICENSE)
