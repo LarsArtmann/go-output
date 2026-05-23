@@ -212,6 +212,7 @@ func TestD2NodeWithClass(t *testing.T) {
 	d := NewD2Diagram()
 	d.AddClass("important", D2NodeStyle{
 		Fill: "red",
+
 		D2StrokeStyle: D2StrokeStyle{Stroke: "darkred"},
 	})
 	d.AddNode(D2Node{ //nolint:exhaustruct // Test uses minimal required fields

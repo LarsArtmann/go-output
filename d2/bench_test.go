@@ -118,7 +118,10 @@ func BenchmarkD2DiagramFullConfig(b *testing.B) {
 			SetTitle("Benchmark Diagram").
 			SetLayout("elk")
 
-		d.AddClass("highlight", D2NodeStyle{Fill: "#ffcc00", D2StrokeStyle: D2StrokeStyle{Stroke: "#ff9900"}})
+		d.AddClass("highlight", D2NodeStyle{
+			Fill:          "#ffcc00",
+			D2StrokeStyle: D2StrokeStyle{Stroke: "#ff9900"},
+		})
 
 		for _, node := range generateBenchmarkD2Nodes(50) {
 			d.AddNode(node)

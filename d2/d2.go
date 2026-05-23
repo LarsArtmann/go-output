@@ -25,6 +25,7 @@ func (s D2StrokeStyle) isSet() bool {
 // D2NodeStyle represents styling for a D2 node.
 type D2NodeStyle struct {
 	D2StrokeStyle
+
 	Fill          string
 	Opacity       float64
 	Shadow        bool
@@ -81,6 +82,7 @@ func (n D2Node) hasSize() bool {
 // D2EdgeStyle represents styling for a D2 edge.
 type D2EdgeStyle struct {
 	D2StrokeStyle
+
 	Animated bool
 }
 

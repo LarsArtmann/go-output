@@ -187,7 +187,7 @@ func testRendererNotEmpty[R renderer](
 func TestMermaidFormatContent(t *testing.T) {
 	t.Parallel()
 
-	testRendererNotEmpty(t, graph.MermaidFlowchartRenderer, "Mermaid")
+	testRendererNotEmpty(t, graph.MermaidFromTableData, "Mermaid")
 }
 
 func TestDOTFormatContent(t *testing.T) {

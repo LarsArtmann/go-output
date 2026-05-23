@@ -325,7 +325,7 @@ func renderDOTFormat(projects []TestProject) string {
 }
 
 func renderMermaidFormat(projects []TestProject) string {
-	out, err := graph.MermaidFlowchartRenderer(newGraphTableData(projects)).Render()
+	out, err := graph.MermaidFromTableData(newGraphTableData(projects)).Render()
 	if err != nil {
 		return ""
 	}

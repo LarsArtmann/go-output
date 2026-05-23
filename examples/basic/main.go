@@ -279,7 +279,7 @@ func renderDiagram(projects []Project, createRenderer func(*output.TableData) ou
 
 func renderMermaid(projects []Project) {
 	renderDiagram(projects, func(data *output.TableData) output.Renderer {
-		return graph.MermaidFlowchartRenderer(data)
+		return graph.MermaidFromTableData(data)
 	})
 }
 
