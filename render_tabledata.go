@@ -52,12 +52,8 @@ func RenderTableData(data *TableData, format Format, opts ...RenderOptions) erro
 		return renderXMLTableData(w, data)
 	case FormatYAML:
 		return renderYAMLTableData(w, data)
-	case FormatD2:
-		return renderD2TableData(w, data)
-	case FormatMermaid:
-		return renderMermaidTableData(w, data)
-	case FormatDOT:
-		return renderDOTTableData(w, data, o)
+	case FormatD2, FormatMermaid, FormatDOT:
+		return &UnsupportedFormatError{Format: format}
 	case FormatHTML:
 		return renderHTMLTableData(w, data, o)
 	case FormatTree:
@@ -159,57 +155,6 @@ func renderYAMLTableData(w io.Writer, data *TableData) error {
 	_, err = fmt.Fprint(w, out)
 	if err != nil {
 		return fmt.Errorf("write yaml output: %w", err)
-	}
-
-	return nil
-}
-
-func renderD2TableData(w io.Writer, data *TableData) error {
-	diagram := D2FromTableData(data)
-
-	out, err := diagram.Render()
-	if err != nil {
-		return fmt.Errorf("render d2: %w", err)
-	}
-
-	_, err = fmt.Fprintln(w, out)
-	if err != nil {
-		return fmt.Errorf("write d2 output: %w", err)
-	}
-
-	return nil
-}
-
-func renderMermaidTableData(w io.Writer, data *TableData) error {
-	renderer := MermaidFlowchartRenderer(data)
-
-	out, err := renderer.Render()
-	if err != nil {
-		return fmt.Errorf("render mermaid: %w", err)
-	}
-
-	_, err = fmt.Fprintln(w, out)
-	if err != nil {
-		return fmt.Errorf("write mermaid output: %w", err)
-	}
-
-	return nil
-}
-
-func renderDOTTableData(w io.Writer, data *TableData, opts RenderOptions) error {
-	renderer := DOTFromTableData(data)
-	if opts.GraphID != "" {
-		renderer.SetGraphID(opts.GraphID)
-	}
-
-	out, err := renderer.Render()
-	if err != nil {
-		return fmt.Errorf("render dot: %w", err)
-	}
-
-	_, err = fmt.Fprintln(w, out)
-	if err != nil {
-		return fmt.Errorf("write dot output: %w", err)
 	}
 
 	return nil

@@ -8,6 +8,7 @@ import (
 
 	"github.com/larsartmann/go-output"
 	"github.com/larsartmann/go-output/table"
+	"github.com/larsartmann/go-output/testhelpers"
 )
 
 type TestProject struct {

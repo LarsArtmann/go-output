@@ -1,4 +1,12 @@
-package output
+package d2
+
+import "github.com/larsartmann/go-output"
+
+// D2NodeID is a branded identifier for D2 diagram nodes.
+type D2NodeID = output.D2NodeID
+
+// D2NodeLabel is a branded identifier for D2 diagram node labels.
+type D2NodeLabel = output.D2NodeLabel
 
 // D2NodeStyle represents styling for a D2 node.
 type D2NodeStyle struct {

@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/larsartmann/go-output"
+	"github.com/larsartmann/go-output/testhelpers"
 )
 
 // TestCSVToTableData tests converting CSV data to TableData.

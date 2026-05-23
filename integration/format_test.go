@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/larsartmann/go-output"
+	"github.com/larsartmann/go-output/testhelpers"
 )
 
 func TestFormatParseRoundtrip(t *testing.T) {
@@ -49,7 +50,12 @@ func TestInvalidFormatError(t *testing.T) {
 		"invalid format",
 		"Error message should contain 'invalid format'",
 	)
-	testhelpers.AssertContains(t, result, "invalid", "Error message should contain the invalid value")
+	testhelpers.AssertContains(
+		t,
+		result,
+		"invalid",
+		"Error message should contain the invalid value",
+	)
 }
 
 func TestFormatCategories(t *testing.T) {

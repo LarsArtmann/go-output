@@ -1,11 +1,13 @@
-package output
+package d2
 
 import (
 	"strings"
+
+	"github.com/larsartmann/go-output"
 )
 
 // SetNodes sets graph nodes from the generic GraphNode type, satisfying GraphRenderer.
-func (d *D2Diagram) SetNodes(nodes []GraphNode) {
+func (d *D2Diagram) SetNodes(nodes []output.GraphNode) {
 	d.nodes = make([]D2Node, len(nodes))
 	for i, n := range nodes {
 		d.nodes[i] = graphNodeToD2(n)
@@ -13,52 +15,52 @@ func (d *D2Diagram) SetNodes(nodes []GraphNode) {
 }
 
 // SetEdges sets graph edges from the generic GraphEdge type, satisfying GraphRenderer.
-func (d *D2Diagram) SetEdges(edges []GraphEdge) {
+func (d *D2Diagram) SetEdges(edges []output.GraphEdge) {
 	d.edges = make([]D2Edge, len(edges))
 	for i, e := range edges {
 		d.edges[i] = graphEdgeToD2(e)
 	}
 }
 
-func graphNodeToD2(n GraphNode) D2Node {
+func graphNodeToD2(n output.GraphNode) D2Node {
 	return D2Node{
-		ID:    NewBrandedID[D2NodeIDBrand](n.ID.Get()),
-		Label: NewBrandedID[D2NodeLabelBrand](n.Label.Get()),
+		ID:    output.NewBrandedID[output.D2NodeIDBrand](n.ID.Get()),
+		Label: output.NewBrandedID[output.D2NodeLabelBrand](n.Label.Get()),
 		Shape: graphShapeToD2(n.Shape),
 		Style: graphStyleToD2(n.Style),
 	}
 }
 
-func graphEdgeToD2(e GraphEdge) D2Edge {
+func graphEdgeToD2(e output.GraphEdge) D2Edge {
 	return D2Edge{
-		From:  NewBrandedID[D2NodeIDBrand](e.From.Get()),
-		To:    NewBrandedID[D2NodeIDBrand](e.To.Get()),
-		Label: NewBrandedID[D2NodeLabelBrand](e.Label.Get()),
+		From:  output.NewBrandedID[output.D2NodeIDBrand](e.From.Get()),
+		To:    output.NewBrandedID[output.D2NodeIDBrand](e.To.Get()),
+		Label: output.NewBrandedID[output.D2NodeLabelBrand](e.Label.Get()),
 	}
 }
 
-func graphShapeToD2(s GraphShape) D2NodeShape {
+func graphShapeToD2(s output.GraphShape) D2NodeShape {
 	switch s {
-	case ShapeBox, ShapeRect:
+	case output.ShapeBox, output.ShapeRect:
 		return D2ShapeRectangle
-	case ShapeEllipse:
+	case output.ShapeEllipse:
 		return D2ShapeOval
-	case ShapeDiamond:
+	case output.ShapeDiamond:
 		return D2ShapeDiamond
-	case ShapeCircle:
+	case output.ShapeCircle:
 		return D2ShapeCircle
-	case ShapeCylinder:
+	case output.ShapeCylinder:
 		return D2ShapeCylinder
-	case ShapeHexagon:
+	case output.ShapeHexagon:
 		return D2ShapeHexagon
-	case ShapeParallelogram:
+	case output.ShapeParallelogram:
 		return D2ShapeParallelogram
 	default:
 		return D2ShapeRectangle
 	}
 }
 
-func graphStyleToD2(s GraphStyle) D2NodeStyle {
+func graphStyleToD2(s output.GraphStyle) D2NodeStyle {
 	return D2NodeStyle{
 		Fill:     s.FillColor,
 		Stroke:   s.StrokeColor,
@@ -67,13 +69,13 @@ func graphStyleToD2(s GraphStyle) D2NodeStyle {
 }
 
 // D2FromTableData converts TableData to a D2 diagram with per-row nodes connected by edges.
-func D2FromTableData(data *TableData) *D2Diagram {
+func D2FromTableData(data *output.TableData) *D2Diagram {
 	diagram := NewD2Diagram()
 	if data == nil {
 		return diagram
 	}
 
-	nodes := NodesFromTableData(data, DefaultGraphNodeLabel)
+	nodes := output.NodesFromTableData(data, output.DefaultGraphNodeLabel)
 
 	for _, n := range nodes {
 		diagram.AddNode(graphNodeToD2(n))
@@ -87,7 +89,7 @@ func D2FromTableData(data *TableData) *D2Diagram {
 }
 
 // D2FromTree converts a TreeNode hierarchy to a D2 diagram.
-func D2FromTree(root *TreeNode) *D2Diagram {
+func D2FromTree(root *output.TreeNode) *D2Diagram {
 	diagram := NewD2Diagram()
 	if root == nil {
 		return diagram
@@ -98,15 +100,15 @@ func D2FromTree(root *TreeNode) *D2Diagram {
 	return diagram
 }
 
-func (d *D2Diagram) addTreeNodes(node *TreeNode, parentID string) {
+func (d *D2Diagram) addTreeNodes(node *output.TreeNode, parentID string) {
 	nodeID := node.ID.Get()
 	if nodeID == "" {
 		nodeID = strings.ReplaceAll(node.Label.Get(), " ", "_")
 	}
 
 	d.AddNode(D2Node{
-		ID:    NewBrandedID[D2NodeIDBrand](nodeID),
-		Label: NewBrandedID[D2NodeLabelBrand](node.Label.Get()),
+		ID:    output.NewBrandedID[output.D2NodeIDBrand](nodeID),
+		Label: output.NewBrandedID[output.D2NodeLabelBrand](node.Label.Get()),
 	})
 
 	if parentID != "" {

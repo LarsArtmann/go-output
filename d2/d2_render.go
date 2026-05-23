@@ -1,16 +1,17 @@
-package output
+package d2
 
 import (
 	"fmt"
 	"strings"
 
+	"github.com/larsartmann/go-output"
 	"github.com/larsartmann/go-output/escape"
 )
 
 // Compile-time interface checks.
 var (
-	_ Renderer      = (*D2Diagram)(nil)
-	_ GraphRenderer = (*D2Diagram)(nil)
+	_ output.Renderer      = (*D2Diagram)(nil)
+	_ output.GraphRenderer = (*D2Diagram)(nil)
 )
 
 // D2Diagram builds D2 diagram output with full support for nodes, edges,
@@ -73,16 +74,16 @@ func (d *D2Diagram) AddNode(node D2Node) *D2Diagram {
 // AddNodeSimple adds a simple node with just ID and label.
 func (d *D2Diagram) AddNodeSimple(id, label string) *D2Diagram {
 	return d.AddNode(D2Node{
-		ID:    NewBrandedID[D2NodeIDBrand](id),
-		Label: NewBrandedID[D2NodeLabelBrand](label),
+		ID:    output.NewBrandedID[output.D2NodeIDBrand](id),
+		Label: output.NewBrandedID[output.D2NodeLabelBrand](label),
 	})
 }
 
 // AddNodeWithShape adds a node with a specific shape.
 func (d *D2Diagram) AddNodeWithShape(id, label string, shape D2NodeShape) *D2Diagram {
 	return d.AddNode(D2Node{
-		ID:    NewBrandedID[D2NodeIDBrand](id),
-		Label: NewBrandedID[D2NodeLabelBrand](label),
+		ID:    output.NewBrandedID[output.D2NodeIDBrand](id),
+		Label: output.NewBrandedID[output.D2NodeLabelBrand](label),
 		Shape: shape,
 	})
 }
@@ -96,7 +97,10 @@ func (d *D2Diagram) AddEdge(edge D2Edge) *D2Diagram {
 // AddEdgeSimple adds a simple edge between two nodes.
 func (d *D2Diagram) AddEdgeSimple(from, to string) *D2Diagram {
 	return d.AddEdge( //nolint:exhaustruct // Simple edge uses defaults for optional fields
-		D2Edge{From: NewBrandedID[D2NodeIDBrand](from), To: NewBrandedID[D2NodeIDBrand](to)},
+		D2Edge{
+			From: output.NewBrandedID[output.D2NodeIDBrand](from),
+			To:   output.NewBrandedID[output.D2NodeIDBrand](to),
+		},
 	)
 }
 
@@ -104,9 +108,9 @@ func (d *D2Diagram) AddEdgeSimple(from, to string) *D2Diagram {
 func (d *D2Diagram) AddLabeledEdge(from, to, label string) *D2Diagram {
 	return d.AddEdge( //nolint:exhaustruct // Labeled edge uses defaults for optional fields
 		D2Edge{
-			From:  NewBrandedID[D2NodeIDBrand](from),
-			To:    NewBrandedID[D2NodeIDBrand](to),
-			Label: NewBrandedID[D2NodeLabelBrand](label),
+			From:  output.NewBrandedID[output.D2NodeIDBrand](from),
+			To:    output.NewBrandedID[output.D2NodeIDBrand](to),
+			Label: output.NewBrandedID[output.D2NodeLabelBrand](label),
 		},
 	)
 }

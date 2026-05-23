@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/larsartmann/go-output"
+	"github.com/larsartmann/go-output/testhelpers"
 )
 
 func TestD2FromTableDataIntegration(t *testing.T) {
@@ -14,7 +15,12 @@ func TestD2FromTableDataIntegration(t *testing.T) {
 	result := renderD2FromTableData(projects)
 	testhelpers.AssertContains(t, result, "row0", "D2 from table data should contain row nodes")
 	testhelpers.AssertContains(t, result, "->", "D2 from table data should contain edges")
-	testhelpers.AssertContains(t, result, "Alpha", "D2 from table data should contain project names")
+	testhelpers.AssertContains(
+		t,
+		result,
+		"Alpha",
+		"D2 from table data should contain project names",
+	)
 }
 
 func TestD2FromTreeIntegration(t *testing.T) {

@@ -100,7 +100,7 @@ func testAssertToMapSliceNil(t *testing.T, data *TableData, desc string) {
 	}
 }
 
-func assertMapFields(t *testing.T, got map[string]string, want map[string]string) {
+func assertMapFields(t *testing.T, got, want map[string]string) {
 	t.Helper()
 	for k, v := range want {
 		if got[k] != v {

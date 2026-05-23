@@ -18,59 +18,59 @@ The deduplication work is **FULLY DONE** — 8 clone groups reduced to 0.
 
 ### ✅ FULLY DONE
 
-| Task | Status | Details |
-|------|--------|---------|
-| **Code deduplication** | ✅ DONE | 8 clone groups → 0. All clones eliminated via helpers and refactoring. |
-| **`assertContains` migration** | ✅ DONE | `integration/` and `table/` now use `testhelpers.AssertContains` directly. Local wrappers removed. |
-| **`brandedValue` helper** | ✅ DONE | Extracted to `marshal.go` — eliminates JSON/YAML edge label cloning. |
-| **`assertOutputContainsBoth` helper** | ✅ DONE | Added to `render_tabledata_test.go` for multi-string assertions. |
-| **`extractNames` helper** | ✅ DONE | Added to `sort/compare_test.go` — eliminates slice extraction cloning. |
-| **`testAssertToMapSliceNil` helper** | ✅ DONE | Added to `tabledata_test.go` — eliminates nil-check cloning. |
-| **`assertMapFields` helper** | ✅ DONE | Added to `tabledata_test.go` — eliminates map entry assertion cloning. |
-| **`gentest.AssertOutputContains` usage** | ✅ DONE | Replaced raw `strings.Contains` + `t.Errorf` with helper in `render_tabledata_test.go`. |
+| Task                                     | Status  | Details                                                                                            |
+| ---------------------------------------- | ------- | -------------------------------------------------------------------------------------------------- |
+| **Code deduplication**                   | ✅ DONE | 8 clone groups → 0. All clones eliminated via helpers and refactoring.                             |
+| **`assertContains` migration**           | ✅ DONE | `integration/` and `table/` now use `testhelpers.AssertContains` directly. Local wrappers removed. |
+| **`brandedValue` helper**                | ✅ DONE | Extracted to `marshal.go` — eliminates JSON/YAML edge label cloning.                               |
+| **`assertOutputContainsBoth` helper**    | ✅ DONE | Added to `render_tabledata_test.go` for multi-string assertions.                                   |
+| **`extractNames` helper**                | ✅ DONE | Added to `sort/compare_test.go` — eliminates slice extraction cloning.                             |
+| **`testAssertToMapSliceNil` helper**     | ✅ DONE | Added to `tabledata_test.go` — eliminates nil-check cloning.                                       |
+| **`assertMapFields` helper**             | ✅ DONE | Added to `tabledata_test.go` — eliminates map entry assertion cloning.                             |
+| **`gentest.AssertOutputContains` usage** | ✅ DONE | Replaced raw `strings.Contains` + `t.Errorf` with helper in `render_tabledata_test.go`.            |
 
 ### ❌ TOTALLY FUCKED UP
 
-| Task | Status | Details |
-|------|--------|---------|
-| **D2 Extraction** | ❌ BROKEN | `D2FromTableData` undefined in `render_tabledata.go:168`. The D2 code was moved to `d2/` module but root still references the old function. All code depending on root is blocked. |
-| **Root module** | ❌ BROKEN | Cannot `go build ./...` or `go test ./...` — `D2FromTableData` undefined. |
-| **`table/` module** | ❌ BROKEN | Depends on root, transitively blocked by D2 issue. |
-| **`integration/` module** | ❌ BROKEN | Depends on root + table, transitively blocked by D2 issue. |
-| **`examples/` module** | ❌ UNTESTED | Likely broken due to root dependency. |
-| **`d2/` module** | ⚠️ PARTIAL | Files staged/moved but untracked `d2/go.mod` exists. Unclear if module is complete. |
+| Task                      | Status      | Details                                                                                                                                                                            |
+| ------------------------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **D2 Extraction**         | ❌ BROKEN   | `D2FromTableData` undefined in `render_tabledata.go:168`. The D2 code was moved to `d2/` module but root still references the old function. All code depending on root is blocked. |
+| **Root module**           | ❌ BROKEN   | Cannot `go build ./...` or `go test ./...` — `D2FromTableData` undefined.                                                                                                          |
+| **`table/` module**       | ❌ BROKEN   | Depends on root, transitively blocked by D2 issue.                                                                                                                                 |
+| **`integration/` module** | ❌ BROKEN   | Depends on root + table, transitively blocked by D2 issue.                                                                                                                         |
+| **`examples/` module**    | ❌ UNTESTED | Likely broken due to root dependency.                                                                                                                                              |
+| **`d2/` module**          | ⚠️ PARTIAL  | Files staged/moved but untracked `d2/go.mod` exists. Unclear if module is complete.                                                                                                |
 
 ### ⚠️ PARTIALLY DONE
 
-| Task | Status | Details |
-|------|--------|---------|
-| **Staged D2 changes** | ⚠️ STAGED | `d2/*.go` files are staged (added), root D2 files are deleted (unstaged). This is an incomplete state. |
-| **`go mod tidy`** | ⚠️ NEEDS RUN | `integration/` and `table/` have `testhelpers` as indirect dep — needs promotion to direct. |
+| Task                  | Status       | Details                                                                                                |
+| --------------------- | ------------ | ------------------------------------------------------------------------------------------------------ |
+| **Staged D2 changes** | ⚠️ STAGED    | `d2/*.go` files are staged (added), root D2 files are deleted (unstaged). This is an incomplete state. |
+| **`go mod tidy`**     | ⚠️ NEEDS RUN | `integration/` and `table/` have `testhelpers` as indirect dep — needs promotion to direct.            |
 
 ### ⏭️ NOT STARTED
 
-| Task | Status | Details |
-|------|--------|---------|
-| **Fix `D2FromTableData` reference** | ❌ BLOCKED | Need to update `render_tabledata.go` to use the new D2 module, or restore root-level D2 functions |
-| **`d2/` module integration** | ⏭️ NOT STARTED | `d2/go.mod` is untracked. Module structure unclear. |
-| **Root module cleanup** | ⏭️ NOT STARTED | Deleted root D2 files need commitment or restoration |
-| **Full CI/CD verification** | ⏭️ NOT STARTED | No CI runs since D2 extraction started |
+| Task                                | Status         | Details                                                                                           |
+| ----------------------------------- | -------------- | ------------------------------------------------------------------------------------------------- |
+| **Fix `D2FromTableData` reference** | ❌ BLOCKED     | Need to update `render_tabledata.go` to use the new D2 module, or restore root-level D2 functions |
+| **`d2/` module integration**        | ⏭️ NOT STARTED | `d2/go.mod` is untracked. Module structure unclear.                                               |
+| **Root module cleanup**             | ⏭️ NOT STARTED | Deleted root D2 files need commitment or restoration                                              |
+| **Full CI/CD verification**         | ⏭️ NOT STARTED | No CI runs since D2 extraction started                                                            |
 
 ---
 
 ## B. MODULE TEST STATUS
 
-| Module | Build | Tests | Notes |
-|--------|-------|-------|-------|
-| `.` (root) | ❌ FAIL | ❌ FAIL | `D2FromTableData` undefined |
-| `enum/` | ✅ OK | ✅ PASS | |
-| `escape/` | ✅ OK | ✅ PASS | |
-| `testhelpers/` | ✅ OK | ✅ PASS | |
-| `sort/` | ✅ OK | ✅ PASS | |
-| `table/` | ❌ FAIL | ❌ FAIL | Blocked by root |
-| `integration/` | ❌ FAIL | ❌ FAIL | Blocked by root + table |
-| `examples/` | ❌ UNKNOWN | ❌ UNKNOWN | Likely blocked |
-| `d2/` | ⚠️ UNTRACKED | ⚠️ UNTESTED | `go.mod` exists but not tracked |
+| Module         | Build        | Tests       | Notes                           |
+| -------------- | ------------ | ----------- | ------------------------------- |
+| `.` (root)     | ❌ FAIL      | ❌ FAIL     | `D2FromTableData` undefined     |
+| `enum/`        | ✅ OK        | ✅ PASS     |                                 |
+| `escape/`      | ✅ OK        | ✅ PASS     |                                 |
+| `testhelpers/` | ✅ OK        | ✅ PASS     |                                 |
+| `sort/`        | ✅ OK        | ✅ PASS     |                                 |
+| `table/`       | ❌ FAIL      | ❌ FAIL     | Blocked by root                 |
+| `integration/` | ❌ FAIL      | ❌ FAIL     | Blocked by root + table         |
+| `examples/`    | ❌ UNKNOWN   | ❌ UNKNOWN  | Likely blocked                  |
+| `d2/`          | ⚠️ UNTRACKED | ⚠️ UNTESTED | `go.mod` exists but not tracked |
 
 ---
 
@@ -78,14 +78,14 @@ The deduplication work is **FULLY DONE** — 8 clone groups reduced to 0.
 
 ### Clones Eliminated
 
-| File | Before | After | Method |
-|------|--------|-------|--------|
-| `render_tabledata_test.go` | 7 clones | 0 | Added `assertOutputContainsBoth`, `gentest.AssertOutputContains` |
-| `sort/compare_test.go` | 5 clones | 0 | Added `extractNames`, restructured numeric tests |
-| `integration/test_helpers.go` | 1 clone | 0 | Removed wrapper, callers use `testhelpers.AssertContains` |
-| `table/table_test.go` | 1 clone | 0 | Removed wrapper, callers use `testhelpers.AssertContains` |
-| `tabledata_test.go` | 4 clones | 0 | Added `testAssertToMapSliceNil`, `assertMapFields` |
-| `json_renderers.go` + `yaml_renderers.go` | 1 clone | 0 | Extracted `brandedValue[Brand]` to `marshal.go` |
+| File                                      | Before   | After | Method                                                           |
+| ----------------------------------------- | -------- | ----- | ---------------------------------------------------------------- |
+| `render_tabledata_test.go`                | 7 clones | 0     | Added `assertOutputContainsBoth`, `gentest.AssertOutputContains` |
+| `sort/compare_test.go`                    | 5 clones | 0     | Added `extractNames`, restructured numeric tests                 |
+| `integration/test_helpers.go`             | 1 clone  | 0     | Removed wrapper, callers use `testhelpers.AssertContains`        |
+| `table/table_test.go`                     | 1 clone  | 0     | Removed wrapper, callers use `testhelpers.AssertContains`        |
+| `tabledata_test.go`                       | 4 clones | 0     | Added `testAssertToMapSliceNil`, `assertMapFields`               |
+| `json_renderers.go` + `yaml_renderers.go` | 1 clone  | 0     | Extracted `brandedValue[Brand]` to `marshal.go`                  |
 
 ### Deduplication Command Results
 
@@ -99,6 +99,7 @@ art-dupl -t 18 . --semantic --sort total-tokens
 ## D. FILES MODIFIED
 
 ### Deduplication Changes (This Session)
+
 ```
  marshal.go                                  | +10  (added brandedValue helper)
  json_renderers.go                           |  +8  (use brandedValue)
@@ -120,6 +121,7 @@ art-dupl -t 18 . --semantic --sort total-tokens
 ```
 
 ### D2 Extraction Changes (Pre-existing, Unfinished)
+
 ```
 d2.go                           | -105  (deleted, moved to d2/)
 d2/d2.go                        | +new  (staged)
@@ -221,6 +223,7 @@ The current state shows `d2/` extracting D2-specific functionality into its own 
 - **Option C**: Shared interface module — a third `output/d2iface/` or similar module holds interfaces both depend on
 
 **Which model is the intended architecture?** The `d2/go.mod` is untracked and the `d2/` files are staged but incomplete, so I cannot determine from the code what the final dependency direction should be. This is blocking me from fixing the `D2FromTableData` reference correctly — I don't know whether to:
+
 1. Update `render_tabledata.go` to call into `d2/` module (Option A)
 2. Restore a root-level wrapper that delegates to `d2/` (Option B/C)
 3. Something else entirely
@@ -244,9 +247,11 @@ a5cf21e chore(lint): normalize .golangci.yml indentation from 2 to 4 spaces
 ## I. STAGED vs UNSTAGED
 
 **Staged (git add):**
+
 - All `d2/d2*.go` files (10 files) — new D2 module contents
 
 **Unstaged Changes:**
+
 - `d2.go`, `d2_convert.go`, `d2_convert_test.go`, `d2_edge_test.go`, `d2_enum.go`, `d2_enum_test.go`, `d2_node_test.go`, `d2_render.go`, `d2_test.go`, `d2_write.go` — deleted from root
 - `docs/modularization/EXECUTION_PLAN.md` — modified
 - `docs/modularization/PROPOSAL.md` — modified

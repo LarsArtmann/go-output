@@ -14,7 +14,7 @@ func extractNames[T any](items []T, name func(T) string) []string {
 	return names
 }
 
-func assertSortedOrder(t *testing.T, got []string, want []string) {
+func assertSortedOrder(t *testing.T, got, want []string) {
 	t.Helper()
 
 	if len(got) != len(want) {
@@ -46,8 +46,11 @@ func TestByField(t *testing.T) {
 			func(item struct{ Name string }) string { return item.Name },
 		))
 
-		assertSortedOrder(t, extractNames(items, func(i struct{ Name string }) string { return i.Name }),
-			[]string{"alpha", "bravo", "charlie"})
+		assertSortedOrder(
+			t,
+			extractNames(items, func(i struct{ Name string }) string { return i.Name }),
+			[]string{"alpha", "bravo", "charlie"},
+		)
 	})
 
 	t.Run("numeric field ascending", func(t *testing.T) {
@@ -68,7 +71,11 @@ func TestByField(t *testing.T) {
 			}
 
 			slices.SortStableFunc(items, ByField(func(i orderedItem) int { return i.Order }))
-			assertSortedOrder(t, extractNames(items, func(i orderedItem) string { return i.Name }), []string{"alpha", "bravo", "charlie"})
+			assertSortedOrder(
+				t,
+				extractNames(items, func(i orderedItem) string { return i.Name }),
+				[]string{"alpha", "bravo", "charlie"},
+			)
 		})
 
 		t.Run("uint64 field", func(t *testing.T) {
@@ -86,7 +93,11 @@ func TestByField(t *testing.T) {
 			}
 
 			slices.SortStableFunc(items, ByField(func(i sizedItem) uint64 { return i.Size }))
-			assertSortedOrder(t, extractNames(items, func(i sizedItem) string { return i.Name }), []string{"small", "medium", "large"})
+			assertSortedOrder(
+				t,
+				extractNames(items, func(i sizedItem) string { return i.Name }),
+				[]string{"small", "medium", "large"},
+			)
 		})
 	})
 

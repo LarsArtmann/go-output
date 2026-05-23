@@ -175,7 +175,12 @@ func TestHeadersOnlyNoRows(t *testing.T) {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	testhelpers.AssertContains(t, output, "Only", "Render() should contain headers even without rows")
+	testhelpers.AssertContains(
+		t,
+		output,
+		"Only",
+		"Render() should contain headers even without rows",
+	)
 	testhelpers.AssertContains(
 		t,
 		output,
