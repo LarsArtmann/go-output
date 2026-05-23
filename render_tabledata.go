@@ -71,8 +71,7 @@ type UnsupportedFormatError struct {
 }
 
 func (e *UnsupportedFormatError) Error() string {
-	return fmt.Sprintf("render table data: format %q not supported (handle table/json in caller)",
-		e.Format)
+	return fmt.Sprintf("render table data: format %q not supported", e.Format)
 }
 
 func renderCSVTableData(w io.Writer, data *TableData) error {
