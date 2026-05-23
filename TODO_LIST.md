@@ -12,11 +12,11 @@
 | P0       | 6     | 6    | 0        | 0              |
 | P1       | 7     | 7    | 0        | 0              |
 | P2       | 4     | 4    | 0        | 0              |
-| P3       | 5     | 2    | 2        | 1              |
+| P3       | 5     | 3    | 1        | 1              |
 | P4       | 4     | 2    | 2        | 0              |
 | P5       | 4     | 4    | 0        | 0              |
 | P6       | 10    | 0    | 10       | 0              |
-| **Total** | **40** | **25** | **14** | **1** |
+| **Total** | **40** | **26** | **13** | **1** |
 
 ---
 
@@ -45,27 +45,25 @@
 
 ## ✅ P2: Code Quality & Coverage — ALL DONE
 
-- ✅ **14.** Root test coverage: **92.2%** (above 90% target)
+- ✅ **14.** Root test coverage: **95.1%** (above 90% target)
 - ✅ **15.** testhelpers coverage: **93.8%** (above 90% target)
 - ✅ **16.** D2 benchmarks added (`d2/bench_test.go`)
 - ✅ **17.** D2 and graph fuzz tests added (`d2/fuzz_test.go`, `graph/fuzz_test.go`)
 
 ---
 
-## P3: Architecture — 2 Done, 2 Open, 1 Needs Decision
+## P3: Architecture — 3 Done, 1 Open, 1 Needs Decision
 
+- ✅ **18.** GraphRendererMixin TableData methods extracted to `graph_tabledata.go`
 - ✅ **22.** Registry + sub-module pattern documented in AGENTS.md
-- ✅ (graph/ doc comments already present: 9 in dot.go, 7 in mermaid.go)
+- ✅ **(graph/ doc comments already present: 9 in dot.go, 7 in mermaid.go)**
 
 ### Open
 
-- **18.** GraphRendererMixin couples Graph types with TableData
-  - `graph.go:169-270` — `SetNodesFromTableData`, `AddRowEdges`, `NodesFromTableData` mix graph and table concerns
-  - **Fix:** Extract table-related methods to `graph_tabledata.go` in root
-
 - **19.** Inconsistent re-export pattern between d2/ and graph/
-  - d2 re-exports `D2NodeID`/`D2NodeLabel` as type aliases. graph does not.
-  - **Fix:** Either add graph aliases or document the difference (d2 has its own struct types that use branded IDs; graph uses `output.GraphNode` directly)
+  - d2 re-exports `D2NodeID`/`D2NodeLabel` as type aliases because d2 has its own rich domain types (D2Node, D2Edge) that use branded IDs. Users work with `d2.D2Node` and need `d2.D2NodeID`.
+  - graph does NOT re-export because its renderers are configured via `output.GraphNode`/`output.GraphEdge` through the `SetNodes`/`SetEdges` methods. Graph users already import `output` for the interface.
+  - **Resolution:** Difference is intentional and correct. No action needed.
 
 ### Needs Decision (from Lars)
 
@@ -137,7 +135,7 @@
 - ✅ registry.go simplified with cmp.Compare
 - ✅ README uses non-deprecated API (Supports/Shapes)
 - ✅ Error-path tests for markup, xml, streaming, render_tabledata, json, color, markdown, tsv
-- ✅ Root coverage 82.2% → 92.2%
+- ✅ Root coverage 82.2% → 95.1%
 - ✅ D2 coverage 95.4% → 100%
 - ✅ Graph coverage 94.4% → 95.2%
 - ✅ Integration coverage 75.9% → 82.8%

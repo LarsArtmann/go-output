@@ -149,7 +149,7 @@ EOF
 
 | Package       | Coverage | Module |
 | ------------- | -------- | ------ |
-| output (root) | 92.2%    | root   |
+| output (root) | 95.1%    | root   |
 | d2            | 100%     | own    |
 | graph         | 95.2%    | own    |
 | enum          | 100%     | own    |
