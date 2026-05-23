@@ -203,7 +203,7 @@ func TestMermaidTreeRendererNilRoot(t *testing.T) {
 
 func TestMermaidTreeRendererWithEmptyID(t *testing.T) {
 	t.Parallel()
-	// TreeNode with empty ID should use label
+
 	root := output.NewTreeNode("", "RootLabel")
 	renderer := MermaidTreeRenderer(root)
 

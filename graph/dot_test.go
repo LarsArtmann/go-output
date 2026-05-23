@@ -149,3 +149,24 @@ func TestDOTSetGraphID(t *testing.T) {
 
 	assertContains(t, out, "digraph MyGraph {", "Output should use custom graph ID")
 }
+
+func TestDOTFromTreeWithEmptyID(t *testing.T) {
+	t.Parallel()
+
+	root := &output.TreeNode{
+		Label: output.NewBrandedID[output.TreeNodeLabelBrand]("My Root"),
+		Children: []*output.TreeNode{
+			{Label: output.NewBrandedID[output.TreeNodeLabelBrand]("Child Node")},
+		},
+	}
+
+	renderer := DOTFromTree(root)
+
+	out, err := renderer.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
+	assertContains(t, out, "My_Root", "empty ID should use label slug")
+	assertContains(t, out, "Child_Node", "empty ID should use label slug")
+}
