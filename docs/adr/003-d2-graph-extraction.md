@@ -10,6 +10,7 @@
 After ADR 001 established the multi-module workspace with 8 modules, the root `package output` remained a god-package at 4,345 production LOC across 31 files. It contained all core types, 7 table formatters, tree rendering, 3 graph renderers (DOT, Mermaid, D2), a full D2 diagram system with rich domain types, streaming, and shared infrastructure.
 
 Two natural module boundaries existed:
+
 - **D2** (835 LOC, 5 production files) — rich domain model with D2Node, D2Edge, D2Direction, D2NodeShape, D2ArrowType, D2Constraint
 - **Graph** (319 LOC, 2 production files) — DOT and Mermaid renderers sharing `GraphRendererMixin`
 

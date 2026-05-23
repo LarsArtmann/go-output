@@ -21,18 +21,18 @@ Several sub-packages (enum, escape, testhelpers) have zero dependencies and are 
 
 Split into 10 independent Go modules using `go.work` for local development:
 
-| Module             | Deps                       | Isolation benefit                    |
-| ------------------ | -------------------------- | ------------------------------------ |
+| Module             | Deps                                                | Isolation benefit                     |
+| ------------------ | --------------------------------------------------- | ------------------------------------- |
 | Root (`go-output`) | enum, escape, yaml, x/term, branded-id, testhelpers | Core formatters, no lipgloss/d2/graph |
-| `enum/`            | testhelpers (tests only)   | Reusable enum utilities              |
-| `escape/`          | None                       | Reusable escaping (D2, DOT, Mermaid) |
-| `testhelpers/`     | None                       | Shared test assertions               |
-| `d2/`              | root, escape, testhelpers  | D2 diagram renderer (rich domain)    |
-| `graph/`           | root, escape, testhelpers  | DOT + Mermaid renderers              |
-| `table/`           | root, lipgloss             | **Lipgloss isolated** — biggest win  |
-| `sort/`            | None                       | Deprecated — only ByField helper     |
-| `integration/`     | root, table, d2, graph     | Cross-module tests                   |
-| `examples/`        | root, table, d2, graph     | Usage examples                       |
+| `enum/`            | testhelpers (tests only)                            | Reusable enum utilities               |
+| `escape/`          | None                                                | Reusable escaping (D2, DOT, Mermaid)  |
+| `testhelpers/`     | None                                                | Shared test assertions                |
+| `d2/`              | root, escape, testhelpers                           | D2 diagram renderer (rich domain)     |
+| `graph/`           | root, escape, testhelpers                           | DOT + Mermaid renderers               |
+| `table/`           | root, lipgloss                                      | **Lipgloss isolated** — biggest win   |
+| `sort/`            | None                                                | Deprecated — only ByField helper      |
+| `integration/`     | root, table, d2, graph                              | Cross-module tests                    |
+| `examples/`        | root, table, d2, graph                              | Usage examples                        |
 
 Root stays as `package output` — no core/ directory, no package rename.
 

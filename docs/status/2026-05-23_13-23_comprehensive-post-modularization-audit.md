@@ -15,6 +15,7 @@ The d2/ and graph/ sub-modules have been fully extracted from root. All stale re
 ## A) FULLY DONE ✅
 
 ### Modularization (core)
+
 - [x] D2 module extracted to `d2/` with own go.mod, replace directives, rich domain model
 - [x] Graph module extracted to `graph/` with DOT + Mermaid renderers
 - [x] Root has ZERO sub-module imports (verified via `go mod graph`)
@@ -23,10 +24,12 @@ The d2/ and graph/ sub-modules have been fully extracted from root. All stale re
 - [x] No circular dependencies in dependency DAG
 
 ### CI/CD
+
 - [x] `.github/workflows/ci.yml` — all 4 loops (build, test, mod-tidy, govulncheck) iterate over all 10 modules
 - [x] Lint job via golangci-lint-action
 
 ### Documentation
+
 - [x] README.md — D2/graph API examples fixed, installation docs, API stability section, module annotations
 - [x] CONTRIBUTING.md — 10 modules, go.work snippet updated
 - [x] go.work.example — includes d2/graph
@@ -40,11 +43,13 @@ The d2/ and graph/ sub-modules have been fully extracted from root. All stale re
 - [x] AGENTS.md — registry + sub-module docs, coverage table, gentest decision, D2 re-export rationale
 
 ### Configuration
+
 - [x] `.golangci.yml` — depguard allow-lists updated (default, main, examples rules)
 - [x] `gci` formatter removed (was conflicting with goimports)
 - [x] Pre-commit hooks working via git-hooks.nix
 
 ### Test Quality
+
 - [x] Root coverage: 82.2% → 88.7%
 - [x] testhelpers: 75% → 93.8%
 - [x] d2: 95.4% → 98.2%
@@ -62,13 +67,16 @@ The d2/ and graph/ sub-modules have been fully extracted from root. All stale re
 ## B) PARTIALLY DONE 🔶
 
 ### Root coverage (88.7%)
+
 - 33 functions below 80% coverage — mostly in streaming.go, xml.go, tsv.go, render_tabledata.go, markup.go
 - `writeTSVData` at 50%, `writeMarkupRow` at 58.3%, `AssertTreeNodeDepth` at 57.1%
 
 ### Integration module coverage (75.9%)
+
 - `assertTableData` at 50%, helper functions at 83-87%
 
 ### Deprecated code cleanup
+
 - `format_deprecated.go` still exists (OutputFormat backward compat aliases)
 - `FormatCategory`, `Category()`, `IsTableFormat()`, `IsTreeFormat()`, `IsGraphFormat()` all deprecated but still present
 - `sort/` module exists only for `ByField` helper
@@ -104,6 +112,7 @@ However, honest self-critique:
 ## E) WHAT WE SHOULD IMPROVE
 
 ### Architecture
+
 1. **`color.go` pulls `golang.org/x/term` into root module** — Every user of go-output gets this transitive dep even if they never use color. Consider moving color detection to a separate `color/` sub-module.
 2. **`GraphStyle` has 4 fields but `D2NodeStyle` has 10** — The generic graph types are impoverished compared to D2. If we add more graph renderers, GraphStyle will need expansion.
 3. **`render_tabledata.go` is a monolithic dispatcher** — 200 lines of switch-case with per-format render functions. Could use the registry pattern instead.
@@ -111,17 +120,20 @@ However, honest self-critique:
 5. **`d2/d2_enum.go` at 244 lines** — 4 enum types in one file. Each could be its own file for discoverability.
 
 ### Type Model
+
 6. **Branded IDs add complexity for minimal safety gain** — `output.NewBrandedID[output.GraphNodeIDBrand]("node")` is verbose. Consider simpler string type aliases or just raw strings with validation.
 7. **`TableData` has no generic typed version** — Everything is `[][]string`. A typed version `TableData[T]` would enable type-safe rendering without string conversion.
 8. **`GraphNode.Metadata map[string]string`** — Unstructured. Consider a typed alternative or removing it.
 9. **No `RenderTo(io.Writer)` method** — Every renderer returns `(string, error)`. For large outputs, streaming to a writer would be more efficient. `StreamingHTMLRenderer` exists but is the only one.
 
 ### Developer Experience
+
 10. **No `testify/assert` in tests** — The custom `testhelpers.AssertEqual(t, name, input, got, want)` 5-arg pattern is non-standard. testify/assert is the Go community standard and would reduce test boilerplate significantly.
 11. **`internal/gentest` is root-only** — Sub-modules copy helpers. This was a deliberate decision but means each module has its own slightly-different test helpers.
 12. **Example tests don't verify output** — All 6 Example functions use `//nolint:testableexamples`. Real verified examples would catch regressions in output format.
 
 ### Operational
+
 13. **No `go.work` checked in** — Users must create one manually. A `go.work.example` exists but isn't used by CI.
 14. **CI doesn't lint integration/examples** — The lint job runs golangci-lint without per-module scoping, which means it hits the root `.golangci.yml` for all dirs.
 15. **20 stale status reports in `docs/status/`** — Going back to April. Historical noise.
@@ -132,33 +144,33 @@ However, honest self-critique:
 
 Sorted by **Impact × Effort** (high impact + low effort first):
 
-| # | Item | Impact | Effort | Module |
-|---|------|--------|--------|--------|
-| 1 | Fix pre-existing lint issues (sort wsl_v5, table goimports, integration goconst) | Low | 5m | sort, table, integration |
-| 2 | Fix color.go goimports formatting | Low | 1m | root |
-| 3 | Add D2Constraint tests (AllD2Constraints, String, AllowedValues at 0%) | Low | 5m | d2 |
-| 4 | Add undirected DOT renderer test | Low | 10m | graph |
-| 5 | Prune stale status reports (keep latest 3) | Low | 3m | docs |
-| 6 | Verify Example test output for regression detection | Medium | 30m | d2, graph |
-| 7 | Split format.go into format.go + shape.go + renderer_interfaces.go | Medium | 20m | root |
-| 8 | Split d2_enum.go into per-enum files | Low | 10m | d2 |
-| 9 | Add `RenderTo(io.Writer) error` to Renderer interface | High | 60m | root |
-| 10 | Root coverage 88.7% → 92% (focus on streaming.go, xml.go, tsv.go) | Medium | 45m | root |
-| 11 | Integration coverage 75.9% → 90% | Low | 20m | integration |
-| 12 | Graph coverage: test dotTreeNodeID/mermaidTreeNodeID edge cases | Low | 15m | graph |
-| 13 | Move color detection to separate color/ sub-module (drop x/term from root) | High | 60m | root |
-| 14 | Replace custom testhelpers with testify/assert | Medium | 90m | all |
-| 15 | Add typed TableData[T] generic wrapper | High | 120m | root |
-| 16 | Use registry pattern in render_tabledata.go instead of switch-case | Medium | 45m | root |
-| 17 | Remove deprecated FormatCategory/OutputFormat code | Medium | 30m | root |
-| 18 | Remove deprecated sort/ module (inline ByField into root or delete) | Low | 15m | sort |
-| 19 | Add CI lint job that runs per-module with correct config | Medium | 30m | ci |
-| 20 | Tag v0.1.0 release with CHANGELOG | Medium | 15m | — |
-| 21 | Add PlantUML renderer to graph/ module | Medium | 120m | graph |
-| 22 | Document the 10-module architecture in a public-facing blog post or ADR summary | Low | 30m | docs |
-| 23 | Add TableData validation (row length matches headers) | Medium | 30m | root |
-| 24 | Consider dropping go-branded-id dependency for simpler string aliases | Medium | 60m | root |
-| 25 | Add fuzz tests for escape/ module (HTML, XML, D2, DOT, Mermaid) | Low | 20m | escape |
+| #   | Item                                                                             | Impact | Effort | Module                   |
+| --- | -------------------------------------------------------------------------------- | ------ | ------ | ------------------------ |
+| 1   | Fix pre-existing lint issues (sort wsl_v5, table goimports, integration goconst) | Low    | 5m     | sort, table, integration |
+| 2   | Fix color.go goimports formatting                                                | Low    | 1m     | root                     |
+| 3   | Add D2Constraint tests (AllD2Constraints, String, AllowedValues at 0%)           | Low    | 5m     | d2                       |
+| 4   | Add undirected DOT renderer test                                                 | Low    | 10m    | graph                    |
+| 5   | Prune stale status reports (keep latest 3)                                       | Low    | 3m     | docs                     |
+| 6   | Verify Example test output for regression detection                              | Medium | 30m    | d2, graph                |
+| 7   | Split format.go into format.go + shape.go + renderer_interfaces.go               | Medium | 20m    | root                     |
+| 8   | Split d2_enum.go into per-enum files                                             | Low    | 10m    | d2                       |
+| 9   | Add `RenderTo(io.Writer) error` to Renderer interface                            | High   | 60m    | root                     |
+| 10  | Root coverage 88.7% → 92% (focus on streaming.go, xml.go, tsv.go)                | Medium | 45m    | root                     |
+| 11  | Integration coverage 75.9% → 90%                                                 | Low    | 20m    | integration              |
+| 12  | Graph coverage: test dotTreeNodeID/mermaidTreeNodeID edge cases                  | Low    | 15m    | graph                    |
+| 13  | Move color detection to separate color/ sub-module (drop x/term from root)       | High   | 60m    | root                     |
+| 14  | Replace custom testhelpers with testify/assert                                   | Medium | 90m    | all                      |
+| 15  | Add typed TableData[T] generic wrapper                                           | High   | 120m   | root                     |
+| 16  | Use registry pattern in render_tabledata.go instead of switch-case               | Medium | 45m    | root                     |
+| 17  | Remove deprecated FormatCategory/OutputFormat code                               | Medium | 30m    | root                     |
+| 18  | Remove deprecated sort/ module (inline ByField into root or delete)              | Low    | 15m    | sort                     |
+| 19  | Add CI lint job that runs per-module with correct config                         | Medium | 30m    | ci                       |
+| 20  | Tag v0.1.0 release with CHANGELOG                                                | Medium | 15m    | —                        |
+| 21  | Add PlantUML renderer to graph/ module                                           | Medium | 120m   | graph                    |
+| 22  | Document the 10-module architecture in a public-facing blog post or ADR summary  | Low    | 30m    | docs                     |
+| 23  | Add TableData validation (row length matches headers)                            | Medium | 30m    | root                     |
+| 24  | Consider dropping go-branded-id dependency for simpler string aliases            | Medium | 60m    | root                     |
+| 25  | Add fuzz tests for escape/ module (HTML, XML, D2, DOT, Mermaid)                  | Low    | 20m    | escape                   |
 
 ---
 
@@ -174,17 +186,17 @@ The current state is confusing: `FormatCategory` is deprecated, `Category()` met
 
 ## Module Coverage Summary
 
-| Module | Coverage | Status |
-|--------|----------|--------|
-| root (output) | 88.7% | 🔶 33 functions <80% |
-| d2 | 98.2% | ✅ 3 minor gaps |
-| graph | 94.4% | ✅ tree node ID paths |
-| enum | 100% | ✅ |
-| escape | 100% | ✅ |
-| testhelpers | 93.8% | ✅ Fatalf path uncovered |
-| sort | 100% | ✅ (deprecated) |
-| table | 100% | ✅ |
-| integration | 75.9% | 🔶 helpers at 50-87% |
-| gentest (internal) | 87.5% | ✅ |
+| Module             | Coverage | Status                   |
+| ------------------ | -------- | ------------------------ |
+| root (output)      | 88.7%    | 🔶 33 functions <80%     |
+| d2                 | 98.2%    | ✅ 3 minor gaps          |
+| graph              | 94.4%    | ✅ tree node ID paths    |
+| enum               | 100%     | ✅                       |
+| escape             | 100%     | ✅                       |
+| testhelpers        | 93.8%    | ✅ Fatalf path uncovered |
+| sort               | 100%     | ✅ (deprecated)          |
+| table              | 100%     | ✅                       |
+| integration        | 75.9%    | 🔶 helpers at 50-87%     |
+| gentest (internal) | 87.5%    | ✅                       |
 
 ## All 10 Modules: BUILD ✓ TEST ✓ VET ✓ LINT CLEAN ✓
