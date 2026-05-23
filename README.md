@@ -68,7 +68,7 @@ fmt.Println(format.Category())           // table
 | `xml`      |  ✅   |      |       | XML with table structure                                         |
 | `markdown` |  ✅   |      |       | Markdown tables                                                  |
 | `yaml`     |  ✅   |  ✅  |  ✅   | Shape-agnostic serialization                                     |
-| `d2`       |  ✅   |      |  ✅   | SQL tables + node-edge diagrams (separate `d2/` module)         |
+| `d2`       |  ✅   |      |  ✅   | SQL tables + node-edge diagrams (separate `d2/` module)          |
 | `html`     |  ✅   |  ✅  |       | HTML tables + collapsible tree                                   |
 | `tree`     |       |  ✅  |       | ASCII tree with box-drawing chars                                |
 | `mermaid`  |  ✅   |      |  ✅   | Mermaid flowchart diagrams (separate `graph/` module)            |
