@@ -11,7 +11,7 @@ Thank you for your interest in contributing to go-output!
 
 ## Development Setup
 
-This project uses a Go multi-module workspace with 8 independent modules.
+This project uses a Go multi-module workspace with 10 independent modules.
 
 ### Initial Setup
 
@@ -22,8 +22,10 @@ go 1.26.2
 
 use (
   .
+  ./d2
   ./enum
   ./escape
+  ./graph
   ./testhelpers
   ./sort
   ./table
