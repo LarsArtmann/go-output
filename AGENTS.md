@@ -236,7 +236,7 @@ import "github.com/larsartmann/go-output/table"            // Lipgloss tables (o
 - Multi-module workspace with 10 independent modules (see ADR 001)
 - Shape capability matrix (ADR 002) replaces FormatCategory — deprecated methods redirect to `Supports(Shape)`
 - `render_tabledata.go` returns `UnsupportedFormatError` for D2/DOT/Mermaid (these live in separate modules)
-- `internal/gentest` and `internal/testutils` are root-only — sub-modules must inline helpers or create their own
+- `internal/gentest` and `internal/testutils` are root-only — sub-modules must inline helpers or create their own. Decision rationale: exposing test helpers publicly via `testhelpers/gentest` would freeze internal testing APIs; each module having its own test helpers allows independent evolution
 - Nix flake uses `flake-parts` + `treefmt-nix` + `git-hooks.nix` — no `gomod2nix` (library, 10 modules, no binary)
 - Go checks (build/test/lint) NOT in flake — Nix sandbox blocks `go mod download`; CI handles these reliably
 - `.pre-commit-config.yaml` exists for non-Nix users; `git-hooks.nix` auto-installs hooks for Nix users via `nix develop`
