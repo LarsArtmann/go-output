@@ -49,47 +49,6 @@ func BenchmarkHTMLRenderer(b *testing.B) {
 	}
 }
 
-// generateBenchmarkNodes creates a slice of GraphNode for benchmarking.
-func generateBenchmarkNodes(n int) []GraphNode {
-	nodes := make([]GraphNode, n)
-	for i := range nodes {
-		nodes[i] = GraphNode{
-			ID:    NewBrandedID[GraphNodeIDBrand]("node"),
-			Label: NewBrandedID[GraphNodeLabelBrand]("Node"),
-		}
-	}
-
-	return nodes
-}
-
-// generateBenchmarkEdges creates a slice of GraphEdge for benchmarking.
-func generateBenchmarkEdges(n int) []GraphEdge {
-	edges := make([]GraphEdge, n)
-	for i := range edges {
-		edges[i] = GraphEdge{
-			From: NewBrandedID[GraphNodeIDBrand]("node"),
-			To:   NewBrandedID[GraphNodeIDBrand]("node"),
-		}
-	}
-
-	return edges
-}
-
-// benchmarkGraphRenderer sets up nodes and edges for a graph renderer benchmark.
-func benchmarkGraphRenderer(b *testing.B, renderer GraphRenderer) {
-	nodes := generateBenchmarkNodes(100)
-	renderer.SetNodes(nodes)
-
-	edges := generateBenchmarkEdges(99)
-	renderer.SetEdges(edges)
-
-	b.ResetTimer()
-
-	for b.Loop() {
-		_, _ = renderer.Render()
-	}
-}
-
 func BenchmarkTableDataCreateRowEdges(b *testing.B) {
 	data := NewTableData([]string{"A", "B", "C", "D", "E"})
 	for range 1000 {
