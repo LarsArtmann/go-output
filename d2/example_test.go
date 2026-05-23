@@ -65,8 +65,10 @@ func ExampleNewD2Diagram_styledNodes() {
 		Label: output.NewBrandedID[output.D2NodeLabelBrand]("Web Server"),
 		Shape: d2.D2ShapeHexagon,
 		Style: d2.D2NodeStyle{
-			Fill:   "#E0F0FF",
-			Stroke: "#0066CC",
+			Fill: "#E0F0FF",
+			D2StrokeStyle: d2.D2StrokeStyle{
+				Stroke: "#0066CC",
+			},
 			Shadow: true,
 		},
 	})

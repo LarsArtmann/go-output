@@ -20,8 +20,10 @@ func NewServiceD2Diagram(title string) *d2.D2Diagram {
 		SetDirection(d2.D2DirRight).
 		SetTitle(title).
 		AddClass("service", d2.D2NodeStyle{
-			Fill:     "lightblue",
-			Stroke:   "navy",
-			FontSize: 16,
+			Fill: "lightblue",
+			D2StrokeStyle: d2.D2StrokeStyle{
+				Stroke:   "navy",
+				FontSize: 16,
+			},
 		})
 }

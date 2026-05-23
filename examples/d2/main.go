@@ -12,8 +12,10 @@ import (
 func main() {
 	diagram := shared.NewServiceD2Diagram("Microservice Architecture").
 		AddClass("database", d2.D2NodeStyle{
-			Fill:   "lightyellow",
-			Stroke: "goldenrod",
+			Fill: "lightyellow",
+			D2StrokeStyle: d2.D2StrokeStyle{
+				Stroke: "goldenrod",
+			},
 		}).
 		AddTable("users", []d2.D2Column{
 			{Name: "id", Type: "serial", Constraint: d2.D2ConstraintPrimary},

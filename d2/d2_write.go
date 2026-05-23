@@ -8,15 +8,15 @@ import (
 )
 
 func (d *D2Diagram) writeStyleAttrs(b *strings.Builder, s D2NodeStyle, indent string) {
-	d.writeStyleColors(b, s, indent)
-	d.writeStyleEffects(b, s, indent)
-}
-
-func (*D2Diagram) writeStyleColors(b *strings.Builder, s D2NodeStyle, indent string) {
 	if s.Fill != "" {
 		fmt.Fprintf(b, "%sstyle.fill: %s\n", indent, s.Fill)
 	}
 
+	d.writeStyleColors(b, s.D2StrokeStyle, indent)
+	d.writeStyleEffects(b, s, indent)
+}
+
+func (*D2Diagram) writeStyleColors(b *strings.Builder, s D2StrokeStyle, indent string) {
 	if s.Stroke != "" {
 		fmt.Fprintf(b, "%sstyle.stroke: %s\n", indent, s.Stroke)
 	}
@@ -76,14 +76,7 @@ func (d *D2Diagram) writeEdge(b *strings.Builder, edge D2Edge) {
 }
 
 func (d *D2Diagram) writeEdgeBlockAttrs(b *strings.Builder, edge D2Edge) {
-	//nolint:exhaustruct // Only common style fields; edge-specific attrs written below
-	d.writeStyleColors(b, D2NodeStyle{
-		Stroke:      edge.Style.Stroke,
-		StrokeWidth: edge.Style.StrokeWidth,
-		StrokeDash:  edge.Style.StrokeDash,
-		FontSize:    edge.Style.FontSize,
-		FontColor:   edge.Style.FontColor,
-	}, "  ")
+	d.writeStyleColors(b, edge.Style.D2StrokeStyle, "  ")
 
 	if edge.Style.Animated {
 		b.WriteString("  style.animated: true\n")

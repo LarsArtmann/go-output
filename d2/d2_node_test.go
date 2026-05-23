@@ -71,12 +71,14 @@ func TestD2NodeWithStyle(t *testing.T) {
 		Width:  200,
 		Height: 100,
 		Style: D2NodeStyle{
-			Fill:          "blue",
-			Stroke:        "black",
-			StrokeWidth:   2,
-			StrokeDash:    3,
-			FontSize:      14,
-			FontColor:     "white",
+			Fill: "blue",
+			D2StrokeStyle: D2StrokeStyle{
+				Stroke:      "black",
+				StrokeWidth: 2,
+				StrokeDash:  3,
+				FontSize:    14,
+				FontColor:   "white",
+			},
 			Opacity:       0.8,
 			Shadow:        true,
 			BorderRadius:  8,
@@ -209,8 +211,8 @@ func TestD2NodeWithClass(t *testing.T) {
 
 	d := NewD2Diagram()
 	d.AddClass("important", D2NodeStyle{
-		Fill:   "red",
-		Stroke: "darkred",
+		Fill: "red",
+		D2StrokeStyle: D2StrokeStyle{Stroke: "darkred"},
 	})
 	d.AddNode(D2Node{ //nolint:exhaustruct // Test uses minimal required fields
 		ID:    output.NewBrandedID[output.D2NodeIDBrand]("alert"),

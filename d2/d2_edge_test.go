@@ -115,12 +115,14 @@ func TestD2EdgeStyle(t *testing.T) {
 		To:    output.NewBrandedID[output.D2NodeIDBrand]("b"),
 		Label: output.NewBrandedID[output.D2NodeLabelBrand]("styled"),
 		Style: D2EdgeStyle{
-			Stroke:      "red",
-			StrokeWidth: 3,
-			StrokeDash:  5,
-			Animated:    true,
-			FontColor:   "blue",
-			FontSize:    12,
+			D2StrokeStyle: D2StrokeStyle{
+				Stroke:      "red",
+				StrokeWidth: 3,
+				StrokeDash:  5,
+				FontColor:   "blue",
+				FontSize:    12,
+			},
+			Animated: true,
 		},
 	})
 

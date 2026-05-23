@@ -98,10 +98,12 @@ func BenchmarkD2DiagramStyledNodes(b *testing.B) {
 				Label: output.NewBrandedID[output.D2NodeLabelBrand](fmt.Sprintf("Node %d", i)),
 				Shape: D2ShapeCircle,
 				Style: D2NodeStyle{
-					Fill:     "#f0f0f0",
-					Stroke:   "#333333",
-					FontSize: 14,
-					Shadow:   true,
+					Fill: "#f0f0f0",
+					D2StrokeStyle: D2StrokeStyle{
+						Stroke:   "#333333",
+						FontSize: 14,
+					},
+					Shadow: true,
 				},
 				Tooltip: fmt.Sprintf("Tooltip for node %d", i),
 				Link:    fmt.Sprintf("https://example.com/node/%d", i),
@@ -116,7 +118,7 @@ func BenchmarkD2DiagramFullConfig(b *testing.B) {
 			SetTitle("Benchmark Diagram").
 			SetLayout("elk")
 
-		d.AddClass("highlight", D2NodeStyle{Fill: "#ffcc00", Stroke: "#ff9900"})
+		d.AddClass("highlight", D2NodeStyle{Fill: "#ffcc00", D2StrokeStyle: D2StrokeStyle{Stroke: "#ff9900"}})
 
 		for _, node := range generateBenchmarkD2Nodes(50) {
 			d.AddNode(node)

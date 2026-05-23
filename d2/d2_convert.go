@@ -62,9 +62,11 @@ func graphShapeToD2(s output.GraphShape) D2NodeShape {
 
 func graphStyleToD2(s output.GraphStyle) D2NodeStyle {
 	return D2NodeStyle{
-		Fill:     s.FillColor,
-		Stroke:   s.StrokeColor,
-		FontSize: s.FontSize,
+		Fill: s.FillColor,
+		D2StrokeStyle: D2StrokeStyle{
+			Stroke:   s.StrokeColor,
+			FontSize: s.FontSize,
+		},
 	}
 }
 

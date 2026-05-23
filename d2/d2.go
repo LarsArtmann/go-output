@@ -8,14 +8,24 @@ type D2NodeID = output.D2NodeID
 // D2NodeLabel is a branded identifier for D2 diagram node labels.
 type D2NodeLabel = output.D2NodeLabel
 
+// D2StrokeStyle represents shared stroke/font styling for D2 nodes and edges.
+type D2StrokeStyle struct {
+	Stroke      string
+	StrokeWidth int
+	StrokeDash  int
+	FontSize    int
+	FontColor   string
+}
+
+func (s D2StrokeStyle) isSet() bool {
+	return s.Stroke != "" || s.StrokeWidth > 0 || s.StrokeDash > 0 ||
+		s.FontSize > 0 || s.FontColor != ""
+}
+
 // D2NodeStyle represents styling for a D2 node.
 type D2NodeStyle struct {
+	D2StrokeStyle
 	Fill          string
-	Stroke        string
-	StrokeWidth   int
-	StrokeDash    int
-	FontSize      int
-	FontColor     string
 	Opacity       float64
 	Shadow        bool
 	BorderRadius  int
@@ -23,10 +33,8 @@ type D2NodeStyle struct {
 }
 
 func (s D2NodeStyle) isSet() bool {
-	return s.Fill != "" || s.Stroke != "" || s.StrokeWidth > 0 ||
-		s.StrokeDash > 0 || s.FontSize > 0 || s.FontColor != "" ||
-		s.Opacity > 0 || s.Shadow || s.BorderRadius > 0 ||
-		s.TextTransform != ""
+	return s.D2StrokeStyle.isSet() || s.Fill != "" ||
+		s.Opacity > 0 || s.Shadow || s.BorderRadius > 0 || s.TextTransform != ""
 }
 
 // D2Node represents a node in a D2 diagram.
@@ -72,12 +80,8 @@ func (n D2Node) hasSize() bool {
 
 // D2EdgeStyle represents styling for a D2 edge.
 type D2EdgeStyle struct {
-	Stroke      string
-	StrokeWidth int
-	StrokeDash  int
-	Animated    bool
-	FontColor   string
-	FontSize    int
+	D2StrokeStyle
+	Animated bool
 }
 
 // D2Edge represents an edge in a D2 diagram.

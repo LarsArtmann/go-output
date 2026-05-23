@@ -58,7 +58,7 @@ func TestD2ClassesIntegration(t *testing.T) {
 	t.Parallel()
 
 	d2Diagram := d2.NewD2Diagram()
-	d2Diagram.AddClass("server", d2.D2NodeStyle{Fill: "blue", Stroke: "black"})
+	d2Diagram.AddClass("server", d2.D2NodeStyle{Fill: "blue", D2StrokeStyle: d2.D2StrokeStyle{Stroke: "black"}})
 	d2Diagram.AddNode(d2.D2Node{
 		ID:    output.NewBrandedID[output.D2NodeIDBrand]("api"),
 		Label: output.NewBrandedID[output.D2NodeLabelBrand]("API"),
