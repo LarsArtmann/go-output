@@ -15,6 +15,30 @@ func TestAssertStringSliceEqual(t *testing.T) {
 
 	AssertStringSliceEqual(t, "equal", []string{"a", "b"}, []string{"a", "b"})
 	AssertStringSliceEqual(t, "empty", []string{}, []string{})
+
+	t.Run("different lengths", func(t *testing.T) {
+		t.Parallel()
+
+		mock := &testing.T{}
+
+		AssertStringSliceEqual(mock, "len", []string{"a"}, []string{"a", "b"})
+
+		if !mock.Failed() {
+			t.Error("expected failure for different lengths")
+		}
+	})
+
+	t.Run("different values", func(t *testing.T) {
+		t.Parallel()
+
+		mock := &testing.T{}
+
+		AssertStringSliceEqual(mock, "val", []string{"a"}, []string{"b"})
+
+		if !mock.Failed() {
+			t.Error("expected failure for different values")
+		}
+	})
 }
 
 func TestAssertContains(t *testing.T) {
@@ -22,6 +46,18 @@ func TestAssertContains(t *testing.T) {
 
 	AssertContains(t, "hello world", "world", "should contain world")
 	AssertContains(t, "hello", "hello", "should contain hello")
+
+	t.Run("missing substring", func(t *testing.T) {
+		t.Parallel()
+
+		mock := &testing.T{}
+
+		AssertContains(mock, "hello", "missing", "should fail")
+
+		if !mock.Failed() {
+			t.Error("expected failure for missing substring")
+		}
+	})
 }
 
 func TestAssertEqual(t *testing.T) {
@@ -29,6 +65,18 @@ func TestAssertEqual(t *testing.T) {
 
 	AssertEqual(t, "int", "input", 42, 42)
 	AssertEqual(t, "string", "input", "same", "same")
+
+	t.Run("unequal values", func(t *testing.T) {
+		t.Parallel()
+
+		mock := &testing.T{}
+
+		AssertEqual(mock, "int", "input", 1, 2)
+
+		if !mock.Failed() {
+			t.Error("expected failure for unequal values")
+		}
+	})
 }
 
 func TestTestEnumIsValid(t *testing.T) {
@@ -57,10 +105,34 @@ func TestStringField(t *testing.T) {
 	t.Parallel()
 
 	StringField("name", "same", "same")(t)
+
+	t.Run("mismatch", func(t *testing.T) {
+		t.Parallel()
+
+		mock := &testing.T{}
+
+		StringField("name", "got", "want")(mock)
+
+		if !mock.Failed() {
+			t.Error("expected failure for mismatched string field")
+		}
+	})
 }
 
 func TestIntField(t *testing.T) {
 	t.Parallel()
 
 	IntField("count", 5, 5)(t)
+
+	t.Run("mismatch", func(t *testing.T) {
+		t.Parallel()
+
+		mock := &testing.T{}
+
+		IntField("count", 1, 2)(mock)
+
+		if !mock.Failed() {
+			t.Error("expected failure for mismatched int field")
+		}
+	})
 }
