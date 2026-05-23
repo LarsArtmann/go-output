@@ -5,274 +5,115 @@
 
 ---
 
-## P0: Before Merge (Blocking)
+## Summary
 
-### 1. CI workflow missing d2/graph modules
-
-**File:** `.github/workflows/ci.yml`
-**Problem:** Build/test/mod-tidy/govulncheck loops iterate `. enum escape testhelpers sort table integration examples` — missing `d2` and `graph`. CI will pass on master but not test 2 of 10 modules.
-**Fix:** Add `d2 graph` to all 4 loops in ci.yml.
-
-### 2. README.md: D2/Graph code examples are stale
-
-**File:** `README.md:202-209, 251-280`
-**Problem:** D2 examples reference `output.NewD2Renderer("Architecture")` (does not exist), `output.D2Node`, `output.D2ShapeHexagon`, `output.D2Table`, `output.D2Column` — all now in `d2/` module. Graph examples reference `output.DOTFromTableData()` and `output.MermaidFlowchartRenderer()` — now in `graph/` module.
-**Fix:** Update all code examples to import and use `d2.NewD2Diagram()`, `d2.D2Node`, `graph.DOTFromTableData()`, `graph.MermaidFlowchartRenderer()`.
-
-### 3. README.md: Installation section missing d2/graph
-
-**File:** `README.md:236-244`
-**Problem:** Only shows `go get go-output` and `go get go-output/table`. Missing `go get go-output/d2` and `go get go-output/graph`.
-**Fix:** Add installation instructions for d2 and graph sub-modules.
-
-### 4. CONTRIBUTING.md: Outdated module list
-
-**File:** `CONTRIBUTING.md:16`
-**Problem:** Says "8 independent modules" and go.work snippet omits `d2` and `graph`.
-**Fix:** Update to 10 modules, add `./d2` and `./graph` to go.work snippet.
-
-### 5. go.work.example: Missing d2/graph
-
-**File:** `go.work.example`
-**Problem:** Only lists 8 modules, missing `./d2` and `./graph`.
-**Fix:** Add both.
-
-### 6. CHANGELOG.md: No entry for d2/graph extraction
-
-**File:** `CHANGELOG.md`
-**Problem:** `[Unreleased]` section doesn't mention d2/graph module extraction.
-**Fix:** Add entry under `[Unreleased]` noting d2/ and graph/ are now independent modules with import path changes.
+| Priority | Count | Done | Not Done | Needs Decision |
+| -------- | ----- | ---- | -------- | -------------- |
+| P0       | 6     | 6    | 0        | 0              |
+| P1       | 7     | 7    | 0        | 0              |
+| P2       | 4     | 4    | 0        | 0              |
+| P3       | 5     | 2    | 2        | 1              |
+| P4       | 4     | 2    | 2        | 0              |
+| P5       | 4     | 4    | 0        | 0              |
+| P6       | 10    | 0    | 10       | 0              |
+| **Total** | **40** | **25** | **14** | **1** |
 
 ---
 
-## P1: Documentation Accuracy
+## ✅ P0: Before Merge — ALL DONE
 
-### 7. ADR 001: Stale — references cmdguard, says d2/graph "not done yet"
-
-**File:** `docs/adr/001-multi-module-workspace.md`
-**Problem:** Lists 7 modules (now 10), references deleted `cmdguard/`, says "d2/ and graph/ modules not yet extracted (future work)" which is now done.
-**Fix:** Update module table to 10, remove cmdguard, update status, add note about completion.
-
-### 8. ADR 002: Status shows PROPOSED but is fully implemented
-
-**File:** `docs/adr/002-shape-capability-matrix.md:4`
-**Problem:** `Status: PROPOSED` but Shape capability matrix is fully implemented and in production use.
-**Fix:** Change to `Status: ACCEPTED & IMPLEMENTED`.
-
-### 9. ADR 003: Missing — no ADR for d2/graph extraction
-
-**File:** `docs/adr/003-d2-graph-extraction.md` (does not exist)
-**Problem:** No ADR documenting the decision to extract d2/ and graph/ as independent modules.
-**Fix:** Write ADR 003 with context (root was god-package at 4345 LOC), decision (extract to sub-modules), and consequences (UnsupportedFormatError, accessor methods).
-
-### 10. DEPENDENCY_GRAPH.md: Wrong root LOC
-
-**File:** `docs/modularization/DEPENDENCY_GRAPH.md:19`
-**Problem:** Shows "~1,400 production LOC" for root but actual is 5,191. Also shows `internal/testutils/` in root box (deleted).
-**Fix:** Update LOC to actual count, remove testutils reference.
-
-### 11. DOMAIN_LANGUAGE.md: Still a template
-
-**File:** `docs/DOMAIN_LANGUAGE.md`
-**Problem:** Contains placeholder comments and "Example Term" entries. Should define actual domain vocabulary: TableData, Renderer, Format, Shape, GraphNode, GraphEdge, BrandedID, etc.
-**Fix:** Populate with real domain terms from the codebase.
-
-### 12. FORMAT_ARCHITECTURE.md: Stale registry API reference
-
-**File:** `docs/FORMAT_ARCHITECTURE.md:170`
-**Problem:** References `GetRenderer(format Format) (Renderer, error)` but actual API is `Create(format Format) (Renderer, error)`.
-**Fix:** Update method name.
-
-### 13. README.md: Supported formats table missing module annotations
-
-**File:** `README.md:52-66`
-**Problem:** `d2`, `mermaid`, `dot` rows don't note they're in separate modules (like `table` does).
-**Fix:** Add "(separate `d2/` module)" and "(separate `graph/` module)" notes.
+- ✅ **1.** CI workflow includes d2/graph modules
+- ✅ **2.** README D2/Graph code examples updated to use `d2.`/`graph.` imports
+- ✅ **3.** README installation section includes d2/graph
+- ✅ **4.** CONTRIBUTING.md updated to 10 modules
+- ✅ **5.** go.work.example includes d2/graph
+- ✅ **6.** CHANGELOG.md has d2/graph extraction entry
 
 ---
 
-## P2: Code Quality & Coverage
+## ✅ P1: Documentation Accuracy — ALL DONE
 
-### 14. Root test coverage: 82.2% (target: 90%+)
-
-**File:** `internal/gentest/` (0% coverage)
-**Problem:** Root module coverage is 82.2%, below the 90% target in AGENTS.md. Main gap: `internal/gentest` at 0%.
-**Fix:** Either add tests for gentest or exclude from coverage reporting.
-
-### 15. testhelpers coverage: 75% (target: 90%+)
-
-**File:** `testhelpers/`
-**Problem:** Only module below 90% target.
-**Fix:** Add tests for uncovered assertions.
-
-### 16. Add D2 benchmark tests
-
-**File:** `d2/` (no bench_test.go)
-**Problem:** `graph/` has benchmarks but `d2/` doesn't. No performance regression detection for D2 rendering.
-**Fix:** Add `d2/bench_test.go` matching `graph/bench_test.go` pattern.
-
-### 17. Add fuzz tests for d2/ and graph/
-
-**File:** `d2/`, `graph/`
-**Problem:** Root has `fuzz_test.go` but sub-modules don't.
-**Fix:** Add fuzz targets for renderers in both modules.
+- ✅ **7.** ADR 001 updated to 10 modules, cmdguard removed, d2/graph marked complete
+- ✅ **8.** ADR 002 status changed to ACCEPTED & IMPLEMENTED
+- ✅ **9.** ADR 003 written for d2/graph extraction
+- ✅ **10.** DEPENDENCY_GRAPH.md LOC updated (~5,200 for root)
+- ✅ **11.** DOMAIN_LANGUAGE.md populated with real domain terms
+- ✅ **12.** FORMAT_ARCHITECTURE.md uses correct `Create()` API
+- ✅ **13.** README format table has module annotations for d2, mermaid, dot
 
 ---
 
-## P3: Architecture
+## ✅ P2: Code Quality & Coverage — ALL DONE
 
-### 18. GraphRendererMixin couples Graph types with TableData
-
-**File:** `graph.go:169-270`
-**Problem:** `SetNodesFromTableData`, `AddRowEdges`, `NodesFromTableData` mix graph and table concerns in one file.
-**Fix:** Extract `GraphTableConverter` or move TableData methods to a separate file.
-
-### 19. Inconsistent re-export pattern between d2/ and graph/
-
-**File:** `d2/d2.go:5-6` vs `graph/`
-**Problem:** d2 re-exports `D2NodeID`/`D2NodeLabel` as type aliases. graph does not re-export `GraphNodeID`/`GraphNodeLabel`.
-**Fix:** Pick one pattern. Either add graph aliases or remove d2 aliases.
-
-### 20. Decide: migrate internal/gentest to testhelpers/gentest?
-
-**File:** `internal/gentest/`
-**Problem:** Sub-modules (d2, graph) cannot import `internal/` packages from root. They had to duplicate test helpers. Trade-off: public test API vs sub-module reuse.
-**Status:** ❓ NEEDS DECISION (from Lars)
-
-### 21. Duplicated test helpers in graph/helpers_test.go
-
-**File:** `graph/helpers_test.go`
-**Problem:** Copies of helpers from root's `output_test_helpers.go`. If root's versions change, graph's won't.
-**Fix:** Move shared helpers to `testhelpers/` package (depends on #20 decision).
-
-### 22. Document registry + sub-module pattern
-
-**File:** `AGENTS.md`
-**Problem:** Registry in root can't register d2/graph renderers. Users must import sub-modules directly. No guidance in docs.
-**Fix:** Add "Using Registry with Sub-Modules" to AGENTS.md Common Tasks.
+- ✅ **14.** Root test coverage: **92.2%** (above 90% target)
+- ✅ **15.** testhelpers coverage: **93.8%** (above 90% target)
+- ✅ **16.** D2 benchmarks added (`d2/bench_test.go`)
+- ✅ **17.** D2 and graph fuzz tests added (`d2/fuzz_test.go`, `graph/fuzz_test.go`)
 
 ---
 
-## P4: Build & Config Hygiene
+## P3: Architecture — 2 Done, 2 Open, 1 Needs Decision
 
-### 23. .golangci.yml depguard: missing d2/graph in allow-lists
+- ✅ **22.** Registry + sub-module pattern documented in AGENTS.md
+- ✅ (graph/ doc comments already present: 9 in dot.go, 7 in mermaid.go)
 
-**File:** `.golangci.yml:121-192`
-**Problem:** depguard `default` and `examples` rules don't mention `go-output/d2` or `go-output/graph`. Works per-module but should be explicit.
-**Fix:** Add `github.com/larsartmann/go-output/d2` and `github.com/larsartmann/go-output/graph` to depguard allow-lists.
+### Open
 
-### 24. Fix or disable broken pre-commit hooks
+- **18.** GraphRendererMixin couples Graph types with TableData
+  - `graph.go:169-270` — `SetNodesFromTableData`, `AddRowEdges`, `NodesFromTableData` mix graph and table concerns
+  - **Fix:** Extract table-related methods to `graph_tabledata.go` in root
 
-**Problem:** `go-structure-linter` and `todo-check` hooks fail on pre-existing issues, forcing `--no-verify` for every commit.
-**Fix:** Either fix the 29 root-package-files issues, add exceptions, or disable these hooks.
+- **19.** Inconsistent re-export pattern between d2/ and graph/
+  - d2 re-exports `D2NodeID`/`D2NodeLabel` as type aliases. graph does not.
+  - **Fix:** Either add graph aliases or document the difference (d2 has its own struct types that use branded IDs; graph uses `output.GraphNode` directly)
 
-### 25. Verify go mod tidy is idempotent across all 10 modules
+### Needs Decision (from Lars)
 
-**Problem:** Not verified that `go mod tidy` produces no changes on already-tidy modules.
-**Fix:** Run `go mod tidy` in all 10 modules and verify zero diff.
-
-### 26. flake.nix: verify d2/graph included in devShell
-
-**File:** `flake.nix`
-**Problem:** If flake builds/tests modules, verify d2 and graph are included.
-**Fix:** Check flake.nix and add if missing.
+- **20.** Should `internal/gentest` be moved to `testhelpers/gentest`?
+  - Moving it allows d2/graph to share test infrastructure
+  - But exposes internal testing APIs publicly
+  - **Status:** ❓ NEEDS DECISION
+- **21.** Duplicated test helpers in graph/ (depends on #20)
 
 ---
 
-## P5: Polish & DX
+## P4: Build & Config Hygiene — 2 Done, 2 Open
 
-### 27. Add doc comments to graph/ public API
+- ✅ **23.** depguard includes d2/graph in all 3 rules
+- ✅ **25.** `go mod tidy` verified idempotent across all 10 modules
 
-**File:** `graph/dot.go`, `graph/mermaid.go`
-**Problem:** `NewDOTRenderer`, `NewMermaidRenderer`, `DOTFromTableData`, `MermaidFlowchartRenderer` lack doc comments.
-**Fix:** Add godoc-compatible comments.
+### Open
 
-### 28. Add API stability section to README
+- **24.** Pre-commit hooks: BuildFlow's `go-structure-linter` reports 29 "root-package-files" issues and `todo-check` finds 2 NOTE comments. These are external tool false positives (root package IS the public API for a Go library). Every commit requires `--no-verify`.
+  - **Fix:** Either configure BuildFlow to ignore these rules, or accept `--no-verify` as the workaround.
 
-**Problem:** Pre-v1 library with no documented stability promises.
-**Fix:** Add section about pre-v1 API guarantees and import path stability.
+- **26.** flake.nix: Nix sandbox blocks `go mod download`, so Go build/test/lint NOT in flake. CI handles Go checks. flake.nix provides dev shell (Go 1.26, golangci-lint, gopls) and formatting checks only.
 
-### 29. Add Example test functions for godoc
+---
 
-**File:** `graph/`, `d2/`
-**Problem:** No `func Example*` test functions for godoc discoverability.
-**Fix:** Add `ExampleDOTFromTableData`, `ExampleMermaidFlowchartRenderer`, `ExampleNewD2Diagram`.
+## ✅ P5: Polish & DX — ALL DONE
 
-### 30. Delete stale docs/status/ reports
-
-**Problem:** Multiple older status reports reference broken/incomplete states that are now resolved.
-**Fix:** Keep the latest, prune older reports that are fully superseded.
+- ✅ **27.** Graph/ public API has doc comments (dot.go: 9, mermaid.go: 7)
+- ✅ **28.** API stability section in README (pre-v1 guarantees)
+- ✅ **29.** Example test functions: `d2/example_test.go`, `graph/example_test.go`
+- ✅ **30.** Stale status reports pruned (kept latest 3)
 
 ---
 
 ## P6: Future (Not Blocking)
 
-### 31. Tag next release (v0.5.0?)
-
-**Problem:** Multiple major features since v0.4.0: d2/graph extraction, Shape matrix, JSON/YAML renderers, deduplication.
-**Fix:** Update CHANGELOG, tag release.
-
-### 32. Remove deprecated FormatCategory code
-
-**File:** `format_deprecated.go`, `format.go:171-235`
-**Problem:** `FormatCategory`, `IsTableFormat()`, `Category()` all deprecated. Redirect to `Supports()`.
-**Fix:** Remove in next major version.
-
-### 33. Remove deprecated OutputFormat aliases
-
-**File:** `format_deprecated.go`
-**Problem:** `OutputFormat` type alias and all `OutputFormat*` constants.
-**Fix:** Remove in v2.0.
-
-### 34. ADR 002 Phase 2: Shape-specific renderer constructors
-
-**File:** `docs/adr/002-shape-capability-matrix.md:104-111`
-**Problem:** `NewJSONTableRenderer(data)`, `NewYAMLTreeRenderer(root)` etc. were out of scope for initial Shape refactor.
-**Fix:** Implement shape-specific constructors in future iteration.
-
-### 35. Add TOML format
-
-**Problem:** Listed as P2 item in earlier planning.
-**Fix:** New module `toml/` with table rendering.
-
-### 36. Add JSONL format
-
-**Problem:** Listed as P2 item in earlier planning.
-**Fix:** New renderer for JSON Lines output.
-
-### 37. Add PlantUML format
-
-**Problem:** Listed as P3 item in earlier planning.
-**Fix:** New module `plantuml/` with UML rendering.
-
-### 38. Add AsciiDoc format
-
-**Problem:** Listed as P3 item in earlier planning.
-**Fix:** New renderer for AsciiDoc tables.
-
-### 39. Pre-v1 API stability audit
-
-**Problem:** No comprehensive review of all public APIs for breaking changes.
-**Fix:** Audit all exported types, functions, constants. Document stability guarantees.
-
-### 40. Community: Post to r/golang, submit to Awesome Go
-
-**Fix:** Marketing/community items from earlier planning.
+- **31.** Tag next release (v0.5.0?)
+- **32.** Remove deprecated FormatCategory code (breaking change, defer to v1.0)
+- **33.** Remove deprecated OutputFormat aliases (breaking change, defer to v2.0)
+- **34.** ADR 002 Phase 2: Shape-specific renderer constructors
+- **35.** Add TOML format (new module)
+- **36.** Add JSONL format (new renderer)
+- **37.** Add PlantUML format (new module)
+- **38.** Add AsciiDoc format (new renderer)
+- **39.** Pre-v1 API stability audit
+- **40.** Community: Post to r/golang, submit to Awesome Go
 
 ---
-
-## Summary
-
-| Priority          | Count  | Not Done | Needs Decision |
-| ----------------- | ------ | -------- | -------------- |
-| P0: Before Merge  | 6      | 6        | 0              |
-| P1: Documentation | 7      | 7        | 0              |
-| P2: Code Quality  | 4      | 4        | 0              |
-| P3: Architecture  | 5      | 4        | 1              |
-| P4: Build/Config  | 4      | 4        | 0              |
-| P5: Polish        | 4      | 4        | 0              |
-| P6: Future        | 10     | 10       | 0              |
-| **Total**         | **40** | **39**   | **1**          |
 
 ## Completed (do not re-do)
 
@@ -282,8 +123,8 @@
 - ✅ All 10 modules build/test/vet/lint clean
 - ✅ AGENTS.md updated to 10-module table
 - ✅ DEPENDENCY_GRAPH.md rewritten for current state
-- ✅ PROPOSAL.md → ACCEPTED & IMPLEMENTED
-- ✅ EXECUTION_PLAN.md → COMPLETED
+- ✅ ADR 002 → ACCEPTED & IMPLEMENTED
+- ✅ ADR 003 → written
 - ✅ Dead code removed from root (test helpers, benchmarks)
 - ✅ gci/goimports formatter conflict resolved
 - ✅ Code deduplication (0 clone groups)
@@ -292,3 +133,13 @@
 - ✅ JSON/YAML table renderers implemented
 - ✅ Graph benchmarks added to graph/ module
 - ✅ UnsupportedFormatError message cleaned
+- ✅ format.go split into format.go + shape.go + renderer.go + format_deprecated.go
+- ✅ registry.go simplified with cmp.Compare
+- ✅ README uses non-deprecated API (Supports/Shapes)
+- ✅ Error-path tests for markup, xml, streaming, render_tabledata, json, color, markdown, tsv
+- ✅ Root coverage 82.2% → 92.2%
+- ✅ D2 coverage 95.4% → 100%
+- ✅ Graph coverage 94.4% → 95.2%
+- ✅ Integration coverage 75.9% → 82.8%
+- ✅ testhelpers coverage 75% → 93.8%
+- ✅ gentest coverage 0% → 87.5%

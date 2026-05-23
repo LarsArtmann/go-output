@@ -17,7 +17,7 @@ Level 2 — Core module
 ━━━━━━━━━━━━━━━━━━━━━
     ┌─────────────────────────────────────────────┐
     │        root (package output)                │
-    │        ~2,800 production LOC                │
+    │        ~5,200 production LOC                │
     │                                             │
     │  External: go-faster/yaml, x/term,          │
     │            go-branded-id                     │
@@ -38,7 +38,7 @@ Level 3 — Format modules (depend on root core types)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     ┌──────────────┐  ┌──────────────┐  ┌────────────┐
     │    d2/        │  │   graph/     │  │   table/    │
-    │  833 LOC      │  │  ~350 LOC    │  │  92 LOC     │
+    │  ~850 LOC     │  │  ~320 LOC    │  │  93 LOC     │
     │ →root,escape, │  │ →root,escape,│  │ →root,      │
     │   testhelpers │  │  testhelpers │  │   lipgloss  │
     └──────────────┘  └──────────────┘  └────────────┘
