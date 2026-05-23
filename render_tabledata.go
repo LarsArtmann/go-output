@@ -19,11 +19,13 @@ type RenderOptions struct {
 }
 
 // RenderTableData renders TableData in the given format and writes to w (or os.Stdout).
-// It supports all tabular formats: csv, tsv, markdown, xml, yaml, d2, html, tree, mermaid, dot.
-// Table and JSON formats are NOT handled — those require per-command customization
+// It supports: csv, tsv, markdown, xml, yaml, html, tree.
+//
+// D2, Mermaid, and DOT are NOT handled — those require importing the d2 or graph
+// sub-modules directly. Table and JSON formats also require per-command customization
 // (table for lipgloss styling, json for full struct marshaling).
 //
-// Returns UnsupportedFormatError if the format is table or json (caller should handle those).
+// Returns UnsupportedFormatError for unsupported formats (d2, mermaid, dot, table, json).
 //
 //nolint:cyclop,exhaustive // Dispatcher function with many format cases.
 func RenderTableData(data *TableData, format Format, opts ...RenderOptions) error {
