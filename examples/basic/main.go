@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/larsartmann/go-output"
+	"github.com/larsartmann/go-output/d2"
 	"github.com/larsartmann/go-output/examples/shared"
 	"github.com/larsartmann/go-output/table"
 )
@@ -201,29 +202,29 @@ func renderYAML(projects []Project) {
 }
 
 func renderD2(projects []Project) {
-	d2 := shared.NewServiceD2Diagram("Project Architecture").
-		AddTable("projects", []output.D2Column{
-			{Name: "id", Type: "serial", Constraint: output.D2ConstraintPrimary},
+	d2Diagram := shared.NewServiceD2Diagram("Project Architecture").
+		AddTable("projects", []d2.D2Column{
+			{Name: "id", Type: "serial", Constraint: d2.D2ConstraintPrimary},
 			{Name: "name", Type: "varchar(255)"},
 			{Name: "health", Type: "int"},
 			{Name: "complexity", Type: "int"},
 		})
 
 	for _, p := range projects {
-		d2.AddNode(output.D2Node{
+		d2Diagram.AddNode(d2.D2Node{
 			ID:    output.NewBrandedID[output.D2NodeIDBrand](p.Name),
 			Label: output.NewBrandedID[output.D2NodeLabelBrand](p.Name),
-			Shape: output.D2ShapeCircle,
+			Shape: d2.D2ShapeCircle,
 			Class: "service",
 		})
-		d2.AddEdge(output.D2Edge{
+		d2Diagram.AddEdge(d2.D2Edge{
 			From:        output.NewBrandedID[output.D2NodeIDBrand]("projects"),
 			To:          output.NewBrandedID[output.D2NodeIDBrand](p.Name),
-			TargetArrow: output.D2ArrowCFMany,
+			TargetArrow: d2.D2ArrowCFMany,
 		})
 	}
 
-	out, err := d2.Render()
+	out, err := d2Diagram.Render()
 	if err != nil {
 		shared.HandleError(err)
 	}

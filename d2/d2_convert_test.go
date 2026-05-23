@@ -3,6 +3,9 @@ package d2
 import (
 	"strings"
 	"testing"
+
+	"github.com/larsartmann/go-output"
+	"github.com/larsartmann/go-output/testhelpers"
 )
 
 func TestD2TableWithConstraints(t *testing.T) {
@@ -21,10 +24,10 @@ func TestD2TableWithConstraints(t *testing.T) {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	assertContains(t, got, "id: int {constraint: primary_key}", "should contain primary key")
-	assertContains(t, got, "email: string {constraint: unique}", "should contain unique")
-	assertContains(t, got, "org_id: int {constraint: foreign_key}", "should contain foreign key")
-	assertContains(t, got, "name: string\n", "should contain column without constraint")
+	testhelpers.AssertContains(t, got, "id: int {constraint: primary_key}", "should contain primary key")
+	testhelpers.AssertContains(t, got, "email: string {constraint: unique}", "should contain unique")
+	testhelpers.AssertContains(t, got, "org_id: int {constraint: foreign_key}", "should contain foreign key")
+	testhelpers.AssertContains(t, got, "name: string\n", "should contain column without constraint")
 
 	if strings.Contains(got, "name: string {constraint") {
 		t.Error("column without constraint should not have constraint block")
@@ -71,7 +74,7 @@ func TestD2FromTableData(t *testing.T) {
 	t.Run("with rows", func(t *testing.T) {
 		t.Parallel()
 
-		data := NewTableData([]string{"Name", "Value"})
+		data := output.NewTableData([]string{"Name", "Value"})
 		data.AddRow([]string{"Alpha", "100"})
 		data.AddRow([]string{"Beta", "200"})
 
@@ -82,10 +85,10 @@ func TestD2FromTableData(t *testing.T) {
 			t.Fatalf("Render() error = %v", err)
 		}
 
-		assertContains(t, got, "row0", "should contain first row node")
-		assertContains(t, got, "row1", "should contain second row node")
-		assertContains(t, got, "->", "should contain edges")
-		assertContains(t, got, "Name: Alpha", "should contain label content")
+		testhelpers.AssertContains(t, got, "row0", "should contain first row node")
+		testhelpers.AssertContains(t, got, "row1", "should contain second row node")
+		testhelpers.AssertContains(t, got, "->", "should contain edges")
+		testhelpers.AssertContains(t, got, "Name: Alpha", "should contain label content")
 	})
 }
 
@@ -113,10 +116,10 @@ func TestD2FromTree(t *testing.T) {
 	t.Run("tree with children", func(t *testing.T) {
 		t.Parallel()
 
-		root := NewTreeNode("root", "Root")
+		root := output.NewTreeNode("root", "Root")
 
-		root.AddChild(NewTreeNode("child1", "Child 1"))
-		root.AddChild(NewTreeNode("child2", "Child 2"))
+		root.AddChild(output.NewTreeNode("child1", "Child 1"))
+		root.AddChild(output.NewTreeNode("child2", "Child 2"))
 
 		d := D2FromTree(root)
 
@@ -125,20 +128,20 @@ func TestD2FromTree(t *testing.T) {
 			t.Fatalf("Render() error = %v", err)
 		}
 
-		assertContains(t, got, "root: Root", "should contain root node")
-		assertContains(t, got, "child1: Child 1", "should contain first child")
-		assertContains(t, got, "child2: Child 2", "should contain second child")
-		assertContains(t, got, "root -> child1", "should contain edge to first child")
-		assertContains(t, got, "root -> child2", "should contain edge to second child")
+		testhelpers.AssertContains(t, got, "root: Root", "should contain root node")
+		testhelpers.AssertContains(t, got, "child1: Child 1", "should contain first child")
+		testhelpers.AssertContains(t, got, "child2: Child 2", "should contain second child")
+		testhelpers.AssertContains(t, got, "root -> child1", "should contain edge to first child")
+		testhelpers.AssertContains(t, got, "root -> child2", "should contain edge to second child")
 	})
 
 	t.Run("deeply nested tree", func(t *testing.T) {
 		t.Parallel()
 
-		root := NewTreeNode("root", "Root")
+		root := output.NewTreeNode("root", "Root")
 
-		root.AddChild(NewTreeNode("child", "Child"))
-		root.Children[0].AddChild(NewTreeNode("grandchild", "Grandchild"))
+		root.AddChild(output.NewTreeNode("child", "Child"))
+		root.Children[0].AddChild(output.NewTreeNode("grandchild", "Grandchild"))
 
 		d := D2FromTree(root)
 
@@ -147,23 +150,23 @@ func TestD2FromTree(t *testing.T) {
 			t.Fatalf("Render() error = %v", err)
 		}
 
-		assertContains(t, got, "root -> child", "should contain root->child edge")
-		assertContains(t, got, "child -> grandchild", "should contain child->grandchild edge")
+		testhelpers.AssertContains(t, got, "root -> child", "should contain root->child edge")
+		testhelpers.AssertContains(t, got, "child -> grandchild", "should contain child->grandchild edge")
 	})
 }
 
 func TestD2GraphRendererInterface(t *testing.T) {
 	t.Parallel()
 
-	var _ GraphRenderer = NewD2Diagram()
+	var _ output.GraphRenderer = NewD2Diagram()
 
 	d := NewD2Diagram()
-	d.SetNodes([]GraphNode{
-		*NewGraphNode("a", "Node A"),
-		*NewGraphNode("b", "Node B"),
+	d.SetNodes([]output.GraphNode{
+		*output.NewGraphNode("a", "Node A"),
+		*output.NewGraphNode("b", "Node B"),
 	})
-	d.SetEdges([]GraphEdge{
-		*NewGraphEdge("a", "b"),
+	d.SetEdges([]output.GraphEdge{
+		*output.NewGraphEdge("a", "b"),
 	})
 
 	got, err := d.Render()
@@ -171,9 +174,9 @@ func TestD2GraphRendererInterface(t *testing.T) {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	assertContains(t, got, "a: Node A", "should contain node A")
-	assertContains(t, got, "b: Node B", "should contain node B")
-	assertContains(t, got, "a -> b", "should contain edge")
+	testhelpers.AssertContains(t, got, "a: Node A", "should contain node A")
+	testhelpers.AssertContains(t, got, "b: Node B", "should contain node B")
+	testhelpers.AssertContains(t, got, "a -> b", "should contain edge")
 }
 
 func TestD2GraphShapeConversion(t *testing.T) {
@@ -181,17 +184,17 @@ func TestD2GraphShapeConversion(t *testing.T) {
 
 	tests := []struct {
 		name  string
-		shape GraphShape
+		shape output.GraphShape
 		want  string
 	}{
-		{"box implicit rectangle", ShapeBox, ""},
-		{"rect implicit rectangle", ShapeRect, ""},
-		{"ellipse to oval", ShapeEllipse, "oval"},
-		{"diamond to diamond", ShapeDiamond, "diamond"},
-		{"circle to circle", ShapeCircle, "circle"},
-		{"cylinder to cylinder", ShapeCylinder, "cylinder"},
-		{"hexagon to hexagon", ShapeHexagon, "hexagon"},
-		{"parallelogram to parallelogram", ShapeParallelogram, "parallelogram"},
+		{"box implicit rectangle", output.ShapeBox, ""},
+		{"rect implicit rectangle", output.ShapeRect, ""},
+		{"ellipse to oval", output.ShapeEllipse, "oval"},
+		{"diamond to diamond", output.ShapeDiamond, "diamond"},
+		{"circle to circle", output.ShapeCircle, "circle"},
+		{"cylinder to cylinder", output.ShapeCylinder, "cylinder"},
+		{"hexagon to hexagon", output.ShapeHexagon, "hexagon"},
+		{"parallelogram to parallelogram", output.ShapeParallelogram, "parallelogram"},
 	}
 
 	for _, tt := range tests {
@@ -199,7 +202,13 @@ func TestD2GraphShapeConversion(t *testing.T) {
 			t.Parallel()
 
 			d := NewD2Diagram()
-			d.SetNodes([]GraphNode{newTestNodeWithShape("node", "Test", tt.shape)})
+			d.SetNodes([]output.GraphNode{
+				{
+					ID:    output.NewBrandedID[output.GraphNodeIDBrand]("node"),
+					Label: output.NewBrandedID[output.GraphNodeLabelBrand]("Test"),
+					Shape: tt.shape,
+				},
+			})
 
 			got, err := d.Render()
 			if err != nil {
@@ -212,7 +221,7 @@ func TestD2GraphShapeConversion(t *testing.T) {
 				}
 			} else {
 				msg := "should convert " + tt.shape.String() + " to " + tt.want
-				assertContains(t, got, "shape: "+tt.want, msg)
+				testhelpers.AssertContains(t, got, "shape: "+tt.want, msg)
 			}
 		})
 	}
@@ -222,11 +231,11 @@ func TestD2GraphStyleConversion(t *testing.T) {
 	t.Parallel()
 
 	d := NewD2Diagram()
-	d.SetNodes([]GraphNode{
+	d.SetNodes([]output.GraphNode{
 		{
-			ID:    NewBrandedID[GraphNodeIDBrand]("styled"),
-			Label: NewBrandedID[GraphNodeLabelBrand]("Styled"),
-			Style: GraphStyle{
+			ID:    output.NewBrandedID[output.GraphNodeIDBrand]("styled"),
+			Label: output.NewBrandedID[output.GraphNodeLabelBrand]("Styled"),
+			Style: output.GraphStyle{
 				FillColor:   "blue",
 				StrokeColor: "black",
 				FontSize:    14,
@@ -239,7 +248,7 @@ func TestD2GraphStyleConversion(t *testing.T) {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	assertContains(t, got, "style.fill: blue", "should convert fill color")
-	assertContains(t, got, "style.stroke: black", "should convert stroke color")
-	assertContains(t, got, "style.font-size: 14", "should convert font size")
+	testhelpers.AssertContains(t, got, "style.fill: blue", "should convert fill color")
+	testhelpers.AssertContains(t, got, "style.stroke: black", "should convert stroke color")
+	testhelpers.AssertContains(t, got, "style.font-size: 14", "should convert font size")
 }

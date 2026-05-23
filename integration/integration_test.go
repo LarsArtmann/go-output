@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/larsartmann/go-output"
+	"github.com/larsartmann/go-output/d2"
 	"github.com/larsartmann/go-output/table"
 	"github.com/larsartmann/go-output/testhelpers"
 )
@@ -267,16 +268,16 @@ func renderTreeFormat(projects []TestProject) string {
 }
 
 func renderD2Format(projects []TestProject) string {
-	d2 := output.NewD2Diagram()
-	d2.AddTable("projects", []output.D2Column{
+	d2Diagram := d2.NewD2Diagram()
+	d2Diagram.AddTable("projects", []d2.D2Column{
 		{Name: "name", Type: "string"},
 	})
 
 	for _, p := range projects {
-		d2.AddNodeWithShape(p.Name, p.Name, output.D2ShapeCircle)
+		d2Diagram.AddNodeWithShape(p.Name, p.Name, d2.D2ShapeCircle)
 	}
 
-	out, err := d2.Render()
+	out, err := d2Diagram.Render()
 	if err != nil {
 		return ""
 	}
@@ -287,7 +288,7 @@ func renderD2Format(projects []TestProject) string {
 func renderD2FromTableData(projects []TestProject) string {
 	data := newGraphTableData(projects)
 
-	out, err := output.D2FromTableData(data).Render()
+	out, err := d2.D2FromTableData(data).Render()
 	if err != nil {
 		return ""
 	}
@@ -296,7 +297,7 @@ func renderD2FromTableData(projects []TestProject) string {
 }
 
 func renderD2FromTree(projects []TestProject) string {
-	out, err := output.D2FromTree(buildProjectTree(projects)).Render()
+	out, err := d2.D2FromTree(buildProjectTree(projects)).Render()
 	if err != nil {
 		return ""
 	}

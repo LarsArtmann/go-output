@@ -2,12 +2,15 @@ package d2
 
 import (
 	"testing"
+
+	"github.com/larsartmann/go-output"
+	"github.com/larsartmann/go-output/testhelpers"
 )
 
 func newTestD2Edge(opts ...func(*D2Edge)) D2Edge {
 	edge := D2Edge{ //nolint:exhaustruct // Test uses minimal required fields
-		From: NewBrandedID[D2NodeIDBrand]("a"),
-		To:   NewBrandedID[D2NodeIDBrand]("b"),
+		From: output.NewBrandedID[output.D2NodeIDBrand]("a"),
+		To:   output.NewBrandedID[output.D2NodeIDBrand]("b"),
 	}
 	for _, opt := range opts {
 		opt(&edge)
@@ -21,7 +24,7 @@ func TestD2EdgeWithArrows(t *testing.T) {
 
 	d := NewD2Diagram()
 	d.AddEdge(newTestD2Edge(func(e *D2Edge) {
-		e.Label = NewBrandedID[D2NodeLabelBrand]("test")
+		e.Label = output.NewBrandedID[output.D2NodeLabelBrand]("test")
 		e.SourceArrow = D2ArrowDiamond
 		e.TargetArrow = D2ArrowTriangle
 	}))
@@ -31,8 +34,8 @@ func TestD2EdgeWithArrows(t *testing.T) {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	assertContains(t, got, "source-arrowhead.shape: diamond", "should contain source arrow")
-	assertContains(t, got, "target-arrowhead.shape: triangle", "should contain target arrow")
+	testhelpers.AssertContains(t, got, "source-arrowhead.shape: diamond", "should contain source arrow")
+	testhelpers.AssertContains(t, got, "target-arrowhead.shape: triangle", "should contain target arrow")
 }
 
 func TestD2AllArrowTypes(t *testing.T) {
@@ -66,7 +69,7 @@ func TestD2AllArrowTypes(t *testing.T) {
 				t.Fatalf("Render() error = %v", err)
 			}
 
-			assertContains(t, got, "target-arrowhead.shape: "+string(arrow),
+			testhelpers.AssertContains(t, got, "target-arrowhead.shape: "+string(arrow),
 				"should contain arrow type "+string(arrow))
 		})
 	}
@@ -85,7 +88,7 @@ func TestD2EdgeWithFilledArrow(t *testing.T) {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	assertContains(t, got, "target-arrowhead.shape: filled", "should contain filled arrow")
+	testhelpers.AssertContains(t, got, "target-arrowhead.shape: filled", "should contain filled arrow")
 }
 
 func TestD2EdgeStyle(t *testing.T) {
@@ -93,9 +96,9 @@ func TestD2EdgeStyle(t *testing.T) {
 
 	d := NewD2Diagram()
 	d.AddEdge(D2Edge{
-		From:  NewBrandedID[D2NodeIDBrand]("a"),
-		To:    NewBrandedID[D2NodeIDBrand]("b"),
-		Label: NewBrandedID[D2NodeLabelBrand]("styled"),
+		From:  output.NewBrandedID[output.D2NodeIDBrand]("a"),
+		To:    output.NewBrandedID[output.D2NodeIDBrand]("b"),
+		Label: output.NewBrandedID[output.D2NodeLabelBrand]("styled"),
 		Style: D2EdgeStyle{
 			Stroke:      "red",
 			StrokeWidth: 3,
@@ -111,10 +114,10 @@ func TestD2EdgeStyle(t *testing.T) {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	assertContains(t, got, "style.stroke: red", "should contain edge stroke")
-	assertContains(t, got, "style.stroke-width: 3", "should contain edge stroke-width")
-	assertContains(t, got, "style.stroke-dash: 5", "should contain stroke-dash")
-	assertContains(t, got, "style.animated: true", "should contain animated")
-	assertContains(t, got, "style.font-color: blue", "should contain edge font-color")
-	assertContains(t, got, "style.font-size: 12", "should contain edge font-size")
+	testhelpers.AssertContains(t, got, "style.stroke: red", "should contain edge stroke")
+	testhelpers.AssertContains(t, got, "style.stroke-width: 3", "should contain edge stroke-width")
+	testhelpers.AssertContains(t, got, "style.stroke-dash: 5", "should contain stroke-dash")
+	testhelpers.AssertContains(t, got, "style.animated: true", "should contain animated")
+	testhelpers.AssertContains(t, got, "style.font-color: blue", "should contain edge font-color")
+	testhelpers.AssertContains(t, got, "style.font-size: 12", "should contain edge font-size")
 }

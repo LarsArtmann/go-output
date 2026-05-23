@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/larsartmann/go-output"
+	"github.com/larsartmann/go-output/d2"
 )
 
 // HandleError prints the error to stderr and exits with code 1.
@@ -15,11 +15,11 @@ func HandleError(err error) {
 }
 
 // NewServiceD2Diagram creates a D2 diagram with a service class pre-configured.
-func NewServiceD2Diagram(title string) *output.D2Diagram {
-	return output.NewD2Diagram().
-		SetDirection(output.D2DirRight).
+func NewServiceD2Diagram(title string) *d2.D2Diagram {
+	return d2.NewD2Diagram().
+		SetDirection(d2.D2DirRight).
 		SetTitle(title).
-		AddClass("service", output.D2NodeStyle{
+		AddClass("service", d2.D2NodeStyle{
 			Fill:     "lightblue",
 			Stroke:   "navy",
 			FontSize: 16,

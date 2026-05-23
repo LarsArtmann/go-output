@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/larsartmann/go-output"
+	"github.com/larsartmann/go-output/d2"
 	"github.com/larsartmann/go-output/testhelpers"
 )
 
@@ -142,12 +143,12 @@ func TestTreeFormatContent(t *testing.T) {
 func TestD2FormatContent(t *testing.T) {
 	t.Parallel()
 
-	d2 := output.NewD2Diagram()
-	d2.AddTable("test", []output.D2Column{
+	d2Diagram := d2.NewD2Diagram()
+	d2Diagram.AddTable("test", []d2.D2Column{
 		{Name: "name", Type: "string"},
 	})
 
-	result, err := d2.Render()
+	result, err := d2Diagram.Render()
 	if err != nil {
 		t.Fatalf("Render() error = %v", err)
 	}

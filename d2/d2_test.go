@@ -2,6 +2,9 @@ package d2
 
 import (
 	"testing"
+
+	"github.com/larsartmann/go-output"
+	"github.com/larsartmann/go-output/testhelpers"
 )
 
 func TestD2Diagram(t *testing.T) {
@@ -21,9 +24,9 @@ func TestD2Diagram(t *testing.T) {
 			t.Fatalf("Render() error = %v", err)
 		}
 
-		assertContains(t, got, "users:", "should contain table name")
-		assertContains(t, got, "shape: sql_table", "should contain sql_table shape")
-		assertContains(t, got, "id: int", "should contain column definitions")
+		testhelpers.AssertContains(t, got, "users:", "should contain table name")
+		testhelpers.AssertContains(t, got, "shape: sql_table", "should contain sql_table shape")
+		testhelpers.AssertContains(t, got, "id: int", "should contain column definitions")
 	})
 
 	t.Run("chaining", func(t *testing.T) {
@@ -49,8 +52,8 @@ func TestD2Diagram(t *testing.T) {
 			t.Fatalf("Render() error = %v", err)
 		}
 
-		assertContains(t, got, "users:", "should contain users table")
-		assertContains(t, got, "posts:", "should contain posts table")
+		testhelpers.AssertContains(t, got, "users:", "should contain users table")
+		testhelpers.AssertContains(t, got, "posts:", "should contain posts table")
 	})
 
 	t.Run("empty diagram", func(t *testing.T) {
@@ -91,7 +94,7 @@ func TestD2Config(t *testing.T) {
 			t.Fatalf("Render() error = %v", err)
 		}
 
-		assertContains(t, got, "direction: right", "should contain direction")
+		testhelpers.AssertContains(t, got, "direction: right", "should contain direction")
 	})
 
 	t.Run("title", func(t *testing.T) {
@@ -104,8 +107,8 @@ func TestD2Config(t *testing.T) {
 			t.Fatalf("Render() error = %v", err)
 		}
 
-		assertContains(t, got, "title:", "should contain title block")
-		assertContains(t, got, "My Diagram", "should contain title value")
+		testhelpers.AssertContains(t, got, "title:", "should contain title block")
+		testhelpers.AssertContains(t, got, "My Diagram", "should contain title value")
 	})
 
 	t.Run("layout engine", func(t *testing.T) {
@@ -118,7 +121,7 @@ func TestD2Config(t *testing.T) {
 			t.Fatalf("Render() error = %v", err)
 		}
 
-		assertContains(t, got, "layout: elk", "should contain layout engine")
+		testhelpers.AssertContains(t, got, "layout: elk", "should contain layout engine")
 	})
 
 	t.Run("combined config", func(t *testing.T) {
@@ -131,9 +134,9 @@ func TestD2Config(t *testing.T) {
 			t.Fatalf("Render() error = %v", err)
 		}
 
-		assertContains(t, got, "direction: right", "should contain direction")
-		assertContains(t, got, "layout: elk", "should contain layout")
-		assertContains(t, got, "Architecture", "should contain title")
+		testhelpers.AssertContains(t, got, "direction: right", "should contain direction")
+		testhelpers.AssertContains(t, got, "layout: elk", "should contain layout")
+		testhelpers.AssertContains(t, got, "Architecture", "should contain title")
 	})
 }
 
@@ -146,8 +149,8 @@ func TestD2Diagram_AddNode(t *testing.T) {
 		d := NewD2Diagram()
 
 		result := d.AddNode(D2Node{ //nolint:exhaustruct // Test uses minimal required fields
-			ID:    NewBrandedID[D2NodeIDBrand]("server"),
-			Label: NewBrandedID[D2NodeLabelBrand]("Web Server"),
+			ID:    output.NewBrandedID[output.D2NodeIDBrand]("server"),
+			Label: output.NewBrandedID[output.D2NodeLabelBrand]("Web Server"),
 		})
 		if result != d {
 			t.Error("AddNode should return diagram for chaining")
@@ -158,7 +161,7 @@ func TestD2Diagram_AddNode(t *testing.T) {
 			t.Fatalf("Render() error = %v", err)
 		}
 
-		assertContains(t, got, "server: Web Server", "should contain node")
+		testhelpers.AssertContains(t, got, "server: Web Server", "should contain node")
 	})
 
 	t.Run("AddNodeSimple", func(t *testing.T) {
@@ -176,7 +179,7 @@ func TestD2Diagram_AddNode(t *testing.T) {
 			t.Fatalf("Render() error = %v", err)
 		}
 
-		assertContains(t, got, "db: Database", "should contain simple node")
+		testhelpers.AssertContains(t, got, "db: Database", "should contain simple node")
 	})
 
 	t.Run("AddNodeWithShape", func(t *testing.T) {
@@ -194,8 +197,8 @@ func TestD2Diagram_AddNode(t *testing.T) {
 			t.Fatalf("Render() error = %v", err)
 		}
 
-		assertContains(t, got, "cache: Cache {", "should use block syntax for shaped node")
-		assertContains(t, got, "shape: circle", "should contain shape attribute")
+		testhelpers.AssertContains(t, got, "cache: Cache {", "should use block syntax for shaped node")
+		testhelpers.AssertContains(t, got, "shape: circle", "should contain shape attribute")
 	})
 }
 
@@ -208,8 +211,8 @@ func TestD2Diagram_AddEdge(t *testing.T) {
 		d := NewD2Diagram()
 
 		result := d.AddEdge(D2Edge{ //nolint:exhaustruct // Test uses minimal required fields
-			From: NewBrandedID[D2NodeIDBrand]("a"),
-			To:   NewBrandedID[D2NodeIDBrand]("b"),
+			From: output.NewBrandedID[output.D2NodeIDBrand]("a"),
+			To:   output.NewBrandedID[output.D2NodeIDBrand]("b"),
 		})
 		if result != d {
 			t.Error("AddEdge should return diagram for chaining")
@@ -220,7 +223,7 @@ func TestD2Diagram_AddEdge(t *testing.T) {
 			t.Fatalf("Render() error = %v", err)
 		}
 
-		assertContains(t, got, "a -> b", "should contain edge")
+		testhelpers.AssertContains(t, got, "a -> b", "should contain edge")
 	})
 
 	t.Run("AddEdgeSimple", func(t *testing.T) {
@@ -238,7 +241,7 @@ func TestD2Diagram_AddEdge(t *testing.T) {
 			t.Fatalf("Render() error = %v", err)
 		}
 
-		assertContains(t, got, "x -> y", "should contain simple edge")
+		testhelpers.AssertContains(t, got, "x -> y", "should contain simple edge")
 	})
 
 	t.Run("AddLabeledEdge", func(t *testing.T) {
@@ -256,6 +259,6 @@ func TestD2Diagram_AddEdge(t *testing.T) {
 			t.Fatalf("Render() error = %v", err)
 		}
 
-		assertContains(t, got, "src -> dst: connects", "should contain labeled edge")
+		testhelpers.AssertContains(t, got, "src -> dst: connects", "should contain labeled edge")
 	})
 }
