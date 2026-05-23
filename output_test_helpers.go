@@ -145,4 +145,3 @@ func testHTMLEmptyExpected() []ExpectedOutput {
 		"</table>", "Empty table should have closing tag",
 	)
 }
-
