@@ -201,6 +201,15 @@ func TestMermaidTreeRendererNilRoot(t *testing.T) {
 	assertContains(t, out, "flowchart TD", "Nil root should still produce valid flowchart")
 }
 
+func TestMermaidFlowchartRendererNil(t *testing.T) {
+	t.Parallel()
+
+	renderer := MermaidFlowchartRenderer(nil)
+	if renderer == nil {
+		t.Fatal("MermaidFlowchartRenderer(nil) should return non-nil renderer")
+	}
+}
+
 func TestMermaidTreeRendererWithEmptyID(t *testing.T) {
 	t.Parallel()
 

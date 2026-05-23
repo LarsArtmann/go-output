@@ -170,3 +170,21 @@ func TestDOTFromTreeWithEmptyID(t *testing.T) {
 	assertContains(t, out, "My_Root", "empty ID should use label slug")
 	assertContains(t, out, "Child_Node", "empty ID should use label slug")
 }
+
+func TestDOTFromTableDataNil(t *testing.T) {
+	t.Parallel()
+
+	renderer := DOTFromTableData(nil)
+	if renderer == nil {
+		t.Fatal("DOTFromTableData(nil) should return non-nil renderer")
+	}
+}
+
+func TestDOTFromTreeNil(t *testing.T) {
+	t.Parallel()
+
+	renderer := DOTFromTree(nil)
+	if renderer == nil {
+		t.Fatal("DOTFromTree(nil) should return non-nil renderer")
+	}
+}
