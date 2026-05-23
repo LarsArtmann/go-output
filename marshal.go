@@ -45,5 +45,6 @@ func brandedValue[Brand any](label id.ID[Brand, string]) string {
 	if label.IsZero() {
 		return ""
 	}
+
 	return label.Get()
 }

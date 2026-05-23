@@ -95,6 +95,7 @@ func testCreateRowEdgesMultiple(t *testing.T) {
 
 func testAssertToMapSliceNil(t *testing.T, data *TableData, desc string) {
 	t.Helper()
+
 	if got := data.ToMapSlice(); got != nil {
 		t.Errorf("ToMapSlice() on %s = %v, want nil", desc, got)
 	}
@@ -102,6 +103,7 @@ func testAssertToMapSliceNil(t *testing.T, data *TableData, desc string) {
 
 func assertMapFields(t *testing.T, got, want map[string]string) {
 	t.Helper()
+
 	for k, v := range want {
 		if got[k] != v {
 			t.Errorf("map[%q] = %q, want %q", k, got[k], v)

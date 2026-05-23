@@ -19,6 +19,7 @@ func testTableData() *TableData {
 
 func assertOutputContainsBoth(t *testing.T, out, a, b, format string) {
 	t.Helper()
+
 	if !strings.Contains(out, a) || !strings.Contains(out, b) {
 		t.Errorf("%s output missing expected content: %q", format, out)
 	}
@@ -105,50 +106,6 @@ func TestRenderTableData_YAML(t *testing.T) {
 	gentest.AssertOutputContains(t, out, "Alice")
 }
 
-func TestRenderTableData_D2(t *testing.T) {
-	var buf bytes.Buffer
-
-	data := testTableData()
-
-	err := RenderTableData(data, FormatD2, RenderOptions{Writer: &buf})
-	if err != nil {
-		t.Fatalf("RenderTableData d2: %v", err)
-	}
-
-	out := buf.String()
-	gentest.AssertOutputContains(t, out, "Alice")
-}
-
-func TestRenderTableData_Mermaid(t *testing.T) {
-	var buf bytes.Buffer
-
-	data := testTableData()
-
-	err := RenderTableData(data, FormatMermaid, RenderOptions{Writer: &buf})
-	if err != nil {
-		t.Fatalf("RenderTableData mermaid: %v", err)
-	}
-
-	out := buf.String()
-	if !strings.Contains(out, "graph") && !strings.Contains(out, "flowchart") {
-		t.Errorf("mermaid output missing graph declaration: %q", out)
-	}
-}
-
-func TestRenderTableData_DOT(t *testing.T) {
-	var buf bytes.Buffer
-
-	data := testTableData()
-
-	err := RenderTableData(data, FormatDOT, RenderOptions{Writer: &buf, GraphID: "test_graph"})
-	if err != nil {
-		t.Fatalf("RenderTableData dot: %v", err)
-	}
-
-	out := buf.String()
-	assertOutputContainsBoth(t, out, "digraph", "test_graph", "dot")
-}
-
 func TestRenderTableData_HTML(t *testing.T) {
 	var buf bytes.Buffer
 
@@ -180,7 +137,7 @@ func TestRenderTableData_Tree(t *testing.T) {
 func TestRenderTableData_UnsupportedFormats(t *testing.T) {
 	data := testTableData()
 
-	for _, f := range []Format{FormatTable, FormatJSON} {
+	for _, f := range []Format{FormatTable, FormatJSON, FormatD2, FormatMermaid, FormatDOT} {
 		var buf bytes.Buffer
 
 		err := RenderTableData(data, f, RenderOptions{Writer: &buf})
