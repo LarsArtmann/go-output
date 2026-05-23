@@ -165,7 +165,9 @@ func (d *D2Diagram) writeClasses(b *strings.Builder) {
 	b.WriteString("classes: {\n")
 
 	for name, style := range d.classes {
-		b.WriteString("  " + escape.D2(name) + ": {\n")
+		b.WriteString("  ")
+		b.WriteString(escape.D2(name))
+		b.WriteString(": {\n")
 		d.writeStyleAttrs(b, style, "    ")
 		b.WriteString("  }\n")
 	}
