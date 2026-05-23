@@ -44,8 +44,8 @@ Use the `Format` enum for runtime format selection — perfect for CLI flags:
 
 ```go
 format, _ := output.ParseFormat("json") // validates input
-fmt.Println(format.IsTableFormat())      // true
-fmt.Println(format.Category())           // table
+fmt.Println(format.Supports(output.ShapeTable)) // true
+fmt.Println(format.Shapes())                     // [table tree graph]
 ```
 
 ## Why go-output?
