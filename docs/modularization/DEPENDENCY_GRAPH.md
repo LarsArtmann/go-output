@@ -17,7 +17,7 @@ Level 2 — Core module
 ━━━━━━━━━━━━━━━━━━━━━
     ┌─────────────────────────────────────────────┐
     │        root (package output)                │
-    │        ~1,400 production LOC                │
+    │        ~2,800 production LOC                │
     │                                             │
     │  External: go-faster/yaml, x/term,          │
     │            go-branded-id                     │
@@ -29,7 +29,7 @@ Level 2 — Core module
     │    BrandedID, SortBy, ColorMode              │
     │  Formatters: JSON, CSV, TSV, Markdown,      │
     │    HTML, YAML, XML, Tree, Streaming          │
-    │  Internal packages: gentest/, testutils/     │
+    │  Internal packages: gentest/                 │
     │  Test helpers: output_test_helpers.go        │
     └──────────────────┬──────────────────────────┘
                        │

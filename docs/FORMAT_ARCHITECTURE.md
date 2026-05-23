@@ -167,7 +167,7 @@ type StreamingRenderer interface {
 ## Implementation Strategy
 
 1. **Shape capability matrix**: `formatCapabilities` map in `format.go` is the single source of truth
-2. **Format Registry**: Opt-in runtime dispatch via `GetRenderer(format Format) (Renderer, error)`
+2. **Format Registry**: Opt-in runtime dispatch via `Create(format Format) (Renderer, error)`
 3. **Adapter Pattern**: Each format implements its specific rendering
 4. **Unified Data Model**: TableData works across all table-capable formats
 5. **Tree-specific Model**: TreeNode for tree-capable formats
