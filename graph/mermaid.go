@@ -78,8 +78,8 @@ func (r *MermaidRenderer) getMermaidShape(shape output.GraphShape) (string, stri
 	}
 }
 
-// MermaidFlowchartRenderer creates a Mermaid flowchart from table data.
-func MermaidFlowchartRenderer(data *output.TableData) *MermaidRenderer {
+// MermaidFromTableData creates a Mermaid flowchart from table data.
+func MermaidFromTableData(data *output.TableData) *MermaidRenderer {
 	renderer := NewMermaidRenderer()
 	if data == nil {
 		return renderer
@@ -93,8 +93,8 @@ func MermaidFlowchartRenderer(data *output.TableData) *MermaidRenderer {
 	return renderer
 }
 
-// MermaidTreeRenderer converts a TreeNode to Mermaid.
-func MermaidTreeRenderer(root *output.TreeNode) *MermaidRenderer {
+// MermaidFromTree converts a TreeNode to Mermaid.
+func MermaidFromTree(root *output.TreeNode) *MermaidRenderer {
 	renderer := NewMermaidRenderer()
 	if root == nil {
 		return renderer
@@ -122,4 +122,18 @@ func (r *MermaidRenderer) addTreeNodes(node *output.TreeNode, parentID string) {
 		mermaidTreeNodeID,
 		output.ShapeBox,
 	)
+}
+
+// MermaidFlowchartRenderer creates a Mermaid flowchart from table data.
+//
+// Deprecated: Use MermaidFromTableData instead.
+func MermaidFlowchartRenderer(data *output.TableData) *MermaidRenderer {
+	return MermaidFromTableData(data)
+}
+
+// MermaidTreeRenderer converts a TreeNode to Mermaid.
+//
+// Deprecated: Use MermaidFromTree instead.
+func MermaidTreeRenderer(root *output.TreeNode) *MermaidRenderer {
+	return MermaidFromTree(root)
 }
