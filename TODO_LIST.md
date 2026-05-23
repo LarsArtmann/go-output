@@ -137,7 +137,13 @@
 - ✅ Error-path tests for markup, xml, streaming, render_tabledata, json, color, markdown, tsv
 - ✅ Root coverage 82.2% → 95.1%
 - ✅ D2 coverage 95.4% → 100%
-- ✅ Graph coverage 94.4% → 95.2%
+- ✅ Graph coverage 94.4% → 97.6%
 - ✅ Integration coverage 75.9% → 82.8%
 - ✅ testhelpers coverage 75% → 93.8%
 - ✅ gentest coverage 0% → 87.5%
+- ✅ escape.DOT deduplicated: DOT now delegates to D2 (fixes missing \t escape)
+- ✅ D2StrokeStyle extracted from D2NodeStyle/D2EdgeStyle (fixes edge style coercion)
+- ✅ MermaidFromTableData/MermaidFromTree added (old names deprecated)
+- ✅ writeChunkWithError merged into writeChunk in streaming.go
+- ✅ SortBy type in root package marked deprecated
+- ✅ graph_tabledata.go extracted from graph.go

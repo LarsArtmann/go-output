@@ -151,7 +151,7 @@ EOF
 | ------------- | -------- | ------ |
 | output (root) | 95.1%    | root   |
 | d2            | 100%     | own    |
-| graph         | 95.2%    | own    |
+| graph         | 97.6%    | own    |
 | enum          | 100%     | own    |
 | escape        | 100%     | own    |
 | sort          | 100%     | own    |
