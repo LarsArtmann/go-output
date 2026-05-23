@@ -45,6 +45,7 @@ func dotTestCases() []escapeTestCase {
 	return []escapeTestCase{
 		{"quotes", `"hi"`, `\"hi\"`},
 		{"newline", "a\nb", `a\nb`},
+		{"tab", "a\tb", `a\tb`},
 		{"backslash", `a\b`, `a\\b`},
 	}
 }
