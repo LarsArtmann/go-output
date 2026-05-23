@@ -350,7 +350,6 @@ linters:
       - _enum\.go$
 formatters:
   enable:
-    - gci
     - goimports
     - gofumpt
     - golines
