@@ -1,0 +1,130 @@
+# Execution Plan — go-output TODO List
+
+**Date:** 2026-05-23
+**Branch:** `modularize/extract-d2-graph`
+**Total tasks:** 40 (split into 68 micro-steps, each ≤12 min)
+**Sorting:** Customer value → Impact → Effort (ascending) → Risk
+
+---
+
+## Execution Table
+
+| Step | TODO# | Task | File(s) | Est. | Value | Impact | Effort |
+|------|-------|------|---------|------|-------|--------|--------|
+| **Batch 1: P0 — Customer-facing breakage (README is WRONG)** |||||||
+| 1.1 | 2 | Fix README Graph Formats section: update DOT/Mermaid imports to `graph.` package | `README.md:175-198` | 8m | 🔴 Critical | Users copy broken code | Trivial |
+| 1.2 | 2 | Fix README D2 Advanced Features section: update to `d2.NewD2Diagram()` + `d2.D2Node` | `README.md:200-215` | 8m | 🔴 Critical | Users copy broken code | Trivial |
+| 1.3 | 2 | Fix README Branded IDs section: D2 examples use `d2.D2NodeIDBrand` not `output.` | `README.md:245-280` | 5m | 🔴 Critical | Users copy broken code | Trivial |
+| 1.4 | 3 | Fix README Installation: add `go get go-output/d2` and `go get go-output/graph` | `README.md:236-244` | 5m | 🔴 Critical | Users can't install | Trivial |
+| 1.5 | 13 | Fix README Supported Formats table: add module annotations for d2/mermaid/dot | `README.md:52-66` | 4m | 🔴 Critical | Users miss sub-modules | Trivial |
+| **Commit:** `fix(readme): update D2/graph code examples and installation for sub-module structure` |||||||
+| **Batch 2: P0 — CI will silently skip 2 modules** |||||||
+| 2.1 | 1 | Add `d2 graph` to all 4 loops in CI: build, test, mod-tidy, govulncheck | `.github/workflows/ci.yml` | 5m | 🔴 Critical | CI passes with broken code | Trivial |
+| **Commit:** `fix(ci): add d2 and graph modules to all workflow loops` |||||||
+| **Batch 3: P0 — Config & changelog** |||||||
+| 3.1 | 4 | Update CONTRIBUTING.md: 8→10 modules, add d2+graph to go.work snippet | `CONTRIBUTING.md` | 4m | 🟠 High | Contributors get wrong setup | Trivial |
+| 3.2 | 5 | Update go.work.example: add `./d2` and `./graph` | `go.work.example` | 2m | 🟠 High | Devs create broken workfile | Trivial |
+| 3.3 | 6 | Add CHANGELOG.md `[Unreleased]` entry for d2/graph extraction | `CHANGELOG.md` | 5m | 🟠 High | No release notes | Small |
+| **Commit:** `docs: update CONTRIBUTING.md, go.work.example, CHANGELOG for 10-module structure` |||||||
+| **Batch 4: P1 — ADR accuracy** |||||||
+| 4.1 | 8 | ADR 002: change `Status: PROPOSED` → `Status: ACCEPTED & IMPLEMENTED` | `docs/adr/002-shape-capability-matrix.md` | 2m | 🟡 Medium | ADR says "proposed" but it's live | Trivial |
+| 4.2 | 7 | ADR 001: update module table 7→10, remove cmdguard, update consequences | `docs/adr/001-multi-module-workspace.md` | 8m | 🟡 Medium | Stale ADR misleads | Small |
+| 4.3 | 9 | Write ADR 003: d2/graph extraction decision | `docs/adr/003-d2-graph-extraction.md` | 10m | 🟡 Medium | Missing architectural record | Small |
+| **Commit:** `docs(adr): update ADR 001/002, add ADR 003 for d2/graph extraction` |||||||
+| **Batch 5: P1 — Remaining doc fixes** |||||||
+| 5.1 | 10 | Fix DEPENDENCY_GRAPH.md: root LOC ~1400→actual, remove testutils reference | `docs/modularization/DEPENDENCY_GRAPH.md` | 5m | 🟢 Low | Accuracy | Trivial |
+| 5.2 | 12 | Fix FORMAT_ARCHITECTURE.md: `GetRenderer` → `Create` | `docs/FORMAT_ARCHITECTURE.md` | 3m | 🟢 Low | Accuracy | Trivial |
+| 5.3 | 11 | Populate DOMAIN_LANGUAGE.md with real terms (TableData, Renderer, Format, Shape, GraphNode, BrandedID) | `docs/DOMAIN_LANGUAGE.md` | 10m | 🟢 Low | Onboarding | Small |
+| **Commit:** `docs: fix DEPENDENCY_GRAPH LOC, FORMAT_ARCHITECTURE API ref, populate DOMAIN_LANGUAGE` |||||||
+| **Batch 6: P4 — Build/Config hygiene** |||||||
+| 6.1 | 23 | Add d2+graph to depguard allow-lists in `.golangci.yml` (default + examples rules) | `.golangci.yml:121-192` | 5m | 🟠 High | Lint might block future imports | Trivial |
+| 6.2 | 24a | Investigate pre-commit hook failures: run hooks, categorize issues | `.pre-commit-config.yaml` | 8m | 🟠 High | Can't commit without --no-verify | Small |
+| 6.3 | 24b | Fix or disable `go-structure-linter` and `todo-check` hooks | `.pre-commit-config.yaml` | 10m | 🟠 High | Dev experience | Medium |
+| 6.4 | 25 | Verify `go mod tidy` idempotent across all 10 modules | all `go.mod` | 5m | 🟢 Low | Build hygiene | Trivial |
+| 6.5 | 26 | Check flake.nix for d2/graph inclusion in devShell | `flake.nix` | 5m | 🟢 Low | Nix users | Trivial |
+| **Commit (6.1):** `fix(lint): add d2/graph to depguard allow-lists` | |||||||
+| **Commit (6.2-6.3):** `fix(hooks): fix or disable broken pre-commit hooks` | |||||||
+| **Commit (6.4-6.5):** `chore: verify mod tidy idempotency and flake.nix coverage` | |||||||
+| **Batch 7: P2 — Test coverage (root)** |||||||
+| 7.1 | 14a | Analyze root coverage gap: identify which functions in `internal/gentest` lack tests | `internal/gentest/` | 5m | 🟡 Medium | 82.2% < 90% target | Trivial |
+| 7.2 | 14b | Add tests for `internal/gentest` (ExpectedOutput, AssertHTMLEscape, AssertMarshalError) | `internal/gentest/` | 10m | 🟡 Medium | Coverage target | Small |
+| 7.3 | 14c | Verify root coverage ≥90% after fix | root module | 3m | 🟡 Medium | Verification | Trivial |
+| **Commit:** `test: add coverage for internal/gentest to reach 90% root coverage target` |||||||
+| **Batch 8: P2 — Test coverage (testhelpers)** |||||||
+| 8.1 | 15a | Analyze testhelpers coverage gap: which functions lack coverage | `testhelpers/` | 5m | 🟡 Medium | 75% < 90% target | Trivial |
+| 8.2 | 15b | Add tests for uncovered testhelpers assertions | `testhelpers/` | 8m | 🟡 Medium | Coverage target | Small |
+| 8.3 | 15c | Verify testhelpers coverage ≥90% | testhelpers module | 2m | 🟡 Medium | Verification | Trivial |
+| **Commit:** `test(testhelpers): add tests to reach 90% coverage target` |||||||
+| **Batch 9: P2 — Benchmarks & fuzz** |||||||
+| 9.1 | 16 | Add D2 benchmark tests (diagram rendering) | `d2/bench_test.go` | 8m | 🟡 Medium | Perf regression detection | Small |
+| 9.2 | 17a | Add fuzz tests for d2 renderers | `d2/fuzz_test.go` | 8m | 🟢 Low | Robustness | Small |
+| 9.3 | 17b | Add fuzz tests for graph renderers | `graph/fuzz_test.go` | 8m | 🟢 Low | Robustness | Small |
+| **Commit (9.1):** `test(d2): add benchmark tests for diagram rendering` | |||||||
+| **Commit (9.2-9.3):** `test(d2,graph): add fuzz tests for renderers` | |||||||
+| **Batch 10: P3 — Architecture cleanup** |||||||
+| 10.1 | 19 | Add consistent re-export: graph module re-exports GraphNodeID/GraphNodeLabel like d2 does | `graph/graph.go` (new) | 5m | 🟢 Low | API consistency | Trivial |
+| 10.2 | 18a | Extract TableData-related methods from graph.go into graph_tabledata.go | `graph_tabledata.go` (new) | 10m | 🟡 Medium | Separation of concerns | Small |
+| 10.3 | 18b | Verify all tests pass after graph.go split | root module | 3m | 🟡 Medium | Verification | Trivial |
+| 10.4 | 22 | Document registry + sub-module pattern in AGENTS.md Common Tasks | `AGENTS.md` | 5m | 🟢 Low | DX | Trivial |
+| **Commit (10.1):** `refactor(graph): add GraphNodeID/GraphNodeLabel re-exports for consistency with d2` | |||||||
+| **Commit (10.2-10.3):** `refactor: extract TableData methods from graph.go into graph_tabledata.go` | |||||||
+| **Commit (10.4):** `docs(AGENTS): add registry + sub-module usage pattern` | |||||||
+| **Batch 11: P3 — Test helper architecture (requires decision)** |||||||
+| 11.0 | 20 | ⚠️ DECISION NEEDED: migrate `internal/gentest` → `testhelpers/gentest`? | — | 0m | 🟡 Medium | Sub-module reuse | — |
+| 11.1 | 21a | If YES: create `testhelpers/gentest/` with moved code | `testhelpers/gentest/` | 8m | 🟡 Medium | DRY | Small |
+| 11.2 | 21b | If YES: update root + sub-module imports to use new location | root, d2, graph | 5m | 🟡 Medium | Wiring | Trivial |
+| 11.3 | 21c | If NO: document decision in ADR or AGENTS.md | `AGENTS.md` | 3m | 🟢 Low | Record | Trivial |
+| **Commit:** depends on decision | |||||||
+| **Batch 12: P5 — Polish** |||||||
+| 12.1 | 27a | Add doc comments to `graph/dot.go` exported functions | `graph/dot.go` | 5m | 🟢 Low | Godoc quality | Trivial |
+| 12.2 | 27b | Add doc comments to `graph/mermaid.go` exported functions | `graph/mermaid.go` | 5m | 🟢 Low | Godoc quality | Trivial |
+| 12.3 | 28 | Add API stability section to README (pre-v1 guarantees) | `README.md` | 5m | 🟢 Low | User expectations | Trivial |
+| 12.4 | 29a | Add `ExampleDOTFromTableData` + `ExampleMermaidFlowchartRenderer` test funcs | `graph/example_test.go` | 8m | 🟢 Low | Godoc discoverability | Small |
+| 12.5 | 29b | Add `ExampleNewD2Diagram` + `ExampleD2FromTableData` test funcs | `d2/example_test.go` | 8m | 🟢 Low | Godoc discoverability | Small |
+| 12.6 | 30 | Delete stale docs/status/ reports (keep latest 2) | `docs/status/` | 3m | 🟢 Low | Cleanliness | Trivial |
+| **Commit (12.1-12.2):** `docs(graph): add godoc comments to public API` | |||||||
+| **Commit (12.3):** `docs(readme): add API stability section` | |||||||
+| **Commit (12.4-12.5):** `docs(d2,graph): add Example test functions for godoc` | |||||||
+| **Commit (12.6):** `chore: prune stale status reports` | |||||||
+| **Batch 13: P6 — Future (can defer to next iteration)** |||||||
+| 13.1 | 31 | Tag next release: update CHANGELOG, `git tag v0.5.0` | `CHANGELOG.md` | 5m | 🟡 Medium | Release | Trivial |
+| 13.2 | 32 | Remove deprecated FormatCategory code | `format_deprecated.go` | 5m | 🟢 Low | Cleanup | Trivial |
+| 13.3 | 33 | Remove deprecated OutputFormat aliases | `format_deprecated.go` | 5m | 🟢 Low | Cleanup | Trivial |
+| 13.4 | 39 | Pre-v1 API stability audit | all exported symbols | 12m | 🟡 Medium | Stability | Medium |
+| 13.5 | 34 | ADR 002 Phase 2: shape-specific renderer constructors | `docs/adr/002`, new files | 12m | 🟢 Low | DX | Medium |
+| 13.6 | 35 | Add TOML format (new module `toml/`) | `toml/` | 12m | 🟢 Low | New feature | Medium |
+| 13.7 | 36 | Add JSONL format (new renderer) | root or new module | 12m | 🟢 Low | New feature | Medium |
+| 13.8 | 37 | Add PlantUML format (new module `plantuml/`) | `plantuml/` | 12m | 🟢 Low | New feature | Medium |
+| 13.9 | 38 | Add AsciiDoc format (new renderer) | root or new module | 12m | 🟢 Low | New feature | Medium |
+| 13.10 | 40 | Community: post to r/golang, submit to Awesome Go | — | 12m | 🟢 Low | Adoption | Low |
+
+---
+
+## Summary by Batch
+
+| Batch | Theme | Steps | Total Est. | Commits | Blocking? |
+|-------|-------|-------|------------|---------|-----------|
+| 1 | README breakage fix | 5 | 30 min | 1 | ✅ Yes |
+| 2 | CI fix | 1 | 5 min | 1 | ✅ Yes |
+| 3 | Config & changelog | 3 | 11 min | 1 | ✅ Yes |
+| 4 | ADR accuracy | 3 | 20 min | 1 | No |
+| 5 | Doc fixes | 3 | 18 min | 1 | No |
+| 6 | Build/config hygiene | 5 | 33 min | 3 | No |
+| 7 | Root coverage | 3 | 18 min | 1 | No |
+| 8 | testhelpers coverage | 3 | 15 min | 1 | No |
+| 9 | Benchmarks & fuzz | 3 | 24 min | 2 | No |
+| 10 | Architecture cleanup | 4 | 23 min | 3 | No |
+| 11 | Test helper arch | 3 | 16 min | 1 | ❓ Decision |
+| 12 | Polish | 6 | 34 min | 4 | No |
+| 13 | Future | 10 | 100 min | N/A | No |
+| **Total** | | **52** | **~5.5 hrs** | **21** | |
+
+## Execution Order Rationale
+
+1. **Batches 1-3 first** — Customer-facing breakage. README has wrong API (`output.NewD2Renderer` doesn't exist), CI skips 2 modules. These block merge.
+2. **Batches 4-5** — Documentation accuracy. Stale ADRs mislead future decisions.
+3. **Batch 6** — Build hygiene. Depguard + hooks prevent clean commits.
+4. **Batches 7-9** — Test quality. Meets project's own standards.
+5. **Batches 10-11** — Architecture. Separation of concerns. Decision needed on #20.
+6. **Batch 12** — Polish. Nice-to-have improvements.
+7. **Batch 13** — Future. Entirely deferrable to next iteration.
