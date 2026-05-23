@@ -1,8 +1,9 @@
 package graph
 
 import (
-	"github.com/larsartmann/go-output"
 	"testing"
+
+	"github.com/larsartmann/go-output"
 )
 
 //nolint:exhaustruct // Test files use partial struct initialization

@@ -6,8 +6,8 @@ import (
 	"testing"
 
 	"github.com/larsartmann/go-output"
-	"github.com/larsartmann/go-output/graph"
 	"github.com/larsartmann/go-output/d2"
+	"github.com/larsartmann/go-output/graph"
 	"github.com/larsartmann/go-output/testhelpers"
 )
 

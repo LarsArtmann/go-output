@@ -285,6 +285,6 @@ func renderMermaid(projects []Project) {
 
 func renderDOT(projects []Project) {
 	renderDiagram(projects, func(data *output.TableData) output.Renderer {
-				return graph.DOTFromTableData(data)
+		return graph.DOTFromTableData(data)
 	})
 }

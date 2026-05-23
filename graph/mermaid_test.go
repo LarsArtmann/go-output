@@ -1,10 +1,10 @@
 package graph
 
 import (
-	"github.com/larsartmann/go-output"
 	"strings"
 	"testing"
 
+	"github.com/larsartmann/go-output"
 	"github.com/larsartmann/go-output/escape"
 )
 
@@ -33,7 +33,9 @@ func TestMermaidRendererWithDiamond(t *testing.T) {
 	t.Parallel()
 
 	renderer := NewMermaidRenderer()
-	renderer.SetNodes([]output.GraphNode{newTestNodeWithShape("decision", "Decision", output.ShapeDiamond)})
+	renderer.SetNodes(
+		[]output.GraphNode{newTestNodeWithShape("decision", "Decision", output.ShapeDiamond)},
+	)
 	renderer.SetEdges([]output.GraphEdge{})
 
 	out, err := renderer.Render()

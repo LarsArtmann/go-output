@@ -1,10 +1,10 @@
 package graph
 
 import (
-	"github.com/larsartmann/go-output"
 	"strings"
 	"testing"
 
+	"github.com/larsartmann/go-output"
 	"github.com/larsartmann/go-output/testhelpers"
 )
 
@@ -74,7 +74,12 @@ func TestGraphShapeString(t *testing.T) {
 		{output.ShapeCircle, "circle"},
 	}
 
-	testEnumString(t, "output.GraphShape.String", tests, func(s output.GraphShape) string { return s.String() })
+	testEnumString(
+		t,
+		"output.GraphShape.String",
+		tests,
+		func(s output.GraphShape) string { return s.String() },
+	)
 }
 
 func TestGraphShapeAllowedValues(t *testing.T) {
@@ -147,7 +152,12 @@ func TestGraphNodeStyle(t *testing.T) {
 	t.Parallel()
 
 	node := &output.GraphNode{
-		Style: output.GraphStyle{FillColor: "red", StrokeColor: "blue", FontColor: "green", FontSize: 14},
+		Style: output.GraphStyle{
+			FillColor:   "red",
+			StrokeColor: "blue",
+			FontColor:   "green",
+			FontSize:    14,
+		},
 	}
 
 	testGraphStyleFields(t, node.Style, 14)
