@@ -250,6 +250,15 @@ func BenchmarkMarshalJSON(b *testing.B) {
 	}
 }
 
+func TestMarshalJSONIndentError(t *testing.T) {
+	t.Parallel()
+
+	_, err := MarshalJSONIndent(make(chan int), "", "  ")
+	if err == nil {
+		t.Fatal("expected error for unmarshalable type")
+	}
+}
+
 func BenchmarkMarshalJSONIndent(b *testing.B) {
 	data := NewBenchmarkData()
 

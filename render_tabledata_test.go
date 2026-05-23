@@ -226,3 +226,69 @@ func TestMarshalTSVFromTableData_Nil(t *testing.T) {
 		t.Errorf("expected nil for nil data, got %q", string(b))
 	}
 }
+
+func TestRenderTableData_CSVWriterError(t *testing.T) {
+	data := testTableData()
+
+	err := RenderTableData(data, FormatCSV, RenderOptions{Writer: &errorWriter{}})
+	if err == nil {
+		t.Fatal("expected error from errorWriter")
+	}
+}
+
+func TestRenderTableData_TSVWriterError(t *testing.T) {
+	data := testTableData()
+
+	err := RenderTableData(data, FormatTSV, RenderOptions{Writer: &errorWriter{}})
+	if err == nil {
+		t.Fatal("expected error from errorWriter")
+	}
+}
+
+func TestRenderTableData_XMLWriterError(t *testing.T) {
+	data := testTableData()
+
+	err := RenderTableData(data, FormatXML, RenderOptions{Writer: &errorWriter{}})
+	if err == nil {
+		t.Fatal("expected error from errorWriter")
+	}
+}
+
+func TestRenderTableData_YAMLWriterError(t *testing.T) {
+	data := testTableData()
+
+	err := RenderTableData(data, FormatYAML, RenderOptions{Writer: &errorWriter{}})
+	if err == nil {
+		t.Fatal("expected error from errorWriter")
+	}
+}
+
+func TestRenderTableData_MarkdownWriterError(t *testing.T) {
+	data := testTableData()
+
+	err := RenderTableData(data, FormatMarkdown, RenderOptions{
+		Writer: &errorWriter{},
+		Title:  "Test",
+	})
+	if err == nil {
+		t.Fatal("expected error from errorWriter")
+	}
+}
+
+func TestRenderTableData_HTMLWriterError(t *testing.T) {
+	data := testTableData()
+
+	err := RenderTableData(data, FormatHTML, RenderOptions{Writer: &errorWriter{}})
+	if err == nil {
+		t.Fatal("expected error from errorWriter")
+	}
+}
+
+func TestRenderTableData_TreeWriterError(t *testing.T) {
+	data := testTableData()
+
+	err := RenderTableData(data, FormatTree, RenderOptions{Writer: &errorWriter{}})
+	if err == nil {
+		t.Fatal("expected error from errorWriter")
+	}
+}

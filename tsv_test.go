@@ -1,6 +1,7 @@
 package output
 
 import (
+	"errors"
 	"io"
 	"strings"
 	"testing"
@@ -68,6 +69,30 @@ func TestMarshalTSV(t *testing.T) {
 	tsv := string(result)
 	assertContains(t, tsv, "Alpha", "TSV should contain Alpha")
 	assertContains(t, tsv, "\t", "TSV should use tabs")
+}
+
+func TestMarshalTSVSingleRow(t *testing.T) {
+	t.Parallel()
+
+	result, err := MarshalTSV([]string{"A", "B", "C"})
+	if err != nil {
+		t.Fatalf("MarshalTSV() error = %v", err)
+	}
+
+	assertContains(t, string(result), "A\tB\tC", "should marshal single row")
+}
+
+func TestMarshalTSVUnsupportedType(t *testing.T) {
+	t.Parallel()
+
+	_, err := MarshalTSV(42)
+	if err == nil {
+		t.Fatal("expected error for unsupported type")
+	}
+
+	if !errors.Is(err, ErrUnsupportedType) {
+		t.Errorf("error = %v, want ErrUnsupportedType", err)
+	}
 }
 
 func BenchmarkTSVWriter(b *testing.B) {

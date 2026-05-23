@@ -64,8 +64,10 @@ examples      → root, table, d2, graph
 
 ```
 go-output/                    # Root module (package output) — types, interfaces, formatters
-├── format.go                 # Format enum, Shape enum, capability matrix, Renderer/TableRenderer interfaces
-├── format_deprecated.go      # FormatCategory/OutputFormat backward compat (deprecated)
+├── format.go                 # Format enum, ParseFormat, InvalidFormatError, AllFormats
+├── shape.go                  # Shape enum, capability matrix, Supports/Shapes/FormatsForShape
+├── renderer.go               # Renderer, MustRender, TableRenderer interfaces
+├── format_deprecated.go       # FormatCategory/OutputFormat/IsTableFormat/IsTreeFormat/IsGraphFormat (deprecated)
 ├── sort.go                   # SortBy enum
 ├── color.go                  # ColorMode enum + terminal detection
 ├── ids.go                    # BrandedID phantom types
@@ -147,14 +149,16 @@ EOF
 
 | Package       | Coverage | Module |
 | ------------- | -------- | ------ |
-| output (root) | 88.7%    | root   |
-| d2            | 95.4%    | own    |
-| graph         | 94.4%    | own    |
+| output (root) | 92.2%    | root   |
+| d2            | 100%     | own    |
+| graph         | 95.2%    | own    |
 | enum          | 100%     | own    |
 | escape        | 100%     | own    |
 | sort          | 100%     | own    |
 | table         | 100%     | own    |
 | testhelpers   | 93.8%    | own    |
+| integration   | 82.8%    | own    |
+| gentest       | 87.5%    | root   |
 
 ## Testing
 
@@ -235,6 +239,7 @@ import "github.com/larsartmann/go-output/table"            // Lipgloss tables (o
 - sort/ is **deprecated** — `Sorter[T]` deleted, only `ByField` helper remains (zero deps). Use `slices.SortStableFunc` + `cmp.Compare` (stdlib)
 - Multi-module workspace with 10 independent modules (see ADR 001)
 - Shape capability matrix (ADR 002) replaces FormatCategory — deprecated methods redirect to `Supports(Shape)`
+- `format.go` split into focused files: `format.go` (Format enum), `shape.go` (Shape + capability matrix), `renderer.go` (Renderer/TableRenderer interfaces), `format_deprecated.go` (all deprecated FormatCategory/IsTableFormat/etc)
 - `render_tabledata.go` returns `UnsupportedFormatError` for D2/DOT/Mermaid (these live in separate modules)
 - `internal/gentest` and `internal/testutils` are root-only — sub-modules must inline helpers or create their own. Decision rationale: exposing test helpers publicly via `testhelpers/gentest` would freeze internal testing APIs; each module having its own test helpers allows independent evolution
 - Nix flake uses `flake-parts` + `treefmt-nix` + `git-hooks.nix` — no `gomod2nix` (library, 10 modules, no binary)

@@ -202,7 +202,10 @@ func TestD2Constraint(t *testing.T) {
 		t.Parallel()
 
 		if D2ConstraintPrimary.String() != "primary_key" {
-			t.Errorf("D2ConstraintPrimary.String() = %q, want %q", D2ConstraintPrimary.String(), "primary_key")
+			t.Errorf(
+				"D2ConstraintPrimary.String() = %q, want %q",
+				D2ConstraintPrimary.String(), "primary_key",
+			)
 		}
 	})
 

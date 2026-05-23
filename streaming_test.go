@@ -213,3 +213,61 @@ func TestStreamingHTMLRendererMultipleRows(t *testing.T) {
 		}
 	}
 }
+
+func TestStreamingHTMLRendererStreamError(t *testing.T) {
+	t.Parallel()
+
+	r := NewStreamingHTMLRenderer()
+	r.SetHeaders([]string{"A"})
+	r.AddRow([]string{"1"})
+
+	err := r.Stream(&errorWriter{})
+	if err == nil {
+		t.Fatal("expected error from errorWriter")
+	}
+}
+
+func TestStreamingRendererFromRendererError(t *testing.T) {
+	t.Parallel()
+
+	original := &errorRenderer{}
+	adapter := StreamingRendererFromRenderer(original)
+
+	_, err := adapter.Render()
+	if err == nil {
+		t.Fatal("expected error from failing renderer")
+	}
+
+	assertContains(t, err.Error(), "adapter render", "error should mention adapter render")
+}
+
+func TestStreamingRendererFromRendererStreamError(t *testing.T) {
+	t.Parallel()
+
+	original := &testRenderer{output: "test"}
+	adapter := StreamingRendererFromRenderer(original)
+
+	err := adapter.Stream(&errorWriter{})
+	if err == nil {
+		t.Fatal("expected error from errorWriter")
+	}
+
+	assertContains(t, err.Error(), "stream render output", "error should mention stream")
+}
+
+func TestStreamingRendererFromRendererStreamRenderError(t *testing.T) {
+	t.Parallel()
+
+	original := &errorRenderer{}
+	adapter := StreamingRendererFromRenderer(original)
+
+	err := adapter.Stream(&strings.Builder{})
+	if err == nil {
+		t.Fatal("expected error from failing renderer")
+	}
+
+	assertContains(
+		t, err.Error(),
+		"render for streaming", "error should mention render for streaming",
+	)
+}

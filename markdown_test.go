@@ -187,3 +187,20 @@ func TestNewMarkdownTableFromDataEmpty(t *testing.T) {
 		t.Errorf("FromData with empty data should render empty, got %q", got)
 	}
 }
+
+func TestMarkdownTableGetAlignmentOutOfBounds(t *testing.T) {
+	t.Parallel()
+
+	m := NewMarkdownTable()
+	m.SetHeaders([]string{"A", "B", "C"}).SetAlign(0, AlignRight)
+	m.AddRow([]string{"x", "y", "z"})
+
+	got, err := m.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
+	assertContains(t, got, "x", "should contain cell x")
+	assertContains(t, got, "y", "should contain cell y")
+	assertContains(t, got, "z", "should contain cell z")
+}

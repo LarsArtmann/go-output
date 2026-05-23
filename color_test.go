@@ -132,3 +132,20 @@ func TestColorModeShouldColor(t *testing.T) {
 	// Auto mode depends on environment
 	_ = ColorModeAuto.ShouldColor() // Just ensure it doesn't panic
 }
+
+func TestColorModeShouldColorDefault(t *testing.T) {
+	t.Parallel()
+
+	cm := ColorMode("unknown")
+	if cm.ShouldColor() {
+		t.Error("unknown ColorMode.ShouldColor() should return false")
+	}
+}
+
+func TestIsStdoutTerminalWithForceColor(t *testing.T) {
+	t.Setenv("GO_OUTPUT_FORCE_COLOR", "1")
+
+	if !isStdoutTerminal() {
+		t.Error("isStdoutTerminal() should return true with GO_OUTPUT_FORCE_COLOR=1")
+	}
+}
