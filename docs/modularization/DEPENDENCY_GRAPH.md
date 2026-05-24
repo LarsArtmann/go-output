@@ -1,17 +1,17 @@
 # Dependency Graph — go-output
 
-**Date:** 2026-05-23
+**Date:** 2026-05-25
 
 ## Current Dependency Graph
 
 ```
 Level 0 — Leaf modules (zero internal deps)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    ┌──────────┐  ┌──────────┐  ┌──────────────┐  ┌──────────┐
-    │  enum/    │  │ escape/   │  │ testhelpers/ │  │  sort/    │
-    │ 64 LOC    │  │ 76 LOC    │  │ shared tests │  │deprecated│
-    │ zero deps │  │ zero deps │  │  zero deps   │  │ zero deps│
-    └──────────┘  └──────────┘  └──────────────┘  └──────────┘
+    ┌──────────┐  ┌──────────┐  ┌──────────────┐
+    │  enum/    │  │ escape/   │  │ testhelpers/ │
+    │ 64 LOC    │  │ 76 LOC    │  │ shared tests │
+    │ zero deps │  │ zero deps │  │  zero deps   │
+    └──────────┘  └──────────┘  └──────────────┘
 
 Level 2 — Core module
 ━━━━━━━━━━━━━━━━━━━━━
@@ -63,7 +63,6 @@ Level 5 — Consumers
 | **d2**          | —    | ✅     | ✅   | —   | —     | —     | —        |
 | **graph**       | —    | ✅     | ✅   | —   | —     | —     | —        |
 | **table**       | —    | —      | ✅   | —   | —     | —     | ✅       |
-| **sort**        | —    | —      | —    | —   | —     | —     | —        |
 | **integration** | —    | —      | ✅   | ✅  | ✅    | ✅    | —        |
 | **examples**    | —    | —      | ✅   | ✅  | ✅    | ✅    | —        |
 
@@ -92,5 +91,5 @@ No module appears on both sides of `<` in any chain. Therefore the graph is a DA
 1. **Root has ZERO imports from sub-modules** — verified by `go mod graph`
 2. **`go get github.com/larsartmann/go-output`** pulls only root + enum + escape + yaml + x/term + branded-id — zero lipgloss, zero d2, zero graph
 3. **Each format module is independently versionable** — d2, graph, table can evolve at their own pace
-4. **sort/ is deprecated** — zero deps, only `ByField` helper remains
+4. **sort/ is deleted** — was deprecated, now fully removed. Use `slices.SortStableFunc` + `cmp.Compare` from stdlib
 5. **testhelpers/ is shared** — zero deps, used by d2, graph, and root for test assertions

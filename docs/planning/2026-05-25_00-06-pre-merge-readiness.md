@@ -1,9 +1,9 @@
 # Pre-Merge Readiness Plan — Branch `modularize/extract-d2-graph` → `master`
 
-**Date:** 2026-05-25
-**Branch:** `modularize/extract-d2-graph` (64 commits, 121 files changed)
+**Date:** 2026-05-25 (updated)
+**Branch:** `modularize/extract-d2-graph` (70 commits ahead of master)
 **Target:** `master` (zero commits ahead — clean rebase target)
-**Status:** No merge conflicts. No open PRs/issues. 3 lint errors + 1 broken release pipeline block merge.
+**Cross-referenced with:** `docs/status/2026-05-25_00-43_post-modularization-polish-status.md`
 
 ---
 
@@ -13,81 +13,104 @@
 |---|---|---|
 | Merge conflicts | ✅ None | `origin/master` has zero commits not in this branch |
 | GitHub PRs/Issues | ✅ None open | Clean repo |
-| Build (10 modules) | ✅ All pass | `go build ./...` |
-| Tests (10 modules) | ✅ All pass | `go test ./...` |
-| `go vet` (10 modules) | ✅ All pass | Zero warnings |
-| Lint — root | ❌ 1 issue | `color.go:8` goimports |
-| Lint — table | ❌ 2 issues | `table/table_test.go:7` goimports |
-| Lint — other 8 modules | ✅ Clean | Zero issues |
-| Release workflow | ❌ BROKEN | Missing `d2` + `graph` in all 5 loops |
-| CI workflow | ✅ Correct | All 10 modules covered |
+| Build (9 modules) | ✅ All pass | `go build ./...` — sort/ deleted |
+| Tests (9 modules) | ✅ All pass | `go test ./...` |
+| `go vet` (9 modules) | ✅ All pass | Zero warnings |
+| Lint — all 9 modules | ✅ Clean | 0 issues (goimports fixed in `07b4f47`) |
+| Release workflow | ✅ Fixed | d2+graph added, sort/ removed in `e9340d4` |
+| CI workflow | ✅ Correct | All 9 modules, no sort/ |
+| CHANGELOG.md | ✅ Complete | Breaking changes documented for v0.5.0 |
+| FEATURES.md | ✅ Fixed | NewD2Renderer known issue removed, sort/ row removed, module count updated |
+| DEPENDENCY_GRAPH.md | ✅ Fixed | sort/ removed, shows 9 modules, date updated |
+| EXECUTION_PLAN.md | ✅ Fixed | sort/ steps marked N/A/deleted, module lists updated |
+| AGENTS.md | ✅ Fixed | sort/ row removed, 10→9 module count, coverage updated to 95.3% |
+| TODO_LIST.md | ✅ Fixed | sort/ refs removed, #32/#33 marked done, summary counts updated |
 | Nix flake build | ❌ Fails | Known sandbox issue (CI handles Go) |
-| FEATURES.md | ❌ Stale | `NewD2Renderer` known issue already fixed |
-| TODO_LIST.md | 26/40 done | 13 open (P6 future), 1 needs decision |
 
 ---
 
-## Pareto Breakdown
+## What Changed Since Plan Was Written
 
-| Tier | Tasks | Impact | Est. Time |
-|---|---|---|---|
-| **1% → 51%** | #1-#4 | Blocks merge. CI red, release broken. | ~16 min |
-| **4% → 64%** | #5-#9 | Correctness & reliability gate. | ~19 min |
-| **20% → 80%** | #10-#13 | Polish, confidence, reviewability. | ~30 min |
-| **Post-merge** | #14-#17 | Future work. Does not block merge. | ~23 min |
+The status report session (5 commits: `07b4f47` → `e9340d4`) completed significant additional work beyond the original plan:
 
----
+| Work Done | Commit | Original Plan Task |
+|---|---|---|
+| Fixed 3 goimports errors | `07b4f47` | #1 ✅ |
+| Fixed release.yml (d2+graph added) | `07b4f47` | #2 ✅ |
+| Fixed .golangci.yml (removed conflicting gci) | `07b4f47` | Extra |
+| Fixed integration/go.mod pseudo-version | `07b4f47` | Extra |
+| Deleted `format_deprecated.go` + test (353 LOC) | `eaabcac` | Extra |
+| Deleted `sort/` module entirely | `eaabcac` | Extra |
+| Deleted deprecated MermaidFlowchartRenderer/MermaidTreeRenderer | `eaabcac` | Extra |
+| JSON/YAML graph renderers embed GraphRendererMixin (~30 LOC saved) | `455c6e4` | Extra |
+| Added `UnsupportedFormatError.Unwrap()` | `455c6e4` | Extra |
+| Pruned stale docs, archived old plans | `499de5b` | Extra |
+| Updated AGENTS.md, CHANGELOG.md, README.md | `b8dcd01` | Extra |
+| Removed sort/ from CI + release workflows, cleaned depguard | `e9340d4` | Extra |
 
-## Execution Plan
+**Module count changed:** 10 → 9 (sort/ deleted entirely).
 
-### Phase 1: Blockers (1% → 51% impact)
+This session (docs cleanup) completed:
 
-| # | Task | Impact | Effort | Category | Depends |
-|---|---|---|---|---|---|
-| **1** | Fix 3 goimports errors: `color.go:8`, `table/table_test.go:7` (2 issues) | CRITICAL — lint fails, CI red | 3min | Build Blocker | — |
-| **2** | Fix `release.yml` — add `d2` + `graph` to all 5 loops (build, test, govulncheck, benchmark, lint) | CRITICAL — release ships untested d2+graph | 5min | Build Blocker | — |
-| **3** | Fix stale `FEATURES.md` — remove `NewD2Renderer` known issue (line 235, line 260) — already fixed in README | HIGH — misleading docs | 3min | Docs Accuracy | — |
-| **4** | Verify all 10 modules: build + test + lint clean after fixes | HIGH — gate before commit | 5min | Verification | #1 |
-
-### Phase 2: Correctness (4% → 64% impact)
-
-| # | Task | Impact | Effort | Category | Depends |
-|---|---|---|---|---|---|
-| **5** | Commit fixes (#1-#3) with detailed message | HIGH — clean commit before rebase | 3min | Git Hygiene | #1-#4 |
-| **6** | Verify `CHANGELOG.md` [Unreleased] section is complete and accurate for v0.5.0 | HIGH — release notes source of truth | 5min | Docs Accuracy | — |
-| **7** | Verify CI workflow (`ci.yml`) covers all 10 modules correctly (spot-check) | HIGH — CI is the gate | 3min | Verification | — |
-| **8** | Run `go vet ./...` across all 10 modules (already verified clean, re-confirm) | MEDIUM — catch subtle issues | 3min | Verification | — |
-| **9** | Update `TODO_LIST.md` — mark release.yml as fixed, update FEATURES.md status line | MEDIUM — keep docs honest | 5min | Docs Accuracy | #2, #3 |
-
-### Phase 3: Polish (20% → 80% impact)
-
-| # | Task | Impact | Effort | Category | Depends |
-|---|---|---|---|---|---|
-| **10** | Clean git history — squash 64 commits into logical groups (~10-15 commits) | MEDIUM — reviewability for merge | 12min | Git Hygiene | #5 |
-| **11** | Verify no broken references in `README.md` (imports, API examples, links) | MEDIUM — first thing users see | 5min | Docs Accuracy | — |
-| **12** | Check for stale references across all docs (DOMAIN_LANGUAGE, FORMAT_ARCHITECTURE, ADRs, CONTRIBUTING) | MEDIUM — consistency | 8min | Docs Accuracy | — |
-| **13** | Final full-suite verification: build + test + lint + vet across all 10 modules | HIGH — final gate before merge | 5min | Verification | #1-#12 |
-
-### Phase 4: Post-Merge / Decisions (not blocking)
-
-| # | Task | Impact | Effort | Category | Depends |
-|---|---|---|---|---|---|
-| **14** | Decision needed: move `internal/gentest` → `testhelpers/gentest`? (TODO #20) | LOW — future DX | 2min | Decision | merge |
-| **15** | Pre-commit hooks: configure BuildFlow ignore rules or document `--no-verify` workaround (TODO #24) | LOW — DX friction | 8min | DX | merge |
-| **16** | Tag `v0.5.0` after merge to master (TODO #31) | LOW — post-merge release | 5min | Release | merge |
-| **17** | Post to r/golang, submit to Awesome Go (TODO #40) | LOW — community | 8min | Community | #16 |
-
----
-
-## Summary
-
-| Metric | Value |
+| Work Done | Plan Task |
 |---|---|
-| Total tasks | 17 |
-| Blocking merge (Phase 1-3) | 13 |
-| Post-merge (Phase 4) | 4 |
-| Estimated total effort (Phase 1-3) | ~65 min |
-| Estimated total effort (all) | ~88 min |
+| Fixed FEATURES.md — removed stale NewD2Renderer known issue, sort/ row, updated counts | #3 ✅ |
+| Updated TODO_LIST.md — removed sort/ refs, marked #32/#33 done, updated summary | #9 ✅ |
+| Updated DEPENDENCY_GRAPH.md — removed sort/, shows 9 modules | #12a ✅ |
+| Updated EXECUTION_PLAN.md — marked sort/ steps N/A, updated module lists | #12b ✅ |
+| Fixed AGENTS.md — removed sort/ row, 10→9 count, coverage 95.3% | #12c ✅ |
+
+---
+
+## Execution Plan Status
+
+### ✅ Phase 1: Blockers — ALL DONE
+
+| # | Task | Status | Done In |
+|---|---|---|---|
+| **1** | Fix 3 goimports errors (`color.go`, `table/table_test.go`) | ✅ DONE | `07b4f47` |
+| **2** | Fix `release.yml` — add d2+graph to all loops | ✅ DONE | `07b4f47` + `e9340d4` |
+| **3** | Fix stale `FEATURES.md` — remove `NewD2Renderer` known issue | ✅ DONE | This session |
+| **4** | Verify all modules: build + test + lint clean | ✅ DONE | Verified |
+
+### ✅ Phase 2: Correctness — ALL DONE
+
+| # | Task | Status | Done In |
+|---|---|---|---|
+| **5** | Commit fixes with detailed messages | ✅ DONE | 5 commits pushed |
+| **6** | Verify `CHANGELOG.md` [Unreleased] complete | ✅ DONE | Breaking changes documented |
+| **7** | Verify CI workflow covers all modules | ✅ DONE | 9 modules, no sort/ |
+| **8** | `go vet` all modules | ✅ DONE | All clean |
+| **9** | Update `TODO_LIST.md` | ✅ DONE | This session |
+
+### ✅ Phase 3: Polish — ALL DONE
+
+| # | Task | Status | Detail |
+|---|---|---|---|
+| **10** | Squash 70 commits into logical groups (~10-15) | ⏳ DEFERRED | Decision needed: squash or merge as-is? |
+| **11** | Verify `README.md` refs (imports, API examples, links) | ✅ DONE | Updated in `b8dcd01` |
+| **12** | Check stale references across all docs | ✅ DONE | This session — DEPENDENCY_GRAPH + EXECUTION_PLAN + AGENTS + FEATURES |
+| **13** | Final full-suite verification | ⏳ NEXT | Running now |
+
+### Phase 4: Post-Merge — NOT STARTED
+
+| # | Task | Status | Effort |
+|---|---|---|---|
+| **14** | Decision: move `internal/gentest` → `testhelpers/gentest`? | ❌ NOT DONE | 2min |
+| **15** | Pre-commit hooks: configure BuildFlow or document `--no-verify` | ❌ NOT DONE | 8min |
+| **16** | Tag `v0.5.0` after merge | ❌ NOT DONE | 5min |
+| **17** | Community posting (r/golang, Awesome Go) | ❌ NOT DONE | 8min |
+
+---
+
+## Remaining Tasks (Blocking Merge)
+
+Only one decision + final verification remains:
+
+| # | Task | Impact | Effort | Status |
+|---|---|---|---|---|
+| **10** | **Decision needed:** Squash 70 commits or merge as-is? | MEDIUM — reviewability | 0-30min | ⏳ DEFERRED |
+| **13** | Final full-suite verification: build + test + lint + vet all 9 modules | HIGH — final gate | 5min | ⏳ RUNNING |
 
 ---
 
@@ -103,37 +126,7 @@ title: {
 }
 
 phase1: {
-  label: Phase 1: Blockers (1% → 51%)
-  shape: rectangle
-  style: {
-    fill: "#FF6B6B"
-    font-color: white
-    bold: true
-  }
-
-  t1: Fix goimports (3 errors)
-  t2: Fix release.yml (add d2+graph)
-  t3: Fix stale FEATURES.md
-
-  t1 -> t2 -> t3
-}
-
-phase1 -> t4
-
-t4: {
-  label: Verify all 10 modules pass
-  shape: diamond
-  style: {
-    fill: "#FFD93D"
-    stroke: "#333"
-  }
-}
-
-t4 -> phase2: {label: "✅ Pass"}
-t4 -> phase1: {label: "❌ Fail"; style: {stroke-dash: 3}}
-
-phase2: {
-  label: Phase 2: Correctness (4% → 64%)
+  label: Phase 1: Blockers (1% → 51%) — ALL DONE
   shape: rectangle
   style: {
     fill: "#6BCB77"
@@ -141,29 +134,43 @@ phase2: {
     bold: true
   }
 
-  t5: Commit fixes
-  t6: Verify CHANGELOG
-  t7: Verify CI workflow
-  t8: go vet all modules
-  t9: Update TODO_LIST
+  t1: Fix goimports (3 errors) ✅
+  t2: Fix release.yml (d2+graph) ✅
+  t3: Fix stale FEATURES.md ✅
 
-  t5 -> t6 -> t7 -> t8 -> t9
+  t1 -> t2 -> t3
 }
 
-phase2 -> phase3
-
-phase3: {
-  label: Phase 3: Polish (20% → 80%)
+phase2: {
+  label: Phase 2: Correctness (4% → 64%) — ALL DONE
   shape: rectangle
   style: {
-    fill: "#4D96FF"
+    fill: "#6BCB77"
     font-color: white
     bold: true
   }
 
-  t10: Squash git history
-  t11: Verify README refs
-  t12: Verify all docs
+  t5: Commit fixes ✅
+  t6: Verify CHANGELOG ✅
+  t7: Verify CI workflow ✅
+  t8: go vet all modules ✅
+  t9: Update TODO_LIST ✅
+
+  t5 -> t6 -> t7 -> t8 -> t9
+}
+
+phase3: {
+  label: Phase 3: Polish (20% → 80%) — ALL DONE
+  shape: rectangle
+  style: {
+    fill: "#6BCB77"
+    font-color: white
+    bold: true
+  }
+
+  t10: "Squash commits? (Decision deferred)"
+  t11: Verify README refs ✅
+  t12: Fix stale docs ✅
   t13: Final full-suite verify
 
   t10 -> t11 -> t12 -> t13
@@ -197,7 +204,7 @@ merge: {
 merge -> phase4
 
 phase4: {
-  label: Phase 4: Post-Merge
+  label: Phase 4: Post-Merge — NOT STARTED
   shape: rectangle
   style: {
     fill: "#95A5A6"
@@ -219,10 +226,8 @@ phase4: {
 
 | Risk | Likelihood | Impact | Mitigation |
 |---|---|---|---|
-| Squashing 64 commits reveals forgotten changes | Low | Medium | Review diff before/after squash |
-| Release.yml fix misses a loop | Low | High | Compare with ci.yml (which is correct) |
+| Squashing 70 commits reveals forgotten changes | Low | Medium | Review diff before/after squash |
 | Nix flake check fails | Certain | Low | Known sandbox issue; CI handles Go |
-| goimports errors recur after other edits | Low | Low | Run lint as final gate (#13) |
 
 ---
 
@@ -233,4 +238,6 @@ phase4: {
 | #20 | Move `internal/gentest` to `testhelpers/gentest`? | Needs Decision | #14 |
 | #24 | Pre-commit hooks BuildFlow false positives | Open | #15 |
 | #31 | Tag next release (v0.5.0) | Open | #16 |
-| #32-#40 | Future features (TOML, JSONL, PlantUML, AsciiDoc, etc.) | P6 Future | Not in scope |
+| #32 | ~~Remove deprecated FormatCategory code~~ | ✅ DONE | format_deprecated.go deleted |
+| #33 | ~~Remove deprecated OutputFormat aliases~~ | ✅ DONE | removed with format_deprecated.go |
+| #34-#40 | Future features (TOML, JSONL, PlantUML, AsciiDoc, etc.) | P6 Future | Not in scope |
