@@ -46,11 +46,10 @@ This project uses Go workspace modules. Each sub-package with its own `go.mod` i
 ### Dependency Graph
 
 ```
-root (output) → enum, escape, yaml, x/term, go-branded-id, testhelpers
+root (output) → enum, escape, yaml, x/term, go-branded-id
 enum          → testhelpers (tests only)
 escape        → (none)
 testhelpers   → (none) — zero deps, shared test assertions
-sort          → (none) — zero deps, only ByField helper
 d2            → root, escape, testhelpers
 graph         → root, escape, testhelpers
 table         → root, lipgloss/v2
@@ -67,7 +66,6 @@ go-output/                    # Root module (package output) — types, interfac
 ├── format.go                 # Format enum, ParseFormat, InvalidFormatError, AllFormats
 ├── shape.go                  # Shape enum, capability matrix, Supports/Shapes/FormatsForShape
 ├── renderer.go               # Renderer, MustRender, TableRenderer interfaces
-├── format_deprecated.go       # FormatCategory/OutputFormat/IsTableFormat/IsTreeFormat/IsGraphFormat (deprecated)
 ├── sort.go                   # SortBy enum
 ├── color.go                  # ColorMode enum + terminal detection
 ├── ids.go                    # BrandedID phantom types
@@ -89,7 +87,6 @@ go-output/                    # Root module (package output) — types, interfac
 ├── escape/                   # MODULE: Format-specific escaping (zero deps)
 ├── testhelpers/              # MODULE: Shared test assertions (non-internal, zero deps)
 ├── table/                    # MODULE: Lipgloss terminal tables (lipgloss isolated)
-├── sort/                     # MODULE: Deprecated — only ByField helper remains (zero deps)
 ├── integration/              # MODULE: Cross-module integration tests
 └── examples/                 # MODULE: Usage examples
 ```
@@ -109,7 +106,7 @@ golangci-lint run ./...         # Lint root module
 go mod tidy                     # Tidy root module
 
 # Per-module (required since go.work is gitignored)
-for mod in . d2 graph enum escape testhelpers sort table integration examples; do
+for mod in . d2 graph enum escape testhelpers table integration examples; do
   (cd $mod && go test ./...)
 done
 ```
@@ -127,7 +124,6 @@ use (
   ./escape
   ./graph
   ./testhelpers
-  ./sort
   ./table
   ./integration
   ./examples
@@ -154,7 +150,6 @@ EOF
 | graph         | 97.6%    | own    |
 | enum          | 100%     | own    |
 | escape        | 100%     | own    |
-| sort          | 100%     | own    |
 | table         | 100%     | own    |
 | testhelpers   | 93.8%    | own    |
 | integration   | 82.8%    | own    |
@@ -236,7 +231,7 @@ import "github.com/larsartmann/go-output/table"            // Lipgloss tables (o
 - Tree conversion has renderer-specific addTreeNodes in d2_convert, graph/dot, graph/mermaid — the generic AddTreeNodes in graph.go handles the common case
 - Depguard config restricts imports
 - escape/ uses `html.EscapeString()` from stdlib for HTML, with `strings.ReplaceAll` for XML `&apos;`
-- sort/ is **deprecated** — `Sorter[T]` deleted, only `ByField` helper remains (zero deps). Use `slices.SortStableFunc` + `cmp.Compare` (stdlib)
+- sort/ is **removed** — was deprecated, only `ByField` helper remained (zero deps). Use `slices.SortStableFunc` + `cmp.Compare` (stdlib)
 - Multi-module workspace with 10 independent modules (see ADR 001)
 - Shape capability matrix (ADR 002) replaces FormatCategory — deprecated methods redirect to `Supports(Shape)`
 - `format.go` split into focused files: `format.go` (Format enum), `shape.go` (Shape + capability matrix), `renderer.go` (Renderer/TableRenderer interfaces), `format_deprecated.go` (all deprecated FormatCategory/IsTableFormat/etc)
