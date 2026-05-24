@@ -226,6 +226,7 @@ linters:
       replace-allow-list:
         - github.com/larsartmann/go-output/enum
         - github.com/larsartmann/go-output/escape
+        - github.com/larsartmann/go-output/testhelpers
       replace-local: true
     revive:
       rules:
@@ -310,6 +311,7 @@ linters:
           - paralleltest
           - thelper
           - tparallel
+
       - path: internal/
         text: .*
         linters:
@@ -356,7 +358,6 @@ linters:
       - _enum\.go$
 formatters:
   enable:
-    - gci
     - goimports
     - gofumpt
     - golines
