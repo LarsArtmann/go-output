@@ -243,13 +243,13 @@ git revert HEAD
 
 ### Actions
 
-1. Check if `sort` is still in root's `go.mod` as a production dependency
-2. If yes: remove from `require` block, keep in `replace` block if needed by integration
-3. Run `go mod tidy` in root
+1. ~~Check if sort is still in root's go.mod~~ **N/A: sort/ module deleted entirely**
+2. ~~If yes: remove from require block~~ **N/A**
+3. ~~Run go mod tidy in root~~ **Already done**
 
 ### Verification
 
-- [ ] Root `go.mod` does not list `sort` as direct production dependency
+- [x] Root `go.mod` does not list `sort` as direct production dependency (sort/ deleted)
 - [ ] `go build ./...` passes
 - [ ] `go test ./...` passes
 
@@ -306,7 +306,7 @@ git revert HEAD
 4. Verify DAG: root has zero imports from d2/ or graph/
 
 ```bash
-for mod in . d2 graph enum escape testhelpers sort table integration examples; do
+for mod in . d2 graph enum escape testhelpers table integration examples; do
   echo "=== $mod ==="
   (cd "$mod" && go build ./... && go test ./... && go vet ./... && go mod tidy)
 done
@@ -314,7 +314,7 @@ done
 
 ### Success Criteria
 
-- [ ] All 10 modules build independently
+- [ ] All 9 modules build independently (sort/ deleted)
 - [ ] All tests pass workspace-wide
 - [ ] All modules pass `go vet`
 - [ ] All modules pass `go mod tidy` with no changes
@@ -331,7 +331,7 @@ done
 | 2   | `enum/`                 | Existing, unchanged              |
 | 3   | `escape/`               | Existing, unchanged              |
 | 4   | `testhelpers/`          | Existing, unchanged              |
-| 5   | `sort/`                 | Existing, unchanged (deprecated) |
+| 5   | `sort/`                 | **REMOVED** — deleted in post-modularization polish session |
 | 6   | `table/`                | Existing, unchanged              |
 | 7   | `integration/`          | Existing, updated deps           |
 | 8   | `examples/`             | Existing, updated deps           |

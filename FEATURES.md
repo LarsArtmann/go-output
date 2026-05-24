@@ -102,9 +102,9 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 
 | Feature                | Status           | Notes                                                                                                           |
 | ---------------------- | ---------------- | --------------------------------------------------------------------------------------------------------------- |
-| **TableData → Graph**  | FULLY_FUNCTIONAL | `D2FromTableData()`, `DOTFromTableData()`, `MermaidFlowchartRenderer()`, `NodesFromTableData()`                 |
+| **TableData → Graph**  | FULLY_FUNCTIONAL | `D2FromTableData()`, `DOTFromTableData()`, `MermaidFromTableData()`, `NodesFromTableData()`                 |
 | **TableData → Tree**   | FULLY_FUNCTIONAL | `TreeRendererFromTableData()` creates hierarchical tree from tabular data                                       |
-| **Tree → Graph**       | FULLY_FUNCTIONAL | `D2FromTree()`, `DOTFromTree()`, `MermaidTreeRenderer()`. Generic `AddTreeNodes()` for custom renderers         |
+| **Tree → Graph**       | FULLY_FUNCTIONAL | `D2FromTree()`, `DOTFromTree()`, `MermaidFromTree()`. Generic `AddTreeNodes()` for custom renderers           |
 | **GraphNode → D2Node** | FULLY_FUNCTIONAL | `graphNodeToD2()`, `graphEdgeToD2()`, `graphShapeToD2()` — automatic type mapping for `SetNodes()`/`SetEdges()` |
 
 ---
@@ -207,7 +207,6 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 | **enum/**                          | FULLY_FUNCTIONAL | Generic enum utilities. Zero dependencies                                               |
 | **escape/**                        | FULLY_FUNCTIONAL | Format-specific escaping. Zero dependencies                                             |
 | **testhelpers/**                   | FULLY_FUNCTIONAL | Shared test assertions. Zero dependencies, publicly importable                          |
-| **sort/**                          | DEPRECATED       | Only `ByField[T]()` helper remains. Use `slices.SortStableFunc` + `cmp.Compare` instead |
 | **table/**                         | FULLY_FUNCTIONAL | Lipgloss terminal tables. Isolated from root module                                     |
 | **integration/**                   | FULLY_FUNCTIONAL | Cross-module integration tests                                                          |
 | **examples/**                      | FULLY_FUNCTIONAL | Working examples demonstrating all 12 formats                                           |
@@ -232,7 +231,7 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 
 | Feature                    | Status           | Notes                                                                                         |
 | -------------------------- | ---------------- | --------------------------------------------------------------------------------------------- |
-| **README.md**              | KNOWN_ISSUE      | References `NewD2Renderer("Architecture")` which does not exist. Only `NewD2Diagram()` exists |
+| **README.md**              | FULLY_FUNCTIONAL | All examples verified correct after deprecated API removal                                    |
 | **CHANGELOG.md**           | FULLY_FUNCTIONAL | Version history                                                                               |
 | **CONTRIBUTING.md**        | FULLY_FUNCTIONAL | Contribution guidelines                                                                       |
 | **ADR 001**                | FULLY_FUNCTIONAL | Multi-module workspace decision                                                               |
@@ -253,8 +252,8 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 
 ---
 
-**Last audited:** 2026-05-23
+**Last audited:** 2026-05-25
 **Total features:** 112
-**Fully functional:** 108
-**Deprecated:** 3 (FormatCategory, OutputFormat, sort package)
-**Known issues:** 1 (README references non-existent `NewD2Renderer`)
+**Fully functional:** 110
+**Removed:** 2 (FormatCategory, OutputFormat)
+**Known issues:** 0
