@@ -1,6 +1,6 @@
 # TODO_LIST.md — go-output
 
-**Last updated:** 2026-05-23
+**Last updated:** 2026-05-25
 **Source audit:** All `docs/`, `.go`, `.github/`, `.golangci.yml`, `CONTRIBUTING.md`, `README.md`, `CHANGELOG.md`, `go.work.example`
 
 ---
@@ -15,8 +15,8 @@
 | P3        | 5      | 3      | 1        | 1              |
 | P4        | 4      | 2      | 2        | 0              |
 | P5        | 4      | 4      | 0        | 0              |
-| P6        | 10     | 0      | 10       | 0              |
-| **Total** | **40** | **26** | **13**   | **1**          |
+| P6        | 7      | 3      | 4        | 0              |
+| **Total** | **37** | **29** | **5**    | **1**          |
 
 ---
 
@@ -78,7 +78,7 @@
 ## P4: Build & Config Hygiene — 2 Done, 2 Open
 
 - ✅ **23.** depguard includes d2/graph in all 3 rules
-- ✅ **25.** `go mod tidy` verified idempotent across all 10 modules
+- ✅ **25.** `go mod tidy` verified idempotent across all 9 modules
 
 ### Open
 
@@ -101,8 +101,9 @@
 ## P6: Future (Not Blocking)
 
 - **31.** Tag next release (v0.5.0?)
-- **32.** Remove deprecated FormatCategory code (breaking change, defer to v1.0)
-- **33.** Remove deprecated OutputFormat aliases (breaking change, defer to v2.0)
+- ✅ **32.** ~~Remove deprecated FormatCategory code~~ DONE — `format_deprecated.go` deleted
+- ✅ **33.** ~~Remove deprecated OutputFormat aliases~~ DONE — removed with format_deprecated.go
+- ✅ **(sort/)** Module deleted entirely — `ByField` removed, use stdlib `slices.SortStableFunc`
 - **34.** ADR 002 Phase 2: Shape-specific renderer constructors
 - **35.** Add TOML format (new module)
 - **36.** Add JSONL format (new renderer)
@@ -118,8 +119,8 @@
 - ✅ D2 module extraction from root
 - ✅ Graph module extraction from root
 - ✅ Root module zero sub-module imports
-- ✅ All 10 modules build/test/vet/lint clean
-- ✅ AGENTS.md updated to 10-module table
+- ✅ All 9 modules build/test/vet/lint clean (sort/ deleted)
+- ✅ AGENTS.md updated to 9-module table
 - ✅ DEPENDENCY_GRAPH.md rewritten for current state
 - ✅ ADR 002 → ACCEPTED & IMPLEMENTED
 - ✅ ADR 003 → written
@@ -130,8 +131,9 @@
 - ✅ Shape capability matrix implemented
 - ✅ JSON/YAML table renderers implemented
 - ✅ Graph benchmarks added to graph/ module
-- ✅ UnsupportedFormatError message cleaned
-- ✅ format.go split into format.go + shape.go + renderer.go + format_deprecated.go
+- ✅ JSON/YAML graph renderers embed GraphRendererMixin (eliminates ~30 LOC duplication)
+- ✅ UnsupportedFormatError.Unwrap() added for error chain support
+- ✅ format.go split into format.go + shape.go + renderer.go (format_deprecated.go deleted)
 - ✅ registry.go simplified with cmp.Compare
 - ✅ README uses non-deprecated API (Supports/Shapes)
 - ✅ Error-path tests for markup, xml, streaming, render_tabledata, json, color, markdown, tsv
@@ -143,7 +145,7 @@
 - ✅ gentest coverage 0% → 87.5%
 - ✅ escape.DOT deduplicated: DOT now delegates to D2 (fixes missing \t escape)
 - ✅ D2StrokeStyle extracted from D2NodeStyle/D2EdgeStyle (fixes edge style coercion)
-- ✅ MermaidFromTableData/MermaidFromTree added (old names deprecated)
+- ✅ MermaidFlowchartRenderer/MermaidTreeRenderer deleted — use MermaidFromTableData/MermaidFromTree
 - ✅ writeChunkWithError merged into writeChunk in streaming.go
 - ✅ SortBy type in root package marked deprecated
 - ✅ graph_tabledata.go extracted from graph.go

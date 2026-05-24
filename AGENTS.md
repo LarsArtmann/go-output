@@ -35,7 +35,6 @@ This project uses Go workspace modules. Each sub-package with its own `go.mod` i
 | `d2/`                   | ✅     | root, escape, testhelpers                           | D2 diagram renderer (rich domain model) |
 | `graph/`                | ✅     | root, escape, testhelpers                           | DOT + Mermaid renderers                 |
 | `table/`                | ✅     | root, lipgloss                                      | **Lipgloss isolated from root**         |
-| `sort/`                 | ✅     | None                                                | **Deprecated** — only `ByField` remains |
 | `integration/`          | ✅     | root, table, d2, graph                              | Cross-module tests                      |
 | `examples/`             | ✅     | root, table, d2, graph                              | Usage examples                          |
 
@@ -145,7 +144,7 @@ EOF
 
 | Package       | Coverage | Module |
 | ------------- | -------- | ------ |
-| output (root) | 95.1%    | root   |
+| output (root) | 95.3%    | root   |
 | d2            | 100%     | own    |
 | graph         | 97.6%    | own    |
 | enum          | 100%     | own    |
@@ -232,11 +231,11 @@ import "github.com/larsartmann/go-output/table"            // Lipgloss tables (o
 - Depguard config restricts imports
 - escape/ uses `html.EscapeString()` from stdlib for HTML, with `strings.ReplaceAll` for XML `&apos;`
 - sort/ is **removed** — was deprecated, only `ByField` helper remained (zero deps). Use `slices.SortStableFunc` + `cmp.Compare` (stdlib)
-- Multi-module workspace with 10 independent modules (see ADR 001)
+- Multi-module workspace with 9 independent modules (see ADR 001)
 - Shape capability matrix (ADR 002) replaces FormatCategory — deprecated methods redirect to `Supports(Shape)`
-- `format.go` split into focused files: `format.go` (Format enum), `shape.go` (Shape + capability matrix), `renderer.go` (Renderer/TableRenderer interfaces), `format_deprecated.go` (all deprecated FormatCategory/IsTableFormat/etc)
+- `format.go` split into focused files: `format.go` (Format enum), `shape.go` (Shape + capability matrix), `renderer.go` (Renderer/TableRenderer interfaces) — `format_deprecated.go` deleted
 - `render_tabledata.go` returns `UnsupportedFormatError` for D2/DOT/Mermaid (these live in separate modules)
 - `internal/gentest` and `internal/testutils` are root-only — sub-modules must inline helpers or create their own. Decision rationale: exposing test helpers publicly via `testhelpers/gentest` would freeze internal testing APIs; each module having its own test helpers allows independent evolution
-- Nix flake uses `flake-parts` + `treefmt-nix` + `git-hooks.nix` — no `gomod2nix` (library, 10 modules, no binary)
+- Nix flake uses `flake-parts` + `treefmt-nix` + `git-hooks.nix` — no `gomod2nix` (library, 9 modules, no binary)
 - Go checks (build/test/lint) NOT in flake — Nix sandbox blocks `go mod download`; CI handles these reliably
 - `.pre-commit-config.yaml` exists for non-Nix users; `git-hooks.nix` auto-installs hooks for Nix users via `nix develop`
