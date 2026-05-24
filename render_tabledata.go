@@ -74,6 +74,10 @@ func (e *UnsupportedFormatError) Error() string {
 	return fmt.Sprintf("render table data: format %q not supported", e.Format)
 }
 
+func (e *UnsupportedFormatError) Unwrap() error {
+	return nil
+}
+
 func renderCSVTableData(w io.Writer, data *TableData) error {
 	b, err := MarshalCSVFromTableData(data)
 	if err != nil {
