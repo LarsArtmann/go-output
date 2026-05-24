@@ -1,8 +1,6 @@
 package output
 
 import (
-	"errors"
-	"fmt"
 	"slices"
 
 	"github.com/larsartmann/go-output/enum"
@@ -42,19 +40,20 @@ func (s Shape) AllowedValues() []string {
 	return enum.AllowedValues(AllShapes)
 }
 
-// ErrInvalidShape is returned when an invalid data shape is provided.
-var ErrInvalidShape = errors.New("invalid shape")
+// InvalidShapeError is returned when an invalid data shape is provided.
+type InvalidShapeError struct {
+	Value string
+}
+
+func (e *InvalidShapeError) Error() string {
+	return "invalid shape: " + e.Value
+}
 
 // ParseShape converts a string to Shape, returning an error if invalid.
 func ParseShape(s string) (Shape, error) {
 	v, err := enum.Parse(AllShapes, s, func(sh Shape) string { return string(sh) })
 	if err != nil {
-		return "", fmt.Errorf(
-			"%w: %q (allowed: %s)",
-			ErrInvalidShape,
-			s,
-			enum.AllowedValues(AllShapes),
-		)
+		return "", &InvalidShapeError{Value: s}
 	}
 
 	return v, nil
