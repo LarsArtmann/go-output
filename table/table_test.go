@@ -5,7 +5,6 @@ import (
 
 	"charm.land/lipgloss/v2"
 	"charm.land/lipgloss/v2/table"
-
 	"github.com/larsartmann/go-output/testhelpers"
 )
 
