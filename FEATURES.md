@@ -102,9 +102,9 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 
 | Feature                | Status           | Notes                                                                                                           |
 | ---------------------- | ---------------- | --------------------------------------------------------------------------------------------------------------- |
-| **TableData → Graph**  | FULLY_FUNCTIONAL | `D2FromTableData()`, `DOTFromTableData()`, `MermaidFromTableData()`, `NodesFromTableData()`                 |
+| **TableData → Graph**  | FULLY_FUNCTIONAL | `D2FromTableData()`, `DOTFromTableData()`, `MermaidFromTableData()`, `NodesFromTableData()`                     |
 | **TableData → Tree**   | FULLY_FUNCTIONAL | `TreeRendererFromTableData()` creates hierarchical tree from tabular data                                       |
-| **Tree → Graph**       | FULLY_FUNCTIONAL | `D2FromTree()`, `DOTFromTree()`, `MermaidFromTree()`. Generic `AddTreeNodes()` for custom renderers           |
+| **Tree → Graph**       | FULLY_FUNCTIONAL | `D2FromTree()`, `DOTFromTree()`, `MermaidFromTree()`. Generic `AddTreeNodes()` for custom renderers             |
 | **GraphNode → D2Node** | FULLY_FUNCTIONAL | `graphNodeToD2()`, `graphEdgeToD2()`, `graphShapeToD2()` — automatic type mapping for `SetNodes()`/`SetEdges()` |
 
 ---
@@ -201,16 +201,16 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 
 ## Multi-Module Architecture
 
-| Feature                            | Status           | Notes                                                                                   |
-| ---------------------------------- | ---------------- | --------------------------------------------------------------------------------------- |
-| **Root module** (`package output`) | FULLY_FUNCTIONAL | Core types + formatters. Zero lipgloss dependency                                       |
-| **enum/**                          | FULLY_FUNCTIONAL | Generic enum utilities. Zero dependencies                                               |
-| **escape/**                        | FULLY_FUNCTIONAL | Format-specific escaping. Zero dependencies                                             |
-| **testhelpers/**                   | FULLY_FUNCTIONAL | Shared test assertions. Zero dependencies, publicly importable                          |
-| **table/**                         | FULLY_FUNCTIONAL | Lipgloss terminal tables. Isolated from root module                                     |
-| **integration/**                   | FULLY_FUNCTIONAL | Cross-module integration tests                                                          |
-| **examples/**                      | FULLY_FUNCTIONAL | Working examples demonstrating all 12 formats                                           |
-| **go.work**                        | FULLY_FUNCTIONAL | Gitignored. `go.work.example` provided for local development                            |
+| Feature                            | Status           | Notes                                                          |
+| ---------------------------------- | ---------------- | -------------------------------------------------------------- |
+| **Root module** (`package output`) | FULLY_FUNCTIONAL | Core types + formatters. Zero lipgloss dependency              |
+| **enum/**                          | FULLY_FUNCTIONAL | Generic enum utilities. Zero dependencies                      |
+| **escape/**                        | FULLY_FUNCTIONAL | Format-specific escaping. Zero dependencies                    |
+| **testhelpers/**                   | FULLY_FUNCTIONAL | Shared test assertions. Zero dependencies, publicly importable |
+| **table/**                         | FULLY_FUNCTIONAL | Lipgloss terminal tables. Isolated from root module            |
+| **integration/**                   | FULLY_FUNCTIONAL | Cross-module integration tests                                 |
+| **examples/**                      | FULLY_FUNCTIONAL | Working examples demonstrating all 12 formats                  |
+| **go.work**                        | FULLY_FUNCTIONAL | Gitignored. `go.work.example` provided for local development   |
 
 ---
 
@@ -229,15 +229,15 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 
 ## Documentation
 
-| Feature                    | Status           | Notes                                                                                         |
-| -------------------------- | ---------------- | --------------------------------------------------------------------------------------------- |
-| **README.md**              | FULLY_FUNCTIONAL | All examples verified correct after deprecated API removal                                    |
-| **CHANGELOG.md**           | FULLY_FUNCTIONAL | Version history                                                                               |
-| **CONTRIBUTING.md**        | FULLY_FUNCTIONAL | Contribution guidelines                                                                       |
-| **ADR 001**                | FULLY_FUNCTIONAL | Multi-module workspace decision                                                               |
-| **ADR 002**                | FULLY_FUNCTIONAL | Shape capability matrix decision                                                              |
-| **DOMAIN_LANGUAGE.md**     | FULLY_FUNCTIONAL | Domain vocabulary                                                                             |
-| **FORMAT_ARCHITECTURE.md** | FULLY_FUNCTIONAL | Format architecture documentation                                                             |
+| Feature                    | Status           | Notes                                                      |
+| -------------------------- | ---------------- | ---------------------------------------------------------- |
+| **README.md**              | FULLY_FUNCTIONAL | All examples verified correct after deprecated API removal |
+| **CHANGELOG.md**           | FULLY_FUNCTIONAL | Version history                                            |
+| **CONTRIBUTING.md**        | FULLY_FUNCTIONAL | Contribution guidelines                                    |
+| **ADR 001**                | FULLY_FUNCTIONAL | Multi-module workspace decision                            |
+| **ADR 002**                | FULLY_FUNCTIONAL | Shape capability matrix decision                           |
+| **DOMAIN_LANGUAGE.md**     | FULLY_FUNCTIONAL | Domain vocabulary                                          |
+| **FORMAT_ARCHITECTURE.md** | FULLY_FUNCTIONAL | Format architecture documentation                          |
 
 ---
 
