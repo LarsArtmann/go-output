@@ -1,9 +1,6 @@
 package output
 
 import (
-	"errors"
-	"fmt"
-
 	"github.com/larsartmann/go-output/enum"
 )
 
@@ -62,14 +59,20 @@ var graphShapeValues = []GraphShape{
 	ShapeRect,
 }
 
-// ErrInvalidGraphShape is returned when an invalid graph shape is provided.
-var ErrInvalidGraphShape = errors.New("invalid graph shape")
+// InvalidGraphShapeError is returned when an invalid graph shape is provided.
+type InvalidGraphShapeError struct {
+	Value string
+}
+
+func (e *InvalidGraphShapeError) Error() string {
+	return "invalid graph shape: " + e.Value
+}
 
 // ParseGraphShape converts a string to GraphShape, returning an error if invalid.
 func ParseGraphShape(s string) (GraphShape, error) {
 	v, err := enum.Parse(graphShapeValues, s, func(g GraphShape) string { return string(g) })
 	if err != nil {
-		return "", fmt.Errorf("%w: %q", ErrInvalidGraphShape, s)
+		return "", &InvalidGraphShapeError{Value: s}
 	}
 
 	return v, nil

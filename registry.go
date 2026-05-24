@@ -1,13 +1,4 @@
-// Package output provides a registry for dynamically registering renderer factories.
-//
-// The registry is an opt-in plugin system. By default, formats are used directly
-// via their constructors (NewMarkdownTable, NewD2Diagram, etc.). Use Register/Create
-// when you need runtime-dispatchable format selection, e.g.:
-//
-//	output.Register(output.FormatJSON, func() output.Renderer { return myCustomJSONRenderer })
-//	renderer, _ := output.Create(output.FormatJSON)
-//
-// The registry is thread-safe.
+// Package output provides consistent output formatting for CLI applications.
 package output
 
 import (
@@ -32,6 +23,8 @@ var (
 )
 
 // Register registers a renderer factory for a format.
+//
+// Deprecated: Use format constructors directly. This function may be removed in a future version.
 func Register(format Format, factory RendererFactory) error {
 	regMu.Lock()
 	defer regMu.Unlock()
@@ -51,6 +44,8 @@ func Register(format Format, factory RendererFactory) error {
 }
 
 // Unregister removes a format from the registry.
+//
+// Deprecated: Use format constructors directly.
 func Unregister(format Format) {
 	regMu.Lock()
 	defer regMu.Unlock()
@@ -62,6 +57,8 @@ func Unregister(format Format) {
 var ErrNoRendererRegistered = errors.New("no renderer registered for format")
 
 // Create returns a new Renderer instance for the given format.
+//
+// Deprecated: Use format constructors directly. This function may be removed in a future version.
 func Create(format Format) (Renderer, error) {
 	regMu.RLock()
 
@@ -77,6 +74,8 @@ func Create(format Format) (Renderer, error) {
 }
 
 // RegisteredFormats returns a sorted list of all registered formats.
+//
+// Deprecated: Use format constructors directly.
 func RegisteredFormats() []Format {
 	regMu.RLock()
 	defer regMu.RUnlock()
@@ -94,6 +93,8 @@ func RegisteredFormats() []Format {
 }
 
 // IsRegistered returns true if a format has a registered renderer.
+//
+// Deprecated: Use format constructors directly.
 func IsRegistered(format Format) bool {
 	regMu.RLock()
 	defer regMu.RUnlock()
