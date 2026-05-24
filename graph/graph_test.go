@@ -1,7 +1,6 @@
 package graph
 
 import (
-	"strings"
 	"testing"
 
 	"github.com/larsartmann/go-output"
@@ -172,32 +171,4 @@ func testGraphStyleFields(t *testing.T, style output.GraphStyle, wantFontSize in
 		testhelpers.StringField("FontColor", style.FontColor, "green"),
 		testhelpers.IntField("FontSize", style.FontSize, wantFontSize),
 	)
-}
-
-func TestContainsString(t *testing.T) {
-	t.Parallel()
-
-	tests := []struct {
-		s      string
-		substr string
-		want   bool
-	}{
-		{"hello world", "world", true},
-		{"hello world", "hello", true},
-		{"hello world", "xyz", false},
-		{"hello", "hello", true},
-		{"hi", "hello", false},
-		{"", "", true},
-		{"abc", "", true},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.s+"_"+tt.substr, func(t *testing.T) {
-			t.Parallel()
-
-			if got := strings.Contains(tt.s, tt.substr); got != tt.want {
-				t.Errorf("containsString(%q, %q) = %v, want %v", tt.s, tt.substr, got, tt.want)
-			}
-		})
-	}
 }

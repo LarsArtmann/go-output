@@ -30,7 +30,7 @@ func ExampleDOTFromTableData() {
 }
 
 //nolint:testableexamples // Demonstration example, output is dynamic
-func ExampleMermaidFlowchartRenderer() {
+func ExampleMermaidFromTableData() {
 	data := &output.TableData{
 		Headers: []string{"Step", "Action"},
 		Rows: [][]string{
@@ -40,7 +40,7 @@ func ExampleMermaidFlowchartRenderer() {
 		},
 	}
 
-	renderer := graph.MermaidFlowchartRenderer(data)
+	renderer := graph.MermaidFromTableData(data)
 
 	result, err := renderer.Render()
 	if err != nil {

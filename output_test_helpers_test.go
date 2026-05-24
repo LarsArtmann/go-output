@@ -106,8 +106,8 @@ func testEmptyRendererOutput(
 	}
 }
 
-// AssertTreeNodeDepth verifies the depth of tree nodes in a hierarchy.
-func AssertTreeNodeDepth(t *testing.T, root, child, grandchild *TreeNode) {
+// assertTreeNodeDepth verifies the depth of tree nodes in a hierarchy.
+func assertTreeNodeDepth(t *testing.T, root, child, grandchild *TreeNode) {
 	t.Helper()
 
 	if root.Depth() != 0 {

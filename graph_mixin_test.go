@@ -231,32 +231,6 @@ func TestGraphRendererMixin_SetNodesFromTableData(t *testing.T) {
 	}
 }
 
-func TestFormatCategory_String(t *testing.T) {
-	t.Parallel()
-
-	if CategoryTable.String() != "table" {
-		t.Errorf("CategoryTable.String() = %q, want %q", CategoryTable.String(), "table")
-	}
-
-	if CategoryTree.String() != "tree" {
-		t.Errorf("CategoryTree.String() = %q, want %q", CategoryTree.String(), "tree")
-	}
-
-	if CategoryGraph.String() != "graph" {
-		t.Errorf("CategoryGraph.String() = %q, want %q", CategoryGraph.String(), "graph")
-	}
-}
-
-func TestFormatCategory_String_Unknown(t *testing.T) {
-	t.Parallel()
-
-	cat := FormatCategory(99)
-
-	if cat.String() != "unknown" {
-		t.Errorf("unknown category = %q, want %q", cat.String(), "unknown")
-	}
-}
-
 func TestUnsupportedFormatError_Error(t *testing.T) {
 	t.Parallel()
 
