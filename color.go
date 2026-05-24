@@ -3,9 +3,8 @@ package output
 import (
 	"os"
 
-	"golang.org/x/term"
-
 	"github.com/larsartmann/go-output/enum"
+	"golang.org/x/term"
 )
 
 // ColorMode controls terminal color output.
