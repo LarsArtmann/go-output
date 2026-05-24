@@ -189,7 +189,7 @@ renderer := graph.DOTFromTableData(data)
 out, _ := renderer.Render()
 
 // Mermaid flowchart (requires go-output/graph)
-renderer := graph.MermaidFlowchartRenderer(data)
+renderer := graph.MermaidFromTableData(data)
 out, _ := renderer.Render()
 
 // JSON graph
