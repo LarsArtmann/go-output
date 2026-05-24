@@ -72,26 +72,14 @@ func (r *YAMLTreeRenderer) toYAMLNode(node *TreeNode) yamlTreeNode {
 
 // YAMLGraphRenderer renders graph nodes and edges as YAML.
 type YAMLGraphRenderer struct {
-	nodes []GraphNode
-	edges []GraphEdge
+	GraphRendererMixin
 }
 
 // NewYAMLGraphRenderer creates a new YAMLGraphRenderer.
 func NewYAMLGraphRenderer() *YAMLGraphRenderer {
 	return &YAMLGraphRenderer{
-		nodes: make([]GraphNode, 0),
-		edges: make([]GraphEdge, 0),
+		GraphRendererMixin: NewGraphRendererMixin(),
 	}
-}
-
-// SetNodes sets the graph nodes.
-func (r *YAMLGraphRenderer) SetNodes(nodes []GraphNode) {
-	r.nodes = nodes
-}
-
-// SetEdges sets the graph edges.
-func (r *YAMLGraphRenderer) SetEdges(edges []GraphEdge) {
-	r.edges = edges
 }
 
 // yamlGraph is the YAML representation of a graph.
@@ -118,11 +106,11 @@ type yamlGraphEdge struct {
 // Render returns the graph as a YAML string.
 func (r *YAMLGraphRenderer) Render() (string, error) {
 	graph := yamlGraph{
-		Nodes: make([]yamlGraphNode, 0, len(r.nodes)),
-		Edges: make([]yamlGraphEdge, 0, len(r.edges)),
+		Nodes: make([]yamlGraphNode, 0, len(r.Nodes())),
+		Edges: make([]yamlGraphEdge, 0, len(r.Edges())),
 	}
 
-	for _, node := range r.nodes {
+	for _, node := range r.Nodes() {
 		n := yamlGraphNode{
 			ID:       node.ID.Get(),
 			Label:    node.Label.Get(),
@@ -133,7 +121,7 @@ func (r *YAMLGraphRenderer) Render() (string, error) {
 		graph.Nodes = append(graph.Nodes, n)
 	}
 
-	for _, edge := range r.edges {
+	for _, edge := range r.Edges() {
 		e := yamlGraphEdge{
 			From:  edge.From.Get(),
 			To:    edge.To.Get(),
