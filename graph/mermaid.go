@@ -123,17 +123,3 @@ func (r *MermaidRenderer) addTreeNodes(node *output.TreeNode, parentID string) {
 		output.ShapeBox,
 	)
 }
-
-// MermaidFlowchartRenderer creates a Mermaid flowchart from table data.
-//
-// Deprecated: Use MermaidFromTableData instead.
-func MermaidFlowchartRenderer(data *output.TableData) *MermaidRenderer {
-	return MermaidFromTableData(data)
-}
-
-// MermaidTreeRenderer converts a TreeNode to Mermaid.
-//
-// Deprecated: Use MermaidFromTree instead.
-func MermaidTreeRenderer(root *output.TreeNode) *MermaidRenderer {
-	return MermaidFromTree(root)
-}

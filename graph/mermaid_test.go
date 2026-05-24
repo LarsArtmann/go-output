@@ -55,7 +55,7 @@ func TestMermaidRendererFromTableData(t *testing.T) {
 	data.AddRow([]string{"Step 1", "Do something"})
 	data.AddRow([]string{"End", "Finish"})
 
-	renderer := MermaidFlowchartRenderer(data)
+	renderer := MermaidFromTableData(data)
 
 	out, err := renderer.Render()
 	if err != nil {
@@ -67,14 +67,14 @@ func TestMermaidRendererFromTableData(t *testing.T) {
 	assertContains(t, out, "End", "Output should contain 'End'")
 }
 
-func TestMermaidTreeRenderer(t *testing.T) {
+func TestMermaidFromTree(t *testing.T) {
 	t.Parallel()
 
 	root := output.NewTreeNode("root", "Root")
 	root.AddChild(output.NewTreeNode("child1", "Child 1"))
 	root.AddChild(output.NewTreeNode("child2", "Child 2"))
 
-	renderer := MermaidTreeRenderer(root)
+	renderer := MermaidFromTree(root)
 
 	out, err := renderer.Render()
 	if err != nil {
@@ -188,10 +188,10 @@ func TestMermaidRendererWithEdgeLabel(t *testing.T) {
 	assertContains(t, out, "|connects|", "Output should contain edge label |connects|")
 }
 
-func TestMermaidTreeRendererNilRoot(t *testing.T) {
+func TestMermaidFromTreeNilRoot(t *testing.T) {
 	t.Parallel()
 
-	renderer := MermaidTreeRenderer(nil)
+	renderer := MermaidFromTree(nil)
 
 	out, err := renderer.Render()
 	if err != nil {
@@ -201,20 +201,20 @@ func TestMermaidTreeRendererNilRoot(t *testing.T) {
 	assertContains(t, out, "flowchart TD", "Nil root should still produce valid flowchart")
 }
 
-func TestMermaidFlowchartRendererNil(t *testing.T) {
+func TestMermaidFromTableDataNil(t *testing.T) {
 	t.Parallel()
 
-	renderer := MermaidFlowchartRenderer(nil)
+	renderer := MermaidFromTableData(nil)
 	if renderer == nil {
-		t.Fatal("MermaidFlowchartRenderer(nil) should return non-nil renderer")
+		t.Fatal("MermaidFromTableData(nil) should return non-nil renderer")
 	}
 }
 
-func TestMermaidTreeRendererWithEmptyID(t *testing.T) {
+func TestMermaidFromTreeWithEmptyID(t *testing.T) {
 	t.Parallel()
 
 	root := output.NewTreeNode("", "RootLabel")
-	renderer := MermaidTreeRenderer(root)
+	renderer := MermaidFromTree(root)
 
 	out, err := renderer.Render()
 	if err != nil {

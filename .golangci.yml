@@ -147,7 +147,6 @@ linters:
             - github.com/larsartmann/go-output/internal/testutils
             - github.com/larsartmann/go-output/escape
             - github.com/larsartmann/go-output/table
-            - github.com/larsartmann/go-output/sort
             - github.com/larsartmann/go-output/testhelpers
             - github.com/larsartmann/go-output/d2
             - github.com/larsartmann/go-output/graph
@@ -186,7 +185,6 @@ linters:
             - github.com/larsartmann/go-output/internal/testutils
             - github.com/larsartmann/go-output/escape
             - github.com/larsartmann/go-output/table
-            - github.com/larsartmann/go-output/sort
             - github.com/larsartmann/go-output/testhelpers
             - github.com/larsartmann/go-output/d2
             - github.com/larsartmann/go-output/graph
@@ -235,10 +233,6 @@ linters:
   exclusions:
     generated: lax
     rules:
-      - path: sort/.*\.go
-        text: package name
-        linters:
-          - revive
       - path: testing_test\.go
         text: package should be
         linters:
@@ -256,10 +250,6 @@ linters:
         linters:
           - testpackage
       - path: render_helpers_test\.go
-        text: package should be
-        linters:
-          - testpackage
-      - path: sort_test\.go
         text: package should be
         linters:
           - testpackage
@@ -301,10 +291,6 @@ linters:
         text: (?:make it a constant|but such constant)
         linters:
           - goconst
-      - path: sort/sorter\.go
-        text: varnamelen
-        linters:
-          - varnamelen
       - path: _test\.go$
         text: (?:parallel test|t\.Parallel|test helper)
         linters:
