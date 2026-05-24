@@ -1,391 +1,356 @@
 version: "2"
 run:
-    timeout: 5m
-    go: 1.26.3
-    build-tags:
-        - goexperiment.arenas
-        - goexperiment.goroutineleakprofile
-        - goexperiment.jsonv2
-        - goexperiment.runtimesecret
-        - goexperiment.simd
-    allow-parallel-runners: true
-    allow-serial-runners: true
-    issues-exit-code: 1
-    tests: true
+  timeout: 5m
+  go: 1.26.2
+  build-tags:
+    - goexperiment.arenas
+    - goexperiment.goroutineleakprofile
+    - goexperiment.jsonv2
+    - goexperiment.runtimesecret
+    - goexperiment.simd
+  allow-parallel-runners: true
+  allow-serial-runners: true
+  issues-exit-code: 1
+  tests: true
 output:
-    formats: {}
+  formats: {}
 linters:
-    enable:
-        - arangolint
-        - asasalint
-        - asciicheck
-        - bidichk
-        - bodyclose
-        - canonicalheader
-        - containedctx
-        - contextcheck
-        - copyloopvar
-        - cyclop
-        - decorder
-        - depguard
-        - dogsled
-        - dupl
-        - dupword
-        - durationcheck
-        - embeddedstructfieldcheck
-        - err113
-        - errcheck
-        - errchkjson
-        - errname
-        - errorlint
-        - exhaustive
-        - exhaustruct
-        - exptostd
-        - fatcontext
-        - forbidigo
-        - forcetypeassert
-        - funlen
-        - ginkgolinter
-        - gocheckcompilerdirectives
-        - gochecknoglobals
-        - gochecknoinits
-        - gochecksumtype
-        - gocognit
-        - goconst
-        - gocritic
-        - gocyclo
-        - godot
-        - godox
-        - goheader
-        - gomoddirectives
-        - gomodguard_v2
-        - goprintffuncname
-        - gosec
-        - gosmopolitan
-        - govet
-        - grouper
-        - importas
-        - ineffassign
-        - interfacebloat
-        - intrange
-        - iotamixing
-        - loggercheck
-        - maintidx
-        - makezero
-        - mirror
-        - misspell
-        - mnd
-        - modernize
-        - musttag
-        - nakedret
-        - nestif
-        - nilerr
-        - nilnesserr
-        - nilnil
-        - noctx
-        - nolintlint
-        - nosprintfhostport
-        - paralleltest
-        - perfsprint
-        - prealloc
-        - predeclared
-        - promlinter
-        - protogetter
-        - reassign
-        - recvcheck
-        - revive
-        - rowserrcheck
-        - sloglint
-        - spancheck
-        - sqlclosecheck
-        - staticcheck
-        - tagalign
-        - testableexamples
-        - testifylint
-        - testpackage
-        - thelper
-        - tparallel
-        - unconvert
-        - unparam
-        - unqueryvet
-        - unused
-        - usestdlibvars
-        - usetesting
-        - varnamelen
-        - wastedassign
-        - whitespace
-        - wrapcheck
-        - wsl_v5
-        - zerologlint
-    settings:
-        cyclop:
-            max-complexity: 12
-        depguard:
-            rules:
-                default:
-                    allow:
-                        - $STDERR
-                        - $GITHUB_ACTION
-                        - bytes
-                        - cmp
-                        - encoding/csv
-                        - encoding/json
-                        - encoding/xml
-                        - errors
-                        - fmt
-                        - html
-                        - io
-                        - os
-                        - slices
-                        - sort
-                        - strconv
-                        - strings
-                        - sync
-                        - testing
-                        - time
-                        - github.com/larsartmann/go-output
-                        - github.com/larsartmann/go-output/enum
-                        - github.com/larsartmann/go-output/internal/gentest
-                        - github.com/larsartmann/go-output/escape
-                        - github.com/larsartmann/go-output/table
-                        - github.com/larsartmann/go-output/testhelpers
-                        - github.com/larsartmann/go-output/d2
-                        - github.com/larsartmann/go-output/graph
-                        - github.com/larsartmann/go-output/examples/shared
-                        - github.com/larsartmann/go-branded-id
-                        - github.com/larsartmann/go-output/pkg/errors
-                        - charm.land/lipgloss/v2
-                        - charm.land/lipgloss/v2/table
-                        - github.com/go-faster/yaml
-                        - golang.org/x/term
-                examples:
-                    allow:
-                        - $STDERR
-                        - $GITHUB_ACTION
-                        - bytes
-                        - fmt
-                        - io
-                        - os
-                        - strconv
-                        - strings
-                        - github.com/larsartmann/go-output
-                        - github.com/larsartmann/go-output/examples/shared
-                        - github.com/larsartmann/go-output/table
-                        - github.com/larsartmann/go-output/d2
-                        - github.com/larsartmann/go-output/graph
-                        - github.com/larsartmann/go-branded-id
-                    files:
-                        - examples/**/*.go
-                main:
-                    allow:
-                        - $STDERR
-                        - $GITHUB_ACTION
-                        - github.com/larsartmann/go-output
-                        - github.com/larsartmann/go-output/enum
-                        - github.com/larsartmann/go-output/internal/gentest
-                        - github.com/larsartmann/go-output/escape
-                        - github.com/larsartmann/go-output/table
-                        - github.com/larsartmann/go-output/testhelpers
-                        - github.com/larsartmann/go-output/d2
-                        - github.com/larsartmann/go-output/graph
-                        - github.com/larsartmann/go-output/examples/shared
-                        - github.com/larsartmann/go-branded-id
-                        - charm.land/lipgloss/v2
-                        - charm.land/lipgloss/v2/table
-                        - github.com/go-faster/yaml
-                        - golang.org/x/term
-                        - bytes
-                        - cmp
-                        - encoding/csv
-                        - encoding/json
-                        - encoding/xml
-                        - errors
-                        - fmt
-                        - html
-                        - io
-                        - os
-                        - slices
-                        - sort
-                        - strconv
-                        - strings
-                        - sync
-                        - testing
-                        - time
-        exhaustruct:
-            exclude:
-                - os/exec.Cmd
-        gocritic:
-            disabled-checks:
-                - dupImport
-                - ifElseChain
-                - octalLiteral
-                - whyNoLint
-        gomoddirectives:
-            replace-allow-list:
-                - github.com/larsartmann/go-output/enum
-                - github.com/larsartmann/go-output/escape
-                - github.com/larsartmann/go-output/testhelpers
-            replace-local: true
-        revive:
-            rules:
-                - disabled: true
-                  name: var-naming
-        varnamelen:
-            ignore-map-index-ok: true
-            ignore-names:
-                - err
-                - ok
-                - tt
-                - fn
-                - t
-                - i
-                - m
-                - g
-                - a
-                - b
-                - v
-            ignore-type-assert-ok: true
-    exclusions:
-        generated: lax
-        rules:
-            - path: testing_test\.go
-              text: package should be
-              linters:
-                - testpackage
-            - path: _test\.go$
-              text: package should be
-              linters:
-                - testpackage
-            - path: benchmarks_test\.go
-              text: package should be
-              linters:
-                - testpackage
-            - path: fuzz_test\.go
-              text: package should be
-              linters:
-                - testpackage
-            - path: render_helpers_test\.go
-              text: package should be
-              linters:
-                - testpackage
-            - path: userjourney_test\.go
-              text: package should be
-              linters:
-                - testpackage
-            - path: integration/
-              text: package should be
-              linters:
-                - testpackage
-            - path: enum/enum_test\.go
-              text: package should be
-              linters:
-                - testpackage
-            - path: enum/testing_test\.go
-              text: package should be
-              linters:
-                - testpackage
-            - path: internal/
-              text: (?:gochecknoglobals)
-              linters:
-                - gochecknoglobals
-            - path: escape/
-              text: (?:gochecknoglobals)
-              linters:
-                - gochecknoglobals
-            - path: examples/
-              text: (?:forbidigo|magic number|global variable)
-              linters:
-                - forbidigo
-                - mnd
-                - gochecknoglobals
-            - path: _test\.go$
-              text: (?:parallel test|t\.Parallel)
-              linters:
-                - paralleltest
-            - path: _test\.go$
-              text: (?:make it a constant|but such constant)
-              linters:
-                - goconst
-            - path: _test\.go$
-              text: (?:parallel test|t\.Parallel|test helper)
-              linters:
-                - paralleltest
-                - thelper
-                - tparallel
-            - path: internal/
-              text: .*
-              linters:
-                - gochecknoglobals
-                - exhaustruct
-                - varnamelen
-            - path: escape/
-              text: .*
-              linters:
-                - gochecknoglobals
-                - exhaustruct
-                - varnamelen
-            - path: format\.go
-              text: (?:gochecknoglobals|AllFormats)
-              linters:
-                - gochecknoglobals
-            - path: format\.go
-              text: (?:already exists|make it a constant)
-              linters:
-                - goconst
-            - path: .*\.go$
-              text: .*
-              linters:
-                - godoclint
-                - iface
-                - inamedparam
-                - ireturn
-                - funlen
-                - forbidigo
-                - mnd
-                - noinlineerr
-                - nlreturn
-                - nonamedreturns
-                - tagliatelle
-                - unparam
-                - unused
-                - exhaustruct
-                - nolintlint
-                - paralleltest
-                - thelper
-                - tparallel
-                - varnamelen
-            - path: _test\.go
-              linters:
-                - exhaustruct
-                - testpackage
-                - gochecknoglobals
-                - funlen
-                - cyclop
-                - goconst
-            - path: _test\.go
-              text: unused
-              linters:
-                - unused
-        paths:
-            - \.gen\.go$
-            - _enum\.go$
-            - _templ\.go$
-            - vendor/
+  enable:
+    - arangolint
+    - asasalint
+    - asciicheck
+    - bidichk
+    - bodyclose
+    - canonicalheader
+    - containedctx
+    - contextcheck
+    - copyloopvar
+    - cyclop
+    - decorder
+    - depguard
+    - dogsled
+    - dupl
+    - dupword
+    - durationcheck
+    - embeddedstructfieldcheck
+    - err113
+    - errcheck
+    - errchkjson
+    - errname
+    - errorlint
+    - exhaustive
+    - exhaustruct
+    - exptostd
+    - fatcontext
+    - forbidigo
+    - forcetypeassert
+    - funlen
+    - ginkgolinter
+    - gocheckcompilerdirectives
+    - gochecknoglobals
+    - gochecknoinits
+    - gochecksumtype
+    - gocognit
+    - goconst
+    - gocritic
+    - gocyclo
+    - godot
+    - godox
+    - goheader
+    - gomoddirectives
+    - gomodguard_v2
+    - goprintffuncname
+    - gosec
+    - gosmopolitan
+    - govet
+    - grouper
+    - importas
+    - ineffassign
+    - interfacebloat
+    - intrange
+    - iotamixing
+    - loggercheck
+    - maintidx
+    - makezero
+    - mirror
+    - misspell
+    - mnd
+    - modernize
+    - musttag
+    - nakedret
+    - nestif
+    - nilerr
+    - nilnesserr
+    - nilnil
+    - noctx
+    - nolintlint
+    - nosprintfhostport
+    - paralleltest
+    - perfsprint
+    - prealloc
+    - predeclared
+    - promlinter
+    - protogetter
+    - reassign
+    - recvcheck
+    - revive
+    - rowserrcheck
+    - sloglint
+    - spancheck
+    - sqlclosecheck
+    - staticcheck
+    - tagalign
+    - testableexamples
+    - testifylint
+    - testpackage
+    - thelper
+    - tparallel
+    - unconvert
+    - unparam
+    - unqueryvet
+    - unused
+    - usestdlibvars
+    - usetesting
+    - varnamelen
+    - wastedassign
+    - whitespace
+    - wrapcheck
+    - wsl_v5
+    - zerologlint
+  settings:
+    depguard:
+      rules:
+        default:
+          allow:
+            - $STDERR
+            - $GITHUB_ACTION
+            - bytes
+            - cmp
+            - encoding/csv
+            - encoding/json
+            - encoding/xml
+            - errors
+            - fmt
+            - html
+            - io
+            - os
+            - slices
+            - sort
+            - strconv
+            - strings
+            - sync
+            - testing
+            - time
+            - github.com/larsartmann/go-output
+            - github.com/larsartmann/go-output/enum
+            - github.com/larsartmann/go-output/internal/gentest
+            - github.com/larsartmann/go-output/escape
+            - github.com/larsartmann/go-output/table
+            - github.com/larsartmann/go-output/testhelpers
+            - github.com/larsartmann/go-output/d2
+            - github.com/larsartmann/go-output/graph
+            - github.com/larsartmann/go-output/examples/shared
+            - github.com/larsartmann/go-branded-id
+            - github.com/larsartmann/go-output/pkg/errors
+            - charm.land/lipgloss/v2
+            - charm.land/lipgloss/v2/table
+            - github.com/go-faster/yaml
+            - golang.org/x/term
+        examples:
+          allow:
+            - $STDERR
+            - $GITHUB_ACTION
+            - bytes
+            - fmt
+            - io
+            - os
+            - strconv
+            - strings
+            - github.com/larsartmann/go-output
+            - github.com/larsartmann/go-output/examples/shared
+            - github.com/larsartmann/go-output/table
+            - github.com/larsartmann/go-output/d2
+            - github.com/larsartmann/go-output/graph
+            - github.com/larsartmann/go-branded-id
+          files:
+            - examples/**/*.go
+        main:
+          allow:
+            - $STDERR
+            - $GITHUB_ACTION
+            - github.com/larsartmann/go-output
+            - github.com/larsartmann/go-output/enum
+            - github.com/larsartmann/go-output/internal/gentest
+            - github.com/larsartmann/go-output/escape
+            - github.com/larsartmann/go-output/table
+            - github.com/larsartmann/go-output/testhelpers
+            - github.com/larsartmann/go-output/d2
+            - github.com/larsartmann/go-output/graph
+            - github.com/larsartmann/go-output/examples/shared
+            - github.com/larsartmann/go-branded-id
+            - charm.land/lipgloss/v2
+            - charm.land/lipgloss/v2/table
+            - github.com/go-faster/yaml
+            - golang.org/x/term
+            - bytes
+            - cmp
+            - encoding/csv
+            - encoding/json
+            - encoding/xml
+            - errors
+            - fmt
+            - html
+            - io
+            - os
+            - slices
+            - sort
+            - strconv
+            - strings
+            - sync
+            - testing
+            - time
+    exhaustruct:
+      exclude:
+        - os/exec.Cmd
+    gocritic:
+      disabled-checks:
+        - dupImport
+        - ifElseChain
+        - octalLiteral
+        - whyNoLint
+    gomoddirectives:
+      replace-allow-list:
+        - github.com/larsartmann/go-output/enum
+        - github.com/larsartmann/go-output/escape
+        - github.com/larsartmann/go-output/testhelpers
+      replace-local: true
+    revive:
+      rules:
+        - disabled: true
+          name: var-naming
+  exclusions:
+    generated: lax
+    rules:
+      - path: testing_test\.go
+        text: package should be
+        linters:
+          - testpackage
+      - path: _test\.go$
+        text: package should be
+        linters:
+          - testpackage
+      - path: benchmarks_test\.go
+        text: package should be
+        linters:
+          - testpackage
+      - path: fuzz_test\.go
+        text: package should be
+        linters:
+          - testpackage
+      - path: render_helpers_test\.go
+        text: package should be
+        linters:
+          - testpackage
+      - path: userjourney_test\.go
+        text: package should be
+        linters:
+          - testpackage
+      - path: integration/
+        text: package should be
+        linters:
+          - testpackage
+      - path: enum/enum_test\.go
+        text: package should be
+        linters:
+          - testpackage
+      - path: enum/testing_test\.go
+        text: package should be
+        linters:
+          - testpackage
+      - path: internal/
+        text: (?:gochecknoglobals)
+        linters:
+          - gochecknoglobals
+      - path: escape/
+        text: (?:gochecknoglobals)
+        linters:
+          - gochecknoglobals
+      - path: examples/
+        text: (?:forbidigo|magic number|global variable)
+        linters:
+          - forbidigo
+          - mnd
+          - gochecknoglobals
+      - path: _test\.go$
+        text: (?:parallel test|t\.Parallel)
+        linters:
+          - paralleltest
+      - path: _test\.go$
+        text: (?:make it a constant|but such constant)
+        linters:
+          - goconst
+      - path: _test\.go$
+        text: (?:parallel test|t\.Parallel|test helper)
+        linters:
+          - paralleltest
+          - thelper
+          - tparallel
+
+      - path: internal/
+        text: .*
+        linters:
+          - gochecknoglobals
+          - exhaustruct
+          - varnamelen
+      - path: escape/
+        text: .*
+        linters:
+          - gochecknoglobals
+          - exhaustruct
+          - varnamelen
+      - path: format\.go
+        text: (?:gochecknoglobals|AllFormats)
+        linters:
+          - gochecknoglobals
+      - path: format\.go
+        text: (?:already exists|make it a constant)
+        linters:
+          - goconst
+      - path: .*\.go$
+        text: .*
+        linters:
+          - godoclint
+          - iface
+          - inamedparam
+          - ireturn
+          - funlen
+          - forbidigo
+          - mnd
+          - noinlineerr
+          - nlreturn
+          - nonamedreturns
+          - tagliatelle
+          - unparam
+          - unused
+          - exhaustruct
+          - nolintlint
+          - paralleltest
+          - thelper
+          - tparallel
+          - varnamelen
+    paths:
+      - _enum\.go$
 formatters:
-    enable:
-        - gci
-        - goimports
-        - gofumpt
-        - golines
-    settings:
-        goimports:
-            local-prefixes:
-                - github.com/larsartmann/go-output
-        golines:
-            max-len: 120
-    exclusions:
-        generated: lax
-        paths:
-            - _enum\.go$
-            - _templ\.go$
+  enable:
+    - goimports
+    - gofumpt
+    - golines
+  settings:
+    goimports:
+      local-prefixes:
+        - github.com/larsartmann/go-output
+  exclusions:
+    generated: lax
+    paths:
+      - _enum\.go$
 issues: {}
