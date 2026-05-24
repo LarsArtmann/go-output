@@ -1,67 +1,54 @@
 # Domain Language
 
-A **Unified Language** for `.` — shared across Customer, Product Owner, Developer, and AI.
+A **Unified Language** for `go-output` — shared across Customer, Product Owner, Developer, and AI.
 Inspired by Domain-Driven Design (DDD) Ubiquitous Language.
 
 Every term below should mean the **same thing** to everyone who reads it.
-If a word means something different to a developer than to a customer, define it here.
 
 ## Glossary
 
-| Term         | Definition               | Context                        |
-| ------------ | ------------------------ | ------------------------------ |
-| .            | The project/product name | What we call this system       |
-| Example Term | A placeholder definition | Replace with your actual terms |
+| Term                   | Definition                                                             | Context                                                                         |
+| ---------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| **Format**             | A string enum identifying an output format (e.g., "json", "csv", "d2") | Used for CLI flags, runtime dispatch, capability queries                        |
+| **Shape**              | A data shape an output format can render: table, tree, or graph        | `ShapeTable`, `ShapeTree`, `ShapeGraph` — formats declare which they support    |
+| **Renderer**           | The core interface: `Render() (string, error)`                         | Every format implements this — JSON, CSV, HTML, D2, DOT, Mermaid, etc.          |
+| **TableData**          | Tabular data structure with headers and rows (`[][]string`)            | Central data type shared across all table-capable formats                       |
+| **TreeNode**           | A node in a tree hierarchy with id, label, children, metadata          | Used by Tree, JSON Tree, YAML Tree, HTML Tree renderers                         |
+| **GraphNode**          | A node in a graph with branded ID, label, and optional shape           | Used by DOT, Mermaid, JSON Graph, YAML Graph renderers                          |
+| **GraphEdge**          | A directed edge between two GraphNodes with optional label and style   | Used alongside GraphNode in graph renderers                                     |
+| **Branded ID**         | A phantom-typed identifier (e.g., `D2NodeID`, `TreeNodeID`)            | Prevents mixing different ID types at compile time                              |
+| **GraphRendererMixin** | Shared state holder for graph renderers (nodes, edges)                 | Embedded by DOTRenderer and MermaidRenderer in `graph/` module                  |
+| **ColorMode**          | Terminal color output mode: auto, always, never                        | Respects `NO_COLOR`, CI env vars, TTY detection                                 |
+| **Registry**           | Opt-in format→factory map for runtime renderer dispatch                | `Register(format, factory)`, `Create(format)` — sub-modules register themselves |
 
 ## Entities
 
-Objects with identity and lifecycle (e.g., User, Order, Account).
-
-<!-- Add your entities here:
-| Term | Definition | Context |
-|------|-----------|---------|
-| User | A person who interacts with the system | Customer-facing |
--->
+| Term                | Definition                                                   | Context                                   |
+| ------------------- | ------------------------------------------------------------ | ----------------------------------------- |
+| **D2Diagram**       | A D2 diagram with nodes, edges, tables, classes, and styling | Lives in `d2/` module — rich domain model |
+| **DOTRenderer**     | A renderer producing DOT/Graphviz output                     | Lives in `graph/` module                  |
+| **MermaidRenderer** | A renderer producing Mermaid flowchart output                | Lives in `graph/` module                  |
+| **HTMLRenderer**    | A renderer producing styled HTML tables                      | Supports both table and tree shapes       |
 
 ## Value Objects
 
-Immutable objects defined by attributes (e.g., Email, Money, Address).
-
-<!-- Add your value objects here:
-| Term | Definition | Context |
-|------|-----------|---------|
-| Email | A validated email address | Unique identifier for users |
--->
-
-## Events
-
-Things that happen in the domain (e.g., UserRegistered, PaymentProcessed).
-
-<!-- Add your events here:
-| Term | Definition | Context |
-|------|-----------|---------|
-| UserRegistered | A new user completed signup | Triggers welcome email |
--->
-
-## Commands
-
-Actions the system can perform (e.g., CreateUser, ProcessPayment).
-
-<!-- Add your commands here:
-| Term | Definition | Context |
-|------|-----------|---------|
-| CreateUser | Registers a new user account | Admin action |
--->
+| Term             | Definition                                                         | Context                                                |
+| ---------------- | ------------------------------------------------------------------ | ------------------------------------------------------ |
+| **SortBy**       | A string enum for sort criteria                                    | `ParseSortBy()`, `IsValid()` — used for column sorting |
+| **GraphShape**   | Visual shape for a graph node: rectangle, diamond, ellipse, etc.   | DOT and Mermaid renderers interpret these              |
+| **EdgeStyle**    | Visual style for a graph edge: solid, dashed, dotted               | Used in DOT renderer                                   |
+| **D2NodeShape**  | D2-specific node shape: rectangle, circle, hexagon, cylinder, etc. | 20 shapes supported in `d2/` module                    |
+| **D2ArrowType**  | D2-specific arrow head style                                       | 11 arrow types in `d2/` module                         |
+| **D2Constraint** | SQL column constraint: primary, unique, foreign                    | Used in D2 SQL table rendering                         |
 
 ## Bounded Contexts
 
-Subsystems with distinct vocabulary (e.g., Billing vs. Shipping).
-
-<!-- Define contexts where the same word means different things:
-| Context | Description |
-|---------|------------|
-| Billing | Handles payments and invoices |
--->
+| Context                          | Description                                                                                            |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| **Core** (root `package output`) | Core types, interfaces, simple formatters (JSON, CSV, TSV, XML, Markdown, YAML, HTML, Tree, Streaming) |
+| **D2** (`d2/` module)            | D2-specific diagram domain — rich types, SQL tables, grid layouts, style classes                       |
+| **Graph** (`graph/` module)      | DOT and Mermaid graph rendering — flowcharts, directed graphs                                          |
+| **Table** (`table/` module)      | Terminal table rendering with lipgloss styling — isolated heavy dependency                             |
 
 ---
 

@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/larsartmann/go-output"
+	"github.com/larsartmann/go-output/testhelpers"
 )
 
 // TestCSVToTableData tests converting CSV data to TableData.
@@ -48,8 +49,8 @@ func TestTableDataToJSON(t *testing.T) {
 
 	// Then: JSON should contain all data
 	jsonStr := string(jsonBytes)
-	assertContains(t, jsonStr, "Alpha", "JSON should contain Alpha")
-	assertContains(t, jsonStr, "100", "JSON should contain 100")
+	testhelpers.AssertContains(t, jsonStr, "Alpha", "JSON should contain Alpha")
+	testhelpers.AssertContains(t, jsonStr, "100", "JSON should contain 100")
 }
 
 // TestTableDataToYAML tests rendering TableData as YAML.
@@ -72,8 +73,8 @@ func TestTableDataToYAML(t *testing.T) {
 
 	// Then: YAML should contain all data
 	yamlStr := string(yamlBytes)
-	assertContains(t, yamlStr, "Name", "YAML should contain Name header")
-	assertContains(t, yamlStr, "Gamma", "YAML should contain Gamma")
+	testhelpers.AssertContains(t, yamlStr, "Name", "YAML should contain Name header")
+	testhelpers.AssertContains(t, yamlStr, "Gamma", "YAML should contain Gamma")
 }
 
 // TestSortAndRenderWorkflow tests sorting before rendering.
@@ -104,7 +105,7 @@ func TestSortAndRenderWorkflow(t *testing.T) {
 		jsonStr := string(jsonBytes)
 
 		// Then: Apple should come first
-		assertContains(t, jsonStr, `"Apple"`, "Sorted JSON should contain Apple")
+		testhelpers.AssertContains(t, jsonStr, `"Apple"`, "Sorted JSON should contain Apple")
 
 		appleIdx := strings.Index(jsonStr, `"Apple"`)
 
@@ -164,8 +165,8 @@ func TestLargeDatasetWorkflow(t *testing.T) {
 
 		// Then: Output should be valid HTML
 		result := buf.String()
-		assertContains(t, result, "<table", "Should contain table tag")
-		assertContains(t, result, "<tr>", "Should contain row tags")
+		testhelpers.AssertContains(t, result, "<table", "Should contain table tag")
+		testhelpers.AssertContains(t, result, "<tr>", "Should contain row tags")
 	})
 }
 

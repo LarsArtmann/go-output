@@ -129,7 +129,10 @@ func (r *StreamingHTMLRenderer) writeRows(w io.Writer) error {
 }
 
 func (r *StreamingHTMLRenderer) writeRow(w io.Writer, row []string, rowIndex int) error {
-	if err := r.writeChunkWithError(w, []byte("<tr>\n"), rowIndex, "start"); err != nil {
+	if err := r.writeChunk(
+		w, []byte("<tr>\n"),
+		fmt.Sprintf("write row %d start", rowIndex),
+	); err != nil {
 		return err
 	}
 
@@ -139,21 +142,10 @@ func (r *StreamingHTMLRenderer) writeRow(w io.Writer, row []string, rowIndex int
 		}
 	}
 
-	return r.writeChunkWithError(w, []byte("</tr>\n"), rowIndex, "end")
-}
-
-func (r *StreamingHTMLRenderer) writeChunkWithError(
-	w io.Writer,
-	chunk []byte,
-	rowIndex int,
-	location string,
-) error {
-	_, err := w.Write(chunk)
-	if err != nil {
-		return fmt.Errorf("write row %d %s: %w", rowIndex, location, err)
-	}
-
-	return nil
+	return r.writeChunk(
+		w, []byte("</tr>\n"),
+		fmt.Sprintf("write row %d end", rowIndex),
+	)
 }
 
 func (r *StreamingHTMLRenderer) writeTableClose(w io.Writer) error {

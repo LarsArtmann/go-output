@@ -72,26 +72,14 @@ func (r *JSONTreeRenderer) toJSONNode(node *TreeNode) jsonTreeNode {
 
 // JSONGraphRenderer renders graph nodes and edges as JSON.
 type JSONGraphRenderer struct {
-	nodes []GraphNode
-	edges []GraphEdge
+	GraphRendererMixin
 }
 
 // NewJSONGraphRenderer creates a new JSONGraphRenderer.
 func NewJSONGraphRenderer() *JSONGraphRenderer {
 	return &JSONGraphRenderer{
-		nodes: make([]GraphNode, 0),
-		edges: make([]GraphEdge, 0),
+		GraphRendererMixin: NewGraphRendererMixin(),
 	}
-}
-
-// SetNodes sets the graph nodes.
-func (r *JSONGraphRenderer) SetNodes(nodes []GraphNode) {
-	r.nodes = nodes
-}
-
-// SetEdges sets the graph edges.
-func (r *JSONGraphRenderer) SetEdges(edges []GraphEdge) {
-	r.edges = edges
 }
 
 // jsonGraph is the JSON representation of a graph.
@@ -118,11 +106,11 @@ type jsonGraphEdge struct {
 // Render returns the graph as a JSON string.
 func (r *JSONGraphRenderer) Render() (string, error) {
 	graph := jsonGraph{
-		Nodes: make([]jsonGraphNode, 0, len(r.nodes)),
-		Edges: make([]jsonGraphEdge, 0, len(r.edges)),
+		Nodes: make([]jsonGraphNode, 0, len(r.Nodes())),
+		Edges: make([]jsonGraphEdge, 0, len(r.Edges())),
 	}
 
-	for _, node := range r.nodes {
+	for _, node := range r.Nodes() {
 		n := jsonGraphNode{
 			ID:       node.ID.Get(),
 			Label:    node.Label.Get(),
@@ -132,13 +120,11 @@ func (r *JSONGraphRenderer) Render() (string, error) {
 		graph.Nodes = append(graph.Nodes, n)
 	}
 
-	for _, edge := range r.edges {
+	for _, edge := range r.Edges() {
 		e := jsonGraphEdge{
-			From: edge.From.Get(),
-			To:   edge.To.Get(),
-		}
-		if !edge.Label.IsZero() {
-			e.Label = edge.Label.Get()
+			From:  edge.From.Get(),
+			To:    edge.To.Get(),
+			Label: brandedValue(edge.Label),
 		}
 
 		graph.Edges = append(graph.Edges, e)

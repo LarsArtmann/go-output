@@ -2,13 +2,13 @@
 package output
 
 import (
-	"errors"
-	"fmt"
-
 	"github.com/larsartmann/go-output/enum"
 )
 
 // SortBy represents the available sort field options for CLI applications.
+//
+// Deprecated: SortBy is application-specific business logic that does not belong
+// in a general-purpose output library. Define your own sort enum in your application.
 type SortBy string
 
 // Sort field constants.
@@ -31,14 +31,20 @@ var sortByValues = []SortBy{
 	SortByComplexity,
 }
 
-// ErrInvalidSortBy is returned when an invalid sort field is provided.
-var ErrInvalidSortBy = errors.New("invalid sort by")
+// InvalidSortByError is returned when an invalid sort field is provided.
+type InvalidSortByError struct {
+	Value string
+}
+
+func (e *InvalidSortByError) Error() string {
+	return "invalid sort by: " + e.Value
+}
 
 // ParseSortBy converts a string to SortBy, returning an error if invalid.
 func ParseSortBy(s string) (SortBy, error) {
 	v, err := enum.Parse(sortByValues, s, func(s SortBy) string { return string(s) })
 	if err != nil {
-		return "", fmt.Errorf("%w: %q", ErrInvalidSortBy, s)
+		return "", &InvalidSortByError{Value: s}
 	}
 
 	return v, nil

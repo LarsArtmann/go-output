@@ -180,3 +180,159 @@ func TestMarshalXMLIndent(t *testing.T) {
 	result := string(data)
 	assertContains(t, result, "  <name>", "Indented XML should contain indentation")
 }
+
+func TestXMLWriterWriteHeaderError(t *testing.T) {
+	t.Parallel()
+
+	x := NewXMLWriter(&errorWriter{})
+
+	err := x.WriteHeader([]string{"Name"})
+	if err == nil {
+		t.Fatal("expected error from errorWriter")
+	}
+
+	assertContains(t, err.Error(), "xml header", "error should mention xml header")
+}
+
+func TestXMLWriterWriteHeaderTableOpenError(t *testing.T) {
+	t.Parallel()
+
+	x := NewXMLWriter(&writeNThenFailWriter{remaining: 1})
+
+	err := x.WriteHeader([]string{"Name"})
+	if err == nil {
+		t.Fatal("expected error on table open")
+	}
+
+	assertContains(t, err.Error(), "table open", "error should mention table open")
+}
+
+func TestXMLWriterWriteHeaderHeadersOpenError(t *testing.T) {
+	t.Parallel()
+
+	x := NewXMLWriter(&writeNThenFailWriter{remaining: 2})
+
+	err := x.WriteHeader([]string{"Name"})
+	if err == nil {
+		t.Fatal("expected error on headers open")
+	}
+
+	assertContains(t, err.Error(), "headers open", "error should mention headers open")
+}
+
+func TestXMLWriterWriteHeaderColumnsError(t *testing.T) {
+	t.Parallel()
+
+	x := NewXMLWriter(&writeNThenFailWriter{remaining: 3})
+
+	err := x.WriteHeader([]string{"Name"})
+	if err == nil {
+		t.Fatal("expected error on columns")
+	}
+
+	assertContains(t, err.Error(), "columns", "error should mention columns")
+}
+
+func TestXMLWriterWriteHeaderHeadersCloseError(t *testing.T) {
+	t.Parallel()
+
+	x := NewXMLWriter(&writeNThenFailWriter{remaining: 6})
+
+	err := x.WriteHeader([]string{"Name"})
+	if err == nil {
+		t.Fatal("expected error on headers close")
+	}
+
+	assertContains(t, err.Error(), "headers close", "error should mention headers close")
+}
+
+func TestXMLWriterWriteHeaderRowsOpenError(t *testing.T) {
+	t.Parallel()
+
+	x := NewXMLWriter(&writeNThenFailWriter{remaining: 7})
+
+	err := x.WriteHeader([]string{"Name"})
+	if err == nil {
+		t.Fatal("expected error on rows open")
+	}
+
+	assertContains(t, err.Error(), "rows open", "error should mention rows open")
+}
+
+func TestXMLWriterWriteFooterTableCloseError(t *testing.T) {
+	t.Parallel()
+
+	x := NewXMLWriter(&writeNThenFailWriter{remaining: 1})
+
+	err := x.WriteFooter()
+	if err == nil {
+		t.Fatal("expected error on table close")
+	}
+
+	assertContains(t, err.Error(), "table close", "error should mention table close")
+}
+
+func TestXMLWriterWriteRowError(t *testing.T) {
+	t.Parallel()
+
+	x := NewXMLWriter(&errorWriter{})
+
+	err := x.WriteRow([]string{"test"})
+	if err == nil {
+		t.Fatal("expected error from errorWriter")
+	}
+
+	assertContains(t, err.Error(), "row", "error should mention row")
+}
+
+func TestXMLWriterWriteRowsError(t *testing.T) {
+	t.Parallel()
+
+	x := NewXMLWriter(&errorWriter{})
+
+	err := x.WriteRows([][]string{{"a", "b"}})
+	if err == nil {
+		t.Fatal("expected error from errorWriter")
+	}
+
+	assertContains(t, err.Error(), "row", "error should mention row")
+}
+
+func TestXMLWriterWriteFooterError(t *testing.T) {
+	t.Parallel()
+
+	x := NewXMLWriter(&errorWriter{})
+
+	err := x.WriteFooter()
+	if err == nil {
+		t.Fatal("expected error from errorWriter")
+	}
+
+	assertContains(t, err.Error(), "rows close", "error should mention rows close")
+}
+
+func TestMarshalXMLFromTableDataNoHeaders(t *testing.T) {
+	t.Parallel()
+
+	data := NewTableData(nil)
+	data.AddRow([]string{"a", "b"})
+
+	result, err := MarshalXMLFromTableData(data)
+	if err != nil {
+		t.Fatalf("MarshalXMLFromTableData() error = %v", err)
+	}
+
+	output := string(result)
+	assertContains(t, output, "<rows>", "should contain rows")
+	assertContains(t, output, "<row>", "should contain row")
+	assertContains(t, output, "</table>", "should contain table close")
+}
+
+func TestMarshalXMLIndentError(t *testing.T) {
+	t.Parallel()
+
+	_, err := MarshalXMLIndent(make(chan int), "", "  ")
+	if err == nil {
+		t.Fatal("expected error for unmarshalable type")
+	}
+}

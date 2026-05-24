@@ -6,6 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Removed
+
+- **BREAKING**: `format_deprecated.go` removed — `OutputFormat`, `FormatCategory`, `ParseOutputFormat`, `IsTableFormat()`, `IsTreeFormat()`, `IsGraphFormat()`, `Category()` all removed. Use `Format`, `Shape`, `ParseFormat()`, `Supports(Shape*)`, `Shapes()` instead.
+- **BREAKING**: `sort/` module removed — `ByField` is trivially replaceable with `slices.SortStableFunc` + `cmp.Compare` from stdlib.
+- **BREAKING**: `MermaidFlowchartRenderer` and `MermaidTreeRenderer` removed — use `MermaidFromTableData` and `MermaidFromTree` instead.
+- `gci` formatter removed from `.golangci.yml` (conflicted with `goimports` on local-prefix grouping in sub-modules).
+
+### Changed
+
+- **BREAKING**: D2 diagram types moved to `d2/` sub-module — `output.D2Node` → `d2.D2Node`, `output.NewD2Renderer` → `d2.NewD2Diagram`, etc. Import `github.com/larsartmann/go-output/d2`.
+- **BREAKING**: DOT and Mermaid renderers moved to `graph/` sub-module — `output.DOTFromTableData` → `graph.DOTFromTableData`, `output.MermaidFromTableData` → `graph.MermaidFromTableData`. Import `github.com/larsartmann/go-output/graph`.
+- `RenderTableData` now returns `UnsupportedFormatError` for D2, Mermaid, and DOT formats (use sub-module constructors directly).
+- Added `Nodes()`, `Edges()`, `NodesPtr()`, `EdgesPtr()` accessor methods to `GraphRendererMixin` for cross-package use.
+- Multi-module workspace: 9 independent modules (see ADR 001, ADR 003).
+
 ### Added
 
 - `JSONTableRenderer` — renders `TableData` as a JSON array of objects (implements `Renderer` + `TableRenderer`)
@@ -23,26 +38,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - `RenderTableData` — all writer errors now wrapped with `fmt.Errorf("write X: %w", err)` for pinpoint failure reporting
 - `FilledStrings` — uses `slices.Repeat` (Go 1.26 stdlib) instead of manual make+for loop
 - `NewBrandedID` — simplified from `id.NewID[Brand, string](value)` to `id.NewID[Brand](value)` (inferred type arg)
-- `sort/` module no longer depends on root — circular dependency eliminated
-- `sort/sorter.go` (`Sorter[T]`, `New`, `WithLessFunc`, `Sort`) deleted — use stdlib `slices.SortStableFunc`
-- `sort/sort_test.go` deleted (415 lines of tests for removed deprecated type)
-- `sort/compare.go` updated: package docs, `ByField` signature, usage examples
-- `sort/compare_test.go` rewritten as self-contained with zero external deps
-- `sort/go.mod` stripped to 3 lines (zero dependencies)
 - `enum/enum_test.go` no longer imports `internal/gentest` (inlined helper)
-- `cmdguard/cmdguard_test.go` no longer imports `internal/gentest` (inlined helper)
-- Root `go.mod` no longer requires or replaces `sort/` module
-- `integration/go.mod` no longer requires or replaces `sort/` module
-- `userjourney_test.go` uses stdlib `slices.SortStableFunc` + `cmp.Compare`
-- `integration/workflow_test.go` uses stdlib sort instead of deprecated `sort.New`
 - `.gitignore` — added `result` and `.direnv/` for Nix artifacts
 
 ### Removed
 
 - `ErrUnsupportedFormat` — renamed to `UnsupportedFormatError` (breaking change)
-- `sort/sorter.go` — deprecated `Sorter[T]` type (circular dependency with root)
-- `sort/sort_test.go` — tests for deleted type
-- `sort/go.sum` — no longer needed (zero deps)
+- `TestContainsString` in graph/ — tested stdlib `strings.Contains` (zero value)
 
 ## [0.4.0] - 2026-05-17
 

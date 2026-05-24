@@ -93,6 +93,24 @@ func testCreateRowEdgesMultiple(t *testing.T) {
 	verifyEdge(1, "row1", "row2")
 }
 
+func testAssertToMapSliceNil(t *testing.T, data *TableData, desc string) {
+	t.Helper()
+
+	if got := data.ToMapSlice(); got != nil {
+		t.Errorf("ToMapSlice() on %s = %v, want nil", desc, got)
+	}
+}
+
+func assertMapFields(t *testing.T, got, want map[string]string) {
+	t.Helper()
+
+	for k, v := range want {
+		if got[k] != v {
+			t.Errorf("map[%q] = %q, want %q", k, got[k], v)
+		}
+	}
+}
+
 func testTableDataToMapSlice(t *testing.T) {
 	t.Helper()
 
@@ -100,20 +118,14 @@ func testTableDataToMapSlice(t *testing.T) {
 		t.Parallel()
 
 		var data *TableData
-
-		if got := data.ToMapSlice(); got != nil {
-			t.Errorf("ToMapSlice() = %v, want nil", got)
-		}
+		testAssertToMapSliceNil(t, data, "nil")
 	})
 
 	t.Run("no headers", func(t *testing.T) {
 		t.Parallel()
 
 		data := &TableData{Rows: [][]string{{"a"}}}
-
-		if got := data.ToMapSlice(); got != nil {
-			t.Errorf("ToMapSlice() = %v, want nil", got)
-		}
+		testAssertToMapSliceNil(t, data, "no headers")
 	})
 
 	t.Run("maps rows to headers", func(t *testing.T) {
@@ -129,13 +141,8 @@ func testTableDataToMapSlice(t *testing.T) {
 			t.Fatalf("ToMapSlice() returned %d maps, want 2", len(got))
 		}
 
-		if got[0]["Name"] != "Alice" || got[0]["Age"] != "30" {
-			t.Errorf("ToMapSlice()[0] = %v, want Name=Alice Age=30", got[0])
-		}
-
-		if got[1]["Name"] != "Bob" || got[1]["Age"] != "25" {
-			t.Errorf("ToMapSlice()[1] = %v, want Name=Bob Age=25", got[1])
-		}
+		assertMapFields(t, got[0], map[string]string{"Name": "Alice", "Age": "30"})
+		assertMapFields(t, got[1], map[string]string{"Name": "Bob", "Age": "25"})
 	})
 
 	t.Run("short row omits missing cells", func(t *testing.T) {

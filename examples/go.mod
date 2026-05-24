@@ -4,13 +4,15 @@ go 1.26.2
 
 require (
 	github.com/larsartmann/go-output v0.0.0
+	github.com/larsartmann/go-output/d2 v0.0.0
+	github.com/larsartmann/go-output/graph v0.0.0
 	github.com/larsartmann/go-output/table v0.0.0
 )
 
 require (
 	charm.land/lipgloss/v2 v2.0.3 // indirect
 	github.com/charmbracelet/colorprofile v0.4.3 // indirect
-	github.com/charmbracelet/ultraviolet v0.0.0-20251205161215-1948445e3318 // indirect
+	github.com/charmbracelet/ultraviolet v0.0.0-20260511121909-c840852527f3 // indirect
 	github.com/charmbracelet/x/ansi v0.11.7 // indirect
 	github.com/charmbracelet/x/term v0.2.2 // indirect
 	github.com/charmbracelet/x/termios v0.1.1 // indirect
@@ -23,7 +25,6 @@ require (
 	github.com/larsartmann/go-branded-id v0.1.0 // indirect
 	github.com/larsartmann/go-output/enum v0.0.0 // indirect
 	github.com/larsartmann/go-output/escape v0.0.0 // indirect
-	github.com/larsartmann/go-output/testhelpers v0.0.0 // indirect
 	github.com/lucasb-eyer/go-colorful v1.4.0 // indirect
 	github.com/mattn/go-runewidth v0.0.23 // indirect
 	github.com/muesli/cancelreader v0.2.2 // indirect
@@ -38,8 +39,10 @@ require (
 
 replace (
 	github.com/larsartmann/go-output => ../
+	github.com/larsartmann/go-output/d2 => ../d2
 	github.com/larsartmann/go-output/enum => ../enum
 	github.com/larsartmann/go-output/escape => ../escape
+	github.com/larsartmann/go-output/graph => ../graph
 	github.com/larsartmann/go-output/table => ../table
 	github.com/larsartmann/go-output/testhelpers => ../testhelpers
 )

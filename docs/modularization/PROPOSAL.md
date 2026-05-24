@@ -1,146 +1,124 @@
-# Go Modularization Proposal — go-output
+# Go Modularization Proposal — go-output (v2)
 
-**Date:** 2026-05-16
-**Status:** DRAFT
+**Date:** 2026-05-23
+**Status:** ACCEPTED & IMPLEMENTED
 **Deciders:** Lars Artmann
-
-**Status:** REVIEWED (self-review complete, see below)
-
----
-
-## Self-Review (Phase 4)
-
-### Critical Finding: output_test_helpers.go contains graph-specific helpers
-
-`output_test_helpers.go` (176 LOC) contains graph-specific helpers that reference `GraphNode`, `GraphEdge`, DOT, and Mermaid:
-
-- `testNodesAB()`, `testNodesABC()`, `newTestNode()`, `newTestNodeWithShape()` → GraphNode
-- `testEdgeAB()`, `testEdgesAB()`, `testEdgesABC()` → GraphEdge
-- `testDOTEmptyExpected()` → DOT renderer
-- `testMermaidEmptyExpected()` → Mermaid renderer
-
-**Resolution:** Split `output_test_helpers.go`:
-
-- Graph-related helpers move to `graph/` as internal test helpers
-- D2 helpers (none currently in this file — D2 has its own test helpers inline)
-- Remaining helpers (HTML escape, expected output, tree depth) stay in root
-
-### Decision: gentest/ and testutils/ extraction may be over-engineering
-
-At 151 LOC and 149 LOC respectively, extracting test helpers as full modules adds 2 more `go.mod` files and replace directives for minimal benefit. The cross-module `internal/` leak is a minor inconvenience, not a blocking issue.
-
-**Revised approach:** Keep `internal/gentest` and `internal/testutils` in root module. The `internal/` visibility works correctly — sibling modules can import them. The real value is in extracting `d2/` and `graph/`.
-
-### Final Proposal (Revised)
-
-Extract only 2 new modules:
-
-1. **`d2/`** — D2 diagram rendering (833 LOC → 5 files)
-2. **`graph/`** — DOT + Mermaid rendering (568 LOC → 3 files)
-
-Keep `internal/gentest` and `internal/testutils` in root. Fix the sort dependency.
+**Supersedes:** 2026-05-16 proposal (stale — referenced deleted cmdguard/, internal/testutils/)
 
 ---
 
 ## 1. Executive Summary
 
-go-output is already a **partially modularized** multi-module Go workspace (ADR 001 accepted 2026-05-07). The initial split achieved the primary goal: lipgloss isolation in `table/`. However, the **root module remains a god-package** at 3,587 production LOC across 28 files, containing all core types, 7 table formatters, tree rendering, 3 graph renderers, a full D2 diagram system, streaming, and shared infrastructure.
+go-output is a **partially modularized** multi-module Go workspace (ADR 001, accepted 2026-05-07). The initial split achieved lipgloss isolation in `table/`. However, the **root module remains a god-package** at 4,345 production LOC across 31 files, containing all core types, 7 table formatters, tree rendering, 3 graph renderers, a full D2 diagram system, streaming, and shared infrastructure.
 
-This proposal extracts the remaining natural module boundaries while preserving the existing 7-module structure and the "root IS the core" design from ADR 001.
+This proposal extracts two natural module boundaries (`d2/` and `graph/`) while solving the **critical coupling issue** in `render_tabledata.go` that the previous proposal missed.
 
-**What changes:** Extract `d2/` and `graph/` as new modules. Remove the deprecated `sort/` dependency from root's production `go.mod`.
+**What changes:**
 
-**What stays:** Root module remains `package output` — the formatters (JSON, CSV, TSV, Markdown, XML, YAML, HTML), streaming, tree, core types (Format, TableData, TreeNode, Renderer interfaces), and registry all stay in root. The existing `enum/`, `escape/`, `cmdguard/`, `table/`, `sort/` modules are unchanged.
+- Extract `d2/` as new module (835 LOC, 5 production files)
+- Extract `graph/` as new module (319 LOC, 2 production files for DOT+Mermaid)
+- Introduce `TableDataRenderFunc` registry extension to break the root→d2/graph cycle in `render_tabledata.go`
+- Move graph-specific test helpers from `output_test_helpers.go` to `graph/`
+
+**What stays:**
+
+- Root module remains `package output` — core types, interfaces, simple formatters, streaming, tree, registry
+- `enum/`, `escape/`, `testhelpers/`, `sort/`, `table/` unchanged
+- Core types (`GraphNode`, `GraphEdge`, `GraphRenderer`, `TreeNode`, `TableData`, `Format`, `Shape`, branded IDs) stay in root
 
 **Expected benefits:**
 
-- D2 users get an independent module (833 LOC with zero coupling to root formatters)
-- Graph (DOT + Mermaid) users get an independent module (568 LOC, only needs root core types)
-- Root module shrinks from 3,587 → ~2,183 production LOC
+- D2 users get an independent module with zero coupling to root formatters
+- Graph (DOT + Mermaid) users get an independent module
+- Root module shrinks from 4,345 → ~3,191 production LOC (excluding test helpers)
 - Clean DAG: `d2/` and `graph/` depend on root, never the reverse
-- Each new module can be versioned independently
+- No circular dependencies via registry-based dispatch
 
 ---
 
 ## 2. Current State Analysis
 
-### 2.1 Existing Module Landscape
+### 2.1 Existing Module Landscape (as of 2026-05-23)
 
-| Module                  | Path             | Internal Deps               | External Deps                         | Replace Directives | State                                            |
-| ----------------------- | ---------------- | --------------------------- | ------------------------------------- | ------------------ | ------------------------------------------------ |
-| Root (`package output`) | `./`             | enum, escape, sort          | go-faster/yaml, x/term, go-branded-id | 5 replace          | **Leaky** — sort is test-only dep listed as prod |
-| `enum/`                 | `./enum/`        | None                        | None                                  | None               | Clean                                            |
-| `escape/`               | `./escape/`      | None                        | None                                  | None               | Clean                                            |
-| `cmdguard/`             | `./cmdguard/`    | None (tests: root, gentest) | None                                  | None               | Clean                                            |
-| `sort/`                 | `./sort/`        | root                        | None                                  | 2 replace          | Deprecated                                       |
-| `table/`                | `./table/`       | root                        | lipgloss/v2                           | 3 replace          | Clean                                            |
-| `integration/`          | `./integration/` | root, sort, table           | None (transitive)                     | 5 replace          | Clean                                            |
-| `examples/`             | `./examples/`    | root, table                 | lipgloss (transitive)                 | 4 replace          | Clean                                            |
+| Module                  | Path             | Internal Deps                                       | External Deps                         | Replace Directives | State                                    |
+| ----------------------- | ---------------- | --------------------------------------------------- | ------------------------------------- | ------------------ | ---------------------------------------- |
+| Root (`package output`) | `./`             | enum, escape, testhelpers                           | go-faster/yaml, x/term, go-branded-id | 4 replace          | **Leaky** — sort in go.mod but test-only |
+| `enum/`                 | `./enum/`        | testhelpers (tests)                                 | None                                  | 1 replace          | Clean                                    |
+| `escape/`               | `./escape/`      | None                                                | None                                  | None               | Clean                                    |
+| `testhelpers/`          | `./testhelpers/` | None                                                | None                                  | None               | Clean                                    |
+| `sort/`                 | `./sort/`        | None                                                | None                                  | None               | Deprecated, clean                        |
+| `table/`                | `./table/`       | root (prod), enum, escape, testhelpers (transitive) | lipgloss/v2                           | 4 replace          | Clean                                    |
+| `integration/`          | `./integration/` | root, table                                         | None (transitive)                     | 5 replace          | Clean                                    |
+| `examples/`             | `./examples/`    | root, table                                         | None (transitive)                     | 5 replace          | Clean                                    |
+
+**Changes since v1 proposal:**
+
+- `cmdguard/` deleted (commit 10e8104) — zero consumers
+- `internal/testutils/` deleted (commit 291639a) — replaced by public `testhelpers/`
+- `internal/gentest/` still exists but assertions migrated to `testhelpers/`
+- Root production LOC grew from 3,587 → 4,345
+- Module count: 8 (was 10 in v1 proposal due to removed cmdguard)
 
 ### 2.2 Root Module Concern Clusters
 
-| Cluster                        | Files                                                                                               | LOC | External Deps               | Internal Deps                               |
-| ------------------------------ | --------------------------------------------------------------------------------------------------- | --- | --------------------------- | ------------------------------------------- |
-| **Core types + interfaces**    | format.go, ids.go, color.go, sort.go, slices.go, registry.go, format_deprecated.go                  | 734 | enum, go-branded-id, x/term | —                                           |
-| **Table formatters**           | json.go, csv.go, tsv.go, markdown.go, html.go, yaml.go, xml.go, delimited.go, markup.go, marshal.go | 945 | escape, go-faster/yaml      | Core types                                  |
-| **Tree formatter**             | tree.go                                                                                             | 130 | —                           | Core types                                  |
-| **Graph formatters (generic)** | graph.go, dot.go, mermaid.go                                                                        | 568 | enum, escape                | Core types                                  |
-| **D2 (specialized graph)**     | d2.go, d2_enum.go, d2_render.go, d2_write.go, d2_convert.go                                         | 833 | enum, escape                | Core types (GraphNode, TreeNode, BrandedID) |
-| **Streaming**                  | streaming.go                                                                                        | 198 | escape                      | Core types                                  |
-| **Test helpers**               | output_test_helpers.go                                                                              | 176 | —                           | All formatters                              |
+| Cluster                            | Files                                                                                               | LOC    |
+| ---------------------------------- | --------------------------------------------------------------------------------------------------- | ------ |
+| **Core types + interfaces**        | format.go, ids.go, color.go, sort.go, slices.go, registry.go, format_deprecated.go                  | ~700   |
+| **Table data infrastructure**      | tabledata.go, render_tabledata.go                                                                   | ~440   |
+| **Table formatters**               | json.go, csv.go, tsv.go, markdown.go, html.go, yaml.go, xml.go, delimited.go, markup.go, marshal.go | ~1,359 |
+| **JSON/YAML tree+graph renderers** | json_renderers.go, yaml_renderers.go                                                                | ~308   |
+| **Tree formatter**                 | tree.go                                                                                             | ~181   |
+| **Graph core types**               | graph.go                                                                                            | ~249   |
+| **D2 diagram rendering**           | d2.go, d2_enum.go, d2_render.go, d2_write.go, d2_convert.go                                         | ~835   |
+| **DOT + Mermaid rendering**        | dot.go, mermaid.go                                                                                  | ~319   |
+| **Streaming**                      | streaming.go                                                                                        | ~198   |
+| **Test helpers**                   | output_test_helpers.go                                                                              | ~180   |
 
-**Total root production LOC: 3,587**
+**Total root production LOC: 4,345** (31 files)
 
 ### 2.3 Dependency Graph (Current)
 
 ```
-enum ─────────────────────────────────────┐
-escape ───────────────────────────────────┤
-                                         ▼
-sort ──► root (package output) ◄── cmdguard (tests)
-          │
-          ├── json, csv, tsv, markdown, yaml, xml
-          ├── html (table + tree)
-          ├── tree
-          ├── streaming
-          ├── graph.go (GraphNode, GraphEdge, GraphRenderer)
-          ├── dot.go (DOTRenderer, GraphRendererMixin)
-          ├── mermaid.go (MermaidRenderer)
-          └── d2*.go (D2Diagram, 5 files)
+enum ─────────────────────────────┐
+escape ───────────────────────────┤
+testhelpers ──────────────────────┤
+                                  ▼
+sort ──► root (package output)    │
+          │                       │
+          ├── Core: Format, Renderer, TableData, TreeNode
+          ├── GraphNode, GraphEdge, GraphRenderer, BrandedID
+          ├── Formatters: JSON, CSV, TSV, Markdown, HTML, YAML, XML
+          ├── Tree: ASCIITreeRenderer
+          ├── Graph: DOT, Mermaid, GraphRendererMixin
+          ├── D2: D2Diagram (5 files, rich domain model)
+          ├── Streaming: StreamingHTMLRenderer
+          └── Dispatcher: RenderTableData → calls D2, DOT, Mermaid directly
                 │
 table ◄──── root ────► integration
                 │
             examples
 ```
 
-### 2.4 Coupling Hotspots
+### 2.4 Critical Coupling: `render_tabledata.go`
 
-1. **D2 ↔ Root core types** — D2's `d2_convert.go` imports `GraphNode`, `GraphEdge`, `TableData`, `TreeNode`, `GraphShape`, `GraphStyle` from root. But D2 has its own rich types (D2Node, D2Edge, D2Direction, etc.) that are fully self-contained.
+The **previous proposal missed** that `render_tabledata.go` directly calls:
 
-2. **DOT/Mermaid ↔ Root core types** — DOT's `GraphRendererMixin`, `MermaidRenderer` both implement `GraphRenderer` and `Renderer` interfaces from root. They import `GraphNode`, `GraphEdge`, `BrandedID`, `TableData`, `TreeNode`.
+- `D2FromTableData(data)` → defined in `d2_convert.go`
+- `MermaidFlowchartRenderer(data)` → defined in `mermaid.go`
+- `DOTFromTableData(data)` → defined in `dot.go`
 
-3. **`internal/gentest` cross-module leak** — `enum/` and `cmdguard/` test files import `internal/gentest` from the root module. This creates a test-time dependency on the full root module.
+If D2 and graph move to separate modules, root would need to import `d2` and `graph` — creating a **cycle** since those modules depend on root for core types.
 
-4. **`internal/testutils` cross-module leak** — `table/` and `integration/` test files import `internal/testutils` from root.
+**Resolution:** Introduce a `TableDataRenderFunc` registration mechanism (see Section 3.5).
 
-5. **sort is test-only in root** — root's `go.mod` lists `go-output/sort` as a production dependency, but only `userjourney_test.go` imports it. Should be test-only or removed.
+### 2.5 God-Package Analysis
 
-6. **No god-packages in sub-modules** — Each sub-module is small and focused (enum: 64 LOC, escape: 76 LOC, cmdguard: 53 LOC, table: 92 LOC). The root module IS the god-package.
+The root module has **31 production files** spanning **7 distinct concerns**. All are cohesive internally but coupled through `package output`.
 
-### 2.5 God-Package Analysis: Root Module
+The most extractable concerns are:
 
-The root module (`package output`) has **28 production files** spanning **6 distinct concerns**:
-
-| Concern                         | Exports               | Cohesion                           |
-| ------------------------------- | --------------------- | ---------------------------------- |
-| Format enum + core types        | ~35                   | High — core abstractions           |
-| Table formatters (7)            | ~60                   | High — all implement TableRenderer |
-| Tree rendering                  | ~7                    | High — self-contained              |
-| Graph rendering (DOT + Mermaid) | ~20                   | High — implements GraphRenderer    |
-| D2 diagram rendering            | ~33 enum + ~45 render | High — rich domain model           |
-| Streaming HTML                  | ~19                   | Medium — depends on HTML + core    |
-
-All concerns are cohesive internally but coupled through `package output` — they share the same namespace, the same `go.mod`, and the same import path.
+1. **D2** (835 LOC, 5 files) — richest domain model, most self-contained
+2. **DOT + Mermaid** (319 LOC, 2 files) — share `GraphRendererMixin`, identical dependency profile
 
 ---
 
@@ -148,121 +126,154 @@ All concerns are cohesive internally but coupled through `package output` — th
 
 ### 3.1 Module Definitions
 
-#### Existing Modules (Unchanged)
-
-| Module         | Path             | Purpose                  | Production Deps   |
-| -------------- | ---------------- | ------------------------ | ----------------- |
-| `enum/`        | `./enum/`        | Generic enum utilities   | None              |
-| `escape/`      | `./escape/`      | Format-specific escaping | None              |
-| `cmdguard/`    | `./cmdguard/`    | CLI flag parsing         | None              |
-| `sort/`        | `./sort/`        | Deprecated sorting       | root              |
-| `table/`       | `./table/`       | Lipgloss terminal tables | root, lipgloss    |
-| `integration/` | `./integration/` | Cross-module tests       | root, sort, table |
-| `examples/`    | `./examples/`    | Usage examples           | root, table       |
-
 #### New Modules
 
-| Module       | Path       | Purpose                 | Production Deps                      | Public API                                                |
-| ------------ | ---------- | ----------------------- | ------------------------------------ | --------------------------------------------------------- |
-| **`d2/`**    | `./d2/`    | D2 diagram rendering    | root (core types only), enum, escape | D2Diagram, D2Node, D2Edge, D2Direction, D2NodeShape, etc. |
-| **`graph/`** | `./graph/` | DOT + Mermaid rendering | root (core types only), enum, escape | DOTRenderer, MermaidRenderer, GraphRendererMixin          |
+| Module       | Path       | Purpose                 | Production Deps    | Public API                                                               |
+| ------------ | ---------- | ----------------------- | ------------------ | ------------------------------------------------------------------------ |
+| **`d2/`**    | `./d2/`    | D2 diagram rendering    | root, enum, escape | D2Diagram, D2Node, D2Edge, D2Direction, D2NodeShape, all D2 constructors |
+| **`graph/`** | `./graph/` | DOT + Mermaid rendering | root, enum, escape | DOTRenderer, MermaidRenderer, GraphRendererMixin, all graph constructors |
 
-**NOT extracted (revised after self-review):**
+#### Root Module (After Extraction)
 
-- `gentest/` and `testutils/` stay as `internal/` packages in root — 300 LOC total, extraction adds complexity for minimal benefit
-- Streaming stays in root — only 198 LOC, deeply coupled to HTML renderer
+| Cluster                        | Files                                                                                               | LOC        |
+| ------------------------------ | --------------------------------------------------------------------------------------------------- | ---------- |
+| Core types + interfaces        | format.go, ids.go, color.go, sort.go, slices.go, registry.go, format_deprecated.go                  | ~700       |
+| Table data infrastructure      | tabledata.go, render_tabledata.go                                                                   | ~440       |
+| Table formatters               | json.go, csv.go, tsv.go, markdown.go, html.go, yaml.go, xml.go, delimited.go, markup.go, marshal.go | ~1,359     |
+| JSON/YAML tree+graph renderers | json_renderers.go, yaml_renderers.go                                                                | ~308       |
+| Tree formatter                 | tree.go                                                                                             | ~181       |
+| Graph core types               | graph.go (stays — core types used by D2 too)                                                        | ~249       |
+| Streaming                      | streaming.go                                                                                        | ~198       |
+| Test helpers                   | output_test_helpers.go (graph helpers removed)                                                      | ~80        |
+| **Total**                      |                                                                                                     | **~3,515** |
 
-#### Root Module (Slimmed)
+`GraphRendererMixin` moves to `graph/` — only used by DOT and Mermaid.
 
-After extraction, root `package output` contains:
+### 3.2 What Stays in Root
 
-| Cluster                 | Files                                                                                               | LOC       |
-| ----------------------- | --------------------------------------------------------------------------------------------------- | --------- |
-| Core types + interfaces | format.go, ids.go, color.go, sort.go, slices.go, registry.go, format_deprecated.go                  | 734       |
-| Table formatters        | json.go, csv.go, tsv.go, markdown.go, html.go, yaml.go, xml.go, delimited.go, markup.go, marshal.go | 945       |
-| Tree formatter          | tree.go                                                                                             | 130       |
-| Streaming               | streaming.go                                                                                        | 198       |
-| Test helpers            | output_test_helpers.go                                                                              | 176       |
-| **Total**               |                                                                                                     | **2,183** |
+These types must remain in root because they're used by multiple downstream modules:
 
-### ~~3.2 Test Helper Extraction~~ (Superseded)
-
-> **Decision reversed during self-review (Phase 4).** `internal/gentest` and `internal/testutils` stay in root as `internal/` packages. At 151 LOC and 149 LOC respectively, extraction adds 2 more `go.mod` files and replace directives for minimal benefit. The cross-module `internal/` leak is a minor inconvenience, not a blocking issue.
+- `GraphNode`, `GraphEdge`, `GraphShape`, `GraphStyle` — used by D2, DOT, Mermaid, JSON, YAML
+- `GraphRenderer` interface — implemented by D2, DOT, Mermaid
+- `TreeNode`, `TreeOutputRenderer` — used by DOT, Mermaid, D2, tree
+- `TableData` — used by all formatters
+- `Format`, `Shape`, `Renderer`, `TableRenderer` — core interfaces
+- `BrandedID` re-exports and brand types (`D2NodeIDBrand`, `GraphNodeIDBrand`, etc.) — type definitions
+- `AddTreeNodes`, `NodesFromTableData` — utility functions used by DOT, Mermaid, D2
+- Format constants (`FormatD2`, `FormatMermaid`, `FormatDOT`) — enum values
 
 ### 3.3 DAG Verification
 
-Proposed dependency direction:
-
 ```
-Level 0 (zero deps):     enum, escape
-Level 1 (root):          root → enum, escape, go-branded-id, x/term, go-faster/yaml
-Level 2 (format mods):   d2 → root, enum, escape
-                          graph → root, enum, escape
-                          table → root, lipgloss
-Level 3 (consumers):     integration → root, sort, table, d2, graph
-                          examples → root, table, d2, graph
-                          cmdguard (zero prod deps; tests: root)
-                          sort → root (deprecated)
+Level 0 (zero deps):    enum, escape, testhelpers
+Level 1 (root):         root → enum, escape, testhelpers, go-branded-id, x/term, go-faster/yaml
+Level 2 (format mods):  d2 → root, enum, escape
+                         graph → root, enum, escape
+                         table → root, lipgloss
+Level 3 (consumers):    integration → root, table
+                         examples → root, table
+                         sort (deprecated, zero deps)
 ```
 
-**Cycles:** None. All arrows point downward.
-
-**Key invariant:** Root never imports `d2/`, `graph/`, `table/`, `sort/`, `integration/`, or `examples/`. These are always downstream consumers.
+**Cycles:** None. Root never imports `d2/`, `graph/`, `table/`, `integration/`, or `examples/`.
 
 ### 3.4 Replace / Workspace Strategy
 
-**Current:** Replace directives in every consuming module's `go.mod`. No committed `go.work`.
+**Keep current approach:** Replace directives in each consuming module's `go.mod`. No committed `go.work`.
 
-**Proposed:** Keep current approach. It works well:
+**Rationale:**
 
-- Replace directives allow `cd d2 && go test ./...` to work standalone
-- No committed `go.work` means published versions are clean
+- `cd d2 && go test ./...` works standalone
+- Published versions are clean (no go.work)
 - Each module is self-contained for development
 
-**Changes needed:**
+**New files:**
 
-- `d2/go.mod` — new, with replace for root, enum, escape
-- `graph/go.mod` — new, with replace for root, enum, escape
-- Root `go.mod` — remove `sort` from prod deps (test-only or remove entirely)
-- `integration/go.mod` — add `d2`, `graph` to replace directives
-- `examples/go.mod` — add `d2`, `graph`, `table` to replace directives (table is currently missing)
+- `d2/go.mod` — replace for root, enum, escape, testhelpers
+- `graph/go.mod` — replace for root, enum, escape, testhelpers
 
-### 3.5 Test Dependency Isolation
+**Updated files:**
 
-| Module         | Production Deps                                     | Test-Only Deps          |
-| -------------- | --------------------------------------------------- | ----------------------- |
-| `enum/`        | —                                                   | —                       |
-| `escape/`      | —                                                   | —                       |
-| `cmdguard/`    | —                                                   | root                    |
-| `root`         | enum, escape, go-branded-id, x/term, go-faster/yaml | sort (or remove), table |
-| `d2/`          | root, enum, escape                                  | —                       |
-| `graph/`       | root, enum, escape                                  | —                       |
-| `table/`       | root, lipgloss                                      | —                       |
-| `sort/`        | root                                                | —                       |
-| `integration/` | root, sort, table                                   | —                       |
-| `examples/`    | root, table, d2, graph                              | —                       |
+- `integration/go.mod` — add d2, graph to replace
+- `examples/go.mod` — add d2, graph to replace
 
-### 3.6 Interface Extraction
+### 3.5 TableDataRenderFunc Registry (Breaking the Cycle)
 
-No interface extraction needed. The current design already uses clean interfaces:
+**Problem:** `render_tabledata.go` directly calls `D2FromTableData()`, `MermaidFlowchartRenderer()`, and `DOTFromTableData()`. If these move to separate modules, root would need to import them → cycle.
 
-- `Renderer` — defined in root, implemented by all renderers
-- `GraphRenderer` — defined in root, implemented by DOT/Mermaid/D2
-- `TableRenderer` — defined in root, implemented by table formatters
-- `TreeOutputRenderer` — defined in root, implemented by tree renderer
+**Solution:** Extend the registry with a `TableDataRenderFunc` type:
 
-D2 and graph modules import root's interfaces and implement them. Root never imports D2 or graph. This is the correct Go pattern.
+```go
+// In root's registry.go (or render_tabledata.go):
+type TableDataRenderFunc func(w io.Writer, data *TableData, opts RenderOptions) error
 
-### 3.7 Versioning Strategy
+var tableDataRenderers = make(map[Format]TableDataRenderFunc)
 
-**Shared versioning** (same as current):
+func RegisterTableDataRenderer(format Format, fn TableDataRenderFunc) {
+    // register
+}
+
+// RenderTableData checks tableDataRenderers for D2/Mermaid/DOT cases
+```
+
+Then in `d2/` and `graph/` modules, each registers its render function:
+
+```go
+// In d2/init.go or via explicit call:
+func init() {
+    output.RegisterTableDataRenderer(output.FormatD2, renderD2TableData)
+}
+```
+
+**Alternative (simpler, preferred):** Don't use `init()`. Instead:
+
+1. Root's `RenderTableData` returns `UnsupportedFormatError` for D2/Mermaid/DOT after extraction
+2. D2 and graph modules provide their own `RenderTableData(data) error` convenience functions
+3. Callers who need D2/Mermaid/DOT import the module directly
+
+**Decision: Option 2 (UnsupportedFormatError approach).**
+
+**Rationale:**
+
+- Simpler — no registry extension needed
+- Honest — `RenderTableData` in root only handles root-owned formats
+- D2/graph modules already have `D2FromTableData()`, `DOTFromTableData()`, `MermaidFlowchartRenderer()` which accept `TableData` directly
+- Users who need D2/graph already import those modules
+- Avoids `init()` side effects and global state
+
+**Impact:** `render_tabledata.go` loses ~50 LOC (3 render functions). `render_tabledata_test.go` loses ~35 LOC (3 test cases). These move to their respective modules as tests.
+
+### 3.6 Test Dependency Isolation
+
+| Module         | Production Deps                                                  | Test-Only Deps               |
+| -------------- | ---------------------------------------------------------------- | ---------------------------- |
+| `enum/`        | —                                                                | testhelpers                  |
+| `escape/`      | —                                                                | —                            |
+| `testhelpers/` | —                                                                | —                            |
+| `root`         | enum, escape, testhelpers, go-branded-id, x/term, go-faster/yaml | —                            |
+| `d2/`          | root, enum, escape                                               | testhelpers (for assertions) |
+| `graph/`       | root, enum, escape                                               | testhelpers (for assertions) |
+| `table/`       | root, lipgloss                                                   | —                            |
+| `sort/`        | —                                                                | —                            |
+| `integration/` | root, table                                                      | —                            |
+| `examples/`    | root, table                                                      | —                            |
+
+### 3.7 Interface Extraction
+
+No interface extraction needed. The current design uses clean interfaces already:
+
+- `Renderer`, `GraphRenderer`, `TableRenderer`, `TreeOutputRenderer` — all defined in root
+- D2 and graph modules import root's interfaces and implement them
+- Root never imports D2 or graph
+
+### 3.8 Versioning Strategy
+
+**Shared versioning** (unchanged):
 
 - All modules share a single git tag `v1.2.3`
 - Root module is the primary published artifact
-- Sub-modules (`d2/`, `graph/`, `table/`, etc.) are opt-in extensions
-- No independent semver — the modules are too tightly coupled to root's core types
-
-**Rationale:** go-output is a single library, not a platform. Users import `go-output` and optionally `go-output/table`, `go-output/d2`, etc. Independent versioning would create compatibility headaches for no real benefit — there are no independent consumers of `enum/` or `escape/` outside this repo.
+- Sub-modules are opt-in extensions
+- No independent semver — modules are tightly coupled to root's core types
 
 ---
 
@@ -270,127 +281,106 @@ D2 and graph modules import root's interfaces and implement them. Root never imp
 
 ### 4.1 Prerequisites
 
-- Ensure all tests pass: `go test ./...`
-- Ensure clean lint: `golangci-lint run --fix ./...`
+- All tests pass: `go test ./...` in each module
+- Clean lint: `golangci-lint run ./...`
 - Create branch: `git checkout -b modularize/extract-d2-graph`
 
 ### 4.2 Ordered Steps
 
-Each step is independently committable and leaves the project buildable.
-
-#### Step 1: Extract `d2/` module (Highest value)
+#### Step 1: Extract `d2/` Module (Highest Value)
 
 - Move `d2.go`, `d2_enum.go`, `d2_render.go`, `d2_write.go`, `d2_convert.go` → `d2/`
-- Rename package from `output` to `d2`
-- Create `d2/go.mod` (depends on root, enum, escape)
-- Move `d2_*_test.go` → `d2/`
-- D2 imports root's `GraphNode`, `GraphEdge`, `TableData`, `TreeNode`, `BrandedID`, `Renderer`, `GraphRenderer`
-- Format enum stays in root — D2 is a consumer of `output.FormatD2`
-- Add `d2/` replace directive in integration's go.mod
-- **Verification:** `go test ./d2/... && go test ./...`
+- Move D2 test files → `d2/`
+- Rename package: `output` → `d2`
+- Create `d2/go.mod`
+- Update imports (root types → `output.` prefix)
+- Remove `renderD2TableData` from `render_tabledata.go` — return `UnsupportedFormatError` for `FormatD2`
+- Move D2 render test case from `render_tabledata_test.go` → `d2/`
+- Update `examples/`, `integration/` go.mod files
+- Update `benchmarks_test.go` if needed (D2 benchmarks inline)
 
-#### Step 2: Extract `graph/` module
+**Verification:** `cd d2 && go test ./...` and root `go test ./...` both pass
 
-- Move `dot.go`, `mermaid.go` → `graph/` (`graph.go` stays in root — core types used by D2 too)
-- Rename package from `output` to `graph`
-- Create `graph/go.mod` (depends on root, enum, escape)
-- Move `graph_test.go`, `dot_test.go`, `mermaid_test.go` → `graph/`
-- Split `output_test_helpers.go`: graph-related helpers (`testNodesAB`, `testDOTEmptyExpected`, etc.) move to `graph/`
-- Keep `GraphRenderer`, `GraphNode`, `GraphEdge`, `GraphShape`, `GraphStyle` in root — they're core types
-- Move `GraphRendererMixin` to `graph/` — currently defined in `dot.go:21`, only used by DOT and Mermaid
-- `AddTreeNodes` stays in root — used by D2, graph, and potentially external consumers
-- Add `graph/` replace directive in integration's go.mod
-- **Verification:** `go test ./graph/... && go test ./...`
+#### Step 2: Extract `graph/` Module
 
-#### Step 3: Clean up sort dependency
+- Move `dot.go`, `mermaid.go` → `graph/` (graph.go stays in root)
+- Move `GraphRendererMixin` with `dot.go` to `graph/`
+- Move graph test files (`dot_test.go`, `mermaid_test.go`, `graph_test.go`) → `graph/`
+- Split `output_test_helpers.go`: graph-related helpers move to `graph/`
+- Rename package: `output` → `graph`
+- Create `graph/go.mod`
+- Update imports
+- Remove `renderMermaidTableData`, `renderDOTTableData` from `render_tabledata.go`
+- Move Mermaid/DOT render test cases from `render_tabledata_test.go` → `graph/`
+- Update `examples/`, `integration/` go.mod files
+- Update `benchmarks_test.go`: `NewMermaidRenderer()` → `graph.NewMermaidRenderer()`, `NewDOTRenderer()` → `graph.NewDOTRenderer()`
 
-- Remove `sort` from root's production `go.mod` — it's only used in `userjourney_test.go`
-- Add `sort` as test-only dependency or remove the test (sort is deprecated)
-- **Verification:** `go mod tidy && go build ./...`
+**Verification:** `cd graph && go test ./...` and root `go test ./...` both pass
 
-#### Step 4: Update documentation
+#### Step 3: Clean Up Sort Dependency
 
-- Update `AGENTS.md` with new module table
-- Update `docs/FORMAT_ARCHITECTURE.md` if needed
-- Update README if module structure section exists
-- **Verification:** Manual review
+- Remove sort from root's production `go.mod` if present (it's test-only in `userjourney_test.go`)
+- Run `go mod tidy`
+
+**Verification:** Root `go.mod` clean
+
+#### Step 4: Update Documentation
+
+- Update `AGENTS.md` with new module table (8 → 10 modules)
+- Update `docs/modularization/DEPENDENCY_GRAPH.md`
+- Update README examples if needed
+- Update `docs/FORMAT_ARCHITECTURE.md`
 
 ---
 
 ## 5. Risk Assessment
 
-| Risk                                         | Likelihood | Impact | Mitigation                                                                              |
-| -------------------------------------------- | ---------- | ------ | --------------------------------------------------------------------------------------- |
-| D2 package rename breaks consumers           | Medium     | High   | D2 module re-exports root types; public API is `d2.D2Diagram`, `d2.NewD2Diagram()` etc. |
-| Graph package rename breaks consumers        | Medium     | High   | Same approach — `graph.DOTRenderer`, `graph.NewMermaidRenderer()` etc.                  |
-| Integration tests fail after moves           | Low        | Medium | Step-by-step extraction with test verification at each step                             |
-| Internal package moves break existing tests  | Low        | Low    | `gentest/` and `testutils/` staying in root eliminates this risk                        |
-| Root module still too large after extraction | Low        | Low    | 2,183 LOC is acceptable for a core library module with 12 formats                       |
-| go.mod replace directive sprawl              | Medium     | Low    | Document pattern; consider `go.work` for local dev if it grows beyond 12 modules        |
+| Risk                                               | Likelihood | Impact | Mitigation                                             |
+| -------------------------------------------------- | ---------- | ------ | ------------------------------------------------------ |
+| D2 package rename breaks consumers                 | Medium     | High   | Pre-v1 library; breaking change acceptable             |
+| Graph package rename breaks consumers              | Medium     | High   | Same — pre-v1                                          |
+| `RenderTableData` no longer handles D2/Mermaid/DOT | Medium     | Medium | Document clearly; modules provide equivalent functions |
+| Integration tests fail after moves                 | Low        | Medium | Step-by-step extraction with test verification         |
+| Root module still large after extraction           | Low        | Low    | ~3,515 LOC acceptable for core library with 9 formats  |
+| go.mod replace directive sprawl                    | Medium     | Low    | 10 modules is manageable; consider go.work if it grows |
 
 ---
 
 ## 6. Key Decisions
 
-1. **Root IS the core** (ADR 001) — unchanged. Core types, interfaces, and simple formatters stay in root.
-2. **D2 gets its own module** — 833 LOC, rich domain model, self-contained rendering.
-3. **DOT + Mermaid share a `graph/` module** — they share `GraphRendererMixin` and have identical dependency profiles.
-4. **`GraphNode`/`GraphEdge` stay in root** — D2 also uses them for `SetNodes`/`SetEdges`. Moving them to `graph/` would create a D2→graph dependency or require duplication.
-5. **`GraphRendererMixin` moves to `graph/`** — only used by DOT and Mermaid, not by D2.
-6. **Test helpers stay in root** — `internal/gentest` and `internal/testutils` remain. The cross-module leak is minor and extraction adds more complexity than value.
-7. **`output_test_helpers.go` split** — graph-related test helpers move with graph module; HTML/tree helpers stay in root.
-8. **`sort/` dependency cleaned from root** — test-only import should not be in production `go.mod`.
-9. **Package rename required** — `d2/` becomes `package d2`, `graph/` becomes `package graph`. This is a breaking change for any code using `output.D2Diagram` etc. Acceptable for pre-v1 library.
+1. **Root IS the core** (ADR 001) — unchanged
+2. **D2 gets its own module** — 835 LOC, rich domain model
+3. **DOT + Mermaid share `graph/` module** — share `GraphRendererMixin`, identical deps
+4. **`GraphNode`/`GraphEdge` stay in root** — used by D2, JSON, YAML too
+5. **`GraphRendererMixin` moves to `graph/`** — only DOT/Mermaid use it
+6. **`render_tabledata.go` drops D2/Mermaid/DOT cases** — returns `UnsupportedFormatError` for those formats; avoids cycle
+7. **Package rename required** — `package d2`, `package graph` (breaking, acceptable pre-v1)
+8. **No `init()` registration** — simpler, no global state side effects
+9. **`sort/` dependency cleaned from root** — test-only
+10. **Test helpers split** — graph helpers move to `graph/`, rest stay in root
 
 ---
 
 ## 7. Build System Impact
 
-- **flake.nix** — Update to build/test each new module independently
+- **flake.nix** — Update to build/test `d2/` and `graph/` independently
 - **CI/CD** — Add parallel jobs for `d2/`, `graph/`
-- **golangci-lint** — Already runs workspace-wide, no changes needed
-- **go.work** — Add new modules to workspace file (if re-created for local dev)
+- **golangci-lint** — Already workspace-wide, no changes
+- **go.work** — Add new modules if re-created for local dev
 
 ---
 
 ## 8. What Does NOT Change
 
-- `enum/`, `escape/`, `cmdguard/` — unchanged
+- `enum/`, `escape/`, `testhelpers/` — unchanged
 - `table/` — unchanged
 - `sort/` — unchanged (still deprecated)
-- `internal/gentest/`, `internal/testutils/` — unchanged (stays in root after self-review)
-- Root module name — still `github.com/larsartmann/go-output`, still `package output`
+- `internal/gentest/` — stays in root
+- Root module name — still `github.com/larsartmann/go-output`, `package output`
 - Format enum — still in root
-- Renderer/TableRenderer/GraphRenderer interfaces — still in root
+- `Renderer`/`TableRenderer`/`GraphRenderer` interfaces — still in root
 - Core types (Format, TableData, TreeNode, GraphNode, GraphEdge) — still in root
-- All 7 table formatters — still in root
+- JSON, CSV, TSV, Markdown, HTML, YAML, XML formatters — still in root
+- JSON/YAML tree and graph renderers — still in root
 - Streaming — still in root
 - Registry — still in root
-
----
-
-## 9. Future Improvements (Post-Extraction)
-
-These are not in scope for the extraction but surfaced during review.
-
-### Type Model Improvements
-
-1. **Duplicated tree→graph conversion** — `DOTRenderer.addTreeNodes()` uses the shared `AddTreeNodes()` function, but `D2Diagram.addTreeNodes()` re-implements the tree walk because it uses `D2Node`/`D2Edge` instead of `GraphNode`/`GraphEdge`. Could use `AddTreeNodes()` + `graphNodeToD2()` conversion to eliminate the duplication.
-
-2. **`EdgeStyle.Style` field naming** — `edge.Style.Style` is confusing (field name repeats type name). Consider renaming to `LineStyle` or `DashStyle` in a future major version.
-
-3. **`GraphRendererMixin` is value-embedded** in `DOTRenderer` but methods have pointer receivers. If someone copies a `DOTRenderer` value, they'd share the mixin's slices. Consider pointer embedding or documenting the requirement.
-
-4. **`RowEdge` uses plain `string` for `From`/`To`** while `GraphEdge` uses branded IDs — inconsistent when `RowEdge` data flows into `GraphEdge`.
-
-5. **`AddTreeNodes` mutates via pointer params** (`*[]GraphNode`, `*[]GraphEdge`) — an imperative pattern unusual for Go public APIs. Returning slices would be cleaner.
-
-### Enum Code Generation
-
-6. Every string enum (`Format`, `GraphShape`, `D2Direction`, `D2NodeShape`, `D2ArrowType`, `D2Constraint`) repeats ~15-20 lines of identical boilerplate (`Parse*`, `String`, `IsValid`, `AllowedValues`, `ErrInvalid*`). The `enum/` package already provides the generic functions. A `go generate` step with `stringer` or a custom generator could eliminate this entirely. Low priority — the boilerplate is small and explicit.
-
-### Potential Library Replacements
-
-7. **DOT generation** — Currently hand-rolled string builder. `github.com/emicklei/dot` is a mature DOT library with a fluent API. Would reduce `dot.go` significantly but adds an external dependency. Evaluate if DOT rendering needs grow beyond the current feature set.
-
-8. **`BrandedID` re-export** — `ids.go` re-exports `go-branded-id` as `BrandedID`. Its own comment says "Use `id.ID[Brand, string]` for new code". Consider removing the re-export in the next major version.

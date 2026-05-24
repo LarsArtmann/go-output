@@ -6,6 +6,9 @@ import (
 	"testing"
 
 	"github.com/larsartmann/go-output"
+	"github.com/larsartmann/go-output/d2"
+	"github.com/larsartmann/go-output/graph"
+	"github.com/larsartmann/go-output/testhelpers"
 )
 
 func TestTableFormatContent(t *testing.T) {
@@ -14,9 +17,9 @@ func TestTableFormatContent(t *testing.T) {
 	projects := SampleProjects()
 
 	result := renderTableFormat(projects)
-	assertContains(t, result, "Name", "Table should contain header 'Name'")
-	assertContains(t, result, "Alpha", "Table should contain project name 'Alpha'")
-	assertContains(t, result, "Beta", "Table should contain project name 'Beta'")
+	testhelpers.AssertContains(t, result, "Name", "Table should contain header 'Name'")
+	testhelpers.AssertContains(t, result, "Alpha", "Table should contain project name 'Alpha'")
+	testhelpers.AssertContains(t, result, "Beta", "Table should contain project name 'Beta'")
 }
 
 func TestJSONFormatContent(t *testing.T) {
@@ -30,8 +33,8 @@ func TestJSONFormatContent(t *testing.T) {
 	}
 
 	result := string(data)
-	assertContains(t, result, "Alpha", "JSON should contain project name 'Alpha'")
-	assertContains(t, result, "90", "JSON should contain health value 90")
+	testhelpers.AssertContains(t, result, "Alpha", "JSON should contain project name 'Alpha'")
+	testhelpers.AssertContains(t, result, "90", "JSON should contain health value 90")
 }
 
 func TestMarkdownTableContent(t *testing.T) {
@@ -39,9 +42,9 @@ func TestMarkdownTableContent(t *testing.T) {
 
 	result := renderSampleMarkdownTable()
 
-	assertContains(t, result, "| Name", "Markdown should contain header cell")
-	assertContains(t, result, "| Alpha", "Markdown should contain row data")
-	assertContains(t, result, "|---", "Markdown should contain separator row")
+	testhelpers.AssertContains(t, result, "| Name", "Markdown should contain header cell")
+	testhelpers.AssertContains(t, result, "| Alpha", "Markdown should contain row data")
+	testhelpers.AssertContains(t, result, "|---", "Markdown should contain separator row")
 }
 
 func TestCSVFormatContent(t *testing.T) {
@@ -64,8 +67,8 @@ func TestCSVFormatContent(t *testing.T) {
 	w.Flush()
 
 	result := buf.String()
-	assertContains(t, result, "Name,Health", "CSV should contain header row")
-	assertContains(t, result, "Alpha,90", "CSV should contain data row")
+	testhelpers.AssertContains(t, result, "Name,Health", "CSV should contain header row")
+	testhelpers.AssertContains(t, result, "Alpha,90", "CSV should contain data row")
 }
 
 func TestYAMLFormatContent(t *testing.T) {
@@ -79,7 +82,7 @@ func TestYAMLFormatContent(t *testing.T) {
 	}
 
 	result := string(data)
-	assertContains(t, result, "Alpha", "YAML should contain project name 'Alpha'")
+	testhelpers.AssertContains(t, result, "Alpha", "YAML should contain project name 'Alpha'")
 }
 
 func TestHTMLFormatContent(t *testing.T) {
@@ -94,8 +97,8 @@ func TestHTMLFormatContent(t *testing.T) {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	assertContains(t, result, "<table", "HTML should contain table tag")
-	assertContains(t, result, "Alpha", "HTML should contain project name 'Alpha'")
+	testhelpers.AssertContains(t, result, "<table", "HTML should contain table tag")
+	testhelpers.AssertContains(t, result, "Alpha", "HTML should contain project name 'Alpha'")
 }
 
 func TestHTMLFullPage(t *testing.T) {
@@ -110,8 +113,8 @@ func TestHTMLFullPage(t *testing.T) {
 		t.Fatalf("RenderFullHTML() error = %v", err)
 	}
 
-	assertContains(t, result, "<html", "Full HTML should contain html tag")
-	assertContains(
+	testhelpers.AssertContains(t, result, "<html", "Full HTML should contain html tag")
+	testhelpers.AssertContains(
 		t,
 		result,
 		"<title>Test Page</title>",
@@ -141,12 +144,12 @@ func TestTreeFormatContent(t *testing.T) {
 func TestD2FormatContent(t *testing.T) {
 	t.Parallel()
 
-	d2 := output.NewD2Diagram()
-	d2.AddTable("test", []output.D2Column{
+	d2Diagram := d2.NewD2Diagram()
+	d2Diagram.AddTable("test", []d2.D2Column{
 		{Name: "name", Type: "string"},
 	})
 
-	result, err := d2.Render()
+	result, err := d2Diagram.Render()
 	if err != nil {
 		t.Fatalf("Render() error = %v", err)
 	}
@@ -184,11 +187,11 @@ func testRendererNotEmpty[R renderer](
 func TestMermaidFormatContent(t *testing.T) {
 	t.Parallel()
 
-	testRendererNotEmpty(t, output.MermaidFlowchartRenderer, "Mermaid")
+	testRendererNotEmpty(t, graph.MermaidFromTableData, "Mermaid")
 }
 
 func TestDOTFormatContent(t *testing.T) {
 	t.Parallel()
 
-	testRendererNotEmpty(t, output.DOTFromTableData, "DOT")
+	testRendererNotEmpty(t, graph.DOTFromTableData, "DOT")
 }

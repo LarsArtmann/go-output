@@ -131,5 +131,5 @@ func TestTreeNodeDepth(t *testing.T) {
 	child.AddChild(grandchild)
 	root.AddChild(child)
 
-	AssertTreeNodeDepth(t, root, child, grandchild)
+	assertTreeNodeDepth(t, root, child, grandchild)
 }

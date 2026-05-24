@@ -2,8 +2,10 @@ go 1.26.2
 
 use (
 	.
+	./d2
 	./enum
 	./escape
+	./graph
 	./testhelpers
 	./sort
 	./table

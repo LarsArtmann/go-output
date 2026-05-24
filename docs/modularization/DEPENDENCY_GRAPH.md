@@ -1,131 +1,70 @@
 # Dependency Graph — go-output
 
-**Date:** 2026-05-16
+**Date:** 2026-05-25
 
 ## Current Dependency Graph
 
 ```
-                    ┌─────────────────────────────────────────────┐
-                    │            External Dependencies            │
-                    │  go-faster/yaml · x/term · go-branded-id   │
-                    └─────────────────┬───────────────────────────┘
-                                      │
-                    ┌─────────────────▼───────────────────────────┐
-                    │         root (package output)               │
-                    │         3,587 production LOC                │
-                    │                                             │
-                    │  Core: Format, Renderer, TableData,         │
-                    │         TreeNode, GraphNode, GraphEdge      │
-                    │  Formatters: JSON, CSV, TSV, Markdown,      │
-                    │              HTML, YAML, XML                 │
-                    │  Graph: DOT, Mermaid, GraphRendererMixin     │
-                    │  D2: D2Diagram, 5 files, rich types          │
-                    │  Tree: ASCIITreeRenderer                     │
-                    │  Streaming: StreamingHTMLRenderer            │
-                    │  Test: output_test_helpers.go                │
-                    │  Internal: gentest/, testutils/              │
-                    └──┬──────┬──────┬──────────────────────────┘
-                       │      │      │
-            ┌──────────▼┐  ┌──▼──┐  ┌──▼──────┐
-            │   enum/    │  │sort/│  │ escape/  │
-            │   64 LOC   │  │dep. │  │ 76 LOC   │
-            │   zero deps│  │→root│  │ zero deps│
-            └────────────┘  └──────┘  └─────────┘
-
-
-    ┌───────────────┐     ┌──────────────┐     ┌───────────────┐
-    │   table/       │     │ integration/ │     │   examples/   │
-    │   92 LOC       │     │ tests only   │     │  examples     │
-    │ →root, lipgloss│     │→root,sort,   │     │ →root, table  │
-    │               │     │  table       │     │               │
-    └───────────────┘     └──────────────┘     └───────────────┘
-
-    ┌───────────────┐
-    │  cmdguard/     │
-    │  53 LOC        │
-    │  zero deps     │
-    │ (tests: root)  │
-    └───────────────┘
-```
-
-### Cross-Module internal/ Leaks (Minor)
-
-```
-enum/enum_test.go ───► internal/gentest (in root module)
-cmdguard/cmdguard_test.go ───► internal/gentest (in root module)
-table/table_test.go ───► internal/testutils (in root module)
-integration/*.go ───► internal/testutils (in root module)
-```
-
-These `internal/` packages are inside the root module but consumed by sibling modules' tests. Go's `internal/` visibility rules allow this (same repo root). **Decision: leave as-is** after self-review — extraction adds more complexity (2 new go.mod files, more replace directives) than the minor coupling warrants.
-
-## Proposed Dependency Graph (After Extraction)
-
-```
 Level 0 — Leaf modules (zero internal deps)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    ┌────────┐  ┌─────────┐
-    │  enum/  │  │ escape/  │
-    │ 64 LOC  │  │ 76 LOC  │
-    └────────┘  └─────────┘
+    ┌──────────┐  ┌──────────┐  ┌──────────────┐
+    │  enum/    │  │ escape/   │  │ testhelpers/ │
+    │ 64 LOC    │  │ 76 LOC    │  │ shared tests │
+    │ zero deps │  │ zero deps │  │  zero deps   │
+    └──────────┘  └──────────┘  └──────────────┘
 
 Level 2 — Core module
 ━━━━━━━━━━━━━━━━━━━━━
     ┌─────────────────────────────────────────────┐
     │        root (package output)                │
-    │        ~2,183 production LOC                │
+    │        ~5,200 production LOC                │
     │                                             │
     │  External: go-faster/yaml, x/term,          │
     │            go-branded-id                     │
-    │  Internal: → enum, escape                   │
+    │  Internal: → enum, escape, testhelpers      │
     │                                             │
     │  Core types: Format, Renderer, TableData,   │
     │    TreeNode, GraphNode, GraphEdge,           │
-    │    GraphRenderer, BrandedID                  │
+    │    GraphRenderer, GraphRendererMixin,        │
+    │    BrandedID, SortBy, ColorMode              │
     │  Formatters: JSON, CSV, TSV, Markdown,      │
     │    HTML, YAML, XML, Tree, Streaming          │
-    │  Internal packages: gentest/, testutils/     │
+    │  Internal packages: gentest/                 │
     │  Test helpers: output_test_helpers.go        │
     └──────────────────┬──────────────────────────┘
                        │
+
 Level 3 — Format modules (depend on root core types)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    ┌──────────┐  ┌──────────┐  ┌───────────┐
-    │   d2/     │  │  graph/   │  │  table/    │
-    │  833 LOC  │  │  568 LOC  │  │  92 LOC   │
-    │→root,enum, │  │→root,enum, │  │→root,     │
-    │  escape   │  │  escape   │  │  lipgloss  │
-    └──────────┘  └──────────┘  └───────────┘
+    ┌──────────────┐  ┌──────────────┐  ┌────────────┐
+    │    d2/        │  │   graph/     │  │   table/    │
+    │  ~850 LOC     │  │  ~320 LOC    │  │  93 LOC     │
+    │ →root,escape, │  │ →root,escape,│  │ →root,      │
+    │   testhelpers │  │  testhelpers │  │   lipgloss  │
+    └──────────────┘  └──────────────┘  └────────────┘
 
 Level 5 — Consumers
 ━━━━━━━━━━━━━━━━━━━
-    ┌───────────────┐  ┌──────────────┐  ┌──────────┐
-    │ integration/   │  │  examples/   │  │ cmdguard/ │
-    │→root,sort,     │  │ →root, table │  │ 53 LOC    │
-    │  table,d2,graph│  │  d2, graph   │  │ zero deps │
-    └───────────────┘  └──────────────┘  └──────────┘
-
-    ┌──────────┐
-    │  sort/    │
-    │deprecated│
-    │ →root    │
-    └──────────┘
+    ┌───────────────┐  ┌────────────────┐
+    │ integration/   │  │   examples/    │
+    │ →root, table,  │  │ →root, table,  │
+    │  d2, graph     │  │  d2, graph     │
+    └───────────────┘  └────────────────┘
 ```
 
-## Module Dependency Matrix (Proposed)
+## Module Dependency Matrix
 
-| ↓ depends on →  | enum | escape | root | d2  | graph | table | sort | lipgloss |
-| --------------- | ---- | ------ | ---- | --- | ----- | ----- | ---- | -------- |
-| **enum**        | —    | —      | —    | —   | —     | —     | —    | —        |
-| **escape**      | —    | —      | —    | —   | —     | —     | —    | —        |
-| **root**        | ✅   | ✅     | —    | —   | —     | —     | —    | —        |
-| **d2**          | ✅   | ✅     | ✅   | —   | —     | —     | —    | —        |
-| **graph**       | ✅   | ✅     | ✅   | —   | —     | —     | —    | —        |
-| **table**       | —    | —      | ✅   | —   | —     | —     | —    | ✅       |
-| **sort**        | —    | —      | ✅   | —   | —     | —     | —    | —        |
-| **cmdguard**    | —    | —      | —    | —   | —     | —     | —    | —        |
-| **integration** | —    | —      | ✅   | ✅  | ✅    | ✅    | ✅   | —        |
-| **examples**    | —    | —      | ✅   | ✅  | ✅    | ✅    | —    | —        |
+| ↓ depends on →  | enum | escape | root | d2  | graph | table | lipgloss |
+| --------------- | ---- | ------ | ---- | --- | ----- | ----- | -------- |
+| **enum**        | —    | —      | —    | —   | —     | —     | —        |
+| **escape**      | —    | —      | —    | —   | —     | —     | —        |
+| **testhelpers** | —    | —      | —    | —   | —     | —     | —        |
+| **root**        | ✅   | ✅     | —    | —   | —     | —     | —        |
+| **d2**          | —    | ✅     | ✅   | —   | —     | —     | —        |
+| **graph**       | —    | ✅     | ✅   | —   | —     | —     | —        |
+| **table**       | —    | —      | ✅   | —   | —     | —     | ✅       |
+| **integration** | —    | —      | ✅   | ✅  | ✅    | ✅    | —        |
+| **examples**    | —    | —      | ✅   | ✅  | ✅    | ✅    | —        |
 
 **Cycles:** None. All dependencies point downward (higher row → lower column).
 
@@ -137,11 +76,20 @@ Each module's dependencies form a strict partial order:
 enum < root < d2
 enum < root < graph
 enum < root < table < integration
-root < sort < integration
-root < integration
+root < d2 < integration
+root < graph < integration
+root < table < integration
 root < d2 < examples
 root < graph < examples
 root < table < examples
 ```
 
 No module appears on both sides of `<` in any chain. Therefore the graph is a DAG.
+
+## Key Properties
+
+1. **Root has ZERO imports from sub-modules** — verified by `go mod graph`
+2. **`go get github.com/larsartmann/go-output`** pulls only root + enum + escape + yaml + x/term + branded-id — zero lipgloss, zero d2, zero graph
+3. **Each format module is independently versionable** — d2, graph, table can evolve at their own pace
+4. **sort/ is deleted** — was deprecated, now fully removed. Use `slices.SortStableFunc` + `cmp.Compare` from stdlib
+5. **testhelpers/ is shared** — zero deps, used by d2, graph, and root for test assertions

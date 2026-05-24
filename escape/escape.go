@@ -28,12 +28,9 @@ func D2(s string) string {
 }
 
 // DOT escapes special characters for DOT/Graphviz strings.
+// DOT and D2 share the same escaping rules: backslash, double quote, newline, and tab.
 func DOT(s string) string {
-	s = strings.ReplaceAll(s, `\`, `\\`)
-	s = strings.ReplaceAll(s, `"`, `\"`)
-	s = strings.ReplaceAll(s, "\n", `\n`)
-
-	return s
+	return D2(s)
 }
 
 // MermaidID sanitizes a string for use as a Mermaid node identifier.

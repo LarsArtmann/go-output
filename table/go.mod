@@ -5,6 +5,7 @@ go 1.26.2
 require (
 	charm.land/lipgloss/v2 v2.0.3
 	github.com/larsartmann/go-output v0.0.0
+	github.com/larsartmann/go-output/testhelpers v0.0.0
 )
 
 require (
@@ -23,7 +24,6 @@ require (
 	github.com/larsartmann/go-branded-id v0.1.0 // indirect
 	github.com/larsartmann/go-output/enum v0.0.0 // indirect
 	github.com/larsartmann/go-output/escape v0.0.0 // indirect
-	github.com/larsartmann/go-output/testhelpers v0.0.0 // indirect
 	github.com/lucasb-eyer/go-colorful v1.4.0 // indirect
 	github.com/mattn/go-runewidth v0.0.23 // indirect
 	github.com/muesli/cancelreader v0.2.2 // indirect

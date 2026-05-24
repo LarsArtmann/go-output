@@ -49,57 +49,6 @@ func BenchmarkHTMLRenderer(b *testing.B) {
 	}
 }
 
-// generateBenchmarkNodes creates a slice of GraphNode for benchmarking.
-func generateBenchmarkNodes(n int) []GraphNode {
-	nodes := make([]GraphNode, n)
-	for i := range nodes {
-		nodes[i] = GraphNode{
-			ID:    NewBrandedID[GraphNodeIDBrand]("node"),
-			Label: NewBrandedID[GraphNodeLabelBrand]("Node"),
-		}
-	}
-
-	return nodes
-}
-
-// generateBenchmarkEdges creates a slice of GraphEdge for benchmarking.
-func generateBenchmarkEdges(n int) []GraphEdge {
-	edges := make([]GraphEdge, n)
-	for i := range edges {
-		edges[i] = GraphEdge{
-			From: NewBrandedID[GraphNodeIDBrand]("node"),
-			To:   NewBrandedID[GraphNodeIDBrand]("node"),
-		}
-	}
-
-	return edges
-}
-
-// benchmarkGraphRenderer sets up nodes and edges for a graph renderer benchmark.
-func benchmarkGraphRenderer(b *testing.B, renderer GraphRenderer) {
-	nodes := generateBenchmarkNodes(100)
-	renderer.SetNodes(nodes)
-
-	edges := generateBenchmarkEdges(99)
-	renderer.SetEdges(edges)
-
-	b.ResetTimer()
-
-	for b.Loop() {
-		_, _ = renderer.Render()
-	}
-}
-
-func BenchmarkMermaidRenderer(b *testing.B) {
-	renderer := NewMermaidRenderer()
-	benchmarkGraphRenderer(b, renderer)
-}
-
-func BenchmarkDOTRenderer(b *testing.B) {
-	renderer := NewDOTRenderer()
-	benchmarkGraphRenderer(b, renderer)
-}
-
 func BenchmarkTableDataCreateRowEdges(b *testing.B) {
 	data := NewTableData([]string{"A", "B", "C", "D", "E"})
 	for range 1000 {
@@ -197,5 +146,42 @@ func NewBenchmarkData() BenchmarkData {
 		Active:    true,
 		CreatedAt: "2026-03-22T10:00:00Z",
 		UpdatedAt: "2026-03-22T12:00:00Z",
+	}
+}
+
+func BenchmarkStreamingHTMLRenderer(b *testing.B) {
+	renderer := NewStreamingHTMLRenderer()
+
+	headers := FilledStrings(10, "Header")
+	renderer.SetHeaders(headers)
+
+	b.ResetTimer()
+
+	for b.Loop() {
+		for range 100 {
+			renderer.AddRow(FilledStrings(10, "Cell"))
+		}
+
+		_ = renderer.Stream(io.Discard)
+	}
+}
+
+func BenchmarkXMLWriter(b *testing.B) {
+	headers := FilledStrings(10, "Header")
+
+	rows := make([][]string, 100)
+	for i := range rows {
+		rows[i] = FilledStrings(10, "Cell")
+	}
+
+	b.ResetTimer()
+
+	for b.Loop() {
+		w := NewXMLWriter(io.Discard)
+
+		_ = w.WriteHeader(headers)
+		for _, row := range rows {
+			_ = w.WriteRow(row)
+		}
 	}
 }

@@ -1,20 +1,17 @@
 package integration
 
 import (
-	"strings"
 	"testing"
 
 	"github.com/larsartmann/go-output"
 )
 
-// assertContains checks that output contains substr.
-func assertContains(t *testing.T, output, substr, msg string) {
-	t.Helper()
-
-	if !strings.Contains(output, substr) {
-		t.Error(msg)
-	}
-}
+const (
+	headerName   = "Name"
+	headerHealth = "Health"
+	sampleHealth = "90%"
+	sampleAlpha  = "Alpha"
+)
 
 // assertTableData verifies that the table has the expected number of columns and rows.
 func assertTableData(t *testing.T, data *output.TableData, expectedCols, expectedRows int) {
@@ -55,8 +52,8 @@ func renderMarkdownTable(headers []string, rows [][]string) string {
 // renderSampleMarkdownTable returns a rendered markdown table with sample project data.
 func renderSampleMarkdownTable() string {
 	md := output.NewMarkdownTable()
-	md.SetHeaders([]string{"Name", "Health"})
-	md.AddRow([]string{"Alpha", "90%"})
+	md.SetHeaders([]string{headerName, headerHealth})
+	md.AddRow([]string{sampleAlpha, sampleHealth})
 
 	out, err := md.Render()
 	if err != nil {
