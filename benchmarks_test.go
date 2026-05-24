@@ -148,3 +148,40 @@ func NewBenchmarkData() BenchmarkData {
 		UpdatedAt: "2026-03-22T12:00:00Z",
 	}
 }
+
+func BenchmarkStreamingHTMLRenderer(b *testing.B) {
+	renderer := NewStreamingHTMLRenderer()
+
+	headers := FilledStrings(10, "Header")
+	renderer.SetHeaders(headers)
+
+	b.ResetTimer()
+
+	for b.Loop() {
+		for range 100 {
+			renderer.AddRow(FilledStrings(10, "Cell"))
+		}
+
+		_ = renderer.Stream(io.Discard)
+	}
+}
+
+func BenchmarkXMLWriter(b *testing.B) {
+	headers := FilledStrings(10, "Header")
+
+	rows := make([][]string, 100)
+	for i := range rows {
+		rows[i] = FilledStrings(10, "Cell")
+	}
+
+	b.ResetTimer()
+
+	for b.Loop() {
+		w := NewXMLWriter(io.Discard)
+
+		_ = w.WriteHeader(headers)
+		for _, row := range rows {
+			_ = w.WriteRow(row)
+		}
+	}
+}
