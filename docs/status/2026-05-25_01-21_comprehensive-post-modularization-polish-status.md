@@ -10,16 +10,19 @@
 ## a) FULLY DONE ✅
 
 ### Modularization Infrastructure
+
 - **9 independent Go modules** with own `go.mod` files and replace directives
 - **Zero circular deps** — root imports NO sub-modules (DAG verified via `go mod graph`)
 - **Dependency isolation** — `go get github.com/larsartmann/go-output` pulls ZERO lipgloss, ZERO d2/graph deps
 
 ### CI/CD
+
 - **`.github/workflows/ci.yml`** — builds/tests/lints all 9 modules; `sort/` removed
 - **`.github/workflows/release.yml`** — goreleaser with all 9 modules; `sort/` removed
 - **`.golangci.yml`** — gci removed (incompatible with goimports in multi-module), depguard cleaned, `testhelpers` in replace-allow-list
 
 ### Dead Code Removed (353 LOC deleted)
+
 - `format_deprecated.go` (96 LOC) — `OutputFormat`, `FormatCategory`, `ParseOutputFormat`, `IsTableFormat/IsTreeFormat/IsGraphFormat`, `Category()`
 - `format_deprecated_test.go` (257 LOC) — all tests for deleted types
 - `sort/` module entirely — `compare.go`, `compare_test.go`, `go.mod`
@@ -27,6 +30,7 @@
 - 7 stale docs (status reports, planning docs)
 
 ### Quality Improvements
+
 - **Rich error structs** — `ErrInvalidColorMode`/`ErrInvalidShape`/`ErrInvalidGraphShape`/`ErrInvalidSortBy` converted from sentinel errors to struct types with `Value` fields (matching `InvalidFormatError` pattern)
 - **GraphRendererMixin embedding** — JSON/YAML graph renderers now embed mixin instead of duplicating nodes/edges fields (~30 LOC removed)
 - **`UnsupportedFormatError.Unwrap()`** added for error chain inspection
@@ -35,6 +39,7 @@
 - **Test helper rename** — `output_test_helpers.go` → `output_test_helpers_test.go`; `AssertTreeNodeDepth` → `assertTreeNodeDepth` (removes false production dep on testhelpers)
 
 ### Verification State
+
 - **Build:** 9/9 modules ✅
 - **Test:** 9/9 modules pass ✅
 - **Lint:** 7/7 lintable modules (0 issues) ✅
@@ -43,8 +48,8 @@
 
 ### Coverage
 
-| Module       | Coverage |
-|-------------|----------|
+| Module      | Coverage |
+| ----------- | -------- |
 | root        | 94.8%    |
 | d2          | 100.0%   |
 | graph       | 96.0%    |
@@ -56,6 +61,7 @@
 | gentest     | 87.5%    |
 
 ### Documentation Updated
+
 - `AGENTS.md` — 9 modules, removed all sort/ references
 - `CHANGELOG.md` — "Removed" section with breaking changes
 - `README.md` — Updated Mermaid function names
@@ -68,15 +74,18 @@
 ## b) PARTIALLY DONE 🔶
 
 ### flake.nix
+
 - **Status:** Only builds root module. Per-module build/test for all 9 modules not added.
 - **Blocker:** Nix sandbox blocks `go mod download` — can't run `go build` in Nix sandbox for modules with external deps. Would need `gomod2nix` or fetchgo modules approach.
 - **Impact:** Low — CI (GitHub Actions) handles all build/test/lint reliably.
 
 ### .pre-commit-config.yaml
+
 - **Status:** Stale hook versions; doesn't cover sub-modules.
 - **Impact:** Low — Nix users use `git-hooks.nix` (auto-installed via `nix develop`). Non-Nix users are the audience.
 
 ### gocritic config warnings
+
 - **Status:** `.golangci.yml` has 3 disabled gocritic checks (`dupImport`, `octalLiteral`, `whyNoLint`) that golangci-lint says are already disabled (double-disable). Generates noise in every lint run.
 - **Impact:** Cosmetic — 3 warnings per module per lint run, but 0 actual issues.
 
@@ -116,22 +125,26 @@ The closest things to "fucked up":
 ## e) WHAT WE SHOULD IMPROVE
 
 ### Architecture
+
 - **Renderer naming convention** — establish a single pattern: `New{Format}Renderer()` for all, or `New{Format}From{Shape}()` for shape-specific. Current mix is confusing.
 - **Registry removal** — deprecated but still exists. Either remove entirely (breaking) or keep with clear deprecation path.
 - **`SortBy` deprecation** — `sort.go` in root is deprecated but still exported. Should it move or be removed?
 
 ### Testing
+
 - **Integration coverage 82.8%** — lowest in the project. Some graph render paths untested.
 - **`gentest` 87.5%** — internal test helper, acceptable but could be higher.
 - **No fuzz tests** — format parsing (ParseFormat, ParseShape) is a good fuzz target.
 - **No property-based tests** — enum roundtrip (Parse(String(x)) == x) could be property-tested.
 
 ### DevEx
+
 - **`goimports -local` not in any automation** — developers must remember to use `-local github.com/larsartmann/go-output` or formatting breaks. Should be in a Makefile/script or enforced by pre-commit hook.
 - **No `go.work` committed** — each developer must create one locally or run per-module commands. Could commit a `go.work` that's replaced by CI.
 - **Per-module lint commands** — no single command to lint all modules; shell loop required.
 
 ### Documentation
+
 - **`docs/planning/EXECUTION_PLAN_TODO.md`** — 130 lines, partially stale (sort/ refs)
 - **`docs/modularization/PROPOSAL.md`** — historical, has stale sort/cmdguard refs
 - **No migration guide** — users upgrading from pre-modularization need a `MIGRATION.md`
@@ -142,53 +155,53 @@ The closest things to "fucked up":
 
 ### 🔴 P0 — Merge Blockers
 
-| # | Task | Impact | Effort |
-|---|------|--------|--------|
-| 1 | **Squash 77 commits into ~10-15 logical groups** | Unblocks merge | 30min |
-| 2 | **Rebase onto master** | Clean merge | 5min |
-| 3 | **Final verification (build+test+lint all 9 modules)** | Confidence | 5min |
-| 4 | **Push and merge PR** | Ships the work | 5min |
-| 5 | **Tag `v0.5.0`** | Release | 2min |
+| #   | Task                                                   | Impact         | Effort |
+| --- | ------------------------------------------------------ | -------------- | ------ |
+| 1   | **Squash 77 commits into ~10-15 logical groups**       | Unblocks merge | 30min  |
+| 2   | **Rebase onto master**                                 | Clean merge    | 5min   |
+| 3   | **Final verification (build+test+lint all 9 modules)** | Confidence     | 5min   |
+| 4   | **Push and merge PR**                                  | Ships the work | 5min   |
+| 5   | **Tag `v0.5.0`**                                       | Release        | 2min   |
 
 ### 🟠 P1 — High Impact, Low Effort
 
-| # | Task | Impact | Effort |
-|---|------|--------|--------|
-| 6 | **Remove unused `testBoolMethod`/`testBoolValue` from `testing_test.go`** | Cleans gopls warnings | 2min |
-| 7 | **Fix gocritic double-disable in `.golangci.yml`** | Eliminates 21 warnings/lint-run | 2min |
-| 8 | **Extract render helpers from `integration/integration_test.go`** (352 lines) | Under 350-line limit | 15min |
-| 9 | **Write `MIGRATION.md`** for v0.4→v0.5 upgrade | User-facing value | 30min |
-| 10 | **Add `goimports -local` to `.pre-commit-config.yaml`** or script | Prevents formatting regressions | 15min |
+| #   | Task                                                                          | Impact                          | Effort |
+| --- | ----------------------------------------------------------------------------- | ------------------------------- | ------ |
+| 6   | **Remove unused `testBoolMethod`/`testBoolValue` from `testing_test.go`**     | Cleans gopls warnings           | 2min   |
+| 7   | **Fix gocritic double-disable in `.golangci.yml`**                            | Eliminates 21 warnings/lint-run | 2min   |
+| 8   | **Extract render helpers from `integration/integration_test.go`** (352 lines) | Under 350-line limit            | 15min  |
+| 9   | **Write `MIGRATION.md`** for v0.4→v0.5 upgrade                                | User-facing value               | 30min  |
+| 10  | **Add `goimports -local` to `.pre-commit-config.yaml`** or script             | Prevents formatting regressions | 15min  |
 
 ### 🟡 P2 — High Impact, Medium Effort
 
-| # | Task | Impact | Effort |
-|---|------|--------|--------|
-| 11 | **Normalize renderer constructors** (`New{Format}Renderer()` pattern) | API consistency | 1hr |
-| 12 | **Standardize `FromTableData` naming** across renderers | API clarity | 45min |
-| 13 | **Remove or finalize `SortBy` deprecation** in root | Reduces API surface | 30min |
-| 14 | **Add property-based tests** for enum roundtrips | Robustness | 45min |
-| 15 | **Bump integration coverage to 90%+** | Quality gate | 30min |
+| #   | Task                                                                  | Impact              | Effort |
+| --- | --------------------------------------------------------------------- | ------------------- | ------ |
+| 11  | **Normalize renderer constructors** (`New{Format}Renderer()` pattern) | API consistency     | 1hr    |
+| 12  | **Standardize `FromTableData` naming** across renderers               | API clarity         | 45min  |
+| 13  | **Remove or finalize `SortBy` deprecation** in root                   | Reduces API surface | 30min  |
+| 14  | **Add property-based tests** for enum roundtrips                      | Robustness          | 45min  |
+| 15  | **Bump integration coverage to 90%+**                                 | Quality gate        | 30min  |
 
 ### 🟢 P3 — Medium Impact, Medium Effort
 
-| # | Task | Impact | Effort |
-|---|------|--------|--------|
-| 16 | **Update `flake.nix` for per-module build/test** | Nix completeness | 2hr |
-| 17 | **Add fuzz tests** for ParseFormat/ParseShape | Edge case coverage | 1hr |
-| 18 | **Clean up stale planning docs** (`EXECUTION_PLAN_TODO.md`, `PROPOSAL.md`) | Doc hygiene | 15min |
-| 19 | **Remove registry entirely** (breaking, but zero users) | Simpler API | 30min |
-| 20 | **Add `EdgeStyle.Style` as defined type** | Type safety | 15min |
+| #   | Task                                                                       | Impact             | Effort |
+| --- | -------------------------------------------------------------------------- | ------------------ | ------ |
+| 16  | **Update `flake.nix` for per-module build/test**                           | Nix completeness   | 2hr    |
+| 17  | **Add fuzz tests** for ParseFormat/ParseShape                              | Edge case coverage | 1hr    |
+| 18  | **Clean up stale planning docs** (`EXECUTION_PLAN_TODO.md`, `PROPOSAL.md`) | Doc hygiene        | 15min  |
+| 19  | **Remove registry entirely** (breaking, but zero users)                    | Simpler API        | 30min  |
+| 20  | **Add `EdgeStyle.Style` as defined type**                                  | Type safety        | 15min  |
 
 ### 🔵 P4 — Nice to Have
 
-| # | Task | Impact | Effort |
-|---|------|--------|--------|
-| 21 | **Fix BuildFlow `todo-check` false positive** on `// Note:` comments | DevEx | 30min |
-| 22 | **Commit `go.work`** or add script to generate it | Dev onboarding | 15min |
-| 23 | **Update `.pre-commit-config.yaml`** with current hook versions + sub-module coverage | Non-Nix users | 20min |
-| 24 | **Add `CONTRIBUTING.md`** with module structure + dev setup | Open-source readiness | 1hr |
-| 25 | **Add Go doc examples** (`Example*` functions) for all public renderers | godoc quality | 2hr |
+| #   | Task                                                                                  | Impact                | Effort |
+| --- | ------------------------------------------------------------------------------------- | --------------------- | ------ |
+| 21  | **Fix BuildFlow `todo-check` false positive** on `// Note:` comments                  | DevEx                 | 30min  |
+| 22  | **Commit `go.work`** or add script to generate it                                     | Dev onboarding        | 15min  |
+| 23  | **Update `.pre-commit-config.yaml`** with current hook versions + sub-module coverage | Non-Nix users         | 20min  |
+| 24  | **Add `CONTRIBUTING.md`** with module structure + dev setup                           | Open-source readiness | 1hr    |
+| 25  | **Add Go doc examples** (`Example*` functions) for all public renderers               | godoc quality         | 2hr    |
 
 ---
 
@@ -214,15 +227,15 @@ I recommend **Option 2** (~10-15 logical groups). It preserves meaningful histor
 
 ## Raw Numbers
 
-| Metric | Value |
-|--------|-------|
-| Go modules | 9 |
-| Total Go LOC | 14,758 |
-| Go files | ~97 |
-| Commits ahead of master | 77 |
-| Test coverage (avg) | 94.3% |
-| Lint issues | 0 |
-| Build failures | 0 |
-| DAG violations | 0 |
-| Deprecated items remaining | 6 (5 registry funcs + SortBy) |
-| Files over 350 lines | 1 (`integration_test.go` at 352) |
+| Metric                     | Value                            |
+| -------------------------- | -------------------------------- |
+| Go modules                 | 9                                |
+| Total Go LOC               | 14,758                           |
+| Go files                   | ~97                              |
+| Commits ahead of master    | 77                               |
+| Test coverage (avg)        | 94.3%                            |
+| Lint issues                | 0                                |
+| Build failures             | 0                                |
+| DAG violations             | 0                                |
+| Deprecated items remaining | 6 (5 registry funcs + SortBy)    |
+| Files over 350 lines       | 1 (`integration_test.go` at 352) |
