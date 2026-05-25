@@ -1,16 +1,21 @@
 # Root Package Split Proposal
 
 **Date:** 2026-05-25
+**Status:** ✅ **IMPLEMENTED** (Strategy B, 2026-05-25)
+
+## Outcome
+
+Strategy B was executed in full. Three new modules created: `delimited/`, `serialization/`, `markup/`. Root reduced from 54 to ~20 source files. Root production code has zero sub-module imports. See `root-split-execution-plan.md` for the detailed task-by-task audit.
 
 ## Problem
 
 Root has **54 `.go` files** (~8K lines) in a single `package output`. Three cross-cutting unexported helpers create coupling that blocks extraction:
 
-| Helper | Used by | Block extraction? |
-|---|---|---|
+| Helper                                                | Used by                                         | Block extraction?               |
+| ----------------------------------------------------- | ----------------------------------------------- | ------------------------------- |
 | `marshal.go` (`marshal`, `unmarshal`, `brandedValue`) | JSON, YAML, XML, json_renderers, yaml_renderers | Yes — must be exported or moved |
-| `markup.go` (`writeMarkupRow`, `writeMarkupColumns`) | XML, HTML | Yes — must be exported or moved |
-| `delimited.go` (`DelimitedWriter`) | CSV, TSV | Yes — must be exported or moved |
+| `markup.go` (`writeMarkupRow`, `writeMarkupColumns`)  | XML, HTML                                       | Yes — must be exported or moved |
+| `delimited.go` (`DelimitedWriter`)                    | CSV, TSV                                        | Yes — must be exported or moved |
 
 ## Dependency Map (Current)
 
@@ -143,13 +148,13 @@ Root drops from ~54 to ~25 files. Less isolation but simpler.
 
 ## Comparison
 
-| | Strategy A (per-format) | Strategy B (grouped) |
-|---|---|---|
-| Modules added | 7 new | 3 new |
-| Root file reduction | ~54 → ~20 | ~54 → ~25 |
-| Dep isolation | Best — per-format | Good — per-family |
-| Maintenance | More go.mod files | Fewer go.mod files |
-| User ergonomics | `import "go-output/json"` | `import "go-output/serialization"` |
+|                     | Strategy A (per-format)   | Strategy B (grouped)               |
+| ------------------- | ------------------------- | ---------------------------------- |
+| Modules added       | 7 new                     | 3 new                              |
+| Root file reduction | ~54 → ~20                 | ~54 → ~25                          |
+| Dep isolation       | Best — per-format         | Good — per-family                  |
+| Maintenance         | More go.mod files         | Fewer go.mod files                 |
+| User ergonomics     | `import "go-output/json"` | `import "go-output/serialization"` |
 
 ## Decision
 

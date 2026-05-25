@@ -6,20 +6,29 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- **BREAKING**: CSV and TSV writers moved to `delimited/` sub-module — `output.NewCSVWriter` → `delimited.NewCSVWriter`, `output.NewTSVWriter` → `delimited.NewTSVWriter`. Import `github.com/larsartmann/go-output/delimited`.
+- **BREAKING**: JSON and YAML marshalers/renderers moved to `serialization/` sub-module — `output.MarshalJSON` → `serialization.MarshalJSON`, `output.NewJSONTableRenderer` → `serialization.NewJSONTableRenderer`, etc. Import `github.com/larsartmann/go-output/serialization`.
+- **BREAKING**: XML, HTML, and StreamingHTML renderers moved to `markup/` sub-module — `output.NewHTMLRenderer` → `markup.NewHTMLRenderer`, `output.MarshalXMLFromTableData` → `markup.MarshalXMLFromTableData`, etc. Import `github.com/larsartmann/go-output/markup`.
+- **BREAKING**: D2 diagram types moved to `d2/` sub-module — `output.D2Node` → `d2.D2Node`, `output.NewD2Renderer` → `d2.NewD2Diagram`, etc. Import `github.com/larsartmann/go-output/d2`.
+- **BREAKING**: DOT and Mermaid renderers moved to `graph/` sub-module — `output.DOTFromTableData` → `graph.DOTFromTableData`, `output.MermaidFromTableData` → `graph.MermaidFromTableData`. Import `github.com/larsartmann/go-output/graph`.
+- `RenderTableData` now returns `UnsupportedFormatError` for D2, Mermaid, and DOT formats (use sub-module constructors directly).
+- `RenderTableData` uses registry-based dispatch via `TableDataMarshaler` — sub-modules register via `init()`. Root has zero sub-module imports.
+- `tableDataBase` exported as `TableDataBase` with `Data()` getter — enables cross-module embedding.
+- `marshal()`, `unmarshal()`, `brandedValue()` exported as `MarshalFormat()`, `UnmarshalFormat()`, `BrandedValue()` — used by serialization/ and markup/.
+- Multi-module workspace: 12 independent modules (see ADR 001, ADR 003).
+- Root production code has zero imports from sub-modules (`delimited`, `serialization`, `markup`, `d2`, `graph`, `table`).
+- Root production code has zero `go-faster/yaml` and zero `escape` imports (isolated in `serialization/` and `markup/`).
+
 ### Removed
 
 - **BREAKING**: `format_deprecated.go` removed — `OutputFormat`, `FormatCategory`, `ParseOutputFormat`, `IsTableFormat()`, `IsTreeFormat()`, `IsGraphFormat()`, `Category()` all removed. Use `Format`, `Shape`, `ParseFormat()`, `Supports(Shape*)`, `Shapes()` instead.
 - **BREAKING**: `sort/` module removed — `ByField` is trivially replaceable with `slices.SortStableFunc` + `cmp.Compare` from stdlib.
 - **BREAKING**: `MermaidFlowchartRenderer` and `MermaidTreeRenderer` removed — use `MermaidFromTableData` and `MermaidFromTree` instead.
 - `gci` formatter removed from `.golangci.yml` (conflicted with `goimports` on local-prefix grouping in sub-modules).
-
-### Changed
-
-- **BREAKING**: D2 diagram types moved to `d2/` sub-module — `output.D2Node` → `d2.D2Node`, `output.NewD2Renderer` → `d2.NewD2Diagram`, etc. Import `github.com/larsartmann/go-output/d2`.
-- **BREAKING**: DOT and Mermaid renderers moved to `graph/` sub-module — `output.DOTFromTableData` → `graph.DOTFromTableData`, `output.MermaidFromTableData` → `graph.MermaidFromTableData`. Import `github.com/larsartmann/go-output/graph`.
-- `RenderTableData` now returns `UnsupportedFormatError` for D2, Mermaid, and DOT formats (use sub-module constructors directly).
-- Added `Nodes()`, `Edges()`, `NodesPtr()`, `EdgesPtr()` accessor methods to `GraphRendererMixin` for cross-package use.
-- Multi-module workspace: 9 independent modules (see ADR 001, ADR 003).
+- `ErrUnsupportedFormat` — renamed to `UnsupportedFormatError` (breaking change).
+- `TestContainsString` in graph/ — tested stdlib `strings.Contains` (zero value).
 
 ### Added
 
@@ -27,24 +36,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - `YAMLTableRenderer` — renders `TableData` as a YAML sequence of mappings (implements `Renderer` + `TableRenderer`)
 - `TableData.ToMapSlice()` — converts tabular data to `[]map[string]string` for serialization
 - `UnsupportedFormatError` — renamed from `ErrUnsupportedFormat` (follows Go naming conventions)
+- `TableDataMarshaler` registry — sub-modules register via `init()`, root has zero sub-module imports
+- `TableDataBase` — exported from root for cross-module embedding
+- `MarshalFormat()`, `UnmarshalFormat()`, `BrandedValue()` — exported helpers used by serialization/ and markup/
 - `flake.nix` — Nix flake with devShell (Go 1.26.2, golangci-lint, gopls), treefmt-nix formatter, git-hooks.nix
 - `.envrc` — direnv integration for automatic `nix develop` on cd
-- `MIGRATION_TO_NIX_FLAKES_PROPOSAL.md` — migration plan from justfile to nix flakes
 - Depguard whitelist for `examples/` module (scoped `examples/**/*.go` rule)
 - CI: golangci-lint v2 (`github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest`)
 
 ### Changed
 
 - `RenderTableData` — all writer errors now wrapped with `fmt.Errorf("write X: %w", err)` for pinpoint failure reporting
+- `RenderTableData` — uses registry-based dispatch via `TableDataMarshaler` instead of direct function calls
 - `FilledStrings` — uses `slices.Repeat` (Go 1.26 stdlib) instead of manual make+for loop
 - `NewBrandedID` — simplified from `id.NewID[Brand, string](value)` to `id.NewID[Brand](value)` (inferred type arg)
+- Added `Nodes()`, `Edges()`, `NodesPtr()`, `EdgesPtr()` accessor methods to `GraphRendererMixin` for cross-package use
 - `enum/enum_test.go` no longer imports `internal/gentest` (inlined helper)
 - `.gitignore` — added `result` and `.direnv/` for Nix artifacts
-
-### Removed
-
-- `ErrUnsupportedFormat` — renamed to `UnsupportedFormatError` (breaking change)
-- `TestContainsString` in graph/ — tested stdlib `strings.Contains` (zero value)
+- Multi-module workspace expanded from 9 to 12 independent modules
 
 ## [0.4.0] - 2026-05-17
 
