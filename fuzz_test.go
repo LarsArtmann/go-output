@@ -3,29 +3,7 @@ package output
 import (
 	"strings"
 	"testing"
-
-	"github.com/larsartmann/go-output/testhelpers"
 )
-
-func fuzzEnumTest[E testhelpers.StringEnum](
-	t *testing.T,
-	s string,
-	parse func(string) (E, error),
-	typeName string,
-) {
-	result, err := parse(s)
-	if err != nil {
-		if result != "" {
-			t.Errorf("%s(%q) returned error but non-empty result: %q", typeName, s, result)
-		}
-	}
-
-	if result.IsValid() && err == nil {
-		if string(result) != s {
-			t.Errorf("%s(%q) = %q, but IsValid() was true", typeName, s, result)
-		}
-	}
-}
 
 func FuzzMarkdownTable(f *testing.F) {
 	// Seed corpus
