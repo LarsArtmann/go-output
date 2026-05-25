@@ -7,14 +7,27 @@ import (
 	"github.com/larsartmann/go-output"
 )
 
-func BenchmarkCSVWriter(b *testing.B) {
-	headers := []string{"Name", "Age", "Email", "City"}
+var benchHeaders = []string{"Name", "Age", "Email", "City"}
 
+var benchRows = func() [][]string {
 	rows := make([][]string, 100)
 	for i := range rows {
 		rows[i] = []string{"Alice", "30", "alice@example.com", "Berlin"}
 	}
 
+	return rows
+}()
+
+func benchTableData() *output.TableData {
+	data := output.NewTableData(benchHeaders)
+	for range 100 {
+		data.AddRow([]string{"Alice", "30", "alice@example.com", "Berlin"})
+	}
+
+	return data
+}
+
+func BenchmarkCSVWriter(b *testing.B) {
 	b.ResetTimer()
 
 	for b.Loop() {
@@ -22,9 +35,9 @@ func BenchmarkCSVWriter(b *testing.B) {
 
 		w := NewCSVWriter(&buf)
 
-		_ = w.WriteHeader(headers)
+		_ = w.WriteHeader(benchHeaders)
 
-		for _, row := range rows {
+		for _, row := range benchRows {
 			_ = w.WriteRow(row)
 		}
 
@@ -33,10 +46,7 @@ func BenchmarkCSVWriter(b *testing.B) {
 }
 
 func BenchmarkMarshalCSVFromTableData(b *testing.B) {
-	data := output.NewTableData([]string{"Name", "Age", "Email", "City"})
-	for range 100 {
-		data.AddRow([]string{"Alice", "30", "alice@example.com", "Berlin"})
-	}
+	data := benchTableData()
 
 	b.ResetTimer()
 
@@ -46,13 +56,6 @@ func BenchmarkMarshalCSVFromTableData(b *testing.B) {
 }
 
 func BenchmarkTSVWriter(b *testing.B) {
-	headers := []string{"Name", "Age", "Email", "City"}
-
-	rows := make([][]string, 100)
-	for i := range rows {
-		rows[i] = []string{"Alice", "30", "alice@example.com", "Berlin"}
-	}
-
 	b.ResetTimer()
 
 	for b.Loop() {
@@ -60,9 +63,9 @@ func BenchmarkTSVWriter(b *testing.B) {
 
 		w := NewTSVWriter(&buf)
 
-		_ = w.WriteHeader(headers)
+		_ = w.WriteHeader(benchHeaders)
 
-		for _, row := range rows {
+		for _, row := range benchRows {
 			_ = w.WriteRow(row)
 		}
 
@@ -71,10 +74,7 @@ func BenchmarkTSVWriter(b *testing.B) {
 }
 
 func BenchmarkMarshalTSVFromTableData(b *testing.B) {
-	data := output.NewTableData([]string{"Name", "Age", "Email", "City"})
-	for range 100 {
-		data.AddRow([]string{"Alice", "30", "alice@example.com", "Berlin"})
-	}
+	data := benchTableData()
 
 	b.ResetTimer()
 
