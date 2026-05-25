@@ -30,99 +30,19 @@ func FuzzD2Escape(f *testing.F) {
 }
 
 func FuzzParseD2Direction(f *testing.F) {
-	for _, dir := range d2DirectionValues {
-		f.Add(string(dir))
-	}
-
-	f.Add("invalid")
-	f.Add("")
-
-	f.Fuzz(func(t *testing.T, input string) {
-		got, err := ParseD2Direction(input)
-		if err != nil {
-			if got != "" {
-				t.Errorf("ParseD2Direction(%q) returned non-empty on error: %q", input, got)
-			}
-
-			return
-		}
-
-		if !got.IsValid() {
-			t.Errorf("ParseD2Direction(%q) = %q, not valid", input, got)
-		}
-	})
+	fuzzTestParseEnum(f, d2DirectionValues, ParseD2Direction)
 }
 
 func FuzzParseD2NodeShape(f *testing.F) {
-	for _, shape := range d2NodeShapeValues {
-		f.Add(string(shape))
-	}
-
-	f.Add("invalid")
-	f.Add("")
-
-	f.Fuzz(func(t *testing.T, input string) {
-		got, err := ParseD2NodeShape(input)
-		if err != nil {
-			if got != "" {
-				t.Errorf("ParseD2NodeShape(%q) returned non-empty on error: %q", input, got)
-			}
-
-			return
-		}
-
-		if !got.IsValid() {
-			t.Errorf("ParseD2NodeShape(%q) = %q, not valid", input, got)
-		}
-	})
+	fuzzTestParseEnum(f, d2NodeShapeValues, ParseD2NodeShape)
 }
 
 func FuzzParseD2ArrowType(f *testing.F) {
-	for _, arrow := range d2ArrowTypeValues {
-		f.Add(string(arrow))
-	}
-
-	f.Add("invalid")
-	f.Add("")
-
-	f.Fuzz(func(t *testing.T, input string) {
-		got, err := ParseD2ArrowType(input)
-		if err != nil {
-			if got != "" {
-				t.Errorf("ParseD2ArrowType(%q) returned non-empty on error: %q", input, got)
-			}
-
-			return
-		}
-
-		if !got.IsValid() {
-			t.Errorf("ParseD2ArrowType(%q) = %q, not valid", input, got)
-		}
-	})
+	fuzzTestParseEnum(f, d2ArrowTypeValues, ParseD2ArrowType)
 }
 
 func FuzzParseD2Constraint(f *testing.F) {
-	for _, c := range allD2Constraints {
-		f.Add(string(c))
-	}
-
-	f.Add("invalid")
-	f.Add("")
-
-	f.Fuzz(func(t *testing.T, input string) {
-		got, err := ParseD2Constraint(input)
-		if err != nil {
-			if got != "" {
-				t.Errorf("ParseD2Constraint(%q) returned non-empty on error: %q", input, got)
-			}
-
-			return
-		}
-
-		if !got.IsValid() {
-			t.Errorf("ParseD2Constraint(%q) = %q, not valid", input, got)
-		}
-	})
+	fuzzTestParseEnum(f, allD2Constraints, ParseD2Constraint)
 }
 
 func FuzzD2DiagramRender(f *testing.F) {
