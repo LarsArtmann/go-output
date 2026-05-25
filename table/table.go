@@ -18,34 +18,59 @@ type TableDataProvider interface {
 	GetRows() [][]string
 }
 
+// Option configures a Table during construction.
+type Option func(*Table)
+
+// WithColorMode sets the color mode for the table renderer.
+// ColorModeAuto (default) enables colors when stdout is a terminal.
+// ColorModeNever disables all ANSI styling.
+// ColorModeAlways forces ANSI styling regardless of terminal state.
+func WithColorMode(mode output.ColorMode) Option {
+	return func(t *Table) { t.colorMode = mode }
+}
+
 // Table renders formatted tables using lipgloss.
 type Table struct {
-	t *table.Table
+	t         *table.Table
+	colorMode output.ColorMode
 }
 
 // New creates a new Table with default styling.
-func New() *Table {
-	t := table.New().
+// Pass WithColorMode to control ANSI color output (default: ColorModeAuto).
+func New(opts ...Option) *Table {
+	tbl := &Table{colorMode: output.ColorModeAuto}
+
+	for _, opt := range opts {
+		opt(tbl)
+	}
+
+	useColor := tbl.colorMode.ShouldColor()
+
+	tbl.t = table.New().
 		Border(lipgloss.RoundedBorder()).
 		StyleFunc(func(row, _ int) lipgloss.Style {
 			if row == table.HeaderRow {
-				return lipgloss.NewStyle().
-					Foreground(lipgloss.Color("99")).
-					Bold(true).
-					Padding(0, 1)
+				style := lipgloss.NewStyle().Padding(0, 1)
+				if useColor {
+					style = style.Foreground(lipgloss.Color("99")).Bold(true)
+				}
+
+				return style
 			}
 
 			if row%2 == 0 {
-				return lipgloss.NewStyle().
-					Foreground(lipgloss.Color("245")).
-					Padding(0, 1)
+				style := lipgloss.NewStyle().Padding(0, 1)
+				if useColor {
+					style = style.Foreground(lipgloss.Color("245"))
+				}
+
+				return style
 			}
 
-			return lipgloss.NewStyle().
-				Padding(0, 1)
+			return lipgloss.NewStyle().Padding(0, 1)
 		})
 
-	return &Table{t: t}
+	return tbl
 }
 
 // apply executes fn on the underlying table and returns self for chaining.
@@ -77,12 +102,12 @@ func (t *Table) Render() (string, error) {
 
 // FromTableData creates a new Table populated from a TableDataProvider.
 // If data is nil, returns an empty table.
-func FromTableData(data TableDataProvider) *Table {
+func FromTableData(data TableDataProvider, opts ...Option) *Table {
 	if data == nil {
-		return New()
+		return New(opts...)
 	}
 
-	t := New()
+	t := New(opts...)
 	t.SetHeaders(data.GetHeaders()...)
 
 	for _, row := range data.GetRows() {

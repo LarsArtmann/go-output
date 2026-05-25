@@ -149,11 +149,11 @@ func TestLargeDatasetWorkflow(t *testing.T) {
 		// Given: Large streaming dataset
 		html := markup.NewStreamingHTMLRenderer()
 
-		headers := output.FilledStrings(10, "Col")
+		headers := slices.Repeat([]string{"Col"}, 10)
 		html.SetHeaders(headers)
 
 		for range 100 {
-			row := output.FilledStrings(10, "data")
+			row := slices.Repeat([]string{"data"}, 10)
 			html.AddRow(row)
 		}
 

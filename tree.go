@@ -5,6 +5,19 @@ import (
 	"strings"
 )
 
+// ANSI escape codes for terminal coloring.
+const (
+	ansiReset   = "\033[0m"
+	ansiBold    = "\033[1m"
+	ansiDim     = "\033[2m"
+	ansiCyan    = "\033[36m"
+	ansiBlue    = "\033[34m"
+	ansiGreen   = "\033[32m"
+	ansiMagenta = "\033[35m"
+)
+
+var depthColors = []string{ansiGreen, ansiBlue, ansiMagenta, ansiCyan}
+
 // TreeOutputRenderer defines the interface for tree format renderers.
 type TreeOutputRenderer interface {
 	Renderer
@@ -58,12 +71,18 @@ func (n *TreeNode) Parent() *TreeNode {
 
 // ASCIITreeRenderer implements the TreeOutputRenderer interface for ASCII tree output.
 type ASCIITreeRenderer struct {
-	root *TreeNode
+	root      *TreeNode
+	colorMode ColorMode
 }
 
 // NewASCIITreeRenderer creates a new ASCIITreeRenderer.
 func NewASCIITreeRenderer() *ASCIITreeRenderer {
-	return &ASCIITreeRenderer{} //nolint:exhaustruct // root and builder are initialized lazily
+	return &ASCIITreeRenderer{colorMode: ColorModeAuto} //nolint:exhaustruct // root is initialized lazily
+}
+
+// SetColorMode sets the color mode for the tree renderer.
+func (r *ASCIITreeRenderer) SetColorMode(mode ColorMode) {
+	r.colorMode = mode
 }
 
 // Compile-time interface checks.
@@ -84,9 +103,17 @@ func (r *ASCIITreeRenderer) Render() (string, error) {
 	}
 
 	var b strings.Builder
-	r.renderNode(&b, r.root, "", true)
+	r.renderNode(&b, r.root, "", true, 0)
 
 	return b.String(), nil
+}
+
+func (r *ASCIITreeRenderer) useColor() bool {
+	return r.colorMode.ShouldColor()
+}
+
+func (r *ASCIITreeRenderer) colorForDepth(depth int) string {
+	return depthColors[depth%len(depthColors)]
 }
 
 func (r *ASCIITreeRenderer) renderNode(
@@ -94,8 +121,8 @@ func (r *ASCIITreeRenderer) renderNode(
 	node *TreeNode,
 	prefix string,
 	isLast bool,
+	depth int,
 ) {
-	// Determine connector characters
 	var connector string
 	if isLast {
 		connector = "└── "
@@ -103,26 +130,51 @@ func (r *ASCIITreeRenderer) renderNode(
 		connector = "├── "
 	}
 
-	// Write this node
 	b.WriteString(prefix)
+
+	if r.useColor() {
+		b.WriteString(ansiDim)
+	}
+
 	b.WriteString(connector)
+
+	if r.useColor() {
+		b.WriteString(ansiReset)
+		b.WriteString(r.colorForDepth(depth))
+		b.WriteString(ansiBold)
+	}
+
 	b.WriteString(node.Label.Get())
 
-	// Add metadata summary if present
+	if r.useColor() {
+		b.WriteString(ansiReset)
+	}
+
 	if len(node.Metadata) > 0 {
 		metaParts := make([]string, 0, len(node.Metadata))
 		for k, v := range node.Metadata {
 			metaParts = append(metaParts, k+": "+v)
 		}
 
-		b.WriteString(" (")
+		if r.useColor() {
+			b.WriteString(" ")
+			b.WriteString(ansiDim)
+			b.WriteString(ansiCyan)
+		} else {
+			b.WriteString(" ")
+		}
+
+		b.WriteString("(")
 		b.WriteString(strings.Join(metaParts, ", "))
 		b.WriteString(")")
+
+		if r.useColor() {
+			b.WriteString(ansiReset)
+		}
 	}
 
 	b.WriteString("\n")
 
-	// Prepare prefix for children
 	var childPrefix string
 	if isLast {
 		childPrefix = prefix + "    "
@@ -130,10 +182,9 @@ func (r *ASCIITreeRenderer) renderNode(
 		childPrefix = prefix + "│   "
 	}
 
-	// Render children
 	for i, child := range node.Children {
 		isLastChild := i == len(node.Children)-1
-		r.renderNode(b, child, childPrefix, isLastChild)
+		r.renderNode(b, child, childPrefix, isLastChild, depth+1)
 	}
 }
 

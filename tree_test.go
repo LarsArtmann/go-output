@@ -1,6 +1,7 @@
 package output
 
 import (
+	"strings"
 	"testing"
 )
 
@@ -132,4 +133,80 @@ func TestTreeNodeDepth(t *testing.T) {
 	root.AddChild(child)
 
 	assertTreeNodeDepth(t, root, child, grandchild)
+}
+
+func TestTreeColorModeNever(t *testing.T) {
+	t.Parallel()
+
+	renderer := NewASCIITreeRenderer()
+	renderer.SetColorMode(ColorModeNever)
+
+	root := NewTreeNode("root", "Root")
+	root.Metadata["key"] = "value"
+	renderer.SetRoot(root)
+
+	got, err := renderer.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
+	if strings.Contains(got, "\x1b[") {
+		t.Errorf("ColorModeNever should produce no ANSI codes, got: %q", got)
+	}
+
+	assertContains(t, got, "Root", "should contain label even without colors")
+	assertContains(t, got, "key: value", "should contain metadata even without colors")
+}
+
+func TestTreeColorModeAlways(t *testing.T) {
+	t.Parallel()
+
+	renderer := NewASCIITreeRenderer()
+	renderer.SetColorMode(ColorModeAlways)
+
+	root := NewTreeNode("root", "Root")
+	child := NewTreeNode("child", "Child")
+	root.AddChild(child)
+	renderer.SetRoot(root)
+
+	got, err := renderer.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
+	if !strings.Contains(got, "\x1b[") {
+		t.Errorf("ColorModeAlways should produce ANSI codes, got: %q", got)
+	}
+
+	assertContains(t, got, "Root", "should contain label")
+	assertContains(t, got, "Child", "should contain child label")
+}
+
+func TestTreeColorModeDefault(t *testing.T) {
+	t.Parallel()
+
+	renderer := NewASCIITreeRenderer()
+	if renderer.colorMode != ColorModeAuto {
+		t.Errorf("default ColorMode = %v, want %v", renderer.colorMode, ColorModeAuto)
+	}
+}
+
+func TestTreeColoredMetadata(t *testing.T) {
+	t.Parallel()
+
+	renderer := NewASCIITreeRenderer()
+	renderer.SetColorMode(ColorModeAlways)
+
+	node := NewTreeNode("node", "Node")
+	node.Metadata["count"] = "42"
+	node.Metadata["status"] = "active"
+	renderer.SetRoot(node)
+
+	got, err := renderer.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
+	assertContains(t, got, "count: 42", "should contain metadata")
+	assertContains(t, got, "status: active", "should contain metadata")
 }

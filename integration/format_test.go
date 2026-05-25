@@ -2,7 +2,6 @@
 package integration
 
 import (
-	"slices"
 	"testing"
 
 	"github.com/larsartmann/go-output"
@@ -106,31 +105,5 @@ func TestFormatCategories(t *testing.T) {
 		if !f.Supports(output.ShapeGraph) {
 			t.Errorf("Format %s should support ShapeGraph", f)
 		}
-	}
-}
-
-//nolint:staticcheck // Intentional test of deprecated registry API.
-func TestFormatRegistry(t *testing.T) {
-	t.Parallel()
-
-	customFormat := output.Format("custom")
-
-	err := output.Register(customFormat, func() output.Renderer {
-		return nil
-	})
-	if err != nil {
-		t.Fatalf("Register failed: %v", err)
-	}
-	defer output.Unregister(customFormat)
-
-	if !output.IsRegistered(customFormat) {
-		t.Error("Custom format should be registered")
-	}
-
-	formats := output.RegisteredFormats()
-
-	found := slices.Contains(formats, customFormat)
-	if !found {
-		t.Error("Custom format should be in registered formats list")
 	}
 }

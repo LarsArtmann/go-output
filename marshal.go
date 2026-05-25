@@ -3,8 +3,6 @@ package output
 import (
 	"encoding/json"
 	"fmt"
-
-	id "github.com/larsartmann/go-branded-id"
 )
 
 // MarshalJSONIndent encodes v to indented JSON.
@@ -40,11 +38,3 @@ func MarshalFormat(format string, marshalFn func(any) ([]byte, error), v any) ([
 	return data, nil
 }
 
-// BrandedValue returns the string value of a branded ID, or empty string if zero.
-func BrandedValue[Brand any](label id.ID[Brand, string]) string {
-	if label.IsZero() {
-		return ""
-	}
-
-	return label.Get()
-}
