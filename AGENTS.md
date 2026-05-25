@@ -217,7 +217,8 @@ The registry is opt-in — use constructors directly by default:
 d := d2.NewD2Diagram()
 
 // Registry for runtime dispatch (e.g., CLI --format flag)
-output.Register(output.FormatJSON, func() output.Renderer { return output.NewJSONRenderer() })
+// Note: output.Register/output.Create are deprecated; prefer direct constructors
+output.Register(output.FormatJSON, func() output.Renderer { return serialization.NewJSONTableRenderer() })
 renderer, err := output.Create(formatFromFlag)
 ```
 
