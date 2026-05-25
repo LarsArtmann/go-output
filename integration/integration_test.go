@@ -353,3 +353,88 @@ func formatHealth(h int) string {
 func formatComplexity(c int) string {
 	return fmt.Sprintf("%d/10", c)
 }
+
+func TestColorModeRenderTableData(t *testing.T) {
+	t.Parallel()
+
+	data := output.NewTableData([]string{"Name", "Value"})
+	data.AddRow([]string{"Alpha", "100"})
+
+	t.Run("markdown with color always", func(t *testing.T) {
+		t.Parallel()
+
+		var buf bytes.Buffer
+
+		err := output.RenderTableData(data, output.FormatMarkdown, output.RenderOptions{
+			Writer:    &buf,
+			ColorMode: output.ColorModeAlways,
+		})
+		if err != nil {
+			t.Fatalf("RenderTableData markdown: %v", err)
+		}
+
+		out := buf.String()
+		testhelpers.AssertContains(t, out, "Alpha", "Markdown should contain data")
+
+		if !bytes.Contains(buf.Bytes(), []byte("\033[")) {
+			t.Error("Markdown output with ColorModeAlways should contain ANSI escape codes")
+		}
+	})
+
+	t.Run("tree with color always", func(t *testing.T) {
+		t.Parallel()
+
+		var buf bytes.Buffer
+
+		err := output.RenderTableData(data, output.FormatTree, output.RenderOptions{
+			Writer:    &buf,
+			ColorMode: output.ColorModeAlways,
+		})
+		if err != nil {
+			t.Fatalf("RenderTableData tree: %v", err)
+		}
+
+		out := buf.String()
+		testhelpers.AssertContains(t, out, "Alpha", "Tree should contain data")
+
+		if !bytes.Contains(buf.Bytes(), []byte("\033[")) {
+			t.Error("Tree output with ColorModeAlways should contain ANSI escape codes")
+		}
+	})
+
+	t.Run("markdown with color never", func(t *testing.T) {
+		t.Parallel()
+
+		var buf bytes.Buffer
+
+		err := output.RenderTableData(data, output.FormatMarkdown, output.RenderOptions{
+			Writer:    &buf,
+			ColorMode: output.ColorModeNever,
+		})
+		if err != nil {
+			t.Fatalf("RenderTableData markdown: %v", err)
+		}
+
+		if bytes.Contains(buf.Bytes(), []byte("\033[")) {
+			t.Error("Markdown output with ColorModeNever should not contain ANSI escape codes")
+		}
+	})
+
+	t.Run("tree with color never", func(t *testing.T) {
+		t.Parallel()
+
+		var buf bytes.Buffer
+
+		err := output.RenderTableData(data, output.FormatTree, output.RenderOptions{
+			Writer:    &buf,
+			ColorMode: output.ColorModeNever,
+		})
+		if err != nil {
+			t.Fatalf("RenderTableData tree: %v", err)
+		}
+
+		if bytes.Contains(buf.Bytes(), []byte("\033[")) {
+			t.Error("Tree output with ColorModeNever should not contain ANSI escape codes")
+		}
+	})
+}

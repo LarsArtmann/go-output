@@ -43,7 +43,7 @@ func BenchmarkTableDataCreateRowEdges(b *testing.B) {
 	}
 }
 
-func BenchmarkMarkdownTable(b *testing.B) {
+func BenchmarkMarkdownTableColored(b *testing.B) {
 	md := NewMarkdownTable()
 
 	const (
@@ -57,6 +57,7 @@ func BenchmarkMarkdownTable(b *testing.B) {
 	}
 
 	md.SetHeaders(headers)
+	md.SetColorMode(ColorModeAlways)
 
 	rows := make([][]string, 100)
 	for i := range rows {
@@ -73,5 +74,32 @@ func BenchmarkMarkdownTable(b *testing.B) {
 
 	for b.Loop() {
 		_, _ = md.Render()
+	}
+}
+
+func BenchmarkASCIITreeColored(b *testing.B) {
+	root := NewTreeNode("root", "Root")
+	for i := range 100 {
+		child := NewTreeNode("child", "Child")
+
+		for j := range 10 {
+			_ = j
+
+			child.AddChild(NewTreeNode("leaf", "Leaf"))
+		}
+
+		root.AddChild(child)
+
+		_ = i
+	}
+
+	renderer := NewASCIITreeRenderer()
+	renderer.SetRoot(root)
+	renderer.SetColorMode(ColorModeAlways)
+
+	b.ResetTimer()
+
+	for b.Loop() {
+		_, _ = renderer.Render()
 	}
 }

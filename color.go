@@ -8,6 +8,17 @@ import (
 	"github.com/larsartmann/go-output/enum"
 )
 
+// ANSI escape codes for terminal coloring.
+const (
+	ansiReset   = "\033[0m"
+	ansiBold    = "\033[1m"
+	ansiDim     = "\033[2m"
+	ansiCyan    = "\033[36m"
+	ansiBlue    = "\033[34m"
+	ansiGreen   = "\033[32m"
+	ansiMagenta = "\033[35m"
+)
+
 // ColorMode controls terminal color output.
 type ColorMode string
 

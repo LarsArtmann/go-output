@@ -135,12 +135,9 @@ func renderMarkdownTableData(w io.Writer, data *TableData, opts RenderOptions) e
 	return nil
 }
 
-func renderTreeTableData(w io.Writer, data *TableData, opts ...RenderOptions) error {
+func renderTreeTableData(w io.Writer, data *TableData, opts RenderOptions) error {
 	renderer := TreeRendererFromTableData(data)
-
-	if len(opts) > 0 {
-		renderer.SetColorMode(opts[0].ColorMode)
-	}
+	renderer.SetColorMode(opts.ColorMode)
 
 	out, err := renderer.Render()
 	if err != nil {

@@ -132,13 +132,17 @@ func (m *MarkdownTable) writeHeader(b *strings.Builder, colWidths []int) {
 
 	for i, header := range m.headers {
 		b.WriteString(" ")
+
 		if m.useColor() {
 			b.WriteString(ansiBold)
 		}
+
 		b.WriteString(header)
+
 		if m.useColor() {
 			b.WriteString(ansiReset)
 		}
+
 		b.WriteString(strings.Repeat(" ", colWidths[i]-len(header)+1))
 		b.WriteString("|")
 	}

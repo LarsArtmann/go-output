@@ -204,6 +204,7 @@ func TestMarkdownColorModeNever(t *testing.T) {
 	if strings.Contains(got, ansiBold) {
 		t.Error("ColorModeNever should not produce ANSI escape codes")
 	}
+
 	if strings.Contains(got, ansiDim) {
 		t.Error("ColorModeNever should not produce dim ANSI codes")
 	}

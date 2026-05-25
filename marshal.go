@@ -37,4 +37,3 @@ func MarshalFormat(format string, marshalFn func(any) ([]byte, error), v any) ([
 
 	return data, nil
 }
-

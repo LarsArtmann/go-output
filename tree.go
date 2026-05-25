@@ -5,17 +5,7 @@ import (
 	"strings"
 )
 
-// ANSI escape codes for terminal coloring.
-const (
-	ansiReset   = "\033[0m"
-	ansiBold    = "\033[1m"
-	ansiDim     = "\033[2m"
-	ansiCyan    = "\033[36m"
-	ansiBlue    = "\033[34m"
-	ansiGreen   = "\033[32m"
-	ansiMagenta = "\033[35m"
-)
-
+//nolint:gochecknoglobals // Color cycle lookup table for depth-based tree coloring.
 var depthColors = []string{ansiGreen, ansiBlue, ansiMagenta, ansiCyan}
 
 // TreeOutputRenderer defines the interface for tree format renderers.

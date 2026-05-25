@@ -13,11 +13,6 @@ type ExpectedOutput = gentest.ExpectedOutput
 //nolint:gochecknoglobals // Re-exported test helpers for package-local use
 var assertContains = testhelpers.AssertContains
 
-// Re-export shared test helpers from testhelpers package.
-//
-//nolint:gochecknoglobals // Re-exported test helper for package-local use
-var assertStringSliceEqual = testhelpers.AssertStringSliceEqual
-
 // testNodesAB returns a slice of GraphNode with nodes A and B for testing.
 func testNodesAB() []GraphNode {
 	return []GraphNode{
