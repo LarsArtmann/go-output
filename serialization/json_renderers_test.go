@@ -161,16 +161,7 @@ func TestJSONGraphRenderer_EdgeWithLabel(t *testing.T) {
 func TestJSONGraphRenderer_NodeWithShape(t *testing.T) {
 	t.Parallel()
 
-	r := NewJSONGraphRenderer()
-	r.SetNodes([]output.GraphNode{newTestNodeWithShape("A", "Node A", output.ShapeDiamond)})
-	r.SetEdges(nil)
-
-	got, err := r.Render()
-	if err != nil {
-		t.Fatalf("Render() error = %v", err)
-	}
-
-	assertOutputContains(t, got, `"shape": "diamond"`)
+	testGraphRendererNodeWithShape(t, NewJSONGraphRenderer(), `"shape": "diamond"`)
 }
 
 func TestJSONGraphRenderer_NodeWithMetadata(t *testing.T) {

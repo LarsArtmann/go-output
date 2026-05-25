@@ -11,21 +11,10 @@ import (
 
 //nolint:gochecknoinits // Registers TSV TableData marshaler for registry-based dispatch.
 func init() {
-	output.RegisterTableDataMarshaler(output.FormatTSV, renderTSVTableData)
-}
-
-func renderTSVTableData(w io.Writer, data *output.TableData, _ output.RenderOptions) error {
-	b, err := MarshalTSVFromTableData(data)
-	if err != nil {
-		return fmt.Errorf("render tsv: %w", err)
-	}
-
-	_, err = w.Write(b)
-	if err != nil {
-		return fmt.Errorf("write tsv bytes: %w", err)
-	}
-
-	return nil
+	output.RegisterTableDataMarshaler(output.FormatTSV,
+		func(w io.Writer, data *output.TableData, _ output.RenderOptions) error {
+			return renderDelimitedTableData(w, data, MarshalTSVFromTableData, "tsv")
+		})
 }
 
 // TSVWriter writes TSV (Tab-Separated Values) output.

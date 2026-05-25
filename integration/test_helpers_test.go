@@ -19,35 +19,31 @@ func TestAssertTableData(t *testing.T) {
 		assertTableData(t, data, 2, 1)
 	})
 
-	t.Run("mismatched columns", func(t *testing.T) {
-		t.Parallel()
+	mismatchTests := []struct {
+		name    string
+		headers int
+		rows    int
+	}{
+		{name: "mismatched columns", headers: 5, rows: 1},
+		{name: "mismatched rows", headers: 1, rows: 99},
+	}
 
-		mock := &testing.T{}
+	for _, tt := range mismatchTests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 
-		data := output.NewTableData([]string{"A"})
-		data.AddRow([]string{"1"})
+			mock := &testing.T{}
 
-		assertTableData(mock, data, 5, 1)
+			data := output.NewTableData([]string{"A"})
+			data.AddRow([]string{"1"})
 
-		if !mock.Failed() {
-			t.Error("expected failure for column count mismatch")
-		}
-	})
+			assertTableData(mock, data, tt.headers, tt.rows)
 
-	t.Run("mismatched rows", func(t *testing.T) {
-		t.Parallel()
-
-		mock := &testing.T{}
-
-		data := output.NewTableData([]string{"A"})
-		data.AddRow([]string{"1"})
-
-		assertTableData(mock, data, 1, 99)
-
-		if !mock.Failed() {
-			t.Error("expected failure for row count mismatch")
-		}
-	})
+			if !mock.Failed() {
+				t.Errorf("expected failure for %s", tt.name)
+			}
+		})
+	}
 }
 
 func TestRenderMarkdownTable(t *testing.T) {

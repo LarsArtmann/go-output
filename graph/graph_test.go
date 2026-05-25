@@ -115,17 +115,19 @@ func TestGraphShapeIsValid(t *testing.T) {
 	})
 }
 
-func TestGraphStyle(t *testing.T) {
-	t.Parallel()
-
-	style := output.GraphStyle{
+func newTestGraphStyle(fontSize int) output.GraphStyle {
+	return output.GraphStyle{
 		FillColor:   "red",
 		StrokeColor: "blue",
 		FontColor:   "green",
-		FontSize:    12,
+		FontSize:    fontSize,
 	}
+}
 
-	testGraphStyleFields(t, style, 12)
+func TestGraphStyle(t *testing.T) {
+	t.Parallel()
+
+	testGraphStyleFields(t, newTestGraphStyle(12), 12)
 }
 
 func TestEdgeStyle(t *testing.T) {
@@ -150,14 +152,7 @@ func TestEdgeStyle(t *testing.T) {
 func TestGraphNodeStyle(t *testing.T) {
 	t.Parallel()
 
-	node := &output.GraphNode{
-		Style: output.GraphStyle{
-			FillColor:   "red",
-			StrokeColor: "blue",
-			FontColor:   "green",
-			FontSize:    14,
-		},
-	}
+	node := &output.GraphNode{Style: newTestGraphStyle(14)}
 
 	testGraphStyleFields(t, node.Style, 14)
 }

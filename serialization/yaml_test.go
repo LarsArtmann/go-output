@@ -38,19 +38,13 @@ func TestMarshalYAML(t *testing.T) {
 func TestUnmarshalYAML(t *testing.T) {
 	t.Parallel()
 
-	tests := []struct {
-		name    string
-		data    string
-		wantErr bool
-	}{
+	tests := []unmarshalTestCase{
 		{name: "map", data: "a: 1\nb: 2", wantErr: false},
 		{name: "slice", data: "- 1\n- 2\n- 3", wantErr: false},
 		{name: "invalid", data: "invalid: yaml: [", wantErr: true},
 	}
 
-	for _, tt := range tests {
-		testUnmarshalError(t, tt.name, tt.data, tt.wantErr, UnmarshalYAML, "UnmarshalYAML")
-	}
+	testUnmarshalCases(t, tests, UnmarshalYAML, "UnmarshalYAML")
 }
 
 func TestYAMLTableRenderer(t *testing.T) {

@@ -57,19 +57,13 @@ func TestMarshalJSON(t *testing.T) {
 func TestUnmarshalJSON(t *testing.T) {
 	t.Parallel()
 
-	tests := []struct {
-		name    string
-		data    string
-		wantErr bool
-	}{
+	tests := []unmarshalTestCase{
 		{name: "map", data: `{"a":1}`, wantErr: false},
 		{name: "slice", data: "[1,2,3]", wantErr: false},
 		{name: "invalid", data: `{`, wantErr: true},
 	}
 
-	for _, tt := range tests {
-		testUnmarshalError(t, tt.name, tt.data, tt.wantErr, UnmarshalJSON, "UnmarshalJSON")
-	}
+	testUnmarshalCases(t, tests, UnmarshalJSON, "UnmarshalJSON")
 }
 
 func TestJSONWriter(t *testing.T) {

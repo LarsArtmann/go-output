@@ -81,6 +81,45 @@ func testEdgesABC() []output.GraphEdge {
 	}
 }
 
+type graphRenderer interface {
+	output.Renderer
+	SetNodes([]output.GraphNode)
+	SetEdges([]output.GraphEdge)
+}
+
+func testGraphRendererNodeWithShape(t *testing.T, r graphRenderer, wantShape string) {
+	t.Helper()
+
+	r.SetNodes([]output.GraphNode{newTestNodeWithShape("A", "Node A", output.ShapeDiamond)})
+	r.SetEdges(nil)
+
+	got, err := r.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
+	assertOutputContains(t, got, wantShape)
+}
+
+type unmarshalTestCase struct {
+	name    string
+	data    string
+	wantErr bool
+}
+
+func testUnmarshalCases(
+	t *testing.T,
+	tests []unmarshalTestCase,
+	unmarshal func([]byte, any) error,
+	funcName string,
+) {
+	t.Helper()
+
+	for _, tt := range tests {
+		testUnmarshalError(t, tt.name, tt.data, tt.wantErr, unmarshal, funcName)
+	}
+}
+
 func testUnmarshalError(
 	t *testing.T,
 	name, data string,

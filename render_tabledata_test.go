@@ -138,46 +138,55 @@ func TestRenderTableData_EmptyRows(t *testing.T) {
 }
 
 func TestRenderTableData_MarkdownWriterError(t *testing.T) {
-	data := testTableData()
-
-	err := RenderTableData(data, FormatMarkdown, RenderOptions{
+	testRenderTableDataWriterError(t, FormatMarkdown, RenderOptions{
 		Writer: &errorWriter{},
 		Title:  "Test",
-	})
-	if err == nil {
-		t.Fatal("expected error from errorWriter")
-	}
+	}, "expected error from errorWriter")
 }
 
 func TestRenderTableData_TreeWriterError(t *testing.T) {
-	data := testTableData()
+	testRenderTableDataWriterError(t, FormatTree, RenderOptions{Writer: &errorWriter{}},
+		"expected error from errorWriter")
+}
 
-	err := RenderTableData(data, FormatTree, RenderOptions{Writer: &errorWriter{}})
-	if err == nil {
-		t.Fatal("expected error from errorWriter")
+func TestRenderTableData_MarkdownPartialWriteErrors(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name string
+		opts RenderOptions
+	}{
+		{
+			name: "title write error",
+			opts: RenderOptions{Writer: &writeNThenFailWriter{Remaining: 0}, Title: "Test"},
+		},
+		{
+			name: "row count write error",
+			opts: RenderOptions{Writer: &writeNThenFailWriter{Remaining: 1}, Title: "Test"},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			data := testTableData()
+
+			err := RenderTableData(data, FormatMarkdown, tt.opts)
+			if err == nil {
+				t.Fatal("expected write error")
+			}
+		})
 	}
 }
 
-func TestRenderTableData_MarkdownTitleWriteError(t *testing.T) {
+func testRenderTableDataWriterError(t *testing.T, format Format, opts RenderOptions, msg string) {
+	t.Helper()
+
 	data := testTableData()
 
-	err := RenderTableData(data, FormatMarkdown, RenderOptions{
-		Writer: &writeNThenFailWriter{Remaining: 0},
-		Title:  "Test",
-	})
+	err := RenderTableData(data, format, opts)
 	if err == nil {
-		t.Fatal("expected error on title write")
-	}
-}
-
-func TestRenderTableData_MarkdownRowCountWriteError(t *testing.T) {
-	data := testTableData()
-
-	err := RenderTableData(data, FormatMarkdown, RenderOptions{
-		Writer: &writeNThenFailWriter{Remaining: 1},
-		Title:  "Test",
-	})
-	if err == nil {
-		t.Fatal("expected error on row count write")
+		t.Fatal(msg)
 	}
 }

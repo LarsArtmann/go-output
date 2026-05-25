@@ -17,10 +17,7 @@ func TestMarkdownTable(t *testing.T) {
 func testMarkdownBasicTable(t *testing.T) {
 	t.Helper()
 
-	m := NewMarkdownTable()
-	m.SetHeaders([]string{"Name", "Age"}).
-		AddRow([]string{"Alice", "30"}).
-		AddRow([]string{"Bob", "25"})
+	m := newMarkdownTableWithData()
 
 	got, err := m.Render()
 	if err != nil {
@@ -29,6 +26,19 @@ func testMarkdownBasicTable(t *testing.T) {
 
 	assertContains(t, got, "Name", "Render() should contain header text")
 	assertContains(t, got, "Alice", "Render() should contain data row")
+}
+
+func newMarkdownTableWithSingleRow() *MarkdownTable {
+	return newMarkdownTableWithData()
+}
+
+func newMarkdownTableWithData() *MarkdownTable {
+	m := NewMarkdownTable()
+	m.SetHeaders([]string{"Name", "Age"}).
+		AddRow([]string{"Alice", "30"}).
+		AddRow([]string{"Bob", "25"})
+
+	return m
 }
 
 func testMarkdownEmptyHeaders(t *testing.T) {
@@ -191,9 +201,7 @@ func TestNewMarkdownTableFromDataEmpty(t *testing.T) {
 func TestMarkdownColorModeNever(t *testing.T) {
 	t.Parallel()
 
-	m := NewMarkdownTable()
-	m.SetHeaders([]string{"Name", "Age"}).
-		AddRow([]string{"Alice", "30"})
+	m := newMarkdownTableWithSingleRow()
 	m.SetColorMode(ColorModeNever)
 
 	got, err := m.Render()
@@ -216,9 +224,7 @@ func TestMarkdownColorModeNever(t *testing.T) {
 func TestMarkdownColorModeAlways(t *testing.T) {
 	t.Parallel()
 
-	m := NewMarkdownTable()
-	m.SetHeaders([]string{"Name", "Age"}).
-		AddRow([]string{"Alice", "30"})
+	m := newMarkdownTableWithSingleRow()
 	m.SetColorMode(ColorModeAlways)
 
 	got, err := m.Render()

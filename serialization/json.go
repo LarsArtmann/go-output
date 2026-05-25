@@ -58,17 +58,7 @@ func NewJSONTableRenderer() *JSONTableRenderer {
 
 // Render returns the table data as a JSON string.
 func (r *JSONTableRenderer) Render() (string, error) {
-	data := r.Data()
-	if data == nil || len(data.Headers) == 0 {
-		return "[]", nil
-	}
-
-	rows := data.ToMapSlice()
-
-	b, err := json.MarshalIndent(rows, "", "  ")
-	if err != nil {
-		return "", fmt.Errorf("marshal json table (%d rows): %w", len(rows), err)
-	}
-
-	return string(b), nil
+	return renderTable(r.Data(), "[]", "json", func(v any) ([]byte, error) {
+		return json.MarshalIndent(v, "", "  ")
+	})
 }

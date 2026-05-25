@@ -55,11 +55,7 @@ func TestHTMLRendererEmpty(t *testing.T) {
 func TestHTMLRendererEscaping(t *testing.T) {
 	t.Parallel()
 
-	testHTMLEscape(t, func() interface {
-		SetHeaders([]string)
-		AddRow([]string)
-		Render() (string, error)
-	} {
+	testHTMLEscape(t, func() htmlEscapeTestRenderer {
 		return NewHTMLRenderer()
 	}, "HTMLRenderer")
 }

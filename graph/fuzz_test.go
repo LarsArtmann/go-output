@@ -39,14 +39,17 @@ func FuzzMermaidTextEscape(f *testing.F) {
 	f.Fuzz(func(t *testing.T, input string) {
 		escaped := escape.MermaidText(input)
 
-		if strings.Contains(input, `"`) && strings.Contains(escaped, `"`) {
-			t.Errorf("MermaidText(%q) = %q, double quotes not escaped", input, escaped)
-		}
-
-		if strings.Contains(input, "[") && strings.Contains(escaped, "[") {
-			t.Errorf("MermaidText(%q) = %q, brackets not escaped", input, escaped)
-		}
+		assertEscaped(t, input, escaped, `"`, "double quotes", "MermaidText")
+		assertEscaped(t, input, escaped, "[", "brackets", "MermaidText")
 	})
+}
+
+func assertEscaped(t *testing.T, input, escaped, char, desc, fn string) {
+	t.Helper()
+
+	if strings.Contains(input, char) && strings.Contains(escaped, char) {
+		t.Errorf("%s(%q) = %q, %s not escaped", fn, input, escaped, desc)
+	}
 }
 
 func FuzzMermaidID(f *testing.F) {

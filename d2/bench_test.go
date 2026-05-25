@@ -84,9 +84,7 @@ func BenchmarkD2DiagramEdges(b *testing.B) {
 
 func BenchmarkD2DiagramTables(b *testing.B) {
 	benchmarkD2Diagram(b, func(d *D2Diagram) {
-		for _, table := range generateBenchmarkD2Tables(50) {
-			d.AddTable(table.Name, table.Columns)
-		}
+		addBenchmarkD2Tables(d, 50)
 	})
 }
 
@@ -131,8 +129,12 @@ func BenchmarkD2DiagramFullConfig(b *testing.B) {
 			d.AddEdge(edge)
 		}
 
-		for _, table := range generateBenchmarkD2Tables(10) {
-			d.AddTable(table.Name, table.Columns)
-		}
+		addBenchmarkD2Tables(d, 10)
 	})
+}
+
+func addBenchmarkD2Tables(d *D2Diagram, n int) {
+	for _, table := range generateBenchmarkD2Tables(n) {
+		d.AddTable(table.Name, table.Columns)
+	}
 }

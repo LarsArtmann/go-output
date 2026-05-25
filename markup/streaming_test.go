@@ -146,11 +146,7 @@ func streamRenderer(t *testing.T, r *StreamingHTMLRenderer) string {
 func TestStreamingHTMLRendererEscapeHTML(t *testing.T) {
 	t.Parallel()
 
-	testHTMLEscape(t, func() interface {
-		SetHeaders([]string)
-		AddRow([]string)
-		Render() (string, error)
-	} {
+	testHTMLEscape(t, func() htmlEscapeTestRenderer {
 		return NewStreamingHTMLRenderer()
 	}, "StreamingHTMLRenderer")
 }

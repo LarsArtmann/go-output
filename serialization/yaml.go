@@ -44,19 +44,7 @@ var emptyYAML = "[]\n"
 
 // Render returns the table data as a YAML string.
 func (r *YAMLTableRenderer) Render() (string, error) {
-	data := r.Data()
-	if data == nil || len(data.Headers) == 0 {
-		return emptyYAML, nil
-	}
-
-	rows := data.ToMapSlice()
-
-	b, err := yaml.Marshal(rows)
-	if err != nil {
-		return "", fmt.Errorf("marshal yaml table (%d rows): %w", len(rows), err)
-	}
-
-	return string(b), nil
+	return renderTable(r.Data(), emptyYAML, "yaml", yaml.Marshal)
 }
 
 func renderYAMLTableData(w io.Writer, data *output.TableData, _ output.RenderOptions) error {

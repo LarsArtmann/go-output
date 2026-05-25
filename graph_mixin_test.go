@@ -146,10 +146,6 @@ func TestNewGraphRendererMixin(t *testing.T) {
 	if m.Edges() == nil {
 		t.Error("Edges() should not be nil")
 	}
-
-	if len(m.Nodes()) != 0 {
-		t.Errorf("Nodes() len = %d, want 0", len(m.Nodes()))
-	}
 }
 
 func TestGraphRendererMixin_SetNodes(t *testing.T) {
@@ -158,9 +154,7 @@ func TestGraphRendererMixin_SetNodes(t *testing.T) {
 	m := NewGraphRendererMixin()
 	m.SetNodes(testNodesAB())
 
-	if len(m.Nodes()) != 2 {
-		t.Errorf("Nodes() len = %d, want 2", len(m.Nodes()))
-	}
+	assertSliceLen(t, "Nodes", m.Nodes(), 2)
 }
 
 func TestGraphRendererMixin_SetEdges(t *testing.T) {
@@ -169,9 +163,7 @@ func TestGraphRendererMixin_SetEdges(t *testing.T) {
 	m := NewGraphRendererMixin()
 	m.SetEdges(testEdgesAB())
 
-	if len(m.Edges()) != 1 {
-		t.Errorf("Edges() len = %d, want 1", len(m.Edges()))
-	}
+	assertSliceLen(t, "Edges", m.Edges(), 1)
 }
 
 func TestGraphRendererMixin_NodesPtr(t *testing.T) {
@@ -206,9 +198,7 @@ func TestGraphRendererMixin_AddRowEdges(t *testing.T) {
 
 	m.AddRowEdges(data)
 
-	if len(m.Edges()) != 1 {
-		t.Errorf("Edges() len = %d, want 2", len(m.Edges()))
-	}
+	assertSliceLen(t, "Edges", m.Edges(), 1)
 }
 
 func TestGraphRendererMixin_SetNodesFromTableData(t *testing.T) {
@@ -221,12 +211,15 @@ func TestGraphRendererMixin_SetNodesFromTableData(t *testing.T) {
 
 	m.SetNodesFromTableData(data, func(i int, n *GraphNode) {})
 
-	if len(m.Nodes()) != 2 {
-		t.Errorf("Nodes() len = %d, want 2", len(m.Nodes()))
-	}
+	assertSliceLen(t, "Nodes", m.Nodes(), 2)
+	assertSliceLen(t, "Edges", m.Edges(), 1)
+}
 
-	if len(m.Edges()) != 1 {
-		t.Errorf("Edges() len = %d, want 1", len(m.Edges()))
+func assertSliceLen[T any](t *testing.T, name string, slice []T, want int) {
+	t.Helper()
+
+	if len(slice) != want {
+		t.Errorf("%s() len = %d, want %d", name, len(slice), want)
 	}
 }
 

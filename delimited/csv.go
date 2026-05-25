@@ -8,23 +8,31 @@ import (
 	"github.com/larsartmann/go-output"
 )
 
-//nolint:gochecknoinits // Registers CSV TableData marshaler for registry-based dispatch.
-func init() {
-	output.RegisterTableDataMarshaler(output.FormatCSV, renderCSVTableData)
-}
-
-func renderCSVTableData(w io.Writer, data *output.TableData, _ output.RenderOptions) error {
-	b, err := MarshalCSVFromTableData(data)
+func renderDelimitedTableData(
+	w io.Writer,
+	data *output.TableData,
+	marshalFunc func(*output.TableData) ([]byte, error),
+	formatName string,
+) error {
+	b, err := marshalFunc(data)
 	if err != nil {
-		return fmt.Errorf("render csv: %w", err)
+		return fmt.Errorf("render %s: %w", formatName, err)
 	}
 
 	_, err = w.Write(b)
 	if err != nil {
-		return fmt.Errorf("write csv bytes: %w", err)
+		return fmt.Errorf("write %s bytes: %w", formatName, err)
 	}
 
 	return nil
+}
+
+//nolint:gochecknoinits // Registers CSV TableData marshaler for registry-based dispatch.
+func init() {
+	output.RegisterTableDataMarshaler(output.FormatCSV,
+		func(w io.Writer, data *output.TableData, _ output.RenderOptions) error {
+			return renderDelimitedTableData(w, data, MarshalCSVFromTableData, "csv")
+		})
 }
 
 // CSVWriter writes CSV output.

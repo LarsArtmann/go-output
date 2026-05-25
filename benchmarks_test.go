@@ -4,8 +4,9 @@ import (
 	"testing"
 )
 
-func BenchmarkASCIITreeRenderer(b *testing.B) {
+func buildBenchmarkTree() *TreeNode {
 	root := NewTreeNode("root", "Root")
+
 	for i := range 100 {
 		child := NewTreeNode("child", "Child")
 
@@ -20,8 +21,12 @@ func BenchmarkASCIITreeRenderer(b *testing.B) {
 		_ = i
 	}
 
+	return root
+}
+
+func BenchmarkASCIITreeRenderer(b *testing.B) {
 	renderer := NewASCIITreeRenderer()
-	renderer.SetRoot(root)
+	renderer.SetRoot(buildBenchmarkTree())
 
 	b.ResetTimer()
 
@@ -78,23 +83,8 @@ func BenchmarkMarkdownTableColored(b *testing.B) {
 }
 
 func BenchmarkASCIITreeColored(b *testing.B) {
-	root := NewTreeNode("root", "Root")
-	for i := range 100 {
-		child := NewTreeNode("child", "Child")
-
-		for j := range 10 {
-			_ = j
-
-			child.AddChild(NewTreeNode("leaf", "Leaf"))
-		}
-
-		root.AddChild(child)
-
-		_ = i
-	}
-
 	renderer := NewASCIITreeRenderer()
-	renderer.SetRoot(root)
+	renderer.SetRoot(buildBenchmarkTree())
 	renderer.SetColorMode(ColorModeAlways)
 
 	b.ResetTimer()

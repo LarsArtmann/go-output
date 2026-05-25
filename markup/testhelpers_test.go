@@ -16,6 +16,12 @@ type writeNThenFailWriter = testhelpers.WriteNThenFailWriter
 
 type errorRenderer = testhelpers.ErrorRenderer
 
+type htmlEscapeTestRenderer interface {
+	SetHeaders([]string)
+	AddRow([]string)
+	Render() (string, error)
+}
+
 func testEmptyRendererOutput(
 	t *testing.T,
 	renderer output.Renderer,
@@ -42,41 +48,46 @@ func testHTMLEmptyExpected() []struct{ Substring, Message string } {
 	}
 }
 
-func testHTMLEscape(t *testing.T, newRenderer func() interface {
-	SetHeaders([]string)
-	AddRow([]string)
-	Render() (string, error)
-}, name string,
-) {
+func testHTMLEscape(t *testing.T, newRenderer func() htmlEscapeTestRenderer, name string) {
 	t.Helper()
 
-	t.Run("escapes <brackets>", func(t *testing.T) {
-		t.Parallel()
+	tests := []struct {
+		subtest string
+		header  string
+		input   string
+		want    string
+		msg     string
+	}{
+		{
+			subtest: "escapes <brackets>",
+			header:  "Data",
+			input:   "<script>alert('xss')</script>",
+			want:    "&lt;script&gt;",
+			msg:     "should escape < and >",
+		},
+		{
+			subtest: "escapes & ampersand",
+			header:  "Name",
+			input:   "Tom & Jerry",
+			want:    "Tom &amp; Jerry",
+			msg:     "should escape &",
+		},
+	}
 
-		r := newRenderer()
-		r.SetHeaders([]string{"Data"})
-		r.AddRow([]string{"<script>alert('xss')</script>"})
+	for _, tt := range tests {
+		t.Run(tt.subtest, func(t *testing.T) {
+			t.Parallel()
 
-		got, err := r.Render()
-		if err != nil {
-			t.Fatalf("Render() error = %v", err)
-		}
+			r := newRenderer()
+			r.SetHeaders([]string{tt.header})
+			r.AddRow([]string{tt.input})
 
-		assertContains(t, got, "&lt;script&gt;", name+" should escape < and >")
-	})
+			got, err := r.Render()
+			if err != nil {
+				t.Fatalf("Render() error = %v", err)
+			}
 
-	t.Run("escapes & ampersand", func(t *testing.T) {
-		t.Parallel()
-
-		r := newRenderer()
-		r.SetHeaders([]string{"Name"})
-		r.AddRow([]string{"Tom & Jerry"})
-
-		got, err := r.Render()
-		if err != nil {
-			t.Fatalf("Render() error = %v", err)
-		}
-
-		assertContains(t, got, "Tom &amp; Jerry", name+" should escape &")
-	})
+			assertContains(t, got, tt.want, name+" "+tt.msg)
+		})
+	}
 }
