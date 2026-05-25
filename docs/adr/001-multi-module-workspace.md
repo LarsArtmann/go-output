@@ -44,8 +44,9 @@ Root stays as `package output` — no core/ directory, no package rename.
 2. **No go.work committed** — gitignored per Go convention, replaced by `replace` directives in each go.mod
 3. **Replace directives in every consuming module** — allows `cd table && go test ./...` standalone
 4. **Leaf modules first** — enum, escape, testhelpers have zero deps and zero risk
-5. **sort/ deprecated** — stdlib `slices.SortStableFunc` + `cmp.Compare` do the same job
+5. **sort/ removed** — deleted in favor of `slices.SortStableFunc` + `cmp.Compare`
 6. **d2/ and graph/ extracted** — rich domain models moved to own modules (see ADR 003)
+7. **delimited/, serialization/, markup/ extracted** — format families grouped by domain (see root-split proposal)
 
 ## Consequences
 
