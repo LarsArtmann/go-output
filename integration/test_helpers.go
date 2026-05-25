@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/larsartmann/go-output"
+	"github.com/larsartmann/go-output/serialization"
 )
 
 const (
@@ -70,7 +71,7 @@ func runEmptyDataRendersJSONWithoutPanic(t *testing.T) {
 
 		data := output.NewTableData([]string{})
 
-		_, err := output.MarshalJSON(data)
+		_, err := serialization.MarshalJSON(data)
 		if err != nil {
 			t.Errorf("MarshalJSON on empty data should not error: %v", err)
 		}

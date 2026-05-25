@@ -8,8 +8,11 @@ import (
 
 	"github.com/larsartmann/go-output"
 	"github.com/larsartmann/go-output/d2"
+	"github.com/larsartmann/go-output/delimited"
 	"github.com/larsartmann/go-output/examples/shared"
 	"github.com/larsartmann/go-output/graph"
+	"github.com/larsartmann/go-output/markup"
+	"github.com/larsartmann/go-output/serialization"
 	"github.com/larsartmann/go-output/table"
 )
 
@@ -144,12 +147,12 @@ func projectsToTableData(projects []Project) *output.TableData {
 }
 
 func renderCSV(projects []Project) {
-	w := output.NewCSVWriter(os.Stdout)
+	w := delimited.NewCSVWriter(os.Stdout)
 	renderDelimited(w, projects)
 }
 
 func renderTSV(projects []Project) {
-	w := output.NewTSVWriter(os.Stdout)
+	w := delimited.NewTSVWriter(os.Stdout)
 	renderDelimited(w, projects)
 }
 
@@ -185,7 +188,7 @@ func renderDelimited(w writer, projects []Project) {
 func renderXML(projects []Project) {
 	data := projectsToTableData(projects)
 
-	xmlData, err := output.MarshalXMLFromTableData(data)
+	xmlData, err := markup.MarshalXMLFromTableData(data)
 	if err != nil {
 		shared.HandleError(err)
 	}
@@ -194,7 +197,7 @@ func renderXML(projects []Project) {
 }
 
 func renderYAML(projects []Project) {
-	data, err := output.MarshalYAML(projects)
+	data, err := serialization.MarshalYAML(projects)
 	if err != nil {
 		shared.HandleError(err)
 	}
@@ -234,7 +237,7 @@ func renderD2(projects []Project) {
 }
 
 func renderHTML(projects []Project) {
-	html := output.NewHTMLRenderer()
+	html := markup.NewHTMLRenderer()
 	html.SetHeaders(projectHeaders)
 
 	for _, p := range projects {

@@ -1,35 +1,34 @@
-package output
+package serialization
 
 import (
 	"encoding/json"
 	"fmt"
+
+	"github.com/larsartmann/go-output"
 )
 
-// Compile-time interface checks.
 var (
-	_ Renderer           = (*JSONTreeRenderer)(nil)
-	_ TreeOutputRenderer = (*JSONTreeRenderer)(nil)
-	_ Renderer           = (*JSONGraphRenderer)(nil)
-	_ GraphRenderer      = (*JSONGraphRenderer)(nil)
+	_ output.Renderer           = (*JSONTreeRenderer)(nil)
+	_ output.TreeOutputRenderer = (*JSONTreeRenderer)(nil)
+	_ output.Renderer           = (*JSONGraphRenderer)(nil)
+	_ output.GraphRenderer      = (*JSONGraphRenderer)(nil)
 )
 
 // JSONTreeRenderer renders a TreeNode hierarchy as JSON.
-// Each node becomes a JSON object with "id", "label", and optional "children".
 type JSONTreeRenderer struct {
-	root *TreeNode
+	root *output.TreeNode
 }
 
 // NewJSONTreeRenderer creates a new JSONTreeRenderer.
 func NewJSONTreeRenderer() *JSONTreeRenderer {
-	return &JSONTreeRenderer{} //nolint:exhaustruct // root is set via SetRoot
+	return &JSONTreeRenderer{}
 }
 
 // SetRoot sets the root node of the tree.
-func (r *JSONTreeRenderer) SetRoot(node *TreeNode) {
+func (r *JSONTreeRenderer) SetRoot(node *output.TreeNode) {
 	r.root = node
 }
 
-// jsonTreeNode is the JSON representation of a TreeNode.
 type jsonTreeNode struct {
 	ID       string            `json:"id"`
 	Label    string            `json:"label"`
@@ -53,7 +52,7 @@ func (r *JSONTreeRenderer) Render() (string, error) {
 	return string(data), nil
 }
 
-func (r *JSONTreeRenderer) toJSONNode(node *TreeNode) jsonTreeNode {
+func (r *JSONTreeRenderer) toJSONNode(node *output.TreeNode) jsonTreeNode {
 	result := jsonTreeNode{
 		ID:       node.ID.Get(),
 		Label:    node.Label.Get(),
@@ -72,23 +71,21 @@ func (r *JSONTreeRenderer) toJSONNode(node *TreeNode) jsonTreeNode {
 
 // JSONGraphRenderer renders graph nodes and edges as JSON.
 type JSONGraphRenderer struct {
-	GraphRendererMixin
+	output.GraphRendererMixin
 }
 
 // NewJSONGraphRenderer creates a new JSONGraphRenderer.
 func NewJSONGraphRenderer() *JSONGraphRenderer {
 	return &JSONGraphRenderer{
-		GraphRendererMixin: NewGraphRendererMixin(),
+		GraphRendererMixin: output.NewGraphRendererMixin(),
 	}
 }
 
-// jsonGraph is the JSON representation of a graph.
 type jsonGraph struct {
 	Nodes []jsonGraphNode `json:"nodes"`
 	Edges []jsonGraphEdge `json:"edges"`
 }
 
-// jsonGraphNode is the JSON representation of a GraphNode.
 type jsonGraphNode struct {
 	ID       string            `json:"id"`
 	Label    string            `json:"label"`
@@ -96,7 +93,6 @@ type jsonGraphNode struct {
 	Metadata map[string]string `json:"metadata,omitempty"`
 }
 
-// jsonGraphEdge is the JSON representation of a GraphEdge.
 type jsonGraphEdge struct {
 	From  string `json:"from"`
 	To    string `json:"to"`
@@ -124,7 +120,7 @@ func (r *JSONGraphRenderer) Render() (string, error) {
 		e := jsonGraphEdge{
 			From:  edge.From.Get(),
 			To:    edge.To.Get(),
-			Label: brandedValue(edge.Label),
+			Label: brandedEdgeLabel(edge.Label),
 		}
 
 		graph.Edges = append(graph.Edges, e)
@@ -136,4 +132,12 @@ func (r *JSONGraphRenderer) Render() (string, error) {
 	}
 
 	return string(data), nil
+}
+
+func brandedEdgeLabel(label output.GraphNodeLabel) string {
+	if label.IsZero() {
+		return ""
+	}
+
+	return label.Get()
 }

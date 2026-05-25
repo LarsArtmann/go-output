@@ -1,22 +1,28 @@
-package output
+package markup
 
 import (
 	"fmt"
+	"io"
 	"strings"
 
+	"github.com/larsartmann/go-output"
 	"github.com/larsartmann/go-output/escape"
 )
 
 // Compile-time interface checks.
 var (
-	_ Renderer      = (*HTMLRenderer)(nil)
-	_ Renderer      = (*HTMLTreeRenderer)(nil)
-	_ TableRenderer = (*HTMLRenderer)(nil)
+	_ output.Renderer      = (*HTMLRenderer)(nil)
+	_ output.Renderer      = (*HTMLTreeRenderer)(nil)
+	_ output.TableRenderer = (*HTMLRenderer)(nil)
 )
+
+func init() {
+	output.RegisterTableDataMarshaler(output.FormatHTML, renderHTMLTableData)
+}
 
 // HTMLRenderer implements the Renderer interface for HTML table output.
 type HTMLRenderer struct {
-	tableDataBase
+	output.TableDataBase
 }
 
 // NewHTMLRenderer creates a new HTMLRenderer.
@@ -26,7 +32,8 @@ func NewHTMLRenderer() *HTMLRenderer {
 
 // Render returns the HTML table as a string.
 func (r *HTMLRenderer) Render() (string, error) {
-	if r.data == nil {
+	data := r.Data()
+	if data == nil {
 		return "<table class=\"data-table\"></table>", nil
 	}
 
@@ -37,7 +44,7 @@ func (r *HTMLRenderer) Render() (string, error) {
 <tr>
 `)
 
-	for _, h := range r.data.Headers {
+	for _, h := range data.Headers {
 		b.WriteString("<th>")
 		b.WriteString(escape.HTML(h))
 		b.WriteString("</th>\n")
@@ -48,7 +55,7 @@ func (r *HTMLRenderer) Render() (string, error) {
 <tbody>
 `)
 
-	for _, row := range r.data.Rows {
+	for _, row := range data.Rows {
 		_ = writeMarkupRow(&b, row, "tr", "td", "", escape.HTML)
 	}
 
@@ -89,8 +96,7 @@ func (r *HTMLRenderer) RenderFullHTML(title string) (string, error) {
 `)
 }
 
-// renderHTMLWithStyles renders HTML content with given styles, handling errors with context.
-func renderHTMLWithStyles(r Renderer, title, styles, errContext string) (string, error) {
+func renderHTMLWithStyles(r output.Renderer, title, styles, errContext string) (string, error) {
 	content, err := r.Render()
 	if err != nil {
 		return "", fmt.Errorf("%s for title=%q styles=%q: %w", errContext, title, styles, err)
@@ -99,24 +105,22 @@ func renderHTMLWithStyles(r Renderer, title, styles, errContext string) (string,
 	return renderFullHTMLDocument(title, styles, content), nil
 }
 
-// renderFullHTMLWithStyles renders the HTML content with the given styles.
 func (r *HTMLRenderer) renderFullHTMLWithStyles(title, styles string) (string, error) {
 	return renderHTMLWithStyles(r, title, styles, "render html table")
 }
 
 // HTMLTreeRenderer renders a tree structure as HTML with nested lists.
 type HTMLTreeRenderer struct {
-	root *TreeNode
+	root *output.TreeNode
 }
 
 // NewHTMLTreeRenderer creates a new HTMLTreeRenderer.
 func NewHTMLTreeRenderer() *HTMLTreeRenderer {
-	return &HTMLTreeRenderer{ //nolint:exhaustruct // root is set via SetRoot
-	}
+	return &HTMLTreeRenderer{}
 }
 
 // SetRoot sets the root node of the tree.
-func (r *HTMLTreeRenderer) SetRoot(node *TreeNode) {
+func (r *HTMLTreeRenderer) SetRoot(node *output.TreeNode) {
 	r.root = node
 }
 
@@ -136,7 +140,7 @@ func (r *HTMLTreeRenderer) Render() (string, error) {
 	return b.String(), nil
 }
 
-func (r *HTMLTreeRenderer) renderNode(b *strings.Builder, node *TreeNode) {
+func (r *HTMLTreeRenderer) renderNode(b *strings.Builder, node *output.TreeNode) {
 	b.WriteString("<li>")
 	b.WriteString(escape.HTML(node.Label.Get()))
 
@@ -175,12 +179,10 @@ func (r *HTMLTreeRenderer) RenderFullHTML(title string) (string, error) {
 `)
 }
 
-// renderFullHTMLWithStyles renders the HTML content with the given styles.
 func (r *HTMLTreeRenderer) renderFullHTMLWithStyles(title, styles string) (string, error) {
 	return renderHTMLWithStyles(r, title, styles, "render html tree")
 }
 
-// renderFullHTMLDocument creates a complete HTML document with the given styles and content.
 func renderFullHTMLDocument(title, styles, content string) string {
 	return `<!DOCTYPE html>
 <html lang="en">
@@ -202,4 +204,26 @@ body {
 ` + content + `
 </body>
 </html>`
+}
+
+func renderHTMLTableData(w io.Writer, data *output.TableData, opts output.RenderOptions) error {
+	renderer := NewHTMLRenderer()
+	renderer.SetData(data)
+
+	title := opts.Title
+	if title == "" {
+		title = fmt.Sprintf("Data - %d rows", data.RowCount())
+	}
+
+	out, err := renderer.RenderFullHTML(title)
+	if err != nil {
+		return fmt.Errorf("render html: %w", err)
+	}
+
+	_, err = fmt.Fprintln(w, out)
+	if err != nil {
+		return fmt.Errorf("write html output: %w", err)
+	}
+
+	return nil
 }

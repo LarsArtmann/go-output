@@ -1,0 +1,74 @@
+package serialization
+
+import (
+	"fmt"
+	"io"
+
+	"github.com/go-faster/yaml"
+	"github.com/larsartmann/go-output"
+)
+
+var (
+	_ output.Renderer      = (*YAMLTableRenderer)(nil)
+	_ output.TableRenderer = (*YAMLTableRenderer)(nil)
+)
+
+func init() {
+	output.RegisterTableDataMarshaler(output.FormatYAML, renderYAMLTableData)
+}
+
+// MarshalYAML encodes v to YAML.
+func MarshalYAML(v any) ([]byte, error) {
+	return output.MarshalFormat("yaml", yaml.Marshal, v)
+}
+
+// UnmarshalYAML decodes YAML data into v.
+func UnmarshalYAML(data []byte, v any) error {
+	return output.UnmarshalFormat("yaml", yaml.Unmarshal, data, v)
+}
+
+// YAMLTableRenderer renders TableData as a YAML sequence of mappings.
+type YAMLTableRenderer struct {
+	output.TableDataBase
+}
+
+// NewYAMLTableRenderer creates a new YAMLTableRenderer.
+func NewYAMLTableRenderer() *YAMLTableRenderer {
+	return &YAMLTableRenderer{}
+}
+
+var emptyYAML = "[]\n"
+
+// Render returns the table data as a YAML string.
+func (r *YAMLTableRenderer) Render() (string, error) {
+	data := r.Data()
+	if data == nil || len(data.Headers) == 0 {
+		return emptyYAML, nil
+	}
+
+	rows := data.ToMapSlice()
+
+	b, err := yaml.Marshal(rows)
+	if err != nil {
+		return "", fmt.Errorf("marshal yaml table (%d rows): %w", len(rows), err)
+	}
+
+	return string(b), nil
+}
+
+func renderYAMLTableData(w io.Writer, data *output.TableData, _ output.RenderOptions) error {
+	renderer := NewYAMLTableRenderer()
+	renderer.SetData(data)
+
+	out, err := renderer.Render()
+	if err != nil {
+		return fmt.Errorf("render yaml: %w", err)
+	}
+
+	_, err = fmt.Fprint(w, out)
+	if err != nil {
+		return fmt.Errorf("write yaml output: %w", err)
+	}
+
+	return nil
+}

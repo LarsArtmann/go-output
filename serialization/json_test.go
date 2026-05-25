@@ -1,32 +1,11 @@
-package output
+package serialization
 
 import (
 	"bytes"
 	"strings"
 	"testing"
 	"time"
-
-	"github.com/larsartmann/go-output/internal/gentest"
 )
-
-func testUnmarshalError(
-	t *testing.T,
-	name, data string,
-	wantErr bool,
-	unmarshal func([]byte, any) error,
-	funcName string,
-) {
-	t.Run(name, func(t *testing.T) {
-		t.Parallel()
-
-		var got any
-
-		err := unmarshal([]byte(data), &got)
-		if (err != nil) != wantErr {
-			t.Errorf("%s() error = %v, wantErr %v", funcName, err, wantErr)
-		}
-	})
-}
 
 func TestMarshalJSON(t *testing.T) {
 	t.Parallel()
@@ -75,51 +54,17 @@ func TestMarshalJSON(t *testing.T) {
 	}
 }
 
-func TestMarshalJSONIndent(t *testing.T) {
-	t.Parallel()
-
-	input := map[string]int{"a": 1}
-
-	got, err := MarshalJSONIndent(input, "", "  ")
-	if err != nil {
-		t.Errorf("MarshalJSONIndent() error = %v", err)
-
-		return
-	}
-
-	want := "{\n  \"a\": 1\n}"
-	if string(got) != want {
-		t.Errorf("MarshalJSONIndent() = %v, want %v", string(got), want)
-	}
-}
-
 func TestUnmarshalJSON(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
 		name    string
 		data    string
-		want    any
 		wantErr bool
 	}{
-		{
-			name:    "map",
-			data:    `{"a":1}`,
-			want:    &map[string]any{},
-			wantErr: false,
-		},
-		{
-			name:    "slice",
-			data:    "[1,2,3]",
-			want:    &[]any{},
-			wantErr: false,
-		},
-		{
-			name:    "invalid",
-			data:    `{`,
-			want:    nil,
-			wantErr: true,
-		},
+		{name: "map", data: `{"a":1}`, wantErr: false},
+		{name: "slice", data: "[1,2,3]", wantErr: false},
+		{name: "invalid", data: `{`, wantErr: true},
 	}
 
 	for _, tt := range tests {
@@ -175,9 +120,8 @@ func TestJSONTableRenderer(t *testing.T) {
 			t.Fatalf("Render() error = %v", err)
 		}
 
-		gentest.AssertOutputContains(t, got, `"Name": "Alice"`)
-
-		gentest.AssertOutputContains(t, got, `"Age": "25"`)
+		assertOutputContains(t, got, `"Name": "Alice"`)
+		assertOutputContains(t, got, `"Age": "25"`)
 	})
 
 	t.Run("nil data returns empty array", func(t *testing.T) {
@@ -207,23 +151,12 @@ func TestJSONTableRenderer(t *testing.T) {
 			t.Fatalf("Render() error = %v", err)
 		}
 
-		gentest.AssertOutputContains(t, got, `"A": "1"`)
+		assertOutputContains(t, got, `"A": "1"`)
 
 		if strings.Contains(got, `"B"`) {
 			t.Errorf("Render() = %q, want B absent for short row", got)
 		}
 	})
-}
-
-func TestJSONTableRendererMustRender(t *testing.T) {
-	t.Parallel()
-
-	r := NewJSONTableRenderer()
-	r.SetHeaders([]string{"X"})
-	r.AddRow([]string{"1"})
-
-	got := MustRender(r)
-	gentest.AssertOutputContains(t, got, `"X": "1"`)
 }
 
 func TestJSONTableRendererNoHeaders(t *testing.T) {
@@ -242,18 +175,10 @@ func TestJSONTableRendererNoHeaders(t *testing.T) {
 	}
 }
 
-func BenchmarkMarshalJSON(b *testing.B) {
-	data := NewBenchmarkData()
-
-	for b.Loop() {
-		_, _ = MarshalJSON(data)
-	}
-}
-
-func TestMarshalJSONIndentError(t *testing.T) {
+func TestMarshalJSONError(t *testing.T) {
 	t.Parallel()
 
-	_, err := MarshalJSONIndent(make(chan int), "", "  ")
+	_, err := MarshalJSON(make(chan int))
 	if err == nil {
 		t.Fatal("expected error for unmarshalable type")
 	}
@@ -272,24 +197,7 @@ func TestJSONWriterEncodeError(t *testing.T) {
 	assertContains(t, err.Error(), "encode json", "error should mention encode json")
 }
 
-func TestMarshalJSONError(t *testing.T) {
-	t.Parallel()
-
-	_, err := MarshalJSON(make(chan int))
-	if err == nil {
-		t.Fatal("expected error for unmarshalable type")
-	}
-}
-
-func BenchmarkMarshalJSONIndent(b *testing.B) {
-	data := NewBenchmarkData()
-
-	for b.Loop() {
-		_, _ = MarshalJSONIndent(data, "", "  ")
-	}
-}
-
-type BenchmarkStruct struct {
+type benchmarkStruct struct {
 	ID        int       `json:"id"`
 	Name      string    `json:"name"`
 	Items     []string  `json:"items"`
@@ -299,13 +207,25 @@ type BenchmarkStruct struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
+func BenchmarkMarshalJSON(b *testing.B) {
+	data := benchmarkStruct{
+		ID: 12345, Name: "Test Project Alpha",
+		Items: []string{"item1", "item2", "item3", "item4", "item5"},
+		Count: 100, Active: true,
+	}
+
+	for b.Loop() {
+		_, _ = MarshalJSON(data)
+	}
+}
+
 func BenchmarkUnmarshalJSON(b *testing.B) {
 	jsonData := []byte(
 		`{"id":12345,"name":"Test Project Alpha","items":["item1","item2","item3","item4","item5"],"count":100,"active":true,"created_at":"2026-03-22T10:00:00Z","updated_at":"2026-03-22T12:00:00Z"}`,
 	)
 
 	for b.Loop() {
-		var result BenchmarkStruct
+		var result benchmarkStruct
 
 		_ = UnmarshalJSON(jsonData, &result)
 	}

@@ -7,7 +7,10 @@ import (
 
 	"github.com/larsartmann/go-output"
 	"github.com/larsartmann/go-output/d2"
+	"github.com/larsartmann/go-output/delimited"
 	"github.com/larsartmann/go-output/graph"
+	"github.com/larsartmann/go-output/markup"
+	"github.com/larsartmann/go-output/serialization"
 	"github.com/larsartmann/go-output/testhelpers"
 )
 
@@ -52,7 +55,7 @@ func TestCSVFormatContent(t *testing.T) {
 
 	var buf bytes.Buffer
 
-	w := output.NewCSVWriter(&buf)
+	w := delimited.NewCSVWriter(&buf)
 
 	err := w.WriteHeader([]string{"Name", "Health"})
 	if err != nil {
@@ -76,7 +79,7 @@ func TestYAMLFormatContent(t *testing.T) {
 
 	projects := SampleProject()
 
-	data, err := output.MarshalYAML(projects)
+	data, err := serialization.MarshalYAML(projects)
 	if err != nil {
 		t.Fatalf("MarshalYAML failed: %v", err)
 	}
@@ -88,7 +91,7 @@ func TestYAMLFormatContent(t *testing.T) {
 func TestHTMLFormatContent(t *testing.T) {
 	t.Parallel()
 
-	html := output.NewHTMLRenderer()
+	html := markup.NewHTMLRenderer()
 	html.SetHeaders([]string{"Name", "Health"})
 	html.AddRow([]string{"Alpha", "90%"})
 
@@ -104,7 +107,7 @@ func TestHTMLFormatContent(t *testing.T) {
 func TestHTMLFullPage(t *testing.T) {
 	t.Parallel()
 
-	html := output.NewHTMLRenderer()
+	html := markup.NewHTMLRenderer()
 	html.SetHeaders([]string{"Name"})
 	html.AddRow([]string{"Test"})
 

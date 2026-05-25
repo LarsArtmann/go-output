@@ -1,7 +1,6 @@
 package output
 
 import (
-	"io"
 	"testing"
 )
 
@@ -11,36 +10,18 @@ func BenchmarkASCIITreeRenderer(b *testing.B) {
 		child := NewTreeNode("child", "Child")
 
 		for j := range 10 {
-			_ = j // suppress unused
+			_ = j
 
 			child.AddChild(NewTreeNode("leaf", "Leaf"))
 		}
 
 		root.AddChild(child)
 
-		_ = i // suppress unused
+		_ = i
 	}
 
 	renderer := NewASCIITreeRenderer()
 	renderer.SetRoot(root)
-
-	b.ResetTimer()
-
-	for b.Loop() {
-		_, _ = renderer.Render()
-	}
-}
-
-func BenchmarkHTMLRenderer(b *testing.B) {
-	renderer := NewHTMLRenderer()
-
-	headers := FilledStrings(10, "Header")
-	renderer.SetHeaders(headers)
-
-	for range 100 {
-		row := FilledStrings(10, "Cell")
-		renderer.AddRow(row)
-	}
 
 	b.ResetTimer()
 
@@ -60,34 +41,6 @@ func BenchmarkTableDataCreateRowEdges(b *testing.B) {
 	for b.Loop() {
 		data.CreateRowEdges()
 	}
-}
-
-func BenchmarkCSVWriter(b *testing.B) {
-	const (
-		headerCell = "Header"
-		dataCell   = "Cell"
-	)
-
-	headers := make([]string, 10)
-	for i := range headers {
-		headers[i] = headerCell
-	}
-
-	rows := make([][]string, 100)
-	for i := range rows {
-		row := make([]string, 10)
-		for j := range row {
-			row[j] = dataCell
-		}
-
-		rows[i] = row
-	}
-
-	b.ResetTimer()
-
-	benchmarkTableWriter(b, headers, rows, func(w io.Writer) TableWriter {
-		return NewCSVWriter(w)
-	})
 }
 
 func BenchmarkMarkdownTable(b *testing.B) {
@@ -123,7 +76,6 @@ func BenchmarkMarkdownTable(b *testing.B) {
 	}
 }
 
-// BenchmarkData is used for JSON and YAML marshal/unmarshal benchmarks.
 type BenchmarkData struct {
 	ID        int      `json:"id"         yaml:"id"`
 	Name      string   `json:"name"       yaml:"name"`
@@ -134,7 +86,6 @@ type BenchmarkData struct {
 	UpdatedAt string   `json:"updated_at" yaml:"updated_at"`
 }
 
-// BenchmarkYAMLStruct is an alias for BenchmarkData for YAML-specific benchmarks.
 type BenchmarkYAMLStruct = BenchmarkData
 
 func NewBenchmarkData() BenchmarkData {
@@ -146,42 +97,5 @@ func NewBenchmarkData() BenchmarkData {
 		Active:    true,
 		CreatedAt: "2026-03-22T10:00:00Z",
 		UpdatedAt: "2026-03-22T12:00:00Z",
-	}
-}
-
-func BenchmarkStreamingHTMLRenderer(b *testing.B) {
-	renderer := NewStreamingHTMLRenderer()
-
-	headers := FilledStrings(10, "Header")
-	renderer.SetHeaders(headers)
-
-	b.ResetTimer()
-
-	for b.Loop() {
-		for range 100 {
-			renderer.AddRow(FilledStrings(10, "Cell"))
-		}
-
-		_ = renderer.Stream(io.Discard)
-	}
-}
-
-func BenchmarkXMLWriter(b *testing.B) {
-	headers := FilledStrings(10, "Header")
-
-	rows := make([][]string, 100)
-	for i := range rows {
-		rows[i] = FilledStrings(10, "Cell")
-	}
-
-	b.ResetTimer()
-
-	for b.Loop() {
-		w := NewXMLWriter(io.Discard)
-
-		_ = w.WriteHeader(headers)
-		for _, row := range rows {
-			_ = w.WriteRow(row)
-		}
 	}
 }

@@ -3,9 +3,12 @@ module github.com/larsartmann/go-output/integration
 go 1.26.2
 
 require (
-	github.com/larsartmann/go-output v0.0.0
+	github.com/larsartmann/go-output v0.5.0
 	github.com/larsartmann/go-output/d2 v0.0.0
+	github.com/larsartmann/go-output/delimited v0.0.0
 	github.com/larsartmann/go-output/graph v0.0.0
+	github.com/larsartmann/go-output/markup v0.0.0
+	github.com/larsartmann/go-output/serialization v0.0.0
 	github.com/larsartmann/go-output/table v0.0.0
 	github.com/larsartmann/go-output/testhelpers v0.0.0
 )
@@ -41,9 +44,12 @@ require (
 replace (
 	github.com/larsartmann/go-output => ../
 	github.com/larsartmann/go-output/d2 => ../d2
+	github.com/larsartmann/go-output/delimited => ../delimited
 	github.com/larsartmann/go-output/enum => ../enum
 	github.com/larsartmann/go-output/escape => ../escape
 	github.com/larsartmann/go-output/graph => ../graph
+	github.com/larsartmann/go-output/markup => ../markup
+	github.com/larsartmann/go-output/serialization => ../serialization
 	github.com/larsartmann/go-output/table => ../table
 	github.com/larsartmann/go-output/testhelpers => ../testhelpers
 )

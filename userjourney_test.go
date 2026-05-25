@@ -7,6 +7,8 @@ import (
 	"testing"
 
 	"github.com/larsartmann/go-output"
+	"github.com/larsartmann/go-output/delimited"
+	"github.com/larsartmann/go-output/serialization"
 	"github.com/larsartmann/go-output/testhelpers"
 )
 
@@ -101,7 +103,7 @@ func TestRenderDataAsCSV(t *testing.T) {
 	// When: I render it as CSV
 	var buf strings.Builder
 
-	w := output.NewCSVWriter(&buf)
+	w := delimited.NewCSVWriter(&buf)
 	_ = w.WriteHeader([]string{"Name", "Health"})
 	_ = w.WriteRow([]string{"Alpha", "90%"})
 	w.Flush()
@@ -139,7 +141,7 @@ func TestRenderDataAsYAML(t *testing.T) {
 	data.AddRow([]string{"Alpha", "90%"})
 
 	// When: I render it as YAML
-	yamlBytes, err := output.MarshalYAML(data)
+	yamlBytes, err := serialization.MarshalYAML(data)
 	if err != nil {
 		t.Fatalf("MarshalYAML() error = %v", err)
 	}
@@ -157,7 +159,7 @@ func TestHandleEdgeCases(t *testing.T) {
 		t.Parallel()
 
 		data := output.NewTableData([]string{})
-		if _, err := output.MarshalJSON(data); err != nil {
+		if _, err := serialization.MarshalJSON(data); err != nil {
 			t.Errorf("MarshalJSON on empty data should not error: %v", err)
 		}
 	})

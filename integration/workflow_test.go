@@ -9,6 +9,8 @@ import (
 	"testing"
 
 	"github.com/larsartmann/go-output"
+	"github.com/larsartmann/go-output/markup"
+	"github.com/larsartmann/go-output/serialization"
 	"github.com/larsartmann/go-output/testhelpers"
 )
 
@@ -66,7 +68,7 @@ func TestTableDataToYAML(t *testing.T) {
 	}
 
 	// When: I render as YAML
-	yamlBytes, err := output.MarshalYAML(data)
+	yamlBytes, err := serialization.MarshalYAML(data)
 	if err != nil {
 		t.Fatalf("MarshalYAML failed: %v", err)
 	}
@@ -145,7 +147,7 @@ func TestLargeDatasetWorkflow(t *testing.T) {
 		t.Parallel()
 
 		// Given: Large streaming dataset
-		html := output.NewStreamingHTMLRenderer()
+		html := markup.NewStreamingHTMLRenderer()
 
 		headers := output.FilledStrings(10, "Col")
 		html.SetHeaders(headers)

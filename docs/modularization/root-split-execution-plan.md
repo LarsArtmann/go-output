@@ -1,68 +1,97 @@
 # Root Split Execution Plan — Strategy B
 
 **Date:** 2026-05-25
+**Last Audited:** 2026-05-25
 **Approach:** Group by Domain — 3 new modules + registry-based dispatch
 **Constraint:** Each task ≤ 12 min
 
 ---
 
+## Overall Progress
+
+| Phase     | Description                 | Status     | Tasks Done |
+| --------- | --------------------------- | ---------- | ---------- |
+| Phase 0   | Foundation — Export symbols | ✅ DONE    | 6/6        |
+| Phase 1   | Extract `delimited/`        | ✅ DONE    | 8/8        |
+| Phase 2   | Extract `markup/`           | ✅ DONE    | 9/9        |
+| Phase 3   | Extract `serialization/`    | ✅ DONE    | 9/9        |
+| Phase 4   | Update dependents           | ✅ DONE    | 7/7        |
+| Phase 5   | Root cleanup                | ⚠️ PARTIAL | 4/6        |
+| Phase 6   | Docs + verify               | ⚠️ PARTIAL | 4/6        |
+| **Total** |                             | **⚠️ 92%** | **43/51**  |
+
+---
+
 ## Architecture Decision
 
-### New Module Map
+### New Module Map (AS-BUILT)
 
 ```
-go-output/                      # Root: core types + lightweight formatters (~25 files)
+go-output/                      # Root: core types + lightweight formatters
 ├── format.go, shape.go, renderer.go, ids.go, registry.go
 ├── sort.go, color.go, slices.go, tabledata.go
 ├── tree.go, graph.go, graph_tabledata.go
-├── markdown.go                     # stays — zero external deps, 204 lines
+├── streaming.go                    # interface + adapter only (implementation moved to markup/)
+├── markdown.go                     # stays — zero external deps
 ├── marshal.go                      # stays — exported helpers used by 3 modules
-├── render_tabledata.go             # stays — registry-based dispatch (no sub-module imports)
+├── render_tabledata.go             # stays — registry-based dispatch (zero sub-module imports)
 │
-├── delimited/                      # NEW: CSV + TSV + DelimitedWriter
+├── delimited/                      # ✅ DONE: CSV + TSV + DelimitedWriter
 │   ├── delimited.go
-│   ├── csv.go
-│   ├── tsv.go
-│   └── go.mod → root, escape (via root)
-│
-├── serialization/                  # NEW: JSON + YAML + renderers
-│   ├── json.go, json_renderers.go
-│   ├── yaml.go, yaml_renderers.go
+│   ├── csv.go, csv_test.go
+│   ├── tsv.go, tsv_test.go
+│   ├── testhelpers_test.go
 │   └── go.mod → root
 │
-├── markup/                         # NEW: XML + HTML + Streaming + markup helpers
-│   ├── markup.go, xml.go
-│   ├── html.go, streaming.go
+├── serialization/                  # ✅ DONE: JSON + YAML + renderers
+│   ├── json.go, json_test.go
+│   ├── json_renderers.go, json_renderers_test.go
+│   ├── yaml.go, yaml_test.go
+│   ├── yaml_renderers.go, yaml_renderers_test.go
+│   ├── testhelpers_test.go
+│   └── go.mod → root, go-faster/yaml, testhelpers
+│
+├── markup/                         # ✅ DONE: XML + HTML + StreamingHTML + markup helpers
+│   ├── markup.go, markup_test.go
+│   ├── xml.go, xml_test.go
+│   ├── html.go, html_test.go
+│   ├── streaming.go, streaming_test.go
+│   ├── testhelpers_test.go
 │   └── go.mod → root, escape
 ```
 
 ### Critical Design Decisions
 
-1. **`marshal.go` stays in root** — exports `MarshalFormat()`, `UnmarshalFormat()`, `BrandedValue()` (currently unexported). Used by serialization/ AND markup/ (xml.go). Moving it to either would create inter-module dep.
+1. **`marshal.go` stays in root** ✅ — exports `MarshalFormat()`, `UnmarshalFormat()`, `BrandedValue()`. Used by serialization/ AND markup/. Verified: all callers updated.
 
-2. **`render_tabledata.go` stays in root** — refactored to use **registry-based dispatch** instead of direct function calls. Each format module registers a `TableDataMarshaler` via `init()`. Root imports ZERO sub-modules. Consistent with existing pattern (D2/DOT/Mermaid already return `UnsupportedFormatError`).
+2. **`render_tabledata.go` stays in root** ✅ — uses registry-based dispatch. Each format module registers via `init()`. Root imports ZERO sub-modules. No format-specific references remain.
 
-3. **`tableDataBase` exported as `TableDataBase`** — currently unexported, embedded by JSON, YAML, HTML, Streaming renderers. Must be exported so sub-modules can embed it.
+3. **`tableDataBase` exported as `TableDataBase`** ✅ — exported with `Data()` getter. Sub-modules embed it successfully.
 
-4. **`markdown.go` stays in root** — zero external deps, 204 lines, used by `render_tabledata.go`. Not worth a separate module.
+4. **`markdown.go` stays in root** ✅ — zero external deps, used by `render_tabledata.go`.
 
-5. **Test helpers** — each new module creates its own `_test.go` helpers. Shared assertions already live in `testhelpers/`. Graph/tree node helpers (currently in `output_test_helpers_test.go`) get duplicated in each module that needs them (~10 lines each).
+5. **`streaming.go` split correctly** ✅ — root retains the `StreamingRenderer` interface + `StreamingRendererFromRenderer` adapter. Markup/ has the `StreamingHTMLRenderer` implementation. This is cleaner than the original plan (which called for full move).
 
-### Dependency Graph (After)
+6. **Test helpers** ✅ — each module has its own `testhelpers_test.go`. Shared assertions in `testhelpers/`.
+
+7. **`internal/gentest` imports `go-faster/yaml`** — this keeps `go-faster/yaml` as a direct root dependency. `internal/gentest` is root-only (sub-modules can't import it), so this is isolated. Root `.go` production files have zero yaml imports.
+
+### Dependency Graph (AS-BUILT)
 
 ```
-root (output) → enum, escape, yaml, x/term, go-branded-id
-  └── exports: TableDataBase, MarshalFormat, UnmarshalFormat, BrandedValue, RenderTableData
+root (output) → enum, x/term, go-branded-id
+  └── exports: TableDataBase, MarshalFormat, UnmarshalFormat, BrandedValue, MarshalJSONIndent, RenderTableData
+  └── note: go-faster/yaml in go.mod via internal/gentest only (not production code)
 
 delimited/    → root (TableData, TableDataBase, Format)
-serialization/ → root (Renderer, TableRenderer, TableDataBase, TreeNode, GraphRendererMixin, MarshalFormat, BrandedValue)
-markup/       → root (Renderer, TableRenderer, TableDataBase, TreeNode), escape
+serialization/ → root (Renderer, TableRenderer, TableDataBase, TreeNode, GraphRendererMixin, MarshalFormat, BrandedValue), go-faster/yaml, testhelpers
+markup/       → root (Renderer, TableRenderer, TableDataBase, StreamingRenderer), escape
 
 integration/  → root, delimited, serialization, markup, d2, graph, table
 examples/     → root, delimited, serialization, markup, d2, graph, table
 ```
 
-**Root has ZERO sub-module imports.** Preserved.
+**Root has ZERO sub-module imports.** ✅ Preserved.
 
 ---
 
@@ -70,14 +99,14 @@ examples/     → root, delimited, serialization, markup, d2, graph, table
 
 These unblock ALL extraction work. Must be done first, tested, committed.
 
-| # | Task | Est. | Impact | Files |
-|---|------|------|--------|-------|
-| 01 | Export `tableDataBase` → `TableDataBase` in `tabledata.go`. Update all 4 embedders in root (`json.go`, `yaml.go`, `html.go`, `streaming.go`) to use new name. | 8m | HIGH — blocks extraction | `tabledata.go`, `json.go`, `yaml.go`, `html.go`, `streaming.go` |
-| 02 | Export `marshal()` → `MarshalFormat()`, `unmarshal()` → `UnmarshalFormat()` in `marshal.go`. Update all callers in root: `json.go`, `yaml.go`, `xml.go`, `json_renderers.go`, `yaml_renderers.go`. | 8m | HIGH — blocks extraction | `marshal.go`, `json.go`, `yaml.go`, `xml.go`, `json_renderers.go`, `yaml_renderers.go` |
-| 03 | Export `brandedValue()` → `BrandedValue()` in `marshal.go`. Update callers: `json_renderers.go`, `yaml_renderers.go`. | 4m | HIGH — blocks serialization/ | `marshal.go`, `json_renderers.go`, `yaml_renderers.go` |
-| 04 | Add `TableDataMarshaler` type + `RegisterTableDataMarshaler()` to `render_tabledata.go`. Define: `type TableDataMarshaler func(w io.Writer, data *TableData, opts RenderOptions) error` and a `map[Format]TableDataMarshaler` with register function. | 6m | HIGH — enables registry dispatch | `render_tabledata.go` |
-| 05 | Refactor `RenderTableData()` to use registered marshalers. Replace direct function calls with map lookup. Keep markdown/tree as direct calls (they stay in root). Register markdown/tree marshalers in `init()` within render_tabledata.go. | 10m | HIGH — core dispatch refactor | `render_tabledata.go` |
-| 06 | Run full root test suite. Verify zero regressions from Phase 0 changes. | 3m | HIGH — gate | — |
+| #   | Task                                                                                                             | Status  | Notes                                                                                                               |
+| --- | ---------------------------------------------------------------------------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------- |
+| 01  | Export `tableDataBase` → `TableDataBase` in `tabledata.go`. Update all embedders to use new name.                | ✅ DONE | `TableDataBase` exported with `Data()` getter, `SetHeaders()`, `AddRow()`, `SetData()`                              |
+| 02  | Export `marshal()` → `MarshalFormat()`, `unmarshal()` → `UnmarshalFormat()` in `marshal.go`. Update all callers. | ✅ DONE | All callers in serialization/, markup/ updated                                                                      |
+| 03  | Export `brandedValue()` → `BrandedValue()` in `marshal.go`. Update callers.                                      | ✅ DONE | Generic function, used by serialization/ renderers                                                                  |
+| 04  | Add `TableDataMarshaler` type + `RegisterTableDataMarshaler()` to `render_tabledata.go`.                         | ✅ DONE | Thread-safe registry with `sync.RWMutex`, `map[Format]TableDataMarshaler`                                           |
+| 05  | Refactor `RenderTableData()` to use registered marshalers.                                                       | ✅ DONE | Registry lookup first, falls back to markdown/tree (root-local). `UnsupportedFormatError` for unregistered formats. |
+| 06  | Run full root test suite. Verify zero regressions.                                                               | ✅ DONE | Zero compile errors, all tests pass                                                                                 |
 
 ---
 
@@ -85,16 +114,16 @@ These unblock ALL extraction work. Must be done first, tested, committed.
 
 Cleanest extraction — `DelimitedWriter` has zero root deps. Only `csv.go`/`tsv.go` need `TableData`.
 
-| # | Task | Est. | Impact | Files |
-|---|------|------|--------|-------|
-| 07 | Create `delimited/` directory. Create `go.mod` with replace directives for root. | 3m | MED — creates module | `delimited/go.mod` |
-| 08 | Copy `delimited.go` → `delimited/delimited.go`. Change package to `delimited`. No import changes needed (pure stdlib). | 3m | MED | `delimited/delimited.go` |
-| 09 | Copy `csv.go` → `delimited/csv.go`. Change package to `delimited`. Add `import "github.com/larsartmann/go-output"` for `TableData`. Fix `DelimitedWriter` refs (now local). Fix `TableData` → `output.TableData`. | 8m | MED | `delimited/csv.go` |
-| 10 | Copy `tsv.go` → `delimited/tsv.go`. Same treatment as csv.go. | 8m | MED | `delimited/tsv.go` |
-| 11 | Add `init()` to delimited module: register CSV and TSV as `TableDataMarshaler` via `output.RegisterTableDataMarshaler()`. Move `renderCSVTableData`/`renderTSVTableData` logic from root `render_tabledata.go` into delimited's init(). | 8m | HIGH — wires dispatch | `delimited/csv.go`, `delimited/tsv.go` |
-| 12 | Copy `csv_test.go` + `tsv_test.go` → `delimited/`. Update package to `delimited_test`. Fix imports: `output.X` → `output.X` (root types), local types stay. Create local test helpers if needed. | 10m | MED | `delimited/csv_test.go`, `delimited/tsv_test.go` |
-| 13 | Run `go mod tidy` + `go build ./...` + `go test ./...` in `delimited/`. Fix compilation errors. | 5m | HIGH — gate | — |
-| 14 | Delete original `csv.go`, `tsv.go`, `delimited.go` from root. Update root `render_tabledata.go` to remove CSV/TSV direct calls (now registry-based). | 5m | HIGH — cleanup | root |
+| #   | Task                                                                             | Status  | Notes                                                |
+| --- | -------------------------------------------------------------------------------- | ------- | ---------------------------------------------------- |
+| 07  | Create `delimited/` directory. Create `go.mod` with replace directives for root. | ✅ DONE | `go.mod` exists, depends on root                     |
+| 08  | Copy `delimited.go` → `delimited/delimited.go`. Change package.                  | ✅ DONE | Pure stdlib, no import changes                       |
+| 09  | Copy `csv.go` → `delimited/csv.go`. Change package. Fix imports.                 | ✅ DONE | `output.TableData`, local `DelimitedWriter`          |
+| 10  | Copy `tsv.go` → `delimited/tsv.go`. Same treatment.                              | ✅ DONE | Same pattern as csv.go                               |
+| 11  | Add `init()`: register CSV and TSV as `TableDataMarshaler`.                      | ✅ DONE | `csv.go` and `tsv.go` each have `func init()`        |
+| 12  | Copy test files → `delimited/`. Update package + imports.                        | ✅ DONE | `csv_test.go`, `tsv_test.go`, `testhelpers_test.go`  |
+| 13  | Run `go mod tidy` + `go build` + `go test` in `delimited/`.                      | ✅ DONE | Module builds and tests pass                         |
+| 14  | Delete originals from root. Update `render_tabledata.go`.                        | ✅ DONE | `csv.go`, `tsv.go`, `delimited.go` deleted from root |
 
 ---
 
@@ -102,17 +131,17 @@ Cleanest extraction — `DelimitedWriter` has zero root deps. Only `csv.go`/`tsv
 
 Medium complexity — `markup.go` is zero-dep, `xml.go`/`html.go`/`streaming.go` need root types + escape.
 
-| # | Task | Est. | Impact | Files |
-|---|------|------|--------|-------|
-| 15 | Create `markup/` directory. Create `go.mod` with replace directives for root + escape. | 3m | MED | `markup/go.mod` |
-| 16 | Copy `markup.go` → `markup/markup.go`. Change package to `markup`. Functions stay unexported (only used within this package). | 3m | MED | `markup/markup.go` |
-| 17 | Copy `xml.go` → `markup/xml.go`. Change package to `markup`. Fix imports: `output.TableData`, `output.MarshalFormat()`, `escape.XMLEscape`. Fix `marshal()` → `output.MarshalFormat()`. Fix `writeMarkupRow` → local. | 8m | MED | `markup/xml.go` |
-| 18 | Copy `html.go` → `markup/html.go`. Change package to `markup`. Fix imports: `output.Renderer`, `output.TableRenderer`, `output.TableDataBase`, `output.TreeNode`. Fix embedded types. Fix `writeMarkupRow` → local. | 10m | MED | `markup/html.go` |
-| 19 | Copy `streaming.go` → `markup/streaming.go`. Change package to `markup`. Fix imports: `output.Renderer`, `output.TableRenderer`, `output.TableDataBase`, `output.StreamingRenderer`. Fix embedded types. | 8m | MED | `markup/streaming.go` |
-| 20 | Add `init()` to markup module: register XML and HTML as `TableDataMarshaler`. Move `renderXMLTableData`/`renderHTMLTableData` logic from root. | 8m | HIGH | `markup/xml.go`, `markup/html.go` |
-| 21 | Copy test files: `xml_test.go`, `html_test.go`, `streaming_test.go`, `markup_test.go` → `markup/`. Update package to `markup_test`. Create local test helpers for graph/tree nodes (thin wrappers calling `output.NewBrandedID`). | 12m | MED | `markup/*_test.go` |
-| 22 | Run `go mod tidy` + `go build ./...` + `go test ./...` in `markup/`. Fix compilation errors. | 5m | HIGH — gate | — |
-| 23 | Delete original `xml.go`, `html.go`, `streaming.go`, `markup.go` from root. Update root `render_tabledata.go` to remove XML/HTML direct calls. | 5m | HIGH | root |
+| #   | Task                                                                 | Status  | Notes                                                                                       |
+| --- | -------------------------------------------------------------------- | ------- | ------------------------------------------------------------------------------------------- |
+| 15  | Create `markup/` directory. Create `go.mod` with replace directives. | ✅ DONE | Depends on root + escape                                                                    |
+| 16  | Copy `markup.go` → `markup/markup.go`. Change package.               | ✅ DONE | Functions stay unexported (package-internal)                                                |
+| 17  | Copy `xml.go` → `markup/xml.go`. Fix imports.                        | ✅ DONE | `output.TableData`, `output.MarshalFormat()`, `escape.XMLEscape`                            |
+| 18  | Copy `html.go` → `markup/html.go`. Fix imports.                      | ✅ DONE | `output.TableDataBase`, `output.TreeNode`, etc.                                             |
+| 19  | Copy `streaming.go` → `markup/streaming.go`. Fix imports.            | ✅ DONE | `StreamingHTMLRenderer` implementation. Root retains interface.                             |
+| 20  | Add `init()`: register XML and HTML as `TableDataMarshaler`.         | ✅ DONE | `xml.go` and `html.go` each have `func init()`                                              |
+| 21  | Copy test files → `markup/`. Update package + imports.               | ✅ DONE | `xml_test.go`, `html_test.go`, `streaming_test.go`, `markup_test.go`, `testhelpers_test.go` |
+| 22  | Run `go mod tidy` + `go build` + `go test` in `markup/`.             | ✅ DONE | Module builds and tests pass                                                                |
+| 23  | Delete originals from root. Update `render_tabledata.go`.            | ✅ DONE | `xml.go`, `html.go`, `markup.go` deleted. Root `streaming.go` kept (interface only).        |
 
 ---
 
@@ -120,95 +149,115 @@ Medium complexity — `markup.go` is zero-dep, `xml.go`/`html.go`/`streaming.go`
 
 Heaviest — yaml external dep, renderers with graph/tree types.
 
-| # | Task | Est. | Impact | Files |
-|---|------|------|--------|-------|
-| 24 | Create `serialization/` directory. Create `go.mod` with replace directives for root. | 3m | MED | `serialization/go.mod` |
-| 25 | Copy `json.go` → `serialization/json.go`. Change package to `serialization`. Fix imports: `output.Renderer`, `output.TableRenderer`, `output.TableDataBase`, `output.MarshalFormat()`, `output.UnmarshalFormat()`, `output.TableData`. | 8m | MED | `serialization/json.go` |
-| 26 | Copy `json_renderers.go` → `serialization/json_renderers.go`. Change package to `serialization`. Fix imports: `output.Renderer`, `output.TreeNode`, `output.TreeOutputRenderer`, `output.GraphRendererMixin`, `output.GraphRenderer`, `output.NewGraphRendererMixin`, `output.BrandedValue()`. | 10m | MED | `serialization/json_renderers.go` |
-| 27 | Copy `yaml.go` → `serialization/yaml.go`. Same treatment as json.go but with yaml imports. | 8m | MED | `serialization/yaml.go` |
-| 28 | Copy `yaml_renderers.go` → `serialization/yaml_renderers.go`. Same treatment as json_renderers.go. | 10m | MED | `serialization/yaml_renderers.go` |
-| 29 | Add `init()` to serialization module: register YAML as `TableDataMarshaler`. Move `renderYAMLTableData` logic from root. JSON is NOT registered (RenderTableData doesn't handle JSON — it returns UnsupportedFormatError). | 6m | HIGH | `serialization/yaml.go` |
-| 30 | Copy test files: `json_test.go`, `json_renderers_test.go`, `yaml_test.go`, `yaml_renderers_test.go` → `serialization/`. Update package to `serialization_test`. Create local test helpers for graph/tree nodes. | 12m | MED | `serialization/*_test.go` |
-| 31 | Run `go mod tidy` + `go build ./...` + `go test ./...` in `serialization/`. Fix compilation errors. | 5m | HIGH — gate | — |
-| 32 | Delete original `json.go`, `json_renderers.go`, `yaml.go`, `yaml_renderers.go` from root. Update root `render_tabledata.go` to remove YAML direct call. | 5m | HIGH | root |
+| #   | Task                                                                       | Status  | Notes                                                                                                     |
+| --- | -------------------------------------------------------------------------- | ------- | --------------------------------------------------------------------------------------------------------- |
+| 24  | Create `serialization/` directory. Create `go.mod`.                        | ✅ DONE | Depends on root, go-faster/yaml, testhelpers                                                              |
+| 25  | Copy `json.go` → `serialization/json.go`. Fix imports.                     | ✅ DONE | `output.TableDataBase`, `output.MarshalFormat()`, etc.                                                    |
+| 26  | Copy `json_renderers.go` → `serialization/json_renderers.go`. Fix imports. | ✅ DONE | `output.GraphRendererMixin`, `output.BrandedValue()`, etc.                                                |
+| 27  | Copy `yaml.go` → `serialization/yaml.go`. Fix imports.                     | ✅ DONE | Same pattern as json.go + yaml imports                                                                    |
+| 28  | Copy `yaml_renderers.go` → `serialization/yaml_renderers.go`. Fix imports. | ✅ DONE | Same pattern as json_renderers.go                                                                         |
+| 29  | Add `init()`: register YAML as `TableDataMarshaler`.                       | ✅ DONE | `yaml.go` has `func init()` registering `FormatYAML`                                                      |
+| 30  | Copy test files → `serialization/`.                                        | ✅ DONE | `json_test.go`, `json_renderers_test.go`, `yaml_test.go`, `yaml_renderers_test.go`, `testhelpers_test.go` |
+| 31  | Run `go mod tidy` + `go build` + `go test` in `serialization/`.            | ✅ DONE | Module builds and tests pass                                                                              |
+| 32  | Delete originals from root.                                                | ✅ DONE | `json.go`, `json_renderers.go`, `yaml.go`, `yaml_renderers.go` deleted from root                          |
 
 ---
 
 ## Phase 4: Update Dependent Modules
 
-Integration + examples need new import paths. Other sub-modules (d2, graph, table) likely unaffected.
+Integration + examples need new import paths.
 
-| # | Task | Est. | Impact | Files |
-|---|------|------|--------|-------|
-| 33 | Update `integration/go.mod`: add `delimited`, `serialization`, `markup` to require + replace. | 3m | MED | `integration/go.mod` |
-| 34 | Update `integration/integration_test.go`: add imports for `delimited`, `serialization`, `markup`. Fix `output.NewCSVWriter` → `delimited.NewCSVWriter`, `output.MarshalJSON` → `serialization.MarshalJSON`, `output.NewHTMLRenderer` → `markup.NewHTMLRenderer`, etc. | 10m | HIGH — tests must pass | `integration/integration_test.go` |
-| 35 | Update `integration/renderer_test.go`: same import fixes as above. | 8m | HIGH | `integration/renderer_test.go` |
-| 36 | Update `integration/workflow_test.go`: fix `output.MarshalJSONIndent` → `serialization.MarshalJSONIndent`, `output.NewStreamingHTMLRenderer` → `markup.NewStreamingHTMLRenderer`. | 6m | HIGH | `integration/workflow_test.go` |
-| 37 | Update `integration/test_helpers.go`: fix `output.MarshalJSON` → `serialization.MarshalJSON`. | 3m | MED | `integration/test_helpers.go` |
-| 38 | Update `examples/go.mod`: add `delimited`, `serialization`, `markup` to require + replace. | 3m | MED | `examples/go.mod` |
-| 39 | Update `examples/basic/main.go`: fix all format-specific imports. | 8m | MED | `examples/basic/main.go` |
+| #   | Task                                                   | Status  | Notes                                                                                 |
+| --- | ------------------------------------------------------ | ------- | ------------------------------------------------------------------------------------- |
+| 33  | Update `integration/go.mod`: add new modules.          | ✅ DONE | `delimited`, `serialization`, `markup` in require + replace                           |
+| 34  | Update `integration/integration_test.go`: fix imports. | ✅ DONE | `delimited.NewCSVWriter`, `serialization.MarshalJSON`, `markup.NewHTMLRenderer`, etc. |
+| 35  | Update `integration/renderer_test.go`: fix imports.    | ✅ DONE | Same pattern — all format-specific imports point to sub-modules                       |
+| 36  | Update `integration/workflow_test.go`: fix imports.    | ✅ DONE | `serialization.MarshalYAML`, `markup.NewStreamingHTMLRenderer`                        |
+| 37  | Update `integration/test_helpers.go`: fix imports.     | ✅ DONE | `serialization.MarshalJSON`                                                           |
+| 38  | Update `examples/go.mod`: add new modules.             | ✅ DONE | All 3 new modules in require + replace                                                |
+| 39  | Update `examples/basic/main.go`: fix imports.          | ✅ DONE | All format-specific imports use sub-module paths                                      |
 
 ---
 
 ## Phase 5: Root Cleanup + Verify
 
-| # | Task | Est. | Impact | Files |
-|---|------|------|--------|-------|
-| 40 | Clean root test files: remove moved test helpers from `output_test_helpers_test.go` (graph/tree helpers only used by moved tests). Keep helpers used by remaining root tests. | 8m | MED | `output_test_helpers_test.go` |
-| 41 | Remove `benchmarks_test.go` entries for moved formats (CSV, TSV, JSON, XML benchmarks) or move them to respective modules. | 5m | LOW | `benchmarks_test.go` |
-| 42 | Remove `fuzz_test.go` entries for moved formats or move them. | 5m | LOW | `fuzz_test.go` |
-| 43 | Remove `userjourney_test.go` format-specific parts or update imports. | 8m | MED | `userjourney_test.go` |
-| 44 | Update root `go.mod`: remove `go-faster/yaml` if no longer needed (check `yaml.go` moved). Remove `escape` if no longer needed (check only `xml.go`/`html.go` used it). Run `go mod tidy`. | 5m | HIGH — dep isolation | `go.mod` |
-| 45 | Run full root test suite: `go test ./...` in root. Verify all tests pass. | 3m | HIGH — gate | — |
+| #   | Task                                                             | Status      | Notes                                                                                                                                                                                                                                                    |
+| --- | ---------------------------------------------------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 40  | Clean root `output_test_helpers_test.go`: remove unused helpers. | ❌ NOT DONE | **4 unused declarations remain:** `htmlEscapeTestRenderer`, `assertMarshalError`, `testHTMLEscapeShared`, `testHTMLEmptyExpected`. Plus 3 more unused by root: `newTestNodeWithShape`, `testEdgesABC`, `testEmptyRendererOutput`. Total: 7 unused items. |
+| 41  | Remove `benchmarks_test.go` entries for moved formats.           | ✅ DONE     | Only root benchmarks remain: `ASCIITreeRenderer`, `TableDataCreateRowEdges`, `MarkdownTable`                                                                                                                                                             |
+| 42  | Remove `fuzz_test.go` entries for moved formats.                 | ✅ DONE     | Only `FuzzMarkdownTable` + generic `fuzzEnumTest` helper remain                                                                                                                                                                                          |
+| 43  | Remove `userjourney_test.go` format-specific parts.              | ❌ NOT DONE | **Still references moved formats** via sub-module imports (`delimited`, `serialization`). Tests like `TestRenderDataAsCSV`, `TestRenderDataAsJSON`, `TestRenderDataAsYAML` remain. Depguard warns on sub-module imports from root.                       |
+| 44  | Update root `go.mod`: remove `go-faster/yaml`, remove `escape`.  | ⚠️ PARTIAL  | `escape` correctly absent from `require` (only in `replace`). `go-faster/yaml` stays in `require` — justified by `internal/gentest/assert.go` which uses it directly. Root production code has zero yaml imports.                                        |
+| 45  | Run full root test suite.                                        | ✅ DONE     | Zero compile errors, all tests pass                                                                                                                                                                                                                      |
 
 ---
 
 ## Phase 6: Documentation + Final Verification
 
-| # | Task | Est. | Impact | Files |
-|---|------|------|--------|-------|
-| 46 | Update `AGENTS.md`: new module table, dependency graph, module count (9→12), new import paths, updated coverage. | 10m | HIGH — future sessions depend on this | `AGENTS.md` |
-| 47 | Update `docs/modularization/root-split-proposal.md`: mark as implemented, add actual vs planned notes. | 5m | LOW | `docs/modularization/root-split-proposal.md` |
-| 48 | Update `README.md`: new import path examples for serialization/delimited/markup. | 8m | HIGH — user-facing | `README.md` |
-| 49 | Update `go.work` example in AGENTS.md: add `./serialization`, `./delimited`, `./markup`. | 3m | MED | `AGENTS.md` |
-| 50 | Run ALL modules: `for mod in . delimited serialization markup d2 graph enum escape testhelpers table integration examples; do (cd $mod && go test ./...); done` | 5m | HIGH — final gate | — |
-| 51 | Run `golangci-lint` across ALL modules. Fix any issues. | 8m | HIGH — quality gate | — |
+| #   | Task                                                                      | Status      | Notes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| --- | ------------------------------------------------------------------------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 46  | Update `AGENTS.md`: new module table, dependency graph, import paths.     | ✅ DONE     | Module table has 12 modules, dependency graph updated, go.work example includes all modules                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| 47  | Update `docs/modularization/root-split-proposal.md`: mark as implemented. | ❌ NOT DONE | Still reads as a raw proposal. No "implemented" status marker.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| 48  | Update `README.md`: new import path examples.                             | ⚠️ PARTIAL  | Sub-module import paths shown in some sections. **But many examples still use stale `output.X` references:** `output.NewCSVWriter` (→ should be `delimited.NewCSVWriter`), `output.MarshalJSONIndent` (stays in root ✓), `output.NewJSONTableRenderer` (→ should be `serialization.NewJSONTableRenderer`), `output.NewYAMLTableRenderer` (→ should be `serialization.NewYAMLTableRenderer`), `output.MarshalXMLFromTableData` (→ should be `markup.MarshalXMLFromTableData`), `output.MarshalYAML` (→ should be `serialization.MarshalYAML`), `output.NewHTMLTreeRenderer` (→ should be `markup.NewHTMLTreeRenderer`), `output.NewStreamingHTMLRenderer` (→ should be `markup.NewStreamingHTMLRenderer`). |
+| 49  | Update `go.work` example in AGENTS.md.                                    | ✅ DONE     | Includes `./serialization`, `./delimited`, `./markup`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| 50  | Run ALL modules: test suite.                                              | ✅ DONE     | All modules build and test without errors                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| 51  | Run `golangci-lint` across ALL modules.                                   | ✅ DONE     | No errors. Warnings exist (unused test helpers — tracked in task 40). `.golangci.yml` not present.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 
 ---
 
-## Summary
+## Remaining Work
 
-| Metric | Value |
-|--------|-------|
-| **Total tasks** | 51 |
-| **Phases** | 7 (0-6) |
-| **New modules** | 3 (`delimited/`, `serialization/`, `markup/`) |
-| **Root file reduction** | 54 → ~25 |
-| **Root deps removed** | `go-faster/yaml`, `escape` (if fully moved) |
-| **Breaking changes** | Users must import format-specific modules: `import "go-output/serialization"` instead of `import "go-output"` for JSON/YAML |
-| **Registry dispatch** | `render_tabledata.go` uses `TableDataMarshaler` registry — no sub-module imports in root |
-| **Key invariant preserved** | Root has ZERO sub-module imports |
+### Required (breaks correctness/staleness)
 
-## Estimated Total Time
+| #   | Original Task | What's Left                                                                                                                                                                                                  | Priority |
+| --- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- |
+| R1  | #48           | **Fix README.md examples** — ~10 code examples still reference `output.X` for functions that moved to sub-modules (`delimited`, `serialization`, `markup`). Users copying these examples get compile errors. | HIGH     |
+| R2  | #47           | **Mark `root-split-proposal.md` as implemented** — add status section noting Strategy B was executed, date completed, actual vs planned deviations.                                                          | LOW      |
 
-| Phase | Tasks | Est. Time |
-|-------|-------|-----------|
-| Phase 0: Foundation | 6 | ~39 min |
-| Phase 1: delimited/ | 8 | ~50 min |
-| Phase 2: markup/ | 9 | ~62 min |
-| Phase 3: serialization/ | 9 | ~67 min |
-| Phase 4: Dependents | 7 | ~41 min |
-| Phase 5: Cleanup | 6 | ~34 min |
-| Phase 6: Docs + Verify | 6 | ~39 min |
-| **Total** | **51** | **~332 min (~5.5h)** |
+### Nice-to-have (dead code / lint)
+
+| #   | Original Task | What's Left                                                                                                                                                                                                                               | Priority |
+| --- | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| R3  | #40           | **Remove 7 unused declarations from `output_test_helpers_test.go`** — `htmlEscapeTestRenderer`, `assertMarshalError`, `testHTMLEscapeShared`, `testHTMLEmptyExpected`, `newTestNodeWithShape`, `testEdgesABC`, `testEmptyRendererOutput`. | MED      |
+| R4  | #43           | **Decide fate of `userjourney_test.go`** — currently imports `delimited`/`serialization` from root (depguard violation). Options: (a) move to `integration/`, (b) delete format-specific tests, (c) update depguard config to allow.      | MED      |
+
+---
+
+## Summary (Actual vs Planned)
+
+| Metric                               | Planned                                                  | Actual                                                                                                       |
+| ------------------------------------ | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| **Total tasks**                      | 51                                                       | 43 done, 4 partial, 4 not done                                                                               |
+| **Phases**                           | 7 (0-6)                                                  | 4 complete, 2 partial, 0 not started                                                                         |
+| **New modules**                      | 3 (`delimited/`, `serialization/`, `markup/`)            | ✅ 3 created, all with tests + init() registration                                                           |
+| **Root file reduction**              | 54 → ~25                                                 | 54 → ~20 source files (better than planned)                                                                  |
+| **Root deps removed from prod code** | `go-faster/yaml`, `escape`                               | ✅ Zero yaml/escape imports in root `.go` files. `go-faster/yaml` in go.mod justified by `internal/gentest`. |
+| **Breaking changes**                 | Users must import format-specific modules                | ✅ Documented, examples/ updated correctly                                                                   |
+| **Registry dispatch**                | `render_tabledata.go` uses `TableDataMarshaler` registry | ✅ Thread-safe, zero sub-module imports in root                                                              |
+| **Key invariant preserved**          | Root has ZERO sub-module imports                         | ✅ Verified via `go mod graph`                                                                               |
+| **Deviation from plan**              | —                                                        | `streaming.go` split: interface stayed in root, implementation moved to markup/ (cleaner than planned)       |
 
 ## Risk Register
 
-| Risk | Likelihood | Impact | Mitigation |
-|------|-----------|--------|------------|
-| Unexported type embedding breaks | Medium | High | Phase 0 exports `TableDataBase` first |
-| Test helper duplication across modules | High | Low | ~10 lines each, acceptable tradeoff |
-| `render_tabledata.go` registry not populated | Medium | High | Clear error message if format not imported |
-| Circular imports between new modules | Low | High | `marshal.go` stays in root; modules only import root |
-| Integration tests break | High | Medium | Phase 4 dedicates 5 tasks to fixing imports |
-| `go-faster/yaml` still in root go.mod | Low | Low | Verify after Phase 5 cleanup |
+| Risk                                         | Likelihood | Impact | Mitigation                                  | Status                                          |
+| -------------------------------------------- | ---------- | ------ | ------------------------------------------- | ----------------------------------------------- |
+| Unexported type embedding breaks             | Medium     | High   | Phase 0 exports `TableDataBase` first       | ✅ Mitigated                                    |
+| Test helper duplication across modules       | High       | Low    | ~10 lines each, acceptable tradeoff         | ✅ Accepted                                     |
+| `render_tabledata.go` registry not populated | Medium     | High   | Clear error message if format not imported  | ✅ Mitigated — returns `UnsupportedFormatError` |
+| Circular imports between new modules         | Low        | High   | `marshal.go` stays in root                  | ✅ Mitigated — zero circular deps               |
+| Integration tests break                      | High       | Medium | Phase 4 dedicates 5 tasks to fixing imports | ✅ Mitigated                                    |
+| `go-faster/yaml` still in root go.mod        | Low        | Low    | Verify after Phase 5 cleanup                | ⚠️ Stays — justified by `internal/gentest`      |
+| README examples stale                        | High       | Medium | Task 48 update                              | ❌ **Active risk** — ~10 examples broken        |
+
+## Estimated Total Time
+
+| Phase                   | Tasks  | Est. Time            | Actual               |
+| ----------------------- | ------ | -------------------- | -------------------- |
+| Phase 0: Foundation     | 6      | ~39 min              | ✅ Done              |
+| Phase 1: delimited/     | 8      | ~50 min              | ✅ Done              |
+| Phase 2: markup/        | 9      | ~62 min              | ✅ Done              |
+| Phase 3: serialization/ | 9      | ~67 min              | ✅ Done              |
+| Phase 4: Dependents     | 7      | ~41 min              | ✅ Done              |
+| Phase 5: Cleanup        | 6      | ~34 min              | ⚠️ 4/6 done          |
+| Phase 6: Docs + Verify  | 6      | ~39 min              | ⚠️ 4/6 done          |
+| **Total**               | **51** | **~332 min (~5.5h)** | **43/51 done (92%)** |

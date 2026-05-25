@@ -1,8 +1,10 @@
-package output
+package markup
 
 import (
 	"strings"
 	"testing"
+
+	"github.com/larsartmann/go-output"
 )
 
 func TestXMLWriterWriteHeader(t *testing.T) {
@@ -113,7 +115,7 @@ func TestMarshalXMLFromTableDataNil(t *testing.T) {
 func TestMarshalXMLFromTableDataWithData(t *testing.T) {
 	t.Parallel()
 
-	data := NewTableData([]string{"Name", "Value"})
+	data := output.NewTableData([]string{"Name", "Value"})
 	data.AddRow([]string{"test", "123"})
 
 	result, err := MarshalXMLFromTableData(data)
@@ -121,24 +123,24 @@ func TestMarshalXMLFromTableDataWithData(t *testing.T) {
 		t.Fatalf("MarshalXMLFromTableData() error = %v", err)
 	}
 
-	output := string(result)
-	assertContains(t, output, "<table>", "XML should contain <table>")
-	assertContains(t, output, "<headers>", "XML should contain <headers>")
-	assertContains(t, output, "<row>", "XML should contain <row>")
+	outputStr := string(result)
+	assertContains(t, outputStr, "<table>", "XML should contain <table>")
+	assertContains(t, outputStr, "<headers>", "XML should contain <headers>")
+	assertContains(t, outputStr, "<row>", "XML should contain <row>")
 }
 
 func TestMarshalXMLFromTableDataEmpty(t *testing.T) {
 	t.Parallel()
 
-	data := NewTableData([]string{})
+	data := output.NewTableData([]string{})
 
 	result, err := MarshalXMLFromTableData(data)
 	if err != nil {
 		t.Fatalf("MarshalXMLFromTableData() error = %v", err)
 	}
 
-	output := string(result)
-	assertContains(t, output, "</table>", "XML should contain closing </table>")
+	outputStr := string(result)
+	assertContains(t, outputStr, "</table>", "XML should contain closing </table>")
 }
 
 func TestMarshalXML(t *testing.T) {
@@ -314,7 +316,7 @@ func TestXMLWriterWriteFooterError(t *testing.T) {
 func TestMarshalXMLFromTableDataNoHeaders(t *testing.T) {
 	t.Parallel()
 
-	data := NewTableData(nil)
+	data := output.NewTableData(nil)
 	data.AddRow([]string{"a", "b"})
 
 	result, err := MarshalXMLFromTableData(data)
@@ -322,10 +324,10 @@ func TestMarshalXMLFromTableDataNoHeaders(t *testing.T) {
 		t.Fatalf("MarshalXMLFromTableData() error = %v", err)
 	}
 
-	output := string(result)
-	assertContains(t, output, "<rows>", "should contain rows")
-	assertContains(t, output, "<row>", "should contain row")
-	assertContains(t, output, "</table>", "should contain table close")
+	outputStr := string(result)
+	assertContains(t, outputStr, "<rows>", "should contain rows")
+	assertContains(t, outputStr, "<row>", "should contain row")
+	assertContains(t, outputStr, "</table>", "should contain table close")
 }
 
 func TestMarshalXMLIndentError(t *testing.T) {

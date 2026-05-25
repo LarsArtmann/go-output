@@ -1,35 +1,34 @@
-package output
+package serialization
 
 import (
 	"fmt"
 
 	"github.com/go-faster/yaml"
+	"github.com/larsartmann/go-output"
 )
 
-// Compile-time interface checks.
 var (
-	_ Renderer           = (*YAMLTreeRenderer)(nil)
-	_ TreeOutputRenderer = (*YAMLTreeRenderer)(nil)
-	_ Renderer           = (*YAMLGraphRenderer)(nil)
-	_ GraphRenderer      = (*YAMLGraphRenderer)(nil)
+	_ output.Renderer           = (*YAMLTreeRenderer)(nil)
+	_ output.TreeOutputRenderer = (*YAMLTreeRenderer)(nil)
+	_ output.Renderer           = (*YAMLGraphRenderer)(nil)
+	_ output.GraphRenderer      = (*YAMLGraphRenderer)(nil)
 )
 
 // YAMLTreeRenderer renders a TreeNode hierarchy as YAML.
 type YAMLTreeRenderer struct {
-	root *TreeNode
+	root *output.TreeNode
 }
 
 // NewYAMLTreeRenderer creates a new YAMLTreeRenderer.
 func NewYAMLTreeRenderer() *YAMLTreeRenderer {
-	return &YAMLTreeRenderer{} //nolint:exhaustruct // root is set via SetRoot
+	return &YAMLTreeRenderer{}
 }
 
 // SetRoot sets the root node of the tree.
-func (r *YAMLTreeRenderer) SetRoot(node *TreeNode) {
+func (r *YAMLTreeRenderer) SetRoot(node *output.TreeNode) {
 	r.root = node
 }
 
-// yamlTreeNode is the YAML representation of a TreeNode.
 type yamlTreeNode struct {
 	ID       string            `yaml:"id"`
 	Label    string            `yaml:"label"`
@@ -53,7 +52,7 @@ func (r *YAMLTreeRenderer) Render() (string, error) {
 	return string(data), nil
 }
 
-func (r *YAMLTreeRenderer) toYAMLNode(node *TreeNode) yamlTreeNode {
+func (r *YAMLTreeRenderer) toYAMLNode(node *output.TreeNode) yamlTreeNode {
 	result := yamlTreeNode{
 		ID:       node.ID.Get(),
 		Label:    node.Label.Get(),
@@ -72,23 +71,21 @@ func (r *YAMLTreeRenderer) toYAMLNode(node *TreeNode) yamlTreeNode {
 
 // YAMLGraphRenderer renders graph nodes and edges as YAML.
 type YAMLGraphRenderer struct {
-	GraphRendererMixin
+	output.GraphRendererMixin
 }
 
 // NewYAMLGraphRenderer creates a new YAMLGraphRenderer.
 func NewYAMLGraphRenderer() *YAMLGraphRenderer {
 	return &YAMLGraphRenderer{
-		GraphRendererMixin: NewGraphRendererMixin(),
+		GraphRendererMixin: output.NewGraphRendererMixin(),
 	}
 }
 
-// yamlGraph is the YAML representation of a graph.
 type yamlGraph struct {
 	Nodes []yamlGraphNode `yaml:"nodes"`
 	Edges []yamlGraphEdge `yaml:"edges"`
 }
 
-// yamlGraphNode is the YAML representation of a GraphNode.
 type yamlGraphNode struct {
 	ID       string            `yaml:"id"`
 	Label    string            `yaml:"label"`
@@ -96,7 +93,6 @@ type yamlGraphNode struct {
 	Metadata map[string]string `yaml:"metadata,omitempty"`
 }
 
-// yamlGraphEdge is the YAML representation of a GraphEdge.
 type yamlGraphEdge struct {
 	From  string `yaml:"from"`
 	To    string `yaml:"to"`
@@ -125,7 +121,7 @@ func (r *YAMLGraphRenderer) Render() (string, error) {
 		e := yamlGraphEdge{
 			From:  edge.From.Get(),
 			To:    edge.To.Get(),
-			Label: brandedValue(edge.Label),
+			Label: brandedEdgeLabel(edge.Label),
 		}
 
 		graph.Edges = append(graph.Edges, e)

@@ -1,10 +1,10 @@
-package output
+package serialization
 
 import (
 	"strings"
 	"testing"
 
-	"github.com/larsartmann/go-output/internal/gentest"
+	"github.com/larsartmann/go-output"
 )
 
 func TestJSONTreeRenderer_Empty(t *testing.T) {
@@ -26,7 +26,7 @@ func TestJSONTreeRenderer_Single(t *testing.T) {
 	t.Parallel()
 
 	r := NewJSONTreeRenderer()
-	root := NewTreeNode("root", "Root")
+	root := output.NewTreeNode("root", "Root")
 	r.SetRoot(root)
 
 	got, err := r.Render()
@@ -34,17 +34,16 @@ func TestJSONTreeRenderer_Single(t *testing.T) {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	gentest.AssertOutputContains(t, got, `"id": "root"`)
-
-	gentest.AssertOutputContains(t, got, `"label": "Root"`)
+	assertOutputContains(t, got, `"id": "root"`)
+	assertOutputContains(t, got, `"label": "Root"`)
 }
 
 func TestJSONTreeRenderer_WithChildren(t *testing.T) {
 	t.Parallel()
 
 	r := NewJSONTreeRenderer()
-	root := NewTreeNode("root", "Root")
-	child := NewTreeNode("child", "Child")
+	root := output.NewTreeNode("root", "Root")
+	child := output.NewTreeNode("child", "Child")
 	root.AddChild(child)
 	r.SetRoot(root)
 
@@ -53,17 +52,16 @@ func TestJSONTreeRenderer_WithChildren(t *testing.T) {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	gentest.AssertOutputContains(t, got, `"children"`)
-
-	gentest.AssertOutputContains(t, got, `"id": "child"`)
+	assertOutputContains(t, got, `"children"`)
+	assertOutputContains(t, got, `"id": "child"`)
 }
 
 func TestJSONTreeRenderer_WithMetadata(t *testing.T) {
 	t.Parallel()
 
 	r := NewJSONTreeRenderer()
-	root := NewTreeNode("root", "Root")
-	root.Metadata["key"] = "value" //nolint:goconst // test value
+	root := output.NewTreeNode("root", "Root")
+	root.Metadata["key"] = "value"
 	r.SetRoot(root)
 
 	got, err := r.Render()
@@ -71,19 +69,17 @@ func TestJSONTreeRenderer_WithMetadata(t *testing.T) {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	gentest.AssertOutputContains(t, got, `"metadata"`)
-
-	gentest.AssertOutputContains(t, got, `"key": "value"`)
+	assertOutputContains(t, got, `"metadata"`)
+	assertOutputContains(t, got, `"key": "value"`)
 }
 
 func TestJSONTreeRenderer_ValidJSON(t *testing.T) {
 	t.Parallel()
 
 	r := NewJSONTreeRenderer()
-	root := NewTreeNode("root", "Root")
-	child1 := NewTreeNode("c1", "Child 1")
-	child2 := NewTreeNode("c2", "Child 2")
-
+	root := output.NewTreeNode("root", "Root")
+	child1 := output.NewTreeNode("c1", "Child 1")
+	child2 := output.NewTreeNode("c2", "Child 2")
 	root.AddChild(child1)
 	root.AddChild(child2)
 	r.SetRoot(root)
@@ -93,16 +89,16 @@ func TestJSONTreeRenderer_ValidJSON(t *testing.T) {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	gentest.AssertValidJSON(t, got)
+	assertValidJSON(t, got)
 }
 
 func TestJSONTreeRenderer_DeepNesting(t *testing.T) {
 	t.Parallel()
 
 	r := NewJSONTreeRenderer()
-	root := NewTreeNode("root", "Root")
-	child := NewTreeNode("child", "Child")
-	grandchild := NewTreeNode("grandchild", "Grandchild")
+	root := output.NewTreeNode("root", "Root")
+	child := output.NewTreeNode("child", "Child")
+	grandchild := output.NewTreeNode("grandchild", "Grandchild")
 	child.AddChild(grandchild)
 	root.AddChild(child)
 	r.SetRoot(root)
@@ -112,7 +108,7 @@ func TestJSONTreeRenderer_DeepNesting(t *testing.T) {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	gentest.AssertOutputContains(t, got, `"id": "grandchild"`)
+	assertOutputContains(t, got, `"id": "grandchild"`)
 }
 
 func TestJSONGraphRenderer_Empty(t *testing.T) {
@@ -142,9 +138,8 @@ func TestJSONGraphRenderer_WithNodesAndEdges(t *testing.T) {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	gentest.AssertOutputContains(t, got, `"id": "A"`)
-
-	gentest.AssertOutputContains(t, got, `"from": "A"`)
+	assertOutputContains(t, got, `"id": "A"`)
+	assertOutputContains(t, got, `"from": "A"`)
 }
 
 func TestJSONGraphRenderer_EdgeWithLabel(t *testing.T) {
@@ -152,21 +147,21 @@ func TestJSONGraphRenderer_EdgeWithLabel(t *testing.T) {
 
 	r := NewJSONGraphRenderer()
 	r.SetNodes(testNodesAB())
-	r.SetEdges([]GraphEdge{testEdgeAB("connects")})
+	r.SetEdges([]output.GraphEdge{testEdgeAB("connects")})
 
 	got, err := r.Render()
 	if err != nil {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	gentest.AssertOutputContains(t, got, `"label": "connects"`)
+	assertOutputContains(t, got, `"label": "connects"`)
 }
 
 func TestJSONGraphRenderer_NodeWithShape(t *testing.T) {
 	t.Parallel()
 
 	r := NewJSONGraphRenderer()
-	r.SetNodes([]GraphNode{newTestNodeWithShape("A", "Node A", ShapeDiamond)})
+	r.SetNodes([]output.GraphNode{newTestNodeWithShape("A", "Node A", output.ShapeDiamond)})
 	r.SetEdges(nil)
 
 	got, err := r.Render()
@@ -174,16 +169,16 @@ func TestJSONGraphRenderer_NodeWithShape(t *testing.T) {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	gentest.AssertOutputContains(t, got, `"shape": "diamond"`)
+	assertOutputContains(t, got, `"shape": "diamond"`)
 }
 
 func TestJSONGraphRenderer_NodeWithMetadata(t *testing.T) {
 	t.Parallel()
 
 	r := NewJSONGraphRenderer()
-	node := NewGraphNode("A", "Node A")
+	node := output.NewGraphNode("A", "Node A")
 	node.Metadata["type"] = "service"
-	r.SetNodes([]GraphNode{*node})
+	r.SetNodes([]output.GraphNode{*node})
 	r.SetEdges(nil)
 
 	got, err := r.Render()
@@ -191,7 +186,7 @@ func TestJSONGraphRenderer_NodeWithMetadata(t *testing.T) {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	gentest.AssertOutputContains(t, got, `"type": "service"`)
+	assertOutputContains(t, got, `"type": "service"`)
 }
 
 func TestJSONGraphRenderer_ValidJSON(t *testing.T) {
@@ -206,26 +201,5 @@ func TestJSONGraphRenderer_ValidJSON(t *testing.T) {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	gentest.AssertValidJSON(t, got)
-}
-
-func TestJSONTreeRendererMustRender(t *testing.T) {
-	t.Parallel()
-
-	r := NewJSONTreeRenderer()
-	root := NewTreeNode("root", "Root")
-	r.SetRoot(root)
-
-	got := MustRender(r)
-	gentest.AssertOutputContains(t, got, `"id": "root"`)
-}
-
-func TestJSONGraphRendererMustRender(t *testing.T) {
-	t.Parallel()
-
-	r := NewJSONGraphRenderer()
-	r.SetNodes(testNodesAB())
-
-	got := MustRender(r)
-	gentest.AssertOutputContains(t, got, `"id": "A"`)
+	assertValidJSON(t, got)
 }

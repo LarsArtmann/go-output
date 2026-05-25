@@ -78,48 +78,6 @@ func TestRenderTableData_Markdown(t *testing.T) {
 	gentest.AssertOutputContains(t, out, "| Name")
 }
 
-func TestRenderTableData_XML(t *testing.T) {
-	var buf bytes.Buffer
-
-	data := testTableData()
-
-	err := RenderTableData(data, FormatXML, RenderOptions{Writer: &buf})
-	if err != nil {
-		t.Fatalf("RenderTableData xml: %v", err)
-	}
-
-	out := buf.String()
-	assertOutputContainsBoth(t, out, "Alice", "<", "xml")
-}
-
-func TestRenderTableData_YAML(t *testing.T) {
-	var buf bytes.Buffer
-
-	data := testTableData()
-
-	err := RenderTableData(data, FormatYAML, RenderOptions{Writer: &buf})
-	if err != nil {
-		t.Fatalf("RenderTableData yaml: %v", err)
-	}
-
-	out := buf.String()
-	gentest.AssertOutputContains(t, out, "Alice")
-}
-
-func TestRenderTableData_HTML(t *testing.T) {
-	var buf bytes.Buffer
-
-	data := testTableData()
-
-	err := RenderTableData(data, FormatHTML, RenderOptions{Writer: &buf, Title: "My Data"})
-	if err != nil {
-		t.Fatalf("RenderTableData html: %v", err)
-	}
-
-	out := buf.String()
-	assertOutputContainsBoth(t, out, "<!DOCTYPE html>", "Alice", "html")
-}
-
 func TestRenderTableData_Tree(t *testing.T) {
 	var buf bytes.Buffer
 
@@ -179,90 +137,6 @@ func TestRenderTableData_EmptyRows(t *testing.T) {
 	gentest.AssertOutputContains(t, out, "A")
 }
 
-func TestMarshalCSVFromTableData(t *testing.T) {
-	data := testTableData()
-
-	b, err := MarshalCSVFromTableData(data)
-	if err != nil {
-		t.Fatalf("MarshalCSVFromTableData: %v", err)
-	}
-
-	gentest.AssertOutputContains(t, string(b), "Alice")
-}
-
-func TestMarshalCSVFromTableData_Nil(t *testing.T) {
-	b, err := MarshalCSVFromTableData(nil)
-	if err != nil {
-		t.Fatalf("MarshalCSVFromTableData nil: %v", err)
-	}
-
-	if b != nil {
-		t.Errorf("expected nil for nil data, got %q", string(b))
-	}
-}
-
-func TestMarshalTSVFromTableData(t *testing.T) {
-	data := testTableData()
-
-	b, err := MarshalTSVFromTableData(data)
-	if err != nil {
-		t.Fatalf("MarshalTSVFromTableData: %v", err)
-	}
-
-	gentest.AssertOutputContains(t, string(b), "Alice")
-
-	if !strings.Contains(string(b), "\t") {
-		t.Error("tsv should contain tabs")
-	}
-}
-
-func TestMarshalTSVFromTableData_Nil(t *testing.T) {
-	b, err := MarshalTSVFromTableData(nil)
-	if err != nil {
-		t.Fatalf("MarshalTSVFromTableData nil: %v", err)
-	}
-
-	if b != nil {
-		t.Errorf("expected nil for nil data, got %q", string(b))
-	}
-}
-
-func TestRenderTableData_CSVWriterError(t *testing.T) {
-	data := testTableData()
-
-	err := RenderTableData(data, FormatCSV, RenderOptions{Writer: &errorWriter{}})
-	if err == nil {
-		t.Fatal("expected error from errorWriter")
-	}
-}
-
-func TestRenderTableData_TSVWriterError(t *testing.T) {
-	data := testTableData()
-
-	err := RenderTableData(data, FormatTSV, RenderOptions{Writer: &errorWriter{}})
-	if err == nil {
-		t.Fatal("expected error from errorWriter")
-	}
-}
-
-func TestRenderTableData_XMLWriterError(t *testing.T) {
-	data := testTableData()
-
-	err := RenderTableData(data, FormatXML, RenderOptions{Writer: &errorWriter{}})
-	if err == nil {
-		t.Fatal("expected error from errorWriter")
-	}
-}
-
-func TestRenderTableData_YAMLWriterError(t *testing.T) {
-	data := testTableData()
-
-	err := RenderTableData(data, FormatYAML, RenderOptions{Writer: &errorWriter{}})
-	if err == nil {
-		t.Fatal("expected error from errorWriter")
-	}
-}
-
 func TestRenderTableData_MarkdownWriterError(t *testing.T) {
 	data := testTableData()
 
@@ -270,15 +144,6 @@ func TestRenderTableData_MarkdownWriterError(t *testing.T) {
 		Writer: &errorWriter{},
 		Title:  "Test",
 	})
-	if err == nil {
-		t.Fatal("expected error from errorWriter")
-	}
-}
-
-func TestRenderTableData_HTMLWriterError(t *testing.T) {
-	data := testTableData()
-
-	err := RenderTableData(data, FormatHTML, RenderOptions{Writer: &errorWriter{}})
 	if err == nil {
 		t.Fatal("expected error from errorWriter")
 	}

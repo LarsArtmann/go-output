@@ -1,4 +1,4 @@
-package output
+package delimited
 
 import (
 	"encoding/csv"

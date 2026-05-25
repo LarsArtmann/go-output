@@ -91,31 +91,36 @@ func (d *TableData) CreateRowEdges() []RowEdge {
 	return edges
 }
 
-// tableDataBase provides common table data storage for renderers.
-type tableDataBase struct {
+// TableDataBase provides common table data storage for renderers.
+type TableDataBase struct {
 	data *TableData
 }
 
 // ensureData initializes data if nil.
-func (b *tableDataBase) ensureData() {
+func (b *TableDataBase) ensureData() {
 	if b.data == nil {
 		b.data = &TableData{}
 	}
 }
 
 // SetHeaders sets the column headers.
-func (b *tableDataBase) SetHeaders(headers []string) {
+func (b *TableDataBase) SetHeaders(headers []string) {
 	b.ensureData()
 	b.data.Headers = headers
 }
 
 // AddRow adds a data row.
-func (b *tableDataBase) AddRow(row []string) {
+func (b *TableDataBase) AddRow(row []string) {
 	b.ensureData()
 	b.data.Rows = append(b.data.Rows, row)
 }
 
 // SetData sets the table data directly.
-func (b *tableDataBase) SetData(data *TableData) {
+func (b *TableDataBase) SetData(data *TableData) {
 	b.data = data
+}
+
+// Data returns the underlying TableData.
+func (b *TableDataBase) Data() *TableData {
+	return b.data
 }

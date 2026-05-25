@@ -1,8 +1,7 @@
-package output
+package delimited
 
 import (
 	"errors"
-	"io"
 	"strings"
 	"testing"
 )
@@ -143,27 +142,4 @@ func TestTSVWriterError(t *testing.T) {
 	if err == nil {
 		t.Error("Error() should return error after failed write")
 	}
-}
-
-func BenchmarkTSVWriter(b *testing.B) {
-	headers := make([]string, 10)
-	for i := range headers {
-		headers[i] = "Header"
-	}
-
-	rows := make([][]string, 100)
-	for i := range rows {
-		row := make([]string, 10)
-		for j := range row {
-			row[j] = "Cell"
-		}
-
-		rows[i] = row
-	}
-
-	b.ResetTimer()
-
-	benchmarkTableWriter(b, headers, rows, func(w io.Writer) TableWriter {
-		return NewTSVWriter(w)
-	})
 }

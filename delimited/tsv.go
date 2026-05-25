@@ -1,11 +1,31 @@
-package output
+package delimited
 
 import (
 	"errors"
 	"fmt"
 	"io"
 	"strings"
+
+	"github.com/larsartmann/go-output"
 )
+
+func init() {
+	output.RegisterTableDataMarshaler(output.FormatTSV, renderTSVTableData)
+}
+
+func renderTSVTableData(w io.Writer, data *output.TableData, _ output.RenderOptions) error {
+	b, err := MarshalTSVFromTableData(data)
+	if err != nil {
+		return fmt.Errorf("render tsv: %w", err)
+	}
+
+	_, err = w.Write(b)
+	if err != nil {
+		return fmt.Errorf("write tsv bytes: %w", err)
+	}
+
+	return nil
+}
 
 // TSVWriter writes TSV (Tab-Separated Values) output.
 type TSVWriter struct {
@@ -90,7 +110,7 @@ func writeTSVData(w *TSVWriter, data any) error {
 }
 
 // MarshalTSVFromTableData marshals TableData as TSV with a header row.
-func MarshalTSVFromTableData(data *TableData) ([]byte, error) {
+func MarshalTSVFromTableData(data *output.TableData) ([]byte, error) {
 	if data == nil {
 		return nil, nil
 	}

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"sync"
 )
 
 // RenderOptions configures optional behavior for RenderTableData.
@@ -18,8 +19,36 @@ type RenderOptions struct {
 	Writer io.Writer
 }
 
+// TableDataMarshaler renders TableData in a specific format to a writer.
+type TableDataMarshaler func(w io.Writer, data *TableData, opts RenderOptions) error
+
+var (
+	//nolint:gochecknoglobals // Registry for TableData marshalers, populated by sub-module init().
+	tableDataMarshalers   = map[Format]TableDataMarshaler{}
+	//nolint:gochecknoglobals // Mutex protects concurrent access to tableDataMarshalers.
+	tableDataMarshalersMu sync.RWMutex
+)
+
+// RegisterTableDataMarshaler registers a marshaler for a format.
+// Sub-modules call this from their init() to enable RenderTableData dispatch.
+func RegisterTableDataMarshaler(format Format, marshaler TableDataMarshaler) {
+	tableDataMarshalersMu.Lock()
+	defer tableDataMarshalersMu.Unlock()
+
+	tableDataMarshalers[format] = marshaler
+}
+
+func getTableDataMarshaler(format Format) (TableDataMarshaler, bool) {
+	tableDataMarshalersMu.RLock()
+	defer tableDataMarshalersMu.RUnlock()
+
+	m, ok := tableDataMarshalers[format]
+
+	return m, ok
+}
+
 // RenderTableData renders TableData in the given format and writes to w (or os.Stdout).
-// It supports: csv, tsv, markdown, xml, yaml, html, tree.
+// It supports: csv, tsv, markdown, xml, yaml, html, tree (when respective sub-modules are imported).
 //
 // D2, Mermaid, and DOT are NOT handled — those require importing the d2 or graph
 // sub-modules directly. Table and JSON formats also require per-command customization
@@ -43,23 +72,19 @@ func RenderTableData(data *TableData, format Format, opts ...RenderOptions) erro
 		w = os.Stdout
 	}
 
+	// Registry-based dispatch for sub-module formats.
+	if m, ok := getTableDataMarshaler(format); ok {
+		return m(w, data, o)
+	}
+
+	// Direct dispatch for formats that live in root.
 	switch format {
-	case FormatCSV:
-		return renderCSVTableData(w, data)
-	case FormatTSV:
-		return renderTSVTableData(w, data)
 	case FormatMarkdown:
 		return renderMarkdownTableData(w, data, o)
-	case FormatXML:
-		return renderXMLTableData(w, data)
-	case FormatYAML:
-		return renderYAMLTableData(w, data)
-	case FormatD2, FormatMermaid, FormatDOT:
-		return &UnsupportedFormatError{Format: format}
-	case FormatHTML:
-		return renderHTMLTableData(w, data, o)
 	case FormatTree:
 		return renderTreeTableData(w, data)
+	case FormatD2, FormatMermaid, FormatDOT:
+		return &UnsupportedFormatError{Format: format}
 	default:
 		return &UnsupportedFormatError{Format: format}
 	}
@@ -75,34 +100,6 @@ func (e *UnsupportedFormatError) Error() string {
 }
 
 func (e *UnsupportedFormatError) Unwrap() error {
-	return nil
-}
-
-func renderCSVTableData(w io.Writer, data *TableData) error {
-	b, err := MarshalCSVFromTableData(data)
-	if err != nil {
-		return fmt.Errorf("render csv: %w", err)
-	}
-
-	_, err = w.Write(b)
-	if err != nil {
-		return fmt.Errorf("write csv bytes: %w", err)
-	}
-
-	return nil
-}
-
-func renderTSVTableData(w io.Writer, data *TableData) error {
-	b, err := MarshalTSVFromTableData(data)
-	if err != nil {
-		return fmt.Errorf("render tsv: %w", err)
-	}
-
-	_, err = w.Write(b)
-	if err != nil {
-		return fmt.Errorf("write tsv bytes: %w", err)
-	}
-
 	return nil
 }
 
@@ -129,59 +126,6 @@ func renderMarkdownTableData(w io.Writer, data *TableData, opts RenderOptions) e
 	_, err = fmt.Fprintln(w, out)
 	if err != nil {
 		return fmt.Errorf("write markdown output: %w", err)
-	}
-
-	return nil
-}
-
-func renderXMLTableData(w io.Writer, data *TableData) error {
-	b, err := MarshalXMLFromTableData(data)
-	if err != nil {
-		return fmt.Errorf("render xml: %w", err)
-	}
-
-	_, err = fmt.Fprintln(w, string(b))
-	if err != nil {
-		return fmt.Errorf("write xml output: %w", err)
-	}
-
-	return nil
-}
-
-func renderYAMLTableData(w io.Writer, data *TableData) error {
-	renderer := NewYAMLTableRenderer()
-	renderer.SetData(data)
-
-	out, err := renderer.Render()
-	if err != nil {
-		return fmt.Errorf("render yaml: %w", err)
-	}
-
-	_, err = fmt.Fprint(w, out)
-	if err != nil {
-		return fmt.Errorf("write yaml output: %w", err)
-	}
-
-	return nil
-}
-
-func renderHTMLTableData(w io.Writer, data *TableData, opts RenderOptions) error {
-	renderer := NewHTMLRenderer()
-	renderer.SetData(data)
-
-	title := opts.Title
-	if title == "" {
-		title = fmt.Sprintf("Data - %d rows", data.RowCount())
-	}
-
-	out, err := renderer.RenderFullHTML(title)
-	if err != nil {
-		return fmt.Errorf("render html: %w", err)
-	}
-
-	_, err = fmt.Fprintln(w, out)
-	if err != nil {
-		return fmt.Errorf("write html output: %w", err)
 	}
 
 	return nil

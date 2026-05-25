@@ -138,12 +138,12 @@ func TestInvalidFormatErrorWithAllowed(t *testing.T) {
 func TestMustRender(t *testing.T) {
 	t.Parallel()
 
-	renderer := NewJSONTableRenderer()
-	renderer.SetHeaders([]string{"Name"})
-	renderer.AddRow([]string{"test"})
+	md := NewMarkdownTable()
+	md.SetHeaders([]string{"Name"})
+	md.AddRow([]string{"test"})
 
-	got := MustRender(renderer)
-	gentest.AssertOutputContains(t, got, `"Name"`)
+	got := MustRender(md)
+	gentest.AssertOutputContains(t, got, "Name")
 }
 
 func TestMustRenderPanics(t *testing.T) {

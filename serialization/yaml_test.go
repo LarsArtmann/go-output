@@ -1,9 +1,7 @@
-package output
+package serialization
 
 import (
 	"testing"
-
-	"github.com/larsartmann/go-output/internal/gentest"
 )
 
 func TestMarshalYAML(t *testing.T) {
@@ -14,21 +12,9 @@ func TestMarshalYAML(t *testing.T) {
 		input   any
 		wantErr bool
 	}{
-		{
-			name:    "simple map",
-			input:   map[string]int{"a": 1, "b": 2},
-			wantErr: false,
-		},
-		{
-			name:    "slice",
-			input:   []int{1, 2, 3},
-			wantErr: false,
-		},
-		{
-			name:    "string",
-			input:   "hello",
-			wantErr: false,
-		},
+		{name: "simple map", input: map[string]int{"a": 1, "b": 2}, wantErr: false},
+		{name: "slice", input: []int{1, 2, 3}, wantErr: false},
+		{name: "string", input: "hello", wantErr: false},
 	}
 
 	for _, tt := range tests {
@@ -57,21 +43,9 @@ func TestUnmarshalYAML(t *testing.T) {
 		data    string
 		wantErr bool
 	}{
-		{
-			name:    "map",
-			data:    "a: 1\nb: 2",
-			wantErr: false,
-		},
-		{
-			name:    "slice",
-			data:    "- 1\n- 2\n- 3",
-			wantErr: false,
-		},
-		{
-			name:    "invalid",
-			data:    "invalid: yaml: [",
-			wantErr: true,
-		},
+		{name: "map", data: "a: 1\nb: 2", wantErr: false},
+		{name: "slice", data: "- 1\n- 2\n- 3", wantErr: false},
+		{name: "invalid", data: "invalid: yaml: [", wantErr: true},
 	}
 
 	for _, tt := range tests {
@@ -95,9 +69,8 @@ func TestYAMLTableRenderer(t *testing.T) {
 			t.Fatalf("Render() error = %v", err)
 		}
 
-		gentest.AssertOutputContains(t, got, "Name: Alice")
-
-		gentest.AssertOutputContains(t, got, `Age: "25"`)
+		assertOutputContains(t, got, "Name: Alice")
+		assertOutputContains(t, got, `Age: "25"`)
 	})
 
 	t.Run("nil data returns empty array", func(t *testing.T) {
@@ -130,25 +103,6 @@ func TestYAMLTableRenderer(t *testing.T) {
 			t.Errorf("Render() = %q, want []\\n", got)
 		}
 	})
-
-	t.Run("must render helper", func(t *testing.T) {
-		t.Parallel()
-
-		r := NewYAMLTableRenderer()
-		r.SetHeaders([]string{"X"})
-		r.AddRow([]string{"1"})
-
-		got := MustRender(r)
-		gentest.AssertOutputContains(t, got, `X: "1"`)
-	})
-}
-
-func BenchmarkMarshalYAML(b *testing.B) {
-	data := NewBenchmarkData()
-
-	for b.Loop() {
-		_, _ = MarshalYAML(data)
-	}
 }
 
 func TestMarshalYAMLError(t *testing.T) {
@@ -161,6 +115,28 @@ func TestMarshalYAMLError(t *testing.T) {
 	}()
 
 	_, _ = MarshalYAML(make(chan int))
+}
+
+type benchmarkYAMLStruct struct {
+	ID        int      `yaml:"id"`
+	Name      string   `yaml:"name"`
+	Items     []string `yaml:"items"`
+	Count     int      `yaml:"count"`
+	Active    bool     `yaml:"active"`
+	CreatedAt string   `yaml:"created_at"`
+	UpdatedAt string   `yaml:"updated_at"`
+}
+
+func BenchmarkMarshalYAML(b *testing.B) {
+	data := benchmarkYAMLStruct{
+		ID: 12345, Name: "Test Project Alpha",
+		Items: []string{"item1", "item2", "item3", "item4", "item5"},
+		Count: 100, Active: true,
+	}
+
+	for b.Loop() {
+		_, _ = MarshalYAML(data)
+	}
 }
 
 func BenchmarkUnmarshalYAML(b *testing.B) {
@@ -178,7 +154,7 @@ created_at: "2026-03-22T10:00:00Z"
 updated_at: "2026-03-22T12:00:00Z"`)
 
 	for b.Loop() {
-		var result BenchmarkYAMLStruct
+		var result benchmarkYAMLStruct
 
 		_ = UnmarshalYAML(yamlData, &result)
 	}

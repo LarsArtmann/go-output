@@ -1,4 +1,4 @@
-package output
+package markup
 
 import (
 	"encoding/xml"
@@ -6,12 +6,17 @@ import (
 	"io"
 	"strings"
 
+	"github.com/larsartmann/go-output"
 	"github.com/larsartmann/go-output/escape"
 )
 
+func init() {
+	output.RegisterTableDataMarshaler(output.FormatXML, renderXMLTableData)
+}
+
 // MarshalXML encodes v to XML.
 func MarshalXML(v any) ([]byte, error) {
-	return marshal("xml", xml.Marshal, v)
+	return output.MarshalFormat("xml", xml.Marshal, v)
 }
 
 // MarshalXMLIndent encodes v to indented XML.
@@ -105,7 +110,7 @@ func (x *XMLWriter) WriteFooter() error {
 }
 
 // MarshalXMLFromTableData marshals TableData to XML.
-func MarshalXMLFromTableData(data *TableData) ([]byte, error) {
+func MarshalXMLFromTableData(data *output.TableData) ([]byte, error) {
 	if data == nil {
 		return []byte("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<table/>\n"), nil
 	}
@@ -136,4 +141,18 @@ func MarshalXMLFromTableData(data *TableData) ([]byte, error) {
 	b.WriteString("</table>\n")
 
 	return []byte(b.String()), nil
+}
+
+func renderXMLTableData(w io.Writer, data *output.TableData, _ output.RenderOptions) error {
+	b, err := MarshalXMLFromTableData(data)
+	if err != nil {
+		return fmt.Errorf("render xml: %w", err)
+	}
+
+	_, err = fmt.Fprintln(w, string(b))
+	if err != nil {
+		return fmt.Errorf("write xml output: %w", err)
+	}
+
+	return nil
 }

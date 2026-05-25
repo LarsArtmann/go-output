@@ -1,11 +1,10 @@
-package output
+package markup
 
 import (
 	"fmt"
 	"io"
 )
 
-// writeRowTag writes a row opening or closing tag.
 func writeRowTag(w io.Writer, indent, tag string, isClose bool) error {
 	var content string
 	if isClose {

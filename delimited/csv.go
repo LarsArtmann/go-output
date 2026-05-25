@@ -1,10 +1,30 @@
-package output
+package delimited
 
 import (
 	"fmt"
 	"io"
 	"strings"
+
+	"github.com/larsartmann/go-output"
 )
+
+func init() {
+	output.RegisterTableDataMarshaler(output.FormatCSV, renderCSVTableData)
+}
+
+func renderCSVTableData(w io.Writer, data *output.TableData, _ output.RenderOptions) error {
+	b, err := MarshalCSVFromTableData(data)
+	if err != nil {
+		return fmt.Errorf("render csv: %w", err)
+	}
+
+	_, err = w.Write(b)
+	if err != nil {
+		return fmt.Errorf("write csv bytes: %w", err)
+	}
+
+	return nil
+}
 
 // CSVWriter writes CSV output.
 type CSVWriter struct {
@@ -44,7 +64,7 @@ func (c *CSVWriter) Error() error {
 }
 
 // MarshalCSVFromTableData marshals TableData as CSV with a header row.
-func MarshalCSVFromTableData(data *TableData) ([]byte, error) {
+func MarshalCSVFromTableData(data *output.TableData) ([]byte, error) {
 	if data == nil {
 		return nil, nil
 	}

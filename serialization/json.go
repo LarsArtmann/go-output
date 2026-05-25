@@ -1,25 +1,26 @@
-package output
+package serialization
 
 import (
 	"encoding/json"
 	"fmt"
 	"io"
+
+	"github.com/larsartmann/go-output"
 )
 
-// Compile-time interface checks.
 var (
-	_ Renderer      = (*JSONTableRenderer)(nil)
-	_ TableRenderer = (*JSONTableRenderer)(nil)
+	_ output.Renderer      = (*JSONTableRenderer)(nil)
+	_ output.TableRenderer = (*JSONTableRenderer)(nil)
 )
 
 // MarshalJSON encodes v to JSON.
 func MarshalJSON(v any) ([]byte, error) {
-	return marshal("json", json.Marshal, v)
+	return output.MarshalFormat("json", json.Marshal, v)
 }
 
 // UnmarshalJSON decodes JSON data into v.
 func UnmarshalJSON(data []byte, v any) error {
-	return unmarshal("json", json.Unmarshal, data, v)
+	return output.UnmarshalFormat("json", json.Unmarshal, data, v)
 }
 
 // JSONWriter writes JSON output to an io.Writer.
@@ -46,9 +47,8 @@ func (j *JSONWriter) Encode(v any) error {
 }
 
 // JSONTableRenderer renders TableData as a JSON array of objects.
-// Each row becomes a JSON object with headers as keys.
 type JSONTableRenderer struct {
-	tableDataBase
+	output.TableDataBase
 }
 
 // NewJSONTableRenderer creates a new JSONTableRenderer.
@@ -58,16 +58,17 @@ func NewJSONTableRenderer() *JSONTableRenderer {
 
 // Render returns the table data as a JSON string.
 func (r *JSONTableRenderer) Render() (string, error) {
-	if r.data == nil || len(r.data.Headers) == 0 {
+	data := r.Data()
+	if data == nil || len(data.Headers) == 0 {
 		return "[]", nil
 	}
 
-	rows := r.data.ToMapSlice()
+	rows := data.ToMapSlice()
 
-	data, err := json.MarshalIndent(rows, "", "  ")
+	b, err := json.MarshalIndent(rows, "", "  ")
 	if err != nil {
 		return "", fmt.Errorf("marshal json table (%d rows): %w", len(rows), err)
 	}
 
-	return string(data), nil
+	return string(b), nil
 }

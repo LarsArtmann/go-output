@@ -1,22 +1,9 @@
-package output
+package delimited
 
 import (
 	"bytes"
-	"errors"
-	"io"
 	"testing"
 )
-
-type errorWriter struct{}
-
-// errWrite is a static error for write failures.
-var errWrite = errors.New("write error")
-
-func (e *errorWriter) Write(_ []byte) (int, error) {
-	return 0, errWrite
-}
-
-var _ io.Writer = (*errorWriter)(nil)
 
 func TestCSVWriter(t *testing.T) {
 	t.Parallel()
@@ -122,8 +109,8 @@ func TestCSVWriterErrorPaths(t *testing.T) {
 		t.Parallel()
 
 		w := NewCSVWriter(&errorWriter{})
-		_ = w.WriteRow([]string{"test"}) // Buffer the write
-		w.Flush()                        // Error occurs on flush
+		_ = w.WriteRow([]string{"test"})
+		w.Flush()
 
 		err := w.Error()
 		if err == nil {

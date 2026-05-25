@@ -1,7 +1,6 @@
 package output
 
 import (
-	"strings"
 	"testing"
 )
 
@@ -238,25 +237,6 @@ func TestUnsupportedFormatError_Error(t *testing.T) {
 
 	if err.Error() == "" {
 		t.Error("Error() should not be empty")
-	}
-}
-
-func TestTSVWriter_WriteRows(t *testing.T) {
-	t.Parallel()
-
-	var buf strings.Builder
-
-	w := NewTSVWriter(&buf)
-
-	err := w.WriteRows([][]string{{"1", "2"}, {"3", "4"}})
-	if err != nil {
-		t.Fatalf("WriteRows error: %v", err)
-	}
-
-	w.Flush()
-
-	if w.Error() != nil {
-		t.Fatalf("Error: %v", w.Error())
 	}
 }
 

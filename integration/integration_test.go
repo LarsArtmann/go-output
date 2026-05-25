@@ -8,7 +8,10 @@ import (
 
 	"github.com/larsartmann/go-output"
 	"github.com/larsartmann/go-output/d2"
+	"github.com/larsartmann/go-output/delimited"
 	"github.com/larsartmann/go-output/graph"
+	"github.com/larsartmann/go-output/markup"
+	"github.com/larsartmann/go-output/serialization"
 	"github.com/larsartmann/go-output/table"
 	"github.com/larsartmann/go-output/testhelpers"
 )
@@ -73,7 +76,7 @@ func TestAllFormatsRender(t *testing.T) {
 }
 
 func TestStreamingRenderer(t *testing.T) {
-	r := output.NewStreamingHTMLRenderer()
+	r := markup.NewStreamingHTMLRenderer()
 	r.SetHeaders([]string{"Name"})
 	r.AddRow([]string{"Alpha"})
 
@@ -176,7 +179,7 @@ func renderTableFormat(projects []TestProject) string {
 }
 
 func renderJSONFormat(projects []TestProject) string {
-	data, _ := output.MarshalJSONIndent(projects, "", "  ")
+	data, _ := serialization.MarshalJSON(projects)
 
 	return string(data)
 }
@@ -190,7 +193,7 @@ func renderMarkdownFormat(projects []TestProject) string {
 func renderCSVFormat(projects []TestProject) string {
 	var buf bytes.Buffer
 
-	w := output.NewCSVWriter(&buf)
+	w := delimited.NewCSVWriter(&buf)
 
 	_ = w.WriteHeader([]string{"Name", "Health", "Complexity"})
 	for _, row := range formatProjectsToRows(projects) {
@@ -205,7 +208,7 @@ func renderCSVFormat(projects []TestProject) string {
 func renderTSVFormat(projects []TestProject) string {
 	var buf bytes.Buffer
 
-	w := output.NewTSVWriter(&buf)
+	w := delimited.NewTSVWriter(&buf)
 
 	_ = w.WriteHeader([]string{"Name", "Health", "Complexity"})
 	for _, row := range formatProjectsToRows(projects) {
@@ -218,7 +221,7 @@ func renderTSVFormat(projects []TestProject) string {
 }
 
 func renderXMLFormat(projects []TestProject) string {
-	data, _ := output.MarshalXMLFromTableData(&output.TableData{
+	data, _ := markup.MarshalXMLFromTableData(&output.TableData{
 		Headers: []string{"Name", "Health", "Complexity"},
 		Rows:    formatProjectsToRows(projects),
 	})
@@ -236,13 +239,13 @@ func formatProjectsToRows(projects []TestProject) [][]string {
 }
 
 func renderYAMLFormat(projects []TestProject) string {
-	data, _ := output.MarshalYAML(projects)
+	data, _ := serialization.MarshalYAML(projects)
 
 	return string(data)
 }
 
 func renderHTMLFormat(projects []TestProject) string {
-	html := output.NewHTMLRenderer()
+	html := markup.NewHTMLRenderer()
 	html.SetHeaders([]string{"Name", "Health", "Complexity"})
 
 	for _, row := range formatProjectsToRows(projects) {
