@@ -16,6 +16,7 @@ var (
 	_ output.TableRenderer = (*HTMLRenderer)(nil)
 )
 
+//nolint:gochecknoinits // Registers HTML TableData marshaler for registry-based dispatch.
 func init() {
 	output.RegisterTableDataMarshaler(output.FormatHTML, renderHTMLTableData)
 }

@@ -10,6 +10,7 @@ import (
 	"github.com/larsartmann/go-output/escape"
 )
 
+//nolint:gochecknoinits // Registers XML TableData marshaler for registry-based dispatch.
 func init() {
 	output.RegisterTableDataMarshaler(output.FormatXML, renderXMLTableData)
 }

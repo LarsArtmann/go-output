@@ -8,6 +8,7 @@ import (
 	"github.com/larsartmann/go-output"
 )
 
+//nolint:gochecknoinits // Registers CSV TableData marshaler for registry-based dispatch.
 func init() {
 	output.RegisterTableDataMarshaler(output.FormatCSV, renderCSVTableData)
 }

@@ -213,31 +213,5 @@ func TestMarshalTSVFromTableData(t *testing.T) {
 func TestTSVRenderTableData(t *testing.T) {
 	t.Parallel()
 
-	t.Run("renders via registry dispatch", func(t *testing.T) {
-		t.Parallel()
-
-		data := output.NewTableData([]string{"Name", "Value"})
-		data.AddRow([]string{"Alpha", "100"})
-
-		var buf strings.Builder
-		opts := output.RenderOptions{Writer: &buf}
-
-		err := output.RenderTableData(data, output.FormatTSV, opts)
-		if err != nil {
-			t.Fatalf("RenderTableData(tsv) error = %v", err)
-		}
-
-		result := buf.String()
-		assertContains(t, result, "Name", "TSV render should contain header")
-		assertContains(t, result, "Alpha", "TSV render should contain data")
-	})
-
-	t.Run("nil data returns nil", func(t *testing.T) {
-		t.Parallel()
-
-		err := output.RenderTableData(nil, output.FormatTSV)
-		if err != nil {
-			t.Fatalf("RenderTableData(nil) error = %v", err)
-		}
-	})
+	testRenderTableData(t, output.FormatTSV, "TSV")
 }

@@ -9,6 +9,7 @@ import (
 	"github.com/larsartmann/go-output"
 )
 
+//nolint:gochecknoinits // Registers TSV TableData marshaler for registry-based dispatch.
 func init() {
 	output.RegisterTableDataMarshaler(output.FormatTSV, renderTSVTableData)
 }

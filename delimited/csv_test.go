@@ -208,31 +208,5 @@ func TestMarshalCSVFromTableData(t *testing.T) {
 func TestCSVRenderTableData(t *testing.T) {
 	t.Parallel()
 
-	t.Run("renders via registry dispatch", func(t *testing.T) {
-		t.Parallel()
-
-		data := output.NewTableData([]string{"Name", "Value"})
-		data.AddRow([]string{"Alpha", "100"})
-
-		var buf bytes.Buffer
-		opts := output.RenderOptions{Writer: &buf}
-
-		err := output.RenderTableData(data, output.FormatCSV, opts)
-		if err != nil {
-			t.Fatalf("RenderTableData(csv) error = %v", err)
-		}
-
-		result := buf.String()
-		assertContains(t, result, "Name", "CSV render should contain header")
-		assertContains(t, result, "Alpha", "CSV render should contain data")
-	})
-
-	t.Run("nil data returns nil", func(t *testing.T) {
-		t.Parallel()
-
-		err := output.RenderTableData(nil, output.FormatCSV)
-		if err != nil {
-			t.Fatalf("RenderTableData(nil) error = %v", err)
-		}
-	})
+	testRenderTableData(t, output.FormatCSV, "CSV")
 }

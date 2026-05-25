@@ -23,6 +23,7 @@ func BenchmarkMarshalXMLFromTableData(b *testing.B) {
 
 func BenchmarkXMLWriter(b *testing.B) {
 	headers := []string{"Name", "Age", "Email"}
+
 	rows := make([][]string, 100)
 	for i := range rows {
 		rows[i] = []string{"Alice", "30", "alice@example.com"}
@@ -32,7 +33,9 @@ func BenchmarkXMLWriter(b *testing.B) {
 
 	for b.Loop() {
 		var buf bytes.Buffer
+
 		w := NewXMLWriter(&buf)
+
 		_ = w.WriteHeader(headers)
 		_ = w.WriteRows(rows)
 		_ = w.WriteFooter()
@@ -49,10 +52,13 @@ func BenchmarkHTMLRenderer(b *testing.B) {
 
 	for b.Loop() {
 		renderer := NewHTMLRenderer()
+
 		renderer.SetHeaders(r.GetHeaders())
+
 		for _, row := range r.GetRows() {
 			renderer.AddRow(row)
 		}
+
 		_, _ = renderer.Render()
 	}
 }
@@ -67,6 +73,7 @@ func BenchmarkStreamingHTMLRenderer(b *testing.B) {
 
 	for b.Loop() {
 		renderer := NewStreamingHTMLRenderer()
+
 		renderer.SetData(data)
 		_, _ = renderer.Render()
 	}
@@ -82,7 +89,9 @@ func BenchmarkStreamingHTMLRenderer_Stream(b *testing.B) {
 
 	for b.Loop() {
 		var buf strings.Builder
+
 		renderer := NewStreamingHTMLRenderer()
+
 		renderer.SetData(data)
 		_ = renderer.Stream(&buf)
 	}

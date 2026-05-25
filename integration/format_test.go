@@ -109,6 +109,7 @@ func TestFormatCategories(t *testing.T) {
 	}
 }
 
+//nolint:staticcheck // Intentional test of deprecated registry API.
 func TestFormatRegistry(t *testing.T) {
 	t.Parallel()
 

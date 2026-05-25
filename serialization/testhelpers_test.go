@@ -25,6 +25,7 @@ var _ io.Writer = (*errorWriter)(nil)
 
 func assertOutputContains(t *testing.T, output, substr string) {
 	t.Helper()
+
 	if !strings.Contains(output, substr) {
 		t.Errorf("output should contain %q, got %q", substr, output)
 	}
@@ -32,6 +33,7 @@ func assertOutputContains(t *testing.T, output, substr string) {
 
 func assertValidJSON(t *testing.T, output string) {
 	t.Helper()
+
 	if !json.Valid([]byte(output)) {
 		t.Errorf("output should be valid JSON, got %q", output)
 	}
@@ -39,6 +41,7 @@ func assertValidJSON(t *testing.T, output string) {
 
 func assertValidYAML(t *testing.T, output string) {
 	t.Helper()
+
 	if output == "" {
 		t.Error("output should not be empty for valid YAML check")
 	}
@@ -46,6 +49,7 @@ func assertValidYAML(t *testing.T, output string) {
 
 func assertMarshalError(t *testing.T, name string, err error, wantErr bool) {
 	t.Helper()
+
 	if (err != nil) != wantErr {
 		t.Errorf("%s() error = %v, wantErr %v", name, err, wantErr)
 	}

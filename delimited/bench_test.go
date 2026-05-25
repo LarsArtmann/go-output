@@ -9,6 +9,7 @@ import (
 
 func BenchmarkCSVWriter(b *testing.B) {
 	headers := []string{"Name", "Age", "Email", "City"}
+
 	rows := make([][]string, 100)
 	for i := range rows {
 		rows[i] = []string{"Alice", "30", "alice@example.com", "Berlin"}
@@ -18,11 +19,15 @@ func BenchmarkCSVWriter(b *testing.B) {
 
 	for b.Loop() {
 		var buf bytes.Buffer
+
 		w := NewCSVWriter(&buf)
+
 		_ = w.WriteHeader(headers)
+
 		for _, row := range rows {
 			_ = w.WriteRow(row)
 		}
+
 		w.Flush()
 	}
 }
@@ -42,6 +47,7 @@ func BenchmarkMarshalCSVFromTableData(b *testing.B) {
 
 func BenchmarkTSVWriter(b *testing.B) {
 	headers := []string{"Name", "Age", "Email", "City"}
+
 	rows := make([][]string, 100)
 	for i := range rows {
 		rows[i] = []string{"Alice", "30", "alice@example.com", "Berlin"}
@@ -51,11 +57,15 @@ func BenchmarkTSVWriter(b *testing.B) {
 
 	for b.Loop() {
 		var buf bytes.Buffer
+
 		w := NewTSVWriter(&buf)
+
 		_ = w.WriteHeader(headers)
+
 		for _, row := range rows {
 			_ = w.WriteRow(row)
 		}
+
 		w.Flush()
 	}
 }

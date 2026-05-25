@@ -21,20 +21,20 @@ Several sub-packages (enum, escape, testhelpers) have zero dependencies and are 
 
 Split into 12 independent Go modules using `go.work` for local development:
 
-| Module             | Deps                                                | Isolation benefit                     |
-| ------------------ | --------------------------------------------------- | ------------------------------------- |
-| Root (`go-output`) | enum, x/term, branded-id, testhelpers            | Core formatters, no lipgloss/d2/graph/yaml |
-| `enum/`            | testhelpers (tests only)                            | Reusable enum utilities               |
-| `escape/`          | None                                                | Reusable escaping (D2, DOT, Mermaid)  |
-| `testhelpers/`     | None                                                | Shared test assertions                |
-| `d2/`              | root, escape, testhelpers                           | D2 diagram renderer (rich domain)     |
-| `graph/`           | root, escape, testhelpers                           | DOT + Mermaid renderers               |
-| `table/`           | root, lipgloss                                      | **Lipgloss isolated** — biggest win   |
-| `delimited/`       | root                                                | CSV + TSV writers                     |
-| `serialization/`   | root, go-faster/yaml                                | JSON + YAML isolated                  |
-| `markup/`          | root, escape                                        | XML + HTML + Streaming                |
-| `integration/`     | root, delimited, serialization, markup, table, d2, graph | Cross-module tests                 |
-| `examples/`        | root, delimited, serialization, markup, table, d2, graph | Usage examples                     |
+| Module             | Deps                                                     | Isolation benefit                          |
+| ------------------ | -------------------------------------------------------- | ------------------------------------------ |
+| Root (`go-output`) | enum, x/term, branded-id, testhelpers                    | Core formatters, no lipgloss/d2/graph/yaml |
+| `enum/`            | testhelpers (tests only)                                 | Reusable enum utilities                    |
+| `escape/`          | None                                                     | Reusable escaping (D2, DOT, Mermaid)       |
+| `testhelpers/`     | None                                                     | Shared test assertions                     |
+| `d2/`              | root, escape, testhelpers                                | D2 diagram renderer (rich domain)          |
+| `graph/`           | root, escape, testhelpers                                | DOT + Mermaid renderers                    |
+| `table/`           | root, lipgloss                                           | **Lipgloss isolated** — biggest win        |
+| `delimited/`       | root                                                     | CSV + TSV writers                          |
+| `serialization/`   | root, go-faster/yaml                                     | JSON + YAML isolated                       |
+| `markup/`          | root, escape                                             | XML + HTML + Streaming                     |
+| `integration/`     | root, delimited, serialization, markup, table, d2, graph | Cross-module tests                         |
+| `examples/`        | root, delimited, serialization, markup, table, d2, graph | Usage examples                             |
 
 Root stays as `package output` — no core/ directory, no package rename.
 

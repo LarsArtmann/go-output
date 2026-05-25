@@ -5,6 +5,7 @@ import (
 	"io"
 
 	"github.com/go-faster/yaml"
+
 	"github.com/larsartmann/go-output"
 )
 
@@ -13,6 +14,7 @@ var (
 	_ output.TableRenderer = (*YAMLTableRenderer)(nil)
 )
 
+//nolint:gochecknoinits // Registers YAML TableData marshaler for registry-based dispatch.
 func init() {
 	output.RegisterTableDataMarshaler(output.FormatYAML, renderYAMLTableData)
 }
@@ -37,6 +39,7 @@ func NewYAMLTableRenderer() *YAMLTableRenderer {
 	return &YAMLTableRenderer{}
 }
 
+//nolint:gochecknoglobals // Constant-like value for empty YAML output.
 var emptyYAML = "[]\n"
 
 // Render returns the table data as a YAML string.
