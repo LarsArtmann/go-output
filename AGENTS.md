@@ -263,7 +263,7 @@ import "github.com/larsartmann/go-output/plantuml"            // PlantUML diagra
 - `ColorMode` wired into table (via `WithColorMode` functional option), tree (via `SetColorMode()`), markdown (via `SetColorMode()`), and `RenderTableData()` (via `RenderOptions.ColorMode`)
 - Tree rendering uses depth-based ANSI color cycling when color is enabled
 - Markdown rendering uses bold headers and dim separators when color is enabled
-- Multi-module workspace with 12 independent modules (see ADR 001)
+- Multi-module workspace with 13 independent modules (see ADR 001)
 - Shape capability matrix (ADR 002) replaces FormatCategory — deprecated methods redirect to `Supports(Shape)`
 - `format.go` split into focused files: `format.go` (Format enum), `shape.go` (Shape + capability matrix), `renderer.go` (Renderer/TableRenderer interfaces) — `format_deprecated.go` deleted
 - `render_tabledata.go` uses registry-based dispatch via `TableDataMarshaler` — sub-modules register in `init()`. Returns `UnsupportedFormatError` for D2/DOT/Mermaid (these live in separate modules)
@@ -271,6 +271,6 @@ import "github.com/larsartmann/go-output/plantuml"            // PlantUML diagra
 - `marshal.go` exports `MarshalFormat()`, `UnmarshalFormat()`, `MarshalJSONIndent()` — used by both serialization/ and markup/ sub-modules
 - Root format files (CSV, TSV, JSON, YAML, XML, HTML, Streaming) extracted to delimited/, serialization/, markup/ modules respectively
 - `internal/gentest` and `internal/testutils` are root-only — sub-modules must inline helpers or create their own. Decision rationale: exposing test helpers publicly via `testhelpers/gentest` would freeze internal testing APIs; each module having its own test helpers allows independent evolution
-- Nix flake uses `flake-parts` + `treefmt-nix` + `git-hooks.nix` — no `gomod2nix` (library, 12 modules, no binary)
+- Nix flake uses `flake-parts` + `treefmt-nix` + `git-hooks.nix` — no `gomod2nix` (library, 13 modules, no binary)
 - Go checks (build/test/lint) NOT in flake — Nix sandbox blocks `go mod download`; CI handles these reliably
 - `.pre-commit-config.yaml` exists for non-Nix users; `git-hooks.nix` auto-installs hooks for Nix users via `nix develop`

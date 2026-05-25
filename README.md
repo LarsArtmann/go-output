@@ -5,7 +5,7 @@
 [![GoDoc](https://godoc.org/github.com/larsartmann/go-output?status.svg)](https://godoc.org/github.com/larsartmann/go-output)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A Go library that formats structured data into **12 output formats** — tables, trees, and diagrams — with type-safe enums, branded IDs, and zero-config color support. Write your data once, render it anywhere.
+A Go library that formats structured data into **16 output formats** — tables, trees, and diagrams — with type-safe enums, branded IDs, and zero-config color support. Write your data once, render it anywhere.
 
 ```go
 import "github.com/larsartmann/go-output"
@@ -50,7 +50,7 @@ fmt.Println(format.Shapes())                     // [table tree graph]
 
 ## Why go-output?
 
-- **12 formats, one API** — Same data, different renderers. No format-specific code paths.
+- **16 formats, one API** — Same data, different renderers. No format-specific code paths.
 - **Type-safe enums** — `Format`, `ColorMode` — all validated at parse time, never raw strings.
 - **Zero heavy deps in root module** — `go get go-output` pulls only `x/term`. YAML is isolated in `serialization/`, lipgloss in `table/`, D2 and graph renderers in their own modules.
 - **Branded IDs** — Phantom types prevent mixing D2NodeID, TreeNodeID, GraphNodeID at compile time.
@@ -407,7 +407,7 @@ require github.com/larsartmann/go-output/graph v0.0.0
 
 ## Examples
 
-See [`examples/basic/main.go`](examples/basic/main.go) for a complete example demonstrating all 12 formats with color support:
+See [`examples/basic/main.go`](examples/basic/main.go) for a complete example demonstrating all 16 formats with color support:
 
 ```bash
 go run ./examples/basic/main.go markdown          # auto color
