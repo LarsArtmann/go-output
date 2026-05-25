@@ -51,11 +51,11 @@ fmt.Println(format.Shapes())                     // [table tree graph]
 ## Why go-output?
 
 - **12 formats, one API** — Same data, different renderers. No format-specific code paths.
-- **Type-safe enums** — `Format`, `ColorMode`, `SortBy` — all validated at parse time, never raw strings.
+- **Type-safe enums** — `Format`, `ColorMode` — all validated at parse time, never raw strings.
 - **Zero heavy deps in root module** — `go get go-output` pulls only `x/term`. YAML is isolated in `serialization/`, lipgloss in `table/`, D2 and graph renderers in their own modules.
 - **Branded IDs** — Phantom types prevent mixing D2NodeID, TreeNodeID, GraphNodeID at compile time.
 - **Streaming** — `StreamingHTMLRenderer` for large datasets with minimal memory.
-- **Extensible registry** — Register custom renderers for runtime dispatch.
+- **Zero-config color** — `ColorMode` (auto/always/never) with terminal detection. Wired into table, tree, and markdown renderers.
 
 ## Supported Formats
 
@@ -300,18 +300,27 @@ node := d2.D2Node{
 }
 ```
 
-## Registry System
+## Color Modes
 
-Register custom renderers for runtime dispatch:
+All terminal renderers support `ColorMode` for controlling ANSI color output:
 
 ```go
-output.Register(output.Format("custom"), func() output.Renderer {
-    return &myCustomRenderer{}
-})
+// Table: functional options pattern (requires go-output/table)
+tbl := table.New(table.WithColorMode(output.ColorModeAlways))
 
-renderer, _ := output.Create(output.FormatTable)
-formats := output.RegisteredFormats()
+// Tree: setter method
+tree := output.NewASCIITreeRenderer()
+tree.SetColorMode(output.ColorModeAlways)
+
+// Markdown: setter method (chains)
+md := output.NewMarkdownTable().SetColorMode(output.ColorModeAlways)
+
+// RenderTableData dispatch: pass via RenderOptions
+output.RenderTableData(data, output.FormatTree,
+    output.RenderOptions{ColorMode: output.ColorModeAlways})
 ```
+
+Default `ColorModeAuto` detects terminal via `golang.org/x/term`, respects `NO_COLOR`, `CI`, `FORCE_COLOR`.
 
 ## Streaming Renderer
 
@@ -322,14 +331,6 @@ renderer := markup.NewStreamingHTMLRenderer()
 renderer.SetData(tableData)
 _ = renderer.Stream(os.Stdout)
 ```
-
-## Color Modes
-
-| Mode     | Description                                    |
-| -------- | ---------------------------------------------- |
-| `auto`   | Respect `NO_COLOR`, CI env vars, TTY detection |
-| `always` | Force ANSI colors                              |
-| `never`  | Disable colors                                 |
 
 ## Type-Safe Enums
 
@@ -402,10 +403,12 @@ require github.com/larsartmann/go-output/graph v0.0.0
 
 ## Examples
 
-See [`examples/basic/main.go`](examples/basic/main.go) for a complete example demonstrating all 12 formats:
+See [`examples/basic/main.go`](examples/basic/main.go) for a complete example demonstrating all 12 formats with color support:
 
 ```bash
-go run ./examples/basic/main.go markdown
+go run ./examples/basic/main.go markdown          # auto color
+go run ./examples/basic/main.go tree --color always  # force colors
+go run ./examples/basic/main.go table --color never   # no colors
 ```
 
 ## Development

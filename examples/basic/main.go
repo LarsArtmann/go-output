@@ -44,6 +44,9 @@ func getRenderers() map[output.Format]rendererFunc {
 	}
 }
 
+// colorMode is the global color mode for output, parsed from --color flag.
+var colorMode output.ColorMode
+
 func main() {
 	projects := []Project{
 		{Name: "Alpha", Health: 90, Complexity: 7},
@@ -51,19 +54,30 @@ func main() {
 		{Name: "Gamma", Health: 85, Complexity: 8},
 	}
 
-	// Parse command line format (default to table)
 	format := output.FormatTable
+	colorMode = output.ColorModeAuto
 
-	if len(os.Args) > 1 {
-		f, err := output.ParseFormat(os.Args[1])
-		if err != nil {
-			shared.HandleError(err)
+	for i := 1; i < len(os.Args); i++ {
+		switch {
+		case os.Args[i] == "--color" && i+1 < len(os.Args):
+			i++
+
+			cm, err := output.ParseColorMode(os.Args[i])
+			if err != nil {
+				shared.HandleError(err)
+			}
+
+			colorMode = cm
+		default:
+			f, err := output.ParseFormat(os.Args[i])
+			if err != nil {
+				shared.HandleError(err)
+			}
+
+			format = f
 		}
-
-		format = f
 	}
 
-	// Output in the specified format
 	renderOutput(format, projects)
 }
 
@@ -82,7 +96,7 @@ func renderOutput(format output.Format, projects []Project) {
 }
 
 func renderTable(projects []Project) {
-	tbl := table.New()
+	tbl := table.New(table.WithColorMode(colorMode))
 	tbl.SetHeaders("Name", "Health", "Complexity")
 
 	for _, p := range projects {
@@ -107,7 +121,7 @@ func renderJSON(projects []Project) {
 }
 
 func renderMarkdown(projects []Project) {
-	md := output.NewMarkdownTable()
+	md := output.NewMarkdownTable().SetColorMode(colorMode)
 	md.SetHeaders([]string{"Name", "Health", "Complexity"})
 
 	for _, p := range projects {
@@ -249,6 +263,7 @@ func renderHTML(projects []Project) {
 
 func renderTree(projects []Project) {
 	tree := output.NewASCIITreeRenderer()
+	tree.SetColorMode(colorMode)
 
 	root := output.NewTreeNode("root", "Projects")
 	for _, p := range projects {

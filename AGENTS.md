@@ -68,17 +68,14 @@ go-output/                    # Root module (package output) — core types, Mar
 ├── format.go                 # Format enum, ParseFormat, InvalidFormatError, AllFormats
 ├── shape.go                  # Shape enum, capability matrix, Supports/Shapes/FormatsForShape
 ├── renderer.go               # Renderer, MustRender, TableRenderer interfaces
-├── sort.go                   # SortBy enum
-├── color.go                  # ColorMode enum + terminal detection
+├── color.go                  # ColorMode enum + terminal detection (wired into table, tree, markdown)
 ├── ids.go                    # BrandedID phantom types
-├── registry.go               # Opt-in renderer registry
-├── slices.go                 # FilledStrings utility
 ├── tabledata.go              # TableData, RowEdge, TableDataBase (exported for sub-modules)
-├── tree.go                   # TreeNode, TreeOutputRenderer
+├── tree.go                   # TreeNode, TreeOutputRenderer, colored tree rendering
 ├── graph.go                  # GraphNode, GraphEdge, GraphRenderer, GraphRendererMixin, AddTreeNodes
-├── markdown.go               # Markdown table renderer (stays in root — zero external deps)
-├── marshal.go                # MarshalFormat, UnmarshalFormat, BrandedValue, MarshalJSONIndent
-├── render_tabledata.go       # Registry-based TableData dispatch
+├── markdown.go               # Markdown table renderer with ColorMode (bold headers, dim separators)
+├── marshal.go                # MarshalFormat, UnmarshalFormat, MarshalJSONIndent
+├── render_tabledata.go       # Registry-based TableData dispatch with ColorMode in RenderOptions
 ├── streaming.go              # StreamingRenderer interface + adapter
 ├── internal/gentest/         # Generic test helpers (root module only, not importable by sub-modules)
 │
@@ -182,8 +179,8 @@ go test -bench=. -benchmem ./...  # Benchmarks
 3. **Branded IDs**: Phantom types prevent mixing D2NodeID/TreeNodeID/etc via `go-branded-id`.
 4. **Interface-based design**: Renderer, GraphRenderer, TableRenderer, TreeOutputRenderer interfaces — all have `Render() (string, error)`. Use `MustRender(r)` for tests/examples.
 5. **Composition**: GraphRendererMixin in graph.go (root) provides shared state for DOT/Mermaid via accessor methods (Nodes/Edges/NodesPtr/EdgesPtr). TableDataBase in tabledata.go shared by delimited, markup, serialization via Data() getter.
-6. **Registry is opt-in**: Use constructors directly by default. Register/Create for runtime dispatch.
-7. **TableDataMarshaler registry**: Sub-modules (delimited, serialization, markup) register their TableData renderers via `init()` in root's dispatch table. Root has ZERO sub-module imports — dispatch is fully decoupled.
+6. **Registry dispatch**: `RenderTableData()` dispatches to registered `TableDataMarshaler` functions. Sub-modules register via `init()`. Root has ZERO sub-module imports.
+7. **ColorMode wired into renderers**: `ColorMode` (auto/always/never) controls ANSI color output. `table.New(WithColorMode(mode))` for lipgloss tables, `ASCIITreeRenderer.SetColorMode(mode)` for trees, `MarkdownTable.SetColorMode(mode)` for markdown, `RenderOptions.ColorMode` for `RenderTableData()` dispatch.
 
 ## Common Tasks
 
@@ -208,21 +205,26 @@ go test -bench=. -benchmem ./...  # Benchmarks
 3. Implement `output.GraphRenderer` interface
 4. Add tests with >90% coverage
 
-### Using the Registry for Runtime Dispatch
+### Using ColorMode
 
-The registry is opt-in — use constructors directly by default:
+All terminal renderers support `ColorMode` for controlling ANSI color output:
 
 ```go
-// Direct constructor (recommended for known formats)
-d := d2.NewD2Diagram()
+// Table: functional options pattern
+tbl := table.New(table.WithColorMode(output.ColorModeAlways))
 
-// Registry for runtime dispatch (e.g., CLI --format flag)
-// Note: output.Register/output.Create are deprecated; prefer direct constructors
-output.Register(output.FormatJSON, func() output.Renderer { return serialization.NewJSONTableRenderer() })
-renderer, err := output.Create(formatFromFlag)
+// Tree: setter method
+tree := output.NewASCIITreeRenderer()
+tree.SetColorMode(output.ColorModeAlways)
+
+// Markdown: setter method (chains)
+md := output.NewMarkdownTable().SetColorMode(output.ColorModeAlways)
+
+// RenderTableData dispatch: pass via RenderOptions
+output.RenderTableData(data, output.FormatTree, output.RenderOptions{ColorMode: output.ColorModeAlways})
 ```
 
-Sub-modules (d2, graph, table) are NOT pre-registered. Users call `Register()` explicitly to avoid importing unused dependencies.
+`ColorModeAuto` (default) detects terminal via `golang.org/x/term`, respects `NO_COLOR`, `CI`, `FORCE_COLOR`.
 
 ### Sub-Module Usage Pattern
 
@@ -249,12 +251,18 @@ import "github.com/larsartmann/go-output/table"              // Lipgloss tables 
 - Depguard config restricts imports
 - escape/ uses `html.EscapeString()` from stdlib for HTML, with `strings.ReplaceAll` for XML `&apos;`
 - sort/ is **removed** — was deprecated, only `ByField` helper remained (zero deps). Use `slices.SortStableFunc` + `cmp.Compare` (stdlib)
+- registry.go **removed** — deprecated renderer registry had zero external callers. Use direct constructors instead.
+- slices.go **removed** — `FilledStrings` was trivially replaced by `slices.Repeat` (stdlib)
+- `BrandedValue()` removed from `marshal.go` — zero callers after sub-module extraction
+- `ColorMode` wired into table (via `WithColorMode` functional option), tree (via `SetColorMode()`), markdown (via `SetColorMode()`), and `RenderTableData()` (via `RenderOptions.ColorMode`)
+- Tree rendering uses depth-based ANSI color cycling when color is enabled
+- Markdown rendering uses bold headers and dim separators when color is enabled
 - Multi-module workspace with 12 independent modules (see ADR 001)
 - Shape capability matrix (ADR 002) replaces FormatCategory — deprecated methods redirect to `Supports(Shape)`
 - `format.go` split into focused files: `format.go` (Format enum), `shape.go` (Shape + capability matrix), `renderer.go` (Renderer/TableRenderer interfaces) — `format_deprecated.go` deleted
 - `render_tabledata.go` uses registry-based dispatch via `TableDataMarshaler` — sub-modules register in `init()`. Returns `UnsupportedFormatError` for D2/DOT/Mermaid (these live in separate modules)
 - `tableDataBase` exported as `TableDataBase` with `Data()` getter — allows sub-modules to access unexported `data` field
-- `marshal.go` exports `MarshalFormat()`, `UnmarshalFormat()`, `BrandedValue()`, `MarshalJSONIndent()` — used by both serialization/ and markup/ sub-modules
+- `marshal.go` exports `MarshalFormat()`, `UnmarshalFormat()`, `MarshalJSONIndent()` — used by both serialization/ and markup/ sub-modules
 - Root format files (CSV, TSV, JSON, YAML, XML, HTML, Streaming) extracted to delimited/, serialization/, markup/ modules respectively
 - `internal/gentest` and `internal/testutils` are root-only — sub-modules must inline helpers or create their own. Decision rationale: exposing test helpers publicly via `testhelpers/gentest` would freeze internal testing APIs; each module having its own test helpers allows independent evolution
 - Nix flake uses `flake-parts` + `treefmt-nix` + `git-hooks.nix` — no `gomod2nix` (library, 12 modules, no binary)

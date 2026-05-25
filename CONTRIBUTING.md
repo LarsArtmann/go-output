@@ -22,12 +22,14 @@ go 1.26.2
 
 use (
   .
+  ./delimited
   ./d2
   ./enum
   ./escape
   ./graph
+  ./markup
+  ./serialization
   ./testhelpers
-  ./sort
   ./table
   ./integration
   ./examples
@@ -118,7 +120,7 @@ go test -race ./...
 
 # Run fuzz tests
 go test -fuzz=FuzzParseOutputFormat -fuzztime=1m .
-go test -fuzz=FuzzParseSortBy -fuzztime=1m .
+go test -fuzz=FuzzMarkdownTable -fuzztime=1m .
 ```
 
 ## Code Quality
