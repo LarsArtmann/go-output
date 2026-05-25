@@ -12,20 +12,20 @@
 
 All modules build, test, vet, and lint clean independently:
 
-| Module | Coverage | Lint | LOC | Role |
-|---|---|---|---|---|
-| root (`output`) | 88.8% | 0 issues | ~3,800 | Core types, Markdown, Tree, Streaming, Registry |
-| `delimited/` | 84.8% | 0 issues | ~400 | CSV + TSV writers and formatters |
-| `serialization/` | 84.4% | 0 issues | ~800 | JSON + YAML marshaling and renderers |
-| `markup/` | 87.9% | 0 issues | ~800 | XML + HTML + Streaming HTML renderers |
-| `d2/` | 100% | 0 issues | ~2,200 | D2 diagram renderer (rich domain model) |
-| `graph/` | 96.0% | 0 issues | ~1,200 | DOT + Mermaid renderers |
-| `enum/` | 100% | 0 issues | ~100 | Generic enum utilities |
-| `escape/` | 100% | 0 issues | ~80 | Format-specific escaping |
-| `testhelpers/` | 93.8% | 0 issues | ~100 | Shared test assertions |
-| `table/` | 100% | 0 issues | ~400 | Lipgloss terminal tables |
-| `integration/` | 82.8% | 0 issues | ~1,200 | Cross-module integration tests |
-| `examples/` | n/a | 0 issues | ~300 | Usage examples |
+| Module           | Coverage | Lint     | LOC    | Role                                            |
+| ---------------- | -------- | -------- | ------ | ----------------------------------------------- |
+| root (`output`)  | 88.8%    | 0 issues | ~3,800 | Core types, Markdown, Tree, Streaming, Registry |
+| `delimited/`     | 84.8%    | 0 issues | ~400   | CSV + TSV writers and formatters                |
+| `serialization/` | 84.4%    | 0 issues | ~800   | JSON + YAML marshaling and renderers            |
+| `markup/`        | 87.9%    | 0 issues | ~800   | XML + HTML + Streaming HTML renderers           |
+| `d2/`            | 100%     | 0 issues | ~2,200 | D2 diagram renderer (rich domain model)         |
+| `graph/`         | 96.0%    | 0 issues | ~1,200 | DOT + Mermaid renderers                         |
+| `enum/`          | 100%     | 0 issues | ~100   | Generic enum utilities                          |
+| `escape/`        | 100%     | 0 issues | ~80    | Format-specific escaping                        |
+| `testhelpers/`   | 93.8%    | 0 issues | ~100   | Shared test assertions                          |
+| `table/`         | 100%     | 0 issues | ~400   | Lipgloss terminal tables                        |
+| `integration/`   | 82.8%    | 0 issues | ~1,200 | Cross-module integration tests                  |
+| `examples/`      | n/a      | 0 issues | ~300   | Usage examples                                  |
 
 **Totals:** 104 Go files, 14,800 LOC, 43 source files, 60 test files.
 
@@ -35,6 +35,7 @@ Every module passes `golangci-lint run` with **zero issues** using 80+ enabled l
 gochecknoglobals, gochecknoinits, wsl_v5, goimports, depguard, wrapcheck, dupl, staticcheck, govet, errcheck, and 70+ more.
 
 Fixes applied this session:
+
 - **goimports import grouping** (5 files): Proper stdlib → third-party → local grouping
 - **wsl_v5 whitespace** (19 occurrences, 9 files): Blank lines before assignments after control flow
 - **gochecknoinits nolint** (5 files): `//nolint:gochecknoinits` with justification comments on registry init() functions
@@ -52,12 +53,12 @@ Users who `go get github.com/larsartmann/go-output` get zero transitive deps fro
 
 ### Dependency Isolation
 
-| Dependency | Isolated To | Root? |
-|---|---|---|
-| `charm.land/lipgloss/v2` | `table/` only | ❌ Not in root |
-| `github.com/go-faster/yaml` | `serialization/` only | ❌ Not in root |
-| `github.com/larsartmann/go-branded-id` | root only | ✅ |
-| `golang.org/x/term` | root only | ✅ |
+| Dependency                             | Isolated To           | Root?          |
+| -------------------------------------- | --------------------- | -------------- |
+| `charm.land/lipgloss/v2`               | `table/` only         | ❌ Not in root |
+| `github.com/go-faster/yaml`            | `serialization/` only | ❌ Not in root |
+| `github.com/larsartmann/go-branded-id` | root only             | ✅             |
+| `golang.org/x/term`                    | root only             | ✅             |
 
 ### CI Pipeline
 
@@ -73,13 +74,13 @@ All 12 modules pass with `-race` flag — zero data races detected.
 
 ### Coverage Gaps (modules below 90% target)
 
-| Module | Coverage | Gap | What's Missing |
-|---|---|---|---|
-| `integration/` | 82.8% | 7.2% | Error paths in cross-module tests, edge cases in workflow tests |
-| `serialization/` | 84.4% | 5.6% | JSON/YAML graph renderer error paths, some unmarshal edge cases |
-| `delimited/` | 84.8% | 5.2% | DelimitedWriter error paths, TSV type-switch branches |
-| `root (output)` | 88.8% | 1.2% | Minor: some error paths in render_tabledata, streaming adapter |
-| `gentest (internal)` | 87.5% | 2.5% | One untested assertion helper |
+| Module               | Coverage | Gap  | What's Missing                                                  |
+| -------------------- | -------- | ---- | --------------------------------------------------------------- |
+| `integration/`       | 82.8%    | 7.2% | Error paths in cross-module tests, edge cases in workflow tests |
+| `serialization/`     | 84.4%    | 5.6% | JSON/YAML graph renderer error paths, some unmarshal edge cases |
+| `delimited/`         | 84.8%    | 5.2% | DelimitedWriter error paths, TSV type-switch branches           |
+| `root (output)`      | 88.8%    | 1.2% | Minor: some error paths in render_tabledata, streaming adapter  |
+| `gentest (internal)` | 87.5%    | 2.5% | One untested assertion helper                                   |
 
 ### Documentation
 
@@ -130,6 +131,7 @@ All 12 modules pass with `-race` flag — zero data races detected.
 - Zero leaked dependencies across module boundaries
 
 The only "bad" things are minor and don't affect correctness:
+
 - `go.work` is gitignored — local development requires manual workspace setup (documented in AGENTS.md)
 - `go mod tidy` produces remote resolution errors for local replace directives (expected, idempotent)
 - Pre-commit hooks require `--no-verify` due to external tool false positives (documented workaround)
@@ -178,43 +180,43 @@ Sorted by impact × effort (Pareto order):
 
 ### HIGH IMPACT, LOW EFFORT (do first)
 
-| # | Task | Impact | Effort |
-|---|---|---|---|
-| 1 | **Tag v0.5.0** — Bundle 5 BREAKING changes, update CHANGELOG | High | 5 min |
-| 2 | **Add fuzz tests to delimited/, serialization/, markup/** — Copy pattern from root/d2/graph | High | 1 hr |
-| 3 | **Write ADR-004** — Document delimited/serialization/markup extraction rationale | Med | 20 min |
-| 4 | **Move internal/gentest to testhelpers/gentest** — Eliminate test helper duplication (TODO #20) | Med | 30 min |
-| 5 | **Deduplicate graph/ test helpers** — Depends on #4 (TODO #21) | Med | 15 min |
-| 6 | **Add coverage threshold to CI** — Fail if any module drops below 80% | Med | 15 min |
-| 7 | **Add JSONL format** — Trivial extension of JSON writer, high demand format | High | 1 hr |
-| 8 | **Fix integration/ coverage to 90%+** — Add error path tests | Med | 30 min |
-| 9 | **Fix serialization/ coverage to 90%+** — Add graph renderer error tests | Med | 20 min |
-| 10 | **Fix delimited/ coverage to 90%+** — Add DelimitedWriter error tests | Med | 20 min |
+| #   | Task                                                                                            | Impact | Effort |
+| --- | ----------------------------------------------------------------------------------------------- | ------ | ------ |
+| 1   | **Tag v0.5.0** — Bundle 5 BREAKING changes, update CHANGELOG                                    | High   | 5 min  |
+| 2   | **Add fuzz tests to delimited/, serialization/, markup/** — Copy pattern from root/d2/graph     | High   | 1 hr   |
+| 3   | **Write ADR-004** — Document delimited/serialization/markup extraction rationale                | Med    | 20 min |
+| 4   | **Move internal/gentest to testhelpers/gentest** — Eliminate test helper duplication (TODO #20) | Med    | 30 min |
+| 5   | **Deduplicate graph/ test helpers** — Depends on #4 (TODO #21)                                  | Med    | 15 min |
+| 6   | **Add coverage threshold to CI** — Fail if any module drops below 80%                           | Med    | 15 min |
+| 7   | **Add JSONL format** — Trivial extension of JSON writer, high demand format                     | High   | 1 hr   |
+| 8   | **Fix integration/ coverage to 90%+** — Add error path tests                                    | Med    | 30 min |
+| 9   | **Fix serialization/ coverage to 90%+** — Add graph renderer error tests                        | Med    | 20 min |
+| 10  | **Fix delimited/ coverage to 90%+** — Add DelimitedWriter error tests                           | Med    | 20 min |
 
 ### HIGH IMPACT, MEDIUM EFFORT
 
-| # | Task | Impact | Effort |
-|---|---|---|---|
-| 11 | **Unified error types** — `output.Error` with `Kind` enum for programmatic handling | High | 2 hr |
-| 12 | **Consistent streaming API** — Common `StreamingWriter` interface across all formats | High | 3 hr |
-| 13 | **Add TOML format** — New module `toml/`, popular in Go ecosystem | Med | 2 hr |
-| 14 | **Add snapshot testing** — Catch unintended output format changes | Med | 2 hr |
-| 15 | **Pre-v1 API audit** — Review all public APIs for stability guarantees | High | 3 hr |
-| 16 | **goreleaser config** — Automate version tagging and release notes | Med | 1 hr |
-| 17 | **Move userjourney_test.go to integration/** — Cleaner module separation | Low | 15 min |
-| 18 | **Add AsciiDoc format** — New renderer in markup/ or new module | Low | 1 hr |
+| #   | Task                                                                                 | Impact | Effort |
+| --- | ------------------------------------------------------------------------------------ | ------ | ------ |
+| 11  | **Unified error types** — `output.Error` with `Kind` enum for programmatic handling  | High   | 2 hr   |
+| 12  | **Consistent streaming API** — Common `StreamingWriter` interface across all formats | High   | 3 hr   |
+| 13  | **Add TOML format** — New module `toml/`, popular in Go ecosystem                    | Med    | 2 hr   |
+| 14  | **Add snapshot testing** — Catch unintended output format changes                    | Med    | 2 hr   |
+| 15  | **Pre-v1 API audit** — Review all public APIs for stability guarantees               | High   | 3 hr   |
+| 16  | **goreleaser config** — Automate version tagging and release notes                   | Med    | 1 hr   |
+| 17  | **Move userjourney_test.go to integration/** — Cleaner module separation             | Low    | 15 min |
+| 18  | **Add AsciiDoc format** — New renderer in markup/ or new module                      | Low    | 1 hr   |
 
 ### MEDIUM IMPACT, HIGHER EFFORT
 
-| # | Task | Impact | Effort |
-|---|---|---|---|
-| 19 | **Generic TableData[T]** — Type-safe column access instead of `[][]string` | Very High | 1 day |
-| 20 | **go-output CLI tool** — Companion CLI for ad-hoc format conversion | Very High | 2 days |
-| 21 | **Add PlantUML format** — New module with UML diagram types | Med | 4 hr |
-| 22 | **Benchmark regression CI** — Track performance across commits | Med | 2 hr |
-| 23 | **Fix pre-commit hooks** — Configure BuildFlow's go-structure-linter | Low | 30 min |
-| 24 | **Shape-specific renderer constructors** — ADR-002 Phase 2: `NewTableRenderer(format)` | Med | 3 hr |
-| 25 | **Community posting** — r/golang, Awesome Go, Go newsletter | High | 1 hr |
+| #   | Task                                                                                   | Impact    | Effort |
+| --- | -------------------------------------------------------------------------------------- | --------- | ------ |
+| 19  | **Generic TableData[T]** — Type-safe column access instead of `[][]string`             | Very High | 1 day  |
+| 20  | **go-output CLI tool** — Companion CLI for ad-hoc format conversion                    | Very High | 2 days |
+| 21  | **Add PlantUML format** — New module with UML diagram types                            | Med       | 4 hr   |
+| 22  | **Benchmark regression CI** — Track performance across commits                         | Med       | 2 hr   |
+| 23  | **Fix pre-commit hooks** — Configure BuildFlow's go-structure-linter                   | Low       | 30 min |
+| 24  | **Shape-specific renderer constructors** — ADR-002 Phase 2: `NewTableRenderer(format)` | Med       | 3 hr   |
+| 25  | **Community posting** — r/golang, Awesome Go, Go newsletter                            | High      | 1 hr   |
 
 ---
 
@@ -223,12 +225,14 @@ Sorted by impact × effort (Pareto order):
 **Should we remove the deprecated Registry API (`Register`/`Create`/`Unregister`/`RegisteredFormats`/`IsRegistered`) before v0.5.0, or keep it for backward compatibility?**
 
 Current state:
+
 - All 5 functions have `// Deprecated:` doc comments
 - They're only tested in `integration/format_test.go` (with `//nolint:staticcheck`)
 - The new `TableDataMarshaler` registry (`RegisterTableDataMarshaler`) completely replaces their TableData use case
 - But nothing replaces the generic `Renderer` factory use case (e.g., runtime dispatch for custom formats)
 
 Options:
+
 1. **Remove now** — Clean break, bundle with existing BREAKING changes
 2. **Keep for v0.x** — Remove in v1.0 after providing alternative
 3. **Replace with better API** — `RegisterRenderer(format, factory)` that doesn't conflict with TableDataMarshaler
@@ -237,12 +241,12 @@ Options:
 
 ## File Change Summary (this session)
 
-| Category | Files Changed |
-|---|---|
-| Import formatting | `color.go`, `serialization/yaml.go`, `serialization/yaml_renderers.go`, `table/table.go`, `table/table_test.go` |
+| Category          | Files Changed                                                                                                                                                                                                                                                                    |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Import formatting | `color.go`, `serialization/yaml.go`, `serialization/yaml_renderers.go`, `table/table.go`, `table/table_test.go`                                                                                                                                                                  |
 | wsl_v5 whitespace | `render_tabledata.go`, `delimited/bench_test.go`, `delimited/csv_test.go`, `delimited/tsv_test.go`, `delimited/testhelpers_test.go`, `serialization/testhelpers_test.go`, `serialization/json_renderers_test.go`, `serialization/yaml_renderers_test.go`, `markup/bench_test.go` |
-| Lint suppressions | `delimited/csv.go`, `delimited/tsv.go`, `serialization/yaml.go`, `markup/html.go`, `markup/xml.go`, `integration/format_test.go` |
-| Config | `.golangci.yml` (wrapcheck, gocritic, gci removal) |
-| Test dedup | `delimited/testhelpers_test.go`, `delimited/csv_test.go`, `delimited/tsv_test.go` |
+| Lint suppressions | `delimited/csv.go`, `delimited/tsv.go`, `serialization/yaml.go`, `markup/html.go`, `markup/xml.go`, `integration/format_test.go`                                                                                                                                                 |
+| Config            | `.golangci.yml` (wrapcheck, gocritic, gci removal)                                                                                                                                                                                                                               |
+| Test dedup        | `delimited/testhelpers_test.go`, `delimited/csv_test.go`, `delimited/tsv_test.go`                                                                                                                                                                                                |
 
 **Session result: 42 lint issues → 0 lint issues across all 12 modules.**
