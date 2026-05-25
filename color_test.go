@@ -66,11 +66,11 @@ func TestIsTerminalByEnv(t *testing.T) {
 
 func TestParseColorMode(t *testing.T) {
 	tests := []parseEnumTestCase[ColorMode]{
-		{"auto", "auto", ColorModeAuto, false},
-		{"always", "always", ColorModeAlways, false},
-		{"never", "never", ColorModeNever, false},
-		{"invalid", "invalid", "", true},
-		{"empty", "", "", true},
+		{Name: "auto", Input: "auto", Want: ColorModeAuto},
+		{Name: "always", Input: "always", Want: ColorModeAlways},
+		{Name: "never", Input: "never", Want: ColorModeNever},
+		{Name: "invalid", Input: "invalid", WantErr: true},
+		{Name: "empty", Input: "", WantErr: true},
 	}
 	testParseEnum(
 		t,
@@ -83,9 +83,9 @@ func TestParseColorMode(t *testing.T) {
 
 func TestColorModeString(t *testing.T) {
 	tests := []stringEnumTestCase[ColorMode]{
-		{ColorModeAuto, "auto"},
-		{ColorModeAlways, "always"},
-		{ColorModeNever, "never"},
+		{Value: ColorModeAuto, Want: "auto"},
+		{Value: ColorModeAlways, Want: "always"},
+		{Value: ColorModeNever, Want: "never"},
 	}
 
 	testEnumString(t, "ColorMode.String", tests, func(m ColorMode) string { return m.String() })

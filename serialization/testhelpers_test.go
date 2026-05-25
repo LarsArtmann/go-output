@@ -6,6 +6,7 @@ import (
 
 	"github.com/larsartmann/go-output"
 	"github.com/larsartmann/go-output/testhelpers"
+	"github.com/larsartmann/go-output/testhelpers/graphtest"
 )
 
 var assertContains = testhelpers.AssertContains
@@ -15,6 +16,18 @@ var assertOutputContains = testhelpers.AssertOutputContains
 var assertMarshalError = testhelpers.AssertMarshalError
 
 type errorWriter = testhelpers.ErrorWriter
+
+var newTestNodeWithShape = graphtest.NewTestNodeWithShape
+
+var testNodesAB = graphtest.TestNodesAB
+
+var testNodesABC = graphtest.TestNodesABC
+
+var testEdgeAB = graphtest.TestEdgeAB
+
+var testEdgesAB = graphtest.TestEdgesAB
+
+var testEdgesABC = graphtest.TestEdgesABC
 
 func assertValidJSON(t *testing.T, output string) {
 	t.Helper()
@@ -29,55 +42,6 @@ func assertValidYAML(t *testing.T, output string) {
 
 	if output == "" {
 		t.Error("output should not be empty for valid YAML check")
-	}
-}
-
-func testNodesAB() []output.GraphNode {
-	return []output.GraphNode{
-		newTestNode("A", "Node A"),
-		newTestNode("B", "Node B"),
-	}
-}
-
-func newTestNode(id, label string) output.GraphNode {
-	return output.GraphNode{
-		ID:    output.NewBrandedID[output.GraphNodeIDBrand](id),
-		Label: output.NewBrandedID[output.GraphNodeLabelBrand](label),
-	}
-}
-
-func newTestNodeWithShape(id, label string, shape output.GraphShape) output.GraphNode {
-	return output.GraphNode{
-		ID:    output.NewBrandedID[output.GraphNodeIDBrand](id),
-		Label: output.NewBrandedID[output.GraphNodeLabelBrand](label),
-		Shape: shape,
-	}
-}
-
-func testEdgeAB(label string) output.GraphEdge {
-	return output.GraphEdge{
-		From:  output.NewBrandedID[output.GraphNodeIDBrand]("A"),
-		To:    output.NewBrandedID[output.GraphNodeIDBrand]("B"),
-		Label: output.NewBrandedID[output.GraphNodeLabelBrand](label),
-	}
-}
-
-func testEdgesAB() []output.GraphEdge {
-	return []output.GraphEdge{testEdgeAB("")}
-}
-
-func testNodesABC() []output.GraphNode {
-	nodes := testNodesAB()
-	return append(nodes, newTestNode("C", "Node C"))
-}
-
-func testEdgesABC() []output.GraphEdge {
-	return []output.GraphEdge{
-		testEdgeAB(""),
-		{
-			From: output.NewBrandedID[output.GraphNodeIDBrand]("B"),
-			To:   output.NewBrandedID[output.GraphNodeIDBrand]("C"),
-		},
 	}
 }
 

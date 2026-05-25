@@ -45,16 +45,16 @@ func TestGraphEdge(t *testing.T) {
 
 func TestParseGraphShape(t *testing.T) {
 	tests := []parseEnumTestCase[output.GraphShape]{
-		{"box", "box", output.ShapeBox, false},
-		{"ellipse", "ellipse", output.ShapeEllipse, false},
-		{"diamond", "diamond", output.ShapeDiamond, false},
-		{"circle", "circle", output.ShapeCircle, false},
-		{"cylinder", "cylinder", output.ShapeCylinder, false},
-		{"hexagon", "hexagon", output.ShapeHexagon, false},
-		{"parallelogram", "parallelogram", output.ShapeParallelogram, false},
-		{"rect", "rect", output.ShapeRect, false},
-		{"invalid", "invalid", "", true},
-		{"empty", "", "", true},
+		{Name: "box", Input: "box", Want: output.ShapeBox},
+		{Name: "ellipse", Input: "ellipse", Want: output.ShapeEllipse},
+		{Name: "diamond", Input: "diamond", Want: output.ShapeDiamond},
+		{Name: "circle", Input: "circle", Want: output.ShapeCircle},
+		{Name: "cylinder", Input: "cylinder", Want: output.ShapeCylinder},
+		{Name: "hexagon", Input: "hexagon", Want: output.ShapeHexagon},
+		{Name: "parallelogram", Input: "parallelogram", Want: output.ShapeParallelogram},
+		{Name: "rect", Input: "rect", Want: output.ShapeRect},
+		{Name: "invalid", Input: "invalid", WantErr: true},
+		{Name: "empty", Input: "", WantErr: true},
 	}
 	testParseEnum(
 		t,
@@ -67,10 +67,10 @@ func TestParseGraphShape(t *testing.T) {
 
 func TestGraphShapeString(t *testing.T) {
 	tests := []stringEnumTestCase[output.GraphShape]{
-		{output.ShapeBox, "box"},
-		{output.ShapeEllipse, "ellipse"},
-		{output.ShapeDiamond, "diamond"},
-		{output.ShapeCircle, "circle"},
+		{Value: output.ShapeBox, Want: "box"},
+		{Value: output.ShapeEllipse, Want: "ellipse"},
+		{Value: output.ShapeDiamond, Want: "diamond"},
+		{Value: output.ShapeCircle, Want: "circle"},
 	}
 
 	testEnumString(

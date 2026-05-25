@@ -134,3 +134,74 @@ func TestAllowedValues(t *testing.T, name string, got, want []string) {
 func IntField(name string, got, want int) FieldCheck {
 	return equalField(name, got, want)
 }
+
+// ParseEnumTestCase is a test case for enum Parse functions.
+type ParseEnumTestCase[T any] struct {
+	Name    string
+	Input   string
+	Want    T
+	WantErr bool
+}
+
+// TestParseEnum runs table-driven tests for a generic enum Parse function.
+func TestParseEnum[T any](
+	t *testing.T,
+	name string,
+	parseFunc func(string) (T, error),
+	testCases []ParseEnumTestCase[T],
+	equalFunc func(T, T) bool,
+) {
+	t.Helper()
+
+	t.Run(name, func(t *testing.T) {
+		t.Parallel()
+
+		for _, tc := range testCases {
+			t.Run(tc.Name, func(t *testing.T) {
+				t.Parallel()
+
+				got, err := parseFunc(tc.Input)
+
+				if (err != nil) != tc.WantErr {
+					t.Errorf("%s() error = %v, wantErr %v", name, err, tc.WantErr)
+
+					return
+				}
+
+				if !equalFunc(got, tc.Want) {
+					t.Errorf("%s() = %v, want %v", name, got, tc.Want)
+				}
+			})
+		}
+	})
+}
+
+// StringEnumTestCase is a test case for enum String functions.
+type StringEnumTestCase[T any] struct {
+	Value T
+	Want  string
+}
+
+// TestEnumString runs table-driven tests for a generic enum String function.
+func TestEnumString[T any](
+	t *testing.T,
+	name string,
+	testCases []StringEnumTestCase[T],
+	stringFunc func(T) string,
+) {
+	t.Helper()
+
+	t.Run(name, func(t *testing.T) {
+		t.Parallel()
+
+		for _, tc := range testCases {
+			t.Run(tc.Want, func(t *testing.T) {
+				t.Parallel()
+
+				if got := stringFunc(tc.Value); got != tc.Want {
+					t.Errorf("%s() = %v, want %v", name, got, tc.Want)
+				}
+			})
+		}
+	})
+}

@@ -6,6 +6,7 @@ import (
 
 	"github.com/larsartmann/go-output"
 	"github.com/larsartmann/go-output/testhelpers"
+	"github.com/larsartmann/go-output/testhelpers/graphtest"
 )
 
 type expectedOutput struct {
@@ -16,54 +17,19 @@ type expectedOutput struct {
 //nolint:gochecknoglobals // Re-exported test helper for package-local use
 var assertContains = testhelpers.AssertContains
 
-func newTestNode(id, label string) output.GraphNode {
-	return output.GraphNode{
-		ID:    output.NewBrandedID[output.GraphNodeIDBrand](id),
-		Label: output.NewBrandedID[output.GraphNodeLabelBrand](label),
-	}
-}
+var newTestNode = graphtest.NewTestNode
 
-func newTestNodeWithShape(id, label string, shape output.GraphShape) output.GraphNode {
-	return output.GraphNode{
-		ID:    output.NewBrandedID[output.GraphNodeIDBrand](id),
-		Label: output.NewBrandedID[output.GraphNodeLabelBrand](label),
-		Shape: shape,
-	}
-}
+var newTestNodeWithShape = graphtest.NewTestNodeWithShape
 
-func testNodesAB() []output.GraphNode {
-	return []output.GraphNode{
-		newTestNode("A", "Node A"),
-		newTestNode("B", "Node B"),
-	}
-}
+var testNodesAB = graphtest.TestNodesAB
 
-func testEdgeAB(label string) output.GraphEdge {
-	return output.GraphEdge{
-		From:  output.NewBrandedID[output.GraphNodeIDBrand]("A"),
-		To:    output.NewBrandedID[output.GraphNodeIDBrand]("B"),
-		Label: output.NewBrandedID[output.GraphNodeLabelBrand](label),
-	}
-}
+var testNodesABC = graphtest.TestNodesABC
 
-func testEdgesAB() []output.GraphEdge {
-	return []output.GraphEdge{testEdgeAB("")}
-}
+var testEdgeAB = graphtest.TestEdgeAB
 
-func testNodesABC() []output.GraphNode {
-	nodes := testNodesAB()
-	return append(nodes, newTestNode("C", "Node C"))
-}
+var testEdgesAB = graphtest.TestEdgesAB
 
-func testEdgesABC() []output.GraphEdge {
-	return []output.GraphEdge{
-		testEdgeAB(""),
-		{
-			From: output.NewBrandedID[output.GraphNodeIDBrand]("B"),
-			To:   output.NewBrandedID[output.GraphNodeIDBrand]("C"),
-		},
-	}
-}
+var testEdgesABC = graphtest.TestEdgesABC
 
 func testEmptyRendererOutput(
 	t *testing.T,
@@ -127,12 +93,7 @@ func testSanitizeFunc(
 	}
 }
 
-type parseEnumTestCase[T any] struct {
-	name    string
-	input   string
-	want    T
-	wantErr bool
-}
+type parseEnumTestCase[T any] = testhelpers.ParseEnumTestCase[T]
 
 func testParseEnum[T any](
 	t *testing.T,
@@ -141,35 +102,10 @@ func testParseEnum[T any](
 	testCases []parseEnumTestCase[T],
 	equalFunc func(T, T) bool,
 ) {
-	t.Helper()
-
-	t.Run(name, func(t *testing.T) {
-		t.Parallel()
-
-		for _, testCase := range testCases {
-			t.Run(testCase.name, func(t *testing.T) {
-				t.Parallel()
-
-				got, err := parseFunc(testCase.input)
-
-				if (err != nil) != testCase.wantErr {
-					t.Errorf("%s() error = %v, wantErr %v", name, err, testCase.wantErr)
-
-					return
-				}
-
-				if !equalFunc(got, testCase.want) {
-					t.Errorf("%s() = %v, want %v", name, got, testCase.want)
-				}
-			})
-		}
-	})
+	testhelpers.TestParseEnum(t, name, parseFunc, testCases, equalFunc)
 }
 
-type stringEnumTestCase[T any] struct {
-	value T
-	want  string
-}
+type stringEnumTestCase[T any] = testhelpers.StringEnumTestCase[T]
 
 func testEnumString[T any](
 	t *testing.T,
@@ -177,21 +113,7 @@ func testEnumString[T any](
 	testCases []stringEnumTestCase[T],
 	stringFunc func(T) string,
 ) {
-	t.Helper()
-
-	t.Run(name, func(t *testing.T) {
-		t.Parallel()
-
-		for _, testCase := range testCases {
-			t.Run(testCase.want, func(t *testing.T) {
-				t.Parallel()
-
-				if got := stringFunc(testCase.value); got != testCase.want {
-					t.Errorf("%s() = %v, want %v", name, got, testCase.want)
-				}
-			})
-		}
-	})
+	testhelpers.TestEnumString(t, name, testCases, stringFunc)
 }
 
 var testAllowedValues = testhelpers.TestAllowedValues
