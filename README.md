@@ -28,8 +28,8 @@ for _, row := range data.GetRows() {
 }
 out, _ := md.Render()
 
-// JSON (any data — requires go-output/serialization)
-data, _ := serialization.MarshalJSONIndent(projects, "", "  ")
+// JSON (any data — from root package)
+data, _ := output.MarshalJSONIndent(projects, "", "  ")
 
 // CSV (requires go-output/delimited)
 w := delimited.NewCSVWriter(os.Stdout)
@@ -106,8 +106,8 @@ yt.SetHeaders([]string{"Name", "Health"})
 yt.AddRow([]string{"Alpha", "90%"})
 out, _ := yt.Render()
 
-// JSON (any data — requires go-output/serialization)
-data, _ := serialization.MarshalJSONIndent(projects, "", "  ")
+// JSON (any data — from root package)
+data, _ := output.MarshalJSONIndent(projects, "", "  ")
 
 // CSV (requires go-output/delimited)
 w := delimited.NewCSVWriter(os.Stdout)
@@ -364,7 +364,7 @@ safeID := escape.D2("my-node.with.dots")
 
 ## Dependencies
 
-Root module — zero lipgloss, zero yaml in production code:
+Root module — zero lipgloss, zero yaml **in production code**. (YAML dep isolated in `serialization/` module).
 
 ```go
 require (
