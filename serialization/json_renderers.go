@@ -81,50 +81,9 @@ func NewJSONGraphRenderer() *JSONGraphRenderer {
 	}
 }
 
-type jsonGraph struct {
-	Nodes []jsonGraphNode `json:"nodes"`
-	Edges []jsonGraphEdge `json:"edges"`
-}
-
-type jsonGraphNode struct {
-	ID       string            `json:"id"`
-	Label    string            `json:"label"`
-	Shape    string            `json:"shape,omitempty"`
-	Metadata map[string]string `json:"metadata,omitempty"`
-}
-
-type jsonGraphEdge struct {
-	From  string `json:"from"`
-	To    string `json:"to"`
-	Label string `json:"label,omitempty"`
-}
-
 // Render returns the graph as a JSON string.
 func (r *JSONGraphRenderer) Render() (string, error) {
-	graph := jsonGraph{
-		Nodes: make([]jsonGraphNode, 0, len(r.Nodes())),
-		Edges: make([]jsonGraphEdge, 0, len(r.Edges())),
-	}
-
-	for _, node := range r.Nodes() {
-		n := jsonGraphNode{
-			ID:       node.ID.Get(),
-			Label:    node.Label.Get(),
-			Shape:    string(node.Shape),
-			Metadata: node.Metadata,
-		}
-		graph.Nodes = append(graph.Nodes, n)
-	}
-
-	for _, edge := range r.Edges() {
-		e := jsonGraphEdge{
-			From:  edge.From.Get(),
-			To:    edge.To.Get(),
-			Label: brandedEdgeLabel(edge.Label),
-		}
-
-		graph.Edges = append(graph.Edges, e)
-	}
+	graph := buildGraphDTO(r.GraphRendererMixin)
 
 	data, err := json.MarshalIndent(graph, "", "  ")
 	if err != nil {

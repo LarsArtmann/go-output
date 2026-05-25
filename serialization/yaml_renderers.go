@@ -82,51 +82,9 @@ func NewYAMLGraphRenderer() *YAMLGraphRenderer {
 	}
 }
 
-type yamlGraph struct {
-	Nodes []yamlGraphNode `yaml:"nodes"`
-	Edges []yamlGraphEdge `yaml:"edges"`
-}
-
-type yamlGraphNode struct {
-	ID       string            `yaml:"id"`
-	Label    string            `yaml:"label"`
-	Shape    string            `yaml:"shape,omitempty"`
-	Metadata map[string]string `yaml:"metadata,omitempty"`
-}
-
-type yamlGraphEdge struct {
-	From  string `yaml:"from"`
-	To    string `yaml:"to"`
-	Label string `yaml:"label,omitempty"`
-}
-
 // Render returns the graph as a YAML string.
 func (r *YAMLGraphRenderer) Render() (string, error) {
-	graph := yamlGraph{
-		Nodes: make([]yamlGraphNode, 0, len(r.Nodes())),
-		Edges: make([]yamlGraphEdge, 0, len(r.Edges())),
-	}
-
-	for _, node := range r.Nodes() {
-		n := yamlGraphNode{
-			ID:       node.ID.Get(),
-			Label:    node.Label.Get(),
-			Shape:    string(node.Shape),
-			Metadata: node.Metadata,
-		}
-
-		graph.Nodes = append(graph.Nodes, n)
-	}
-
-	for _, edge := range r.Edges() {
-		e := yamlGraphEdge{
-			From:  edge.From.Get(),
-			To:    edge.To.Get(),
-			Label: brandedEdgeLabel(edge.Label),
-		}
-
-		graph.Edges = append(graph.Edges, e)
-	}
+	graph := buildGraphDTO(r.GraphRendererMixin)
 
 	data, err := yaml.Marshal(graph)
 	if err != nil {
