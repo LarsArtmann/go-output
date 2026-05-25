@@ -2,7 +2,10 @@ package delimited
 
 import (
 	"bytes"
+	"strings"
 	"testing"
+
+	"github.com/larsartmann/go-output"
 )
 
 func TestCSVWriter(t *testing.T) {
@@ -115,6 +118,121 @@ func TestCSVWriterErrorPaths(t *testing.T) {
 		err := w.Error()
 		if err == nil {
 			t.Error("Error() should return error after failed write")
+		}
+	})
+
+	t.Run("WriteHeader error on flush", func(t *testing.T) {
+		t.Parallel()
+
+		w := NewCSVWriter(&errorWriter{})
+		_ = w.WriteHeader([]string{"Name"})
+		w.Flush()
+
+		err := w.Error()
+		if err == nil {
+			t.Error("Error() should return error after WriteHeader with failing writer")
+		}
+	})
+}
+
+func TestMarshalCSVFromTableData(t *testing.T) {
+	t.Parallel()
+
+	t.Run("with headers and rows", func(t *testing.T) {
+		t.Parallel()
+
+		data := output.NewTableData([]string{"Name", "Age"})
+		data.AddRow([]string{"Alice", "30"})
+		data.AddRow([]string{"Bob", "25"})
+
+		b, err := MarshalCSVFromTableData(data)
+		if err != nil {
+			t.Fatalf("MarshalCSVFromTableData() error = %v", err)
+		}
+
+		result := string(b)
+		if !strings.Contains(result, "Name") {
+			t.Error("CSV should contain header 'Name'")
+		}
+
+		if !strings.Contains(result, "Alice") {
+			t.Error("CSV should contain row 'Alice'")
+		}
+	})
+
+	t.Run("nil data returns nil", func(t *testing.T) {
+		t.Parallel()
+
+		b, err := MarshalCSVFromTableData(nil)
+		if err != nil {
+			t.Fatalf("MarshalCSVFromTableData(nil) error = %v", err)
+		}
+
+		if b != nil {
+			t.Errorf("MarshalCSVFromTableData(nil) = %q, want nil", b)
+		}
+	})
+
+	t.Run("empty data", func(t *testing.T) {
+		t.Parallel()
+
+		data := output.NewTableData(nil)
+
+		b, err := MarshalCSVFromTableData(data)
+		if err != nil {
+			t.Fatalf("MarshalCSVFromTableData() error = %v", err)
+		}
+
+		if len(b) != 0 {
+			t.Errorf("MarshalCSVFromTableData(empty) = %q, want empty", b)
+		}
+	})
+
+	t.Run("headers only no rows", func(t *testing.T) {
+		t.Parallel()
+
+		data := output.NewTableData([]string{"Name", "Age"})
+
+		b, err := MarshalCSVFromTableData(data)
+		if err != nil {
+			t.Fatalf("MarshalCSVFromTableData() error = %v", err)
+		}
+
+		result := string(b)
+		if !strings.Contains(result, "Name") {
+			t.Error("CSV should contain header even with no rows")
+		}
+	})
+}
+
+func TestCSVRenderTableData(t *testing.T) {
+	t.Parallel()
+
+	t.Run("renders via registry dispatch", func(t *testing.T) {
+		t.Parallel()
+
+		data := output.NewTableData([]string{"Name", "Value"})
+		data.AddRow([]string{"Alpha", "100"})
+
+		var buf bytes.Buffer
+		opts := output.RenderOptions{Writer: &buf}
+
+		err := output.RenderTableData(data, output.FormatCSV, opts)
+		if err != nil {
+			t.Fatalf("RenderTableData(csv) error = %v", err)
+		}
+
+		result := buf.String()
+		assertContains(t, result, "Name", "CSV render should contain header")
+		assertContains(t, result, "Alpha", "CSV render should contain data")
+	})
+
+	t.Run("nil data returns nil", func(t *testing.T) {
+		t.Parallel()
+
+		err := output.RenderTableData(nil, output.FormatCSV)
+		if err != nil {
+			t.Fatalf("RenderTableData(nil) error = %v", err)
 		}
 	})
 }

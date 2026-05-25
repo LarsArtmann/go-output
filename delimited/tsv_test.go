@@ -4,6 +4,8 @@ import (
 	"errors"
 	"strings"
 	"testing"
+
+	"github.com/larsartmann/go-output"
 )
 
 func TestTSVWriterHeaderAndRow(t *testing.T) {
@@ -142,4 +144,100 @@ func TestTSVWriterError(t *testing.T) {
 	if err == nil {
 		t.Error("Error() should return error after failed write")
 	}
+}
+
+func TestMarshalTSVFromTableData(t *testing.T) {
+	t.Parallel()
+
+	t.Run("with headers and rows", func(t *testing.T) {
+		t.Parallel()
+
+		data := output.NewTableData([]string{"Name", "Value"})
+		data.AddRow([]string{"Alpha", "100"})
+		data.AddRow([]string{"Beta", "200"})
+
+		b, err := MarshalTSVFromTableData(data)
+		if err != nil {
+			t.Fatalf("MarshalTSVFromTableData() error = %v", err)
+		}
+
+		result := string(b)
+		assertContains(t, result, "Name", "TSV should contain header")
+		assertContains(t, result, "Alpha", "TSV should contain data")
+		assertContains(t, result, "\t", "TSV should use tabs")
+	})
+
+	t.Run("nil data returns nil", func(t *testing.T) {
+		t.Parallel()
+
+		b, err := MarshalTSVFromTableData(nil)
+		if err != nil {
+			t.Fatalf("MarshalTSVFromTableData(nil) error = %v", err)
+		}
+
+		if b != nil {
+			t.Errorf("MarshalTSVFromTableData(nil) = %q, want nil", b)
+		}
+	})
+
+	t.Run("empty data", func(t *testing.T) {
+		t.Parallel()
+
+		data := output.NewTableData(nil)
+
+		b, err := MarshalTSVFromTableData(data)
+		if err != nil {
+			t.Fatalf("MarshalTSVFromTableData() error = %v", err)
+		}
+
+		if len(b) != 0 {
+			t.Errorf("MarshalTSVFromTableData(empty) = %q, want empty", b)
+		}
+	})
+
+	t.Run("headers only no rows", func(t *testing.T) {
+		t.Parallel()
+
+		data := output.NewTableData([]string{"Name"})
+
+		b, err := MarshalTSVFromTableData(data)
+		if err != nil {
+			t.Fatalf("MarshalTSVFromTableData() error = %v", err)
+		}
+
+		result := string(b)
+		assertContains(t, result, "Name", "TSV should contain header even with no rows")
+	})
+}
+
+func TestTSVRenderTableData(t *testing.T) {
+	t.Parallel()
+
+	t.Run("renders via registry dispatch", func(t *testing.T) {
+		t.Parallel()
+
+		data := output.NewTableData([]string{"Name", "Value"})
+		data.AddRow([]string{"Alpha", "100"})
+
+		var buf strings.Builder
+		opts := output.RenderOptions{Writer: &buf}
+
+		err := output.RenderTableData(data, output.FormatTSV, opts)
+		if err != nil {
+			t.Fatalf("RenderTableData(tsv) error = %v", err)
+		}
+
+		result := buf.String()
+		assertContains(t, result, "Name", "TSV render should contain header")
+		assertContains(t, result, "Alpha", "TSV render should contain data")
+	})
+
+	t.Run("nil data returns nil", func(t *testing.T) {
+		t.Parallel()
+
+		err := output.RenderTableData(nil, output.FormatTSV)
+		if err != nil {
+			t.Fatalf("RenderTableData(nil) error = %v", err)
+		}
+	})
 }
