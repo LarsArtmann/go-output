@@ -73,8 +73,8 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 | --------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------ |
 | **Format enum**       | FULLY_FUNCTIONAL | 12 format constants. `ParseFormat()`, `String()`, `IsValid()`, `AllowedValues()`                                   |
 | **Shape enum**        | FULLY_FUNCTIONAL | 3 shape constants. `ParseShape()`, `String()`, `IsValid()`, `AllowedValues()`                                      |
-| **ColorMode enum**    | FULLY_FUNCTIONAL | `auto`, `always`, `never`. `ParseColorMode()`, `ShouldColor()`. Wired into table, tree, markdown renderers |
-| **SortBy enum**       | REMOVED          | Deleted — zero external callers. Use `slices.SortStableFunc` + `cmp.Compare` (stdlib) |
+| **ColorMode enum**    | FULLY_FUNCTIONAL | `auto`, `always`, `never`. `ParseColorMode()`, `ShouldColor()`. Wired into table, tree, markdown renderers         |
+| **SortBy enum**       | REMOVED          | Deleted — zero external callers. Use `slices.SortStableFunc` + `cmp.Compare` (stdlib)                              |
 | **GraphShape enum**   | FULLY_FUNCTIONAL | 8 node shapes (box, ellipse, diamond, circle, cylinder, hexagon, parallelogram, rect)                              |
 | **D2Direction enum**  | FULLY_FUNCTIONAL | 4 directions (down, right, left, up). Default is down                                                              |
 | **D2NodeShape enum**  | FULLY_FUNCTIONAL | 20 shapes (rectangle, circle, diamond, hexagon, cloud, person, queue, sql_table, class, code, etc.)                |
@@ -153,13 +153,13 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 
 ## Registry System
 
-| Feature                 | Status           | Notes                                                                                |
-| ----------------------- | ---------------- | ------------------------------------------------------------------------------------ |
-| **Register()**          | REMOVED          | Deprecated renderer registry deleted. Use direct constructors (`d2.NewD2Diagram()`) |
-| **Create()**            | REMOVED          | Removed with registry. Use format-specific constructors                              |
-| **Unregister()**        | REMOVED          | Removed with registry                                                                |
-| **RegisteredFormats()** | REMOVED          | Removed with registry                                                                |
-| **IsRegistered()**      | REMOVED          | Removed with registry                                                                |
+| Feature                 | Status  | Notes                                                                               |
+| ----------------------- | ------- | ----------------------------------------------------------------------------------- |
+| **Register()**          | REMOVED | Deprecated renderer registry deleted. Use direct constructors (`d2.NewD2Diagram()`) |
+| **Create()**            | REMOVED | Removed with registry. Use format-specific constructors                             |
+| **Unregister()**        | REMOVED | Removed with registry                                                               |
+| **RegisteredFormats()** | REMOVED | Removed with registry                                                               |
+| **IsRegistered()**      | REMOVED | Removed with registry                                                               |
 
 ---
 
@@ -245,7 +245,7 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 
 | Feature                    | Status           | Notes                                                                                                      |
 | -------------------------- | ---------------- | ---------------------------------------------------------------------------------------------------------- |
-| **FilledStrings()**        | REMOVED          | Replaced by `slices.Repeat` (stdlib). Zero external callers.                                      |
+| **FilledStrings()**        | REMOVED          | Replaced by `slices.Repeat` (stdlib). Zero external callers.                                               |
 | **InvalidFormatError**     | FULLY_FUNCTIONAL | Descriptive error with allowed values list                                                                 |
 | **UnsupportedFormatError** | FULLY_FUNCTIONAL | Returned by `RenderTableData()` for table/json formats                                                     |
 | **D2 utility methods**     | FULLY_FUNCTIONAL | `AddNodeSimple()`, `AddNodeWithShape()`, `AddEdgeSimple()`, `AddLabeledEdge()` — builder pattern shortcuts |

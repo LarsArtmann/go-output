@@ -34,14 +34,20 @@ Level 2 — Core module
     └──────────────────┬──────────────────────────┘
                        │
 
-Level 3 — Format modules (depend on root core types)
+Level 2 — Format modules (depend on root core types)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    ┌──────────────┐  ┌──────────────┐  ┌────────────┐
-    │    d2/        │  │   graph/     │  │   table/    │
-    │  ~850 LOC     │  │  ~320 LOC    │  │  93 LOC     │
-    │ →root,escape, │  │ →root,escape,│  │ →root,      │
-    │   testhelpers │  │  testhelpers │  │   lipgloss  │
-    └──────────────┘  └──────────────┘  └────────────┘
+    ┌──────────────┐  ┌──────────────┐  ┌────────────┐  ┌──────────────┐
+    │    d2/        │  │   graph/     │  │   table/    │  │  delimited/  │
+    │  ~850 LOC     │  │  ~320 LOC    │  │  93 LOC     │  │  CSV + TSV   │
+    │ →root,escape, │  │ →root,escape,│  │ →root,      │  │ →root        │
+    │   testhelpers │  │  testhelpers │  │   lipgloss  │  │              │
+    └──────────────┘  └──────────────┘  └────────────┘  └──────────────┘
+    ┌──────────────────┐  ┌──────────────────┐
+    │  serialization/  │  │     markup/      │
+    │  JSON + YAML     │  │  XML + HTML +    │
+    │ →root, go-faster │  │  Streaming HTML  │
+    │   yaml           │  │ →root, escape    │
+    └──────────────────┘  └──────────────────┘
 
 Level 5 — Consumers
 ━━━━━━━━━━━━━━━━━━━
@@ -54,17 +60,20 @@ Level 5 — Consumers
 
 ## Module Dependency Matrix
 
-| ↓ depends on →  | enum | escape | root | d2  | graph | table | lipgloss |
-| --------------- | ---- | ------ | ---- | --- | ----- | ----- | -------- |
-| **enum**        | —    | —      | —    | —   | —     | —     | —        |
-| **escape**      | —    | —      | —    | —   | —     | —     | —        |
-| **testhelpers** | —    | —      | —    | —   | —     | —     | —        |
-| **root**        | ✅   | ✅     | —    | —   | —     | —     | —        |
-| **d2**          | —    | ✅     | ✅   | —   | —     | —     | —        |
-| **graph**       | —    | ✅     | ✅   | —   | —     | —     | —        |
-| **table**       | —    | —      | ✅   | —   | —     | —     | ✅       |
-| **integration** | —    | —      | ✅   | ✅  | ✅    | ✅    | —        |
-| **examples**    | —    | —      | ✅   | ✅  | ✅    | ✅    | —        |
+| ↓ depends on →    | enum | escape | root | d2  | graph | table | delimited | serialization | markup |
+| ----------------- | ---- | ------ | ---- | --- | ----- | ----- | --------- | ------------- | ------ |
+| **enum**          | —    | —      | —    | —   | —     | —     | —         | —             | —      |
+| **escape**        | —    | —      | —    | —   | —     | —     | —         | —             | —      |
+| **testhelpers**   | —    | —      | —    | —   | —     | —     | —         | —             | —      |
+| **root**          | ✅   | —      | —    | —   | —     | —     | —         | —             | —      |
+| **d2**            | —    | ✅     | ✅   | —   | —     | —     | —         | —             | —      |
+| **graph**         | —    | ✅     | ✅   | —   | —     | —     | —         | —             | —      |
+| **table**         | —    | —      | ✅   | —   | —     | —     | —         | —             | —      |
+| **delimited**     | —    | —      | ✅   | —   | —     | —     | —         | —             | —      |
+| **serialization** | —    | —      | ✅   | —   | —     | —     | —         | —             | —      |
+| **markup**        | —    | ✅     | ✅   | —   | —     | —     | —         | —             | —      |
+| **integration**   | —    | —      | ✅   | ✅  | ✅    | ✅    | ✅        | ✅            | ✅     |
+| **examples**      | —    | —      | ✅   | ✅  | ✅    | ✅    | ✅        | ✅            | ✅     |
 
 **Cycles:** None. All dependencies point downward (higher row → lower column).
 
@@ -89,7 +98,8 @@ No module appears on both sides of `<` in any chain. Therefore the graph is a DA
 ## Key Properties
 
 1. **Root has ZERO imports from sub-modules** — verified by `go mod graph`
-2. **`go get github.com/larsartmann/go-output`** pulls only root + enum + escape + yaml + x/term + branded-id — zero lipgloss, zero d2, zero graph
+2. **`go get github.com/larsartmann/go-output`** pulls only root + enum + x/term + branded-id — zero lipgloss, zero yaml, zero escape
 3. **Each format module is independently versionable** — d2, graph, table can evolve at their own pace
 4. **sort/ is deleted** — was deprecated, now fully removed. Use `slices.SortStableFunc` + `cmp.Compare` from stdlib
-5. **testhelpers/ is shared** — zero deps, used by d2, graph, and root for test assertions
+5. **registry.go is deleted** — renderer factory registry removed, replaced by `TableDataMarshaler` dispatch
+6. **testhelpers/ is shared** — zero deps, used by d2, graph, and root for test assertions
