@@ -28,11 +28,11 @@ for _, row := range data.GetRows() {
 }
 out, _ := md.Render()
 
-// JSON
-json, _ := output.MarshalJSONIndent(projects, "", "  ")
+// JSON (any data — requires go-output/serialization)
+data, _ := serialization.MarshalJSONIndent(projects, "", "  ")
 
-// CSV
-w := output.NewCSVWriter(os.Stdout)
+// CSV (requires go-output/delimited)
+w := delimited.NewCSVWriter(os.Stdout)
 w.WriteHeader(data.GetHeaders())
 for _, row := range data.GetRows() {
     w.WriteRow(row)
@@ -52,7 +52,7 @@ fmt.Println(format.Shapes())                     // [table tree graph]
 
 - **12 formats, one API** — Same data, different renderers. No format-specific code paths.
 - **Type-safe enums** — `Format`, `ColorMode`, `SortBy` — all validated at parse time, never raw strings.
-- **Zero heavy deps in root module** — `go get go-output` pulls only `go-faster/yaml` and `x/term`. Lipgloss is isolated in `table/`, D2 and graph renderers in their own modules.
+- **Zero heavy deps in root module** — `go get go-output` pulls only `x/term`. YAML is isolated in `serialization/`, lipgloss in `table/`, D2 and graph renderers in their own modules.
 - **Branded IDs** — Phantom types prevent mixing D2NodeID, TreeNodeID, GraphNodeID at compile time.
 - **Streaming** — `StreamingHTMLRenderer` for large datasets with minimal memory.
 - **Extensible registry** — Register custom renderers for runtime dispatch.
@@ -82,42 +82,50 @@ type Renderer interface {
 }
 ```
 
+```go
+import (
+    "github.com/larsartmann/go-output"
+    "github.com/larsartmann/go-output/delimited"
+    "github.com/larsartmann/go-output/serialization"
+)
+```
+
 ### Table Formats
 
 ```go
-// JSON table (array of objects)
-jt := output.NewJSONTableRenderer()
+// JSON table (array of objects — requires go-output/serialization)
+jt := serialization.NewJSONTableRenderer()
 jt.SetHeaders([]string{"Name", "Health"})
 jt.AddRow([]string{"Alpha", "90%"})
 out, _ := jt.Render()
 // [{"Name": "Alpha", "Health": "90%"}]
 
-// YAML table (sequence of mappings)
-yt := output.NewYAMLTableRenderer()
+// YAML table (sequence of mappings — requires go-output/serialization)
+yt := serialization.NewYAMLTableRenderer()
 yt.SetHeaders([]string{"Name", "Health"})
 yt.AddRow([]string{"Alpha", "90%"})
 out, _ := yt.Render()
 
-// JSON (any data)
-data, _ := output.MarshalJSONIndent(projects, "", "  ")
+// JSON (any data — requires go-output/serialization)
+data, _ := serialization.MarshalJSONIndent(projects, "", "  ")
 
-// CSV
-w := output.NewCSVWriter(os.Stdout)
+// CSV (requires go-output/delimited)
+w := delimited.NewCSVWriter(os.Stdout)
 w.WriteHeader([]string{"Name", "Value"})
 w.WriteRow([]string{"Item", "123"})
 w.Flush()
 
-// TSV
-tw := output.NewTSVWriter(os.Stdout)
+// TSV (requires go-output/delimited)
+tw := delimited.NewTSVWriter(os.Stdout)
 tw.WriteHeader([]string{"Name", "Value"})
 tw.WriteRow([]string{"Item", "123"})
 tw.Flush()
 
-// XML
-data, _ := output.MarshalXMLFromTableData(tableData)
+// XML (requires go-output/markup)
+data, _ := markup.MarshalXMLFromTableData(tableData)
 
-// YAML (any data)
-data, _ := output.MarshalYAML(projects)
+// YAML (any data — requires go-output/serialization)
+data, _ := serialization.MarshalYAML(projects)
 
 // Markdown table
 md := output.NewMarkdownTable()
@@ -147,22 +155,22 @@ out, _ := tree.Render()
 // ├── Alpha
 // └── Beta
 
-// JSON tree
-jt := output.NewJSONTreeRenderer()
+// JSON tree (requires go-output/serialization)
+jt := serialization.NewJSONTreeRenderer()
 jt.SetRoot(root)
 out, _ := jt.Render()
 // {"id": "root", "label": "Projects", "children": [...]}
 
-// YAML tree
-yt := output.NewYAMLTreeRenderer()
+// YAML tree (requires go-output/serialization)
+yt := serialization.NewYAMLTreeRenderer()
 yt.SetRoot(root)
 out, _ := yt.Render()
 // id: root
 // label: Projects
 // children: ...
 
-// HTML tree (collapsible)
-ht := output.NewHTMLTreeRenderer()
+// HTML tree (requires go-output/markup)
+ht := markup.NewHTMLTreeRenderer()
 ht.SetRoot(root)
 out, _ := ht.Render()
 ```
@@ -192,15 +200,15 @@ out, _ := renderer.Render()
 renderer := graph.MermaidFromTableData(data)
 out, _ := renderer.Render()
 
-// JSON graph
-jg := output.NewJSONGraphRenderer()
+// JSON graph (requires go-output/serialization)
+jg := serialization.NewJSONGraphRenderer()
 jg.SetNodes(nodes)
 jg.SetEdges(edges)
 out, _ := jg.Render()
 // {"nodes": [...], "edges": [...]}
 
-// YAML graph
-yg := output.NewYAMLGraphRenderer()
+// YAML graph (requires go-output/serialization)
+yg := serialization.NewYAMLGraphRenderer()
 yg.SetNodes(nodes)
 yg.SetEdges(edges)
 out, _ := yg.Render()
@@ -243,9 +251,12 @@ go get github.com/larsartmann/go-output
 Sub-modules for specific formats:
 
 ```bash
-go get github.com/larsartmann/go-output/table   # Terminal tables with lipgloss
-go get github.com/larsartmann/go-output/d2     # D2 diagrams
-go get github.com/larsartmann/go-output/graph  # DOT + Mermaid renderers
+go get github.com/larsartmann/go-output/delimited       # CSV + TSV writers
+go get github.com/larsartmann/go-output/serialization   # JSON + YAML marshaling
+go get github.com/larsartmann/go-output/markup          # XML + HTML + Streaming HTML
+go get github.com/larsartmann/go-output/table           # Terminal tables with lipgloss
+go get github.com/larsartmann/go-output/d2              # D2 diagrams
+go get github.com/larsartmann/go-output/graph           # DOT + Mermaid renderers
 ```
 
 ## Branded IDs
@@ -307,7 +318,7 @@ formats := output.RegisteredFormats()
 For large datasets, stream output incrementally:
 
 ```go
-renderer := output.NewStreamingHTMLRenderer()
+renderer := markup.NewStreamingHTMLRenderer()
 renderer.SetData(tableData)
 _ = renderer.Stream(os.Stdout)
 ```
@@ -353,12 +364,19 @@ safeID := escape.D2("my-node.with.dots")
 
 ## Dependencies
 
-Root module — zero lipgloss dependencies:
+Root module — zero lipgloss, zero yaml in production code:
+
+```go
+require (
+    golang.org/x/term v0.43.0
+)
+```
+
+Serialization module (JSON + YAML — install separately):
 
 ```go
 require (
     github.com/go-faster/yaml v0.4.6
-    golang.org/x/term v0.42.0
 )
 ```
 
@@ -415,7 +433,7 @@ golangci-lint run --fix ./...   # Lint
 This library is pre-v1. The following guarantees apply:
 
 - **Root module** (`github.com/larsartmann/go-output`): Public API is stable. Breaking changes will be documented in CHANGELOG.md.
-- **Sub-modules** (`d2`, `graph`, `table`): May evolve independently. Import them explicitly to opt in.
+- **Sub-modules** (`d2`, `graph`, `table`, `delimited`, `serialization`, `markup`): May evolve independently. Import them explicitly to opt in.
 - **`Renderer` interface**: Stable — all formats implement `Render() (string, error)`.
 - **`internal/` packages**: No stability guarantee. Do not import these.
 
