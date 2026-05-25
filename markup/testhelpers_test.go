@@ -12,13 +12,9 @@ var assertContains = testhelpers.AssertContains
 
 type errorWriter = testhelpers.ErrorWriter
 
-var errTest = testhelpers.ErrTest
-
 type writeNThenFailWriter = testhelpers.WriteNThenFailWriter
 
 type errorRenderer = testhelpers.ErrorRenderer
-
-type testRenderer = testhelpers.FixedRenderer
 
 func testEmptyRendererOutput(
 	t *testing.T,

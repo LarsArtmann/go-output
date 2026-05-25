@@ -195,51 +195,26 @@ func TestStreamingHTMLRendererMultipleRows(t *testing.T) {
 func TestStreamingHTMLRendererStreamMidWriteError(t *testing.T) {
 	t.Parallel()
 
-	r := NewStreamingHTMLRenderer()
-	r.SetHeaders([]string{"A"})
-	r.AddRow([]string{"1"})
+	for _, tt := range []struct {
+		name      string
+		remaining int
+	}{
+		{"header cell write", 2},
+		{"row cell write", 4},
+		{"row end chunk write", 5},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 
-	err := r.Stream(&writeNThenFailWriter{Remaining: 2})
-	if err == nil {
-		t.Fatal("expected error from mid-write failure")
-	}
-}
+			r := NewStreamingHTMLRenderer()
+			r.SetHeaders([]string{"A"})
+			r.AddRow([]string{"1"})
 
-func TestStreamingHTMLRendererWriteHeaderCellError(t *testing.T) {
-	t.Parallel()
-
-	r := NewStreamingHTMLRenderer()
-	r.SetHeaders([]string{"A", "B"})
-
-	err := r.Stream(&writeNThenFailWriter{Remaining: 2})
-	if err == nil {
-		t.Fatal("expected error during header cell write")
-	}
-}
-
-func TestStreamingHTMLRendererWriteRowCellError(t *testing.T) {
-	t.Parallel()
-
-	r := NewStreamingHTMLRenderer()
-	r.SetHeaders([]string{"A"})
-	r.AddRow([]string{"1"})
-
-	err := r.Stream(&writeNThenFailWriter{Remaining: 4})
-	if err == nil {
-		t.Fatal("expected error during row cell write")
-	}
-}
-
-func TestStreamingHTMLRendererWriteRowEndChunkError(t *testing.T) {
-	t.Parallel()
-
-	r := NewStreamingHTMLRenderer()
-	r.SetHeaders([]string{"A"})
-	r.AddRow([]string{"1"})
-
-	err := r.Stream(&writeNThenFailWriter{Remaining: 5})
-	if err == nil {
-		t.Fatal("expected error during row end chunk write")
+			err := r.Stream(&writeNThenFailWriter{Remaining: tt.remaining})
+			if err == nil {
+				t.Fatal("expected error")
+			}
+		})
 	}
 }
 
