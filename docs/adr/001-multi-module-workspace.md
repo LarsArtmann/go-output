@@ -19,20 +19,22 @@ Several sub-packages (enum, escape, testhelpers) have zero dependencies and are 
 
 ## Decision
 
-Split into 10 independent Go modules using `go.work` for local development:
+Split into 12 independent Go modules using `go.work` for local development:
 
 | Module             | Deps                                                | Isolation benefit                     |
 | ------------------ | --------------------------------------------------- | ------------------------------------- |
-| Root (`go-output`) | enum, escape, yaml, x/term, branded-id, testhelpers | Core formatters, no lipgloss/d2/graph |
+| Root (`go-output`) | enum, x/term, branded-id, testhelpers            | Core formatters, no lipgloss/d2/graph/yaml |
 | `enum/`            | testhelpers (tests only)                            | Reusable enum utilities               |
 | `escape/`          | None                                                | Reusable escaping (D2, DOT, Mermaid)  |
 | `testhelpers/`     | None                                                | Shared test assertions                |
 | `d2/`              | root, escape, testhelpers                           | D2 diagram renderer (rich domain)     |
 | `graph/`           | root, escape, testhelpers                           | DOT + Mermaid renderers               |
 | `table/`           | root, lipgloss                                      | **Lipgloss isolated** — biggest win   |
-| `sort/`            | None                                                | Deprecated — only ByField helper      |
-| `integration/`     | root, table, d2, graph                              | Cross-module tests                    |
-| `examples/`        | root, table, d2, graph                              | Usage examples                        |
+| `delimited/`       | root                                                | CSV + TSV writers                     |
+| `serialization/`   | root, go-faster/yaml                                | JSON + YAML isolated                  |
+| `markup/`          | root, escape                                        | XML + HTML + Streaming                |
+| `integration/`     | root, delimited, serialization, markup, table, d2, graph | Cross-module tests                 |
+| `examples/`        | root, delimited, serialization, markup, table, d2, graph | Usage examples                     |
 
 Root stays as `package output` — no core/ directory, no package rename.
 
@@ -49,14 +51,14 @@ Root stays as `package output` — no core/ directory, no package rename.
 
 **Positive:**
 
-- Users who only need JSON/YAML/CSV get zero lipgloss, zero d2, zero graph deps
+- Users who only need JSON/YAML/CSV get zero lipgloss, zero d2, zero graph, zero yaml, zero escape deps
 - enum, escape, testhelpers can be imported independently
 - Each module can be versioned independently (future)
 - Follows go-cqrs-lite workspace pattern
-- CI tests all 10 modules independently
+- CI tests all 12 modules independently
 
 **Negative:**
 
-- More go.mod files to maintain (10 total)
+- More go.mod files to maintain (12 total)
 - Replace directives needed in every consuming module for standalone dev
 - `render_tabledata.go` cannot call d2/graph constructors (returns `UnsupportedFormatError`)
