@@ -35,8 +35,8 @@ This project uses Go workspace modules. Each sub-package with its own `go.mod` i
 | `d2/`                   | ✅     | root, escape, testhelpers                           | D2 diagram renderer (rich domain model) |
 | `graph/`                | ✅     | root, escape, testhelpers                           | DOT + Mermaid renderers                 |
 | `table/`                | ✅     | root, lipgloss                                      | **Lipgloss isolated from root**         |
-| `integration/`          | ✅     | root, table, d2, graph                              | Cross-module tests                      |
-| `examples/`             | ✅     | root, table, d2, graph                              | Usage examples                          |
+| `integration/`          | ✅     | root, delimited, serialization, markup, table, d2, graph | Cross-module tests                      |
+| `examples/`             | ✅     | root, delimited, serialization, markup, table, d2, graph | Usage examples                          |
 
 `go.work` is gitignored (local dev only). Each module uses `replace` directives for standalone development.
 
