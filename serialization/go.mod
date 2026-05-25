@@ -21,6 +21,5 @@ require (
 
 replace (
 	github.com/larsartmann/go-output => ../
-	github.com/larsartmann/go-output/delimited => ../delimited
 	github.com/larsartmann/go-output/testhelpers => ../testhelpers
 )
