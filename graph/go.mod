@@ -3,9 +3,15 @@ module github.com/larsartmann/go-output/graph
 go 1.26.2
 
 require (
-	github.com/larsartmann/go-output v0.5.0
+	github.com/larsartmann/go-output v0.0.0
 	github.com/larsartmann/go-output/escape v0.0.0
 	github.com/larsartmann/go-output/testhelpers v0.0.0
+)
+
+replace (
+	github.com/larsartmann/go-output => ../
+	github.com/larsartmann/go-output/escape => ../escape
+	github.com/larsartmann/go-output/testhelpers => ../testhelpers
 )
 
 require (
