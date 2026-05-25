@@ -24,7 +24,7 @@ type TableDataMarshaler func(w io.Writer, data *TableData, opts RenderOptions) e
 
 var (
 	//nolint:gochecknoglobals // Registry for TableData marshalers, populated by sub-module init().
-	tableDataMarshalers   = map[Format]TableDataMarshaler{}
+	tableDataMarshalers = map[Format]TableDataMarshaler{}
 	//nolint:gochecknoglobals // Mutex protects concurrent access to tableDataMarshalers.
 	tableDataMarshalersMu sync.RWMutex
 )

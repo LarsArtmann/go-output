@@ -5,6 +5,7 @@ go 1.26.2
 require (
 	github.com/larsartmann/go-output v0.0.0
 	github.com/larsartmann/go-output/escape v0.0.0
+	github.com/larsartmann/go-output/testhelpers v0.0.0
 )
 
 require (

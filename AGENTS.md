@@ -26,15 +26,15 @@ https://github.com/larsartmann/go-output
 
 This project uses Go workspace modules. Each sub-package with its own `go.mod` is an independent module:
 
-| Module                  | go.mod | Deps                                                | Notes                                   |
-| ----------------------- | ------ | --------------------------------------------------- | --------------------------------------- |
-| Root (`package output`) | ✅     | enum, escape, yaml, x/term, branded-id, testhelpers | Core types + formatters                 |
-| `enum/`                 | ✅     | testhelpers (tests only)                            | Generic enum utilities                  |
-| `escape/`               | ✅     | None                                                | Format-specific escaping                |
-| `testhelpers/`          | ✅     | None                                                | Shared test assertions (non-internal)   |
-| `d2/`                   | ✅     | root, escape, testhelpers                           | D2 diagram renderer (rich domain model) |
-| `graph/`                | ✅     | root, escape, testhelpers                           | DOT + Mermaid renderers                 |
-| `table/`                | ✅     | root, lipgloss                                      | **Lipgloss isolated from root**         |
+| Module                  | go.mod | Deps                                                     | Notes                                   |
+| ----------------------- | ------ | -------------------------------------------------------- | --------------------------------------- |
+| Root (`package output`) | ✅     | enum, escape, yaml, x/term, branded-id, testhelpers      | Core types + formatters                 |
+| `enum/`                 | ✅     | testhelpers (tests only)                                 | Generic enum utilities                  |
+| `escape/`               | ✅     | None                                                     | Format-specific escaping                |
+| `testhelpers/`          | ✅     | None                                                     | Shared test assertions (non-internal)   |
+| `d2/`                   | ✅     | root, escape, testhelpers                                | D2 diagram renderer (rich domain model) |
+| `graph/`                | ✅     | root, escape, testhelpers                                | DOT + Mermaid renderers                 |
+| `table/`                | ✅     | root, lipgloss                                           | **Lipgloss isolated from root**         |
 | `integration/`          | ✅     | root, delimited, serialization, markup, table, d2, graph | Cross-module tests                      |
 | `examples/`             | ✅     | root, delimited, serialization, markup, table, d2, graph | Usage examples                          |
 

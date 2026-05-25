@@ -9,15 +9,15 @@
 
 ## Overall Progress
 
-| Phase     | Description                 | Status     | Tasks Done |
-| --------- | --------------------------- | ---------- | ---------- |
-| Phase 0   | Foundation — Export symbols | ✅ DONE    | 6/6        |
-| Phase 1   | Extract `delimited/`        | ✅ DONE    | 8/8        |
-| Phase 2   | Extract `markup/`           | ✅ DONE    | 9/9        |
-| Phase 3   | Extract `serialization/`    | ✅ DONE    | 9/9        |
-| Phase 4   | Update dependents           | ✅ DONE    | 7/7        |
-| Phase 5   | Root cleanup                | ✅ DONE    | 6/6        |
-| Phase 6   | Docs + verify               | ✅ DONE    | 6/6        |
+| Phase     | Description                 | Status      | Tasks Done |
+| --------- | --------------------------- | ----------- | ---------- |
+| Phase 0   | Foundation — Export symbols | ✅ DONE     | 6/6        |
+| Phase 1   | Extract `delimited/`        | ✅ DONE     | 8/8        |
+| Phase 2   | Extract `markup/`           | ✅ DONE     | 9/9        |
+| Phase 3   | Extract `serialization/`    | ✅ DONE     | 9/9        |
+| Phase 4   | Update dependents           | ✅ DONE     | 7/7        |
+| Phase 5   | Root cleanup                | ✅ DONE     | 6/6        |
+| Phase 6   | Docs + verify               | ✅ DONE     | 6/6        |
 | **Total** |                             | **✅ 100%** | **51/51**  |
 
 ---
@@ -181,27 +181,27 @@ Integration + examples need new import paths.
 
 ## Phase 5: Root Cleanup + Verify
 
-| #   | Task                                                             | Status      | Notes                                                                                                                                                                                                                                                    |
-| --- | ---------------------------------------------------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 40  | Clean root `output_test_helpers_test.go`: remove unused helpers. | ✅ DONE     | Removed 7 unused declarations: `htmlEscapeTestRenderer`, `assertMarshalError`, `testHTMLEscapeShared`, `testHTMLEmptyExpected`, `newTestNodeWithShape`, `testEdgesABC`, `testEmptyRendererOutput`. |
-| 41  | Remove `benchmarks_test.go` entries for moved formats.           | ✅ DONE     | Only root benchmarks remain: `ASCIITreeRenderer`, `TableDataCreateRowEdges`, `MarkdownTable`                                                                                                                                                             |
-| 42  | Remove `fuzz_test.go` entries for moved formats.                 | ✅ DONE     | Only `FuzzMarkdownTable` + generic `fuzzEnumTest` helper remain                                                                                                                                                                                          |
-| 43  | Remove `userjourney_test.go` format-specific parts.              | ⚠️ KEPT    | `userjourney_test.go` kept in root — tests cross-module user journeys. Depguard warns on `delimited`/`serialization` imports (acceptable for integration-style tests).                                |
-| 44  | Update root `go.mod`: remove `go-faster/yaml`, remove `escape`.  | ✅ DONE     | `escape` and `markup` replace directives removed (root doesn't depend on them). `go-faster/yaml` stays in `require` — justified by `internal/gentest/assert.go`.                                         |
-| 45  | Run full root test suite.                                        | ✅ DONE     | Zero compile errors, all tests pass                                                                                                                                                                                                                      |
+| #   | Task                                                             | Status  | Notes                                                                                                                                                                                              |
+| --- | ---------------------------------------------------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 40  | Clean root `output_test_helpers_test.go`: remove unused helpers. | ✅ DONE | Removed 7 unused declarations: `htmlEscapeTestRenderer`, `assertMarshalError`, `testHTMLEscapeShared`, `testHTMLEmptyExpected`, `newTestNodeWithShape`, `testEdgesABC`, `testEmptyRendererOutput`. |
+| 41  | Remove `benchmarks_test.go` entries for moved formats.           | ✅ DONE | Only root benchmarks remain: `ASCIITreeRenderer`, `TableDataCreateRowEdges`, `MarkdownTable`                                                                                                       |
+| 42  | Remove `fuzz_test.go` entries for moved formats.                 | ✅ DONE | Only `FuzzMarkdownTable` + generic `fuzzEnumTest` helper remain                                                                                                                                    |
+| 43  | Remove `userjourney_test.go` format-specific parts.              | ⚠️ KEPT | `userjourney_test.go` kept in root — tests cross-module user journeys. Depguard warns on `delimited`/`serialization` imports (acceptable for integration-style tests).                             |
+| 44  | Update root `go.mod`: remove `go-faster/yaml`, remove `escape`.  | ✅ DONE | `escape` and `markup` replace directives removed (root doesn't depend on them). `go-faster/yaml` stays in `require` — justified by `internal/gentest/assert.go`.                                   |
+| 45  | Run full root test suite.                                        | ✅ DONE | Zero compile errors, all tests pass                                                                                                                                                                |
 
 ---
 
 ## Phase 6: Documentation + Final Verification
 
-| #   | Task                                                                      | Status      | Notes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| --- | ------------------------------------------------------------------------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 46  | Update `AGENTS.md`: new module table, dependency graph, import paths.     | ✅ DONE     | Module table has 12 modules, dependency graph updated, go.work example includes all modules                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| 47  | Update `docs/modularization/root-split-proposal.md`: mark as implemented. | ✅ DONE     | Added implementation status header with date and summary                   |
-| 48  | Update `README.md`: new import path examples.                             | ✅ DONE     | All 13 stale `output.X` references updated to correct sub-module imports (`delimited`, `serialization`, `markup`). Dependencies section updated.       |
-| 49  | Update `go.work` example in AGENTS.md.                                    | ✅ DONE     | Includes `./serialization`, `./delimited`, `./markup`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| 50  | Run ALL modules: test suite.                                              | ✅ DONE     | All modules build and test without errors                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| 51  | Run `golangci-lint` across ALL modules.                                   | ✅ DONE     | Depguard config updated for new sub-modules. `.golangci.yml` present.     |
+| #   | Task                                                                      | Status  | Notes                                                                                                                                            |
+| --- | ------------------------------------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 46  | Update `AGENTS.md`: new module table, dependency graph, import paths.     | ✅ DONE | Module table has 12 modules, dependency graph updated, go.work example includes all modules                                                      |
+| 47  | Update `docs/modularization/root-split-proposal.md`: mark as implemented. | ✅ DONE | Added implementation status header with date and summary                                                                                         |
+| 48  | Update `README.md`: new import path examples.                             | ✅ DONE | All 13 stale `output.X` references updated to correct sub-module imports (`delimited`, `serialization`, `markup`). Dependencies section updated. |
+| 49  | Update `go.work` example in AGENTS.md.                                    | ✅ DONE | Includes `./serialization`, `./delimited`, `./markup`                                                                                            |
+| 50  | Run ALL modules: test suite.                                              | ✅ DONE | All modules build and test without errors                                                                                                        |
+| 51  | Run `golangci-lint` across ALL modules.                                   | ✅ DONE | Depguard config updated for new sub-modules. `.golangci.yml` present.                                                                            |
 
 ---
 
@@ -209,22 +209,22 @@ Integration + examples need new import paths.
 
 All original execution plan tasks are complete.
 
-| #   | Original Task | Resolution                                                                                                                                                          |
-| --- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| R1  | #48           | ✅ Fixed — all 13 stale README examples updated to use correct sub-module imports                                                                                   |
-| R2  | #47           | ✅ Fixed — `root-split-proposal.md` marked as implemented with status header                                                                                       |
-| R3  | #40           | ✅ Fixed — 7 unused declarations removed from `output_test_helpers_test.go`, 3 from `testing_test.go`, 3 from `benchmarks_test.go`                                 |
-| R4  | #43           | ⚠️ Kept — `userjourney_test.go` stays in root as integration-style cross-module test. Depguard warnings are acceptable for user journey tests.                   |
+| #   | Original Task | Resolution                                                                                                                                     |
+| --- | ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| R1  | #48           | ✅ Fixed — all 13 stale README examples updated to use correct sub-module imports                                                              |
+| R2  | #47           | ✅ Fixed — `root-split-proposal.md` marked as implemented with status header                                                                   |
+| R3  | #40           | ✅ Fixed — 7 unused declarations removed from `output_test_helpers_test.go`, 3 from `testing_test.go`, 3 from `benchmarks_test.go`             |
+| R4  | #43           | ⚠️ Kept — `userjourney_test.go` stays in root as integration-style cross-module test. Depguard warnings are acceptable for user journey tests. |
 
 ### Additional fixes applied during final cleanup
 
-| #   | Fix                                                                                   | Priority  |
-| --- | ------------------------------------------------------------------------------------- | --------- |
-| A1  | Fixed CI: added `delimited`, `serialization`, `markup` to build/test/tidy/vulncheck  | HIGH      |
-| A2  | Fixed `d2/go.mod` and `graph/go.mod`: added replace directives, changed v0.5.0→v0.0  | HIGH      |
-| A3  | Updated `.golangci.yml` depguard + gomoddirectives for new sub-modules               | MED       |
-| A4  | Removed stale `escape`/`markup` replace directives from root `go.mod`                | LOW       |
-| A5  | Updated CHANGELOG.md with extraction entries, consolidated duplicate sections        | MED       |
+| #   | Fix                                                                                 | Priority |
+| --- | ----------------------------------------------------------------------------------- | -------- |
+| A1  | Fixed CI: added `delimited`, `serialization`, `markup` to build/test/tidy/vulncheck | HIGH     |
+| A2  | Fixed `d2/go.mod` and `graph/go.mod`: added replace directives, changed v0.5.0→v0.0 | HIGH     |
+| A3  | Updated `.golangci.yml` depguard + gomoddirectives for new sub-modules              | MED      |
+| A4  | Removed stale `escape`/`markup` replace directives from root `go.mod`               | LOW      |
+| A5  | Updated CHANGELOG.md with extraction entries, consolidated duplicate sections       | MED      |
 
 ---
 
@@ -232,8 +232,8 @@ All original execution plan tasks are complete.
 
 | Metric                               | Planned                                                  | Actual                                                                                                       |
 | ------------------------------------ | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| **Total tasks**                      | 51                                                       | 51 done (100%)                                                                               |
-| **Phases**                           | 7 (0-6)                                                  | 7 complete                                                                         |
+| **Total tasks**                      | 51                                                       | 51 done (100%)                                                                                               |
+| **Phases**                           | 7 (0-6)                                                  | 7 complete                                                                                                   |
 | **New modules**                      | 3 (`delimited/`, `serialization/`, `markup/`)            | ✅ 3 created, all with tests + init() registration                                                           |
 | **Root file reduction**              | 54 → ~25                                                 | 54 → ~20 source files (better than planned)                                                                  |
 | **Root deps removed from prod code** | `go-faster/yaml`, `escape`                               | ✅ Zero yaml/escape imports in root `.go` files. `go-faster/yaml` in go.mod justified by `internal/gentest`. |
@@ -252,17 +252,17 @@ All original execution plan tasks are complete.
 | Circular imports between new modules         | Low        | High   | `marshal.go` stays in root                  | ✅ Mitigated — zero circular deps               |
 | Integration tests break                      | High       | Medium | Phase 4 dedicates 5 tasks to fixing imports | ✅ Mitigated                                    |
 | `go-faster/yaml` still in root go.mod        | Low        | Low    | Verify after Phase 5 cleanup                | ⚠️ Stays — justified by `internal/gentest`      |
-| README examples stale                        | High       | Medium | Task 48 update                              | ✅ Fixed — all examples updated        |
+| README examples stale                        | High       | Medium | Task 48 update                              | ✅ Fixed — all examples updated                 |
 
 ## Estimated Total Time
 
-| Phase                   | Tasks  | Est. Time            | Actual               |
-| ----------------------- | ------ | -------------------- | -------------------- |
-| Phase 0: Foundation     | 6      | ~39 min              | ✅ Done              |
-| Phase 1: delimited/     | 8      | ~50 min              | ✅ Done              |
-| Phase 2: markup/        | 9      | ~62 min              | ✅ Done              |
-| Phase 3: serialization/ | 9      | ~67 min              | ✅ Done              |
-| Phase 4: Dependents     | 7      | ~41 min              | ✅ Done              |
-| Phase 5: Cleanup        | 6      | ~34 min              | ✅ Done          |
-| Phase 6: Docs + Verify  | 6      | ~39 min              | ✅ Done          |
-| **Total**               | **51** | **~332 min (~5.5h)** | **51/51 done (100%)**** |
+| Phase                   | Tasks  | Est. Time            | Actual                    |
+| ----------------------- | ------ | -------------------- | ------------------------- |
+| Phase 0: Foundation     | 6      | ~39 min              | ✅ Done                   |
+| Phase 1: delimited/     | 8      | ~50 min              | ✅ Done                   |
+| Phase 2: markup/        | 9      | ~62 min              | ✅ Done                   |
+| Phase 3: serialization/ | 9      | ~67 min              | ✅ Done                   |
+| Phase 4: Dependents     | 7      | ~41 min              | ✅ Done                   |
+| Phase 5: Cleanup        | 6      | ~34 min              | ✅ Done                   |
+| Phase 6: Docs + Verify  | 6      | ~39 min              | ✅ Done                   |
+| **Total**               | **51** | **~332 min (~5.5h)** | **51/51 done (100%)\*\*** |
