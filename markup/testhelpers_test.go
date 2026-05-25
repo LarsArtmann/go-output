@@ -1,7 +1,6 @@
 package markup
 
 import (
-	"errors"
 	"strings"
 	"testing"
 
@@ -13,23 +12,13 @@ var assertContains = testhelpers.AssertContains
 
 type errorWriter = testhelpers.ErrorWriter
 
-var errTest = errors.New("test error")
+var errTest = testhelpers.ErrTest
 
 type writeNThenFailWriter = testhelpers.WriteNThenFailWriter
 
-type errorRenderer struct{}
+type errorRenderer = testhelpers.ErrorRenderer
 
-func (e *errorRenderer) Render() (string, error) {
-	return "", errTest
-}
-
-type testRenderer struct {
-	output string
-}
-
-func (r *testRenderer) Render() (string, error) {
-	return r.output, nil
-}
+type testRenderer = testhelpers.FixedRenderer
 
 func testEmptyRendererOutput(
 	t *testing.T,

@@ -1,16 +1,13 @@
 package output
 
 import (
-	"errors"
 	"slices"
 	"strings"
 	"testing"
 
 	"github.com/larsartmann/go-output/internal/gentest"
+	"github.com/larsartmann/go-output/testhelpers"
 )
-
-// errTest is a static test error for MustRender panic testing.
-var errTest = errors.New("test error")
 
 func TestFormatSupports(t *testing.T) {
 	t.Parallel()
@@ -157,11 +154,5 @@ func TestMustRenderPanics(t *testing.T) {
 	}()
 
 	// Use a renderer that always errors
-	_ = MustRender(&errorRenderer{})
-}
-
-type errorRenderer struct{}
-
-func (e *errorRenderer) Render() (string, error) {
-	return "", errTest
+	_ = MustRender(&testhelpers.ErrorRenderer{})
 }

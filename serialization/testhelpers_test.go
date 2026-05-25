@@ -2,8 +2,6 @@ package serialization
 
 import (
 	"encoding/json"
-	"errors"
-	"io"
 	"strings"
 	"testing"
 
@@ -13,15 +11,7 @@ import (
 
 var assertContains = testhelpers.AssertContains
 
-type errorWriter struct{}
-
-var errWrite = errors.New("write error")
-
-func (e *errorWriter) Write(_ []byte) (int, error) {
-	return 0, errWrite
-}
-
-var _ io.Writer = (*errorWriter)(nil)
+type errorWriter = testhelpers.ErrorWriter
 
 func assertOutputContains(t *testing.T, output, substr string) {
 	t.Helper()

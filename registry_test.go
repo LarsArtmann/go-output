@@ -4,6 +4,8 @@ import (
 	"slices"
 	"sync"
 	"testing"
+
+	"github.com/larsartmann/go-output/testhelpers"
 )
 
 // testRegistryFormat avoids collisions with real format constants in parallel tests.
@@ -26,7 +28,7 @@ func TestRegister(t *testing.T) {
 
 // testRendererFunc creates a test renderer for the given output string.
 func testRendererFunc(output string) func() Renderer {
-	return func() Renderer { return &testRenderer{output: output} }
+	return func() Renderer { return &testhelpers.FixedRenderer{Output: output} }
 }
 
 func TestRegisterDuplicate(t *testing.T) {
@@ -100,12 +102,12 @@ func TestRegisteredFormats(t *testing.T) {
 	Unregister(formatA)
 	Unregister(formatB)
 
-	err := Register(formatA, func() Renderer { return &testRenderer{output: ""} })
+	err := Register(formatA, func() Renderer { return &testhelpers.FixedRenderer{Output: ""} })
 	if err != nil {
 		t.Fatalf("Register(A) error = %v", err)
 	}
 
-	err = Register(formatB, func() Renderer { return &testRenderer{output: ""} })
+	err = Register(formatB, func() Renderer { return &testhelpers.FixedRenderer{Output: ""} })
 	if err != nil {
 		t.Fatalf("Register(B) error = %v", err)
 	}
@@ -169,12 +171,4 @@ func TestRegistryConcurrency(t *testing.T) {
 	}
 
 	wg.Wait()
-}
-
-type testRenderer struct {
-	output string
-}
-
-func (r *testRenderer) Render() (string, error) {
-	return r.output, nil
 }
