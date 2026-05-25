@@ -17,6 +17,9 @@ type RenderOptions struct {
 
 	// Writer overrides the default os.Stdout output destination.
 	Writer io.Writer
+
+	// ColorMode controls terminal color output. Defaults to ColorModeAuto.
+	ColorMode ColorMode
 }
 
 // TableDataMarshaler renders TableData in a specific format to a writer.
@@ -82,7 +85,7 @@ func RenderTableData(data *TableData, format Format, opts ...RenderOptions) erro
 	case FormatMarkdown:
 		return renderMarkdownTableData(w, data, o)
 	case FormatTree:
-		return renderTreeTableData(w, data)
+		return renderTreeTableData(w, data, o)
 	case FormatD2, FormatMermaid, FormatDOT:
 		return &UnsupportedFormatError{Format: format}
 	default:
@@ -117,6 +120,7 @@ func renderMarkdownTableData(w io.Writer, data *TableData, opts RenderOptions) e
 	}
 
 	mdTable := NewMarkdownTableFromData(data)
+	mdTable.SetColorMode(opts.ColorMode)
 
 	out, err := mdTable.Render()
 	if err != nil {
@@ -131,8 +135,12 @@ func renderMarkdownTableData(w io.Writer, data *TableData, opts RenderOptions) e
 	return nil
 }
 
-func renderTreeTableData(w io.Writer, data *TableData) error {
+func renderTreeTableData(w io.Writer, data *TableData, opts ...RenderOptions) error {
 	renderer := TreeRendererFromTableData(data)
+
+	if len(opts) > 0 {
+		renderer.SetColorMode(opts[0].ColorMode)
+	}
 
 	out, err := renderer.Render()
 	if err != nil {

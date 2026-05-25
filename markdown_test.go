@@ -188,6 +188,66 @@ func TestNewMarkdownTableFromDataEmpty(t *testing.T) {
 	}
 }
 
+func TestMarkdownColorModeNever(t *testing.T) {
+	t.Parallel()
+
+	m := NewMarkdownTable()
+	m.SetHeaders([]string{"Name", "Age"}).
+		AddRow([]string{"Alice", "30"})
+	m.SetColorMode(ColorModeNever)
+
+	got, err := m.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
+	if strings.Contains(got, ansiBold) {
+		t.Error("ColorModeNever should not produce ANSI escape codes")
+	}
+	if strings.Contains(got, ansiDim) {
+		t.Error("ColorModeNever should not produce dim ANSI codes")
+	}
+
+	assertContains(t, got, "Name", "should contain header text without ANSI")
+	assertContains(t, got, "Alice", "should contain data without ANSI")
+}
+
+func TestMarkdownColorModeAlways(t *testing.T) {
+	t.Parallel()
+
+	m := NewMarkdownTable()
+	m.SetHeaders([]string{"Name", "Age"}).
+		AddRow([]string{"Alice", "30"})
+	m.SetColorMode(ColorModeAlways)
+
+	got, err := m.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
+	assertContains(t, got, ansiBold, "ColorModeAlways should bold headers")
+	assertContains(t, got, ansiReset, "ColorModeAlways should reset after bold")
+	assertContains(t, got, ansiDim, "ColorModeAlways should dim separators")
+	assertContains(t, got, "Name", "should contain header text")
+	assertContains(t, got, "Alice", "should contain data row")
+}
+
+func TestMarkdownColorModeDefault(t *testing.T) {
+	t.Parallel()
+
+	m := NewMarkdownTable()
+	m.SetHeaders([]string{"Col"}).
+		AddRow([]string{"Val"})
+
+	got, err := m.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
+	assertContains(t, got, "Col", "default render should contain header")
+	assertContains(t, got, "Val", "default render should contain row")
+}
+
 func TestMarkdownTableGetAlignmentOutOfBounds(t *testing.T) {
 	t.Parallel()
 

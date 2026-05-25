@@ -27,17 +27,19 @@ const (
 
 // MarkdownTable builds Markdown tables.
 type MarkdownTable struct {
-	headers []string
-	rows    [][]string
-	align   []Alignment
+	headers   []string
+	rows      [][]string
+	align     []Alignment
+	colorMode ColorMode
 }
 
 // NewMarkdownTable creates a new MarkdownTable.
 func NewMarkdownTable() *MarkdownTable {
 	return &MarkdownTable{
-		headers: nil,
-		rows:    nil,
-		align:   nil,
+		headers:   nil,
+		rows:      nil,
+		align:     nil,
+		colorMode: ColorModeAuto, //nolint:exhaustruct // align set via SetHeaders
 	}
 }
 
@@ -50,6 +52,12 @@ func NewMarkdownTableFromData(data *TableData) *MarkdownTable {
 		m.AddRow(row)
 	}
 
+	return m
+}
+
+// SetColorMode sets the color mode for terminal output.
+func (m *MarkdownTable) SetColorMode(mode ColorMode) *MarkdownTable {
+	m.colorMode = mode
 	return m
 }
 
@@ -115,12 +123,22 @@ func (m *MarkdownTable) calculateColumnWidths() []int {
 	return colWidths
 }
 
+func (m *MarkdownTable) useColor() bool {
+	return m.colorMode.ShouldColor()
+}
+
 func (m *MarkdownTable) writeHeader(b *strings.Builder, colWidths []int) {
 	b.WriteString("|")
 
 	for i, header := range m.headers {
 		b.WriteString(" ")
+		if m.useColor() {
+			b.WriteString(ansiBold)
+		}
 		b.WriteString(header)
+		if m.useColor() {
+			b.WriteString(ansiReset)
+		}
 		b.WriteString(strings.Repeat(" ", colWidths[i]-len(header)+1))
 		b.WriteString("|")
 	}
@@ -129,6 +147,10 @@ func (m *MarkdownTable) writeHeader(b *strings.Builder, colWidths []int) {
 }
 
 func (m *MarkdownTable) writeSeparator(b *strings.Builder, colWidths []int) {
+	if m.useColor() {
+		b.WriteString(ansiDim)
+	}
+
 	b.WriteString("|")
 
 	for i, width := range colWidths {
@@ -140,6 +162,10 @@ func (m *MarkdownTable) writeSeparator(b *strings.Builder, colWidths []int) {
 	}
 
 	b.WriteString("\n")
+
+	if m.useColor() {
+		b.WriteString(ansiReset)
+	}
 }
 
 func (m *MarkdownTable) getAlignmentMarkers(col int) (prefix, suffix string) {
