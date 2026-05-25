@@ -1,6 +1,10 @@
 package output
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/larsartmann/go-output/testhelpers"
+)
 
 // runSubtest runs a subtest with the standard parallel pattern.
 func runSubtest(t *testing.T, name string, testFunc func(*testing.T)) {
@@ -78,17 +82,4 @@ func testEnumString[T any](
 	})
 }
 
-func testAllowedValues(
-	t *testing.T,
-	name string,
-	got []string,
-	want []string,
-) {
-	t.Helper()
-
-	t.Run(name, func(t *testing.T) {
-		t.Parallel()
-
-		assertStringSliceEqual(t, name, got, want)
-	})
-}
+var testAllowedValues = testhelpers.TestAllowedValues

@@ -40,6 +40,30 @@ func AssertEqual[T comparable](t *testing.T, name string, input any, got, want T
 	}
 }
 
+// ExpectedOutput contains a substring to check and its corresponding error message.
+type ExpectedOutput struct {
+	Substring string
+	Message   string
+}
+
+// AssertOutputContains checks that output contains substr, failing with a descriptive error.
+func AssertOutputContains(t *testing.T, output, substr string) {
+	t.Helper()
+
+	if !strings.Contains(output, substr) {
+		t.Errorf("output should contain %q, got %q", substr, output)
+	}
+}
+
+// AssertMarshalError checks that a marshal function returns the expected error.
+func AssertMarshalError(t *testing.T, name string, err error, wantErr bool) {
+	t.Helper()
+
+	if (err != nil) != wantErr {
+		t.Errorf("%s() error = %v, wantErr %v", name, err, wantErr)
+	}
+}
+
 // StringEnum is a constraint for string-based enum types with IsValid().
 type StringEnum interface {
 	~string
@@ -93,6 +117,17 @@ func equalField[V comparable](name string, got, want V) FieldCheck {
 // StringField creates a FieldCheck for a string field.
 func StringField(name, got, want string) FieldCheck {
 	return equalField(name, got, want)
+}
+
+// TestAllowedValues runs a subtest checking that got matches want string slice.
+func TestAllowedValues(t *testing.T, name string, got, want []string) {
+	t.Helper()
+
+	t.Run(name, func(t *testing.T) {
+		t.Parallel()
+
+		AssertStringSliceEqual(t, name, got, want)
+	})
 }
 
 // IntField creates a FieldCheck for an int field.

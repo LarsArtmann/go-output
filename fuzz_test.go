@@ -3,15 +3,11 @@ package output
 import (
 	"strings"
 	"testing"
+
+	"github.com/larsartmann/go-output/testhelpers"
 )
 
-// stringEnum is a constraint for string-based enum types used in fuzz testing.
-type stringEnum interface {
-	~string
-	IsValid() bool
-}
-
-func fuzzEnumTest[E stringEnum](
+func fuzzEnumTest[E testhelpers.StringEnum](
 	t *testing.T,
 	s string,
 	parse func(string) (E, error),

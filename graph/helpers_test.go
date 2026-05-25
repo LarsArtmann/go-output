@@ -194,17 +194,4 @@ func testEnumString[T any](
 	})
 }
 
-func testAllowedValues(
-	t *testing.T,
-	name string,
-	got []string,
-	want []string,
-) {
-	t.Helper()
-
-	t.Run(name, func(t *testing.T) {
-		t.Parallel()
-
-		testhelpers.AssertStringSliceEqual(t, name, got, want)
-	})
-}
+var testAllowedValues = testhelpers.TestAllowedValues

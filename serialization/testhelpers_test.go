@@ -2,7 +2,6 @@ package serialization
 
 import (
 	"encoding/json"
-	"strings"
 	"testing"
 
 	"github.com/larsartmann/go-output"
@@ -11,15 +10,11 @@ import (
 
 var assertContains = testhelpers.AssertContains
 
+var assertOutputContains = testhelpers.AssertOutputContains
+
+var assertMarshalError = testhelpers.AssertMarshalError
+
 type errorWriter = testhelpers.ErrorWriter
-
-func assertOutputContains(t *testing.T, output, substr string) {
-	t.Helper()
-
-	if !strings.Contains(output, substr) {
-		t.Errorf("output should contain %q, got %q", substr, output)
-	}
-}
 
 func assertValidJSON(t *testing.T, output string) {
 	t.Helper()
@@ -34,14 +29,6 @@ func assertValidYAML(t *testing.T, output string) {
 
 	if output == "" {
 		t.Error("output should not be empty for valid YAML check")
-	}
-}
-
-func assertMarshalError(t *testing.T, name string, err error, wantErr bool) {
-	t.Helper()
-
-	if (err != nil) != wantErr {
-		t.Errorf("%s() error = %v, wantErr %v", name, err, wantErr)
 	}
 }
 
