@@ -41,7 +41,6 @@ func RegisterTableDataMarshaler(format Format, marshaler TableDataMarshaler) {
 func getTableDataMarshaler(format Format) (TableDataMarshaler, bool) {
 	tableDataMarshalersMu.RLock()
 	defer tableDataMarshalersMu.RUnlock()
-
 	m, ok := tableDataMarshalers[format]
 
 	return m, ok

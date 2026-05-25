@@ -70,18 +70,3 @@ func assertTreeNodeDepth(t testing.TB, root, child, grandchild *TreeNode) {
 		t.Errorf("Grandchild depth should be 2, got %d", grandchild.Depth())
 	}
 }
-
-// testExpectedOutputs builds a []ExpectedOutput from alternating substring/message pairs.
-func testExpectedOutputs(pairs ...string) []ExpectedOutput {
-	if len(pairs)%2 != 0 {
-		panic("testExpectedOutputs requires even number of arguments")
-	}
-
-	out := make([]ExpectedOutput, 0, len(pairs)/2)
-	for i := 0; i < len(pairs); i += 2 {
-		// gosec G602: Safe - i increments by 2, and len(pairs) is guaranteed even
-		out = append(out, ExpectedOutput{Substring: pairs[i], Message: pairs[i+1]}) //nolint:gosec
-	}
-
-	return out
-}

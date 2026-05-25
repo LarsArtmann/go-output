@@ -287,6 +287,9 @@ linters:
         text: package should be
         linters:
           - testpackage
+      - path: userjourney_test\.go
+        linters:
+          - depguard
       - path: integration/
         text: package should be
         linters:
