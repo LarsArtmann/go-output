@@ -11,6 +11,7 @@ import (
 	"github.com/larsartmann/go-output/delimited"
 	"github.com/larsartmann/go-output/graph"
 	"github.com/larsartmann/go-output/markup"
+	"github.com/larsartmann/go-output/plantuml"
 	"github.com/larsartmann/go-output/serialization"
 	"github.com/larsartmann/go-output/table"
 	"github.com/larsartmann/go-output/testhelpers"
@@ -61,6 +62,10 @@ func TestAllFormatsRender(t *testing.T) {
 		output.FormatD2,
 		output.FormatMermaid,
 		output.FormatDOT,
+		output.FormatJSONL,
+		output.FormatAsciiDoc,
+		output.FormatTOML,
+		output.FormatPlantUML,
 	}
 
 	for _, format := range formats {
@@ -157,6 +162,14 @@ func renderProject(format output.Format, projects []TestProject) string {
 		return renderMermaidFormat(projects)
 	case output.FormatDOT:
 		return renderDOTFormat(projects)
+	case output.FormatJSONL:
+		return renderJSONLFormat(projects)
+	case output.FormatAsciiDoc:
+		return renderAsciiDocFormat(projects)
+	case output.FormatTOML:
+		return renderTOMLFormat(projects)
+	case output.FormatPlantUML:
+		return renderPlantUMLFormat(projects)
 	default:
 		return ""
 	}
@@ -339,6 +352,44 @@ func renderDOTFormat(projects []TestProject) string {
 
 func renderMermaidFormat(projects []TestProject) string {
 	out, err := graph.MermaidFromTableData(newGraphTableData(projects)).Render()
+	if err != nil {
+		return ""
+	}
+
+	return out
+}
+
+func renderJSONLFormat(projects []TestProject) string {
+	data := newGraphTableData(projects)
+	b, _ := serialization.MarshalJSONLFromTableData(data)
+
+	return string(b)
+}
+
+func renderAsciiDocFormat(projects []TestProject) string {
+	data := &output.TableData{
+		Headers: []string{"Name", "Health", "Complexity"},
+		Rows:    formatProjectsToRows(projects),
+	}
+
+	b, _ := markup.MarshalAsciiDocFromTableData(data)
+
+	return string(b)
+}
+
+func renderTOMLFormat(projects []TestProject) string {
+	data := &output.TableData{
+		Headers: []string{"Name", "Health", "Complexity"},
+		Rows:    formatProjectsToRows(projects),
+	}
+
+	b, _ := serialization.MarshalTOMLFromTableData(data)
+
+	return string(b)
+}
+
+func renderPlantUMLFormat(projects []TestProject) string {
+	out, err := plantuml.PlantUMLFromTableData(newGraphTableData(projects)).Render()
 	if err != nil {
 		return ""
 	}

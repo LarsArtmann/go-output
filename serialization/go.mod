@@ -7,6 +7,7 @@ require (
 	github.com/larsartmann/go-output v0.0.0
 	github.com/larsartmann/go-output/testhelpers v0.0.0
 	github.com/larsartmann/go-output/testhelpers/graphtest v0.0.0
+	github.com/pelletier/go-toml/v2 v2.3.1
 )
 
 require (
@@ -22,6 +23,9 @@ require (
 
 replace (
 	github.com/larsartmann/go-output => ../
+	github.com/larsartmann/go-output/delimited => ../delimited
+	github.com/larsartmann/go-output/enum => ../enum
+	github.com/larsartmann/go-output/escape => ../escape
 	github.com/larsartmann/go-output/testhelpers => ../testhelpers
 	github.com/larsartmann/go-output/testhelpers/graphtest => ../testhelpers/graphtest
 )

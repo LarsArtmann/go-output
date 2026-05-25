@@ -23,6 +23,10 @@ const (
 	FormatTree     Format = "tree"
 	FormatMermaid  Format = "mermaid"
 	FormatDOT      Format = "dot"
+	FormatJSONL    Format = "jsonl"
+	FormatAsciiDoc Format = "asciidoc"
+	FormatTOML     Format = "toml"
+	FormatPlantUML Format = "plantuml"
 )
 
 // AllFormats contains all valid output format values.
@@ -40,6 +44,10 @@ var AllFormats = []Format{
 	FormatTree,
 	FormatMermaid,
 	FormatDOT,
+	FormatJSONL,
+	FormatAsciiDoc,
+	FormatTOML,
+	FormatPlantUML,
 }
 
 // ParseFormat converts a string to Format, returning an error if invalid.

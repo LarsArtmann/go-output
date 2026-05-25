@@ -75,6 +75,10 @@ var formatCapabilities = map[Format][]Shape{
 	FormatTree:     {ShapeTree},
 	FormatMermaid:  {ShapeTable, ShapeGraph},
 	FormatDOT:      {ShapeTable, ShapeGraph},
+	FormatJSONL:    {ShapeTable},
+	FormatAsciiDoc: {ShapeTable},
+	FormatTOML:     {ShapeTable, ShapeTree},
+	FormatPlantUML: {ShapeTable, ShapeGraph},
 }
 
 // Supports returns true if the format can render the given data shape.

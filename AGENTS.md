@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-A reusable Go library for CLI applications providing consistent output formatting across 12 formats (Table, JSON, CSV, TSV, Markdown, XML, YAML, HTML, Tree, D2, Mermaid, DOT) with type-safe enum-based configuration and a Shape capability matrix.
+A reusable Go library for CLI applications providing consistent output formatting across 16 formats (Table, JSON, CSV, TSV, Markdown, XML, YAML, HTML, Tree, D2, Mermaid, DOT, JSONL, AsciiDoc, TOML, PlantUML) with type-safe enum-based configuration and a Shape capability matrix.
 
 **Updated:** 2026-05-25
 
@@ -19,6 +19,7 @@ https://github.com/larsartmann/go-output
 - Go 1.26+
 - charm.land/lipgloss/v2 (terminal styling — **in table/ module only, not root**)
 - github.com/go-faster/yaml (YAML support — **in serialization/ module only, not root**)
+- github.com/pelletier/go-toml/v2 (TOML support — **in serialization/ module only, not root**)
 - golang.org/x/term (terminal detection)
 - github.com/larsartmann/go-branded-id (phantom types for type-safe IDs)
 
@@ -26,37 +27,39 @@ https://github.com/larsartmann/go-output
 
 This project uses Go workspace modules. Each sub-package with its own `go.mod` is an independent module:
 
-| Module                  | go.mod | Deps                                                     | Notes                                   |
-| ----------------------- | ------ | -------------------------------------------------------- | --------------------------------------- |
-| Root (`package output`) | ✅     | enum, escape, yaml, x/term, branded-id, testhelpers      | Core types + formatters                 |
-| `enum/`                 | ✅     | testhelpers (tests only)                                 | Generic enum utilities                  |
-| `escape/`               | ✅     | None                                                     | Format-specific escaping                |
-| `testhelpers/`          | ✅     | None                                                     | Shared test assertions (non-internal)   |
-| `d2/`                   | ✅     | root, escape, testhelpers                                | D2 diagram renderer (rich domain model) |
-| `graph/`                | ✅     | root, escape, testhelpers                                | DOT + Mermaid renderers                 |
-| `table/`                | ✅     | root, lipgloss                                           | **Lipgloss isolated from root**         |
-| `integration/`          | ✅     | root, delimited, serialization, markup, table, d2, graph | Cross-module tests                      |
-| `examples/`             | ✅     | root, delimited, serialization, markup, table, d2, graph | Usage examples                          |
+| Module                  | go.mod | Deps                                                               | Notes                                   |
+| ----------------------- | ------ | ------------------------------------------------------------------ | --------------------------------------- |
+| Root (`package output`) | ✅     | enum, escape, yaml, x/term, branded-id, testhelpers                | Core types + formatters                 |
+| `enum/`                 | ✅     | testhelpers (tests only)                                           | Generic enum utilities                  |
+| `escape/`               | ✅     | None                                                               | Format-specific escaping                |
+| `testhelpers/`          | ✅     | None                                                               | Shared test assertions (non-internal)   |
+| `d2/`                   | ✅     | root, escape, testhelpers                                          | D2 diagram renderer (rich domain model) |
+| `graph/`                | ✅     | root, escape, testhelpers                                          | DOT + Mermaid renderers                 |
+| `plantuml/`             | ✅     | root                                                               | PlantUML diagram renderer               |
+| `table/`                | ✅     | root, lipgloss                                                     | **Lipgloss isolated from root**         |
+| `integration/`          | ✅     | root, delimited, serialization, markup, table, d2, graph, plantuml | Cross-module tests                      |
+| `examples/`             | ✅     | root, delimited, serialization, markup, table, d2, graph, plantuml | Usage examples                          |
 
 `go.work` is gitignored (local dev only). Each module uses `replace` directives for standalone development.
 
-**Key benefit:** `go get github.com/larsartmann/go-output` pulls ZERO lipgloss deps, ZERO yaml deps, and ZERO d2/graph deps. Users import only the modules they need.
+**Key benefit:** `go get github.com/larsartmann/go-output` pulls ZERO lipgloss deps, ZERO yaml deps, ZERO toml deps, and ZERO d2/graph/plantuml deps. Users import only the modules they need.
 
 ### Dependency Graph
 
 ```
 root (output) → enum, x/term, go-branded-id, delimited, serialization
 delimited     → root
-serialization → root, go-faster/yaml
+serialization → root, go-faster/yaml, go-toml/v2
 markup        → root, escape
+plantuml      → root
 enum          → testhelpers (tests only)
 escape        → (none)
 testhelpers   → (none) — zero deps, shared test assertions
 d2            → root, escape, testhelpers
 graph         → root, escape, testhelpers
 table         → root, lipgloss/v2
-integration   → root, delimited, serialization, markup, table, d2, graph
-examples      → root, delimited, serialization, markup, table, d2, graph
+integration   → root, delimited, serialization, markup, table, d2, graph, plantuml
+examples      → root, delimited, serialization, markup, table, d2, graph, plantuml
 ```
 
 **No circular dependencies.** Root has zero imports from d2/, graph/, table/, or any sub-module.
@@ -80,10 +83,11 @@ go-output/                    # Root module (package output) — core types, Mar
 ├── internal/gentest/         # Generic test helpers (root module only, not importable by sub-modules)
 │
 ├── delimited/                # MODULE: CSV + TSV writers and formatters
-├── serialization/            # MODULE: JSON + YAML marshaling and renderers (go-faster/yaml isolated here)
-├── markup/                   # MODULE: XML + HTML + Streaming HTML renderers (escape isolated here)
+├── serialization/            # MODULE: JSON + YAML + TOML + JSONL marshaling and renderers
+├── markup/                   # MODULE: XML + HTML + AsciiDoc + Streaming HTML renderers
 ├── d2/                       # MODULE: D2 diagram renderer (rich domain model)
 ├── graph/                    # MODULE: DOT + Mermaid renderers
+├── plantuml/                 # MODULE: PlantUML diagram renderer
 │
 ├── enum/                     # MODULE: Generic enum utilities (zero deps)
 ├── escape/                   # MODULE: Format-specific escaping (zero deps)
@@ -108,7 +112,7 @@ golangci-lint run ./...         # Lint root module
 go mod tidy                     # Tidy root module
 
 # Per-module (required since go.work is gitignored)
-for mod in . delimited serialization markup d2 graph enum escape testhelpers table integration examples; do
+for mod in . delimited serialization markup d2 graph enum escape testhelpers table integration examples plantuml; do
   (cd $mod && go test ./...)
 done
 ```
@@ -129,6 +133,7 @@ use (
   ./graph
   ./integration
   ./markup
+  ./plantuml
   ./serialization
   ./table
   ./testhelpers
@@ -233,11 +238,12 @@ Each sub-module is independently versioned. Users import only what they need:
 ```go
 import "github.com/larsartmann/go-output"                  // core types + Markdown/Tree formatters
 import "github.com/larsartmann/go-output/delimited"          // CSV + TSV (optional)
-import "github.com/larsartmann/go-output/serialization"      // JSON + YAML (optional)
-import "github.com/larsartmann/go-output/markup"             // XML + HTML + Streaming (optional)
+import "github.com/larsartmann/go-output/serialization"      // JSON + YAML + TOML + JSONL (optional)
+import "github.com/larsartmann/go-output/markup"             // XML + HTML + AsciiDoc + Streaming (optional)
 import "github.com/larsartmann/go-output/d2"                 // D2 diagrams (optional)
 import "github.com/larsartmann/go-output/graph"              // DOT + Mermaid (optional)
 import "github.com/larsartmann/go-output/table"              // Lipgloss tables (optional)
+import "github.com/larsartmann/go-output/plantuml"            // PlantUML diagrams (optional)
 ```
 
 ## Architecture Notes

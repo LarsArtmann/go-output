@@ -12,6 +12,7 @@ import (
 	"github.com/larsartmann/go-output/examples/shared"
 	"github.com/larsartmann/go-output/graph"
 	"github.com/larsartmann/go-output/markup"
+	"github.com/larsartmann/go-output/plantuml"
 	"github.com/larsartmann/go-output/serialization"
 	"github.com/larsartmann/go-output/table"
 )
@@ -41,6 +42,10 @@ func getRenderers() map[output.Format]rendererFunc {
 		output.FormatTree:     renderTree,
 		output.FormatMermaid:  renderMermaid,
 		output.FormatDOT:      renderDOT,
+		output.FormatJSONL:    renderJSONL,
+		output.FormatAsciiDoc: renderAsciiDoc,
+		output.FormatTOML:     renderTOML,
+		output.FormatPlantUML: renderPlantUML,
 	}
 }
 
@@ -305,4 +310,64 @@ func renderDOT(projects []Project) {
 	renderDiagram(projects, func(data *output.TableData) output.Renderer {
 		return graph.DOTFromTableData(data)
 	})
+}
+
+func renderJSONL(projects []Project) {
+	data := projectsToTableData(projects)
+
+	b, err := serialization.MarshalJSONLFromTableData(data)
+	if err != nil {
+		shared.HandleError(err)
+	}
+
+	fmt.Print(string(b))
+}
+
+func renderAsciiDoc(projects []Project) {
+	data := projectsToTableData(projects)
+
+	b, err := markup.MarshalAsciiDocFromTableData(data)
+	if err != nil {
+		shared.HandleError(err)
+	}
+
+	fmt.Println(string(b))
+}
+
+func renderTOML(projects []Project) {
+	data := projectsToTableData(projects)
+
+	b, err := serialization.MarshalTOMLFromTableData(data)
+	if err != nil {
+		shared.HandleError(err)
+	}
+
+	fmt.Print(string(b))
+}
+
+func renderPlantUML(projects []Project) {
+	diagram := plantuml.NewPlantUMLDiagram()
+	diagram.AddNode(output.GraphNode{
+		ID:    output.NewBrandedID[output.GraphNodeIDBrand]("projects"),
+		Label: output.NewBrandedID[output.GraphNodeLabelBrand]("Projects"),
+	})
+
+	for _, p := range projects {
+		diagram.AddNode(output.GraphNode{
+			ID:    output.NewBrandedID[output.GraphNodeIDBrand](p.Name),
+			Label: output.NewBrandedID[output.GraphNodeLabelBrand](p.Name),
+		})
+		diagram.AddEdge(output.GraphEdge{
+			From:  output.NewBrandedID[output.GraphNodeIDBrand]("projects"),
+			To:    output.NewBrandedID[output.GraphNodeIDBrand](p.Name),
+			Label: output.NewBrandedID[output.GraphNodeLabelBrand]("contains"),
+		})
+	}
+
+	out, err := diagram.Render()
+	if err != nil {
+		shared.HandleError(err)
+	}
+
+	fmt.Println(out)
 }

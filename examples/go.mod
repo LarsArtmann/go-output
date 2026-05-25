@@ -8,6 +8,7 @@ require (
 	github.com/larsartmann/go-output/delimited v0.0.0
 	github.com/larsartmann/go-output/graph v0.0.0
 	github.com/larsartmann/go-output/markup v0.0.0
+	github.com/larsartmann/go-output/plantuml v0.0.0
 	github.com/larsartmann/go-output/serialization v0.0.0
 	github.com/larsartmann/go-output/table v0.0.0
 )
@@ -31,6 +32,7 @@ require (
 	github.com/lucasb-eyer/go-colorful v1.4.0 // indirect
 	github.com/mattn/go-runewidth v0.0.23 // indirect
 	github.com/muesli/cancelreader v0.2.2 // indirect
+	github.com/pelletier/go-toml/v2 v2.3.1 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/segmentio/asm v1.2.1 // indirect
 	github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect
@@ -48,7 +50,9 @@ replace (
 	github.com/larsartmann/go-output/escape => ../escape
 	github.com/larsartmann/go-output/graph => ../graph
 	github.com/larsartmann/go-output/markup => ../markup
+	github.com/larsartmann/go-output/plantuml => ../plantuml
 	github.com/larsartmann/go-output/serialization => ../serialization
 	github.com/larsartmann/go-output/table => ../table
 	github.com/larsartmann/go-output/testhelpers => ../testhelpers
+	github.com/larsartmann/go-output/testhelpers/graphtest => ../testhelpers/graphtest
 )

@@ -154,12 +154,15 @@ linters:
             - github.com/larsartmann/go-output/delimited
             - github.com/larsartmann/go-output/serialization
             - github.com/larsartmann/go-output/markup
+            - github.com/larsartmann/go-output/plantuml
             - github.com/larsartmann/go-output/examples/shared
             - github.com/larsartmann/go-branded-id
             - github.com/larsartmann/go-output/pkg/errors
             - charm.land/lipgloss/v2
             - charm.land/lipgloss/v2/table
             - github.com/go-faster/yaml
+            - github.com/pelletier/go-toml/v2
+            - bufio
             - golang.org/x/term
         examples:
           allow:
@@ -179,6 +182,7 @@ linters:
             - github.com/larsartmann/go-output/markup
             - github.com/larsartmann/go-output/serialization
             - github.com/larsartmann/go-output/table
+            - github.com/larsartmann/go-output/plantuml
             - github.com/larsartmann/go-branded-id
           files:
             - examples/**/*.go
@@ -197,11 +201,14 @@ linters:
             - github.com/larsartmann/go-output/delimited
             - github.com/larsartmann/go-output/serialization
             - github.com/larsartmann/go-output/markup
+            - github.com/larsartmann/go-output/plantuml
             - github.com/larsartmann/go-output/examples/shared
             - github.com/larsartmann/go-branded-id
             - charm.land/lipgloss/v2
             - charm.land/lipgloss/v2/table
             - github.com/go-faster/yaml
+            - github.com/pelletier/go-toml/v2
+            - bufio
             - golang.org/x/term
             - bytes
             - cmp
@@ -237,6 +244,7 @@ linters:
         - github.com/larsartmann/go-output/serialization
         - github.com/larsartmann/go-output/table
         - github.com/larsartmann/go-output/testhelpers
+        - github.com/larsartmann/go-output/plantuml
       replace-local: true
     revive:
       rules:

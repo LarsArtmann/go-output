@@ -59,20 +59,24 @@ fmt.Println(format.Shapes())                     // [table tree graph]
 
 ## Supported Formats
 
-| Format     | Table | Tree | Graph | Notes                                                            |
-| ---------- | :---: | :--: | :---: | ---------------------------------------------------------------- |
-| `table`    |  ✅   |      |       | Terminal tables with lipgloss styling (separate `table/` module) |
-| `json`     |  ✅   |  ✅  |  ✅   | Shape-agnostic serialization                                     |
-| `csv`      |  ✅   |      |       | Comma-separated export                                           |
-| `tsv`      |  ✅   |      |       | Tab-separated export                                             |
-| `xml`      |  ✅   |      |       | XML with table structure                                         |
-| `markdown` |  ✅   |      |       | Markdown tables                                                  |
-| `yaml`     |  ✅   |  ✅  |  ✅   | Shape-agnostic serialization                                     |
-| `d2`       |  ✅   |      |  ✅   | SQL tables + node-edge diagrams (separate `d2/` module)          |
-| `html`     |  ✅   |  ✅  |       | HTML tables + collapsible tree                                   |
-| `tree`     |       |  ✅  |       | ASCII tree with box-drawing chars                                |
-| `mermaid`  |  ✅   |      |  ✅   | Mermaid flowchart diagrams (separate `graph/` module)            |
-| `dot`      |  ✅   |      |  ✅   | DOT/Graphviz directed graphs (separate `graph/` module)          |
+| Format     | Table | Tree | Graph | Notes                                                                    |
+| ---------- | :---: | :--: | :---: | ------------------------------------------------------------------------ |
+| `table`    |  ✅   |      |       | Terminal tables with lipgloss styling (separate `table/` module)         |
+| `json`     |  ✅   |  ✅  |  ✅   | Shape-agnostic serialization                                             |
+| `csv`      |  ✅   |      |       | Comma-separated export                                                   |
+| `tsv`      |  ✅   |      |       | Tab-separated export                                                     |
+| `xml`      |  ✅   |      |       | XML with table structure                                                 |
+| `markdown` |  ✅   |      |       | Markdown tables                                                          |
+| `yaml`     |  ✅   |  ✅  |  ✅   | Shape-agnostic serialization                                             |
+| `d2`       |  ✅   |      |  ✅   | SQL tables + node-edge diagrams (separate `d2/` module)                  |
+| `html`     |  ✅   |  ✅  |       | HTML tables + collapsible tree                                           |
+| `tree`     |       |  ✅  |       | ASCII tree with box-drawing chars                                        |
+| `mermaid`  |  ✅   |      |  ✅   | Mermaid flowchart diagrams (separate `graph/` module)                    |
+| `dot`      |  ✅   |      |  ✅   | DOT/Graphviz directed graphs (separate `graph/` module)                  |
+| `jsonl`    |  ✅   |      |       | JSON Lines — one JSON object per line (separate `serialization/` module) |
+| `asciidoc` |  ✅   |      |       | AsciiDoc tables (separate `markup/` module)                              |
+| `toml`     |  ✅   |  ✅  |       | TOML serialization (separate `serialization/` module)                    |
+| `plantuml` |  ✅   |      |  ✅   | PlantUML component diagrams (separate `plantuml/` module)                |
 
 All formats implement the `Renderer` interface:
 
