@@ -75,21 +75,7 @@ func (r *JSONLTableRenderer) Render() (string, error) {
 		return emptyJSONL, nil
 	}
 
-	rows := data.ToMapSlice()
-
-	var buf strings.Builder
-
-	for _, row := range rows {
-		b, err := json.Marshal(row)
-		if err != nil {
-			return "", fmt.Errorf("marshal jsonl row (%d fields): %w", len(row), err)
-		}
-
-		buf.Write(b)
-		buf.WriteByte('\n')
-	}
-
-	return buf.String(), nil
+	return marshalJSONLRows(data.ToMapSlice())
 }
 
 // MarshalJSONLFromTableData marshals TableData as JSON Lines.
@@ -99,20 +85,16 @@ func MarshalJSONLFromTableData(data *output.TableData) ([]byte, error) {
 	}
 
 	rows := data.ToMapSlice()
-
-	var buf strings.Builder
-
-	for _, row := range rows {
-		b, err := json.Marshal(row)
-		if err != nil {
-			return nil, fmt.Errorf("marshal jsonl row (%d fields): %w", len(row), err)
-		}
-
-		buf.Write(b)
-		buf.WriteByte('\n')
+	if len(rows) == 0 {
+		return nil, nil
 	}
 
-	return []byte(buf.String()), nil
+	out, err := marshalJSONLRows(rows)
+	if err != nil {
+		return nil, err
+	}
+
+	return []byte(out), nil
 }
 
 func renderJSONLTableData(w io.Writer, data *output.TableData, _ output.RenderOptions) error {
@@ -121,6 +103,9 @@ func renderJSONLTableData(w io.Writer, data *output.TableData, _ output.RenderOp
 	}
 
 	rows := data.ToMapSlice()
+	if len(rows) == 0 {
+		return nil
+	}
 
 	for _, row := range rows {
 		b, err := json.Marshal(row)
@@ -140,4 +125,20 @@ func renderJSONLTableData(w io.Writer, data *output.TableData, _ output.RenderOp
 	}
 
 	return nil
+}
+
+func marshalJSONLRows(rows []map[string]string) (string, error) {
+	var buf strings.Builder
+
+	for _, row := range rows {
+		b, err := json.Marshal(row)
+		if err != nil {
+			return "", fmt.Errorf("marshal jsonl row (%d fields): %w", len(row), err)
+		}
+
+		buf.Write(b)
+		buf.WriteByte('\n')
+	}
+
+	return buf.String(), nil
 }

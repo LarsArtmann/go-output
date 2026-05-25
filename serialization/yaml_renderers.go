@@ -30,20 +30,13 @@ func (r *YAMLTreeRenderer) SetRoot(node *output.TreeNode) {
 	r.root = node
 }
 
-type yamlTreeNode struct {
-	ID       string            `yaml:"id"`
-	Label    string            `yaml:"label"`
-	Children []yamlTreeNode    `yaml:"children,omitempty"`
-	Metadata map[string]string `yaml:"metadata,omitempty"`
-}
-
 // Render returns the tree as a YAML string.
 func (r *YAMLTreeRenderer) Render() (string, error) {
 	if r.root == nil {
 		return "null\n", nil
 	}
 
-	node := r.toYAMLNode(r.root)
+	node := toTreeNodeDTO(r.root)
 
 	data, err := yaml.Marshal(node)
 	if err != nil {
@@ -51,23 +44,6 @@ func (r *YAMLTreeRenderer) Render() (string, error) {
 	}
 
 	return string(data), nil
-}
-
-func (r *YAMLTreeRenderer) toYAMLNode(node *output.TreeNode) yamlTreeNode {
-	result := yamlTreeNode{
-		ID:       node.ID.Get(),
-		Label:    node.Label.Get(),
-		Metadata: node.Metadata,
-	}
-
-	if len(node.Children) > 0 {
-		result.Children = make([]yamlTreeNode, 0, len(node.Children))
-		for _, child := range node.Children {
-			result.Children = append(result.Children, r.toYAMLNode(child))
-		}
-	}
-
-	return result
 }
 
 // YAMLGraphRenderer renders graph nodes and edges as YAML.

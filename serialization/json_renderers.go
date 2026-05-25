@@ -29,20 +29,13 @@ func (r *JSONTreeRenderer) SetRoot(node *output.TreeNode) {
 	r.root = node
 }
 
-type jsonTreeNode struct {
-	ID       string            `json:"id"`
-	Label    string            `json:"label"`
-	Children []jsonTreeNode    `json:"children,omitempty"`
-	Metadata map[string]string `json:"metadata,omitempty"`
-}
-
 // Render returns the tree as a JSON string.
 func (r *JSONTreeRenderer) Render() (string, error) {
 	if r.root == nil {
 		return "null", nil
 	}
 
-	node := r.toJSONNode(r.root)
+	node := toTreeNodeDTO(r.root)
 
 	data, err := json.MarshalIndent(node, "", "  ")
 	if err != nil {
@@ -50,23 +43,6 @@ func (r *JSONTreeRenderer) Render() (string, error) {
 	}
 
 	return string(data), nil
-}
-
-func (r *JSONTreeRenderer) toJSONNode(node *output.TreeNode) jsonTreeNode {
-	result := jsonTreeNode{
-		ID:       node.ID.Get(),
-		Label:    node.Label.Get(),
-		Metadata: node.Metadata,
-	}
-
-	if len(node.Children) > 0 {
-		result.Children = make([]jsonTreeNode, 0, len(node.Children))
-		for _, child := range node.Children {
-			result.Children = append(result.Children, r.toJSONNode(child))
-		}
-	}
-
-	return result
 }
 
 // JSONGraphRenderer renders graph nodes and edges as JSON.

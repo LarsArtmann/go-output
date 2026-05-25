@@ -3,7 +3,6 @@ package serialization
 import (
 	"fmt"
 	"io"
-	"strings"
 
 	"github.com/pelletier/go-toml/v2"
 
@@ -45,19 +44,7 @@ var emptyTOML = "[]\n"
 
 // Render returns the table data as a TOML string.
 func (r *TOMLTableRenderer) Render() (string, error) {
-	data := r.Data()
-	if data == nil || len(data.Headers) == 0 {
-		return emptyTOML, nil
-	}
-
-	rows := data.ToMapSlice()
-
-	b, err := toml.Marshal(rows)
-	if err != nil {
-		return "", fmt.Errorf("marshal toml table (%d rows): %w", len(rows), err)
-	}
-
-	return string(b), nil
+	return renderTable(r.Data(), emptyTOML, "toml", toml.Marshal)
 }
 
 func renderTOMLTableData(w io.Writer, data *output.TableData, _ output.RenderOptions) error {
@@ -83,19 +70,13 @@ func MarshalTOMLFromTableData(data *output.TableData) ([]byte, error) {
 		return nil, nil
 	}
 
-	rows := data.ToMapSlice()
+	renderer := NewTOMLTableRenderer()
+	renderer.SetData(data)
 
-	var buf strings.Builder
-
-	for _, row := range rows {
-		b, err := toml.Marshal(row)
-		if err != nil {
-			return nil, fmt.Errorf("marshal toml row: %w", err)
-		}
-
-		buf.Write(b)
-		buf.WriteString("\n")
+	out, err := renderer.Render()
+	if err != nil {
+		return nil, fmt.Errorf("render toml: %w", err)
 	}
 
-	return []byte(buf.String()), nil
+	return []byte(out), nil
 }
