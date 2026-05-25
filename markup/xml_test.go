@@ -199,7 +199,7 @@ func TestXMLWriterWriteHeaderError(t *testing.T) {
 func TestXMLWriterWriteHeaderTableOpenError(t *testing.T) {
 	t.Parallel()
 
-	x := NewXMLWriter(&writeNThenFailWriter{remaining: 1})
+	x := NewXMLWriter(&writeNThenFailWriter{Remaining: 1})
 
 	err := x.WriteHeader([]string{"Name"})
 	if err == nil {
@@ -212,7 +212,7 @@ func TestXMLWriterWriteHeaderTableOpenError(t *testing.T) {
 func TestXMLWriterWriteHeaderHeadersOpenError(t *testing.T) {
 	t.Parallel()
 
-	x := NewXMLWriter(&writeNThenFailWriter{remaining: 2})
+	x := NewXMLWriter(&writeNThenFailWriter{Remaining: 2})
 
 	err := x.WriteHeader([]string{"Name"})
 	if err == nil {
@@ -225,7 +225,7 @@ func TestXMLWriterWriteHeaderHeadersOpenError(t *testing.T) {
 func TestXMLWriterWriteHeaderColumnsError(t *testing.T) {
 	t.Parallel()
 
-	x := NewXMLWriter(&writeNThenFailWriter{remaining: 3})
+	x := NewXMLWriter(&writeNThenFailWriter{Remaining: 3})
 
 	err := x.WriteHeader([]string{"Name"})
 	if err == nil {
@@ -238,7 +238,7 @@ func TestXMLWriterWriteHeaderColumnsError(t *testing.T) {
 func TestXMLWriterWriteHeaderHeadersCloseError(t *testing.T) {
 	t.Parallel()
 
-	x := NewXMLWriter(&writeNThenFailWriter{remaining: 6})
+	x := NewXMLWriter(&writeNThenFailWriter{Remaining: 6})
 
 	err := x.WriteHeader([]string{"Name"})
 	if err == nil {
@@ -251,7 +251,7 @@ func TestXMLWriterWriteHeaderHeadersCloseError(t *testing.T) {
 func TestXMLWriterWriteHeaderRowsOpenError(t *testing.T) {
 	t.Parallel()
 
-	x := NewXMLWriter(&writeNThenFailWriter{remaining: 7})
+	x := NewXMLWriter(&writeNThenFailWriter{Remaining: 7})
 
 	err := x.WriteHeader([]string{"Name"})
 	if err == nil {
@@ -264,7 +264,7 @@ func TestXMLWriterWriteHeaderRowsOpenError(t *testing.T) {
 func TestXMLWriterWriteFooterTableCloseError(t *testing.T) {
 	t.Parallel()
 
-	x := NewXMLWriter(&writeNThenFailWriter{remaining: 1})
+	x := NewXMLWriter(&writeNThenFailWriter{Remaining: 1})
 
 	err := x.WriteFooter()
 	if err == nil {

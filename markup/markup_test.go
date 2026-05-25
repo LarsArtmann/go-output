@@ -98,7 +98,7 @@ func TestWriteMarkupRow(t *testing.T) {
 		t.Parallel()
 
 		err := writeMarkupRow(
-			&writeNThenFailWriter{remaining: 1}, []string{"A"}, "row", "cell", "  ",
+			&writeNThenFailWriter{Remaining: 1}, []string{"A"}, "row", "cell", "  ",
 			func(s string) string { return s },
 		)
 		if err == nil {
@@ -112,7 +112,7 @@ func TestWriteMarkupRow(t *testing.T) {
 		t.Parallel()
 
 		err := writeMarkupRow(
-			&writeNThenFailWriter{remaining: 2}, []string{"A"}, "row", "cell", "  ",
+			&writeNThenFailWriter{Remaining: 2}, []string{"A"}, "row", "cell", "  ",
 			func(s string) string { return s },
 		)
 		if err == nil {
@@ -126,7 +126,7 @@ func TestWriteMarkupRow(t *testing.T) {
 		t.Parallel()
 
 		err := writeMarkupRow(
-			&writeNThenFailWriter{remaining: 3}, []string{"A"}, "row", "cell", "  ",
+			&writeNThenFailWriter{Remaining: 3}, []string{"A"}, "row", "cell", "  ",
 			func(s string) string { return s },
 		)
 		if err == nil {
@@ -140,7 +140,7 @@ func TestWriteMarkupRow(t *testing.T) {
 		t.Parallel()
 
 		err := writeMarkupRow(
-			&writeNThenFailWriter{remaining: 4}, []string{"A"}, "row", "cell", "  ",
+			&writeNThenFailWriter{Remaining: 4}, []string{"A"}, "row", "cell", "  ",
 			func(s string) string { return s },
 		)
 		if err == nil {
@@ -190,7 +190,7 @@ func TestWriteMarkupColumns(t *testing.T) {
 		t.Parallel()
 
 		err := writeMarkupColumns(
-			&writeNThenFailWriter{remaining: 1}, []string{"A"}, "  ",
+			&writeNThenFailWriter{Remaining: 1}, []string{"A"}, "  ",
 			func(s string) string { return s },
 		)
 		if err == nil {
@@ -204,7 +204,7 @@ func TestWriteMarkupColumns(t *testing.T) {
 		t.Parallel()
 
 		err := writeMarkupColumns(
-			&writeNThenFailWriter{remaining: 2}, []string{"A"}, "  ",
+			&writeNThenFailWriter{Remaining: 2}, []string{"A"}, "  ",
 			func(s string) string { return s },
 		)
 		if err == nil {

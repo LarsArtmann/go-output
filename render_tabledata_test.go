@@ -162,7 +162,7 @@ func TestRenderTableData_MarkdownTitleWriteError(t *testing.T) {
 	data := testTableData()
 
 	err := RenderTableData(data, FormatMarkdown, RenderOptions{
-		Writer: &writeNThenFailWriter{remaining: 0},
+		Writer: &writeNThenFailWriter{Remaining: 0},
 		Title:  "Test",
 	})
 	if err == nil {
@@ -174,7 +174,7 @@ func TestRenderTableData_MarkdownRowCountWriteError(t *testing.T) {
 	data := testTableData()
 
 	err := RenderTableData(data, FormatMarkdown, RenderOptions{
-		Writer: &writeNThenFailWriter{remaining: 1},
+		Writer: &writeNThenFailWriter{Remaining: 1},
 		Title:  "Test",
 	})
 	if err == nil {

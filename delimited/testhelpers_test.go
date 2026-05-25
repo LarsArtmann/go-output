@@ -2,23 +2,14 @@ package delimited
 
 import (
 	"bytes"
-	"errors"
-	"io"
 	"strings"
 	"testing"
 
 	"github.com/larsartmann/go-output"
+	"github.com/larsartmann/go-output/testhelpers"
 )
 
-type errorWriter struct{}
-
-var errWrite = errors.New("write error")
-
-func (e *errorWriter) Write(_ []byte) (int, error) {
-	return 0, errWrite
-}
-
-var _ io.Writer = (*errorWriter)(nil)
+type errorWriter = testhelpers.ErrorWriter
 
 func assertContains(t *testing.T, s, substr, msg string) {
 	t.Helper()

@@ -199,7 +199,7 @@ func TestStreamingHTMLRendererStreamMidWriteError(t *testing.T) {
 	r.SetHeaders([]string{"A"})
 	r.AddRow([]string{"1"})
 
-	err := r.Stream(&writeNThenFailWriter{remaining: 2})
+	err := r.Stream(&writeNThenFailWriter{Remaining: 2})
 	if err == nil {
 		t.Fatal("expected error from mid-write failure")
 	}
@@ -211,7 +211,7 @@ func TestStreamingHTMLRendererWriteHeaderCellError(t *testing.T) {
 	r := NewStreamingHTMLRenderer()
 	r.SetHeaders([]string{"A", "B"})
 
-	err := r.Stream(&writeNThenFailWriter{remaining: 2})
+	err := r.Stream(&writeNThenFailWriter{Remaining: 2})
 	if err == nil {
 		t.Fatal("expected error during header cell write")
 	}
@@ -224,7 +224,7 @@ func TestStreamingHTMLRendererWriteRowCellError(t *testing.T) {
 	r.SetHeaders([]string{"A"})
 	r.AddRow([]string{"1"})
 
-	err := r.Stream(&writeNThenFailWriter{remaining: 4})
+	err := r.Stream(&writeNThenFailWriter{Remaining: 4})
 	if err == nil {
 		t.Fatal("expected error during row cell write")
 	}
@@ -237,7 +237,7 @@ func TestStreamingHTMLRendererWriteRowEndChunkError(t *testing.T) {
 	r.SetHeaders([]string{"A"})
 	r.AddRow([]string{"1"})
 
-	err := r.Stream(&writeNThenFailWriter{remaining: 5})
+	err := r.Stream(&writeNThenFailWriter{Remaining: 5})
 	if err == nil {
 		t.Fatal("expected error during row end chunk write")
 	}
