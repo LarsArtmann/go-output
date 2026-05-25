@@ -1,7 +1,6 @@
 package output
 
 import (
-	"strings"
 	"testing"
 
 	"github.com/larsartmann/go-output/internal/gentest"
@@ -9,29 +8,15 @@ import (
 )
 
 // Re-export generic helpers for use by package output tests.
-type (
-	ExpectedOutput         = gentest.ExpectedOutput
-	htmlEscapeTestRenderer = gentest.HTMLEscapeTestRenderer
-)
+type ExpectedOutput = gentest.ExpectedOutput
 
 //nolint:gochecknoglobals // Re-exported test helpers for package-local use
-var (
-	assertContains     = testhelpers.AssertContains
-	assertMarshalError = gentest.AssertMarshalError
-)
+var assertContains = testhelpers.AssertContains
 
 // Re-export shared test helpers from testhelpers package.
 //
 //nolint:gochecknoglobals // Re-exported test helper for package-local use
 var assertStringSliceEqual = testhelpers.AssertStringSliceEqual
-
-func testHTMLEscapeShared(
-	t *testing.T,
-	newRenderer func() gentest.HTMLEscapeTestRenderer,
-	name string,
-) {
-	gentest.AssertHTMLEscape(t, newRenderer, name)
-}
 
 // testNodesAB returns a slice of GraphNode with nodes A and B for testing.
 func testNodesAB() []GraphNode {
@@ -46,15 +31,6 @@ func newTestNode(id, label string) GraphNode {
 	return GraphNode{
 		ID:    NewBrandedID[GraphNodeIDBrand](id),
 		Label: NewBrandedID[GraphNodeLabelBrand](label),
-	}
-}
-
-// newTestNodeWithShape creates a GraphNode with the given ID, label, and shape for testing.
-func newTestNodeWithShape(id, label string, shape GraphShape) GraphNode {
-	return GraphNode{
-		ID:    NewBrandedID[GraphNodeIDBrand](id),
-		Label: NewBrandedID[GraphNodeLabelBrand](label),
-		Shape: shape,
 	}
 }
 
@@ -78,36 +54,8 @@ func testNodesABC() []GraphNode {
 	return append(nodes, newTestNode("C", "Node C"))
 }
 
-// testEdgesABC returns edges A->B and B->C.
-func testEdgesABC() []GraphEdge {
-	return []GraphEdge{
-		testEdgeAB(""),
-		{From: NewBrandedID[GraphNodeIDBrand]("B"), To: NewBrandedID[GraphNodeIDBrand]("C")},
-	}
-}
-
-// testEmptyRendererOutput verifies that an empty renderer produces valid output structure.
-func testEmptyRendererOutput(
-	t *testing.T,
-	renderer Renderer,
-	expectedOutputs []gentest.ExpectedOutput,
-) {
-	t.Helper()
-
-	output, err := renderer.Render()
-	if err != nil {
-		t.Fatalf("Render() error = %v", err)
-	}
-
-	for _, expected := range expectedOutputs {
-		if !strings.Contains(output, expected.Substring) {
-			t.Error(expected.Message)
-		}
-	}
-}
-
 // assertTreeNodeDepth verifies the depth of tree nodes in a hierarchy.
-func assertTreeNodeDepth(t *testing.T, root, child, grandchild *TreeNode) {
+func assertTreeNodeDepth(t testing.TB, root, child, grandchild *TreeNode) {
 	t.Helper()
 
 	if root.Depth() != 0 {
@@ -136,12 +84,4 @@ func testExpectedOutputs(pairs ...string) []ExpectedOutput {
 	}
 
 	return out
-}
-
-// testHTMLEmptyExpected returns the expected substrings for an empty HTML renderer.
-func testHTMLEmptyExpected() []ExpectedOutput {
-	return testExpectedOutputs(
-		"<table", "Empty table should still be valid HTML",
-		"</table>", "Empty table should have closing tag",
-	)
 }

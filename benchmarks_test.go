@@ -75,27 +75,3 @@ func BenchmarkMarkdownTable(b *testing.B) {
 		_, _ = md.Render()
 	}
 }
-
-type BenchmarkData struct {
-	ID        int      `json:"id"         yaml:"id"`
-	Name      string   `json:"name"       yaml:"name"`
-	Items     []string `json:"items"      yaml:"items"`
-	Count     int      `json:"count"      yaml:"count"`
-	Active    bool     `json:"active"     yaml:"active"`
-	CreatedAt string   `json:"created_at" yaml:"created_at"`
-	UpdatedAt string   `json:"updated_at" yaml:"updated_at"`
-}
-
-type BenchmarkYAMLStruct = BenchmarkData
-
-func NewBenchmarkData() BenchmarkData {
-	return BenchmarkData{
-		ID:        12345,
-		Name:      "Test Project Alpha",
-		Items:     []string{"item1", "item2", "item3", "item4", "item5"},
-		Count:     100,
-		Active:    true,
-		CreatedAt: "2026-03-22T10:00:00Z",
-		UpdatedAt: "2026-03-22T12:00:00Z",
-	}
-}
