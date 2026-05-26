@@ -1,14 +1,17 @@
-go 1.26.2
+go 1.26.3
 
 use (
 	.
+	./delimited
 	./d2
 	./enum
 	./escape
-	./graph
-	./testhelpers
-	./sort
-	./table
-	./integration
 	./examples
+	./graph
+	./integration
+	./markup
+	./plantuml
+	./serialization
+	./table
+	./testhelpers
 )

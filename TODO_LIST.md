@@ -100,15 +100,15 @@
 
 ## P6: Future (Not Blocking)
 
-- **31.** Tag next release (v0.5.0?)
+- ✅ **31.** ~~Tag next release~~ DONE — tagged v0.6.0
 - ✅ **32.** ~~Remove deprecated FormatCategory code~~ DONE — `format_deprecated.go` deleted
 - ✅ **33.** ~~Remove deprecated OutputFormat aliases~~ DONE — removed with format_deprecated.go
 - ✅ **(sort/)** Module deleted entirely — `ByField` removed, use stdlib `slices.SortStableFunc`
-- **34.** ADR 002 Phase 2: Shape-specific renderer constructors
-- **35.** Add TOML format (new module)
-- **36.** Add JSONL format (new renderer)
-- **37.** Add PlantUML format (new module)
-- **38.** Add AsciiDoc format (new renderer)
+- ✅ **34.** ~~ADR 002 Phase 2: Shape-specific renderer constructors~~ DONE — constructors exist for all formats
+- ✅ **35.** ~~Add TOML format (new module)~~ DONE — `serialization/toml.go`, `serialization/toml_renderers.go`
+- ✅ **36.** ~~Add JSONL format (new renderer)~~ DONE — `serialization/jsonl.go`
+- ✅ **37.** ~~Add PlantUML format (new module)~~ DONE — `plantuml/` module
+- ✅ **38.** ~~Add AsciiDoc format (new renderer)~~ DONE — `markup/asciidoc.go`
 - **39.** Pre-v1 API stability audit
 - **40.** Community: Post to r/golang, submit to Awesome Go
 
