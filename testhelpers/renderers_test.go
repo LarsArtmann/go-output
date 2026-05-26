@@ -1,6 +1,7 @@
 package testhelpers
 
 import (
+	"errors"
 	"testing"
 )
 
@@ -14,7 +15,7 @@ func TestErrorRenderer(t *testing.T) {
 		t.Errorf("ErrorRenderer.Render() got = %q, want empty", got)
 	}
 
-	if err != ErrTest {
+	if !errors.Is(err, ErrTest) {
 		t.Errorf("ErrorRenderer.Render() err = %v, want ErrTest", err)
 	}
 }
@@ -23,8 +24,8 @@ func TestFixedRenderer(t *testing.T) {
 	t.Parallel()
 
 	r := &FixedRenderer{Output: "hello"}
-	got, err := r.Render()
 
+	got, err := r.Render()
 	if err != nil {
 		t.Errorf("FixedRenderer.Render() err = %v, want nil", err)
 	}

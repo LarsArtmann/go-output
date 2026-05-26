@@ -1,6 +1,7 @@
 package testhelpers
 
 import (
+	"errors"
 	"testing"
 )
 
@@ -14,7 +15,7 @@ func TestErrorWriter(t *testing.T) {
 		t.Errorf("ErrorWriter.Write() n = %d, want 0", n)
 	}
 
-	if err != ErrWrite {
+	if !errors.Is(err, ErrWrite) {
 		t.Errorf("ErrorWriter.Write() err = %v, want ErrWrite", err)
 	}
 }
@@ -51,7 +52,7 @@ func TestWriteNThenFailWriter(t *testing.T) {
 			t.Errorf("Write() n = %d, want 0", n)
 		}
 
-		if err != ErrWrite {
+		if !errors.Is(err, ErrWrite) {
 			t.Errorf("Write() err = %v, want ErrWrite", err)
 		}
 	})
@@ -75,7 +76,7 @@ func TestWriteNThenFailWriter(t *testing.T) {
 			t.Errorf("second Write() n = %d, want 0", n)
 		}
 
-		if err != ErrWrite {
+		if !errors.Is(err, ErrWrite) {
 			t.Errorf("second Write() err = %v, want ErrWrite", err)
 		}
 	})

@@ -143,14 +143,14 @@ func TestAssertMarshalError(t *testing.T) {
 	t.Parallel()
 
 	AssertMarshalError(t, "no error", nil, false)
-	AssertMarshalError(t, "has error", assertErr, true)
+	AssertMarshalError(t, "has error", errTestAssert, true)
 
 	t.Run("unexpected error", func(t *testing.T) {
 		t.Parallel()
 
 		mock := &testing.T{}
 
-		AssertMarshalError(mock, "unexpected", assertErr, false)
+		AssertMarshalError(mock, "unexpected", errTestAssert, false)
 
 		if !mock.Failed() {
 			t.Error("expected failure for unexpected error")
@@ -176,11 +176,11 @@ func TestTestAllowedValues(t *testing.T) {
 	TestAllowedValues(t, "formats", []string{"json", "yaml"}, []string{"json", "yaml"})
 }
 
-var assertErr = errors.New("test error")
+var errTestAssert = errors.New("test error")
 
 func parseLower(s string) (string, error) {
 	if s == "" {
-		return "", assertErr
+		return "", errTestAssert
 	}
 
 	return strings.ToLower(s), nil
@@ -189,7 +189,8 @@ func parseLower(s string) (string, error) {
 func TestTestParseEnum(t *testing.T) {
 	t.Parallel()
 
-	TestParseEnum(t, "lower",
+	TestParseEnum(
+		t, "lower",
 		parseLower,
 		[]ParseEnumTestCase[string]{
 			{Name: "upper", Input: "FOO", Want: "foo", WantErr: false},
@@ -202,7 +203,8 @@ func TestTestParseEnum(t *testing.T) {
 func TestTestEnumString(t *testing.T) {
 	t.Parallel()
 
-	TestEnumString(t, "upper",
+	TestEnumString(
+		t, "upper",
 		[]StringEnumTestCase[string]{
 			{Value: "hello", Want: "HELLO"},
 			{Value: "world", Want: "WORLD"},
