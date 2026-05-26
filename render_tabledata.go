@@ -50,16 +50,18 @@ func getTableDataMarshaler(format Format) (TableDataMarshaler, bool) {
 	return m, ok
 }
 
+//nolint:gochecknoinits // Registers Markdown and Tree TableData marshalers for registry-based dispatch.
+func init() {
+	RegisterTableDataMarshaler(FormatMarkdown, renderMarkdownTableData)
+	RegisterTableDataMarshaler(FormatTree, renderTreeTableData)
+}
+
 // RenderTableData renders TableData in the given format and writes to w (or os.Stdout).
-// It supports: csv, tsv, markdown, xml, yaml, html, tree (when respective sub-modules are imported).
+// It supports all registered formats (csv, tsv, markdown, xml, yaml, html, jsonl, toml,
+// asciidoc, tree) when respective sub-modules are imported.
 //
-// D2, Mermaid, and DOT are NOT handled — those require importing the d2 or graph
-// sub-modules directly. Table and JSON formats also require per-command customization
-// (table for lipgloss styling, json for full struct marshaling).
-//
-// Returns UnsupportedFormatError for unsupported formats (d2, mermaid, dot, table, json).
-//
-//nolint:cyclop,exhaustive // Dispatcher function with many format cases.
+// D2, Mermaid, DOT, Table, and JSON return UnsupportedFormatError — those require
+// direct constructor calls from their respective sub-modules.
 func RenderTableData(data *TableData, format Format, opts ...RenderOptions) error {
 	if data == nil {
 		return nil
@@ -75,22 +77,11 @@ func RenderTableData(data *TableData, format Format, opts ...RenderOptions) erro
 		w = os.Stdout
 	}
 
-	// Registry-based dispatch for sub-module formats.
 	if m, ok := getTableDataMarshaler(format); ok {
 		return m(w, data, o)
 	}
 
-	// Direct dispatch for formats that live in root.
-	switch format {
-	case FormatMarkdown:
-		return renderMarkdownTableData(w, data, o)
-	case FormatTree:
-		return renderTreeTableData(w, data, o)
-	case FormatD2, FormatMermaid, FormatDOT:
-		return &UnsupportedFormatError{Format: format}
-	default:
-		return &UnsupportedFormatError{Format: format}
-	}
+	return &UnsupportedFormatError{Format: format}
 }
 
 // UnsupportedFormatError is returned when RenderTableData cannot handle a format.
