@@ -34,9 +34,28 @@ jobs:
         run: |
           for mod in . delimited serialization markup d2 graph plantuml enum escape testhelpers table integration examples; do
             echo "::group::Test $mod"
-            (cd $mod && go test -v -race ./...)
+            (cd $mod && go test -v -race -coverprofile=cover.out ./...)
             echo "::endgroup::"
           done
+
+      - name: Check coverage thresholds
+        run: |
+          MIN_COVERAGE=80
+          FAILED=""
+          for mod in . delimited serialization markup d2 graph plantuml enum escape testhelpers table integration examples; do
+            if [ -f "$mod/cover.out" ]; then
+              COV=$(cd $mod && go tool cover -func=cover.out | grep total | awk '{print $3}' | sed 's/%//')
+              echo "$mod: ${COV}% coverage"
+              if [ "$(echo "$COV < $MIN_COVERAGE" | bc -l)" = "1" ]; then
+                FAILED="$FAILED $mod(${COV}%)"
+              fi
+              rm -f $mod/cover.out
+            fi
+          done
+          if [ -n "$FAILED" ]; then
+            echo "::error::Coverage below ${MIN_COVERAGE}% in:$FAILED"
+            exit 1
+          fi
 
       - name: Check go mod tidy
         run: |

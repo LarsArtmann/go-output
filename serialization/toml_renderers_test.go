@@ -7,6 +7,68 @@ import (
 	"github.com/larsartmann/go-output"
 )
 
+func TestTOMLGraphRenderer_Empty(t *testing.T) {
+	t.Parallel()
+
+	r := NewTOMLGraphRenderer()
+
+	out, err := r.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
+	if !strings.Contains(out, "nodes") {
+		t.Error("TOML graph output should contain 'nodes'")
+	}
+}
+
+func TestTOMLGraphRenderer_WithNodesAndEdges(t *testing.T) {
+	t.Parallel()
+
+	r := NewTOMLGraphRenderer()
+	r.SetNodes([]output.GraphNode{
+		{ID: output.NewBrandedID[output.GraphNodeIDBrand]("a"), Label: output.NewBrandedID[output.GraphNodeLabelBrand]("Node A")},
+		{ID: output.NewBrandedID[output.GraphNodeIDBrand]("b"), Label: output.NewBrandedID[output.GraphNodeLabelBrand]("Node B")},
+	})
+	r.SetEdges([]output.GraphEdge{
+		{From: output.NewBrandedID[output.GraphNodeIDBrand]("a"), To: output.NewBrandedID[output.GraphNodeIDBrand]("b")},
+	})
+
+	out, err := r.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
+	if !strings.Contains(out, "Node A") {
+		t.Error("TOML graph output should contain 'Node A'")
+	}
+
+	if !strings.Contains(out, "Node B") {
+		t.Error("TOML graph output should contain 'Node B'")
+	}
+}
+
+func TestTOMLGraphRenderer_EdgeWithLabel(t *testing.T) {
+	t.Parallel()
+
+	r := NewTOMLGraphRenderer()
+	r.SetNodes([]output.GraphNode{
+		{ID: output.NewBrandedID[output.GraphNodeIDBrand]("a"), Label: output.NewBrandedID[output.GraphNodeLabelBrand]("A")},
+	})
+	r.SetEdges([]output.GraphEdge{
+		{From: output.NewBrandedID[output.GraphNodeIDBrand]("a"), To: output.NewBrandedID[output.GraphNodeIDBrand]("b"), Label: output.NewBrandedID[output.GraphNodeLabelBrand]("connects")},
+	})
+
+	out, err := r.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
+	if !strings.Contains(out, "connects") {
+		t.Error("TOML graph output should contain edge label 'connects'")
+	}
+}
+
 func TestTOMLTreeRenderer(t *testing.T) {
 	t.Parallel()
 

@@ -63,6 +63,21 @@ func BenchmarkHTMLRenderer(b *testing.B) {
 	}
 }
 
+func BenchmarkAsciiDocTableRenderer(b *testing.B) {
+	data := output.NewTableData([]string{"Name", "Age", "Email"})
+	for range 100 {
+		data.AddRow([]string{"Alice", "30", "alice@example.com"})
+	}
+
+	b.ResetTimer()
+
+	for b.Loop() {
+		renderer := NewAsciiDocTableRenderer()
+		renderer.SetData(data)
+		_, _ = renderer.Render()
+	}
+}
+
 func BenchmarkStreamingHTMLRenderer(b *testing.B) {
 	data := output.NewTableData([]string{"Name", "Age", "Email"})
 	for range 100 {

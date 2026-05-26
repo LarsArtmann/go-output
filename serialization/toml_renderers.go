@@ -11,7 +11,33 @@ import (
 var (
 	_ output.Renderer           = (*TOMLTreeRenderer)(nil)
 	_ output.TreeOutputRenderer = (*TOMLTreeRenderer)(nil)
+	_ output.Renderer           = (*TOMLGraphRenderer)(nil)
+	_ output.GraphRenderer      = (*TOMLGraphRenderer)(nil)
 )
+
+// TOMLGraphRenderer renders graph nodes and edges as TOML.
+type TOMLGraphRenderer struct {
+	output.GraphRendererMixin
+}
+
+// NewTOMLGraphRenderer creates a new TOMLGraphRenderer.
+func NewTOMLGraphRenderer() *TOMLGraphRenderer {
+	return &TOMLGraphRenderer{
+		GraphRendererMixin: output.NewGraphRendererMixin(),
+	}
+}
+
+// Render returns the graph as a TOML string.
+func (r *TOMLGraphRenderer) Render() (string, error) {
+	graph := buildGraphDTO(r.GraphRendererMixin)
+
+	data, err := toml.Marshal(graph)
+	if err != nil {
+		return "", fmt.Errorf("marshal toml graph: %w", err)
+	}
+
+	return string(data), nil
+}
 
 // TOMLTreeRenderer renders a TreeNode hierarchy as TOML.
 type TOMLTreeRenderer struct {
