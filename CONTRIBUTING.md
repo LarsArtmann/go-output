@@ -11,14 +11,14 @@ Thank you for your interest in contributing to go-output!
 
 ## Development Setup
 
-This project uses a Go multi-module workspace with 10 independent modules.
+This project uses a Go multi-module workspace with 13 independent modules.
 
 ### Initial Setup
 
 ```bash
 # Create go.work for local development (gitignored)
 cat > go.work << 'EOF'
-go 1.26.2
+go 1.26.3
 
 use (
   .
@@ -28,6 +28,7 @@ use (
   ./escape
   ./graph
   ./markup
+  ./plantuml
   ./serialization
   ./testhelpers
   ./table
