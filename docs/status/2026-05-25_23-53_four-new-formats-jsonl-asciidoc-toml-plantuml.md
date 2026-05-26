@@ -15,6 +15,7 @@ Added 4 new output formats (JSONL, AsciiDoc, TOML, PlantUML) to go-output, expan
 ## a) FULLY DONE ✓
 
 ### Root Enum Infrastructure
+
 - [x] `FormatJSONL`, `FormatAsciiDoc`, `FormatTOML`, `FormatPlantUML` constants in `format.go`
 - [x] `AllFormats` slice updated (16 entries)
 - [x] `formatCapabilities` matrix in `shape.go` updated:
@@ -25,6 +26,7 @@ Added 4 new output formats (JSONL, AsciiDoc, TOML, PlantUML) to go-output, expan
 - [x] `ParseFormat`, `IsValid`, `AllowedValues` all work automatically via `AllFormats`
 
 ### JSONL (`serialization/jsonl.go`) — 143 lines
+
 - [x] `init()` registers `FormatJSONL` marshaler
 - [x] `JSONLWriter` — streaming writer with `Encode(v)` + `Flush()`
 - [x] `JSONLTableRenderer` — `Render()` produces one JSON object per line
@@ -34,6 +36,7 @@ Added 4 new output formats (JSONL, AsciiDoc, TOML, PlantUML) to go-output, expan
 - [x] Zero new external dependencies (stdlib `encoding/json` + `bufio`)
 
 ### AsciiDoc (`markup/asciidoc.go`) — 99 lines
+
 - [x] `init()` registers `FormatAsciiDoc` marshaler
 - [x] `AsciiDocTableRenderer` — `Render()` produces `|===` delimited table
 - [x] `MarshalAsciiDocFromTableData()` — batch marshaling
@@ -42,6 +45,7 @@ Added 4 new output formats (JSONL, AsciiDoc, TOML, PlantUML) to go-output, expan
 - [x] Zero new external dependencies
 
 ### TOML (`serialization/toml.go` + `toml_renderers.go`) — 170 lines total
+
 - [x] `init()` registers `FormatTOML` marshaler
 - [x] `MarshalTOML()` / `UnmarshalTOML()` — generic marshal/unmarshal
 - [x] `TOMLTableRenderer` — renders TableData as TOML
@@ -51,6 +55,7 @@ Added 4 new output formats (JSONL, AsciiDoc, TOML, PlantUML) to go-output, expan
 - [x] Tests: `toml_test.go` + `toml_renderers_test.go` — marshal, unmarshal, renderer, tree
 
 ### PlantUML (`plantuml/` — NEW MODULE) — 121 lines production
+
 - [x] `plantuml/go.mod` — independent module, replace directives
 - [x] `PlantUMLDiagram` — `Render()` produces `@startuml`/`@enduml` component diagram
 - [x] `AddNode()` / `AddEdge()` — builder pattern, uses `GraphRendererMixin`
@@ -61,16 +66,19 @@ Added 4 new output formats (JSONL, AsciiDoc, TOML, PlantUML) to go-output, expan
 - [x] Coverage: 97.2%
 
 ### Integration Tests
+
 - [x] `format_test.go` — `TestFormatCategories` updated with JSONL, TOML, PlantUML in table/tree/graph lists
 - [x] `integration_test.go` — `TestAllFormatsRender` expanded to 16 formats
 - [x] `integration_test.go` — `renderProject` switch expanded with 4 new cases
 - [x] `integration_test.go` — new render functions: `renderJSONLFormat`, `renderAsciiDocFormat`, `renderTOMLFormat`, `renderPlantUMLFormat`
 
 ### Examples
+
 - [x] `examples/basic/main.go` — new `renderJSONL`, `renderAsciiDoc`, `renderTOML`, `renderPlantUML` functions
 - [x] `getRenderers()` map expanded with 4 new format entries
 
 ### Module Wiring
+
 - [x] `serialization/go.mod` — added `go-toml/v2` dep + replace directives
 - [x] `integration/go.mod` — added `plantuml` import + replace
 - [x] `examples/go.mod` — added `plantuml` import + replace
@@ -78,12 +86,14 @@ Added 4 new output formats (JSONL, AsciiDoc, TOML, PlantUML) to go-output, expan
 - [x] All 13 modules: `go mod tidy` + `go build ./...` clean
 
 ### Lint Configuration
+
 - [x] `.golangci.yml` depguard `default` rule: added `plantuml`, `go-toml/v2`, `bufio`
 - [x] `.golangci.yml` depguard `examples` rule: added `plantuml`
 - [x] `.golangci.yml` depguard `main` rule: added `plantuml`
 - [x] `.golangci.yml` `gomoddirectives` replace-allow-list: added `plantuml`
 
 ### Documentation
+
 - [x] `AGENTS.md` — 16 formats, 13 modules, updated dependency graph, coverage table, go.work snippet
 - [x] `README.md` — 4 new rows in Supported Formats table
 - [x] `CHANGELOG.md` — `### Added` section with all 4 formats detailed
@@ -99,6 +109,7 @@ All planned work items from the 44-task TODO list are complete.
 ## c) NOT STARTED
 
 ### Format Enhancements
+
 - [ ] TOML graph renderer (`TOMLGraphRenderer`) — only table + tree implemented
 - [ ] JSONL tree/graph renderers — only table implemented
 - [ ] AsciiDoc tree renderer — only table implemented
@@ -110,6 +121,7 @@ All planned work items from the 44-task TODO list are complete.
 - [ ] TOML `MarshalTOMLFromTableData` could produce TOML arrays of tables more idiomatically
 
 ### Test Coverage Gaps
+
 - [ ] `serialization/` coverage dropped from ~90% to 75.4% — needs more tests for TOML/JSONL edge cases
 - [ ] `testhelpers/` coverage at 43.5% — was 93.8% (may be measurement artifact)
 - [ ] PlantUML `convert.go` test coverage (currently only tested via plantuml_test.go)
@@ -118,6 +130,7 @@ All planned work items from the 44-task TODO list are complete.
 - [ ] Error path tests for PlantUML (edge cases with special chars in labels)
 
 ### Documentation
+
 - [ ] README.md usage examples for new formats (only table rows added)
 - [ ] Example functions (`ExampleNewJSONLTableRenderer`, etc.) for Go doc
 - [ ] ADR for PlantUML module creation (like ADR-003 for D2/Graph)
@@ -134,11 +147,13 @@ No broken builds, no failing tests, no lint errors, no circular deps. All 13 mod
 ## e) WHAT WE SHOULD IMPROVE
 
 ### Critical (Do Next)
+
 1. **Serialization coverage is 75.4%** — dropped from ~90% because new TOML/JSONL files added without exhaustive edge-case tests. Needs error path tests, nil/empty edge cases, large datasets.
 2. **ADR-001 still says 10 modules** — the file wasn't updated in this session (only AGENTS.md was). Need to sync.
 3. **PlantUML is bare-bones** — it works but has no rich domain model (no shapes, arrows, SQL tables, classes like D2). This is the biggest gap vs. the D2 module.
 
 ### Important
+
 4. **No benchmarks** for new formats — `delimited/` has benchmarks, but new formats don't.
 5. **go.work is gitignored** — every new module requires manual `go.work` update. Consider a `just` recipe or `scripts/setup-workspace.sh`.
 6. **No fuzz tests** for new formats — `graph/` has fuzz tests, new modules don't.
@@ -146,6 +161,7 @@ No broken builds, no failing tests, no lint errors, no circular deps. All 13 mod
 8. **PlantUML `sanitizePlantUMLID` is naive** — only handles spaces and hyphens. Should handle dots, colons, unicode, etc.
 
 ### Nice to Have
+
 9. **No `Example*` functions** for godoc — all existing formats have them in `example_test.go`.
 10. **Integration `go.mod` has 25+ lines of replace directives** — the module count is growing; consider a script to generate them.
 11. **No version bump** — `go.mod` still says `v0.0.0` or `v0.5.0` for root. Should tag a release.
@@ -155,33 +171,33 @@ No broken builds, no failing tests, no lint errors, no circular deps. All 13 mod
 
 ## f) Top 25 Things to Do Next
 
-| # | Priority | Task | Impact | Effort |
-|---|----------|------|--------|--------|
-| 1 | P0 | Fix serialization coverage → 90%+ (TOML/JSONL error paths) | Quality | Low |
-| 2 | P0 | Update ADR-001 to reflect 13 modules | Accuracy | Low |
-| 3 | P1 | Add benchmarks for JSONL, AsciiDoc, TOML, PlantUML | Perf | Low |
-| 3 | P1 | Add `Example*` functions for all 4 new formats (godoc) | Docs | Low |
-| 5 | P1 | PlantUML rich domain model (shapes, arrows, classes) | Feature | Medium |
-| 6 | P1 | TOML graph renderer (`TOMLGraphRenderer`) | Feature parity | Low |
-| 7 | P1 | Verify root `go.mod` has zero `go-toml/v2` import in production code | Correctness | Low |
-| 8 | P1 | Add fuzz tests for TOML/JSONL/AsciiDoc parsing | Robustness | Low |
-| 9 | P2 | PlantUML sequence diagram support | Feature | Medium |
-| 10 | P2 | PlantUML `sanitizePlantUMLID` — handle dots, colons, unicode | Correctness | Low |
-| 11 | P2 | JSONL streaming renderer (line-by-line to `io.Writer`) | Streaming | Low |
-| 12 | P2 | AsciiDoc tree renderer | Feature parity | Low |
-| 13 | P2 | README.md usage examples for JSONL, TOML, AsciiDoc, PlantUML | Docs | Low |
-| 14 | P2 | Write ADR for PlantUML module creation | Docs | Low |
-| 15 | P2 | Tag a release (v0.6.0?) with 16 formats, 13 modules | Release | Low |
-| 16 | P3 | Script to auto-generate replace directives in go.mod files | DX | Medium |
-| 17 | P3 | Testhelpers coverage investigation (43.5% vs 93.8%) | Quality | Low |
-| 18 | P3 | JSONL tree/graph renderers | Feature parity | Medium |
-| 19 | P3 | TOML `MarshalTOMLFromTableData` — idiomatic TOML array of tables | Quality | Low |
-| 20 | P3 | Root `go.mod` dep cleanup — remove transitive deps pulled by new modules | Hygiene | Low |
-| 21 | P3 | PlantUML class diagram support (methods, fields) | Feature | Medium |
-| 22 | P3 | AsciiDoc include directives / cross-references | Feature | Low |
-| 23 | P4 | Integration test for `RenderTableData` dispatch with new formats | Coverage | Low |
-| 24 | P4 | Consider `go.work` sync script or justfile recipe | DX | Low |
-| 25 | P4 | Split CHANGELOG into recent + archived | Hygiene | Low |
+| #   | Priority | Task                                                                     | Impact         | Effort |
+| --- | -------- | ------------------------------------------------------------------------ | -------------- | ------ |
+| 1   | P0       | Fix serialization coverage → 90%+ (TOML/JSONL error paths)               | Quality        | Low    |
+| 2   | P0       | Update ADR-001 to reflect 13 modules                                     | Accuracy       | Low    |
+| 3   | P1       | Add benchmarks for JSONL, AsciiDoc, TOML, PlantUML                       | Perf           | Low    |
+| 3   | P1       | Add `Example*` functions for all 4 new formats (godoc)                   | Docs           | Low    |
+| 5   | P1       | PlantUML rich domain model (shapes, arrows, classes)                     | Feature        | Medium |
+| 6   | P1       | TOML graph renderer (`TOMLGraphRenderer`)                                | Feature parity | Low    |
+| 7   | P1       | Verify root `go.mod` has zero `go-toml/v2` import in production code     | Correctness    | Low    |
+| 8   | P1       | Add fuzz tests for TOML/JSONL/AsciiDoc parsing                           | Robustness     | Low    |
+| 9   | P2       | PlantUML sequence diagram support                                        | Feature        | Medium |
+| 10  | P2       | PlantUML `sanitizePlantUMLID` — handle dots, colons, unicode             | Correctness    | Low    |
+| 11  | P2       | JSONL streaming renderer (line-by-line to `io.Writer`)                   | Streaming      | Low    |
+| 12  | P2       | AsciiDoc tree renderer                                                   | Feature parity | Low    |
+| 13  | P2       | README.md usage examples for JSONL, TOML, AsciiDoc, PlantUML             | Docs           | Low    |
+| 14  | P2       | Write ADR for PlantUML module creation                                   | Docs           | Low    |
+| 15  | P2       | Tag a release (v0.6.0?) with 16 formats, 13 modules                      | Release        | Low    |
+| 16  | P3       | Script to auto-generate replace directives in go.mod files               | DX             | Medium |
+| 17  | P3       | Testhelpers coverage investigation (43.5% vs 93.8%)                      | Quality        | Low    |
+| 18  | P3       | JSONL tree/graph renderers                                               | Feature parity | Medium |
+| 19  | P3       | TOML `MarshalTOMLFromTableData` — idiomatic TOML array of tables         | Quality        | Low    |
+| 20  | P3       | Root `go.mod` dep cleanup — remove transitive deps pulled by new modules | Hygiene        | Low    |
+| 21  | P3       | PlantUML class diagram support (methods, fields)                         | Feature        | Medium |
+| 22  | P3       | AsciiDoc include directives / cross-references                           | Feature        | Low    |
+| 23  | P4       | Integration test for `RenderTableData` dispatch with new formats         | Coverage       | Low    |
+| 24  | P4       | Consider `go.work` sync script or justfile recipe                        | DX             | Low    |
+| 25  | P4       | Split CHANGELOG into recent + archived                                   | Hygiene        | Low    |
 
 ---
 
@@ -210,27 +226,28 @@ No broken builds, no failing tests, no lint errors, no circular deps. All 13 mod
 
 ### Coverage Snapshot
 
-| Module | Coverage | Status |
-|--------|----------|--------|
-| output (root) | 89.6% | ✓ |
-| internal/gentest | 80.8% | ✓ |
-| delimited | 86.2% | ✓ |
-| serialization | 75.4% | ⚠ Dropped from ~90% |
-| markup | 85.5% | ✓ |
-| d2 | 100.0% | ✓ |
-| graph | 96.0% | ✓ |
-| enum | 100.0% | ✓ |
-| escape | 100.0% | ✓ |
-| testhelpers | 43.5% | ⚠ Investigate |
-| table | 100.0% | ✓ |
-| integration | 82.8% | ✓ |
-| plantuml | 97.2% | ✓ |
+| Module           | Coverage | Status              |
+| ---------------- | -------- | ------------------- |
+| output (root)    | 89.6%    | ✓                   |
+| internal/gentest | 80.8%    | ✓                   |
+| delimited        | 86.2%    | ✓                   |
+| serialization    | 75.4%    | ⚠ Dropped from ~90% |
+| markup           | 85.5%    | ✓                   |
+| d2               | 100.0%   | ✓                   |
+| graph            | 96.0%    | ✓                   |
+| enum             | 100.0%   | ✓                   |
+| escape           | 100.0%   | ✓                   |
+| testhelpers      | 43.5%    | ⚠ Investigate       |
+| table            | 100.0%   | ✓                   |
+| integration      | 82.8%    | ✓                   |
+| plantuml         | 97.2%    | ✓                   |
 
 ---
 
 ## Files Changed (28 total)
 
 ### Modified (15)
+
 - `.golangci.yml` — depguard + gomoddirectives for plantuml, toml, bufio
 - `AGENTS.md` — 16 formats, 13 modules, updated graph/table/snippets
 - `CHANGELOG.md` — Added section for 4 new formats
@@ -248,6 +265,7 @@ No broken builds, no failing tests, no lint errors, no circular deps. All 13 mod
 - `examples/go.sum` — checksums
 
 ### Created (13)
+
 - `serialization/jsonl.go` — 143 lines
 - `serialization/jsonl_test.go` — JSONL tests
 - `markup/asciidoc.go` — 99 lines

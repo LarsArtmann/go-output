@@ -19,9 +19,9 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 | **XML** (`FormatXML`)                 | FULLY_FUNCTIONAL | Structured `<table><headers>...</headers><rows>...</rows></table>` with XML escaping                      |
 | **YAML Table** (`FormatYAML`)         | FULLY_FUNCTIONAL | Sequence of mappings via `YAMLTableRenderer`. Uses `go-faster/yaml`                                       |
 | **HTML Table** (`FormatHTML`)         | FULLY_FUNCTIONAL | Styled `<table class="data-table">` with XSS escaping. Full-page mode with `RenderFullHTML()`             |
-| **JSONL** (`FormatJSONL`)           | FULLY_FUNCTIONAL | JSON Lines — one JSON object per line via `JSONLTableRenderer`. Streaming via `JSONLWriter`                     |
-| **AsciiDoc** (`FormatAsciiDoc`)     | FULLY_FUNCTIONAL | AsciiDoc tables with `\|===` borders via `AsciiDocTableRenderer`. Pipe escaping for cell content                 |
-| **TOML** (`FormatTOML`)             | FULLY_FUNCTIONAL | TOML serialization via `TOMLTableRenderer` and `TOMLTreeRenderer`. Uses `go-toml/v2`                            |
+| **JSONL** (`FormatJSONL`)             | FULLY_FUNCTIONAL | JSON Lines — one JSON object per line via `JSONLTableRenderer`. Streaming via `JSONLWriter`               |
+| **AsciiDoc** (`FormatAsciiDoc`)       | FULLY_FUNCTIONAL | AsciiDoc tables with `\|===` borders via `AsciiDocTableRenderer`. Pipe escaping for cell content          |
+| **TOML** (`FormatTOML`)               | FULLY_FUNCTIONAL | TOML serialization via `TOMLTableRenderer` and `TOMLTreeRenderer`. Uses `go-toml/v2`                      |
 | **Terminal Table** (`FormatTable`)    | FULLY_FUNCTIONAL | Lipgloss-styled tables in separate `table/` module. Rounded borders, alternating row colors, bold headers |
 
 ### Tree Data Formats
@@ -30,20 +30,20 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 | ----------------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------ |
 | **ASCII Tree** (`FormatTree`) | FULLY_FUNCTIONAL | Box-drawing characters (`├──`, `└──`, `│`). Metadata summary on nodes. `TreeRendererFromTableData()` auto-converts |
 | **JSON Tree**                 | FULLY_FUNCTIONAL | Nested JSON with `id`, `label`, `children`, `metadata` via `JSONTreeRenderer`                                      |
-| **TOML Tree**                 | FULLY_FUNCTIONAL | Nested TOML structure via `TOMLTreeRenderer`. Uses shared treeNodeDTO with json+yaml+toml tags                   |
+| **TOML Tree**                 | FULLY_FUNCTIONAL | Nested TOML structure via `TOMLTreeRenderer`. Uses shared treeNodeDTO with json+yaml+toml tags                     |
 | **YAML Tree**                 | FULLY_FUNCTIONAL | Nested YAML structure via `YAMLTreeRenderer`                                                                       |
 | **HTML Tree**                 | FULLY_FUNCTIONAL | Nested `<ul>/<li>` list with CSS styling via `HTMLTreeRenderer`. Full-page mode available                          |
 
 ### Graph/Diagram Formats
 
-| Feature                        | Status           | Notes                                                                                                                                                           |
-| ------------------------------ | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **D2 Diagrams** (`FormatD2`)   | FULLY_FUNCTIONAL | Rich domain model: 20 node shapes, 11 arrow types, SQL tables with constraints, grid layouts, nested containers, reusable style classes, icons, links, tooltips |
-| **Mermaid** (`FormatMermaid`)  | FULLY_FUNCTIONAL | Flowchart diagrams with shape support (diamond, ellipse, circle, hexagon, cylinder, parallelogram, box)                                                         |
-| **DOT/Graphviz** (`FormatDOT`) | FULLY_FUNCTIONAL | Directed and undirected graphs. Configurable graph ID, node shapes, edge styles/labels                                                                          |
-| **JSON Graph**                 | FULLY_FUNCTIONAL | `{nodes: [...], edges: [...]}` structure via `JSONGraphRenderer`                                                                                                |
-| **YAML Graph**                 | FULLY_FUNCTIONAL | Same structure as JSON Graph, YAML-serialized via `YAMLGraphRenderer`                                                                                           |
-| **PlantUML** (`FormatPlantUML`) | FULLY_FUNCTIONAL | Component diagrams via `PlantUMLDiagram`. Uses `GraphRendererMixin`. Supports TableData→graph and Tree→graph conversion           |
+| Feature                         | Status           | Notes                                                                                                                                                           |
+| ------------------------------- | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **D2 Diagrams** (`FormatD2`)    | FULLY_FUNCTIONAL | Rich domain model: 20 node shapes, 11 arrow types, SQL tables with constraints, grid layouts, nested containers, reusable style classes, icons, links, tooltips |
+| **Mermaid** (`FormatMermaid`)   | FULLY_FUNCTIONAL | Flowchart diagrams with shape support (diamond, ellipse, circle, hexagon, cylinder, parallelogram, box)                                                         |
+| **DOT/Graphviz** (`FormatDOT`)  | FULLY_FUNCTIONAL | Directed and undirected graphs. Configurable graph ID, node shapes, edge styles/labels                                                                          |
+| **JSON Graph**                  | FULLY_FUNCTIONAL | `{nodes: [...], edges: [...]}` structure via `JSONGraphRenderer`                                                                                                |
+| **YAML Graph**                  | FULLY_FUNCTIONAL | Same structure as JSON Graph, YAML-serialized via `YAMLGraphRenderer`                                                                                           |
+| **PlantUML** (`FormatPlantUML`) | FULLY_FUNCTIONAL | Component diagrams via `PlantUMLDiagram`. Uses `GraphRendererMixin`. Supports TableData→graph and Tree→graph conversion                                         |
 
 ---
 
@@ -74,21 +74,21 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 
 ## Type-Safe Enums
 
-| Feature               | Status           | Notes                                                                                                              |
-| --------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------ |
-| **Format enum**       | FULLY_FUNCTIONAL | 16 format constants. `ParseFormat()`, `String()`, `IsValid()`, `AllowedValues()`                                   |
-| **Shape enum**        | FULLY_FUNCTIONAL | 3 shape constants. `ParseShape()`, `String()`, `IsValid()`, `AllowedValues()`                                      |
-| **ColorMode enum**    | FULLY_FUNCTIONAL | `auto`, `always`, `never`. `ParseColorMode()`, `ShouldColor()`. Wired into table, tree, markdown renderers         |
-| **SortBy enum**       | REMOVED          | Deleted — zero external callers. Use `slices.SortStableFunc` + `cmp.Compare` (stdlib)                              |
-| **GraphShape enum**   | FULLY_FUNCTIONAL | 8 node shapes (box, ellipse, diamond, circle, cylinder, hexagon, parallelogram, rect)                              |
-| **D2Direction enum**  | FULLY_FUNCTIONAL | 4 directions (down, right, left, up). Default is down                                                              |
-| **D2NodeShape enum**  | FULLY_FUNCTIONAL | 20 shapes (rectangle, circle, diamond, hexagon, cloud, person, queue, sql_table, class, code, etc.)                |
-| **D2ArrowType enum**  | FULLY_FUNCTIONAL | 11 arrow types (arrow, triangle, diamond, circle, filled, box, cross, CF variants)                                 |
-| **D2Constraint enum** | FULLY_FUNCTIONAL | 3 SQL constraints (primary_key, foreign_key, unique)                                                               |
-| **Alignment enum**    | FULLY_FUNCTIONAL | Markdown column alignment: left, right, center                                                                     |
-| **enum package**      | FULLY_FUNCTIONAL | Generic `Parse[T]()`, `Contains[T]()`, `AllowedValues[T]()`, `AllowedStrings[T]()`. Zero-dependency sub-module     |
-| **FormatCategory**    | REMOVED          | Replaced by `Shape`. `IsTableFormat()`, `IsTreeFormat()`, `IsGraphFormat()`, `Category()` removed                  |
-| **OutputFormat**      | REMOVED          | Type alias for `Format`. All `OutputFormat*` constants removed                                                     |
+| Feature               | Status           | Notes                                                                                                          |
+| --------------------- | ---------------- | -------------------------------------------------------------------------------------------------------------- |
+| **Format enum**       | FULLY_FUNCTIONAL | 16 format constants. `ParseFormat()`, `String()`, `IsValid()`, `AllowedValues()`                               |
+| **Shape enum**        | FULLY_FUNCTIONAL | 3 shape constants. `ParseShape()`, `String()`, `IsValid()`, `AllowedValues()`                                  |
+| **ColorMode enum**    | FULLY_FUNCTIONAL | `auto`, `always`, `never`. `ParseColorMode()`, `ShouldColor()`. Wired into table, tree, markdown renderers     |
+| **SortBy enum**       | REMOVED          | Deleted — zero external callers. Use `slices.SortStableFunc` + `cmp.Compare` (stdlib)                          |
+| **GraphShape enum**   | FULLY_FUNCTIONAL | 8 node shapes (box, ellipse, diamond, circle, cylinder, hexagon, parallelogram, rect)                          |
+| **D2Direction enum**  | FULLY_FUNCTIONAL | 4 directions (down, right, left, up). Default is down                                                          |
+| **D2NodeShape enum**  | FULLY_FUNCTIONAL | 20 shapes (rectangle, circle, diamond, hexagon, cloud, person, queue, sql_table, class, code, etc.)            |
+| **D2ArrowType enum**  | FULLY_FUNCTIONAL | 11 arrow types (arrow, triangle, diamond, circle, filled, box, cross, CF variants)                             |
+| **D2Constraint enum** | FULLY_FUNCTIONAL | 3 SQL constraints (primary_key, foreign_key, unique)                                                           |
+| **Alignment enum**    | FULLY_FUNCTIONAL | Markdown column alignment: left, right, center                                                                 |
+| **enum package**      | FULLY_FUNCTIONAL | Generic `Parse[T]()`, `Contains[T]()`, `AllowedValues[T]()`, `AllowedStrings[T]()`. Zero-dependency sub-module |
+| **FormatCategory**    | REMOVED          | Replaced by `Shape`. `IsTableFormat()`, `IsTreeFormat()`, `IsGraphFormat()`, `Category()` removed              |
+| **OutputFormat**      | REMOVED          | Type alias for `Format`. All `OutputFormat*` constants removed                                                 |
 
 ---
 
@@ -105,12 +105,12 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 
 ## Cross-Shape Conversion
 
-| Feature                | Status           | Notes                                                                                                           |
-| ---------------------- | ---------------- | --------------------------------------------------------------------------------------------------------------- |
-| **TableData → Graph**  | FULLY_FUNCTIONAL | `D2FromTableData()`, `DOTFromTableData()`, `MermaidFromTableData()`, `PlantUMLFromTableData()`, `NodesFromTableData()`                     |
-| **TableData → Tree**   | FULLY_FUNCTIONAL | `TreeRendererFromTableData()` creates hierarchical tree from tabular data                                       |
-| **Tree → Graph**       | FULLY_FUNCTIONAL | `D2FromTree()`, `DOTFromTree()`, `MermaidFromTree()`, `PlantUMLFromTree()`. Generic `AddTreeNodes()` for custom renderers             |
-| **GraphNode → D2Node** | FULLY_FUNCTIONAL | `graphNodeToD2()`, `graphEdgeToD2()`, `graphShapeToD2()` — automatic type mapping for `SetNodes()`/`SetEdges()` |
+| Feature                | Status           | Notes                                                                                                                     |
+| ---------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| **TableData → Graph**  | FULLY_FUNCTIONAL | `D2FromTableData()`, `DOTFromTableData()`, `MermaidFromTableData()`, `PlantUMLFromTableData()`, `NodesFromTableData()`    |
+| **TableData → Tree**   | FULLY_FUNCTIONAL | `TreeRendererFromTableData()` creates hierarchical tree from tabular data                                                 |
+| **Tree → Graph**       | FULLY_FUNCTIONAL | `D2FromTree()`, `DOTFromTree()`, `MermaidFromTree()`, `PlantUMLFromTree()`. Generic `AddTreeNodes()` for custom renderers |
+| **GraphNode → D2Node** | FULLY_FUNCTIONAL | `graphNodeToD2()`, `graphEdgeToD2()`, `graphShapeToD2()` — automatic type mapping for `SetNodes()`/`SetEdges()`           |
 
 ---
 
@@ -132,14 +132,14 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 
 ## Writer APIs (Streaming I/O)
 
-| Feature             | Status           | Notes                                                              |
-| ------------------- | ---------------- | ------------------------------------------------------------------ |
-| **CSVWriter**       | FULLY_FUNCTIONAL | `WriteHeader()`, `WriteRow()`, `WriteRows()`, `Flush()`, `Error()` |
-| **TSVWriter**       | FULLY_FUNCTIONAL | Same API as CSVWriter with tab delimiter                           |
-| **JSONWriter**      | FULLY_FUNCTIONAL | `Encode(v any) error` — streaming JSON encoder with indentation    |
-| **JSONLWriter**     | FULLY_FUNCTIONAL | `Encode(v any) error`, `Flush() error` — streaming JSON Lines encoder              |
-| **XMLWriter**       | FULLY_FUNCTIONAL | `WriteHeader()`, `WriteRow()`, `WriteRows()`, `WriteFooter()`      |
-| **DelimitedWriter** | FULLY_FUNCTIONAL | Shared base for CSV/TSV writers. Configurable delimiter            |
+| Feature             | Status           | Notes                                                                 |
+| ------------------- | ---------------- | --------------------------------------------------------------------- |
+| **CSVWriter**       | FULLY_FUNCTIONAL | `WriteHeader()`, `WriteRow()`, `WriteRows()`, `Flush()`, `Error()`    |
+| **TSVWriter**       | FULLY_FUNCTIONAL | Same API as CSVWriter with tab delimiter                              |
+| **JSONWriter**      | FULLY_FUNCTIONAL | `Encode(v any) error` — streaming JSON encoder with indentation       |
+| **JSONLWriter**     | FULLY_FUNCTIONAL | `Encode(v any) error`, `Flush() error` — streaming JSON Lines encoder |
+| **XMLWriter**       | FULLY_FUNCTIONAL | `WriteHeader()`, `WriteRow()`, `WriteRows()`, `WriteFooter()`         |
+| **DelimitedWriter** | FULLY_FUNCTIONAL | Shared base for CSV/TSV writers. Configurable delimiter               |
 
 ---
 
@@ -154,10 +154,10 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 | **MarshalCSVFromTableData**              | FULLY_FUNCTIONAL | One-shot CSV from `TableData`                          |
 | **MarshalTSV / MarshalTSVFromTableData** | FULLY_FUNCTIONAL | One-shot TSV from `TableData` or raw data              |
 | **MarshalXMLFromTableData**              | FULLY_FUNCTIONAL | One-shot XML from `TableData`                          |
-| **MarshalTOML / UnmarshalTOML**        | FULLY_FUNCTIONAL | Wrapper over `go-toml/v2` with type-context errors   |
-| **MarshalJSONLFromTableData**           | FULLY_FUNCTIONAL | One-shot JSON Lines from `TableData`                 |
-| **MarshalAsciiDocFromTableData**        | FULLY_FUNCTIONAL | One-shot AsciiDoc table from `TableData`             |
-| **MarshalTOMLFromTableData**            | FULLY_FUNCTIONAL | One-shot TOML from `TableData`                      |
+| **MarshalTOML / UnmarshalTOML**          | FULLY_FUNCTIONAL | Wrapper over `go-toml/v2` with type-context errors     |
+| **MarshalJSONLFromTableData**            | FULLY_FUNCTIONAL | One-shot JSON Lines from `TableData`                   |
+| **MarshalAsciiDocFromTableData**         | FULLY_FUNCTIONAL | One-shot AsciiDoc table from `TableData`               |
+| **MarshalTOMLFromTableData**             | FULLY_FUNCTIONAL | One-shot TOML from `TableData`                         |
 
 ---
 
