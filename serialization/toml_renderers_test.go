@@ -27,11 +27,20 @@ func TestTOMLGraphRenderer_WithNodesAndEdges(t *testing.T) {
 
 	r := NewTOMLGraphRenderer()
 	r.SetNodes([]output.GraphNode{
-		{ID: output.NewBrandedID[output.GraphNodeIDBrand]("a"), Label: output.NewBrandedID[output.GraphNodeLabelBrand]("Node A")},
-		{ID: output.NewBrandedID[output.GraphNodeIDBrand]("b"), Label: output.NewBrandedID[output.GraphNodeLabelBrand]("Node B")},
+		{
+			ID:    output.NewBrandedID[output.GraphNodeIDBrand]("a"),
+			Label: output.NewBrandedID[output.GraphNodeLabelBrand]("Node A"),
+		},
+		{
+			ID:    output.NewBrandedID[output.GraphNodeIDBrand]("b"),
+			Label: output.NewBrandedID[output.GraphNodeLabelBrand]("Node B"),
+		},
 	})
 	r.SetEdges([]output.GraphEdge{
-		{From: output.NewBrandedID[output.GraphNodeIDBrand]("a"), To: output.NewBrandedID[output.GraphNodeIDBrand]("b")},
+		{
+			From: output.NewBrandedID[output.GraphNodeIDBrand]("a"),
+			To:   output.NewBrandedID[output.GraphNodeIDBrand]("b"),
+		},
 	})
 
 	out, err := r.Render()
@@ -53,10 +62,17 @@ func TestTOMLGraphRenderer_EdgeWithLabel(t *testing.T) {
 
 	r := NewTOMLGraphRenderer()
 	r.SetNodes([]output.GraphNode{
-		{ID: output.NewBrandedID[output.GraphNodeIDBrand]("a"), Label: output.NewBrandedID[output.GraphNodeLabelBrand]("A")},
+		{
+			ID:    output.NewBrandedID[output.GraphNodeIDBrand]("a"),
+			Label: output.NewBrandedID[output.GraphNodeLabelBrand]("A"),
+		},
 	})
 	r.SetEdges([]output.GraphEdge{
-		{From: output.NewBrandedID[output.GraphNodeIDBrand]("a"), To: output.NewBrandedID[output.GraphNodeIDBrand]("b"), Label: output.NewBrandedID[output.GraphNodeLabelBrand]("connects")},
+		{
+			From:  output.NewBrandedID[output.GraphNodeIDBrand]("a"),
+			To:    output.NewBrandedID[output.GraphNodeIDBrand]("b"),
+			Label: output.NewBrandedID[output.GraphNodeLabelBrand]("connects"),
+		},
 	})
 
 	out, err := r.Render()
