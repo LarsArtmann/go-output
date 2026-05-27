@@ -106,6 +106,24 @@ func TestFooterRendersWithFormats(t *testing.T) {
 		testhelpers.AssertContains(t, string(result), "<footer>", "xml should contain footer element")
 		testhelpers.AssertContains(t, string(result), "Total", "xml footer should contain text")
 	})
+
+	t.Run("streaming html includes tfoot", func(t *testing.T) {
+		t.Parallel()
+
+		renderer := markup.NewStreamingHTMLRenderer()
+		renderer.SetData(data)
+
+		var buf bytes.Buffer
+		err := renderer.Stream(&buf)
+		if err != nil {
+			t.Fatalf("StreamingHTML Stream: %v", err)
+		}
+
+		result := buf.String()
+		testhelpers.AssertContains(t, result, "<tfoot>", "streaming html should contain tfoot")
+		testhelpers.AssertContains(t, result, "Total", "streaming html footer should contain text")
+		testhelpers.AssertContains(t, result, "</tfoot>", "streaming html should close tfoot")
+	})
 }
 
 func TestAllFormatsRender(t *testing.T) {
