@@ -72,39 +72,54 @@ func (c *CSVWriter) Error() error {
 	return c.writer.Error()
 }
 
-// MarshalCSVFromTableData marshals TableData as CSV with a header row.
-func MarshalCSVFromTableData(data *output.TableData) ([]byte, error) {
+// tableDataWriter is the common interface for CSV and TSV writers used by marshalFromTableData.
+type tableDataWriter interface {
+	WriteHeader(cols []string) error
+	WriteRow(values []string) error
+	Flush()
+	Error() error
+}
+
+// marshalFromTableData marshals TableData using any delimited writer (CSV or TSV).
+func marshalFromTableData(data *output.TableData, name string, newWriter func(io.Writer) tableDataWriter) ([]byte, error) {
 	if data == nil {
 		return nil, nil
 	}
 
 	var builder strings.Builder
 
-	csvWriter := NewCSVWriter(&builder)
+	w := newWriter(&builder)
 
 	if len(data.Headers) > 0 {
-		if err := csvWriter.WriteHeader(data.Headers); err != nil {
-			return nil, fmt.Errorf("write csv header: %w", err)
+		if err := w.WriteHeader(data.Headers); err != nil {
+			return nil, fmt.Errorf("write %s header: %w", name, err)
 		}
 	}
 
 	for _, row := range data.Rows {
-		if err := csvWriter.WriteRow(row); err != nil {
-			return nil, fmt.Errorf("write csv row: %w", err)
+		if err := w.WriteRow(row); err != nil {
+			return nil, fmt.Errorf("write %s row: %w", name, err)
 		}
 	}
 
 	if data.HasFooter() {
-		if err := csvWriter.WriteRow(data.Footer); err != nil {
-			return nil, fmt.Errorf("write csv footer: %w", err)
+		if err := w.WriteRow(data.Footer); err != nil {
+			return nil, fmt.Errorf("write %s footer: %w", name, err)
 		}
 	}
 
-	csvWriter.Flush()
+	w.Flush()
 
-	if err := csvWriter.Error(); err != nil {
-		return nil, fmt.Errorf("flush csv writer: %w", err)
+	if err := w.Error(); err != nil {
+		return nil, fmt.Errorf("flush %s writer: %w", name, err)
 	}
 
 	return []byte(builder.String()), nil
+}
+
+// MarshalCSVFromTableData marshals TableData as CSV with a header row.
+func MarshalCSVFromTableData(data *output.TableData) ([]byte, error) {
+	return marshalFromTableData(data, "csv", func(w io.Writer) tableDataWriter {
+		return NewCSVWriter(w)
+	})
 }

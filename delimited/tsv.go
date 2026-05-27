@@ -101,37 +101,7 @@ func writeTSVData(w *TSVWriter, data any) error {
 
 // MarshalTSVFromTableData marshals TableData as TSV with a header row.
 func MarshalTSVFromTableData(data *output.TableData) ([]byte, error) {
-	if data == nil {
-		return nil, nil
-	}
-
-	var builder strings.Builder
-
-	tsvWriter := NewTSVWriter(&builder)
-
-	if len(data.Headers) > 0 {
-		if err := tsvWriter.WriteHeader(data.Headers); err != nil {
-			return nil, fmt.Errorf("write tsv header: %w", err)
-		}
-	}
-
-	for _, row := range data.Rows {
-		if err := tsvWriter.WriteRow(row); err != nil {
-			return nil, fmt.Errorf("write tsv row: %w", err)
-		}
-	}
-
-	if data.HasFooter() {
-		if err := tsvWriter.WriteRow(data.Footer); err != nil {
-			return nil, fmt.Errorf("write tsv footer: %w", err)
-		}
-	}
-
-	tsvWriter.Flush()
-
-	if err := tsvWriter.Error(); err != nil {
-		return nil, fmt.Errorf("flush tsv writer: %w", err)
-	}
-
-	return []byte(builder.String()), nil
+	return marshalFromTableData(data, "tsv", func(w io.Writer) tableDataWriter {
+		return NewTSVWriter(w)
+	})
 }
