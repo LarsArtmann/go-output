@@ -25,6 +25,8 @@ func renderTable(projects []Project) {
 		tbl.AddRow(p.Name, strconv.Itoa(p.Health)+"%", strconv.Itoa(p.Complexity)+"/10")
 	}
 
+	tbl.SetFooter("TOTAL", fmt.Sprintf("%d", len(projects)), "-")
+
 	out, err := tbl.Render()
 	if err != nil {
 		shared.HandleError(err)
