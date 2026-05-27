@@ -49,15 +49,15 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 
 ## Core Data Model
 
-| Feature                   | Status           | Notes                                                                                                                   |
-| ------------------------- | ---------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Feature                   | Status           | Notes                                                                                                                                                                    |
+| ------------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **TableData**             | FULLY_FUNCTIONAL | `Headers []string` + `Rows [][]string` + `Footer []string`. Central data type shared across all table renderers. Footer renders as totals/summary row in tabular formats |
-| **tableDataBase**         | FULLY_FUNCTIONAL | Embedded struct providing `SetHeaders()`, `AddRow()`, `SetData()`, `SetFooter()`. Shared by JSON, YAML, HTML, Streaming renderers      |
-| **ToMapSlice()**          | FULLY_FUNCTIONAL | Converts `TableData` to `[]map[string]string` (header→cell). Used by JSON/YAML table renderers                          |
-| **CreateRowEdges()**      | FULLY_FUNCTIONAL | Generates directed edges between consecutive rows. Used by graph renderers for `TableData`→graph conversion             |
-| **TreeNode**              | FULLY_FUNCTIONAL | Hierarchical node with `ID`, `Label`, `Children`, `Metadata`, `Parent()`, `Depth()`                                     |
-| **GraphNode / GraphEdge** | FULLY_FUNCTIONAL | Generic graph model with `ID`, `Label`, `Shape`, `Style`, `Metadata`. Shared by DOT/Mermaid/JSON/YAML                   |
-| **GraphRendererMixin**    | FULLY_FUNCTIONAL | Shared composition for DOT and Mermaid. Provides `SetNodes()`, `SetEdges()`, `SetNodesFromTableData()`, `AddRowEdges()` |
+| **tableDataBase**         | FULLY_FUNCTIONAL | Embedded struct providing `SetHeaders()`, `AddRow()`, `SetData()`, `SetFooter()`. Shared by JSON, YAML, HTML, Streaming renderers                                        |
+| **ToMapSlice()**          | FULLY_FUNCTIONAL | Converts `TableData` to `[]map[string]string` (header→cell). Used by JSON/YAML table renderers                                                                           |
+| **CreateRowEdges()**      | FULLY_FUNCTIONAL | Generates directed edges between consecutive rows. Used by graph renderers for `TableData`→graph conversion                                                              |
+| **TreeNode**              | FULLY_FUNCTIONAL | Hierarchical node with `ID`, `Label`, `Children`, `Metadata`, `Parent()`, `Depth()`                                                                                      |
+| **GraphNode / GraphEdge** | FULLY_FUNCTIONAL | Generic graph model with `ID`, `Label`, `Shape`, `Style`, `Metadata`. Shared by DOT/Mermaid/JSON/YAML                                                                    |
+| **GraphRendererMixin**    | FULLY_FUNCTIONAL | Shared composition for DOT and Mermaid. Provides `SetNodes()`, `SetEdges()`, `SetNodesFromTableData()`, `AddRowEdges()`                                                  |
 
 ---
 
@@ -116,17 +116,17 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 
 ## Rendering Infrastructure
 
-| Feature                             | Status           | Notes                                                                                                                                       |
-| ----------------------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Renderer interface**              | FULLY_FUNCTIONAL | `Render() (string, error)`. Universal contract for all formats                                                                              |
-| **TableRenderer interface**         | FULLY_FUNCTIONAL | Extends `Renderer` with `SetHeaders([]string)` and `AddRow([]string)`                                                                       |
-| **TreeOutputRenderer interface**    | FULLY_FUNCTIONAL | Extends `Renderer` with `SetRoot(*TreeNode)`                                                                                                |
-| **GraphRenderer interface**         | FULLY_FUNCTIONAL | Extends `Renderer` with `SetNodes([]GraphNode)` and `SetEdges([]GraphEdge)`                                                                 |
-| **StreamingRenderer interface**     | FULLY_FUNCTIONAL | `Stream(io.Writer) error`. Incremental output for large datasets                                                                            |
-| **StreamingHTMLRenderer**           | FULLY_FUNCTIONAL | True streaming HTML table output. Writes chunks incrementally                                                                               |
-| **StreamingRendererFromRenderer()** | FULLY_FUNCTIONAL | Adapter wrapping standard `Renderer` as `StreamingRenderer` (collects then writes)                                                          |
-| **MustRender()**                    | FULLY_FUNCTIONAL | `MustRender(r Renderer) string` — panics on error. For tests/examples                                                                       |
-| **RenderTableData()**               | FULLY_FUNCTIONAL | Unified dispatcher: renders `TableData` in any format to `io.Writer` (defaults to stdout). Accepts `RenderOptions` (Title, GraphID, Writer) |
+| Feature                             | Status           | Notes                                                                                                                                                                                                                                         |
+| ----------------------------------- | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Renderer interface**              | FULLY_FUNCTIONAL | `Render() (string, error)`. Universal contract for all formats                                                                                                                                                                                |
+| **TableRenderer interface**         | FULLY_FUNCTIONAL | Extends `Renderer` with `SetHeaders([]string)` and `AddRow([]string)`                                                                                                                                                                         |
+| **TreeOutputRenderer interface**    | FULLY_FUNCTIONAL | Extends `Renderer` with `SetRoot(*TreeNode)`                                                                                                                                                                                                  |
+| **GraphRenderer interface**         | FULLY_FUNCTIONAL | Extends `Renderer` with `SetNodes([]GraphNode)` and `SetEdges([]GraphEdge)`                                                                                                                                                                   |
+| **StreamingRenderer interface**     | FULLY_FUNCTIONAL | `Stream(io.Writer) error`. Incremental output for large datasets                                                                                                                                                                              |
+| **StreamingHTMLRenderer**           | FULLY_FUNCTIONAL | True streaming HTML table output. Writes chunks incrementally                                                                                                                                                                                 |
+| **StreamingRendererFromRenderer()** | FULLY_FUNCTIONAL | Adapter wrapping standard `Renderer` as `StreamingRenderer` (collects then writes)                                                                                                                                                            |
+| **MustRender()**                    | FULLY_FUNCTIONAL | `MustRender(r Renderer) string` — panics on error. For tests/examples                                                                                                                                                                         |
+| **RenderTableData()**               | FULLY_FUNCTIONAL | Unified dispatcher: renders `TableData` in any format to `io.Writer` (defaults to stdout). Accepts `RenderOptions` (Title, GraphID, Writer)                                                                                                   |
 | **Footer row**                      | FULLY_FUNCTIONAL | `TableData.Footer []string` — optional totals/summary row. CSV/TSV append as last row. HTML uses `<tfoot>`. XML uses `<footer>`. Markdown adds separator + bold row. Table uses bold styling. Data formats (JSON/YAML/TOML/JSONL) skip footer |
 
 ---
