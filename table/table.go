@@ -51,31 +51,9 @@ func New(opts ...Option) *Table {
 		opt(tbl)
 	}
 
-	useColor := tbl.colorMode.ShouldColor()
-
 	tbl.t = table.New().
 		Border(lipgloss.RoundedBorder()).
-		StyleFunc(func(row, _ int) lipgloss.Style {
-			if row == table.HeaderRow {
-				style := lipgloss.NewStyle().Padding(0, 1)
-				if useColor {
-					style = style.Foreground(lipgloss.Color("99")).Bold(true)
-				}
-
-				return style
-			}
-
-			if row%2 == 0 {
-				style := lipgloss.NewStyle().Padding(0, 1)
-				if useColor {
-					style = style.Foreground(lipgloss.Color("245"))
-				}
-
-				return style
-			}
-
-			return lipgloss.NewStyle().Padding(0, 1)
-		})
+		StyleFunc(tbl.buildStyleFunc(0))
 
 	return tbl
 }
@@ -101,42 +79,10 @@ func (t *Table) AddRow(row ...string) *Table {
 
 // SetFooter adds a bold-styled footer row to the table.
 func (t *Table) SetFooter(row ...string) *Table {
-	footerRow := t.rowCount + 1
+	t.rowCount++
 
 	t.t.Row(row...)
-
-	useColor := t.colorMode.ShouldColor()
-
-	t.StyleFunc(func(row, _ int) lipgloss.Style {
-		if row == table.HeaderRow {
-			style := lipgloss.NewStyle().Padding(0, 1)
-			if useColor {
-				style = style.Foreground(lipgloss.Color("99")).Bold(true)
-			}
-
-			return style
-		}
-
-		if row == footerRow {
-			style := lipgloss.NewStyle().Padding(0, 1)
-			if useColor {
-				style = style.Bold(true)
-			}
-
-			return style
-		}
-
-		if row%2 == 0 {
-			style := lipgloss.NewStyle().Padding(0, 1)
-			if useColor {
-				style = style.Foreground(lipgloss.Color("245"))
-			}
-
-			return style
-		}
-
-		return lipgloss.NewStyle().Padding(0, 1)
-	})
+	t.StyleFunc(t.buildStyleFunc(t.rowCount))
 
 	return t
 }
@@ -167,25 +113,21 @@ func FromTableData(data TableDataProvider, opts ...Option) *Table {
 	}
 
 	if fp, ok := data.(FooterProvider); ok {
-		applyFooterStyle(t, fp.GetFooter())
+		footer := fp.GetFooter()
+		if len(footer) > 0 {
+			t.SetFooter(footer...)
+		}
 	}
 
 	return t
 }
 
-func applyFooterStyle(t *Table, footer []string) {
-	if len(footer) == 0 {
-		return
-	}
-
-	t.rowCount++
-	footerRow := t.rowCount
-
-	t.t.Row(footer...)
-
+// buildStyleFunc returns a StyleFunc that applies header, footer, and alternating row styles.
+// footerRow > 0 enables bold footer styling on that row index.
+func (t *Table) buildStyleFunc(footerRow int) func(row, col int) lipgloss.Style {
 	useColor := t.colorMode.ShouldColor()
 
-	t.StyleFunc(func(row, _ int) lipgloss.Style {
+	return func(row, _ int) lipgloss.Style {
 		if row == table.HeaderRow {
 			style := lipgloss.NewStyle().Padding(0, 1)
 			if useColor {
@@ -195,7 +137,7 @@ func applyFooterStyle(t *Table, footer []string) {
 			return style
 		}
 
-		if row == footerRow {
+		if footerRow > 0 && row == footerRow {
 			style := lipgloss.NewStyle().Padding(0, 1)
 			if useColor {
 				style = style.Bold(true)
@@ -214,5 +156,5 @@ func applyFooterStyle(t *Table, footer []string) {
 		}
 
 		return lipgloss.NewStyle().Padding(0, 1)
-	})
+	}
 }
