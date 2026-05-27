@@ -12,6 +12,7 @@ func TestMarkdownTable(t *testing.T) {
 	runSubtest(t, "alignment", testMarkdownAlignment)
 	runSubtest(t, "center alignment", testMarkdownCenterAlignment)
 	runSubtest(t, "chaining", testMarkdownChaining)
+	runSubtest(t, "footer", testMarkdownFooter)
 }
 
 func testMarkdownBasicTable(t *testing.T) {
@@ -270,4 +271,70 @@ func TestMarkdownTableGetAlignmentOutOfBounds(t *testing.T) {
 	assertContains(t, got, "x", "should contain cell x")
 	assertContains(t, got, "y", "should contain cell y")
 	assertContains(t, got, "z", "should contain cell z")
+}
+
+func testMarkdownFooter(t *testing.T) {
+	t.Helper()
+
+	t.Run("renders footer after separator", func(t *testing.T) {
+		t.Parallel()
+
+		m := NewMarkdownTable()
+		m.SetHeaders([]string{"Name", "Count"})
+		m.AddRow([]string{"Alice", "10"})
+		m.AddRow([]string{"Bob", "20"})
+		m.SetFooter([]string{"Total", "30"})
+
+		got, err := m.Render()
+		if err != nil {
+			t.Fatalf("Render() error = %v", err)
+		}
+
+		assertContains(t, got, "Total", "should contain footer text")
+		assertContains(t, got, "30", "should contain footer value")
+
+		lines := strings.Split(strings.TrimSpace(got), "\n")
+		if len(lines) != 6 {
+			t.Fatalf("expected 6 lines (header + sep + 2 rows + sep + footer), got %d:\n%s", len(lines), got)
+		}
+
+		if !strings.Contains(lines[4], "---") {
+			t.Errorf("expected separator before footer, got %q", lines[4])
+		}
+
+		if !strings.Contains(lines[5], "Total") {
+			t.Errorf("expected footer on last line, got %q", lines[5])
+		}
+	})
+
+	t.Run("no footer by default", func(t *testing.T) {
+		t.Parallel()
+
+		m := newMarkdownTableWithData()
+		got, err := m.Render()
+		if err != nil {
+			t.Fatalf("Render() error = %v", err)
+		}
+
+		lines := strings.Split(strings.TrimSpace(got), "\n")
+		if len(lines) != 4 {
+			t.Errorf("expected 4 lines without footer, got %d", len(lines))
+		}
+	})
+
+	t.Run("footer from TableData", func(t *testing.T) {
+		t.Parallel()
+
+		data := NewTableData([]string{"Item", "Qty"})
+		data.AddRow([]string{"Apple", "5"})
+		data.Footer = []string{"Sum", "5"}
+
+		m := NewMarkdownTableFromData(data)
+		got, err := m.Render()
+		if err != nil {
+			t.Fatalf("Render() error = %v", err)
+		}
+
+		assertContains(t, got, "Sum", "should contain footer from TableData")
+	})
 }

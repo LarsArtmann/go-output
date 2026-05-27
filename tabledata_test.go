@@ -9,6 +9,7 @@ func TestTableData(t *testing.T) {
 	runSubtest(t, "RowCount and ColCount", testTableDataRowColCount)
 	runSubtest(t, "CreateRowEdges", testTableDataCreateRowEdges)
 	runSubtest(t, "ToMapSlice", testTableDataToMapSlice)
+	runSubtest(t, "Footer", testTableDataFooter)
 }
 
 func testTableDataRowColCount(t *testing.T) {
@@ -159,6 +160,41 @@ func testTableDataToMapSlice(t *testing.T) {
 
 		if _, ok := got[0]["B"]; ok {
 			t.Errorf("ToMapSlice()[0][B] = %q, want absent", got[0]["B"])
+		}
+	})
+}
+
+func testTableDataFooter(t *testing.T) {
+	t.Helper()
+
+	t.Run("no footer by default", func(t *testing.T) {
+		t.Parallel()
+
+		data := NewTableData([]string{"Name", "Value"})
+		if data.HasFooter() {
+			t.Error("HasFooter() = true, want false")
+		}
+
+		if got := data.GetFooter(); got != nil {
+			t.Errorf("GetFooter() = %v, want nil", got)
+		}
+	})
+
+	t.Run("set and get footer", func(t *testing.T) {
+		t.Parallel()
+
+		data := NewTableData([]string{"Name", "Count"})
+		data.AddRow([]string{"Alice", "10"})
+		data.AddRow([]string{"Bob", "20"})
+		data.Footer = []string{"Total", "30"}
+
+		if !data.HasFooter() {
+			t.Error("HasFooter() = false, want true")
+		}
+
+		footer := data.GetFooter()
+		if len(footer) != 2 || footer[0] != "Total" || footer[1] != "30" {
+			t.Errorf("GetFooter() = %v, want [Total 30]", footer)
 		}
 	})
 }

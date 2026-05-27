@@ -2,10 +2,11 @@ package output
 
 import "fmt"
 
-// TableData represents tabular data with headers and rows.
+// TableData represents tabular data with headers, rows, and an optional footer.
 type TableData struct {
 	Headers []string
 	Rows    [][]string
+	Footer  []string
 }
 
 // NewTableData creates a new TableData with the given headers.
@@ -41,6 +42,17 @@ func (d *TableData) GetHeaders() []string {
 // Satisfies the table.TableDataProvider interface.
 func (d *TableData) GetRows() [][]string {
 	return d.Rows
+}
+
+// GetFooter returns the footer row, or nil if none is set.
+// Satisfies the table.FooterProvider optional interface.
+func (d *TableData) GetFooter() []string {
+	return d.Footer
+}
+
+// HasFooter returns true if a footer row is present.
+func (d *TableData) HasFooter() bool {
+	return len(d.Footer) > 0
 }
 
 // ToMapSlice converts TableData to a slice of maps (header→cell).
@@ -123,4 +135,19 @@ func (b *TableDataBase) SetData(data *TableData) {
 // Data returns the underlying TableData.
 func (b *TableDataBase) Data() *TableData {
 	return b.data
+}
+
+// SetFooter sets the footer row.
+func (b *TableDataBase) SetFooter(footer []string) {
+	b.ensureData()
+	b.data.Footer = footer
+}
+
+// HasFooter returns true if a footer row is present.
+func (b *TableDataBase) HasFooter() bool {
+	if b.data == nil {
+		return false
+	}
+
+	return b.data.HasFooter()
 }

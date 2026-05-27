@@ -29,6 +29,7 @@ const (
 type MarkdownTable struct {
 	headers   []string
 	rows      [][]string
+	footer    []string
 	align     []Alignment
 	colorMode ColorMode
 }
@@ -50,6 +51,10 @@ func NewMarkdownTableFromData(data *TableData) *MarkdownTable {
 
 	for _, row := range data.Rows {
 		m.AddRow(row)
+	}
+
+	if data.HasFooter() {
+		m.SetFooter(data.Footer)
 	}
 
 	return m
@@ -89,6 +94,13 @@ func (m *MarkdownTable) AddRow(row []string) *MarkdownTable {
 	return m
 }
 
+// SetFooter sets the footer row for the table.
+func (m *MarkdownTable) SetFooter(footer []string) *MarkdownTable {
+	m.footer = footer
+
+	return m
+}
+
 // Render returns the Markdown table string.
 func (m *MarkdownTable) Render() (string, error) {
 	if len(m.headers) == 0 {
@@ -102,6 +114,11 @@ func (m *MarkdownTable) Render() (string, error) {
 	m.writeHeader(&b, colWidths)
 	m.writeSeparator(&b, colWidths)
 	m.writeRows(&b, colWidths)
+
+	if len(m.footer) > 0 {
+		m.writeSeparator(&b, colWidths)
+		m.writeFooterRow(&b, colWidths)
+	}
 
 	return b.String(), nil
 }
@@ -117,6 +134,12 @@ func (m *MarkdownTable) calculateColumnWidths() []int {
 			if i < len(colWidths) && len(cell) > colWidths[i] {
 				colWidths[i] = len(cell)
 			}
+		}
+	}
+
+	for i, cell := range m.footer {
+		if i < len(colWidths) && len(cell) > colWidths[i] {
+			colWidths[i] = len(cell)
 		}
 	}
 
@@ -187,21 +210,37 @@ func (m *MarkdownTable) getAlignmentMarkers(col int) (prefix, suffix string) {
 
 func (m *MarkdownTable) writeRows(b *strings.Builder, colWidths []int) {
 	for _, row := range m.rows {
-		b.WriteString("|")
+		m.writeSingleRow(b, row, colWidths)
+	}
+}
 
-		for i := range m.headers {
-			cell := ""
-			if i < len(row) {
-				cell = row[i]
-			}
+func (m *MarkdownTable) writeFooterRow(b *strings.Builder, colWidths []int) {
+	if m.useColor() {
+		b.WriteString(ansiBold)
+	}
 
-			b.WriteString(" ")
-			m.writeCell(b, i, cell, colWidths)
-			b.WriteString(" |")
+	m.writeSingleRow(b, m.footer, colWidths)
+
+	if m.useColor() {
+		b.WriteString(ansiReset)
+	}
+}
+
+func (m *MarkdownTable) writeSingleRow(b *strings.Builder, row []string, colWidths []int) {
+	b.WriteString("|")
+
+	for i := range m.headers {
+		cell := ""
+		if i < len(row) {
+			cell = row[i]
 		}
 
-		b.WriteString("\n")
+		b.WriteString(" ")
+		m.writeCell(b, i, cell, colWidths)
+		b.WriteString(" |")
 	}
+
+	b.WriteString("\n")
 }
 
 func (m *MarkdownTable) writeCell(b *strings.Builder, i int, cell string, colWidths []int) {
