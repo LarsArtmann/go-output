@@ -94,6 +94,12 @@ func MarshalCSVFromTableData(data *output.TableData) ([]byte, error) {
 		}
 	}
 
+	if data.HasFooter() {
+		if err := csvWriter.WriteRow(data.Footer); err != nil {
+			return nil, fmt.Errorf("write csv footer: %w", err)
+		}
+	}
+
 	csvWriter.Flush()
 
 	if err := csvWriter.Error(); err != nil {

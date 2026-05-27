@@ -121,6 +121,12 @@ func MarshalTSVFromTableData(data *output.TableData) ([]byte, error) {
 		}
 	}
 
+	if data.HasFooter() {
+		if err := tsvWriter.WriteRow(data.Footer); err != nil {
+			return nil, fmt.Errorf("write tsv footer: %w", err)
+		}
+	}
+
 	tsvWriter.Flush()
 
 	if err := tsvWriter.Error(); err != nil {
