@@ -66,6 +66,16 @@ func (r *StreamingHTMLRenderer) Stream(w io.Writer) error {
 		return err
 	}
 
+	if data.HasFooter() {
+		err = r.writeFooter(w, data)
+	} else {
+		err = r.writeChunk(w, []byte("</tbody>\n"), "close tbody")
+	}
+
+	if err != nil {
+		return err
+	}
+
 	return r.writeTableClose(w)
 }
 
@@ -136,7 +146,27 @@ func (r *StreamingHTMLRenderer) writeRowBoundary(w io.Writer, tag string, rowInd
 }
 
 func (r *StreamingHTMLRenderer) writeTableClose(w io.Writer) error {
-	return r.writeChunk(w, []byte(`</tbody>
-</table>
-`), "write table end")
+	return r.writeChunk(w, []byte("</table>\n"), "write table end")
+}
+
+func (r *StreamingHTMLRenderer) writeFooter(w io.Writer, data *output.TableData) error {
+	if err := r.writeChunk(w, []byte("</tbody>\n"), "close tbody before tfoot"); err != nil {
+		return err
+	}
+
+	if err := r.writeChunk(w, []byte("<tfoot>\n<tr>\n"), "write tfoot open"); err != nil {
+		return err
+	}
+
+	for i, cell := range data.Footer {
+		if _, err := w.Write([]byte("<td>" + escape.HTML(cell) + "</td>\n")); err != nil {
+			return fmt.Errorf("write footer cell %d: %w", i, err)
+		}
+	}
+
+	if err := r.writeChunk(w, []byte("</tr>\n</tfoot>\n"), "write tfoot close"); err != nil {
+		return err
+	}
+
+	return nil
 }

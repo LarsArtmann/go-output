@@ -226,3 +226,44 @@ func TestStreamingHTMLRendererStreamError(t *testing.T) {
 		t.Fatal("expected error from errorWriter")
 	}
 }
+
+func TestStreamingHTMLRendererWithFooter(t *testing.T) {
+	t.Parallel()
+
+	r := NewStreamingHTMLRenderer()
+	r.SetHeaders([]string{"Name", "Count"})
+	r.AddRow([]string{"Alice", "10"})
+	r.SetFooter([]string{"Total", "10"})
+
+	got, err := r.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
+	assertContains(t, got, "<tfoot>", "should contain <tfoot>")
+	assertContains(t, got, "<td>Total</td>", "should contain footer cell")
+	assertContains(t, got, "</tfoot>", "should contain </tfoot>")
+
+	if strings.Contains(got, "<tfoot>") && !strings.Contains(got, "</tbody>") {
+		t.Error("<tfoot> should come after </tbody>")
+	}
+}
+
+func TestStreamingHTMLRendererNoFooter(t *testing.T) {
+	t.Parallel()
+
+	r := NewStreamingHTMLRenderer()
+	r.SetHeaders([]string{"Name"})
+	r.AddRow([]string{"Alice"})
+
+	got, err := r.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
+	if strings.Contains(got, "<tfoot>") {
+		t.Error("should not contain <tfoot> when no footer")
+	}
+
+	assertContains(t, got, "</tbody>", "should still close tbody")
+}
