@@ -93,3 +93,21 @@ func BenchmarkASCIITreeColored(b *testing.B) {
 		_, _ = renderer.Render()
 	}
 }
+
+func BenchmarkMarkdownTableWithFooter(b *testing.B) {
+	md := NewMarkdownTable()
+	md.SetHeaders([]string{"Name", "Age", "Email", "City"})
+	md.SetColorMode(ColorModeAlways)
+
+	for range 100 {
+		md.AddRow([]string{"Alice", "30", "alice@example.com", "Berlin"})
+	}
+
+	md.SetFooter([]string{"Total", "100", "", ""})
+
+	b.ResetTimer()
+
+	for b.Loop() {
+		_, _ = md.Render()
+	}
+}

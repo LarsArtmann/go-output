@@ -55,6 +55,17 @@ func BenchmarkMarshalCSVFromTableData(b *testing.B) {
 	}
 }
 
+func BenchmarkMarshalCSVFromTableDataWithFooter(b *testing.B) {
+	data := benchTableData()
+	data.SetFooter([]string{"Total", "100", "", ""})
+
+	b.ResetTimer()
+
+	for b.Loop() {
+		_, _ = MarshalCSVFromTableData(data)
+	}
+}
+
 func BenchmarkTSVWriter(b *testing.B) {
 	b.ResetTimer()
 
