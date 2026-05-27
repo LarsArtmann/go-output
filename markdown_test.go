@@ -339,4 +339,44 @@ func testMarkdownFooter(t *testing.T) {
 
 		assertContains(t, got, "Sum", "should contain footer from TableData")
 	})
+
+	t.Run("footer inherits column alignment", func(t *testing.T) {
+		t.Parallel()
+
+		m := NewMarkdownTable()
+		m.SetHeaders([]string{"Left", "Right", "Center"})
+		m.SetAlign(0, AlignLeft)
+		m.SetAlign(1, AlignRight)
+		m.SetAlign(2, AlignCenter)
+		m.AddRow([]string{"a", "b", "c"})
+		m.SetFooter([]string{"L", "R", "C"})
+
+		got, err := m.Render()
+		if err != nil {
+			t.Fatalf("Render() error = %v", err)
+		}
+
+		lines := strings.Split(strings.TrimSpace(got), "\n")
+		if len(lines) != 5 {
+			t.Fatalf("expected 5 lines, got %d:\n%s", len(lines), got)
+		}
+
+		footerSeparator := lines[3]
+		if !strings.Contains(footerSeparator, "---:") {
+			t.Errorf("footer separator should have right-alignment marker '---:', got %q", footerSeparator)
+		}
+
+		if !strings.Contains(footerSeparator, ":---") {
+			t.Errorf("footer separator should have center-alignment marker ':---', got %q", footerSeparator)
+		}
+
+		footerLine := lines[4]
+		if !strings.Contains(footerLine, "| L ") {
+			t.Errorf("footer left cell should be left-aligned '| L ', got %q", footerLine)
+		}
+
+		if !strings.Contains(footerLine, "R |") {
+			t.Errorf("footer right cell should be right-aligned 'R |', got %q", footerLine)
+		}
+	})
 }
