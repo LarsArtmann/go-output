@@ -21,7 +21,7 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 | **HTML Table** (`FormatHTML`)         | FULLY_FUNCTIONAL | Styled `<table class="data-table">` with XSS escaping. Full-page mode with `RenderFullHTML()`             |
 | **JSONL** (`FormatJSONL`)             | FULLY_FUNCTIONAL | JSON Lines — one JSON object per line via `JSONLTableRenderer`. Streaming via `JSONLWriter`               |
 | **AsciiDoc** (`FormatAsciiDoc`)       | FULLY_FUNCTIONAL | AsciiDoc tables with `\|===` borders via `AsciiDocTableRenderer`. Pipe escaping for cell content          |
-| **TOML** (`FormatTOML`)               | FULLY_FUNCTIONAL | TOML serialization via `TOMLTableRenderer`, `TOMLTreeRenderer`, `TOMLGraphRenderer`. Uses `go-toml/v2`   |
+| **TOML** (`FormatTOML`)               | FULLY_FUNCTIONAL | TOML serialization via `TOMLTableRenderer`, `TOMLTreeRenderer`, `TOMLGraphRenderer`. Uses `go-toml/v2`    |
 | **Terminal Table** (`FormatTable`)    | FULLY_FUNCTIONAL | Lipgloss-styled tables in separate `table/` module. Rounded borders, alternating row colors, bold headers |
 
 ### Tree Data Formats
@@ -182,15 +182,15 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 
 ### ColorMode Support by Format
 
-| Format | ColorMode | Behavior |
-|--------|-----------|----------|
-| Table (lipgloss) | ✅ | Bold headers, alternating row colors, border styling via `table.WithColorMode()` |
-| Tree | ✅ | Depth-based ANSI color cycling, bold labels, dim connectors via `SetColorMode()` |
-| Markdown | ✅ | Bold headers, dim separators via `SetColorMode()` |
-| CSV / TSV | ❌ | Plain text — no ANSI support |
-| JSON / YAML / TOML / JSONL | ❌ | Structured data — no ANSI support |
-| XML / HTML / AsciiDoc | ❌ | Markup formats — styling via markup syntax, not ANSI |
-| D2 / Mermaid / DOT / PlantUML | ❌ | Diagram formats — styling via diagram syntax |
+| Format                        | ColorMode | Behavior                                                                         |
+| ----------------------------- | --------- | -------------------------------------------------------------------------------- |
+| Table (lipgloss)              | ✅        | Bold headers, alternating row colors, border styling via `table.WithColorMode()` |
+| Tree                          | ✅        | Depth-based ANSI color cycling, bold labels, dim connectors via `SetColorMode()` |
+| Markdown                      | ✅        | Bold headers, dim separators via `SetColorMode()`                                |
+| CSV / TSV                     | ❌        | Plain text — no ANSI support                                                     |
+| JSON / YAML / TOML / JSONL    | ❌        | Structured data — no ANSI support                                                |
+| XML / HTML / AsciiDoc         | ❌        | Markup formats — styling via markup syntax, not ANSI                             |
+| D2 / Mermaid / DOT / PlantUML | ❌        | Diagram formats — styling via diagram syntax                                     |
 
 ---
 

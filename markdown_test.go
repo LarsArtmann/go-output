@@ -311,6 +311,7 @@ func testMarkdownFooter(t *testing.T) {
 		t.Parallel()
 
 		m := newMarkdownTableWithData()
+
 		got, err := m.Render()
 		if err != nil {
 			t.Fatalf("Render() error = %v", err)
@@ -330,6 +331,7 @@ func testMarkdownFooter(t *testing.T) {
 		data.Footer = []string{"Sum", "5"}
 
 		m := NewMarkdownTableFromData(data)
+
 		got, err := m.Render()
 		if err != nil {
 			t.Fatalf("Render() error = %v", err)

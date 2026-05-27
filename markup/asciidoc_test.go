@@ -60,6 +60,24 @@ func TestMarshalAsciiDocFromTableData(t *testing.T) {
 			t.Error("pipe in cell should be escaped")
 		}
 	})
+
+	t.Run("with footer row", func(t *testing.T) {
+		t.Parallel()
+
+		data := output.NewTableData([]string{"Name", "Count"})
+		data.AddRow([]string{"Alice", "10"})
+		data.Footer = []string{"Total", "10"}
+
+		b, err := MarshalAsciiDocFromTableData(data)
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+
+		result := string(b)
+		if !strings.Contains(result, "Total") {
+			t.Error("AsciiDoc output should contain footer text 'Total'")
+		}
+	})
 }
 
 func TestAsciiDocTableRenderer(t *testing.T) {

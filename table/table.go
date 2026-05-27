@@ -18,6 +18,12 @@ type TableDataProvider interface {
 	GetRows() [][]string
 }
 
+// FooterProvider is an optional interface that TableDataProvider can implement
+// to provide a footer row (e.g., totals). Checked via type assertion in FromTableData.
+type FooterProvider interface {
+	GetFooter() []string
+}
+
 // Option configures a Table during construction.
 type Option func(*Table)
 
@@ -102,6 +108,7 @@ func (t *Table) Render() (string, error) {
 
 // FromTableData creates a new Table populated from a TableDataProvider.
 // If data is nil, returns an empty table.
+// If data also implements FooterProvider, the footer row is added and bold-styled.
 func FromTableData(data TableDataProvider, opts ...Option) *Table {
 	if data == nil {
 		return New(opts...)
@@ -114,5 +121,51 @@ func FromTableData(data TableDataProvider, opts ...Option) *Table {
 		t.AddRow(row...)
 	}
 
+	if fp, ok := data.(FooterProvider); ok {
+		applyFooterStyle(t, fp.GetFooter(), len(data.GetRows()))
+	}
+
 	return t
+}
+
+func applyFooterStyle(t *Table, footer []string, dataRowCount int) {
+	if len(footer) == 0 {
+		return
+	}
+
+	useColor := t.colorMode.ShouldColor()
+	footerRow := dataRowCount + 1
+
+	t.t.Row(footer...)
+
+	t.StyleFunc(func(row, _ int) lipgloss.Style {
+		if row == table.HeaderRow {
+			style := lipgloss.NewStyle().Padding(0, 1)
+			if useColor {
+				style = style.Foreground(lipgloss.Color("99")).Bold(true)
+			}
+
+			return style
+		}
+
+		if row == footerRow {
+			style := lipgloss.NewStyle().Padding(0, 1)
+			if useColor {
+				style = style.Bold(true)
+			}
+
+			return style
+		}
+
+		if row%2 == 0 {
+			style := lipgloss.NewStyle().Padding(0, 1)
+			if useColor {
+				style = style.Foreground(lipgloss.Color("245"))
+			}
+
+			return style
+		}
+
+		return lipgloss.NewStyle().Padding(0, 1)
+	})
 }

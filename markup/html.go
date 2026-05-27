@@ -60,9 +60,15 @@ func (r *HTMLRenderer) Render() (string, error) {
 		_ = writeMarkupRow(&b, row, "tr", "td", "", escape.HTML)
 	}
 
-	b.WriteString(`</tbody>
-</table>
-`)
+	b.WriteString("</tbody>\n")
+
+	if data.HasFooter() {
+		b.WriteString("<tfoot>\n")
+		_ = writeMarkupRow(&b, data.Footer, "tr", "td", "", escape.HTML)
+		b.WriteString("</tfoot>\n")
+	}
+
+	b.WriteString("</table>\n")
 
 	return b.String(), nil
 }

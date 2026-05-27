@@ -200,6 +200,16 @@ type testTableData struct {
 func (d *testTableData) GetHeaders() []string { return d.headers }
 func (d *testTableData) GetRows() [][]string  { return d.rows }
 
+type testTableDataWithFooter struct {
+	headers []string
+	rows    [][]string
+	footer  []string
+}
+
+func (d *testTableDataWithFooter) GetHeaders() []string { return d.headers }
+func (d *testTableDataWithFooter) GetRows() [][]string  { return d.rows }
+func (d *testTableDataWithFooter) GetFooter() []string  { return d.footer }
+
 func TestFromTableData(t *testing.T) {
 	t.Parallel()
 
@@ -308,4 +318,66 @@ func TestTableColorModeDefault(t *testing.T) {
 	if tbl.colorMode != output.ColorModeAuto {
 		t.Errorf("default ColorMode = %v, want %v", tbl.colorMode, output.ColorModeAuto)
 	}
+}
+
+func TestFromTableDataWithFooter(t *testing.T) {
+	t.Parallel()
+
+	data := &testTableDataWithFooter{
+		headers: []string{"Name", "Count"},
+		rows: [][]string{
+			{"Alice", "10"},
+			{"Bob", "20"},
+		},
+		footer: []string{"Total", "30"},
+	}
+
+	tbl := FromTableData(data)
+
+	output, err := tbl.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
+	testhelpers.AssertContains(t, output, "Name", "should contain header")
+	testhelpers.AssertContains(t, output, "Alice", "should contain row")
+	testhelpers.AssertContains(t, output, "Total", "should contain footer row")
+	testhelpers.AssertContains(t, output, "30", "should contain footer value")
+}
+
+func TestFromTableDataWithEmptyFooter(t *testing.T) {
+	t.Parallel()
+
+	data := &testTableDataWithFooter{
+		headers: []string{"Name"},
+		rows:    [][]string{{"Alice"}},
+		footer:  nil,
+	}
+
+	tbl := FromTableData(data)
+
+	output, err := tbl.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
+	testhelpers.AssertContains(t, output, "Alice", "should contain row")
+}
+
+func TestFromTableDataWithRealTableData(t *testing.T) {
+	t.Parallel()
+
+	data := output.NewTableData([]string{"Item", "Qty"})
+	data.AddRow([]string{"Apple", "5"})
+	data.Footer = []string{"Sum", "5"}
+
+	tbl := FromTableData(data)
+
+	output, err := tbl.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
+	testhelpers.AssertContains(t, output, "Apple", "should contain data row")
+	testhelpers.AssertContains(t, output, "Sum", "should contain footer from output.TableData")
 }

@@ -304,3 +304,37 @@ func TestMarshalXMLIndentError(t *testing.T) {
 		t.Fatal("expected error for unmarshalable type")
 	}
 }
+
+func TestMarshalXMLFromTableDataWithFooter(t *testing.T) {
+	t.Parallel()
+
+	data := output.NewTableData([]string{"Name", "Count"})
+	data.AddRow([]string{"Alice", "10"})
+	data.Footer = []string{"Total", "10"}
+
+	result, err := MarshalXMLFromTableData(data)
+	if err != nil {
+		t.Fatalf("MarshalXMLFromTableData() error = %v", err)
+	}
+
+	outputStr := string(result)
+	assertContains(t, outputStr, "<footer>", "XML should contain <footer>")
+	assertContains(t, outputStr, "Total", "XML footer should contain footer text")
+	assertContains(t, outputStr, "</footer>", "XML should contain </footer>")
+}
+
+func TestMarshalXMLFromTableDataNoFooter(t *testing.T) {
+	t.Parallel()
+
+	data := output.NewTableData([]string{"Name"})
+	data.AddRow([]string{"Alice"})
+
+	result, err := MarshalXMLFromTableData(data)
+	if err != nil {
+		t.Fatalf("MarshalXMLFromTableData() error = %v", err)
+	}
+
+	if strings.Contains(string(result), "<footer>") {
+		t.Error("XML should not contain <footer> when no footer is set")
+	}
+}

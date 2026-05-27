@@ -113,6 +113,45 @@ func TestHTMLRendererSetData(t *testing.T) {
 	assertContains(t, out, "<td>1", "Output should contain cell '1'")
 }
 
+func TestHTMLRendererWithFooter(t *testing.T) {
+	t.Parallel()
+
+	renderer := NewHTMLRenderer()
+	renderer.SetHeaders([]string{"Name", "Count"})
+	renderer.AddRow([]string{"Alice", "10"})
+	renderer.SetFooter([]string{"Total", "10"})
+
+	out, err := renderer.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
+	assertContains(t, out, "<tfoot>", "Output should contain <tfoot>")
+	assertContains(t, out, "Total", "Output should contain footer text")
+	assertContains(t, out, "</tfoot>", "Output should contain </tfoot>")
+
+	if strings.Contains(out, "<tfoot>") && !strings.Contains(out, "</tbody>") {
+		t.Error("<tfoot> should come after </tbody>")
+	}
+}
+
+func TestHTMLRendererNoFooter(t *testing.T) {
+	t.Parallel()
+
+	renderer := NewHTMLRenderer()
+	renderer.SetHeaders([]string{"Name"})
+	renderer.AddRow([]string{"Alice"})
+
+	out, err := renderer.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
+	if strings.Contains(out, "<tfoot>") {
+		t.Error("Output should not contain <tfoot> when no footer is set")
+	}
+}
+
 func TestHTMLRendererAddRowWithoutSetHeaders(t *testing.T) {
 	t.Parallel()
 

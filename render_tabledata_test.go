@@ -190,3 +190,38 @@ func testRenderTableDataWriterError(t *testing.T, format Format, opts RenderOpti
 		t.Fatal(msg)
 	}
 }
+
+func TestRenderTableData_MarkdownWithFooter(t *testing.T) {
+	var buf bytes.Buffer
+
+	data := testTableData()
+	data.Footer = []string{"Total", "55", "NYC+LA"}
+
+	err := RenderTableData(data, FormatMarkdown, RenderOptions{Writer: &buf})
+	if err != nil {
+		t.Fatalf("RenderTableData markdown with footer: %v", err)
+	}
+
+	out := buf.String()
+	assertOutputContainsBoth(t, out, "Alice", "Total", "markdown with footer")
+}
+
+func TestRenderTableData_CSVWithFooter(t *testing.T) {
+	var buf bytes.Buffer
+
+	data := testTableData()
+	data.Footer = []string{"Total", "55", "NYC+LA"}
+
+	err := RenderTableData(data, FormatCSV, RenderOptions{Writer: &buf})
+	if err != nil {
+		t.Fatalf("RenderTableData csv with footer: %v", err)
+	}
+
+	out := buf.String()
+	assertOutputContainsBoth(t, out, "Alice", "Total", "csv with footer")
+
+	lines := strings.Split(strings.TrimSpace(out), "\n")
+	if len(lines) != 4 {
+		t.Errorf("expected 4 lines (header + 2 rows + footer), got %d", len(lines))
+	}
+}

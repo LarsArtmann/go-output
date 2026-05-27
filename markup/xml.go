@@ -139,6 +139,17 @@ func MarshalXMLFromTableData(data *output.TableData) ([]byte, error) {
 	}
 
 	b.WriteString("  </rows>\n")
+
+	if data.HasFooter() {
+		b.WriteString("  <footer>\n")
+
+		if err := writeMarkupRow(&b, data.Footer, "row", "cell", "    ", escape.XML); err != nil {
+			return nil, fmt.Errorf("write footer: %w", err)
+		}
+
+		b.WriteString("  </footer>\n")
+	}
+
 	b.WriteString("</table>\n")
 
 	return []byte(b.String()), nil

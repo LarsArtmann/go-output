@@ -4,7 +4,7 @@
 
 A reusable Go library for CLI applications providing consistent output formatting across 16 formats (Table, JSON, CSV, TSV, Markdown, XML, YAML, HTML, Tree, D2, Mermaid, DOT, JSONL, AsciiDoc, TOML, PlantUML) with type-safe enum-based configuration and a Shape capability matrix.
 
-**Updated:** 2026-05-25
+**Updated:** 2026-05-27
 
 ## Location
 
@@ -189,6 +189,7 @@ go test -bench=. -benchmem ./...  # Benchmarks
 5. **Composition**: GraphRendererMixin in graph.go (root) provides shared state for DOT/Mermaid via accessor methods (Nodes/Edges/NodesPtr/EdgesPtr). TableDataBase in tabledata.go shared by delimited, markup, serialization via Data() getter.
 6. **Registry dispatch**: `RenderTableData()` dispatches to registered `TableDataMarshaler` functions. Sub-modules register via `init()`. Root has ZERO sub-module imports.
 7. **ColorMode wired into renderers**: `ColorMode` (auto/always/never) controls ANSI color output. `table.New(WithColorMode(mode))` for lipgloss tables, `ASCIITreeRenderer.SetColorMode(mode)` for trees, `MarkdownTable.SetColorMode(mode)` for markdown, `RenderOptions.ColorMode` for `RenderTableData()` dispatch.
+8. **Footer row on TableData**: `TableData.Footer []string` provides an optional totals/summary row. Tabular renderers (CSV, TSV, Markdown, HTML, XML, AsciiDoc, Table) render it visually. HTML uses `<tfoot>`, XML uses `<footer>`, Markdown adds a second separator + bold footer. The `table.FooterProvider` optional interface enables `table.FromTableData()` to bold-style the footer. Data formats (JSON, YAML, TOML, JSONL) and non-tabular formats (Tree, Graph) skip the footer.
 
 ## Common Tasks
 
