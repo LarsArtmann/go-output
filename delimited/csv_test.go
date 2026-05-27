@@ -203,6 +203,34 @@ func TestMarshalCSVFromTableData(t *testing.T) {
 			t.Error("CSV should contain header even with no rows")
 		}
 	})
+
+	t.Run("with footer row", func(t *testing.T) {
+		t.Parallel()
+
+		data := output.NewTableData([]string{"Name", "Count"})
+		data.AddRow([]string{"Alice", "10"})
+		data.AddRow([]string{"Bob", "20"})
+		data.Footer = []string{"Total", "30"}
+
+		b, err := MarshalCSVFromTableData(data)
+		if err != nil {
+			t.Fatalf("MarshalCSVFromTableData() error = %v", err)
+		}
+
+		result := string(b)
+		if !strings.Contains(result, "Total") {
+			t.Error("CSV should contain footer row")
+		}
+
+		lines := strings.Split(strings.TrimSpace(result), "\n")
+		if len(lines) != 4 {
+			t.Errorf("expected 4 lines (header + 2 rows + footer), got %d", len(lines))
+		}
+
+		if !strings.Contains(lines[3], "Total") {
+			t.Errorf("expected footer on last line, got %q", lines[3])
+		}
+	})
 }
 
 func TestCSVRenderTableData(t *testing.T) {
