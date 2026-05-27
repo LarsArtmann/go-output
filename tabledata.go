@@ -2,6 +2,8 @@ package output
 
 import "fmt"
 
+var errColumnMismatch = fmt.Errorf("footer column count does not match headers")
+
 // TableData represents tabular data with headers, rows, and an optional footer.
 type TableData struct {
 	// Headers are the column header labels.
@@ -63,6 +65,21 @@ func (d *TableData) HasFooter() bool {
 // SetFooter sets the footer row.
 func (d *TableData) SetFooter(footer []string) {
 	d.Footer = footer
+}
+
+// Validate checks the TableData for consistency.
+// Returns an error if the footer column count does not match the header count.
+func (d *TableData) Validate() error {
+	if d == nil || len(d.Headers) == 0 || !d.HasFooter() {
+		return nil
+	}
+
+	if len(d.Footer) != len(d.Headers) {
+		return fmt.Errorf("%w: footer has %d columns, expected %d",
+			errColumnMismatch, len(d.Footer), len(d.Headers))
+	}
+
+	return nil
 }
 
 // ToMapSlice converts TableData to a slice of maps (header→cell).
