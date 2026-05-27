@@ -4,6 +4,7 @@ package integration
 import (
 	"bytes"
 	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/larsartmann/go-output"
@@ -36,6 +37,75 @@ func sharedTestData() (headers []string, rows [][]string) {
 		{"Beta", "200"},
 		{"Gamma", "150"},
 	}
+}
+
+func TestFooterRendersWithFormats(t *testing.T) {
+	t.Parallel()
+
+	data := output.NewTableData([]string{"Item", "Qty"})
+	data.AddRow([]string{"Apple", "5"})
+	data.AddRow([]string{"Banana", "3"})
+	data.Footer = []string{"Total", "8"}
+
+	t.Run("markdown includes footer", func(t *testing.T) {
+		t.Parallel()
+
+		var buf bytes.Buffer
+
+		err := output.RenderTableData(data, output.FormatMarkdown, output.RenderOptions{Writer: &buf})
+		if err != nil {
+			t.Fatalf("RenderTableData markdown: %v", err)
+		}
+
+		result := buf.String()
+		testhelpers.AssertContains(t, result, "Total", "markdown should contain footer")
+	})
+
+	t.Run("csv includes footer row", func(t *testing.T) {
+		t.Parallel()
+
+		var buf bytes.Buffer
+
+		err := output.RenderTableData(data, output.FormatCSV, output.RenderOptions{Writer: &buf})
+		if err != nil {
+			t.Fatalf("RenderTableData csv: %v", err)
+		}
+
+		result := buf.String()
+		testhelpers.AssertContains(t, result, "Total", "csv should contain footer")
+
+		lines := strings.Split(strings.TrimSpace(result), "\n")
+		if len(lines) != 4 {
+			t.Errorf("expected 4 lines (header + 2 rows + footer), got %d", len(lines))
+		}
+	})
+
+	t.Run("html includes tfoot", func(t *testing.T) {
+		t.Parallel()
+
+		renderer := markup.NewHTMLRenderer()
+		renderer.SetData(data)
+
+		out, err := renderer.Render()
+		if err != nil {
+			t.Fatalf("HTML render: %v", err)
+		}
+
+		testhelpers.AssertContains(t, out, "<tfoot>", "html should contain tfoot")
+		testhelpers.AssertContains(t, out, "Total", "html footer should contain text")
+	})
+
+	t.Run("xml includes footer element", func(t *testing.T) {
+		t.Parallel()
+
+		result, err := markup.MarshalXMLFromTableData(data)
+		if err != nil {
+			t.Fatalf("XML marshal: %v", err)
+		}
+
+		testhelpers.AssertContains(t, string(result), "<footer>", "xml should contain footer element")
+		testhelpers.AssertContains(t, string(result), "Total", "xml footer should contain text")
+	})
 }
 
 func TestAllFormatsRender(t *testing.T) {
