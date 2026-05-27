@@ -4,9 +4,14 @@ import "fmt"
 
 // TableData represents tabular data with headers, rows, and an optional footer.
 type TableData struct {
+	// Headers are the column header labels.
 	Headers []string
-	Rows    [][]string
-	Footer  []string
+	// Rows contains the data rows, each a slice of cell values.
+	Rows [][]string
+	// Footer is an optional totals/summary row rendered after all data rows.
+	// Tabular formats (CSV, TSV, Markdown, HTML, XML, AsciiDoc, Table) render it visually.
+	// Data formats (JSON, YAML, TOML, JSONL) and non-tabular formats skip it.
+	Footer []string
 }
 
 // NewTableData creates a new TableData with the given headers.
@@ -53,6 +58,11 @@ func (d *TableData) GetFooter() []string {
 // HasFooter returns true if a footer row is present.
 func (d *TableData) HasFooter() bool {
 	return len(d.Footer) > 0
+}
+
+// SetFooter sets the footer row.
+func (d *TableData) SetFooter(footer []string) {
+	d.Footer = footer
 }
 
 // ToMapSlice converts TableData to a slice of maps (header→cell).
