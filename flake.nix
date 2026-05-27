@@ -1,8 +1,10 @@
 {
-  description = "go-output — Reusable Go library for CLI output formatting across 12 formats";
+  description = "go-output — Reusable Go library for CLI output formatting across 16 formats";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+
+    systems.url = "github:nix-systems/default";
 
     flake-parts = {
       url = "github:hercules-ci/flake-parts";
@@ -28,12 +30,7 @@
         inputs.git-hooks.flakeModule
       ];
 
-      systems = [
-        "x86_64-linux"
-        "aarch64-linux"
-        "x86_64-darwin"
-        "aarch64-darwin"
-      ];
+      systems = import inputs.systems;
 
       perSystem =
         {
@@ -43,6 +40,35 @@
         }:
         let
           go = pkgs.go_1_26;
+          modules = [
+            "."
+            "delimited"
+            "d2"
+            "enum"
+            "escape"
+            "examples"
+            "graph"
+            "integration"
+            "markup"
+            "plantuml"
+            "serialization"
+            "table"
+            "testhelpers"
+          ];
+
+          runForModules =
+            action:
+            pkgs.writeShellApplication {
+              name = "go-${action}";
+              runtimeInputs = [ go ];
+              text = ''
+                set -euo pipefail
+                for mod in ${pkgs.lib.concatStringsSep " " modules}; do
+                  echo ":: $mod :: go ${action} ./..."
+                  ( cd "$mod" && go ${action} ./... )
+                done
+              '';
+            };
         in
         {
           treefmt.config = {
@@ -61,26 +87,85 @@
             };
           };
 
-          devShells.default = pkgs.mkShellNoCC {
-            name = "go-output";
+          devShells = {
+            default = pkgs.mkShellNoCC {
+              name = "go-output";
 
-            packages = builtins.attrValues {
-              inherit go;
-              inherit (pkgs) golangci-lint gopls;
+              packages = builtins.attrValues {
+                inherit go;
+                inherit (pkgs) golangci-lint gopls;
+              };
+
+              GOWORK = "off";
+
+              shellHook = config.pre-commit.shellHook;
             };
 
-            shellHook = ''
-              ${config.pre-commit.shellHook}
-              export GOWORK=off
-            '';
+            ci = pkgs.mkShellNoCC {
+              name = "go-output-ci";
+
+              packages = builtins.attrValues {
+                inherit go;
+                inherit (pkgs) golangci-lint;
+              };
+
+              GOWORK = "off";
+            };
           };
 
-          checks.build = pkgs.runCommand "go-output-build" { nativeBuildInputs = [ go ]; } ''
-            export GOWORK=off
-            cp -r ${./.} src && chmod -R u+w src && cd src
-            go build ./...
-            touch $out
-          '';
+          apps = {
+            test = {
+              type = "app";
+              program = runForModules "test";
+            };
+
+            build = {
+              type = "app";
+              program = runForModules "build";
+            };
+
+            lint = {
+              type = "app";
+              program = pkgs.writeShellApplication {
+                name = "go-lint";
+                runtimeInputs = [
+                  go
+                  pkgs.golangci-lint
+                ];
+                text = ''
+                  set -euo pipefail
+                  for mod in ${pkgs.lib.concatStringsSep " " modules}; do
+                    echo ":: $mod :: golangci-lint run ./..."
+                    ( cd "$mod" && golangci-lint run ./... )
+                  done
+                '';
+              };
+            };
+
+            tidy = {
+              type = "app";
+              program = runForModules "mod tidy";
+            };
+
+            setup-workspace = {
+              type = "app";
+              program = pkgs.writeShellApplication {
+                name = "setup-workspace";
+                text = ''
+                  if [ -f go.work ]; then
+                    echo "go.work already exists, skipping"
+                    exit 0
+                  fi
+                  if [ ! -f go.work.example ]; then
+                    echo "ERROR: go.work.example not found" >&2
+                    exit 1
+                  fi
+                  cp go.work.example go.work
+                  echo "Generated go.work from go.work.example"
+                '';
+              };
+            };
+          };
         };
     };
 }

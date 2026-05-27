@@ -101,20 +101,23 @@ go-output/                    # Root module (package output) — core types, Mar
 
 ```bash
 # Nix (recommended)
-nix develop                    # Enter dev shell (Go 1.26.2, golangci-lint, gopls)
+nix develop                    # Enter dev shell (Go 1.26, golangci-lint, gopls)
+nix develop .#ci               # CI dev shell (no gopls, smaller closure)
 nix fmt                        # Format .nix files
 nix flake check                # Verify formatting + pre-commit hooks
 
-# Inside nix develop (or with Go installed):
+# Nix apps (iterate all 13 modules automatically)
+nix run .#build                # Build all modules
+nix run .#test                 # Test all modules
+nix run .#lint                 # Lint all modules
+nix run .#tidy                 # go mod tidy all modules
+nix run .#setup-workspace      # Generate go.work from go.work.example
+
+# Inside nix develop (or with Go installed) — single module:
 go build ./...                  # Build root module
 go test ./...                   # Test root module
 golangci-lint run ./...         # Lint root module
 go mod tidy                     # Tidy root module
-
-# Per-module (required since go.work is gitignored)
-for mod in . delimited serialization markup d2 graph enum escape testhelpers table integration examples plantuml; do
-  (cd $mod && go test ./...)
-done
 ```
 
 **Note:** `go.work` is gitignored. Run per-module commands or create a local `go.work`:
@@ -272,5 +275,5 @@ import "github.com/larsartmann/go-output/plantuml"            // PlantUML diagra
 - Root format files (CSV, TSV, JSON, YAML, XML, HTML, Streaming) extracted to delimited/, serialization/, markup/ modules respectively
 - `internal/gentest` and `internal/testutils` are root-only — sub-modules must inline helpers or create their own. Decision rationale: exposing test helpers publicly via `testhelpers/gentest` would freeze internal testing APIs; each module having its own test helpers allows independent evolution
 - Nix flake uses `flake-parts` + `treefmt-nix` + `git-hooks.nix` — no `gomod2nix` (library, 13 modules, no binary)
-- Go checks (build/test/lint) NOT in flake — Nix sandbox blocks `go mod download`; CI handles these reliably
+- Go checks (build/test/lint) run via `nix run .#test` / `nix run .#lint` / `nix run .#build` — these iterate all 13 modules. Not in `nix flake check` because the Nix sandbox blocks `go mod download`; CI handles these reliably
 - `.pre-commit-config.yaml` exists for non-Nix users; `git-hooks.nix` auto-installs hooks for Nix users via `nix develop`
