@@ -39,6 +39,7 @@ func WithColorMode(mode output.ColorMode) Option {
 type Table struct {
 	t         *table.Table
 	colorMode output.ColorMode
+	rowCount  int
 }
 
 // New creates a new Table with default styling.
@@ -93,7 +94,51 @@ func (t *Table) SetHeaders(headers ...string) *Table {
 
 // AddRow adds a row to the table.
 func (t *Table) AddRow(row ...string) *Table {
+	t.rowCount++
+
 	return t.apply(func() { t.t.Row(row...) })
+}
+
+// SetFooter adds a bold-styled footer row to the table.
+func (t *Table) SetFooter(row ...string) *Table {
+	footerRow := t.rowCount + 1
+
+	t.t.Row(row...)
+
+	useColor := t.colorMode.ShouldColor()
+
+	t.StyleFunc(func(row, _ int) lipgloss.Style {
+		if row == table.HeaderRow {
+			style := lipgloss.NewStyle().Padding(0, 1)
+			if useColor {
+				style = style.Foreground(lipgloss.Color("99")).Bold(true)
+			}
+
+			return style
+		}
+
+		if row == footerRow {
+			style := lipgloss.NewStyle().Padding(0, 1)
+			if useColor {
+				style = style.Bold(true)
+			}
+
+			return style
+		}
+
+		if row%2 == 0 {
+			style := lipgloss.NewStyle().Padding(0, 1)
+			if useColor {
+				style = style.Foreground(lipgloss.Color("245"))
+			}
+
+			return style
+		}
+
+		return lipgloss.NewStyle().Padding(0, 1)
+	})
+
+	return t
 }
 
 // StyleFunc sets a custom style function.
@@ -122,21 +167,23 @@ func FromTableData(data TableDataProvider, opts ...Option) *Table {
 	}
 
 	if fp, ok := data.(FooterProvider); ok {
-		applyFooterStyle(t, fp.GetFooter(), len(data.GetRows()))
+		applyFooterStyle(t, fp.GetFooter())
 	}
 
 	return t
 }
 
-func applyFooterStyle(t *Table, footer []string, dataRowCount int) {
+func applyFooterStyle(t *Table, footer []string) {
 	if len(footer) == 0 {
 		return
 	}
 
-	useColor := t.colorMode.ShouldColor()
-	footerRow := dataRowCount + 1
+	t.rowCount++
+	footerRow := t.rowCount
 
 	t.t.Row(footer...)
+
+	useColor := t.colorMode.ShouldColor()
 
 	t.StyleFunc(func(row, _ int) lipgloss.Style {
 		if row == table.HeaderRow {

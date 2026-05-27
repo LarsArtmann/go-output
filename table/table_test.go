@@ -381,3 +381,22 @@ func TestFromTableDataWithRealTableData(t *testing.T) {
 	testhelpers.AssertContains(t, output, "Apple", "should contain data row")
 	testhelpers.AssertContains(t, output, "Sum", "should contain footer from output.TableData")
 }
+
+func TestTableSetFooter(t *testing.T) {
+	t.Parallel()
+
+	tbl := New(WithColorMode(output.ColorModeNever))
+	tbl.SetHeaders("Name", "Count")
+	tbl.AddRow("Alice", "10")
+	tbl.AddRow("Bob", "20")
+	tbl.SetFooter("Total", "30")
+
+	output, err := tbl.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
+	testhelpers.AssertContains(t, output, "Alice", "should contain row")
+	testhelpers.AssertContains(t, output, "Total", "should contain footer")
+	testhelpers.AssertContains(t, output, "30", "should contain footer value")
+}
