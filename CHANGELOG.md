@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased]
+
+### Added
+
+- **Footer row** (`TableData.Footer []string`) — optional totals/summary row on `TableData`. Tabular renderers render it visually: CSV/TSV append as last row, HTML uses `<tfoot>`, XML uses `<footer>`, Markdown adds separator + bold row, AsciiDoc appends footer row, Terminal Table uses bold styling. Data formats (JSON/YAML/TOML/JSONL) skip footer.
+- `TableData.GetFooter()`, `TableData.HasFooter()`, `TableDataBase.SetFooter()`, `TableDataBase.HasFooter()` — accessor methods for footer row.
+- `MarkdownTable.SetFooter()` — sets footer row on Markdown table renderer.
+- `table.SetFooter()` — adds bold-styled footer row to lipgloss terminal table.
+- `table.FooterProvider` — optional interface checked by `FromTableData()` for automatic footer styling.
+
 ## [0.6.0] - 2026-05-25
 
 ### Added

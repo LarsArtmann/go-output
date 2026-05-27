@@ -20,6 +20,9 @@ data := output.NewTableData([]string{"Name", "Health", "Complexity"})
 data.AddRow([]string{"Alpha", "90%", "7/10"})
 data.AddRow([]string{"Beta", "75%", "5/10"})
 
+// Optional footer row (totals/summary)
+data.Footer = []string{"Total", "2", "-"}
+
 // Markdown table
 md := output.NewMarkdownTable()
 md.SetHeaders(data.GetHeaders())
