@@ -4,7 +4,7 @@ go 1.26.3
 
 require (
 	github.com/go-faster/yaml v0.4.6
-	github.com/larsartmann/go-branded-id v0.1.0
+	github.com/larsartmann/go-branded-id v0.3.0
 	github.com/larsartmann/go-output/delimited v0.0.0
 	github.com/larsartmann/go-output/enum v0.0.0
 	github.com/larsartmann/go-output/serialization v0.0.0
@@ -30,5 +30,5 @@ require (
 	github.com/segmentio/asm v1.2.1 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/exp v0.0.0-20260410095643-746e56fc9e2f // indirect
-	golang.org/x/sys v0.44.0 // indirect
+	golang.org/x/sys v0.45.0 // indirect
 )
