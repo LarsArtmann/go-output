@@ -208,6 +208,27 @@ func TestMarshalTSVFromTableData(t *testing.T) {
 		result := string(b)
 		assertContains(t, result, "Name", "TSV should contain header even with no rows")
 	})
+
+	t.Run("with footer row", func(t *testing.T) {
+		t.Parallel()
+
+		data := output.NewTableData([]string{"Name", "Count"})
+		data.AddRow([]string{"Alice", "10"})
+		data.Footer = []string{"Total", "10"}
+
+		b, err := MarshalTSVFromTableData(data)
+		if err != nil {
+			t.Fatalf("MarshalTSVFromTableData() error = %v", err)
+		}
+
+		result := string(b)
+		assertContains(t, result, "Total", "TSV should contain footer row")
+
+		lines := strings.Split(strings.TrimSpace(result), "\n")
+		if len(lines) != 3 {
+			t.Errorf("expected 3 lines (header + row + footer), got %d", len(lines))
+		}
+	})
 }
 
 func TestTSVRenderTableData(t *testing.T) {
