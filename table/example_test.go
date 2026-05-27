@@ -41,3 +41,21 @@ func ExampleFromTableData() {
 
 	fmt.Println(result)
 }
+
+//nolint:testableexamples // Demonstration example, output is dynamic
+func ExampleTable_SetFooter() {
+	tbl := table.New(table.WithColorMode(output.ColorModeNever))
+	tbl.SetHeaders("Name", "Score")
+	tbl.AddRow("Alice", "95")
+	tbl.AddRow("Bob", "87")
+	tbl.SetFooter("Total", "182")
+
+	result, err := tbl.Render()
+	if err != nil {
+		fmt.Printf("error: %v\n", err)
+
+		return
+	}
+
+	fmt.Println(result)
+}
