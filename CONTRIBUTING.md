@@ -11,7 +11,7 @@ Thank you for your interest in contributing to go-output!
 
 ## Development Setup
 
-This project uses a Go multi-module workspace with 13 independent modules.
+This project uses a Go multi-module workspace with 14 independent modules.
 
 ### Initial Setup
 
@@ -31,6 +31,7 @@ use (
   ./plantuml
   ./serialization
   ./testhelpers
+  ./testhelpers/graphtest
   ./table
   ./integration
   ./examples
