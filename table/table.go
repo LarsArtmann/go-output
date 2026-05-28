@@ -8,8 +8,11 @@ import (
 	"github.com/larsartmann/go-output"
 )
 
-// Compile-time interface check.
-var _ output.Renderer = (*Table)(nil)
+// Compile-time interface checks.
+var (
+	_ output.Renderer      = (*Table)(nil)
+	_ output.TableRenderer = (*tableRendererAdapter)(nil)
+)
 
 // TableDataProvider defines the interface for types that provide tabular data.
 // The root package's TableData satisfies this interface implicitly.
@@ -174,4 +177,20 @@ func (t *Table) buildStyleFunc(footerRow int) func(row, col int) lipgloss.Style 
 
 		return lipgloss.NewStyle().Padding(0, 1)
 	}
+}
+
+// tableRendererAdapter wraps a Table to satisfy the output.TableRenderer interface.
+// It adapts the variadic API (...string) to the slice-based TableRenderer methods.
+type tableRendererAdapter struct {
+	inner *Table
+}
+
+func (a *tableRendererAdapter) Render() (string, error)     { return a.inner.Render() }
+func (a *tableRendererAdapter) SetHeaders(headers []string)  { a.inner.SetHeaders(headers...) }
+func (a *tableRendererAdapter) AddRow(row []string)          { a.inner.AddRow(row...) }
+
+// AsTableRenderer returns a TableRenderer that delegates to this Table.
+// This adapts the variadic API (...string) to the slice-based TableRenderer interface.
+func (t *Table) AsTableRenderer() output.TableRenderer {
+	return &tableRendererAdapter{inner: t}
 }

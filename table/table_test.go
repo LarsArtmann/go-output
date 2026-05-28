@@ -319,3 +319,23 @@ func TestTableColorModeDefault(t *testing.T) {
 		t.Errorf("default ColorMode = %v, want %v", tbl.colorMode, output.ColorModeAuto)
 	}
 }
+
+func TestAsTableRenderer(t *testing.T) {
+	t.Parallel()
+
+	tbl := New()
+	tr := tbl.AsTableRenderer()
+
+	tr.SetHeaders([]string{"A", "B"})
+	tr.AddRow([]string{"1", "2"})
+
+	got, err := tr.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
+	testhelpers.AssertContains(t, got, "A", "should contain header A")
+	testhelpers.AssertContains(t, got, "1", "should contain cell 1")
+
+	var _ output.TableRenderer = tr
+}
