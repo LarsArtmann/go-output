@@ -2,7 +2,10 @@ module github.com/larsartmann/go-output/plantuml
 
 go 1.26.3
 
-require github.com/larsartmann/go-output v0.0.0
+require (
+	github.com/larsartmann/go-output v0.0.0
+	github.com/larsartmann/go-output/testhelpers/graphtest v0.0.0-00010101000000-000000000000
+)
 
 require (
 	github.com/larsartmann/go-branded-id v0.3.0 // indirect
@@ -14,4 +17,6 @@ require (
 replace (
 	github.com/larsartmann/go-output => ../
 	github.com/larsartmann/go-output/enum => ../enum
+	github.com/larsartmann/go-output/testhelpers => ../testhelpers
+	github.com/larsartmann/go-output/testhelpers/graphtest => ../testhelpers/graphtest
 )

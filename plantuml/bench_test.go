@@ -4,16 +4,14 @@ import (
 	"testing"
 
 	"github.com/larsartmann/go-output"
+	"github.com/larsartmann/go-output/testhelpers/graphtest"
 )
 
 func BenchmarkPlantUMLRender(b *testing.B) {
 	diagram := NewPlantUMLDiagram()
 
 	for range 50 {
-		diagram.AddNode(output.GraphNode{
-			ID:    output.NewBrandedID[output.GraphNodeIDBrand]("node"),
-			Label: output.NewBrandedID[output.GraphNodeLabelBrand]("Node"),
-		})
+		diagram.AddNode(graphtest.NewTestNode("node", "Node"))
 	}
 
 	for range 49 {

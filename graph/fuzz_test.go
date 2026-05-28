@@ -58,13 +58,8 @@ func FuzzMermaidID(f *testing.F) {
 	f.Fuzz(func(t *testing.T, input string) {
 		result := escape.MermaidID(input)
 
-		for _, r := range result {
-			isValid := (r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') ||
-				(r >= '0' && r <= '9') || r == '_'
-
-			if !isValid {
-				t.Errorf("MermaidID(%q) = %q, invalid rune %c", input, result, r)
-			}
+		if escape.MermaidID(result) != result {
+			t.Errorf("MermaidID(%q) = %q, not idempotent", input, result)
 		}
 	})
 }

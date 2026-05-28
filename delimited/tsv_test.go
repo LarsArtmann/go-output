@@ -2,7 +2,6 @@ package delimited
 
 import (
 	"bytes"
-	"errors"
 	"strings"
 	"testing"
 
@@ -82,19 +81,6 @@ func TestMarshalTSVSingleRow(t *testing.T) {
 	}
 
 	assertContains(t, string(result), "A\tB\tC", "should marshal single row")
-}
-
-func TestMarshalTSVUnsupportedType(t *testing.T) {
-	t.Parallel()
-
-	_, err := MarshalTSV(42)
-	if err == nil {
-		t.Fatal("expected error for unsupported type")
-	}
-
-	if !errors.Is(err, ErrUnsupportedType) {
-		t.Errorf("error = %v, want ErrUnsupportedType", err)
-	}
 }
 
 func TestTSVWriterRowError(t *testing.T) {

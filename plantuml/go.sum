@@ -10,8 +10,6 @@ github.com/larsartmann/go-output/delimited v0.0.0 h1:tJuPO08fksj+aipUHZP1GSGTt2B
 github.com/larsartmann/go-output/delimited v0.0.0/go.mod h1:sI7hI8XhDuwLew3XbpW9vqf6GfX/tZcmr1F0rqo+jYo=
 github.com/larsartmann/go-output/serialization v0.0.0 h1:MyLyPHjCEyGKoIGXBcXdK+Mwfk5J2e6LdQG9yX1UIhU=
 github.com/larsartmann/go-output/serialization v0.0.0/go.mod h1:QE4dNBMXLylcpo3znnJ6jXvxUzgJaT3I/xbQG1TnBIk=
-github.com/larsartmann/go-output/testhelpers v0.0.0 h1:c7Bvrr1mfZFv/41iqTwdLuGRCq9pNI08PHgcb/3FxDM=
-github.com/larsartmann/go-output/testhelpers v0.0.0/go.mod h1:vmra8I+01eqq2Vl93YBLA8e2d2hebxbIrgRKNLrQyI0=
 github.com/pelletier/go-toml/v2 v2.3.1 h1:MYEvvGnQjeNkRF1qUuGolNtNExTDwct51yp7olPtrEc=
 github.com/pelletier/go-toml/v2 v2.3.1/go.mod h1:2gIqNv+qfxSVS7cM2xJQKtLSTLUE9V8t9Stt+h56mCY=
 github.com/segmentio/asm v1.2.1 h1:DTNbBqs57ioxAD4PrArqftgypG4/qNpXoJx8TVXxPR0=
