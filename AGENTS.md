@@ -293,12 +293,12 @@ At `art-dupl -t 50` (industry standard), this codebase has **zero actionable clo
 
 At `art-dupl -t 15` (aggressive), ~50 clone groups appear. These are categorized as:
 
-| Category | Description | Action |
-|----------|-------------|--------|
-| **Go test idioms** | `strings.Contains` assertions, `t.Errorf` patterns, `t.Parallel()` | Accept — language patterns |
-| **Module boundary** | Interface re-declarations, type aliases across modules | Accept — Go design constraint |
-| **Example/docs** | Full API usage in `example_test.go` and `examples/` | Accept — intentional for documentation |
-| **Single-line** | `render*TableData` signatures, `init()` registrations | Accept — interface compliance |
+| Category            | Description                                                        | Action                                 |
+| ------------------- | ------------------------------------------------------------------ | -------------------------------------- |
+| **Go test idioms**  | `strings.Contains` assertions, `t.Errorf` patterns, `t.Parallel()` | Accept — language patterns             |
+| **Module boundary** | Interface re-declarations, type aliases across modules             | Accept — Go design constraint          |
+| **Example/docs**    | Full API usage in `example_test.go` and `examples/`                | Accept — intentional for documentation |
+| **Single-line**     | `render*TableData` signatures, `init()` registrations              | Accept — interface compliance          |
 
 ### Key Decisions
 

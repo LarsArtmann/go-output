@@ -11,11 +11,11 @@ Running `art-dupl --semantic -t 15` reports ~50 clone groups in the codebase. We
 
 ### Threshold Policy
 
-| Threshold | Clone Groups | Action |
-|-----------|-------------|--------|
-| **t=50** (industry standard) | 2 | Fix all |
-| **t=30** (meaningful) | ~11 | Fix production code, evaluate test code |
-| **t=15** (aggressive) | ~50 | Categorize and accept most |
+| Threshold                    | Clone Groups | Action                                  |
+| ---------------------------- | ------------ | --------------------------------------- |
+| **t=50** (industry standard) | 2            | Fix all                                 |
+| **t=30** (meaningful)        | ~11          | Fix production code, evaluate test code |
+| **t=15** (aggressive)        | ~50          | Categorize and accept most              |
 
 ### Acceptable Clone Categories
 
