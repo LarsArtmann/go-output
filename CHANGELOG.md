@@ -10,16 +10,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - **Footer row** (`TableData.Footer []string`) — optional totals/summary row on `TableData`. Tabular renderers render it visually: CSV/TSV append as last row, HTML uses `<tfoot>` with `footer-cell` CSS class, XML uses `<footer>`, Markdown adds separator + bold row (with column alignment), AsciiDoc appends footer row, Terminal Table uses bold styling. Data formats (JSON/YAML/TOML/JSONL) skip footer.
 - `TableData.GetFooter()`, `TableData.HasFooter()`, `TableDataBase.SetFooter()`, `TableDataBase.HasFooter()` — accessor methods for footer row.
-- `TableData.Validate()` — validates footer column count matches headers. Returns `errColumnMismatch` on mismatch.
+- `TableData.Validate()` — validates footer column count matches headers. Returns `errColumnMismatch` on mismatch. Wired into `RenderTableData()` for automatic validation.
 - `MarkdownTable.SetFooter()` — sets footer row on Markdown table renderer (inherits column alignment).
-- `table.SetFooter()` — adds bold-styled footer row to lipgloss terminal table.
+- `table.SetFooter()` — adds bold-styled footer row to lipgloss terminal table. Tracks `footerRowIndex` for correct bold styling on multiple calls.
 - `table.FooterProvider` — optional interface checked by `FromTableData()` for automatic footer styling.
 - `CSVWriter.WriteFooter()`, `TSVWriter.WriteFooter()` — explicit footer methods for streaming delimited output.
+- Package doc.go files for 8 packages (output, delimited, d2, graph, markup, plantuml, serialization, testhelpers) — pkg.go.dev now shows proper package documentation.
+- GoDoc examples for `Format.IsValid`, `ParseFormat`, `ColorMode`, `Shape`, `TableData.Validate`, `MustRender`.
+- GoDoc comments on all exported struct fields in graph, tree, and d2 types (40+ fields).
 
 ### Changed
 
 - `delimited.marshalFromTableData()` — extracted shared helper from `MarshalCSVFromTableData` and `MarshalTSVFromTableData`, eliminating ~70 lines of duplication.
 - HTML footer cells now use `class="footer-cell"` for CSS targeting (both `HTMLRenderer` and `StreamingHTMLRenderer`).
+- All 14 modules unified to `go 1.26.3`.
+- `table.SetFooter()` now correctly tracks `footerRowIndex` — only the last footer row receives bold styling.
+- Root module test coverage improved from 88.6% to 95.9%.
+
+### Fixed
+
+- `integration/go.mod` root dep reference fixed from `v0.5.0` to `v0.0.0`.
+- AsciiDoc renderer now uses `HasFooter()` consistently with other renderers.
+- `TestBrandedIDFormat` updated for go-branded-id v0.3.0 `%#v` output.
 
 ## [0.6.0] - 2026-05-25
 

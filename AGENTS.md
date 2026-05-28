@@ -158,18 +158,18 @@ EOF
 
 | Package       | Coverage | Module |
 | ------------- | -------- | ------ |
-| output (root) | ~90%     | root   |
-| delimited     | ~95%     | own    |
-| serialization | ~90%     | own    |
-| markup        | ~90%     | own    |
+| output (root) | 95.9%    | root   |
+| delimited     | 90.2%    | own    |
+| serialization | 89.0%    | own    |
+| markup        | 93.9%    | own    |
 | d2            | 100%     | own    |
 | graph         | 97.6%    | own    |
 | enum          | 100%     | own    |
 | escape        | 100%     | own    |
 | table         | 100%     | own    |
 | testhelpers   | 93.8%    | own    |
-| integration   | ~80%     | own    |
-| gentest       | 87.5%    | root   |
+| integration   | 82.8%    | own    |
+| gentest       | 80.8%    | root   |
 
 ## Testing
 

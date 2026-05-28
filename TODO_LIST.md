@@ -1,6 +1,6 @@
 # TODO_LIST.md — go-output
 
-**Last updated:** 2026-05-25
+**Last updated:** 2026-05-28
 **Source audit:** All `docs/`, `.go`, `.github/`, `.golangci.yml`, `CONTRIBUTING.md`, `README.md`, `CHANGELOG.md`, `go.work.example`
 
 ---
@@ -45,7 +45,7 @@
 
 ## ✅ P2: Code Quality & Coverage — ALL DONE
 
-- ✅ **14.** Root test coverage: **95.1%** (above 90% target)
+- ✅ **14.** Root test coverage: **95.9%** (above 90% target)
 - ✅ **15.** testhelpers coverage: **93.8%** (above 90% target)
 - ✅ **16.** D2 benchmarks added (`d2/bench_test.go`)
 - ✅ **17.** D2 and graph fuzz tests added (`d2/fuzz_test.go`, `graph/fuzz_test.go`)
@@ -110,6 +110,7 @@
 - ✅ **37.** ~~Add PlantUML format (new module)~~ DONE — `plantuml/` module
 - ✅ **38.** ~~Add AsciiDoc format (new renderer)~~ DONE — `markup/asciidoc.go`
 - ✅ **41.** ~~Footer row feature~~ DONE — `TableData.Footer`, `Validate()`, `WriteFooter()`, CSS classes, GoDoc examples, benchmarks, integration tests, delimited dedup, README footer matrix
+- ✅ **42.** ~~Footer polish rounds 2-4~~ DONE — go.mod unified, Validate() wired, coverage 88.6→95.9%, doc.go for 8 packages, GoDoc on 40+ struct fields, t.Parallel() consistency, xml_test.go split, table.SetFooter multi-call bug fixed
 - **39.** Pre-v1 API stability audit
 - **40.** Community: Post to r/golang, submit to Awesome Go
 
