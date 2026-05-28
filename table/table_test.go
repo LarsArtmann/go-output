@@ -339,3 +339,53 @@ func TestAsTableRenderer(t *testing.T) {
 
 	var _ output.TableRenderer = tr
 }
+
+func TestBuildStyleFunc_AllBranches(t *testing.T) {
+	t.Parallel()
+
+	t.Run("always color header footer even odd rows", func(t *testing.T) {
+		t.Parallel()
+
+		tbl := New(WithColorMode(output.ColorModeAlways))
+		tbl.SetHeaders("A", "B")
+		tbl.AddRow("1", "2")
+		tbl.AddRow("3", "4")
+		tbl.SetFooter("T", "6")
+
+		got, err := tbl.Render()
+		if err != nil {
+			t.Fatalf("Render() error = %v", err)
+		}
+
+		if !strings.Contains(got, "\x1b[") {
+			t.Error("ColorModeAlways should produce ANSI codes")
+		}
+
+		testhelpers.AssertContains(t, got, "1", "should contain row")
+		testhelpers.AssertContains(t, got, "3", "should contain row")
+		testhelpers.AssertContains(t, got, "T", "should contain footer")
+	})
+
+	t.Run("never color header footer even odd rows", func(t *testing.T) {
+		t.Parallel()
+
+		tbl := New(WithColorMode(output.ColorModeNever))
+		tbl.SetHeaders("A", "B")
+		tbl.AddRow("1", "2")
+		tbl.AddRow("3", "4")
+		tbl.SetFooter("T", "6")
+
+		got, err := tbl.Render()
+		if err != nil {
+			t.Fatalf("Render() error = %v", err)
+		}
+
+		if strings.Contains(got, "\x1b[") {
+			t.Error("ColorModeNever should produce no ANSI codes")
+		}
+
+		testhelpers.AssertContains(t, got, "1", "should contain row")
+		testhelpers.AssertContains(t, got, "3", "should contain row")
+		testhelpers.AssertContains(t, got, "T", "should contain footer")
+	})
+}

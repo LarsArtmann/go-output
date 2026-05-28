@@ -158,4 +158,58 @@ func TestAssertHTMLEscape(t *testing.T) {
 			return &mockHTMLRenderer{}
 		}, "mock")
 	})
+
+	t.Run("raw script tag detected", func(t *testing.T) {
+		t.Parallel()
+
+		mock := &testing.T{}
+
+		AssertHTMLEscape(mock, func() HTMLEscapeTestRenderer {
+			return &mockNoEscapeRenderer{}
+		}, "noescape")
+
+		if !mock.Failed() {
+			t.Error("expected test to fail when raw script tag found")
+		}
+	})
+
+	t.Run("escaped but wrong format", func(t *testing.T) {
+		t.Parallel()
+
+		mock := &testing.T{}
+
+		AssertHTMLEscape(mock, func() HTMLEscapeTestRenderer {
+			return &mockWrongEscapeRenderer{}
+		}, "wrongescape")
+
+		if !mock.Failed() {
+			t.Error("expected test to fail when escaped format is wrong")
+		}
+	})
+}
+
+type mockNoEscapeRenderer struct {
+	headers []string
+	rows    [][]string
+}
+
+func (m *mockNoEscapeRenderer) SetHeaders(h []string) { m.headers = h }
+
+func (m *mockNoEscapeRenderer) AddRow(r []string) { m.rows = append(m.rows, r) }
+
+func (m *mockNoEscapeRenderer) Render() (string, error) {
+	return "<table><td><script>alert('xss')</script></td></table>", nil
+}
+
+type mockWrongEscapeRenderer struct {
+	headers []string
+	rows    [][]string
+}
+
+func (m *mockWrongEscapeRenderer) SetHeaders(h []string) { m.headers = h }
+
+func (m *mockWrongEscapeRenderer) AddRow(r []string) { m.rows = append(m.rows, r) }
+
+func (m *mockWrongEscapeRenderer) Render() (string, error) {
+	return "<table><td>SAFE_TEXT</td></table>", nil
 }
