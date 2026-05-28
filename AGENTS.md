@@ -4,7 +4,7 @@
 
 A reusable Go library for CLI applications providing consistent output formatting across 16 formats (Table, JSON, CSV, TSV, Markdown, XML, YAML, HTML, Tree, D2, Mermaid, DOT, JSONL, AsciiDoc, TOML, PlantUML) with type-safe enum-based configuration and a Shape capability matrix.
 
-**Updated:** 2026-05-27
+**Updated:** 2026-05-28
 
 ## Location
 
@@ -191,6 +191,8 @@ go test -bench=. -benchmem ./...  # Benchmarks
 7. **ColorMode wired into renderers**: `ColorMode` (auto/always/never) controls ANSI color output. `table.New(WithColorMode(mode))` for lipgloss tables, `ASCIITreeRenderer.SetColorMode(mode)` for trees, `MarkdownTable.SetColorMode(mode)` for markdown, `RenderOptions.ColorMode` for `RenderTableData()` dispatch.
 8. **Footer row on TableData**: `TableData.Footer []string` provides an optional totals/summary row. Tabular renderers (CSV, TSV, Markdown, HTML, XML, AsciiDoc, Table) render it visually. HTML uses `<tfoot>` with `footer-cell` CSS class, XML uses `<footer>`, Markdown adds a second separator + bold footer (inherits column alignment). The `table.FooterProvider` optional interface enables `table.FromTableData()` to bold-style the footer. `CSVWriter.WriteFooter()` and `TSVWriter.WriteFooter()` provide explicit streaming footer methods. `TableData.Validate()` checks footer column count matches headers. Data formats (JSON, YAML, TOML, JSONL) and non-tabular formats (Tree, Graph) skip the footer.
 9. **Delimited dedup**: `delimited.marshalFromTableData()` is a shared helper used by both `MarshalCSVFromTableData` and `MarshalTSVFromTableData`, eliminating structural duplication via a `tableDataWriter` interface.
+10. **TableRenderer adapter pattern**: Both `MarkdownTable` and `table.Table` use fluent/builder APIs (returning `*Self`) incompatible with the void-returning `TableRenderer` interface. `AsTableRenderer()` adapter methods wrap the builder with void-returning delegates. Pattern: `md.AsTableRenderer()` for MarkdownTable, `tbl.AsTableRenderer()` for table.Table.
+11. **WithFooterStyle option**: `table.WithFooterStyle(func(lipgloss.Style) lipgloss.Style)` provides composable footer styling for lipgloss tables. Receives the base style (with padding) and returns the styled result.
 
 ## Common Tasks
 
