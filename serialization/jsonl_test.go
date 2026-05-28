@@ -168,3 +168,14 @@ func TestJSONLWriter(t *testing.T) {
 		}
 	})
 }
+
+func TestJSONLWriter_EncodeError(t *testing.T) {
+	t.Parallel()
+
+	w := NewJSONLWriter(&errorWriter{})
+
+	err := w.Encode(map[string]interface{}{"key": make(chan int)})
+	if err == nil {
+		t.Fatal("Encode should return error for unmarshalable type")
+	}
+}
