@@ -130,20 +130,20 @@ func (m *MarkdownTable) calculateColumnWidths() []int {
 	}
 
 	for _, row := range m.rows {
-		for i, cell := range row {
-			if i < len(colWidths) && len(cell) > colWidths[i] {
-				colWidths[i] = len(cell)
-			}
-		}
+		updateMaxWidths(colWidths, row)
 	}
 
-	for i, cell := range m.footer {
+	updateMaxWidths(colWidths, m.footer)
+
+	return colWidths
+}
+
+func updateMaxWidths(colWidths []int, cells []string) {
+	for i, cell := range cells {
 		if i < len(colWidths) && len(cell) > colWidths[i] {
 			colWidths[i] = len(cell)
 		}
 	}
-
-	return colWidths
 }
 
 func (m *MarkdownTable) useColor() bool {

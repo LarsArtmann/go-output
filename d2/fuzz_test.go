@@ -6,6 +6,7 @@ import (
 
 	"github.com/larsartmann/go-output"
 	"github.com/larsartmann/go-output/escape"
+	"github.com/larsartmann/go-output/testhelpers/graphtest"
 )
 
 func FuzzD2Escape(f *testing.F) {
@@ -19,13 +20,8 @@ func FuzzD2Escape(f *testing.F) {
 	f.Fuzz(func(t *testing.T, input string) {
 		escaped := escape.D2(input)
 
-		if strings.Contains(input, `"`) && !strings.Contains(escaped, `\"`) {
-			t.Errorf("D2(%q) = %q, quotes not escaped", input, escaped)
-		}
-
-		if strings.Contains(input, `\`) && !strings.Contains(escaped, `\\`) {
-			t.Errorf("D2(%q) = %q, backslashes not escaped", input, escaped)
-		}
+		graphtest.AssertEscape(t, "D2", input, escaped, `"`, "quotes")
+		graphtest.AssertEscape(t, "D2", input, escaped, `\`, "backslashes")
 	})
 }
 

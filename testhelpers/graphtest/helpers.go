@@ -1,6 +1,9 @@
 package graphtest
 
 import (
+	"strings"
+	"testing"
+
 	"github.com/larsartmann/go-output"
 )
 
@@ -58,5 +61,14 @@ func TestEdgesABC() []output.GraphEdge {
 			From: output.NewBrandedID[output.GraphNodeIDBrand]("B"),
 			To:   output.NewBrandedID[output.GraphNodeIDBrand]("C"),
 		},
+	}
+}
+
+// AssertEscape checks that if input contains a character, the escaped output has it backslash-escaped.
+func AssertEscape(t *testing.T, fnName, input, escaped, char, desc string) {
+	t.Helper()
+
+	if strings.Contains(input, char) && !strings.Contains(escaped, `\`+char) {
+		t.Errorf("%s(%q) = %q, %s not escaped", fnName, input, escaped, desc)
 	}
 }

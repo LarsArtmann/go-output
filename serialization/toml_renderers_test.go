@@ -26,22 +26,8 @@ func TestTOMLGraphRenderer_WithNodesAndEdges(t *testing.T) {
 	t.Parallel()
 
 	r := NewTOMLGraphRenderer()
-	r.SetNodes([]output.GraphNode{
-		{
-			ID:    output.NewBrandedID[output.GraphNodeIDBrand]("a"),
-			Label: output.NewBrandedID[output.GraphNodeLabelBrand]("Node A"),
-		},
-		{
-			ID:    output.NewBrandedID[output.GraphNodeIDBrand]("b"),
-			Label: output.NewBrandedID[output.GraphNodeLabelBrand]("Node B"),
-		},
-	})
-	r.SetEdges([]output.GraphEdge{
-		{
-			From: output.NewBrandedID[output.GraphNodeIDBrand]("a"),
-			To:   output.NewBrandedID[output.GraphNodeIDBrand]("b"),
-		},
-	})
+	r.SetNodes(testNodesAB())
+	r.SetEdges(testEdgesAB())
 
 	out, err := r.Render()
 	if err != nil {
@@ -61,19 +47,8 @@ func TestTOMLGraphRenderer_EdgeWithLabel(t *testing.T) {
 	t.Parallel()
 
 	r := NewTOMLGraphRenderer()
-	r.SetNodes([]output.GraphNode{
-		{
-			ID:    output.NewBrandedID[output.GraphNodeIDBrand]("a"),
-			Label: output.NewBrandedID[output.GraphNodeLabelBrand]("A"),
-		},
-	})
-	r.SetEdges([]output.GraphEdge{
-		{
-			From:  output.NewBrandedID[output.GraphNodeIDBrand]("a"),
-			To:    output.NewBrandedID[output.GraphNodeIDBrand]("b"),
-			Label: output.NewBrandedID[output.GraphNodeLabelBrand]("connects"),
-		},
-	})
+	r.SetNodes([]output.GraphNode{newTestNode("a", "A")})
+	r.SetEdges([]output.GraphEdge{testEdgeAB("connects")})
 
 	out, err := r.Render()
 	if err != nil {

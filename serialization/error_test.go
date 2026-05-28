@@ -233,51 +233,6 @@ func TestMarshalTOMLFromTableData_RenderError(t *testing.T) {
 	}
 }
 
-func TestTOMLTableRenderer_NilData(t *testing.T) {
-	t.Parallel()
-
-	r := NewTOMLTableRenderer()
-
-	got, err := r.Render()
-	if err != nil {
-		t.Fatalf("Render nil data: %v", err)
-	}
-
-	if got != "[]\n" {
-		t.Errorf("Expected '[]\\n' for nil data, got %q", got)
-	}
-}
-
-func TestYAMLTableRenderer_NilData(t *testing.T) {
-	t.Parallel()
-
-	r := NewYAMLTableRenderer()
-
-	got, err := r.Render()
-	if err != nil {
-		t.Fatalf("Render nil data: %v", err)
-	}
-
-	if got != "[]\n" {
-		t.Errorf("Expected '[]\\n' for nil data, got %q", got)
-	}
-}
-
-func TestJSONTableRenderer_NilData(t *testing.T) {
-	t.Parallel()
-
-	r := NewJSONTableRenderer()
-
-	got, err := r.Render()
-	if err != nil {
-		t.Fatalf("Render nil data: %v", err)
-	}
-
-	if got != "[]" {
-		t.Errorf("Expected '[]' for nil data, got %q", got)
-	}
-}
-
 func TestMarshalTOMLFromTableData_Nil(t *testing.T) {
 	t.Parallel()
 

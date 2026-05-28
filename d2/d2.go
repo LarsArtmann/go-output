@@ -129,9 +129,7 @@ type D2Edge struct {
 }
 
 func (e D2Edge) hasBlockAttrs() bool {
-	s := e.Style
-	hasStyle := s.Stroke != "" || s.StrokeWidth > 0 || s.StrokeDash > 0 ||
-		s.Animated || s.FontColor != "" || s.FontSize > 0
+	hasStyle := e.Style.isSet() || e.Style.Animated
 	hasArrows := e.SourceArrow != "" || e.TargetArrow != ""
 
 	return hasStyle || hasArrows

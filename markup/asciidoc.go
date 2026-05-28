@@ -48,22 +48,12 @@ func (r *AsciiDocTableRenderer) Render() (string, error) {
 	b.WriteString("\n\n")
 
 	for _, row := range data.Rows {
-		for _, cell := range row {
-			b.WriteString("| ")
-			b.WriteString(escapeAsciiDoc(cell))
-			b.WriteString(" ")
-		}
-
+		writeAsciiDocCells(&b, row)
 		b.WriteString("\n\n")
 	}
 
 	if data.HasFooter() {
-		for _, cell := range data.Footer {
-			b.WriteString("| ")
-			b.WriteString(escapeAsciiDoc(cell))
-			b.WriteString(" ")
-		}
-
+		writeAsciiDocCells(&b, data.Footer)
 		b.WriteString("\n\n")
 	}
 
@@ -106,4 +96,12 @@ func renderAsciiDocTableData(w io.Writer, data *output.TableData, _ output.Rende
 // escapeAsciiDoc escapes special AsciiDoc characters in cell content.
 func escapeAsciiDoc(s string) string {
 	return strings.ReplaceAll(s, "|", "\\|")
+}
+
+func writeAsciiDocCells(b *strings.Builder, cells []string) {
+	for _, cell := range cells {
+		b.WriteString("| ")
+		b.WriteString(escapeAsciiDoc(cell))
+		b.WriteString(" ")
+	}
 }

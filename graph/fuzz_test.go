@@ -6,6 +6,7 @@ import (
 
 	"github.com/larsartmann/go-output"
 	"github.com/larsartmann/go-output/escape"
+	"github.com/larsartmann/go-output/testhelpers/graphtest"
 )
 
 func FuzzDOTEscape(f *testing.F) {
@@ -18,13 +19,8 @@ func FuzzDOTEscape(f *testing.F) {
 	f.Fuzz(func(t *testing.T, input string) {
 		escaped := escape.DOT(input)
 
-		if strings.Contains(input, `"`) && !strings.Contains(escaped, `\"`) {
-			t.Errorf("DOT(%q) = %q, quotes not escaped", input, escaped)
-		}
-
-		if strings.Contains(input, `\`) && !strings.Contains(escaped, `\\`) {
-			t.Errorf("DOT(%q) = %q, backslashes not escaped", input, escaped)
-		}
+		graphtest.AssertEscape(t, "DOT", input, escaped, `"`, "quotes")
+		graphtest.AssertEscape(t, "DOT", input, escaped, `\`, "backslashes")
 	})
 }
 

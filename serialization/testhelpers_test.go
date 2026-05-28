@@ -19,6 +19,8 @@ type errorWriter = testhelpers.ErrorWriter
 
 var newTestNodeWithShape = graphtest.NewTestNodeWithShape
 
+var newTestNode = graphtest.NewTestNode
+
 var testNodesAB = graphtest.TestNodesAB
 
 var testNodesABC = graphtest.TestNodesABC

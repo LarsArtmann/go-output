@@ -44,7 +44,7 @@ func TestGraphEdge(t *testing.T) {
 }
 
 func TestParseGraphShape(t *testing.T) {
-	tests := []parseEnumTestCase[output.GraphShape]{
+	tests := []testhelpers.ParseEnumTestCase[output.GraphShape]{
 		{Name: "box", Input: "box", Want: output.ShapeBox},
 		{Name: "ellipse", Input: "ellipse", Want: output.ShapeEllipse},
 		{Name: "diamond", Input: "diamond", Want: output.ShapeDiamond},
@@ -56,7 +56,7 @@ func TestParseGraphShape(t *testing.T) {
 		{Name: "invalid", Input: "invalid", WantErr: true},
 		{Name: "empty", Input: "", WantErr: true},
 	}
-	testParseEnum(
+	testhelpers.TestParseEnum(
 		t,
 		"output.ParseGraphShape",
 		output.ParseGraphShape,
@@ -66,14 +66,14 @@ func TestParseGraphShape(t *testing.T) {
 }
 
 func TestGraphShapeString(t *testing.T) {
-	tests := []stringEnumTestCase[output.GraphShape]{
+	tests := []testhelpers.StringEnumTestCase[output.GraphShape]{
 		{Value: output.ShapeBox, Want: "box"},
 		{Value: output.ShapeEllipse, Want: "ellipse"},
 		{Value: output.ShapeDiamond, Want: "diamond"},
 		{Value: output.ShapeCircle, Want: "circle"},
 	}
 
-	testEnumString(
+	testhelpers.TestEnumString(
 		t,
 		"output.GraphShape.String",
 		tests,
@@ -94,7 +94,7 @@ func TestGraphShapeAllowedValues(t *testing.T) {
 		"rect",
 	}
 
-	testAllowedValues(t, "AllowedValues", got, want)
+	testhelpers.TestAllowedValues(t, "AllowedValues", got, want)
 }
 
 func TestGraphShapeIsValid(t *testing.T) {

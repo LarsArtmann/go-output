@@ -2,7 +2,6 @@ package delimited
 
 import (
 	"bytes"
-	"strings"
 	"testing"
 
 	"github.com/larsartmann/go-output"
@@ -11,13 +10,7 @@ import (
 
 type errorWriter = testhelpers.ErrorWriter
 
-func assertContains(t *testing.T, s, substr, msg string) {
-	t.Helper()
-
-	if !strings.Contains(s, substr) {
-		t.Errorf("%s: %q does not contain %q", msg, s, substr)
-	}
-}
+var assertContains = testhelpers.AssertContains
 
 func testRenderTableData(t *testing.T, format output.Format, name string) {
 	t.Helper()
