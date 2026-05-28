@@ -196,6 +196,8 @@ func TestAllFormatsRender(t *testing.T) {
 }
 
 func TestStreamingRenderer(t *testing.T) {
+	t.Parallel()
+
 	r := markup.NewStreamingHTMLRenderer()
 	r.SetHeaders([]string{"Name"})
 	r.AddRow([]string{"Alpha"})

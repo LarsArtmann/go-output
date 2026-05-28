@@ -26,6 +26,8 @@ func assertOutputContainsBoth(t *testing.T, out, a, b, format string) {
 }
 
 func TestRenderTableData_CSV(t *testing.T) {
+	t.Parallel()
+
 	var buf bytes.Buffer
 
 	data := testTableData()
@@ -45,6 +47,8 @@ func TestRenderTableData_CSV(t *testing.T) {
 }
 
 func TestRenderTableData_TSV(t *testing.T) {
+	t.Parallel()
+
 	var buf bytes.Buffer
 
 	data := testTableData()
@@ -63,6 +67,8 @@ func TestRenderTableData_TSV(t *testing.T) {
 }
 
 func TestRenderTableData_Markdown(t *testing.T) {
+	t.Parallel()
+
 	var buf bytes.Buffer
 
 	data := testTableData()
@@ -79,6 +85,8 @@ func TestRenderTableData_Markdown(t *testing.T) {
 }
 
 func TestRenderTableData_Tree(t *testing.T) {
+	t.Parallel()
+
 	var buf bytes.Buffer
 
 	data := testTableData()
@@ -93,6 +101,8 @@ func TestRenderTableData_Tree(t *testing.T) {
 }
 
 func TestRenderTableData_UnsupportedFormats(t *testing.T) {
+	t.Parallel()
+
 	data := testTableData()
 
 	for _, f := range []Format{FormatTable, FormatJSON, FormatD2, FormatMermaid, FormatDOT} {
@@ -111,6 +121,8 @@ func TestRenderTableData_UnsupportedFormats(t *testing.T) {
 }
 
 func TestRenderTableData_NilData(t *testing.T) {
+	t.Parallel()
+
 	var buf bytes.Buffer
 
 	err := RenderTableData(nil, FormatCSV, RenderOptions{Writer: &buf})
@@ -124,6 +136,8 @@ func TestRenderTableData_NilData(t *testing.T) {
 }
 
 func TestRenderTableData_EmptyRows(t *testing.T) {
+	t.Parallel()
+
 	var buf bytes.Buffer
 
 	data := NewTableData([]string{"A", "B"})
@@ -138,6 +152,8 @@ func TestRenderTableData_EmptyRows(t *testing.T) {
 }
 
 func TestRenderTableData_MarkdownWriterError(t *testing.T) {
+	t.Parallel()
+
 	testRenderTableDataWriterError(t, FormatMarkdown, RenderOptions{
 		Writer: &errorWriter{},
 		Title:  "Test",
@@ -145,6 +161,8 @@ func TestRenderTableData_MarkdownWriterError(t *testing.T) {
 }
 
 func TestRenderTableData_TreeWriterError(t *testing.T) {
+	t.Parallel()
+
 	testRenderTableDataWriterError(t, FormatTree, RenderOptions{Writer: &errorWriter{}},
 		"expected error from errorWriter")
 }
@@ -192,6 +210,8 @@ func testRenderTableDataWriterError(t *testing.T, format Format, opts RenderOpti
 }
 
 func TestRenderTableData_MarkdownWithFooter(t *testing.T) {
+	t.Parallel()
+
 	var buf bytes.Buffer
 
 	data := testTableData()
@@ -207,6 +227,8 @@ func TestRenderTableData_MarkdownWithFooter(t *testing.T) {
 }
 
 func TestRenderTableData_CSVWithFooter(t *testing.T) {
+	t.Parallel()
+
 	var buf bytes.Buffer
 
 	data := testTableData()
@@ -227,6 +249,8 @@ func TestRenderTableData_CSVWithFooter(t *testing.T) {
 }
 
 func TestRenderTableData_ValidateRejectsFooterMismatch(t *testing.T) {
+	t.Parallel()
+
 	var buf bytes.Buffer
 
 	data := NewTableData([]string{"A", "B"})
