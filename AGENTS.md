@@ -124,7 +124,7 @@ go mod tidy                     # Tidy root module
 
 ```bash
 cat > go.work << 'EOF'
-go 1.26.2
+go 1.26.3
 
 use (
   .
@@ -140,6 +140,7 @@ use (
   ./serialization
   ./table
   ./testhelpers
+  ./testhelpers/graphtest
 )
 EOF
 ```
@@ -158,18 +159,18 @@ EOF
 
 | Package       | Coverage | Module |
 | ------------- | -------- | ------ |
-| output (root) | 95.9%    | root   |
+| output (root) | 96.1%    | root   |
 | delimited     | 90.2%    | own    |
-| serialization | 89.0%    | own    |
+| serialization | 91.4%    | own    |
 | markup        | 93.9%    | own    |
 | d2            | 100%     | own    |
-| graph         | 97.6%    | own    |
+| graph         | 96.0%    | own    |
 | enum          | 100%     | own    |
 | escape        | 100%     | own    |
 | table         | 100%     | own    |
-| testhelpers   | 93.8%    | own    |
-| integration   | 82.8%    | own    |
-| gentest       | 80.8%    | root   |
+| testhelpers   | 91.3%    | own    |
+| integration   | 95.5%    | own    |
+| gentest       | 96.2%    | root   |
 
 ## Testing
 
