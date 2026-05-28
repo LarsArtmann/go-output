@@ -73,7 +73,7 @@ func TestAsTableRenderer(t *testing.T) {
 	testhelpers.AssertContains(t, got, "A", "should contain header A")
 	testhelpers.AssertContains(t, got, "1", "should contain cell 1")
 
-	var _ output.TableRenderer = tr
+	var _ output.TableRenderer = tr //nolint:staticcheck // Interface assertion
 }
 
 func TestBuildStyleFunc_AllBranches(t *testing.T) {
@@ -193,6 +193,7 @@ func TestBuildStyleFunc_DirectCall(t *testing.T) {
 		tbl.SetFooter("T")
 
 		sf := tbl.buildStyleFunc(tbl.footerRowIndex)
+
 		footerStyle := sf(tbl.footerRowIndex, 0)
 		if !footerStyle.GetItalic() {
 			t.Error("custom footer style should be italic")

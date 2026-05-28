@@ -3,6 +3,7 @@ package integration
 import (
 	"bytes"
 	"errors"
+	"strings"
 	"testing"
 
 	"github.com/larsartmann/go-output"
@@ -32,7 +33,7 @@ func TestRenderTableData_InvalidFooter(t *testing.T) {
 		t.Fatal("Expected error for footer with wrong column count")
 	}
 
-	if !bytes.Contains([]byte(err.Error()), []byte("footer column count")) {
+	if !strings.Contains(err.Error(), "footer column count") {
 		t.Errorf("Expected footer column mismatch error, got: %v", err)
 	}
 }
@@ -88,6 +89,7 @@ func TestCreateRowEdges_EdgeCases(t *testing.T) {
 		t.Parallel()
 
 		var data *output.TableData
+
 		edges := data.CreateRowEdges()
 		if edges != nil {
 			t.Errorf("Expected nil edges for nil data, got %v", edges)
@@ -98,6 +100,7 @@ func TestCreateRowEdges_EdgeCases(t *testing.T) {
 		t.Parallel()
 
 		data := output.NewTableData([]string{"A"})
+
 		edges := data.CreateRowEdges()
 		if edges != nil {
 			t.Errorf("Expected nil edges for zero rows, got %v", edges)
@@ -109,6 +112,7 @@ func TestCreateRowEdges_EdgeCases(t *testing.T) {
 
 		data := output.NewTableData([]string{"A"})
 		data.AddRow([]string{"1"})
+
 		edges := data.CreateRowEdges()
 		if edges != nil {
 			t.Errorf("Expected nil edges for single row, got %v", edges)

@@ -15,6 +15,7 @@ func TestJSONLWriter_FlushError(t *testing.T) {
 
 	w := NewJSONLWriter(&testhelpers.ErrorWriter{})
 
+	//nolint:errchkjson // Intentionally ignoring to test Flush error
 	_ = w.encoder.Encode(map[string]string{"key": "val"})
 
 	err := w.Flush()
@@ -99,7 +100,6 @@ func TestRenderTable_MarshalError(t *testing.T) {
 	_, err := renderTable(data, "[]", "failing", func(v any) ([]byte, error) {
 		return nil, &json.UnsupportedValueError{}
 	})
-
 	if err == nil {
 		t.Fatal("Expected error from failing marshal function")
 	}
