@@ -1,7 +1,10 @@
 package table
 
 import (
+	"strings"
 	"testing"
+
+	"charm.land/lipgloss/v2"
 
 	"github.com/larsartmann/go-output"
 	"github.com/larsartmann/go-output/testhelpers"
@@ -109,4 +112,29 @@ func TestTableSetFooter_MultipleCalls(t *testing.T) {
 	testhelpers.AssertContains(t, output, "Alice", "should contain data row")
 	testhelpers.AssertContains(t, output, "Old", "should contain first footer as data")
 	testhelpers.AssertContains(t, output, "Total", "should contain last footer")
+}
+
+func TestWithFooterStyle(t *testing.T) {
+	t.Parallel()
+
+	tbl := New(
+		WithColorMode(output.ColorModeAlways),
+		WithFooterStyle(func(s lipgloss.Style) lipgloss.Style {
+			return s.Foreground(lipgloss.Color("196")).Italic(true)
+		}),
+	)
+	tbl.SetHeaders("Name", "Count")
+	tbl.AddRow("Alice", "10")
+	tbl.SetFooter("Total", "10")
+
+	got, err := tbl.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
+	testhelpers.AssertContains(t, got, "Total", "should contain footer text")
+
+	if !strings.Contains(got, "\033[") {
+		t.Error("WithFooterStyle should produce ANSI output with ColorModeAlways")
+	}
 }

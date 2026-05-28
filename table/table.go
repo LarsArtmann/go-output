@@ -35,12 +35,21 @@ func WithColorMode(mode output.ColorMode) Option {
 	return func(t *Table) { t.colorMode = mode }
 }
 
+// WithFooterStyle sets a custom style function for the footer row.
+// The provided function receives a base lipgloss.Style (with padding)
+// and returns the styled result. When set, this overrides the default
+// bold footer styling.
+func WithFooterStyle(fn func(lipgloss.Style) lipgloss.Style) Option {
+	return func(t *Table) { t.footerStyleFn = fn }
+}
+
 // Table renders formatted tables using lipgloss.
 type Table struct {
 	t              *table.Table
 	colorMode      output.ColorMode
 	rowCount       int
 	footerRowIndex int
+	footerStyleFn  func(lipgloss.Style) lipgloss.Style
 }
 
 // New creates a new Table with default styling.
@@ -145,6 +154,10 @@ func (t *Table) buildStyleFunc(footerRow int) func(row, col int) lipgloss.Style 
 			style := lipgloss.NewStyle().Padding(0, 1)
 			if useColor {
 				style = style.Bold(true)
+			}
+
+			if t.footerStyleFn != nil {
+				style = t.footerStyleFn(style)
 			}
 
 			return style
