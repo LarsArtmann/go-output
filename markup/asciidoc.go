@@ -80,17 +80,7 @@ func MarshalAsciiDocFromTableData(data *output.TableData) ([]byte, error) {
 }
 
 func renderAsciiDocTableData(w io.Writer, data *output.TableData, _ output.RenderOptions) error {
-	b, err := MarshalAsciiDocFromTableData(data)
-	if err != nil {
-		return fmt.Errorf("render asciidoc: %w", err)
-	}
-
-	_, err = w.Write(b)
-	if err != nil {
-		return fmt.Errorf("write asciidoc bytes: %w", err)
-	}
-
-	return nil
+	return renderMarshalAndWrite(w, data, MarshalAsciiDocFromTableData, "asciidoc")
 }
 
 // escapeAsciiDoc escapes special AsciiDoc characters in cell content.

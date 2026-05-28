@@ -25,7 +25,7 @@ func renderTable(projects []Project) {
 		tbl.AddRow(p.Name, strconv.Itoa(p.Health)+"%", strconv.Itoa(p.Complexity)+"/10")
 	}
 
-	tbl.SetFooter("TOTAL", fmt.Sprintf("%d", len(projects)), "-")
+	tbl.SetFooter("TOTAL", strconv.Itoa(len(projects)), "-")
 
 	out, err := tbl.Render()
 	if err != nil {
@@ -93,7 +93,7 @@ func renderDelimited(w delimitedWriter, projects []Project) {
 		}
 	}
 
-	footer := []string{"TOTAL", fmt.Sprintf("%d", len(projects)), "-"}
+	footer := []string{"TOTAL", strconv.Itoa(len(projects)), "-"}
 
 	if err := w.WriteFooter(footer); err != nil {
 		shared.HandleError(err)

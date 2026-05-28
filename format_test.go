@@ -24,7 +24,7 @@ func TestFormatSupports(t *testing.T) {
 		{FormatCSV, ShapeTree, false},
 		{FormatCSV, ShapeGraph, false},
 		{FormatD2, ShapeTable, true},
-		{FormatD2, ShapeTree, false},
+		{FormatD2, ShapeTree, true},
 		{FormatD2, ShapeGraph, true},
 		{FormatTree, ShapeTree, true},
 		{FormatTree, ShapeTable, false},
@@ -53,7 +53,7 @@ func TestFormatShapes(t *testing.T) {
 	}{
 		{FormatJSON, []Shape{ShapeTable, ShapeTree, ShapeGraph}},
 		{FormatCSV, []Shape{ShapeTable}},
-		{FormatD2, []Shape{ShapeTable, ShapeGraph}},
+		{FormatD2, []Shape{ShapeTable, ShapeTree, ShapeGraph}},
 		{FormatTree, []Shape{ShapeTree}},
 		{FormatTable, []Shape{ShapeTable}},
 		{FormatYAML, []Shape{ShapeTable, ShapeTree, ShapeGraph}},
@@ -82,9 +82,9 @@ func TestFormatsForShape(t *testing.T) {
 	t.Parallel()
 
 	assertContainsAll(t, "graph", FormatsForShape(ShapeGraph),
-		FormatJSON, FormatYAML, FormatD2, FormatMermaid, FormatDOT)
+		FormatJSON, FormatYAML, FormatD2, FormatMermaid, FormatDOT, FormatTOML, FormatPlantUML)
 	assertContainsAll(t, "tree", FormatsForShape(ShapeTree),
-		FormatJSON, FormatYAML, FormatHTML, FormatTree)
+		FormatJSON, FormatYAML, FormatHTML, FormatTree, FormatD2, FormatMermaid, FormatDOT, FormatTOML, FormatPlantUML)
 	assertContainsAll(t, "table", FormatsForShape(ShapeTable),
 		FormatTable, FormatJSON, FormatCSV, FormatD2, FormatMermaid, FormatDOT)
 }

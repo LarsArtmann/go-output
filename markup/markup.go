@@ -3,7 +3,28 @@ package markup
 import (
 	"fmt"
 	"io"
+
+	"github.com/larsartmann/go-output"
 )
+
+func renderMarshalAndWrite(
+	w io.Writer,
+	data *output.TableData,
+	marshalFunc func(*output.TableData) ([]byte, error),
+	formatName string,
+) error {
+	b, err := marshalFunc(data)
+	if err != nil {
+		return fmt.Errorf("render %s: %w", formatName, err)
+	}
+
+	_, err = w.Write(b)
+	if err != nil {
+		return fmt.Errorf("write %s bytes: %w", formatName, err)
+	}
+
+	return nil
+}
 
 func writeRowTag(w io.Writer, indent, tag string, isClose bool) error {
 	var content string

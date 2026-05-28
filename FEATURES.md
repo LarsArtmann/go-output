@@ -43,6 +43,7 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 | **DOT/Graphviz** (`FormatDOT`)  | FULLY_FUNCTIONAL | Directed and undirected graphs. Configurable graph ID, node shapes, edge styles/labels                                                                          |
 | **JSON Graph**                  | FULLY_FUNCTIONAL | `{nodes: [...], edges: [...]}` structure via `JSONGraphRenderer`                                                                                                |
 | **YAML Graph**                  | FULLY_FUNCTIONAL | Same structure as JSON Graph, YAML-serialized via `YAMLGraphRenderer`                                                                                           |
+| **TOML Graph**                  | FULLY_FUNCTIONAL | Same structure as JSON Graph, TOML-serialized via `TOMLGraphRenderer`                                                                                           |
 | **PlantUML** (`FormatPlantUML`) | FULLY_FUNCTIONAL | Component diagrams via `PlantUMLDiagram`. Uses `GraphRendererMixin`. Supports TableData→graph and Tree→graph conversion                                         |
 
 ---
@@ -52,12 +53,12 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 | Feature                   | Status           | Notes                                                                                                                                                                    |
 | ------------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **TableData**             | FULLY_FUNCTIONAL | `Headers []string` + `Rows [][]string` + `Footer []string`. Central data type shared across all table renderers. Footer renders as totals/summary row in tabular formats |
-| **tableDataBase**         | FULLY_FUNCTIONAL | Embedded struct providing `SetHeaders()`, `AddRow()`, `SetData()`, `SetFooter()`. Shared by JSON, YAML, HTML, Streaming renderers                                        |
+| **TableDataBase**         | FULLY_FUNCTIONAL | Exported embedded struct providing `SetHeaders()`, `AddRow()`, `SetData()`, `Data()`, `SetFooter()`. Shared by JSON, YAML, TOML, HTML, AsciiDoc, Streaming renderers |
 | **ToMapSlice()**          | FULLY_FUNCTIONAL | Converts `TableData` to `[]map[string]string` (header→cell). Used by JSON/YAML table renderers                                                                           |
 | **CreateRowEdges()**      | FULLY_FUNCTIONAL | Generates directed edges between consecutive rows. Used by graph renderers for `TableData`→graph conversion                                                              |
 | **TreeNode**              | FULLY_FUNCTIONAL | Hierarchical node with `ID`, `Label`, `Children`, `Metadata`, `Parent()`, `Depth()`                                                                                      |
 | **GraphNode / GraphEdge** | FULLY_FUNCTIONAL | Generic graph model with `ID`, `Label`, `Shape`, `Style`, `Metadata`. Shared by DOT/Mermaid/JSON/YAML                                                                    |
-| **GraphRendererMixin**    | FULLY_FUNCTIONAL | Shared composition for DOT and Mermaid. Provides `SetNodes()`, `SetEdges()`, `SetNodesFromTableData()`, `AddRowEdges()`                                                  |
+| **GraphRendererMixin**    | FULLY_FUNCTIONAL | Shared composition for all graph renderers (DOT, Mermaid, JSON, YAML, TOML, PlantUML). Provides `SetNodes()`, `SetEdges()`, `SetNodesFromTableData()`, `AddRowEdges()` |
 
 ---
 
@@ -262,6 +263,8 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 | **ADR 002**                | FULLY_FUNCTIONAL | Shape capability matrix decision                           |
 | **ADR 003**                | FULLY_FUNCTIONAL | D2/graph module extraction decision                        |
 | **ADR 004**                | FULLY_FUNCTIONAL | Footer row design decision                                 |
+| **ADR 005**                | FULLY_FUNCTIONAL | Code duplication thresholds decision                       |
+| **ADR 006**                | FULLY_FUNCTIONAL | Pre-v1 API stability guarantees                           |
 | **DOMAIN_LANGUAGE.md**     | FULLY_FUNCTIONAL | Domain vocabulary                                          |
 | **FORMAT_ARCHITECTURE.md** | FULLY_FUNCTIONAL | Format architecture documentation                          |
 
@@ -279,7 +282,7 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 ---
 
 **Last audited:** 2026-05-28
-**Total features:** 115
-**Fully functional:** 106
+**Total features:** 117
+**Fully functional:** 108
 **Removed:** 9 (FormatCategory, OutputFormat, SortBy, FilledStrings, Register, Create, Unregister, RegisteredFormats, IsRegistered)
 **Known issues:** 0

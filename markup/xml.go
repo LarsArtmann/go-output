@@ -156,15 +156,5 @@ func MarshalXMLFromTableData(data *output.TableData) ([]byte, error) {
 }
 
 func renderXMLTableData(w io.Writer, data *output.TableData, _ output.RenderOptions) error {
-	b, err := MarshalXMLFromTableData(data)
-	if err != nil {
-		return fmt.Errorf("render xml: %w", err)
-	}
-
-	_, err = fmt.Fprintln(w, string(b))
-	if err != nil {
-		return fmt.Errorf("write xml output: %w", err)
-	}
-
-	return nil
+	return renderMarshalAndWrite(w, data, MarshalXMLFromTableData, "xml")
 }

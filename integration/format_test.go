@@ -90,6 +90,10 @@ func TestFormatCategories(t *testing.T) {
 		output.FormatJSON,
 		output.FormatYAML,
 		output.FormatTOML,
+		output.FormatD2,
+		output.FormatMermaid,
+		output.FormatDOT,
+		output.FormatPlantUML,
 	}
 
 	for _, f := range treeFormats {
@@ -105,6 +109,7 @@ func TestFormatCategories(t *testing.T) {
 		output.FormatJSON,
 		output.FormatYAML,
 		output.FormatPlantUML,
+		output.FormatTOML,
 	}
 
 	for _, f := range graphFormats {

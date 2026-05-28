@@ -3,6 +3,7 @@ module github.com/larsartmann/go-output/integration
 go 1.26.3
 
 require (
+	github.com/go-faster/yaml v0.4.6
 	github.com/larsartmann/go-output v0.0.0
 	github.com/larsartmann/go-output/d2 v0.0.0
 	github.com/larsartmann/go-output/delimited v0.0.0
@@ -26,7 +27,6 @@ require (
 	github.com/clipperhouse/uax29/v2 v2.7.0 // indirect
 	github.com/go-faster/errors v0.7.1 // indirect
 	github.com/go-faster/jx v1.2.0 // indirect
-	github.com/go-faster/yaml v0.4.6 // indirect
 	github.com/larsartmann/go-branded-id v0.3.0 // indirect
 	github.com/larsartmann/go-output/enum v0.0.0 // indirect
 	github.com/larsartmann/go-output/escape v0.0.0 // indirect

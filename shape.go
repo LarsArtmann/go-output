@@ -70,16 +70,16 @@ var formatCapabilities = map[Format][]Shape{
 	FormatTSV:      {ShapeTable},
 	FormatXML:      {ShapeTable},
 	FormatMarkdown: {ShapeTable},
-	FormatD2:       {ShapeTable, ShapeGraph},
+	FormatD2:       {ShapeTable, ShapeTree, ShapeGraph},
 	FormatYAML:     {ShapeTable, ShapeTree, ShapeGraph},
 	FormatHTML:     {ShapeTable, ShapeTree},
 	FormatTree:     {ShapeTree},
-	FormatMermaid:  {ShapeTable, ShapeGraph},
-	FormatDOT:      {ShapeTable, ShapeGraph},
+	FormatMermaid:  {ShapeTable, ShapeTree, ShapeGraph},
+	FormatDOT:      {ShapeTable, ShapeTree, ShapeGraph},
 	FormatJSONL:    {ShapeTable},
 	FormatAsciiDoc: {ShapeTable},
-	FormatTOML:     {ShapeTable, ShapeTree},
-	FormatPlantUML: {ShapeTable, ShapeGraph},
+	FormatTOML:     {ShapeTable, ShapeTree, ShapeGraph},
+	FormatPlantUML: {ShapeTable, ShapeTree, ShapeGraph},
 }
 
 // Supports returns true if the format can render the given data shape.

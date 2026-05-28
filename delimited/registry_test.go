@@ -79,35 +79,33 @@ func TestRenderDelimitedTableData_MarshalError(t *testing.T) {
 	}
 }
 
-func TestMarshalCSVFromTableData_NoHeaders(t *testing.T) {
+func TestMarshalDelimitedFromTableData_NoHeaders(t *testing.T) {
 	t.Parallel()
 
-	data := output.NewTableData(nil)
-	data.AddRow([]string{"Alice", "30"})
-
-	b, err := MarshalCSVFromTableData(data)
-	if err != nil {
-		t.Fatalf("MarshalCSVFromTableData no headers: %v", err)
+	tests := []struct {
+		name        string
+		marshalFunc func(*output.TableData) ([]byte, error)
+	}{
+		{"CSV", MarshalCSVFromTableData},
+		{"TSV", MarshalTSVFromTableData},
 	}
 
-	if !strings.Contains(string(b), "Alice") {
-		t.Errorf("expected Alice in output, got %q", string(b))
-	}
-}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 
-func TestMarshalTSVFromTableData_NoHeaders(t *testing.T) {
-	t.Parallel()
+			data := output.NewTableData(nil)
+			data.AddRow([]string{"Alice", "30"})
 
-	data := output.NewTableData(nil)
-	data.AddRow([]string{"Alice", "30"})
+			b, err := tt.marshalFunc(data)
+			if err != nil {
+				t.Fatalf("marshal %s no headers: %v", tt.name, err)
+			}
 
-	b, err := MarshalTSVFromTableData(data)
-	if err != nil {
-		t.Fatalf("MarshalTSVFromTableData no headers: %v", err)
-	}
-
-	if !strings.Contains(string(b), "Alice") {
-		t.Errorf("expected Alice in output, got %q", string(b))
+			if !strings.Contains(string(b), "Alice") {
+				t.Errorf("expected Alice in %s output, got %q", tt.name, string(b))
+			}
+		})
 	}
 }
 

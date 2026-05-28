@@ -473,9 +473,44 @@ golangci-lint run --fix ./...   # Lint
 This library is pre-v1. The following guarantees apply:
 
 - **Root module** (`github.com/larsartmann/go-output`): Public API is stable. Breaking changes will be documented in CHANGELOG.md.
-- **Sub-modules** (`d2`, `graph`, `table`, `delimited`, `serialization`, `markup`): May evolve independently. Import them explicitly to opt in.
+- **Sub-modules** (`d2`, `graph`, `table`, `delimited`, `serialization`, `markup`, `plantuml`): May evolve independently. Import them explicitly to opt in.
 - **`Renderer` interface**: Stable — all formats implement `Render() (string, error)`.
 - **`internal/` packages**: No stability guarantee. Do not import these.
+
+### Frozen Interfaces (v1 locked)
+
+These interfaces will not change signature:
+
+| Interface | Methods | Implementations |
+|-----------|---------|-----------------|
+| `Renderer` | `Render() (string, error)` | All 16 formats |
+| `TableRenderer` | `SetHeaders([]string)`, `AddRow([]string)`, `Render()` | JSON, YAML, TOML, JSONL, HTML, Streaming HTML, AsciiDoc, Markdown (adapter), Table (adapter) |
+| `TreeOutputRenderer` | `SetRoot(*TreeNode)`, `Render()` | ASCII Tree, JSON Tree, YAML Tree, TOML Tree, HTML Tree |
+| `GraphRenderer` | `SetNodes([]GraphNode)`, `SetEdges([]GraphEdge)`, `Render()` | D2, DOT, Mermaid, PlantUML, JSON Graph, YAML Graph, TOML Graph |
+| `StreamingRenderer` | `Stream(io.Writer) error`, `Render()` | Streaming HTML |
+
+### Frozen Types (v1 locked)
+
+| Type | Package | Notes |
+|------|---------|-------|
+| `Format` | root | 16 format string constants |
+| `Shape` | root | 3 shape constants + capability matrix |
+| `ColorMode` | root | auto/always/never + terminal detection |
+| `TableData` | root | Headers, Rows, Footer — central data type |
+| `TreeNode` | root | Hierarchical node with children |
+| `GraphNode` / `GraphEdge` | root | Graph data model |
+| `GraphRendererMixin` | root | Composition for graph renderers |
+| `D2Node`, `D2Edge`, `D2Table` | d2 | Rich D2 domain model |
+| `D2Direction`, `D2NodeShape`, `D2ArrowType`, `D2Constraint` | d2 | D2 enum types |
+
+### Non-Breaking Changes Only (until v1.0)
+
+- Adding new `Format` constants
+- Adding new `Shape` constants
+- Adding new methods to existing types
+- Adding new `RenderOptions` fields
+- Adding new sub-modules
+- Adding new `RegisterTableDataMarshaler` entries
 
 ## License
 
