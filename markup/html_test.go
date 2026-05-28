@@ -127,7 +127,7 @@ func TestHTMLRendererWithFooter(t *testing.T) {
 	}
 
 	assertContains(t, out, "<tfoot>", "Output should contain <tfoot>")
-	assertContains(t, out, "Total", "Output should contain footer text")
+	assertContains(t, out, `<td class="footer-cell">Total</td>`, "Output should contain footer cell with class")
 	assertContains(t, out, "</tfoot>", "Output should contain </tfoot>")
 
 	if strings.Contains(out, "<tfoot>") && !strings.Contains(out, "</tbody>") {

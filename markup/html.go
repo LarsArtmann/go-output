@@ -63,9 +63,13 @@ func (r *HTMLRenderer) Render() (string, error) {
 	b.WriteString("</tbody>\n")
 
 	if data.HasFooter() {
-		b.WriteString("<tfoot>\n")
-		_ = writeMarkupRow(&b, data.Footer, "tr", "td", "", escape.HTML)
-		b.WriteString("</tfoot>\n")
+		b.WriteString("<tfoot>\n<tr>\n")
+		for _, cell := range data.Footer {
+			b.WriteString(`<td class="footer-cell">`)
+			b.WriteString(escape.HTML(cell))
+			b.WriteString("</td>\n")
+		}
+		b.WriteString("</tr>\n</tfoot>\n")
 	}
 
 	b.WriteString("</table>\n")

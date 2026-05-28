@@ -92,6 +92,7 @@ func TestFooterRendersWithFormats(t *testing.T) {
 		}
 
 		testhelpers.AssertContains(t, out, "<tfoot>", "html should contain tfoot")
+		testhelpers.AssertContains(t, out, "footer-cell", "html footer should have footer-cell class")
 		testhelpers.AssertContains(t, out, "Total", "html footer should contain text")
 	})
 
@@ -121,6 +122,7 @@ func TestFooterRendersWithFormats(t *testing.T) {
 
 		result := buf.String()
 		testhelpers.AssertContains(t, result, "<tfoot>", "streaming html should contain tfoot")
+		testhelpers.AssertContains(t, result, "footer-cell", "streaming html footer should have footer-cell class")
 		testhelpers.AssertContains(t, result, "Total", "streaming html footer should contain text")
 		testhelpers.AssertContains(t, result, "</tfoot>", "streaming html should close tfoot")
 	})

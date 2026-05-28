@@ -159,7 +159,7 @@ func (r *StreamingHTMLRenderer) writeFooter(w io.Writer, data *output.TableData)
 	}
 
 	for i, cell := range data.Footer {
-		if _, err := w.Write([]byte("<td>" + escape.HTML(cell) + "</td>\n")); err != nil {
+		if _, err := w.Write([]byte(`<td class="footer-cell">` + escape.HTML(cell) + "</td>\n")); err != nil {
 			return fmt.Errorf("write footer cell %d: %w", i, err)
 		}
 	}
