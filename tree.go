@@ -17,9 +17,13 @@ type TreeOutputRenderer interface {
 
 // TreeNode represents a node in a tree structure.
 type TreeNode struct {
-	ID       TreeNodeID
-	Label    TreeNodeLabel
+	// ID is the unique identifier for the node.
+	ID TreeNodeID
+	// Label is the display text for the node.
+	Label TreeNodeLabel
+	// Children holds the child nodes.
 	Children []*TreeNode
+	// Metadata holds arbitrary key-value pairs for custom data.
 	Metadata map[string]string
 	parent   *TreeNode
 }

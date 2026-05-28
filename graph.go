@@ -15,10 +15,15 @@ type GraphRenderer interface {
 
 // GraphNode represents a node in a graph.
 type GraphNode struct {
-	ID       GraphNodeID
-	Label    GraphNodeLabel
-	Shape    GraphShape
-	Style    GraphStyle
+	// ID is the unique identifier for the node.
+	ID GraphNodeID
+	// Label is the display text for the node.
+	Label GraphNodeLabel
+	// Shape defines the visual shape (box, ellipse, diamond, etc.).
+	Shape GraphShape
+	// Style contains optional visual styling attributes.
+	Style GraphStyle
+	// Metadata holds arbitrary key-value pairs for custom data.
 	Metadata map[string]string
 }
 
@@ -96,17 +101,25 @@ func (s GraphShape) IsValid() bool {
 
 // GraphStyle represents styling attributes for a graph node.
 type GraphStyle struct {
-	FillColor   string
+	// FillColor is the background color (e.g., "#f9f9f9").
+	FillColor string
+	// StrokeColor is the border color.
 	StrokeColor string
-	FontColor   string
-	FontSize    int
+	// FontColor is the text color.
+	FontColor string
+	// FontSize is the text size in points.
+	FontSize int
 }
 
 // GraphEdge represents an edge between two nodes.
 type GraphEdge struct {
-	From  GraphNodeID
-	To    GraphNodeID
+	// From is the source node ID.
+	From GraphNodeID
+	// To is the target node ID.
+	To GraphNodeID
+	// Label is the optional display text on the edge.
 	Label GraphNodeLabel
+	// Style contains optional visual styling attributes.
 	Style EdgeStyle
 }
 
@@ -121,9 +134,13 @@ func NewGraphEdge(from, to string) *GraphEdge {
 
 // EdgeStyle represents styling attributes for an edge.
 type EdgeStyle struct {
-	Color     string
-	Style     string // solid, dashed, dotted
+	// Color is the edge line color.
+	Color string
+	// Style is the line style ("solid", "dashed", "dotted").
+	Style string
+	// ArrowHead is the arrowhead style at the target end.
 	ArrowHead string
+	// ArrowTail is the arrowhead style at the source end.
 	ArrowTail string
 }
 
