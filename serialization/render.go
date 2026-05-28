@@ -28,7 +28,10 @@ func renderTable(
 }
 
 func renderViaRenderer(w io.Writer, data *output.TableData, renderer output.TableRenderer, formatName string) error {
-	renderer.SetData(data)
+	renderer.SetHeaders(data.Headers)
+	for _, row := range data.Rows {
+		renderer.AddRow(row)
+	}
 
 	out, err := renderer.Render()
 	if err != nil {
