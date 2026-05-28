@@ -10,11 +10,16 @@ type D2NodeLabel = output.D2NodeLabel
 
 // D2StrokeStyle represents shared stroke/font styling for D2 nodes and edges.
 type D2StrokeStyle struct {
-	Stroke      string
+	// Stroke is the border color (e.g., "red", "#ff0000").
+	Stroke string
+	// StrokeWidth is the border thickness in pixels.
 	StrokeWidth int
-	StrokeDash  int
-	FontSize    int
-	FontColor   string
+	// StrokeDash is the dash gap length (0 = solid).
+	StrokeDash int
+	// FontSize is the label text size in points.
+	FontSize int
+	// FontColor is the label text color.
+	FontColor string
 }
 
 func (s D2StrokeStyle) isSet() bool {
@@ -26,10 +31,15 @@ func (s D2StrokeStyle) isSet() bool {
 type D2NodeStyle struct {
 	D2StrokeStyle
 
-	Fill          string
-	Opacity       float64
-	Shadow        bool
-	BorderRadius  int
+	// Fill is the background color (e.g., "blue", "#0000ff").
+	Fill string
+	// Opacity is the transparency level (0.0 to 1.0).
+	Opacity float64
+	// Shadow enables a drop shadow effect.
+	Shadow bool
+	// BorderRadius is the corner radius in pixels.
+	BorderRadius int
+	// TextTransform controls text casing ("uppercase", "lowercase", "capitalize").
 	TextTransform string
 }
 
@@ -40,21 +50,36 @@ func (s D2NodeStyle) isSet() bool {
 
 // D2Node represents a node in a D2 diagram.
 type D2Node struct {
-	ID          D2NodeID
-	Label       D2NodeLabel
-	Shape       D2NodeShape
-	Style       D2NodeStyle
-	Icon        string
-	Link        string
-	Tooltip     string
-	Class       string
-	Near        string
-	Width       int
-	Height      int
-	GridRows    int
+	// ID is the unique identifier for the node (used in connections).
+	ID D2NodeID
+	// Label is the display text. Defaults to ID if empty.
+	Label D2NodeLabel
+	// Shape defines the visual shape (rectangle, circle, etc.).
+	Shape D2NodeShape
+	// Style contains optional visual styling.
+	Style D2NodeStyle
+	// Icon is an optional icon name or URL.
+	Icon string
+	// Link is an optional URL the node links to.
+	Link string
+	// Tooltip is an optional hover tooltip text.
+	Tooltip string
+	// Class is an optional CSS-like class name for shared styling.
+	Class string
+	// Near positions the node near another element.
+	Near string
+	// Width sets an explicit width in pixels.
+	Width int
+	// Height sets an explicit height in pixels.
+	Height int
+	// GridRows defines the number of rows in a grid layout.
+	GridRows int
+	// GridColumns defines the number of columns in a grid layout.
 	GridColumns int
-	GridGap     int
-	Nested      string
+	// GridGap sets the spacing between grid cells in pixels.
+	GridGap int
+	// Nested is the D2 source for nested diagram content.
+	Nested string
 }
 
 func (n D2Node) hasBlockAttrs() bool {
@@ -83,16 +108,23 @@ func (n D2Node) hasSize() bool {
 type D2EdgeStyle struct {
 	D2StrokeStyle
 
+	// Animated enables edge animation.
 	Animated bool
 }
 
 // D2Edge represents an edge in a D2 diagram.
 type D2Edge struct {
-	From        D2NodeID
-	To          D2NodeID
-	Label       D2NodeLabel
-	Style       D2EdgeStyle
+	// From is the source node ID.
+	From D2NodeID
+	// To is the target node ID.
+	To D2NodeID
+	// Label is the optional display text on the edge.
+	Label D2NodeLabel
+	// Style contains optional visual styling.
+	Style D2EdgeStyle
+	// SourceArrow is the arrowhead style at the source end.
 	SourceArrow D2ArrowType
+	// TargetArrow is the arrowhead style at the target end.
 	TargetArrow D2ArrowType
 }
 
@@ -107,13 +139,18 @@ func (e D2Edge) hasBlockAttrs() bool {
 
 // D2Column represents a column in a D2 SQL table shape.
 type D2Column struct {
-	Name       string
-	Type       string
+	// Name is the column name.
+	Name string
+	// Type is the column data type (e.g., "varchar", "int").
+	Type string
+	// Constraint is the column constraint (e.g., primary key, not null).
 	Constraint D2Constraint
 }
 
 // D2Table represents a SQL table shape in D2 diagrams.
 type D2Table struct {
-	Name    string
+	// Name is the table name.
+	Name string
+	// Columns lists the table columns.
 	Columns []D2Column
 }
