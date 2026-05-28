@@ -8,11 +8,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
-- **Footer row** (`TableData.Footer []string`) — optional totals/summary row on `TableData`. Tabular renderers render it visually: CSV/TSV append as last row, HTML uses `<tfoot>`, XML uses `<footer>`, Markdown adds separator + bold row, AsciiDoc appends footer row, Terminal Table uses bold styling. Data formats (JSON/YAML/TOML/JSONL) skip footer.
+- **Footer row** (`TableData.Footer []string`) — optional totals/summary row on `TableData`. Tabular renderers render it visually: CSV/TSV append as last row, HTML uses `<tfoot>` with `footer-cell` CSS class, XML uses `<footer>`, Markdown adds separator + bold row (with column alignment), AsciiDoc appends footer row, Terminal Table uses bold styling. Data formats (JSON/YAML/TOML/JSONL) skip footer.
 - `TableData.GetFooter()`, `TableData.HasFooter()`, `TableDataBase.SetFooter()`, `TableDataBase.HasFooter()` — accessor methods for footer row.
-- `MarkdownTable.SetFooter()` — sets footer row on Markdown table renderer.
+- `TableData.Validate()` — validates footer column count matches headers. Returns `errColumnMismatch` on mismatch.
+- `MarkdownTable.SetFooter()` — sets footer row on Markdown table renderer (inherits column alignment).
 - `table.SetFooter()` — adds bold-styled footer row to lipgloss terminal table.
 - `table.FooterProvider` — optional interface checked by `FromTableData()` for automatic footer styling.
+- `CSVWriter.WriteFooter()`, `TSVWriter.WriteFooter()` — explicit footer methods for streaming delimited output.
+
+### Changed
+
+- `delimited.marshalFromTableData()` — extracted shared helper from `MarshalCSVFromTableData` and `MarshalTSVFromTableData`, eliminating ~70 lines of duplication.
+- HTML footer cells now use `class="footer-cell"` for CSS targeting (both `HTMLRenderer` and `StreamingHTMLRenderer`).
 
 ## [0.6.0] - 2026-05-25
 

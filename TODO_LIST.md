@@ -109,6 +109,7 @@
 - ✅ **36.** ~~Add JSONL format (new renderer)~~ DONE — `serialization/jsonl.go`
 - ✅ **37.** ~~Add PlantUML format (new module)~~ DONE — `plantuml/` module
 - ✅ **38.** ~~Add AsciiDoc format (new renderer)~~ DONE — `markup/asciidoc.go`
+- ✅ **41.** ~~Footer row feature~~ DONE — `TableData.Footer`, `Validate()`, `WriteFooter()`, CSS classes, GoDoc examples, benchmarks, integration tests, delimited dedup, README footer matrix
 - **39.** Pre-v1 API stability audit
 - **40.** Community: Post to r/golang, submit to Awesome Go
 
