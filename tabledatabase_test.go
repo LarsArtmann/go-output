@@ -6,6 +6,8 @@ import (
 	"testing"
 )
 
+var errTestUnmarshal = errors.New("test unmarshal error")
+
 func TestTableDataBase_SetHeaders(t *testing.T) {
 	t.Parallel()
 
@@ -42,6 +44,7 @@ func TestTableDataBase_SetData(t *testing.T) {
 	t.Parallel()
 
 	var base TableDataBase
+
 	d := &TableData{Headers: []string{"X"}}
 	base.SetData(d)
 
@@ -187,7 +190,7 @@ func TestUnmarshalFormat(t *testing.T) {
 	var result string
 
 	err := UnmarshalFormat("json", func(data []byte, v any) error {
-		return errors.New("test error") //nolint:goerr113 // intentional test error
+		return errTestUnmarshal
 	}, []byte(`"hello"`), &result)
 	if err == nil {
 		t.Fatal("UnmarshalFormat should propagate unmarshal error")
