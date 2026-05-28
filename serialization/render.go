@@ -27,11 +27,8 @@ func renderTable(
 	return string(b), nil
 }
 
-func renderViaRenderer(w io.Writer, data *output.TableData, renderer output.TableRenderer, formatName string) error {
-	renderer.SetHeaders(data.Headers)
-	for _, row := range data.Rows {
-		renderer.AddRow(row)
-	}
+func renderViaRenderer(w io.Writer, data *output.TableData, renderer dataSetter, formatName string) error {
+	renderer.SetData(data)
 
 	out, err := renderer.Render()
 	if err != nil {
@@ -44,4 +41,9 @@ func renderViaRenderer(w io.Writer, data *output.TableData, renderer output.Tabl
 	}
 
 	return nil
+}
+
+type dataSetter interface {
+	SetData(*output.TableData)
+	Render() (string, error)
 }

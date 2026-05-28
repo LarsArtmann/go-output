@@ -1,7 +1,6 @@
 package serialization
 
 import (
-	"fmt"
 	"io"
 
 	"github.com/go-faster/yaml"
@@ -48,18 +47,5 @@ func (r *YAMLTableRenderer) Render() (string, error) {
 }
 
 func renderYAMLTableData(w io.Writer, data *output.TableData, _ output.RenderOptions) error {
-	renderer := NewYAMLTableRenderer()
-	renderer.SetData(data)
-
-	out, err := renderer.Render()
-	if err != nil {
-		return fmt.Errorf("render yaml: %w", err)
-	}
-
-	_, err = fmt.Fprint(w, out)
-	if err != nil {
-		return fmt.Errorf("write yaml output: %w", err)
-	}
-
-	return nil
+	return renderViaRenderer(w, data, NewYAMLTableRenderer(), "yaml")
 }

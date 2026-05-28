@@ -48,20 +48,7 @@ func (r *TOMLTableRenderer) Render() (string, error) {
 }
 
 func renderTOMLTableData(w io.Writer, data *output.TableData, _ output.RenderOptions) error {
-	renderer := NewTOMLTableRenderer()
-	renderer.SetData(data)
-
-	out, err := renderer.Render()
-	if err != nil {
-		return fmt.Errorf("render toml: %w", err)
-	}
-
-	_, err = fmt.Fprint(w, out)
-	if err != nil {
-		return fmt.Errorf("write toml output: %w", err)
-	}
-
-	return nil
+	return renderViaRenderer(w, data, NewTOMLTableRenderer(), "toml")
 }
 
 // MarshalTOMLFromTableData marshals TableData as TOML.
