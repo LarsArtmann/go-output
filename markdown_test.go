@@ -290,5 +290,5 @@ func TestMarkdownTable_AsTableRenderer(t *testing.T) {
 	assertContains(t, got, "A", "should contain header A")
 	assertContains(t, got, "1", "should contain cell 1")
 
-	var _ TableRenderer = tr
+	_ = tr
 }

@@ -278,9 +278,9 @@ type markdownTableAdapter struct {
 	inner *MarkdownTable
 }
 
-func (a *markdownTableAdapter) Render() (string, error)        { return a.inner.Render() }
-func (a *markdownTableAdapter) SetHeaders(headers []string)    { a.inner.SetHeaders(headers) }
-func (a *markdownTableAdapter) AddRow(row []string)            { a.inner.AddRow(row) }
+func (a *markdownTableAdapter) Render() (string, error)     { return a.inner.Render() }
+func (a *markdownTableAdapter) SetHeaders(headers []string) { a.inner.SetHeaders(headers) }
+func (a *markdownTableAdapter) AddRow(row []string)         { a.inner.AddRow(row) }
 
 // AsTableRenderer returns a TableRenderer that delegates to this MarkdownTable.
 // This adapts the fluent API (returning *MarkdownTable) to the TableRenderer interface.

@@ -43,7 +43,7 @@ func TestRenderTableData_UnsupportedFormat(t *testing.T) {
 	data := output.NewTableData([]string{"A"})
 	data.AddRow([]string{"1"})
 
-	var unsupportedFormats = []output.Format{
+	unsupportedFormats := []output.Format{
 		output.FormatD2,
 		output.FormatDOT,
 		output.FormatMermaid,

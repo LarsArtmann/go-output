@@ -186,8 +186,8 @@ type tableRendererAdapter struct {
 }
 
 func (a *tableRendererAdapter) Render() (string, error)     { return a.inner.Render() }
-func (a *tableRendererAdapter) SetHeaders(headers []string)  { a.inner.SetHeaders(headers...) }
-func (a *tableRendererAdapter) AddRow(row []string)          { a.inner.AddRow(row...) }
+func (a *tableRendererAdapter) SetHeaders(headers []string) { a.inner.SetHeaders(headers...) }
+func (a *tableRendererAdapter) AddRow(row []string)         { a.inner.AddRow(row...) }
 
 // AsTableRenderer returns a TableRenderer that delegates to this Table.
 // This adapts the variadic API (...string) to the slice-based TableRenderer interface.
