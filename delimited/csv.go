@@ -57,6 +57,11 @@ func (c *CSVWriter) WriteRow(values []string) error {
 	return c.writer.WriteRow(values, "csv row")
 }
 
+// WriteFooter writes a footer row (semantically equivalent to WriteRow for CSV).
+func (c *CSVWriter) WriteFooter(values []string) error {
+	return c.writer.WriteRow(values, "csv footer")
+}
+
 // WriteRows writes multiple rows.
 func (c *CSVWriter) WriteRows(values [][]string) error {
 	return c.writer.WriteRows(values, "csv")
@@ -81,7 +86,11 @@ type tableDataWriter interface {
 }
 
 // marshalFromTableData marshals TableData using any delimited writer (CSV or TSV).
-func marshalFromTableData(data *output.TableData, name string, newWriter func(io.Writer) tableDataWriter) ([]byte, error) {
+func marshalFromTableData(
+	data *output.TableData,
+	name string,
+	newWriter func(io.Writer) tableDataWriter,
+) ([]byte, error) {
 	if data == nil {
 		return nil, nil
 	}

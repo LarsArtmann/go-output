@@ -42,6 +42,11 @@ func (t *TSVWriter) WriteRow(values []string) error {
 	return t.writer.WriteRow(values, "tsv row")
 }
 
+// WriteFooter writes a footer row (semantically equivalent to WriteRow for TSV).
+func (t *TSVWriter) WriteFooter(values []string) error {
+	return t.writer.WriteRow(values, "tsv footer")
+}
+
 // WriteRows writes multiple rows.
 func (t *TSVWriter) WriteRows(values [][]string) error {
 	return t.writer.WriteRows(values, "tsv")
