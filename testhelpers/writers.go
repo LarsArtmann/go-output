@@ -5,8 +5,10 @@ import (
 	"io"
 )
 
+// ErrWrite is a sentinel error used by ErrorWriter and WriteNThenFailWriter.
 var ErrWrite = errors.New("write error")
 
+// ErrorWriter implements io.Writer, always returning an error.
 type ErrorWriter struct{}
 
 func (e *ErrorWriter) Write(_ []byte) (int, error) {
@@ -15,6 +17,8 @@ func (e *ErrorWriter) Write(_ []byte) (int, error) {
 
 var _ io.Writer = (*ErrorWriter)(nil)
 
+// WriteNThenFailWriter implements io.Writer. It succeeds for the first N calls,
+// then returns ErrWrite on every subsequent call.
 type WriteNThenFailWriter struct {
 	Remaining int
 }
