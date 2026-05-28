@@ -25,10 +25,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - HTML footer cells now use `class="footer-cell"` for CSS targeting (both `HTMLRenderer` and `StreamingHTMLRenderer`).
 - All 14 modules unified to `go 1.26.3`.
 - `table.SetFooter()` now correctly tracks `footerRowIndex` — only the last footer row receives bold styling.
-- Root module test coverage improved from 88.6% to 95.9%.
+- Root module test coverage improved from 88.6% to 96.1%.
 
 ### Fixed
 
+- `MarkdownTable.AsTableRenderer()` — adapter wrapping fluent MarkdownTable API as void-returning `TableRenderer` interface.
+- `table.Table.AsTableRenderer()` — adapter wrapping lipgloss table builder as `TableRenderer` interface.
+- `table.WithFooterStyle(func(lipgloss.Style) lipgloss.Style)` — composable footer styling for lipgloss tables.
+- Alignment constants (`AlignmentLeft/Right/Center`) unexported to `alignmentLeft/Right/Center` — were documented as unexported but actually exported.
+- `UnsupportedFormatError.Unwrap()` removed — returned nil, semantically identical to not having it.
+- ADR 004: Footer row design decision record.
+- Coverage: gentest 80.8%→96.2%, integration 82.8%→95.5%, table 85.5%→100%, serialization 89.0%→91.4%.
+- `table/table_test.go` split into `table/table_test.go` + `table/color_test.go` (391→274 lines, under 350-line limit).
+- GoDoc on all exported testhelpers symbols: `ErrTest`, `ErrorRenderer`, `FixedRenderer`, `ErrWrite`, `ErrorWriter`, `WriteNThenFailWriter`.
+- Package doc added to `testhelpers/graphtest`.
 - `integration/go.mod` root dep reference fixed from `v0.5.0` to `v0.0.0`.
 - AsciiDoc renderer now uses `HasFooter()` consistently with other renderers.
 - `TestBrandedIDFormat` updated for go-branded-id v0.3.0 `%#v` output.
