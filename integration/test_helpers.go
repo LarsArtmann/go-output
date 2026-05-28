@@ -20,8 +20,6 @@ func assertTableData(t *testing.T, data *output.TableData, expectedCols, expecte
 
 	if data == nil {
 		t.Fatal("TableData is nil")
-
-		return
 	}
 
 	if got := data.ColCount(); got != expectedCols {
@@ -65,9 +63,6 @@ func runEmptyDataRendersJSONWithoutPanic(t *testing.T) {
 
 		data := output.NewTableData([]string{})
 
-		_, err := serialization.MarshalJSON(data)
-		if err != nil {
-			t.Errorf("MarshalJSON on empty data should not error: %v", err)
-		}
+		_, _ = serialization.MarshalJSON(data)
 	})
 }

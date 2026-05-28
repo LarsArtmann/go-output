@@ -4,6 +4,9 @@ import (
 	"strings"
 	"testing"
 
+	"charm.land/lipgloss/v2"
+	"charm.land/lipgloss/v2/table"
+
 	"github.com/larsartmann/go-output"
 	"github.com/larsartmann/go-output/testhelpers"
 )
@@ -120,5 +123,94 @@ func TestBuildStyleFunc_AllBranches(t *testing.T) {
 		testhelpers.AssertContains(t, got, "1", "should contain row")
 		testhelpers.AssertContains(t, got, "3", "should contain row")
 		testhelpers.AssertContains(t, got, "T", "should contain footer")
+	})
+}
+
+func TestBuildStyleFunc_DirectCall(t *testing.T) {
+	t.Parallel()
+
+	t.Run("color always all branches", func(t *testing.T) {
+		t.Parallel()
+
+		tbl := New(WithColorMode(output.ColorModeAlways))
+		tbl.SetFooter("T") // sets footerRowIndex = 1 (after 0 rows)
+
+		sf := tbl.buildStyleFunc(tbl.footerRowIndex)
+
+		headerStyle := sf(table.HeaderRow, 0)
+		if !headerStyle.GetBold() {
+			t.Error("color always: header should be bold")
+		}
+
+		footerStyle := sf(tbl.footerRowIndex, 0)
+		if !footerStyle.GetBold() {
+			t.Error("color always: footer should be bold")
+		}
+
+		evenStyle := sf(0, 0)
+		if evenStyle.String() == "" {
+			t.Error("color always: even row style should not be empty")
+		}
+
+		oddStyle := sf(1, 0)
+		_ = oddStyle
+	})
+
+	t.Run("color never all branches", func(t *testing.T) {
+		t.Parallel()
+
+		tbl := New(WithColorMode(output.ColorModeNever))
+		tbl.SetFooter("T")
+
+		sf := tbl.buildStyleFunc(tbl.footerRowIndex)
+
+		headerStyle := sf(table.HeaderRow, 0)
+		if headerStyle.GetBold() {
+			t.Error("color never: header should not be bold")
+		}
+
+		footerStyle := sf(tbl.footerRowIndex, 0)
+		if footerStyle.GetBold() {
+			t.Error("color never: footer should not be bold")
+		}
+
+		evenStyle := sf(0, 0)
+		_ = evenStyle
+
+		oddStyle := sf(1, 0)
+		_ = oddStyle
+	})
+
+	t.Run("color always with custom footer style", func(t *testing.T) {
+		t.Parallel()
+
+		tbl := New(
+			WithColorMode(output.ColorModeAlways),
+			WithFooterStyle(func(s lipgloss.Style) lipgloss.Style {
+				return s.Italic(true)
+			}),
+		)
+		tbl.SetFooter("T")
+
+		sf := tbl.buildStyleFunc(tbl.footerRowIndex)
+		footerStyle := sf(tbl.footerRowIndex, 0)
+		if !footerStyle.GetItalic() {
+			t.Error("custom footer style should be italic")
+		}
+	})
+
+	t.Run("no footer", func(t *testing.T) {
+		t.Parallel()
+
+		tbl := New(WithColorMode(output.ColorModeAlways))
+		tbl.SetHeaders("A")
+
+		sf := tbl.buildStyleFunc(0)
+
+		headerStyle := sf(table.HeaderRow, 0)
+		_ = headerStyle
+
+		evenStyle := sf(0, 0)
+		_ = evenStyle
 	})
 }
