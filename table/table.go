@@ -78,6 +78,8 @@ func (t *Table) AddRow(row ...string) *Table {
 }
 
 // SetFooter adds a bold-styled footer row to the table.
+// Calling SetFooter more than once is undefined — only the last footer row
+// receives bold styling. For single-footer use (recommended), use SetFooter once.
 func (t *Table) SetFooter(row ...string) *Table {
 	t.rowCount++
 

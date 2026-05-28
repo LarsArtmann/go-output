@@ -45,6 +45,7 @@ type InvalidShapeError struct {
 	Value string
 }
 
+// Error returns a descriptive error message for the invalid shape.
 func (e *InvalidShapeError) Error() string {
 	return "invalid shape: " + e.Value
 }

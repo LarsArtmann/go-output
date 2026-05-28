@@ -57,7 +57,7 @@ func (r *AsciiDocTableRenderer) Render() (string, error) {
 		b.WriteString("\n\n")
 	}
 
-	if len(data.Footer) > 0 {
+	if data.HasFooter() {
 		for _, cell := range data.Footer {
 			b.WriteString("| ")
 			b.WriteString(escapeAsciiDoc(cell))

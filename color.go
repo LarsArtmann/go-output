@@ -41,6 +41,7 @@ type InvalidColorModeError struct {
 	Value string
 }
 
+// Error returns a descriptive error message for the invalid color mode.
 func (e *InvalidColorModeError) Error() string {
 	return "invalid color mode: " + e.Value
 }

@@ -75,6 +75,7 @@ func renderTSV(projects []Project) {
 type delimitedWriter interface {
 	WriteHeader(cols []string) error
 	WriteRow(values []string) error
+	WriteFooter(values []string) error
 	Flush()
 	Error() error
 }
@@ -90,6 +91,12 @@ func renderDelimited(w delimitedWriter, projects []Project) {
 		if err != nil {
 			shared.HandleError(err)
 		}
+	}
+
+	footer := []string{"TOTAL", fmt.Sprintf("%d", len(projects)), "-"}
+
+	if err := w.WriteFooter(footer); err != nil {
+		shared.HandleError(err)
 	}
 
 	w.Flush()

@@ -64,6 +64,7 @@ type InvalidGraphShapeError struct {
 	Value string
 }
 
+// Error returns a descriptive error message for the invalid graph shape.
 func (e *InvalidGraphShapeError) Error() string {
 	return "invalid graph shape: " + e.Value
 }

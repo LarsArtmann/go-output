@@ -115,6 +115,7 @@ func TestFooterRendersWithFormats(t *testing.T) {
 		renderer.SetData(data)
 
 		var buf bytes.Buffer
+
 		err := renderer.Stream(&buf)
 		if err != nil {
 			t.Fatalf("StreamingHTML Stream: %v", err)
@@ -125,6 +126,36 @@ func TestFooterRendersWithFormats(t *testing.T) {
 		testhelpers.AssertContains(t, result, "footer-cell", "streaming html footer should have footer-cell class")
 		testhelpers.AssertContains(t, result, "Total", "streaming html footer should contain text")
 		testhelpers.AssertContains(t, result, "</tfoot>", "streaming html should close tfoot")
+	})
+
+	t.Run("tsv includes footer row", func(t *testing.T) {
+		t.Parallel()
+
+		var buf bytes.Buffer
+
+		err := output.RenderTableData(data, output.FormatTSV, output.RenderOptions{Writer: &buf})
+		if err != nil {
+			t.Fatalf("RenderTableData tsv: %v", err)
+		}
+
+		result := buf.String()
+		testhelpers.AssertContains(t, result, "Total", "tsv should contain footer")
+
+		lines := strings.Split(strings.TrimSpace(result), "\n")
+		if len(lines) != 4 {
+			t.Errorf("expected 4 lines (header + 2 rows + footer), got %d", len(lines))
+		}
+	})
+
+	t.Run("asciidoc includes footer row", func(t *testing.T) {
+		t.Parallel()
+
+		result, err := markup.MarshalAsciiDocFromTableData(data)
+		if err != nil {
+			t.Fatalf("AsciiDoc marshal: %v", err)
+		}
+
+		testhelpers.AssertContains(t, string(result), "Total", "asciidoc should contain footer text")
 	})
 }
 

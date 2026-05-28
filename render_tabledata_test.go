@@ -225,3 +225,19 @@ func TestRenderTableData_CSVWithFooter(t *testing.T) {
 		t.Errorf("expected 4 lines (header + 2 rows + footer), got %d", len(lines))
 	}
 }
+
+func TestRenderTableData_ValidateRejectsFooterMismatch(t *testing.T) {
+	var buf bytes.Buffer
+
+	data := NewTableData([]string{"A", "B"})
+	data.Footer = []string{"too", "many", "cols"}
+
+	err := RenderTableData(data, FormatMarkdown, RenderOptions{Writer: &buf})
+	if err == nil {
+		t.Fatal("RenderTableData should reject footer with wrong column count")
+	}
+
+	if !strings.Contains(err.Error(), "footer column count") {
+		t.Errorf("error should mention footer column count, got: %v", err)
+	}
+}

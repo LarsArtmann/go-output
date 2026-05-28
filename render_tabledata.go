@@ -67,6 +67,10 @@ func RenderTableData(data *TableData, format Format, opts ...RenderOptions) erro
 		return nil
 	}
 
+	if err := data.Validate(); err != nil {
+		return fmt.Errorf("render table data: %w", err)
+	}
+
 	var o RenderOptions
 	if len(opts) > 0 {
 		o = opts[0]
