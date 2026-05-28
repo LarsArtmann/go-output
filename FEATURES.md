@@ -116,32 +116,32 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 
 ## Rendering Infrastructure
 
-| Feature                             | Status           | Notes                                                                                                                                                                                                                                         |
-| ----------------------------------- | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Renderer interface**              | FULLY_FUNCTIONAL | `Render() (string, error)`. Universal contract for all formats                                                                                                                                                                                |
-| **TableRenderer interface**         | FULLY_FUNCTIONAL | Extends `Renderer` with `SetHeaders([]string)` and `AddRow([]string)`                                                                                                                                                                         |
-| **TreeOutputRenderer interface**    | FULLY_FUNCTIONAL | Extends `Renderer` with `SetRoot(*TreeNode)`                                                                                                                                                                                                  |
-| **GraphRenderer interface**         | FULLY_FUNCTIONAL | Extends `Renderer` with `SetNodes([]GraphNode)` and `SetEdges([]GraphEdge)`                                                                                                                                                                   |
-| **StreamingRenderer interface**     | FULLY_FUNCTIONAL | `Stream(io.Writer) error`. Incremental output for large datasets                                                                                                                                                                              |
-| **StreamingHTMLRenderer**           | FULLY_FUNCTIONAL | True streaming HTML table output. Writes chunks incrementally                                                                                                                                                                                 |
-| **StreamingRendererFromRenderer()** | FULLY_FUNCTIONAL | Adapter wrapping standard `Renderer` as `StreamingRenderer` (collects then writes)                                                                                                                                                            |
-| **MustRender()**                    | FULLY_FUNCTIONAL | `MustRender(r Renderer) string` — panics on error. For tests/examples                                                                                                                                                                         |
-| **RenderTableData()**               | FULLY_FUNCTIONAL | Unified dispatcher: renders `TableData` in any format to `io.Writer` (defaults to stdout). Accepts `RenderOptions` (Title, GraphID, Writer)                                                                                                   |
-| **Footer row** | FULLY_FUNCTIONAL | `TableData.Footer []string` — optional totals/summary row. CSV/TSV append as last row. HTML uses `<tfoot>` with `footer-cell` class. XML uses `<footer>`. Markdown adds separator + bold row. Table uses bold styling. Data formats (JSON/YAML/TOML/JSONL) skip footer |
-| **TableData.Validate()** | FULLY_FUNCTIONAL | Validates footer column count matches headers. Returns `errColumnMismatch` when counts differ |
+| Feature                             | Status           | Notes                                                                                                                                                                                                                                                                  |
+| ----------------------------------- | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Renderer interface**              | FULLY_FUNCTIONAL | `Render() (string, error)`. Universal contract for all formats                                                                                                                                                                                                         |
+| **TableRenderer interface**         | FULLY_FUNCTIONAL | Extends `Renderer` with `SetHeaders([]string)` and `AddRow([]string)`                                                                                                                                                                                                  |
+| **TreeOutputRenderer interface**    | FULLY_FUNCTIONAL | Extends `Renderer` with `SetRoot(*TreeNode)`                                                                                                                                                                                                                           |
+| **GraphRenderer interface**         | FULLY_FUNCTIONAL | Extends `Renderer` with `SetNodes([]GraphNode)` and `SetEdges([]GraphEdge)`                                                                                                                                                                                            |
+| **StreamingRenderer interface**     | FULLY_FUNCTIONAL | `Stream(io.Writer) error`. Incremental output for large datasets                                                                                                                                                                                                       |
+| **StreamingHTMLRenderer**           | FULLY_FUNCTIONAL | True streaming HTML table output. Writes chunks incrementally                                                                                                                                                                                                          |
+| **StreamingRendererFromRenderer()** | FULLY_FUNCTIONAL | Adapter wrapping standard `Renderer` as `StreamingRenderer` (collects then writes)                                                                                                                                                                                     |
+| **MustRender()**                    | FULLY_FUNCTIONAL | `MustRender(r Renderer) string` — panics on error. For tests/examples                                                                                                                                                                                                  |
+| **RenderTableData()**               | FULLY_FUNCTIONAL | Unified dispatcher: renders `TableData` in any format to `io.Writer` (defaults to stdout). Accepts `RenderOptions` (Title, GraphID, Writer)                                                                                                                            |
+| **Footer row**                      | FULLY_FUNCTIONAL | `TableData.Footer []string` — optional totals/summary row. CSV/TSV append as last row. HTML uses `<tfoot>` with `footer-cell` class. XML uses `<footer>`. Markdown adds separator + bold row. Table uses bold styling. Data formats (JSON/YAML/TOML/JSONL) skip footer |
+| **TableData.Validate()**            | FULLY_FUNCTIONAL | Validates footer column count matches headers. Returns `errColumnMismatch` when counts differ                                                                                                                                                                          |
 
 ---
 
 ## Writer APIs (Streaming I/O)
 
-| Feature             | Status           | Notes                                                                 |
-| ------------------- | ---------------- | --------------------------------------------------------------------- |
+| Feature             | Status           | Notes                                                                               |
+| ------------------- | ---------------- | ----------------------------------------------------------------------------------- |
 | **CSVWriter**       | FULLY_FUNCTIONAL | `WriteHeader()`, `WriteRow()`, `WriteRows()`, `WriteFooter()`, `Flush()`, `Error()` |
-| **TSVWriter**       | FULLY_FUNCTIONAL | Same API as CSVWriter with tab delimiter                              |
-| **JSONWriter**      | FULLY_FUNCTIONAL | `Encode(v any) error` — streaming JSON encoder with indentation       |
-| **JSONLWriter**     | FULLY_FUNCTIONAL | `Encode(v any) error`, `Flush() error` — streaming JSON Lines encoder |
-| **XMLWriter**       | FULLY_FUNCTIONAL | `WriteHeader()`, `WriteRow()`, `WriteRows()`, `WriteFooter()`         |
-| **DelimitedWriter** | FULLY_FUNCTIONAL | Shared base for CSV/TSV writers. Configurable delimiter               |
+| **TSVWriter**       | FULLY_FUNCTIONAL | Same API as CSVWriter with tab delimiter                                            |
+| **JSONWriter**      | FULLY_FUNCTIONAL | `Encode(v any) error` — streaming JSON encoder with indentation                     |
+| **JSONLWriter**     | FULLY_FUNCTIONAL | `Encode(v any) error`, `Flush() error` — streaming JSON Lines encoder               |
+| **XMLWriter**       | FULLY_FUNCTIONAL | `WriteHeader()`, `WriteRow()`, `WriteRows()`, `WriteFooter()`                       |
+| **DelimitedWriter** | FULLY_FUNCTIONAL | Shared base for CSV/TSV writers. Configurable delimiter                             |
 
 ---
 
