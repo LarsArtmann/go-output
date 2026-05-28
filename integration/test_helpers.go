@@ -42,10 +42,7 @@ func renderMarkdownTable(headers []string, rows [][]string) string {
 		md.AddRow(row)
 	}
 
-	out, err := md.Render()
-	if err != nil {
-		return ""
-	}
+	out, _ := md.Render()
 
 	return out
 }
@@ -56,10 +53,7 @@ func renderSampleMarkdownTable() string {
 	md.SetHeaders([]string{headerName, headerHealth})
 	md.AddRow([]string{sampleAlpha, sampleHealth})
 
-	out, err := md.Render()
-	if err != nil {
-		return ""
-	}
+	out, _ := md.Render()
 
 	return out
 }

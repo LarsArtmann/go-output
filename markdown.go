@@ -271,3 +271,19 @@ func (m *MarkdownTable) getAlignment(col int) Alignment {
 
 	return alignmentLeft
 }
+
+// markdownTableAdapter wraps a MarkdownTable to satisfy the TableRenderer interface.
+// It adapts the fluent API (returning *MarkdownTable) to the void-returning TableRenderer methods.
+type markdownTableAdapter struct {
+	inner *MarkdownTable
+}
+
+func (a *markdownTableAdapter) Render() (string, error)        { return a.inner.Render() }
+func (a *markdownTableAdapter) SetHeaders(headers []string)    { a.inner.SetHeaders(headers) }
+func (a *markdownTableAdapter) AddRow(row []string)            { a.inner.AddRow(row) }
+
+// AsTableRenderer returns a TableRenderer that delegates to this MarkdownTable.
+// This adapts the fluent API (returning *MarkdownTable) to the TableRenderer interface.
+func (m *MarkdownTable) AsTableRenderer() TableRenderer {
+	return &markdownTableAdapter{inner: m}
+}

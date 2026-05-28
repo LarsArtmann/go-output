@@ -272,3 +272,23 @@ func TestMarkdownTableGetAlignmentOutOfBounds(t *testing.T) {
 	assertContains(t, got, "y", "should contain cell y")
 	assertContains(t, got, "z", "should contain cell z")
 }
+
+func TestMarkdownTable_AsTableRenderer(t *testing.T) {
+	t.Parallel()
+
+	m := NewMarkdownTable()
+	tr := m.AsTableRenderer()
+
+	tr.SetHeaders([]string{"A", "B"})
+	tr.AddRow([]string{"1", "2"})
+
+	got, err := tr.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
+	assertContains(t, got, "A", "should contain header A")
+	assertContains(t, got, "1", "should contain cell 1")
+
+	var _ TableRenderer = tr
+}
