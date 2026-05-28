@@ -65,21 +65,21 @@ Four rounds of work on the `go-output` library:
 
 ### Coverage Table
 
-| Module | Coverage | Status |
-|--------|----------|--------|
-| output (root) | 95.9% | ✅ Above 90% |
-| delimited | 90.2% | ✅ Above 90% |
-| d2 | 100.0% | ✅ Perfect |
-| enum | 100.0% | ✅ Perfect |
-| escape | 100.0% | ✅ Perfect |
-| graph | 96.0% | ✅ Above 90% |
-| markup | 93.9% | ✅ Above 90% |
-| plantuml | 97.2% | ✅ Above 90% |
-| table | 92.2% | ✅ Above 90% |
-| testhelpers | 91.3% | ✅ Above 90% |
-| integration | 82.8% | ⚠️ Below 90% |
-| serialization | 89.0% | ⚠️ Just below 90% |
-| gentest | 80.8% | ⚠️ Below 90% |
+| Module        | Coverage | Status            |
+| ------------- | -------- | ----------------- |
+| output (root) | 95.9%    | ✅ Above 90%      |
+| delimited     | 90.2%    | ✅ Above 90%      |
+| d2            | 100.0%   | ✅ Perfect        |
+| enum          | 100.0%   | ✅ Perfect        |
+| escape        | 100.0%   | ✅ Perfect        |
+| graph         | 96.0%    | ✅ Above 90%      |
+| markup        | 93.9%    | ✅ Above 90%      |
+| plantuml      | 97.2%    | ✅ Above 90%      |
+| table         | 92.2%    | ✅ Above 90%      |
+| testhelpers   | 91.3%    | ✅ Above 90%      |
+| integration   | 82.8%    | ⚠️ Below 90%      |
+| serialization | 89.0%    | ⚠️ Just below 90% |
+| gentest       | 80.8%    | ⚠️ Below 90%      |
 
 ### Build/Lint Status
 
@@ -210,11 +210,13 @@ Nothing catastrophic. Minor issues resolved during the session:
 The current behavior (skip footer) means `TableData` → JSON → `TableData` round-trips lose footer data. This is philosophically consistent ("footer is visual") but practically surprising.
 
 Arguments for inclusion:
+
 - Round-trip fidelity — serialize/deserialize should preserve all data
 - `TableData` has the field, silently dropping it feels wrong
 - Users exporting data might want totals included
 
 Arguments against:
+
 - Footer is a presentation concept, not data
 - JSON `[{...}, {_footer: true, ...}]` is ugly and non-standard
 - Data formats should remain pure data — use CSV for footer preservation
