@@ -272,4 +272,3 @@ func TestMarkdownTableGetAlignmentOutOfBounds(t *testing.T) {
 	assertContains(t, got, "y", "should contain cell y")
 	assertContains(t, got, "z", "should contain cell z")
 }
-

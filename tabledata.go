@@ -1,8 +1,11 @@
 package output
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
-var errColumnMismatch = fmt.Errorf("footer column count does not match headers")
+var errColumnMismatch = errors.New("footer column count does not match headers")
 
 // TableData represents tabular data with headers, rows, and an optional footer.
 type TableData struct {

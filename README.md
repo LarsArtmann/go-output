@@ -85,24 +85,24 @@ fmt.Println(format.Shapes())                     // [table tree graph]
 
 Set `TableData.Footer` for an optional totals/summary row. Tabular formats render it visually.
 
-| Format     | Footer | Behavior                                          |
-| ---------- | :----: | ------------------------------------------------- |
-| `table`    |  ✅    | Bold-styled footer row                            |
-| `markdown` |  ✅    | Second separator + bold footer row                |
-| `csv`      |  ✅    | Appended as last data row                         |
-| `tsv`      |  ✅    | Appended as last data row                         |
-| `html`     |  ✅    | `<tfoot>` section with `footer-cell` class        |
-| `xml`      |  ✅    | `<footer>` element                                |
-| `asciidoc` |  ✅    | Footer row cells                                  |
-| `json`     |  ❌    | Data serialization — footer skipped               |
-| `yaml`     |  ❌    | Data serialization — footer skipped               |
-| `toml`     |  ❌    | Data serialization — footer skipped               |
-| `jsonl`    |  ❌    | Data serialization — footer skipped               |
-| `tree`     |  ❌    | Hierarchical format — not tabular                 |
-| `d2`       |  ❌    | Diagram format — not tabular                      |
-| `mermaid`  |  ❌    | Diagram format — not tabular                      |
-| `dot`      |  ❌    | Diagram format — not tabular                      |
-| `plantuml` |  ❌    | Diagram format — not tabular                      |
+| Format     | Footer | Behavior                                   |
+| ---------- | :----: | ------------------------------------------ |
+| `table`    |   ✅   | Bold-styled footer row                     |
+| `markdown` |   ✅   | Second separator + bold footer row         |
+| `csv`      |   ✅   | Appended as last data row                  |
+| `tsv`      |   ✅   | Appended as last data row                  |
+| `html`     |   ✅   | `<tfoot>` section with `footer-cell` class |
+| `xml`      |   ✅   | `<footer>` element                         |
+| `asciidoc` |   ✅   | Footer row cells                           |
+| `json`     |   ❌   | Data serialization — footer skipped        |
+| `yaml`     |   ❌   | Data serialization — footer skipped        |
+| `toml`     |   ❌   | Data serialization — footer skipped        |
+| `jsonl`    |   ❌   | Data serialization — footer skipped        |
+| `tree`     |   ❌   | Hierarchical format — not tabular          |
+| `d2`       |   ❌   | Diagram format — not tabular               |
+| `mermaid`  |   ❌   | Diagram format — not tabular               |
+| `dot`      |   ❌   | Diagram format — not tabular               |
+| `plantuml` |   ❌   | Diagram format — not tabular               |
 
 ```go
 data := output.NewTableData([]string{"Name", "Score"})

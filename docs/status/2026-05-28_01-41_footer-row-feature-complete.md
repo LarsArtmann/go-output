@@ -18,6 +18,7 @@ Implemented a **footer/totals row** feature for go-output: `TableData.Footer []s
 ## A) FULLY DONE ✅
 
 ### Core Data Model
+
 - **`TableData.Footer []string`** field added to `tabledata.go` (line 9)
 - **`TableData.GetFooter()`** — satisfies `table.FooterProvider` interface
 - **`TableData.HasFooter()`** — checks if footer is present
@@ -26,30 +27,34 @@ Implemented a **footer/totals row** feature for go-output: `TableData.Footer []s
 - All exported fields have GoDoc comments
 
 ### Root Renderers
+
 - **Markdown** (`markdown.go`): `MarkdownTable.SetFooter()`, footer rendered after separator, bold-styled with ColorMode, included in column width calculation
 - **`renderMarkdownTableData`** picks up footer via `NewMarkdownTableFromData`
 - **`renderTreeTableData`** intentionally skips footer (trees are hierarchical, not tabular)
 
 ### Sub-Module Renderers
-| Format | Footer Behavior | File |
-|--------|----------------|------|
-| CSV | Appended as last data row | `delimited/csv.go` |
-| TSV | Appended as last data row | `delimited/tsv.go` |
-| HTML | `<tfoot>` section with cells | `markup/html.go` |
-| Streaming HTML | `<tfoot>` section (streaming chunks) | `markup/streaming.go` |
-| XML | `<footer>` element with cells | `markup/xml.go` |
-| AsciiDoc | Footer row cells | `markup/asciidoc.go` |
-| Terminal Table | Bold-styled footer via `SetFooter()` / `FooterProvider` | `table/table.go` |
-| JSON/YAML/TOML/JSONL | Skipped (data serialization, not visual) | — |
-| Tree/D2/Mermaid/DOT/PlantUML | Skipped (not tabular) | — |
+
+| Format                       | Footer Behavior                                         | File                  |
+| ---------------------------- | ------------------------------------------------------- | --------------------- |
+| CSV                          | Appended as last data row                               | `delimited/csv.go`    |
+| TSV                          | Appended as last data row                               | `delimited/tsv.go`    |
+| HTML                         | `<tfoot>` section with cells                            | `markup/html.go`      |
+| Streaming HTML               | `<tfoot>` section (streaming chunks)                    | `markup/streaming.go` |
+| XML                          | `<footer>` element with cells                           | `markup/xml.go`       |
+| AsciiDoc                     | Footer row cells                                        | `markup/asciidoc.go`  |
+| Terminal Table               | Bold-styled footer via `SetFooter()` / `FooterProvider` | `table/table.go`      |
+| JSON/YAML/TOML/JSONL         | Skipped (data serialization, not visual)                | —                     |
+| Tree/D2/Mermaid/DOT/PlantUML | Skipped (not tabular)                                   | —                     |
 
 ### Table Module (`table/`)
+
 - **`FooterProvider`** optional interface — `GetFooter() []string`
 - **`Table.SetFooter(row ...string)`** — adds bold footer row for direct usage
 - **`FromTableData()`** checks `FooterProvider` via type assertion
 - **`buildStyleFunc(footerRow)`** — single extracted helper, eliminated 3× duplication
 
 ### Tests
+
 - Root: `testTableDataFooter`, `testMarkdownFooter`, `TestRenderTableData_MarkdownWithFooter`, `TestRenderTableData_CSVWithFooter`
 - Delimited: footer subtests in CSV and TSV
 - Markup: `TestHTMLRendererWithFooter`, `TestHTMLRendererNoFooter`, `TestStreamingHTMLRendererWithFooter`, `TestStreamingHTMLRendererNoFooter`, `TestMarshalXMLFromTableDataWithFooter`, `TestMarshalXMLFromTableDataNoFooter`, AsciiDoc footer test
@@ -57,6 +62,7 @@ Implemented a **footer/totals row** feature for go-output: `TableData.Footer []s
 - Integration: `TestFooterRendersWithFormats` covering Markdown, CSV, HTML, XML
 
 ### Documentation
+
 - **FEATURES.md**: Updated TableData, TableDataBase entries + added Footer row entry
 - **CHANGELOG.md**: `[Unreleased]` section with full API surface
 - **README.md**: `data.Footer = []string{...}` in Quick Start example
@@ -64,6 +70,7 @@ Implemented a **footer/totals row** feature for go-output: `TableData.Footer []s
 - **GoDoc**: All `TableData` fields documented, `FooterProvider` interface documented
 
 ### Code Quality
+
 - All 13 modules build clean
 - All tests pass (except pre-existing `TestBrandedIDFormat`)
 - `golangci-lint` clean on all modules (except pre-existing `delimited/` dupl)
@@ -75,11 +82,13 @@ Implemented a **footer/totals row** feature for go-output: `TableData.Footer []s
 ## B) PARTIALLY DONE ⚠️
 
 ### Delimited Module Duplication
+
 - `MarshalCSVFromTableData` and `MarshalTSVFromTableData` are structurally identical (pre-existing dupl warning)
 - Footer handling added to both (making them more similar)
 - Could extract a shared generic helper using the existing `DelimitedWriter` — **not done**
 
 ### Example Coverage
+
 - Only the terminal table example shows footer
 - CSV, Markdown, HTML examples don't demonstrate footer
 - Could add `data.Footer = ...` to `examples/basic/main.go` `projectsToTableData()` — **not done**
@@ -101,6 +110,7 @@ Implemented a **footer/totals row** feature for go-output: `TableData.Footer []s
 ## D) TOTALLY FUCKED UP 💥
 
 Nothing. The implementation is solid:
+
 - Zero new lint issues
 - All tests pass
 - Backward compatible (footer is optional, defaults to empty)
@@ -112,16 +122,19 @@ Nothing. The implementation is solid:
 ## E) WHAT WE SHOULD IMPROVE
 
 ### Architecture
+
 1. **`delimited/` copy-paste** — `MarshalCSVFromTableData` and `MarshalTSVFromTableData` should share a generic `marshalDelimitedFromTableData` helper. The pre-existing dupl is now worse with footer.
 2. **`table.buildStyleFunc` could be a public option** — Users who override `StyleFunc` lose footer styling. A `WithFooterStyle` option could compose.
 3. **Footer validation** — `TableData.SetFooter()` should optionally validate column count matches headers.
 
 ### Testing
+
 4. **Edge case: footer longer than headers** — No test for footer with more cells than headers
 5. **Edge case: empty footer cells** — No test for `Footer: []string{"", ""}`
 6. **Benchmark** — No benchmark for footer rendering overhead
 
 ### Documentation
+
 7. **GoDoc examples** — No `ExampleTable_SetFooter` or `ExampleTableData_SetFooter`
 8. **Footer format matrix** — No single table in README showing which formats support footer
 
@@ -130,6 +143,7 @@ Nothing. The implementation is solid:
 ## F) Top #25 Things to Do Next
 
 ### High Impact, Low Effort
+
 1. ✏️ Add footer validation to `TableData.SetFooter()` — warn if column count mismatches headers
 2. 🧪 Add edge case tests (footer longer than headers, empty cells, nil footer)
 3. 📝 Add GoDoc examples (`ExampleTable_SetFooter`, `ExampleRenderTableData_footer`)
@@ -137,6 +151,7 @@ Nothing. The implementation is solid:
 5. 📊 Add footer format matrix to README (which formats support it)
 
 ### High Impact, Medium Effort
+
 6. 🔧 Extract shared `marshalDelimitedFromTableData` in `delimited/` to eliminate dupl
 7. 🏗️ Add `WithFooterStyle` option to `table.New()` for composable footer styling
 8. 📦 Add footer to `projectsToTableData()` in examples/basic/main.go
@@ -144,6 +159,7 @@ Nothing. The implementation is solid:
 10. 🔍 Add `go vet` + `staticcheck` to CI (not just golangci-lint)
 
 ### Medium Impact, Low Effort
+
 11. 📐 Add benchmark for footer rendering (`BenchmarkMarkdownWithFooter`, etc.)
 12. 🌳 Document that tree format intentionally ignores footer in FEATURES.md
 13. 📋 Add footer streaming documentation (WriteRow for footer in CSV/TSV)
@@ -151,6 +167,7 @@ Nothing. The implementation is solid:
 15. 🔗 Cross-reference footer in CHANGELOG.md from all format entries
 
 ### Medium Impact, Medium Effort
+
 16. 🎨 Add footer alignment support to Markdown (inherit column alignment)
 17. 📊 Consider `_footer: true` marker in JSON/YAML serialization for round-trip fidelity
 18. 🧪 Add integration test for streaming HTML with footer
@@ -158,6 +175,7 @@ Nothing. The implementation is solid:
 20. 🔧 Add `WriteFooter(footer []string)` method to `CSVWriter`/`TSVWriter` for clarity
 
 ### Lower Priority
+
 21. 🤔 Consider multiple footer rows (`Footer [][]string` instead of `Footer []string`)
 22. 🎯 Add footer-specific CSS class in HTML output (`class="footer-cell"`)
 23. 📐 Add footer row spanning support (merged cells)
@@ -171,11 +189,13 @@ Nothing. The implementation is solid:
 **Should JSON/YAML/TOML/JSONL include the footer row in their serialized output?**
 
 Arguments for:
+
 - Round-trip fidelity: serialize → deserialize should preserve all data
 - `TableData` has the field, why drop it silently?
 - Users might want to include totals in data exports
 
 Arguments against:
+
 - Footer is a visual/presentation concept, not data
 - JSON `[{...}, {_footer: true, ...}]` is ugly and non-standard
 - Changes the output schema for all existing users
@@ -187,21 +207,21 @@ The current decision is to **skip footer in data formats** — but I'm not 100% 
 
 ## Build & Test Matrix
 
-| Module | Build | Tests | Lint |
-|--------|-------|-------|------|
-| Root (.) | ✅ | ⚠️ pre-existing `TestBrandedIDFormat` | ✅ 0 issues |
-| delimited | ✅ | ✅ | ⚠️ pre-existing dupl |
-| d2 | ✅ | ✅ | ✅ 0 issues |
-| enum | ✅ | ✅ | ✅ 0 issues |
-| escape | ✅ | ✅ | ✅ 0 issues |
-| graph | ✅ | ✅ | ✅ 0 issues |
-| markup | ✅ | ✅ | ✅ 0 issues |
-| plantuml | ✅ | ✅ | ✅ 0 issues |
-| serialization | ✅ | ✅ | ✅ 0 issues |
-| table | ✅ | ✅ | ✅ 0 issues |
-| testhelpers | ✅ | ✅ | ✅ 0 issues |
-| integration | ✅ | ✅ | — (no own go.mod) |
-| examples | ✅ | — (no test files) | — |
+| Module        | Build | Tests                                 | Lint                 |
+| ------------- | ----- | ------------------------------------- | -------------------- |
+| Root (.)      | ✅    | ⚠️ pre-existing `TestBrandedIDFormat` | ✅ 0 issues          |
+| delimited     | ✅    | ✅                                    | ⚠️ pre-existing dupl |
+| d2            | ✅    | ✅                                    | ✅ 0 issues          |
+| enum          | ✅    | ✅                                    | ✅ 0 issues          |
+| escape        | ✅    | ✅                                    | ✅ 0 issues          |
+| graph         | ✅    | ✅                                    | ✅ 0 issues          |
+| markup        | ✅    | ✅                                    | ✅ 0 issues          |
+| plantuml      | ✅    | ✅                                    | ✅ 0 issues          |
+| serialization | ✅    | ✅                                    | ✅ 0 issues          |
+| table         | ✅    | ✅                                    | ✅ 0 issues          |
+| testhelpers   | ✅    | ✅                                    | ✅ 0 issues          |
+| integration   | ✅    | ✅                                    | — (no own go.mod)    |
+| examples      | ✅    | — (no test files)                     | —                    |
 
 ---
 

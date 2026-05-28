@@ -204,6 +204,7 @@ func TestTableDataValidate(t *testing.T) {
 
 	t.Run("nil data", func(t *testing.T) {
 		t.Parallel()
+
 		var data *TableData
 		if err := data.Validate(); err != nil {
 			t.Errorf("Validate() on nil = %v, want nil", err)
@@ -212,6 +213,7 @@ func TestTableDataValidate(t *testing.T) {
 
 	t.Run("no footer", func(t *testing.T) {
 		t.Parallel()
+
 		data := NewTableData([]string{"A", "B"})
 		if err := data.Validate(); err != nil {
 			t.Errorf("Validate() with no footer = %v, want nil", err)
@@ -220,8 +222,10 @@ func TestTableDataValidate(t *testing.T) {
 
 	t.Run("matching columns", func(t *testing.T) {
 		t.Parallel()
+
 		data := NewTableData([]string{"A", "B"})
 		data.SetFooter([]string{"1", "2"})
+
 		if err := data.Validate(); err != nil {
 			t.Errorf("Validate() with matching columns = %v, want nil", err)
 		}
@@ -229,8 +233,10 @@ func TestTableDataValidate(t *testing.T) {
 
 	t.Run("footer longer than headers", func(t *testing.T) {
 		t.Parallel()
+
 		data := NewTableData([]string{"A"})
 		data.SetFooter([]string{"1", "2", "3"})
+
 		if err := data.Validate(); err == nil {
 			t.Error("Validate() with footer longer than headers = nil, want error")
 		}
@@ -238,8 +244,10 @@ func TestTableDataValidate(t *testing.T) {
 
 	t.Run("footer shorter than headers", func(t *testing.T) {
 		t.Parallel()
+
 		data := NewTableData([]string{"A", "B", "C"})
 		data.SetFooter([]string{"1"})
+
 		if err := data.Validate(); err == nil {
 			t.Error("Validate() with footer shorter than headers = nil, want error")
 		}
@@ -247,8 +255,10 @@ func TestTableDataValidate(t *testing.T) {
 
 	t.Run("empty footer cells", func(t *testing.T) {
 		t.Parallel()
+
 		data := NewTableData([]string{"A", "B"})
 		data.SetFooter([]string{"", ""})
+
 		if err := data.Validate(); err != nil {
 			t.Errorf("Validate() with empty footer cells = %v, want nil", err)
 		}
@@ -256,6 +266,7 @@ func TestTableDataValidate(t *testing.T) {
 
 	t.Run("empty headers with footer", func(t *testing.T) {
 		t.Parallel()
+
 		data := &TableData{Footer: []string{"x"}}
 		if err := data.Validate(); err != nil {
 			t.Errorf("Validate() with empty headers = %v, want nil", err)
