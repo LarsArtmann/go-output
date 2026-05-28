@@ -282,3 +282,25 @@ import "github.com/larsartmann/go-output/plantuml"            // PlantUML diagra
 - Nix flake uses `flake-parts` + `treefmt-nix` + `git-hooks.nix` — no `gomod2nix` (library, 13 modules, no binary)
 - Go checks (build/test/lint) run via `nix run .#test` / `nix run .#lint` / `nix run .#build` — these iterate all 13 modules. Not in `nix flake check` because the Nix sandbox blocks `go mod download`; CI handles these reliably
 - `.pre-commit-config.yaml` exists for non-Nix users; `git-hooks.nix` auto-installs hooks for Nix users via `nix develop`
+
+## Code Duplication Policy
+
+**Updated:** 2026-05-28
+
+At `art-dupl -t 50` (industry standard), this codebase has **zero actionable clones**.
+
+At `art-dupl -t 15` (aggressive), ~50 clone groups appear. These are categorized as:
+
+| Category | Description | Action |
+|----------|-------------|--------|
+| **Go test idioms** | `strings.Contains` assertions, `t.Errorf` patterns, `t.Parallel()` | Accept — language patterns |
+| **Module boundary** | Interface re-declarations, type aliases across modules | Accept — Go design constraint |
+| **Example/docs** | Full API usage in `example_test.go` and `examples/` | Accept — intentional for documentation |
+| **Single-line** | `render*TableData` signatures, `init()` registrations | Accept — interface compliance |
+
+### Key Decisions
+
+- `testhelpers` is **zero-dep by design** — cannot import `output`. Cross-module test helpers must stay local or use table-driven patterns within each module
+- `serialization/render.go` has `renderViaRenderer()` shared helper for YAML/TOML (identical `render*TableData` bodies)
+- `graphtest.NewTestNode`/`TestEdgeAB` used in serialization, graph, d2, plantuml benches — not in examples (must show full API)
+- **Threshold 15 is too aggressive for action** — use t=30-40 for meaningful dedup work
