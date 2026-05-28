@@ -13,16 +13,16 @@ type Alignment int
 
 // Column alignment constants.
 const (
-	AlignLeft   Alignment = AlignmentLeft
-	AlignRight  Alignment = AlignmentRight
-	AlignCenter Alignment = AlignmentCenter
+	AlignLeft   Alignment = alignmentLeft
+	AlignRight  Alignment = alignmentRight
+	AlignCenter Alignment = alignmentCenter
 )
 
-// Column alignment iota values (unexported).
+// Column alignment iota values.
 const (
-	AlignmentLeft Alignment = iota
-	AlignmentRight
-	AlignmentCenter
+	alignmentLeft Alignment = iota
+	alignmentRight
+	alignmentCenter
 )
 
 // MarkdownTable builds Markdown tables.
@@ -72,7 +72,7 @@ func (m *MarkdownTable) SetHeaders(headers []string) *MarkdownTable {
 
 	m.align = make([]Alignment, len(headers))
 	for i := range m.align {
-		m.align[i] = AlignmentLeft
+		m.align[i] = alignmentLeft
 	}
 
 	return m
@@ -197,11 +197,11 @@ func (m *MarkdownTable) writeSeparator(b *strings.Builder, colWidths []int) {
 
 func (m *MarkdownTable) getAlignmentMarkers(col int) (prefix, suffix string) {
 	switch m.getAlignment(col) {
-	case AlignmentRight:
+	case alignmentRight:
 		return "", ":"
-	case AlignmentCenter:
+	case alignmentCenter:
 		return ":", ":"
-	case AlignmentLeft:
+	case alignmentLeft:
 		fallthrough
 	default:
 		return "", ""
@@ -248,15 +248,15 @@ func (m *MarkdownTable) writeCell(b *strings.Builder, i int, cell string, colWid
 	alignment := m.getAlignment(i)
 
 	switch alignment {
-	case AlignmentRight:
+	case alignmentRight:
 		fmt.Fprintf(b, "%*s", width, cell)
-	case AlignmentCenter:
+	case alignmentCenter:
 		leftPad := (width - len(cell)) / 2
 		rightPad := width - len(cell) - leftPad
 		b.WriteString(strings.Repeat(" ", leftPad))
 		b.WriteString(cell)
 		b.WriteString(strings.Repeat(" ", rightPad))
-	case AlignmentLeft:
+	case alignmentLeft:
 		fallthrough
 	default:
 		b.WriteString(cell)
@@ -269,5 +269,5 @@ func (m *MarkdownTable) getAlignment(col int) Alignment {
 		return m.align[col]
 	}
 
-	return AlignmentLeft
+	return alignmentLeft
 }
