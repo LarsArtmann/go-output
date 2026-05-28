@@ -1,3 +1,3 @@
 module github.com/larsartmann/go-output/testhelpers
 
-go 1.26.2
+go 1.26.3

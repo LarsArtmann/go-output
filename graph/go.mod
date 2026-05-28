@@ -1,6 +1,6 @@
 module github.com/larsartmann/go-output/graph
 
-go 1.26.2
+go 1.26.3
 
 require (
 	github.com/larsartmann/go-output v0.0.0
@@ -17,8 +17,8 @@ replace (
 )
 
 require (
-	github.com/larsartmann/go-branded-id v0.1.0 // indirect
+	github.com/larsartmann/go-branded-id v0.3.0 // indirect
 	github.com/larsartmann/go-output/enum v0.0.0 // indirect
-	golang.org/x/sys v0.44.0 // indirect
+	golang.org/x/sys v0.45.0 // indirect
 	golang.org/x/term v0.43.0 // indirect
 )

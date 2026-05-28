@@ -1,6 +1,6 @@
 module github.com/larsartmann/go-output/enum
 
-go 1.26.2
+go 1.26.3
 
 require github.com/larsartmann/go-output/testhelpers v0.0.0
 

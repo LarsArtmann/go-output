@@ -7,8 +7,8 @@ require github.com/larsartmann/go-output v0.0.0
 replace github.com/larsartmann/go-output => ../..
 
 require (
-	github.com/larsartmann/go-branded-id v0.1.0 // indirect
+	github.com/larsartmann/go-branded-id v0.3.0 // indirect
 	github.com/larsartmann/go-output/enum v0.0.0 // indirect
-	golang.org/x/sys v0.44.0 // indirect
+	golang.org/x/sys v0.45.0 // indirect
 	golang.org/x/term v0.43.0 // indirect
 )
