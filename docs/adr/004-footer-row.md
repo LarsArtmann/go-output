@@ -12,7 +12,7 @@ Two design alternatives:
 1. **Data on `TableData`** — Store `Footer []string` directly on `TableData`, propagate to sub-module renderers via `Data() *TableData`.
 2. **Data on `RenderOptions`** — Pass footer as a `RenderOptions` field, require callers to pass it separately from data.
 
-Additionally, each renderer needs to decide *how* to style the footer (bold, colored, CSS class, XML element).
+Additionally, each renderer needs to decide _how_ to style the footer (bold, colored, CSS class, XML element).
 
 ## Decision
 
@@ -27,7 +27,8 @@ type TableData struct {
 ```
 
 **Rationale:**
-- Footer is *data*, not *render configuration*. It belongs with the data model.
+
+- Footer is _data_, not _render configuration_. It belongs with the data model.
 - Sub-modules already receive `*TableData` — zero API changes needed.
 - `RenderTableData()` callers don't need to pass footer separately.
 - `TableData.Validate()` can check footer column count matches headers.
@@ -36,16 +37,16 @@ type TableData struct {
 
 Each renderer decides how to style the footer:
 
-| Renderer | Styling |
-|----------|---------|
-| Markdown | Second separator + bold footer (inherits column alignment) |
-| HTML | `<tfoot>` with `footer-cell` CSS class |
-| XML | `<footer>` element wrapping `<cell>` elements |
-| AsciiDoc | Bold cells via `*text*` |
-| CSV/TSV | Plain row (no special styling — delimiter format) |
-| Table (lipgloss) | Bold via `buildStyleFunc` + `WithFooterStyle` option |
-| JSON/YAML/TOML/JSONL | **Skipped** — data formats don't have visual footers |
-| Tree/Graph | **Skipped** — non-tabular shapes |
+| Renderer             | Styling                                                    |
+| -------------------- | ---------------------------------------------------------- |
+| Markdown             | Second separator + bold footer (inherits column alignment) |
+| HTML                 | `<tfoot>` with `footer-cell` CSS class                     |
+| XML                  | `<footer>` element wrapping `<cell>` elements              |
+| AsciiDoc             | Bold cells via `*text*`                                    |
+| CSV/TSV              | Plain row (no special styling — delimiter format)          |
+| Table (lipgloss)     | Bold via `buildStyleFunc` + `WithFooterStyle` option       |
+| JSON/YAML/TOML/JSONL | **Skipped** — data formats don't have visual footers       |
+| Tree/Graph           | **Skipped** — non-tabular shapes                           |
 
 ### 3. Validation is centralized
 
