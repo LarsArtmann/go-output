@@ -8,6 +8,59 @@ import (
 	"github.com/larsartmann/go-output"
 )
 
+func TestRenderTableData_NilData(t *testing.T) {
+	t.Parallel()
+
+	for _, tt := range []struct {
+		name   string
+		format output.Format
+	}{
+		{"JSONL", output.FormatJSONL},
+		{"YAML", output.FormatYAML},
+		{"TOML", output.FormatTOML},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			var buf bytes.Buffer
+
+			err := output.RenderTableData(nil, tt.format, output.RenderOptions{Writer: &buf})
+			if err != nil {
+				t.Fatalf("RenderTableData %s nil: %v", tt.name, err)
+			}
+
+			if buf.String() != "" {
+				t.Errorf("expected empty output for nil data, got %q", buf.String())
+			}
+		})
+	}
+}
+
+func TestRenderTableData_WriterError(t *testing.T) {
+	t.Parallel()
+
+	for _, tt := range []struct {
+		name   string
+		format output.Format
+	}{
+		{"JSONL", output.FormatJSONL},
+		{"YAML", output.FormatYAML},
+		{"TOML", output.FormatTOML},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			data := output.NewTableData([]string{"Name"})
+			data.AddRow([]string{"Alice"})
+
+			err := output.RenderTableData(data, tt.format, output.RenderOptions{Writer: &errorWriter{}})
+			if err == nil {
+				t.Fatal("expected error from errorWriter")
+			}
+		})
+	}
+}
+
 func TestRenderJSONLTableData(t *testing.T) {
 	t.Parallel()
 
@@ -32,21 +85,6 @@ func TestRenderJSONLTableData(t *testing.T) {
 	}
 }
 
-func TestRenderJSONLTableData_NilData(t *testing.T) {
-	t.Parallel()
-
-	var buf bytes.Buffer
-
-	err := output.RenderTableData(nil, output.FormatJSONL, output.RenderOptions{Writer: &buf})
-	if err != nil {
-		t.Fatalf("RenderTableData jsonl nil: %v", err)
-	}
-
-	if buf.String() != "" {
-		t.Errorf("expected empty output for nil data, got %q", buf.String())
-	}
-}
-
 func TestRenderYAMLTableData(t *testing.T) {
 	t.Parallel()
 
@@ -65,21 +103,6 @@ func TestRenderYAMLTableData(t *testing.T) {
 	assertContains(t, out, "Age: \"30\"", "yaml output")
 }
 
-func TestRenderYAMLTableData_NilData(t *testing.T) {
-	t.Parallel()
-
-	var buf bytes.Buffer
-
-	err := output.RenderTableData(nil, output.FormatYAML, output.RenderOptions{Writer: &buf})
-	if err != nil {
-		t.Fatalf("RenderTableData yaml nil: %v", err)
-	}
-
-	if buf.String() != "" {
-		t.Errorf("expected empty output for nil data, got %q", buf.String())
-	}
-}
-
 func TestRenderTOMLTableData(t *testing.T) {
 	t.Parallel()
 
@@ -96,55 +119,4 @@ func TestRenderTOMLTableData(t *testing.T) {
 	out := buf.String()
 	assertContains(t, out, "Name", "toml output")
 	assertContains(t, out, "Alice", "toml output")
-}
-
-func TestRenderTOMLTableData_NilData(t *testing.T) {
-	t.Parallel()
-
-	var buf bytes.Buffer
-
-	err := output.RenderTableData(nil, output.FormatTOML, output.RenderOptions{Writer: &buf})
-	if err != nil {
-		t.Fatalf("RenderTableData toml nil: %v", err)
-	}
-
-	if buf.String() != "" {
-		t.Errorf("expected empty output for nil data, got %q", buf.String())
-	}
-}
-
-func TestRenderJSONLTableData_WriterError(t *testing.T) {
-	t.Parallel()
-
-	data := output.NewTableData([]string{"Name"})
-	data.AddRow([]string{"Alice"})
-
-	err := output.RenderTableData(data, output.FormatJSONL, output.RenderOptions{Writer: &errorWriter{}})
-	if err == nil {
-		t.Fatal("expected error from errorWriter")
-	}
-}
-
-func TestRenderYAMLTableData_WriterError(t *testing.T) {
-	t.Parallel()
-
-	data := output.NewTableData([]string{"Name"})
-	data.AddRow([]string{"Alice"})
-
-	err := output.RenderTableData(data, output.FormatYAML, output.RenderOptions{Writer: &errorWriter{}})
-	if err == nil {
-		t.Fatal("expected error from errorWriter")
-	}
-}
-
-func TestRenderTOMLTableData_WriterError(t *testing.T) {
-	t.Parallel()
-
-	data := output.NewTableData([]string{"Name"})
-	data.AddRow([]string{"Alice"})
-
-	err := output.RenderTableData(data, output.FormatTOML, output.RenderOptions{Writer: &errorWriter{}})
-	if err == nil {
-		t.Fatal("expected error from errorWriter")
-	}
 }
