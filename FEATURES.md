@@ -260,6 +260,8 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 | **CONTRIBUTING.md**        | FULLY_FUNCTIONAL | Contribution guidelines                                    |
 | **ADR 001**                | FULLY_FUNCTIONAL | Multi-module workspace decision                            |
 | **ADR 002**                | FULLY_FUNCTIONAL | Shape capability matrix decision                           |
+| **ADR 003**                | FULLY_FUNCTIONAL | D2/graph module extraction decision                        |
+| **ADR 004**                | FULLY_FUNCTIONAL | Footer row design decision                                 |
 | **DOMAIN_LANGUAGE.md**     | FULLY_FUNCTIONAL | Domain vocabulary                                          |
 | **FORMAT_ARCHITECTURE.md** | FULLY_FUNCTIONAL | Format architecture documentation                          |
 
@@ -276,8 +278,8 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 
 ---
 
-**Last audited:** 2026-05-25
-**Total features:** 112
-**Fully functional:** 103
+**Last audited:** 2026-05-28
+**Total features:** 115
+**Fully functional:** 106
 **Removed:** 9 (FormatCategory, OutputFormat, SortBy, FilledStrings, Register, Create, Unregister, RegisteredFormats, IsRegistered)
 **Known issues:** 0
