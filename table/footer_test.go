@@ -87,3 +87,26 @@ func TestTableSetFooter(t *testing.T) {
 	testhelpers.AssertContains(t, output, "Total", "should contain footer")
 	testhelpers.AssertContains(t, output, "30", "should contain footer value")
 }
+
+func TestTableSetFooter_MultipleCalls(t *testing.T) {
+	t.Parallel()
+
+	tbl := New(WithColorMode(output.ColorModeNever))
+	tbl.SetHeaders("Name", "Count")
+	tbl.AddRow("Alice", "10")
+	tbl.SetFooter("Old", "0")
+	tbl.SetFooter("Total", "30")
+
+	if tbl.footerRowIndex != 3 {
+		t.Errorf("footerRowIndex = %d, want 3 (last footer row)", tbl.footerRowIndex)
+	}
+
+	output, err := tbl.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
+	testhelpers.AssertContains(t, output, "Alice", "should contain data row")
+	testhelpers.AssertContains(t, output, "Old", "should contain first footer as data")
+	testhelpers.AssertContains(t, output, "Total", "should contain last footer")
+}

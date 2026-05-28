@@ -37,9 +37,10 @@ func WithColorMode(mode output.ColorMode) Option {
 
 // Table renders formatted tables using lipgloss.
 type Table struct {
-	t         *table.Table
-	colorMode output.ColorMode
-	rowCount  int
+	t              *table.Table
+	colorMode      output.ColorMode
+	rowCount       int
+	footerRowIndex int
 }
 
 // New creates a new Table with default styling.
@@ -78,13 +79,14 @@ func (t *Table) AddRow(row ...string) *Table {
 }
 
 // SetFooter adds a bold-styled footer row to the table.
-// Calling SetFooter more than once is undefined — only the last footer row
-// receives bold styling. For single-footer use (recommended), use SetFooter once.
+// Only the last footer row receives bold styling; previous footer rows
+// become unstyled data rows. Use SetFooter once for a single summary row.
 func (t *Table) SetFooter(row ...string) *Table {
+	t.footerRowIndex = t.rowCount + 1
 	t.rowCount++
 
 	t.t.Row(row...)
-	t.StyleFunc(t.buildStyleFunc(t.rowCount))
+	t.StyleFunc(t.buildStyleFunc(t.footerRowIndex))
 
 	return t
 }

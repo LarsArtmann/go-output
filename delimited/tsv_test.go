@@ -1,6 +1,7 @@
 package delimited
 
 import (
+	"bytes"
 	"errors"
 	"strings"
 	"testing"
@@ -235,4 +236,19 @@ func TestTSVRenderTableData(t *testing.T) {
 	t.Parallel()
 
 	testRenderTableData(t, output.FormatTSV, "TSV")
+}
+
+func TestTSVWriter_WriteFooter(t *testing.T) {
+	t.Parallel()
+
+	var buf bytes.Buffer
+
+	w := NewTSVWriter(&buf)
+	_ = w.WriteHeader([]string{"Name", "Count"})
+	_ = w.WriteRow([]string{"Alice", "10"})
+	_ = w.WriteFooter([]string{"Total", "10"})
+	w.Flush()
+
+	result := buf.String()
+	assertContains(t, result, "Total", "TSV WriteFooter should contain footer text")
 }

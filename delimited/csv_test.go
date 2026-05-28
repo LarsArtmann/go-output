@@ -238,3 +238,26 @@ func TestCSVRenderTableData(t *testing.T) {
 
 	testRenderTableData(t, output.FormatCSV, "CSV")
 }
+
+func TestCSVWriter_WriteFooter(t *testing.T) {
+	t.Parallel()
+
+	var buf bytes.Buffer
+
+	w := NewCSVWriter(&buf)
+	_ = w.WriteHeader([]string{"Name", "Count"})
+	_ = w.WriteRow([]string{"Alice", "10"})
+	_ = w.WriteFooter([]string{"Total", "10"})
+	w.Flush()
+
+	result := buf.String()
+
+	lines := strings.Split(strings.TrimSpace(result), "\n")
+	if len(lines) != 3 {
+		t.Fatalf("expected 3 lines (header + row + footer), got %d", len(lines))
+	}
+
+	if !strings.Contains(lines[2], "Total") {
+		t.Errorf("footer should contain 'Total', got %q", lines[2])
+	}
+}
