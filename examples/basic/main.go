@@ -113,5 +113,11 @@ func projectsToTableData(projects []Project) *output.TableData {
 		data.AddRow(projectToRow(p))
 	}
 
+	data.SetFooter([]string{
+		"TOTAL",
+		fmt.Sprintf("%d projects", len(projects)),
+		"-",
+	})
+
 	return data
 }
