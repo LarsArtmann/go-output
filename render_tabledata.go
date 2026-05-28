@@ -97,10 +97,6 @@ func (e *UnsupportedFormatError) Error() string {
 	return fmt.Sprintf("render table data: format %q not supported", e.Format)
 }
 
-func (e *UnsupportedFormatError) Unwrap() error {
-	return nil
-}
-
 func renderMarkdownTableData(w io.Writer, data *TableData, opts RenderOptions) error {
 	if opts.Title != "" {
 		_, err := fmt.Fprintf(w, "# %s\n\n", opts.Title)
