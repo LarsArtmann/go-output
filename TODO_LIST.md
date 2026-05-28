@@ -45,14 +45,14 @@
 
 ## ✅ P2: Code Quality & Coverage — ALL DONE
 
-- ✅ **14.** Root test coverage: **95.9%** (above 90% target)
-- ✅ **15.** testhelpers coverage: **93.8%** (above 90% target)
+- ✅ **14.** Root test coverage: **96.1%** (above 90% target)
+- ✅ **15.** testhelpers coverage: **91.3%** (above 90% target)
 - ✅ **16.** D2 benchmarks added (`d2/bench_test.go`)
 - ✅ **17.** D2 and graph fuzz tests added (`d2/fuzz_test.go`, `graph/fuzz_test.go`)
 
 ---
 
-## P3: Architecture — 3 Done, 1 Open, 1 Needs Decision
+## P3: Architecture — 4 Done, 1 Needs Decision
 
 - ✅ **18.** GraphRendererMixin TableData methods extracted to `graph_tabledata.go`
 - ✅ **22.** Registry + sub-module pattern documented in AGENTS.md
@@ -60,10 +60,7 @@
 
 ### Open
 
-- **19.** Inconsistent re-export pattern between d2/ and graph/
-  - d2 re-exports `D2NodeID`/`D2NodeLabel` as type aliases because d2 has its own rich domain types (D2Node, D2Edge) that use branded IDs. Users work with `d2.D2Node` and need `d2.D2NodeID`.
-  - graph does NOT re-export because its renderers are configured via `output.GraphNode`/`output.GraphEdge` through the `SetNodes`/`SetEdges` methods. Graph users already import `output` for the interface.
-  - **Resolution:** Difference is intentional and correct. No action needed.
+- ✅ **19.** Inconsistent re-export pattern between d2/ and graph/ — **resolved**: difference is intentional and correct (d2 has rich domain types needing branded IDs, graph uses output.GraphNode directly).
 
 ### Needs Decision (from Lars)
 
@@ -139,12 +136,12 @@
 - ✅ registry.go simplified with cmp.Compare
 - ✅ README uses non-deprecated API (Supports/Shapes)
 - ✅ Error-path tests for markup, xml, streaming, render_tabledata, json, color, markdown, tsv
-- ✅ Root coverage 82.2% → 95.1%
+- ✅ Root coverage 82.2% → 96.1%
 - ✅ D2 coverage 95.4% → 100%
-- ✅ Graph coverage 94.4% → 97.6%
-- ✅ Integration coverage 75.9% → 82.8%
-- ✅ testhelpers coverage 75% → 93.8%
-- ✅ gentest coverage 0% → 87.5%
+- ✅ Graph coverage 94.4% → 96.0%
+- ✅ integration coverage 75.9% → 95.5%
+- ✅ testhelpers coverage 75% → 91.3%
+- ✅ gentest coverage 0% → 96.2%
 - ✅ escape.DOT deduplicated: DOT now delegates to D2 (fixes missing \t escape)
 - ✅ D2StrokeStyle extracted from D2NodeStyle/D2EdgeStyle (fixes edge style coercion)
 - ✅ MermaidFlowchartRenderer/MermaidTreeRenderer deleted — use MermaidFromTableData/MermaidFromTree
