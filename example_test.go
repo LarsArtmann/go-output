@@ -62,6 +62,7 @@ func ExampleMustRender() {
 
 	m := output.NewMarkdownTable().SetColorMode(output.ColorModeNever)
 	m.SetHeaders(data.GetHeaders())
+
 	for _, row := range data.GetRows() {
 		m.AddRow(row)
 	}
