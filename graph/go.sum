@@ -8,8 +8,8 @@ github.com/larsartmann/go-branded-id v0.3.0 h1:3uE01+ymNTfsvtLMRSiux+6TjPZX5+frq
 github.com/larsartmann/go-branded-id v0.3.0/go.mod h1:O9fhyzY3DxtLsswpR7XaI+VbCM9182ZbZQLjfFFanLk=
 github.com/larsartmann/go-output/delimited v0.0.0 h1:tJuPO08fksj+aipUHZP1GSGTt2B3gt3SsA5X8rd12+c=
 github.com/larsartmann/go-output/delimited v0.0.0/go.mod h1:UJJ6PM0FZwCuCGMpv+/9sQgam9MPSwV+LoCezG04e0E=
-github.com/larsartmann/go-output/enum v0.0.0 h1:UvVBkbANYiCDz64HuCf/aLwp2ui0pPwJKLmLlvUti8I=
-github.com/larsartmann/go-output/enum v0.0.0/go.mod h1:NinBvYyGkx3X71ZRcp1PCJsaWRxfcH3Vv1S7H62cm2A=
+github.com/larsartmann/go-output/enum v0.6.1 h1:4GcIytCXc3C6M9BICuXLGckL0g43nHgBJBimVScA3Oc=
+github.com/larsartmann/go-output/enum v0.6.1/go.mod h1:NinBvYyGkx3X71ZRcp1PCJsaWRxfcH3Vv1S7H62cm2A=
 github.com/larsartmann/go-output/serialization v0.0.0 h1:MyLyPHjCEyGKoIGXBcXdK+Mwfk5J2e6LdQG9yX1UIhU=
 github.com/larsartmann/go-output/serialization v0.0.0/go.mod h1:eR7R3FmXlR5z5amsp/c4kDitjuv9SIhzsmzVjPngxu0=
 github.com/pelletier/go-toml/v2 v2.3.1 h1:MYEvvGnQjeNkRF1qUuGolNtNExTDwct51yp7olPtrEc=
