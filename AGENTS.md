@@ -4,7 +4,7 @@
 
 A reusable Go library for CLI applications providing consistent output formatting across 16 formats (Table, JSON, CSV, TSV, Markdown, XML, YAML, HTML, Tree, D2, Mermaid, DOT, JSONL, AsciiDoc, TOML, PlantUML) with type-safe enum-based configuration and a Shape capability matrix.
 
-**Updated:** 2026-05-28
+**Updated:** 2026-05-30
 
 ## Location
 
@@ -287,7 +287,7 @@ import "github.com/larsartmann/go-output/plantuml"            // PlantUML diagra
 
 ## Code Duplication Policy
 
-**Updated:** 2026-05-28
+**Updated:** 2026-05-30
 
 At `art-dupl -t 50` (industry standard), this codebase has **zero actionable clones**.
 

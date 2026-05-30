@@ -7,9 +7,9 @@ github.com/go-faster/yaml v0.4.6/go.mod h1:390dRIvV4zbnO7qC9FGo6YYutc+wyyUSHBgbX
 github.com/larsartmann/go-branded-id v0.3.0 h1:3uE01+ymNTfsvtLMRSiux+6TjPZX5+frqR5Ub3Cj+w0=
 github.com/larsartmann/go-branded-id v0.3.0/go.mod h1:O9fhyzY3DxtLsswpR7XaI+VbCM9182ZbZQLjfFFanLk=
 github.com/larsartmann/go-output/delimited v0.0.0 h1:tJuPO08fksj+aipUHZP1GSGTt2B3gt3SsA5X8rd12+c=
-github.com/larsartmann/go-output/delimited v0.0.0/go.mod h1:sI7hI8XhDuwLew3XbpW9vqf6GfX/tZcmr1F0rqo+jYo=
+github.com/larsartmann/go-output/delimited v0.0.0/go.mod h1:UJJ6PM0FZwCuCGMpv+/9sQgam9MPSwV+LoCezG04e0E=
 github.com/larsartmann/go-output/serialization v0.0.0 h1:MyLyPHjCEyGKoIGXBcXdK+Mwfk5J2e6LdQG9yX1UIhU=
-github.com/larsartmann/go-output/serialization v0.0.0/go.mod h1:QE4dNBMXLylcpo3znnJ6jXvxUzgJaT3I/xbQG1TnBIk=
+github.com/larsartmann/go-output/serialization v0.0.0/go.mod h1:eR7R3FmXlR5z5amsp/c4kDitjuv9SIhzsmzVjPngxu0=
 github.com/pelletier/go-toml/v2 v2.3.1 h1:MYEvvGnQjeNkRF1qUuGolNtNExTDwct51yp7olPtrEc=
 github.com/pelletier/go-toml/v2 v2.3.1/go.mod h1:2gIqNv+qfxSVS7cM2xJQKtLSTLUE9V8t9Stt+h56mCY=
 github.com/segmentio/asm v1.2.1 h1:DTNbBqs57ioxAD4PrArqftgypG4/qNpXoJx8TVXxPR0=
