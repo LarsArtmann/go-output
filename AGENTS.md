@@ -254,6 +254,15 @@ import "github.com/larsartmann/go-output/table"              // Lipgloss tables 
 import "github.com/larsartmann/go-output/plantuml"            // PlantUML diagrams (optional)
 ```
 
+### Mono-Version Tagging
+
+All modules are released in lockstep with the same version. Every release creates tags for every module:
+
+- Root: `vX.Y.Z`
+- Sub-modules: `d2/vX.Y.Z`, `delimited/vX.Y.Z`, `enum/vX.Y.Z`, `escape/vX.Y.Z`, `examples/vX.Y.Z`, `graph/vX.Y.Z`, `integration/vX.Y.Z`, `markup/vX.Y.Z`, `plantuml/vX.Y.Z`, `serialization/vX.Y.Z`, `table/vX.Y.Z`, `testhelpers/vX.Y.Z`, `testhelpers/graphtest/vX.Y.Z`
+
+This ensures `go get github.com/larsartmann/go-output/table@vX.Y.Z` resolves correctly instead of falling back to a stale `v0.0.0` pseudo-version.
+
 ## Architecture Notes
 
 - **Root has ZERO sub-module imports** — verified via `go mod graph`. Users get zero transitive deps from sub-modules they don't import.
