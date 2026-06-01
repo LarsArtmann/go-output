@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/larsartmann/go-output"
+	"github.com/larsartmann/go-output/testhelpers/graphtest"
 )
 
 func TestPlantUMLDiagramRender(t *testing.T) {
@@ -33,19 +34,9 @@ func TestPlantUMLDiagramRender(t *testing.T) {
 		t.Parallel()
 
 		d := NewPlantUMLDiagram()
-		d.AddNode(output.GraphNode{
-			ID:    output.NewBrandedID[output.GraphNodeIDBrand]("svc-a"),
-			Label: output.NewBrandedID[output.GraphNodeLabelBrand]("Service A"),
-		})
-		d.AddNode(output.GraphNode{
-			ID:    output.NewBrandedID[output.GraphNodeIDBrand]("svc-b"),
-			Label: output.NewBrandedID[output.GraphNodeLabelBrand]("Service B"),
-		})
-		d.AddEdge(output.GraphEdge{
-			From:  output.NewBrandedID[output.GraphNodeIDBrand]("svc-a"),
-			To:    output.NewBrandedID[output.GraphNodeIDBrand]("svc-b"),
-			Label: output.NewBrandedID[output.GraphNodeLabelBrand]("calls"),
-		})
+		d.AddNode(graphtest.NewTestNode("svc-a", "Service A"))
+		d.AddNode(graphtest.NewTestNode("svc-b", "Service B"))
+		d.AddEdge(graphtest.NewTestEdge("svc-a", "svc-b", "calls"))
 
 		out, err := d.Render()
 		if err != nil {

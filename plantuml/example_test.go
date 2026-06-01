@@ -5,24 +5,15 @@ import (
 
 	"github.com/larsartmann/go-output"
 	"github.com/larsartmann/go-output/plantuml"
+	"github.com/larsartmann/go-output/testhelpers/graphtest"
 )
 
 //nolint:testableexamples // Demonstration example, output is dynamic
 func ExampleNewPlantUMLDiagram() {
 	diagram := plantuml.NewPlantUMLDiagram()
-	diagram.AddNode(output.GraphNode{
-		ID:    output.NewBrandedID[output.GraphNodeIDBrand]("client"),
-		Label: output.NewBrandedID[output.GraphNodeLabelBrand]("Client"),
-	})
-	diagram.AddNode(output.GraphNode{
-		ID:    output.NewBrandedID[output.GraphNodeIDBrand]("server"),
-		Label: output.NewBrandedID[output.GraphNodeLabelBrand]("Server"),
-	})
-	diagram.AddEdge(output.GraphEdge{
-		From:  output.NewBrandedID[output.GraphNodeIDBrand]("client"),
-		To:    output.NewBrandedID[output.GraphNodeIDBrand]("server"),
-		Label: output.NewBrandedID[output.GraphNodeLabelBrand]("requests"),
-	})
+	diagram.AddNode(graphtest.NewTestNode("client", "Client"))
+	diagram.AddNode(graphtest.NewTestNode("server", "Server"))
+	diagram.AddEdge(graphtest.NewTestEdge("client", "server", "requests"))
 
 	result, err := diagram.Render()
 	if err != nil {

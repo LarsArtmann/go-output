@@ -33,19 +33,19 @@ func ExampleNewD2Diagram() {
 func ExampleNewD2Diagram_tables() {
 	diagram := d2.NewD2Diagram()
 
-	diagram.AddTable("users", []d2.D2Column{
-		{Name: "id", Type: "int", Constraint: d2.D2ConstraintPrimary},
-		{Name: "name", Type: "string"},
-		{Name: "email", Type: "string", Constraint: d2.D2ConstraintUnique},
-	})
+	diagram.
+		AddTable("accounts", []d2.D2Column{
+			{Name: "id", Type: "serial", Constraint: d2.D2ConstraintPrimary},
+			{Name: "email", Type: "varchar", Constraint: d2.D2ConstraintUnique},
+		}).
+		AddTable("profiles", []d2.D2Column{
+			{Name: "id", Type: "bigint", Constraint: d2.D2ConstraintPrimary},
+			{Name: "account_id", Type: "bigint", Constraint: d2.D2ConstraintForeign},
+			{Name: "bio", Type: "text"},
+			{Name: "avatar_url", Type: "varchar"},
+		})
 
-	diagram.AddTable("posts", []d2.D2Column{
-		{Name: "id", Type: "int", Constraint: d2.D2ConstraintPrimary},
-		{Name: "user_id", Type: "int", Constraint: d2.D2ConstraintForeign},
-		{Name: "title", Type: "string"},
-	})
-
-	diagram.AddLabeledEdge("users", "posts", "has many")
+	diagram.AddLabeledEdge("accounts", "profiles", "has many")
 
 	result, err := diagram.Render()
 	if err != nil {

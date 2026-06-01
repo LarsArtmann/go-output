@@ -153,12 +153,10 @@ func TestDOTSetGraphID(t *testing.T) {
 func TestDOTFromTreeWithEmptyID(t *testing.T) {
 	t.Parallel()
 
-	root := &output.TreeNode{
-		Label: output.NewBrandedID[output.TreeNodeLabelBrand]("My Root"),
-		Children: []*output.TreeNode{
-			{Label: output.NewBrandedID[output.TreeNodeLabelBrand]("Child Node")},
-		},
-	}
+	root := output.NewTreeNode("", "Root Node")
+	root.AddChild(&output.TreeNode{
+		Label: output.NewBrandedID[output.TreeNodeLabelBrand]("Leaf"),
+	})
 
 	renderer := DOTFromTree(root)
 
@@ -167,8 +165,8 @@ func TestDOTFromTreeWithEmptyID(t *testing.T) {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	assertContains(t, out, "My_Root", "empty ID should use label slug")
-	assertContains(t, out, "Child_Node", "empty ID should use label slug")
+	assertContains(t, out, "Root_Node", "empty ID should use label slug")
+	assertContains(t, out, "Leaf", "empty ID should use label slug")
 }
 
 func TestDOTFromTableDataNil(t *testing.T) {

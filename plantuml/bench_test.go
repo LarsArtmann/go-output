@@ -15,11 +15,7 @@ func BenchmarkPlantUMLRender(b *testing.B) {
 	}
 
 	for range 49 {
-		diagram.AddEdge(output.GraphEdge{
-			From:  output.NewBrandedID[output.GraphNodeIDBrand]("node"),
-			To:    output.NewBrandedID[output.GraphNodeIDBrand]("node"),
-			Label: output.NewBrandedID[output.GraphNodeLabelBrand]("edge"),
-		})
+		diagram.AddEdge(graphtest.NewTestEdge("node", "node", "edge"))
 	}
 
 	b.ResetTimer()

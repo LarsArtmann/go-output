@@ -39,13 +39,18 @@ func TestNodesABC() []output.GraphNode {
 	return append(nodes, NewTestNode("C", "Node C"))
 }
 
-// TestEdgeAB returns a GraphEdge connecting A to B with the given label.
-func TestEdgeAB(label string) output.GraphEdge {
+// NewTestEdge creates a GraphEdge with the given from, to, and label for testing.
+func NewTestEdge(from, to, label string) output.GraphEdge {
 	return output.GraphEdge{
-		From:  output.NewBrandedID[output.GraphNodeIDBrand]("A"),
-		To:    output.NewBrandedID[output.GraphNodeIDBrand]("B"),
+		From:  output.NewBrandedID[output.GraphNodeIDBrand](from),
+		To:    output.NewBrandedID[output.GraphNodeIDBrand](to),
 		Label: output.NewBrandedID[output.GraphNodeLabelBrand](label),
 	}
+}
+
+// TestEdgeAB returns a GraphEdge connecting A to B with the given label.
+func TestEdgeAB(label string) output.GraphEdge {
+	return NewTestEdge("A", "B", label)
 }
 
 // TestEdgesAB returns a slice with a single edge from A to B.

@@ -10,17 +10,16 @@ import (
 func renderMarshalAndWrite(
 	w io.Writer,
 	data *output.TableData,
-	marshalFunc func(*output.TableData) ([]byte, error),
 	formatName string,
+	marshalFunc func(*output.TableData) ([]byte, error),
 ) error {
 	b, err := marshalFunc(data)
 	if err != nil {
-		return fmt.Errorf("render %s: %w", formatName, err)
+		return fmt.Errorf("marshal %s table data: %w", formatName, err)
 	}
 
-	_, err = w.Write(b)
-	if err != nil {
-		return fmt.Errorf("write %s bytes: %w", formatName, err)
+	if _, err := w.Write(b); err != nil {
+		return fmt.Errorf("write %s output: %w", formatName, err)
 	}
 
 	return nil
