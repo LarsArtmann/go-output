@@ -5,10 +5,10 @@ go 1.26.3
 require (
 	github.com/go-faster/yaml v0.4.6
 	github.com/larsartmann/go-branded-id v0.3.0
-	github.com/larsartmann/go-output/delimited v0.6.1
-	github.com/larsartmann/go-output/enum v0.6.1
-	github.com/larsartmann/go-output/serialization v0.6.1
-	github.com/larsartmann/go-output/testhelpers v0.6.1
+	github.com/larsartmann/go-output/delimited v0.6.2
+	github.com/larsartmann/go-output/enum v0.6.2
+	github.com/larsartmann/go-output/serialization v0.6.2
+	github.com/larsartmann/go-output/testhelpers v0.6.2
 	golang.org/x/term v0.43.0
 )
 

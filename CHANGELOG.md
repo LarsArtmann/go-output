@@ -6,6 +6,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.6.2] - 2026-06-01
+
+### Fixed
+
+- All internal cross-module `go.mod` references upgraded from `v0.0.0` pseudo-versions to canonical `v0.6.2` tags across all 14 modules. Resolves the chicken-and-egg release issue where v0.6.1 was tagged before dependency versions were bumped.
+- `integration/go.mod`: fixed `d2`, `graph`, `markup`, `plantuml`, `table` references from `v0.0.0` to `v0.6.2`.
+- `plantuml/go.mod`: fixed `testhelpers/graphtest` reference from `v0.0.0-00010101000000-000000000000` to `v0.6.2`.
+- `d2/go.mod`, `graph/go.mod`, `serialization/go.mod`: fixed `testhelpers/graphtest` references from `v0.0.0` to `v0.6.2`.
+- `enum/go.mod`, `testhelpers/graphtest/go.mod`: fixed root and testhelpers references from `v0.0.0` to `v0.6.2`.
+
+### Changed
+
+- Mono-version tagging policy documented in `AGENTS.md` — all 14 modules release in lockstep.
+
+### Added
+
+- `docs/research/go-error-family-adoption-report.html` — comprehensive PRO/CONTRA analysis evaluating `github.com/larsartmann/go-error-family v0.3.0` adoption. Verdict: Do Not Adopt (Yet); Strategy B recommended (add to `examples/` module only).
+
 ## [0.6.1] - 2026-05-30
 
 ### Added
