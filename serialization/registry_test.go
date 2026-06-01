@@ -8,57 +8,56 @@ import (
 	"github.com/larsartmann/go-output"
 )
 
-func TestRenderTableData_NilData(t *testing.T) {
+func TestRenderTableData_NilAndError(t *testing.T) {
 	t.Parallel()
 
-	for _, tt := range []struct {
+	formats := []struct {
 		name   string
 		format output.Format
 	}{
 		{"JSONL", output.FormatJSONL},
 		{"YAML", output.FormatYAML},
 		{"TOML", output.FormatTOML},
-	} {
-		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-
-			var buf bytes.Buffer
-
-			err := output.RenderTableData(nil, tt.format, output.RenderOptions{Writer: &buf})
-			if err != nil {
-				t.Fatalf("RenderTableData %s nil: %v", tt.name, err)
-			}
-
-			if buf.String() != "" {
-				t.Errorf("expected empty output for nil data, got %q", buf.String())
-			}
-		})
 	}
-}
 
-func TestRenderTableData_WriterError(t *testing.T) {
-	t.Parallel()
+	t.Run("nil data produces empty output", func(t *testing.T) {
+		t.Parallel()
 
-	for _, tt := range []struct {
-		name   string
-		format output.Format
-	}{
-		{"JSONL", output.FormatJSONL},
-		{"YAML", output.FormatYAML},
-		{"TOML", output.FormatTOML},
-	} {
-		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
+		for _, f := range formats {
+			t.Run(f.name, func(t *testing.T) {
+				t.Parallel()
 
-			data := output.NewTableData([]string{"Name"})
-			data.AddRow([]string{"Alice"})
+				var buf bytes.Buffer
 
-			err := output.RenderTableData(data, tt.format, output.RenderOptions{Writer: &errorWriter{}})
-			if err == nil {
-				t.Fatal("expected error from errorWriter")
-			}
-		})
-	}
+				err := output.RenderTableData(nil, f.format, output.RenderOptions{Writer: &buf})
+				if err != nil {
+					t.Fatalf("RenderTableData %s nil: %v", f.name, err)
+				}
+
+				if buf.Len() > 0 {
+					t.Errorf("expected empty output for nil data, got %q", buf.String())
+				}
+			})
+		}
+	})
+
+	t.Run("writer error propagates", func(t *testing.T) {
+		t.Parallel()
+
+		for _, f := range formats {
+			t.Run(f.name, func(t *testing.T) {
+				t.Parallel()
+
+				data := output.NewTableData([]string{"Name"})
+				data.AddRow([]string{"Alice"})
+
+				err := output.RenderTableData(data, f.format, output.RenderOptions{Writer: &errorWriter{}})
+				if err == nil {
+					t.Fatal("expected error from errorWriter")
+				}
+			})
+		}
+	})
 }
 
 func TestRenderJSONLTableData(t *testing.T) {

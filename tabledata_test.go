@@ -202,74 +202,37 @@ func testTableDataFooter(t *testing.T) {
 func TestTableDataValidate(t *testing.T) {
 	t.Parallel()
 
-	t.Run("nil data", func(t *testing.T) {
-		t.Parallel()
-
-		var data *TableData
-		if err := data.Validate(); err != nil {
-			t.Errorf("Validate() on nil = %v, want nil", err)
+	buildData := func(headers, footer []string) *TableData {
+		data := NewTableData(headers)
+		if footer != nil {
+			data.SetFooter(footer)
 		}
-	})
 
-	t.Run("no footer", func(t *testing.T) {
-		t.Parallel()
+		return data
+	}
 
-		data := NewTableData([]string{"A", "B"})
-		if err := data.Validate(); err != nil {
-			t.Errorf("Validate() with no footer = %v, want nil", err)
-		}
-	})
+	for _, tt := range []struct {
+		name    string
+		data    *TableData
+		wantErr bool
+	}{
+		{name: "nil data", data: nil, wantErr: false},
+		{name: "no footer", data: buildData([]string{"A", "B"}, nil), wantErr: false},
+		{name: "matching columns", data: buildData([]string{"A", "B"}, []string{"1", "2"}), wantErr: false},
+		{name: "empty footer cells", data: buildData([]string{"A", "B"}, []string{"", ""}), wantErr: false},
+		{name: "empty headers with footer", data: &TableData{Footer: []string{"x"}}, wantErr: false},
+		{name: "footer longer than headers", data: buildData([]string{"A"}, []string{"1", "2", "3"}), wantErr: true},
+		{name: "footer shorter than headers", data: buildData([]string{"A", "B", "C"}, []string{"1"}), wantErr: true},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 
-	t.Run("matching columns", func(t *testing.T) {
-		t.Parallel()
-
-		data := NewTableData([]string{"A", "B"})
-		data.SetFooter([]string{"1", "2"})
-
-		if err := data.Validate(); err != nil {
-			t.Errorf("Validate() with matching columns = %v, want nil", err)
-		}
-	})
-
-	t.Run("footer longer than headers", func(t *testing.T) {
-		t.Parallel()
-
-		data := NewTableData([]string{"A"})
-		data.SetFooter([]string{"1", "2", "3"})
-
-		if err := data.Validate(); err == nil {
-			t.Error("Validate() with footer longer than headers = nil, want error")
-		}
-	})
-
-	t.Run("footer shorter than headers", func(t *testing.T) {
-		t.Parallel()
-
-		data := NewTableData([]string{"A", "B", "C"})
-		data.SetFooter([]string{"1"})
-
-		if err := data.Validate(); err == nil {
-			t.Error("Validate() with footer shorter than headers = nil, want error")
-		}
-	})
-
-	t.Run("empty footer cells", func(t *testing.T) {
-		t.Parallel()
-
-		data := NewTableData([]string{"A", "B"})
-		data.SetFooter([]string{"", ""})
-
-		if err := data.Validate(); err != nil {
-			t.Errorf("Validate() with empty footer cells = %v, want nil", err)
-		}
-	})
-
-	t.Run("empty headers with footer", func(t *testing.T) {
-		t.Parallel()
-
-		data := &TableData{Footer: []string{"x"}}
-		if err := data.Validate(); err != nil {
-			t.Errorf("Validate() with empty headers = %v, want nil", err)
-		}
-	})
+			err := tt.data.Validate()
+			if tt.wantErr && err == nil {
+				t.Error("Validate() = nil, want error")
+			} else if !tt.wantErr && err != nil {
+				t.Errorf("Validate() = %v, want nil", err)
+			}
+		})
+	}
 }

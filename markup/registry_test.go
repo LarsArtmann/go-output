@@ -8,56 +8,61 @@ import (
 	"github.com/larsartmann/go-output/testhelpers"
 )
 
-func TestRenderTableData_NilData(t *testing.T) {
+func TestRenderTableData_NilAndError(t *testing.T) {
 	t.Parallel()
 
-	for _, tt := range []struct {
+	formats := []struct {
 		name   string
 		format output.Format
 	}{
 		{"XML", output.FormatXML},
 		{"HTML", output.FormatHTML},
 		{"AsciiDoc", output.FormatAsciiDoc},
-	} {
-		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-
-			var buf bytes.Buffer
-
-			err := output.RenderTableData(nil, tt.format, output.RenderOptions{Writer: &buf})
-			if err != nil {
-				t.Fatalf("RenderTableData %s nil: %v", tt.name, err)
-			}
-
-			if buf.String() != "" {
-				t.Errorf("expected empty output for nil data, got %q", buf.String())
-			}
-		})
 	}
+
+	t.Run("nil data produces empty output", func(t *testing.T) {
+		t.Parallel()
+
+		for _, f := range formats {
+			t.Run(f.name, func(t *testing.T) {
+				t.Parallel()
+
+				assertNilDataEmptyOutput(t, f.format, f.name)
+			})
+		}
+	})
+
+	t.Run("writer error propagates", func(t *testing.T) {
+		t.Parallel()
+
+		for _, f := range formats {
+			t.Run(f.name, func(t *testing.T) {
+				t.Parallel()
+
+				data := output.NewTableData([]string{"Name"})
+				data.AddRow([]string{"Alice"})
+
+				err := output.RenderTableData(data, f.format, output.RenderOptions{Writer: &testhelpers.ErrorWriter{}})
+				if err == nil {
+					t.Fatal("expected error from ErrorWriter")
+				}
+			})
+		}
+	})
 }
 
-func TestRenderTableData_WriterError(t *testing.T) {
-	t.Parallel()
+func assertNilDataEmptyOutput(t *testing.T, format output.Format, name string) {
+	t.Helper()
 
-	for _, tt := range []struct {
-		name   string
-		format output.Format
-	}{
-		{"XML", output.FormatXML},
-		{"HTML", output.FormatHTML},
-		{"AsciiDoc", output.FormatAsciiDoc},
-	} {
-		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
+	var buf bytes.Buffer
 
-			data := output.NewTableData([]string{"Name"})
-			data.AddRow([]string{"Alice"})
+	err := output.RenderTableData(nil, format, output.RenderOptions{Writer: &buf})
+	if err != nil {
+		t.Fatalf("RenderTableData %s nil: %v", name, err)
+	}
 
-			err := output.RenderTableData(data, tt.format, output.RenderOptions{Writer: &testhelpers.ErrorWriter{}})
-			if err == nil {
-				t.Fatal("expected error from ErrorWriter")
-			}
-		})
+	if buf.String() != "" {
+		t.Errorf("expected empty output for nil data, got %q", buf.String())
 	}
 }
 

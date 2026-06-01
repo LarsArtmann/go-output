@@ -142,32 +142,35 @@ func TestAssertOutputContains(t *testing.T) {
 func TestAssertMarshalError(t *testing.T) {
 	t.Parallel()
 
-	AssertMarshalError(t, "no error", nil, false)
-	AssertMarshalError(t, "has error", errTestAssert, true)
+	for _, tt := range []struct {
+		name       string
+		label      string
+		err        error
+		wantError  bool
+		shouldFail bool
+	}{
+		{name: "no error", label: "no error", err: nil, wantError: false, shouldFail: false},
+		{name: "has error", label: "has error", err: errTestAssert, wantError: true, shouldFail: false},
+		{name: "unexpected error", label: "unexpected", err: errTestAssert, wantError: false, shouldFail: true},
+		{name: "expected error missing", label: "missing", err: nil, wantError: true, shouldFail: true},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 
-	t.Run("unexpected error", func(t *testing.T) {
-		t.Parallel()
+			if tt.shouldFail {
+				mock := &testing.T{}
+				AssertMarshalError(mock, tt.label, tt.err, tt.wantError)
 
-		mock := &testing.T{}
+				if !mock.Failed() {
+					t.Errorf("expected failure for %s", tt.name)
+				}
 
-		AssertMarshalError(mock, "unexpected", errTestAssert, false)
+				return
+			}
 
-		if !mock.Failed() {
-			t.Error("expected failure for unexpected error")
-		}
-	})
-
-	t.Run("expected error missing", func(t *testing.T) {
-		t.Parallel()
-
-		mock := &testing.T{}
-
-		AssertMarshalError(mock, "missing", nil, true)
-
-		if !mock.Failed() {
-			t.Error("expected failure for missing error")
-		}
-	})
+			AssertMarshalError(t, tt.label, tt.err, tt.wantError)
+		})
+	}
 }
 
 func TestTestAllowedValues(t *testing.T) {

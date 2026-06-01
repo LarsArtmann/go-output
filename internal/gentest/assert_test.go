@@ -111,41 +111,34 @@ func TestAssertValidYAML(t *testing.T) {
 func TestAssertMarshalError(t *testing.T) {
 	t.Parallel()
 
-	t.Run("error expected and occurred", func(t *testing.T) {
-		t.Parallel()
+	for _, tt := range []struct {
+		name       string
+		err        error
+		wantError  bool
+		shouldFail bool
+	}{
+		{name: "error expected and occurred", err: errTest, wantError: true, shouldFail: false},
+		{name: "no error expected and none occurred", err: nil, wantError: false, shouldFail: false},
+		{name: "error expected but none occurred", err: nil, wantError: true, shouldFail: true},
+		{name: "no error expected but error occurred", err: errTest, wantError: false, shouldFail: true},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 
-		AssertMarshalError(t, "test", errTest, true)
-	})
+			if tt.shouldFail {
+				mock := &testing.T{}
+				AssertMarshalError(mock, "test", tt.err, tt.wantError)
 
-	t.Run("no error expected and none occurred", func(t *testing.T) {
-		t.Parallel()
+				if !mock.Failed() {
+					t.Error("expected test to fail")
+				}
 
-		AssertMarshalError(t, "test", nil, false)
-	})
+				return
+			}
 
-	t.Run("error expected but none occurred", func(t *testing.T) {
-		t.Parallel()
-
-		mock := &testing.T{}
-
-		AssertMarshalError(mock, "test", nil, true)
-
-		if !mock.Failed() {
-			t.Error("expected test to fail when error expected but none occurred")
-		}
-	})
-
-	t.Run("no error expected but error occurred", func(t *testing.T) {
-		t.Parallel()
-
-		mock := &testing.T{}
-
-		AssertMarshalError(mock, "test", errTest, false)
-
-		if !mock.Failed() {
-			t.Error("expected test to fail when error not expected but occurred")
-		}
-	})
+			AssertMarshalError(t, "test", tt.err, tt.wantError)
+		})
+	}
 }
 
 func TestAssertHTMLEscape(t *testing.T) {
