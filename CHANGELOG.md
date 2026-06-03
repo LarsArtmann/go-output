@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.6.3] - 2026-06-03
+
+### Changed
+
+- Updated `charmbracelet/ultraviolet` from `v0.6.0-20260525` to `v0.6.0-20260601` — includes fix for modified Kitty keyboard navigation/function key releases (affects `table/`, `examples/`, `integration/` modules via lipgloss/v2 transitive dependency).
+- Updated `golang.org/x/exp` from `v0.0.0-20260527` to `v0.0.0-20260529`.
+- Updated nixpkgs flake input to latest revision.
+
+### Internal
+
+- Eliminated all code clones at `art-dupl` threshold 30 across test files in `markup/`, `serialization/`, `table/`, `graph/`, `plantuml/`, `testhelpers/`, and root module.
+
 ## [0.6.2] - 2026-06-01
 
 ### Fixed

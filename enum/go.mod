@@ -2,6 +2,6 @@ module github.com/larsartmann/go-output/enum
 
 go 1.26.3
 
-require github.com/larsartmann/go-output/testhelpers v0.6.2
+require github.com/larsartmann/go-output/testhelpers v0.6.3
 
 replace github.com/larsartmann/go-output/testhelpers => ../testhelpers
