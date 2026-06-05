@@ -18,21 +18,23 @@
 
 ### Code Duplication — ZERO at Industry Standard
 
-| Threshold | Clone Groups | Status |
-|-----------|:------------:|--------|
-| t=50 (industry standard) | 0 | Clean |
-| t=45 | 0 | Clean |
-| t=30 (strict) | 0 | **Clean** |
-| t=15 (aggressive) | 46 | Acceptable — Go test idioms, module boundaries, example/docs |
+| Threshold                | Clone Groups | Status                                                       |
+| ------------------------ | :----------: | ------------------------------------------------------------ |
+| t=50 (industry standard) |      0       | Clean                                                        |
+| t=45                     |      0       | Clean                                                        |
+| t=30 (strict)            |      0       | **Clean**                                                    |
+| t=15 (aggressive)        |      46      | Acceptable — Go test idioms, module boundaries, example/docs |
 
 Two deduplication sessions today (commits `c073004` and `2cc7329`):
 
 **Session 1 (t=45 → 0):**
+
 - `tabledata_test.go`: consolidated 7 sub-tests into table-driven `TestTableDataValidate`
 - `markup/registry_test.go` + `serialization/registry_test.go`: merged NilData+WriterError into `TestRenderTableData_NilAndError`, extracted `assertNilDataEmptyOutput` helper in markup
 - `internal/gentest/assert_test.go` + `testhelpers/helpers_test.go`: converted AssertMarshalError tests to table-driven with `shouldFail` field
 
 **Session 2 (t=30 → 0):**
+
 - Added `graphtest.NewTestEdge(from, to, label)` helper, refactored `TestEdgeAB` to delegate
 - Replaced inline GraphNode/GraphEdge literals in 3 plantuml test files with graphtest helpers
 - Reordered `renderMarshalAndWrite` parameters to differentiate from `renderDelimitedTableData`
@@ -48,33 +50,33 @@ Two deduplication sessions today (commits `c073004` and `2cc7329`):
 
 ### Test Coverage — All Modules Above Target
 
-| Module | Coverage | Target | Lines (prod) |
-|--------|:--------:|:------:|:------------:|
-| output (root) | 96.1% | 90% | ~2,100 |
-| internal/gentest | 96.2% | 90% | ~130 |
-| delimited | 90.2% | 90% | ~350 |
-| serialization | 91.6% | 90% | ~750 |
-| markup | 94.1% | 90% | ~650 |
-| d2 | 100.0% | 90% | ~950 |
-| graph | 96.0% | 90% | ~450 |
-| table | 100.0% | 90% | ~350 |
-| plantuml | 97.2% | 90% | ~200 |
-| enum | 100.0% | 90% | ~100 |
-| escape | 100.0% | 90% | ~80 |
-| testhelpers | 91.3% | 90% | ~200 |
-| integration | 95.5% | 90% | ~1,000 |
-| **Average** | **96.2%** | | **6,169** |
+| Module           | Coverage  | Target | Lines (prod) |
+| ---------------- | :-------: | :----: | :----------: |
+| output (root)    |   96.1%   |  90%   |    ~2,100    |
+| internal/gentest |   96.2%   |  90%   |     ~130     |
+| delimited        |   90.2%   |  90%   |     ~350     |
+| serialization    |   91.6%   |  90%   |     ~750     |
+| markup           |   94.1%   |  90%   |     ~650     |
+| d2               |  100.0%   |  90%   |     ~950     |
+| graph            |   96.0%   |  90%   |     ~450     |
+| table            |  100.0%   |  90%   |     ~350     |
+| plantuml         |   97.2%   |  90%   |     ~200     |
+| enum             |  100.0%   |  90%   |     ~100     |
+| escape           |  100.0%   |  90%   |     ~80      |
+| testhelpers      |   91.3%   |  90%   |     ~200     |
+| integration      |   95.5%   |  90%   |    ~1,000    |
+| **Average**      | **96.2%** |        |  **6,169**   |
 
 ### Build Quality — All Green
 
-| Check | Status |
-|-------|--------|
-| `go build ./...` (all 14 modules) | Pass |
-| `go test ./...` (all 14 modules) | Pass |
-| `go vet ./...` (all 14 modules) | Pass |
-| `golangci-lint run ./...` (root) | 0 issues |
-| `nix flake check` | All checks passed |
-| Race detector (`go test -race`) | Pass |
+| Check                             | Status            |
+| --------------------------------- | ----------------- |
+| `go build ./...` (all 14 modules) | Pass              |
+| `go test ./...` (all 14 modules)  | Pass              |
+| `go vet ./...` (all 14 modules)   | Pass              |
+| `golangci-lint run ./...` (root)  | 0 issues          |
+| `nix flake check`                 | All checks passed |
+| Race detector (`go test -race`)   | Pass              |
 
 ### Architecture — Mature & Stable
 
@@ -87,15 +89,15 @@ Two deduplication sessions today (commits `c073004` and `2cc7329`):
 
 ### TODO_LIST Status
 
-| Priority | Total | Done | Open |
-|----------|:-----:|:----:|:----:|
-| P0 | 6 | 6 | 0 |
-| P1 | 7 | 7 | 0 |
-| P2 | 5 | 5 | 0 |
-| P3 | 7 | 6 | 1 |
-| P4 | 5 | 3 | 2 |
-| P5 | 5 | 5 | 0 |
-| P6 | 7 | 4 | 3 |
+| Priority  | Total  |  Done  | Open  |
+| --------- | :----: | :----: | :---: |
+| P0        |   6    |   6    |   0   |
+| P1        |   7    |   7    |   0   |
+| P2        |   5    |   5    |   0   |
+| P3        |   7    |   6    |   1   |
+| P4        |   5    |   3    |   2   |
+| P5        |   5    |   5    |   0   |
+| P6        |   7    |   4    |   3   |
 | **Total** | **42** | **36** | **6** |
 
 ---
@@ -151,11 +153,13 @@ Two deduplication sessions today (commits `c073004` and `2cc7329`):
 `go-structure-linter` (part of BuildFlow pre-commit) fails on **every single commit** with 29 "root-package-files" violations. Root cause: the tool assumes root packages are anti-patterns, but for a Go library the root package IS the public API. Every commit requires `--no-verify`, which means **all other pre-commit checks are bypassed** (gofmt, goimports, lint, file sizes, TODO scan, module tidy).
 
 **Impact:**
+
 - Cannot use pre-commit hooks as a safety net
 - Risk of accidentally committing unformatted code, lint violations, or TODOs
 - Developer friction on every commit
 
 **Fix options:**
+
 1. Configure BuildFlow to ignore `go-structure-linter` for this project
 2. Add a `.go-structure-linter.yaml` config that allows root-package files
 3. Remove `go-structure-linter` from BuildFlow config entirely
@@ -193,33 +197,33 @@ v0.6.1 was tagged before dependency versions were bumped, leaving `v0.0.0` pseud
 
 ## f) Top #25 Things We Should Get Done Next
 
-| # | Priority | Item | Effort | Impact |
-|---|----------|------|--------|--------|
-| 1 | P0 | Fix `go-structure-linter` pre-commit hook (configure or remove) | Small | High |
-| 2 | P0 | Update CHANGELOG.md with dedup commits | Small | Medium |
-| 3 | P0 | Update AGENTS.md coverage table (plantuml 97.2%, serialization 91.6%) | Small | Medium |
-| 4 | P1 | Decide on `internal/gentest` vs `testhelpers/gentest` (TODO #20) | Small | Medium |
-| 5 | P1 | Update TODO_LIST.md — mark dedup work as done, update dates | Small | Medium |
-| 6 | P1 | Add `graphtest.NewTestEdge` to AGENTS.md Key Design Patterns | Small | Low |
-| 7 | P1 | Write ADR 007 for graphtest helper extraction | Small | Medium |
-| 8 | P2 | Deduplicate at t=15: investigate 46 clone groups | Large | Low |
-| 9 | P2 | Add benchmarks for remaining 14 formats (only d2/plantuml have them) | Medium | Medium |
-| 10 | P2 | Add fuzz tests for serialization, markup, delimited modules | Medium | Medium |
-| 11 | P3 | Evaluate `go:generate stringer` for Format/Shape enums (TODO #47) | Medium | Low |
-| 12 | P3 | Add `gomod2nix` or alternative for reproducible Nix builds (TODO #49) | Medium | Medium |
-| 13 | P3 | Write v1.0.0 release criteria / roadmap | Small | High |
-| 14 | P3 | Investigate streaming renderer unification across formats | Medium | High |
-| 15 | P4 | Post to r/golang with usage examples (TODO #40) | Small | High |
-| 16 | P4 | Submit to Awesome Go (TODO #40) | Small | Medium |
-| 17 | P4 | Write a blog post about the multi-module architecture | Medium | Medium |
-| 18 | P4 | Add GoDoc examples for d2 D2Column, D2Shape, D2Arrow constants | Small | Medium |
-| 19 | P4 | Verify pkg.go.dev renders all 14 module docs correctly | Small | Low |
-| 20 | P5 | Investigate `go-error-family` adoption (report exists, decision pending) | Small | Low |
-| 21 | P5 | Add error wrapping with `%w` consistently across all modules | Medium | Medium |
-| 22 | P5 | Consider `errors.Join` for multi-error scenarios in renderers | Small | Low |
-| 23 | P5 | Add `io.Writer` benchmarks for streaming renderers | Small | Low |
-| 24 | P6 | Explore Go 1.27+ iterator support for streaming TableData | Medium | Low |
-| 25 | P6 | Consider `slog` integration for debug-level rendering logs | Small | Low |
+| #   | Priority | Item                                                                     | Effort | Impact |
+| --- | -------- | ------------------------------------------------------------------------ | ------ | ------ |
+| 1   | P0       | Fix `go-structure-linter` pre-commit hook (configure or remove)          | Small  | High   |
+| 2   | P0       | Update CHANGELOG.md with dedup commits                                   | Small  | Medium |
+| 3   | P0       | Update AGENTS.md coverage table (plantuml 97.2%, serialization 91.6%)    | Small  | Medium |
+| 4   | P1       | Decide on `internal/gentest` vs `testhelpers/gentest` (TODO #20)         | Small  | Medium |
+| 5   | P1       | Update TODO_LIST.md — mark dedup work as done, update dates              | Small  | Medium |
+| 6   | P1       | Add `graphtest.NewTestEdge` to AGENTS.md Key Design Patterns             | Small  | Low    |
+| 7   | P1       | Write ADR 007 for graphtest helper extraction                            | Small  | Medium |
+| 8   | P2       | Deduplicate at t=15: investigate 46 clone groups                         | Large  | Low    |
+| 9   | P2       | Add benchmarks for remaining 14 formats (only d2/plantuml have them)     | Medium | Medium |
+| 10  | P2       | Add fuzz tests for serialization, markup, delimited modules              | Medium | Medium |
+| 11  | P3       | Evaluate `go:generate stringer` for Format/Shape enums (TODO #47)        | Medium | Low    |
+| 12  | P3       | Add `gomod2nix` or alternative for reproducible Nix builds (TODO #49)    | Medium | Medium |
+| 13  | P3       | Write v1.0.0 release criteria / roadmap                                  | Small  | High   |
+| 14  | P3       | Investigate streaming renderer unification across formats                | Medium | High   |
+| 15  | P4       | Post to r/golang with usage examples (TODO #40)                          | Small  | High   |
+| 16  | P4       | Submit to Awesome Go (TODO #40)                                          | Small  | Medium |
+| 17  | P4       | Write a blog post about the multi-module architecture                    | Medium | Medium |
+| 18  | P4       | Add GoDoc examples for d2 D2Column, D2Shape, D2Arrow constants           | Small  | Medium |
+| 19  | P4       | Verify pkg.go.dev renders all 14 module docs correctly                   | Small  | Low    |
+| 20  | P5       | Investigate `go-error-family` adoption (report exists, decision pending) | Small  | Low    |
+| 21  | P5       | Add error wrapping with `%w` consistently across all modules             | Medium | Medium |
+| 22  | P5       | Consider `errors.Join` for multi-error scenarios in renderers            | Small  | Low    |
+| 23  | P5       | Add `io.Writer` benchmarks for streaming renderers                       | Small  | Low    |
+| 24  | P6       | Explore Go 1.27+ iterator support for streaming TableData                | Medium | Low    |
+| 25  | P6       | Consider `slog` integration for debug-level rendering logs               | Small  | Low    |
 
 ---
 
@@ -230,11 +234,13 @@ v0.6.1 was tagged before dependency versions were bumped, leaving `v0.0.0` pseud
 The project is in excellent shape: 16 formats, 96%+ average test coverage, zero clones at industry standard, stable API (228 frozen symbols), 6 ADRs, comprehensive integration tests. The only remaining TODO items are community (r/golang, Awesome Go), tooling (pre-commit hook, gomod2nix), and nice-to-haves (benchmarks, fuzz tests, stringer).
 
 Arguments for v1.0.0:
+
 - API is frozen and stable (ADR 006)
 - All 42 TODO items are either done or non-blocking
 - Production-quality test coverage and architecture
 
 Arguments against:
+
 - Pre-commit hook is broken (bad DX signal for v1.0)
 - No community feedback yet (no users to validate API decisions)
 - Streaming renderer interface is only implemented for HTML
@@ -245,20 +251,20 @@ This is a product/strategy decision that requires Lars's input.
 
 ## Module Health Dashboard
 
-| Module | Coverage | Clones (t=30) | Build | Lint | Race | Lines |
-|--------|:--------:|:--------------:|:-----:|:----:|:----:|:-----:|
-| output (root) | 96.1% | 0 | Pass | 0 | Pass | ~2,100 |
-| internal/gentest | 96.2% | 0 | Pass | 0 | Pass | ~130 |
-| delimited | 90.2% | 0 | Pass | 0 | Pass | ~350 |
-| serialization | 91.6% | 0 | Pass | 0 | Pass | ~750 |
-| markup | 94.1% | 0 | Pass | 0 | Pass | ~650 |
-| d2 | 100.0% | 0 | Pass | 0 | Pass | ~950 |
-| graph | 96.0% | 0 | Pass | 0 | Pass | ~450 |
-| table | 100.0% | 0 | Pass | 0 | Pass | ~350 |
-| plantuml | 97.2% | 0 | Pass | 0 | Pass | ~200 |
-| enum | 100.0% | 0 | Pass | 0 | Pass | ~100 |
-| escape | 100.0% | 0 | Pass | 0 | Pass | ~80 |
-| testhelpers | 91.3% | 0 | Pass | 0 | Pass | ~200 |
-| integration | 95.5% | 0 | Pass | 0 | Pass | ~1,000 |
+| Module           | Coverage | Clones (t=30) | Build | Lint | Race | Lines  |
+| ---------------- | :------: | :-----------: | :---: | :--: | :--: | :----: |
+| output (root)    |  96.1%   |       0       | Pass  |  0   | Pass | ~2,100 |
+| internal/gentest |  96.2%   |       0       | Pass  |  0   | Pass |  ~130  |
+| delimited        |  90.2%   |       0       | Pass  |  0   | Pass |  ~350  |
+| serialization    |  91.6%   |       0       | Pass  |  0   | Pass |  ~750  |
+| markup           |  94.1%   |       0       | Pass  |  0   | Pass |  ~650  |
+| d2               |  100.0%  |       0       | Pass  |  0   | Pass |  ~950  |
+| graph            |  96.0%   |       0       | Pass  |  0   | Pass |  ~450  |
+| table            |  100.0%  |       0       | Pass  |  0   | Pass |  ~350  |
+| plantuml         |  97.2%   |       0       | Pass  |  0   | Pass |  ~200  |
+| enum             |  100.0%  |       0       | Pass  |  0   | Pass |  ~100  |
+| escape           |  100.0%  |       0       | Pass  |  0   | Pass |  ~80   |
+| testhelpers      |  91.3%   |       0       | Pass  |  0   | Pass |  ~200  |
+| integration      |  95.5%   |       0       | Pass  |  0   | Pass | ~1,000 |
 
 **Overall: 14/14 modules healthy. Zero known bugs. Zero clones at t=30.**

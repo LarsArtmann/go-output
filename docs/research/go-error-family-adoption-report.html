@@ -1,572 +1,856 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PRO/CONTRA: Adopting go-error-family in go-output</title>
-  <style>
-    :root {
-      --bg: #0d1117;
-      --surface: #161b22;
-      --border: #30363d;
-      --text: #e6edf3;
-      --text-muted: #8b949e;
-      --pro: #3fb950;
-      --pro-bg: rgba(63, 185, 80, 0.1);
-      --contra: #f85149;
-      --contra-bg: rgba(248, 81, 73, 0.1);
-      --neutral: #d29922;
-      --neutral-bg: rgba(210, 153, 34, 0.1);
-      --verdict: #58a6ff;
-      --verdict-bg: rgba(88, 166, 255, 0.08);
-    }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
-      padding: 2rem 1rem;
-      max-width: 960px;
-      margin: 0 auto;
-    }
-    h1 { font-size: 1.8rem; margin-bottom: 0.5rem; }
-    h2 { font-size: 1.3rem; margin: 2.5rem 0 1rem; padding-bottom: 0.4rem; border-bottom: 1px solid var(--border); }
-    h3 { font-size: 1.1rem; margin: 1.5rem 0 0.5rem; }
-    .meta { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 2rem; }
-    .verdict-box {
-      background: var(--verdict-bg);
-      border: 1px solid var(--verdict);
-      border-radius: 8px;
-      padding: 1.5rem;
-      margin: 2rem 0;
-    }
-    .verdict-box h3 { color: var(--verdict); margin: 0 0 0.5rem; }
-    .card {
-      border-radius: 8px;
-      padding: 1.2rem 1.5rem;
-      margin: 0.8rem 0;
-      border-left: 4px solid;
-    }
-    .card.pro { background: var(--pro-bg); border-color: var(--pro); }
-    .card.contra { background: var(--contra-bg); border-color: var(--contra); }
-    .card.neutral { background: var(--neutral-bg); border-color: var(--neutral); }
-    .card h4 { margin-bottom: 0.3rem; font-size: 1rem; }
-    .card.pro h4 { color: var(--pro); }
-    .card.contra h4 { color: var(--contra); }
-    .card.neutral h4 { color: var(--neutral); }
-    .card p { color: var(--text-muted); font-size: 0.92rem; }
-    .card .detail { margin-top: 0.5rem; font-size: 0.85rem; color: var(--text); opacity: 0.85; }
-    .impact { display: inline-block; font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; margin-left: 0.5rem; vertical-align: middle; }
-    .impact.high { background: rgba(248, 81, 73, 0.2); color: #f85149; }
-    .impact.medium { background: rgba(210, 153, 34, 0.2); color: #d29922; }
-    .impact.low { background: rgba(63, 185, 80, 0.2); color: #3fb950; }
-    table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
-    th, td { text-align: left; padding: 0.6rem 0.8rem; border-bottom: 1px solid var(--border); }
-    th { color: var(--text-muted); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
-    td { color: var(--text); }
-    code { background: rgba(110, 118, 129, 0.2); padding: 0.15em 0.4em; border-radius: 4px; font-size: 0.88em; }
-    .score-bar { display: flex; gap: 1rem; margin: 1.5rem 0; }
-    .score-item { flex: 1; text-align: center; }
-    .score-item .num { font-size: 2.2rem; font-weight: 700; }
-    .score-item .label { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.3rem; }
-    .score-pro .num { color: var(--pro); }
-    .score-contra .num { color: var(--contra); }
-    .score-neutral .num { color: var(--neutral); }
-    .section-intro { color: var(--text-muted); margin-bottom: 1rem; font-size: 0.92rem; }
-    .tag { display: inline-block; font-size: 0.7rem; padding: 1px 6px; border-radius: 3px; margin-right: 4px; }
-    .tag.arch { background: rgba(88, 166, 255, 0.15); color: #58a6ff; }
-    .tag.deps { background: rgba(210, 153, 34, 0.15); color: #d29922; }
-    .tag.api { background: rgba(188, 140, 255, 0.15); color: #bc8cff; }
-    .tag.perf { background: rgba(255, 166, 87, 0.15); color: #ffa657; }
-    .tag.maint { background: rgba(63, 185, 80, 0.15); color: #3fb950; }
-    .tag.scope { background: rgba(248, 81, 73, 0.15); color: #f85149; }
-    ul { padding-left: 1.5rem; }
-    li { margin: 0.3rem 0; color: var(--text-muted); font-size: 0.92rem; }
-  </style>
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PRO/CONTRA: Adopting go-error-family in go-output</title>
+    <style>
+      :root {
+        --bg: #0d1117;
+        --surface: #161b22;
+        --border: #30363d;
+        --text: #e6edf3;
+        --text-muted: #8b949e;
+        --pro: #3fb950;
+        --pro-bg: rgba(63, 185, 80, 0.1);
+        --contra: #f85149;
+        --contra-bg: rgba(248, 81, 73, 0.1);
+        --neutral: #d29922;
+        --neutral-bg: rgba(210, 153, 34, 0.1);
+        --verdict: #58a6ff;
+        --verdict-bg: rgba(88, 166, 255, 0.08);
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.6;
+        padding: 2rem 1rem;
+        max-width: 960px;
+        margin: 0 auto;
+      }
+      h1 {
+        font-size: 1.8rem;
+        margin-bottom: 0.5rem;
+      }
+      h2 {
+        font-size: 1.3rem;
+        margin: 2.5rem 0 1rem;
+        padding-bottom: 0.4rem;
+        border-bottom: 1px solid var(--border);
+      }
+      h3 {
+        font-size: 1.1rem;
+        margin: 1.5rem 0 0.5rem;
+      }
+      .meta {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        margin-bottom: 2rem;
+      }
+      .verdict-box {
+        background: var(--verdict-bg);
+        border: 1px solid var(--verdict);
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin: 2rem 0;
+      }
+      .verdict-box h3 {
+        color: var(--verdict);
+        margin: 0 0 0.5rem;
+      }
+      .card {
+        border-radius: 8px;
+        padding: 1.2rem 1.5rem;
+        margin: 0.8rem 0;
+        border-left: 4px solid;
+      }
+      .card.pro {
+        background: var(--pro-bg);
+        border-color: var(--pro);
+      }
+      .card.contra {
+        background: var(--contra-bg);
+        border-color: var(--contra);
+      }
+      .card.neutral {
+        background: var(--neutral-bg);
+        border-color: var(--neutral);
+      }
+      .card h4 {
+        margin-bottom: 0.3rem;
+        font-size: 1rem;
+      }
+      .card.pro h4 {
+        color: var(--pro);
+      }
+      .card.contra h4 {
+        color: var(--contra);
+      }
+      .card.neutral h4 {
+        color: var(--neutral);
+      }
+      .card p {
+        color: var(--text-muted);
+        font-size: 0.92rem;
+      }
+      .card .detail {
+        margin-top: 0.5rem;
+        font-size: 0.85rem;
+        color: var(--text);
+        opacity: 0.85;
+      }
+      .impact {
+        display: inline-block;
+        font-size: 0.75rem;
+        padding: 2px 8px;
+        border-radius: 4px;
+        margin-left: 0.5rem;
+        vertical-align: middle;
+      }
+      .impact.high {
+        background: rgba(248, 81, 73, 0.2);
+        color: #f85149;
+      }
+      .impact.medium {
+        background: rgba(210, 153, 34, 0.2);
+        color: #d29922;
+      }
+      .impact.low {
+        background: rgba(63, 185, 80, 0.2);
+        color: #3fb950;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1rem 0;
+        font-size: 0.9rem;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 0.6rem 0.8rem;
+        border-bottom: 1px solid var(--border);
+      }
+      th {
+        color: var(--text-muted);
+        font-weight: 600;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      td {
+        color: var(--text);
+      }
+      code {
+        background: rgba(110, 118, 129, 0.2);
+        padding: 0.15em 0.4em;
+        border-radius: 4px;
+        font-size: 0.88em;
+      }
+      .score-bar {
+        display: flex;
+        gap: 1rem;
+        margin: 1.5rem 0;
+      }
+      .score-item {
+        flex: 1;
+        text-align: center;
+      }
+      .score-item .num {
+        font-size: 2.2rem;
+        font-weight: 700;
+      }
+      .score-item .label {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        margin-top: 0.3rem;
+      }
+      .score-pro .num {
+        color: var(--pro);
+      }
+      .score-contra .num {
+        color: var(--contra);
+      }
+      .score-neutral .num {
+        color: var(--neutral);
+      }
+      .section-intro {
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+        font-size: 0.92rem;
+      }
+      .tag {
+        display: inline-block;
+        font-size: 0.7rem;
+        padding: 1px 6px;
+        border-radius: 3px;
+        margin-right: 4px;
+      }
+      .tag.arch {
+        background: rgba(88, 166, 255, 0.15);
+        color: #58a6ff;
+      }
+      .tag.deps {
+        background: rgba(210, 153, 34, 0.15);
+        color: #d29922;
+      }
+      .tag.api {
+        background: rgba(188, 140, 255, 0.15);
+        color: #bc8cff;
+      }
+      .tag.perf {
+        background: rgba(255, 166, 87, 0.15);
+        color: #ffa657;
+      }
+      .tag.maint {
+        background: rgba(63, 185, 80, 0.15);
+        color: #3fb950;
+      }
+      .tag.scope {
+        background: rgba(248, 81, 73, 0.15);
+        color: #f85149;
+      }
+      ul {
+        padding-left: 1.5rem;
+      }
+      li {
+        margin: 0.3rem 0;
+        color: var(--text-muted);
+        font-size: 0.92rem;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>PRO/CONTRA: Adopting <code>go-error-family</code> in <code>go-output</code></h1>
+    <p class="meta">
+      Research Report &middot; 2026-06-01 &middot; Evaluating
+      <code>github.com/larsartmann/go-error-family v0.3.0</code> for
+      <code>github.com/larsartmann/go-output</code>
+    </p>
 
-<h1>PRO/CONTRA: Adopting <code>go-error-family</code> in <code>go-output</code></h1>
-<p class="meta">
-  Research Report &middot; 2026-06-01 &middot;
-  Evaluating <code>github.com/larsartmann/go-error-family v0.3.0</code> for
-  <code>github.com/larsartmann/go-output</code>
-</p>
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <h2>Executive Summary</h2>
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
 
-<!-- ═══════════════════════════════════════════════════════════════════ -->
-<h2>Executive Summary</h2>
-<!-- ═══════════════════════════════════════════════════════════════════ -->
+    <div class="verdict-box">
+      <h3>Verdict: Do Not Adopt (Yet)</h3>
+      <p style="color: var(--text); margin-bottom: 0.8rem">
+        <strong>go-error-family is an excellent library</strong> for CLI applications and HTTP
+        services that need structured error classification, retry semantics, and CLI exit codes.
+        However, <strong>go-output is a formatting library, not a CLI application</strong>. Its
+        error surface is 89% I/O context wrappers and 11% validation sentinels &mdash; none of which
+        benefit from Family classification, retry hints, or exit codes. Adoption would add
+        complexity without solving a real problem go-output has.
+      </p>
+      <p style="color: var(--text-muted)">
+        <strong>Recommended instead:</strong> Recommend go-error-family to go-output's
+        <em>consumers</em> (CLI apps) via documentation/examples. Consider adopting only if
+        go-output adds CLI boundary features (e.g., an <code>output.Run()</code> entry point with
+        exit codes).
+      </p>
+    </div>
 
-<div class="verdict-box">
-  <h3>Verdict: Do Not Adopt (Yet)</h3>
-  <p style="color:var(--text); margin-bottom: 0.8rem;">
-    <strong>go-error-family is an excellent library</strong> for CLI applications and HTTP services
-    that need structured error classification, retry semantics, and CLI exit codes.
-    However, <strong>go-output is a formatting library, not a CLI application</strong>.
-    Its error surface is 89% I/O context wrappers and 11% validation sentinels &mdash;
-    none of which benefit from Family classification, retry hints, or exit codes.
-    Adoption would add complexity without solving a real problem go-output has.
-  </p>
-  <p style="color:var(--text-muted);">
-    <strong>Recommended instead:</strong> Recommend go-error-family to go-output's <em>consumers</em>
-    (CLI apps) via documentation/examples. Consider adopting only if go-output adds
-    CLI boundary features (e.g., an <code>output.Run()</code> entry point with exit codes).
-  </p>
-</div>
+    <div class="score-bar">
+      <div class="score-item score-pro">
+        <div class="num">3</div>
+        <div class="label">Strong PROs</div>
+      </div>
+      <div class="score-item score-contra">
+        <div class="num">5</div>
+        <div class="label">Strong CONTRAs</div>
+      </div>
+      <div class="score-item score-neutral">
+        <div class="num">3</div>
+        <div class="label">Conditional / Neutral</div>
+      </div>
+    </div>
 
-<div class="score-bar">
-  <div class="score-item score-pro">
-    <div class="num">3</div>
-    <div class="label">Strong PROs</div>
-  </div>
-  <div class="score-item score-contra">
-    <div class="num">5</div>
-    <div class="label">Strong CONTRAs</div>
-  </div>
-  <div class="score-item score-neutral">
-    <div class="num">3</div>
-    <div class="label">Conditional / Neutral</div>
-  </div>
-</div>
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <h2>Context: What go-output's Errors Look Like Today</h2>
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
 
-<!-- ═══════════════════════════════════════════════════════════════════ -->
-<h2>Context: What go-output's Errors Look Like Today</h2>
-<!-- ═══════════════════════════════════════════════════════════════════ -->
+    <p class="section-intro">
+      Before evaluating the library, here is the current error landscape in go-output.
+    </p>
 
-<p class="section-intro">
-  Before evaluating the library, here is the current error landscape in go-output.
-</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Category</th>
+          <th>Count</th>
+          <th>Pattern</th>
+          <th>Consumers</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>I/O context wrappers</td>
+          <td>~74</td>
+          <td><code>fmt.Errorf("write row: %w", err)</code></td>
+          <td>None &mdash; debugging only</td>
+        </tr>
+        <tr>
+          <td>Sentinel-wrapped errors</td>
+          <td>5</td>
+          <td><code>fmt.Errorf("%w: %q", ErrInvalid, val)</code></td>
+          <td>Tests only</td>
+        </tr>
+        <tr>
+          <td>Struct error types</td>
+          <td>6</td>
+          <td><code>&amp;InvalidFormatError{Value: s}</code></td>
+          <td>Tests only</td>
+        </tr>
+        <tr>
+          <td>Retry/classification logic</td>
+          <td>0</td>
+          <td>&mdash;</td>
+          <td>&mdash;</td>
+        </tr>
+        <tr>
+          <td>Exit code handling</td>
+          <td>0</td>
+          <td>&mdash;</td>
+          <td>&mdash;</td>
+        </tr>
+      </tbody>
+    </table>
 
-<table>
-  <thead>
-    <tr><th>Category</th><th>Count</th><th>Pattern</th><th>Consumers</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>I/O context wrappers</td>
-      <td>~74</td>
-      <td><code>fmt.Errorf("write row: %w", err)</code></td>
-      <td>None &mdash; debugging only</td>
-    </tr>
-    <tr>
-      <td>Sentinel-wrapped errors</td>
-      <td>5</td>
-      <td><code>fmt.Errorf("%w: %q", ErrInvalid, val)</code></td>
-      <td>Tests only</td>
-    </tr>
-    <tr>
-      <td>Struct error types</td>
-      <td>6</td>
-      <td><code>&amp;InvalidFormatError{Value: s}</code></td>
-      <td>Tests only</td>
-    </tr>
-    <tr>
-      <td>Retry/classification logic</td>
-      <td>0</td>
-      <td>&mdash;</td>
-      <td>&mdash;</td>
-    </tr>
-    <tr>
-      <td>Exit code handling</td>
-      <td>0</td>
-      <td>&mdash;</td>
-      <td>&mdash;</td>
-    </tr>
-  </tbody>
-</table>
+    <p class="section-intro">
+      <strong>Key insight:</strong> No production caller uses <code>errors.Is</code>,
+      <code>errors.As</code>, or any programmatic error matching against go-output's errors. The
+      entire error surface exists for human-readable debugging output. There are zero retry
+      patterns, zero classification needs, and zero exit code decisions <em>inside</em> the library.
+    </p>
 
-<p class="section-intro">
-  <strong>Key insight:</strong> No production caller uses <code>errors.Is</code>, <code>errors.As</code>,
-  or any programmatic error matching against go-output's errors. The entire error surface exists
-  for human-readable debugging output. There are zero retry patterns, zero classification needs,
-  and zero exit code decisions <em>inside</em> the library.
-</p>
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <h2>PRO Arguments</h2>
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
 
-<!-- ═══════════════════════════════════════════════════════════════════ -->
-<h2>PRO Arguments</h2>
-<!-- ═══════════════════════════════════════════════════════════════════ -->
+    <div class="card pro">
+      <h4>
+        1. Standardized Error Construction <span class="tag arch">Architecture</span>
+        <span class="impact medium">Medium Impact</span>
+      </h4>
+      <p>
+        go-output has 6 custom error types with inconsistent field structures:
+        <code>InvalidFormatError</code> has <code>Allowed []Format</code>;
+        <code>InvalidShapeError</code> only has <code>Value string</code>;
+        <code>UnsupportedFormatError</code> uses a typed <code>Format</code> field. go-error-family
+        would provide a uniform construction pattern via <code>New(family, code, msg)</code>
+        and family-specific shortcuts.
+      </p>
+      <p class="detail">
+        <strong>But:</strong> This benefit is cosmetic. The inconsistency exists because each error
+        type carries domain-specific fields (allowed values, format type). Replacing them with
+        <code>errorfamily.NewRejection("format.invalid", "bad format")</code> would actually
+        <em>lose</em> structured metadata like <code>Allowed []Format</code>.
+      </p>
+    </div>
 
-<div class="card pro">
-  <h4>1. Standardized Error Construction <span class="tag arch">Architecture</span> <span class="impact medium">Medium Impact</span></h4>
-  <p>
-    go-output has 6 custom error types with inconsistent field structures:
-    <code>InvalidFormatError</code> has <code>Allowed []Format</code>;
-    <code>InvalidShapeError</code> only has <code>Value string</code>;
-    <code>UnsupportedFormatError</code> uses a typed <code>Format</code> field.
-    go-error-family would provide a uniform construction pattern via <code>New(family, code, msg)</code>
-    and family-specific shortcuts.
-  </p>
-  <p class="detail">
-    <strong>But:</strong> This benefit is cosmetic. The inconsistency exists because each error type
-    carries domain-specific fields (allowed values, format type). Replacing them with
-    <code>errorfamily.NewRejection("format.invalid", "bad format")</code> would actually
-    <em>lose</em> structured metadata like <code>Allowed []Format</code>.
-  </p>
-</div>
+    <div class="card pro">
+      <h4>
+        2. Better Examples / Developer Experience <span class="tag api">API</span>
+        <span class="impact medium">Medium Impact</span>
+      </h4>
+      <p>
+        The examples/ directory uses <code>os.Exit(1)</code> for all errors. Showing
+        <code>errorfamily.HandleError(err)</code> in examples would demonstrate how to properly
+        handle go-output errors at the CLI boundary with meaningful exit codes. This is the
+        strongest adoption argument: dogfooding a sibling library.
+      </p>
+      <p class="detail">
+        <strong>But:</strong> This can be achieved by adding go-error-family as a dependency in the
+        <code>examples/</code> module only, not in the core library. The examples module already has
+        its own <code>go.mod</code> and is not imported by consumers.
+      </p>
+    </div>
 
-<div class="card pro">
-  <h4>2. Better Examples / Developer Experience <span class="tag api">API</span> <span class="impact medium">Medium Impact</span></h4>
-  <p>
-    The examples/ directory uses <code>os.Exit(1)</code> for all errors.
-    Showing <code>errorfamily.HandleError(err)</code> in examples would demonstrate
-    how to properly handle go-output errors at the CLI boundary with meaningful exit codes.
-    This is the strongest adoption argument: dogfooding a sibling library.
-  </p>
-  <p class="detail">
-    <strong>But:</strong> This can be achieved by adding go-error-family as a dependency
-    in the <code>examples/</code> module only, not in the core library.
-    The examples module already has its own <code>go.mod</code> and is not imported by consumers.
-  </p>
-</div>
+    <div class="card pro">
+      <h4>
+        3. Future-Proofing for CLI Boundary Features <span class="tag scope">Scope</span>
+        <span class="impact low">Low Impact</span>
+      </h4>
+      <p>
+        If go-output ever adds a <code>output.Run()</code> or <code>output.Main()</code> entry point
+        that combines rendering + error handling + exit codes, go-error-family's
+        <code>HandleError()</code> and <code>ExitCode()</code> would be directly useful.
+      </p>
+      <p class="detail">
+        <strong>But:</strong> This is speculative. go-output's stated purpose is "a reusable Go
+        library for CLI applications providing consistent output formatting" &mdash; it formats
+        output, it doesn't run applications. Adding CLI boundary features would be scope creep.
+      </p>
+    </div>
 
-<div class="card pro">
-  <h4>3. Future-Proofing for CLI Boundary Features <span class="tag scope">Scope</span> <span class="impact low">Low Impact</span></h4>
-  <p>
-    If go-output ever adds a <code>output.Run()</code> or <code>output.Main()</code> entry point
-    that combines rendering + error handling + exit codes, go-error-family's
-    <code>HandleError()</code> and <code>ExitCode()</code> would be directly useful.
-  </p>
-  <p class="detail">
-    <strong>But:</strong> This is speculative. go-output's stated purpose is "a reusable Go library
-    for CLI applications providing consistent output formatting" &mdash; it formats output,
-    it doesn't run applications. Adding CLI boundary features would be scope creep.
-  </p>
-</div>
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <h2>CONTRA Arguments</h2>
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
 
-<!-- ═══════════════════════════════════════════════════════════════════ -->
-<h2>CONTRA Arguments</h2>
-<!-- ═══════════════════════════════════════════════════════════════════ -->
+    <div class="card contra">
+      <h4>
+        1. Domain Mismatch: Library vs. Application <span class="tag scope">Scope</span>
+        <span class="impact high">High Impact</span>
+      </h4>
+      <p>
+        go-error-family's core value proposition is
+        <strong>classifying errors into families (Retry, Exit Code, Audience, Tone)</strong>. This
+        classification is meaningful at the <strong>CLI/HTTP boundary</strong> &mdash; where errors
+        leave your program and meet a human.
+      </p>
+      <p class="detail">
+        go-output is a <strong>formatting library</strong>. It sits deep in the call stack. Its
+        errors are "write row failed" and "invalid format". Classifying these as
+        <code>Transient</code> vs <code>Infrastructure</code> is meaningless &mdash; the
+        <em>caller's</em>
+        CLI boundary should make that decision, not the formatting library.
+        <br /><br />
+        <strong>Analogy:</strong> Using go-error-family in go-output is like installing a customer
+        support ticketing system in a printer driver. The printer reports "out of paper". The
+        ticketing system belongs at the help desk, not in the driver.
+      </p>
+    </div>
 
-<div class="card contra">
-  <h4>1. Domain Mismatch: Library vs. Application <span class="tag scope">Scope</span> <span class="impact high">High Impact</span></h4>
-  <p>
-    go-error-family's core value proposition is <strong>classifying errors into families
-    (Retry, Exit Code, Audience, Tone)</strong>. This classification is meaningful at the
-    <strong>CLI/HTTP boundary</strong> &mdash; where errors leave your program and meet a human.
-  </p>
-  <p class="detail">
-    go-output is a <strong>formatting library</strong>. It sits deep in the call stack.
-    Its errors are "write row failed" and "invalid format". Classifying these as
-    <code>Transient</code> vs <code>Infrastructure</code> is meaningless &mdash; the <em>caller's</em>
-    CLI boundary should make that decision, not the formatting library.
-    <br><br>
-    <strong>Analogy:</strong> Using go-error-family in go-output is like installing a
-    customer support ticketing system in a printer driver. The printer reports "out of paper".
-    The ticketing system belongs at the help desk, not in the driver.
-  </p>
-</div>
+    <div class="card contra">
+      <h4>
+        2. Dependency Philosophy Violation <span class="tag deps">Dependencies</span>
+        <span class="impact high">High Impact</span>
+      </h4>
+      <p>go-output's architecture document states:</p>
+      <blockquote
+        style="
+          margin: 0.5rem 0;
+          padding: 0.5rem 1rem;
+          border-left: 3px solid var(--neutral);
+          color: var(--text);
+        "
+      >
+        "Root has ZERO sub-module imports" and "go get github.com/larsartmann/go-output pulls ZERO
+        lipgloss deps, ZERO yaml deps..."
+      </blockquote>
+      <p class="detail">
+        Adding go-error-family to root's <code>go.mod</code> would introduce a new transitive
+        dependency for every consumer. While the library itself is zero-dep, the principle matters:
+        a formatting library should minimize its dependency footprint. <br /><br />
+        If added only to sub-modules (d2/, delimited/), the error types would be inconsistent across
+        modules. If added to root, it's a philosophy violation. There's no clean placement.
+      </p>
+    </div>
 
-<div class="card contra">
-  <h4>2. Dependency Philosophy Violation <span class="tag deps">Dependencies</span> <span class="impact high">High Impact</span></h4>
-  <p>
-    go-output's architecture document states:
-  </p>
-  <blockquote style="margin: 0.5rem 0; padding: 0.5rem 1rem; border-left: 3px solid var(--neutral); color: var(--text);">
-    "Root has ZERO sub-module imports" and
-    "go get github.com/larsartmann/go-output pulls ZERO lipgloss deps, ZERO yaml deps..."
-  </blockquote>
-  <p class="detail">
-    Adding go-error-family to root's <code>go.mod</code> would introduce a new transitive
-    dependency for every consumer. While the library itself is zero-dep, the principle matters:
-    a formatting library should minimize its dependency footprint.
-    <br><br>
-    If added only to sub-modules (d2/, delimited/), the error types would be inconsistent
-    across modules. If added to root, it's a philosophy violation. There's no clean placement.
-  </p>
-</div>
+    <div class="card contra">
+      <h4>
+        3. Semantic Mismatch with 89% of Errors <span class="tag arch">Architecture</span>
+        <span class="impact high">High Impact</span>
+      </h4>
+      <p>74 out of ~83 <code>fmt.Errorf</code> calls are pure I/O context wrappers:</p>
+      <ul>
+        <li><code>"write row: %w"</code></li>
+        <li><code>"flush tsv writer: %w"</code></li>
+        <li><code>"marshal json (%T): %w"</code></li>
+        <li><code>"render markdown: %w"</code></li>
+      </ul>
+      <p class="detail">
+        These are <strong>"what was happening when it failed"</strong> context, not error contracts.
+        Wrapping them with <code>errorfamily.NewTransient("io.write", "write row")</code> would add
+        zero value &mdash; the caller still can't retry a half-written CSV. The underlying
+        <code>io.ErrShortWrite</code> is what matters, and it's already available via
+        <code>%w</code>. <br /><br />
+        <strong>Making these into classified errors would actively hurt readability.</strong>
+        Currently: <code>write row: io: read/write on closed pipe</code>. With adoption:
+        <code>[transient:io.write] write row: io: read/write on closed pipe</code>. No one benefits
+        from the prefix.
+      </p>
+    </div>
 
-<div class="card contra">
-  <h4>3. Semantic Mismatch with 89% of Errors <span class="tag arch">Architecture</span> <span class="impact high">High Impact</span></h4>
-  <p>
-    74 out of ~83 <code>fmt.Errorf</code> calls are pure I/O context wrappers:
-  </p>
-  <ul>
-    <li><code>"write row: %w"</code></li>
-    <li><code>"flush tsv writer: %w"</code></li>
-    <li><code>"marshal json (%T): %w"</code></li>
-    <li><code>"render markdown: %w"</code></li>
-  </ul>
-  <p class="detail">
-    These are <strong>"what was happening when it failed"</strong> context, not error contracts.
-    Wrapping them with <code>errorfamily.NewTransient("io.write", "write row")</code> would add
-    zero value &mdash; the caller still can't retry a half-written CSV. The underlying
-    <code>io.ErrShortWrite</code> is what matters, and it's already available via <code>%w</code>.
-    <br><br>
-    <strong>Making these into classified errors would actively hurt readability.</strong>
-    Currently: <code>write row: io: read/write on closed pipe</code>.
-    With adoption: <code>[transient:io.write] write row: io: read/write on closed pipe</code>.
-    No one benefits from the prefix.
-  </p>
-</div>
+    <div class="card contra">
+      <h4>
+        4. Go 1.26 Floor Requirement <span class="tag api">API</span>
+        <span class="impact medium">Medium Impact</span>
+      </h4>
+      <p>
+        go-error-family requires Go 1.26+ (uses <code>errors.AsType[T]()</code>). go-output also
+        targets Go 1.26+, so there's no conflict today.
+      </p>
+      <p class="detail">
+        <strong>But:</strong> Adopting it couples go-output's Go version floor to go-error-family's
+        floor. If go-error-family moves to Go 1.27 for future features, go-output would be forced to
+        follow. Currently, go-output only couples its floor to its own needs + enum/x/term.
+      </p>
+    </div>
 
-<div class="card contra">
-  <h4>4. Go 1.26 Floor Requirement <span class="tag api">API</span> <span class="impact medium">Medium Impact</span></h4>
-  <p>
-    go-error-family requires Go 1.26+ (uses <code>errors.AsType[T]()</code>).
-    go-output also targets Go 1.26+, so there's no conflict today.
-  </p>
-  <p class="detail">
-    <strong>But:</strong> Adopting it couples go-output's Go version floor to go-error-family's
-    floor. If go-error-family moves to Go 1.27 for future features, go-output would be forced
-    to follow. Currently, go-output only couples its floor to its own needs + enum/x/term.
-  </p>
-</div>
+    <div class="card contra">
+      <h4>
+        5. Lost Structured Metadata <span class="tag api">API</span>
+        <span class="impact medium">Medium Impact</span>
+      </h4>
+      <p>Current error types carry domain-specific structured data:</p>
+      <ul>
+        <li>
+          <code>InvalidFormatError{Value, Allowed []Format}</code> &mdash; consumer can inspect
+          allowed values
+        </li>
+        <li>
+          <code>UnsupportedFormatError{Format}</code> &mdash; consumer can inspect the unsupported
+          format
+        </li>
+        <li>
+          <code>TableData.Validate()</code> returns <code>errColumnMismatch</code> with column
+          counts
+        </li>
+      </ul>
+      <p class="detail">
+        go-error-family's <code>Error</code> struct has <code>Code</code> (string) and
+        <code>Context</code> (map[string]string). To preserve the same metadata, you'd need to stuff
+        everything into <code>WithContext("allowed", "csv, json, ...")</code> &mdash; losing type
+        safety. <code>Allowed []Format</code> becomes <code>"allowed"</code> =&gt;
+        <code>"csv,json"</code>. This is objectively worse for programmatic consumers.
+      </p>
+    </div>
 
-<div class="card contra">
-  <h4>5. Lost Structured Metadata <span class="tag api">API</span> <span class="impact medium">Medium Impact</span></h4>
-  <p>
-    Current error types carry domain-specific structured data:
-  </p>
-  <ul>
-    <li><code>InvalidFormatError{Value, Allowed []Format}</code> &mdash; consumer can inspect allowed values</li>
-    <li><code>UnsupportedFormatError{Format}</code> &mdash; consumer can inspect the unsupported format</li>
-    <li><code>TableData.Validate()</code> returns <code>errColumnMismatch</code> with column counts</li>
-  </ul>
-  <p class="detail">
-    go-error-family's <code>Error</code> struct has <code>Code</code> (string) and
-    <code>Context</code> (map[string]string). To preserve the same metadata, you'd need to
-    stuff everything into <code>WithContext("allowed", "csv, json, ...")</code> &mdash; losing
-    type safety. <code>Allowed []Format</code> becomes <code>"allowed"</code> =&gt; <code>"csv,json"</code>.
-    This is objectively worse for programmatic consumers.
-  </p>
-</div>
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <h2>Conditional / Neutral Arguments</h2>
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
 
-<!-- ═══════════════════════════════════════════════════════════════════ -->
-<h2>Conditional / Neutral Arguments</h2>
-<!-- ═══════════════════════════════════════════════════════════════════ -->
+    <div class="card neutral">
+      <h4>6. Zero External Deps (Library Itself) <span class="tag deps">Dependencies</span></h4>
+      <p>
+        go-error-family has zero external dependencies (pure stdlib). This makes it the lightest
+        possible dependency. No transitive supply chain risk.
+      </p>
+      <p class="detail">
+        Neutral because: zero deps is a necessary condition, not a sufficient one. The question
+        isn't "is it cheap?" but "is it useful?"
+      </p>
+    </div>
 
-<div class="card neutral">
-  <h4>6. Zero External Deps (Library Itself) <span class="tag deps">Dependencies</span></h4>
-  <p>
-    go-error-family has zero external dependencies (pure stdlib). This makes it the
-    lightest possible dependency. No transitive supply chain risk.
-  </p>
-  <p class="detail">
-    Neutral because: zero deps is a necessary condition, not a sufficient one.
-    The question isn't "is it cheap?" but "is it useful?"
-  </p>
-</div>
+    <div class="card neutral">
+      <h4>7. Consistent Error Formatting <span class="tag api">API</span></h4>
+      <p>
+        go-error-family's <code>fmt.Formatter</code> gives <code>%v</code> (compact),
+        <code>%+v</code> (verbose with context/timestamp/chain), <code>%s</code> (message only).
+        This is nicer than go-output's current flat strings.
+      </p>
+      <p class="detail">
+        Neutral because: go-output's errors are rarely formatted beyond <code>%v</code> in examples.
+        The verbose format would be useful at CLI boundaries, but that's the caller's job.
+      </p>
+    </div>
 
-<div class="card neutral">
-  <h4>7. Consistent Error Formatting <span class="tag api">API</span></h4>
-  <p>
-    go-error-family's <code>fmt.Formatter</code> gives <code>%v</code> (compact),
-    <code>%+v</code> (verbose with context/timestamp/chain), <code>%s</code> (message only).
-    This is nicer than go-output's current flat strings.
-  </p>
-  <p class="detail">
-    Neutral because: go-output's errors are rarely formatted beyond <code>%v</code> in
-    examples. The verbose format would be useful at CLI boundaries, but that's the caller's job.
-  </p>
-</div>
+    <div class="card neutral">
+      <h4>8. Same Author / Same Ecosystem <span class="tag maint">Maintenance</span></h4>
+      <p>
+        Both libraries are by the same author (<code>github.com/larsartmann</code>). Cross-module
+        compatibility is guaranteed by design. Breaking changes would be coordinated.
+      </p>
+      <p class="detail">
+        Neutral because: same-author dependency is a double-edged sword. It reduces coordination
+        overhead but creates coupling that may bias architectural decisions.
+      </p>
+    </div>
 
-<div class="card neutral">
-  <h4>8. Same Author / Same Ecosystem <span class="tag maint">Maintenance</span></h4>
-  <p>
-    Both libraries are by the same author (<code>github.com/larsartmann</code>). Cross-module
-    compatibility is guaranteed by design. Breaking changes would be coordinated.
-  </p>
-  <p class="detail">
-    Neutral because: same-author dependency is a double-edged sword. It reduces coordination
-    overhead but creates coupling that may bias architectural decisions.
-  </p>
-</div>
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <h2>Detailed Analysis</h2>
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
 
-<!-- ═══════════════════════════════════════════════════════════════════ -->
-<h2>Detailed Analysis</h2>
-<!-- ═══════════════════════════════════════════════════════════════════ -->
+    <h3>What Would Adoption Actually Look Like?</h3>
 
-<h3>What Would Adoption Actually Look Like?</h3>
+    <p class="section-intro">Three adoption strategies and their tradeoffs:</p>
 
-<p class="section-intro">Three adoption strategies and their tradeoffs:</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Strategy</th>
+          <th>Scope</th>
+          <th>Dep Count Impact</th>
+          <th>Value</th>
+          <th>Risk</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>A) Full adoption</strong><br />Add to root go.mod</td>
+          <td>All 6 error types replaced,<br />~83 fmt.Errorf calls reviewed</td>
+          <td>+1 for all consumers</td>
+          <td>Low &mdash; no one uses the classification</td>
+          <td>High &mdash; lost type-safe metadata</td>
+        </tr>
+        <tr>
+          <td><strong>B) Examples only</strong><br />Add to examples/ go.mod</td>
+          <td>examples/shared/HandleError<br />uses HandleError()</td>
+          <td>Zero for library consumers</td>
+          <td>Medium &mdash; shows best practice</td>
+          <td>Low</td>
+        </tr>
+        <tr>
+          <td>
+            <strong>C) Interface alignment</strong><br />Implement errorfamily interfaces on
+            existing types
+          </td>
+          <td>6 error types gain interface methods</td>
+          <td>+1 for all consumers</td>
+          <td>Low &mdash; no one checks these interfaces</td>
+          <td>Medium &mdash; coupling without benefit</td>
+        </tr>
+      </tbody>
+    </table>
 
-<table>
-  <thead>
-    <tr><th>Strategy</th><th>Scope</th><th>Dep Count Impact</th><th>Value</th><th>Risk</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><strong>A) Full adoption</strong><br>Add to root go.mod</td>
-      <td>All 6 error types replaced,<br>~83 fmt.Errorf calls reviewed</td>
-      <td>+1 for all consumers</td>
-      <td>Low &mdash; no one uses the classification</td>
-      <td>High &mdash; lost type-safe metadata</td>
-    </tr>
-    <tr>
-      <td><strong>B) Examples only</strong><br>Add to examples/ go.mod</td>
-      <td>examples/shared/HandleError<br>uses HandleError()</td>
-      <td>Zero for library consumers</td>
-      <td>Medium &mdash; shows best practice</td>
-      <td>Low</td>
-    </tr>
-    <tr>
-      <td><strong>C) Interface alignment</strong><br>Implement errorfamily interfaces on existing types</td>
-      <td>6 error types gain interface methods</td>
-      <td>+1 for all consumers</td>
-      <td>Low &mdash; no one checks these interfaces</td>
-      <td>Medium &mdash; coupling without benefit</td>
-    </tr>
-  </tbody>
-</table>
+    <h3>Error Family Mapping (If Adopted)</h3>
 
-<h3>Error Family Mapping (If Adopted)</h3>
+    <p class="section-intro">What go-output's errors would map to in go-error-family's taxonomy:</p>
 
-<p class="section-intro">What go-output's errors would map to in go-error-family's taxonomy:</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Current Error</th>
+          <th>Family</th>
+          <th>Makes Sense?</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>InvalidFormatError</code></td>
+          <td><code>Rejection</code></td>
+          <td>Sort of &mdash; bad input from user</td>
+        </tr>
+        <tr>
+          <td><code>UnsupportedFormatError</code></td>
+          <td><code>Rejection</code></td>
+          <td>No &mdash; this is a programming error, not user input</td>
+        </tr>
+        <tr>
+          <td><code>InvalidShapeError</code></td>
+          <td><code>Rejection</code></td>
+          <td>Sort of</td>
+        </tr>
+        <tr>
+          <td><code>ErrInvalidD2Direction</code></td>
+          <td><code>Rejection</code></td>
+          <td>Sort of</td>
+        </tr>
+        <tr>
+          <td><code>errColumnMismatch</code></td>
+          <td><code>Corruption</code></td>
+          <td>Maybe &mdash; data inconsistency</td>
+        </tr>
+        <tr>
+          <td>I/O write failures (~74)</td>
+          <td><code>Transient</code>?</td>
+          <td>No &mdash; can't retry a half-written CSV. It's permanent.</td>
+        </tr>
+        <tr>
+          <td>Encoding failures (~20)</td>
+          <td><code>Corruption</code>?</td>
+          <td>No &mdash; bad input, not data corruption</td>
+        </tr>
+      </tbody>
+    </table>
 
-<table>
-  <thead>
-    <tr><th>Current Error</th><th>Family</th><th>Makes Sense?</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><code>InvalidFormatError</code></td>
-      <td><code>Rejection</code></td>
-      <td>Sort of &mdash; bad input from user</td>
-    </tr>
-    <tr>
-      <td><code>UnsupportedFormatError</code></td>
-      <td><code>Rejection</code></td>
-      <td>No &mdash; this is a programming error, not user input</td>
-    </tr>
-    <tr>
-      <td><code>InvalidShapeError</code></td>
-      <td><code>Rejection</code></td>
-      <td>Sort of</td>
-    </tr>
-    <tr>
-      <td><code>ErrInvalidD2Direction</code></td>
-      <td><code>Rejection</code></td>
-      <td>Sort of</td>
-    </tr>
-    <tr>
-      <td><code>errColumnMismatch</code></td>
-      <td><code>Corruption</code></td>
-      <td>Maybe &mdash; data inconsistency</td>
-    </tr>
-    <tr>
-      <td>I/O write failures (~74)</td>
-      <td><code>Transient</code>?</td>
-      <td>No &mdash; can't retry a half-written CSV. It's permanent.</td>
-    </tr>
-    <tr>
-      <td>Encoding failures (~20)</td>
-      <td><code>Corruption</code>?</td>
-      <td>No &mdash; bad input, not data corruption</td>
-    </tr>
-  </tbody>
-</table>
+    <p class="section-intro">
+      <strong>The mapping is forced and artificial.</strong> Every error maps to
+      <code>Rejection</code> (bad input) or falls into an awkward category. This confirms the domain
+      mismatch: go-output doesn't have errors that naturally fit the five-family taxonomy.
+    </p>
 
-<p class="section-intro">
-  <strong>The mapping is forced and artificial.</strong> Every error maps to
-  <code>Rejection</code> (bad input) or falls into an awkward category.
-  This confirms the domain mismatch: go-output doesn't have errors that naturally
-  fit the five-family taxonomy.
-</p>
+    <h3>go-error-family Quality Assessment</h3>
 
-<h3>go-error-family Quality Assessment</h3>
+    <p class="section-intro">For reference, the library itself is high quality:</p>
 
-<p class="section-intro">For reference, the library itself is high quality:</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Dimension</th>
+          <th>Rating</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Go idioms</td>
+          <td>&#9733;&#9733;&#9733;&#9733;&#9733;</td>
+          <td>Interfaces, errors.Is/As, fmt.Formatter, iota</td>
+        </tr>
+        <tr>
+          <td>API design</td>
+          <td>&#9733;&#9733;&#9733;&#9733;&#9733;</td>
+          <td>Progressive disclosure, small interfaces, extensible</td>
+        </tr>
+        <tr>
+          <td>Test coverage</td>
+          <td>&#9733;&#9733;&#9733;&#9733;&#9733;</td>
+          <td>Unit + fuzz + benchmarks + edge cases</td>
+        </tr>
+        <tr>
+          <td>Thread safety</td>
+          <td>&#9733;&#9733;&#9733;&#9733;&#9734;</td>
+          <td>Mutex-protected registries; builder mutation caveat</td>
+        </tr>
+        <tr>
+          <td>Performance</td>
+          <td>&#9733;&#9733;&#9733;&#9734;&#9734;</td>
+          <td>Map snapshot on every Classify(); maps.Clone on ErrorContext()</td>
+        </tr>
+        <tr>
+          <td>API stability</td>
+          <td>&#9733;&#9733;&#9733;&#9733;&#9734;</td>
+          <td>Clean surface; Go 1.26 floor limits adoption</td>
+        </tr>
+        <tr>
+          <td>Documentation</td>
+          <td>&#9733;&#9733;&#9733;&#9733;&#9733;</td>
+          <td>Every symbol documented with examples</td>
+        </tr>
+      </tbody>
+    </table>
 
-<table>
-  <thead>
-    <tr><th>Dimension</th><th>Rating</th><th>Notes</th></tr>
-  </thead>
-  <tbody>
-    <tr><td>Go idioms</td><td>&#9733;&#9733;&#9733;&#9733;&#9733;</td><td>Interfaces, errors.Is/As, fmt.Formatter, iota</td></tr>
-    <tr><td>API design</td><td>&#9733;&#9733;&#9733;&#9733;&#9733;</td><td>Progressive disclosure, small interfaces, extensible</td></tr>
-    <tr><td>Test coverage</td><td>&#9733;&#9733;&#9733;&#9733;&#9733;</td><td>Unit + fuzz + benchmarks + edge cases</td></tr>
-    <tr><td>Thread safety</td><td>&#9733;&#9733;&#9733;&#9733;&#9734;</td><td>Mutex-protected registries; builder mutation caveat</td></tr>
-    <tr><td>Performance</td><td>&#9733;&#9733;&#9733;&#9734;&#9734;</td><td>Map snapshot on every Classify(); maps.Clone on ErrorContext()</td></tr>
-    <tr><td>API stability</td><td>&#9733;&#9733;&#9733;&#9733;&#9734;</td><td>Clean surface; Go 1.26 floor limits adoption</td></tr>
-    <tr><td>Documentation</td><td>&#9733;&#9733;&#9733;&#9733;&#9733;</td><td>Every symbol documented with examples</td></tr>
-  </tbody>
-</table>
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <h2>Recommendation</h2>
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
 
-<!-- ═══════════════════════════════════════════════════════════════════ -->
-<h2>Recommendation</h2>
-<!-- ═══════════════════════════════════════════════════════════════════ -->
+    <div class="verdict-box">
+      <h3>Do: Strategy B &mdash; Examples Only</h3>
+      <p style="color: var(--text); margin-bottom: 1rem">
+        Add <code>go-error-family</code> as a dependency in the <code>examples/</code> module only.
+        Replace <code>shared.HandleError()</code> with <code>errorfamily.HandleError()</code>. This
+        demonstrates best practices to consumers without polluting the core library.
+      </p>
+      <p style="color: var(--text); margin-bottom: 1rem">
+        <strong>Do not</strong> add it to root or any sub-module's <code>go.mod</code>.
+        <strong>Do not</strong> replace existing error types. <strong>Do not</strong> implement
+        errorfamily interfaces on existing structs.
+      </p>
+      <p style="color: var(--text-muted)">
+        go-error-family belongs at the CLI boundary. go-output is a formatting library. They are
+        complementary but should not be coupled.
+      </p>
+    </div>
 
-<div class="verdict-box">
-  <h3>Do: Strategy B &mdash; Examples Only</h3>
-  <p style="color:var(--text); margin-bottom: 1rem;">
-    Add <code>go-error-family</code> as a dependency in the <code>examples/</code> module only.
-    Replace <code>shared.HandleError()</code> with <code>errorfamily.HandleError()</code>.
-    This demonstrates best practices to consumers without polluting the core library.
-  </p>
-  <p style="color:var(--text); margin-bottom: 1rem;">
-    <strong>Do not</strong> add it to root or any sub-module's <code>go.mod</code>.
-    <strong>Do not</strong> replace existing error types. <strong>Do not</strong> implement
-    errorfamily interfaces on existing structs.
-  </p>
-  <p style="color:var(--text-muted);">
-    go-error-family belongs at the CLI boundary. go-output is a formatting library.
-    They are complementary but should not be coupled.
-  </p>
-</div>
+    <h3>If Not Adopted, What Should Improve?</h3>
 
-<h3>If Not Adopted, What Should Improve?</h3>
+    <p class="section-intro">
+      Legitimate error handling improvements that don't require go-error-family:
+    </p>
 
-<p class="section-intro">Legitimate error handling improvements that don't require go-error-family:</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Current Issue</th>
+          <th>Recommended Fix</th>
+          <th>Effort</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Inconsistent error struct fields</td>
+          <td>Add <code>Allowed []string</code> to all parse errors for consistency</td>
+          <td>Small</td>
+        </tr>
+        <tr>
+          <td>
+            <code>InvalidColorModeError</code> and <code>InvalidGraphShapeError</code> lack allowed
+            values
+          </td>
+          <td>
+            Include allowed values in the error message (like <code>InvalidFormatError</code> does)
+          </td>
+          <td>Small</td>
+        </tr>
+        <tr>
+          <td>d2/ uses sentinels while root uses structs</td>
+          <td>Align d2/ to use struct-based errors like root (or accept the difference)</td>
+          <td>Medium</td>
+        </tr>
+        <tr>
+          <td>Examples use <code>os.Exit(1)</code> for everything</td>
+          <td>Add go-error-family to examples/ module for proper exit codes</td>
+          <td>Small</td>
+        </tr>
+      </tbody>
+    </table>
 
-<table>
-  <thead>
-    <tr><th>Current Issue</th><th>Recommended Fix</th><th>Effort</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Inconsistent error struct fields</td>
-      <td>Add <code>Allowed []string</code> to all parse errors for consistency</td>
-      <td>Small</td>
-    </tr>
-    <tr>
-      <td><code>InvalidColorModeError</code> and <code>InvalidGraphShapeError</code> lack allowed values</td>
-      <td>Include allowed values in the error message (like <code>InvalidFormatError</code> does)</td>
-      <td>Small</td>
-    </tr>
-    <tr>
-      <td>d2/ uses sentinels while root uses structs</td>
-      <td>Align d2/ to use struct-based errors like root (or accept the difference)</td>
-      <td>Medium</td>
-    </tr>
-    <tr>
-      <td>Examples use <code>os.Exit(1)</code> for everything</td>
-      <td>Add go-error-family to examples/ module for proper exit codes</td>
-      <td>Small</td>
-    </tr>
-  </tbody>
-</table>
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <h2>Decision Matrix</h2>
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
 
-<!-- ═══════════════════════════════════════════════════════════════════ -->
-<h2>Decision Matrix</h2>
-<!-- ═══════════════════════════════════════════════════════════════════ -->
+    <table>
+      <thead>
+        <tr>
+          <th>Criterion</th>
+          <th>Weight</th>
+          <th>Full Adopt</th>
+          <th>Examples Only</th>
+          <th>Don't Adopt</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Solves real problem</td>
+          <td>High</td>
+          <td style="color: var(--contra)">&#10007;</td>
+          <td style="color: var(--pro)">&#10003;</td>
+          <td style="color: var(--pro)">&#10003;</td>
+        </tr>
+        <tr>
+          <td>Preserves dependency philosophy</td>
+          <td>High</td>
+          <td style="color: var(--contra)">&#10007;</td>
+          <td style="color: var(--pro)">&#10003;</td>
+          <td style="color: var(--pro)">&#10003;</td>
+        </tr>
+        <tr>
+          <td>Preserves type-safe metadata</td>
+          <td>High</td>
+          <td style="color: var(--contra)">&#10007;</td>
+          <td style="color: var(--pro)">&#10003;</td>
+          <td style="color: var(--pro)">&#10003;</td>
+        </tr>
+        <tr>
+          <td>Improves developer experience</td>
+          <td>Medium</td>
+          <td style="color: var(--neutral)">~</td>
+          <td style="color: var(--pro)">&#10003;</td>
+          <td style="color: var(--contra)">&#10007;</td>
+        </tr>
+        <tr>
+          <td>Reduces code complexity</td>
+          <td>Medium</td>
+          <td style="color: var(--contra)">&#10007;</td>
+          <td style="color: var(--pro)">&#10003;</td>
+          <td style="color: var(--pro)">&#10003;</td>
+        </tr>
+        <tr>
+          <td>Future flexibility</td>
+          <td>Low</td>
+          <td style="color: var(--pro)">&#10003;</td>
+          <td style="color: var(--neutral)">~</td>
+          <td style="color: var(--contra)">&#10007;</td>
+        </tr>
+        <tr>
+          <td><strong>Overall</strong></td>
+          <td></td>
+          <td style="color: var(--contra)"><strong>3/6</strong></td>
+          <td style="color: var(--pro)"><strong>6/6</strong></td>
+          <td style="color: var(--neutral)"><strong>5/6</strong></td>
+        </tr>
+      </tbody>
+    </table>
 
-<table>
-  <thead>
-    <tr><th>Criterion</th><th>Weight</th><th>Full Adopt</th><th>Examples Only</th><th>Don't Adopt</th></tr>
-  </thead>
-  <tbody>
-    <tr><td>Solves real problem</td><td>High</td><td style="color:var(--contra);">&#10007;</td><td style="color:var(--pro);">&#10003;</td><td style="color:var(--pro);">&#10003;</td></tr>
-    <tr><td>Preserves dependency philosophy</td><td>High</td><td style="color:var(--contra);">&#10007;</td><td style="color:var(--pro);">&#10003;</td><td style="color:var(--pro);">&#10003;</td></tr>
-    <tr><td>Preserves type-safe metadata</td><td>High</td><td style="color:var(--contra);">&#10007;</td><td style="color:var(--pro);">&#10003;</td><td style="color:var(--pro);">&#10003;</td></tr>
-    <tr><td>Improves developer experience</td><td>Medium</td><td style="color:var(--neutral);">~</td><td style="color:var(--pro);">&#10003;</td><td style="color:var(--contra);">&#10007;</td></tr>
-    <tr><td>Reduces code complexity</td><td>Medium</td><td style="color:var(--contra);">&#10007;</td><td style="color:var(--pro);">&#10003;</td><td style="color:var(--pro);">&#10003;</td></tr>
-    <tr><td>Future flexibility</td><td>Low</td><td style="color:var(--pro);">&#10003;</td><td style="color:var(--neutral);">~</td><td style="color:var(--contra);">&#10007;</td></tr>
-    <tr>
-      <td><strong>Overall</strong></td>
-      <td></td>
-      <td style="color:var(--contra);"><strong>3/6</strong></td>
-      <td style="color:var(--pro);"><strong>6/6</strong></td>
-      <td style="color:var(--neutral);"><strong>5/6</strong></td>
-    </tr>
-  </tbody>
-</table>
-
-<footer style="margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 0.8rem;">
-  Generated 2026-06-01 &middot;
-  go-output @ <code>master</code> &middot;
-  go-error-family @ <code>v0.3.0</code>
-</footer>
-
-</body>
+    <footer
+      style="
+        margin-top: 3rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border);
+        color: var(--text-muted);
+        font-size: 0.8rem;
+      "
+    >
+      Generated 2026-06-01 &middot; go-output @ <code>master</code> &middot; go-error-family @
+      <code>v0.3.0</code>
+    </footer>
+  </body>
 </html>
