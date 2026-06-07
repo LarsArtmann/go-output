@@ -72,7 +72,7 @@
         in
         {
           treefmt.config = {
-            projectRootFile = "flake.nix";
+            projectRootFile = "go.mod";
 
             programs = {
               nixfmt.enable = true;
@@ -84,6 +84,8 @@
           pre-commit.settings = {
             hooks = {
               treefmt.enable = true;
+
+              checks.format = config.treefmt.build.check self;
             };
           };
 
@@ -110,8 +112,7 @@
               };
 
               GOWORK = "off";
-            };
-          };
+            };          };
 
           apps = {
             test = {
