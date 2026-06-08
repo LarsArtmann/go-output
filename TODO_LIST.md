@@ -1,65 +1,64 @@
 # TODO_LIST.md — go-output
 
 **Last updated:** 2026-06-08
-**Open items:** 14
+**Open items:** 13
 **Blocked:** 1 (needs owner decision)
 
 ---
 
 ## P0 — Bugs & Latent Issues
 
-| # | Task | Effort | Status |
-|---|------|--------|--------|
-| 1 | **Extract `escape.SlugifyID()` and unify all 4 call sites** — `escape.MermaidSlug` (complete), `plantuml.sanitizePlantUMLID` (missing `/`), `graph.dotTreeNodeID` (missing `-`, `/`), `d2.treeNodeID` (missing `-`, `/`). Inconsistent sanitization is a latent bug in DOT/D2 tree node IDs. | 15 min | Open |
-| 2 | **Add race test for `RegisterTableDataMarshaler`** — `sync.RWMutex` in `render_tabledata.go` is untested under concurrent access. Thread safety is assumed but not proven. | 10 min | Open |
-| 3 | **Restore `CODE_OF_CONDUCT.md`** — Auto-deleted by pre-commit in previous session. Must exist for community projects. | 2 min | Open |
+| #   | Task                                                                                                                                                                                                                                                                                         | Effort | Status |
+| --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | ------ |
+| 1   | **Extract `escape.SlugifyID()` and unify all 4 call sites** — `escape.MermaidSlug` (complete), `plantuml.sanitizePlantUMLID` (missing `/`), `graph.dotTreeNodeID` (missing `-`, `/`), `d2.treeNodeID` (missing `-`, `/`). Inconsistent sanitization is a latent bug in DOT/D2 tree node IDs. | 15 min | Open   |
+| 2   | **Add race test for `RegisterTableDataMarshaler`** — `sync.RWMutex` in `render_tabledata.go` is untested under concurrent access. Thread safety is assumed but not proven.                                                                                                                   | 10 min | Open   |
 
 ---
 
 ## P1 — Architecture (Breaking Changes)
 
-| # | Task | Effort | Status |
-|---|------|--------|--------|
-| 4 | **Invert `formatCapabilities` dependency** — Sub-modules should register their own shapes via `init()` instead of hardcoding in `shape.go`. Biggest remaining architectural seam. | 45 min | Open |
-| 5 | **Merge HTMLRenderer/StreamingHTMLRenderer table generation** — Both produce identical HTML table structure via string concatenation. Extract shared writer. | 30 min | Open |
-| 6 | **Use `html/template` for HTML generation** — Replace string concatenation in `markup/html.go` and `markup/streaming.go` with template engine for robust auto-escaping. | 30 min | Open |
-| 7 | **Inline `marshal.go` wrappers into `serialization/`** — `MarshalFormat`, `UnmarshalFormat`, `MarshalJSONIndent` are shallow wrappers. Core shouldn't own marshaling. | 20 min | Open |
+| #   | Task                                                                                                                                                                              | Effort | Status |
+| --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | ------ |
+| 4   | **Invert `formatCapabilities` dependency** — Sub-modules should register their own shapes via `init()` instead of hardcoding in `shape.go`. Biggest remaining architectural seam. | 45 min | Open   |
+| 5   | **Merge HTMLRenderer/StreamingHTMLRenderer table generation** — Both produce identical HTML table structure via string concatenation. Extract shared writer.                      | 30 min | Open   |
+| 6   | **Use `html/template` for HTML generation** — Replace string concatenation in `markup/html.go` and `markup/streaming.go` with template engine for robust auto-escaping.           | 30 min | Open   |
+| 7   | **Inline `marshal.go` wrappers into `serialization/`** — `MarshalFormat`, `UnmarshalFormat`, `MarshalJSONIndent` are shallow wrappers. Core shouldn't own marshaling.             | 20 min | Open   |
 
 ---
 
 ## P2 — Naming Cleanup (Breaking Changes)
 
-| # | Task | Effort | Status |
-|---|------|--------|--------|
-| 8 | **Rename `TableDataBase` → `TableDataStore`** — Current name leaks implementation detail ("Base" implies inheritance pattern). | 15 min | Open |
-| 9 | **Rename `GraphRendererMixin` → `GraphRendererState`** — "Mixin" leaks composition pattern choice to callers. | 15 min | Open |
-| 10 | **Remove `DTO` suffix from serialization types** — `treeNodeDTO`, `graphDTO` etc. are Java-isms. Internal-only, so no external breakage. | 15 min | Open |
+| #   | Task                                                                                                                                     | Effort | Status |
+| --- | ---------------------------------------------------------------------------------------------------------------------------------------- | ------ | ------ |
+| 8   | **Rename `TableDataBase` → `TableDataStore`** — Current name leaks implementation detail ("Base" implies inheritance pattern).           | 15 min | Open   |
+| 9   | **Rename `GraphRendererMixin` → `GraphRendererState`** — "Mixin" leaks composition pattern choice to callers.                            | 15 min | Open   |
+| 10  | **Remove `DTO` suffix from serialization types** — `treeNodeDTO`, `graphDTO` etc. are Java-isms. Internal-only, so no external breakage. | 15 min | Open   |
 
 ---
 
 ## P3 — Build & Config
 
-| # | Task | Effort | Status |
-|---|------|--------|--------|
-| 11 | **Fix pre-commit `--no-verify` requirement** — BuildFlow's `go-structure-linter` reports 29 false-positive "root-package-files" issues. Root package IS the public API for a Go library. Configure BuildFlow to ignore this rule, or accept `--no-verify`. | 15 min | Open |
-| 12 | **Add `gomod2nix` for reproducible Nix builds** — Nix sandbox blocks `go mod download`. Currently Go deps download at build time. | 30 min | Open |
-| 13 | **Investigate `go:generate stringer` for enums** — 7 hand-rolled enum types with identical Parse/IsValid/AllowedValues/String patterns. Code generation could eliminate boilerplate. | 20 min | Open |
+| #   | Task                                                                                                                                                                                                                                                       | Effort | Status |
+| --- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | ------ |
+| 11  | **Fix pre-commit `--no-verify` requirement** — BuildFlow's `go-structure-linter` reports 29 false-positive "root-package-files" issues. Root package IS the public API for a Go library. Configure BuildFlow to ignore this rule, or accept `--no-verify`. | 15 min | Open   |
+| 12  | **Add `gomod2nix` for reproducible Nix builds** — Nix sandbox blocks `go mod download`. Currently Go deps download at build time.                                                                                                                          | 30 min | Open   |
+| 13  | **Investigate `go:generate stringer` for enums** — 7 hand-rolled enum types with identical Parse/IsValid/AllowedValues/String patterns. Code generation could eliminate boilerplate.                                                                       | 20 min | Open   |
 
 ---
 
 ## P4 — Future & Community
 
-| # | Task | Effort | Status |
-|---|------|--------|--------|
-| 14 | **Community: Post to r/golang, submit to Awesome Go** | 30 min | Open |
+| #   | Task                                                  | Effort | Status |
+| --- | ----------------------------------------------------- | ------ | ------ |
+| 14  | **Community: Post to r/golang, submit to Awesome Go** | 30 min | Open   |
 
 ---
 
 ## Blocked — Needs Owner Decision
 
-| # | Question | Why Blocked |
-|---|----------|-------------|
-| 15 | **Should `TableData` use exported fields or getters for v1?** Current: both exist (`Headers` + `GetHeaders()`). Option A: exported fields only (Go-idiomatic, simpler). Option B: unexported fields + getters (controlled, future-proof). Option C: keep both for v0.x, decide at v1. | Affects every consumer. v1 API stability commitment. |
+| #   | Question                                                                                                                                                                                                                                                                              | Why Blocked                                          |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
+| 15  | **Should `TableData` use exported fields or getters for v1?** Current: both exist (`Headers` + `GetHeaders()`). Option A: exported fields only (Go-idiomatic, simpler). Option B: unexported fields + getters (controlled, future-proof). Option C: keep both for v0.x, decide at v1. | Affects every consumer. v1 API stability commitment. |
 
 ---
 
