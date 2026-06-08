@@ -13,7 +13,7 @@ import (
 func TestRenderTableData_NilData(t *testing.T) {
 	t.Parallel()
 
-	err := output.RenderTableData(nil, output.FormatMarkdown)
+	err := output.RenderTableData(nil, output.FormatMarkdown, output.RenderOptions{})
 	if err != nil {
 		t.Errorf("RenderTableData with nil data should return nil, got: %v", err)
 	}
@@ -55,7 +55,7 @@ func TestRenderTableData_UnsupportedFormat(t *testing.T) {
 		t.Run(string(format), func(t *testing.T) {
 			t.Parallel()
 
-			err := output.RenderTableData(data, format)
+			err := output.RenderTableData(data, format, output.RenderOptions{})
 			if err == nil {
 				t.Fatalf("Expected UnsupportedFormatError for %s", format)
 			}

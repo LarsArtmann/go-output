@@ -38,7 +38,7 @@ func testRenderTableData(t *testing.T, format output.Format, name string) {
 	t.Run("nil data returns nil", func(t *testing.T) {
 		t.Parallel()
 
-		err := output.RenderTableData(nil, format)
+		err := output.RenderTableData(nil, format, output.RenderOptions{})
 		if err != nil {
 			t.Fatalf("RenderTableData(nil) error = %v", err)
 		}

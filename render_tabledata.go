@@ -60,9 +60,9 @@ func init() {
 // It supports all registered formats (csv, tsv, markdown, xml, yaml, html, jsonl, toml,
 // asciidoc, tree) when respective sub-modules are imported.
 //
-// D2, Mermaid, DOT, Table, and JSON return UnsupportedFormatError — those require
+// D2, Mermaid, DOT, and Table return UnsupportedFormatError — those require
 // direct constructor calls from their respective sub-modules.
-func RenderTableData(data *TableData, format Format, opts ...RenderOptions) error {
+func RenderTableData(data *TableData, format Format, opts RenderOptions) error {
 	if data == nil {
 		return nil
 	}
@@ -71,18 +71,13 @@ func RenderTableData(data *TableData, format Format, opts ...RenderOptions) erro
 		return fmt.Errorf("render table data: %w", err)
 	}
 
-	var o RenderOptions
-	if len(opts) > 0 {
-		o = opts[0]
-	}
-
-	w := o.Writer
+	w := opts.Writer
 	if w == nil {
 		w = os.Stdout
 	}
 
 	if m, ok := getTableDataMarshaler(format); ok {
-		return m(w, data, o)
+		return m(w, data, opts)
 	}
 
 	return &UnsupportedFormatError{Format: format}
