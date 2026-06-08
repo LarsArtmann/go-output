@@ -10,8 +10,6 @@ github.com/larsartmann/go-output/enum v0.6.3 h1:jNf5+bWPLe0qBaYOCT7I2oViTXN25Cxc
 github.com/larsartmann/go-output/enum v0.6.3/go.mod h1:pNUDybeebo7Lto/hU/rE6901JshdXdzaoMO185Z4hG8=
 github.com/larsartmann/go-output/serialization v0.6.3 h1:hhC5iXKV9WAz4E0FbhyPjCQ3EPjBzkkDYzWeNRmRxRg=
 github.com/larsartmann/go-output/serialization v0.6.3/go.mod h1:zrJPDhwiPZb3Jn2AKavZI+2scsD+bjVEoGXamhIOyTE=
-github.com/larsartmann/go-output/testhelpers v0.6.3 h1:tODs6aN6/0I2VioITVLVy2SnpthUskrqB5lRJBaMEDk=
-github.com/larsartmann/go-output/testhelpers v0.6.3/go.mod h1:HXirIrpJiVpIJ1CaI9MbmOUP26eC4JKApaFqAAe5+s8=
 github.com/pelletier/go-toml/v2 v2.3.1 h1:MYEvvGnQjeNkRF1qUuGolNtNExTDwct51yp7olPtrEc=
 github.com/pelletier/go-toml/v2 v2.3.1/go.mod h1:2gIqNv+qfxSVS7cM2xJQKtLSTLUE9V8t9Stt+h56mCY=
 github.com/segmentio/asm v1.2.1 h1:DTNbBqs57ioxAD4PrArqftgypG4/qNpXoJx8TVXxPR0=
