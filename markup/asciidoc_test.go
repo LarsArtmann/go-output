@@ -152,6 +152,11 @@ func TestEscapeAsciiDoc(t *testing.T) {
 		{"a|b", `a\|b`},
 		{"a|b|c", `a\|b\|c`},
 		{"no pipes", "no pipes"},
+		{"*bold*", `\*bold\*`},
+		{"_italic_", `\_italic\_`},
+		{"`code`", `\` + "`" + `code\` + "`"},
+		{"~sub~", `\~sub\~`},
+		{"^super^", `\^super\^`},
 	}
 
 	for _, tt := range tests {

@@ -142,10 +142,11 @@ func FromTableData(data TableDataProvider, opts ...Option) *Table {
 // footerRow > 0 enables bold footer styling on that row index.
 func (t *Table) buildStyleFunc(footerRow int) func(row, col int) lipgloss.Style {
 	useColor := t.colorMode.ShouldColor()
+	baseStyle := lipgloss.NewStyle().Padding(0, 1)
 
 	return func(row, _ int) lipgloss.Style {
 		if row == table.HeaderRow {
-			style := lipgloss.NewStyle().Padding(0, 1)
+			style := baseStyle
 			if useColor {
 				style = style.Foreground(lipgloss.Color("99")).Bold(true)
 			}
@@ -154,7 +155,7 @@ func (t *Table) buildStyleFunc(footerRow int) func(row, col int) lipgloss.Style 
 		}
 
 		if footerRow > 0 && row == footerRow {
-			style := lipgloss.NewStyle().Padding(0, 1)
+			style := baseStyle
 			if useColor {
 				style = style.Bold(true)
 			}
@@ -167,7 +168,7 @@ func (t *Table) buildStyleFunc(footerRow int) func(row, col int) lipgloss.Style 
 		}
 
 		if row%2 == 0 {
-			style := lipgloss.NewStyle().Padding(0, 1)
+			style := baseStyle
 			if useColor {
 				style = style.Foreground(lipgloss.Color("245"))
 			}
@@ -175,7 +176,7 @@ func (t *Table) buildStyleFunc(footerRow int) func(row, col int) lipgloss.Style 
 			return style
 		}
 
-		return lipgloss.NewStyle().Padding(0, 1)
+		return baseStyle
 	}
 }
 

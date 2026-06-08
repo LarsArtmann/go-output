@@ -191,5 +191,5 @@ func dotTreeNodeID(node *output.TreeNode) string {
 }
 
 func (r *DOTRenderer) addTreeNodes(node *output.TreeNode, parentID output.TreeNodeID) {
-	output.AddTreeNodes(r.NodesPtr(), r.EdgesPtr(), node, parentID.Get(), dotTreeNodeID, "")
+	output.AddTreeNodes(&r.GraphRendererMixin, node, parentID.Get(), dotTreeNodeID, "")
 }

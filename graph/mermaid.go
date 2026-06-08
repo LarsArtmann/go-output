@@ -115,8 +115,7 @@ func mermaidTreeNodeID(node *output.TreeNode) string {
 
 func (r *MermaidRenderer) addTreeNodes(node *output.TreeNode, parentID string) {
 	output.AddTreeNodes(
-		r.NodesPtr(),
-		r.EdgesPtr(),
+		&r.GraphRendererMixin,
 		node,
 		parentID,
 		mermaidTreeNodeID,

@@ -83,9 +83,21 @@ func renderAsciiDocTableData(w io.Writer, data *output.TableData, _ output.Rende
 	return renderMarshalAndWrite(w, data, "asciidoc", MarshalAsciiDocFromTableData)
 }
 
+// asciidocReplacer escapes AsciiDoc special characters: cell delimiter and inline formatting.
+//
+//nolint:gochecknoglobals // Reusable strings.Replacer, safe to share.
+var asciidocReplacer = strings.NewReplacer(
+	"|", "\\|",
+	"*", "\\*",
+	"_", "\\_",
+	"`", "\\`",
+	"~", "\\~",
+	"^", "\\^",
+)
+
 // escapeAsciiDoc escapes special AsciiDoc characters in cell content.
 func escapeAsciiDoc(s string) string {
-	return strings.ReplaceAll(s, "|", "\\|")
+	return asciidocReplacer.Replace(s)
 }
 
 func writeAsciiDocCells(b *strings.Builder, cells []string) {

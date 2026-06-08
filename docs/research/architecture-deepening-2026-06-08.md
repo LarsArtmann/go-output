@@ -10,11 +10,11 @@
 
 The codebase is already well-architected: bounded contexts are respected (root imports no sub-modules), `Renderer` is a strong small interface, and the `TableData` / `TreeNode` / `GraphNode` data models provide real leverage. Most findings are minor deepening opportunities around duplication, leaky seams, and shallow wrappers.
 
-| Strength | Count |
-|----------|-------|
-| Strong candidates | 2 |
-| Worth exploring | 4 |
-| Speculative | 3 |
+| Strength          | Count |
+| ----------------- | ----- |
+| Strong candidates | 2     |
+| Worth exploring   | 4     |
+| Speculative       | 3     |
 
 ---
 

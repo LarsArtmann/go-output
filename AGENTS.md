@@ -4,7 +4,7 @@
 
 A reusable Go library for CLI applications providing consistent output formatting across 16 formats (Table, JSON, CSV, TSV, Markdown, XML, YAML, HTML, Tree, D2, Mermaid, DOT, JSONL, AsciiDoc, TOML, PlantUML) with type-safe enum-based configuration and a Shape capability matrix.
 
-**Updated:** 2026-05-30
+**Updated:** 2026-06-08
 
 ## Location
 
@@ -159,7 +159,7 @@ EOF
 
 | Package       | Coverage | Module |
 | ------------- | -------- | ------ |
-| output (root) | 96.1%    | root   |
+| output (root) | 96.3%    | root   |
 | delimited     | 90.2%    | own    |
 | serialization | 91.4%    | own    |
 | markup        | 93.9%    | own    |
@@ -187,13 +187,15 @@ go test -bench=. -benchmem ./...  # Benchmarks
 2. **Shape capability matrix**: Each format declares supported data shapes via `formatCapabilities` map[Format][]Shape. Use `f.Supports(shape)` to query.
 3. **Branded IDs**: Phantom types prevent mixing D2NodeID/TreeNodeID/etc via `go-branded-id`.
 4. **Interface-based design**: Renderer, GraphRenderer, TableRenderer, TreeOutputRenderer interfaces — all have `Render() (string, error)`. Use `MustRender(r)` for tests/examples.
-5. **Composition**: GraphRendererMixin in graph.go (root) provides shared state for DOT/Mermaid via accessor methods (Nodes/Edges/NodesPtr/EdgesPtr). TableDataBase in tabledata.go shared by delimited, markup, serialization via Data() getter.
+5. **Composition**: GraphRendererMixin in graph.go (root) provides shared state for DOT/Mermaid via AddNode/AddEdge methods. Sub-renderers pass `&r.GraphRendererMixin` to `AddTreeNodes` which uses the `NodeEdgeAppender` interface. TableDataBase in tabledata.go shared by delimited, markup, serialization via Data() getter.
 6. **Registry dispatch**: `RenderTableData()` dispatches to registered `TableDataMarshaler` functions. Sub-modules register via `init()`. Root has ZERO sub-module imports.
 7. **ColorMode wired into renderers**: `ColorMode` (auto/always/never) controls ANSI color output. `table.New(WithColorMode(mode))` for lipgloss tables, `ASCIITreeRenderer.SetColorMode(mode)` for trees, `MarkdownTable.SetColorMode(mode)` for markdown, `RenderOptions.ColorMode` for `RenderTableData()` dispatch.
 8. **Footer row on TableData**: `TableData.Footer []string` provides an optional totals/summary row. Tabular renderers (CSV, TSV, Markdown, HTML, XML, AsciiDoc, Table) render it visually. HTML uses `<tfoot>` with `footer-cell` CSS class, XML uses `<footer>`, Markdown adds a second separator + bold footer (inherits column alignment). The `table.FooterProvider` optional interface enables `table.FromTableData()` to bold-style the footer. `CSVWriter.WriteFooter()` and `TSVWriter.WriteFooter()` provide explicit streaming footer methods. `TableData.Validate()` checks footer column count matches headers. Data formats (JSON, YAML, TOML, JSONL) and non-tabular formats (Tree, Graph) skip the footer.
 9. **Delimited dedup**: `delimited.marshalFromTableData()` is a shared helper used by both `MarshalCSVFromTableData` and `MarshalTSVFromTableData`, eliminating structural duplication via a `tableDataWriter` interface.
 10. **TableRenderer adapter pattern**: Both `MarkdownTable` and `table.Table` use fluent/builder APIs (returning `*Self`) incompatible with the void-returning `TableRenderer` interface. `AsTableRenderer()` adapter methods wrap the builder with void-returning delegates. Pattern: `md.AsTableRenderer()` for MarkdownTable, `tbl.AsTableRenderer()` for table.Table.
 11. **WithFooterStyle option**: `table.WithFooterStyle(func(lipgloss.Style) lipgloss.Style)` provides composable footer styling for lipgloss tables. Receives the base style (with padding) and returns the styled result.
+12. **lipgloss style caching**: `table.buildStyleFunc` pre-allocates the base `lipgloss.NewStyle().Padding(0, 1)` once and reuses it for all rows, eliminating per-row allocations in the hot path.
+13. **NodeEdgeAppender interface**: `AddTreeNodes` accepts `NodeEdgeAppender` (AddNode/AddEdge methods) instead of raw `*[]GraphNode`/`*[]GraphEdge` pointers, providing controlled mutation without exposing internal state.
 
 ## Common Tasks
 
@@ -270,9 +272,11 @@ This ensures `go get github.com/larsartmann/go-output/table@vX.Y.Z` resolves cor
 - D2 has richer types than generic graph (shapes, arrows, SQL tables, classes) — lives in `d2/` module with its own `D2Node`/`D2Edge` types
 - D2 re-exports `D2NodeID`/`D2NodeLabel` from root so users don't need to import both `d2` and `output` for ID construction
 - DOT and Mermaid renderers live in `graph/` module, sharing `GraphRendererMixin` from root via accessor methods
-- Tree conversion has renderer-specific addTreeNodes in d2_convert, graph/dot, graph/mermaid — the generic AddTreeNodes in graph.go handles the common case
+- Tree conversion has renderer-specific addTreeNodes in d2_convert, graph/dot, graph/mermaid — the generic AddTreeNodes in graph.go handles the common case via `NodeEdgeAppender` interface
 - Depguard config restricts imports
 - escape/ uses `html.EscapeString()` from stdlib for HTML, with `strings.ReplaceAll` for XML `&apos;`
+- escape/ uses `strings.NewReplacer` for D2/DOT and MermaidText (single-pass, 1 allocation instead of 4 chained ReplaceAll)
+- markup/asciidoc.go uses `strings.NewReplacer` for AsciiDoc escaping (|, \*, \_, `, ~, ^)
 - sort/ is **removed** — was deprecated, only `ByField` helper remained (zero deps). Use `slices.SortStableFunc` + `cmp.Compare` (stdlib)
 - registry.go **removed** — deprecated renderer registry had zero external callers. Use direct constructors instead.
 - slices.go **removed** — `FilledStrings` was trivially replaced by `slices.Repeat` (stdlib)
@@ -285,7 +289,7 @@ This ensures `go get github.com/larsartmann/go-output/table@vX.Y.Z` resolves cor
 - API stability audit (ADR 006) completed — all exported symbols frozen, capability matrix fixed (D2/Mermaid/DOT/PlantUML now declare ShapeTree, TOML now declares ShapeGraph)
 - Round-trip integration tests in `integration/roundtrip_test.go` verify 16 formats: 8 parseable round-trips (JSON, CSV, TSV, YAML, TOML, JSONL, XML, HTML) + 8 structural verifications (Markdown, Table, Tree, AsciiDoc, D2, Mermaid, DOT, PlantUML)
 - `format.go` split into focused files: `format.go` (Format enum), `shape.go` (Shape + capability matrix), `renderer.go` (Renderer/TableRenderer interfaces) — `format_deprecated.go` deleted
-- `render_tabledata.go` uses registry-based dispatch via `TableDataMarshaler` — sub-modules register in `init()`. Returns `UnsupportedFormatError` for D2/DOT/Mermaid (these live in separate modules)
+- `render_tabledata.go` uses registry-based dispatch via `TableDataMarshaler` — sub-modules register in `init()`. Returns `UnsupportedFormatError` for D2/DOT/Mermaid (these live in separate modules). Signature is `RenderTableData(data *TableData, format Format, opts RenderOptions) error` (non-variadic).
 - `tableDataBase` exported as `TableDataBase` with `Data()` getter — allows sub-modules to access unexported `data` field
 - `marshal.go` exports `MarshalFormat()`, `UnmarshalFormat()`, `MarshalJSONIndent()` — used by both serialization/ and markup/ sub-modules
 - Root format files (CSV, TSV, JSON, YAML, XML, HTML, Streaming) extracted to delimited/, serialization/, markup/ modules respectively

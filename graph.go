@@ -144,9 +144,25 @@ type EdgeStyle struct {
 	ArrowTail string
 }
 
-// AddTreeNodes recursively adds tree nodes and edges to the provided graph slices.
+// AddNode appends a node to the graph.
+func (m *GraphRendererMixin) AddNode(node GraphNode) {
+	m.nodes = append(m.nodes, node)
+}
+
+// AddEdge appends an edge to the graph.
+func (m *GraphRendererMixin) AddEdge(edge GraphEdge) {
+	m.edges = append(m.edges, edge)
+}
+
+// NodeEdgeAppender is implemented by types that can add nodes and edges.
+type NodeEdgeAppender interface {
+	AddNode(node GraphNode)
+	AddEdge(edge GraphEdge)
+}
+
+// AddTreeNodes recursively adds tree nodes and edges to the provided appender.
 func AddTreeNodes(
-	nodes *[]GraphNode, edges *[]GraphEdge,
+	a NodeEdgeAppender,
 	node *TreeNode, parentID string,
 	idFunc TreeNodeIDFunc, shape GraphShape,
 ) {
@@ -155,7 +171,7 @@ func AddTreeNodes(
 	graphNodeLabel := NewBrandedID[GraphNodeLabelBrand](node.Label.Get())
 
 	//nolint:exhaustruct // Uses defaults for optional fields
-	*nodes = append(*nodes, GraphNode{
+	a.AddNode(GraphNode{
 		ID:    graphNodeID,
 		Label: graphNodeLabel,
 		Shape: shape,
@@ -163,14 +179,14 @@ func AddTreeNodes(
 
 	if parentID != "" {
 		//nolint:exhaustruct // Uses defaults for optional fields
-		*edges = append(*edges, GraphEdge{
+		a.AddEdge(GraphEdge{
 			From: NewBrandedID[GraphNodeIDBrand](parentID),
 			To:   graphNodeID,
 		})
 	}
 
 	for _, child := range node.Children {
-		AddTreeNodes(nodes, edges, child, nodeID, idFunc, shape)
+		AddTreeNodes(a, child, nodeID, idFunc, shape)
 	}
 }
 
@@ -210,14 +226,4 @@ func (m *GraphRendererMixin) Nodes() []GraphNode {
 // Edges returns the graph edges.
 func (m *GraphRendererMixin) Edges() []GraphEdge {
 	return m.edges
-}
-
-// NodesPtr returns a pointer to the graph nodes slice for mutation.
-func (m *GraphRendererMixin) NodesPtr() *[]GraphNode {
-	return &m.nodes
-}
-
-// EdgesPtr returns a pointer to the graph edges slice for mutation.
-func (m *GraphRendererMixin) EdgesPtr() *[]GraphEdge {
-	return &m.edges
 }

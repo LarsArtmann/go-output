@@ -17,14 +17,19 @@ func HTML(s string) string {
 	return html.EscapeString(s)
 }
 
+// d2Replacer escapes backslash, double quote, newline, and tab for D2 strings.
+//
+//nolint:gochecknoglobals // Reusable strings.Replacer, safe to share.
+var d2Replacer = strings.NewReplacer(
+	`\`, `\\`,
+	`"`, `\"`,
+	"\n", `\n`,
+	"\t", `\t`,
+)
+
 // D2 escapes special characters for D2 diagram strings.
 func D2(s string) string {
-	s = strings.ReplaceAll(s, `\`, `\\`)
-	s = strings.ReplaceAll(s, `"`, `\"`)
-	s = strings.ReplaceAll(s, "\n", `\n`)
-	s = strings.ReplaceAll(s, "\t", `\t`)
-
-	return s
+	return d2Replacer.Replace(s)
 }
 
 // DOT escapes special characters for DOT/Graphviz strings.
@@ -60,14 +65,19 @@ func MermaidSlug(label string) string {
 	return s
 }
 
+// mermaidTextReplacer escapes brackets, braces, quotes, and newlines for Mermaid labels.
+//
+//nolint:gochecknoglobals // Reusable strings.Replacer, safe to share.
+var mermaidTextReplacer = strings.NewReplacer(
+	`"`, "'",
+	"[", "(",
+	"]", ")",
+	"{", "(",
+	"}", ")",
+	"\n", "<br>",
+)
+
 // MermaidText escapes special characters for Mermaid display labels.
 func MermaidText(s string) string {
-	s = strings.ReplaceAll(s, `"`, "'")
-	s = strings.ReplaceAll(s, "[", "(")
-	s = strings.ReplaceAll(s, "]", ")")
-	s = strings.ReplaceAll(s, "{", "(")
-	s = strings.ReplaceAll(s, "}", ")")
-	s = strings.ReplaceAll(s, "\n", "<br>")
-
-	return s
+	return mermaidTextReplacer.Replace(s)
 }

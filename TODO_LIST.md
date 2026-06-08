@@ -1,6 +1,6 @@
 # TODO_LIST.md — go-output
 
-**Last updated:** 2026-05-28
+**Last updated:** 2026-06-08
 **Source audit:** All `docs/`, `.go`, `.github/`, `.golangci.yml`, `CONTRIBUTING.md`, `README.md`, `CHANGELOG.md`, `go.work.example`
 
 ---
@@ -12,7 +12,7 @@
 | P0        | 6      | 6      | 0        | 0              |
 | P1        | 7      | 7      | 0        | 0              |
 | P2        | 5      | 5      | 0        | 0              |
-| P3        | 7      | 6      | 0        | 1              |
+| P3        | 7      | 7      | 0        | 0              |
 | P4        | 8      | 6      | 2        | 0              |
 | P5        | 5      | 5      | 0        | 0              |
 | P6        | 7      | 4      | 3        | 0              |
@@ -68,11 +68,8 @@
 
 ### Needs Decision (from Lars)
 
-- **20.** Should `internal/gentest` be moved to `testhelpers/gentest`?
-  - Moving it allows d2/graph to share test infrastructure
-  - But exposes internal testing APIs publicly
-  - **Status:** ❓ NEEDS DECISION
-- **21.** Duplicated test helpers in graph/ (depends on #20)
+- **20.** ~~Should `internal/gentest` be moved to `testhelpers/gentest`?~~ DEFERRED — each module inlining helpers allows independent evolution; exposing test APIs publicly would freeze them.
+- **21.** ~~Duplicated test helpers in graph/ (depends on #20)~~ CLOSED — see #20 rationale.
 
 ---
 
@@ -164,3 +161,13 @@
 - ✅ Capability matrix fixed: D2/Mermaid/DOT/PlantUML now declare ShapeTree, TOML now declares ShapeGraph
 - ✅ ADR 006 (API stability) written — all exported symbols frozen
 - ✅ Round-trip integration tests added for all 16 formats
+- ✅ NodesPtr/EdgesPtr removed — GraphRendererMixin now exposes AddNode/AddEdge; AddTreeNodes uses NodeEdgeAppender interface
+- ✅ escape.D2 and escape.MermaidText optimized with strings.NewReplacer (1 allocation instead of 4)
+- ✅ AsciiDoc escaping completed: `|`, `*`, `_`, `` ` ``, `~`, `^` all escaped
+- ✅ lipgloss.NewStyle() cached in table.buildStyleFunc — single allocation for base style
+- ✅ RenderTableData signature changed from variadic to single RenderOptions
+- ✅ JSON registered in RenderTableData dispatch (FormatJSON registry fix)
+- ✅ TableData nil-receiver safety with comprehensive tests
+- ✅ D2 writeClasses sorted for deterministic output
+- ✅ D2ArrowNone added to D2ArrowType values
+- ✅ doc.go files rewritten with real package descriptions

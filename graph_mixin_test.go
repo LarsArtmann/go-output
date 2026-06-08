@@ -81,26 +81,23 @@ func TestAddTreeNodes(t *testing.T) {
 	child := NewTreeNode("child", "Child")
 	root.AddChild(child)
 
-	var nodes []GraphNode
-
-	var edges []GraphEdge
-
+	m := NewGraphRendererMixin()
 	AddTreeNodes(
-		&nodes, &edges, root, "",
+		&m, root, "",
 		func(n *TreeNode) string { return n.ID.Get() },
 		ShapeRect,
 	)
 
-	if len(nodes) != 2 {
-		t.Errorf("nodes count = %d, want 2", len(nodes))
+	if len(m.Nodes()) != 2 {
+		t.Errorf("nodes count = %d, want 2", len(m.Nodes()))
 	}
 
-	if len(edges) != 1 {
-		t.Errorf("edges count = %d, want 1", len(edges))
+	if len(m.Edges()) != 1 {
+		t.Errorf("edges count = %d, want 1", len(m.Edges()))
 	}
 
-	if edges[0].To.Get() != "child" {
-		t.Errorf("edge To = %q, want %q", edges[0].To.Get(), "child")
+	if m.Edges()[0].To.Get() != "child" {
+		t.Errorf("edge To = %q, want %q", m.Edges()[0].To.Get(), "child")
 	}
 }
 
@@ -166,24 +163,22 @@ func TestGraphRendererMixin_SetEdges(t *testing.T) {
 	assertSliceLen(t, "Edges", m.Edges(), 1)
 }
 
-func TestGraphRendererMixin_NodesPtr(t *testing.T) {
+func TestGraphRendererMixin_AddNode(t *testing.T) {
 	t.Parallel()
 
 	m := NewGraphRendererMixin()
+	m.AddNode(GraphNode{ID: NewBrandedID[GraphNodeIDBrand]("a")})
 
-	if m.NodesPtr() == nil {
-		t.Error("NodesPtr() should not be nil")
-	}
+	assertSliceLen(t, "Nodes", m.Nodes(), 1)
 }
 
-func TestGraphRendererMixin_EdgesPtr(t *testing.T) {
+func TestGraphRendererMixin_AddEdge(t *testing.T) {
 	t.Parallel()
 
 	m := NewGraphRendererMixin()
+	m.AddEdge(GraphEdge{From: NewBrandedID[GraphNodeIDBrand]("a"), To: NewBrandedID[GraphNodeIDBrand]("b")})
 
-	if m.EdgesPtr() == nil {
-		t.Error("EdgesPtr() should not be nil")
-	}
+	assertSliceLen(t, "Edges", m.Edges(), 1)
 }
 
 func TestGraphRendererMixin_AddRowEdges(t *testing.T) {

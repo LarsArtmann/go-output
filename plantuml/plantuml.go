@@ -29,13 +29,13 @@ func NewPlantUMLDiagram() *PlantUMLDiagram {
 
 // AddNode adds a node to the diagram.
 func (d *PlantUMLDiagram) AddNode(node output.GraphNode) *PlantUMLDiagram {
-	*d.NodesPtr() = append(*d.NodesPtr(), node)
+	d.GraphRendererMixin.AddNode(node)
 	return d
 }
 
 // AddEdge adds an edge to the diagram.
 func (d *PlantUMLDiagram) AddEdge(edge output.GraphEdge) *PlantUMLDiagram {
-	*d.EdgesPtr() = append(*d.EdgesPtr(), edge)
+	d.GraphRendererMixin.AddEdge(edge)
 	return d
 }
 

@@ -40,38 +40,38 @@
 
 ### Tier 1 — 1% Effort → 51% Impact (Do First)
 
-| # | Task | Files | Effort | Impact | Rationale |
-|---|------|-------|--------|--------|-----------|
-| 1.1 | Add nil-safety tests for `TableData` | `tabledata_test.go` | 10 min | High | Coverage dropped to 94.7%; restore to 96%+ |
-| 1.2 | Add D2 deterministic classes test | `d2/d2_render_test.go` | 10 min | High | Verify writeClasses sort fix works |
-| 1.3 | Add D2ArrowType empty-string parse test | `d2/d2_enum_test.go` | 5 min | High | Verify ParseD2ArrowType("") now returns D2ArrowNone |
-| 1.4 | Add JSON registry integration test | `integration/render_helpers_test.go` + `integration_test.go` | 15 min | High | Verify RenderTableData works with FormatJSON |
-| 1.5 | Add race test for `RegisterTableDataMarshaler` | `render_tabledata_test.go` | 10 min | High | `sync.RWMutex` is untested under concurrency |
-| 1.6 | Fix variadic `RenderOptions` → single value | `render_tabledata.go`, all callers | 15 min | High | Removes misleading API; every caller already passes 0 or 1 arg |
-| 1.7 | Fix garbage `doc.go` files with real content | `integration/doc.go`, `internal/gentest/doc.go`, `testhelpers/graphtest/doc.go` | 10 min | Medium | Replace "provides ..." with actual package descriptions |
+| #   | Task                                           | Files                                                                           | Effort | Impact | Rationale                                                      |
+| --- | ---------------------------------------------- | ------------------------------------------------------------------------------- | ------ | ------ | -------------------------------------------------------------- |
+| 1.1 | Add nil-safety tests for `TableData`           | `tabledata_test.go`                                                             | 10 min | High   | Coverage dropped to 94.7%; restore to 96%+                     |
+| 1.2 | Add D2 deterministic classes test              | `d2/d2_render_test.go`                                                          | 10 min | High   | Verify writeClasses sort fix works                             |
+| 1.3 | Add D2ArrowType empty-string parse test        | `d2/d2_enum_test.go`                                                            | 5 min  | High   | Verify ParseD2ArrowType("") now returns D2ArrowNone            |
+| 1.4 | Add JSON registry integration test             | `integration/render_helpers_test.go` + `integration_test.go`                    | 15 min | High   | Verify RenderTableData works with FormatJSON                   |
+| 1.5 | Add race test for `RegisterTableDataMarshaler` | `render_tabledata_test.go`                                                      | 10 min | High   | `sync.RWMutex` is untested under concurrency                   |
+| 1.6 | Fix variadic `RenderOptions` → single value    | `render_tabledata.go`, all callers                                              | 15 min | High   | Removes misleading API; every caller already passes 0 or 1 arg |
+| 1.7 | Fix garbage `doc.go` files with real content   | `integration/doc.go`, `internal/gentest/doc.go`, `testhelpers/graphtest/doc.go` | 10 min | Medium | Replace "provides ..." with actual package descriptions        |
 
 ### Tier 2 — 4% Effort → 64% Impact (Do Next)
 
-| # | Task | Files | Effort | Impact | Rationale |
-|---|------|-------|--------|--------|-----------|
-| 2.1 | Remove `NodesPtr/EdgesPtr`, replace with `AddNode/AddEdge` | `graph.go`, `graph_mixin_test.go`, callers in graph/ | 20 min | High | Breaks encapsulation; callers use it for mutation |
-| 2.2 | Optimize `escape.D2` with `strings.NewReplacer` | `escape/escape.go` | 5 min | Medium | Single-pass replace, 1 allocation instead of 4 |
-| 2.3 | Optimize `escape.MermaidText` with `strings.NewReplacer` | `escape/escape.go` | 5 min | Medium | Same optimization |
-| 2.4 | Cache `lipgloss.NewStyle()` in `table.buildStyleFunc` | `table/table.go` | 15 min | Medium | Eliminates per-row allocation in hot path |
-| 2.5 | Complete AsciiDoc escaping | `markup/asciidoc.go` | 10 min | Medium | Add `*`, `_`, `` ` ``, `~`, `^` escaping |
-| 2.6 | Extract shared `SlugifyID` helper | New file or `escape/escape.go` | 15 min | Medium | Remove 4 duplications of `ReplaceAll(label, " ", "_")` |
+| #   | Task                                                       | Files                                                | Effort | Impact | Rationale                                              |
+| --- | ---------------------------------------------------------- | ---------------------------------------------------- | ------ | ------ | ------------------------------------------------------ |
+| 2.1 | Remove `NodesPtr/EdgesPtr`, replace with `AddNode/AddEdge` | `graph.go`, `graph_mixin_test.go`, callers in graph/ | 20 min | High   | Breaks encapsulation; callers use it for mutation      |
+| 2.2 | Optimize `escape.D2` with `strings.NewReplacer`            | `escape/escape.go`                                   | 5 min  | Medium | Single-pass replace, 1 allocation instead of 4         |
+| 2.3 | Optimize `escape.MermaidText` with `strings.NewReplacer`   | `escape/escape.go`                                   | 5 min  | Medium | Same optimization                                      |
+| 2.4 | Cache `lipgloss.NewStyle()` in `table.buildStyleFunc`      | `table/table.go`                                     | 15 min | Medium | Eliminates per-row allocation in hot path              |
+| 2.5 | Complete AsciiDoc escaping                                 | `markup/asciidoc.go`                                 | 10 min | Medium | Add `*`, `_`, `` ` ``, `~`, `^` escaping               |
+| 2.6 | Extract shared `SlugifyID` helper                          | New file or `escape/escape.go`                       | 15 min | Medium | Remove 4 duplications of `ReplaceAll(label, " ", "_")` |
 
 ### Tier 3 — 20% Effort → 80% Impact (Do Later)
 
-| # | Task | Files | Effort | Impact | Rationale |
-|---|------|-------|--------|--------|-----------|
-| 3.1 | Rename `TableDataBase` → `TableDataStore` | `tabledata.go`, all sub-modules | 30 min | Low | Name leaks implementation; breaking change |
-| 3.2 | Rename `GraphRendererMixin` → `GraphRendererState` | `graph.go`, all graph renderers | 30 min | Low | Name leaks pattern; breaking change |
-| 3.3 | Remove `DTO` suffix from serialization types | `serialization/*_dto.go` | 20 min | Low | Java-ism in Go code; internal only |
-| 3.4 | Invert `formatCapabilities` dependency | `shape.go`, all sub-modules | 45 min | High | Sub-modules register shapes; cleaner seam |
-| 3.5 | Merge HTMLRenderer/StreamingHTMLRenderer generation | `markup/html.go`, `markup/streaming.go` | 30 min | High | Single source of truth for HTML table structure |
-| 3.6 | Inline `marshal.go` wrappers into `serialization/` | `marshal.go`, `serialization/*.go` | 20 min | Low | Shallow wrappers; core shouldn't own marshaling |
-| 3.7 | Use `html/template` for HTML generation | `markup/html.go`, `markup/streaming.go` | 30 min | Medium | More robust than string concatenation |
+| #   | Task                                                | Files                                   | Effort | Impact | Rationale                                       |
+| --- | --------------------------------------------------- | --------------------------------------- | ------ | ------ | ----------------------------------------------- |
+| 3.1 | Rename `TableDataBase` → `TableDataStore`           | `tabledata.go`, all sub-modules         | 30 min | Low    | Name leaks implementation; breaking change      |
+| 3.2 | Rename `GraphRendererMixin` → `GraphRendererState`  | `graph.go`, all graph renderers         | 30 min | Low    | Name leaks pattern; breaking change             |
+| 3.3 | Remove `DTO` suffix from serialization types        | `serialization/*_dto.go`                | 20 min | Low    | Java-ism in Go code; internal only              |
+| 3.4 | Invert `formatCapabilities` dependency              | `shape.go`, all sub-modules             | 45 min | High   | Sub-modules register shapes; cleaner seam       |
+| 3.5 | Merge HTMLRenderer/StreamingHTMLRenderer generation | `markup/html.go`, `markup/streaming.go` | 30 min | High   | Single source of truth for HTML table structure |
+| 3.6 | Inline `marshal.go` wrappers into `serialization/`  | `marshal.go`, `serialization/*.go`      | 20 min | Low    | Shallow wrappers; core shouldn't own marshaling |
+| 3.7 | Use `html/template` for HTML generation             | `markup/html.go`, `markup/streaming.go` | 30 min | Medium | More robust than string concatenation           |
 
 ---
 
@@ -105,13 +105,13 @@
 
 ## Part 4: Library Opportunities (Well-Established)
 
-| Library | Already Used? | Could Use For | Effort | Impact |
-|---------|---------------|---------------|--------|--------|
-| `strings.NewReplacer` (stdlib) | No | `escape.D2`, `escape.MermaidText`, `escape.MermaidSlug` | 10 min | Medium |
-| `html/template` (stdlib) | No | `markup/html.go`, `markup/streaming.go` | 30 min | Medium |
-| `sort.Strings` (stdlib) | Yes (just added) | `d2/d2_render.go` writeClasses | Done | High |
-| `sync.RWMutex` (stdlib) | Yes | `render_tabledata.go` registry | Already used | — |
-| `github.com/puzpuzpuz/xsync` | No | Lock-free registry map | 20 min | Low (overkill) |
+| Library                        | Already Used?    | Could Use For                                           | Effort       | Impact         |
+| ------------------------------ | ---------------- | ------------------------------------------------------- | ------------ | -------------- |
+| `strings.NewReplacer` (stdlib) | No               | `escape.D2`, `escape.MermaidText`, `escape.MermaidSlug` | 10 min       | Medium         |
+| `html/template` (stdlib)       | No               | `markup/html.go`, `markup/streaming.go`                 | 30 min       | Medium         |
+| `sort.Strings` (stdlib)        | Yes (just added) | `d2/d2_render.go` writeClasses                          | Done         | High           |
+| `sync.RWMutex` (stdlib)        | Yes              | `render_tabledata.go` registry                          | Already used | —              |
+| `github.com/puzpuzpuz/xsync`   | No               | Lock-free registry map                                  | 20 min       | Low (overkill) |
 
 **Verdict:** `strings.NewReplacer` and `html/template` are clear wins. `xsync` is overkill for a write-once-read-many map populated at init().
 
@@ -120,6 +120,7 @@
 ## Part 5: Verification Checklist Per Task
 
 After every task:
+
 - [ ] `go test ./...` passes in affected module(s)
 - [ ] `go test -race ./...` passes in affected module(s)
 - [ ] `golangci-lint run ./...` passes in affected module(s)
@@ -128,6 +129,7 @@ After every task:
 - [ ] `git commit` with detailed message
 
 After all tasks:
+
 - [ ] `nix flake check` passes
 - [ ] `go test -race ./...` passes in all 14 modules
 - [ ] `golangci-lint run ./...` passes in all 14 modules

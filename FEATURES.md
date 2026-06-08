@@ -213,14 +213,14 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 
 ## Testing Infrastructure
 
-| Feature                 | Status           | Notes                                                                                                                                                                                         |
-| ----------------------- | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **testhelpers package** | FULLY_FUNCTIONAL | Zero-dep, publicly importable. `AssertStringSliceEqual()`, `AssertContains()`, `AssertEqual[T]()`, `TestEnumIsValid[T]()`, `TestStructFields()`, `StringField()`, `IntField()`                |
-| **internal/gentest**    | FULLY_FUNCTIONAL | Root-only helpers: `AssertOutputContains()`, `AssertValidJSON()`, `AssertValidYAML()`, `AssertHTMLEscape()`, `AssertMarshalError()`, `ExpectedOutput`                                         |
-| **Fuzz tests**          | FULLY_FUNCTIONAL | `FuzzMarkdownTable` — seed corpus + coverage-guided fuzzing                                                                                                                                    |
+| Feature                 | Status           | Notes                                                                                                                                                                                                                                    |
+| ----------------------- | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **testhelpers package** | FULLY_FUNCTIONAL | Zero-dep, publicly importable. `AssertStringSliceEqual()`, `AssertContains()`, `AssertEqual[T]()`, `TestEnumIsValid[T]()`, `TestStructFields()`, `StringField()`, `IntField()`                                                           |
+| **internal/gentest**    | FULLY_FUNCTIONAL | Root-only helpers: `AssertOutputContains()`, `AssertValidJSON()`, `AssertValidYAML()`, `AssertHTMLEscape()`, `AssertMarshalError()`, `ExpectedOutput`                                                                                    |
+| **Fuzz tests**          | FULLY_FUNCTIONAL | `FuzzMarkdownTable` — seed corpus + coverage-guided fuzzing                                                                                                                                                                              |
 | **Benchmarks**          | FULLY_FUNCTIONAL | `BenchmarkASCIITreeRenderer`, `BenchmarkHTMLRenderer`, `BenchmarkMermaidRenderer`, `BenchmarkDOTRenderer`, `BenchmarkCSVWriter`, `BenchmarkMarkdownTableColored`, `BenchmarkMarkdownTableWithFooter`, `BenchmarkTableDataCreateRowEdges` |
-| **Integration tests**   | FULLY_FUNCTIONAL | Cross-module tests in `integration/` package. Tests all 16 formats, streaming, tree depth, edge creation, large datasets                                                                      |
-| **User journey tests**  | FULLY_FUNCTIONAL | End-to-end tests simulating CLI developer workflows in `userjourney_test.go`                                                                                                                  |
+| **Integration tests**   | FULLY_FUNCTIONAL | Cross-module tests in `integration/` package. Tests all 16 formats, streaming, tree depth, edge creation, large datasets                                                                                                                 |
+| **User journey tests**  | FULLY_FUNCTIONAL | End-to-end tests simulating CLI developer workflows in `userjourney_test.go`                                                                                                                                                             |
 
 ---
 
