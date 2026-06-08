@@ -5,7 +5,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/larsartmann/go-output/internal/gentest"
 	"github.com/larsartmann/go-output/testhelpers"
 )
 
@@ -127,9 +126,9 @@ func TestInvalidFormatErrorWithAllowed(t *testing.T) {
 
 	got := err.Error()
 
-	gentest.AssertOutputContains(t, got, "bogus")
+	testhelpers.AssertOutputContains(t, got, "bogus")
 
-	gentest.AssertOutputContains(t, got, "table")
+	testhelpers.AssertOutputContains(t, got, "table")
 }
 
 func TestMustRender(t *testing.T) {
@@ -140,7 +139,7 @@ func TestMustRender(t *testing.T) {
 	md.AddRow([]string{"test"})
 
 	got := MustRender(md)
-	gentest.AssertOutputContains(t, got, "Name")
+	testhelpers.AssertOutputContains(t, got, "Name")
 }
 
 func TestMustRenderPanics(t *testing.T) {

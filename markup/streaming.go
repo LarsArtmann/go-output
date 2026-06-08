@@ -75,14 +75,21 @@ var htmlTableTemplate = template.Must(template.New("htmlTable").Parse(
 // streamHTMLTable writes a complete HTML table to w using html/template for auto-escaping.
 func streamHTMLTable(w io.Writer, data *output.TableData) error {
 	if data == nil {
-		_, err := w.Write([]byte(`<table class="data-table"></table>`))
+		if _, err := w.Write([]byte(`<table class="data-table"></table>`)); err != nil {
+			return fmt.Errorf("write empty table: %w", err)
+		}
 
-		return err
+		return nil
 	}
 
-	return htmlTableTemplate.Execute(w, htmlTableData{
+	err := htmlTableTemplate.Execute(w, htmlTableData{
 		Headers: data.Headers,
 		Rows:    data.Rows,
 		Footer:  data.Footer,
 	})
+	if err != nil {
+		return fmt.Errorf("execute html table template: %w", err)
+	}
+
+	return nil
 }

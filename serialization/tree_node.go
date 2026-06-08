@@ -1,11 +1,13 @@
 package serialization
 
-import "github.com/larsartmann/go-output"
+import (
+	"github.com/larsartmann/go-output"
+)
 
 type treeNode struct {
 	ID       string            `json:"id"                 toml:"id"                 yaml:"id"`
 	Label    string            `json:"label"              toml:"label"              yaml:"label"`
-	Children []treeNode     `json:"children,omitempty" toml:"children,omitempty" yaml:"children,omitempty"`
+	Children []treeNode        `json:"children,omitempty" toml:"children,omitempty" yaml:"children,omitempty"`
 	Metadata map[string]string `json:"metadata,omitempty" toml:"metadata,omitempty" yaml:"metadata,omitempty"`
 }
 

@@ -179,6 +179,8 @@ type fullHTMLData struct {
 func renderFullHTMLDocument(title, styles, content string) (string, error) {
 	var b strings.Builder
 
+	// #nosec G203 — Content is already-rendered HTML from the table/tree renderer.
+	// The template auto-escapes Title and Styles; Content is trusted HTML output.
 	err := fullHTMLTemplate.Execute(&b, fullHTMLData{
 		Title:   title,
 		Styles:  styles,

@@ -3,12 +3,11 @@ package output
 import (
 	"testing"
 
-	"github.com/larsartmann/go-output/internal/gentest"
 	"github.com/larsartmann/go-output/testhelpers"
 )
 
 // Re-export generic helpers for use by package output tests.
-type ExpectedOutput = gentest.ExpectedOutput
+type ExpectedOutput = testhelpers.ExpectedOutput
 
 //nolint:gochecknoglobals // Re-exported test helpers for package-local use
 var assertContains = testhelpers.AssertContains

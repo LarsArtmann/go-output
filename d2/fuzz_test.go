@@ -78,11 +78,7 @@ func FuzzGraphNodeRoundTrip(f *testing.F) {
 			return
 		}
 
-		node := output.GraphNode{
-			ID:    output.NewBrandedID[output.GraphNodeIDBrand](id),
-			Label: output.NewBrandedID[output.GraphNodeLabelBrand](label),
-			Shape: shape,
-		}
+		node := graphtest.NewTestNodeWithShape(id, label, shape)
 
 		d := NewD2Diagram()
 		d.SetNodes([]output.GraphNode{node})

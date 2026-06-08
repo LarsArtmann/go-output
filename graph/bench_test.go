@@ -9,10 +9,7 @@ import (
 func generateBenchmarkNodes(n int) []output.GraphNode {
 	nodes := make([]output.GraphNode, n)
 	for i := range nodes {
-		nodes[i] = output.GraphNode{
-			ID:    output.NewBrandedID[output.GraphNodeIDBrand]("node"),
-			Label: output.NewBrandedID[output.GraphNodeLabelBrand]("Node"),
-		}
+		nodes[i] = newTestNode("node", "Node")
 	}
 
 	return nodes
