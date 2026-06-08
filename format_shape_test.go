@@ -1,6 +1,8 @@
 package output
 
 import (
+	"strconv"
+	"sync"
 	"testing"
 
 	"github.com/larsartmann/go-output/testhelpers"
@@ -104,4 +106,29 @@ func TestShapeString(t *testing.T) {
 	if ShapeGraph.String() != "graph" {
 		t.Errorf("ShapeGraph.String() = %q, want %q", ShapeGraph.String(), "graph")
 	}
+}
+
+func TestRegisterFormatShapes_ConcurrentAccess(t *testing.T) {
+	t.Parallel()
+
+	const goroutines = 100
+
+	var wg sync.WaitGroup
+	wg.Add(goroutines * 2)
+
+	for i := range goroutines {
+		go func() {
+			defer wg.Done()
+
+			RegisterFormatShapes(Format("race-test-"+strconv.Itoa(i)), ShapeTable)
+		}()
+
+		go func() {
+			defer wg.Done()
+
+			_, _ = getFormatShapes(Format("race-test-" + strconv.Itoa(i)))
+		}()
+	}
+
+	wg.Wait()
 }
