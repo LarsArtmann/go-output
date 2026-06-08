@@ -264,7 +264,7 @@ func TestD2ClassesDeterministic(t *testing.T) {
 	betaIdx := findSubstrIndex(got1, "beta:")
 	zebraIdx := findSubstrIndex(got1, "zebra:")
 
-	if !(alphaIdx < betaIdx && betaIdx < zebraIdx) {
+	if alphaIdx >= betaIdx || betaIdx >= zebraIdx {
 		t.Errorf("classes not sorted alphabetically: alpha@%d beta@%d zebra@%d", alphaIdx, betaIdx, zebraIdx)
 	}
 }
