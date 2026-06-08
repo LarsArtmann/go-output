@@ -1,8 +1,9 @@
 # Status Report: Post-Deduplication & Consolidation
 
 **Date:** 2026-06-08 21:55 CEST
+**Updated:** 2026-06-08 22:02 CEST
 **Reporter:** Crush (AI Engineering Partner)
-**Commit:** `fa6ac0d`
+**Commit:** `ca097a9`
 **Branch:** master
 
 ---
@@ -17,7 +18,19 @@ Since the architecture & naming sprint (10:26 CEST), the only change is this sta
 
 ## a) FULLY DONE ✅
 
-### 1. Deduplication Sprint — `internal/gentest` Deletion
+### 1. Post-Report Improvements (Done After 21:55)
+
+After writing this status report, 3 improvement items from the deep-dive analysis were implemented:
+
+| # | Task | Commit | Why |
+|---|------|--------|-----|
+| 1 | Race test for `RegisterFormatShapes` | `86eebac` | `RegisterTableDataMarshaler` had a race test; `RegisterFormatShapes` (identical RWMutex+map pattern) did not. Documents thread-safety contract. |
+| 2 | Nil row validation in `TableData.Validate()` | `34570b1` | Nil rows in `[][]string` are almost certainly bugs and could cause panics in downstream renderers. Catches them at validation time with clear error messages including the row index. |
+| 3 | AGENTS.md documentation update | `6f6114f` | The `RegisterFormatShapes` registry pattern was implemented but undocumented. Updated Key Design Patterns and "Adding a New Output Format" task. Removed stale `internal/gentest` reference. |
+
+**Impact:** +40 lines, -3 lines. Zero breaking changes. All quality gates still pass.
+
+### 2. Deduplication Sprint — `internal/gentest` Deletion
 
 **Status:** COMPLETE (committed in `5d1e344`)
 **Impact:** -313 lines, -1 package, eliminated 2 clone groups
@@ -148,7 +161,7 @@ Options remain: A) Create `.buildflow.yml`, B) Accept recommendations, C) Contin
 | testhelpers/graphtest | — | — | — | Helper pkg |
 | examples | ✅ | ✅ | — | Usage demos |
 
-**Total:** 14 modules, 149 Go files, 86 test files, ~19,794 LOC
+**Total:** 14 modules, 149 Go files, 86 test files, ~19,831 LOC (+37 lines from improvements)
 
 ---
 
