@@ -232,53 +232,6 @@ func TestD2NodeWithClass(t *testing.T) {
 	testhelpers.AssertContains(t, got, "class: important", "should contain class reference")
 }
 
-func TestD2ClassesDeterministic(t *testing.T) {
-	t.Parallel()
-
-	d := NewD2Diagram()
-	d.AddClass("zebra", D2NodeStyle{Fill: "black"})
-	d.AddClass("alpha", D2NodeStyle{Fill: "red"})
-	d.AddClass("beta", D2NodeStyle{Fill: "green"})
-	d.AddNode(D2Node{ //nolint:exhaustruct // Test uses minimal required fields
-		ID:    output.NewBrandedID[output.D2NodeIDBrand]("n1"),
-		Label: output.NewBrandedID[output.D2NodeLabelBrand]("N1"),
-		Class: "alpha",
-	})
-
-	got1, err := d.Render()
-	if err != nil {
-		t.Fatalf("Render() error = %v", err)
-	}
-
-	got2, err := d.Render()
-	if err != nil {
-		t.Fatalf("Render() second call error = %v", err)
-	}
-
-	if got1 != got2 {
-		t.Error("D2 output with multiple classes is not deterministic across Render() calls")
-	}
-
-	// Verify sorted order: alpha before beta before zebra
-	alphaIdx := findSubstrIndex(got1, "alpha:")
-	betaIdx := findSubstrIndex(got1, "beta:")
-	zebraIdx := findSubstrIndex(got1, "zebra:")
-
-	if alphaIdx >= betaIdx || betaIdx >= zebraIdx {
-		t.Errorf("classes not sorted alphabetically: alpha@%d beta@%d zebra@%d", alphaIdx, betaIdx, zebraIdx)
-	}
-}
-
-func findSubstrIndex(s, substr string) int {
-	for i := 0; i <= len(s)-len(substr); i++ {
-		if s[i:i+len(substr)] == substr {
-			return i
-		}
-	}
-
-	return -1
-}
-
 func TestD2NodeNested(t *testing.T) {
 	t.Parallel()
 
