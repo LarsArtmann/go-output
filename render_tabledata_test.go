@@ -265,3 +265,5 @@ func TestRenderTableData_ValidateRejectsFooterMismatch(t *testing.T) {
 		t.Errorf("error should mention footer column count, got: %v", err)
 	}
 }
+
+

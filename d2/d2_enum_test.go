@@ -122,6 +122,19 @@ func TestParseD2ArrowType(t *testing.T) {
 			t.Error("empty arrow type should be valid (means no arrow)")
 		}
 	})
+
+	t.Run("parse empty arrow returns none", func(t *testing.T) {
+		t.Parallel()
+
+		got, err := ParseD2ArrowType("")
+		if err != nil {
+			t.Errorf("ParseD2ArrowType(\"\") unexpected error: %v", err)
+		}
+
+		if got != D2ArrowNone {
+			t.Errorf("ParseD2ArrowType(\"\") = %q, want %q", got, D2ArrowNone)
+		}
+	})
 }
 
 func TestD2ArrowTypeValidation(t *testing.T) {

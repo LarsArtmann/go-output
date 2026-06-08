@@ -199,6 +199,39 @@ func testTableDataFooter(t *testing.T) {
 	})
 }
 
+func TestTableDataNilMethods(t *testing.T) {
+	t.Parallel()
+
+	var data *TableData
+
+	if got := data.RowCount(); got != 0 {
+		t.Errorf("RowCount() on nil = %d, want 0", got)
+	}
+
+	if got := data.ColCount(); got != 0 {
+		t.Errorf("ColCount() on nil = %d, want 0", got)
+	}
+
+	if got := data.GetHeaders(); got != nil {
+		t.Errorf("GetHeaders() on nil = %v, want nil", got)
+	}
+
+	if got := data.GetRows(); got != nil {
+		t.Errorf("GetRows() on nil = %v, want nil", got)
+	}
+
+	if got := data.GetFooter(); got != nil {
+		t.Errorf("GetFooter() on nil = %v, want nil", got)
+	}
+
+	if data.HasFooter() {
+		t.Error("HasFooter() on nil = true, want false")
+	}
+
+	// SetFooter on nil should not panic
+	data.SetFooter([]string{"a", "b"})
+}
+
 func TestTableDataValidate(t *testing.T) {
 	t.Parallel()
 
