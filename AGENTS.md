@@ -80,7 +80,6 @@ go-output/                    # Root module (package output) — core types, Mar
 ├── marshal.go                # MarshalJSONIndent (MarshalFormat/UnmarshalFormat removed — inlined into sub-modules)
 ├── render_tabledata.go       # Registry-based TableData dispatch with ColorMode in RenderOptions
 ├── streaming.go              # StreamingRenderer interface + adapter
-├── internal/gentest/         # Generic test helpers (root module only, not importable by sub-modules)
 │
 ├── delimited/                # MODULE: CSV + TSV writers and formatters
 ├── serialization/            # MODULE: JSON + YAML + TOML + JSONL marshaling and renderers
@@ -184,7 +183,7 @@ go test -bench=. -benchmem ./...  # Benchmarks
 ## Key Design Patterns
 
 1. **Type-safe enums**: String constants with Parse/Validate via `enum` package. Every enum has `Parse()`, `String()`, `IsValid()`, `AllowedValues()`.
-2. **Shape capability matrix**: Each format declares supported data shapes via `formatCapabilities` map[Format][]Shape. Use `f.Supports(shape)` to query.
+2. **Shape capability matrix**: Each format declares supported data shapes via `RegisterFormatShapes(format, shapes...)` in `init()`. Root registers defaults; sub-modules override. Query with `f.Supports(shape)` or `FormatsForShape(shape)`.
 3. **Branded IDs**: Phantom types prevent mixing D2NodeID/TreeNodeID/etc via `go-branded-id`.
 4. **Interface-based design**: Renderer, GraphRenderer, TableRenderer, TreeOutputRenderer interfaces — all have `Render() (string, error)`. Use `MustRender(r)` for tests/examples.
 5. **Composition**: GraphRendererState in graph.go (root) provides shared state for DOT/Mermaid via AddNode/AddEdge methods. Sub-renderers pass `&r.GraphRendererState` to `AddTreeNodes` which uses the `NodeEdgeAppender` interface. TableDataStore in tabledata.go shared by delimited, markup, serialization via Data() getter.
@@ -202,7 +201,7 @@ go test -bench=. -benchmem ./...  # Benchmarks
 ### Adding a New Output Format
 
 1. Add format constant to `format.go`
-2. Add to `formatCapabilities` map with supported shapes
+2. Call `RegisterFormatShapes(FormatNew, ShapeTable, ...)` in your sub-module's `init()`
 3. Implement formatter — embed Renderer interface
 4. Add tests with >90% coverage
 5. Update CHANGELOG.md and README.md
