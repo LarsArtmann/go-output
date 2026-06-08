@@ -300,3 +300,25 @@ func assertColorMode(
 		}
 	})
 }
+
+func TestRenderTableData_JSON(t *testing.T) {
+	t.Parallel()
+
+	data := output.NewTableData([]string{"Name", "Value"})
+	data.AddRow([]string{"Alpha", "100"})
+
+	var buf bytes.Buffer
+
+	err := output.RenderTableData(data, output.FormatJSON, output.RenderOptions{Writer: &buf})
+	if err != nil {
+		t.Fatalf("RenderTableData JSON: %v", err)
+	}
+
+	out := buf.String()
+	if out == "" {
+		t.Fatal("JSON output should not be empty")
+	}
+
+	testhelpers.AssertContains(t, out, "Alpha", "JSON should contain row data")
+	testhelpers.AssertContains(t, out, "Name", "JSON should contain header key")
+}
