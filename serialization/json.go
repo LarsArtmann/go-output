@@ -13,6 +13,11 @@ var (
 	_ output.TableRenderer = (*JSONTableRenderer)(nil)
 )
 
+//nolint:gochecknoinits // Registers JSON TableData marshaler for registry-based dispatch.
+func init() {
+	output.RegisterTableDataMarshaler(output.FormatJSON, renderJSONTableData)
+}
+
 // MarshalJSON encodes v to JSON.
 func MarshalJSON(v any) ([]byte, error) {
 	return output.MarshalFormat("json", json.Marshal, v)
@@ -61,4 +66,8 @@ func (r *JSONTableRenderer) Render() (string, error) {
 	return renderTable(r.Data(), "[]", "json", func(v any) ([]byte, error) {
 		return json.MarshalIndent(v, "", "  ")
 	})
+}
+
+func renderJSONTableData(w io.Writer, data *output.TableData, _ output.RenderOptions) error {
+	return renderViaRenderer(w, data, NewJSONTableRenderer(), "json")
 }

@@ -1,0 +1,235 @@
+direction: down
+
+# Ideal core layer: types and interfaces only
+core: {
+  label: Ideal Core Layer
+  style.fill: "#e3f2fd"
+  style.stroke: "#1976d2"
+
+  root: {
+    label: |go
+      root (package output)
+      Domain types + interfaces ONLY
+      Format, Shape, TableData,
+      Renderer, ColorMode, IDs
+      ~1,500 LOC target
+    |
+    shape: rectangle
+  }
+
+  enum: {
+    label: |go
+      enum/
+      Generic enum utilities
+    |
+    shape: rectangle
+  }
+
+  testhelpers: {
+    label: |go
+      testhelpers/
+      Shared test assertions
+    |
+    shape: rectangle
+  }
+
+  graphtest: {
+    label: |go
+      testhelpers/graphtest
+      Graph test fixtures
+    |
+    shape: rectangle
+  }
+}
+
+# Formatter layer: all implementations live here
+formatters: {
+  label: Formatter Layer (All Implementations)
+  style.fill: "#f3e5f5"
+  style.stroke: "#7b1fa2"
+
+  delimited: {
+    label: |go
+      delimited/
+      CSV + TSV writers
+    |
+    shape: rectangle
+  }
+
+  serialization: {
+    label: |go
+      serialization/
+      JSON + YAML + TOML + JSONL
+      (was partially in root)
+    |
+    shape: rectangle
+  }
+
+  markup: {
+    label: |go
+      markup/
+      XML + HTML + AsciiDoc
+      Streaming HTML
+      Markdown tables (was in root)
+    |
+    shape: rectangle
+  }
+
+  tree: {
+    label: |go
+      tree/
+      ASCII tree renderer
+      (was in root)
+    |
+    shape: rectangle
+  }
+
+  table: {
+    label: |go
+      table/
+      Lipgloss terminal tables
+    |
+    shape: rectangle
+  }
+
+  d2: {
+    label: |go
+      d2/
+      D2 diagram renderer
+    |
+    shape: rectangle
+  }
+
+  graph: {
+    label: |go
+      graph/
+      DOT + Mermaid renderers
+      Graph base types (was in root)
+    |
+    shape: rectangle
+  }
+
+  plantuml: {
+    label: |go
+      plantuml/
+      PlantUML renderer
+    |
+    shape: rectangle
+  }
+
+  escape: {
+    label: |go
+      escape/
+      Format-specific escaping
+      (merged into markup? or kept)
+    |
+    shape: rectangle
+  }
+}
+
+# Integration layer
+integration: {
+  label: Integration Layer
+  style.fill: "#e8f5e9"
+  style.stroke: "#388e3c"
+
+  integration_mod: {
+    label: |go
+      integration/
+      Cross-module tests
+    |
+    shape: rectangle
+  }
+
+  examples: {
+    label: |go
+      examples/
+      Usage examples
+    |
+    shape: rectangle
+  }
+}
+
+# External dependencies
+external: {
+  label: External Deps
+  style.fill: "#fff3e0"
+  style.stroke: "#f57c00"
+
+  lipgloss: {
+    label: charm.sh/lipgloss/v2
+    shape: circle
+  }
+  yaml: {
+    label: go-faster/yaml
+    shape: circle
+  }
+  toml: {
+    label: pelletier/go-toml/v2
+    shape: circle
+  }
+  term: {
+    label: golang.org/x/term
+    shape: circle
+  }
+  branded: {
+    label: go-branded-id
+    shape: circle
+  }
+}
+
+# Core relationships
+root -> enum: uses
+root -> testhelpers: tests only
+
+# Formatter -> Core (all depend on root only)
+delimited -> root: imports
+serialization -> root: imports
+markup -> root: imports
+tree -> root: imports
+table -> root: imports
+d2 -> root: imports
+graph -> root: imports
+plantuml -> root: imports
+escape -> root: imports
+
+# Cross-formatter dependencies (minimal)
+markup -> escape: imports
+graph -> escape: imports
+d2 -> escape: imports
+d2 -> enum: imports
+
+# External
+table -> lipgloss: imports
+serialization -> yaml: imports
+serialization -> toml: imports
+root -> term: imports
+root -> branded: imports
+
+# Integration
+integration_mod -> root: imports
+integration_mod -> delimited: imports
+integration_mod -> serialization: imports
+integration_mod -> markup: imports
+integration_mod -> tree: imports
+integration_mod -> table: imports
+integration_mod -> d2: imports
+integration_mod -> graph: imports
+integration_mod -> plantuml: imports
+examples -> root: imports
+examples -> delimited: imports
+examples -> serialization: imports
+examples -> markup: imports
+examples -> tree: imports
+examples -> table: imports
+examples -> d2: imports
+examples -> graph: imports
+examples -> plantuml: imports
+
+# Test fixtures
+d2 -> graphtest: tests only
+graph -> graphtest: tests only
+plantuml -> graphtest: tests only
+serialization -> graphtest: tests only
+integration_mod -> graphtest: tests only
+graphtest -> root: imports

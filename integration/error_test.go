@@ -49,7 +49,6 @@ func TestRenderTableData_UnsupportedFormat(t *testing.T) {
 		output.FormatDOT,
 		output.FormatMermaid,
 		output.FormatTable,
-		output.FormatJSON,
 	}
 
 	for _, format := range unsupportedFormats {

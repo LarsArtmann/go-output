@@ -13,10 +13,10 @@
 | P1        | 7      | 7      | 0        | 0              |
 | P2        | 5      | 5      | 0        | 0              |
 | P3        | 7      | 6      | 0        | 1              |
-| P4        | 5      | 3      | 2        | 0              |
+| P4        | 8      | 6      | 2        | 0              |
 | P5        | 5      | 5      | 0        | 0              |
 | P6        | 7      | 4      | 3        | 0              |
-| **Total** | **42** | **36** | **5**    | **1**          |
+| **Total** | **45** | **39** | **5**    | **1**          |
 
 ---
 
@@ -79,7 +79,10 @@
 ## P4: Build & Config Hygiene — 3 Done, 2 Open
 
 - ✅ **23.** depguard includes d2/graph in all 3 rules
-- ✅ **25.** `go mod tidy` verified idempotent across all 9 modules
+- ✅ **25.** `go mod tidy` verified idempotent across all 13 modules
+- ✅ **51.** Add missing `replace` directives for `testhelpers` in `delimited/go.mod` and `markup/go.mod` — fixes standalone builds without `go.work`
+- ✅ **52.** Fix `flake.nix` checks configuration (`checks.format` was nested inside `pre-commit.settings.hooks`) — `nix flake check` now passes
+- ✅ **53.** Add `testhelpers/graphtest` to CI workflow module loops (build, test, tidy, govulncheck)
 - ✅ **44.** ~~Stage untracked status report~~ DONE — status report committed in previous sprint
 
 ### Open

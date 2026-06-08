@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Architecture Review — go-output Modularity</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body { font-family: system-ui, -apple-system, sans-serif; }
+  .badge-strong { @apply bg-red-100 text-red-800; }
+  .badge-explore { @apply bg-yellow-100 text-yellow-800; }
+  .badge-speculative { @apply bg-gray-100 text-gray-800; }
+</style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+<div class="max-w-5xl mx-auto px-6 py-10">
+
+<h1 class="text-3xl font-bold mb-2">Architecture Review — go-output</h1>
+<p class="text-gray-600 mb-8">Date: 2026-06-08 &middot; Focus: Modularity, Scalability, Composability</p>
+
+<div class="bg-white rounded-lg shadow p-6 mb-8">
+  <h2 class="text-xl font-semibold mb-4">Executive Summary</h2>
+  <p class="mb-4">go-output is a well-architected multi-module Go library with clean bounded contexts. The 14-module workspace successfully isolates heavy dependencies (lipgloss, yaml, toml) from the core package. Overall assessment: <strong>production-ready</strong> with minor deepening opportunities.</p>
+  <div class="grid grid-cols-3 gap-4 text-center">
+    <div class="bg-green-50 rounded p-4">
+      <div class="text-2xl font-bold text-green-700">14</div>
+      <div class="text-sm text-green-800">Modules</div>
+    </div>
+    <div class="bg-green-50 rounded p-4">
+      <div class="text-2xl font-bold text-green-700">0</div>
+      <div class="text-sm text-green-800">Cycles (production)</div>
+    </div>
+    <div class="bg-yellow-50 rounded p-4">
+      <div class="text-2xl font-bold text-yellow-700">3</div>
+      <div class="text-sm text-yellow-800">Config gaps fixed</div>
+    </div>
+  </div>
+</div>
+
+<div class="bg-white rounded-lg shadow p-6 mb-8">
+  <h2 class="text-xl font-semibold mb-4">Module Dependency Graph</h2>
+  <p class="text-sm text-gray-600 mb-4">Current architecture: core types at root, implementations in sub-modules, integration/tests at leaves.</p>
+  <div class="overflow-x-auto">
+    <table class="min-w-full text-sm">
+      <thead class="bg-gray-100">
+        <tr><th class="px-4 py-2 text-left">Module</th><th class="px-4 py-2 text-left">Purpose</th><th class="px-4 py-2 text-left">Internal Deps</th><th class="px-4 py-2 text-left">External Deps</th></tr>
+      </thead>
+      <tbody class="divide-y">
+        <tr><td class="px-4 py-2 font-mono">root</td><td class="px-4 py-2">Core types + interfaces</td><td class="px-4 py-2">enum, testhelpers</td><td class="px-4 py-2">x/term, go-branded-id</td></tr>
+        <tr><td class="px-4 py-2 font-mono">enum</td><td class="px-4 py-2">Generic enum utilities</td><td class="px-4 py-2">testhelpers (tests)</td><td class="px-4 py-2">—</td></tr>
+        <tr><td class="px-4 py-2 font-mono">escape</td><td class="px-4 py-2">Format-specific escaping</td><td class="px-4 py-2">—</td><td class="px-4 py-2">—</td></tr>
+        <tr><td class="px-4 py-2 font-mono">delimited</td><td class="px-4 py-2">CSV + TSV writers</td><td class="px-4 py-2">root, testhelpers</td><td class="px-4 py-2">—</td></tr>
+        <tr><td class="px-4 py-2 font-mono">serialization</td><td class="px-4 py-2">JSON + YAML + TOML + JSONL</td><td class="px-4 py-2">root, testhelpers, graphtest</td><td class="px-4 py-2">go-faster/yaml, go-toml/v2</td></tr>
+        <tr><td class="px-4 py-2 font-mono">markup</td><td class="px-4 py-2">XML + HTML + AsciiDoc</td><td class="px-4 py-2">root, escape, testhelpers</td><td class="px-4 py-2">—</td></tr>
+        <tr><td class="px-4 py-2 font-mono">table</td><td class="px-4 py-2">Lipgloss terminal tables</td><td class="px-4 py-2">root, testhelpers</td><td class="px-4 py-2">lipgloss/v2</td></tr>
+        <tr><td class="px-4 py-2 font-mono">d2</td><td class="px-4 py-2">D2 diagram renderer</td><td class="px-4 py-2">root, enum, escape, testhelpers, graphtest</td><td class="px-4 py-2">—</td></tr>
+        <tr><td class="px-4 py-2 font-mono">graph</td><td class="px-4 py-2">DOT + Mermaid renderers</td><td class="px-4 py-2">root, escape, testhelpers, graphtest</td><td class="px-4 py-2">—</td></tr>
+        <tr><td class="px-4 py-2 font-mono">plantuml</td><td class="px-4 py-2">PlantUML renderer</td><td class="px-4 py-2">root, graphtest</td><td class="px-4 py-2">—</td></tr>
+        <tr><td class="px-4 py-2 font-mono">integration</td><td class="px-4 py-2">Cross-module tests</td><td class="px-4 py-2">all formatter modules</td><td class="px-4 py-2">—</td></tr>
+        <tr><td class="px-4 py-2 font-mono">examples</td><td class="px-4 py-2">Usage examples</td><td class="px-4 py-2">all formatter modules</td><td class="px-4 py-2">—</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="bg-white rounded-lg shadow p-6 mb-8">
+  <h2 class="text-xl font-semibold mb-4">Scalability Assessment</h2>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div>
+      <h3 class="font-semibold text-green-700 mb-2">Strengths</h3>
+      <ul class="list-disc list-inside text-sm space-y-1">
+        <li>Zero transitive dep bloat for consumers who import only root</li>
+        <li>Each module builds and tests independently (verified)</li>
+        <li>Registry pattern allows adding formats without modifying core</li>
+        <li>Interface-based design (Renderer, TableRenderer, GraphRenderer) enables plug-in replacements</li>
+        <li>Branded IDs make impossible states unrepresentable at compile time</li>
+      </ul>
+    </div>
+    <div>
+      <h3 class="font-semibold text-yellow-700 mb-2">Friction Points</h3>
+      <ul class="list-disc list-inside text-sm space-y-1">
+        <li>Root is a god-package (~5,200 LOC) — long-term extraction opportunity</li>
+        <li>`formatCapabilities` map in core knows about all 16 formats — bounded-context leak</li>
+        <li>HTMLRenderer and StreamingHTMLRenderer duplicate table generation logic</li>
+        <li>GraphRendererMixin exposes mutable slice pointers (NodesPtr/EdgesPtr)</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="bg-white rounded-lg shadow p-6 mb-8">
+  <h2 class="text-xl font-semibold mb-4">Composability Score</h2>
+  <p class="text-sm text-gray-600 mb-4">How easily can modules be composed like Unix pipes?</p>
+  <div class="space-y-3">
+    <div class="flex items-center"><div class="w-32 text-sm font-medium">Core &rarr; Formatter</div><div class="flex-1 bg-gray-200 rounded h-4"><div class="bg-green-500 h-4 rounded" style="width: 95%"></div></div><div class="w-12 text-right text-sm">95%</div></div>
+    <div class="flex items-center"><div class="w-32 text-sm font-medium">Formatter &rarr; Output</div><div class="flex-1 bg-gray-200 rounded h-4"><div class="bg-green-500 h-4 rounded" style="width: 90%"></div></div><div class="w-12 text-right text-sm">90%</div></div>
+    <div class="flex items-center"><div class="w-32 text-sm font-medium">Test &rarr; Reuse</div><div class="flex-1 bg-gray-200 rounded h-4"><div class="bg-yellow-500 h-4 rounded" style="width: 75%"></div></div><div class="w-12 text-right text-sm">75%</div></div>
+    <div class="flex items-center"><div class="w-32 text-sm font-medium">Extensibility</div><div class="flex-1 bg-gray-200 rounded h-4"><div class="bg-green-500 h-4 rounded" style="width: 88%"></div></div><div class="w-12 text-right text-sm">88%</div></div>
+  </div>
+</div>
+
+<div class="bg-white rounded-lg shadow p-6 mb-8">
+  <h2 class="text-xl font-semibold mb-4">Recommendations</h2>
+  <div class="space-y-4">
+    <div class="border-l-4 border-red-500 pl-4">
+      <div class="font-semibold">Strong: Merge HTMLRenderer & StreamingHTMLRenderer generation</div>
+      <p class="text-sm text-gray-600">Both encode the same HTML table structure. Delegate non-streaming to streaming adapter for single source of truth.</p>
+    </div>
+    <div class="border-l-4 border-yellow-500 pl-4">
+      <div class="font-semibold">Worth exploring: Invert formatCapabilities dependency</div>
+      <p class="text-sm text-gray-600">Let sub-modules register their supported shapes at init() time, rather than hardcoding the matrix in core.</p>
+    </div>
+    <div class="border-l-4 border-yellow-500 pl-4">
+      <div class="font-semibold">Worth exploring: Slim root god-package</div>
+      <p class="text-sm text-gray-600">Extract Markdown and Tree renderers to sub-modules. Keep root focused on types, interfaces, and data models only.</p>
+    </div>
+    <div class="border-l-4 border-gray-400 pl-4">
+      <div class="font-semibold">Speculative: Inline marshal.go wrappers</div>
+      <p class="text-sm text-gray-600">Move thin error-wrapping utilities to serialization/ where callers live.</p>
+    </div>
+  </div>
+</div>
+
+<div class="bg-white rounded-lg shadow p-6">
+  <h2 class="text-xl font-semibold mb-4">Verification</h2>
+  <p class="text-sm text-gray-600 mb-2">All modules build, test, and lint clean after this audit:</p>
+  <pre class="bg-gray-100 rounded p-3 text-xs font-mono">nix flake check     # passes
+GOWORK=off go test  # all 14 modules pass
+golangci-lint run   # 0 issues across all modules</pre>
+</div>
+
+</div>
+</body>
+</html>

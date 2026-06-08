@@ -217,8 +217,8 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 | ----------------------- | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **testhelpers package** | FULLY_FUNCTIONAL | Zero-dep, publicly importable. `AssertStringSliceEqual()`, `AssertContains()`, `AssertEqual[T]()`, `TestEnumIsValid[T]()`, `TestStructFields()`, `StringField()`, `IntField()`                |
 | **internal/gentest**    | FULLY_FUNCTIONAL | Root-only helpers: `AssertOutputContains()`, `AssertValidJSON()`, `AssertValidYAML()`, `AssertHTMLEscape()`, `AssertMarshalError()`, `ExpectedOutput`                                         |
-| **Fuzz tests**          | FULLY_FUNCTIONAL | `FuzzCSVWriter`, `FuzzMarkdownTable` — seed corpus + coverage-guided fuzzing                                                                                                                  |
-| **Benchmarks**          | FULLY_FUNCTIONAL | `BenchmarkASCIITreeRenderer`, `BenchmarkHTMLRenderer`, `BenchmarkMermaidRenderer`, `BenchmarkDOTRenderer`, `BenchmarkCSVWriter`, `BenchmarkMarkdownTable`, `BenchmarkTableDataCreateRowEdges` |
+| **Fuzz tests**          | FULLY_FUNCTIONAL | `FuzzMarkdownTable` — seed corpus + coverage-guided fuzzing                                                                                                                                    |
+| **Benchmarks**          | FULLY_FUNCTIONAL | `BenchmarkASCIITreeRenderer`, `BenchmarkHTMLRenderer`, `BenchmarkMermaidRenderer`, `BenchmarkDOTRenderer`, `BenchmarkCSVWriter`, `BenchmarkMarkdownTableColored`, `BenchmarkMarkdownTableWithFooter`, `BenchmarkTableDataCreateRowEdges` |
 | **Integration tests**   | FULLY_FUNCTIONAL | Cross-module tests in `integration/` package. Tests all 16 formats, streaming, tree depth, edge creation, large datasets                                                                      |
 | **User journey tests**  | FULLY_FUNCTIONAL | End-to-end tests simulating CLI developer workflows in `userjourney_test.go`                                                                                                                  |
 
@@ -235,6 +235,12 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 | **table/**                         | FULLY_FUNCTIONAL | Lipgloss terminal tables. Isolated from root module            |
 | **integration/**                   | FULLY_FUNCTIONAL | Cross-module integration tests                                 |
 | **examples/**                      | FULLY_FUNCTIONAL | Working examples demonstrating all 16 formats                  |
+| **delimited/**                     | FULLY_FUNCTIONAL | CSV/TSV writers and marshalers. Isolated from root module      |
+| **d2/**                            | FULLY_FUNCTIONAL | D2 diagram builder. Isolated from root module                  |
+| **graph/**                         | FULLY_FUNCTIONAL | DOT and Mermaid renderers. Isolated from root module           |
+| **markup/**                        | FULLY_FUNCTIONAL | HTML, XML, AsciiDoc renderers. Isolated from root module       |
+| **plantuml/**                      | FULLY_FUNCTIONAL | PlantUML diagram renderer. Isolated from root module           |
+| **serialization/**                 | FULLY_FUNCTIONAL | JSON, YAML, TOML, JSONL renderers. Isolated from root module   |
 | **go.work**                        | FULLY_FUNCTIONAL | Gitignored. `go.work.example` provided for local development   |
 
 ---
@@ -281,8 +287,8 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 
 ---
 
-**Last audited:** 2026-05-28
-**Total features:** 117
-**Fully functional:** 108
+**Last audited:** 2026-06-08
+**Total features:** 138
+**Fully functional:** 129
 **Removed:** 9 (FormatCategory, OutputFormat, SortBy, FilledStrings, Register, Create, Unregister, RegisteredFormats, IsRegistered)
 **Known issues:** 0

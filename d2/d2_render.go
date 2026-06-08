@@ -2,6 +2,7 @@ package d2
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 
 	"github.com/larsartmann/go-output"
@@ -164,11 +165,18 @@ func (d *D2Diagram) writeConfig(b *strings.Builder) {
 func (d *D2Diagram) writeClasses(b *strings.Builder) {
 	b.WriteString("classes: {\n")
 
-	for name, style := range d.classes {
+	names := make([]string, 0, len(d.classes))
+	for name := range d.classes {
+		names = append(names, name)
+	}
+
+	sort.Strings(names)
+
+	for _, name := range names {
 		b.WriteString("  ")
 		b.WriteString(escape.D2(name))
 		b.WriteString(": {\n")
-		d.writeStyleAttrs(b, style, "    ")
+		d.writeStyleAttrs(b, d.classes[name], "    ")
 		b.WriteString("  }\n")
 	}
 

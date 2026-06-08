@@ -105,7 +105,7 @@ func TestRenderTableData_UnsupportedFormats(t *testing.T) {
 
 	data := testTableData()
 
-	for _, f := range []Format{FormatTable, FormatJSON, FormatD2, FormatMermaid, FormatDOT} {
+	for _, f := range []Format{FormatTable, FormatD2, FormatMermaid, FormatDOT} {
 		var buf bytes.Buffer
 
 		err := RenderTableData(data, f, RenderOptions{Writer: &buf})

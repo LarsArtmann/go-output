@@ -154,6 +154,7 @@ const (
 
 //nolint:gochecknoglobals // Global variable used for value iteration.
 var d2ArrowTypeValues = []D2ArrowType{
+	D2ArrowNone,
 	D2ArrowArrow,
 	D2ArrowTriangle,
 	D2ArrowDiamond,

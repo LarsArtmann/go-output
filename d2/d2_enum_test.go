@@ -132,7 +132,7 @@ func TestD2ArrowTypeValidation(t *testing.T) {
 	}
 
 	values := D2ArrowArrow.AllowedValues()
-	assertAllowedValueCount(t, values, 11)
+	assertAllowedValueCount(t, values, 12)
 }
 
 func TestParseD2Direction(t *testing.T) {

@@ -14,4 +14,7 @@ require (
 	golang.org/x/term v0.43.0 // indirect
 )
 
-replace github.com/larsartmann/go-output => ../
+replace (
+	github.com/larsartmann/go-output => ../
+	github.com/larsartmann/go-output/testhelpers => ../testhelpers
+)

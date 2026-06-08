@@ -84,10 +84,10 @@
           pre-commit.settings = {
             hooks = {
               treefmt.enable = true;
-
-              checks.format = config.treefmt.build.check self;
             };
           };
+
+          checks.format = config.treefmt.build.check inputs.self;
 
           devShells = {
             default = pkgs.mkShellNoCC {
@@ -112,7 +112,8 @@
               };
 
               GOWORK = "off";
-            };          };
+            };
+          };
 
           apps = {
             test = {

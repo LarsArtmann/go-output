@@ -19,4 +19,5 @@ replace (
 	github.com/larsartmann/go-output => ../
 	github.com/larsartmann/go-output/delimited => ../delimited
 	github.com/larsartmann/go-output/escape => ../escape
+	github.com/larsartmann/go-output/testhelpers => ../testhelpers
 )

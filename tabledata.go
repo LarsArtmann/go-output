@@ -34,46 +34,78 @@ func (d *TableData) AddRow(row []string) {
 
 // RowCount returns the number of data rows.
 func (d *TableData) RowCount() int {
+	if d == nil {
+		return 0
+	}
+
 	return len(d.Rows)
 }
 
 // ColCount returns the number of columns (based on headers).
 func (d *TableData) ColCount() int {
+	if d == nil {
+		return 0
+	}
+
 	return len(d.Headers)
 }
 
 // GetHeaders returns the column headers.
 // Satisfies the table.TableDataProvider interface.
 func (d *TableData) GetHeaders() []string {
+	if d == nil {
+		return nil
+	}
+
 	return d.Headers
 }
 
 // GetRows returns the data rows.
 // Satisfies the table.TableDataProvider interface.
 func (d *TableData) GetRows() [][]string {
+	if d == nil {
+		return nil
+	}
+
 	return d.Rows
 }
 
 // GetFooter returns the footer row, or nil if none is set.
 // Satisfies the table.FooterProvider optional interface.
 func (d *TableData) GetFooter() []string {
+	if d == nil {
+		return nil
+	}
+
 	return d.Footer
 }
 
 // HasFooter returns true if a footer row is present.
 func (d *TableData) HasFooter() bool {
+	if d == nil {
+		return false
+	}
+
 	return len(d.Footer) > 0
 }
 
 // SetFooter sets the footer row.
 func (d *TableData) SetFooter(footer []string) {
+	if d == nil {
+		return
+	}
+
 	d.Footer = footer
 }
 
 // Validate checks the TableData for consistency.
 // Returns an error if the footer column count does not match the header count.
 func (d *TableData) Validate() error {
-	if d == nil || len(d.Headers) == 0 || !d.HasFooter() {
+	if d == nil {
+		return nil
+	}
+
+	if len(d.Headers) == 0 || !d.HasFooter() {
 		return nil
 	}
 
