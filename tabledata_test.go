@@ -256,6 +256,8 @@ func TestTableDataValidate(t *testing.T) {
 		{name: "empty headers with footer", data: &TableData{Footer: []string{"x"}}, wantErr: false},
 		{name: "footer longer than headers", data: buildData([]string{"A"}, []string{"1", "2", "3"}), wantErr: true},
 		{name: "footer shorter than headers", data: buildData([]string{"A", "B", "C"}, []string{"1"}), wantErr: true},
+		{name: "nil row", data: &TableData{Headers: []string{"A"}, Rows: [][]string{nil}}, wantErr: true},
+		{name: "nil row after valid row", data: &TableData{Headers: []string{"A", "B"}, Rows: [][]string{{"1", "2"}, nil}}, wantErr: true},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()

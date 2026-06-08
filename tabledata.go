@@ -5,7 +5,10 @@ import (
 	"fmt"
 )
 
-var errColumnMismatch = errors.New("footer column count does not match headers")
+var (
+	errColumnMismatch = errors.New("footer column count does not match headers")
+	errNilRow         = errors.New("nil row in data")
+)
 
 // TableData represents tabular data with headers, rows, and an optional footer.
 type TableData struct {
@@ -99,10 +102,16 @@ func (d *TableData) SetFooter(footer []string) {
 }
 
 // Validate checks the TableData for consistency.
-// Returns an error if the footer column count does not match the header count.
+// Returns an error if rows are nil, or if the footer column count does not match the header count.
 func (d *TableData) Validate() error {
 	if d == nil {
 		return nil
+	}
+
+	for i, row := range d.Rows {
+		if row == nil {
+			return fmt.Errorf("%w at index %d", errNilRow, i)
+		}
 	}
 
 	if len(d.Headers) == 0 || !d.HasFooter() {
