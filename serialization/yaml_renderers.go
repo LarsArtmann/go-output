@@ -36,7 +36,7 @@ func (r *YAMLTreeRenderer) Render() (string, error) {
 		return "null\n", nil
 	}
 
-	node := toTreeNodeDTO(r.root)
+	node := toTreeNode(r.root)
 
 	data, err := yaml.Marshal(node)
 	if err != nil {
@@ -48,19 +48,19 @@ func (r *YAMLTreeRenderer) Render() (string, error) {
 
 // YAMLGraphRenderer renders graph nodes and edges as YAML.
 type YAMLGraphRenderer struct {
-	output.GraphRendererMixin
+	output.GraphRendererState
 }
 
 // NewYAMLGraphRenderer creates a new YAMLGraphRenderer.
 func NewYAMLGraphRenderer() *YAMLGraphRenderer {
 	return &YAMLGraphRenderer{
-		GraphRendererMixin: output.NewGraphRendererMixin(),
+		GraphRendererState: output.NewGraphRendererState(),
 	}
 }
 
 // Render returns the graph as a YAML string.
 func (r *YAMLGraphRenderer) Render() (string, error) {
-	graph := buildGraphDTO(r.GraphRendererMixin)
+	graph := buildGraphView(r.GraphRendererState)
 
 	data, err := yaml.Marshal(graph)
 	if err != nil {

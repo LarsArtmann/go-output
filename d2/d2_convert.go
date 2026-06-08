@@ -1,9 +1,8 @@
 package d2
 
 import (
-	"strings"
-
 	"github.com/larsartmann/go-output"
+	"github.com/larsartmann/go-output/escape"
 )
 
 // SetNodes sets graph nodes from the generic GraphNode type, satisfying GraphRenderer.
@@ -105,7 +104,7 @@ func D2FromTree(root *output.TreeNode) *D2Diagram {
 func (d *D2Diagram) addTreeNodes(node *output.TreeNode, parentID string) {
 	nodeID := node.ID.Get()
 	if nodeID == "" {
-		nodeID = strings.ReplaceAll(node.Label.Get(), " ", "_")
+		nodeID = escape.SlugifyID(node.Label.Get())
 	}
 
 	d.AddNode(D2Node{

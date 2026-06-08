@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/larsartmann/go-output"
+	"github.com/larsartmann/go-output/escape"
 )
 
 var (
@@ -12,9 +13,14 @@ var (
 	_ output.GraphRenderer = (*PlantUMLDiagram)(nil)
 )
 
+//nolint:gochecknoinits // Registers PlantUML format capabilities.
+func init() {
+	output.RegisterFormatShapes(output.FormatPlantUML, output.ShapeTable, output.ShapeTree, output.ShapeGraph)
+}
+
 // PlantUMLDiagram renders a PlantUML component/class diagram.
 type PlantUMLDiagram struct {
-	output.GraphRendererMixin
+	output.GraphRendererState
 
 	diagramType string
 }
@@ -22,20 +28,20 @@ type PlantUMLDiagram struct {
 // NewPlantUMLDiagram creates a new PlantUMLDiagram.
 func NewPlantUMLDiagram() *PlantUMLDiagram {
 	return &PlantUMLDiagram{
-		GraphRendererMixin: output.NewGraphRendererMixin(),
+		GraphRendererState: output.NewGraphRendererState(),
 		diagramType:        "component",
 	}
 }
 
 // AddNode adds a node to the diagram.
 func (d *PlantUMLDiagram) AddNode(node output.GraphNode) *PlantUMLDiagram {
-	d.GraphRendererMixin.AddNode(node)
+	d.GraphRendererState.AddNode(node)
 	return d
 }
 
 // AddEdge adds an edge to the diagram.
 func (d *PlantUMLDiagram) AddEdge(edge output.GraphEdge) *PlantUMLDiagram {
-	d.GraphRendererMixin.AddEdge(edge)
+	d.GraphRendererState.AddEdge(edge)
 	return d
 }
 
@@ -74,8 +80,5 @@ func (d *PlantUMLDiagram) Render() (string, error) {
 
 // sanitizePlantUMLID converts a string to a valid PlantUML identifier.
 func sanitizePlantUMLID(s string) string {
-	s = strings.ReplaceAll(s, " ", "_")
-	s = strings.ReplaceAll(s, "-", "_")
-
-	return s
+	return escape.SlugifyID(s)
 }

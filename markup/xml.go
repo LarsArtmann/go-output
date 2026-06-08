@@ -10,14 +10,20 @@ import (
 	"github.com/larsartmann/go-output/escape"
 )
 
-//nolint:gochecknoinits // Registers XML TableData marshaler for registry-based dispatch.
+//nolint:gochecknoinits // Registers XML TableData marshaler and format capabilities.
 func init() {
+	output.RegisterFormatShapes(output.FormatXML, output.ShapeTable)
 	output.RegisterTableDataMarshaler(output.FormatXML, renderXMLTableData)
 }
 
 // MarshalXML encodes v to XML.
 func MarshalXML(v any) ([]byte, error) {
-	return output.MarshalFormat("xml", xml.Marshal, v)
+	data, err := xml.Marshal(v)
+	if err != nil {
+		return nil, fmt.Errorf("marshal xml %T: %w", v, err)
+	}
+
+	return data, nil
 }
 
 // MarshalXMLIndent encodes v to indented XML.

@@ -1,17 +1,14 @@
 package output
 
 import (
-	"errors"
 	"strings"
 	"testing"
 )
 
-var errTestUnmarshal = errors.New("test unmarshal error")
-
-func TestTableDataBase_SetHeaders(t *testing.T) {
+func TestTableDataStore_SetHeaders(t *testing.T) {
 	t.Parallel()
 
-	var base TableDataBase
+	var base TableDataStore
 	base.SetHeaders([]string{"A", "B"})
 
 	data := base.Data()
@@ -24,10 +21,10 @@ func TestTableDataBase_SetHeaders(t *testing.T) {
 	}
 }
 
-func TestTableDataBase_AddRow(t *testing.T) {
+func TestTableDataStore_AddRow(t *testing.T) {
 	t.Parallel()
 
-	var base TableDataBase
+	var base TableDataStore
 	base.AddRow([]string{"1", "2"})
 
 	data := base.Data()
@@ -40,10 +37,10 @@ func TestTableDataBase_AddRow(t *testing.T) {
 	}
 }
 
-func TestTableDataBase_SetData(t *testing.T) {
+func TestTableDataStore_SetData(t *testing.T) {
 	t.Parallel()
 
-	var base TableDataBase
+	var base TableDataStore
 
 	d := &TableData{Headers: []string{"X"}}
 	base.SetData(d)
@@ -53,10 +50,10 @@ func TestTableDataBase_SetData(t *testing.T) {
 	}
 }
 
-func TestTableDataBase_SetFooter(t *testing.T) {
+func TestTableDataStore_SetFooter(t *testing.T) {
 	t.Parallel()
 
-	var base TableDataBase
+	var base TableDataStore
 	base.SetFooter([]string{"Total", "10"})
 
 	if !base.HasFooter() {
@@ -69,19 +66,19 @@ func TestTableDataBase_SetFooter(t *testing.T) {
 	}
 }
 
-func TestTableDataBase_HasFooterNil(t *testing.T) {
+func TestTableDataStore_HasFooterNil(t *testing.T) {
 	t.Parallel()
 
-	var base TableDataBase
+	var base TableDataStore
 	if base.HasFooter() {
 		t.Error("HasFooter() should return false when data is nil")
 	}
 }
 
-func TestTableDataBase_DataNil(t *testing.T) {
+func TestTableDataStore_DataNil(t *testing.T) {
 	t.Parallel()
 
-	var base TableDataBase
+	var base TableDataStore
 	if base.Data() != nil {
 		t.Error("Data() should return nil when not initialized")
 	}
@@ -181,18 +178,5 @@ func TestStreamingRendererFromRenderer(t *testing.T) {
 
 	if buf.String() != "hello" {
 		t.Errorf("Stream() = %q, want %q", buf.String(), "hello")
-	}
-}
-
-func TestUnmarshalFormat(t *testing.T) {
-	t.Parallel()
-
-	var result string
-
-	err := UnmarshalFormat("json", func(data []byte, v any) error {
-		return errTestUnmarshal
-	}, []byte(`"hello"`), &result)
-	if err == nil {
-		t.Fatal("UnmarshalFormat should propagate unmarshal error")
 	}
 }

@@ -27,8 +27,9 @@ func renderDelimitedTableData(
 	return nil
 }
 
-//nolint:gochecknoinits // Registers CSV TableData marshaler for registry-based dispatch.
+//nolint:gochecknoinits // Registers CSV TableData marshaler and format capabilities.
 func init() {
+	output.RegisterFormatShapes(output.FormatCSV, output.ShapeTable)
 	output.RegisterTableDataMarshaler(output.FormatCSV,
 		func(w io.Writer, data *output.TableData, _ output.RenderOptions) error {
 			return renderDelimitedTableData(w, data, MarshalCSVFromTableData, "csv")

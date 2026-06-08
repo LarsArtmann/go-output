@@ -56,13 +56,26 @@ func MermaidID(id string) string {
 	return result.String()
 }
 
+// slugIDReplacer sanitizes strings for use as identifiers across diagram formats.
+// Replaces spaces, hyphens, and slashes with underscores.
+//
+//nolint:gochecknoglobals // Reusable strings.Replacer, safe to share.
+var slugIDReplacer = strings.NewReplacer(
+	" ", "_",
+	"-", "_",
+	"/", "_",
+)
+
+// SlugifyID sanitizes a string for use as a diagram node identifier.
+// It replaces spaces, hyphens, and slashes with underscores — characters
+// that are problematic in D2, DOT, Mermaid, and PlantUML identifiers.
+func SlugifyID(s string) string {
+	return slugIDReplacer.Replace(s)
+}
+
 // MermaidSlug sanitizes a string for use as a Mermaid node identifier fallback.
 func MermaidSlug(label string) string {
-	s := strings.ReplaceAll(label, " ", "_")
-	s = strings.ReplaceAll(s, "-", "_")
-	s = strings.ReplaceAll(s, "/", "_")
-
-	return s
+	return SlugifyID(label)
 }
 
 // mermaidTextReplacer escapes brackets, braces, quotes, and newlines for Mermaid labels.

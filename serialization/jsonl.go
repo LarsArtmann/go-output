@@ -15,8 +15,9 @@ var (
 	_ output.TableRenderer = (*JSONLTableRenderer)(nil)
 )
 
-//nolint:gochecknoinits // Registers JSONL TableData marshaler for registry-based dispatch.
+//nolint:gochecknoinits // Registers JSONL TableData marshaler and format capabilities.
 func init() {
+	output.RegisterFormatShapes(output.FormatJSONL, output.ShapeTable)
 	output.RegisterTableDataMarshaler(output.FormatJSONL, renderJSONLTableData)
 }
 
@@ -57,7 +58,7 @@ func (j *JSONLWriter) Flush() error {
 
 // JSONLTableRenderer renders TableData as JSON Lines.
 type JSONLTableRenderer struct {
-	output.TableDataBase
+	output.TableDataStore
 }
 
 // NewJSONLTableRenderer creates a new JSONLTableRenderer.

@@ -2,6 +2,11 @@ package d2
 
 import "github.com/larsartmann/go-output"
 
+//nolint:gochecknoinits // Registers D2 format capabilities.
+func init() {
+	output.RegisterFormatShapes(output.FormatD2, output.ShapeTable, output.ShapeTree, output.ShapeGraph)
+}
+
 // D2NodeID is a branded identifier for D2 diagram nodes.
 type D2NodeID = output.D2NodeID
 

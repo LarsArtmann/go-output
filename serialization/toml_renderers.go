@@ -17,19 +17,19 @@ var (
 
 // TOMLGraphRenderer renders graph nodes and edges as TOML.
 type TOMLGraphRenderer struct {
-	output.GraphRendererMixin
+	output.GraphRendererState
 }
 
 // NewTOMLGraphRenderer creates a new TOMLGraphRenderer.
 func NewTOMLGraphRenderer() *TOMLGraphRenderer {
 	return &TOMLGraphRenderer{
-		GraphRendererMixin: output.NewGraphRendererMixin(),
+		GraphRendererState: output.NewGraphRendererState(),
 	}
 }
 
 // Render returns the graph as a TOML string.
 func (r *TOMLGraphRenderer) Render() (string, error) {
-	graph := buildGraphDTO(r.GraphRendererMixin)
+	graph := buildGraphView(r.GraphRendererState)
 
 	data, err := toml.Marshal(graph)
 	if err != nil {
@@ -60,7 +60,7 @@ func (r *TOMLTreeRenderer) Render() (string, error) {
 		return "", nil
 	}
 
-	node := toTreeNodeDTO(r.root)
+	node := toTreeNode(r.root)
 
 	data, err := toml.Marshal(node)
 	if err != nil {

@@ -14,9 +14,14 @@ var (
 	_ output.GraphRenderer = (*DOTRenderer)(nil)
 )
 
+//nolint:gochecknoinits // Registers DOT format capabilities.
+func init() {
+	output.RegisterFormatShapes(output.FormatDOT, output.ShapeTable, output.ShapeTree, output.ShapeGraph)
+}
+
 // DOTRenderer implements the GraphRenderer interface for DOT/Graphviz output.
 type DOTRenderer struct {
-	output.GraphRendererMixin
+	output.GraphRendererState
 
 	directed bool
 	graphID  string
@@ -25,7 +30,7 @@ type DOTRenderer struct {
 // newDOTRenderer creates a new DOTRenderer with the specified direction.
 func newDOTRenderer(directed bool) *DOTRenderer {
 	return &DOTRenderer{
-		GraphRendererMixin: output.NewGraphRendererMixin(),
+		GraphRendererState: output.NewGraphRendererState(),
 		directed:           directed,
 		graphID:            "G",
 	}
@@ -187,9 +192,9 @@ func dotTreeNodeID(node *output.TreeNode) string {
 		return node.ID.Get()
 	}
 
-	return strings.ReplaceAll(node.Label.Get(), " ", "_")
+	return escape.SlugifyID(node.Label.Get())
 }
 
 func (r *DOTRenderer) addTreeNodes(node *output.TreeNode, parentID output.TreeNodeID) {
-	output.AddTreeNodes(&r.GraphRendererMixin, node, parentID.Get(), dotTreeNodeID, "")
+	output.AddTreeNodes(&r.GraphRendererState, node, parentID.Get(), dotTreeNodeID, "")
 }

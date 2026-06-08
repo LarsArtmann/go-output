@@ -13,14 +13,15 @@ var (
 	_ output.TableRenderer = (*AsciiDocTableRenderer)(nil)
 )
 
-//nolint:gochecknoinits // Registers AsciiDoc TableData marshaler for registry-based dispatch.
+//nolint:gochecknoinits // Registers AsciiDoc TableData marshaler and format capabilities.
 func init() {
+	output.RegisterFormatShapes(output.FormatAsciiDoc, output.ShapeTable)
 	output.RegisterTableDataMarshaler(output.FormatAsciiDoc, renderAsciiDocTableData)
 }
 
 // AsciiDocTableRenderer renders TableData as an AsciiDoc table.
 type AsciiDocTableRenderer struct {
-	output.TableDataBase
+	output.TableDataStore
 }
 
 // NewAsciiDocTableRenderer creates a new AsciiDocTableRenderer.

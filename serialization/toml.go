@@ -14,24 +14,35 @@ var (
 	_ output.TableRenderer = (*TOMLTableRenderer)(nil)
 )
 
-//nolint:gochecknoinits // Registers TOML TableData marshaler for registry-based dispatch.
+//nolint:gochecknoinits // Registers TOML TableData marshaler and format capabilities.
 func init() {
+	output.RegisterFormatShapes(output.FormatTOML, output.ShapeTable, output.ShapeTree, output.ShapeGraph)
 	output.RegisterTableDataMarshaler(output.FormatTOML, renderTOMLTableData)
 }
 
 // MarshalTOML encodes v to TOML.
 func MarshalTOML(v any) ([]byte, error) {
-	return output.MarshalFormat("toml", toml.Marshal, v)
+	data, err := toml.Marshal(v)
+	if err != nil {
+		return nil, fmt.Errorf("marshal toml %T: %w", v, err)
+	}
+
+	return data, nil
 }
 
 // UnmarshalTOML decodes TOML data into v.
 func UnmarshalTOML(data []byte, v any) error {
-	return output.UnmarshalFormat("toml", toml.Unmarshal, data, v)
+	err := toml.Unmarshal(data, v)
+	if err != nil {
+		return fmt.Errorf("unmarshal toml into %T: %w", v, err)
+	}
+
+	return nil
 }
 
 // TOMLTableRenderer renders TableData as a TOML array of tables.
 type TOMLTableRenderer struct {
-	output.TableDataBase
+	output.TableDataStore
 }
 
 // NewTOMLTableRenderer creates a new TOMLTableRenderer.

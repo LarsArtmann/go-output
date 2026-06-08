@@ -145,12 +145,12 @@ type EdgeStyle struct {
 }
 
 // AddNode appends a node to the graph.
-func (m *GraphRendererMixin) AddNode(node GraphNode) {
+func (m *GraphRendererState) AddNode(node GraphNode) {
 	m.nodes = append(m.nodes, node)
 }
 
 // AddEdge appends an edge to the graph.
-func (m *GraphRendererMixin) AddEdge(edge GraphEdge) {
+func (m *GraphRendererState) AddEdge(edge GraphEdge) {
 	m.edges = append(m.edges, edge)
 }
 
@@ -190,40 +190,40 @@ func AddTreeNodes(
 	}
 }
 
-// GraphRendererMixin contains shared fields and methods for graph renderers.
+// GraphRendererState contains shared fields and methods for graph renderers.
 //
 // D2 does not use this mixin because it has richer domain-specific types
 // (D2Node, D2Edge with classes, SQL tables, shapes, arrow types, etc.)
 // that do not map to the simpler GraphNode/GraphEdge model.
-type GraphRendererMixin struct {
+type GraphRendererState struct {
 	nodes []GraphNode
 	edges []GraphEdge
 }
 
-// NewGraphRendererMixin creates a new GraphRendererMixin with initialized slices.
-func NewGraphRendererMixin() GraphRendererMixin {
-	return GraphRendererMixin{
+// NewGraphRendererState creates a new GraphRendererState with initialized slices.
+func NewGraphRendererState() GraphRendererState {
+	return GraphRendererState{
 		nodes: make([]GraphNode, 0),
 		edges: make([]GraphEdge, 0),
 	}
 }
 
 // SetNodes sets the graph nodes.
-func (m *GraphRendererMixin) SetNodes(nodes []GraphNode) {
+func (m *GraphRendererState) SetNodes(nodes []GraphNode) {
 	m.nodes = nodes
 }
 
 // SetEdges sets the graph edges.
-func (m *GraphRendererMixin) SetEdges(edges []GraphEdge) {
+func (m *GraphRendererState) SetEdges(edges []GraphEdge) {
 	m.edges = edges
 }
 
 // Nodes returns the graph nodes.
-func (m *GraphRendererMixin) Nodes() []GraphNode {
+func (m *GraphRendererState) Nodes() []GraphNode {
 	return m.nodes
 }
 
 // Edges returns the graph edges.
-func (m *GraphRendererMixin) Edges() []GraphEdge {
+func (m *GraphRendererState) Edges() []GraphEdge {
 	return m.edges
 }

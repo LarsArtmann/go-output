@@ -165,48 +165,48 @@ func (d *TableData) CreateRowEdges() []RowEdge {
 	return edges
 }
 
-// TableDataBase provides common table data storage for renderers.
-type TableDataBase struct {
+// TableDataStore provides common table data storage for renderers.
+type TableDataStore struct {
 	data *TableData
 }
 
 // ensureData initializes data if nil.
-func (b *TableDataBase) ensureData() {
+func (b *TableDataStore) ensureData() {
 	if b.data == nil {
 		b.data = &TableData{}
 	}
 }
 
 // SetHeaders sets the column headers.
-func (b *TableDataBase) SetHeaders(headers []string) {
+func (b *TableDataStore) SetHeaders(headers []string) {
 	b.ensureData()
 	b.data.Headers = headers
 }
 
 // AddRow adds a data row.
-func (b *TableDataBase) AddRow(row []string) {
+func (b *TableDataStore) AddRow(row []string) {
 	b.ensureData()
 	b.data.Rows = append(b.data.Rows, row)
 }
 
 // SetData sets the table data directly.
-func (b *TableDataBase) SetData(data *TableData) {
+func (b *TableDataStore) SetData(data *TableData) {
 	b.data = data
 }
 
 // Data returns the underlying TableData.
-func (b *TableDataBase) Data() *TableData {
+func (b *TableDataStore) Data() *TableData {
 	return b.data
 }
 
 // SetFooter sets the footer row.
-func (b *TableDataBase) SetFooter(footer []string) {
+func (b *TableDataStore) SetFooter(footer []string) {
 	b.ensureData()
 	b.data.Footer = footer
 }
 
 // HasFooter returns true if a footer row is present.
-func (b *TableDataBase) HasFooter() bool {
+func (b *TableDataStore) HasFooter() bool {
 	if b.data == nil {
 		return false
 	}

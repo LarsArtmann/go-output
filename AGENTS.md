@@ -73,11 +73,11 @@ go-output/                    # Root module (package output) — core types, Mar
 ├── renderer.go               # Renderer, MustRender, TableRenderer interfaces
 ├── color.go                  # ColorMode enum + terminal detection (wired into table, tree, markdown)
 ├── ids.go                    # BrandedID phantom types
-├── tabledata.go              # TableData, RowEdge, TableDataBase (exported for sub-modules)
+├── tabledata.go              # TableData, RowEdge, TableDataStore (exported for sub-modules)
 ├── tree.go                   # TreeNode, TreeOutputRenderer, colored tree rendering
-├── graph.go                  # GraphNode, GraphEdge, GraphRenderer, GraphRendererMixin, AddTreeNodes
+├── graph.go                  # GraphNode, GraphEdge, GraphRenderer, GraphRendererState, AddTreeNodes
 ├── markdown.go               # Markdown table renderer with ColorMode (bold headers, dim separators)
-├── marshal.go                # MarshalFormat, UnmarshalFormat, MarshalJSONIndent
+├── marshal.go                # MarshalJSONIndent (MarshalFormat/UnmarshalFormat removed — inlined into sub-modules)
 ├── render_tabledata.go       # Registry-based TableData dispatch with ColorMode in RenderOptions
 ├── streaming.go              # StreamingRenderer interface + adapter
 ├── internal/gentest/         # Generic test helpers (root module only, not importable by sub-modules)
@@ -187,7 +187,7 @@ go test -bench=. -benchmem ./...  # Benchmarks
 2. **Shape capability matrix**: Each format declares supported data shapes via `formatCapabilities` map[Format][]Shape. Use `f.Supports(shape)` to query.
 3. **Branded IDs**: Phantom types prevent mixing D2NodeID/TreeNodeID/etc via `go-branded-id`.
 4. **Interface-based design**: Renderer, GraphRenderer, TableRenderer, TreeOutputRenderer interfaces — all have `Render() (string, error)`. Use `MustRender(r)` for tests/examples.
-5. **Composition**: GraphRendererMixin in graph.go (root) provides shared state for DOT/Mermaid via AddNode/AddEdge methods. Sub-renderers pass `&r.GraphRendererMixin` to `AddTreeNodes` which uses the `NodeEdgeAppender` interface. TableDataBase in tabledata.go shared by delimited, markup, serialization via Data() getter.
+5. **Composition**: GraphRendererState in graph.go (root) provides shared state for DOT/Mermaid via AddNode/AddEdge methods. Sub-renderers pass `&r.GraphRendererState` to `AddTreeNodes` which uses the `NodeEdgeAppender` interface. TableDataStore in tabledata.go shared by delimited, markup, serialization via Data() getter.
 6. **Registry dispatch**: `RenderTableData()` dispatches to registered `TableDataMarshaler` functions. Sub-modules register via `init()`. Root has ZERO sub-module imports.
 7. **ColorMode wired into renderers**: `ColorMode` (auto/always/never) controls ANSI color output. `table.New(WithColorMode(mode))` for lipgloss tables, `ASCIITreeRenderer.SetColorMode(mode)` for trees, `MarkdownTable.SetColorMode(mode)` for markdown, `RenderOptions.ColorMode` for `RenderTableData()` dispatch.
 8. **Footer row on TableData**: `TableData.Footer []string` provides an optional totals/summary row. Tabular renderers (CSV, TSV, Markdown, HTML, XML, AsciiDoc, Table) render it visually. HTML uses `<tfoot>` with `footer-cell` CSS class, XML uses `<footer>`, Markdown adds a second separator + bold footer (inherits column alignment). The `table.FooterProvider` optional interface enables `table.FromTableData()` to bold-style the footer. `CSVWriter.WriteFooter()` and `TSVWriter.WriteFooter()` provide explicit streaming footer methods. `TableData.Validate()` checks footer column count matches headers. Data formats (JSON, YAML, TOML, JSONL) and non-tabular formats (Tree, Graph) skip the footer.
@@ -216,7 +216,7 @@ go test -bench=. -benchmem ./...  # Benchmarks
 ### Adding a New Graph Renderer
 
 1. Create renderer in `graph/` module
-2. Embed `output.GraphRendererMixin` for shared node/edge state
+2. Embed `output.GraphRendererState` for shared node/edge state
 3. Implement `output.GraphRenderer` interface
 4. Add tests with >90% coverage
 
@@ -271,7 +271,7 @@ This ensures `go get github.com/larsartmann/go-output/table@vX.Y.Z` resolves cor
 - Root no longer imports `go-faster/yaml` or `escape` in production code — these deps are isolated in serialization/ and markup/ respectively
 - D2 has richer types than generic graph (shapes, arrows, SQL tables, classes) — lives in `d2/` module with its own `D2Node`/`D2Edge` types
 - D2 re-exports `D2NodeID`/`D2NodeLabel` from root so users don't need to import both `d2` and `output` for ID construction
-- DOT and Mermaid renderers live in `graph/` module, sharing `GraphRendererMixin` from root via accessor methods
+- DOT and Mermaid renderers live in `graph/` module, sharing `GraphRendererState` from root via accessor methods
 - Tree conversion has renderer-specific addTreeNodes in d2_convert, graph/dot, graph/mermaid — the generic AddTreeNodes in graph.go handles the common case via `NodeEdgeAppender` interface
 - Depguard config restricts imports
 - escape/ uses `html.EscapeString()` from stdlib for HTML, with `strings.ReplaceAll` for XML `&apos;`
@@ -285,13 +285,13 @@ This ensures `go get github.com/larsartmann/go-output/table@vX.Y.Z` resolves cor
 - Tree rendering uses depth-based ANSI color cycling when color is enabled
 - Markdown rendering uses bold headers and dim separators when color is enabled
 - Multi-module workspace with 13 independent modules (see ADR 001)
-- Shape capability matrix (ADR 002) replaces FormatCategory — deprecated methods redirect to `Supports(Shape)`
+- Shape capability matrix (ADR 002) uses registry pattern: `RegisterFormatShapes()` in each sub-module's `init()`. Root registers defaults for all formats as fallback. Query with `f.Supports(shape)`
 - API stability audit (ADR 006) completed — all exported symbols frozen, capability matrix fixed (D2/Mermaid/DOT/PlantUML now declare ShapeTree, TOML now declares ShapeGraph)
 - Round-trip integration tests in `integration/roundtrip_test.go` verify 16 formats: 8 parseable round-trips (JSON, CSV, TSV, YAML, TOML, JSONL, XML, HTML) + 8 structural verifications (Markdown, Table, Tree, AsciiDoc, D2, Mermaid, DOT, PlantUML)
 - `format.go` split into focused files: `format.go` (Format enum), `shape.go` (Shape + capability matrix), `renderer.go` (Renderer/TableRenderer interfaces) — `format_deprecated.go` deleted
-- `render_tabledata.go` uses registry-based dispatch via `TableDataMarshaler` — sub-modules register in `init()`. Returns `UnsupportedFormatError` for D2/DOT/Mermaid (these live in separate modules). Signature is `RenderTableData(data *TableData, format Format, opts RenderOptions) error` (non-variadic).
-- `tableDataBase` exported as `TableDataBase` with `Data()` getter — allows sub-modules to access unexported `data` field
-- `marshal.go` exports `MarshalFormat()`, `UnmarshalFormat()`, `MarshalJSONIndent()` — used by both serialization/ and markup/ sub-modules
+- `escape.SlugifyID()` unifies ID sanitization (spaces, hyphens, slashes → underscores) across D2, DOT, Mermaid, and PlantUML tree node ID generation
+- `tableDataBase` exported as `TableDataStore` with `Data()` getter — allows sub-modules to access unexported `data` field
+- `marshal.go` exports `MarshalJSONIndent()` — used by integration, examples, and tests. `MarshalFormat`/`UnmarshalFormat` removed — inlined into serialization/ and markup/ callers
 - Root format files (CSV, TSV, JSON, YAML, XML, HTML, Streaming) extracted to delimited/, serialization/, markup/ modules respectively
 - `internal/gentest` and `internal/testutils` are root-only — sub-modules must inline helpers or create their own. Decision rationale: exposing test helpers publicly via `testhelpers/gentest` would freeze internal testing APIs; each module having its own test helpers allows independent evolution
 - Nix flake uses `flake-parts` + `treefmt-nix` + `git-hooks.nix` — no `gomod2nix` (library, 13 modules, no binary)

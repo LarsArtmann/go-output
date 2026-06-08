@@ -170,6 +170,23 @@ func TestMermaidSlug(t *testing.T) {
 	testEscapeFunc(t, "MermaidSlug", MermaidSlug, mermaidSlugTestCases())
 }
 
+func TestSlugifyID(t *testing.T) {
+	t.Parallel()
+
+	tests := []escapeTestCase{
+		{"simple text", "simple", "simple"},
+		{"spaces", "has spaces", "has_spaces"},
+		{"hyphens", "has-dash", "has_dash"},
+		{"slashes", "path/to/file", "path_to_file"},
+		{"mixed", "a b-c/d", "a_b_c_d"},
+		{"empty", "", ""},
+		{"no change", "already_clean", "already_clean"},
+		{"multiple spaces", "a  b", "a__b"},
+	}
+
+	testEscapeFunc(t, "SlugifyID", SlugifyID, tests)
+}
+
 func TestMermaidText(t *testing.T) {
 	t.Parallel()
 

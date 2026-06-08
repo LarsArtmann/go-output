@@ -13,19 +13,30 @@ var (
 	_ output.TableRenderer = (*JSONTableRenderer)(nil)
 )
 
-//nolint:gochecknoinits // Registers JSON TableData marshaler for registry-based dispatch.
+//nolint:gochecknoinits // Registers JSON TableData marshaler and format capabilities.
 func init() {
+	output.RegisterFormatShapes(output.FormatJSON, output.ShapeTable, output.ShapeTree, output.ShapeGraph)
 	output.RegisterTableDataMarshaler(output.FormatJSON, renderJSONTableData)
 }
 
 // MarshalJSON encodes v to JSON.
 func MarshalJSON(v any) ([]byte, error) {
-	return output.MarshalFormat("json", json.Marshal, v)
+	data, err := json.Marshal(v)
+	if err != nil {
+		return nil, fmt.Errorf("marshal json %T: %w", v, err)
+	}
+
+	return data, nil
 }
 
 // UnmarshalJSON decodes JSON data into v.
 func UnmarshalJSON(data []byte, v any) error {
-	return output.UnmarshalFormat("json", json.Unmarshal, data, v)
+	err := json.Unmarshal(data, v)
+	if err != nil {
+		return fmt.Errorf("unmarshal json into %T: %w", v, err)
+	}
+
+	return nil
 }
 
 // JSONWriter writes JSON output to an io.Writer.
@@ -53,7 +64,7 @@ func (j *JSONWriter) Encode(v any) error {
 
 // JSONTableRenderer renders TableData as a JSON array of objects.
 type JSONTableRenderer struct {
-	output.TableDataBase
+	output.TableDataStore
 }
 
 // NewJSONTableRenderer creates a new JSONTableRenderer.

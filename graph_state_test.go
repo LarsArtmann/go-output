@@ -81,7 +81,7 @@ func TestAddTreeNodes(t *testing.T) {
 	child := NewTreeNode("child", "Child")
 	root.AddChild(child)
 
-	m := NewGraphRendererMixin()
+	m := NewGraphRendererState()
 	AddTreeNodes(
 		&m, root, "",
 		func(n *TreeNode) string { return n.ID.Get() },
@@ -131,10 +131,10 @@ func TestNodesFromTableData_Nil(t *testing.T) {
 	}
 }
 
-func TestNewGraphRendererMixin(t *testing.T) {
+func TestNewGraphRendererState(t *testing.T) {
 	t.Parallel()
 
-	m := NewGraphRendererMixin()
+	m := NewGraphRendererState()
 
 	if m.Nodes() == nil {
 		t.Error("Nodes() should not be nil")
@@ -145,46 +145,46 @@ func TestNewGraphRendererMixin(t *testing.T) {
 	}
 }
 
-func TestGraphRendererMixin_SetNodes(t *testing.T) {
+func TestGraphRendererState_SetNodes(t *testing.T) {
 	t.Parallel()
 
-	m := NewGraphRendererMixin()
+	m := NewGraphRendererState()
 	m.SetNodes(testNodesAB())
 
 	assertSliceLen(t, "Nodes", m.Nodes(), 2)
 }
 
-func TestGraphRendererMixin_SetEdges(t *testing.T) {
+func TestGraphRendererState_SetEdges(t *testing.T) {
 	t.Parallel()
 
-	m := NewGraphRendererMixin()
+	m := NewGraphRendererState()
 	m.SetEdges(testEdgesAB())
 
 	assertSliceLen(t, "Edges", m.Edges(), 1)
 }
 
-func TestGraphRendererMixin_AddNode(t *testing.T) {
+func TestGraphRendererState_AddNode(t *testing.T) {
 	t.Parallel()
 
-	m := NewGraphRendererMixin()
+	m := NewGraphRendererState()
 	m.AddNode(GraphNode{ID: NewBrandedID[GraphNodeIDBrand]("a")})
 
 	assertSliceLen(t, "Nodes", m.Nodes(), 1)
 }
 
-func TestGraphRendererMixin_AddEdge(t *testing.T) {
+func TestGraphRendererState_AddEdge(t *testing.T) {
 	t.Parallel()
 
-	m := NewGraphRendererMixin()
+	m := NewGraphRendererState()
 	m.AddEdge(GraphEdge{From: NewBrandedID[GraphNodeIDBrand]("a"), To: NewBrandedID[GraphNodeIDBrand]("b")})
 
 	assertSliceLen(t, "Edges", m.Edges(), 1)
 }
 
-func TestGraphRendererMixin_AddRowEdges(t *testing.T) {
+func TestGraphRendererState_AddRowEdges(t *testing.T) {
 	t.Parallel()
 
-	m := NewGraphRendererMixin()
+	m := NewGraphRendererState()
 	m.SetNodes(testNodesABC())
 
 	data := NewTableData([]string{"A"})
@@ -196,10 +196,10 @@ func TestGraphRendererMixin_AddRowEdges(t *testing.T) {
 	assertSliceLen(t, "Edges", m.Edges(), 1)
 }
 
-func TestGraphRendererMixin_SetNodesFromTableData(t *testing.T) {
+func TestGraphRendererState_SetNodesFromTableData(t *testing.T) {
 	t.Parallel()
 
-	m := NewGraphRendererMixin()
+	m := NewGraphRendererState()
 	data := NewTableData([]string{"Name"})
 	data.AddRow([]string{"Alpha"})
 	data.AddRow([]string{"Beta"})

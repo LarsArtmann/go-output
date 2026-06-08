@@ -1,6 +1,7 @@
 package serialization
 
 import (
+	"fmt"
 	"io"
 
 	"github.com/go-faster/yaml"
@@ -13,24 +14,35 @@ var (
 	_ output.TableRenderer = (*YAMLTableRenderer)(nil)
 )
 
-//nolint:gochecknoinits // Registers YAML TableData marshaler for registry-based dispatch.
+//nolint:gochecknoinits // Registers YAML TableData marshaler and format capabilities.
 func init() {
+	output.RegisterFormatShapes(output.FormatYAML, output.ShapeTable, output.ShapeTree, output.ShapeGraph)
 	output.RegisterTableDataMarshaler(output.FormatYAML, renderYAMLTableData)
 }
 
 // MarshalYAML encodes v to YAML.
 func MarshalYAML(v any) ([]byte, error) {
-	return output.MarshalFormat("yaml", yaml.Marshal, v)
+	data, err := yaml.Marshal(v)
+	if err != nil {
+		return nil, fmt.Errorf("marshal yaml %T: %w", v, err)
+	}
+
+	return data, nil
 }
 
 // UnmarshalYAML decodes YAML data into v.
 func UnmarshalYAML(data []byte, v any) error {
-	return output.UnmarshalFormat("yaml", yaml.Unmarshal, data, v)
+	err := yaml.Unmarshal(data, v)
+	if err != nil {
+		return fmt.Errorf("unmarshal yaml into %T: %w", v, err)
+	}
+
+	return nil
 }
 
 // YAMLTableRenderer renders TableData as a YAML sequence of mappings.
 type YAMLTableRenderer struct {
-	output.TableDataBase
+	output.TableDataStore
 }
 
 // NewYAMLTableRenderer creates a new YAMLTableRenderer.

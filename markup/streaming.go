@@ -2,11 +2,11 @@ package markup
 
 import (
 	"fmt"
+	"html/template"
 	"io"
 	"strings"
 
 	"github.com/larsartmann/go-output"
-	"github.com/larsartmann/go-output/escape"
 )
 
 // Compile-time interface checks.
@@ -19,7 +19,7 @@ var (
 // StreamingHTMLRenderer is a streaming implementation of HTMLRenderer.
 // It writes output incrementally to minimize memory usage.
 type StreamingHTMLRenderer struct {
-	output.TableDataBase
+	output.TableDataStore
 }
 
 // NewStreamingHTMLRenderer creates a new StreamingHTMLRenderer.
@@ -41,132 +41,48 @@ func (r *StreamingHTMLRenderer) Render() (string, error) {
 
 // Stream writes the HTML table incrementally to an io.Writer.
 func (r *StreamingHTMLRenderer) Stream(w io.Writer) error {
-	data := r.Data()
-	if data == nil {
-		return r.writeEmptyTable(w)
-	}
-
-	err := r.writeTableOpen(w)
-	if err != nil {
-		return err
-	}
-
-	err = r.writeHeaders(w, data)
-	if err != nil {
-		return err
-	}
-
-	err = r.writeTableBodyOpen(w)
-	if err != nil {
-		return err
-	}
-
-	err = r.writeRows(w, data)
-	if err != nil {
-		return err
-	}
-
-	if data.HasFooter() {
-		err = r.writeFooter(w, data)
-	} else {
-		err = r.writeChunk(w, []byte("</tbody>\n"), "close tbody")
-	}
-
-	if err != nil {
-		return err
-	}
-
-	return r.writeTableClose(w)
+	return streamHTMLTable(w, r.Data())
 }
 
-func (r *StreamingHTMLRenderer) writeChunk(w io.Writer, chunk []byte, description string) error {
-	_, err := w.Write(chunk)
-	if err != nil {
-		return fmt.Errorf("%s: %w", description, err)
-	}
-
-	return nil
+// htmlTableData holds the data for HTML table template rendering.
+type htmlTableData struct {
+	Headers []string
+	Rows    [][]string
+	Footer  []string
 }
 
-func (r *StreamingHTMLRenderer) writeEmptyTable(w io.Writer) error {
-	return r.writeChunk(w, []byte(`<table class="data-table"></table>`), "write empty table")
-}
-
-func (r *StreamingHTMLRenderer) writeTableOpen(w io.Writer) error {
-	return r.writeChunk(w, []byte(`<table class="data-table">
-<thead>
+//nolint:gochecknoglobals // Parsed template for HTML table.
+var htmlTableTemplate = template.Must(template.New("htmlTable").Parse(
+	`<table class="data-table">
+{{- if .Headers}}<thead>
 <tr>
-`), "write table header")
-}
-
-func (r *StreamingHTMLRenderer) writeHeaders(w io.Writer, data *output.TableData) error {
-	for _, h := range data.Headers {
-		if _, err := w.Write([]byte("<th>" + escape.HTML(h) + "</th>\n")); err != nil {
-			return fmt.Errorf("write header cell: %w", err)
-		}
-	}
-
-	return nil
-}
-
-func (r *StreamingHTMLRenderer) writeTableBodyOpen(w io.Writer) error {
-	return r.writeChunk(w, []byte(`</tr>
+{{range .Headers}}<th>{{.}}</th>
+{{end}}</tr>
 </thead>
-<tbody>
-`), "write table body")
-}
+{{- end}}<tbody>
+{{range $i, $row := .Rows}}<tr>
+{{range $row}}<td>{{.}}</td>
+{{end}}</tr>
+{{end}}{{if .Footer}}</tbody>
+<tfoot>
+<tr>
+{{range .Footer}}<td class="footer-cell">{{.}}</td>
+{{end}}</tr>
+</tfoot>
+{{else}}</tbody>
+{{end}}</table>`))
 
-func (r *StreamingHTMLRenderer) writeRows(w io.Writer, data *output.TableData) error {
-	for i, row := range data.Rows {
-		err := r.writeRow(w, row, i)
-		if err != nil {
-			return err
-		}
-	}
+// streamHTMLTable writes a complete HTML table to w using html/template for auto-escaping.
+func streamHTMLTable(w io.Writer, data *output.TableData) error {
+	if data == nil {
+		_, err := w.Write([]byte(`<table class="data-table"></table>`))
 
-	return nil
-}
-
-func (r *StreamingHTMLRenderer) writeRow(w io.Writer, row []string, rowIndex int) error {
-	if err := r.writeRowBoundary(w, "<tr>\n", rowIndex, "start"); err != nil {
 		return err
 	}
 
-	for colIndex, cell := range row {
-		if _, err := w.Write([]byte("<td>" + escape.HTML(cell) + "</td>\n")); err != nil {
-			return fmt.Errorf("write row %d cell %d: %w", rowIndex, colIndex, err)
-		}
-	}
-
-	return r.writeRowBoundary(w, "</tr>\n", rowIndex, "end")
-}
-
-func (r *StreamingHTMLRenderer) writeRowBoundary(w io.Writer, tag string, rowIndex int, phase string) error {
-	return r.writeChunk(w, []byte(tag), fmt.Sprintf("write row %d %s", rowIndex, phase))
-}
-
-func (r *StreamingHTMLRenderer) writeTableClose(w io.Writer) error {
-	return r.writeChunk(w, []byte("</table>\n"), "write table end")
-}
-
-func (r *StreamingHTMLRenderer) writeFooter(w io.Writer, data *output.TableData) error {
-	if err := r.writeChunk(w, []byte("</tbody>\n"), "close tbody before tfoot"); err != nil {
-		return err
-	}
-
-	if err := r.writeChunk(w, []byte("<tfoot>\n<tr>\n"), "write tfoot open"); err != nil {
-		return err
-	}
-
-	for i, cell := range data.Footer {
-		if _, err := w.Write([]byte(`<td class="footer-cell">` + escape.HTML(cell) + "</td>\n")); err != nil {
-			return fmt.Errorf("write footer cell %d: %w", i, err)
-		}
-	}
-
-	if err := r.writeChunk(w, []byte("</tr>\n</tfoot>\n"), "write tfoot close"); err != nil {
-		return err
-	}
-
-	return nil
+	return htmlTableTemplate.Execute(w, htmlTableData{
+		Headers: data.Headers,
+		Rows:    data.Rows,
+		Footer:  data.Footer,
+	})
 }

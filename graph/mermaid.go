@@ -14,15 +14,20 @@ var (
 	_ output.GraphRenderer = (*MermaidRenderer)(nil)
 )
 
+//nolint:gochecknoinits // Registers Mermaid format capabilities.
+func init() {
+	output.RegisterFormatShapes(output.FormatMermaid, output.ShapeTable, output.ShapeTree, output.ShapeGraph)
+}
+
 // MermaidRenderer implements the GraphRenderer interface for Mermaid diagrams.
 type MermaidRenderer struct {
-	output.GraphRendererMixin
+	output.GraphRendererState
 }
 
 // NewMermaidRenderer creates a new MermaidRenderer.
 func NewMermaidRenderer() *MermaidRenderer {
 	return &MermaidRenderer{
-		GraphRendererMixin: output.NewGraphRendererMixin(),
+		GraphRendererState: output.NewGraphRendererState(),
 	}
 }
 
@@ -115,7 +120,7 @@ func mermaidTreeNodeID(node *output.TreeNode) string {
 
 func (r *MermaidRenderer) addTreeNodes(node *output.TreeNode, parentID string) {
 	output.AddTreeNodes(
-		&r.GraphRendererMixin,
+		&r.GraphRendererState,
 		node,
 		parentID,
 		mermaidTreeNodeID,

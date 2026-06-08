@@ -3,7 +3,10 @@ package output
 import (
 	"bytes"
 	"errors"
+	"io"
+	"strconv"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/larsartmann/go-output/testhelpers"
@@ -264,4 +267,31 @@ func TestRenderTableData_ValidateRejectsFooterMismatch(t *testing.T) {
 	if !strings.Contains(err.Error(), "footer column count") {
 		t.Errorf("error should mention footer column count, got: %v", err)
 	}
+}
+
+func TestRegisterTableDataMarshaler_ConcurrentAccess(t *testing.T) {
+	t.Parallel()
+
+	const goroutines = 100
+
+	var wg sync.WaitGroup
+	wg.Add(goroutines * 2)
+
+	for i := range goroutines {
+		go func() {
+			defer wg.Done()
+
+			RegisterTableDataMarshaler(Format("race-test-"+strconv.Itoa(i)),
+				func(w io.Writer, data *TableData, opts RenderOptions) error { return nil },
+			)
+		}()
+
+		go func() {
+			defer wg.Done()
+
+			_, _ = getTableDataMarshaler(Format("race-test-" + strconv.Itoa(i)))
+		}()
+	}
+
+	wg.Wait()
 }

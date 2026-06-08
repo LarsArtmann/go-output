@@ -41,7 +41,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 
 - **Footer row** (`TableData.Footer []string`) — optional totals/summary row on `TableData`. Tabular renderers render it visually: CSV/TSV append as last row, HTML uses `<tfoot>` with `footer-cell` CSS class, XML uses `<footer>`, Markdown adds separator + bold row (with column alignment), AsciiDoc appends footer row, Terminal Table uses bold styling. Data formats (JSON/YAML/TOML/JSONL) skip footer.
-- `TableData.GetFooter()`, `TableData.HasFooter()`, `TableDataBase.SetFooter()`, `TableDataBase.HasFooter()` — accessor methods for footer row.
+- `TableData.GetFooter()`, `TableData.HasFooter()`, `TableDataStore.SetFooter()`, `TableDataStore.HasFooter()` — accessor methods for footer row.
 - `TableData.Validate()` — validates footer column count matches headers. Returns `errColumnMismatch` on mismatch. Wired into `RenderTableData()` for automatic validation.
 - `MarkdownTable.SetFooter()` — sets footer row on Markdown table renderer (inherits column alignment).
 - `table.SetFooter()` — adds bold-styled footer row to lipgloss terminal table. Tracks `footerRowIndex` for correct bold styling on multiple calls.
@@ -90,7 +90,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - `TableData.ToMapSlice()` — converts tabular data to `[]map[string]string` for serialization
 - `UnsupportedFormatError` — renamed from `ErrUnsupportedFormat` (follows Go naming conventions)
 - `TableDataMarshaler` registry — sub-modules register via `init()`, root has zero sub-module imports
-- `TableDataBase` — exported from root for cross-module embedding
+- `TableDataStore` — exported from root for cross-module embedding
 - `RenderTableData` now accepts `RenderOptions.ColorMode` to control ANSI color output for terminal renderers.
 - `table.New()` accepts `WithColorMode(ColorMode)` functional option — lipgloss styles conditionally applied based on terminal detection.
 - `ASCIITreeRenderer.SetColorMode(ColorMode)` — depth-based ANSI color cycling, bold labels, dim connectors, cyan metadata.
@@ -112,14 +112,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - `RenderTableData` now returns `UnsupportedFormatError` for D2, Mermaid, and DOT formats (use sub-module constructors directly).
 - `RenderTableData` uses registry-based dispatch via `TableDataMarshaler` — sub-modules register via `init()`. Root has zero sub-module imports.
 - `RenderTableData` — all writer errors now wrapped with `fmt.Errorf("write X: %w", err)` for pinpoint failure reporting
-- `tableDataBase` exported as `TableDataBase` with `Data()` getter — enables cross-module embedding.
+- `tableDataBase` exported as `TableDataStore` with `Data()` getter — enables cross-module embedding.
 - `marshal()`, `unmarshal()`, `brandedValue()` exported as `MarshalFormat()`, `UnmarshalFormat()`, `BrandedValue()` — used by serialization/ and markup/.
 - Multi-module workspace: 13 independent modules (see ADR 001, ADR 003).
 - Root production code has zero imports from sub-modules (`delimited`, `serialization`, `markup`, `d2`, `graph`, `table`, `plantuml`).
 - Root production code has zero `go-faster/yaml`, zero `go-toml/v2`, and zero `escape` imports (isolated in `serialization/` and `markup/`).
 - `FilledStrings` — uses `slices.Repeat` (Go 1.26 stdlib) instead of manual make+for loop
 - `NewBrandedID` — simplified from `id.NewID[Brand, string](value)` to `id.NewID[Brand](value)` (inferred type arg)
-- Added `Nodes()`, `Edges()`, `NodesPtr()`, `EdgesPtr()` accessor methods to `GraphRendererMixin` for cross-package use
+- Added `Nodes()`, `Edges()`, `NodesPtr()`, `EdgesPtr()` accessor methods to `GraphRendererState` for cross-package use
 - `enum/enum_test.go` no longer imports `internal/gentest` (inlined helper)
 - `.gitignore` — added `result` and `.direnv/` for Nix artifacts
 - Deduplication sprints reduced code clones from 44 → 26 (41% total reduction)
@@ -157,7 +157,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - `FormatCategory`, `IsTableFormat()`, `IsTreeFormat()`, `IsGraphFormat()`, `Category()` deprecated — use `Supports(Shape)` instead
 - `TreeNode` and `TreeOutputRenderer` extracted from `format.go` to `tree.go`
 - `TableData`, `RowEdge`, and `tableDataBase` extracted from `format.go`/`html.go` to `tabledata.go`
-- `GraphRendererMixin` moved from `dot.go` to `graph.go`
+- `GraphRendererState` moved from `dot.go` to `graph.go`
 - `format.go` reduced from 373 to 291 lines (under 350-line limit)
 - `dot.go` reduced from 253 to 199 lines
 
@@ -216,7 +216,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - `SortBy` enum for sort field selection
 - Opt-in renderer registry (`Register`/`Create`)
 - D2 diagram renderer with shapes, arrows, SQL tables, classes, user journeys
-- DOT/Graphviz renderer with `GraphRendererMixin`
+- DOT/Graphviz renderer with `GraphRendererState`
 - Mermaid flowchart renderer
 - HTML table renderer with escaping
 - Streaming HTML renderer for large datasets

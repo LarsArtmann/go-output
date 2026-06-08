@@ -2,6 +2,7 @@ package output
 
 import (
 	"slices"
+	"sync"
 
 	"github.com/larsartmann/go-output/enum"
 )
@@ -60,31 +61,54 @@ func ParseShape(s string) (Shape, error) {
 	return v, nil
 }
 
-// formatCapabilities maps each format to the data shapes it supports.
-//
-//nolint:gochecknoglobals // Capability matrix is the single source of truth.
-var formatCapabilities = map[Format][]Shape{
-	FormatTable:    {ShapeTable},
-	FormatJSON:     {ShapeTable, ShapeTree, ShapeGraph},
-	FormatCSV:      {ShapeTable},
-	FormatTSV:      {ShapeTable},
-	FormatXML:      {ShapeTable},
-	FormatMarkdown: {ShapeTable},
-	FormatD2:       {ShapeTable, ShapeTree, ShapeGraph},
-	FormatYAML:     {ShapeTable, ShapeTree, ShapeGraph},
-	FormatHTML:     {ShapeTable, ShapeTree},
-	FormatTree:     {ShapeTree},
-	FormatMermaid:  {ShapeTable, ShapeTree, ShapeGraph},
-	FormatDOT:      {ShapeTable, ShapeTree, ShapeGraph},
-	FormatJSONL:    {ShapeTable},
-	FormatAsciiDoc: {ShapeTable},
-	FormatTOML:     {ShapeTable, ShapeTree, ShapeGraph},
-	FormatPlantUML: {ShapeTable, ShapeTree, ShapeGraph},
+var (
+	//nolint:gochecknoglobals // Registry for format capabilities, populated by sub-module init().
+	formatCapabilities = map[Format][]Shape{}
+	//nolint:gochecknoglobals // Mutex protects concurrent access to formatCapabilities.
+	formatCapabilitiesMu sync.RWMutex
+)
+
+// RegisterFormatShapes registers the data shapes a format supports.
+// Sub-modules call this from their init() to declare capabilities.
+func RegisterFormatShapes(format Format, shapes ...Shape) {
+	formatCapabilitiesMu.Lock()
+	defer formatCapabilitiesMu.Unlock()
+
+	formatCapabilities[format] = shapes
+}
+
+//nolint:gochecknoinits // Registers all format capabilities (sub-modules may override via their own init).
+func init() {
+	RegisterFormatShapes(FormatTable, ShapeTable)
+	RegisterFormatShapes(FormatJSON, ShapeTable, ShapeTree, ShapeGraph)
+	RegisterFormatShapes(FormatCSV, ShapeTable)
+	RegisterFormatShapes(FormatTSV, ShapeTable)
+	RegisterFormatShapes(FormatXML, ShapeTable)
+	RegisterFormatShapes(FormatMarkdown, ShapeTable)
+	RegisterFormatShapes(FormatD2, ShapeTable, ShapeTree, ShapeGraph)
+	RegisterFormatShapes(FormatYAML, ShapeTable, ShapeTree, ShapeGraph)
+	RegisterFormatShapes(FormatHTML, ShapeTable, ShapeTree)
+	RegisterFormatShapes(FormatTree, ShapeTree)
+	RegisterFormatShapes(FormatMermaid, ShapeTable, ShapeTree, ShapeGraph)
+	RegisterFormatShapes(FormatDOT, ShapeTable, ShapeTree, ShapeGraph)
+	RegisterFormatShapes(FormatJSONL, ShapeTable)
+	RegisterFormatShapes(FormatAsciiDoc, ShapeTable)
+	RegisterFormatShapes(FormatTOML, ShapeTable, ShapeTree, ShapeGraph)
+	RegisterFormatShapes(FormatPlantUML, ShapeTable, ShapeTree, ShapeGraph)
+}
+
+func getFormatShapes(format Format) ([]Shape, bool) {
+	formatCapabilitiesMu.RLock()
+	defer formatCapabilitiesMu.RUnlock()
+
+	shapes, ok := formatCapabilities[format]
+
+	return shapes, ok
 }
 
 // Supports returns true if the format can render the given data shape.
 func (f Format) Supports(s Shape) bool {
-	shapes, ok := formatCapabilities[f]
+	shapes, ok := getFormatShapes(f)
 	if !ok {
 		return false
 	}
@@ -94,7 +118,9 @@ func (f Format) Supports(s Shape) bool {
 
 // Shapes returns all data shapes this format supports.
 func (f Format) Shapes() []Shape {
-	return formatCapabilities[f]
+	shapes, _ := getFormatShapes(f)
+
+	return shapes
 }
 
 // FormatsForShape returns all formats that support the given data shape.

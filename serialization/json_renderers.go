@@ -35,7 +35,7 @@ func (r *JSONTreeRenderer) Render() (string, error) {
 		return "null", nil
 	}
 
-	node := toTreeNodeDTO(r.root)
+	node := toTreeNode(r.root)
 
 	data, err := json.MarshalIndent(node, "", "  ")
 	if err != nil {
@@ -47,19 +47,19 @@ func (r *JSONTreeRenderer) Render() (string, error) {
 
 // JSONGraphRenderer renders graph nodes and edges as JSON.
 type JSONGraphRenderer struct {
-	output.GraphRendererMixin
+	output.GraphRendererState
 }
 
 // NewJSONGraphRenderer creates a new JSONGraphRenderer.
 func NewJSONGraphRenderer() *JSONGraphRenderer {
 	return &JSONGraphRenderer{
-		GraphRendererMixin: output.NewGraphRendererMixin(),
+		GraphRendererState: output.NewGraphRendererState(),
 	}
 }
 
 // Render returns the graph as a JSON string.
 func (r *JSONGraphRenderer) Render() (string, error) {
-	graph := buildGraphDTO(r.GraphRendererMixin)
+	graph := buildGraphView(r.GraphRendererState)
 
 	data, err := json.MarshalIndent(graph, "", "  ")
 	if err != nil {
