@@ -1,6 +1,7 @@
 package nom
 
 import (
+	"strings"
 	"testing"
 	"time"
 )
@@ -95,5 +96,28 @@ func TestDependencyTree_AddActivity_UpdateExisting(t *testing.T) {
 	node := dt.GetNode(ActivityID("a"))
 	if node.ActivityName != "Updated" {
 		t.Errorf("ActivityName = %q, want %q", node.ActivityName, "Updated")
+	}
+}
+
+func TestDependencyTree_Render_SecondaryDependencies(t *testing.T) {
+	t.Parallel()
+
+	dt := NewDependencyTree()
+	dt.AddActivity(ActivityID("phase"), "Phase", nil)
+	dt.AddActivity(ActivityID("step1"), "Step1", []ActivityID{"phase"})
+	dt.AddActivity(ActivityID("step2"), "Step2", []ActivityID{"phase", "step1"})
+
+	got := dt.Render(10)
+	if got == "" {
+		t.Fatal("Render() should produce output")
+	}
+
+	if !strings.Contains(got, "depends on") {
+		t.Errorf("render should contain dependency annotation for secondary deps, got:\n%s", got)
+	}
+
+	step2Node := dt.GetNode(ActivityID("step2"))
+	if len(step2Node.SecondaryParents) != 1 || step2Node.SecondaryParents[0] != ActivityID("step1") {
+		t.Errorf("SecondaryParents = %v, want [step1]", step2Node.SecondaryParents)
 	}
 }
