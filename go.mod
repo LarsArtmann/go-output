@@ -8,7 +8,7 @@ require (
 	github.com/larsartmann/go-output/enum v0.6.3
 	github.com/larsartmann/go-output/serialization v0.6.3
 	github.com/larsartmann/go-output/testhelpers v0.6.3
-	golang.org/x/term v0.43.0
+	golang.org/x/term v0.44.0
 )
 
 replace (
@@ -30,5 +30,5 @@ require (
 	github.com/segmentio/asm v1.2.1 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/exp v0.0.0-20260603202125-055de637280b // indirect
-	golang.org/x/sys v0.45.0 // indirect
+	golang.org/x/sys v0.46.0 // indirect
 )
