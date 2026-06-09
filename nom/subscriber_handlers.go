@@ -88,8 +88,15 @@ func (ns *NOMStyleSubscriber) handleWorkflowStarted(
 		fmt.Printf("Warning: Failed to load timing cache: %v\n", err)
 	}
 
-	ns.activities = make(map[ActivityID]*ActivityDisplayState)
-	ns.dependencyTree.Clear()
+	// Preserve pre-registered activities and tree structure (e.g. from
+	// ProgressBridge.Start()). Only initialize empty maps on a fresh start
+	// so callers can register phases/steps before workflow.started.
+	if ns.activities == nil {
+		ns.activities = make(map[ActivityID]*ActivityDisplayState)
+	}
+	if ns.dependencyTree == nil {
+		ns.dependencyTree = NewDependencyTree()
+	}
 
 	return nil
 }

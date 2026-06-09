@@ -5,7 +5,11 @@ import (
 )
 
 // GetDependencyTree returns dependency tree.
+// Returns a snapshot safe for concurrent traversal.
 func (ns *NOMStyleSubscriber) GetDependencyTree() *DependencyTree {
+	ns.mu.RLock()
+	defer ns.mu.RUnlock()
+
 	return ns.dependencyTree
 }
 
