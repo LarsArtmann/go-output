@@ -64,3 +64,14 @@ func newTreeNode(id ActivityID, name string) *TreeNode {
 		IsDisplayed:  true,
 	}
 }
+
+// hasChild returns true if this node already has a child with the given activity ID.
+func (n *TreeNode) hasChild(id ActivityID) bool {
+	for _, c := range n.Children {
+		if c.ActivityID == id {
+			return true
+		}
+	}
+
+	return false
+}

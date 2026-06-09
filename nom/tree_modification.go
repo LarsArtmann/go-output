@@ -32,7 +32,9 @@ func (dt *DependencyTree) AddActivity(
 			node.Parent = depNode
 		}
 
-		depNode.Children = append(depNode.Children, node)
+		if !depNode.hasChild(node.ActivityID) {
+			depNode.Children = append(depNode.Children, node)
+		}
 	}
 
 	dt.loaded = false // Need to rebuild
