@@ -3,9 +3,9 @@ module github.com/larsartmann/go-output/d2
 go 1.26.3
 
 require (
-	github.com/larsartmann/go-output v0.6.3
-	github.com/larsartmann/go-output/enum v0.6.3
-	github.com/larsartmann/go-output/escape v0.6.3
+	github.com/larsartmann/go-output v0.7.2
+	github.com/larsartmann/go-output/enum v0.7.0
+	github.com/larsartmann/go-output/escape v0.7.0
 	github.com/larsartmann/go-output/testhelpers v0.6.3
 	github.com/larsartmann/go-output/testhelpers/graphtest v0.6.3
 )

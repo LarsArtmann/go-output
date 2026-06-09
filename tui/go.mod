@@ -5,7 +5,7 @@ go 1.26.3
 require (
 	charm.land/bubbletea/v2 v2.0.7
 	charm.land/lipgloss/v2 v2.0.3
-	github.com/larsartmann/go-output/nom v0.0.0
+	github.com/larsartmann/go-output/nom v0.7.2
 )
 
 require (
