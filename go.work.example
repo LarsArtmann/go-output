@@ -10,9 +10,11 @@ use (
 	./graph
 	./integration
 	./markup
+	./nom
 	./plantuml
 	./serialization
 	./table
 	./testhelpers
 	./testhelpers/graphtest
+	./tui
 )

@@ -9,13 +9,16 @@ require (
 	github.com/larsartmann/go-output/delimited v0.6.3
 	github.com/larsartmann/go-output/graph v0.6.3
 	github.com/larsartmann/go-output/markup v0.6.3
+	github.com/larsartmann/go-output/nom v0.0.0
 	github.com/larsartmann/go-output/plantuml v0.6.3
 	github.com/larsartmann/go-output/serialization v0.6.3
 	github.com/larsartmann/go-output/table v0.6.3
 	github.com/larsartmann/go-output/testhelpers v0.6.3
+	github.com/larsartmann/go-output/tui v0.0.0-00010101000000-000000000000
 )
 
 require (
+	charm.land/bubbletea/v2 v2.0.7 // indirect
 	charm.land/lipgloss/v2 v2.0.3 // indirect
 	github.com/charmbracelet/colorprofile v0.4.3 // indirect
 	github.com/charmbracelet/ultraviolet v0.0.0-20260608091853-35bcb7319efa // indirect
@@ -51,9 +54,11 @@ replace (
 	github.com/larsartmann/go-output/escape => ../escape
 	github.com/larsartmann/go-output/graph => ../graph
 	github.com/larsartmann/go-output/markup => ../markup
+	github.com/larsartmann/go-output/nom => ../nom
 	github.com/larsartmann/go-output/plantuml => ../plantuml
 	github.com/larsartmann/go-output/serialization => ../serialization
 	github.com/larsartmann/go-output/table => ../table
 	github.com/larsartmann/go-output/testhelpers => ../testhelpers
 	github.com/larsartmann/go-output/testhelpers/graphtest => ../testhelpers/graphtest
+	github.com/larsartmann/go-output/tui => ../tui
 )

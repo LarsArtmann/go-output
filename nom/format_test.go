@@ -1,0 +1,248 @@
+package nom
+
+import (
+	"testing"
+	"time"
+)
+
+func TestFormatDuration(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name     string
+		duration time.Duration
+		want     string
+	}{
+		{"milliseconds", 500 * time.Millisecond, "500ms"},
+		{"1 second", 1 * time.Second, "1.0s"},
+		{"1.5 seconds", 1500 * time.Millisecond, "1.5s"},
+		{"1 minute", 1 * time.Minute, "1m"},
+		{"1 minute 30 seconds", 90 * time.Second, "1m30s"},
+		{"2 minutes", 2 * time.Minute, "2m"},
+		{"zero", 0, "0ms"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			got := FormatDuration(tt.duration)
+			if got != tt.want {
+				t.Errorf("FormatDuration(%v) = %q, want %q", tt.duration, got, tt.want)
+			}
+		})
+	}
+}
+
+func TestGetOperationSymbol(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name    string
+		opType  string
+		want    string
+		wantLen int
+	}{
+		{"download", OperationTypeDownload, SymbolDownload, 1},
+		{"upload", OperationTypeUpload, SymbolUpload, 1},
+		{"unknown", "unknown", "", 0},
+		{"empty", "", "", 0},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			got := GetOperationSymbol(tt.opType)
+			if got != tt.want {
+				t.Errorf("GetOperationSymbol(%q) = %q, want %q", tt.opType, got, tt.want)
+			}
+		})
+	}
+}
+
+func TestShouldDisplayTiming(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name     string
+		duration time.Duration
+		want     bool
+	}{
+		{"below 1s", 500 * time.Millisecond, false},
+		{"exactly 1s", 1 * time.Second, true},
+		{"above 1s", 5 * time.Second, true},
+		{"zero", 0, false},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			got := ShouldDisplayTiming(tt.duration)
+			if got != tt.want {
+				t.Errorf("ShouldDisplayTiming(%v) = %v, want %v", tt.duration, got, tt.want)
+			}
+		})
+	}
+}
+
+func TestFormatTreeNodeTiming(t *testing.T) {
+	t.Parallel()
+
+	t.Run("running with visible timing", func(t *testing.T) {
+		t.Parallel()
+
+		got := FormatTreeNodeTiming(ActivityStatusRunning, 5*time.Second, 0)
+		if got == "" {
+			t.Error("expected non-empty timing for running status")
+		}
+	})
+
+	t.Run("running with sub-second elapsed returns empty", func(t *testing.T) {
+		t.Parallel()
+
+		got := FormatTreeNodeTiming(ActivityStatusRunning, 100*time.Millisecond, 0)
+		if got != "" {
+			t.Errorf("expected empty for sub-second, got %q", got)
+		}
+	})
+
+	t.Run("pending with estimated time", func(t *testing.T) {
+		t.Parallel()
+
+		got := FormatTreeNodeTiming(ActivityStatusPending, 0, 10*time.Second)
+		if got == "" {
+			t.Error("expected non-empty timing for pending with estimate")
+		}
+	})
+
+	t.Run("completed with elapsed", func(t *testing.T) {
+		t.Parallel()
+
+		got := FormatTreeNodeTiming(ActivityStatusCompleted, 3*time.Second, 0)
+		if got == "" {
+			t.Error("expected non-empty timing for completed")
+		}
+	})
+
+	t.Run("failed with elapsed", func(t *testing.T) {
+		t.Parallel()
+
+		got := FormatTreeNodeTiming(ActivityStatusFailed, 2*time.Second, 0)
+		if got == "" {
+			t.Error("expected non-empty timing for failed")
+		}
+	})
+
+	t.Run("paused with elapsed", func(t *testing.T) {
+		t.Parallel()
+
+		got := FormatTreeNodeTiming(ActivityStatusPaused, 2*time.Second, 0)
+		if got == "" {
+			t.Error("expected non-empty timing for paused")
+		}
+	})
+
+	t.Run("zero elapsed returns empty", func(t *testing.T) {
+		t.Parallel()
+
+		got := FormatTreeNodeTiming(ActivityStatusRunning, 0, 0)
+		if got != "" {
+			t.Errorf("expected empty for zero elapsed, got %q", got)
+		}
+	})
+}
+
+func TestGetActivitySummaryString(t *testing.T) {
+	t.Parallel()
+
+	t.Run("all zero returns empty", func(t *testing.T) {
+		t.Parallel()
+
+		got := GetActivitySummaryString(0, 0, 0, 0)
+		if got != "" {
+			t.Errorf("expected empty, got %q", got)
+		}
+	})
+
+	t.Run("only total", func(t *testing.T) {
+		t.Parallel()
+
+		got := GetActivitySummaryString(0, 0, 0, 5)
+		if got == "" {
+			t.Error("expected non-empty for total > 0")
+		}
+	})
+
+	t.Run("with running", func(t *testing.T) {
+		t.Parallel()
+
+		got := GetActivitySummaryString(3, 0, 0, 5)
+		if got == "" {
+			t.Error("expected non-empty")
+		}
+	})
+
+	t.Run("with all categories", func(t *testing.T) {
+		t.Parallel()
+
+		got := GetActivitySummaryString(1, 2, 3, 10)
+		if got == "" {
+			t.Error("expected non-empty")
+		}
+	})
+}
+
+func TestFormatTimingInfo(t *testing.T) {
+	t.Parallel()
+
+	t.Run("running activity shows elapsed", func(t *testing.T) {
+		t.Parallel()
+
+		ads := NewActivityDisplayState(ActivityID("a"), ActivityName("A"))
+		ads.SetRunning()
+
+		got := FormatTimingInfo(ads)
+		if got == "" {
+			t.Error("expected non-empty timing for running activity")
+		}
+	})
+
+	t.Run("completed activity shows duration", func(t *testing.T) {
+		t.Parallel()
+
+		ads := NewActivityDisplayState(ActivityID("a"), ActivityName("A"))
+		ads.SetRunning()
+		time.Sleep(10 * time.Millisecond)
+		ads.SetCompleted()
+
+		got := FormatTimingInfo(ads)
+		if got == "" {
+			t.Error("expected non-empty timing for completed activity")
+		}
+	})
+
+	t.Run("pending with estimated time shows average", func(t *testing.T) {
+		t.Parallel()
+
+		ads := NewActivityDisplayState(ActivityID("a"), ActivityName("A"))
+		ads.SetEstimatedTime(5 * time.Second)
+
+		got := FormatTimingInfo(ads)
+		if got == "" {
+			t.Error("expected non-empty timing for pending with estimate")
+		}
+	})
+
+	t.Run("pending without estimated time returns empty", func(t *testing.T) {
+		t.Parallel()
+
+		ads := NewActivityDisplayState(ActivityID("a"), ActivityName("A"))
+
+		got := FormatTimingInfo(ads)
+		if got != "" {
+			t.Errorf("expected empty, got %q", got)
+		}
+	})
+}

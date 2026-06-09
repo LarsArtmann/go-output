@@ -155,15 +155,37 @@ linters:
             - github.com/larsartmann/go-output/serialization
             - github.com/larsartmann/go-output/markup
             - github.com/larsartmann/go-output/plantuml
+            - github.com/larsartmann/go-output/nom
+            - github.com/larsartmann/go-output/tui
             - github.com/larsartmann/go-output/examples/shared
             - github.com/larsartmann/go-branded-id
             - github.com/larsartmann/go-output/pkg/errors
             - charm.land/lipgloss/v2
             - charm.land/lipgloss/v2/table
+            - charm.land/bubbletea/v2
             - github.com/go-faster/yaml
             - github.com/pelletier/go-toml/v2
             - bufio
+            - cmp
+            - context
+            - encoding/csv
+            - encoding/json
+            - encoding/xml
+            - errors
+            - fmt
             - golang.org/x/term
+            - html
+            - image/color
+            - io
+            - os
+            - path/filepath
+            - slices
+            - sort
+            - strconv
+            - strings
+            - sync
+            - testing
+            - time
         examples:
           allow:
             - $STDERR
@@ -183,6 +205,8 @@ linters:
             - github.com/larsartmann/go-output/serialization
             - github.com/larsartmann/go-output/table
             - github.com/larsartmann/go-output/plantuml
+            - github.com/larsartmann/go-output/nom
+            - github.com/larsartmann/go-output/tui
             - github.com/larsartmann/go-branded-id
           files:
             - examples/**/*.go
@@ -202,24 +226,29 @@ linters:
             - github.com/larsartmann/go-output/serialization
             - github.com/larsartmann/go-output/markup
             - github.com/larsartmann/go-output/plantuml
+            - github.com/larsartmann/go-output/nom
+            - github.com/larsartmann/go-output/tui
             - github.com/larsartmann/go-output/examples/shared
             - github.com/larsartmann/go-branded-id
             - charm.land/lipgloss/v2
             - charm.land/lipgloss/v2/table
+            - charm.land/bubbletea/v2
             - github.com/go-faster/yaml
             - github.com/pelletier/go-toml/v2
             - bufio
-            - golang.org/x/term
-            - bytes
             - cmp
+            - context
             - encoding/csv
             - encoding/json
             - encoding/xml
             - errors
             - fmt
+            - golang.org/x/term
             - html
+            - image/color
             - io
             - os
+            - path/filepath
             - slices
             - sort
             - strconv
@@ -245,6 +274,8 @@ linters:
         - github.com/larsartmann/go-output/table
         - github.com/larsartmann/go-output/testhelpers
         - github.com/larsartmann/go-output/plantuml
+        - github.com/larsartmann/go-output/nom
+        - github.com/larsartmann/go-output/tui
       replace-local: true
     revive:
       rules:
@@ -351,6 +382,22 @@ linters:
           - gochecknoglobals
           - exhaustruct
           - varnamelen
+      - path: nom/symbols\.go
+        text: (?:global variable)
+        linters:
+          - gochecknoglobals
+      - path: nom/
+        text: (?:make it a constant|but such constant)
+        linters:
+          - goconst
+      - path: nom/
+        text: (?:do not define dynamic errors)
+        linters:
+          - err113
+      - path: nom/timing_cache_persist\.go
+        text: (?:G304)
+        linters:
+          - gosec
       - path: format\.go
         text: (?:gochecknoglobals|AllFormats)
         linters:

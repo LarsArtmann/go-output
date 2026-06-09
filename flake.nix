@@ -1,5 +1,5 @@
 {
-  description = "go-output — Reusable Go library for CLI output formatting across 16 formats";
+  description = "go-output — Reusable Go library for CLI output formatting across 16 formats with NOM-style progress visualization";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -50,10 +50,12 @@
             "graph"
             "integration"
             "markup"
+            "nom"
             "plantuml"
             "serialization"
             "table"
             "testhelpers"
+            "tui"
           ];
 
           runForModules =
