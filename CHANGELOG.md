@@ -6,6 +6,35 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-06-09
+
+### Added
+
+- **`nom/` module** — NOM-style real-time progress visualization with dependency trees, timing cache (CSV-persisted), and event-driven activity tracking. Zero imports from root module. `NOMStyleSubscriber` implements `EventSubscriber` with string-based event routing and type-assertion accessor interfaces.
+- **`tui/` module** — Bubble Tea interactive TUI for workflow progress display. `BubbleTeaProgressReporter` with state machine (`WorkflowState`: Idle→Running→Completed/Errored), step-based progress, and NOM integration. Depends on `nom/`.
+- `TableData.Validate()` now rejects nil rows — catches `nil` in `Rows [][]string` before rendering.
+- Race test for `RegisterFormatShapes` confirms thread-safety of the shape capability matrix.
+
+### Changed
+
+- **BREAKING**: `RenderTableData()` changed from variadic `opts ...RenderOptions` to single `opts RenderOptions` — only `opts[0]` was ever used, the variadic signature was misleading.
+- `GraphRendererMixin` API refactored for cleaner method signatures.
+- String escaping optimized across modules — `strings.NewReplacer` for single-pass replacements.
+- File renames for naming consistency across the project.
+- Transitive dependencies updated across all 15 modules.
+
+### Fixed
+
+- Gosec and wrapcheck lint violations resolved.
+- Critical bugs and config gaps from comprehensive quality audit.
+- Flaky `TestTimingCache_SaveAndLoad` — async `saveAsync()` goroutine now completes before test cleanup.
+
+### Internal
+
+- `go.work.example` and `AGENTS.md` updated for 15 modules (was 13).
+- Coverage table updated: nom 93.1%, tui 84.2%.
+- Nix configuration standardized with format and build checks.
+
 ## [0.6.3] - 2026-06-03
 
 ### Changed
