@@ -135,6 +135,20 @@ func (dt *DependencyTree) renderNode(node *TreeNode, displayNodes []*TreeNode) s
 	if timingInfo != "" {
 		activityDisplay += " " + timingInfo
 	}
+	// Append secondary dependency labels (non-primary parents)
+	if len(node.SecondaryParents) > 0 {
+		depNames := make([]string, len(node.SecondaryParents))
+		for i, depID := range node.SecondaryParents {
+			if depNode, ok := dt.nodes[depID]; ok {
+				depNames[i] = depNode.ActivityName
+			} else {
+				depNames[i] = depID.String()
+			}
+		}
+		activityDisplay += lipgloss.NewStyle().
+			Foreground(ColorInfo).
+			Render(fmt.Sprintf(" ⬅ depends on %s", strings.Join(depNames, ", ")))
+	}
 	// Style with color - force ANSI colors
 	style := lipgloss.NewStyle().
 		Foreground(node.Color).

@@ -27,13 +27,14 @@ func (dt *DependencyTree) AddActivity(
 			depNode = newTreeNode(depID, depID.String())
 			dt.nodes[depID] = depNode
 		}
-		// Primary parent is the first dependency; others are secondary parents (child link only)
+		// Primary parent is the first dependency; others are secondary parents (display only)
 		if i == 0 {
 			node.Parent = depNode
-		}
-
-		if !depNode.hasChild(node.ActivityID) {
-			depNode.Children = append(depNode.Children, node)
+			if !depNode.hasChild(node.ActivityID) {
+				depNode.Children = append(depNode.Children, node)
+			}
+		} else {
+			node.SecondaryParents = append(node.SecondaryParents, depID)
 		}
 	}
 
