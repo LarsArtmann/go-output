@@ -55,6 +55,14 @@ type ErrorAccessor interface {
 	GetError() error
 }
 
+// DependenciesAccessor extracts parent activity IDs for tree structure.
+// When implemented on an "activity.started" event, the subscriber uses these
+// IDs as the activity's parents in the dependency tree. The first ID becomes
+// the primary parent (tree edge); all IDs get the activity added as a child.
+type DependenciesAccessor interface {
+	GetDependencies() []ActivityID
+}
+
 // handleWorkflowStarted handles workflow started event.
 func (ns *NOMStyleSubscriber) handleWorkflowStarted(
 	_ context.Context,
@@ -164,10 +172,15 @@ func (ns *NOMStyleSubscriber) handleActivityStarted(
 		activity.SetEstimatedTime(avgDuration)
 	}
 
+	var deps []ActivityID
+	if da, ok := event.(DependenciesAccessor); ok {
+		deps = da.GetDependencies()
+	}
+
 	if err := ns.dependencyTree.AddActivity(
 		aa.GetActivityID(),
 		aa.GetActivityName().String(),
-		[]ActivityID{},
+		deps,
 	); err != nil {
 		fmt.Printf("Warning: Failed to add activity to tree: %v\n", err)
 	}

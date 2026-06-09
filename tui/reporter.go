@@ -51,6 +51,19 @@ func NewBubbleTeaProgressReporter() *BubbleTeaProgressReporter {
 	}
 }
 
+// Subscriber returns the internal NOM subscriber used by the TUI model.
+// Send events to this subscriber to populate the NOM-style dependency tree.
+func (pr *BubbleTeaProgressReporter) Subscriber() *nom.NOMStyleSubscriber {
+	return pr.model.nomSubscriber
+}
+
+// SetDisplayMode switches the rendering mode between NOM and Universal.
+// Must be called before Start(). DisplayModeNOM renders the dependency tree;
+// DisplayModeUniversal renders step-based progress.
+func (pr *BubbleTeaProgressReporter) SetDisplayMode(mode DisplayMode) {
+	pr.model.displayMode = mode
+}
+
 // transitionWorkflowState safely transitions the workflow to a new state.
 func (pr *BubbleTeaProgressReporter) transitionWorkflowState(newState WorkflowState) bool {
 	if pr.model.workflowState.CanTransitionTo(newState) {
