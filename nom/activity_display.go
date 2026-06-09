@@ -1,8 +1,10 @@
 package nom
+
 import (
 	"image/color"
 	"time"
 )
+
 // ============================================================================
 // ACTIVITY DISPLAY STATE
 // ============================================================================
@@ -26,6 +28,7 @@ type ActivityDisplayState struct {
 	// Dependencies for tree rendering
 	Dependencies []string
 }
+
 // NewActivityDisplayState creates a new ActivityDisplayState.
 func NewActivityDisplayState(
 	activityID ActivityID,
@@ -45,6 +48,7 @@ func NewActivityDisplayState(
 		Dependencies:  make([]string, 0),
 	}
 }
+
 // SetRunning marks activity as running.
 func (ads *ActivityDisplayState) SetRunning() {
 	ads.Status = ActivityStatusRunning
@@ -52,6 +56,7 @@ func (ads *ActivityDisplayState) SetRunning() {
 	ads.Color = ColorRunning
 	ads.StartTime = time.Now()
 }
+
 // SetCompleted marks activity as completed.
 func (ads *ActivityDisplayState) SetCompleted() {
 	ads.Status = ActivityStatusCompleted
@@ -59,6 +64,7 @@ func (ads *ActivityDisplayState) SetCompleted() {
 	ads.Color = ColorCompleted
 	ads.calculateElapsedTime()
 }
+
 // SetFailed marks activity as failed.
 func (ads *ActivityDisplayState) SetFailed(err error) {
 	ads.Status = ActivityStatusFailed
@@ -67,38 +73,47 @@ func (ads *ActivityDisplayState) SetFailed(err error) {
 	ads.calculateElapsedTime()
 	ads.Error = err
 }
+
 // calculateElapsedTime calculates elapsed time if start time is set.
 func (ads *ActivityDisplayState) calculateElapsedTime() {
 	if ads.StartTime.IsZero() {
 		return
 	}
+
 	ads.EndTime = time.Now()
 	ads.CurrentElapsed = ads.EndTime.Sub(ads.StartTime)
 }
+
 // SetEstimatedTime sets estimated duration from cache.
 func (ads *ActivityDisplayState) SetEstimatedTime(duration time.Duration) {
 	ads.EstimatedTime = duration
 }
+
 // SetOperationType sets operation type symbol.
 func (ads *ActivityDisplayState) SetOperationType(operationType string) {
 	ads.OperationType = operationType
 }
+
 // AddDependency adds a dependency to activity.
 func (ads *ActivityDisplayState) AddDependency(dep string) {
 	ads.Dependencies = append(ads.Dependencies, dep)
 }
+
 // IsRunning returns true if activity is currently running.
 func (ads *ActivityDisplayState) IsRunning() bool {
 	return ads.Status == ActivityStatusRunning
 }
+
 // IsCompleted returns true if activity is completed.
 func (ads *ActivityDisplayState) IsCompleted() bool {
 	return ads.Status == ActivityStatusCompleted
 }
+
 // IsFailed returns true if activity has failed.
 func (ads *ActivityDisplayState) IsFailed() bool {
 	return ads.Status == ActivityStatusFailed
 }
+
 // Copy creates a deep copy of ActivityDisplayState.
 // This ensures external modifications don't affect the original.
 func (ads *ActivityDisplayState) Copy() *ActivityDisplayState {

@@ -1,5 +1,7 @@
 package nom
+
 import "context"
+
 type Event interface {
 	GetEventType() string
 }

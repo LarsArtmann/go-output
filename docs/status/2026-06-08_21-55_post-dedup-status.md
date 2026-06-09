@@ -22,11 +22,11 @@ Since the architecture & naming sprint (10:26 CEST), the only change is this sta
 
 After writing this status report, 3 improvement items from the deep-dive analysis were implemented:
 
-| # | Task | Commit | Why |
-|---|------|--------|-----|
-| 1 | Race test for `RegisterFormatShapes` | `86eebac` | `RegisterTableDataMarshaler` had a race test; `RegisterFormatShapes` (identical RWMutex+map pattern) did not. Documents thread-safety contract. |
-| 2 | Nil row validation in `TableData.Validate()` | `34570b1` | Nil rows in `[][]string` are almost certainly bugs and could cause panics in downstream renderers. Catches them at validation time with clear error messages including the row index. |
-| 3 | AGENTS.md documentation update | `6f6114f` | The `RegisterFormatShapes` registry pattern was implemented but undocumented. Updated Key Design Patterns and "Adding a New Output Format" task. Removed stale `internal/gentest` reference. |
+| #   | Task                                         | Commit    | Why                                                                                                                                                                                          |
+| --- | -------------------------------------------- | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Race test for `RegisterFormatShapes`         | `86eebac` | `RegisterTableDataMarshaler` had a race test; `RegisterFormatShapes` (identical RWMutex+map pattern) did not. Documents thread-safety contract.                                              |
+| 2   | Nil row validation in `TableData.Validate()` | `34570b1` | Nil rows in `[][]string` are almost certainly bugs and could cause panics in downstream renderers. Catches them at validation time with clear error messages including the row index.        |
+| 3   | AGENTS.md documentation update               | `6f6114f` | The `RegisterFormatShapes` registry pattern was implemented but undocumented. Updated Key Design Patterns and "Adding a New Output Format" task. Removed stale `internal/gentest` reference. |
 
 **Impact:** +40 lines, -3 lines. Zero breaking changes. All quality gates still pass.
 
@@ -92,7 +92,7 @@ The only friction point remains the BuildFlow `library-policy` pre-commit hook.
 
 ## e) WHAT WE SHOULD IMPROVE! 💡
 
-*(Identical to 10:26 report — no code changes since then, so no new improvement opportunities discovered.)*
+_(Identical to 10:26 report — no code changes since then, so no new improvement opportunities discovered.)_
 
 ### High Impact
 
@@ -119,9 +119,10 @@ The only friction point remains the BuildFlow `library-policy` pre-commit hook.
 
 ## f) Top #25 Things We Should Get Done Next 📋
 
-*(Unchanged from 10:26 report — see `2026-06-08_10-26_architecture-naming-sprint-complete.md` for full table.)*
+_(Unchanged from 10:26 report — see `2026-06-08_10-26_architecture-naming-sprint-complete.md` for full table.)_
 
 Top 5 unchanged:
+
 1. Configure BuildFlow `library-policy`
 2. Decide v1 API exported fields vs getters
 3. Add `gomod2nix`
@@ -134,7 +135,7 @@ Top 5 unchanged:
 
 **How do I configure BuildFlow to skip the `library-policy` step?**
 
-*(Identical to 10:26 report — no new information discovered.)*
+_(Identical to 10:26 report — no new information discovered.)_
 
 Options remain: A) Create `.buildflow.yml`, B) Accept recommendations, C) Continue `--no-verify`, D) Skip BuildFlow in pre-commit.
 
@@ -144,22 +145,22 @@ Options remain: A) Create `.buildflow.yml`, B) Accept recommendations, C) Contin
 
 ## Module Health Matrix
 
-| Module | Tests | Lint | Coverage | Notes |
-|--------|-------|------|----------|-------|
-| root (output) | ✅ | ✅ | 96.8% | Registry patterns, core types |
-| delimited | ✅ | ✅ | 90.5% | CSV/TSV writers |
-| d2 | ✅ | ✅ | 100% | Rich domain model |
-| enum | ✅ | ✅ | 100% | Zero deps |
-| escape | ✅ | ✅ | 100% | `SlugifyID` |
-| graph | ✅ | ✅ | 96.1% | DOT/Mermaid |
-| integration | ✅ | ✅ | 95.5% | Round-trip tests |
-| markup | ✅ | ✅ | 93.8% | `html/template` |
-| plantuml | ✅ | ✅ | 97.1% | Escape dep added |
-| serialization | ✅ | ✅ | 91.6% | Inlined wrappers |
-| table | ✅ | ✅ | 100% | Lipgloss isolated |
-| testhelpers | ✅ | ✅ | 91.3% | Shared assertions |
-| testhelpers/graphtest | — | — | — | Helper pkg |
-| examples | ✅ | ✅ | — | Usage demos |
+| Module                | Tests | Lint | Coverage | Notes                         |
+| --------------------- | ----- | ---- | -------- | ----------------------------- |
+| root (output)         | ✅    | ✅   | 96.8%    | Registry patterns, core types |
+| delimited             | ✅    | ✅   | 90.5%    | CSV/TSV writers               |
+| d2                    | ✅    | ✅   | 100%     | Rich domain model             |
+| enum                  | ✅    | ✅   | 100%     | Zero deps                     |
+| escape                | ✅    | ✅   | 100%     | `SlugifyID`                   |
+| graph                 | ✅    | ✅   | 96.1%    | DOT/Mermaid                   |
+| integration           | ✅    | ✅   | 95.5%    | Round-trip tests              |
+| markup                | ✅    | ✅   | 93.8%    | `html/template`               |
+| plantuml              | ✅    | ✅   | 97.1%    | Escape dep added              |
+| serialization         | ✅    | ✅   | 91.6%    | Inlined wrappers              |
+| table                 | ✅    | ✅   | 100%     | Lipgloss isolated             |
+| testhelpers           | ✅    | ✅   | 91.3%    | Shared assertions             |
+| testhelpers/graphtest | —     | —    | —        | Helper pkg                    |
+| examples              | ✅    | ✅   | —        | Usage demos                   |
 
 **Total:** 14 modules, 149 Go files, 86 test files, ~19,831 LOC (+37 lines from improvements)
 
@@ -167,12 +168,12 @@ Options remain: A) Create `.buildflow.yml`, B) Accept recommendations, C) Contin
 
 ## Risk Assessment
 
-| Risk | Level | Mitigation |
-|------|-------|------------|
-| BuildFlow `--no-verify` | 🟡 Medium | Documented; blocks clean CI |
-| v1 API decision delayed | 🟡 Medium | Documented in TODO #15 |
-| No enum code generation | 🟢 Low | Boilerplate accepted; no bugs |
-| `html/template` performance | 🟢 Low | No benchmarks; no complaints |
+| Risk                        | Level     | Mitigation                    |
+| --------------------------- | --------- | ----------------------------- |
+| BuildFlow `--no-verify`     | 🟡 Medium | Documented; blocks clean CI   |
+| v1 API decision delayed     | 🟡 Medium | Documented in TODO #15        |
+| No enum code generation     | 🟢 Low    | Boilerplate accepted; no bugs |
+| `html/template` performance | 🟢 Low    | No benchmarks; no complaints  |
 
 ---
 
@@ -185,4 +186,4 @@ Options remain: A) Create `.buildflow.yml`, B) Accept recommendations, C) Contin
 
 ---
 
-*Report generated by Crush on 2026-06-08 21:55 CEST*
+_Report generated by Crush on 2026-06-08 21:55 CEST_

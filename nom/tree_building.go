@@ -1,7 +1,9 @@
 package nom
+
 import (
 	"sort"
 )
+
 // Build constructs the tree structure and identifies root nodes.
 func (dt *DependencyTree) Build() error {
 	dt.mu.Lock()
@@ -24,9 +26,12 @@ func (dt *DependencyTree) Build() error {
 	for _, root := range dt.roots {
 		dt.calculateDepth(root, 0)
 	}
+
 	dt.loaded = true
+
 	return nil
 }
+
 // calculateDepth recursively calculates the depth of each node.
 func (dt *DependencyTree) calculateDepth(node *TreeNode, depth int) {
 	node.Depth = depth

@@ -26,8 +26,8 @@ No open items.
 
 ## P3 — Build & Config
 
-|| #   | Task                                                                                                                                                                                                                                                       | Effort | Status |
-| --- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | ------ |
+|     | #                                                                                                                                                                                                                                                          | Task   | Effort | Status |
+| --- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | ------ | ------ |
 | 11  | **Fix pre-commit `--no-verify` requirement** — BuildFlow's `go-structure-linter` reports 29 false-positive "root-package-files" issues. Root package IS the public API for a Go library. Configure BuildFlow to ignore this rule, or accept `--no-verify`. | 15 min | Open   |
 | 12  | **Add `gomod2nix` for reproducible Nix builds** — Nix sandbox blocks `go mod download`. Currently Go deps download at build time.                                                                                                                          | 30 min | Open   |
 | 13  | **Investigate `go:generate stringer` for enums** — 7 hand-rolled enum types with identical Parse/IsValid/AllowedValues/String patterns. Code generation could eliminate boilerplate.                                                                       | 20 min | Open   |
@@ -36,16 +36,16 @@ No open items.
 
 ## P4 — Future & Community
 
-|| #   | Task                                                  | Effort | Status |
-| --- | ----------------------------------------------------- | ------ | ------ |
+|     | #                                                     | Task   | Effort | Status |
+| --- | ----------------------------------------------------- | ------ | ------ | ------ |
 | 14  | **Community: Post to r/golang, submit to Awesome Go** | 30 min | Open   |
 
 ---
 
 ## Blocked — Needs Owner Decision
 
-|| #   | Question                                                                                                                                                                                                                                                                              | Why Blocked                                          |
-| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
+|     | #                                                                                                                                                                                                                                                                                     | Question                                             | Why Blocked |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- | ----------- |
 | 15  | **Should `TableData` use exported fields or getters for v1?** Current: both exist (`Headers` + `GetHeaders()`). Option A: exported fields only (Go-idiomatic, simpler). Option B: unexported fields + getters (controlled, future-proof). Option C: keep both for v0.x, decide at v1. | Affects every consumer. v1 API stability commitment. |
 
 ---

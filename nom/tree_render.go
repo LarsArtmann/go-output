@@ -1,16 +1,20 @@
 package nom
+
 import (
 	"fmt"
 	"sort"
 	"strings"
+
 	"charm.land/lipgloss/v2"
 )
+
 // Render generates NOM-style tree rendering.
 func (dt *DependencyTree) Render(maxHeight int) string {
 	// Build tree if not already built (release lock before calling Build to avoid deadlock)
 	dt.mu.RLock()
 	needsBuild := !dt.loaded
 	dt.mu.RUnlock()
+
 	if needsBuild {
 		err := dt.Build()
 		if err != nil {
@@ -26,16 +30,21 @@ func (dt *DependencyTree) Render(maxHeight int) string {
 	}
 	// Get display order with smart filtering
 	displayNodes := dt.getDisplayNodes(maxHeight)
+
 	var lines []string
+
 	for _, node := range displayNodes {
 		line := dt.renderNode(node, displayNodes)
 		lines = append(lines, line)
 	}
+
 	if len(lines) == 0 {
 		return msgNoActivitiesToDisplay
 	}
+
 	return strings.Join(lines, "\n")
 }
+
 // getDisplayNodes returns nodes to display based on smart filtering.
 func (dt *DependencyTree) getDisplayNodes(maxHeight int) []*TreeNode {
 	// Priority: Running > Failed > Pending > Completed
@@ -59,8 +68,10 @@ func (dt *DependencyTree) getDisplayNodes(maxHeight int) []*TreeNode {
 	dt.addNodesIfSlotsRemaining(&nodes, completed, slots)
 	// Sort final list by depth, then by activity ID
 	dt.sortNodesByDepthAndID(nodes)
+
 	return nodes
 }
+
 func (dt *DependencyTree) categorizeNodes() (running, failed, pending, completed []*TreeNode) {
 	for _, node := range dt.nodes {
 		switch node.Status {
@@ -74,13 +85,16 @@ func (dt *DependencyTree) categorizeNodes() (running, failed, pending, completed
 			completed = append(completed, node)
 		}
 	}
+
 	return running, failed, pending, completed
 }
+
 func (dt *DependencyTree) sortNodesByID(nodes []*TreeNode) {
 	sort.Slice(nodes, func(i, j int) bool {
 		return string(nodes[i].ActivityID) < string(nodes[j].ActivityID)
 	})
 }
+
 func (dt *DependencyTree) addNodesIfSlotsRemaining(
 	target *[]*TreeNode,
 	nodes []*TreeNode,
@@ -92,16 +106,20 @@ func (dt *DependencyTree) addNodesIfSlotsRemaining(
 			slots--
 		}
 	}
+
 	return slots
 }
+
 func (dt *DependencyTree) sortNodesByDepthAndID(nodes []*TreeNode) {
 	sort.Slice(nodes, func(i, j int) bool {
 		if nodes[i].Depth != nodes[j].Depth {
 			return nodes[i].Depth < nodes[j].Depth
 		}
+
 		return string(nodes[i].ActivityID) < string(nodes[j].ActivityID)
 	})
 }
+
 // renderNode renders a single node with appropriate tree symbols.
 func (dt *DependencyTree) renderNode(node *TreeNode, displayNodes []*TreeNode) string {
 	// Build prefix for tree structure

@@ -1,10 +1,13 @@
 package nom
+
 import "image/color"
+
 // ============================================================================
 // ACTIVITY STATUS ENUM
 // ============================================================================
 // ActivityStatus represents the display status of an activity.
 type ActivityStatus int
+
 const (
 	ActivityStatusPending ActivityStatus = iota
 	ActivityStatusRunning
@@ -12,6 +15,7 @@ const (
 	ActivityStatusFailed
 	ActivityStatusPaused
 )
+
 // String returns the string representation of activity status.
 func (as ActivityStatus) String() string {
 	switch as {
@@ -29,7 +33,9 @@ func (as ActivityStatus) String() string {
 		return StatusStringUnknown
 	}
 }
+
 const StatusStringUnknown = "unknown"
+
 // GetSymbol returns the NOM-style symbol for the status.
 func (as ActivityStatus) GetSymbol() string {
 	switch as {
@@ -47,6 +53,7 @@ func (as ActivityStatus) GetSymbol() string {
 		return "?"
 	}
 }
+
 // GetColor returns the lipgloss color for the status.
 func (as ActivityStatus) GetColor() color.Color {
 	switch as {

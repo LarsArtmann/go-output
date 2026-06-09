@@ -183,6 +183,7 @@ Completed 9 of 13 open TODO items in a single sprint. All 13 Go modules pass tes
 ### 4. TableData Exported Fields vs Getters for v1 (Blocked #15)
 
 **Why not started:** Blocked — requires owner decision. Affects every consumer. Options:
+
 - A: exported fields only (Go-idiomatic, simpler)
 - B: unexported fields + getters (controlled, future-proof)
 - C: keep both for v0.x, decide at v1
@@ -233,33 +234,33 @@ The only friction point is the BuildFlow `library-policy` pre-commit hook requir
 
 ## f) Top #25 Things We Should Get Done Next 📋
 
-| Rank | Task | Impact | Effort | Module |
-|------|------|--------|--------|--------|
-| 1 | Configure BuildFlow to skip `library-policy` or accept recommendations | 🔴 Critical | 15m | root |
-| 2 | Decide v1 API: exported fields vs getters (Blocked #15) | 🔴 Critical | 30m | root |
-| 3 | Add `gomod2nix` for reproducible Nix builds | 🟡 High | 2h | nix |
-| 4 | Evaluate `go:generate` for enum boilerplate | 🟡 High | 1h | root/enum |
-| 5 | Add race test for `RegisterFormatShapes` | 🟡 High | 15m | root |
-| 6 | Remove `--no-verify` from all workflows | 🟡 Medium | 10m | docs |
-| 7 | Document `RegisterFormatShapes` in AGENTS.md | 🟡 Medium | 10m | docs |
-| 8 | Evaluate `templ` vs `html/template` | 🟢 Low | 2h | markup |
-| 9 | Add `go-error-family` structured errors | 🟢 Low | 4h | all |
-| 10 | Consolidate remaining inline test assertions | 🟢 Low | 1h | all |
-| 11 | Post to r/golang (human action) | 🟡 Medium | 30m | community |
-| 12 | Submit to Awesome Go (human action) | 🟡 Medium | 30m | community |
-| 13 | Benchmark `html/template` vs strings.Builder | 🟢 Low | 30m | markup |
-| 14 | Add `go:build` constraints for examples | 🟢 Low | 30m | examples |
-| 15 | Update CHANGELOG.md for architecture sprint | 🟢 Low | 15m | docs |
-| 16 | Verify all `replace` directives are correct | 🟢 Low | 15m | all |
-| 17 | Add integration test for `RegisterFormatShapes` | 🟢 Low | 20m | integration |
-| 18 | Audit `internal/` package usage | 🟢 Low | 15m | all |
-| 19 | Add bench test for `escape.SlugifyID` | 🟢 Low | 10m | escape |
-| 20 | Document `html/template` migration in ADR | 🟢 Low | 20m | docs |
-| 21 | Verify `plantuml.go` escape import is correct | 🟢 Low | 5m | plantuml |
-| 22 | Check for stale LSP diagnostics in CI | 🟢 Low | 10m | ci |
-| 23 | Update FEATURES.md with new capabilities | 🟢 Low | 10m | docs |
-| 24 | Add `go vet` to pre-commit (already present) | — | — | — |
-| 25 | Archive old status reports | 🟢 Low | 5m | docs |
+| Rank | Task                                                                   | Impact      | Effort | Module      |
+| ---- | ---------------------------------------------------------------------- | ----------- | ------ | ----------- |
+| 1    | Configure BuildFlow to skip `library-policy` or accept recommendations | 🔴 Critical | 15m    | root        |
+| 2    | Decide v1 API: exported fields vs getters (Blocked #15)                | 🔴 Critical | 30m    | root        |
+| 3    | Add `gomod2nix` for reproducible Nix builds                            | 🟡 High     | 2h     | nix         |
+| 4    | Evaluate `go:generate` for enum boilerplate                            | 🟡 High     | 1h     | root/enum   |
+| 5    | Add race test for `RegisterFormatShapes`                               | 🟡 High     | 15m    | root        |
+| 6    | Remove `--no-verify` from all workflows                                | 🟡 Medium   | 10m    | docs        |
+| 7    | Document `RegisterFormatShapes` in AGENTS.md                           | 🟡 Medium   | 10m    | docs        |
+| 8    | Evaluate `templ` vs `html/template`                                    | 🟢 Low      | 2h     | markup      |
+| 9    | Add `go-error-family` structured errors                                | 🟢 Low      | 4h     | all         |
+| 10   | Consolidate remaining inline test assertions                           | 🟢 Low      | 1h     | all         |
+| 11   | Post to r/golang (human action)                                        | 🟡 Medium   | 30m    | community   |
+| 12   | Submit to Awesome Go (human action)                                    | 🟡 Medium   | 30m    | community   |
+| 13   | Benchmark `html/template` vs strings.Builder                           | 🟢 Low      | 30m    | markup      |
+| 14   | Add `go:build` constraints for examples                                | 🟢 Low      | 30m    | examples    |
+| 15   | Update CHANGELOG.md for architecture sprint                            | 🟢 Low      | 15m    | docs        |
+| 16   | Verify all `replace` directives are correct                            | 🟢 Low      | 15m    | all         |
+| 17   | Add integration test for `RegisterFormatShapes`                        | 🟢 Low      | 20m    | integration |
+| 18   | Audit `internal/` package usage                                        | 🟢 Low      | 15m    | all         |
+| 19   | Add bench test for `escape.SlugifyID`                                  | 🟢 Low      | 10m    | escape      |
+| 20   | Document `html/template` migration in ADR                              | 🟢 Low      | 20m    | docs        |
+| 21   | Verify `plantuml.go` escape import is correct                          | 🟢 Low      | 5m     | plantuml    |
+| 22   | Check for stale LSP diagnostics in CI                                  | 🟢 Low      | 10m    | ci          |
+| 23   | Update FEATURES.md with new capabilities                               | 🟢 Low      | 10m    | docs        |
+| 24   | Add `go vet` to pre-commit (already present)                           | —           | —      | —           |
+| 25   | Archive old status reports                                             | 🟢 Low      | 5m     | docs        |
 
 ---
 
@@ -268,18 +269,21 @@ The only friction point is the BuildFlow `library-policy` pre-commit hook requir
 **How do I configure BuildFlow to skip the `library-policy` step?**
 
 The `.structure-linter.yml` successfully skips `root-package-files`, `pkg-directory`, and other structural rules. However, the `library-policy` step (step 17/23 in BuildFlow) is a separate check that:
+
 1. Suggests `github.com/a-h/templ` instead of `html/template`
 2. Requires `github.com/larsartmann/go-error-family` for all modules
 
 I cannot find a BuildFlow configuration file in the repository (searched for `buildflow*`, `bf.yaml`, `bf.yml`). The pre-commit hook runs BuildFlow with its default configuration.
 
 **Options I see:**
+
 - A: Create a `.buildflow.yml` or similar config to disable `library-policy`
 - B: Accept the recommendations and migrate to `templ` + `go-error-family`
 - C: Continue using `--no-verify` indefinitely
 - D: Modify `.pre-commit-config.yaml` to skip BuildFlow entirely
 
 **What I need from you:**
+
 - Do you want to adopt `templ` and `go-error-family` (significant refactoring)?
 - Or do you want to configure BuildFlow to skip `library-policy`?
 - If skip: do you know the config file format/location for BuildFlow?
@@ -288,22 +292,22 @@ I cannot find a BuildFlow configuration file in the repository (searched for `bu
 
 ## Module Health Matrix
 
-| Module | Tests | Lint | Coverage | Notes |
-|--------|-------|------|----------|-------|
-| root (output) | ✅ | ✅ | 96.8% | Registry patterns, core types |
-| delimited | ✅ | ✅ | 90.5% | CSV/TSV writers |
-| d2 | ✅ | ✅ | 100% | Rich domain model, complete |
-| enum | ✅ | ✅ | 100% | Zero deps, generic utilities |
-| escape | ✅ | ✅ | 100% | New `SlugifyID` |
-| graph | ✅ | ✅ | 96.1% | DOT/Mermaid renderers |
-| integration | ✅ | ✅ | 95.5% | Round-trip tests |
-| markup | ✅ | ✅ | 93.8% | `html/template` migration |
-| plantuml | ✅ | ✅ | 97.1% | Escape dependency added |
-| serialization | ✅ | ✅ | 91.6% | Inlined wrappers |
-| table | ✅ | ✅ | 100% | Lipgloss isolated |
-| testhelpers | ✅ | ✅ | 91.3% | Shared assertions |
-| testhelpers/graphtest | — | — | — | No tests (helper pkg) |
-| examples | ✅ | ✅ | — | Usage demos |
+| Module                | Tests | Lint | Coverage | Notes                         |
+| --------------------- | ----- | ---- | -------- | ----------------------------- |
+| root (output)         | ✅    | ✅   | 96.8%    | Registry patterns, core types |
+| delimited             | ✅    | ✅   | 90.5%    | CSV/TSV writers               |
+| d2                    | ✅    | ✅   | 100%     | Rich domain model, complete   |
+| enum                  | ✅    | ✅   | 100%     | Zero deps, generic utilities  |
+| escape                | ✅    | ✅   | 100%     | New `SlugifyID`               |
+| graph                 | ✅    | ✅   | 96.1%    | DOT/Mermaid renderers         |
+| integration           | ✅    | ✅   | 95.5%    | Round-trip tests              |
+| markup                | ✅    | ✅   | 93.8%    | `html/template` migration     |
+| plantuml              | ✅    | ✅   | 97.1%    | Escape dependency added       |
+| serialization         | ✅    | ✅   | 91.6%    | Inlined wrappers              |
+| table                 | ✅    | ✅   | 100%     | Lipgloss isolated             |
+| testhelpers           | ✅    | ✅   | 91.3%    | Shared assertions             |
+| testhelpers/graphtest | —     | —    | —        | No tests (helper pkg)         |
+| examples              | ✅    | ✅   | —        | Usage demos                   |
 
 **Total:** 14 modules, 149 Go files, 86 test files, ~19,794 LOC
 
@@ -311,10 +315,10 @@ I cannot find a BuildFlow configuration file in the repository (searched for `bu
 
 ## Commit History (This Sprint)
 
-| Commit | Message | Files | Lines |
-|--------|---------|-------|-------|
-| `5d1e344` | fix(lint): resolve gosec/wrapcheck violations and consolidate test helpers | 11 | +23 / -314 |
-| `fba960b` | refactor(project): rename files for better naming consistency | 41 | +1200 / -800 |
+| Commit    | Message                                                                    | Files | Lines        |
+| --------- | -------------------------------------------------------------------------- | ----- | ------------ |
+| `5d1e344` | fix(lint): resolve gosec/wrapcheck violations and consolidate test helpers | 11    | +23 / -314   |
+| `fba960b` | refactor(project): rename files for better naming consistency              | 41    | +1200 / -800 |
 
 **Net change:** +1223 lines, -1114 lines (refactoring: mostly renames and structural cleanup)
 
@@ -322,12 +326,12 @@ I cannot find a BuildFlow configuration file in the repository (searched for `bu
 
 ## Risk Assessment
 
-| Risk | Level | Mitigation |
-|------|-------|------------|
-| BuildFlow `--no-verify` required | 🟡 Medium | Documented; blocks clean CI if not fixed |
-| v1 API decision delayed | 🟡 Medium | Documented in TODO #15; deferred to owner |
-| `html/template` performance | 🟢 Low | No benchmarks yet; no user complaints |
-| Multi-module complexity | 🟢 Low | Well-tested; replace directives working |
+| Risk                             | Level     | Mitigation                                |
+| -------------------------------- | --------- | ----------------------------------------- |
+| BuildFlow `--no-verify` required | 🟡 Medium | Documented; blocks clean CI if not fixed  |
+| v1 API decision delayed          | 🟡 Medium | Documented in TODO #15; deferred to owner |
+| `html/template` performance      | 🟢 Low    | No benchmarks yet; no user complaints     |
+| Multi-module complexity          | 🟢 Low    | Well-tested; replace directives working   |
 
 ---
 
@@ -341,4 +345,4 @@ I cannot find a BuildFlow configuration file in the repository (searched for `bu
 
 ---
 
-*Report generated by Crush on 2026-06-08 10:26 CEST*
+_Report generated by Crush on 2026-06-08 10:26 CEST_

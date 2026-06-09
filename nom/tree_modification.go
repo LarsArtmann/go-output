@@ -1,7 +1,9 @@
 package nom
+
 import (
 	"sync"
 )
+
 // AddActivity adds an activity to the tree with its dependencies.
 func (dt *DependencyTree) AddActivity(
 	activityID ActivityID,
@@ -16,6 +18,7 @@ func (dt *DependencyTree) AddActivity(
 		node = newTreeNode(activityID, activityName)
 		dt.nodes[activityID] = node
 	}
+
 	node.ActivityName = activityName
 	// Add dependency relationships — use first dependency as primary parent for tree structure
 	for i, depID := range dependencies {
@@ -28,9 +31,12 @@ func (dt *DependencyTree) AddActivity(
 		if i == 0 {
 			node.Parent = depNode
 		}
+
 		depNode.Children = append(depNode.Children, node)
 	}
+
 	dt.loaded = false // Need to rebuild
 	dt.buildOnce = sync.Once{}
+
 	return nil
 }

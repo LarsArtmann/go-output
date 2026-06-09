@@ -1,8 +1,10 @@
 package nom
+
 import (
 	"sync"
 	"time"
 )
+
 // NOMStyleSubscriber implements EventSubscriber to provide NOM-style visualization.
 type NOMStyleSubscriber struct {
 	mu sync.RWMutex
@@ -18,6 +20,7 @@ type NOMStyleSubscriber struct {
 	// Configuration
 	enabled bool
 }
+
 // NewNOMStyleSubscriber creates a new NOM-style subscriber.
 func NewNOMStyleSubscriber() *NOMStyleSubscriber {
 	return &NOMStyleSubscriber{

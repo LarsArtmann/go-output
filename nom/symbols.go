@@ -1,8 +1,10 @@
 package nom
+
 import "charm.land/lipgloss/v2"
+
 // ============================================================================
 // NOM-STYLE SYMBOL CONSTANTS
-// ============================================================================
+// ============================================================================.
 const (
 	// SymbolRunning represents an activity currently executing.
 	SymbolRunning = "⏵"
@@ -23,18 +25,24 @@ const (
 	// SymbolTotal represents total count/summary.
 	SymbolTotal = "∑"
 )
+
 // ============================================================================
 // COLOR MAPPING FOR ACTIVITY STATES
 // ============================================================================
 // ColorRunning is the color for running activities (yellow, matching NOM).
 var ColorRunning = lipgloss.Color("11")
+
 // ColorCompleted is the color for completed activities (green).
 var ColorCompleted = lipgloss.Color("10")
+
 // ColorPaused is the color for paused activities (gray).
 var ColorPaused = lipgloss.Color("8")
+
 // ColorFailed is the color for failed activities (red).
 var ColorFailed = lipgloss.Color("9")
+
 // ColorWarning is the color for warnings (yellow).
 var ColorWarning = lipgloss.Color("11")
+
 // ColorInfo is the color for information (cyan).
 var ColorInfo = lipgloss.Color("14")

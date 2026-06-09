@@ -1,14 +1,18 @@
 package tui
+
 import (
-"log"
-tea "charm.land/bubbletea/v2"
+	"log"
+
+	tea "charm.land/bubbletea/v2"
 )
+
 // ============================================================================
 // BUBBLE TEA LIFECYCLE METHODS
 // ============================================================================
 // ensureStarted starts the TUI program if not already started.
 func (pr *BubbleTeaProgressReporter) ensureStarted() {
 	pr.mu.RLock()
+
 	if !pr.started {
 		pr.mu.RUnlock()
 		pr.mu.Lock()
@@ -22,6 +26,7 @@ func (pr *BubbleTeaProgressReporter) ensureStarted() {
 					log.Printf("TUI program error: %v", err)
 				}
 			}()
+
 			pr.started = true
 		}
 		pr.mu.Unlock()
@@ -29,10 +34,12 @@ func (pr *BubbleTeaProgressReporter) ensureStarted() {
 		pr.mu.RUnlock()
 	}
 }
+
 // Stop gracefully stops the TUI progress display with completion state.
 func (pr *BubbleTeaProgressReporter) Stop() {
 	pr.mu.Lock()
 	defer pr.mu.Unlock()
+
 	if pr.program != nil {
 		// Transition to completed state
 		pr.transitionWorkflowState(WorkflowStateCompleted)
@@ -46,6 +53,7 @@ func (pr *BubbleTeaProgressReporter) Stop() {
 		}
 	}
 }
+
 // Start initializes and starts the TUI program
 // This is called explicitly in NOM mode before workflow execution begins
 // In normal mode, the TUI starts lazily on the first progress report.

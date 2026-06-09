@@ -1,21 +1,26 @@
 package tui
+
 import (
-"time"
-"github.com/larsartmann/go-output/nom"
+	"time"
+
+	"github.com/larsartmann/go-output/nom"
 )
+
 // ============================================================================
 // STRONG TYPES FOR WORKFLOW STATE MANAGEMENT
 // ============================================================================
 // WorkflowState represents the current state of the workflow execution
 // This makes invalid states unrepresentable through strong typing.
 type WorkflowState uint8
+
 const (
 	WorkflowStateIdle WorkflowState = iota
 	WorkflowStateRunning
 	WorkflowStateCompleted
 	WorkflowStateErrored
 )
-// WorkflowState String Constants
+
+// WorkflowState String Constants.
 const (
 	WorkflowStateStringIdle      = "idle"
 	WorkflowStateStringRunning   = "running"
@@ -23,6 +28,7 @@ const (
 	WorkflowStateStringErrored   = "errored"
 	WorkflowStateStringUnknown   = "unknown"
 )
+
 // String returns the string representation of the workflow state.
 func (ws WorkflowState) String() string {
 	switch ws {
@@ -38,6 +44,7 @@ func (ws WorkflowState) String() string {
 		return WorkflowStateStringUnknown
 	}
 }
+
 // CanAcceptUpdates returns whether this state allows progress updates.
 func (ws WorkflowState) CanAcceptUpdates() bool {
 	switch ws {
@@ -49,10 +56,12 @@ func (ws WorkflowState) CanAcceptUpdates() bool {
 		return false
 	}
 }
+
 // CanAcceptTicks returns whether this state allows timer ticks.
 func (ws WorkflowState) CanAcceptTicks() bool {
 	return ws == WorkflowStateRunning
 }
+
 // CanTransitionTo checks if a transition to another state is valid.
 func (ws WorkflowState) CanTransitionTo(newState WorkflowState) bool {
 	switch ws {
@@ -66,6 +75,7 @@ func (ws WorkflowState) CanTransitionTo(newState WorkflowState) bool {
 		return false
 	}
 }
+
 // ProgressStep represents a step-based progress item.
 type ProgressStep struct {
 	Current     uint
@@ -75,6 +85,7 @@ type ProgressStep struct {
 	CompletedAt *time.Time
 	IsActive    bool
 }
+
 // ProgressModel holds the state for the Bubble Tea progress display.
 type ProgressModel struct {
 	// Core progress data

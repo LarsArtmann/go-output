@@ -1,17 +1,21 @@
 package tui
+
 import (
-"time"
+	"time"
 )
+
 // ============================================================================
 // BUBBLE TEA MESSAGE TYPES
 // ============================================================================
 // UpdateType represents the type of progress update.
 type UpdateType int
+
 const (
 	ProgressUpdate UpdateType = iota
 	MessageUpdate
 	StepUpdate
 )
+
 // ProgressUpdateMsg represents updates to the progress display.
 type ProgressUpdateMsg struct {
 	Type     UpdateType
@@ -20,5 +24,6 @@ type ProgressUpdateMsg struct {
 	Current  uint
 	Total    uint
 }
+
 // TickMsg represents a timer tick for real-time updates.
 type TickMsg time.Time

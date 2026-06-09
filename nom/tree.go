@@ -1,13 +1,16 @@
 package nom
+
 import (
 	"image/color"
 	"sync"
 	"time"
 )
+
 const (
 	// msgNoActivitiesToDisplay is shown when dependency tree is empty.
 	msgNoActivitiesToDisplay = "No activities to display"
 )
+
 // TreeNode represents a node in the dependency tree.
 type TreeNode struct {
 	// Core activity information
@@ -28,15 +31,17 @@ type TreeNode struct {
 	IsRoot      bool
 	IsDisplayed bool
 }
+
 // DependencyTree manages the hierarchical structure of activities and their dependencies.
 type DependencyTree struct {
 	mu        sync.RWMutex
 	buildOnce sync.Once
 	nodes     map[ActivityID]*TreeNode // All nodes by activity ID
-	roots     []*TreeNode                    // Root nodes (no dependencies)
+	roots     []*TreeNode              // Root nodes (no dependencies)
 	order     []ActivityID             // Display order (smart filtered)
-	loaded    bool                           // Whether tree has been built
+	loaded    bool                     // Whether tree has been built
 }
+
 // NewDependencyTree creates a new dependency tree.
 func NewDependencyTree() *DependencyTree {
 	return &DependencyTree{
@@ -46,6 +51,7 @@ func NewDependencyTree() *DependencyTree {
 		loaded: false,
 	}
 }
+
 // newTreeNode creates a new TreeNode with pending status.
 func newTreeNode(id ActivityID, name string) *TreeNode {
 	return &TreeNode{

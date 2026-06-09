@@ -1,7 +1,9 @@
 package nom
+
 import (
 	"strings"
 )
+
 // buildTreePrefix builds the tree structure prefix (├──, └──, etc.)
 func (dt *DependencyTree) buildTreePrefix(node *TreeNode, displayNodes []*TreeNode) string {
 	if node.IsRoot {
@@ -19,8 +21,10 @@ func (dt *DependencyTree) buildTreePrefix(node *TreeNode, displayNodes []*TreeNo
 	} else {
 		prefixBuilder.WriteString("├── ")
 	}
+
 	return prefixBuilder.String()
 }
+
 // isLastChild determines if this node is the last child of its parent.
 func (dt *DependencyTree) isLastChild(node *TreeNode, displayNodes []*TreeNode) bool {
 	if node.Parent == nil {
@@ -28,6 +32,7 @@ func (dt *DependencyTree) isLastChild(node *TreeNode, displayNodes []*TreeNode) 
 	}
 	// Find the last sibling that's displayed
 	var lastDisplayedSibling *TreeNode
+
 	for _, sibling := range node.Parent.Children {
 		for _, displayed := range displayNodes {
 			if sibling.ActivityID == displayed.ActivityID {
@@ -35,5 +40,6 @@ func (dt *DependencyTree) isLastChild(node *TreeNode, displayNodes []*TreeNode) 
 			}
 		}
 	}
+
 	return lastDisplayedSibling == node
 }

@@ -198,7 +198,8 @@ var treeTemplate = template.Must(template.New("treeNode").Parse(
 	`<ul class="tree">
 {{template "treeNodeRec" .}}
 </ul>
-` + treeNodeRecTemplate))
+` + treeNodeRecTemplate,
+))
 
 const treeNodeRecTemplate = `{{define "treeNodeRec"}}<li>{{.Label}}
 {{- if .Children}}

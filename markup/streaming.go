@@ -70,7 +70,8 @@ var htmlTableTemplate = template.Must(template.New("htmlTable").Parse(
 {{end}}</tr>
 </tfoot>
 {{else}}</tbody>
-{{end}}</table>`))
+{{end}}</table>`,
+))
 
 // streamHTMLTable writes a complete HTML table to w using html/template for auto-escaping.
 func streamHTMLTable(w io.Writer, data *output.TableData) error {
