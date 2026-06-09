@@ -4,9 +4,9 @@ go 1.26.3
 
 require (
 	github.com/larsartmann/go-branded-id v0.3.0
-	github.com/larsartmann/go-output/delimited v0.6.3
+	github.com/larsartmann/go-output/delimited v0.7.0
 	github.com/larsartmann/go-output/enum v0.7.0
-	github.com/larsartmann/go-output/serialization v0.6.3
+	github.com/larsartmann/go-output/serialization v0.7.0
 	github.com/larsartmann/go-output/testhelpers v0.6.3
 	golang.org/x/term v0.44.0
 )

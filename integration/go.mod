@@ -6,10 +6,10 @@ require (
 	github.com/go-faster/yaml v0.4.6
 	github.com/larsartmann/go-output v0.7.2
 	github.com/larsartmann/go-output/d2 v0.6.3
-	github.com/larsartmann/go-output/delimited v0.6.3
+	github.com/larsartmann/go-output/delimited v0.7.0
 	github.com/larsartmann/go-output/graph v0.6.3
 	github.com/larsartmann/go-output/markup v0.6.3
-	github.com/larsartmann/go-output/nom v0.0.0
+	github.com/larsartmann/go-output/nom v0.7.2
 	github.com/larsartmann/go-output/plantuml v0.6.3
 	github.com/larsartmann/go-output/serialization v0.7.0
 	github.com/larsartmann/go-output/table v0.6.3
