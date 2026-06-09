@@ -59,7 +59,7 @@ func (ws WorkflowState) CanAcceptUpdates() bool {
 
 // CanAcceptTicks returns whether this state allows timer ticks.
 func (ws WorkflowState) CanAcceptTicks() bool {
-	return ws == WorkflowStateRunning
+	return ws == WorkflowStateIdle || ws == WorkflowStateRunning
 }
 
 // CanTransitionTo checks if a transition to another state is valid.

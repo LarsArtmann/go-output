@@ -63,7 +63,7 @@ func TestWorkflowState_CanAcceptTicks(t *testing.T) {
 		state WorkflowState
 		want  bool
 	}{
-		{WorkflowStateIdle, false},
+		{WorkflowStateIdle, true},
 		{WorkflowStateRunning, true},
 		{WorkflowStateCompleted, false},
 		{WorkflowStateErrored, false},
