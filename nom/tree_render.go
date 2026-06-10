@@ -125,6 +125,11 @@ func isPhaseNode(node *TreeNode) bool {
 	return len(node.ActivityID) > 6 && node.ActivityID[:6] == "phase:"
 }
 
+// RenderNode renders a single node for external consumers (e.g., TUI mouse click highlight).
+func (dt *DependencyTree) RenderNode(node *TreeNode, displayNodes []*TreeNode) string {
+	return dt.renderNode(node, displayNodes)
+}
+
 func (dt *DependencyTree) renderNode(node *TreeNode, displayNodes []*TreeNode) string {
 	// Build prefix for tree structure
 	prefix := dt.buildTreePrefix(node, displayNodes)
@@ -168,4 +173,26 @@ func (dt *DependencyTree) renderNode(node *TreeNode, displayNodes []*TreeNode) s
 	// Force color output by setting a color profile
 	// lipgloss v2 handles color profile automatically
 	return style.Render(prefix + activityDisplay)
+}
+
+// VisibleNodes returns the ordered list of tree nodes that would be displayed
+// for the given maxHeight. This is useful for mapping screen positions to nodes
+// (e.g., mouse click handling).
+func (dt *DependencyTree) VisibleNodes(maxHeight int) []*TreeNode {
+	dt.mu.RLock()
+	needsBuild := !dt.loaded
+	dt.mu.RUnlock()
+
+	if needsBuild {
+		_ = dt.Build()
+	}
+
+	dt.mu.RLock()
+	defer dt.mu.RUnlock()
+
+	if maxHeight <= 0 {
+		maxHeight = len(dt.nodes)
+	}
+
+	return dt.getDisplayNodes(maxHeight)
 }

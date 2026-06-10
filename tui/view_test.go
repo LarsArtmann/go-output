@@ -235,3 +235,49 @@ func TestProgressModel_HelpOverlay(t *testing.T) {
 		}
 	})
 }
+
+func TestProgressModel_SelectedNodeHighlight(t *testing.T) {
+	t.Parallel()
+
+	model := newTestModel()
+	model.width = 80
+	model.height = 24
+	model.displayMode = DisplayModeNOM
+	model.workflowState = WorkflowStateRunning
+
+	tree := nom.NewDependencyTree()
+	_ = tree.AddActivity(nom.ActivityID("step-a"), "Step A", nil)
+	_ = tree.AddActivity(nom.ActivityID("step-b"), "Step B", []nom.ActivityID{"step-a"})
+	tree.EnsureBuild()
+
+	model.dependencyTree = tree
+	model.selectedNode = nom.ActivityID("step-a")
+
+	view := model.View()
+	content := view.Content
+	if content == "" {
+		t.Fatal("View() should not be empty")
+	}
+
+	if !containsString(content, "Step A") {
+		t.Error("rendered content should contain 'Step A'")
+	}
+
+	if !containsString(content, "Step B") {
+		t.Error("rendered content should contain 'Step B'")
+	}
+}
+
+func containsString(s, substr string) bool {
+	return len(s) >= len(substr) && (s == substr || len(s) > 0 && containsSubstring(s, substr))
+}
+
+func containsSubstring(s, substr string) bool {
+	for i := 0; i <= len(s)-len(substr); i++ {
+		if s[i:i+len(substr)] == substr {
+			return true
+		}
+	}
+
+	return false
+}

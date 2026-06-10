@@ -112,4 +112,7 @@ type ProgressModel struct {
 	nomSubscriber  *nom.NOMStyleSubscriber
 	showHelp       bool
 	cancelFunc     context.CancelFunc
+	selectedNode   nom.ActivityID
+	visibleNodes   []*nom.TreeNode
+	treeStartLine  int
 }

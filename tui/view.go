@@ -247,6 +247,7 @@ func (m *ProgressModel) renderSummaryBar() string {
 // ============================================================================
 // renderNOMStyle creates a NOM-style display with dependency tree nom.
 func (m *ProgressModel) renderNOMStyle() string {
+	m.treeStartLine = 0
 	var contentSections []string
 	// Render dependency tree if available
 	if m.dependencyTree != nil {
@@ -256,11 +257,15 @@ func (m *ProgressModel) renderNOMStyle() string {
 		}
 	}
 	// Assemble with NOM summary
-	return m.assembleProgressSections(
+	result := m.assembleProgressSections(
 		"🔄 NOM Workflow Execution",
 		contentSections,
 		m.renderNOMSummaryBar,
 	)
+	// Track where the tree content starts (after title + blank line)
+	m.treeStartLine = 2
+
+	return result
 }
 
 // renderDependencyTree renders the activity dependency tree in NOM style.
@@ -279,7 +284,27 @@ func (m *ProgressModel) renderDependencyTree() string {
 		treeHeight = 20
 	}
 
-	return m.dependencyTree.Render(treeHeight)
+	m.visibleNodes = m.dependencyTree.VisibleNodes(treeHeight)
+
+	if len(m.visibleNodes) == 0 {
+		return "No activities to display"
+	}
+
+	var lines []string
+
+	for _, node := range m.visibleNodes {
+		line := m.dependencyTree.RenderNode(node, m.visibleNodes)
+		if m.selectedNode != "" && node.ActivityID == m.selectedNode {
+			line = lipgloss.NewStyle().
+				Background(lipgloss.Color("62")).
+				Foreground(lipgloss.Color("230")).
+				Render(line)
+		}
+
+		lines = append(lines, line)
+	}
+
+	return strings.Join(lines, "\n")
 }
 
 // renderNOMSummaryBar creates the NOM-style summary bar.

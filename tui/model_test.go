@@ -198,3 +198,86 @@ func TestProgressModel_QuitKey_DoesNotCancel(t *testing.T) {
 		t.Error("q should not cancel the context")
 	}
 }
+
+func TestProgressModel_MouseClick_SelectsNode(t *testing.T) {
+	t.Parallel()
+
+	model := newTestModel()
+	model.width = 80
+	model.height = 24
+	model.displayMode = DisplayModeNOM
+
+	tree := nom.NewDependencyTree()
+	_ = tree.AddActivity(nom.ActivityID("step-a"), "Step A", nil)
+	_ = tree.AddActivity(nom.ActivityID("step-b"), "Step B", []nom.ActivityID{"step-a"})
+	tree.EnsureBuild()
+
+	model.dependencyTree = tree
+	model.visibleNodes = tree.VisibleNodes(20)
+	model.treeStartLine = 2
+
+	// Click on the first tree line (line 0 relative to tree = line 7 absolute with chrome)
+	clickY := model.treeStartLine + chromeLinesAboveTree + 0
+	updatedModel, _ := model.Update(tea.MouseClickMsg{
+		X: 5, Y: clickY, Button: tea.MouseLeft,
+	})
+
+	m := updatedModel.(*ProgressModel)
+	if m.selectedNode != nom.ActivityID("step-a") {
+		t.Errorf("selectedNode = %q, want %q", m.selectedNode, "step-a")
+	}
+}
+
+func TestProgressModel_MouseClick_ToggleOffNode(t *testing.T) {
+	t.Parallel()
+
+	model := newTestModel()
+	model.width = 80
+	model.height = 24
+	model.displayMode = DisplayModeNOM
+
+	tree := nom.NewDependencyTree()
+	_ = tree.AddActivity(nom.ActivityID("step-a"), "Step A", nil)
+	tree.EnsureBuild()
+
+	model.dependencyTree = tree
+	model.visibleNodes = tree.VisibleNodes(20)
+	model.treeStartLine = 2
+	model.selectedNode = nom.ActivityID("step-a")
+
+	clickY := model.treeStartLine + chromeLinesAboveTree + 0
+	updatedModel, _ := model.Update(tea.MouseClickMsg{
+		X: 5, Y: clickY, Button: tea.MouseLeft,
+	})
+
+	m := updatedModel.(*ProgressModel)
+	if m.selectedNode != "" {
+		t.Errorf("second click should deselect, got %q", m.selectedNode)
+	}
+}
+
+func TestProgressModel_MouseClick_IgnoresRightClick(t *testing.T) {
+	t.Parallel()
+
+	model := newTestModel()
+	model.width = 80
+	model.height = 24
+	model.displayMode = DisplayModeNOM
+
+	tree := nom.NewDependencyTree()
+	_ = tree.AddActivity(nom.ActivityID("step-a"), "Step A", nil)
+	tree.EnsureBuild()
+
+	model.dependencyTree = tree
+	model.visibleNodes = tree.VisibleNodes(20)
+	model.treeStartLine = 2
+
+	updatedModel, _ := model.Update(tea.MouseClickMsg{
+		X: 5, Y: 7, Button: tea.MouseRight,
+	})
+
+	m := updatedModel.(*ProgressModel)
+	if m.selectedNode != "" {
+		t.Error("right click should not select a node")
+	}
+}

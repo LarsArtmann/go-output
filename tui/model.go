@@ -7,6 +7,8 @@ import (
 	"github.com/charmbracelet/x/ansi"
 )
 
+const chromeLinesAboveTree = 5
+
 // ============================================================================
 // BUBBLE TEA MODEL IMPLEMENTATION
 // ============================================================================
@@ -31,6 +33,8 @@ func (m *ProgressModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m.handleKeyPress(msg)
 	case tea.MouseWheelMsg:
 		return m.handleMouseWheel(msg)
+	case tea.MouseClickMsg:
+		return m.handleMouseClick(msg)
 	case ProgressUpdateMsg:
 		return m.handleProgressUpdate(msg)
 	case TickMsg:
@@ -102,6 +106,32 @@ func (m *ProgressModel) handleMouseWheel(msg tea.MouseWheelMsg) (tea.Model, tea.
 		m.scrollUp(3)
 	case ansi.MouseWheelDown:
 		m.scrollDown(3)
+	}
+
+	return m, nil
+}
+
+func (m *ProgressModel) handleMouseClick(msg tea.MouseClickMsg) (tea.Model, tea.Cmd) {
+	mouse := msg.Mouse()
+	if mouse.Button != tea.MouseLeft {
+		return m, nil
+	}
+
+	if m.dependencyTree == nil || len(m.visibleNodes) == 0 {
+		return m, nil
+	}
+
+	treeLine := mouse.Y - m.treeStartLine - chromeLinesAboveTree + m.scrollOffset
+	if treeLine < 0 || treeLine >= len(m.visibleNodes) {
+		m.selectedNode = ""
+		return m, nil
+	}
+
+	node := m.visibleNodes[treeLine]
+	if m.selectedNode == node.ActivityID {
+		m.selectedNode = ""
+	} else {
+		m.selectedNode = node.ActivityID
 	}
 
 	return m, nil
