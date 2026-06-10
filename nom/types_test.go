@@ -68,31 +68,6 @@ func TestParseActivityID(t *testing.T) {
 	})
 }
 
-func TestMustActivityID(t *testing.T) {
-	t.Parallel()
-
-	t.Run("valid input", func(t *testing.T) {
-		t.Parallel()
-
-		got := MustActivityID("test")
-		if got != ActivityID("test") {
-			t.Errorf("MustActivityID(%q) = %q, want %q", "test", got, "test")
-		}
-	})
-
-	t.Run("empty input panics", func(t *testing.T) {
-		t.Parallel()
-
-		defer func() {
-			if r := recover(); r == nil {
-				t.Error("expected panic for empty input")
-			}
-		}()
-
-		MustActivityID("")
-	})
-}
-
 func TestWorkflowID(t *testing.T) {
 	t.Parallel()
 
@@ -146,31 +121,6 @@ func TestParseWorkflowID(t *testing.T) {
 		if err == nil {
 			t.Error("expected error for empty input")
 		}
-	})
-}
-
-func TestMustWorkflowID(t *testing.T) {
-	t.Parallel()
-
-	t.Run("valid input", func(t *testing.T) {
-		t.Parallel()
-
-		got := MustWorkflowID("test")
-		if got != WorkflowID("test") {
-			t.Errorf("MustWorkflowID(%q) = %q, want %q", "test", got, "test")
-		}
-	})
-
-	t.Run("empty input panics", func(t *testing.T) {
-		t.Parallel()
-
-		defer func() {
-			if r := recover(); r == nil {
-				t.Error("expected panic for empty input")
-			}
-		}()
-
-		MustWorkflowID("")
 	})
 }
 

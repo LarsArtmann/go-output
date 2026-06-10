@@ -90,7 +90,7 @@ func TestMermaidRendererEmpty(t *testing.T) {
 	t.Parallel()
 
 	renderer := NewMermaidRenderer()
-	testEmptyRendererOutput(t, renderer, testMermaidEmptyExpected())
+	testEmptyRendererOutput(t, renderer, testMermaidEmptyExpected(t))
 }
 
 func TestSanitizeMermaidID(t *testing.T) {

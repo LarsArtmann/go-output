@@ -129,7 +129,7 @@ func TestDOTRendererEmpty(t *testing.T) {
 	t.Parallel()
 
 	renderer := NewDOTRenderer()
-	testEmptyRendererOutput(t, renderer, testDOTEmptyExpected())
+	testEmptyRendererOutput(t, renderer, testDOTEmptyExpected(t))
 }
 
 //nolint:exhaustruct // Test files use partial struct initialization

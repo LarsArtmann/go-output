@@ -24,10 +24,10 @@ type TreeNode struct {
 	EstimatedTime  time.Duration
 	CurrentElapsed time.Duration
 	// Tree structure
-	Parent            *TreeNode
-	Children          []*TreeNode
-	SecondaryParents  []ActivityID // Non-primary dependencies (for display only)
-	Depth             int
+	Parent           *TreeNode
+	Children         []*TreeNode
+	SecondaryParents []ActivityID // Non-primary dependencies (for display only)
+	Depth            int
 	// Display state
 	IsRoot      bool
 	IsDisplayed bool

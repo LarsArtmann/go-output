@@ -50,9 +50,11 @@ func testEmptyRendererOutput(
 	}
 }
 
-func testExpectedOutputs(pairs ...string) []expectedOutput {
+func testExpectedOutputs(t *testing.T, pairs ...string) []expectedOutput {
+	t.Helper()
+
 	if len(pairs)%2 != 0 {
-		panic("testExpectedOutputs requires even number of arguments")
+		t.Fatalf("testExpectedOutputs requires even number of arguments, got %d", len(pairs))
 	}
 
 	out := make([]expectedOutput, 0, len(pairs)/2)
@@ -63,15 +65,17 @@ func testExpectedOutputs(pairs ...string) []expectedOutput {
 	return out
 }
 
-func testDOTEmptyExpected() []expectedOutput {
+func testDOTEmptyExpected(t *testing.T) []expectedOutput {
 	return testExpectedOutputs(
+		t,
 		"digraph G {", "Empty DOT should still have digraph declaration",
 		"rankdir=TB", "Empty DOT should have default attributes",
 	)
 }
 
-func testMermaidEmptyExpected() []expectedOutput {
+func testMermaidEmptyExpected(t *testing.T) []expectedOutput {
 	return testExpectedOutputs(
+		t,
 		"```mermaid", "Empty mermaid should still have fence",
 		"flowchart TD", "Empty mermaid should still have flowchart declaration",
 	)

@@ -19,21 +19,7 @@ func (id WorkflowID) IsZero() bool   { return id == "" }
 type WorkflowName string
 
 func (n WorkflowName) String() string { return string(n) }
-func MustWorkflowID(s string) WorkflowID {
-	if s == "" {
-		panic("WorkflowID must not be empty")
-	}
 
-	return WorkflowID(s)
-}
-
-func MustActivityID(s string) ActivityID {
-	if s == "" {
-		panic("ActivityID must not be empty")
-	}
-
-	return ActivityID(s)
-}
 func NewActivityID(s string) ActivityID     { return ActivityID(s) }
 func NewWorkflowID(s string) WorkflowID     { return WorkflowID(s) }
 func NewActivityName(s string) ActivityName { return ActivityName(s) }

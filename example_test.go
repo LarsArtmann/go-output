@@ -54,20 +54,3 @@ func ExampleTableData_Validate() {
 	fmt.Println(data.Validate())
 	// Output: <nil>
 }
-
-//nolint:testableexamples
-func ExampleMustRender() {
-	data := output.NewTableData([]string{"Name"})
-	data.AddRow([]string{"Alice"})
-
-	m := output.NewMarkdownTable().SetColorMode(output.ColorModeNever)
-	m.SetHeaders(data.GetHeaders())
-
-	for _, row := range data.GetRows() {
-		m.AddRow(row)
-	}
-
-	result := output.MustRender(m)
-	fmt.Println(result != "")
-	// Output: true
-}

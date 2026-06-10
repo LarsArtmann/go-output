@@ -130,28 +130,3 @@ func TestInvalidFormatErrorWithAllowed(t *testing.T) {
 
 	testhelpers.AssertOutputContains(t, got, "table")
 }
-
-func TestMustRender(t *testing.T) {
-	t.Parallel()
-
-	md := NewMarkdownTable()
-	md.SetHeaders([]string{"Name"})
-	md.AddRow([]string{"test"})
-
-	got := MustRender(md)
-	testhelpers.AssertOutputContains(t, got, "Name")
-}
-
-func TestMustRenderPanics(t *testing.T) {
-	t.Parallel()
-
-	defer func() {
-		r := recover()
-		if r == nil {
-			t.Error("MustRender should panic on error")
-		}
-	}()
-
-	// Use a renderer that always errors
-	_ = MustRender(&testhelpers.ErrorRenderer{})
-}

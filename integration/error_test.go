@@ -68,19 +68,6 @@ func TestRenderTableData_UnsupportedFormat(t *testing.T) {
 	}
 }
 
-func TestMustRender_PanicOnFailure(t *testing.T) {
-	t.Parallel()
-
-	defer func() {
-		r := recover()
-		if r == nil {
-			t.Error("Expected MustRender to panic on failing renderer")
-		}
-	}()
-
-	output.MustRender(&testhelpers.ErrorRenderer{})
-}
-
 func TestCreateRowEdges_EdgeCases(t *testing.T) {
 	t.Parallel()
 
