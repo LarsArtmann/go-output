@@ -3,7 +3,6 @@ package tui
 import (
 	"context"
 	"errors"
-	"fmt"
 	"strings"
 	"testing"
 	"time"
@@ -411,15 +410,7 @@ func TestProgressModel_ResizeStress_RapidSequence(t *testing.T) {
 	model := newTestModel()
 	model.displayMode = DisplayModeNOM
 	model.workflowState = WorkflowStateRunning
-
-	tree := nom.NewDependencyTree()
-	for i := 0; i < 50; i++ {
-		id := nom.ActivityID(fmt.Sprintf("step-%d", i))
-		tree.AddActivity(id, fmt.Sprintf("Step %d", i), nil)
-	}
-
-	tree.EnsureBuild()
-	model.dependencyTree = tree
+	model.dependencyTree = newTestTree(50)
 
 	resizes := []tea.WindowSizeMsg{
 		{Width: 120, Height: 40},
@@ -459,14 +450,7 @@ func TestProgressModel_Resize_ClampsScrollOffset(t *testing.T) {
 	model.workflowState = WorkflowStateRunning
 	model.width = 120
 	model.height = 40
-
-	tree := nom.NewDependencyTree()
-	for i := 0; i < 50; i++ {
-		tree.AddActivity(nom.ActivityID(fmt.Sprintf("step-%d", i)), fmt.Sprintf("Step %d", i), nil)
-	}
-
-	tree.EnsureBuild()
-	model.dependencyTree = tree
+	model.dependencyTree = newTestTree(50)
 
 	// Scroll to bottom in large window
 	model.scrollOffset = 30
