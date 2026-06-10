@@ -51,7 +51,13 @@ func (m *ProgressModel) handleWindowSize(msg tea.WindowSizeMsg) (tea.Model, tea.
 
 func (m *ProgressModel) handleKeyPress(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 	switch msg.String() {
-	case "ctrl+c", "q":
+	case "ctrl+c":
+		if m.cancelFunc != nil {
+			m.cancelFunc()
+		}
+
+		return m, tea.Quit
+	case "q":
 		return m, tea.Quit
 	case "up", "k":
 		m.scrollUp(1)

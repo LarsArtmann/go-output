@@ -1,6 +1,7 @@
 package tui
 
 import (
+	"context"
 	"time"
 
 	"github.com/larsartmann/go-output/nom"
@@ -110,4 +111,5 @@ type ProgressModel struct {
 	timingCache    *nom.TimingCache
 	nomSubscriber  *nom.NOMStyleSubscriber
 	showHelp       bool
+	cancelFunc     context.CancelFunc
 }

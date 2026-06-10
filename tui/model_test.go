@@ -1,6 +1,7 @@
 package tui
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -159,5 +160,41 @@ func TestProgressModel_GetActivityCounts(t *testing.T) {
 
 	if pending != 0 {
 		t.Errorf("pending = %d, want 0", pending)
+	}
+}
+
+func TestProgressModel_CtrlC_CancelsContext(t *testing.T) {
+	t.Parallel()
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	model := newTestModel()
+	model.cancelFunc = cancel
+
+	_, cmd := model.Update(tea.KeyPressMsg{Code: 'c', Mod: tea.ModCtrl})
+
+	if ctx.Err() == nil {
+		t.Error("ctrl+c should cancel the context")
+	}
+
+	if cmd == nil {
+		t.Error("ctrl+c should also quit the TUI")
+	}
+}
+
+func TestProgressModel_QuitKey_DoesNotCancel(t *testing.T) {
+	t.Parallel()
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	model := newTestModel()
+	model.cancelFunc = cancel
+
+	_, _ = model.Update(tea.KeyPressMsg{Code: 'q'})
+
+	if ctx.Err() != nil {
+		t.Error("q should not cancel the context")
 	}
 }
