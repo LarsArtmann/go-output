@@ -24,6 +24,8 @@ const (
 	SymbolAverage = "∅"
 	// SymbolTotal represents total count/summary.
 	SymbolTotal = "∑"
+	// SymbolPhase represents a phase/group node in the tree.
+	SymbolPhase = "◈"
 )
 
 // ============================================================================
@@ -46,3 +48,6 @@ var ColorWarning = lipgloss.Color("11")
 
 // ColorInfo is the color for information (cyan).
 var ColorInfo = lipgloss.Color("14")
+
+// ColorPhase is the color for phase/group nodes (magenta).
+var ColorPhase = lipgloss.Color("13")

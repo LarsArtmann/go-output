@@ -76,3 +76,15 @@ func (n *TreeNode) hasChild(id ActivityID) bool {
 
 	return false
 }
+
+// hasSecondaryParent returns true if this node already has the given activity ID
+// as a secondary parent.
+func (n *TreeNode) hasSecondaryParent(id ActivityID) bool {
+	for _, sp := range n.SecondaryParents {
+		if sp == id {
+			return true
+		}
+	}
+
+	return false
+}

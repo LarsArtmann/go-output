@@ -33,7 +33,7 @@ func (dt *DependencyTree) AddActivity(
 			if !depNode.hasChild(node.ActivityID) {
 				depNode.Children = append(depNode.Children, node)
 			}
-		} else {
+		} else if !node.hasSecondaryParent(depID) {
 			node.SecondaryParents = append(node.SecondaryParents, depID)
 		}
 	}

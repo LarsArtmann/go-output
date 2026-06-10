@@ -269,3 +269,20 @@ func TestDependencyTree_Render(t *testing.T) {
 		}
 	})
 }
+
+func TestDependencyTree_AddActivity_DedupSecondaryParents(t *testing.T) {
+	t.Parallel()
+
+	dt := NewDependencyTree()
+	dt.AddActivity(ActivityID("phase"), "Phase", nil)
+	dt.AddActivity(ActivityID("step1"), "Step1", []ActivityID{"phase"})
+
+	// Add step2 with same secondary dep twice (simulating re-registration)
+	dt.AddActivity(ActivityID("step2"), "Step2", []ActivityID{"phase", "step1"})
+	dt.AddActivity(ActivityID("step2"), "Step2", []ActivityID{"phase", "step1"})
+
+	node := dt.GetNode(ActivityID("step2"))
+	if len(node.SecondaryParents) != 1 {
+		t.Errorf("SecondaryParents = %v, want 1 entry", node.SecondaryParents)
+	}
+}

@@ -121,11 +121,22 @@ func (dt *DependencyTree) sortNodesByDepthAndID(nodes []*TreeNode) {
 }
 
 // renderNode renders a single node with appropriate tree symbols.
+func isPhaseNode(node *TreeNode) bool {
+	return len(node.ActivityID) > 6 && node.ActivityID[:6] == "phase:"
+}
+
 func (dt *DependencyTree) renderNode(node *TreeNode, displayNodes []*TreeNode) string {
 	// Build prefix for tree structure
 	prefix := dt.buildTreePrefix(node, displayNodes)
+	// Use phase symbol/color for phase nodes, otherwise status symbol/color
+	symbol := node.Symbol
+	color := node.Color
+	if isPhaseNode(node) {
+		symbol = SymbolPhase
+		color = ColorPhase
+	}
 	// Build activity display with timing
-	activityDisplay := fmt.Sprintf("%s %s", node.Symbol, node.ActivityName)
+	activityDisplay := fmt.Sprintf("%s %s", symbol, node.ActivityName)
 	// Add timing information based on status
 	timingInfo := FormatTreeNodeTiming(
 		node.Status,
@@ -151,7 +162,7 @@ func (dt *DependencyTree) renderNode(node *TreeNode, displayNodes []*TreeNode) s
 	}
 	// Style with color - force ANSI colors
 	style := lipgloss.NewStyle().
-		Foreground(node.Color).
+		Foreground(color).
 		Width(0).    // Don't limit width
 		Inline(true) // Inline mode for better compatibility
 	// Force color output by setting a color profile

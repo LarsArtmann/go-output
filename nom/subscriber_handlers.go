@@ -2,7 +2,6 @@ package nom
 
 import (
 	"context"
-	"fmt"
 	"time"
 )
 
@@ -78,14 +77,10 @@ func (ns *NOMStyleSubscriber) handleWorkflowStarted(
 
 	ns.workflowID = wa.GetWorkflowID()
 	ns.startTime = time.Now()
-
 	ns.isRunning = true
+
 	if na, ok := event.(WorkflowNameAccessor); ok {
 		ns.workflowName = na.GetWorkflowName()
-	}
-
-	if err := ns.timingCache.EnsureLoaded(); err != nil {
-		fmt.Printf("Warning: Failed to load timing cache: %v\n", err)
 	}
 
 	// Preserve pre-registered activities and tree structure (e.g. from
@@ -98,7 +93,7 @@ func (ns *NOMStyleSubscriber) handleWorkflowStarted(
 		ns.dependencyTree = NewDependencyTree()
 	}
 
-	return nil
+	return ns.timingCache.EnsureLoaded()
 }
 
 // handleWorkflowCompleted handles workflow completed event.
@@ -111,15 +106,9 @@ func (ns *NOMStyleSubscriber) handleWorkflowCompleted(
 
 	ns.isRunning = false
 
-	if wa, ok := event.(WorkflowEventAccessor); ok && !wa.GetWorkflowID().IsZero() {
-		fmt.Printf("✅ Workflow '%s' completed\n", wa.GetWorkflowID().String())
-	}
+	_ = event // workflow ID accessible via accessor if needed
 
-	if err := ns.timingCache.Save(); err != nil {
-		fmt.Printf("Warning: Failed to save timing cache: %v\n", err)
-	}
-
-	return nil
+	return ns.timingCache.Save()
 }
 
 // handleWorkflowFailed handles workflow failed event.
@@ -132,15 +121,9 @@ func (ns *NOMStyleSubscriber) handleWorkflowFailed(
 
 	ns.isRunning = false
 
-	if ea, ok := event.(ErrorAccessor); ok && ea.GetError() != nil {
-		fmt.Printf("❌ Workflow failed: %s\n", ea.GetError().Error())
-	}
+	_ = event // error accessible via accessor if needed
 
-	if err := ns.timingCache.Save(); err != nil {
-		fmt.Printf("Warning: Failed to save timing cache: %v\n", err)
-	}
-
-	return nil
+	return ns.timingCache.Save()
 }
 
 // getOrCreateActivity retrieves an existing activity or creates a new one.
@@ -189,21 +172,17 @@ func (ns *NOMStyleSubscriber) handleActivityStarted(
 		aa.GetActivityName().String(),
 		deps,
 	); err != nil {
-		fmt.Printf("Warning: Failed to add activity to tree: %v\n", err)
+		return err
 	}
 
-	if err := ns.dependencyTree.UpdateActivityStatus(
+	return ns.dependencyTree.UpdateActivityStatus(
 		aa.GetActivityID(),
 		activity.Status,
 		activity.Symbol,
 		activity.Color,
 		activity.StartTime,
 		activity.EstimatedTime,
-	); err != nil {
-		fmt.Printf("Warning: Failed to update tree status: %v\n", err)
-	}
-
-	return nil
+	)
 }
 
 // updateActivityStateAfterExecution handles common logic for completing/failing activities.
@@ -213,14 +192,14 @@ func (ns *NOMStyleSubscriber) updateActivityStateAfterExecution(
 	activityName ActivityName,
 	activity *ActivityDisplayState,
 	duration time.Duration,
-) {
+) error {
 	if duration > 0 {
 		if err := ns.timingCache.Record(activityName.String(), duration); err != nil {
-			fmt.Printf("Warning: Failed to record timing: %v\n", err)
+			return err
 		}
 	}
 
-	err := ns.dependencyTree.UpdateActivityStatus(
+	return ns.dependencyTree.UpdateActivityStatus(
 		activityID,
 		activity.Status,
 		activity.Symbol,
@@ -228,9 +207,6 @@ func (ns *NOMStyleSubscriber) updateActivityStateAfterExecution(
 		activity.StartTime,
 		activity.EstimatedTime,
 	)
-	if err != nil {
-		fmt.Printf("Warning: Failed to update tree status: %v\n", err)
-	}
 }
 
 // handleActivityCompleted handles activity completed event.
@@ -254,14 +230,12 @@ func (ns *NOMStyleSubscriber) handleActivityCompleted(
 		duration = da.GetDuration()
 	}
 
-	ns.updateActivityStateAfterExecution(
+	return ns.updateActivityStateAfterExecution(
 		aa.GetActivityID(),
 		aa.GetActivityName(),
 		activity,
 		duration,
 	)
-
-	return nil
 }
 
 // handleActivityFailed handles activity failed event.
@@ -291,12 +265,10 @@ func (ns *NOMStyleSubscriber) handleActivityFailed(
 		duration = da.GetDuration()
 	}
 
-	ns.updateActivityStateAfterExecution(
+	return ns.updateActivityStateAfterExecution(
 		aa.GetActivityID(),
 		aa.GetActivityName(),
 		activity,
 		duration,
 	)
-
-	return nil
 }

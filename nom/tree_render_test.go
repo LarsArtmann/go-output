@@ -121,3 +121,24 @@ func TestDependencyTree_Render_SecondaryDependencies(t *testing.T) {
 		t.Errorf("SecondaryParents = %v, want [step1]", step2Node.SecondaryParents)
 	}
 }
+
+func TestDependencyTree_Render_PhaseStyling(t *testing.T) {
+	t.Parallel()
+
+	dt := NewDependencyTree()
+	dt.AddActivity(ActivityID("phase:build"), "Build", nil)
+	dt.AddActivity(ActivityID("compile"), "Compile", []ActivityID{"phase:build"})
+
+	now := time.Now()
+	dt.UpdateActivityStatus(ActivityID("phase:build"), ActivityStatusRunning, SymbolRunning, ColorRunning, now, 0)
+
+	got := dt.Render(10)
+	if got == "" {
+		t.Fatal("Render() should produce output")
+	}
+
+	// Phase node should use phase symbol
+	if !strings.Contains(got, SymbolPhase) {
+		t.Errorf("render should contain phase symbol %q, got:\n%s", SymbolPhase, got)
+	}
+}
