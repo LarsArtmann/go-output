@@ -26,28 +26,31 @@ type BubbleTeaProgressReporter struct {
 	started bool
 }
 
-// ============================================================================
-// CONSTRUCTOR
-// ============================================================================
-// NewBubbleTeaProgressReporter creates a new TUI progress reporter that implements
-// the universal-workflow ProgressReporter interface.
-func NewBubbleTeaProgressReporter() *BubbleTeaProgressReporter {
-	model := &ProgressModel{
-		messages:      make([]string, 0),
-		steps:         make([]ProgressStep, 0),
-		startTime:     time.Now(),
-		lastUpdate:    time.Now(),
-		workflowState: WorkflowStateIdle,
-		// NOM-style visualization
+// NewProgressModel creates a new ProgressModel with default initialization.
+func NewProgressModel() *ProgressModel {
+	return &ProgressModel{
+		messages:       make([]string, 0),
+		steps:          make([]ProgressStep, 0),
+		startTime:      time.Now(),
+		lastUpdate:     time.Now(),
+		workflowState:  WorkflowStateIdle,
 		displayMode:    DisplayModeUniversal,
 		activities:     make(map[nom.ActivityID]*nom.ActivityDisplayState),
 		dependencyTree: nom.NewDependencyTree(),
 		timingCache:    nom.NewTimingCache(),
 		nomSubscriber:  nom.NewNOMStyleSubscriber(),
 	}
+}
+
+// ============================================================================
+// CONSTRUCTOR
+// ============================================================================
+// NewBubbleTeaProgressReporter creates a new TUI progress reporter that implements
+// the universal-workflow ProgressReporter interface.
+func NewBubbleTeaProgressReporter() *BubbleTeaProgressReporter {
 	// Don't start the program yet - wait for first progress report
 	return &BubbleTeaProgressReporter{
-		model:   model,
+		model:   NewProgressModel(),
 		started: false,
 	}
 }

@@ -11,18 +11,7 @@ import (
 )
 
 func newTestModel() *ProgressModel {
-	return &ProgressModel{
-		messages:       make([]string, 0),
-		steps:          make([]ProgressStep, 0),
-		startTime:      time.Now(),
-		lastUpdate:     time.Now(),
-		workflowState:  WorkflowStateIdle,
-		displayMode:    DisplayModeUniversal,
-		activities:     make(map[nom.ActivityID]*nom.ActivityDisplayState),
-		dependencyTree: nom.NewDependencyTree(),
-		timingCache:    nom.NewTimingCache(),
-		nomSubscriber:  nom.NewNOMStyleSubscriber(),
-	}
+	return NewProgressModel()
 }
 
 func TestProgressModel_Update_WindowSize(t *testing.T) {
