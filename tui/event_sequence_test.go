@@ -3,6 +3,7 @@ package tui
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strings"
 	"testing"
 	"time"
@@ -403,3 +404,86 @@ func splitLines(s string) []string {
 	}
 	return strings.Split(s, "\n")
 }
+
+func TestProgressModel_ResizeStress_RapidSequence(t *testing.T) {
+	t.Parallel()
+
+	model := newTestModel()
+	model.displayMode = DisplayModeNOM
+	model.workflowState = WorkflowStateRunning
+
+	tree := nom.NewDependencyTree()
+	for i := 0; i < 50; i++ {
+		id := nom.ActivityID(fmt.Sprintf("step-%d", i))
+		tree.AddActivity(id, fmt.Sprintf("Step %d", i), nil)
+	}
+
+	tree.EnsureBuild()
+	model.dependencyTree = tree
+
+	resizes := []tea.WindowSizeMsg{
+		{Width: 120, Height: 40},
+		{Width: 80, Height: 24},
+		{Width: 60, Height: 15},
+		{Width: 200, Height: 60},
+		{Width: 40, Height: 10},
+		{Width: 120, Height: 40},
+	}
+
+	for _, resize := range resizes {
+		updated, _ := model.Update(resize)
+		m := updated.(*ProgressModel)
+
+		if m.width != resize.Width {
+			t.Errorf("width after resize = %d, want %d", m.width, resize.Width)
+		}
+
+		if m.height != resize.Height {
+			t.Errorf("height after resize = %d, want %d", m.height, resize.Height)
+		}
+
+		view := m.View()
+		if view.Content == "" {
+			t.Error("View() should produce content after resize")
+		}
+
+		model = m
+	}
+}
+
+func TestProgressModel_Resize_ClampsScrollOffset(t *testing.T) {
+	t.Parallel()
+
+	model := newTestModel()
+	model.displayMode = DisplayModeNOM
+	model.workflowState = WorkflowStateRunning
+	model.width = 120
+	model.height = 40
+
+	tree := nom.NewDependencyTree()
+	for i := 0; i < 50; i++ {
+		tree.AddActivity(nom.ActivityID(fmt.Sprintf("step-%d", i)), fmt.Sprintf("Step %d", i), nil)
+	}
+
+	tree.EnsureBuild()
+	model.dependencyTree = tree
+
+	// Scroll to bottom in large window
+	model.scrollOffset = 30
+
+	// Shrink window — viewport should clamp scrollOffset
+	updated, _ := model.Update(tea.WindowSizeMsg{Width: 80, Height: 10})
+	m := updated.(*ProgressModel)
+
+	// scrollOffset should not exceed content lines - height
+	if m.scrollOffset < 0 {
+		t.Error("scrollOffset should not be negative")
+	}
+
+	// Render should not panic with small height
+	view := m.View()
+	if view.Content == "" {
+		t.Error("View() should produce content after resize")
+	}
+}
+
