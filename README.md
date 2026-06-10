@@ -400,6 +400,31 @@ safeID := escape.D2("my-node.with.dots")
 | `escape.DOT`       | DOT graph identifiers   |
 | `escape.MermaidID` | Mermaid node IDs        |
 
+## TUI Progress Display
+
+The `tui` sub-module provides a Bubble Tea v2 TUI for real-time workflow progress with dependency tree visualization.
+
+### Keyboard Shortcuts
+
+| Key        | Action                        |
+|------------|-------------------------------|
+| `j` / `↓` | Scroll down                   |
+| `k` / `↑` | Scroll up                     |
+| `pgdown`   | Scroll half page down         |
+| `pgup`     | Scroll half page up           |
+| `g` / Home | Scroll to top                 |
+| `G` / End  | Scroll to bottom              |
+| `?`        | Toggle help overlay           |
+| `q`        | Quit (workflow continues)     |
+| `ctrl+c`   | Cancel workflow and quit      |
+
+### Mouse Support
+
+| Action        | Behavior                              |
+|---------------|---------------------------------------|
+| Left click    | Select/deselect tree node (highlight) |
+| Scroll wheel  | Scroll viewport (3 lines per tick)    |
+
 ## Dependencies
 
 Root module — zero lipgloss, zero yaml **in production code**. (YAML dep isolated in `serialization/` module).
