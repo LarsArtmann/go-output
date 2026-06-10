@@ -95,8 +95,9 @@ type ProgressModel struct {
 	// Display state
 	startTime  time.Time
 	lastUpdate time.Time
-	width      int
-	height     int
+	width        int
+	height       int
+	scrollOffset int
 	// Status tracking with strong types
 	workflowState  WorkflowState
 	currentMessage string

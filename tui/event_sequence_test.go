@@ -7,6 +7,7 @@ import (
 	"time"
 
 	tea "charm.land/bubbletea/v2"
+	"github.com/charmbracelet/x/ansi"
 
 	"github.com/larsartmann/go-output/nom"
 )
@@ -265,6 +266,83 @@ func TestProgressModel_EventSequence_KeyQuit(t *testing.T) {
 	}
 
 	// Verify it's a quit command by checking the message it produces
+	msg := cmd()
+	if msg == nil {
+		t.Error("quit command should produce a message")
+	}
+}
+
+// TestProgressModel_KeyboardNavigation verifies scroll keys update offset.
+func TestProgressModel_KeyboardNavigation(t *testing.T) {
+	t.Parallel()
+
+	model := newTestModel()
+	model.height = 20
+	model.scrollOffset = 10
+
+	// Up arrow scrolls up
+	updated, _ := model.Update(tea.KeyPressMsg{Code: tea.KeyUp})
+	m := updated.(*ProgressModel)
+	if m.scrollOffset != 9 {
+		t.Errorf("scroll after up = %d, want 9", m.scrollOffset)
+	}
+
+	// Down arrow scrolls down
+	updated, _ = m.Update(tea.KeyPressMsg{Code: tea.KeyDown})
+	m = updated.(*ProgressModel)
+	if m.scrollOffset != 10 {
+		t.Errorf("scroll after down = %d, want 10", m.scrollOffset)
+	}
+
+	// Home resets to top
+	updated, _ = m.Update(tea.KeyPressMsg{Code: tea.KeyHome})
+	m = updated.(*ProgressModel)
+	if m.scrollOffset != 0 {
+		t.Errorf("scroll after home = %d, want 0", m.scrollOffset)
+	}
+
+	// End jumps to bottom
+	updated, _ = m.Update(tea.KeyPressMsg{Code: tea.KeyEnd})
+	m = updated.(*ProgressModel)
+	if m.scrollOffset != 9999 {
+		t.Errorf("scroll after end = %d, want 9999", m.scrollOffset)
+	}
+}
+
+// TestProgressModel_MouseScrolling verifies mouse wheel updates scroll offset.
+func TestProgressModel_MouseScrolling(t *testing.T) {
+	t.Parallel()
+
+	model := newTestModel()
+	model.scrollOffset = 5
+
+	// Wheel down scrolls down
+	updated, _ := model.Update(tea.MouseWheelMsg{Button: ansi.MouseWheelDown})
+	m := updated.(*ProgressModel)
+	if m.scrollOffset != 8 {
+		t.Errorf("scroll after wheel down = %d, want 8", m.scrollOffset)
+	}
+
+	// Wheel up scrolls up
+	updated, _ = m.Update(tea.MouseWheelMsg{Button: ansi.MouseWheelUp})
+	m = updated.(*ProgressModel)
+	if m.scrollOffset != 5 {
+		t.Errorf("scroll after wheel up = %d, want 5", m.scrollOffset)
+	}
+}
+
+// TestProgressModel_CancelMessage verifies CancelMsg triggers quit.
+func TestProgressModel_CancelMessage(t *testing.T) {
+	t.Parallel()
+
+	model := newTestModel()
+
+	_, cmd := model.Update(CancelMsg{})
+
+	if cmd == nil {
+		t.Fatal("expected Quit command for CancelMsg")
+	}
+
 	msg := cmd()
 	if msg == nil {
 		t.Error("quit command should produce a message")

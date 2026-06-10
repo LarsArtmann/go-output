@@ -27,3 +27,6 @@ type ProgressUpdateMsg struct {
 
 // TickMsg represents a timer tick for real-time updates.
 type TickMsg time.Time
+
+// CancelMsg signals the TUI to shut down gracefully.
+type CancelMsg struct{}

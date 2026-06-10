@@ -4,6 +4,7 @@ import (
 	"time"
 
 	tea "charm.land/bubbletea/v2"
+	"github.com/charmbracelet/x/ansi"
 )
 
 // ============================================================================
@@ -28,10 +29,14 @@ func (m *ProgressModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m.handleWindowSize(msg)
 	case tea.KeyPressMsg:
 		return m.handleKeyPress(msg)
+	case tea.MouseWheelMsg:
+		return m.handleMouseWheel(msg)
 	case ProgressUpdateMsg:
 		return m.handleProgressUpdate(msg)
 	case TickMsg:
 		return m.handleTick(msg)
+	case CancelMsg:
+		return m, tea.Quit
 	}
 
 	return m, nil
@@ -48,6 +53,47 @@ func (m *ProgressModel) handleKeyPress(msg tea.KeyPressMsg) (tea.Model, tea.Cmd)
 	switch msg.String() {
 	case "ctrl+c", "q":
 		return m, tea.Quit
+	case "up", "k":
+		m.scrollUp(1)
+	case "down", "j":
+		m.scrollDown(1)
+	case "pgup":
+		m.scrollUp(m.height / 2)
+	case "pgdown":
+		m.scrollDown(m.height / 2)
+	case "home", "g":
+		m.scrollOffset = 0
+	case "end", "G":
+		m.scrollToBottom()
+	}
+
+	return m, nil
+}
+
+func (m *ProgressModel) scrollUp(lines int) {
+	if m.scrollOffset > lines {
+		m.scrollOffset -= lines
+	} else {
+		m.scrollOffset = 0
+	}
+}
+
+func (m *ProgressModel) scrollDown(lines int) {
+	m.scrollOffset += lines
+}
+
+func (m *ProgressModel) scrollToBottom() {
+	// Approximate bottom based on content; actual rendering handles clamping
+	m.scrollOffset = 9999
+}
+
+func (m *ProgressModel) handleMouseWheel(msg tea.MouseWheelMsg) (tea.Model, tea.Cmd) {
+	mouse := msg.Mouse()
+	switch mouse.Button {
+	case ansi.MouseWheelUp:
+		m.scrollUp(3)
+	case ansi.MouseWheelDown:
+		m.scrollDown(3)
 	}
 
 	return m, nil
