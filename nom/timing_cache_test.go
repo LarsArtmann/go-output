@@ -145,6 +145,8 @@ func TestTimingCache_SaveAndLoad(t *testing.T) {
 	tc.Record("build", 5*time.Second)
 	tc.Record("test", 10*time.Second)
 
+	tc.WaitPendingSaves()
+
 	if err := tc.Save(); err != nil {
 		t.Fatalf("Save() error: %v", err)
 	}

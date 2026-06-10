@@ -4,6 +4,8 @@ import (
 	"testing"
 	"time"
 
+	tea "charm.land/bubbletea/v2"
+
 	"github.com/larsartmann/go-output/nom"
 )
 
@@ -190,6 +192,46 @@ func TestProgressModel_RenderDependencyTree(t *testing.T) {
 		got := model.renderDependencyTree()
 		if got == "" {
 			t.Error("renderDependencyTree() should not be empty for non-empty tree")
+		}
+	})
+}
+
+func TestProgressModel_HelpOverlay(t *testing.T) {
+	t.Parallel()
+
+	t.Run("toggle on and off", func(t *testing.T) {
+		t.Parallel()
+
+		model := newTestModel()
+		if model.showHelp {
+			t.Error("showHelp should start false")
+		}
+
+		updatedModel, _ := model.Update(tea.KeyPressMsg{Code: '?'})
+		m := updatedModel.(*ProgressModel)
+		if !m.showHelp {
+			t.Error("showHelp should be true after pressing ?")
+		}
+
+		updatedModel2, _ := m.Update(tea.KeyPressMsg{Code: '?'})
+		m2 := updatedModel2.(*ProgressModel)
+		if m2.showHelp {
+			t.Error("showHelp should be false after pressing ? again")
+		}
+	})
+
+	t.Run("render includes help content", func(t *testing.T) {
+		t.Parallel()
+
+		model := newTestModel()
+		model.width = 80
+		model.height = 24
+		model.workflowState = WorkflowStateRunning
+		model.showHelp = true
+
+		view := model.View()
+		if view.Content == "" {
+			t.Error("View() should not be empty with help overlay")
 		}
 	})
 }

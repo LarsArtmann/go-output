@@ -133,6 +133,8 @@ func writeCacheToFile(filePath string, data map[string][]time.Duration) error {
 // saveAsync saves the cache asynchronously (non-blocking).
 // Must be called from a goroutine — snapshots data under RLock, then writes without holding any lock.
 func (tc *TimingCache) saveAsync() {
+	defer tc.pendingSaves.Done()
+
 	tc.mu.RLock()
 
 	dataCopy := make(map[string][]time.Duration, len(tc.cache))

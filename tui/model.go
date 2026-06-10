@@ -65,6 +65,8 @@ func (m *ProgressModel) handleKeyPress(msg tea.KeyPressMsg) (tea.Model, tea.Cmd)
 		m.scrollOffset = 0
 	case "end", "G":
 		m.scrollToBottom()
+	case "?":
+		m.showHelp = !m.showHelp
 	}
 
 	return m, nil

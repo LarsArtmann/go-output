@@ -93,8 +93,8 @@ type ProgressModel struct {
 	currentProgress float64
 	steps           []ProgressStep
 	// Display state
-	startTime  time.Time
-	lastUpdate time.Time
+	startTime    time.Time
+	lastUpdate   time.Time
 	width        int
 	height       int
 	scrollOffset int
@@ -109,4 +109,5 @@ type ProgressModel struct {
 	dependencyTree *nom.DependencyTree
 	timingCache    *nom.TimingCache
 	nomSubscriber  *nom.NOMStyleSubscriber
+	showHelp       bool
 }

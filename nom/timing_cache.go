@@ -21,10 +21,11 @@ const (
 
 // TimingCache manages activity duration history and averages.
 type TimingCache struct {
-	mu       sync.RWMutex
-	cache    map[string][]time.Duration // activity name -> duration history
-	filePath string                     // Path to cache file
-	loaded   bool                       // Whether cache has been loaded
+	mu           sync.RWMutex
+	cache        map[string][]time.Duration // activity name -> duration history
+	filePath     string                     // Path to cache file
+	loaded       bool                       // Whether cache has been loaded
+	pendingSaves sync.WaitGroup             // tracks in-flight saveAsync goroutines
 }
 
 // NewTimingCache creates a new timing cache.
@@ -58,6 +59,7 @@ func (tc *TimingCache) Record(activityName string, duration time.Duration) error
 
 	tc.cache[activityName] = history
 	// Save to disk asynchronously (non-blocking)
+	tc.pendingSaves.Add(1)
 	go tc.saveAsync()
 
 	return nil
@@ -160,4 +162,9 @@ func (tc *TimingCache) EnsureLoaded() error {
 	}
 
 	return tc.loadLocked()
+}
+
+// WaitPendingSaves blocks until all in-flight async saves complete.
+func (tc *TimingCache) WaitPendingSaves() {
+	tc.pendingSaves.Wait()
 }

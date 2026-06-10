@@ -8,21 +8,22 @@ import (
 )
 
 // TestDependencyTreeRenderGolden_PhaseSteps renders a tree with a phase node
-// and multiple child steps in various states.
+// and multiple child steps in various states. Uses "phase:" prefix for
+// phase-styled rendering (SymbolPhase/ColorPhase).
 func TestDependencyTreeRenderGolden_PhaseSteps(t *testing.T) {
 	t.Parallel()
 
 	dt := NewDependencyTree()
-	dt.AddActivity(ActivityID("phase1"), "Build Phase", nil)
-	dt.AddActivity(ActivityID("compile"), "Compile", []ActivityID{"phase1"})
-	dt.AddActivity(ActivityID("test"), "Run Tests", []ActivityID{"phase1"})
-	dt.AddActivity(ActivityID("lint"), "Lint Code", []ActivityID{"phase1"})
-	dt.AddActivity(ActivityID("deploy"), "Deploy", []ActivityID{"phase1"})
+	dt.AddActivity(ActivityID("phase:build"), "Build Phase", nil)
+	dt.AddActivity(ActivityID("compile"), "Compile", []ActivityID{"phase:build"})
+	dt.AddActivity(ActivityID("test"), "Run Tests", []ActivityID{"phase:build"})
+	dt.AddActivity(ActivityID("lint"), "Lint Code", []ActivityID{"phase:build"})
+	dt.AddActivity(ActivityID("deploy"), "Deploy", []ActivityID{"phase:build"})
 
 	now := time.Date(2026, 6, 10, 12, 0, 0, 0, time.UTC)
 
-	dt.UpdateActivityStatus(ActivityID("phase1"), ActivityStatusRunning, SymbolRunning, ColorRunning, now, 0)
-	dt.nodes[ActivityID("phase1")].CurrentElapsed = 5 * time.Second
+	dt.UpdateActivityStatus(ActivityID("phase:build"), ActivityStatusRunning, SymbolRunning, ColorRunning, now, 0)
+	dt.nodes[ActivityID("phase:build")].CurrentElapsed = 5 * time.Second
 
 	dt.UpdateActivityStatus(ActivityID("compile"), ActivityStatusCompleted, SymbolCompleted, ColorCompleted, now, 0)
 	dt.nodes[ActivityID("compile")].CurrentElapsed = 2 * time.Second
@@ -45,13 +46,13 @@ func TestDependencyTreeRenderGolden_SecondaryDeps(t *testing.T) {
 	t.Parallel()
 
 	dt := NewDependencyTree()
-	dt.AddActivity(ActivityID("phase"), "Phase", nil)
-	dt.AddActivity(ActivityID("step1"), "Step 1", []ActivityID{"phase"})
-	dt.AddActivity(ActivityID("step2"), "Step 2", []ActivityID{"phase", "step1"})
+	dt.AddActivity(ActivityID("phase:main"), "Phase", nil)
+	dt.AddActivity(ActivityID("step1"), "Step 1", []ActivityID{"phase:main"})
+	dt.AddActivity(ActivityID("step2"), "Step 2", []ActivityID{"phase:main", "step1"})
 
 	now := time.Date(2026, 6, 10, 12, 0, 0, 0, time.UTC)
 
-	dt.UpdateActivityStatus(ActivityID("phase"), ActivityStatusRunning, SymbolRunning, ColorRunning, now, 0)
+	dt.UpdateActivityStatus(ActivityID("phase:main"), ActivityStatusRunning, SymbolRunning, ColorRunning, now, 0)
 	dt.UpdateActivityStatus(ActivityID("step1"), ActivityStatusCompleted, SymbolCompleted, ColorCompleted, now, 0)
 	dt.UpdateActivityStatus(ActivityID("step2"), ActivityStatusPending, SymbolPaused, ColorPaused, time.Time{}, 0)
 

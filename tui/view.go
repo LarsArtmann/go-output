@@ -23,11 +23,48 @@ func (m *ProgressModel) View() tea.View {
 		content = m.renderUniversalWorkflowProgress()
 	}
 
+	content = m.applyScrollViewport(content)
+
+	if m.showHelp {
+		content = m.renderHelpOverlay(content)
+	}
+
 	v := tea.NewView(content)
 	v.AltScreen = true
 	v.MouseMode = tea.MouseModeCellMotion
 
 	return v
+}
+
+// applyScrollViewport clips the content to the visible viewport based on scrollOffset.
+func (m *ProgressModel) applyScrollViewport(content string) string {
+	if m.height <= 0 {
+		return content
+	}
+
+	lines := strings.Split(content, "\n")
+	totalLines := len(lines)
+
+	if totalLines <= m.height {
+		m.scrollOffset = 0
+		return content
+	}
+
+	maxOffset := totalLines - m.height
+	if m.scrollOffset > maxOffset {
+		m.scrollOffset = maxOffset
+	}
+	if m.scrollOffset < 0 {
+		m.scrollOffset = 0
+	}
+
+	end := m.scrollOffset + m.height
+	if end > totalLines {
+		end = totalLines
+	}
+
+	visible := lines[m.scrollOffset:end]
+	return strings.Join(visible, "\n")
 }
 
 // renderUniversalWorkflowProgress creates a display for universal workflow execution.
@@ -231,13 +268,18 @@ func (m *ProgressModel) renderDependencyTree() string {
 	if m.dependencyTree == nil {
 		return ""
 	}
-	// Use the tree's built-in Render method with max height based on terminal
-	maxHeight := m.height
-	if maxHeight <= 0 {
-		maxHeight = 20 // Default reasonable height
+
+	if m.scrollOffset > 0 {
+		return m.dependencyTree.Render(0)
 	}
 
-	return m.dependencyTree.Render(maxHeight)
+	chromeLines := 8
+	treeHeight := m.height - chromeLines
+	if treeHeight <= 0 {
+		treeHeight = 20
+	}
+
+	return m.dependencyTree.Render(treeHeight)
 }
 
 // renderNOMSummaryBar creates the NOM-style summary bar.
@@ -269,4 +311,38 @@ func (m *ProgressModel) getActivityCounts() (running, completed, failed, pending
 	}
 
 	return running, completed, failed, pending
+}
+
+func (m *ProgressModel) renderHelpOverlay(content string) string {
+	helpStyle := lipgloss.NewStyle().
+		Border(lipgloss.RoundedBorder()).
+		Padding(1, 2).
+		Foreground(lipgloss.Color("15")).
+		Background(lipgloss.Color("0"))
+
+	shortcuts := []string{
+		"  Keyboard Shortcuts",
+		"",
+		"  j / ↓       Scroll down",
+		"  k / ↑       Scroll up",
+		"  pgdown      Scroll half page",
+		"  pgup        Scroll half page up",
+		"  g / Home    Scroll to top",
+		"  G / End     Scroll to bottom",
+		"  ?           Toggle this help",
+		"  q / ctrl+c  Quit",
+	}
+
+	helpText := helpStyle.Render(strings.Join(shortcuts, "\n"))
+
+	width := m.width
+	height := m.height
+	if width <= 0 {
+		width = 80
+	}
+	if height <= 0 {
+		height = 24
+	}
+
+	return lipgloss.Place(width, height, lipgloss.Center, lipgloss.Center, helpText)
 }

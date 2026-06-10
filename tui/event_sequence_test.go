@@ -3,6 +3,7 @@ package tui
 import (
 	"context"
 	"errors"
+	"strings"
 	"testing"
 	"time"
 
@@ -347,4 +348,58 @@ func TestProgressModel_CancelMessage(t *testing.T) {
 	if msg == nil {
 		t.Error("quit command should produce a message")
 	}
+}
+
+// TestProgressModel_ViewportScrolling verifies applyScrollViewport clips content.
+func TestProgressModel_ViewportScrolling(t *testing.T) {
+	t.Parallel()
+
+	model := newTestModel()
+	model.width = 80
+	model.height = 3
+
+	content := "line1\nline2\nline3\nline4\nline5\nline6\nline7\nline8\nline9\nline10"
+
+	result := model.applyScrollViewport(content)
+	lines := splitLines(result)
+	if len(lines) != 3 {
+		t.Fatalf("expected 3 visible lines, got %d", len(lines))
+	}
+	if lines[0] != "line1" {
+		t.Errorf("first visible line = %q, want %q", lines[0], "line1")
+	}
+
+	// Scroll to offset 5
+	model.scrollOffset = 5
+	result = model.applyScrollViewport(content)
+	lines = splitLines(result)
+	if len(lines) != 3 {
+		t.Fatalf("expected 3 visible lines after scroll, got %d", len(lines))
+	}
+	if lines[0] != "line6" {
+		t.Errorf("first visible line after scroll = %q, want %q", lines[0], "line6")
+	}
+
+	// Scroll past end — should clamp
+	model.scrollOffset = 100
+	result = model.applyScrollViewport(content)
+	lines = splitLines(result)
+	if lines[0] != "line8" {
+		t.Errorf("clamped first line = %q, want %q", lines[0], "line8")
+	}
+
+	// Content fits viewport — scrollOffset should reset to 0
+	model.height = 20
+	model.scrollOffset = 5
+	_ = model.applyScrollViewport(content)
+	if model.scrollOffset != 0 {
+		t.Errorf("scrollOffset should be 0 when content fits, got %d", model.scrollOffset)
+	}
+}
+
+func splitLines(s string) []string {
+	if s == "" {
+		return nil
+	}
+	return strings.Split(s, "\n")
 }
