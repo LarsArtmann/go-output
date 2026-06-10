@@ -470,4 +470,3 @@ func TestProgressModel_Resize_ClampsScrollOffset(t *testing.T) {
 		t.Error("View() should produce content after resize")
 	}
 }
-

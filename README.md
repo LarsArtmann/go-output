@@ -406,24 +406,24 @@ The `tui` sub-module provides a Bubble Tea v2 TUI for real-time workflow progres
 
 ### Keyboard Shortcuts
 
-| Key        | Action                        |
-|------------|-------------------------------|
-| `j` / `↓` | Scroll down                   |
-| `k` / `↑` | Scroll up                     |
-| `pgdown`   | Scroll half page down         |
-| `pgup`     | Scroll half page up           |
-| `g` / Home | Scroll to top                 |
-| `G` / End  | Scroll to bottom              |
-| `?`        | Toggle help overlay           |
-| `q`        | Quit (workflow continues)     |
-| `ctrl+c`   | Cancel workflow and quit      |
+| Key        | Action                    |
+| ---------- | ------------------------- |
+| `j` / `↓`  | Scroll down               |
+| `k` / `↑`  | Scroll up                 |
+| `pgdown`   | Scroll half page down     |
+| `pgup`     | Scroll half page up       |
+| `g` / Home | Scroll to top             |
+| `G` / End  | Scroll to bottom          |
+| `?`        | Toggle help overlay       |
+| `q`        | Quit (workflow continues) |
+| `ctrl+c`   | Cancel workflow and quit  |
 
 ### Mouse Support
 
-| Action        | Behavior                              |
-|---------------|---------------------------------------|
-| Left click    | Select/deselect tree node (highlight) |
-| Scroll wheel  | Scroll viewport (3 lines per tick)    |
+| Action       | Behavior                              |
+| ------------ | ------------------------------------- |
+| Left click   | Select/deselect tree node (highlight) |
+| Scroll wheel | Scroll viewport (3 lines per tick)    |
 
 ## Dependencies
 
