@@ -1,6 +1,7 @@
 package tui
 
 import (
+	"context"
 	"fmt"
 	"sync"
 	"time"
@@ -55,6 +56,12 @@ func NewBubbleTeaProgressReporter() *BubbleTeaProgressReporter {
 // Send events to this subscriber to populate the NOM-style dependency tree.
 func (pr *BubbleTeaProgressReporter) Subscriber() *nom.NOMStyleSubscriber {
 	return pr.model.nomSubscriber
+}
+
+// SetCancelFunc sets the context cancellation function called on ctrl+c.
+// This allows the TUI to cancel the running workflow when the user presses ctrl+c.
+func (pr *BubbleTeaProgressReporter) SetCancelFunc(fn context.CancelFunc) {
+	pr.model.cancelFunc = fn
 }
 
 // SetDisplayMode switches the rendering mode between NOM and Universal.
