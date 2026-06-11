@@ -60,10 +60,8 @@ func ParseShape(s string) (Shape, error) {
 	return v, nil
 }
 
-var (
-	//nolint:gochecknoglobals // Registry for format capabilities, populated by sub-module init().
-	formatCapabilities = newFormatRegistry[[]Shape]()
-)
+//nolint:gochecknoglobals // Registry for format capabilities, populated by sub-module init().
+var formatCapabilities = newFormatRegistry[[]Shape]()
 
 // RegisterFormatShapes registers the data shapes a format supports.
 // Sub-modules call this from their init() to declare capabilities.

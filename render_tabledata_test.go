@@ -351,6 +351,7 @@ func TestUnsupportedFormatErrorMessage(t *testing.T) {
 	t.Parallel()
 
 	err := &UnsupportedFormatError{Format: FormatJSON}
+
 	msg := err.Error()
 	if !strings.Contains(msg, "json") {
 		t.Errorf("error message should contain format name, got: %q", msg)

@@ -139,7 +139,11 @@ func TestRenderAnyData_YAML(t *testing.T) {
 
 	var buf bytes.Buffer
 
-	err := output.RenderAnyData(map[string]string{"name": "Alice"}, output.FormatYAML, output.RenderOptions{Writer: &buf})
+	err := output.RenderAnyData(
+		map[string]string{"name": "Alice"},
+		output.FormatYAML,
+		output.RenderOptions{Writer: &buf},
+	)
 	if err != nil {
 		t.Fatalf("RenderAnyData yaml: %v", err)
 	}
@@ -153,7 +157,11 @@ func TestRenderAnyData_TOML(t *testing.T) {
 
 	var buf bytes.Buffer
 
-	err := output.RenderAnyData(map[string]string{"name": "Alice"}, output.FormatTOML, output.RenderOptions{Writer: &buf})
+	err := output.RenderAnyData(
+		map[string]string{"name": "Alice"},
+		output.FormatTOML,
+		output.RenderOptions{Writer: &buf},
+	)
 	if err != nil {
 		t.Fatalf("RenderAnyData toml: %v", err)
 	}

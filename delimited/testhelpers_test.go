@@ -10,9 +10,11 @@ import (
 
 type errorWriter = testhelpers.ErrorWriter
 
-var assertContains = testhelpers.AssertContains
-var assertLineCount = testhelpers.AssertLineCount
-var assertLastLineContains = testhelpers.AssertLastLineContains
+var (
+	assertContains         = testhelpers.AssertContains
+	assertLineCount        = testhelpers.AssertLineCount
+	assertLastLineContains = testhelpers.AssertLastLineContains
+)
 
 func testRenderTableData(t *testing.T, format output.Format, name string) {
 	t.Helper()

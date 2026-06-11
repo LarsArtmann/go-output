@@ -24,10 +24,8 @@ type RenderOptions struct {
 // TableDataMarshaler renders TableData in a specific format to a writer.
 type TableDataMarshaler func(w io.Writer, data *TableData, opts RenderOptions) error
 
-var (
-	//nolint:gochecknoglobals // Registry for TableData marshalers, populated by sub-module init().
-	tableDataRegistry = newFormatRegistry[TableDataMarshaler]()
-)
+//nolint:gochecknoglobals // Registry for TableData marshalers, populated by sub-module init().
+var tableDataRegistry = newFormatRegistry[TableDataMarshaler]()
 
 // RegisterTableDataMarshaler registers a marshaler for a format.
 // Sub-modules call this from their init() to enable RenderTableData dispatch.
@@ -128,10 +126,8 @@ func renderTreeTableData(w io.Writer, data *TableData, opts RenderOptions) error
 // AnyDataMarshaler renders arbitrary data (any) in a specific format to a writer.
 type AnyDataMarshaler func(w io.Writer, data any, opts RenderOptions) error
 
-var (
-	//nolint:gochecknoglobals // Registry for any-data marshalers, populated by sub-module init().
-	anyDataRegistry = newFormatRegistry[AnyDataMarshaler]()
-)
+//nolint:gochecknoglobals // Registry for any-data marshalers, populated by sub-module init().
+var anyDataRegistry = newFormatRegistry[AnyDataMarshaler]()
 
 // RegisterAnyDataMarshaler registers a marshaler for arbitrary (non-TableData) data.
 // Sub-modules call this from their init() to enable RenderAnyData dispatch.
