@@ -2,6 +2,7 @@ package delimited
 
 import (
 	"bytes"
+	"io"
 	"strings"
 	"testing"
 
@@ -248,4 +249,22 @@ func TestCSVWriter_WriteFooter(t *testing.T) {
 
 	assertLineCount(t, "WriteFooter", result, 3)
 	assertLastLineContains(t, "WriteFooter", result, "Total")
+}
+
+func TestMarshalFromTableData_FlushError(t *testing.T) {
+	t.Parallel()
+
+	data := output.NewTableData([]string{"Name"})
+	data.AddRow([]string{"Alice"})
+
+	_, err := marshalFromTableData(data, "csv", func(w io.Writer) tableDataWriter {
+		return NewCSVWriter(&errorWriter{})
+	})
+	if err == nil {
+		t.Fatal("expected flush error from errorWriter")
+	}
+
+	if !strings.Contains(err.Error(), "flush csv writer") {
+		t.Errorf("error should mention flush, got: %v", err)
+	}
 }

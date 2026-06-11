@@ -364,6 +364,37 @@ func TestNOMStyleSubscriber_GetActivityCounts(t *testing.T) {
 	}
 }
 
+func TestNOMStyleSubscriber_GetActivityCounts_PausedAndFailed(t *testing.T) {
+	t.Parallel()
+
+	ns := NewNOMStyleSubscriber()
+
+	paused := NewActivityDisplayState(ActivityID("p1"), ActivityName("Wait"))
+	paused.Status = ActivityStatusPaused
+	ns.SetActivityState(paused)
+
+	failed := NewActivityDisplayState(ActivityID("f1"), ActivityName("Build"))
+	failed.SetFailed(errors.New("crash"))
+	ns.SetActivityState(failed)
+
+	running, completed, failedCount, pending := ns.GetActivityCounts()
+	if running != 0 {
+		t.Errorf("running = %d, want 0", running)
+	}
+
+	if completed != 0 {
+		t.Errorf("completed = %d, want 0", completed)
+	}
+
+	if failedCount != 1 {
+		t.Errorf("failed = %d, want 1", failedCount)
+	}
+
+	if pending != 1 {
+		t.Errorf("pending = %d, want 1 (paused counts as pending)", pending)
+	}
+}
+
 func TestNOMStyleSubscriber_GetActivity_NotFound(t *testing.T) {
 	t.Parallel()
 

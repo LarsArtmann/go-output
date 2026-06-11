@@ -1,6 +1,7 @@
 package tui
 
 import (
+	"errors"
 	"strings"
 	"testing"
 	"time"
@@ -257,5 +258,60 @@ func TestProgressModel_SelectedNodeHighlight(t *testing.T) {
 		if !strings.Contains(content, want) {
 			t.Errorf("rendered content should contain %q", want)
 		}
+	}
+}
+
+func TestProgressModel_GetActivityCounts_AllStatuses(t *testing.T) {
+	t.Parallel()
+
+	model := newTestModel()
+	addTestActivity(model, "running", "R", func(a *nom.ActivityDisplayState) { a.SetRunning() })
+	addTestActivity(model, "completed", "C", func(a *nom.ActivityDisplayState) { a.SetCompleted() })
+	addTestActivity(model, "failed", "F", func(a *nom.ActivityDisplayState) { a.SetFailed(errors.New("fail")) })
+
+	paused := nom.NewActivityDisplayState(nom.ActivityID("paused"), nom.ActivityName("P"))
+	paused.Status = nom.ActivityStatusPaused
+	model.activities[nom.ActivityID("paused")] = paused
+
+	running, completed, failed, pending := model.getActivityCounts()
+	if running != 1 {
+		t.Errorf("running = %d, want 1", running)
+	}
+
+	if completed != 1 {
+		t.Errorf("completed = %d, want 1", completed)
+	}
+
+	if failed != 1 {
+		t.Errorf("failed = %d, want 1", failed)
+	}
+
+	if pending != 1 {
+		t.Errorf("pending = %d, want 1 (paused counts as pending)", pending)
+	}
+}
+
+func TestProgressModel_RenderHelpOverlay_DefaultDimensions(t *testing.T) {
+	t.Parallel()
+
+	model := newTestModel()
+
+	got := model.renderHelpOverlay()
+	if got == "" {
+		t.Error("renderHelpOverlay() should not be empty with default dimensions")
+	}
+}
+
+func TestProgressModel_RenderUniversalWorkflowProgress_NoStepsNoProgress(t *testing.T) {
+	t.Parallel()
+
+	model := newTestModel()
+	model.width = 80
+	model.height = 24
+	model.workflowState = WorkflowStateRunning
+
+	got := model.renderUniversalWorkflowProgress()
+	if got == "" {
+		t.Error("should render even with no steps and no progress")
 	}
 }

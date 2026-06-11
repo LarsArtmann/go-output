@@ -267,3 +267,16 @@ func TestStreamingHTMLRendererNoFooter(t *testing.T) {
 
 	assertContains(t, got, "</tbody>", "should still close tbody")
 }
+
+func TestStreamHTMLTable_NilData_WriteError(t *testing.T) {
+	t.Parallel()
+
+	err := streamHTMLTable(&errorWriter{}, nil)
+	if err == nil {
+		t.Fatal("expected error for nil data with error writer")
+	}
+
+	if !strings.Contains(err.Error(), "write empty table") {
+		t.Errorf("error should mention write empty table, got: %v", err)
+	}
+}

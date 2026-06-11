@@ -254,3 +254,66 @@ func TestMarshalTOML_Error(t *testing.T) {
 		t.Error("Expected error for unmarshalable type")
 	}
 }
+
+func TestRenderViaRenderer_WriteError(t *testing.T) {
+	t.Parallel()
+
+	data := output.NewTableData([]string{"A"})
+	data.AddRow([]string{"1"})
+
+	r := NewJSONTableRenderer()
+
+	err := renderViaRenderer(&errorWriter{}, data, r, "test")
+	if err == nil {
+		t.Fatal("expected error from errorWriter")
+	}
+
+	assertContains(t, err.Error(), "write test output", "error should mention write")
+}
+
+func TestRenderJSONAnyData_WriteError(t *testing.T) {
+	t.Parallel()
+
+	err := renderJSONAnyData(&errorWriter{}, map[string]string{"a": "b"}, output.RenderOptions{})
+	if err == nil {
+		t.Fatal("expected error from errorWriter")
+	}
+
+	assertContains(t, err.Error(), "write JSON", "error should mention JSON")
+}
+
+func TestRenderYAMLAnyData_WriteError(t *testing.T) {
+	t.Parallel()
+
+	err := renderYAMLAnyData(&errorWriter{}, map[string]string{"a": "b"}, output.RenderOptions{})
+	if err == nil {
+		t.Fatal("expected error from errorWriter")
+	}
+
+	assertContains(t, err.Error(), "write YAML", "error should mention YAML")
+}
+
+func TestRenderTOMLAnyData_WriteError(t *testing.T) {
+	t.Parallel()
+
+	err := renderTOMLAnyData(&errorWriter{}, map[string]string{"a": "b"}, output.RenderOptions{})
+	if err == nil {
+		t.Fatal("expected error from errorWriter")
+	}
+
+	assertContains(t, err.Error(), "write TOML", "error should mention TOML")
+}
+
+func TestRenderJSONLTableData_WriteRowError(t *testing.T) {
+	t.Parallel()
+
+	data := output.NewTableData([]string{"Name"})
+	data.AddRow([]string{"Alice"})
+
+	err := renderJSONLTableData(&errorWriter{}, data, output.RenderOptions{})
+	if err == nil {
+		t.Fatal("expected error from errorWriter")
+	}
+
+	assertContains(t, err.Error(), "write jsonl", "error should mention jsonl")
+}
