@@ -1,6 +1,7 @@
 package d2
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/larsartmann/go-output"
@@ -34,21 +35,11 @@ func TestD2ClassesDeterministic(t *testing.T) {
 	}
 
 	// Verify sorted order: alpha before beta before zebra
-	alphaIdx := findSubstrIndex(got1, "alpha:")
-	betaIdx := findSubstrIndex(got1, "beta:")
-	zebraIdx := findSubstrIndex(got1, "zebra:")
+	alphaIdx := strings.Index(got1, "alpha:")
+	betaIdx := strings.Index(got1, "beta:")
+	zebraIdx := strings.Index(got1, "zebra:")
 
 	if alphaIdx >= betaIdx || betaIdx >= zebraIdx {
 		t.Errorf("classes not sorted alphabetically: alpha@%d beta@%d zebra@%d", alphaIdx, betaIdx, zebraIdx)
 	}
-}
-
-func findSubstrIndex(s, substr string) int {
-	for i := 0; i <= len(s)-len(substr); i++ {
-		if s[i:i+len(substr)] == substr {
-			return i
-		}
-	}
-
-	return -1
 }

@@ -28,6 +28,37 @@ func (e *testEvent) GetActivityName() ActivityName { return e.aName }
 func (e *testEvent) GetDuration() time.Duration    { return e.duration }
 func (e *testEvent) GetError() error               { return e.err }
 
+// setupWithWorkflow creates a subscriber and fires workflow.started.
+func setupWithWorkflow(t *testing.T) (*NOMStyleSubscriber, context.Context) {
+	t.Helper()
+
+	ns := NewNOMStyleSubscriber()
+	ctx := context.Background()
+
+	ns.OnEvent(ctx, &testEvent{
+		eventType: "workflow.started",
+		workflow:  true,
+		wID:       WorkflowID("wf-1"),
+	})
+
+	return ns, ctx
+}
+
+// sendActivityStarted fires an activity.started event with the given ID and name.
+func sendActivityStarted(t *testing.T, ns *NOMStyleSubscriber, ctx context.Context, id ActivityID, name ActivityName) {
+	t.Helper()
+
+	err := ns.OnEvent(ctx, &testEvent{
+		eventType: "activity.started",
+		activity:  true,
+		aID:       id,
+		aName:     name,
+	})
+	if err != nil {
+		t.Fatalf("activity.started OnEvent() error: %v", err)
+	}
+}
+
 func TestNewNOMStyleSubscriber(t *testing.T) {
 	t.Parallel()
 
@@ -66,6 +97,7 @@ func TestNOMStyleSubscriber_Configuration(t *testing.T) {
 func TestNOMStyleSubscriber_Reset(t *testing.T) {
 	t.Parallel()
 
+	// Reset test uses a custom workflow name to verify it gets cleared.
 	ns := NewNOMStyleSubscriber()
 	ctx := context.Background()
 
@@ -75,12 +107,7 @@ func TestNOMStyleSubscriber_Reset(t *testing.T) {
 		wID:       WorkflowID("wf-1"),
 		wName:     WorkflowName("CI"),
 	})
-	ns.OnEvent(ctx, &testEvent{
-		eventType: "activity.started",
-		activity:  true,
-		aID:       ActivityID("a1"),
-		aName:     ActivityName("Build"),
-	})
+	sendActivityStarted(t, ns, ctx, ActivityID("a1"), ActivityName("Build"))
 
 	ns.Reset()
 
@@ -138,14 +165,7 @@ func TestNOMStyleSubscriber_WorkflowStarted(t *testing.T) {
 func TestNOMStyleSubscriber_WorkflowCompleted(t *testing.T) {
 	t.Parallel()
 
-	ns := NewNOMStyleSubscriber()
-	ctx := context.Background()
-
-	ns.OnEvent(ctx, &testEvent{
-		eventType: "workflow.started",
-		workflow:  true,
-		wID:       WorkflowID("wf-1"),
-	})
+	ns, ctx := setupWithWorkflow(t)
 
 	err := ns.OnEvent(ctx, &testEvent{
 		eventType: "workflow.completed",
@@ -164,14 +184,7 @@ func TestNOMStyleSubscriber_WorkflowCompleted(t *testing.T) {
 func TestNOMStyleSubscriber_WorkflowFailed(t *testing.T) {
 	t.Parallel()
 
-	ns := NewNOMStyleSubscriber()
-	ctx := context.Background()
-
-	ns.OnEvent(ctx, &testEvent{
-		eventType: "workflow.started",
-		workflow:  true,
-		wID:       WorkflowID("wf-1"),
-	})
+	ns, ctx := setupWithWorkflow(t)
 
 	err := ns.OnEvent(ctx, &testEvent{
 		eventType: "workflow.failed",
@@ -189,14 +202,7 @@ func TestNOMStyleSubscriber_WorkflowFailed(t *testing.T) {
 func TestNOMStyleSubscriber_ActivityStarted(t *testing.T) {
 	t.Parallel()
 
-	ns := NewNOMStyleSubscriber()
-	ctx := context.Background()
-
-	ns.OnEvent(ctx, &testEvent{
-		eventType: "workflow.started",
-		workflow:  true,
-		wID:       WorkflowID("wf-1"),
-	})
+	ns, ctx := setupWithWorkflow(t)
 
 	err := ns.OnEvent(ctx, &testEvent{
 		eventType: "activity.started",
@@ -225,20 +231,8 @@ func TestNOMStyleSubscriber_ActivityStarted(t *testing.T) {
 func TestNOMStyleSubscriber_ActivityCompleted(t *testing.T) {
 	t.Parallel()
 
-	ns := NewNOMStyleSubscriber()
-	ctx := context.Background()
-
-	ns.OnEvent(ctx, &testEvent{
-		eventType: "workflow.started",
-		workflow:  true,
-		wID:       WorkflowID("wf-1"),
-	})
-	ns.OnEvent(ctx, &testEvent{
-		eventType: "activity.started",
-		activity:  true,
-		aID:       ActivityID("a1"),
-		aName:     ActivityName("Build"),
-	})
+	ns, ctx := setupWithWorkflow(t)
+	sendActivityStarted(t, ns, ctx, ActivityID("a1"), ActivityName("Build"))
 
 	err := ns.OnEvent(ctx, &testEvent{
 		eventType: "activity.completed",
@@ -264,20 +258,8 @@ func TestNOMStyleSubscriber_ActivityCompleted(t *testing.T) {
 func TestNOMStyleSubscriber_ActivityFailed(t *testing.T) {
 	t.Parallel()
 
-	ns := NewNOMStyleSubscriber()
-	ctx := context.Background()
-
-	ns.OnEvent(ctx, &testEvent{
-		eventType: "workflow.started",
-		workflow:  true,
-		wID:       WorkflowID("wf-1"),
-	})
-	ns.OnEvent(ctx, &testEvent{
-		eventType: "activity.started",
-		activity:  true,
-		aID:       ActivityID("a1"),
-		aName:     ActivityName("Build"),
-	})
+	ns, ctx := setupWithWorkflow(t)
+	sendActivityStarted(t, ns, ctx, ActivityID("a1"), ActivityName("Build"))
 
 	testErr := errors.New("build failed")
 
@@ -340,26 +322,9 @@ func TestNOMStyleSubscriber_EventWithoutAccessor(t *testing.T) {
 func TestNOMStyleSubscriber_GetActivities(t *testing.T) {
 	t.Parallel()
 
-	ns := NewNOMStyleSubscriber()
-	ctx := context.Background()
-
-	ns.OnEvent(ctx, &testEvent{
-		eventType: "workflow.started",
-		workflow:  true,
-		wID:       WorkflowID("wf-1"),
-	})
-	ns.OnEvent(ctx, &testEvent{
-		eventType: "activity.started",
-		activity:  true,
-		aID:       ActivityID("a1"),
-		aName:     ActivityName("Build"),
-	})
-	ns.OnEvent(ctx, &testEvent{
-		eventType: "activity.started",
-		activity:  true,
-		aID:       ActivityID("a2"),
-		aName:     ActivityName("Test"),
-	})
+	ns, ctx := setupWithWorkflow(t)
+	sendActivityStarted(t, ns, ctx, ActivityID("a1"), ActivityName("Build"))
+	sendActivityStarted(t, ns, ctx, ActivityID("a2"), ActivityName("Test"))
 
 	activities := ns.GetActivities()
 	if len(activities) != 2 {
@@ -370,26 +335,10 @@ func TestNOMStyleSubscriber_GetActivities(t *testing.T) {
 func TestNOMStyleSubscriber_GetActivityCounts(t *testing.T) {
 	t.Parallel()
 
-	ns := NewNOMStyleSubscriber()
-	ctx := context.Background()
+	ns, ctx := setupWithWorkflow(t)
+	sendActivityStarted(t, ns, ctx, ActivityID("a1"), ActivityName("Build"))
+	sendActivityStarted(t, ns, ctx, ActivityID("a2"), ActivityName("Test"))
 
-	ns.OnEvent(ctx, &testEvent{
-		eventType: "workflow.started",
-		workflow:  true,
-		wID:       WorkflowID("wf-1"),
-	})
-	ns.OnEvent(ctx, &testEvent{
-		eventType: "activity.started",
-		activity:  true,
-		aID:       ActivityID("a1"),
-		aName:     ActivityName("Build"),
-	})
-	ns.OnEvent(ctx, &testEvent{
-		eventType: "activity.started",
-		activity:  true,
-		aID:       ActivityID("a2"),
-		aName:     ActivityName("Test"),
-	})
 	ns.OnEvent(ctx, &testEvent{
 		eventType: "activity.completed",
 		activity:  true,
@@ -429,20 +378,8 @@ func TestNOMStyleSubscriber_GetActivity_NotFound(t *testing.T) {
 func TestNOMStyleSubscriber_UpdateRunningActivityElapsed(t *testing.T) {
 	t.Parallel()
 
-	ns := NewNOMStyleSubscriber()
-	ctx := context.Background()
-
-	ns.OnEvent(ctx, &testEvent{
-		eventType: "workflow.started",
-		workflow:  true,
-		wID:       WorkflowID("wf-1"),
-	})
-	ns.OnEvent(ctx, &testEvent{
-		eventType: "activity.started",
-		activity:  true,
-		aID:       ActivityID("a1"),
-		aName:     ActivityName("Build"),
-	})
+	ns, ctx := setupWithWorkflow(t)
+	sendActivityStarted(t, ns, ctx, ActivityID("a1"), ActivityName("Build"))
 
 	time.Sleep(10 * time.Millisecond)
 	ns.UpdateRunningActivityElapsed()
@@ -460,20 +397,8 @@ func TestNOMStyleSubscriber_UpdateRunningActivityElapsed(t *testing.T) {
 func TestNOMStyleSubscriber_SyncActivityTimingToTree(t *testing.T) {
 	t.Parallel()
 
-	ns := NewNOMStyleSubscriber()
-	ctx := context.Background()
-
-	ns.OnEvent(ctx, &testEvent{
-		eventType: "workflow.started",
-		workflow:  true,
-		wID:       WorkflowID("wf-1"),
-	})
-	ns.OnEvent(ctx, &testEvent{
-		eventType: "activity.started",
-		activity:  true,
-		aID:       ActivityID("a1"),
-		aName:     ActivityName("Build"),
-	})
+	ns, ctx := setupWithWorkflow(t)
+	sendActivityStarted(t, ns, ctx, ActivityID("a1"), ActivityName("Build"))
 
 	time.Sleep(10 * time.Millisecond)
 	ns.UpdateRunningActivityElapsed()
@@ -535,20 +460,8 @@ func TestNOMStyleSubscriber_GetTimingCache(t *testing.T) {
 func TestNOMStyleSubscriber_ActivitiesDeepCopy(t *testing.T) {
 	t.Parallel()
 
-	ns := NewNOMStyleSubscriber()
-	ctx := context.Background()
-
-	ns.OnEvent(ctx, &testEvent{
-		eventType: "workflow.started",
-		workflow:  true,
-		wID:       WorkflowID("wf-1"),
-	})
-	ns.OnEvent(ctx, &testEvent{
-		eventType: "activity.started",
-		activity:  true,
-		aID:       ActivityID("a1"),
-		aName:     ActivityName("Build"),
-	})
+	ns, ctx := setupWithWorkflow(t)
+	sendActivityStarted(t, ns, ctx, ActivityID("a1"), ActivityName("Build"))
 
 	activities := ns.GetActivities()
 	activities[ActivityID("a1")].Status = ActivityStatusCompleted

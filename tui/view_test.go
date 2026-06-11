@@ -1,6 +1,7 @@
 package tui
 
 import (
+	"strings"
 	"testing"
 	"time"
 
@@ -8,6 +9,18 @@ import (
 
 	"github.com/larsartmann/go-output/nom"
 )
+
+func addRunningActivity(model *ProgressModel, id string, name string) {
+	model.dependencyTree.AddActivity(nom.ActivityID(id), name, nil)
+	model.dependencyTree.UpdateActivityStatus(
+		nom.ActivityID(id),
+		nom.ActivityStatusRunning,
+		nom.SymbolRunning,
+		nom.ColorRunning,
+		time.Now(),
+		0,
+	)
+}
 
 func TestProgressModel_View_ZeroWidth(t *testing.T) {
 	t.Parallel()
@@ -127,15 +140,7 @@ func TestProgressModel_RenderNOMStyle(t *testing.T) {
 	model.workflowState = WorkflowStateRunning
 	model.displayMode = DisplayModeNOM
 	model.dependencyTree = nom.NewDependencyTree()
-	model.dependencyTree.AddActivity(nom.ActivityID("a"), "Activity A", nil)
-	model.dependencyTree.UpdateActivityStatus(
-		nom.ActivityID("a"),
-		nom.ActivityStatusRunning,
-		nom.SymbolRunning,
-		nom.ColorRunning,
-		time.Now(),
-		0,
-	)
+	addRunningActivity(model, "a", "Activity A")
 
 	output := model.renderNOMStyle()
 	if output == "" {
@@ -179,15 +184,7 @@ func TestProgressModel_RenderDependencyTree(t *testing.T) {
 
 		model := newTestModel()
 		model.height = 24
-		model.dependencyTree.AddActivity(nom.ActivityID("a"), "Activity A", nil)
-		model.dependencyTree.UpdateActivityStatus(
-			nom.ActivityID("a"),
-			nom.ActivityStatusRunning,
-			nom.SymbolRunning,
-			nom.ColorRunning,
-			time.Now(),
-			0,
-		)
+		addRunningActivity(model, "a", "Activity A")
 
 		got := model.renderDependencyTree()
 		if got == "" {
@@ -259,25 +256,11 @@ func TestProgressModel_SelectedNodeHighlight(t *testing.T) {
 		t.Fatal("View() should not be empty")
 	}
 
-	if !containsString(content, "Step A") {
+	if !strings.Contains(content, "Step A") {
 		t.Error("rendered content should contain 'Step A'")
 	}
 
-	if !containsString(content, "Step B") {
+	if !strings.Contains(content, "Step B") {
 		t.Error("rendered content should contain 'Step B'")
 	}
-}
-
-func containsString(s, substr string) bool {
-	return len(s) >= len(substr) && (s == substr || len(s) > 0 && containsSubstring(s, substr))
-}
-
-func containsSubstring(s, substr string) bool {
-	for i := 0; i <= len(s)-len(substr); i++ {
-		if s[i:i+len(substr)] == substr {
-			return true
-		}
-	}
-
-	return false
 }

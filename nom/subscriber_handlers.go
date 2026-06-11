@@ -96,19 +96,23 @@ func (ns *NOMStyleSubscriber) handleWorkflowStarted(
 	return ns.timingCache.EnsureLoaded()
 }
 
-// handleWorkflowCompleted handles workflow completed event.
-func (ns *NOMStyleSubscriber) handleWorkflowCompleted(
-	_ context.Context,
-	event Event,
-) error {
+// handleWorkflowFinished handles common logic for workflow completed/failed events.
+// Stops the workflow and persists timing data.
+func (ns *NOMStyleSubscriber) handleWorkflowFinished(_ Event) error {
 	ns.mu.Lock()
 	defer ns.mu.Unlock()
 
 	ns.isRunning = false
 
-	_ = event // workflow ID accessible via accessor if needed
-
 	return ns.timingCache.Save()
+}
+
+// handleWorkflowCompleted handles workflow completed event.
+func (ns *NOMStyleSubscriber) handleWorkflowCompleted(
+	_ context.Context,
+	event Event,
+) error {
+	return ns.handleWorkflowFinished(event)
 }
 
 // handleWorkflowFailed handles workflow failed event.
@@ -116,14 +120,7 @@ func (ns *NOMStyleSubscriber) handleWorkflowFailed(
 	_ context.Context,
 	event Event,
 ) error {
-	ns.mu.Lock()
-	defer ns.mu.Unlock()
-
-	ns.isRunning = false
-
-	_ = event // error accessible via accessor if needed
-
-	return ns.timingCache.Save()
+	return ns.handleWorkflowFinished(event)
 }
 
 // getOrCreateActivity retrieves an existing activity or creates a new one.
