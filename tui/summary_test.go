@@ -57,23 +57,25 @@ func TestBuildActivityCountsSummary(t *testing.T) {
 func TestBuildNOMSummary(t *testing.T) {
 	t.Parallel()
 
-	t.Run("with activity counts", func(t *testing.T) {
-		t.Parallel()
+	tests := []struct {
+		name          string
+		ok, fail, skip, activity int
+		duration      time.Duration
+	}{
+		{"with activity counts", 1, 2, 0, 1, 10 * time.Second},
+		{"with zero counts still shows timing", 0, 0, 0, 0, 5 * time.Second},
+	}
 
-		got := buildNOMSummary(1, 2, 0, 1, 10*time.Second)
-		if got == "" {
-			t.Error("expected non-empty summary")
-		}
-	})
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 
-	t.Run("with zero counts still shows timing", func(t *testing.T) {
-		t.Parallel()
-
-		got := buildNOMSummary(0, 0, 0, 0, 5*time.Second)
-		if got == "" {
-			t.Error("expected non-empty summary with timing")
-		}
-	})
+			got := buildNOMSummary(tt.ok, tt.fail, tt.skip, tt.activity, tt.duration)
+			if got == "" {
+				t.Error("expected non-empty summary")
+			}
+		})
+	}
 }
 
 func TestGetStateStyle(t *testing.T) {
