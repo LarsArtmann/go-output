@@ -117,21 +117,25 @@ func (pr *BubbleTeaProgressReporter) ReportError(err error) {
 // ============================================================================
 // UNIVERSAL-WORKFLOW PROGRESSREPORTER INTERFACE IMPLEMENTATION
 // ============================================================================
-// ReportProgress implements universal-workflow ProgressReporter interface
-// Reports workflow execution progress percentage (0.0 to 100.0).
-func (pr *BubbleTeaProgressReporter) ReportProgress(percent float64) {
+// ensureStartedAndActive ensures the program is started, transitions to Running
+// if currently Idle, and returns true only if the workflow accepts updates.
+func (pr *BubbleTeaProgressReporter) ensureStartedAndActive() bool {
 	pr.ensureStarted()
-	// Transition to running state if this is the first progress report
 	if pr.model.workflowState == WorkflowStateIdle {
 		pr.transitionWorkflowState(WorkflowStateRunning)
 	}
-	// Only accept updates if workflow is active
-	if !pr.isWorkflowActive() {
+
+	return pr.isWorkflowActive()
+}
+
+// ReportProgress implements universal-workflow ProgressReporter interface
+// Reports workflow execution progress percentage (0.0 to 100.0).
+func (pr *BubbleTeaProgressReporter) ReportProgress(percent float64) {
+	if !pr.ensureStartedAndActive() {
 		return
 	}
 
 	pr.model.currentProgress = percent
-	// Check for completion and transition state
 	if percent >= 100.0 {
 		pr.transitionWorkflowState(WorkflowStateCompleted)
 	}
@@ -145,13 +149,7 @@ func (pr *BubbleTeaProgressReporter) ReportProgress(percent float64) {
 // ReportMessage implements universal-workflow ProgressReporter interface
 // Reports a progress message.
 func (pr *BubbleTeaProgressReporter) ReportMessage(message string) {
-	pr.ensureStarted()
-	// Transition to running state if this is the first message
-	if pr.model.workflowState == WorkflowStateIdle {
-		pr.transitionWorkflowState(WorkflowStateRunning)
-	}
-	// Only accept updates if workflow is active
-	if !pr.isWorkflowActive() {
+	if !pr.ensureStartedAndActive() {
 		return
 	}
 
@@ -167,13 +165,7 @@ func (pr *BubbleTeaProgressReporter) ReportMessage(message string) {
 // ReportStep implements universal-workflow ProgressReporter interface
 // Reports step-based progress with current/total counters.
 func (pr *BubbleTeaProgressReporter) ReportStep(current, total uint, message string) {
-	pr.ensureStarted()
-	// Transition to running state if this is the first step
-	if pr.model.workflowState == WorkflowStateIdle {
-		pr.transitionWorkflowState(WorkflowStateRunning)
-	}
-	// Only accept updates if workflow is active
-	if !pr.isWorkflowActive() {
+	if !pr.ensureStartedAndActive() {
 		return
 	}
 	// Update or create step

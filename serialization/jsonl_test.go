@@ -9,6 +9,21 @@ import (
 	"github.com/larsartmann/go-output"
 )
 
+func assertValidJSONLines(t *testing.T, input string, wantLines int) {
+	t.Helper()
+
+	lines := strings.Split(strings.TrimRight(input, "\n"), "\n")
+	if len(lines) != wantLines {
+		t.Fatalf("expected %d lines, got %d", wantLines, len(lines))
+	}
+
+	for _, line := range lines {
+		if !json.Valid([]byte(line)) {
+			t.Errorf("invalid JSON line: %q", line)
+		}
+	}
+}
+
 func TestMarshalJSONLFromTableData(t *testing.T) {
 	t.Parallel()
 
@@ -36,14 +51,7 @@ func TestMarshalJSONLFromTableData(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
-		lines := strings.Split(strings.TrimRight(string(b), "\n"), "\n")
-		if len(lines) != 1 {
-			t.Fatalf("expected 1 line, got %d", len(lines))
-		}
-
-		if !json.Valid([]byte(lines[0])) {
-			t.Errorf("invalid JSON line: %q", lines[0])
-		}
+		assertValidJSONLines(t, string(b), 1)
 	})
 
 	t.Run("multiple rows", func(t *testing.T) {
@@ -58,16 +66,7 @@ func TestMarshalJSONLFromTableData(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
-		lines := strings.Split(strings.TrimRight(string(b), "\n"), "\n")
-		if len(lines) != 2 {
-			t.Fatalf("expected 2 lines, got %d", len(lines))
-		}
-
-		for _, line := range lines {
-			if !json.Valid([]byte(line)) {
-				t.Errorf("invalid JSON line: %q", line)
-			}
-		}
+		assertValidJSONLines(t, string(b), 2)
 	})
 }
 
@@ -87,16 +86,7 @@ func TestJSONLTableRenderer(t *testing.T) {
 			t.Fatalf("Render() error = %v", err)
 		}
 
-		lines := strings.Split(strings.TrimRight(out, "\n"), "\n")
-		if len(lines) != 2 {
-			t.Fatalf("expected 2 lines, got %d", len(lines))
-		}
-
-		for _, line := range lines {
-			if !json.Valid([]byte(line)) {
-				t.Errorf("invalid JSON line: %q", line)
-			}
-		}
+		assertValidJSONLines(t, out, 2)
 	})
 
 	t.Run("nil data returns newline", func(t *testing.T) {
@@ -156,16 +146,7 @@ func TestJSONLWriter(t *testing.T) {
 			t.Fatalf("Flush() error = %v", err)
 		}
 
-		lines := strings.Split(strings.TrimRight(buf.String(), "\n"), "\n")
-		if len(lines) != 2 {
-			t.Fatalf("expected 2 lines, got %d", len(lines))
-		}
-
-		for _, line := range lines {
-			if !json.Valid([]byte(line)) {
-				t.Errorf("invalid JSON line: %q", line)
-			}
-		}
+		assertValidJSONLines(t, buf.String(), 2)
 	})
 }
 

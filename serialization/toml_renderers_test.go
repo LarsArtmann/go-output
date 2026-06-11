@@ -7,6 +7,16 @@ import (
 	"github.com/larsartmann/go-output"
 )
 
+func assertAllContained(t *testing.T, haystack string, needles ...string) {
+	t.Helper()
+
+	for _, n := range needles {
+		if !strings.Contains(haystack, n) {
+			t.Errorf("should contain %q", n)
+		}
+	}
+}
+
 func TestTOMLGraphRenderer_Empty(t *testing.T) {
 	t.Parallel()
 
@@ -17,9 +27,7 @@ func TestTOMLGraphRenderer_Empty(t *testing.T) {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	if !strings.Contains(out, "nodes") {
-		t.Error("TOML graph output should contain 'nodes'")
-	}
+	assertAllContained(t, out, "nodes")
 }
 
 func TestTOMLGraphRenderer_WithNodesAndEdges(t *testing.T) {
@@ -34,13 +42,7 @@ func TestTOMLGraphRenderer_WithNodesAndEdges(t *testing.T) {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	if !strings.Contains(out, "Node A") {
-		t.Error("TOML graph output should contain 'Node A'")
-	}
-
-	if !strings.Contains(out, "Node B") {
-		t.Error("TOML graph output should contain 'Node B'")
-	}
+	assertAllContained(t, out, "Node A", "Node B")
 }
 
 func TestTOMLGraphRenderer_EdgeWithLabel(t *testing.T) {
@@ -55,9 +57,7 @@ func TestTOMLGraphRenderer_EdgeWithLabel(t *testing.T) {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	if !strings.Contains(out, "connects") {
-		t.Error("TOML graph output should contain edge label 'connects'")
-	}
+	assertAllContained(t, out, "connects")
 }
 
 func TestTOMLTreeRenderer(t *testing.T) {
@@ -78,13 +78,7 @@ func TestTOMLTreeRenderer(t *testing.T) {
 			t.Fatalf("Render() error = %v", err)
 		}
 
-		if !strings.Contains(out, "Root") {
-			t.Error("TOML tree output should contain 'Root'")
-		}
-
-		if !strings.Contains(out, "Child") {
-			t.Error("TOML tree output should contain 'Child'")
-		}
+		assertAllContained(t, out, "Root", "Child")
 	})
 
 	t.Run("nil root returns empty", func(t *testing.T) {
@@ -118,8 +112,6 @@ func TestTOMLTreeRenderer(t *testing.T) {
 			t.Fatalf("Render() error = %v", err)
 		}
 
-		if !strings.Contains(out, "Grandchild") {
-			t.Error("TOML tree output should contain 'Grandchild'")
-		}
+		assertAllContained(t, out, "Grandchild")
 	})
 }

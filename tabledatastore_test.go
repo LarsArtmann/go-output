@@ -87,32 +87,25 @@ func TestTableDataStore_DataNil(t *testing.T) {
 func TestErrorTypes(t *testing.T) {
 	t.Parallel()
 
-	t.Run("InvalidColorModeError", func(t *testing.T) {
-		t.Parallel()
+	tests := []struct {
+		name string
+		err  error
+		want string
+	}{
+		{"InvalidColorModeError", &InvalidColorModeError{Value: "bad"}, "invalid color mode: bad"},
+		{"InvalidShapeError", &InvalidShapeError{Value: "bad"}, "invalid shape: bad"},
+		{"InvalidGraphShapeError", &InvalidGraphShapeError{Value: "bad"}, "invalid graph shape: bad"},
+	}
 
-		err := &InvalidColorModeError{Value: "bad"}
-		if err.Error() != "invalid color mode: bad" {
-			t.Errorf("Error() = %q, want %q", err.Error(), "invalid color mode: bad")
-		}
-	})
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 
-	t.Run("InvalidShapeError", func(t *testing.T) {
-		t.Parallel()
-
-		err := &InvalidShapeError{Value: "bad"}
-		if err.Error() != "invalid shape: bad" {
-			t.Errorf("Error() = %q, want %q", err.Error(), "invalid shape: bad")
-		}
-	})
-
-	t.Run("InvalidGraphShapeError", func(t *testing.T) {
-		t.Parallel()
-
-		err := &InvalidGraphShapeError{Value: "bad"}
-		if err.Error() != "invalid graph shape: bad" {
-			t.Errorf("Error() = %q, want %q", err.Error(), "invalid graph shape: bad")
-		}
-	})
+			if tt.err.Error() != tt.want {
+				t.Errorf("Error() = %q, want %q", tt.err.Error(), tt.want)
+			}
+		})
+	}
 }
 
 func TestFormatIsValid(t *testing.T) {

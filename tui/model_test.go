@@ -14,6 +14,23 @@ func newTestModel() *ProgressModel {
 	return NewProgressModel()
 }
 
+func addTestActivity(model *ProgressModel, id, name string, statusFunc func(*nom.ActivityDisplayState)) {
+	activity := nom.NewActivityDisplayState(nom.ActivityID(id), nom.ActivityName(name))
+	if statusFunc != nil {
+		statusFunc(activity)
+	}
+
+	model.activities[nom.ActivityID(id)] = activity
+}
+
+func setupTestTree(model *ProgressModel) *nom.DependencyTree {
+	tree := nom.NewDependencyTree()
+	model.dependencyTree = tree
+	model.treeStartLine = 2
+
+	return tree
+}
+
 func TestProgressModel_Update_WindowSize(t *testing.T) {
 	t.Parallel()
 
@@ -125,14 +142,8 @@ func TestProgressModel_GetActivityCounts(t *testing.T) {
 	t.Parallel()
 
 	model := newTestModel()
-	model.activities[nom.ActivityID("a")] = nom.NewActivityDisplayState(
-		nom.ActivityID("a"), nom.ActivityName("A"),
-	)
-	model.activities[nom.ActivityID("b")] = nom.NewActivityDisplayState(
-		nom.ActivityID("b"), nom.ActivityName("B"),
-	)
-	model.activities[nom.ActivityID("a")].SetRunning()
-	model.activities[nom.ActivityID("b")].SetCompleted()
+	addTestActivity(model, "a", "A", func(a *nom.ActivityDisplayState) { a.SetRunning() })
+	addTestActivity(model, "b", "B", func(a *nom.ActivityDisplayState) { a.SetCompleted() })
 
 	running, completed, failed, pending := model.getActivityCounts()
 	if running != 1 {
@@ -196,14 +207,11 @@ func TestProgressModel_MouseClick_SelectsNode(t *testing.T) {
 	model.height = 24
 	model.displayMode = DisplayModeNOM
 
-	tree := nom.NewDependencyTree()
+	tree := setupTestTree(model)
 	_ = tree.AddActivity(nom.ActivityID("step-a"), "Step A", nil)
 	_ = tree.AddActivity(nom.ActivityID("step-b"), "Step B", []nom.ActivityID{"step-a"})
 	tree.EnsureBuild()
-
-	model.dependencyTree = tree
 	model.visibleNodes = tree.VisibleNodes(20)
-	model.treeStartLine = 2
 
 	// Click on the first tree line (line 0 relative to tree = line 7 absolute with chrome)
 	clickY := model.treeStartLine + chromeLinesAboveTree + 0
@@ -225,13 +233,10 @@ func TestProgressModel_MouseClick_ToggleOffNode(t *testing.T) {
 	model.height = 24
 	model.displayMode = DisplayModeNOM
 
-	tree := nom.NewDependencyTree()
+	tree := setupTestTree(model)
 	_ = tree.AddActivity(nom.ActivityID("step-a"), "Step A", nil)
 	tree.EnsureBuild()
-
-	model.dependencyTree = tree
 	model.visibleNodes = tree.VisibleNodes(20)
-	model.treeStartLine = 2
 	model.selectedNode = nom.ActivityID("step-a")
 
 	clickY := model.treeStartLine + chromeLinesAboveTree + 0

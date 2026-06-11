@@ -47,54 +47,36 @@ func buildBenchmarkTree(nodeCount int) *DependencyTree {
 	return dt
 }
 
-func BenchmarkDependencyTree_Render_100Nodes(b *testing.B) {
-	dt := buildBenchmarkTree(100)
+func BenchmarkDependencyTree_Render(b *testing.B) {
+	for _, size := range []int{100, 500} {
+		b.Run(fmt.Sprintf("%dNodes", size), func(b *testing.B) {
+			dt := buildBenchmarkTree(size)
+			maxVisible := size / 2
 
-	b.ResetTimer()
+			b.ResetTimer()
 
-	for b.Loop() {
-		result := dt.Render(50)
-		if result == "" {
-			b.Fatal("Render() should produce output")
-		}
+			for b.Loop() {
+				if dt.Render(maxVisible) == "" {
+					b.Fatal("Render() should produce output")
+				}
+			}
+		})
 	}
 }
 
-func BenchmarkDependencyTree_Render_500Nodes(b *testing.B) {
-	dt := buildBenchmarkTree(500)
+func BenchmarkDependencyTree_VisibleNodes(b *testing.B) {
+	for _, size := range []int{100, 500} {
+		b.Run(fmt.Sprintf("%dNodes", size), func(b *testing.B) {
+			dt := buildBenchmarkTree(size)
+			maxVisible := size / 2
 
-	b.ResetTimer()
+			b.ResetTimer()
 
-	for b.Loop() {
-		result := dt.Render(100)
-		if result == "" {
-			b.Fatal("Render() should produce output")
-		}
-	}
-}
-
-func BenchmarkDependencyTree_VisibleNodes_100Nodes(b *testing.B) {
-	dt := buildBenchmarkTree(100)
-
-	b.ResetTimer()
-
-	for b.Loop() {
-		nodes := dt.VisibleNodes(50)
-		if len(nodes) == 0 {
-			b.Fatal("VisibleNodes() should return nodes")
-		}
-	}
-}
-
-func BenchmarkDependencyTree_VisibleNodes_500Nodes(b *testing.B) {
-	dt := buildBenchmarkTree(500)
-
-	b.ResetTimer()
-
-	for b.Loop() {
-		nodes := dt.VisibleNodes(100)
-		if len(nodes) == 0 {
-			b.Fatal("VisibleNodes() should return nodes")
-		}
+			for b.Loop() {
+				if len(dt.VisibleNodes(maxVisible)) == 0 {
+					b.Fatal("VisibleNodes() should return nodes")
+				}
+			}
+		})
 	}
 }

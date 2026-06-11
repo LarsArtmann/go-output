@@ -7,6 +7,14 @@ import (
 	"time"
 )
 
+func newTestTimingCache(path string, loaded bool) *TimingCache {
+	return &TimingCache{
+		cache:    make(map[string][]time.Duration),
+		filePath: path,
+		loaded:   loaded,
+	}
+}
+
 func TestNewTimingCache(t *testing.T) {
 	t.Parallel()
 
@@ -136,11 +144,7 @@ func TestTimingCache_SaveAndLoad(t *testing.T) {
 	tmpDir := t.TempDir()
 	cachePath := filepath.Join(tmpDir, "test-timing.csv")
 
-	tc := &TimingCache{
-		cache:    make(map[string][]time.Duration),
-		filePath: cachePath,
-		loaded:   true,
-	}
+	tc := newTestTimingCache(cachePath, true)
 
 	tc.Record("build", 5*time.Second)
 	tc.Record("test", 10*time.Second)
@@ -155,11 +159,7 @@ func TestTimingCache_SaveAndLoad(t *testing.T) {
 		t.Fatal("cache file was not created")
 	}
 
-	tc2 := &TimingCache{
-		cache:    make(map[string][]time.Duration),
-		filePath: cachePath,
-		loaded:   false,
-	}
+	tc2 := newTestTimingCache(cachePath, false)
 
 	if err := tc2.Load(); err != nil {
 		t.Fatalf("Load() error: %v", err)
@@ -181,11 +181,7 @@ func TestTimingCache_Load_NonExistentFile(t *testing.T) {
 	tmpDir := t.TempDir()
 	cachePath := filepath.Join(tmpDir, "nonexistent", "timing.csv")
 
-	tc := &TimingCache{
-		cache:    make(map[string][]time.Duration),
-		filePath: cachePath,
-		loaded:   false,
-	}
+	tc := newTestTimingCache(cachePath, false)
 
 	if err := tc.Load(); err != nil {
 		t.Fatalf("Load() on nonexistent file should not error: %v", err)

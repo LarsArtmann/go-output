@@ -93,13 +93,7 @@ func TestTOMLTableRenderer(t *testing.T) {
 			t.Fatalf("Render() error = %v", err)
 		}
 
-		if !strings.Contains(out, "Alpha") {
-			t.Error("TOML output should contain 'Alpha'")
-		}
-
-		if !strings.Contains(out, "Beta") {
-			t.Error("TOML output should contain 'Beta'")
-		}
+		assertAllContained(t, out, "Alpha", "Beta")
 	})
 
 	t.Run("nil data returns empty marker", func(t *testing.T) {

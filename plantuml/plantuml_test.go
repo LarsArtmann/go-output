@@ -8,6 +8,16 @@ import (
 	"github.com/larsartmann/go-output/testhelpers/graphtest"
 )
 
+func assertAllContained(t *testing.T, haystack string, needles ...string) {
+	t.Helper()
+
+	for _, n := range needles {
+		if !strings.Contains(haystack, n) {
+			t.Errorf("should contain %q", n)
+		}
+	}
+}
+
 func TestPlantUMLDiagramRender(t *testing.T) {
 	t.Parallel()
 
@@ -21,13 +31,7 @@ func TestPlantUMLDiagramRender(t *testing.T) {
 			t.Fatalf("Render() error = %v", err)
 		}
 
-		if !strings.Contains(out, "@startuml") {
-			t.Error("PlantUML output should contain @startuml")
-		}
-
-		if !strings.Contains(out, "@enduml") {
-			t.Error("PlantUML output should contain @enduml")
-		}
+		assertAllContained(t, out, "@startuml", "@enduml")
 	})
 
 	t.Run("with nodes and edges", func(t *testing.T) {
@@ -43,17 +47,7 @@ func TestPlantUMLDiagramRender(t *testing.T) {
 			t.Fatalf("Render() error = %v", err)
 		}
 
-		if !strings.Contains(out, "Service A") {
-			t.Error("output should contain 'Service A'")
-		}
-
-		if !strings.Contains(out, "Service B") {
-			t.Error("output should contain 'Service B'")
-		}
-
-		if !strings.Contains(out, "calls") {
-			t.Error("output should contain edge label 'calls'")
-		}
+		assertAllContained(t, out, "Service A", "Service B", "calls")
 	})
 }
 
@@ -98,9 +92,7 @@ func TestPlantUMLFromTableData(t *testing.T) {
 			t.Fatalf("Render() error = %v", err)
 		}
 
-		if !strings.Contains(out, "@startuml") {
-			t.Error("should contain @startuml")
-		}
+		assertAllContained(t, out, "@startuml")
 	})
 
 	t.Run("with data", func(t *testing.T) {
@@ -117,9 +109,7 @@ func TestPlantUMLFromTableData(t *testing.T) {
 			t.Fatalf("Render() error = %v", err)
 		}
 
-		if !strings.Contains(out, "@startuml") {
-			t.Error("should contain @startuml")
-		}
+		assertAllContained(t, out, "@startuml")
 	})
 }
 
@@ -149,8 +139,6 @@ func TestPlantUMLFromTree(t *testing.T) {
 			t.Fatalf("Render() error = %v", err)
 		}
 
-		if !strings.Contains(out, "Root") {
-			t.Error("should contain 'Root'")
-		}
+		assertAllContained(t, out, "Root")
 	})
 }

@@ -155,6 +155,19 @@ func (m *ProgressModel) renderSteps() string {
 	return strings.Join(lines, "\n")
 }
 
+// stepIconAndStyle returns the icon and lipgloss style for a step based on its state.
+func stepIconAndStyle(step ProgressStep) (string, lipgloss.Style) {
+	if step.CompletedAt != nil {
+		return "✅", lipgloss.NewStyle().Foreground(lipgloss.Color("10"))
+	}
+
+	if step.IsActive {
+		return "🔄", lipgloss.NewStyle().Foreground(lipgloss.Color("11"))
+	}
+
+	return "⏸️", lipgloss.NewStyle().Foreground(lipgloss.Color("8"))
+}
+
 // renderStep renders a single step with nh-style formatting.
 func (m *ProgressModel) renderStep(step ProgressStep, isLast bool) string {
 	// Choose prefix
@@ -163,20 +176,7 @@ func (m *ProgressModel) renderStep(step ProgressStep, isLast bool) string {
 		prefix = "└── "
 	}
 	// Status icon and color
-	var (
-		icon  string
-		style lipgloss.Style
-	)
-	if step.CompletedAt != nil {
-		icon = "✅"
-		style = lipgloss.NewStyle().Foreground(lipgloss.Color("10")) // Green
-	} else if step.IsActive {
-		icon = "🔄"
-		style = lipgloss.NewStyle().Foreground(lipgloss.Color("11")) // Yellow
-	} else {
-		icon = "⏸️"
-		style = lipgloss.NewStyle().Foreground(lipgloss.Color("8")) // Gray
-	}
+	icon, style := stepIconAndStyle(step)
 	// Timing information like nh darwin switch
 	var timing string
 
@@ -312,10 +312,7 @@ func (m *ProgressModel) renderNOMSummaryBar() string {
 	running, completed, failed, pending := m.getActivityCounts()
 	elapsed := time.Since(m.startTime)
 	summary := buildNOMSummary(running, completed, failed, pending, elapsed)
-	style := lipgloss.NewStyle().
-		Border(lipgloss.RoundedBorder()).
-		Padding(0, 1).
-		Foreground(lipgloss.Color("12"))
+	style := createSummaryStyle()
 
 	return style.Render(summary)
 }

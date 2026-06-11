@@ -112,11 +112,15 @@ func renderTSVFormat(projects []TestProject) string {
 	return buf.String()
 }
 
-func renderXMLFormat(projects []TestProject) string {
-	data, _ := markup.MarshalXMLFromTableData(&output.TableData{
+func newProjectTableData(projects []TestProject) *output.TableData {
+	return &output.TableData{
 		Headers: []string{"Name", "Health", "Complexity"},
 		Rows:    formatProjectsToRows(projects),
-	})
+	}
+}
+
+func renderXMLFormat(projects []TestProject) string {
+	data, _ := markup.MarshalXMLFromTableData(newProjectTableData(projects))
 
 	return string(data)
 }
@@ -246,23 +250,13 @@ func renderJSONLFormat(projects []TestProject) string {
 }
 
 func renderAsciiDocFormat(projects []TestProject) string {
-	data := &output.TableData{
-		Headers: []string{"Name", "Health", "Complexity"},
-		Rows:    formatProjectsToRows(projects),
-	}
-
-	b, _ := markup.MarshalAsciiDocFromTableData(data)
+	b, _ := markup.MarshalAsciiDocFromTableData(newProjectTableData(projects))
 
 	return string(b)
 }
 
 func renderTOMLFormat(projects []TestProject) string {
-	data := &output.TableData{
-		Headers: []string{"Name", "Health", "Complexity"},
-		Rows:    formatProjectsToRows(projects),
-	}
-
-	b, _ := serialization.MarshalTOMLFromTableData(data)
+	b, _ := serialization.MarshalTOMLFromTableData(newProjectTableData(projects))
 
 	return string(b)
 }

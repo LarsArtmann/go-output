@@ -273,6 +273,14 @@ func TestProgressModel_EventSequence_KeyQuit(t *testing.T) {
 	}
 }
 
+func assertScrollOffset(t *testing.T, got, want int) {
+	t.Helper()
+
+	if got != want {
+		t.Errorf("scrollOffset = %d, want %d", got, want)
+	}
+}
+
 // TestProgressModel_KeyboardNavigation verifies scroll keys update offset.
 func TestProgressModel_KeyboardNavigation(t *testing.T) {
 	t.Parallel()
@@ -281,33 +289,21 @@ func TestProgressModel_KeyboardNavigation(t *testing.T) {
 	model.height = 20
 	model.scrollOffset = 10
 
-	// Up arrow scrolls up
 	updated, _ := model.Update(tea.KeyPressMsg{Code: tea.KeyUp})
 	m := updated.(*ProgressModel)
-	if m.scrollOffset != 9 {
-		t.Errorf("scroll after up = %d, want 9", m.scrollOffset)
-	}
+	assertScrollOffset(t, m.scrollOffset, 9)
 
-	// Down arrow scrolls down
 	updated, _ = m.Update(tea.KeyPressMsg{Code: tea.KeyDown})
 	m = updated.(*ProgressModel)
-	if m.scrollOffset != 10 {
-		t.Errorf("scroll after down = %d, want 10", m.scrollOffset)
-	}
+	assertScrollOffset(t, m.scrollOffset, 10)
 
-	// Home resets to top
 	updated, _ = m.Update(tea.KeyPressMsg{Code: tea.KeyHome})
 	m = updated.(*ProgressModel)
-	if m.scrollOffset != 0 {
-		t.Errorf("scroll after home = %d, want 0", m.scrollOffset)
-	}
+	assertScrollOffset(t, m.scrollOffset, 0)
 
-	// End jumps to bottom
 	updated, _ = m.Update(tea.KeyPressMsg{Code: tea.KeyEnd})
 	m = updated.(*ProgressModel)
-	if m.scrollOffset != 9999 {
-		t.Errorf("scroll after end = %d, want 9999", m.scrollOffset)
-	}
+	assertScrollOffset(t, m.scrollOffset, 9999)
 }
 
 // TestProgressModel_MouseScrolling verifies mouse wheel updates scroll offset.
@@ -317,19 +313,13 @@ func TestProgressModel_MouseScrolling(t *testing.T) {
 	model := newTestModel()
 	model.scrollOffset = 5
 
-	// Wheel down scrolls down
 	updated, _ := model.Update(tea.MouseWheelMsg{Button: ansi.MouseWheelDown})
 	m := updated.(*ProgressModel)
-	if m.scrollOffset != 8 {
-		t.Errorf("scroll after wheel down = %d, want 8", m.scrollOffset)
-	}
+	assertScrollOffset(t, m.scrollOffset, 8)
 
-	// Wheel up scrolls up
 	updated, _ = m.Update(tea.MouseWheelMsg{Button: ansi.MouseWheelUp})
 	m = updated.(*ProgressModel)
-	if m.scrollOffset != 5 {
-		t.Errorf("scroll after wheel up = %d, want 5", m.scrollOffset)
-	}
+	assertScrollOffset(t, m.scrollOffset, 5)
 }
 
 // TestProgressModel_CancelMessage verifies CancelMsg triggers quit.

@@ -1,11 +1,25 @@
 package nom
 
 import (
+	"image/color"
 	"testing"
 	"time"
 
 	"github.com/charmbracelet/x/exp/golden"
 )
+
+// setStatusWithElapsed updates activity status and sets elapsed time if non-zero.
+func setStatusWithElapsed(
+	dt *DependencyTree,
+	id ActivityID,
+	status ActivityStatus, symbol string, c color.Color,
+	t time.Time, elapsed time.Duration,
+) {
+	dt.UpdateActivityStatus(id, status, symbol, c, t, 0)
+	if elapsed > 0 {
+		dt.nodes[id].CurrentElapsed = elapsed
+	}
+}
 
 // TestDependencyTreeRenderGolden_PhaseSteps renders a tree with a phase node
 // and multiple child steps in various states. Uses "phase:" prefix for
@@ -22,19 +36,11 @@ func TestDependencyTreeRenderGolden_PhaseSteps(t *testing.T) {
 
 	now := time.Date(2026, 6, 10, 12, 0, 0, 0, time.UTC)
 
-	dt.UpdateActivityStatus(ActivityID("phase:build"), ActivityStatusRunning, SymbolRunning, ColorRunning, now, 0)
-	dt.nodes[ActivityID("phase:build")].CurrentElapsed = 5 * time.Second
-
-	dt.UpdateActivityStatus(ActivityID("compile"), ActivityStatusCompleted, SymbolCompleted, ColorCompleted, now, 0)
-	dt.nodes[ActivityID("compile")].CurrentElapsed = 2 * time.Second
-
-	dt.UpdateActivityStatus(ActivityID("test"), ActivityStatusRunning, SymbolRunning, ColorRunning, now, 0)
-	dt.nodes[ActivityID("test")].CurrentElapsed = 3 * time.Second
-
-	dt.UpdateActivityStatus(ActivityID("lint"), ActivityStatusPending, SymbolPaused, ColorPaused, time.Time{}, 0)
-
-	dt.UpdateActivityStatus(ActivityID("deploy"), ActivityStatusFailed, SymbolFailed, ColorFailed, now, 0)
-	dt.nodes[ActivityID("deploy")].CurrentElapsed = 1 * time.Second
+	setStatusWithElapsed(dt, ActivityID("phase:build"), ActivityStatusRunning, SymbolRunning, ColorRunning, now, 5*time.Second)
+	setStatusWithElapsed(dt, ActivityID("compile"), ActivityStatusCompleted, SymbolCompleted, ColorCompleted, now, 2*time.Second)
+	setStatusWithElapsed(dt, ActivityID("test"), ActivityStatusRunning, SymbolRunning, ColorRunning, now, 3*time.Second)
+	setStatusWithElapsed(dt, ActivityID("lint"), ActivityStatusPending, SymbolPaused, ColorPaused, time.Time{}, 0)
+	setStatusWithElapsed(dt, ActivityID("deploy"), ActivityStatusFailed, SymbolFailed, ColorFailed, now, 1*time.Second)
 
 	got := dt.Render(10)
 	golden.RequireEqual(t, got)
@@ -52,9 +58,9 @@ func TestDependencyTreeRenderGolden_SecondaryDeps(t *testing.T) {
 
 	now := time.Date(2026, 6, 10, 12, 0, 0, 0, time.UTC)
 
-	dt.UpdateActivityStatus(ActivityID("phase:main"), ActivityStatusRunning, SymbolRunning, ColorRunning, now, 0)
-	dt.UpdateActivityStatus(ActivityID("step1"), ActivityStatusCompleted, SymbolCompleted, ColorCompleted, now, 0)
-	dt.UpdateActivityStatus(ActivityID("step2"), ActivityStatusPending, SymbolPaused, ColorPaused, time.Time{}, 0)
+	setStatusWithElapsed(dt, ActivityID("phase:main"), ActivityStatusRunning, SymbolRunning, ColorRunning, now, 0)
+	setStatusWithElapsed(dt, ActivityID("step1"), ActivityStatusCompleted, SymbolCompleted, ColorCompleted, now, 0)
+	setStatusWithElapsed(dt, ActivityID("step2"), ActivityStatusPending, SymbolPaused, ColorPaused, time.Time{}, 0)
 
 	got := dt.Render(10)
 	golden.RequireEqual(t, got)
@@ -74,19 +80,11 @@ func TestDependencyTreeRenderGolden_MixedStates(t *testing.T) {
 
 	now := time.Date(2026, 6, 10, 12, 0, 0, 0, time.UTC)
 
-	dt.UpdateActivityStatus(ActivityID("root"), ActivityStatusRunning, SymbolRunning, ColorRunning, now, 0)
-	dt.nodes[ActivityID("root")].CurrentElapsed = 10 * time.Second
-
-	dt.UpdateActivityStatus(ActivityID("running"), ActivityStatusRunning, SymbolRunning, ColorRunning, now, 0)
-	dt.nodes[ActivityID("running")].CurrentElapsed = 5 * time.Second
-
-	dt.UpdateActivityStatus(ActivityID("completed"), ActivityStatusCompleted, SymbolCompleted, ColorCompleted, now, 0)
-	dt.nodes[ActivityID("completed")].CurrentElapsed = 2 * time.Second
-
-	dt.UpdateActivityStatus(ActivityID("failed"), ActivityStatusFailed, SymbolFailed, ColorFailed, now, 0)
-	dt.nodes[ActivityID("failed")].CurrentElapsed = 1 * time.Second
-
-	dt.UpdateActivityStatus(ActivityID("pending"), ActivityStatusPending, SymbolPaused, ColorPaused, time.Time{}, 0)
+	setStatusWithElapsed(dt, ActivityID("root"), ActivityStatusRunning, SymbolRunning, ColorRunning, now, 10*time.Second)
+	setStatusWithElapsed(dt, ActivityID("running"), ActivityStatusRunning, SymbolRunning, ColorRunning, now, 5*time.Second)
+	setStatusWithElapsed(dt, ActivityID("completed"), ActivityStatusCompleted, SymbolCompleted, ColorCompleted, now, 2*time.Second)
+	setStatusWithElapsed(dt, ActivityID("failed"), ActivityStatusFailed, SymbolFailed, ColorFailed, now, 1*time.Second)
+	setStatusWithElapsed(dt, ActivityID("pending"), ActivityStatusPending, SymbolPaused, ColorPaused, time.Time{}, 0)
 
 	got := dt.Render(10)
 	golden.RequireEqual(t, got)

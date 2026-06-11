@@ -26,41 +26,41 @@ func TestBuildUniversalSummary(t *testing.T) {
 func TestBuildActivityCountsSummary(t *testing.T) {
 	t.Parallel()
 
-	t.Run("all zero returns empty", func(t *testing.T) {
-		t.Parallel()
+	tests := []struct {
+		name      string
+		running   int
+		completed int
+		failed    int
+		pending   int
+		wantEmpty bool
+	}{
+		{"all zero returns empty", 0, 0, 0, 0, true},
+		{"with counts", 1, 2, 1, 3, false},
+		{"only running", 3, 0, 0, 0, false},
+	}
 
-		got := buildActivityCountsSummary(0, 0, 0, 0)
-		if got != "" {
-			t.Errorf("expected empty, got %q", got)
-		}
-	})
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 
-	t.Run("with counts", func(t *testing.T) {
-		t.Parallel()
-
-		got := buildActivityCountsSummary(1, 2, 1, 3)
-		if got == "" {
-			t.Error("expected non-empty summary")
-		}
-	})
-
-	t.Run("only running", func(t *testing.T) {
-		t.Parallel()
-
-		got := buildActivityCountsSummary(3, 0, 0, 0)
-		if got == "" {
-			t.Error("expected non-empty summary for running")
-		}
-	})
+			got := buildActivityCountsSummary(tt.running, tt.completed, tt.failed, tt.pending)
+			if tt.wantEmpty && got != "" {
+				t.Errorf("expected empty, got %q", got)
+			}
+			if !tt.wantEmpty && got == "" {
+				t.Error("expected non-empty summary")
+			}
+		})
+	}
 }
 
 func TestBuildNOMSummary(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		name          string
+		name                     string
 		ok, fail, skip, activity int
-		duration      time.Duration
+		duration                 time.Duration
 	}{
 		{"with activity counts", 1, 2, 0, 1, 10 * time.Second},
 		{"with zero counts still shows timing", 0, 0, 0, 0, 5 * time.Second},

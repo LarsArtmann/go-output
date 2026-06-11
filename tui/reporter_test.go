@@ -87,26 +87,26 @@ func TestBubbleTeaProgressReporter_IsWorkflowActive(t *testing.T) {
 func TestBubbleTeaProgressReporter_ReportProgress(t *testing.T) {
 	t.Parallel()
 
-	reporter := NewBubbleTeaProgressReporter()
-	reporter.ReportProgress(50.0)
-
-	if reporter.model.workflowState != WorkflowStateRunning {
-		t.Errorf("workflow state = %v, want Running", reporter.model.workflowState)
+	tests := []struct {
+		name      string
+		progress  float64
+		wantState WorkflowState
+	}{
+		{"sets running on first report", 50.0, WorkflowStateRunning},
+		{"completes at 100%", 100.0, WorkflowStateCompleted},
 	}
 
-	if reporter.model.currentProgress != 50.0 {
-		t.Errorf("progress = %f, want 50.0", reporter.model.currentProgress)
-	}
-}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 
-func TestBubbleTeaProgressReporter_ReportProgress_Completion(t *testing.T) {
-	t.Parallel()
+			reporter := NewBubbleTeaProgressReporter()
+			reporter.ReportProgress(tt.progress)
 
-	reporter := NewBubbleTeaProgressReporter()
-	reporter.ReportProgress(100.0)
-
-	if reporter.model.workflowState != WorkflowStateCompleted {
-		t.Errorf("workflow state = %v, want Completed", reporter.model.workflowState)
+			if reporter.model.workflowState != tt.wantState {
+				t.Errorf("workflow state = %v, want %v", reporter.model.workflowState, tt.wantState)
+			}
+		})
 	}
 }
 
@@ -128,56 +128,60 @@ func TestBubbleTeaProgressReporter_ReportMessage(t *testing.T) {
 func TestBubbleTeaProgressReporter_ReportStep(t *testing.T) {
 	t.Parallel()
 
-	reporter := NewBubbleTeaProgressReporter()
-	reporter.ReportStep(1, 5, "Compile")
+	t.Run("creates active step", func(t *testing.T) {
+		t.Parallel()
 
-	if len(reporter.model.steps) != 1 {
-		t.Fatalf("steps count = %d, want 1", len(reporter.model.steps))
-	}
+		reporter := NewBubbleTeaProgressReporter()
+		reporter.ReportStep(1, 5, "Compile")
 
-	if reporter.model.steps[0].Message != "Compile" {
-		t.Errorf("step message = %q, want %q", reporter.model.steps[0].Message, "Compile")
-	}
+		if len(reporter.model.steps) != 1 {
+			t.Fatalf("steps count = %d, want 1", len(reporter.model.steps))
+		}
 
-	if reporter.model.steps[0].Current != 1 {
-		t.Errorf("step current = %d, want 1", reporter.model.steps[0].Current)
-	}
+		if reporter.model.steps[0].Message != "Compile" {
+			t.Errorf("step message = %q, want %q", reporter.model.steps[0].Message, "Compile")
+		}
 
-	if !reporter.model.steps[0].IsActive {
-		t.Error("step should be active (1 < 5)")
-	}
-}
+		if reporter.model.steps[0].Current != 1 {
+			t.Errorf("step current = %d, want 1", reporter.model.steps[0].Current)
+		}
 
-func TestBubbleTeaProgressReporter_ReportStep_Completion(t *testing.T) {
-	t.Parallel()
+		if !reporter.model.steps[0].IsActive {
+			t.Error("step should be active (1 < 5)")
+		}
+	})
 
-	reporter := NewBubbleTeaProgressReporter()
-	reporter.ReportStep(1, 5, "Compile")
-	reporter.ReportStep(5, 5, "Compile")
+	t.Run("completes when current >= total", func(t *testing.T) {
+		t.Parallel()
 
-	if reporter.model.steps[0].CompletedAt == nil {
-		t.Error("step should be completed when updated to current >= total")
-	}
+		reporter := NewBubbleTeaProgressReporter()
+		reporter.ReportStep(1, 5, "Compile")
+		reporter.ReportStep(5, 5, "Compile")
 
-	if reporter.model.steps[0].IsActive {
-		t.Error("step should not be active when current >= total")
-	}
-}
+		if reporter.model.steps[0].CompletedAt == nil {
+			t.Error("step should be completed when updated to current >= total")
+		}
 
-func TestBubbleTeaProgressReporter_ReportStep_UpdateExisting(t *testing.T) {
-	t.Parallel()
+		if reporter.model.steps[0].IsActive {
+			t.Error("step should not be active when current >= total")
+		}
+	})
 
-	reporter := NewBubbleTeaProgressReporter()
-	reporter.ReportStep(1, 5, "Compile")
-	reporter.ReportStep(3, 5, "Compile")
+	t.Run("updates existing step", func(t *testing.T) {
+		t.Parallel()
 
-	if len(reporter.model.steps) != 1 {
-		t.Errorf("steps count = %d, want 1 (should update, not add)", len(reporter.model.steps))
-	}
+		reporter := NewBubbleTeaProgressReporter()
+		reporter.ReportStep(1, 5, "Compile")
+		reporter.ReportStep(3, 5, "Compile")
 
-	if reporter.model.steps[0].Current != 3 {
-		t.Errorf("step current = %d, want 3", reporter.model.steps[0].Current)
-	}
+		if len(reporter.model.steps) != 1 {
+			t.Errorf("steps count = %d, want 1 (should update, not add)", len(reporter.model.steps))
+		}
+
+		if reporter.model.steps[0].Current != 3 {
+			t.Errorf("step current = %d, want 3", reporter.model.steps[0].Current)
+		}
+	})
 }
 
 func TestBubbleTeaProgressReporter_ReportError(t *testing.T) {

@@ -7,6 +7,16 @@ import (
 	"github.com/larsartmann/go-output"
 )
 
+func assertAllContained(t *testing.T, haystack string, needles ...string) {
+	t.Helper()
+
+	for _, n := range needles {
+		if !strings.Contains(haystack, n) {
+			t.Errorf("should contain %q", n)
+		}
+	}
+}
+
 func TestMarshalAsciiDocFromTableData(t *testing.T) {
 	t.Parallel()
 
@@ -96,17 +106,7 @@ func TestAsciiDocTableRenderer(t *testing.T) {
 			t.Fatalf("Render() error = %v", err)
 		}
 
-		if !strings.Contains(out, "|===") {
-			t.Error("should contain table delimiter")
-		}
-
-		if !strings.Contains(out, "| Name") {
-			t.Error("should contain header")
-		}
-
-		if !strings.Contains(out, "| Alpha") {
-			t.Error("should contain row data")
-		}
+		assertAllContained(t, out, "|===", "| Name", "| Alpha")
 	})
 
 	t.Run("nil data returns empty", func(t *testing.T) {

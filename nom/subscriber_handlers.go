@@ -222,17 +222,7 @@ func (ns *NOMStyleSubscriber) handleActivityCompleted(
 	activity := ns.getOrCreateActivity(aa.GetActivityID(), aa.GetActivityName())
 	activity.SetCompleted()
 
-	var duration time.Duration
-	if da, ok := event.(DurationAccessor); ok {
-		duration = da.GetDuration()
-	}
-
-	return ns.updateActivityStateAfterExecution(
-		aa.GetActivityID(),
-		aa.GetActivityName(),
-		activity,
-		duration,
-	)
+	return ns.finalizeActivityExecution(event, aa, activity)
 }
 
 // handleActivityFailed handles activity failed event.
@@ -257,6 +247,15 @@ func (ns *NOMStyleSubscriber) handleActivityFailed(
 
 	activity.SetFailed(eventErr)
 
+	return ns.finalizeActivityExecution(event, aa, activity)
+}
+
+// finalizeActivityExecution extracts duration from the event and updates activity state.
+func (ns *NOMStyleSubscriber) finalizeActivityExecution(
+	event Event,
+	aa ActivityEventAccessor,
+	activity *ActivityDisplayState,
+) error {
 	var duration time.Duration
 	if da, ok := event.(DurationAccessor); ok {
 		duration = da.GetDuration()

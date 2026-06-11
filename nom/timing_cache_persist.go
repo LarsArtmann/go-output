@@ -72,19 +72,26 @@ func (tc *TimingCache) loadLocked() error {
 	return nil
 }
 
-// Save saves the cache to disk (acquires read lock).
-func (tc *TimingCache) Save() error {
+// snapshotData creates a deep copy of the cache map under RLock, then releases the lock.
+func (tc *TimingCache) snapshotData() (map[string][]time.Duration, string) {
 	tc.mu.RLock()
 
-	cacheSnapshot := make(map[string][]time.Duration, len(tc.cache))
+	snapshot := make(map[string][]time.Duration, len(tc.cache))
 	for name, history := range tc.cache {
 		historyCopy := make([]time.Duration, len(history))
 		copy(historyCopy, history)
-		cacheSnapshot[name] = historyCopy
+		snapshot[name] = historyCopy
 	}
 
 	filePath := tc.filePath
 	tc.mu.RUnlock()
+
+	return snapshot, filePath
+}
+
+// Save saves the cache to disk (acquires read lock).
+func (tc *TimingCache) Save() error {
+	cacheSnapshot, filePath := tc.snapshotData()
 
 	return writeCacheToFile(filePath, cacheSnapshot)
 }
@@ -135,17 +142,7 @@ func writeCacheToFile(filePath string, data map[string][]time.Duration) error {
 func (tc *TimingCache) saveAsync() {
 	defer tc.pendingSaves.Done()
 
-	tc.mu.RLock()
-
-	dataCopy := make(map[string][]time.Duration, len(tc.cache))
-	for name, history := range tc.cache {
-		historyCopy := make([]time.Duration, len(history))
-		copy(historyCopy, history)
-		dataCopy[name] = historyCopy
-	}
-
-	filePath := tc.filePath
-	tc.mu.RUnlock()
+	dataCopy, filePath := tc.snapshotData()
 
 	_ = writeCacheToFile(filePath, dataCopy)
 }

@@ -10,7 +10,7 @@ import (
 	"github.com/larsartmann/go-output/nom"
 )
 
-func addRunningActivity(model *ProgressModel, id string, name string) {
+func addRunningActivity(model *ProgressModel, id, name string) {
 	model.dependencyTree.AddActivity(nom.ActivityID(id), name, nil)
 	model.dependencyTree.UpdateActivityStatus(
 		nom.ActivityID(id),
@@ -153,10 +153,7 @@ func TestProgressModel_RenderNOMSummaryBar(t *testing.T) {
 
 	model := newTestModel()
 	model.startTime = time.Now()
-	model.activities[nom.ActivityID("a")] = nom.NewActivityDisplayState(
-		nom.ActivityID("a"), nom.ActivityName("A"),
-	)
-	model.activities[nom.ActivityID("a")].SetRunning()
+	addTestActivity(model, "a", "A", func(a *nom.ActivityDisplayState) { a.SetRunning() })
 
 	output := model.renderNOMSummaryBar()
 	if output == "" {

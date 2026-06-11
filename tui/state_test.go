@@ -30,52 +30,31 @@ func TestWorkflowState_String(t *testing.T) {
 	}
 }
 
-func TestWorkflowState_CanAcceptUpdates(t *testing.T) {
+func TestWorkflowState_CanAccept(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		state WorkflowState
-		want  bool
+		state        WorkflowState
+		wantUpdates  bool
+		wantTicks    bool
 	}{
-		{WorkflowStateIdle, true},
-		{WorkflowStateRunning, true},
-		{WorkflowStateCompleted, false},
-		{WorkflowStateErrored, false},
-		{WorkflowState(99), false},
+		{WorkflowStateIdle, true, true},
+		{WorkflowStateRunning, true, true},
+		{WorkflowStateCompleted, false, false},
+		{WorkflowStateErrored, false, false},
+		{WorkflowState(99), false, false},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.state.String(), func(t *testing.T) {
 			t.Parallel()
 
-			got := tt.state.CanAcceptUpdates()
-			if got != tt.want {
-				t.Errorf("CanAcceptUpdates() = %v, want %v", got, tt.want)
+			if got := tt.state.CanAcceptUpdates(); got != tt.wantUpdates {
+				t.Errorf("CanAcceptUpdates() = %v, want %v", got, tt.wantUpdates)
 			}
-		})
-	}
-}
 
-func TestWorkflowState_CanAcceptTicks(t *testing.T) {
-	t.Parallel()
-
-	tests := []struct {
-		state WorkflowState
-		want  bool
-	}{
-		{WorkflowStateIdle, true},
-		{WorkflowStateRunning, true},
-		{WorkflowStateCompleted, false},
-		{WorkflowStateErrored, false},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.state.String(), func(t *testing.T) {
-			t.Parallel()
-
-			got := tt.state.CanAcceptTicks()
-			if got != tt.want {
-				t.Errorf("CanAcceptTicks() = %v, want %v", got, tt.want)
+			if got := tt.state.CanAcceptTicks(); got != tt.wantTicks {
+				t.Errorf("CanAcceptTicks() = %v, want %v", got, tt.wantTicks)
 			}
 		})
 	}

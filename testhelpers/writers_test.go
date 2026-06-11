@@ -5,19 +5,24 @@ import (
 	"testing"
 )
 
+func assertErrWrite(t *testing.T, n int, err error) {
+	t.Helper()
+
+	if n != 0 {
+		t.Errorf("Write() n = %d, want 0", n)
+	}
+
+	if !errors.Is(err, ErrWrite) {
+		t.Errorf("Write() err = %v, want ErrWrite", err)
+	}
+}
+
 func TestErrorWriter(t *testing.T) {
 	t.Parallel()
 
 	w := &ErrorWriter{}
 	n, err := w.Write([]byte("data"))
-
-	if n != 0 {
-		t.Errorf("ErrorWriter.Write() n = %d, want 0", n)
-	}
-
-	if !errors.Is(err, ErrWrite) {
-		t.Errorf("ErrorWriter.Write() err = %v, want ErrWrite", err)
-	}
+	assertErrWrite(t, n, err)
 }
 
 func TestWriteNThenFailWriter(t *testing.T) {
@@ -48,13 +53,7 @@ func TestWriteNThenFailWriter(t *testing.T) {
 		w := &WriteNThenFailWriter{Remaining: 0}
 
 		n, err := w.Write([]byte("data"))
-		if n != 0 {
-			t.Errorf("Write() n = %d, want 0", n)
-		}
-
-		if !errors.Is(err, ErrWrite) {
-			t.Errorf("Write() err = %v, want ErrWrite", err)
-		}
+		assertErrWrite(t, n, err)
 	})
 
 	t.Run("decrements to zero then fails", func(t *testing.T) {
@@ -72,12 +71,6 @@ func TestWriteNThenFailWriter(t *testing.T) {
 		}
 
 		n, err = w.Write([]byte("second"))
-		if n != 0 {
-			t.Errorf("second Write() n = %d, want 0", n)
-		}
-
-		if !errors.Is(err, ErrWrite) {
-			t.Errorf("second Write() err = %v, want ErrWrite", err)
-		}
+		assertErrWrite(t, n, err)
 	})
 }
