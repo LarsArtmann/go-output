@@ -26,7 +26,7 @@ func (m *ProgressModel) View() tea.View {
 	content = m.applyScrollViewport(content)
 
 	if m.showHelp {
-		content = m.renderHelpOverlay(content)
+		content = m.renderHelpOverlay()
 	}
 
 	v := tea.NewView(content)
@@ -58,10 +58,7 @@ func (m *ProgressModel) applyScrollViewport(content string) string {
 		m.scrollOffset = 0
 	}
 
-	end := m.scrollOffset + m.height
-	if end > totalLines {
-		end = totalLines
-	}
+	end := min(m.scrollOffset+m.height, totalLines)
 
 	visible := lines[m.scrollOffset:end]
 	return strings.Join(visible, "\n")
@@ -335,7 +332,7 @@ func (m *ProgressModel) getActivityCounts() (running, completed, failed, pending
 	return running, completed, failed, pending
 }
 
-func (m *ProgressModel) renderHelpOverlay(content string) string {
+func (m *ProgressModel) renderHelpOverlay() string {
 	helpStyle := lipgloss.NewStyle().
 		Border(lipgloss.RoundedBorder()).
 		Padding(1, 2).

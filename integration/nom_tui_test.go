@@ -3,6 +3,7 @@ package integration
 import (
 	"context"
 	"errors"
+	"image/color"
 	"testing"
 	"time"
 
@@ -117,38 +118,14 @@ func TestNOMDependencyTree_Integration(t *testing.T) {
 		tree.AddActivity(nom.NewActivityID("child2"), "Child 2", []nom.ActivityID{"root"})
 		tree.AddActivity(nom.NewActivityID("grandchild"), "Grandchild", []nom.ActivityID{"child1"})
 
-		tree.UpdateActivityStatus(
-			nom.NewActivityID("root"),
-			nom.ActivityStatusCompleted,
-			nom.SymbolCompleted,
-			nom.ColorCompleted,
-			time.Now(),
-			0,
-		) //nolint:errcheck // test setup
-		tree.UpdateActivityStatus(
-			nom.NewActivityID("child1"),
-			nom.ActivityStatusRunning,
-			nom.SymbolRunning,
-			nom.ColorRunning,
-			time.Now(),
-			10*time.Second,
-		) //nolint:errcheck
-		tree.UpdateActivityStatus(
-			nom.NewActivityID("child2"),
-			nom.ActivityStatusPending,
-			nom.SymbolPaused,
-			nom.ColorPaused,
-			time.Time{},
-			0,
-		) //nolint:errcheck
-		tree.UpdateActivityStatus(
-			nom.NewActivityID("grandchild"),
-			nom.ActivityStatusFailed,
-			nom.SymbolFailed,
-			nom.ColorFailed,
-			time.Now(),
-			0,
-		) //nolint:errcheck
+		mustUpdateActivityStatus(t, tree, nom.NewActivityID("root"),
+			nom.ActivityStatusCompleted, nom.SymbolCompleted, nom.ColorCompleted, time.Now(), 0)
+		mustUpdateActivityStatus(t, tree, nom.NewActivityID("child1"),
+			nom.ActivityStatusRunning, nom.SymbolRunning, nom.ColorRunning, time.Now(), 10*time.Second)
+		mustUpdateActivityStatus(t, tree, nom.NewActivityID("child2"),
+			nom.ActivityStatusPending, nom.SymbolPaused, nom.ColorPaused, time.Time{}, 0)
+		mustUpdateActivityStatus(t, tree, nom.NewActivityID("grandchild"),
+			nom.ActivityStatusFailed, nom.SymbolFailed, nom.ColorFailed, time.Now(), 0)
 
 		rendered := tree.Render(10)
 		if rendered == "" {
@@ -244,3 +221,23 @@ func (e *nomTestEvent) GetActivityID() nom.ActivityID     { return e.aID }
 func (e *nomTestEvent) GetActivityName() nom.ActivityName { return e.aName }
 func (e *nomTestEvent) GetDuration() time.Duration        { return e.duration }
 func (e *nomTestEvent) GetError() error                   { return e.err }
+
+// mustUpdateActivityStatus calls DependencyTree.UpdateActivityStatus and
+// fails the test on unexpected error. Test setup expects the activity to
+// exist, so any error is a programming bug.
+func mustUpdateActivityStatus(
+	t *testing.T,
+	tree *nom.DependencyTree,
+	id nom.ActivityID,
+	status nom.ActivityStatus,
+	symbol string,
+	c color.Color,
+	startTime time.Time,
+	estimated time.Duration,
+) {
+	t.Helper()
+
+	if err := tree.UpdateActivityStatus(id, status, symbol, c, startTime, estimated); err != nil {
+		t.Fatalf("UpdateActivityStatus(%s): %v", id, err)
+	}
+}

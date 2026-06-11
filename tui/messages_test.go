@@ -27,8 +27,6 @@ func TestProgressUpdateMsg(t *testing.T) {
 		Type:     ProgressUpdate,
 		Progress: 50.0,
 		Message:  "halfway",
-		Current:  5,
-		Total:    10,
 	}
 
 	if msg.Type != ProgressUpdate {

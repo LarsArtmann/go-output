@@ -31,8 +31,29 @@ func NewTableData(headers []string) *TableData {
 }
 
 // AddRow adds a row to the table data.
+//
+// This method does NOT validate the row's column count. Use AddRowChecked
+// to return an error, or call Validate() before rendering to surface
+// mismatched rows. Existing callers that rely on silent acceptance are
+// preserved; new code should prefer AddRowChecked for fail-fast behavior.
 func (d *TableData) AddRow(row []string) {
 	d.Rows = append(d.Rows, row)
+}
+
+// AddRowChecked adds a row to the table data and returns an error if the
+// row's column count does not match the header count.
+//
+// Returns nil if no headers are set, deferring validation to Validate().
+// Returns ErrColumnMismatch if the row length differs from len(Headers).
+func (d *TableData) AddRowChecked(row []string) error {
+	if len(d.Headers) > 0 && len(row) != len(d.Headers) {
+		return fmt.Errorf("%w: row has %d columns, expected %d",
+			errColumnMismatch, len(row), len(d.Headers))
+	}
+
+	d.Rows = append(d.Rows, row)
+
+	return nil
 }
 
 // RowCount returns the number of data rows.

@@ -1,6 +1,8 @@
 package plantuml
 
 import (
+	"bytes"
+	"errors"
 	"strings"
 	"testing"
 
@@ -17,6 +19,15 @@ func assertAllContained(t *testing.T, haystack string, needles ...string) {
 		}
 	}
 }
+
+// errWriter always returns an error from Write.
+type errWriter struct{}
+
+func (errWriter) Write(p []byte) (int, error) {
+	return 0, errWriteFailed
+}
+
+var errWriteFailed = errors.New("write failed")
 
 func TestPlantUMLDiagramRender(t *testing.T) {
 	t.Parallel()
@@ -113,32 +124,73 @@ func TestPlantUMLFromTableData(t *testing.T) {
 	})
 }
 
-func TestPlantUMLFromTree(t *testing.T) {
+func TestRenderPlantUMLTableData(t *testing.T) {
 	t.Parallel()
 
-	t.Run("nil root", func(t *testing.T) {
+	t.Run("writes PlantUML output to writer", func(t *testing.T) {
 		t.Parallel()
 
-		d := PlantUMLFromTree(nil)
-		if d == nil {
-			t.Fatal("PlantUMLFromTree(nil) should return non-nil renderer")
-		}
-	})
+		data := output.NewTableData([]string{"Name"})
+		data.AddRow([]string{"Alpha"})
 
-	t.Run("with tree", func(t *testing.T) {
-		t.Parallel()
+		var buf bytes.Buffer
 
-		root := output.NewTreeNode("root", "Root")
-		child := output.NewTreeNode("child", "Child")
-		root.AddChild(child)
-
-		d := PlantUMLFromTree(root)
-
-		out, err := d.Render()
+		err := output.RenderTableData(data, output.FormatPlantUML, output.RenderOptions{Writer: &buf})
 		if err != nil {
-			t.Fatalf("Render() error = %v", err)
+			t.Fatalf("RenderTableData plantuml: %v", err)
 		}
 
-		assertAllContained(t, out, "Root")
+		assertAllContained(t, buf.String(), "@startuml", "Alpha")
 	})
+
+	t.Run("propagates writer error", func(t *testing.T) {
+		t.Parallel()
+
+		data := output.NewTableData([]string{"Name"})
+		data.AddRow([]string{"Alpha"})
+
+		err := output.RenderTableData(data, output.FormatPlantUML, output.RenderOptions{Writer: &errWriter{}})
+		if err == nil {
+			t.Fatal("expected error from errWriter")
+		}
+	})
+}
+
+func TestPlantUMLFromTree_Branches(t *testing.T) {
+	t.Parallel()
+
+	// Build a multi-level tree: parent → child → grandchild
+	parent := output.NewTreeNode("parent", "Parent")
+	child := output.NewTreeNode("child", "Child")
+	grandchild := output.NewTreeNode("grandchild", "Grandchild")
+	child.AddChild(grandchild)
+	parent.AddChild(child)
+
+	d := PlantUMLFromTree(parent)
+
+	out, err := d.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
+	assertAllContained(t, out, "Parent", "Child", "Grandchild")
+}
+
+func TestPlantUMLDiagramAddNodeExistingID(t *testing.T) {
+	t.Parallel()
+
+	// Adding two nodes with the same ID: the second call should replace
+	// the first (matches AddNode semantics from the GraphRendererState).
+	d := NewPlantUMLDiagram()
+	d.AddNode(graphtest.NewTestNode("svc", "Original"))
+	d.AddNode(graphtest.NewTestNode("svc", "Updated"))
+
+	out, err := d.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
+	if !strings.Contains(out, "Updated") {
+		t.Errorf("expected 'Updated' to replace 'Original', got %q", out)
+	}
 }

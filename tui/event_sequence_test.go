@@ -303,7 +303,7 @@ func TestProgressModel_KeyboardNavigation(t *testing.T) {
 
 	updated, _ = m.Update(tea.KeyPressMsg{Code: tea.KeyEnd})
 	m = updated.(*ProgressModel)
-	assertScrollOffset(t, m.scrollOffset, 9999)
+	assertScrollOffset(t, m.scrollOffset, scrollToBottomSentinel)
 }
 
 // TestProgressModel_MouseScrolling verifies mouse wheel updates scroll offset.

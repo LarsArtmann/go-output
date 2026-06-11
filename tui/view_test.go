@@ -253,11 +253,9 @@ func TestProgressModel_SelectedNodeHighlight(t *testing.T) {
 		t.Fatal("View() should not be empty")
 	}
 
-	if !strings.Contains(content, "Step A") {
-		t.Error("rendered content should contain 'Step A'")
-	}
-
-	if !strings.Contains(content, "Step B") {
-		t.Error("rendered content should contain 'Step B'")
+	for _, want := range []string{"Step A", "Step B"} {
+		if !strings.Contains(content, want) {
+			t.Errorf("rendered content should contain %q", want)
+		}
 	}
 }

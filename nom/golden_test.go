@@ -36,8 +36,24 @@ func TestDependencyTreeRenderGolden_PhaseSteps(t *testing.T) {
 
 	now := time.Date(2026, 6, 10, 12, 0, 0, 0, time.UTC)
 
-	setStatusWithElapsed(dt, ActivityID("phase:build"), ActivityStatusRunning, SymbolRunning, ColorRunning, now, 5*time.Second)
-	setStatusWithElapsed(dt, ActivityID("compile"), ActivityStatusCompleted, SymbolCompleted, ColorCompleted, now, 2*time.Second)
+	setStatusWithElapsed(
+		dt,
+		ActivityID("phase:build"),
+		ActivityStatusRunning,
+		SymbolRunning,
+		ColorRunning,
+		now,
+		5*time.Second,
+	)
+	setStatusWithElapsed(
+		dt,
+		ActivityID("compile"),
+		ActivityStatusCompleted,
+		SymbolCompleted,
+		ColorCompleted,
+		now,
+		2*time.Second,
+	)
 	setStatusWithElapsed(dt, ActivityID("test"), ActivityStatusRunning, SymbolRunning, ColorRunning, now, 3*time.Second)
 	setStatusWithElapsed(dt, ActivityID("lint"), ActivityStatusPending, SymbolPaused, ColorPaused, time.Time{}, 0)
 	setStatusWithElapsed(dt, ActivityID("deploy"), ActivityStatusFailed, SymbolFailed, ColorFailed, now, 1*time.Second)
@@ -80,9 +96,33 @@ func TestDependencyTreeRenderGolden_MixedStates(t *testing.T) {
 
 	now := time.Date(2026, 6, 10, 12, 0, 0, 0, time.UTC)
 
-	setStatusWithElapsed(dt, ActivityID("root"), ActivityStatusRunning, SymbolRunning, ColorRunning, now, 10*time.Second)
-	setStatusWithElapsed(dt, ActivityID("running"), ActivityStatusRunning, SymbolRunning, ColorRunning, now, 5*time.Second)
-	setStatusWithElapsed(dt, ActivityID("completed"), ActivityStatusCompleted, SymbolCompleted, ColorCompleted, now, 2*time.Second)
+	setStatusWithElapsed(
+		dt,
+		ActivityID("root"),
+		ActivityStatusRunning,
+		SymbolRunning,
+		ColorRunning,
+		now,
+		10*time.Second,
+	)
+	setStatusWithElapsed(
+		dt,
+		ActivityID("running"),
+		ActivityStatusRunning,
+		SymbolRunning,
+		ColorRunning,
+		now,
+		5*time.Second,
+	)
+	setStatusWithElapsed(
+		dt,
+		ActivityID("completed"),
+		ActivityStatusCompleted,
+		SymbolCompleted,
+		ColorCompleted,
+		now,
+		2*time.Second,
+	)
 	setStatusWithElapsed(dt, ActivityID("failed"), ActivityStatusFailed, SymbolFailed, ColorFailed, now, 1*time.Second)
 	setStatusWithElapsed(dt, ActivityID("pending"), ActivityStatusPending, SymbolPaused, ColorPaused, time.Time{}, 0)
 

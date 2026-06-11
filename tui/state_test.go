@@ -34,9 +34,9 @@ func TestWorkflowState_CanAccept(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		state        WorkflowState
-		wantUpdates  bool
-		wantTicks    bool
+		state       WorkflowState
+		wantUpdates bool
+		wantTicks   bool
 	}{
 		{WorkflowStateIdle, true, true},
 		{WorkflowStateRunning, true, true},

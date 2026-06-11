@@ -64,6 +64,47 @@ func AssertMarshalError(t *testing.T, name string, err error, wantErr bool) {
 	}
 }
 
+// AssertLineCount checks that output, when split on \n and trimmed, has exactly want lines.
+func AssertLineCount(t *testing.T, name, output string, want int) {
+	t.Helper()
+
+	lines := strings.Split(strings.TrimSpace(output), "\n")
+	if len(lines) != want {
+		t.Errorf("%s: got %d lines, want %d\noutput: %q", name, len(lines), want, output)
+	}
+}
+
+// AssertLastLineContains checks that the last non-empty line of output contains substr.
+func AssertLastLineContains(t *testing.T, name, output, substr string) {
+	t.Helper()
+
+	lines := strings.Split(strings.TrimSpace(output), "\n")
+	if len(lines) == 0 {
+		t.Errorf("%s: output is empty", name)
+
+		return
+	}
+
+	if !strings.Contains(lines[len(lines)-1], substr) {
+		t.Errorf("%s: last line %q should contain %q", name, lines[len(lines)-1], substr)
+	}
+}
+
+// AssertErrorContains checks that err's message contains substr, failing with msg.
+func AssertErrorContains(t *testing.T, err error, substr, msg string) {
+	t.Helper()
+
+	if err == nil {
+		t.Errorf("%s: expected error, got nil", msg)
+
+		return
+	}
+
+	if !strings.Contains(err.Error(), substr) {
+		t.Errorf("%s: error %q should contain %q", msg, err.Error(), substr)
+	}
+}
+
 // StringEnum is a constraint for string-based enum types with IsValid().
 type StringEnum interface {
 	~string

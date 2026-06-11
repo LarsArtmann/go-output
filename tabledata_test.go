@@ -271,3 +271,46 @@ func TestTableDataValidate(t *testing.T) {
 		})
 	}
 }
+
+func TestAddRowChecked(t *testing.T) {
+	t.Parallel()
+
+	t.Run("matching column count succeeds", func(t *testing.T) {
+		t.Parallel()
+
+		data := NewTableData([]string{"A", "B", "C"})
+
+		if err := data.AddRowChecked([]string{"1", "2", "3"}); err != nil {
+			t.Errorf("AddRowChecked() = %v, want nil", err)
+		}
+
+		if data.RowCount() != 1 {
+			t.Errorf("RowCount = %d, want 1", data.RowCount())
+		}
+	})
+
+	t.Run("mismatched column count returns error", func(t *testing.T) {
+		t.Parallel()
+
+		data := NewTableData([]string{"A", "B"})
+
+		err := data.AddRowChecked([]string{"1", "2", "3"})
+		if err == nil {
+			t.Fatal("AddRowChecked() = nil, want error")
+		}
+
+		if data.RowCount() != 0 {
+			t.Errorf("RowCount = %d, want 0 (failed add should not append)", data.RowCount())
+		}
+	})
+
+	t.Run("no headers allows any length", func(t *testing.T) {
+		t.Parallel()
+
+		data := &TableData{}
+
+		if err := data.AddRowChecked([]string{"a", "b", "c", "d"}); err != nil {
+			t.Errorf("AddRowChecked() with no headers = %v, want nil", err)
+		}
+	})
+}

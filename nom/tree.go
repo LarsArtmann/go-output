@@ -2,6 +2,7 @@ package nom
 
 import (
 	"image/color"
+	"slices"
 	"sync"
 	"time"
 )
@@ -68,23 +69,13 @@ func newTreeNode(id ActivityID, name string) *TreeNode {
 
 // hasChild returns true if this node already has a child with the given activity ID.
 func (n *TreeNode) hasChild(id ActivityID) bool {
-	for _, c := range n.Children {
-		if c.ActivityID == id {
-			return true
-		}
-	}
-
-	return false
+	return slices.ContainsFunc(n.Children, func(c *TreeNode) bool {
+		return c.ActivityID == id
+	})
 }
 
 // hasSecondaryParent returns true if this node already has the given activity ID
 // as a secondary parent.
 func (n *TreeNode) hasSecondaryParent(id ActivityID) bool {
-	for _, sp := range n.SecondaryParents {
-		if sp == id {
-			return true
-		}
-	}
-
-	return false
+	return slices.Contains(n.SecondaryParents, id)
 }

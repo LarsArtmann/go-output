@@ -94,9 +94,12 @@ func (m *ProgressModel) scrollDown(lines int) {
 	m.scrollOffset += lines
 }
 
+// scrollToBottomSentinel is the offset value set by scrollToBottom; the
+// render path clamps it to totalLines-m.height.
+const scrollToBottomSentinel = 1 << 30
+
 func (m *ProgressModel) scrollToBottom() {
-	// Approximate bottom based on content; actual rendering handles clamping
-	m.scrollOffset = 9999
+	m.scrollOffset = scrollToBottomSentinel
 }
 
 func (m *ProgressModel) handleMouseWheel(msg tea.MouseWheelMsg) (tea.Model, tea.Cmd) {

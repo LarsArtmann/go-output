@@ -222,14 +222,8 @@ func TestMarshalCSVFromTableData(t *testing.T) {
 			t.Error("CSV should contain footer row")
 		}
 
-		lines := strings.Split(strings.TrimSpace(result), "\n")
-		if len(lines) != 4 {
-			t.Errorf("expected 4 lines (header + 2 rows + footer), got %d", len(lines))
-		}
-
-		if !strings.Contains(lines[3], "Total") {
-			t.Errorf("expected footer on last line, got %q", lines[3])
-		}
+		assertLineCount(t, "CSV with footer", result, 4)
+		assertLastLineContains(t, "CSV with footer", result, "Total")
 	})
 }
 
@@ -252,12 +246,6 @@ func TestCSVWriter_WriteFooter(t *testing.T) {
 
 	result := buf.String()
 
-	lines := strings.Split(strings.TrimSpace(result), "\n")
-	if len(lines) != 3 {
-		t.Fatalf("expected 3 lines (header + row + footer), got %d", len(lines))
-	}
-
-	if !strings.Contains(lines[2], "Total") {
-		t.Errorf("footer should contain 'Total', got %q", lines[2])
-	}
+	assertLineCount(t, "WriteFooter", result, 3)
+	assertLastLineContains(t, "WriteFooter", result, "Total")
 }

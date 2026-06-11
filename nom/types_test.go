@@ -1,10 +1,8 @@
 package nom
 
-import (
-	"testing"
-)
+import "testing"
 
-func TestActivityID(t *testing.T) {
+func TestActivityID_Methods(t *testing.T) {
 	t.Parallel()
 
 	t.Run("String returns underlying value", func(t *testing.T) {
@@ -45,30 +43,41 @@ func TestNewActivityID(t *testing.T) {
 func TestParseActivityID(t *testing.T) {
 	t.Parallel()
 
-	t.Run("valid input", func(t *testing.T) {
-		t.Parallel()
+	tests := []struct {
+		name    string
+		input   string
+		want    ActivityID
+		wantErr bool
+	}{
+		{name: "valid input", input: "build", want: ActivityID("build"), wantErr: false},
+		{name: "empty input returns error", input: "", want: ActivityID(""), wantErr: true},
+	}
 
-		got, err := ParseActivityID("build")
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 
-		if got != ActivityID("build") {
-			t.Errorf("ParseActivityID(%q) = %q, want %q", "build", got, "build")
-		}
-	})
+			got, err := ParseActivityID(tt.input)
+			if tt.wantErr {
+				if err == nil {
+					t.Error("expected error, got nil")
+				}
 
-	t.Run("empty input returns error", func(t *testing.T) {
-		t.Parallel()
+				return
+			}
 
-		_, err := ParseActivityID("")
-		if err == nil {
-			t.Error("expected error for empty input")
-		}
-	})
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+
+			if got != tt.want {
+				t.Errorf("ParseActivityID(%q) = %q, want %q", tt.input, got, tt.want)
+			}
+		})
+	}
 }
 
-func TestWorkflowID(t *testing.T) {
+func TestWorkflowID_Methods(t *testing.T) {
 	t.Parallel()
 
 	t.Run("String returns underlying value", func(t *testing.T) {
@@ -101,30 +110,41 @@ func TestNewWorkflowID(t *testing.T) {
 func TestParseWorkflowID(t *testing.T) {
 	t.Parallel()
 
-	t.Run("valid input", func(t *testing.T) {
-		t.Parallel()
+	tests := []struct {
+		name    string
+		input   string
+		want    WorkflowID
+		wantErr bool
+	}{
+		{name: "valid input", input: "deploy", want: WorkflowID("deploy"), wantErr: false},
+		{name: "empty input returns error", input: "", want: WorkflowID(""), wantErr: true},
+	}
 
-		got, err := ParseWorkflowID("deploy")
-		if err != nil {
-			t.Fatalf("unexpected error: %v", err)
-		}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 
-		if got != WorkflowID("deploy") {
-			t.Errorf("ParseWorkflowID(%q) = %q, want %q", "deploy", got, "deploy")
-		}
-	})
+			got, err := ParseWorkflowID(tt.input)
+			if tt.wantErr {
+				if err == nil {
+					t.Error("expected error, got nil")
+				}
 
-	t.Run("empty input returns error", func(t *testing.T) {
-		t.Parallel()
+				return
+			}
 
-		_, err := ParseWorkflowID("")
-		if err == nil {
-			t.Error("expected error for empty input")
-		}
-	})
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+
+			if got != tt.want {
+				t.Errorf("ParseWorkflowID(%q) = %q, want %q", tt.input, got, tt.want)
+			}
+		})
+	}
 }
 
-func TestActivityName(t *testing.T) {
+func TestActivityName_String(t *testing.T) {
 	t.Parallel()
 
 	got := NewActivityName("compile")
@@ -133,7 +153,7 @@ func TestActivityName(t *testing.T) {
 	}
 }
 
-func TestWorkflowName(t *testing.T) {
+func TestWorkflowName_String(t *testing.T) {
 	t.Parallel()
 
 	got := NewWorkflowName("CI Pipeline")

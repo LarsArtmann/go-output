@@ -50,21 +50,29 @@ func (ns *NOMStyleSubscriber) SetActivityState(activity *ActivityDisplayState) {
 	ns.activities[activity.ActivityID] = activity
 }
 
-// SyncActivityTimingToTree synchronizes timing information from ActivityDisplayState to TreeNode.
-// This ensures that dependency tree (used for rendering) has fresh timing data.
-// Should be called after UpdateRunningActivityElapsed() and before rendering.
+// SyncActivityTimingToTree synchronizes display state (status, symbol, color,
+// timing) from ActivityDisplayState to its corresponding TreeNode.
+//
+// Both structures duplicate the display fields for their respective consumers
+// (TUI status list vs. dependency tree rendering). This helper keeps them
+// aligned; callers should invoke it after any state mutation and before
+// rendering. The tree's own mutex is acquired internally.
 func (ns *NOMStyleSubscriber) SyncActivityTimingToTree() {
 	ns.mu.Lock()
 	defer ns.mu.Unlock()
-	// Iterate through all activities and sync timing to corresponding tree nodes
+
 	for activityID, activity := range ns.activities {
-		// Get corresponding tree node
 		node := ns.dependencyTree.GetNode(activityID)
 		if node == nil {
 			// Tree node doesn't exist yet - skip
 			continue
 		}
-		// Copy timing information from activity to tree node
+
+		// Copy display state from activity to tree node.
+		node.Status = activity.Status
+		node.Symbol = activity.Symbol
+		node.Color = activity.Color
+		// Copy timing information from activity to tree node.
 		node.StartTime = activity.StartTime
 		node.CurrentElapsed = activity.CurrentElapsed
 		node.EstimatedTime = activity.EstimatedTime

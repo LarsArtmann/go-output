@@ -11,17 +11,17 @@ import (
 // enabling extraction into an independent module without circular dependencies.
 func (ns *NOMStyleSubscriber) OnEvent(ctx context.Context, event Event) error {
 	switch event.GetEventType() {
-	case "workflow.started":
+	case EventWorkflowStarted:
 		return ns.handleWorkflowStarted(ctx, event)
-	case "workflow.completed":
+	case EventWorkflowCompleted:
 		return ns.handleWorkflowCompleted(ctx, event)
-	case "workflow.failed":
+	case EventWorkflowFailed:
 		return ns.handleWorkflowFailed(ctx, event)
-	case "activity.started":
+	case EventActivityStarted:
 		return ns.handleActivityStarted(ctx, event)
-	case "activity.completed":
+	case EventActivityCompleted:
 		return ns.handleActivityCompleted(ctx, event)
-	case "activity.failed":
+	case EventActivityFailed:
 		return ns.handleActivityFailed(ctx, event)
 	default:
 		return nil

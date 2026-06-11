@@ -29,6 +29,56 @@ func roundTripData() *output.TableData {
 	return data
 }
 
+// renderTableData is a small helper that renders TableData to the given format
+// and returns the output string. It fails the test on error.
+func renderTableData(t *testing.T, data *output.TableData, format output.Format) string {
+	t.Helper()
+
+	var buf bytes.Buffer
+
+	if err := output.RenderTableData(data, format, output.RenderOptions{Writer: &buf}); err != nil {
+		t.Fatalf("RenderTableData(%s): %v", format, err)
+	}
+
+	return buf.String()
+}
+
+// parseDelimited is a small helper that parses CSV/TSV-like output into records.
+func parseDelimited(t *testing.T, input string, comma rune) [][]string {
+	t.Helper()
+
+	reader := csv.NewReader(strings.NewReader(input))
+	reader.Comma = comma
+
+	records, err := reader.ReadAll()
+	if err != nil {
+		t.Fatalf("parseDelimited (comma=%q): %v", comma, err)
+	}
+
+	return records
+}
+
+// assertCell verifies that records[row][col] equals want.
+func assertCell(t *testing.T, name string, records [][]string, row, col int, want string) {
+	t.Helper()
+
+	if row >= len(records) {
+		t.Errorf("%s: row %d out of range (have %d)", name, row, len(records))
+
+		return
+	}
+
+	if col >= len(records[row]) {
+		t.Errorf("%s: col %d out of range for row %d (have %d)", name, col, row, len(records[row]))
+
+		return
+	}
+
+	if records[row][col] != want {
+		t.Errorf("%s: records[%d][%d] = %q, want %q", name, row, col, records[row][col], want)
+	}
+}
+
 // TestRoundTripJSON verifies TableData → JSON renderer → parse → verify.
 func TestRoundTripJSON(t *testing.T) {
 	t.Parallel()
@@ -67,35 +117,20 @@ func TestRoundTripCSV(t *testing.T) {
 
 	data := roundTripData()
 
-	var buf bytes.Buffer
-
-	err := output.RenderTableData(data, output.FormatCSV, output.RenderOptions{Writer: &buf})
-	if err != nil {
-		t.Fatalf("RenderTableData CSV: %v", err)
-	}
-
-	reader := csv.NewReader(&buf)
-
-	records, err := reader.ReadAll()
-	if err != nil {
-		t.Fatalf("Parse CSV: %v", err)
-	}
+	result := renderTableData(t, data, output.FormatCSV)
+	records := parseDelimited(t, result, ',')
 
 	if len(records) != 3 {
 		t.Fatalf("expected 3 records (header + 2 rows), got %d", len(records))
 	}
 
-	if records[0][0] != "Name" || records[0][1] != "Score" || records[0][2] != "Active" {
-		t.Errorf("header = %v, want [Name Score Active]", records[0])
-	}
-
-	if records[1][0] != "Alice" || records[1][1] != "95" {
-		t.Errorf("row 1 = %v, want [Alice 95 true]", records[1])
-	}
-
-	if records[2][0] != "Bob" || records[2][2] != "false" {
-		t.Errorf("row 2 = %v, want [Bob 87 false]", records[2])
-	}
+	assertCell(t, "CSV header[0]", records, 0, 0, "Name")
+	assertCell(t, "CSV header[1]", records, 0, 1, "Score")
+	assertCell(t, "CSV header[2]", records, 0, 2, "Active")
+	assertCell(t, "CSV row[1][0]", records, 1, 0, "Alice")
+	assertCell(t, "CSV row[1][1]", records, 1, 1, "95")
+	assertCell(t, "CSV row[2][0]", records, 2, 0, "Bob")
+	assertCell(t, "CSV row[2][2]", records, 2, 2, "false")
 }
 
 // TestRoundTripTSV verifies TableData → TSV → parse → verify.
@@ -104,32 +139,15 @@ func TestRoundTripTSV(t *testing.T) {
 
 	data := roundTripData()
 
-	var buf bytes.Buffer
-
-	err := output.RenderTableData(data, output.FormatTSV, output.RenderOptions{Writer: &buf})
-	if err != nil {
-		t.Fatalf("RenderTableData TSV: %v", err)
-	}
-
-	reader := csv.NewReader(&buf)
-	reader.Comma = '\t'
-
-	records, err := reader.ReadAll()
-	if err != nil {
-		t.Fatalf("Parse TSV: %v", err)
-	}
+	result := renderTableData(t, data, output.FormatTSV)
+	records := parseDelimited(t, result, '\t')
 
 	if len(records) != 3 {
 		t.Fatalf("expected 3 records, got %d", len(records))
 	}
 
-	if records[0][0] != "Name" {
-		t.Errorf("header[0] = %q, want %q", records[0][0], "Name")
-	}
-
-	if records[1][0] != "Alice" {
-		t.Errorf("row[1][0] = %q, want %q", records[1][0], "Alice")
-	}
+	assertCell(t, "TSV header[0]", records, 0, 0, "Name")
+	assertCell(t, "TSV row[1][0]", records, 1, 0, "Alice")
 }
 
 // TestRoundTripYAML verifies TableData → YAML → parse → verify.

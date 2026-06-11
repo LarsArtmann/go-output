@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"sync"
 )
 
 // RenderOptions configures optional behavior for RenderTableData.
@@ -27,27 +26,17 @@ type TableDataMarshaler func(w io.Writer, data *TableData, opts RenderOptions) e
 
 var (
 	//nolint:gochecknoglobals // Registry for TableData marshalers, populated by sub-module init().
-	tableDataMarshalers = map[Format]TableDataMarshaler{}
-	//nolint:gochecknoglobals // Mutex protects concurrent access to tableDataMarshalers.
-	tableDataMarshalersMu sync.RWMutex
+	tableDataRegistry = newFormatRegistry[TableDataMarshaler]()
 )
 
 // RegisterTableDataMarshaler registers a marshaler for a format.
 // Sub-modules call this from their init() to enable RenderTableData dispatch.
 func RegisterTableDataMarshaler(format Format, marshaler TableDataMarshaler) {
-	tableDataMarshalersMu.Lock()
-	defer tableDataMarshalersMu.Unlock()
-
-	tableDataMarshalers[format] = marshaler
+	tableDataRegistry.register(format, marshaler)
 }
 
 func getTableDataMarshaler(format Format) (TableDataMarshaler, bool) {
-	tableDataMarshalersMu.RLock()
-	defer tableDataMarshalersMu.RUnlock()
-
-	m, ok := tableDataMarshalers[format]
-
-	return m, ok
+	return tableDataRegistry.get(format)
 }
 
 //nolint:gochecknoinits // Registers Markdown and Tree TableData marshalers for registry-based dispatch.
@@ -141,27 +130,17 @@ type AnyDataMarshaler func(w io.Writer, data any, opts RenderOptions) error
 
 var (
 	//nolint:gochecknoglobals // Registry for any-data marshalers, populated by sub-module init().
-	anyDataMarshalers = map[Format]AnyDataMarshaler{}
-	//nolint:gochecknoglobals // Mutex protects concurrent access to anyDataMarshalers.
-	anyDataMarshalersMu sync.RWMutex
+	anyDataRegistry = newFormatRegistry[AnyDataMarshaler]()
 )
 
 // RegisterAnyDataMarshaler registers a marshaler for arbitrary (non-TableData) data.
 // Sub-modules call this from their init() to enable RenderAnyData dispatch.
 func RegisterAnyDataMarshaler(format Format, marshaler AnyDataMarshaler) {
-	anyDataMarshalersMu.Lock()
-	defer anyDataMarshalersMu.Unlock()
-
-	anyDataMarshalers[format] = marshaler
+	anyDataRegistry.register(format, marshaler)
 }
 
 func getAnyDataMarshaler(format Format) (AnyDataMarshaler, bool) {
-	anyDataMarshalersMu.RLock()
-	defer anyDataMarshalersMu.RUnlock()
-
-	m, ok := anyDataMarshalers[format]
-
-	return m, ok
+	return anyDataRegistry.get(format)
 }
 
 // RenderAnyData renders arbitrary data in the given format and writes to w (or os.Stdout).
@@ -182,26 +161,10 @@ func RenderAnyData(data any, format Format, opts RenderOptions) error {
 
 // RegisteredTableDataFormats returns all formats with registered TableDataMarshalers.
 func RegisteredTableDataFormats() []Format {
-	tableDataMarshalersMu.RLock()
-	defer tableDataMarshalersMu.RUnlock()
-
-	formats := make([]Format, 0, len(tableDataMarshalers))
-	for f := range tableDataMarshalers {
-		formats = append(formats, f)
-	}
-
-	return formats
+	return tableDataRegistry.formats()
 }
 
 // RegisteredAnyDataFormats returns all formats with registered AnyDataMarshalers.
 func RegisteredAnyDataFormats() []Format {
-	anyDataMarshalersMu.RLock()
-	defer anyDataMarshalersMu.RUnlock()
-
-	formats := make([]Format, 0, len(anyDataMarshalers))
-	for f := range anyDataMarshalers {
-		formats = append(formats, f)
-	}
-
-	return formats
+	return anyDataRegistry.formats()
 }

@@ -264,9 +264,7 @@ func TestRenderTableData_ValidateRejectsFooterMismatch(t *testing.T) {
 		t.Fatal("RenderTableData should reject footer with wrong column count")
 	}
 
-	if !strings.Contains(err.Error(), "footer column count") {
-		t.Errorf("error should mention footer column count, got: %v", err)
-	}
+	testhelpers.AssertErrorContains(t, err, "footer column count", "RenderTableData footer mismatch")
 }
 
 func TestRegisterTableDataMarshaler_ConcurrentAccess(t *testing.T) {
@@ -295,4 +293,66 @@ func TestRegisterTableDataMarshaler_ConcurrentAccess(t *testing.T) {
 	}
 
 	wg.Wait()
+}
+
+func TestRegisteredTableDataFormats(t *testing.T) {
+	t.Parallel()
+
+	formats := RegisteredTableDataFormats()
+
+	// At minimum, Markdown and Tree are registered by root init().
+	if len(formats) < 2 {
+		t.Errorf("expected at least 2 registered formats, got %d", len(formats))
+	}
+
+	// All returned values must be valid Format constants.
+	for _, f := range formats {
+		if !f.IsValid() {
+			t.Errorf("registered format %q is not a valid Format", f)
+		}
+	}
+}
+
+func TestRegisteredAnyDataFormats(t *testing.T) {
+	t.Parallel()
+
+	formats := RegisteredAnyDataFormats()
+
+	// Root does not register any any-data marshalers in init(); this should
+	// return an empty slice (or whatever sub-modules have registered).
+	// Just verify the call is safe and returns no duplicates.
+	seen := make(map[Format]bool, len(formats))
+	for _, f := range formats {
+		if seen[f] {
+			t.Errorf("duplicate format in RegisteredAnyDataFormats: %q", f)
+		}
+
+		seen[f] = true
+	}
+}
+
+func TestRenderAnyData_UnsupportedFormatError(t *testing.T) {
+	t.Parallel()
+
+	var buf bytes.Buffer
+
+	err := RenderAnyData("data", Format("unknown"), RenderOptions{Writer: &buf})
+	if err == nil {
+		t.Fatal("expected UnsupportedFormatError")
+	}
+
+	var unsupportedErr *UnsupportedFormatError
+	if !errors.As(err, &unsupportedErr) {
+		t.Errorf("expected UnsupportedFormatError, got %T: %v", err, err)
+	}
+}
+
+func TestUnsupportedFormatErrorMessage(t *testing.T) {
+	t.Parallel()
+
+	err := &UnsupportedFormatError{Format: FormatJSON}
+	msg := err.Error()
+	if !strings.Contains(msg, "json") {
+		t.Errorf("error message should contain format name, got: %q", msg)
+	}
 }

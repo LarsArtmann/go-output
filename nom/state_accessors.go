@@ -4,8 +4,18 @@ import (
 	"time"
 )
 
-// GetDependencyTree returns dependency tree.
-// Returns a snapshot safe for concurrent traversal.
+// GetDependencyTree returns the dependency tree.
+//
+// IMPORTANT: The returned pointer is SHARED state. The caller is responsible
+// for synchronization when mutating it. The tree itself uses an internal
+// RWMutex, so individual method calls (AddActivity, UpdateActivityStatus,
+// Render, etc.) are safe. However, sequences of operations that read and
+// then write are not atomic with respect to concurrent subscribers.
+//
+// Typical use cases:
+//   - Read-only rendering: safe to call Render() at any time.
+//   - Mutation: prefer calling subscriber methods that route through the
+//     subscriber's lock instead of mutating the tree directly.
 func (ns *NOMStyleSubscriber) GetDependencyTree() *DependencyTree {
 	ns.mu.RLock()
 	defer ns.mu.RUnlock()
@@ -15,6 +25,9 @@ func (ns *NOMStyleSubscriber) GetDependencyTree() *DependencyTree {
 
 // GetTimingCache returns timing cache.
 func (ns *NOMStyleSubscriber) GetTimingCache() *TimingCache {
+	ns.mu.RLock()
+	defer ns.mu.RUnlock()
+
 	return ns.timingCache
 }
 

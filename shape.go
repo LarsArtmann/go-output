@@ -2,7 +2,6 @@ package output
 
 import (
 	"slices"
-	"sync"
 
 	"github.com/larsartmann/go-output/enum"
 )
@@ -63,18 +62,13 @@ func ParseShape(s string) (Shape, error) {
 
 var (
 	//nolint:gochecknoglobals // Registry for format capabilities, populated by sub-module init().
-	formatCapabilities = map[Format][]Shape{}
-	//nolint:gochecknoglobals // Mutex protects concurrent access to formatCapabilities.
-	formatCapabilitiesMu sync.RWMutex
+	formatCapabilities = newFormatRegistry[[]Shape]()
 )
 
 // RegisterFormatShapes registers the data shapes a format supports.
 // Sub-modules call this from their init() to declare capabilities.
 func RegisterFormatShapes(format Format, shapes ...Shape) {
-	formatCapabilitiesMu.Lock()
-	defer formatCapabilitiesMu.Unlock()
-
-	formatCapabilities[format] = shapes
+	formatCapabilities.register(format, shapes)
 }
 
 //nolint:gochecknoinits // Registers all format capabilities (sub-modules may override via their own init).
@@ -98,12 +92,7 @@ func init() {
 }
 
 func getFormatShapes(format Format) ([]Shape, bool) {
-	formatCapabilitiesMu.RLock()
-	defer formatCapabilitiesMu.RUnlock()
-
-	shapes, ok := formatCapabilities[format]
-
-	return shapes, ok
+	return formatCapabilities.get(format)
 }
 
 // Supports returns true if the format can render the given data shape.
