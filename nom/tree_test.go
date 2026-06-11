@@ -2,6 +2,7 @@ package nom
 
 import (
 	"errors"
+	"strings"
 	"testing"
 	"time"
 )
@@ -285,4 +286,74 @@ func TestDependencyTree_AddActivity_DedupSecondaryParents(t *testing.T) {
 	if len(node.SecondaryParents) != 1 {
 		t.Errorf("SecondaryParents = %v, want 1 entry", node.SecondaryParents)
 	}
+}
+
+func TestDependencyTree_RenderNode(t *testing.T) {
+	t.Parallel()
+
+	dt := NewDependencyTree()
+	dt.AddActivity(ActivityID("root"), "Root Task", nil)
+	dt.AddActivity(ActivityID("child"), "Child Task", []ActivityID{"root"})
+
+	_ = dt.Build()
+
+	nodes := dt.getDisplayNodes(10)
+	if len(nodes) == 0 {
+		t.Fatal("expected at least one display node")
+	}
+
+	out := dt.RenderNode(nodes[0], nodes)
+	if out == "" {
+		t.Error("RenderNode should produce non-empty output")
+	}
+
+	if !contains(out, "Root") {
+		t.Errorf("RenderNode output should contain node name, got: %q", out)
+	}
+}
+
+func TestDependencyTree_VisibleNodes(t *testing.T) {
+	t.Parallel()
+
+	t.Run("returns nodes up to maxHeight", func(t *testing.T) {
+		t.Parallel()
+
+		dt := NewDependencyTree()
+		dt.AddActivity(ActivityID("a"), "A", nil)
+		dt.AddActivity(ActivityID("b"), "B", nil)
+		dt.AddActivity(ActivityID("c"), "C", nil)
+
+		visible := dt.VisibleNodes(2)
+		if len(visible) != 2 {
+			t.Errorf("VisibleNodes(2) = %d nodes, want 2", len(visible))
+		}
+	})
+
+	t.Run("zero or negative maxHeight returns all", func(t *testing.T) {
+		t.Parallel()
+
+		dt := NewDependencyTree()
+		dt.AddActivity(ActivityID("a"), "A", nil)
+		dt.AddActivity(ActivityID("b"), "B", nil)
+
+		visible := dt.VisibleNodes(0)
+		if len(visible) != 2 {
+			t.Errorf("VisibleNodes(0) = %d nodes, want 2", len(visible))
+		}
+	})
+
+	t.Run("empty tree returns empty", func(t *testing.T) {
+		t.Parallel()
+
+		dt := NewDependencyTree()
+
+		visible := dt.VisibleNodes(10)
+		if len(visible) != 0 {
+			t.Errorf("VisibleNodes on empty tree = %d, want 0", len(visible))
+		}
+	})
+}
+
+func contains(s, substr string) bool {
+	return strings.Contains(s, substr)
 }
