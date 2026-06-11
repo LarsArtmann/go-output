@@ -3,6 +3,7 @@ package nom
 import (
 	"encoding/csv"
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -144,5 +145,7 @@ func (tc *TimingCache) saveAsync() {
 
 	dataCopy, filePath := tc.snapshotData()
 
-	_ = writeCacheToFile(filePath, dataCopy)
+	if err := writeCacheToFile(filePath, dataCopy); err != nil {
+		log.Printf("nom: async cache save failed: %v", err)
+	}
 }
