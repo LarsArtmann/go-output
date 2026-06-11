@@ -2,6 +2,7 @@ package graph
 
 import (
 	"fmt"
+	"io"
 	"strings"
 
 	"github.com/larsartmann/go-output"
@@ -14,9 +15,24 @@ var (
 	_ output.GraphRenderer = (*DOTRenderer)(nil)
 )
 
-//nolint:gochecknoinits // Registers DOT format capabilities.
+//nolint:gochecknoinits // Registers DOT format capabilities and TableDataMarshaler.
 func init() {
 	output.RegisterFormatShapes(output.FormatDOT, output.ShapeTable, output.ShapeTree, output.ShapeGraph)
+	output.RegisterTableDataMarshaler(output.FormatDOT, renderDOTTableData)
+}
+
+func renderDOTTableData(w io.Writer, data *output.TableData, _ output.RenderOptions) error {
+	out, err := DOTFromTableData(data).Render()
+	if err != nil {
+		return fmt.Errorf("render DOT: %w", err)
+	}
+
+	_, err = fmt.Fprintln(w, out)
+	if err != nil {
+		return fmt.Errorf("write DOT output: %w", err)
+	}
+
+	return nil
 }
 
 // DOTRenderer implements the GraphRenderer interface for DOT/Graphviz output.

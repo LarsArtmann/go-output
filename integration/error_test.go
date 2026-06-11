@@ -2,7 +2,6 @@ package integration
 
 import (
 	"bytes"
-	"errors"
 	"strings"
 	"testing"
 
@@ -38,31 +37,31 @@ func TestRenderTableData_InvalidFooter(t *testing.T) {
 	}
 }
 
-func TestRenderTableData_UnsupportedFormat(t *testing.T) {
+func TestRenderTableData_PreviouslyUnsupportedFormats(t *testing.T) {
 	t.Parallel()
 
 	data := output.NewTableData([]string{"A"})
 	data.AddRow([]string{"1"})
 
-	unsupportedFormats := []output.Format{
+	formats := []output.Format{
 		output.FormatD2,
 		output.FormatDOT,
 		output.FormatMermaid,
 		output.FormatTable,
 	}
 
-	for _, format := range unsupportedFormats {
+	for _, format := range formats {
 		t.Run(string(format), func(t *testing.T) {
 			t.Parallel()
 
-			err := output.RenderTableData(data, format, output.RenderOptions{})
-			if err == nil {
-				t.Fatalf("Expected UnsupportedFormatError for %s", format)
+			var buf bytes.Buffer
+			err := output.RenderTableData(data, format, output.RenderOptions{Writer: &buf})
+			if err != nil {
+				t.Fatalf("Expected %s to be supported, got: %v", format, err)
 			}
 
-			var unsupportedErr *output.UnsupportedFormatError
-			if !errors.As(err, &unsupportedErr) {
-				t.Errorf("Expected UnsupportedFormatError, got: %T: %v", err, err)
+			if buf.Len() == 0 {
+				t.Errorf("Expected non-empty output for %s", format)
 			}
 		})
 	}

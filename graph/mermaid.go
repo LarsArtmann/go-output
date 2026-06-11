@@ -2,6 +2,7 @@ package graph
 
 import (
 	"fmt"
+	"io"
 	"strings"
 
 	"github.com/larsartmann/go-output"
@@ -14,9 +15,24 @@ var (
 	_ output.GraphRenderer = (*MermaidRenderer)(nil)
 )
 
-//nolint:gochecknoinits // Registers Mermaid format capabilities.
+//nolint:gochecknoinits // Registers Mermaid format capabilities and TableDataMarshaler.
 func init() {
 	output.RegisterFormatShapes(output.FormatMermaid, output.ShapeTable, output.ShapeTree, output.ShapeGraph)
+	output.RegisterTableDataMarshaler(output.FormatMermaid, renderMermaidTableData)
+}
+
+func renderMermaidTableData(w io.Writer, data *output.TableData, _ output.RenderOptions) error {
+	out, err := MermaidFromTableData(data).Render()
+	if err != nil {
+		return fmt.Errorf("render Mermaid: %w", err)
+	}
+
+	_, err = fmt.Fprintln(w, out)
+	if err != nil {
+		return fmt.Errorf("write Mermaid output: %w", err)
+	}
+
+	return nil
 }
 
 // MermaidRenderer implements the GraphRenderer interface for Mermaid diagrams.

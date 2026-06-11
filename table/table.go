@@ -2,6 +2,9 @@
 package table
 
 import (
+	"fmt"
+	"io"
+
 	"charm.land/lipgloss/v2"
 	"charm.land/lipgloss/v2/table"
 
@@ -13,6 +16,27 @@ var (
 	_ output.Renderer      = (*Table)(nil)
 	_ output.TableRenderer = (*tableRendererAdapter)(nil)
 )
+
+//nolint:gochecknoinits // Registers Table TableDataMarshaler for registry-based dispatch.
+func init() {
+	output.RegisterTableDataMarshaler(output.FormatTable, renderStyledTableData)
+}
+
+func renderStyledTableData(w io.Writer, data *output.TableData, opts output.RenderOptions) error {
+	t := FromTableData(data, WithColorMode(opts.ColorMode))
+
+	out, err := t.Render()
+	if err != nil {
+		return fmt.Errorf("render table: %w", err)
+	}
+
+	_, err = fmt.Fprintln(w, out)
+	if err != nil {
+		return fmt.Errorf("write table output: %w", err)
+	}
+
+	return nil
+}
 
 // TableDataProvider defines the interface for types that provide tabular data.
 // The root package's TableData satisfies this interface implicitly.

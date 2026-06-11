@@ -1,9 +1,31 @@
 package d2
 
 import (
+	"fmt"
+	"io"
+
 	"github.com/larsartmann/go-output"
 	"github.com/larsartmann/go-output/escape"
 )
+
+//nolint:gochecknoinits // Registers D2 TableDataMarshaler for registry-based dispatch.
+func init() {
+	output.RegisterTableDataMarshaler(output.FormatD2, renderD2TableData)
+}
+
+func renderD2TableData(w io.Writer, data *output.TableData, _ output.RenderOptions) error {
+	out, err := D2FromTableData(data).Render()
+	if err != nil {
+		return fmt.Errorf("render D2: %w", err)
+	}
+
+	_, err = fmt.Fprintln(w, out)
+	if err != nil {
+		return fmt.Errorf("write D2 output: %w", err)
+	}
+
+	return nil
+}
 
 // SetNodes sets graph nodes from the generic GraphNode type, satisfying GraphRenderer.
 func (d *D2Diagram) SetNodes(nodes []output.GraphNode) {
