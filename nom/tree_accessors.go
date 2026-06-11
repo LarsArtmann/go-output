@@ -28,7 +28,9 @@ func (dt *DependencyTree) GetRootNodes() []*TreeNode {
 	dt.mu.RUnlock()
 
 	if !loaded {
-		_ = dt.Build()
+		if err := dt.Build(); err != nil {
+			return nil
+		}
 	}
 
 	dt.mu.RLock()
@@ -45,7 +47,7 @@ func (dt *DependencyTree) EnsureBuild() {
 	dt.mu.RUnlock()
 
 	if !loaded {
-		_ = dt.Build()
+		_ = dt.Build() // Best-effort; Build currently never errors.
 	}
 }
 

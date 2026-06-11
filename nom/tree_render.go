@@ -184,7 +184,9 @@ func (dt *DependencyTree) VisibleNodes(maxHeight int) []*TreeNode {
 	dt.mu.RUnlock()
 
 	if needsBuild {
-		_ = dt.Build()
+		if err := dt.Build(); err != nil {
+			return nil
+		}
 	}
 
 	dt.mu.RLock()
