@@ -233,3 +233,87 @@ func TestIntField(t *testing.T) {
 		}
 	})
 }
+
+func TestAssertLineCount(t *testing.T) {
+	t.Parallel()
+
+	t.Run("correct line count", func(t *testing.T) {
+		t.Parallel()
+
+		AssertLineCount(t, "three lines", "a\nb\nc", 3)
+	})
+
+	t.Run("wrong line count", func(t *testing.T) {
+		t.Parallel()
+
+		mock := &testing.T{}
+
+		AssertLineCount(mock, "wrong", "a\nb", 3)
+
+		if !mock.Failed() {
+			t.Error("expected failure for wrong line count")
+		}
+	})
+
+	t.Run("trims whitespace", func(t *testing.T) {
+		t.Parallel()
+
+		AssertLineCount(t, "trailing newline", "a\nb\n", 2)
+	})
+}
+
+func TestAssertLastLineContains(t *testing.T) {
+	t.Parallel()
+
+	t.Run("last line contains substring", func(t *testing.T) {
+		t.Parallel()
+
+		AssertLastLineContains(t, "test", "first\nlast line", "last")
+	})
+
+	t.Run("last line missing substring", func(t *testing.T) {
+		t.Parallel()
+
+		mock := &testing.T{}
+
+		AssertLastLineContains(mock, "test", "first\nlast", "missing")
+
+		if !mock.Failed() {
+			t.Error("expected failure for missing substring in last line")
+		}
+	})
+}
+
+func TestAssertErrorContains(t *testing.T) {
+	t.Parallel()
+
+	t.Run("error contains substring", func(t *testing.T) {
+		t.Parallel()
+
+		AssertErrorContains(t, errors.New("file not found"), "not found", "should contain")
+	})
+
+	t.Run("nil error", func(t *testing.T) {
+		t.Parallel()
+
+		mock := &testing.T{}
+
+		AssertErrorContains(mock, nil, "anything", "nil error")
+
+		if !mock.Failed() {
+			t.Error("expected failure for nil error")
+		}
+	})
+
+	t.Run("error missing substring", func(t *testing.T) {
+		t.Parallel()
+
+		mock := &testing.T{}
+
+		AssertErrorContains(mock, errors.New("other"), "missing", "wrong error")
+
+		if !mock.Failed() {
+			t.Error("expected failure for missing substring in error")
+		}
+	})
+}
