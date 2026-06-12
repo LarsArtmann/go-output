@@ -64,6 +64,10 @@ func (t *TSVWriter) Error() error {
 }
 
 // MarshalTSV marshals data as TSV.
+//
+// Deprecated: Use MarshalTSVFromTableData for type-safe marshaling from TableData,
+// or construct a TSVWriter directly for streaming. The any-based type switch will
+// be removed in a future version.
 func MarshalTSV(data any) ([]byte, error) {
 	var builder strings.Builder
 

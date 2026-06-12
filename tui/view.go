@@ -94,7 +94,7 @@ func (m *ProgressModel) renderCurrentMessage() string {
 
 	messageStyle := lipgloss.NewStyle().
 		Italic(true).
-		Foreground(lipgloss.Color("12"))
+		Foreground(colorInfo)
 
 	return messageStyle.Render(m.currentMessage)
 }
@@ -103,7 +103,7 @@ func (m *ProgressModel) renderCurrentMessage() string {
 func (m *ProgressModel) renderTitle(text string) string {
 	titleStyle := lipgloss.NewStyle().
 		Bold(true).
-		Foreground(lipgloss.Color("39")).
+		Foreground(colorTitle).
 		MarginBottom(1)
 
 	return titleStyle.Render(text)
@@ -155,14 +155,14 @@ func (m *ProgressModel) renderSteps() string {
 // stepIconAndStyle returns the icon and lipgloss style for a step based on its state.
 func stepIconAndStyle(step ProgressStep) (string, lipgloss.Style) {
 	if step.CompletedAt != nil {
-		return "✅", lipgloss.NewStyle().Foreground(lipgloss.Color("10"))
+		return "✅", lipgloss.NewStyle().Foreground(colorSuccess)
 	}
 
 	if step.IsActive {
-		return "🔄", lipgloss.NewStyle().Foreground(lipgloss.Color("11"))
+		return "🔄", lipgloss.NewStyle().Foreground(colorWarning)
 	}
 
-	return "⏸️", lipgloss.NewStyle().Foreground(lipgloss.Color("8"))
+	return "⏸️", lipgloss.NewStyle().Foreground(colorDim)
 }
 
 // renderStep renders a single step with nh-style formatting.
@@ -204,15 +204,15 @@ func (m *ProgressModel) renderStep(step ProgressStep, isLast bool) string {
 
 // renderProgressBar creates a progress bar.
 func (m *ProgressModel) renderProgressBar() string {
-	width := 40
-	if m.width > 0 && m.width < 80 {
-		width = m.width - 30
+	width := progressBarWidth
+	if m.width > 0 && m.width < minWidthThreshold {
+		width = m.width - widthSubtraction
 	}
 
 	filled := int((m.currentProgress / 100.0) * float64(width))
 	bar := strings.Repeat("█", filled) + strings.Repeat("░", width-filled)
 	progressStyle := lipgloss.NewStyle().
-		Foreground(lipgloss.Color("12"))
+		Foreground(colorInfo)
 
 	return progressStyle.Render(fmt.Sprintf("Progress: [%s] %.1f%%", bar, m.currentProgress))
 }
@@ -275,10 +275,9 @@ func (m *ProgressModel) renderDependencyTree() string {
 		return m.dependencyTree.Render(0)
 	}
 
-	chromeLines := 8
 	treeHeight := m.height - chromeLines
 	if treeHeight <= 0 {
-		treeHeight = 20
+		treeHeight = defaultTreeHeight
 	}
 
 	m.visibleNodes = m.dependencyTree.VisibleNodes(treeHeight)
@@ -293,8 +292,8 @@ func (m *ProgressModel) renderDependencyTree() string {
 		line := m.dependencyTree.RenderNode(node, m.visibleNodes)
 		if m.selectedNode != "" && node.ActivityID == m.selectedNode {
 			line = lipgloss.NewStyle().
-				Background(lipgloss.Color("62")).
-				Foreground(lipgloss.Color("230")).
+				Background(colorSelectBG).
+				Foreground(colorSelectFG).
 				Render(line)
 		}
 
@@ -336,8 +335,8 @@ func (m *ProgressModel) renderHelpOverlay() string {
 	helpStyle := lipgloss.NewStyle().
 		Border(lipgloss.RoundedBorder()).
 		Padding(1, 2).
-		Foreground(lipgloss.Color("15")).
-		Background(lipgloss.Color("0"))
+		Foreground(colorHelpFG).
+		Background(colorHelpBG)
 
 	shortcuts := []string{
 		"  Keyboard Shortcuts",
@@ -357,10 +356,10 @@ func (m *ProgressModel) renderHelpOverlay() string {
 	width := m.width
 	height := m.height
 	if width <= 0 {
-		width = 80
+		width = defaultHelpWidth
 	}
 	if height <= 0 {
-		height = 24
+		height = defaultHelpHeight
 	}
 
 	return lipgloss.Place(width, height, lipgloss.Center, lipgloss.Center, helpText)

@@ -104,8 +104,7 @@ func (tc *TimingCache) GetAll() map[string]time.Duration {
 	return averages
 }
 
-// GetHistory returns the duration history for an activity.
-func (tc *TimingCache) GetHistory(activityName string) []time.Duration {
+func (tc *TimingCache) getHistory(activityName string) []time.Duration {
 	tc.mu.RLock()
 	defer tc.mu.RUnlock()
 
@@ -128,8 +127,7 @@ func (tc *TimingCache) Clear() {
 	tc.cache = make(map[string][]time.Duration)
 }
 
-// Remove removes an activity from the cache.
-func (tc *TimingCache) Remove(activityName string) {
+func (tc *TimingCache) remove(activityName string) {
 	tc.mu.Lock()
 	defer tc.mu.Unlock()
 
@@ -164,7 +162,6 @@ func (tc *TimingCache) EnsureLoaded() error {
 	return tc.loadLocked()
 }
 
-// WaitPendingSaves blocks until all in-flight async saves complete.
-func (tc *TimingCache) WaitPendingSaves() {
+func (tc *TimingCache) waitPendingSaves() {
 	tc.pendingSaves.Wait()
 }

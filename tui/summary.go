@@ -25,7 +25,7 @@ func createSummaryStyle() lipgloss.Style {
 	return lipgloss.NewStyle().
 		Border(lipgloss.RoundedBorder()).
 		Padding(0, 1).
-		Foreground(lipgloss.Color("12"))
+		Foreground(colorInfo)
 }
 
 // buildUniversalSummary builds a universal-style summary string.
@@ -79,19 +79,15 @@ func buildNOMSummary(running, completed, failed, pending int, elapsed time.Durat
 func getStateStyle(state WorkflowState) (string, color.Color) {
 	switch state {
 	case WorkflowStateIdle:
-		return "⏳ Workflow Idle | ⏱️ {time}s | Press 'q' or Ctrl+C to exit", lipgloss.Color("8")
+		return "⏳ Workflow Idle | ⏱️ {time}s | Press 'q' or Ctrl+C to exit", colorDim
 	case WorkflowStateRunning:
 		return "", nil
 	case WorkflowStateCompleted:
-		return "✅ Workflow Complete: {completed}✓ | ⏱️ {time}s | Press 'q' or Ctrl+C to exit", lipgloss.Color(
-			"10",
-		)
+		return "✅ Workflow Complete: {completed}✓ | ⏱️ {time}s | Press 'q' or Ctrl+C to exit", colorSuccess
 	case WorkflowStateErrored:
-		return "❌ Workflow Error: {completed}✓ | ⏱️ {time}s | Press 'q' or Ctrl+C to exit", lipgloss.Color(
-			"9",
-		)
+		return "❌ Workflow Error: {completed}✓ | ⏱️ {time}s | Press 'q' or Ctrl+C to exit", colorError
 	default:
-		return "", lipgloss.Color("12")
+		return "", colorInfo
 	}
 }
 

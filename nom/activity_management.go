@@ -69,12 +69,6 @@ func (ns *NOMStyleSubscriber) SyncActivityTimingToTree() {
 		}
 
 		// Copy display state from activity to tree node.
-		node.Status = activity.Status
-		node.Symbol = activity.Symbol
-		node.Color = activity.Color
-		// Copy timing information from activity to tree node.
-		node.StartTime = activity.StartTime
-		node.CurrentElapsed = activity.CurrentElapsed
-		node.EstimatedTime = activity.EstimatedTime
+		node.DisplayState = activity.DisplayState
 	}
 }

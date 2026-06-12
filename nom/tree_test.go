@@ -120,7 +120,7 @@ func TestDependencyTree_GetDisplayActivities(t *testing.T) {
 	dt := NewDependencyTree()
 	dt.AddActivity(ActivityID("a"), "A", nil)
 
-	activities := dt.GetDisplayActivities()
+	activities := dt.getDisplayActivities()
 	if activities == nil {
 		t.Error("GetDisplayActivities() should not return nil")
 	}
@@ -135,7 +135,7 @@ func TestDependencyTree_FindNodesByStatus(t *testing.T) {
 	dt.UpdateActivityStatus(ActivityID("a"), ActivityStatusRunning, SymbolRunning, ColorRunning, time.Now(), 0)
 	dt.UpdateActivityStatus(ActivityID("b"), ActivityStatusCompleted, SymbolCompleted, ColorCompleted, time.Now(), 0)
 
-	running := dt.FindNodesByStatus(ActivityStatusRunning)
+	running := dt.findNodesByStatus(ActivityStatusRunning)
 	if len(running) != 1 {
 		t.Errorf("expected 1 running node, got %d", len(running))
 	}
@@ -167,7 +167,7 @@ func TestDependencyTree_SnapshotRoots(t *testing.T) {
 	dt.AddActivity(ActivityID("a"), "A", nil)
 	dt.AddActivity(ActivityID("b"), "B", nil)
 
-	snapshot := dt.SnapshotRoots()
+	snapshot := dt.snapshotRoots()
 	if len(snapshot) != 2 {
 		t.Errorf("expected 2 roots, got %d", len(snapshot))
 	}

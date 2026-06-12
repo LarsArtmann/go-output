@@ -4,8 +4,7 @@ import (
 	"sort"
 )
 
-// GetDisplayActivities returns the list of activity IDs in display order.
-func (dt *DependencyTree) GetDisplayActivities() []ActivityID {
+func (dt *DependencyTree) getDisplayActivities() []ActivityID {
 	dt.mu.RLock()
 	defer dt.mu.RUnlock()
 
@@ -41,6 +40,9 @@ func (dt *DependencyTree) GetRootNodes() []*TreeNode {
 
 // EnsureBuild guarantees the tree is built at most once between AddActivity calls.
 // AddActivity resets buildOnce so the next GetRootNodes/EnsureBuild will rebuild.
+//
+// Deprecated: EnsureBuild is exported for cross-module test use only. Production
+// code should use GetRootNodes() or VisibleNodes(), which build implicitly.
 func (dt *DependencyTree) EnsureBuild() {
 	dt.mu.RLock()
 	loaded := dt.loaded
@@ -51,8 +53,7 @@ func (dt *DependencyTree) EnsureBuild() {
 	}
 }
 
-// SnapshotRoots returns a snapshot of root nodes safe for concurrent traversal.
-func (dt *DependencyTree) SnapshotRoots() []*TreeNode {
+func (dt *DependencyTree) snapshotRoots() []*TreeNode {
 	roots := dt.GetRootNodes()
 	snapshot := make([]*TreeNode, len(roots))
 	copy(snapshot, roots)
@@ -60,8 +61,7 @@ func (dt *DependencyTree) SnapshotRoots() []*TreeNode {
 	return snapshot
 }
 
-// FindNodesByStatus returns all nodes matching the given status.
-func (dt *DependencyTree) FindNodesByStatus(status ActivityStatus) []*TreeNode {
+func (dt *DependencyTree) findNodesByStatus(status ActivityStatus) []*TreeNode {
 	dt.mu.RLock()
 	defer dt.mu.RUnlock()
 

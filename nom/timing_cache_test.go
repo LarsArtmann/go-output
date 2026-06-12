@@ -77,14 +77,14 @@ func TestTimingCache_GetHistory(t *testing.T) {
 	tc.Record("build", 1*time.Second)
 	tc.Record("build", 2*time.Second)
 
-	history := tc.GetHistory("build")
+	history := tc.getHistory("build")
 	if len(history) != 2 {
 		t.Fatalf("GetHistory() returned %d entries, want 2", len(history))
 	}
 
 	history[0] = 0
 
-	original := tc.GetHistory("build")
+	original := tc.getHistory("build")
 	if original[0] == 0 {
 		t.Error("modifying returned slice should not affect cache")
 	}
@@ -95,7 +95,7 @@ func TestTimingCache_GetHistory_NonExistent(t *testing.T) {
 
 	tc := NewTimingCache()
 
-	history := tc.GetHistory("nonexistent")
+	history := tc.getHistory("nonexistent")
 	if len(history) != 0 {
 		t.Errorf("expected empty slice, got %d entries", len(history))
 	}
@@ -118,7 +118,7 @@ func TestTimingCache_Remove(t *testing.T) {
 
 	tc := NewTimingCache()
 	tc.Record("build", 5*time.Second)
-	tc.Remove("build")
+	tc.remove("build")
 
 	if tc.GetAverage("build") != 0 {
 		t.Error("expected 0 after Remove()")
@@ -134,7 +134,7 @@ func TestTimingCache_MaxEntries(t *testing.T) {
 		tc.Record("build", time.Duration(i+1)*time.Second)
 	}
 
-	history := tc.GetHistory("build")
+	history := tc.getHistory("build")
 	if len(history) > maxCachedEntries {
 		t.Errorf("history has %d entries, want at most %d", len(history), maxCachedEntries)
 	}
@@ -149,7 +149,7 @@ func TestTimingCache_SaveAndLoad(t *testing.T) {
 	tc.Record("build", 5*time.Second)
 	tc.Record("test", 10*time.Second)
 
-	tc.WaitPendingSaves()
+	tc.waitPendingSaves()
 
 	if err := tc.Save(); err != nil {
 		t.Fatalf("Save() error: %v", err)
@@ -203,4 +203,64 @@ func TestTimingCache_EnsureLoaded(t *testing.T) {
 	if !tc.IsLoaded() {
 		t.Error("cache should be loaded after EnsureLoaded()")
 	}
+}
+
+func TestWriteCacheToFile_InvalidPath(t *testing.T) {
+	t.Parallel()
+
+	data := map[string][]time.Duration{
+		"build": {5 * time.Second},
+	}
+
+	err := writeCacheToFile("/dev/null/impossible/path/timing.csv", data)
+	if err == nil {
+		t.Error("expected error writing to impossible path")
+	}
+}
+
+func TestWriteCacheToFile_Success(t *testing.T) {
+	tmpDir := t.TempDir()
+	cachePath := filepath.Join(tmpDir, "timing.csv")
+
+	data := map[string][]time.Duration{
+		"build": {5 * time.Second, 3 * time.Second},
+		"test":  {1 * time.Second},
+	}
+
+	if err := writeCacheToFile(cachePath, data); err != nil {
+		t.Fatalf("writeCacheToFile() error: %v", err)
+	}
+
+	if _, err := os.Stat(cachePath); os.IsNotExist(err) {
+		t.Fatal("cache file was not created")
+	}
+}
+
+func TestRecord_TriggersAsyncSave(t *testing.T) {
+	tmpDir := t.TempDir()
+	cachePath := filepath.Join(tmpDir, "timing.csv")
+
+	tc := &TimingCache{
+		cache:    make(map[string][]time.Duration),
+		filePath: cachePath,
+		loaded:   true,
+	}
+
+	tc.Record("build", 5*time.Second)
+	tc.waitPendingSaves()
+
+	if _, err := os.Stat(cachePath); os.IsNotExist(err) {
+		t.Fatal("async save should have created cache file")
+	}
+}
+
+func TestRecord_AsyncSaveFailureDoesNotBlock(t *testing.T) {
+	tc := &TimingCache{
+		cache:    make(map[string][]time.Duration),
+		filePath: "/dev/null/impossible/path/timing.csv",
+		loaded:   true,
+	}
+
+	tc.Record("build", 5*time.Second)
+	tc.waitPendingSaves()
 }

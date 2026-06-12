@@ -5,6 +5,17 @@ import (
 	"time"
 )
 
+// DisplayState holds the shared display fields synchronized between
+// ActivityDisplayState and TreeNode via SyncActivityTimingToTree.
+type DisplayState struct {
+	Status         ActivityStatus
+	Symbol         string
+	Color          color.Color
+	StartTime      time.Time
+	EstimatedTime  time.Duration
+	CurrentElapsed time.Duration
+}
+
 // ============================================================================
 // ACTIVITY DISPLAY STATE
 // ============================================================================
@@ -13,14 +24,10 @@ type ActivityDisplayState struct {
 	// Core activity information
 	ActivityID   ActivityID
 	ActivityName ActivityName
-	Status       ActivityStatus
-	Symbol       string
-	Color        color.Color
-	// Timing information
-	StartTime      time.Time
-	EndTime        time.Time
-	EstimatedTime  time.Duration // ∅ symbol - average from cache
-	CurrentElapsed time.Duration // Current execution time
+	// Shared display state (synced to TreeNode)
+	DisplayState
+	// Timing information (ActivityDisplayState-specific)
+	EndTime time.Time
 	// Operation type for prefix symbol
 	OperationType string // download, upload, copy, move, delete, ""
 	// Error information
@@ -35,14 +42,14 @@ func NewActivityDisplayState(
 	activityName ActivityName,
 ) *ActivityDisplayState {
 	return &ActivityDisplayState{
-		ActivityID:    activityID,
-		ActivityName:  activityName,
-		Status:        ActivityStatusPending,
-		Symbol:        SymbolPaused,
-		Color:         ColorPaused,
-		StartTime:     time.Time{},
+		ActivityID:   activityID,
+		ActivityName: activityName,
+		DisplayState: DisplayState{
+			Status: ActivityStatusPending,
+			Symbol: SymbolPaused,
+			Color:  ColorPaused,
+		},
 		EndTime:       time.Time{},
-		EstimatedTime: 0,
 		OperationType: "",
 		Error:         nil,
 		Dependencies:  make([]string, 0),
@@ -89,13 +96,11 @@ func (ads *ActivityDisplayState) SetEstimatedTime(duration time.Duration) {
 	ads.EstimatedTime = duration
 }
 
-// SetOperationType sets operation type symbol.
-func (ads *ActivityDisplayState) SetOperationType(operationType string) {
+func (ads *ActivityDisplayState) setOperationType(operationType string) {
 	ads.OperationType = operationType
 }
 
-// AddDependency adds a dependency to activity.
-func (ads *ActivityDisplayState) AddDependency(dep string) {
+func (ads *ActivityDisplayState) addDependency(dep string) {
 	ads.Dependencies = append(ads.Dependencies, dep)
 }
 
@@ -118,17 +123,12 @@ func (ads *ActivityDisplayState) IsFailed() bool {
 // This ensures external modifications don't affect the original.
 func (ads *ActivityDisplayState) Copy() *ActivityDisplayState {
 	return &ActivityDisplayState{
-		ActivityID:     ads.ActivityID,
-		ActivityName:   ads.ActivityName,
-		Status:         ads.Status,
-		Symbol:         ads.Symbol,
-		Color:          ads.Color,
-		StartTime:      ads.StartTime,
-		EndTime:        ads.EndTime,
-		EstimatedTime:  ads.EstimatedTime,
-		CurrentElapsed: ads.CurrentElapsed,
-		OperationType:  ads.OperationType,
-		Error:          ads.Error,
-		Dependencies:   append([]string{}, ads.Dependencies...),
+		ActivityID:    ads.ActivityID,
+		ActivityName:  ads.ActivityName,
+		DisplayState:  ads.DisplayState,
+		EndTime:       ads.EndTime,
+		OperationType: ads.OperationType,
+		Error:         ads.Error,
+		Dependencies:  append([]string{}, ads.Dependencies...),
 	}
 }

@@ -171,7 +171,7 @@ func TestActivityDisplayState_SetOperationType(t *testing.T) {
 	t.Parallel()
 
 	ads := NewActivityDisplayState(ActivityID("a"), ActivityName("A"))
-	ads.SetOperationType(OperationTypeDownload)
+	ads.setOperationType(OperationTypeDownload)
 
 	if ads.OperationType != OperationTypeDownload {
 		t.Errorf("OperationType = %q, want %q", ads.OperationType, OperationTypeDownload)
@@ -182,8 +182,8 @@ func TestActivityDisplayState_AddDependency(t *testing.T) {
 	t.Parallel()
 
 	ads := NewActivityDisplayState(ActivityID("a"), ActivityName("A"))
-	ads.AddDependency("dep1")
-	ads.AddDependency("dep2")
+	ads.addDependency("dep1")
+	ads.addDependency("dep2")
 
 	if len(ads.Dependencies) != 2 {
 		t.Fatalf("Dependencies len = %d, want 2", len(ads.Dependencies))
@@ -199,7 +199,7 @@ func TestActivityDisplayState_Copy(t *testing.T) {
 
 	original := NewActivityDisplayState(ActivityID("a"), ActivityName("A"))
 	original.SetRunning()
-	original.AddDependency("dep1")
+	original.addDependency("dep1")
 
 	copy := original.Copy()
 
@@ -215,7 +215,7 @@ func TestActivityDisplayState_Copy(t *testing.T) {
 		t.Error("Copy should preserve Status")
 	}
 
-	copy.AddDependency("dep2")
+	copy.addDependency("dep2")
 
 	if len(original.Dependencies) == 2 {
 		t.Error("modifying copy should not affect original (deep copy failed)")

@@ -1,10 +1,8 @@
 package nom
 
 import (
-	"image/color"
 	"slices"
 	"sync"
-	"time"
 )
 
 const (
@@ -17,13 +15,8 @@ type TreeNode struct {
 	// Core activity information
 	ActivityID   ActivityID
 	ActivityName string
-	Status       ActivityStatus
-	Symbol       string
-	Color        color.Color
-	// Timing information
-	StartTime      time.Time
-	EstimatedTime  time.Duration
-	CurrentElapsed time.Duration
+	// Shared display state (synced from ActivityDisplayState)
+	DisplayState
 	// Tree structure
 	Parent           *TreeNode
 	Children         []*TreeNode
@@ -59,11 +52,13 @@ func newTreeNode(id ActivityID, name string) *TreeNode {
 	return &TreeNode{
 		ActivityID:   id,
 		ActivityName: name,
-		Status:       ActivityStatusPending,
-		Symbol:       SymbolPaused,
-		Color:        ColorPaused,
-		Children:     make([]*TreeNode, 0),
-		IsDisplayed:  true,
+		DisplayState: DisplayState{
+			Status: ActivityStatusPending,
+			Symbol: SymbolPaused,
+			Color:  ColorPaused,
+		},
+		Children:    make([]*TreeNode, 0),
+		IsDisplayed: true,
 	}
 }
 

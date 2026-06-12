@@ -172,6 +172,77 @@ func TestTUIProgressReporter_Integration(t *testing.T) {
 	})
 }
 
+func TestNOMSubscriber_RenderNodeVisibleNodes_Integration(t *testing.T) {
+	t.Parallel()
+
+	subscriber := nom.NewNOMStyleSubscriber()
+	ctx := context.Background()
+
+	_ = subscriber.OnEvent(ctx, &nomTestEvent{
+		eventType: "workflow.started",
+		wID:       nom.NewWorkflowID("w1"),
+		wName:     nom.NewWorkflowName("Pipeline"),
+	})
+
+	_ = subscriber.OnEvent(ctx, &nomTestEvent{
+		eventType: "activity.started",
+		aID:       nom.NewActivityID("build"),
+		aName:     nom.NewActivityName("Build"),
+	})
+	_ = subscriber.OnEvent(ctx, &nomTestEvent{
+		eventType: "activity.started",
+		aID:       nom.NewActivityID("test"),
+		aName:     nom.NewActivityName("Test"),
+	})
+	_ = subscriber.OnEvent(ctx, &nomTestEvent{
+		eventType: "activity.completed",
+		aID:       nom.NewActivityID("build"),
+		aName:     nom.NewActivityName("Build"),
+		duration:  3 * time.Second,
+	})
+
+	subscriber.UpdateRunningActivityElapsed()
+	subscriber.SyncActivityTimingToTree()
+
+	tree := subscriber.GetDependencyTree()
+	if tree == nil {
+		t.Fatal("dependency tree should exist")
+	}
+
+	visible := tree.VisibleNodes(10)
+	if len(visible) == 0 {
+		t.Fatal("VisibleNodes should return nodes")
+	}
+
+	for _, node := range visible {
+		rendered := tree.RenderNode(node, visible)
+		if rendered == "" {
+			t.Errorf("RenderNode(%s) returned empty string", node.ActivityID)
+		}
+	}
+
+	roots := tree.GetRootNodes()
+	if len(roots) == 0 {
+		t.Fatal("GetRootNodes should return at least one root")
+	}
+
+	buildNode := tree.GetNode(nom.NewActivityID("build"))
+	if buildNode == nil {
+		t.Fatal("build node should exist in tree")
+	}
+	if buildNode.Status != nom.ActivityStatusCompleted {
+		t.Errorf("build status = %v, want Completed", buildNode.Status)
+	}
+
+	testNode := tree.GetNode(nom.NewActivityID("test"))
+	if testNode == nil {
+		t.Fatal("test node should exist in tree")
+	}
+	if testNode.Status != nom.ActivityStatusRunning {
+		t.Errorf("test status = %v, want Running", testNode.Status)
+	}
+}
+
 func TestNOMTimingCache_Integration(t *testing.T) {
 	t.Parallel()
 
