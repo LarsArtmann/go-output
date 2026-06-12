@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"fmt"
 	"strings"
 	"testing"
 	"time"
@@ -182,3 +183,73 @@ func TestInlineRenderer_EmptyTree(t *testing.T) {
 		t.Error("render with empty tree should produce no output")
 	}
 }
+
+func TestInlineRenderer_StartStop_PeriodicRender(t *testing.T) {
+	sub := NewNOMStyleSubscriber()
+	var buf bytes.Buffer
+	renderer := NewInlineRenderer(sub, &buf, 10)
+
+	ctx := context.Background()
+	_ = sub.OnEvent(ctx, &testEvent{
+		eventType: EventWorkflowStarted,
+		wID:       WorkflowID("wf-1"),
+	})
+	_ = sub.OnEvent(ctx, &testEvent{
+		eventType: EventActivityStarted,
+		aID:       ActivityID("step1"),
+		aName:     ActivityName("Step 1"),
+	})
+
+	renderer.Start(ctx, 50*time.Millisecond)
+	time.Sleep(180 * time.Millisecond)
+	renderer.Stop()
+
+	output := buf.String()
+	renders := strings.Count(output, "Step 1")
+	if renders < 2 {
+		t.Errorf("expected at least 2 periodic renders, got %d renders", renders)
+	}
+}
+
+func TestInlineRenderer_StartStop_Idempotent(t *testing.T) {
+	sub := NewNOMStyleSubscriber()
+	var buf bytes.Buffer
+	renderer := NewInlineRenderer(sub, &buf, 10)
+
+	ctx := context.Background()
+
+	renderer.Start(ctx, 50*time.Millisecond)
+	renderer.Start(ctx, 50*time.Millisecond)
+
+	renderer.Stop()
+	renderer.Stop()
+}
+
+func TestInlineRenderer_MaxHeightZero_UsesFallback(t *testing.T) {
+	sub := NewNOMStyleSubscriber()
+	var buf bytes.Buffer
+	renderer := NewInlineRenderer(sub, &buf, 0)
+
+	ctx := context.Background()
+	_ = sub.OnEvent(ctx, &testEvent{
+		eventType: EventWorkflowStarted,
+		wID:       WorkflowID("wf-1"),
+	})
+
+	for i := range 60 {
+		_ = sub.OnEvent(ctx, &testEvent{
+			eventType: EventActivityStarted,
+			aID:       ActivityID(fmt.Sprintf("step%d", i)),
+			aName:     ActivityName(fmt.Sprintf("Step %d", i)),
+		})
+	}
+
+	renderer.Render()
+
+	output := buf.String()
+	lines := strings.Count(output, "\n") + 1
+	if lines > 56 {
+		t.Errorf("expected tree capped to ~50 lines with 2-line summary, got %d lines", lines)
+	}
+}
+

@@ -1,11 +1,15 @@
 package nom
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"os"
 	"strings"
+	"sync"
 	"time"
+
+	"golang.org/x/term"
 )
 
 const (
@@ -33,6 +37,10 @@ type InlineRenderer struct {
 	startTime  time.Time
 	appName    string
 	noColor    bool
+
+	tickMu   sync.Mutex
+	cancelFn context.CancelFunc
+	tickerDone chan struct{}
 }
 
 // NewInlineRenderer creates an inline renderer bound to the given subscriber and writer.
@@ -101,10 +109,7 @@ func (r *InlineRenderer) Render() {
 		return
 	}
 
-	maxH := r.maxHeight
-	if maxH <= 0 {
-		maxH = 50
-	}
+	maxH := r.effectiveMaxHeight()
 
 	frame := tree.Render(maxH)
 
@@ -188,6 +193,68 @@ func (r *InlineRenderer) Finish(workflowErr error) {
 			fmt.Fprintf(r.writer, "\033[32m%s completed successfully.\033[0m\n", r.appName)
 		}
 	}
+}
+
+// Start begins periodic background rendering at the given interval.
+// Call Stop to terminate the background goroutine.
+// The context can be used to cancel independently of Stop.
+func (r *InlineRenderer) Start(ctx context.Context, interval time.Duration) {
+	r.tickMu.Lock()
+	defer r.tickMu.Unlock()
+
+	if r.cancelFn != nil {
+		return
+	}
+
+	ctx, cancel := context.WithCancel(ctx)
+	r.cancelFn = cancel
+	r.tickerDone = make(chan struct{})
+
+	go func() {
+		defer close(r.tickerDone)
+
+		ticker := time.NewTicker(interval)
+		defer ticker.Stop()
+
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			case <-ticker.C:
+				r.Render()
+			}
+		}
+	}()
+}
+
+// Stop terminates the background refresh goroutine started by Start.
+// It is safe to call Stop even if Start was never called.
+func (r *InlineRenderer) Stop() {
+	r.tickMu.Lock()
+	defer r.tickMu.Unlock()
+
+	if r.cancelFn != nil {
+		r.cancelFn()
+		<-r.tickerDone
+		r.cancelFn = nil
+		r.tickerDone = nil
+	}
+}
+
+// effectiveMaxHeight returns the maxHeight if set, otherwise detects
+// terminal height from stderr fd, falling back to 50.
+func (r *InlineRenderer) effectiveMaxHeight() int {
+	if r.maxHeight > 0 {
+		return r.maxHeight
+	}
+
+	if f, ok := r.writer.(*os.File); ok {
+		if _, height, err := term.GetSize(int(f.Fd())); err == nil && height > 4 {
+			return height - 4
+		}
+	}
+
+	return 50
 }
 
 // renderSummary builds a one-line NOM-style summary bar.
