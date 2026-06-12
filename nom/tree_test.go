@@ -295,14 +295,12 @@ func TestDependencyTree_RenderNode(t *testing.T) {
 	dt.AddActivity(ActivityID("root"), "Root Task", nil)
 	dt.AddActivity(ActivityID("child"), "Child Task", []ActivityID{"root"})
 
-	_ = dt.Build()
-
-	nodes := dt.getDisplayNodes(10)
+	nodes := dt.VisibleNodes(10)
 	if len(nodes) == 0 {
 		t.Fatal("expected at least one display node")
 	}
 
-	out := dt.RenderNode(nodes[0], nodes)
+	out := dt.RenderNode(nodes[0], nil)
 	if out == "" {
 		t.Error("RenderNode should produce non-empty output")
 	}

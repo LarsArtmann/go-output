@@ -2,15 +2,15 @@ package nom
 
 import (
 	"fmt"
-	"sort"
 	"strings"
 
 	"charm.land/lipgloss/v2"
 )
 
-// Render generates NOM-style tree rendering.
+// Render generates NOM-style tree rendering using depth-first forest walk.
+// Ports the algorithm from nix-output-monitor's showForest:
+// walks each root tree recursively, building proper box-drawing prefixes (├──, └──, │).
 func (dt *DependencyTree) Render(maxHeight int) string {
-	// Build tree if not already built (release lock before calling Build to avoid deadlock)
 	dt.mu.RLock()
 	needsBuild := !dt.loaded
 	dt.mu.RUnlock()
@@ -21,139 +21,140 @@ func (dt *DependencyTree) Render(maxHeight int) string {
 			return fmt.Sprintf("Error building tree: %v", err)
 		}
 	}
-	// Now acquire read lock for rendering
+
 	dt.mu.RLock()
 	defer dt.mu.RUnlock()
-	// If no maxHeight provided, show all nodes
+
 	if maxHeight <= 0 {
 		maxHeight = len(dt.nodes)
 	}
-	// Get display order with smart filtering
-	displayNodes := dt.getDisplayNodes(maxHeight)
+
+	if len(dt.roots) == 0 {
+		return msgNoActivitiesToDisplay
+	}
+
+	visible := dt.collectVisibleNodes(maxHeight)
+
+	if len(visible) == 0 {
+		return msgNoActivitiesToDisplay
+	}
 
 	var lines []string
 
-	for _, node := range displayNodes {
-		line := dt.renderNode(node, displayNodes)
-		lines = append(lines, line)
-	}
-
-	if len(lines) == 0 {
-		return msgNoActivitiesToDisplay
+	for _, entry := range visible {
+		lines = append(lines, dt.renderLine(entry))
 	}
 
 	return strings.Join(lines, "\n")
 }
 
-// getDisplayNodes returns nodes to display based on smart filtering.
-func (dt *DependencyTree) getDisplayNodes(maxHeight int) []*TreeNode {
-	// Priority: Running > Failed > Pending > Completed
-	var nodes []*TreeNode
-	// Categorize nodes by status
-	running, failed, pending, completed := dt.categorizeNodes()
-	// Sort each category by activity ID
-	dt.sortNodesByID(running)
-	dt.sortNodesByID(failed)
-	dt.sortNodesByID(pending)
-	dt.sortNodesByID(completed)
-	// Allocate slots based on priority
-	slots := maxHeight
-	// 1. Add all running activities
-	slots = dt.addNodesIfSlotsRemaining(&nodes, running, slots)
-	// 2. Add all failed activities
-	slots = dt.addNodesIfSlotsRemaining(&nodes, failed, slots)
-	// 3. Add pending activities (up to remaining slots)
-	slots = dt.addNodesIfSlotsRemaining(&nodes, pending, slots)
-	// 4. Add completed activities only if slots remain
-	dt.addNodesIfSlotsRemaining(&nodes, completed, slots)
-	// Sort final list by depth, then by activity ID
-	dt.sortNodesByDepthAndID(nodes)
-
-	return nodes
+type visibleEntry struct {
+	node      *TreeNode
+	prefix    string
+	connector string
+	isRoot    bool
 }
 
-func (dt *DependencyTree) categorizeNodes() (running, failed, pending, completed []*TreeNode) {
-	for _, node := range dt.nodes {
-		switch node.Status {
-		case ActivityStatusRunning:
-			running = append(running, node)
-		case ActivityStatusFailed:
-			failed = append(failed, node)
-		case ActivityStatusPending, ActivityStatusPaused:
-			pending = append(pending, node)
-		case ActivityStatusCompleted:
-			completed = append(completed, node)
+// collectVisibleNodes walks the forest depth-first, collecting nodes to display.
+func (dt *DependencyTree) collectVisibleNodes(maxHeight int) []visibleEntry {
+	var visible []visibleEntry
+
+	for _, root := range dt.roots {
+		dt.walkSubtree(root, "", true, true, &visible, maxHeight)
+		if len(visible) >= maxHeight {
+			break
 		}
 	}
 
-	return running, failed, pending, completed
+	return visible
 }
 
-func (dt *DependencyTree) sortNodesByID(nodes []*TreeNode) {
-	sort.Slice(nodes, func(i, j int) bool {
-		return string(nodes[i].ActivityID) < string(nodes[j].ActivityID)
-	})
-}
+// walkSubtree recursively walks the tree depth-first, building proper NOM-style prefixes.
+func (dt *DependencyTree) walkSubtree(
+	node *TreeNode,
+	prefix string,
+	isLastSibling bool,
+	isRoot bool,
+	visible *[]visibleEntry,
+	maxHeight int,
+) {
+	if len(*visible) >= maxHeight {
+		return
+	}
 
-func (dt *DependencyTree) addNodesIfSlotsRemaining(
-	target *[]*TreeNode,
-	nodes []*TreeNode,
-	slots int,
-) int {
-	for _, node := range nodes {
-		if slots > 0 {
-			*target = append(*target, node)
-			slots--
+	entry := visibleEntry{
+		node:      node,
+		prefix:    prefix,
+		connector: "",
+		isRoot:    isRoot,
+	}
+
+	if !isRoot {
+		if isLastSibling {
+			entry.connector = "└── "
+		} else {
+			entry.connector = "├── "
 		}
 	}
 
-	return slots
-}
+	*visible = append(*visible, entry)
 
-func (dt *DependencyTree) sortNodesByDepthAndID(nodes []*TreeNode) {
-	sort.Slice(nodes, func(i, j int) bool {
-		if nodes[i].Depth != nodes[j].Depth {
-			return nodes[i].Depth < nodes[j].Depth
+	if len(node.Children) == 0 {
+		return
+	}
+
+	var childIndent string
+
+	if isRoot {
+		childIndent = ""
+	} else if isLastSibling {
+		childIndent = prefix + "    "
+	} else {
+		childIndent = prefix + "│   "
+	}
+
+	for i, child := range node.Children {
+		if len(*visible) >= maxHeight {
+			return
 		}
 
-		return string(nodes[i].ActivityID) < string(nodes[j].ActivityID)
-	})
+		dt.walkSubtree(
+			child,
+			childIndent,
+			i == len(node.Children)-1,
+			false,
+			visible,
+			maxHeight,
+		)
+	}
 }
 
-// renderNode renders a single node with appropriate tree symbols.
-func isPhaseNode(node *TreeNode) bool {
-	return len(node.ActivityID) > 6 && node.ActivityID[:6] == "phase:"
-}
-
-// RenderNode renders a single node for external consumers (e.g., TUI mouse click highlight).
-func (dt *DependencyTree) RenderNode(node *TreeNode, displayNodes []*TreeNode) string {
-	return dt.renderNode(node, displayNodes)
-}
-
-func (dt *DependencyTree) renderNode(node *TreeNode, displayNodes []*TreeNode) string {
-	// Build prefix for tree structure
-	prefix := dt.buildTreePrefix(node, displayNodes)
-	// Use phase symbol/color for phase nodes, otherwise status symbol/color
+// renderLine renders a single line for a visible entry.
+func (dt *DependencyTree) renderLine(entry visibleEntry) string {
+	node := entry.node
 	symbol := node.Symbol
 	color := node.Color
+
 	if isPhaseNode(node) {
 		symbol = SymbolPhase
 		color = ColorPhase
 	}
-	// Build activity display with timing
+
 	activityDisplay := fmt.Sprintf("%s %s", symbol, node.ActivityName)
-	// Add timing information based on status
+
 	timingInfo := FormatTreeNodeTiming(
 		node.Status,
 		node.CurrentElapsed,
 		node.EstimatedTime,
 	)
+
 	if timingInfo != "" {
 		activityDisplay += " " + timingInfo
 	}
-	// Append secondary dependency labels (non-primary parents)
+
 	if len(node.SecondaryParents) > 0 {
 		depNames := make([]string, len(node.SecondaryParents))
+
 		for i, depID := range node.SecondaryParents {
 			if depNode, ok := dt.nodes[depID]; ok {
 				depNames[i] = depNode.ActivityName
@@ -161,23 +162,24 @@ func (dt *DependencyTree) renderNode(node *TreeNode, displayNodes []*TreeNode) s
 				depNames[i] = depID.String()
 			}
 		}
+
 		activityDisplay += lipgloss.NewStyle().
 			Foreground(ColorInfo).
 			Render(fmt.Sprintf(" ⬅ depends on %s", strings.Join(depNames, ", ")))
 	}
-	// Style with color - force ANSI colors
+
 	style := lipgloss.NewStyle().
 		Foreground(color).
-		Width(0).    // Don't limit width
-		Inline(true) // Inline mode for better compatibility
-	// Force color output by setting a color profile
-	// lipgloss v2 handles color profile automatically
-	return style.Render(prefix + activityDisplay)
+		Width(0).
+		Inline(true)
+
+	fullPrefix := entry.prefix + entry.connector
+
+	return style.Render(fullPrefix + activityDisplay)
 }
 
 // VisibleNodes returns the ordered list of tree nodes that would be displayed
-// for the given maxHeight. This is useful for mapping screen positions to nodes
-// (e.g., mouse click handling).
+// for the given maxHeight, in depth-first tree order.
 func (dt *DependencyTree) VisibleNodes(maxHeight int) []*TreeNode {
 	dt.mu.RLock()
 	needsBuild := !dt.loaded
@@ -196,5 +198,45 @@ func (dt *DependencyTree) VisibleNodes(maxHeight int) []*TreeNode {
 		maxHeight = len(dt.nodes)
 	}
 
-	return dt.getDisplayNodes(maxHeight)
+	visible := dt.collectVisibleNodes(maxHeight)
+	nodes := make([]*TreeNode, len(visible))
+
+	for i, entry := range visible {
+		nodes[i] = entry.node
+	}
+
+	return nodes
+}
+
+// RenderNode renders a single node for external consumers (e.g., TUI mouse click highlight).
+func (dt *DependencyTree) RenderNode(node *TreeNode, _ []*TreeNode) string {
+	symbol := node.Symbol
+	color := node.Color
+
+	if isPhaseNode(node) {
+		symbol = SymbolPhase
+		color = ColorPhase
+	}
+
+	activityDisplay := fmt.Sprintf("%s %s", symbol, node.ActivityName)
+
+	timingInfo := FormatTreeNodeTiming(
+		node.Status,
+		node.CurrentElapsed,
+		node.EstimatedTime,
+	)
+
+	if timingInfo != "" {
+		activityDisplay += " " + timingInfo
+	}
+
+	return lipgloss.NewStyle().
+		Foreground(color).
+		Width(0).
+		Inline(true).
+		Render(activityDisplay)
+}
+
+func isPhaseNode(node *TreeNode) bool {
+	return len(node.ActivityID) > 6 && node.ActivityID[:6] == "phase:"
 }
