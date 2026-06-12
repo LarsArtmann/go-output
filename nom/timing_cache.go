@@ -30,13 +30,18 @@ type TimingCache struct {
 
 // NewTimingCache creates a new timing cache.
 func NewTimingCache() *TimingCache {
-	// Determine cache file path
 	homeDir, err := os.UserHomeDir()
-	if err != nil {
-		homeDir = os.TempDir() // Fallback to temp directory
+	if err != nil || homeDir == "" {
+		homeDir = os.TempDir()
 	}
 
 	cachePath := filepath.Join(homeDir, cacheDir, cacheFilename)
+
+	// Validate the parent directory is writable, not /dev/null or similar
+	dir := filepath.Dir(filepath.Dir(cachePath))
+	if fi, err := os.Stat(dir); err != nil || !fi.IsDir() {
+		cachePath = filepath.Join(os.TempDir(), cacheDir, cacheFilename)
+	}
 
 	return &TimingCache{
 		cache:    make(map[string][]time.Duration),

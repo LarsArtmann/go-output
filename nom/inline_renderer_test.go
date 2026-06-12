@@ -22,9 +22,9 @@ func TestInlineRenderer_FirstRender_NoAnsiEscapes(t *testing.T) {
 		wID:       WorkflowID("wf-1"),
 	})
 	_ = sub.OnEvent(ctx, &testEvent{
-		eventType:   EventActivityStarted,
-		aID:         ActivityID("step1"),
-		aName:       ActivityName("Step 1"),
+		eventType: EventActivityStarted,
+		aID:       ActivityID("step1"),
+		aName:     ActivityName("Step 1"),
 	})
 
 	renderer.Render()
@@ -52,9 +52,9 @@ func TestInlineRenderer_SubsequentRender_MovesCursor(t *testing.T) {
 		wID:       WorkflowID("wf-1"),
 	})
 	_ = sub.OnEvent(ctx, &testEvent{
-		eventType:   EventActivityStarted,
-		aID:         ActivityID("step1"),
-		aName:       ActivityName("Step 1"),
+		eventType: EventActivityStarted,
+		aID:       ActivityID("step1"),
+		aName:     ActivityName("Step 1"),
 	})
 
 	renderer.Render()
@@ -81,9 +81,9 @@ func TestInlineRenderer_Finish_ClearsFrame(t *testing.T) {
 		wID:       WorkflowID("wf-1"),
 	})
 	_ = sub.OnEvent(ctx, &testEvent{
-		eventType:   EventActivityStarted,
-		aID:         ActivityID("step1"),
-		aName:       ActivityName("Step 1"),
+		eventType: EventActivityStarted,
+		aID:       ActivityID("step1"),
+		aName:     ActivityName("Step 1"),
 	})
 
 	renderer.Render()
@@ -138,9 +138,9 @@ func TestInlineRenderer_SummaryBar(t *testing.T) {
 		wID:       WorkflowID("wf-1"),
 	})
 	_ = sub.OnEvent(ctx, &testEvent{
-		eventType:   EventActivityStarted,
-		aID:         ActivityID("step1"),
-		aName:       ActivityName("Step 1"),
+		eventType: EventActivityStarted,
+		aID:       ActivityID("step1"),
+		aName:     ActivityName("Step 1"),
 	})
 
 	renderer.SetStartTime(time.Now().Add(-5 * time.Second))

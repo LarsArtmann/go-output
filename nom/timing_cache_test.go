@@ -195,7 +195,10 @@ func TestTimingCache_Load_NonExistentFile(t *testing.T) {
 func TestTimingCache_EnsureLoaded(t *testing.T) {
 	t.Parallel()
 
-	tc := NewTimingCache()
+	tmpDir := t.TempDir()
+	cachePath := filepath.Join(tmpDir, "timing.csv")
+
+	tc := newTestTimingCache(cachePath, false)
 	if err := tc.EnsureLoaded(); err != nil {
 		t.Fatalf("EnsureLoaded() error: %v", err)
 	}

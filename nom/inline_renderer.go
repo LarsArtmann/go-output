@@ -3,6 +3,7 @@ package nom
 import (
 	"fmt"
 	"io"
+	"os"
 	"strings"
 	"time"
 )
@@ -31,6 +32,7 @@ type InlineRenderer struct {
 	hideCursor bool
 	startTime  time.Time
 	appName    string
+	noColor    bool
 }
 
 // NewInlineRenderer creates an inline renderer bound to the given subscriber and writer.
@@ -42,6 +44,7 @@ func NewInlineRenderer(subscriber *NOMStyleSubscriber, writer io.Writer, maxHeig
 		maxHeight:  maxHeight,
 		hideCursor: true,
 		appName:    "Workflow",
+		noColor:    detectNoColor(),
 	}
 }
 
@@ -50,9 +53,32 @@ func (r *InlineRenderer) SetHideCursor(hide bool) {
 	r.hideCursor = hide
 }
 
+// SetNoColor forces colorless output. By default, colors are enabled unless
+// NO_COLOR, TERM=dumb, or lacking a terminal is detected.
+func (r *InlineRenderer) SetNoColor(noColor bool) {
+	r.noColor = noColor
+}
+
 // SetAppName sets the application name for success/failure messages (default: "Workflow").
 func (r *InlineRenderer) SetAppName(name string) {
 	r.appName = name
+}
+
+// detectNoColor checks environment variables for color suppression.
+func detectNoColor() bool {
+	if os.Getenv("NO_COLOR") != "" {
+		return true
+	}
+
+	if os.Getenv("TERM") == "dumb" {
+		return true
+	}
+
+	if os.Getenv("CI") != "" {
+		return true
+	}
+
+	return false
 }
 
 // SetStartTime sets the workflow start time for elapsed display.
@@ -149,10 +175,18 @@ func (r *InlineRenderer) Finish(workflowErr error) {
 		}
 	}
 
-	if workflowErr != nil {
-		fmt.Fprintf(r.writer, "\033[31m%s failed: %v\033[0m\n", r.appName, workflowErr)
+	if r.noColor {
+		if workflowErr != nil {
+			fmt.Fprintf(r.writer, "%s failed: %v\n", r.appName, workflowErr)
+		} else {
+			fmt.Fprintf(r.writer, "%s completed successfully.\n", r.appName)
+		}
 	} else {
-		fmt.Fprintf(r.writer, "\033[32m%s completed successfully.\033[0m\n", r.appName)
+		if workflowErr != nil {
+			fmt.Fprintf(r.writer, "\033[31m%s failed: %v\033[0m\n", r.appName, workflowErr)
+		} else {
+			fmt.Fprintf(r.writer, "\033[32m%s completed successfully.\033[0m\n", r.appName)
+		}
 	}
 }
 
