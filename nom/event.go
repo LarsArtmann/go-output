@@ -6,12 +6,13 @@ import "context"
 // silent typos in event dispatch. The string-based interface is preserved
 // for backward compatibility with callers that implement Event externally.
 const (
-	EventWorkflowStarted   = "workflow.started"
-	EventWorkflowCompleted = "workflow.completed"
-	EventWorkflowFailed    = "workflow.failed"
-	EventActivityStarted   = "activity.started"
-	EventActivityCompleted = "activity.completed"
-	EventActivityFailed    = "activity.failed"
+	EventWorkflowStarted      = "workflow.started"
+	EventWorkflowCompleted    = "workflow.completed"
+	EventWorkflowFailed       = "workflow.failed"
+	EventActivityStarted      = "activity.started"
+	EventActivityCompleted    = "activity.completed"
+	EventActivityFailed       = "activity.failed"
+	EventActivityRegistered   = "activity.registered"
 )
 
 type Event interface {

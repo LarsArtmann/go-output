@@ -238,5 +238,5 @@ func (dt *DependencyTree) RenderNode(node *TreeNode, _ []*TreeNode) string {
 }
 
 func isPhaseNode(node *TreeNode) bool {
-	return len(node.ActivityID) > 6 && node.ActivityID[:6] == "phase:"
+	return strings.HasPrefix(string(node.ActivityID), "phase:")
 }

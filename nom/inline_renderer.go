@@ -30,6 +30,7 @@ type InlineRenderer struct {
 	maxHeight  int
 	hideCursor bool
 	startTime  time.Time
+	appName    string
 }
 
 // NewInlineRenderer creates an inline renderer bound to the given subscriber and writer.
@@ -40,12 +41,18 @@ func NewInlineRenderer(subscriber *NOMStyleSubscriber, writer io.Writer, maxHeig
 		writer:     writer,
 		maxHeight:  maxHeight,
 		hideCursor: true,
+		appName:    "Workflow",
 	}
 }
 
 // SetHideCursor controls whether the cursor is hidden during rendering (default: true).
 func (r *InlineRenderer) SetHideCursor(hide bool) {
 	r.hideCursor = hide
+}
+
+// SetAppName sets the application name for success/failure messages (default: "Workflow").
+func (r *InlineRenderer) SetAppName(name string) {
+	r.appName = name
 }
 
 // SetStartTime sets the workflow start time for elapsed display.
@@ -143,9 +150,9 @@ func (r *InlineRenderer) Finish(workflowErr error) {
 	}
 
 	if workflowErr != nil {
-		fmt.Fprintf(r.writer, "\033[31mBuildFlow failed: %v\033[0m\n", workflowErr)
+		fmt.Fprintf(r.writer, "\033[31m%s failed: %v\033[0m\n", r.appName, workflowErr)
 	} else {
-		fmt.Fprintln(r.writer, "\033[32mBuildFlow completed successfully.\033[0m")
+		fmt.Fprintf(r.writer, "\033[32m%s completed successfully.\033[0m\n", r.appName)
 	}
 }
 
@@ -184,5 +191,7 @@ func (r *InlineRenderer) renderSummary() string {
 
 	summary := strings.Join(parts, " ") + fmt.Sprintf(" %s%d", SymbolTotal, total)
 
-	return fmt.Sprintf("╭───────────────────────────╮\n│ %s │\n╰───────────────────────────╯", summary)
+	border := strings.Repeat("─", max(len(summary)+2, 3))
+
+	return fmt.Sprintf("╭%s╮\n│ %s │\n╰%s╯", border, summary, border)
 }

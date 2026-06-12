@@ -19,6 +19,8 @@ func (ns *NOMStyleSubscriber) OnEvent(ctx context.Context, event Event) error {
 		return ns.handleWorkflowFailed(ctx, event)
 	case EventActivityStarted:
 		return ns.handleActivityStarted(ctx, event)
+	case EventActivityRegistered:
+		return ns.handleActivityRegistered(ctx, event)
 	case EventActivityCompleted:
 		return ns.handleActivityCompleted(ctx, event)
 	case EventActivityFailed:
@@ -179,6 +181,35 @@ func (ns *NOMStyleSubscriber) handleActivityStarted(
 		activity.Color,
 		activity.StartTime,
 		activity.EstimatedTime,
+	)
+}
+
+// handleActivityRegistered registers an activity in the dependency tree as pending.
+// Unlike handleActivityStarted, this does NOT set the activity to running —
+// it only creates the tree node with pending status for pre-registration.
+func (ns *NOMStyleSubscriber) handleActivityRegistered(
+	_ context.Context,
+	event Event,
+) error {
+	aa, ok := event.(ActivityEventAccessor)
+	if !ok {
+		return nil
+	}
+
+	ns.mu.Lock()
+	defer ns.mu.Unlock()
+
+	ns.getOrCreateActivity(aa.GetActivityID(), aa.GetActivityName())
+
+	var deps []ActivityID
+	if da, ok := event.(DependenciesAccessor); ok {
+		deps = da.GetDependencies()
+	}
+
+	return ns.dependencyTree.AddActivity(
+		aa.GetActivityID(),
+		aa.GetActivityName().String(),
+		deps,
 	)
 }
 
