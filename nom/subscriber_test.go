@@ -15,6 +15,7 @@ type testEvent struct {
 	wName     WorkflowName
 	aID       ActivityID
 	aName     ActivityName
+	deps      []ActivityID
 	duration  time.Duration
 	err       error
 }
@@ -27,6 +28,7 @@ func (e *testEvent) GetActivityID() ActivityID     { return e.aID }
 func (e *testEvent) GetActivityName() ActivityName { return e.aName }
 func (e *testEvent) GetDuration() time.Duration    { return e.duration }
 func (e *testEvent) GetError() error               { return e.err }
+func (e *testEvent) GetDependencies() []ActivityID { return e.deps }
 
 // setupWithWorkflow creates a subscriber and fires workflow.started.
 func setupWithWorkflow(t *testing.T) (*NOMStyleSubscriber, context.Context) {

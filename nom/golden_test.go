@@ -1,6 +1,8 @@
 package nom
 
 import (
+	"bytes"
+	"context"
 	"image/color"
 	"testing"
 	"time"
@@ -128,4 +130,90 @@ func TestDependencyTreeRenderGolden_MixedStates(t *testing.T) {
 
 	got := dt.Render(10)
 	golden.RequireEqual(t, got)
+}
+
+func TestInlineRendererGolden_FirstFrame(t *testing.T) {
+	t.Parallel()
+
+	sub := NewNOMStyleSubscriber()
+	var buf bytes.Buffer
+	renderer := NewInlineRenderer(sub, &buf, 20)
+	renderer.SetNoColor(true)
+
+	ctx := context.Background()
+	_ = sub.OnEvent(ctx, &testEvent{
+		eventType: EventWorkflowStarted,
+		wID:       WorkflowID("wf-1"),
+	})
+	_ = sub.OnEvent(ctx, &testEvent{
+		eventType: EventActivityRegistered,
+		aID:       ActivityID("phase:build"),
+		aName:     ActivityName("Build"),
+	})
+	_ = sub.OnEvent(ctx, &testEvent{
+		eventType:    EventActivityRegistered,
+		aID:          ActivityID("compile"),
+		aName:        ActivityName("Compile"),
+		deps: []ActivityID{"phase:build"},
+	})
+	_ = sub.OnEvent(ctx, &testEvent{
+		eventType:    EventActivityRegistered,
+		aID:          ActivityID("test"),
+		aName:        ActivityName("Run Tests"),
+		deps: []ActivityID{"phase:build"},
+	})
+	_ = sub.OnEvent(ctx, &testEvent{
+		eventType:    EventActivityRegistered,
+		aID:          ActivityID("lint"),
+		aName:        ActivityName("Lint"),
+		deps: []ActivityID{"phase:build"},
+	})
+
+	renderer.Render()
+
+	golden.RequireEqual(t, buf.String())
+}
+
+func TestInlineRendererGolden_SecondFrame(t *testing.T) {
+	t.Parallel()
+
+	sub := NewNOMStyleSubscriber()
+	var buf bytes.Buffer
+	renderer := NewInlineRenderer(sub, &buf, 20)
+	renderer.SetNoColor(true)
+
+	ctx := context.Background()
+	_ = sub.OnEvent(ctx, &testEvent{
+		eventType: EventWorkflowStarted,
+		wID:       WorkflowID("wf-1"),
+	})
+	_ = sub.OnEvent(ctx, &testEvent{
+		eventType: EventActivityRegistered,
+		aID:       ActivityID("phase:build"),
+		aName:     ActivityName("Build"),
+	})
+	_ = sub.OnEvent(ctx, &testEvent{
+		eventType:    EventActivityRegistered,
+		aID:          ActivityID("compile"),
+		aName:        ActivityName("Compile"),
+		deps: []ActivityID{"phase:build"},
+	})
+	_ = sub.OnEvent(ctx, &testEvent{
+		eventType:    EventActivityRegistered,
+		aID:          ActivityID("lint"),
+		aName:        ActivityName("Lint"),
+		deps: []ActivityID{"phase:build"},
+	})
+
+	renderer.Render()
+	buf.Reset()
+
+	_ = sub.OnEvent(ctx, &testEvent{
+		eventType: EventActivityStarted,
+		aID:       ActivityID("compile"),
+		aName:     ActivityName("Compile"),
+	})
+	renderer.Render()
+
+	golden.RequireEqual(t, buf.String())
 }
