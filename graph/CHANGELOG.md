@@ -6,19 +6,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-06-12
+
 ### Added
 
-- Initial project structure
-
-### Changed
+- DOT and Mermaid now register as `TableDataMarshaler` via `init()` — enables `RenderTableData()` dispatch for `FormatDOT` and `FormatMermaid`.
+- Registry dispatch tests for DOT and Mermaid table data rendering.
 
 ### Deprecated
 
-### Removed
+- `NewGraphNodeID` / `NewGraphNodeLabel` — use `output.NewBrandedID` directly.
 
-### Fixed
+### Changed
 
-### Security
+- `dt.Build()` errors now propagated instead of silently discarded.
+
+## [0.7.0] - 2026-06-09
+
+### Added
+
+- Initial changelog entry.
 
 ## [0.1.0] - 2026-01-01
 

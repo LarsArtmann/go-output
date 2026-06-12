@@ -6,6 +6,67 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-06-12
+
+### Added
+
+- **`RenderAnyData`** — new registry-based dispatch for rendering arbitrary `any` data (not just `TableData`). JSON, YAML, and TOML register `AnyDataMarshaler` handlers via `init()`.
+- **`RegisterAnyDataMarshaler`** / **`RegisteredAnyDataFormats`** — register and introspect any-data marshalers.
+- **`RegisteredTableDataFormats`** — returns all formats with registered `TableDataMarshaler`s.
+- **`TableData.AddRowChecked(row []string) error`** — fail-fast row addition that returns `ErrColumnMismatch` when column count differs from headers.
+- **`nom.Event*` constants** — typed event string constants (`EventWorkflowStarted`, `EventActivityCompleted`, etc.) replacing bare string literals for safer event dispatch.
+- **All 16 formats register as `TableDataMarshaler`** — D2, DOT, Mermaid, and PlantUML now register via `init()`, making `RenderTableData()` dispatch all 16 formats when sub-modules are imported (previously only 10 were registered).
+- `testhelpers.AssertLineCount`, `AssertLastLineContains`, `AssertErrorContains` — new shared test assertions.
+- `tui/colors.go` — extracted all color and layout constants from scattered inline values.
+- `escape/fuzz_test.go` — fuzz tests for all escape functions.
+
+### Changed
+
+- **Generic `formatRegistry[T]`** replaces 3 separate mutex+map registry patterns (shape capabilities, table-data marshalers, any-data marshalers). Eliminates duplicate mutex boilerplate.
+- `RenderTableData()` doc updated: all 16 formats are now dispatchable with sub-modules imported.
+- NOM subscriber handlers simplified — reduced complexity in event routing.
+- NOM `DisplayState` embedded directly, removing indirection.
+- TUI reporter and view rendering refactored for clarity.
+- D2, graph, plantuml `dt.Build()` errors now propagated instead of silently discarded.
+- NOM timing cache async save errors now logged instead of swallowed.
+
+### Deprecated
+
+- `delimited.MarshalTSV(data any)` — use `MarshalTSVFromTableData` or `TSVWriter` directly.
+- `graph.NewGraphNodeID` / `graph.NewGraphNodeLabel` — use `output.NewBrandedID` directly.
+- `nom.ParseActivityID` / `nom.ParseWorkflowID` — use direct type conversion with manual validation.
+
+### Internal
+
+- Coverage improvements across 5 modules (nom tree/render/subscriber, table registry, serialization, testhelpers).
+- Test deduplication across 22 files — shared helpers extracted to `testhelpers/`, table-driven patterns.
+- Registry benchmarks for generic `formatRegistry[T]`.
+- Comprehensive hardening sprint status reports in `docs/status/`.
+- Graph DOMAIN_LANGUAGE updated with registry dispatch documentation.
+
+## [0.8.0] - 2026-06-10
+
+### Added
+
+- **TUI keyboard navigation** — arrow keys, mouse scroll, click selection on dependency tree nodes.
+- **`tui.SetCancelFunc`** — allows Ctrl+C to cancel workflow context via cancel function.
+- **NOM secondary dependencies** — `DependenciesAccessor` and secondary parent labels in tree rendering.
+- **NOM `SetDisplayMode`** — switch between NOM and Universal display modes.
+- NOM/TUI golden file tests and event sequence tests.
+
+### Changed
+
+- All `panic()` calls eliminated from production code — replaced with error returns.
+- NOM `AddActivity` made idempotent — prevents duplicate children.
+- NOM dependency tree locking fixed — `GetDependencyTree` now properly synchronized.
+
+### Fixed
+
+- Timing cache race condition in async save.
+- TUI help overlay and viewport scroll issues.
+- TUI ticks now allowed in Idle state for NOM sync.
+- Pre-registered activities preserved correctly.
+
 ## [0.7.0] - 2026-06-09
 
 ### Added

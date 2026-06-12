@@ -4,7 +4,7 @@
 
 A reusable Go library for CLI applications providing consistent output formatting across 16 formats (Table, JSON, CSV, TSV, Markdown, XML, YAML, HTML, Tree, D2, Mermaid, DOT, JSONL, AsciiDoc, TOML, PlantUML) with type-safe enum-based configuration, a Shape capability matrix, and NOM-style real-time progress visualization.
 
-**Updated:** 2026-06-09
+**Updated:** 2026-06-12
 
 ## Location
 
@@ -83,7 +83,8 @@ go-output/                    # Root module (package output) — core types, Mar
 ├── graph.go                  # GraphNode, GraphEdge, GraphRenderer, GraphRendererState, AddTreeNodes
 ├── markdown.go               # Markdown table renderer with ColorMode (bold headers, dim separators)
 ├── marshal.go                # MarshalJSONIndent (MarshalFormat/UnmarshalFormat removed — inlined into sub-modules)
-├── render_tabledata.go       # Registry-based TableData dispatch with ColorMode in RenderOptions
+├── render_tabledata.go       # Registry-based TableData + AnyData dispatch with ColorMode in RenderOptions
+├── registry.go               # Generic formatRegistry[T] thread-safe registry (shape, tableData, anyData)
 ├── streaming.go              # StreamingRenderer interface + adapter
 │
 ├── delimited/                # MODULE: CSV + TSV writers and formatters
@@ -198,7 +199,7 @@ go test -bench=. -benchmem ./...  # Benchmarks
 3. **Branded IDs**: Phantom types prevent mixing D2NodeID/TreeNodeID/etc via `go-branded-id`.
 4. **Interface-based design**: Renderer, GraphRenderer, TableRenderer, TreeOutputRenderer interfaces — all have `Render() (string, error)`. Use `MustRender(r)` for tests/examples.
 5. **Composition**: GraphRendererState in graph.go (root) provides shared state for DOT/Mermaid via AddNode/AddEdge methods. Sub-renderers pass `&r.GraphRendererState` to `AddTreeNodes` which uses the `NodeEdgeAppender` interface. TableDataStore in tabledata.go shared by delimited, markup, serialization via Data() getter.
-6. **Registry dispatch**: `RenderTableData()` dispatches to registered `TableDataMarshaler` functions. Sub-modules register via `init()`. Root has ZERO sub-module imports.
+6. **Registry dispatch**: `RenderTableData()` and `RenderAnyData()` dispatch to registered marshaler functions. Sub-modules register via `init()`. Root has ZERO sub-module imports. All 16 formats register as `TableDataMarshaler`; JSON/YAML/TOML also register as `AnyDataMarshaler`.
 7. **ColorMode wired into renderers**: `ColorMode` (auto/always/never) controls ANSI color output. `table.New(WithColorMode(mode))` for lipgloss tables, `ASCIITreeRenderer.SetColorMode(mode)` for trees, `MarkdownTable.SetColorMode(mode)` for markdown, `RenderOptions.ColorMode` for `RenderTableData()` dispatch.
 8. **Footer row on TableData**: `TableData.Footer []string` provides an optional totals/summary row. Tabular renderers (CSV, TSV, Markdown, HTML, XML, AsciiDoc, Table) render it visually. HTML uses `<tfoot>` with `footer-cell` CSS class, XML uses `<footer>`, Markdown adds a second separator + bold footer (inherits column alignment). The `table.FooterProvider` optional interface enables `table.FromTableData()` to bold-style the footer. `CSVWriter.WriteFooter()` and `TSVWriter.WriteFooter()` provide explicit streaming footer methods. `TableData.Validate()` checks footer column count matches headers. Data formats (JSON, YAML, TOML, JSONL) and non-tabular formats (Tree, Graph) skip the footer.
 9. **Delimited dedup**: `delimited.marshalFromTableData()` is a shared helper used by both `MarshalCSVFromTableData` and `MarshalTSVFromTableData`, eliminating structural duplication via a `tableDataWriter` interface.
@@ -295,14 +296,14 @@ This ensures `go get github.com/larsartmann/go-output/table@vX.Y.Z` resolves cor
 - escape/ uses `strings.NewReplacer` for D2/DOT and MermaidText (single-pass, 1 allocation instead of 4 chained ReplaceAll)
 - markup/asciidoc.go uses `strings.NewReplacer` for AsciiDoc escaping (|, \*, \_, `, ~, ^)
 - sort/ is **removed** — was deprecated, only `ByField` helper remained (zero deps). Use `slices.SortStableFunc` + `cmp.Compare` (stdlib)
-- registry.go **removed** — deprecated renderer registry had zero external callers. Use direct constructors instead.
+- registry.go — generic `formatRegistry[T]` thread-safe registry, replacing 3 separate mutex+map patterns. Backs `formatCapabilities`, `tableDataRegistry`, and `anyDataRegistry`.
 - slices.go **removed** — `FilledStrings` was trivially replaced by `slices.Repeat` (stdlib)
 - `BrandedValue()` removed from `marshal.go` — zero callers after sub-module extraction
 - `ColorMode` wired into table (via `WithColorMode` functional option), tree (via `SetColorMode()`), markdown (via `SetColorMode()`), and `RenderTableData()` (via `RenderOptions.ColorMode`)
 - Tree rendering uses depth-based ANSI color cycling when color is enabled
 - Markdown rendering uses bold headers and dim separators when color is enabled
 - Multi-module workspace with 15 independent modules (see ADR 001)
-- Shape capability matrix (ADR 002) uses registry pattern: `RegisterFormatShapes()` in each sub-module's `init()`. Root registers defaults for all formats as fallback. Query with `f.Supports(shape)`
+- Shape capability matrix (ADR 002) uses `formatRegistry[T]` generic registry pattern: `RegisterFormatShapes()` in each sub-module's `init()`. Root registers defaults for all formats as fallback. Query with `f.Supports(shape)`. Same generic `formatRegistry[T]` backs `TableDataMarshaler` and `AnyDataMarshaler` registries, eliminating 3 separate mutex+map boilerplates.
 - API stability audit (ADR 006) completed — all exported symbols frozen, capability matrix fixed (D2/Mermaid/DOT/PlantUML now declare ShapeTree, TOML now declares ShapeGraph)
 - Round-trip integration tests in `integration/roundtrip_test.go` verify 16 formats: 8 parseable round-trips (JSON, CSV, TSV, YAML, TOML, JSONL, XML, HTML) + 8 structural verifications (Markdown, Table, Tree, AsciiDoc, D2, Mermaid, DOT, PlantUML)
 - `format.go` split into focused files: `format.go` (Format enum), `shape.go` (Shape + capability matrix), `renderer.go` (Renderer/TableRenderer interfaces) — `format_deprecated.go` deleted
