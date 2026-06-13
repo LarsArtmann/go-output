@@ -9,6 +9,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/mattn/go-runewidth"
 	"golang.org/x/term"
 )
 
@@ -292,7 +293,8 @@ func (r *InlineRenderer) renderSummary() string {
 
 	summary := strings.Join(parts, " ") + fmt.Sprintf(" %s%d", SymbolTotal, total)
 
-	border := strings.Repeat("─", max(len(summary)+2, 3))
+	visualWidth := runewidth.StringWidth(summary)
+	border := strings.Repeat("─", max(visualWidth+2, 3))
 
 	return fmt.Sprintf("╭%s╮\n│ %s │\n╰%s╯", border, summary, border)
 }
