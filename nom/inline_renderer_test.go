@@ -252,4 +252,3 @@ func TestInlineRenderer_MaxHeightZero_UsesFallback(t *testing.T) {
 		t.Errorf("expected tree capped to ~50 lines with 2-line summary, got %d lines", lines)
 	}
 }
-

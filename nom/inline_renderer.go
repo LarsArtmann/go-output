@@ -39,8 +39,8 @@ type InlineRenderer struct {
 	appName    string
 	noColor    bool
 
-	tickMu   sync.Mutex
-	cancelFn context.CancelFunc
+	tickMu     sync.Mutex
+	cancelFn   context.CancelFunc
 	tickerDone chan struct{}
 }
 

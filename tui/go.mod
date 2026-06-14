@@ -4,9 +4,9 @@ go 1.26.3
 
 require (
 	charm.land/bubbletea/v2 v2.0.7
-	charm.land/lipgloss/v2 v2.0.3
+	charm.land/lipgloss/v2 v2.0.4
 	github.com/charmbracelet/x/ansi v0.11.7
-	github.com/larsartmann/go-output/nom v0.7.2
+	github.com/larsartmann/go-output/nom v0.10.1
 )
 
 require (
@@ -24,6 +24,7 @@ require (
 	github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect
 	golang.org/x/sync v0.21.0 // indirect
 	golang.org/x/sys v0.46.0 // indirect
+	golang.org/x/term v0.44.0 // indirect
 )
 
 replace (

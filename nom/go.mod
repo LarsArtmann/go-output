@@ -3,8 +3,10 @@ module github.com/larsartmann/go-output/nom
 go 1.26.3
 
 require (
-	charm.land/lipgloss/v2 v2.0.3
+	charm.land/lipgloss/v2 v2.0.4
 	github.com/charmbracelet/x/exp/golden v0.0.0-20251106172358-54469c29c2bc
+	github.com/mattn/go-runewidth v0.0.24
+	golang.org/x/term v0.44.0
 )
 
 require (
@@ -18,7 +20,6 @@ require (
 	github.com/clipperhouse/displaywidth v0.11.0 // indirect
 	github.com/clipperhouse/uax29/v2 v2.7.0 // indirect
 	github.com/lucasb-eyer/go-colorful v1.4.0 // indirect
-	github.com/mattn/go-runewidth v0.0.24 // indirect
 	github.com/muesli/cancelreader v0.2.2 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect

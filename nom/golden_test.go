@@ -151,22 +151,22 @@ func TestInlineRendererGolden_FirstFrame(t *testing.T) {
 		aName:     ActivityName("Build"),
 	})
 	_ = sub.OnEvent(ctx, &testEvent{
-		eventType:    EventActivityRegistered,
-		aID:          ActivityID("compile"),
-		aName:        ActivityName("Compile"),
-		deps: []ActivityID{"phase:build"},
+		eventType: EventActivityRegistered,
+		aID:       ActivityID("compile"),
+		aName:     ActivityName("Compile"),
+		deps:      []ActivityID{"phase:build"},
 	})
 	_ = sub.OnEvent(ctx, &testEvent{
-		eventType:    EventActivityRegistered,
-		aID:          ActivityID("test"),
-		aName:        ActivityName("Run Tests"),
-		deps: []ActivityID{"phase:build"},
+		eventType: EventActivityRegistered,
+		aID:       ActivityID("test"),
+		aName:     ActivityName("Run Tests"),
+		deps:      []ActivityID{"phase:build"},
 	})
 	_ = sub.OnEvent(ctx, &testEvent{
-		eventType:    EventActivityRegistered,
-		aID:          ActivityID("lint"),
-		aName:        ActivityName("Lint"),
-		deps: []ActivityID{"phase:build"},
+		eventType: EventActivityRegistered,
+		aID:       ActivityID("lint"),
+		aName:     ActivityName("Lint"),
+		deps:      []ActivityID{"phase:build"},
 	})
 
 	renderer.Render()
@@ -193,16 +193,16 @@ func TestInlineRendererGolden_SecondFrame(t *testing.T) {
 		aName:     ActivityName("Build"),
 	})
 	_ = sub.OnEvent(ctx, &testEvent{
-		eventType:    EventActivityRegistered,
-		aID:          ActivityID("compile"),
-		aName:        ActivityName("Compile"),
-		deps: []ActivityID{"phase:build"},
+		eventType: EventActivityRegistered,
+		aID:       ActivityID("compile"),
+		aName:     ActivityName("Compile"),
+		deps:      []ActivityID{"phase:build"},
 	})
 	_ = sub.OnEvent(ctx, &testEvent{
-		eventType:    EventActivityRegistered,
-		aID:          ActivityID("lint"),
-		aName:        ActivityName("Lint"),
-		deps: []ActivityID{"phase:build"},
+		eventType: EventActivityRegistered,
+		aID:       ActivityID("lint"),
+		aName:     ActivityName("Lint"),
+		deps:      []ActivityID{"phase:build"},
 	})
 
 	renderer.Render()
