@@ -47,6 +47,7 @@ func TestBuildActivityCountsSummary(t *testing.T) {
 			if tt.wantEmpty && got != "" {
 				t.Errorf("expected empty, got %q", got)
 			}
+
 			if !tt.wantEmpty && got == "" {
 				t.Error("expected non-empty summary")
 			}

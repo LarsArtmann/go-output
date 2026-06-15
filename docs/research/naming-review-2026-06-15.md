@@ -13,13 +13,13 @@
 
 ## Automated Detection Results
 
-| Smell                                   | Hits | Verdict                              |
-| --------------------------------------- | ---- | ------------------------------------ |
-| Vague nouns (Data/Info/Record/...)      | 1    | `TableData` — domain-accurate, keep  |
-| Manager/Handler/Processor/Helper/Util   | 0    | Clean                                |
-| Impl/Concrete/Default suffix            | 0    | Clean                                |
-| Abstract/Base prefix                    | 0    | Clean                                |
-| Vague verbs (do/handle/process/manage)  | 1    | `HandleError` (examples only)        |
+| Smell                                  | Hits | Verdict                             |
+| -------------------------------------- | ---- | ----------------------------------- |
+| Vague nouns (Data/Info/Record/...)     | 1    | `TableData` — domain-accurate, keep |
+| Manager/Handler/Processor/Helper/Util  | 0    | Clean                               |
+| Impl/Concrete/Default suffix           | 0    | Clean                               |
+| Abstract/Base prefix                   | 0    | Clean                               |
+| Vague verbs (do/handle/process/manage) | 1    | `HandleError` (examples only)       |
 
 ## Strengths (Good Naming)
 
@@ -37,14 +37,14 @@
 
 The registry layer uses `Marshaler` while every concrete type and the root interface use `Renderer`:
 
-| Layer             | Name                  | Concept                          |
-| ----------------- | --------------------- | -------------------------------- |
-| Root interface    | `Renderer`            | `Render() (string, error)`       |
-| Concrete types    | `JSONTableRenderer` … | implement `Renderer`             |
-| Registry (table)  | `TableDataMarshaler`  | `func(w io.Writer, ...) error`   |
-| Registry (any)    | `AnyDataMarshaler`    | `func(w io.Writer, ...) error`   |
+| Layer            | Name                  | Concept                        |
+| ---------------- | --------------------- | ------------------------------ |
+| Root interface   | `Renderer`            | `Render() (string, error)`     |
+| Concrete types   | `JSONTableRenderer` … | implement `Renderer`           |
+| Registry (table) | `TableDataMarshaler`  | `func(w io.Writer, ...) error` |
+| Registry (any)   | `AnyDataMarshaler`    | `func(w io.Writer, ...) error` |
 
-The distinction is *defensible* (marshal → writer; render → string), but two terms for "produce output" is a mild split-brain. Consider unifying to `TableDataRenderer`/`AnyDataRenderer` for consistency — **low priority**, and changing exported registry types touches ADR 006 (API stability).
+The distinction is _defensible_ (marshal → writer; render → string), but two terms for "produce output" is a mild split-brain. Consider unifying to `TableDataRenderer`/`AnyDataRenderer` for consistency — **low priority**, and changing exported registry types touches ADR 006 (API stability).
 
 ### 🔵 Low — `Get`-prefix accessors (27 functions)
 
@@ -58,11 +58,11 @@ Vague verb "Handle". It panics on error. Better: `Must(err)` or `PanicOnError`. 
 
 ## Fix Recommendations
 
-| # | Issue                      | Priority | Action          | Breaking? |
-| - | -------------------------- | -------- | --------------- | --------- |
-| 1 | Marshaler vs Renderer      | Low      | Rename in next major version (post-v1) | Yes |
-| 2 | Get-prefix in nom          | Low      | Accept (interface-driven) | — |
-| 3 | TableData Get* redundancy  | Low      | Accept (API-frozen) | — |
-| 4 | `HandleError` in examples  | Trivial  | Rename to `Must` | No (examples) |
+| #   | Issue                      | Priority | Action                                 | Breaking?     |
+| --- | -------------------------- | -------- | -------------------------------------- | ------------- |
+| 1   | Marshaler vs Renderer      | Low      | Rename in next major version (post-v1) | Yes           |
+| 2   | Get-prefix in nom          | Low      | Accept (interface-driven)              | —             |
+| 3   | TableData Get\* redundancy | Low      | Accept (API-frozen)                    | —             |
+| 4   | `HandleError` in examples  | Trivial  | Rename to `Must`                       | No (examples) |
 
 No fixes executed: all substantive findings are either API-frozen (ADR 006) or low-value style preferences. The naming is already at a high standard.

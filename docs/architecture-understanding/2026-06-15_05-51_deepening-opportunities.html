@@ -1,54 +1,115 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>go-output — Architecture Deepening Opportunities</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<style>
-  body { font-family: ui-sans-serif, system-ui, sans-serif; }
-  .badge { display:inline-block; padding:.2rem .6rem; border-radius:9999px; font-size:.75rem; font-weight:700; }
-  .strong { background:#dcfce7; color:#166534; }
-  .explore { background:#fef9c3; color:#854d0e; }
-  .spec { background:#f1f5f9; color:#475569; }
-  .mono { font-family: ui-monospace, monospace; }
-  .before { border-left:4px solid #ef4444; }
-  .after { border-left:4px solid #22c55e; }
-  .card-shadow { box-shadow: 0 1px 3px rgba(0,0,0,.1); }
-</style>
-</head>
-<body class="bg-slate-50 text-slate-800">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>go-output — Architecture Deepening Opportunities</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body {
+        font-family: ui-sans-serif, system-ui, sans-serif;
+      }
+      .badge {
+        display: inline-block;
+        padding: 0.2rem 0.6rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 700;
+      }
+      .strong {
+        background: #dcfce7;
+        color: #166534;
+      }
+      .explore {
+        background: #fef9c3;
+        color: #854d0e;
+      }
+      .spec {
+        background: #f1f5f9;
+        color: #475569;
+      }
+      .mono {
+        font-family: ui-monospace, monospace;
+      }
+      .before {
+        border-left: 4px solid #ef4444;
+      }
+      .after {
+        border-left: 4px solid #22c55e;
+      }
+      .card-shadow {
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+    </style>
+  </head>
+  <body class="bg-slate-50 text-slate-800">
+    <div class="max-w-5xl mx-auto px-6 py-10">
+      <header class="mb-10">
+        <h1 class="text-3xl font-bold text-slate-900">Architecture Deepening Opportunities</h1>
+        <p class="text-slate-500 mt-2">
+          go-output · 2026-06-15 · informed by
+          <code class="mono bg-slate-200 px-1 rounded">docs/DOMAIN_LANGUAGE.md</code> + 6 ADRs
+        </p>
+        <p class="text-sm text-slate-500 mt-1">
+          Vocabulary: <b>module</b> (interface+impl) · <b>depth</b> (behaviour behind a small
+          interface) · <b>seam</b> (where an interface lives) · <b>adapter</b> (satisfies an
+          interface at a seam)
+        </p>
+      </header>
 
-<div class="max-w-5xl mx-auto px-6 py-10">
+      <div class="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-8 text-sm">
+        <b>Note:</b> ADR 006 (<i>Pre-v1 API Stability</i>) freezes all exported symbols. Deepening
+        candidates that change the public surface are flagged
+        <span class="badge spec">Speculative</span> for post-v1. Internal-only candidates can
+        proceed now.
+      </div>
 
-<header class="mb-10">
-  <h1 class="text-3xl font-bold text-slate-900">Architecture Deepening Opportunities</h1>
-  <p class="text-slate-500 mt-2">go-output · 2026-06-15 · informed by <code class="mono bg-slate-200 px-1 rounded">docs/DOMAIN_LANGUAGE.md</code> + 6 ADRs</p>
-  <p class="text-sm text-slate-500 mt-1">Vocabulary: <b>module</b> (interface+impl) · <b>depth</b> (behaviour behind a small interface) · <b>seam</b> (where an interface lives) · <b>adapter</b> (satisfies an interface at a seam)</p>
-</header>
+      <!-- CANDIDATE 1 -->
+      <section class="bg-white rounded-xl card-shadow border border-slate-200 p-6 mb-8">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-xl font-bold text-slate-900">
+            ① TableData: enforce invariants at the seam
+          </h2>
+          <span class="badge strong">Strong</span>
+        </div>
+        <p class="text-sm text-slate-500 mb-4 mono">tabledata.go · core domain type</p>
 
-<div class="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-8 text-sm">
-  <b>Note:</b> ADR 006 (<i>Pre-v1 API Stability</i>) freezes all exported symbols. Deepening candidates that change the public surface are flagged <span class="badge spec">Speculative</span> for post-v1. Internal-only candidates can proceed now.
-</div>
+        <p class="mb-4">
+          <b>Problem.</b> The <i>TableData module</i> has a wide mutation <i>interface</i> and its
+          invariants are checked post-hoc. Its fields (<code>Headers</code>, <code>Rows</code>,
+          <code>Footer</code>) are exported and mutable, <i>and</i> it offers setters
+          (<code>SetFooter</code>), <i>and</i> getters (<code>GetHeaders/GetRows/GetFooter</code>) —
+          three surfaces for the same data. Worse, <code>AddRow</code> silently accepts mismatched
+          column counts while <code>AddRowChecked</code> validates; the safe and unsafe paths
+          coexist by design. <code>Validate()</code> only runs at render time, so a
+          <i>TableData</i> can exist in an invalid state for its whole lifetime. Every method also
+          guards a nil receiver — a representable-but-invalid state.
+        </p>
 
-<!-- CANDIDATE 1 -->
-<section class="bg-white rounded-xl card-shadow border border-slate-200 p-6 mb-8">
-  <div class="flex items-center justify-between mb-3">
-    <h2 class="text-xl font-bold text-slate-900">① TableData: enforce invariants at the seam</h2>
-    <span class="badge strong">Strong</span>
-  </div>
-  <p class="text-sm text-slate-500 mb-4 mono">tabledata.go · core domain type</p>
+        <p class="mb-4">
+          <b>Solution.</b> Unexport the fields. Route all mutation through validated methods
+          (<code>SetHeaders</code>, <code>AddRow</code> that always validates,
+          <code>SetFooter</code>). Column-count mismatch becomes a
+          <i>compile-time-impossible</i> state rather than a runtime check. Delete
+          <code>AddRowChecked</code> (the unchecked path) and <code>Validate()</code> (now provably
+          unnecessary). Keep the getters only if interface contracts
+          (<code>TableDataProvider</code>) require them.
+        </p>
 
-  <p class="mb-4"><b>Problem.</b> The <i>TableData module</i> has a wide mutation <i>interface</i> and its invariants are checked post-hoc. Its fields (<code>Headers</code>, <code>Rows</code>, <code>Footer</code>) are exported and mutable, <i>and</i> it offers setters (<code>SetFooter</code>), <i>and</i> getters (<code>GetHeaders/GetRows/GetFooter</code>) — three surfaces for the same data. Worse, <code>AddRow</code> silently accepts mismatched column counts while <code>AddRowChecked</code> validates; the safe and unsafe paths coexist by design. <code>Validate()</code> only runs at render time, so a <i>TableData</i> can exist in an invalid state for its whole lifetime. Every method also guards a nil receiver — a representable-but-invalid state.</p>
+        <p class="mb-4">
+          <b>Benefits.</b> <i>Locality</i>: the column-count invariant lives in one place (the
+          constructor + setters), not scattered across every renderer that calls
+          <code>Validate()</code>. <i>Leverage</i>: callers can never build broken data.
+          <i>Test surface</i>: tests assert "you cannot construct mismatched data" rather than
+          "Validate catches it". The deletion test passes for <code>AddRowChecked</code> +
+          <code>Validate()</code> — their complexity is pure defense against a self-inflicted wound.
+        </p>
 
-  <p class="mb-4"><b>Solution.</b> Unexport the fields. Route all mutation through validated methods (<code>SetHeaders</code>, <code>AddRow</code> that always validates, <code>SetFooter</code>). Column-count mismatch becomes a <i>compile-time-impossible</i> state rather than a runtime check. Delete <code>AddRowChecked</code> (the unchecked path) and <code>Validate()</code> (now provably unnecessary). Keep the getters only if interface contracts (<code>TableDataProvider</code>) require them.</p>
-
-  <p class="mb-4"><b>Benefits.</b> <i>Locality</i>: the column-count invariant lives in one place (the constructor + setters), not scattered across every renderer that calls <code>Validate()</code>. <i>Leverage</i>: callers can never build broken data. <i>Test surface</i>: tests assert "you cannot construct mismatched data" rather than "Validate catches it". The deletion test passes for <code>AddRowChecked</code> + <code>Validate()</code> — their complexity is pure defense against a self-inflicted wound.</p>
-
-  <div class="grid grid-cols-2 gap-4 mt-4">
-    <div class="before bg-red-50 rounded p-3">
-      <p class="font-semibold text-red-700 text-sm mb-2">Before — shallow, post-hoc</p>
-      <pre class="mono text-xs bg-white rounded p-2 overflow-x-auto">type TableData struct {
+        <div class="grid grid-cols-2 gap-4 mt-4">
+          <div class="before bg-red-50 rounded p-3">
+            <p class="font-semibold text-red-700 text-sm mb-2">Before — shallow, post-hoc</p>
+            <pre class="mono text-xs bg-white rounded p-2 overflow-x-auto">
+type TableData struct {
   Headers []string   // exported, mutable
   Rows    [][]string // exported, mutable
   Footer  []string   // exported, mutable
@@ -56,11 +117,13 @@
 AddRow(r)        // no validation ❌
 AddRowChecked(r) // validates     ✅
 Validate()       // render-time   ⏰
-// nil *TableData representable</pre>
-    </div>
-    <div class="after bg-green-50 rounded p-3">
-      <p class="font-semibold text-green-700 text-sm mb-2">After — deep, enforced</p>
-      <pre class="mono text-xs bg-white rounded p-2 overflow-x-auto">type TableData struct {
+// nil *TableData representable</pre
+            >
+          </div>
+          <div class="after bg-green-50 rounded p-3">
+            <p class="font-semibold text-green-700 text-sm mb-2">After — deep, enforced</p>
+            <pre class="mono text-xs bg-white rounded p-2 overflow-x-auto">
+type TableData struct {
   headers []string  // unexported
   rows    [][]string
   footer  []string
@@ -69,71 +132,125 @@ SetHeaders(h)        // sets width
 AddRow(r) error      // always validates
 SetFooter(f) error   // validates width
 // mismatch = impossible state
-// Validate() deleted — unneeded</pre>
-    </div>
-  </div>
-  <p class="text-xs text-slate-400 mt-3">⚠️ Breaking change (exported fields, AddRow signature). Defer to post-v1 or gate behind a v2 TableData. ADR 006 conflict — but the friction is real.</p>
-</section>
+// Validate() deleted — unneeded</pre
+            >
+          </div>
+        </div>
+        <p class="text-xs text-slate-400 mt-3">
+          ⚠️ Breaking change (exported fields, AddRow signature). Defer to post-v1 or gate behind a
+          v2 TableData. ADR 006 conflict — but the friction is real.
+        </p>
+      </section>
 
-<!-- CANDIDATE 2 -->
-<section class="bg-white rounded-xl card-shadow border border-slate-200 p-6 mb-8">
-  <div class="flex items-center justify-between mb-3">
-    <h2 class="text-xl font-bold text-slate-900">② InlineRenderer ↔ NOMStyleSubscriber: one deep module?</h2>
-    <span class="badge explore">Worth exploring</span>
-  </div>
-  <p class="text-sm text-slate-500 mb-4 mono">nom/inline_renderer.go · nom/subscriber.go</p>
+      <!-- CANDIDATE 2 -->
+      <section class="bg-white rounded-xl card-shadow border border-slate-200 p-6 mb-8">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-xl font-bold text-slate-900">
+            ② InlineRenderer ↔ NOMStyleSubscriber: one deep module?
+          </h2>
+          <span class="badge explore">Worth exploring</span>
+        </div>
+        <p class="text-sm text-slate-500 mb-4 mono">nom/inline_renderer.go · nom/subscriber.go</p>
 
-  <p class="mb-4"><b>Problem.</b> To render NOM progress you must instantiate <i>two</i> tightly-coupled <i>modules</i>: a <code>NOMStyleSubscriber</code> (holds the DependencyTree + TimingCache) and an <code>InlineRenderer</code> (reads the subscriber's tree, writes to a writer). The InlineRenderer's <i>interface</i> is broad — 8 methods (<code>Start/Stop/Finish/Render/SetAppName/SetNoColor/SetHideCursor/SetStartTime</code>) — yet it has no behaviour without the subscriber. They are never used apart. This is a hypothetical seam with exactly one <i>adapter</i> combination.</p>
+        <p class="mb-4">
+          <b>Problem.</b> To render NOM progress you must instantiate <i>two</i> tightly-coupled
+          <i>modules</i>: a <code>NOMStyleSubscriber</code> (holds the DependencyTree + TimingCache)
+          and an <code>InlineRenderer</code> (reads the subscriber's tree, writes to a writer). The
+          InlineRenderer's <i>interface</i> is broad — 8 methods
+          (<code>Start/Stop/Finish/Render/SetAppName/SetNoColor/SetHideCursor/SetStartTime</code>) —
+          yet it has no behaviour without the subscriber. They are never used apart. This is a
+          hypothetical seam with exactly one <i>adapter</i> combination.
+        </p>
 
-  <p class="mb-4"><b>Solution (to explore).</b> Consider a single deep <code>NOMProgress</code> <i>module</i> whose <i>interface</i> is <code>OnEvent</code> (feed) + <code>Render</code> (draw) + <code>Finish</code>. The tree, cache, and writer all become <i>internal seams</i>. The two-adapter test: is there a second way to consume the subscriber (e.g. the BubbleTea path in tui/)? <b>Yes</b> — <code>tui</code> reads the subscriber's tree directly. So the subscriber <i>seam is real</i>; the InlineRenderer is the shallow part. Deepening target: keep the subscriber, fold the InlineRenderer's format logic into a deeper render <i>module</i> or make it a thin adapter with a smaller interface.</p>
+        <p class="mb-4">
+          <b>Solution (to explore).</b> Consider a single deep <code>NOMProgress</code>
+          <i>module</i> whose <i>interface</i> is <code>OnEvent</code> (feed) +
+          <code>Render</code> (draw) + <code>Finish</code>. The tree, cache, and writer all become
+          <i>internal seams</i>. The two-adapter test: is there a second way to consume the
+          subscriber (e.g. the BubbleTea path in tui/)? <b>Yes</b> — <code>tui</code> reads the
+          subscriber's tree directly. So the subscriber <i>seam is real</i>; the InlineRenderer is
+          the shallow part. Deepening target: keep the subscriber, fold the InlineRenderer's format
+          logic into a deeper render <i>module</i> or make it a thin adapter with a smaller
+          interface.
+        </p>
 
-  <div class="grid grid-cols-2 gap-4 mt-4">
-    <div class="before bg-red-50 rounded p-3">
-      <p class="font-semibold text-red-700 text-sm mb-2">Before — two coupled modules</p>
-      <pre class="mono text-xs bg-white rounded p-2 overflow-x-auto">sub := NewNOMStyleSubscriber(...)
+        <div class="grid grid-cols-2 gap-4 mt-4">
+          <div class="before bg-red-50 rounded p-3">
+            <p class="font-semibold text-red-700 text-sm mb-2">Before — two coupled modules</p>
+            <pre class="mono text-xs bg-white rounded p-2 overflow-x-auto">
+sub := NewNOMStyleSubscriber(...)
 r   := NewInlineRenderer(sub, w, width)
 r.SetAppName("x"); r.Start()
 sub.OnEvent(ctx, ev)
 r.Render(); r.Finish()
 // 8-method interface on renderer
-// renderer meaningless without sub</pre>
-    </div>
-    <div class="after bg-green-50 rounded p-3">
-      <p class="font-semibold text-green-700 text-sm mb-2">After — deep render module</p>
-      <pre class="mono text-xs bg-white rounded p-2 overflow-x-auto">sub := NewNOMStyleSubscriber(...)
+// renderer meaningless without sub</pre
+            >
+          </div>
+          <div class="after bg-green-50 rounded p-3">
+            <p class="font-semibold text-green-700 text-sm mb-2">After — deep render module</p>
+            <pre class="mono text-xs bg-white rounded p-2 overflow-x-auto">
+sub := NewNOMStyleSubscriber(...)
 p   := NewProgress(sub, w, width)
 p.OnEvent(ctx, ev)   // feed
 p.Render()           // draw
 p.Finish()
 // 3-method interface
-// tree+cache+writer = internal</pre>
+// tree+cache+writer = internal</pre
+            >
+          </div>
+        </div>
+      </section>
+
+      <!-- CANDIDATE 3 -->
+      <section class="bg-white rounded-xl card-shadow border border-slate-200 p-6 mb-8">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-xl font-bold text-slate-900">
+            ③ StreamingRendererFromRenderer: pass-through adapter
+          </h2>
+          <span class="badge spec">Speculative</span>
+        </div>
+        <p class="text-sm text-slate-500 mb-4 mono">streaming.go</p>
+
+        <p class="mb-4">
+          <b>Problem.</b> <code>StreamingRendererFromRenderer(r)</code> adapts a
+          <code>Renderer</code> (returns string) into a <code>StreamingRenderer</code> (writes to
+          writer) by rendering fully then writing — i.e. it does not actually stream.
+          <i>Deletion test</i>: deleting it, callers that need streaming either use a real streaming
+          renderer or write <code>io.WriteString(w, r.Render())</code> themselves. The complexity it
+          hides is one line.
+        </p>
+
+        <p class="mb-4">
+          <b>Verdict.</b> One <i>adapter</i> = hypothetical <i>seam</i>. It earns its keep only if
+          there are multiple callers that need this exact bridge and find the one-liner noisy. Check
+          call sites; if few, inline it.
+        </p>
+      </section>
+
+      <!-- TOP RECOMMENDATION -->
+      <section class="bg-slate-900 text-white rounded-xl p-6 mb-8">
+        <h2 class="text-xl font-bold mb-3">🏆 Top recommendation</h2>
+        <p class="mb-2">
+          <b>Candidate ① — TableData invariant enforcement</b> is the highest-value deepening, but
+          it is breaking and blocked by ADR 006 until post-v1.
+        </p>
+        <p class="mb-2">
+          <b>For now</b>, the non-breaking, high-<i>locality</i> win is <b>Candidate ②</b>: collapse
+          the InlineRenderer's 8-method interface behind a smaller render seam once the
+          subscriber/tree split is confirmed as the real boundary (it is — tui/ proves a second
+          consumer exists).
+        </p>
+        <p class="text-slate-400 text-sm mt-3">
+          Neither is urgent — the codebase is already well-architected. These are the few places
+          where the interface carries more than its share of the complexity.
+        </p>
+      </section>
+
+      <p class="text-center text-slate-400 text-xs">
+        Generated by improve-codebase-architecture skill. Full architecture context in
+        docs/architecture-understanding/2026-06-15_05-51_architecture-review.html
+      </p>
     </div>
-  </div>
-</section>
-
-<!-- CANDIDATE 3 -->
-<section class="bg-white rounded-xl card-shadow border border-slate-200 p-6 mb-8">
-  <div class="flex items-center justify-between mb-3">
-    <h2 class="text-xl font-bold text-slate-900">③ StreamingRendererFromRenderer: pass-through adapter</h2>
-    <span class="badge spec">Speculative</span>
-  </div>
-  <p class="text-sm text-slate-500 mb-4 mono">streaming.go</p>
-
-  <p class="mb-4"><b>Problem.</b> <code>StreamingRendererFromRenderer(r)</code> adapts a <code>Renderer</code> (returns string) into a <code>StreamingRenderer</code> (writes to writer) by rendering fully then writing — i.e. it does not actually stream. <i>Deletion test</i>: deleting it, callers that need streaming either use a real streaming renderer or write <code>io.WriteString(w, r.Render())</code> themselves. The complexity it hides is one line.</p>
-
-  <p class="mb-4"><b>Verdict.</b> One <i>adapter</i> = hypothetical <i>seam</i>. It earns its keep only if there are multiple callers that need this exact bridge and find the one-liner noisy. Check call sites; if few, inline it.</p>
-</section>
-
-<!-- TOP RECOMMENDATION -->
-<section class="bg-slate-900 text-white rounded-xl p-6 mb-8">
-  <h2 class="text-xl font-bold mb-3">🏆 Top recommendation</h2>
-  <p class="mb-2"><b>Candidate ① — TableData invariant enforcement</b> is the highest-value deepening, but it is breaking and blocked by ADR 006 until post-v1.</p>
-  <p class="mb-2"><b>For now</b>, the non-breaking, high-<i>locality</i> win is <b>Candidate ②</b>: collapse the InlineRenderer's 8-method interface behind a smaller render seam once the subscriber/tree split is confirmed as the real boundary (it is — tui/ proves a second consumer exists).</p>
-  <p class="text-slate-400 text-sm mt-3">Neither is urgent — the codebase is already well-architected. These are the few places where the interface carries more than its share of the complexity.</p>
-</section>
-
-<p class="text-center text-slate-400 text-xs">Generated by improve-codebase-architecture skill. Full architecture context in docs/architecture-understanding/2026-06-15_05-51_architecture-review.html</p>
-
-</div>
-</body>
+  </body>
 </html>

@@ -55,6 +55,7 @@ func TestRenderTableData_PreviouslyUnsupportedFormats(t *testing.T) {
 			t.Parallel()
 
 			var buf bytes.Buffer
+
 			err := output.RenderTableData(data, format, output.RenderOptions{Writer: &buf})
 			if err != nil {
 				t.Fatalf("Expected %s to be supported, got: %v", format, err)

@@ -230,6 +230,7 @@ func TestNOMSubscriber_RenderNodeVisibleNodes_Integration(t *testing.T) {
 	if buildNode == nil {
 		t.Fatal("build node should exist in tree")
 	}
+
 	if buildNode.Status != nom.ActivityStatusCompleted {
 		t.Errorf("build status = %v, want Completed", buildNode.Status)
 	}
@@ -238,6 +239,7 @@ func TestNOMSubscriber_RenderNodeVisibleNodes_Integration(t *testing.T) {
 	if testNode == nil {
 		t.Fatal("test node should exist in tree")
 	}
+
 	if testNode.Status != nom.ActivityStatusRunning {
 		t.Errorf("test status = %v, want Running", testNode.Status)
 	}

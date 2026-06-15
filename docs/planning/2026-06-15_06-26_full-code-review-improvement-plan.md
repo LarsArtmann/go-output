@@ -11,6 +11,7 @@
 The go-output codebase is **architecturally excellent** — correct module boundaries, zero cycles, radical dependency isolation, type-safe enums, branded phantom IDs, and a self-registering registry-dispatch pattern. This review visited every production file across all modules, fixed the clear high-value issues on the spot, and prioritizes the remainder below.
 
 **Fixes applied this session (build + tests green):**
+
 1. `.golangci.yml` depguard config portability — eliminated **24 false-positive** lint errors across 8 modules
 2. `nom/inline_renderer.go` — added best-effort write helpers (7 errcheck), flattened nested status block (1 nestif)
 3. `nom/tree_render.go` — perfsprint fix
@@ -28,36 +29,36 @@ The go-output codebase is **architecturally excellent** — correct module bound
 
 ### 🔴 Tier 0 — DONE (1% → 51% of value)
 
-| Task | Impact | Status |
-| --- | --- | --- |
-| Fix depguard config (24 false positives) | Restores lint signal across all modules | ✅ Done |
-| nom production lint (errcheck/nestif/perfsprint/embedded) | Cleaner hot-path code | ✅ Done |
-| Remove dead `colorCyan` | Dead code removal | ✅ Done |
+| Task                                                      | Impact                                  | Status  |
+| --------------------------------------------------------- | --------------------------------------- | ------- |
+| Fix depguard config (24 false positives)                  | Restores lint signal across all modules | ✅ Done |
+| nom production lint (errcheck/nestif/perfsprint/embedded) | Cleaner hot-path code                   | ✅ Done |
+| Remove dead `colorCyan`                                   | Dead code removal                       | ✅ Done |
 
 ### 🟠 Tier 1 — 4% → 64% (high value, low effort)
 
-| # | Task | Files | Effort | Value |
-| - | --- | --- | --- | --- |
-| 1 | `tui/colors.go`: convert 10 mutable globals → immutable style struct | colors.go, view.go, summary.go | Medium | Medium |
-| 2 | `tui/model_test.go`: replace deprecated `EnsureBuild()` → `GetRootNodes()` (3 SA1019) | model_test.go | Low | Low |
-| 3 | `tui/event_sequence_test.go`: guard 3 type assertions (forcetypeassert) | event_sequence_test.go | Low | Low |
+| #   | Task                                                                                  | Files                          | Effort | Value  |
+| --- | ------------------------------------------------------------------------------------- | ------------------------------ | ------ | ------ |
+| 1   | `tui/colors.go`: convert 10 mutable globals → immutable style struct                  | colors.go, view.go, summary.go | Medium | Medium |
+| 2   | `tui/model_test.go`: replace deprecated `EnsureBuild()` → `GetRootNodes()` (3 SA1019) | model_test.go                  | Low    | Low    |
+| 3   | `tui/event_sequence_test.go`: guard 3 type assertions (forcetypeassert)               | event_sequence_test.go         | Low    | Low    |
 
 ### 🟡 Tier 2 — 20% → 80% (medium value)
 
-| # | Task | Files | Effort | Value |
-| - | --- | --- | --- | --- |
-| 4 | Decompose `nom/` into `internal/` sub-packages (tree, cache, render, subscriber) keeping thin public API | nom/ (35 files) | High | Medium (locality, navigability) |
-| 5 | Test errcheck sweep (31 unchecked `AddActivity`/`Record`/`OnEvent` returns across nom/tui/integration tests) | many _test.go | Medium | Low |
-| 6 | err113 test sweep (7 dynamic `errors.New` → wrapped static errors) | tests | Low | Low |
+| #   | Task                                                                                                         | Files           | Effort | Value                           |
+| --- | ------------------------------------------------------------------------------------------------------------ | --------------- | ------ | ------------------------------- |
+| 4   | Decompose `nom/` into `internal/` sub-packages (tree, cache, render, subscriber) keeping thin public API     | nom/ (35 files) | High   | Medium (locality, navigability) |
+| 5   | Test errcheck sweep (31 unchecked `AddActivity`/`Record`/`OnEvent` returns across nom/tui/integration tests) | many \_test.go  | Medium | Low                             |
+| 6   | err113 test sweep (7 dynamic `errors.New` → wrapped static errors)                                           | tests           | Low    | Low                             |
 
 ### 🔵 Tier 3 — Polish (long-term health)
 
-| # | Task | Notes |
-| - | --- | --- |
-| 7 | `TableData` invariant enforcement (unexport fields, validated setters) — **post-v1, ADR 006 conflict** | See improve-codebase-architecture report |
-| 8 | Unify `Marshaler` → `Renderer` terminology in registry | Post-v1 API change |
-| 9 | Collapse `InlineRenderer` 8-method interface behind smaller render seam | See deepening report |
-| 10 | `DOMAIN_LANGUAGE.md` staleness: says `GraphRendererMixin`, code says `GraphRendererState`; missing nom/tui bounded contexts | docs-freshness |
+| #   | Task                                                                                                                        | Notes                                    |
+| --- | --------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------- |
+| 7   | `TableData` invariant enforcement (unexport fields, validated setters) — **post-v1, ADR 006 conflict**                      | See improve-codebase-architecture report |
+| 8   | Unify `Marshaler` → `Renderer` terminology in registry                                                                      | Post-v1 API change                       |
+| 9   | Collapse `InlineRenderer` 8-method interface behind smaller render seam                                                     | See deepening report                     |
+| 10  | `DOMAIN_LANGUAGE.md` staleness: says `GraphRendererMixin`, code says `GraphRendererState`; missing nom/tui bounded contexts | docs-freshness                           |
 
 ---
 
@@ -98,21 +99,21 @@ t3: |go
 
 ## Architect Checklist Reflection
 
-| Concern | Assessment |
-| --- | --- |
-| **Data flow** | Clean — registry dispatch + renderer interfaces, single direction |
-| **Impossible states** | Mostly good (branded IDs, enums). Gap: `TableData` allows column mismatch (post-hoc `Validate`) |
-| **Composed architecture** | Excellent — interfaces, composition over inheritance, shared state via embedding |
-| **Generics** | Used appropriately (`formatRegistry[T]`, `enum.Parse[T]`, `BrandedID[T]`) |
-| **Booleans → enums** | Good — `ColorMode`, `WorkflowState`, `DisplayMode`, `ActivityStatus` are enums |
-| **uints** | Not applicable (string-heavy library) |
-| **Files > 350 lines** | Only `tui/view.go` (375 lines) — borderline, acceptable |
-| **Split brains** | Minor: `Marshaler` vs `Renderer`; `TableData` fields+setters+getters |
-| **Errors centralized** | `pkg/errors` referenced in allow-list; sentinel errors in defining modules |
-| **External tools wrapped** | lipgloss/bubbletea/yaml/toml isolated in modules (adapters) |
-| **Naming** | Excellent — zero Manager/Handler/Impl (see naming-review-2026-06-15.md) |
-| **Duplication** | Minimal — art-dupl "Excellent health", 1 clone fixed |
-| **Test coverage** | 84-100% across modules; integration + round-trip + user-journey tests |
+| Concern                    | Assessment                                                                                      |
+| -------------------------- | ----------------------------------------------------------------------------------------------- |
+| **Data flow**              | Clean — registry dispatch + renderer interfaces, single direction                               |
+| **Impossible states**      | Mostly good (branded IDs, enums). Gap: `TableData` allows column mismatch (post-hoc `Validate`) |
+| **Composed architecture**  | Excellent — interfaces, composition over inheritance, shared state via embedding                |
+| **Generics**               | Used appropriately (`formatRegistry[T]`, `enum.Parse[T]`, `BrandedID[T]`)                       |
+| **Booleans → enums**       | Good — `ColorMode`, `WorkflowState`, `DisplayMode`, `ActivityStatus` are enums                  |
+| **uints**                  | Not applicable (string-heavy library)                                                           |
+| **Files > 350 lines**      | Only `tui/view.go` (375 lines) — borderline, acceptable                                         |
+| **Split brains**           | Minor: `Marshaler` vs `Renderer`; `TableData` fields+setters+getters                            |
+| **Errors centralized**     | `pkg/errors` referenced in allow-list; sentinel errors in defining modules                      |
+| **External tools wrapped** | lipgloss/bubbletea/yaml/toml isolated in modules (adapters)                                     |
+| **Naming**                 | Excellent — zero Manager/Handler/Impl (see naming-review-2026-06-15.md)                         |
+| **Duplication**            | Minimal — art-dupl "Excellent health", 1 clone fixed                                            |
+| **Test coverage**          | 84-100% across modules; integration + round-trip + user-journey tests                           |
 
 ---
 

@@ -203,12 +203,14 @@ func TestProgressModel_HelpOverlay(t *testing.T) {
 		}
 
 		updatedModel, _ := model.Update(tea.KeyPressMsg{Code: '?'})
+
 		m := updatedModel.(*ProgressModel)
 		if !m.showHelp {
 			t.Error("showHelp should be true after pressing ?")
 		}
 
 		updatedModel2, _ := m.Update(tea.KeyPressMsg{Code: '?'})
+
 		m2 := updatedModel2.(*ProgressModel)
 		if m2.showHelp {
 			t.Error("showHelp should be false after pressing ? again")
@@ -249,6 +251,7 @@ func TestProgressModel_SelectedNodeHighlight(t *testing.T) {
 	model.selectedNode = nom.ActivityID("step-a")
 
 	view := model.View()
+
 	content := view.Content
 	if content == "" {
 		t.Fatal("View() should not be empty")

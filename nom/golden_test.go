@@ -18,6 +18,7 @@ func setStatusWithElapsed(
 	t time.Time, elapsed time.Duration,
 ) {
 	dt.UpdateActivityStatus(id, status, symbol, c, t, 0)
+
 	if elapsed > 0 {
 		dt.nodes[id].CurrentElapsed = elapsed
 	}
@@ -136,7 +137,9 @@ func TestInlineRendererGolden_FirstFrame(t *testing.T) {
 	t.Parallel()
 
 	sub := NewNOMStyleSubscriber()
+
 	var buf bytes.Buffer
+
 	renderer := NewInlineRenderer(sub, &buf, 20)
 	renderer.SetNoColor(true)
 
@@ -178,7 +181,9 @@ func TestInlineRendererGolden_SecondFrame(t *testing.T) {
 	t.Parallel()
 
 	sub := NewNOMStyleSubscriber()
+
 	var buf bytes.Buffer
+
 	renderer := NewInlineRenderer(sub, &buf, 20)
 	renderer.SetNoColor(true)
 
@@ -213,6 +218,7 @@ func TestInlineRendererGolden_SecondFrame(t *testing.T) {
 		aID:       ActivityID("compile"),
 		aName:     ActivityName("Compile"),
 	})
+
 	renderer.Render()
 
 	golden.RequireEqual(t, buf.String())

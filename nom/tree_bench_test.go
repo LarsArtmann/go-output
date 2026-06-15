@@ -29,6 +29,7 @@ func buildBenchmarkTree(nodeCount int) *DependencyTree {
 		status := ActivityStatusPending
 		symbol := SymbolPaused
 		color := ColorPaused
+
 		if i < nodeCount/3 {
 			status = ActivityStatusCompleted
 			symbol = SymbolCompleted

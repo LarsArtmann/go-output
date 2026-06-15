@@ -1,153 +1,518 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>go-output Architecture Review — 2026-06-15</title>
-<style>
-  :root { --bg:#0d1117; --card:#161b22; --border:#30363d; --text:#c9d1d9; --mute:#8b949e; --green:#3fb950; --yellow:#d29922; --red:#f85149; --blue:#58a6ff; --purple:#bc8cff; }
-  * { box-sizing:border-box; }
-  body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif; line-height:1.6; padding:2rem; max-width:1100px; margin:0 auto; }
-  h1 { color:#fff; border-bottom:1px solid var(--border); padding-bottom:.5rem; }
-  h2 { color:var(--blue); margin-top:2.5rem; border-bottom:1px solid var(--border); padding-bottom:.3rem; }
-  h3 { color:var(--purple); }
-  .card { background:var(--card); border:1px solid var(--border); border-radius:8px; padding:1.2rem; margin:1rem 0; }
-  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:1rem; }
-  .stat { background:var(--card); border:1px solid var(--border); border-radius:8px; padding:1rem; text-align:center; }
-  .stat .num { font-size:2rem; font-weight:700; color:#fff; }
-  .stat .lbl { color:var(--mute); font-size:.85rem; }
-  table { border-collapse:collapse; width:100%; margin:1rem 0; }
-  th,td { border:1px solid var(--border); padding:.5rem .7rem; text-align:left; }
-  th { background:#21262d; color:#fff; }
-  tr:nth-child(even){ background:#0d1117; }
-  .ok { color:var(--green); } .warn { color:var(--yellow); } .bad { color:var(--red); }
-  .badge { display:inline-block; padding:.15rem .5rem; border-radius:4px; font-size:.75rem; font-weight:600; }
-  .b-green{ background:rgba(63,185,80,.15); color:var(--green); border:1px solid var(--green);}
-  .b-yellow{ background:rgba(210,153,34,.15); color:var(--yellow); border:1px solid var(--yellow);}
-  .dep { font-family:monospace; background:#21262d; padding:.2rem .4rem; border-radius:4px; font-size:.85rem; }
-  .score { font-size:1.1rem; font-weight:700; }
-  code { background:#21262d; padding:.1rem .3rem; border-radius:3px; font-size:.85em; }
-  .arch { font-family:monospace; white-space:pre; background:#010409; border:1px solid var(--border); border-radius:8px; padding:1rem; overflow-x:auto; font-size:.8rem; line-height:1.4; }
-  ul { padding-left:1.2rem; } li { margin:.3rem 0; }
-</style>
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>go-output Architecture Review — 2026-06-15</title>
+    <style>
+      :root {
+        --bg: #0d1117;
+        --card: #161b22;
+        --border: #30363d;
+        --text: #c9d1d9;
+        --mute: #8b949e;
+        --green: #3fb950;
+        --yellow: #d29922;
+        --red: #f85149;
+        --blue: #58a6ff;
+        --purple: #bc8cff;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+        line-height: 1.6;
+        padding: 2rem;
+        max-width: 1100px;
+        margin: 0 auto;
+      }
+      h1 {
+        color: #fff;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 0.5rem;
+      }
+      h2 {
+        color: var(--blue);
+        margin-top: 2.5rem;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 0.3rem;
+      }
+      h3 {
+        color: var(--purple);
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 1.2rem;
+        margin: 1rem 0;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1rem;
+      }
+      .stat {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 1rem;
+        text-align: center;
+      }
+      .stat .num {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #fff;
+      }
+      .stat .lbl {
+        color: var(--mute);
+        font-size: 0.85rem;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin: 1rem 0;
+      }
+      th,
+      td {
+        border: 1px solid var(--border);
+        padding: 0.5rem 0.7rem;
+        text-align: left;
+      }
+      th {
+        background: #21262d;
+        color: #fff;
+      }
+      tr:nth-child(even) {
+        background: #0d1117;
+      }
+      .ok {
+        color: var(--green);
+      }
+      .warn {
+        color: var(--yellow);
+      }
+      .bad {
+        color: var(--red);
+      }
+      .badge {
+        display: inline-block;
+        padding: 0.15rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 600;
+      }
+      .b-green {
+        background: rgba(63, 185, 80, 0.15);
+        color: var(--green);
+        border: 1px solid var(--green);
+      }
+      .b-yellow {
+        background: rgba(210, 153, 34, 0.15);
+        color: var(--yellow);
+        border: 1px solid var(--yellow);
+      }
+      .dep {
+        font-family: monospace;
+        background: #21262d;
+        padding: 0.2rem 0.4rem;
+        border-radius: 4px;
+        font-size: 0.85rem;
+      }
+      .score {
+        font-size: 1.1rem;
+        font-weight: 700;
+      }
+      code {
+        background: #21262d;
+        padding: 0.1rem 0.3rem;
+        border-radius: 3px;
+        font-size: 0.85em;
+      }
+      .arch {
+        font-family: monospace;
+        white-space: pre;
+        background: #010409;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 1rem;
+        overflow-x: auto;
+        font-size: 0.8rem;
+        line-height: 1.4;
+      }
+      ul {
+        padding-left: 1.2rem;
+      }
+      li {
+        margin: 0.3rem 0;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>go-output — Architecture Review</h1>
+    <p style="color: var(--mute)">
+      2026-06-15 · 16 modules · ~9.9k prod LOC · Library (not a service)
+    </p>
 
-<h1>go-output — Architecture Review</h1>
-<p style="color:var(--mute)">2026-06-15 · 16 modules · ~9.9k prod LOC · Library (not a service)</p>
+    <div class="grid">
+      <div class="stat">
+        <div class="num">16</div>
+        <div class="lbl">independent modules</div>
+      </div>
+      <div class="stat">
+        <div class="num">9,927</div>
+        <div class="lbl">prod LOC</div>
+      </div>
+      <div class="stat">
+        <div class="num">0</div>
+        <div class="lbl">prod deps in root<br />(except enum)</div>
+      </div>
+      <div class="stat">
+        <div class="num">A</div>
+        <div class="lbl">modularity grade</div>
+      </div>
+    </div>
 
-<div class="grid">
-  <div class="stat"><div class="num">16</div><div class="lbl">independent modules</div></div>
-  <div class="stat"><div class="num">9,927</div><div class="lbl">prod LOC</div></div>
-  <div class="stat"><div class="num">0</div><div class="lbl">prod deps in root<br>(except enum)</div></div>
-  <div class="stat"><div class="num">A</div><div class="lbl">modularity grade</div></div>
-</div>
+    <h2>1. Questions Answered</h2>
+    <div class="card">
+      <h3>How scalable/modular is the current architecture?</h3>
+      <p>
+        <span class="score ok">Highly modular.</span> The library is split into 16 Go modules with
+        hard, compile-time-enforced boundaries. Root (<code>package output</code>) holds only core
+        types + Markdown/Tree formatters. Every format family lives behind its own
+        <code>go.mod</code>, so consumers import and download only what they use.
+        <code>go get github.com/larsartmann/go-output</code> pulls <strong>zero</strong> lipgloss,
+        bubbletea, yaml, or toml dependencies.
+      </p>
 
-<h2>1. Questions Answered</h2>
-<div class="card">
-<h3>How scalable/modular is the current architecture?</h3>
-<p><span class="score ok">Highly modular.</span> The library is split into 16 Go modules with hard, compile-time-enforced boundaries. Root (<code>package output</code>) holds only core types + Markdown/Tree formatters. Every format family lives behind its own <code>go.mod</code>, so consumers import and download only what they use. <code>go get github.com/larsartmann/go-output</code> pulls <strong>zero</strong> lipgloss, bubbletea, yaml, or toml dependencies.</p>
+      <h3>How can we make this more service-oriented / composable?</h3>
+      <p>
+        As a library, "service-oriented" maps to <strong>interface-driven composability</strong> —
+        already strong here. Three seams drive composition: the <code>Renderer</code> interface
+        family, the registry-dispatch pattern (<code>RenderTableData</code>), and the shape
+        capability matrix. Recommendations in §5.
+      </p>
+    </div>
 
-<h3>How can we make this more service-oriented / composable?</h3>
-<p>As a library, "service-oriented" maps to <strong>interface-driven composability</strong> — already strong here. Three seams drive composition: the <code>Renderer</code> interface family, the registry-dispatch pattern (<code>RenderTableData</code>), and the shape capability matrix. Recommendations in §5.</p>
-</div>
+    <h2>2. Module Dependency Graph (current)</h2>
+    <div class="arch">
+      enum ─────────────────┐ escape ─── testhelpers ──┤ nom ──┐ ▼ │ │ ┌──────── ROOT (output)
+      ◄─────┐ │ ▼ │ format · shape · registry │ │ tui │ tabledata · graph · tree │ │ (bubbletea) │
+      markdown · color · ids │ │ └─────────────┬───────────────┘ │ │ depend-on-root │
+      ┌──────┬──────┬────────┼────────┬──────┬───────┴──┐ ▼ ▼ ▼ ▼ ▼ ▼ ▼ delimited d2 graph markup
+      serialization table plantuml (+escape) (+escape,testhelpers) (+root) integration · examples
+      ◄── leaf aggregators (depend on many, nothing depends on them)
+    </div>
+    <p style="color: var(--mute)">
+      <strong>Verified acyclic.</strong> No upward dependencies. No import cycles (all 16 modules
+      build standalone with <code>GOWORK=off</code>).
+    </p>
 
-<h2>2. Module Dependency Graph (current)</h2>
-<div class="arch">enum ─────────────────┐
-escape ─── testhelpers ──┤                        nom ──┐
-                         ▼                        │     │
-            ┌──────── ROOT (output) ◄─────┐       │     ▼
-            │   format · shape · registry │       │    tui
-            │   tabledata · graph · tree  │       │  (bubbletea)
-            │   markdown · color · ids    │       │
-            └─────────────┬───────────────┘       │
-                          │ depend-on-root        │
-   ┌──────┬──────┬────────┼────────┬──────┬───────┴──┐
-   ▼      ▼      ▼        ▼        ▼      ▼          ▼
-delimited d2   graph   markup  serialization table  plantuml
- (+escape) (+escape,testhelpers)                    (+root)
+    <h2>3. Module Size & Cohesion</h2>
+    <table>
+      <tr>
+        <th>Module</th>
+        <th>Prod LOC</th>
+        <th>Files</th>
+        <th>Purpose (one sentence)</th>
+        <th>Cohesion</th>
+      </tr>
+      <tr>
+        <td><strong>root</strong></td>
+        <td>1,805</td>
+        <td>22</td>
+        <td>Core types, Markdown, Tree, registry, shape matrix</td>
+        <td class="ok">High</td>
+      </tr>
+      <tr>
+        <td><strong>nom</strong></td>
+        <td>2,167</td>
+        <td>35</td>
+        <td>NOM-style real-time progress, dependency trees, timing cache</td>
+        <td class="warn">Med-High</td>
+      </tr>
+      <tr>
+        <td><strong>tui</strong></td>
+        <td>1,157</td>
+        <td>21</td>
+        <td>Bubble Tea interactive progress UI</td>
+        <td class="ok">High</td>
+      </tr>
+      <tr>
+        <td><strong>d2</strong></td>
+        <td>937</td>
+        <td>16</td>
+        <td>D2 diagram renderer (rich domain model)</td>
+        <td class="ok">High</td>
+      </tr>
+      <tr>
+        <td><strong>serialization</strong></td>
+        <td>774</td>
+        <td>24</td>
+        <td>JSON, YAML, TOML, JSONL</td>
+        <td class="ok">High</td>
+      </tr>
+      <tr>
+        <td><strong>markup</strong></td>
+        <td>717</td>
+        <td>16</td>
+        <td>XML, HTML, AsciiDoc, streaming HTML</td>
+        <td class="ok">High</td>
+      </tr>
+      <tr>
+        <td><strong>graph</strong></td>
+        <td>398</td>
+        <td>12</td>
+        <td>DOT + Mermaid renderers</td>
+        <td class="ok">High</td>
+      </tr>
+      <tr>
+        <td><strong>delimited</strong></td>
+        <td>320</td>
+        <td>10</td>
+        <td>CSV + TSV</td>
+        <td class="ok">High</td>
+      </tr>
+      <tr>
+        <td><strong>table</strong></td>
+        <td>221</td>
+        <td>6</td>
+        <td>Lipgloss terminal tables</td>
+        <td class="ok">High</td>
+      </tr>
+      <tr>
+        <td><strong>plantuml</strong></td>
+        <td>153</td>
+        <td>6</td>
+        <td>PlantUML diagrams</td>
+        <td class="ok">High</td>
+      </tr>
+      <tr>
+        <td><strong>escape</strong></td>
+        <td>96</td>
+        <td>3</td>
+        <td>Format-specific escaping (zero deps)</td>
+        <td class="ok">High</td>
+      </tr>
+      <tr>
+        <td><strong>enum</strong></td>
+        <td>65</td>
+        <td>3</td>
+        <td>Generic enum utilities (zero deps)</td>
+        <td class="ok">High</td>
+      </tr>
+      <tr>
+        <td><strong>graphtest</strong></td>
+        <td>82</td>
+        <td>2</td>
+        <td>Shared graph test fixtures (5 consumers)</td>
+        <td class="ok">High</td>
+      </tr>
+    </table>
+    <p style="color: var(--mute)">
+      <strong>nom</strong> is the largest/coarsest module (2,167 LOC, 35 files). It bundles
+      subscriber + dependency tree + inline renderer + timing cache + event accessors. Cohesion is
+      still good (all NOM-progress concerns) but it is the prime candidate for internal package
+      decomposition (see §5).
+    </p>
 
-        integration · examples  ◄── leaf aggregators (depend on many, nothing depends on them)</div>
-<p style="color:var(--mute)"><strong>Verified acyclic.</strong> No upward dependencies. No import cycles (all 16 modules build standalone with <code>GOWORK=off</code>).</p>
+    <h2>4. Composability Seams</h2>
+    <div class="grid">
+      <div class="card">
+        <h3 class="ok">① Renderer interface family</h3>
+        <p>
+          <code>Renderer</code> → <code>TableRenderer</code> → <code>GraphRenderer</code> →
+          <code>TreeOutputRenderer</code>. Every format implements one.
+          <code>MustRender(r)</code> for tests. <strong>Deep, uniform seam.</strong>
+        </p>
+      </div>
+      <div class="card">
+        <h3 class="ok">② Registry dispatch</h3>
+        <p>
+          <code>RenderTableData()</code> / <code>RenderAnyData()</code> dispatch to format functions
+          registered in <code>init()</code>. Root has zero sub-module imports; sub-modules
+          self-register. <strong>Excellent inversion.</strong>
+        </p>
+      </div>
+      <div class="card">
+        <h3 class="ok">③ Shape capability matrix</h3>
+        <p>
+          <code>Format.Supports(Shape)</code> + <code>FormatsForShape()</code>. Single source of
+          truth for "can format X render shape Y". Enables validation and discovery.
+        </p>
+      </div>
+      <div class="card">
+        <h3 class="ok">④ GraphRendererState</h3>
+        <p>
+          Shared composition state embedded by DOT/Mermaid/JSON/YAML/TOML/PlantUML.
+          <code>AddTreeNodes()</code> via <code>NodeEdgeAppender</code> interface. Reused, not
+          duplicated.
+        </p>
+      </div>
+    </div>
 
-<h2>3. Module Size & Cohesion</h2>
-<table>
-<tr><th>Module</th><th>Prod LOC</th><th>Files</th><th>Purpose (one sentence)</th><th>Cohesion</th></tr>
-<tr><td><strong>root</strong></td><td>1,805</td><td>22</td><td>Core types, Markdown, Tree, registry, shape matrix</td><td class="ok">High</td></tr>
-<tr><td><strong>nom</strong></td><td>2,167</td><td>35</td><td>NOM-style real-time progress, dependency trees, timing cache</td><td class="warn">Med-High</td></tr>
-<tr><td><strong>tui</strong></td><td>1,157</td><td>21</td><td>Bubble Tea interactive progress UI</td><td class="ok">High</td></tr>
-<tr><td><strong>d2</strong></td><td>937</td><td>16</td><td>D2 diagram renderer (rich domain model)</td><td class="ok">High</td></tr>
-<tr><td><strong>serialization</strong></td><td>774</td><td>24</td><td>JSON, YAML, TOML, JSONL</td><td class="ok">High</td></tr>
-<tr><td><strong>markup</strong></td><td>717</td><td>16</td><td>XML, HTML, AsciiDoc, streaming HTML</td><td class="ok">High</td></tr>
-<tr><td><strong>graph</strong></td><td>398</td><td>12</td><td>DOT + Mermaid renderers</td><td class="ok">High</td></tr>
-<tr><td><strong>delimited</strong></td><td>320</td><td>10</td><td>CSV + TSV</td><td class="ok">High</td></tr>
-<tr><td><strong>table</strong></td><td>221</td><td>6</td><td>Lipgloss terminal tables</td><td class="ok">High</td></tr>
-<tr><td><strong>plantuml</strong></td><td>153</td><td>6</td><td>PlantUML diagrams</td><td class="ok">High</td></tr>
-<tr><td><strong>escape</strong></td><td>96</td><td>3</td><td>Format-specific escaping (zero deps)</td><td class="ok">High</td></tr>
-<tr><td><strong>enum</strong></td><td>65</td><td>3</td><td>Generic enum utilities (zero deps)</td><td class="ok">High</td></tr>
-<tr><td><strong>graphtest</strong></td><td>82</td><td>2</td><td>Shared graph test fixtures (5 consumers)</td><td class="ok">High</td></tr>
-</table>
-<p style="color:var(--mute)"><strong>nom</strong> is the largest/coarsest module (2,167 LOC, 35 files). It bundles subscriber + dependency tree + inline renderer + timing cache + event accessors. Cohesion is still good (all NOM-progress concerns) but it is the prime candidate for internal package decomposition (see §5).</p>
+    <h2>5. Findings</h2>
 
-<h2>4. Composability Seams</h2>
-<div class="grid">
-<div class="card">
-<h3 class="ok">① Renderer interface family</h3>
-<p><code>Renderer</code> → <code>TableRenderer</code> → <code>GraphRenderer</code> → <code>TreeOutputRenderer</code>. Every format implements one. <code>MustRender(r)</code> for tests. <strong>Deep, uniform seam.</strong></p>
-</div>
-<div class="card">
-<h3 class="ok">② Registry dispatch</h3>
-<p><code>RenderTableData()</code> / <code>RenderAnyData()</code> dispatch to format functions registered in <code>init()</code>. Root has zero sub-module imports; sub-modules self-register. <strong>Excellent inversion.</strong></p>
-</div>
-<div class="card">
-<h3 class="ok">③ Shape capability matrix</h3>
-<p><code>Format.Supports(Shape)</code> + <code>FormatsForShape()</code>. Single source of truth for "can format X render shape Y". Enables validation and discovery.</p>
-</div>
-<div class="card">
-<h3 class="ok">④ GraphRendererState</h3>
-<p>Shared composition state embedded by DOT/Mermaid/JSON/YAML/TOML/PlantUML. <code>AddTreeNodes()</code> via <code>NodeEdgeAppender</code> interface. Reused, not duplicated.</p>
-</div>
-</div>
+    <h3 class="ok">Strengths</h3>
+    <ul>
+      <li>
+        <strong>Radical dependency isolation.</strong> Root imports only <code>enum</code> in
+        production. Heavy deps (lipgloss, bubbletea, yaml, toml) are hermetically sealed in their
+        modules.
+      </li>
+      <li>
+        <strong>Self-registering formats.</strong> Zero coupling between root and format modules —
+        the registry pattern means root never imports
+        <code>delimited</code>/<code>serialization</code>/etc. in production.
+      </li>
+      <li>
+        <strong>Standalone resolvable.</strong> Every module builds with <code>GOWORK=off</code> via
+        committed <code>replace</code> directives. True independence, not just workspace
+        convenience.
+      </li>
+      <li>
+        <strong>Type safety everywhere.</strong> Branded phantom IDs (<code>D2NodeID</code> vs
+        <code>TreeNodeID</code>) prevent mixing at compile time.
+      </li>
+      <li>
+        <strong>Minimal duplication.</strong> art-dupl reports "Excellent code health" — only test
+        idioms, one actionable clone.
+      </li>
+    </ul>
 
-<h2>5. Findings</h2>
+    <h3 class="warn">Gaps & Opportunities</h3>
+    <table>
+      <tr>
+        <th>#</th>
+        <th>Finding</th>
+        <th>Impact</th>
+        <th>Severity</th>
+      </tr>
+      <tr>
+        <td>1</td>
+        <td>
+          <strong>nom module is coarse</strong> — subscriber, dependency tree, inline renderer,
+          timing cache, event accessors, tree render all in one package. 35 files, no
+          <code>internal/</code> subdivision.
+        </td>
+        <td>
+          Hurts navigability & test locality; harder to evolve one concern without touching others
+        </td>
+        <td><span class="badge b-yellow">Medium</span></td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>
+          <strong>.golangci.yml not portable</strong> across modules — depguard allow-lists are
+          root-specific, producing 24 false positives in sub-modules.
+        </td>
+        <td>Lint signal noise; real issues hidden</td>
+        <td><span class="badge b-yellow">Medium</span></td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>
+          <strong>Registry uses "Marshaler", everything else "Renderer"</strong> — mild terminology
+          split-brain for the same concept.
+        </td>
+        <td>Cognitive friction for new contributors</td>
+        <td><span class="badge b-yellow">Low</span></td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td>
+          <strong>tui/colors.go: 11 mutable package globals</strong> for colors — should be
+          constants or a style registry.
+        </td>
+        <td>Mutable global state; not concurrency-safe by construction</td>
+        <td><span class="badge b-yellow">Low</span></td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td>
+          <strong>nom/inline_renderer.go ignores write errors</strong> (6 unchecked
+          <code>fmt.Fprint</code>) — a renderer whose job is writing drops errors.
+        </td>
+        <td>Broken pipe / disk-full silently swallowed</td>
+        <td><span class="badge b-yellow">Medium</span></td>
+      </tr>
+    </table>
 
-<h3 class="ok">Strengths</h3>
-<ul>
-<li><strong>Radical dependency isolation.</strong> Root imports only <code>enum</code> in production. Heavy deps (lipgloss, bubbletea, yaml, toml) are hermetically sealed in their modules.</li>
-<li><strong>Self-registering formats.</strong> Zero coupling between root and format modules — the registry pattern means root never imports <code>delimited</code>/<code>serialization</code>/etc. in production.</li>
-<li><strong>Standalone resolvable.</strong> Every module builds with <code>GOWORK=off</code> via committed <code>replace</code> directives. True independence, not just workspace convenience.</li>
-<li><strong>Type safety everywhere.</strong> Branded phantom IDs (<code>D2NodeID</code> vs <code>TreeNodeID</code>) prevent mixing at compile time.</li>
-<li><strong>Minimal duplication.</strong> art-dupl reports "Excellent code health" — only test idioms, one actionable clone.</li>
-</ul>
+    <h2>6. Recommendations (Pareto-ordered)</h2>
+    <table>
+      <tr>
+        <th>Tier</th>
+        <th>Action</th>
+        <th>Value</th>
+        <th>Effort</th>
+      </tr>
+      <tr>
+        <td><strong>1 (4%→64%)</strong></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>
+          Fix <code>.golangci.yml</code> depguard portability — add <code>files</code> filter to
+          <code>main</code> rule or per-module config. Eliminates 24 false positives and restores
+          lint signal.
+        </td>
+        <td>High</td>
+        <td>Low</td>
+      </tr>
+      <tr>
+        <td><strong>2 (20%→80%)</strong></td>
+        <td>
+          Handle write errors in <code>nom/inline_renderer.go</code> (collect first error, surface
+          on <code>Finish()</code>).
+        </td>
+        <td>High</td>
+        <td>Low</td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>Make <code>tui/colors.go</code> globals immutable (constants or lazy-init struct).</td>
+        <td>Medium</td>
+        <td>Low</td>
+      </tr>
+      <tr>
+        <td><strong>3 (polish)</strong></td>
+        <td>
+          Decompose <code>nom/</code> into <code>internal/</code> sub-packages (tree, cache, render,
+          subscriber) keeping the public API surface thin. Improves locality & AI-navigability.
+        </td>
+        <td>Medium</td>
+        <td>Medium</td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>
+          Unify <code>Marshaler</code>→<code>Renderer</code> terminology in a future major version.
+        </td>
+        <td>Low</td>
+        <td>Medium</td>
+      </tr>
+    </table>
 
-<h3 class="warn">Gaps & Opportunities</h3>
-<table>
-<tr><th>#</th><th>Finding</th><th>Impact</th><th>Severity</th></tr>
-<tr><td>1</td><td><strong>nom module is coarse</strong> — subscriber, dependency tree, inline renderer, timing cache, event accessors, tree render all in one package. 35 files, no <code>internal/</code> subdivision.</td><td>Hurts navigability & test locality; harder to evolve one concern without touching others</td><td><span class="badge b-yellow">Medium</span></td></tr>
-<tr><td>2</td><td><strong>.golangci.yml not portable</strong> across modules — depguard allow-lists are root-specific, producing 24 false positives in sub-modules.</td><td>Lint signal noise; real issues hidden</td><td><span class="badge b-yellow">Medium</span></td></tr>
-<tr><td>3</td><td><strong>Registry uses "Marshaler", everything else "Renderer"</strong> — mild terminology split-brain for the same concept.</td><td>Cognitive friction for new contributors</td><td><span class="badge b-yellow">Low</span></td></tr>
-<tr><td>4</td><td><strong>tui/colors.go: 11 mutable package globals</strong> for colors — should be constants or a style registry.</td><td>Mutable global state; not concurrency-safe by construction</td><td><span class="badge b-yellow">Low</span></td></tr>
-<tr><td>5</td><td><strong>nom/inline_renderer.go ignores write errors</strong> (6 unchecked <code>fmt.Fprint</code>) — a renderer whose job is writing drops errors.</td><td>Broken pipe / disk-full silently swallowed</td><td><span class="badge b-yellow">Medium</span></td></tr>
-</table>
+    <h2>7. Verdict</h2>
+    <div class="card">
+      <p><span class="badge b-green">GRADE A — Production-ready architecture</span></p>
+      <p>
+        The go-output architecture is <strong>genuinely excellent</strong> for a multi-format Go
+        library. Module boundaries are correct, dependencies flow one direction, heavy libraries are
+        sealed away from the core, and the registry-dispatch + shape-matrix design is a model of
+        composable, interface-driven Go. The gaps are minor (lint config portability, write-error
+        handling, one coarse module) — none threaten the architecture's soundness. This is a
+        codebase that has clearly been thought about, not just written.
+      </p>
+    </div>
 
-<h2>6. Recommendations (Pareto-ordered)</h2>
-<table>
-<tr><th>Tier</th><th>Action</th><th>Value</th><th>Effort</th></tr>
-<tr><td><strong>1 (4%→64%)</strong></tr>
-<tr><td></td><td>Fix <code>.golangci.yml</code> depguard portability — add <code>files</code> filter to <code>main</code> rule or per-module config. Eliminates 24 false positives and restores lint signal.</td><td>High</td><td>Low</td></tr>
-<tr><td><strong>2 (20%→80%)</strong></td><td>Handle write errors in <code>nom/inline_renderer.go</code> (collect first error, surface on <code>Finish()</code>).</td><td>High</td><td>Low</td></tr>
-<tr><td></td><td>Make <code>tui/colors.go</code> globals immutable (constants or lazy-init struct).</td><td>Medium</td><td>Low</td></tr>
-<tr><td><strong>3 (polish)</strong></td><td>Decompose <code>nom/</code> into <code>internal/</code> sub-packages (tree, cache, render, subscriber) keeping the public API surface thin. Improves locality & AI-navigability.</td><td>Medium</td><td>Medium</td></tr>
-<tr><td></td><td>Unify <code>Marshaler</code>→<code>Renderer</code> terminology in a future major version.</td><td>Low</td><td>Medium</td></tr>
-</table>
-
-<h2>7. Verdict</h2>
-<div class="card">
-<p><span class="badge b-green">GRADE A — Production-ready architecture</span></p>
-<p>The go-output architecture is <strong>genuinely excellent</strong> for a multi-format Go library. Module boundaries are correct, dependencies flow one direction, heavy libraries are sealed away from the core, and the registry-dispatch + shape-matrix design is a model of composable, interface-driven Go. The gaps are minor (lint config portability, write-error handling, one coarse module) — none threaten the architecture's soundness. This is a codebase that has clearly been thought about, not just written.</p>
-</div>
-
-<p style="color:var(--mute);margin-top:3rem;font-size:.8rem">Generated by architecture-review skill. Cross-references: code-quality-scan-2026-06-15.md, modularization/AUDIT-2026-06-15.md, naming-review-2026-06-15.md.</p>
-
-</body>
+    <p style="color: var(--mute); margin-top: 3rem; font-size: 0.8rem">
+      Generated by architecture-review skill. Cross-references: code-quality-scan-2026-06-15.md,
+      modularization/AUDIT-2026-06-15.md, naming-review-2026-06-15.md.
+    </p>
+  </body>
 </html>

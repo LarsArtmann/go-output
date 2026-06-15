@@ -4,30 +4,30 @@ Scanned all 15 modules (`.` + 14 sub-modules + testhelpers/graphtest).
 
 ## Baseline Summary
 
-| Check        | Result                                                                                       |
-| ------------ | -------------------------------------------------------------------------------------------- |
-| Build        | ✅ All 16 modules compile (`go build ./...` per module)                                       |
-| `go vet`     | ✅ Clean across all modules                                                                  |
-| Tests        | ✅ All pass (verified during later skills)                                                    |
-| Lint         | ⚠️ 118 issues across 9 modules; 4 modules clean (d2, enum, escape, examples, graphtest)       |
-| Duplication  | ✅ art-dupl: "Excellent code health" — 110 groups, all low/idiom (test patterns). 1 actionable |
+| Check       | Result                                                                                         |
+| ----------- | ---------------------------------------------------------------------------------------------- |
+| Build       | ✅ All 16 modules compile (`go build ./...` per module)                                        |
+| `go vet`    | ✅ Clean across all modules                                                                    |
+| Tests       | ✅ All pass (verified during later skills)                                                     |
+| Lint        | ⚠️ 118 issues across 9 modules; 4 modules clean (d2, enum, escape, examples, graphtest)        |
+| Duplication | ✅ art-dupl: "Excellent code health" — 110 groups, all low/idiom (test patterns). 1 actionable |
 
 ## Issue Counts by Linter
 
-| Linter                    | Count | Where                              | Severity |
-| ------------------------- | ----- | ---------------------------------- | -------- |
-| `errcheck`                | 37    | mostly tests (nom, tui, integration) + 6 in nom/inline_renderer.go (production) | High (prod) / Low (test) |
-| `wsl_v5`                  | 26    | nom, tui, integration              | Low (style) |
-| `depguard`                | 24    | all modules                        | **Config bug** (see #1) |
-| `gochecknoglobals`        | 11    | tui/colors.go                      | Medium |
-| `err113`                  | 7     | tests (integration, testhelpers, tui) | Low (test) |
-| `staticcheck` (SA1019)    | 3     | tui/model_test.go (deprecated `EnsureBuild`) | Low (test) |
-| `forcetypeassert`         | 3     | tui/event_sequence_test.go         | Low (test) |
-| `embeddedstructfieldcheck`| 2     | nom/activity_display.go, nom/tree.go | Low |
-| `dupl`                    | 2     | graph/registry_test.go             | Low (1 clone pair) |
-| `predeclared`             | 1     | nom/activity_display_test.go (`copy`) | Low |
-| `perfsprint`              | 1     | nom/tree_render.go:168             | Low |
-| `nestif`                  | 1     | nom/inline_renderer.go:184         | Medium |
+| Linter                     | Count | Where                                                                           | Severity                 |
+| -------------------------- | ----- | ------------------------------------------------------------------------------- | ------------------------ |
+| `errcheck`                 | 37    | mostly tests (nom, tui, integration) + 6 in nom/inline_renderer.go (production) | High (prod) / Low (test) |
+| `wsl_v5`                   | 26    | nom, tui, integration                                                           | Low (style)              |
+| `depguard`                 | 24    | all modules                                                                     | **Config bug** (see #1)  |
+| `gochecknoglobals`         | 11    | tui/colors.go                                                                   | Medium                   |
+| `err113`                   | 7     | tests (integration, testhelpers, tui)                                           | Low (test)               |
+| `staticcheck` (SA1019)     | 3     | tui/model_test.go (deprecated `EnsureBuild`)                                    | Low (test)               |
+| `forcetypeassert`          | 3     | tui/event_sequence_test.go                                                      | Low (test)               |
+| `embeddedstructfieldcheck` | 2     | nom/activity_display.go, nom/tree.go                                            | Low                      |
+| `dupl`                     | 2     | graph/registry_test.go                                                          | Low (1 clone pair)       |
+| `predeclared`              | 1     | nom/activity_display_test.go (`copy`)                                           | Low                      |
+| `perfsprint`               | 1     | nom/tree_render.go:168                                                          | Low                      |
+| `nestif`                   | 1     | nom/inline_renderer.go:184                                                      | Medium                   |
 
 ## Sorted Issue List (by impact)
 
@@ -45,6 +45,7 @@ Sub-modules have no own `.golangci.yml`, so they inherit the root config whose
 module-specific allow-lists don't fit them.
 
 **Fix options:**
+
 1. Add `files: ["**/*.go", "!**/*_test.go"]` to the `main` rule so it only governs production code; let `default` (which allows `bytes`+`testing`) govern tests.
 2. Add the needed stdlib/charmbracelet imports to `main`'s allow list.
 3. (Cleanest long-term) per-module `.golangci.yml` — but high overhead for 15 modules.

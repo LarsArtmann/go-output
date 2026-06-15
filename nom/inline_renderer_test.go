@@ -14,7 +14,9 @@ func TestInlineRenderer_FirstRender_NoAnsiEscapes(t *testing.T) {
 	t.Parallel()
 
 	sub := NewNOMStyleSubscriber()
+
 	var buf bytes.Buffer
+
 	renderer := NewInlineRenderer(sub, &buf, 10)
 
 	ctx := context.Background()
@@ -44,7 +46,9 @@ func TestInlineRenderer_SubsequentRender_MovesCursor(t *testing.T) {
 	t.Parallel()
 
 	sub := NewNOMStyleSubscriber()
+
 	var buf bytes.Buffer
+
 	renderer := NewInlineRenderer(sub, &buf, 10)
 
 	ctx := context.Background()
@@ -73,7 +77,9 @@ func TestInlineRenderer_Finish_ClearsFrame(t *testing.T) {
 	t.Parallel()
 
 	sub := NewNOMStyleSubscriber()
+
 	var buf bytes.Buffer
+
 	renderer := NewInlineRenderer(sub, &buf, 10)
 
 	ctx := context.Background()
@@ -106,7 +112,9 @@ func TestInlineRenderer_Finish_WithError(t *testing.T) {
 	t.Parallel()
 
 	sub := NewNOMStyleSubscriber()
+
 	var buf bytes.Buffer
+
 	renderer := NewInlineRenderer(sub, &buf, 10)
 
 	ctx := context.Background()
@@ -130,7 +138,9 @@ func TestInlineRenderer_SummaryBar(t *testing.T) {
 	t.Parallel()
 
 	sub := NewNOMStyleSubscriber()
+
 	var buf bytes.Buffer
+
 	renderer := NewInlineRenderer(sub, &buf, 20)
 
 	ctx := context.Background()
@@ -161,6 +171,7 @@ func TestInlineRenderer_NilSubscriber(t *testing.T) {
 	t.Parallel()
 
 	var buf bytes.Buffer
+
 	renderer := NewInlineRenderer(nil, &buf, 10)
 
 	renderer.Render()
@@ -174,7 +185,9 @@ func TestInlineRenderer_EmptyTree(t *testing.T) {
 	t.Parallel()
 
 	sub := NewNOMStyleSubscriber()
+
 	var buf bytes.Buffer
+
 	renderer := NewInlineRenderer(sub, &buf, 10)
 
 	renderer.Render()
@@ -186,7 +199,9 @@ func TestInlineRenderer_EmptyTree(t *testing.T) {
 
 func TestInlineRenderer_StartStop_PeriodicRender(t *testing.T) {
 	sub := NewNOMStyleSubscriber()
+
 	var buf bytes.Buffer
+
 	renderer := NewInlineRenderer(sub, &buf, 10)
 
 	ctx := context.Background()
@@ -205,6 +220,7 @@ func TestInlineRenderer_StartStop_PeriodicRender(t *testing.T) {
 	renderer.Stop()
 
 	output := buf.String()
+
 	renders := strings.Count(output, "Step 1")
 	if renders < 2 {
 		t.Errorf("expected at least 2 periodic renders, got %d renders", renders)
@@ -213,7 +229,9 @@ func TestInlineRenderer_StartStop_PeriodicRender(t *testing.T) {
 
 func TestInlineRenderer_StartStop_Idempotent(t *testing.T) {
 	sub := NewNOMStyleSubscriber()
+
 	var buf bytes.Buffer
+
 	renderer := NewInlineRenderer(sub, &buf, 10)
 
 	ctx := context.Background()
@@ -227,7 +245,9 @@ func TestInlineRenderer_StartStop_Idempotent(t *testing.T) {
 
 func TestInlineRenderer_MaxHeightZero_UsesFallback(t *testing.T) {
 	sub := NewNOMStyleSubscriber()
+
 	var buf bytes.Buffer
+
 	renderer := NewInlineRenderer(sub, &buf, 0)
 
 	ctx := context.Background()
@@ -247,6 +267,7 @@ func TestInlineRenderer_MaxHeightZero_UsesFallback(t *testing.T) {
 	renderer.Render()
 
 	output := buf.String()
+
 	lines := strings.Count(output, "\n") + 1
 	if lines > 56 {
 		t.Errorf("expected tree capped to ~50 lines with 2-line summary, got %d lines", lines)

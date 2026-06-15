@@ -22,6 +22,7 @@ func TestSetEnabledAndIsEnabled(t *testing.T) {
 
 		ns := NewNOMStyleSubscriber()
 		ns.SetEnabled(false)
+
 		if ns.IsEnabled() {
 			t.Error("IsEnabled() should be false after SetEnabled(false)")
 		}
@@ -33,6 +34,7 @@ func TestSetEnabledAndIsEnabled(t *testing.T) {
 		ns := NewNOMStyleSubscriber()
 		ns.SetEnabled(false)
 		ns.SetEnabled(true)
+
 		if !ns.IsEnabled() {
 			t.Error("IsEnabled() should be true after SetEnabled(true)")
 		}

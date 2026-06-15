@@ -10,7 +10,8 @@ import (
 // BDD specs describing the format-parsing and shape-capability experience.
 var _ = ginkgo.Describe("format discovery and capabilities", func() {
 	ginkgo.Describe("parsing format strings from CLI flags", func() {
-		ginkgo.DescribeTable("accepts known formats",
+		ginkgo.DescribeTable(
+			"accepts known formats",
 			func(input string, expected output.Format) {
 				got, err := output.ParseFormat(input)
 

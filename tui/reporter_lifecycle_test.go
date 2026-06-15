@@ -36,6 +36,7 @@ func TestBubbleTeaProgressReporter_SetCancelFunc(t *testing.T) {
 
 	// Invoke the cancel function to verify it is the one we set.
 	pr.model.cancelFunc()
+
 	if !called {
 		t.Error("cancel function should have been called")
 	}

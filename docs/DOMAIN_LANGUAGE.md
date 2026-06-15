@@ -42,18 +42,18 @@ Every term below should mean the **same thing** to everyone who reads it.
 
 ## Bounded Contexts
 
-| Context                              | Description                                                                               |
-| ------------------------------------ | ----------------------------------------------------------------------------------------- |
-| **Core** (root `package output`)     | Core types, interfaces, formatters (Markdown, Tree) + ColorMode, RenderTableData dispatch |
-| **Delimited** (`delimited/`)         | CSV + TSV writers and formatters                                                          |
-| **Serialization** (`serialization/`) | JSON + YAML marshaling and renderers (go-faster/yaml isolated here)                       |
-| **Markup** (`markup/`)               | XML + HTML + Streaming HTML renderers (escape utilities isolated here)                    |
-| **D2** (`d2/` module)                | D2-specific diagram domain — rich types, SQL tables, grid layouts, style classes          |
-| **Graph** (`graph/` module)          | DOT and Mermaid graph rendering — flowcharts, directed graphs                             |
-| **Table** (`table/` module)          | Terminal table rendering with lipgloss styling — isolated heavy dependency                |
+| Context                              | Description                                                                                  |
+| ------------------------------------ | -------------------------------------------------------------------------------------------- |
+| **Core** (root `package output`)     | Core types, interfaces, formatters (Markdown, Tree) + ColorMode, RenderTableData dispatch    |
+| **Delimited** (`delimited/`)         | CSV + TSV writers and formatters                                                             |
+| **Serialization** (`serialization/`) | JSON + YAML marshaling and renderers (go-faster/yaml isolated here)                          |
+| **Markup** (`markup/`)               | XML + HTML + Streaming HTML renderers (escape utilities isolated here)                       |
+| **D2** (`d2/` module)                | D2-specific diagram domain — rich types, SQL tables, grid layouts, style classes             |
+| **Graph** (`graph/` module)          | DOT and Mermaid graph rendering — flowcharts, directed graphs                                |
+| **Table** (`table/` module)          | Terminal table rendering with lipgloss styling — isolated heavy dependency                   |
 | **NOM** (`nom/` module)              | NOM-style real-time progress — DependencyTree, InlineRenderer, TimingCache, event subscriber |
-| **TUI** (`tui/` module)              | Bubble Tea v2 interactive progress UI — depends on nom + bubbletea + lipgloss              |
-| **BDD** (`bdd/` module)              | Behavior-driven test suite (Ginkgo/Gomega) — end-user-focused specs, test-only              |
+| **TUI** (`tui/` module)              | Bubble Tea v2 interactive progress UI — depends on nom + bubbletea + lipgloss                |
+| **BDD** (`bdd/` module)              | Behavior-driven test suite (Ginkgo/Gomega) — end-user-focused specs, test-only               |
 
 ---
 
