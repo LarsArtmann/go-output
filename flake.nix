@@ -42,6 +42,7 @@
           go = pkgs.go_1_26;
           modules = [
             "."
+            "bdd"
             "delimited"
             "d2"
             "enum"
