@@ -17,72 +17,52 @@ func (errWriter) Write(p []byte) (int, error) {
 
 var errWriteFailed = errors.New("write failed")
 
-func TestRenderDOTTableData(t *testing.T) {
+func TestRenderGraphTableData(t *testing.T) {
 	t.Parallel()
 
-	t.Run("writes DOT output to writer", func(t *testing.T) {
-		t.Parallel()
+	cases := []struct {
+		name   string
+		format output.Format
+	}{
+		{"DOT", output.FormatDOT},
+		{"Mermaid", output.FormatMermaid},
+	}
 
-		data := output.NewTableData([]string{"Name"})
-		data.AddRow([]string{"Alpha"})
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
 
-		var buf bytes.Buffer
+			t.Run("writes output to writer", func(t *testing.T) {
+				t.Parallel()
 
-		err := output.RenderTableData(data, output.FormatDOT, output.RenderOptions{Writer: &buf})
-		if err != nil {
-			t.Fatalf("RenderTableData dot: %v", err)
-		}
+				data := output.NewTableData([]string{"Name"})
+				data.AddRow([]string{"Alpha"})
 
-		if buf.Len() == 0 {
-			t.Error("expected non-empty DOT output")
-		}
-	})
+				var buf bytes.Buffer
 
-	t.Run("propagates writer error", func(t *testing.T) {
-		t.Parallel()
+				err := output.RenderTableData(data, tc.format, output.RenderOptions{Writer: &buf})
+				if err != nil {
+					t.Fatalf("RenderTableData %s: %v", tc.name, err)
+				}
 
-		data := output.NewTableData([]string{"Name"})
-		data.AddRow([]string{"Alpha"})
+				if buf.Len() == 0 {
+					t.Errorf("expected non-empty %s output", tc.name)
+				}
+			})
 
-		err := output.RenderTableData(data, output.FormatDOT, output.RenderOptions{Writer: &errWriter{}})
-		if err == nil {
-			t.Fatal("expected error from errWriter")
-		}
-	})
-}
+			t.Run("propagates writer error", func(t *testing.T) {
+				t.Parallel()
 
-func TestRenderMermaidTableData(t *testing.T) {
-	t.Parallel()
+				data := output.NewTableData([]string{"Name"})
+				data.AddRow([]string{"Alpha"})
 
-	t.Run("writes Mermaid output to writer", func(t *testing.T) {
-		t.Parallel()
-
-		data := output.NewTableData([]string{"Name"})
-		data.AddRow([]string{"Alpha"})
-
-		var buf bytes.Buffer
-
-		err := output.RenderTableData(data, output.FormatMermaid, output.RenderOptions{Writer: &buf})
-		if err != nil {
-			t.Fatalf("RenderTableData mermaid: %v", err)
-		}
-
-		if buf.Len() == 0 {
-			t.Error("expected non-empty Mermaid output")
-		}
-	})
-
-	t.Run("propagates writer error", func(t *testing.T) {
-		t.Parallel()
-
-		data := output.NewTableData([]string{"Name"})
-		data.AddRow([]string{"Alpha"})
-
-		err := output.RenderTableData(data, output.FormatMermaid, output.RenderOptions{Writer: &errWriter{}})
-		if err == nil {
-			t.Fatal("expected error from errWriter")
-		}
-	})
+				err := output.RenderTableData(data, tc.format, output.RenderOptions{Writer: &errWriter{}})
+				if err == nil {
+					t.Fatal("expected error from errWriter")
+				}
+			})
+		})
+	}
 }
 
 func TestNewGraphNodeIDAndLabel(t *testing.T) {
