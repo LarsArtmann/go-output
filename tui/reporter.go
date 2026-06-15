@@ -121,6 +121,7 @@ func (pr *BubbleTeaProgressReporter) ReportError(err error) {
 // if currently Idle, and returns true only if the workflow accepts updates.
 func (pr *BubbleTeaProgressReporter) ensureStartedAndActive() bool {
 	pr.ensureStarted()
+
 	if pr.model.workflowState == WorkflowStateIdle {
 		pr.transitionWorkflowState(WorkflowStateRunning)
 	}

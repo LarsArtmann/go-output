@@ -13,7 +13,6 @@ var (
 	colorWarning  color.Color = lipgloss.Color("11")
 	colorDim      color.Color = lipgloss.Color("8")
 	colorError    color.Color = lipgloss.Color("9")
-	colorCyan     color.Color = lipgloss.Color("14")
 	colorSelectBG color.Color = lipgloss.Color("62")
 	colorSelectFG color.Color = lipgloss.Color("230")
 	colorHelpFG   color.Color = lipgloss.Color("15")

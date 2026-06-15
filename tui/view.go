@@ -54,6 +54,7 @@ func (m *ProgressModel) applyScrollViewport(content string) string {
 	if m.scrollOffset > maxOffset {
 		m.scrollOffset = maxOffset
 	}
+
 	if m.scrollOffset < 0 {
 		m.scrollOffset = 0
 	}
@@ -61,6 +62,7 @@ func (m *ProgressModel) applyScrollViewport(content string) string {
 	end := min(m.scrollOffset+m.height, totalLines)
 
 	visible := lines[m.scrollOffset:end]
+
 	return strings.Join(visible, "\n")
 }
 
@@ -245,7 +247,9 @@ func (m *ProgressModel) renderSummaryBar() string {
 // renderNOMStyle creates a NOM-style display with dependency tree nom.
 func (m *ProgressModel) renderNOMStyle() string {
 	m.treeStartLine = 0
+
 	var contentSections []string
+
 	// Render dependency tree if available
 	if m.dependencyTree != nil {
 		treeSection := m.renderDependencyTree()
@@ -355,9 +359,11 @@ func (m *ProgressModel) renderHelpOverlay() string {
 
 	width := m.width
 	height := m.height
+
 	if width <= 0 {
 		width = defaultHelpWidth
 	}
+
 	if height <= 0 {
 		height = defaultHelpHeight
 	}
