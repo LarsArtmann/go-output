@@ -6,18 +6,36 @@ import (
 	"charm.land/lipgloss/v2"
 )
 
-var (
-	colorInfo     color.Color = lipgloss.Color("12")
-	colorTitle    color.Color = lipgloss.Color("39")
-	colorSuccess  color.Color = lipgloss.Color("10")
-	colorWarning  color.Color = lipgloss.Color("11")
-	colorDim      color.Color = lipgloss.Color("8")
-	colorError    color.Color = lipgloss.Color("9")
-	colorSelectBG color.Color = lipgloss.Color("62")
-	colorSelectFG color.Color = lipgloss.Color("230")
-	colorHelpFG   color.Color = lipgloss.Color("15")
-	colorHelpBG   color.Color = lipgloss.Color("0")
-)
+// terminalColors groups all ANSI colors used by the TUI into a single
+// cohesive, swappable theme. Immutable after initialization.
+type terminalColors struct {
+	info     color.Color
+	title    color.Color
+	success  color.Color
+	warning  color.Color
+	dim      color.Color
+	err      color.Color
+	selectBG color.Color
+	selectFG color.Color
+	helpFG   color.Color
+	helpBG   color.Color
+}
+
+// colors is the default terminal color theme, set once at package init.
+//
+//nolint:gochecknoglobals // immutable theme configuration (ANSI color constants)
+var colors = terminalColors{
+	info:     lipgloss.Color("12"),
+	title:    lipgloss.Color("39"),
+	success:  lipgloss.Color("10"),
+	warning:  lipgloss.Color("11"),
+	dim:      lipgloss.Color("8"),
+	err:      lipgloss.Color("9"),
+	selectBG: lipgloss.Color("62"),
+	selectFG: lipgloss.Color("230"),
+	helpFG:   lipgloss.Color("15"),
+	helpBG:   lipgloss.Color("0"),
+}
 
 const (
 	progressBarWidth  = 40

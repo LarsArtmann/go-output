@@ -96,7 +96,7 @@ func (m *ProgressModel) renderCurrentMessage() string {
 
 	messageStyle := lipgloss.NewStyle().
 		Italic(true).
-		Foreground(colorInfo)
+		Foreground(colors.info)
 
 	return messageStyle.Render(m.currentMessage)
 }
@@ -105,7 +105,7 @@ func (m *ProgressModel) renderCurrentMessage() string {
 func (m *ProgressModel) renderTitle(text string) string {
 	titleStyle := lipgloss.NewStyle().
 		Bold(true).
-		Foreground(colorTitle).
+		Foreground(colors.title).
 		MarginBottom(1)
 
 	return titleStyle.Render(text)
@@ -157,14 +157,14 @@ func (m *ProgressModel) renderSteps() string {
 // stepIconAndStyle returns the icon and lipgloss style for a step based on its state.
 func stepIconAndStyle(step ProgressStep) (string, lipgloss.Style) {
 	if step.CompletedAt != nil {
-		return "✅", lipgloss.NewStyle().Foreground(colorSuccess)
+		return "✅", lipgloss.NewStyle().Foreground(colors.success)
 	}
 
 	if step.IsActive {
-		return "🔄", lipgloss.NewStyle().Foreground(colorWarning)
+		return "🔄", lipgloss.NewStyle().Foreground(colors.warning)
 	}
 
-	return "⏸️", lipgloss.NewStyle().Foreground(colorDim)
+	return "⏸️", lipgloss.NewStyle().Foreground(colors.dim)
 }
 
 // renderStep renders a single step with nh-style formatting.
@@ -214,7 +214,7 @@ func (m *ProgressModel) renderProgressBar() string {
 	filled := int((m.currentProgress / 100.0) * float64(width))
 	bar := strings.Repeat("█", filled) + strings.Repeat("░", width-filled)
 	progressStyle := lipgloss.NewStyle().
-		Foreground(colorInfo)
+		Foreground(colors.info)
 
 	return progressStyle.Render(fmt.Sprintf("Progress: [%s] %.1f%%", bar, m.currentProgress))
 }
@@ -296,8 +296,8 @@ func (m *ProgressModel) renderDependencyTree() string {
 		line := m.dependencyTree.RenderNode(node, m.visibleNodes)
 		if m.selectedNode != "" && node.ActivityID == m.selectedNode {
 			line = lipgloss.NewStyle().
-				Background(colorSelectBG).
-				Foreground(colorSelectFG).
+				Background(colors.selectBG).
+				Foreground(colors.selectFG).
 				Render(line)
 		}
 
@@ -339,8 +339,8 @@ func (m *ProgressModel) renderHelpOverlay() string {
 	helpStyle := lipgloss.NewStyle().
 		Border(lipgloss.RoundedBorder()).
 		Padding(1, 2).
-		Foreground(colorHelpFG).
-		Background(colorHelpBG)
+		Foreground(colors.helpFG).
+		Background(colors.helpBG)
 
 	shortcuts := []string{
 		"  Keyboard Shortcuts",
