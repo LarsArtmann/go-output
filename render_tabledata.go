@@ -11,7 +11,10 @@ type RenderOptions struct {
 	// Title is used as the document title for HTML output and as a header for Markdown.
 	Title string
 
-	// GraphID is used as the graph identifier for DOT output.
+	// GraphID is intended as the graph identifier for DOT output via
+	// RenderTableData, but is not currently read by any marshaler.
+	// To set a DOT graph ID, use DOTRenderer.SetGraphID() directly.
+	// This field may be wired in a future version or removed at v1.
 	GraphID string
 
 	// Writer overrides the default os.Stdout output destination.
