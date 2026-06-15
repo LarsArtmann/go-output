@@ -92,6 +92,20 @@
 
           checks.format = config.treefmt.build.check inputs.self;
 
+          packages.default =
+            pkgs.runCommand "go-output"
+              {
+                meta = with pkgs.lib; {
+                  description = "Reusable Go library for CLI output formatting across 16 formats with NOM-style progress visualization";
+                  homepage = "https://github.com/larsartmann/go-output";
+                  license = licenses.mit;
+                  platforms = platforms.unix;
+                };
+              }
+              ''
+                echo "go-output library — use 'go get github.com/larsartmann/go-output' to install" > $out
+              '';
+
           devShells = {
             default = pkgs.mkShellNoCC {
               name = "go-output";
