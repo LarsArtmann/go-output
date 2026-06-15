@@ -17,7 +17,7 @@ Every term below should mean the **same thing** to everyone who reads it.
 | **GraphNode**          | A node in a graph with branded ID, label, and optional shape           | Used by DOT, Mermaid, JSON Graph, YAML Graph renderers                       |
 | **GraphEdge**          | A directed edge between two GraphNodes with optional label and style   | Used alongside GraphNode in graph renderers                                  |
 | **Branded ID**         | A phantom-typed identifier (e.g., `D2NodeID`, `TreeNodeID`)            | Prevents mixing different ID types at compile time                           |
-| **GraphRendererMixin** | Shared state holder for graph renderers (nodes, edges)                 | Embedded by DOTRenderer and MermaidRenderer in `graph/` module               |
+| **GraphRendererState** | Shared state holder for graph renderers (nodes, edges)                 | Embedded by DOTRenderer and MermaidRenderer in `graph/` module               |
 | **ColorMode**          | Terminal color output mode: auto, always, never                        | Respects `NO_COLOR`, CI env vars, TTY detection                              |
 | **Registry**           | Format→marshaler dispatch map for `RenderTableData`                    | `RegisterTableDataMarshaler(format, fn)` — sub-modules register in `init()`  |
 
@@ -51,6 +51,9 @@ Every term below should mean the **same thing** to everyone who reads it.
 | **D2** (`d2/` module)                | D2-specific diagram domain — rich types, SQL tables, grid layouts, style classes          |
 | **Graph** (`graph/` module)          | DOT and Mermaid graph rendering — flowcharts, directed graphs                             |
 | **Table** (`table/` module)          | Terminal table rendering with lipgloss styling — isolated heavy dependency                |
+| **NOM** (`nom/` module)              | NOM-style real-time progress — DependencyTree, InlineRenderer, TimingCache, event subscriber |
+| **TUI** (`tui/` module)              | Bubble Tea v2 interactive progress UI — depends on nom + bubbletea + lipgloss              |
+| **BDD** (`bdd/` module)              | Behavior-driven test suite (Ginkgo/Gomega) — end-user-focused specs, test-only              |
 
 ---
 

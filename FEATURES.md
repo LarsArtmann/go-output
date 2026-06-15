@@ -211,6 +211,35 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 
 ---
 
+## Progress Visualization (NOM & TUI)
+
+### NOM-style Real-time Progress (`nom/` module)
+
+| Feature                              | Status           | Notes                                                                                                                |
+| ------------------------------------ | ---------------- | -------------------------------------------------------------------------------------------------------------------- |
+| **NOMStyleSubscriber**               | FULLY_FUNCTIONAL | Event-driven subscriber implementing `EventSubscriber`. Routes string-based events without sharing concrete types    |
+| **DependencyTree**                   | FULLY_FUNCTIONAL | Hierarchical activity visualization. Priority filtering (Running > Failed > Pending > Completed), depth-aware prefixes |
+| **InlineRenderer**                   | FULLY_FUNCTIONAL | Real-time inline terminal renderer. Start/Stop/Finish lifecycle, cursor hiding, no-color mode, ANSI redraw          |
+| **TimingCache**                      | FULLY_FUNCTIONAL | Persists activity durations as CSV at `~/.cache/nom-timing.csv`. Async saves, caps 10 entries/activity                |
+| **ActivityStatus enum**              | FULLY_FUNCTIONAL | 5 states: Running, Failed, Paused, Pending, Completed                                                                |
+| **Branded IDs**                      | FULLY_FUNCTIONAL | `ActivityID`, `ActivityName`, `WorkflowID`, `WorkflowName` — compile-time type safety                                 |
+| **Event accessor interfaces**        | FULLY_FUNCTIONAL | `WorkflowEventAccessor`, `ActivityEventAccessor`, `DurationAccessor`, `ErrorAccessor` — type-assertion routing       |
+| **Activity symbols**                 | FULLY_FUNCTIONAL | `SymbolRunning`, `SymbolCompleted`, `SymbolFailed`, `SymbolPaused`, `SymbolDownload`, `SymbolUpload`, `SymbolTiming` |
+| **Lazy build (double-checked lock)** | FULLY_FUNCTIONAL | `DependencyTree.Build()`/`EnsureBuild()` use `buildOnce`/`loaded` to prevent rebuild under read lock                 |
+
+### Bubble Tea Interactive TUI (`tui/` module)
+
+| Feature                          | Status           | Notes                                                                                                          |
+| -------------------------------- | ---------------- | -------------------------------------------------------------------------------------------------------------- |
+| **BubbleTeaProgressReporter**    | FULLY_FUNCTIONAL | Reports progress to a Bubble Tea program. Lazy TUI start via double-checked locking                            |
+| **ProgressModel**                | FULLY_FUNCTIONAL | Bubble Tea `Model`: `Init()`/`Update()`/`View()`. Handles `TickMsg`, `ProgressUpdateMsg`, `CancelMsg`           |
+| **WorkflowState machine**        | FULLY_FUNCTIONAL | Enforces `Idle → Running → Completed/Errored`. Terminal states reject updates/ticks                            |
+| **DisplayModeNOM**               | FULLY_FUNCTIONAL | Renders NOM dependency tree + activity status                                                                  |
+| **DisplayModeUniversal**         | FULLY_FUNCTIONAL | Renders step-based progress (like `nh darwin switch`)                                                          |
+| **Reporter API**                 | FULLY_FUNCTIONAL | `Start()`, `Stop()`, `ReportStep()`, `ReportProgress()`, `ReportError()`, `ReportMessage()`, `SetDisplayMode()` |
+
+---
+
 ## Testing Infrastructure
 
 | Feature                 | Status           | Notes                                                                                                                                                                                                                                    |
@@ -241,6 +270,8 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 | **markup/**                        | FULLY_FUNCTIONAL | HTML, XML, AsciiDoc renderers. Isolated from root module       |
 | **plantuml/**                      | FULLY_FUNCTIONAL | PlantUML diagram renderer. Isolated from root module           |
 | **serialization/**                 | FULLY_FUNCTIONAL | JSON, YAML, TOML, JSONL renderers. Isolated from root module   |
+| **nom/**                           | FULLY_FUNCTIONAL | NOM-style real-time progress (dependency trees, timing cache). Lipgloss-only |
+| **tui/**                           | FULLY_FUNCTIONAL | Bubble Tea interactive TUI (depends on nom + bubbletea + lipgloss)            |
 | **go.work**                        | FULLY_FUNCTIONAL | Gitignored. `go.work.example` provided for local development   |
 
 ---
@@ -287,8 +318,8 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 
 ---
 
-**Last audited:** 2026-06-08
-**Total features:** 138
-**Fully functional:** 129
+**Last audited:** 2026-06-15
+**Total features:** 160
+**Fully functional:** 151
 **Removed:** 9 (FormatCategory, OutputFormat, SortBy, FilledStrings, Register, Create, Unregister, RegisteredFormats, IsRegistered)
 **Known issues:** 0
