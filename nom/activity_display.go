@@ -21,11 +21,12 @@ type DisplayState struct {
 // ============================================================================
 // ActivityDisplayState represents the display state of an activity in NOM visualization.
 type ActivityDisplayState struct {
+	// Shared display state (synced to TreeNode)
+	DisplayState
+
 	// Core activity information
 	ActivityID   ActivityID
 	ActivityName ActivityName
-	// Shared display state (synced to TreeNode)
-	DisplayState
 	// Timing information (ActivityDisplayState-specific)
 	EndTime time.Time
 	// Operation type for prefix symbol

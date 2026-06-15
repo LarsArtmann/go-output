@@ -135,10 +135,12 @@ func (r *InlineRenderer) Render() {
 		output = fmt.Sprintf(ansiCursorUpN, r.prevLines) + "\r"
 
 		frameLines := strings.Split(frame, "\n")
+
 		var rebuilt strings.Builder
 
 		for i, line := range frameLines {
 			rebuilt.WriteString(ansiClearLine + line)
+
 			if i < len(frameLines)-1 {
 				rebuilt.WriteString("\n")
 			}
@@ -149,9 +151,20 @@ func (r *InlineRenderer) Render() {
 
 	output += frame + "\n"
 
-	fmt.Fprint(r.writer, output)
+	r.write(output)
 
 	r.prevLines = lines
+}
+
+// write writes a string to the renderer's writer, ignoring errors.
+// Terminal output is best-effort: a broken pipe should not crash the render loop.
+func (r *InlineRenderer) write(s string) {
+	_, _ = fmt.Fprint(r.writer, s)
+}
+
+// writef writes a formatted string to the renderer's writer, ignoring errors.
+func (r *InlineRenderer) writef(format string, args ...any) {
+	_, _ = fmt.Fprintf(r.writer, format, args...)
 }
 
 // Finish clears the in-place frame and prints the final static tree.
@@ -160,39 +173,41 @@ func (r *InlineRenderer) Finish(workflowErr error) {
 	tree := r.subscriber.GetDependencyTree()
 
 	if r.prevLines > 0 {
-		fmt.Fprint(r.writer, fmt.Sprintf(ansiCursorUpN, r.prevLines)+"\r")
+		r.write(fmt.Sprintf(ansiCursorUpN, r.prevLines) + "\r")
 
 		for range r.prevLines {
-			fmt.Fprint(r.writer, ansiClearLine+"\n")
+			r.write(ansiClearLine + "\n")
 		}
 
-		fmt.Fprint(r.writer, fmt.Sprintf(ansiCursorUpN, r.prevLines)+"\r")
+		r.write(fmt.Sprintf(ansiCursorUpN, r.prevLines) + "\r")
 		r.prevLines = 0
 	}
 
 	if r.hideCursor {
-		fmt.Fprint(r.writer, ansiShowCursor)
+		r.write(ansiShowCursor)
 	}
 
 	if tree != nil {
 		final := tree.Render(0)
 		if final != msgNoActivitiesToDisplay {
-			fmt.Fprintln(r.writer, final)
+			r.write(final + "\n")
 		}
 	}
 
+	status := "completed successfully."
+	if workflowErr != nil {
+		status = fmt.Sprintf("failed: %v", workflowErr)
+	}
+
 	if r.noColor {
-		if workflowErr != nil {
-			fmt.Fprintf(r.writer, "%s failed: %v\n", r.appName, workflowErr)
-		} else {
-			fmt.Fprintf(r.writer, "%s completed successfully.\n", r.appName)
-		}
+		r.writef("%s %s\n", r.appName, status)
 	} else {
+		c := "\033[32m" // green
 		if workflowErr != nil {
-			fmt.Fprintf(r.writer, "\033[31m%s failed: %v\033[0m\n", r.appName, workflowErr)
-		} else {
-			fmt.Fprintf(r.writer, "\033[32m%s completed successfully.\033[0m\n", r.appName)
+			c = "\033[31m" // red
 		}
+
+		r.writef("%s%s %s\033[0m\n", c, r.appName, status)
 	}
 }
 

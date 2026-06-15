@@ -201,21 +201,21 @@ func TestActivityDisplayState_Copy(t *testing.T) {
 	original.SetRunning()
 	original.addDependency("dep1")
 
-	copy := original.Copy()
+	copied := original.Copy()
 
-	if copy.ActivityID != original.ActivityID {
+	if copied.ActivityID != original.ActivityID {
 		t.Error("Copy should preserve ActivityID")
 	}
 
-	if copy.ActivityName != original.ActivityName {
+	if copied.ActivityName != original.ActivityName {
 		t.Error("Copy should preserve ActivityName")
 	}
 
-	if copy.Status != original.Status {
+	if copied.Status != original.Status {
 		t.Error("Copy should preserve Status")
 	}
 
-	copy.addDependency("dep2")
+	copied.addDependency("dep2")
 
 	if len(original.Dependencies) == 2 {
 		t.Error("modifying copy should not affect original (deep copy failed)")

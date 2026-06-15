@@ -91,6 +91,7 @@ func (ns *NOMStyleSubscriber) handleWorkflowStarted(
 	if ns.activities == nil {
 		ns.activities = make(map[ActivityID]*ActivityDisplayState)
 	}
+
 	if ns.dependencyTree == nil {
 		ns.dependencyTree = NewDependencyTree()
 	}

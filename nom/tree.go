@@ -12,11 +12,12 @@ const (
 
 // TreeNode represents a node in the dependency tree.
 type TreeNode struct {
+	// Shared display state (synced from ActivityDisplayState)
+	DisplayState
+
 	// Core activity information
 	ActivityID   ActivityID
 	ActivityName string
-	// Shared display state (synced from ActivityDisplayState)
-	DisplayState
 	// Tree structure
 	Parent           *TreeNode
 	Children         []*TreeNode

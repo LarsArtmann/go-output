@@ -61,6 +61,7 @@ func (dt *DependencyTree) collectVisibleNodes(maxHeight int) []visibleEntry {
 
 	for _, root := range dt.roots {
 		dt.walkSubtree(root, "", true, true, &visible, maxHeight)
+
 		if len(visible) >= maxHeight {
 			break
 		}
@@ -165,7 +166,7 @@ func (dt *DependencyTree) renderLine(entry visibleEntry) string {
 
 		activityDisplay += lipgloss.NewStyle().
 			Foreground(ColorInfo).
-			Render(fmt.Sprintf(" ⬅ depends on %s", strings.Join(depNames, ", ")))
+			Render(" ⬅ depends on " + strings.Join(depNames, ", "))
 	}
 
 	style := lipgloss.NewStyle().
