@@ -1,0 +1,135 @@
+direction: down
+
+core: {
+  label: Core Layer
+  style.fill: "#e3f2fd"
+  style.stroke: "#1976d2"
+
+  root: {
+    label: |go
+      root (package output)
+      Core types, shape matrix,
+      Registry dispatch (unified Renderer terminology)
+    |
+    shape: rectangle
+  }
+  enum: {label: |go enum/ Generic enums |; shape: rectangle}
+  escape: {label: |go escape/ Escaping |; shape: rectangle}
+  testhelpers: {label: |go testhelpers/ Assertions |; shape: rectangle}
+}
+
+formatters: {
+  label: Formatter Layer
+  style.fill: "#f3e5f5"
+  style.stroke: "#7b1fa2"
+
+  delimited: {label: |go delimited/ CSV + TSV |; shape: rectangle}
+  serialization: {label: |go serialization/ JSON+YAML+TOML+JSONL |; shape: rectangle}
+  markup: {label: |go markup/ XML+HTML+AsciiDoc |; shape: rectangle}
+  table: {label: |go table/ Lipgloss tables |; shape: rectangle}
+  d2: {label: |go d2/ D2 diagrams |; shape: rectangle}
+  graph: {label: |go graph/ DOT + Mermaid |; shape: rectangle}
+  plantuml: {label: |go plantuml/ PlantUML |; shape: rectangle}
+}
+
+progress: {
+  label: Progress Layer (DECOMPOSED target)
+  style.fill: "#e8f5e9"
+  style.stroke: "#388e3c"
+
+  nom: {
+    label: |go
+      nom/ — thin public API
+      NOMStyleSubscriber only
+    |
+    shape: rectangle
+
+    nom_tree: {
+      label: |go
+        internal/tree
+        DependencyTree
+        priority-filter, build-lock
+      |
+      shape: rectangle
+      style.fill: "#c8e6c9"
+    }
+
+    nom_cache: {
+      label: |go
+        internal/cache
+        TimingCache
+        csv-persist, async-save
+      |
+      shape: rectangle
+      style.fill: "#c8e6c9"
+    }
+
+    nom_render: {
+      label: |go
+        internal/render
+        InlineRenderer
+        error-collecting writer
+      |
+      shape: rectangle
+      style.fill: "#c8e6c9"
+    }
+  }
+
+  tui: {
+    label: |go
+      tui/
+      Bubble Tea TUI
+      immutable style registry
+      (was 11 mutable globals)
+    |
+    shape: rectangle
+  }
+}
+
+aggregators: {
+  label: Leaf Aggregators
+  style.fill: "#fff3e0"
+  style.stroke: "#f57c00"
+  integration: {label: |go integration/ |; shape: rectangle}
+  examples: {label: |go examples/ |; shape: rectangle}
+}
+
+external: {
+  label: External Deps
+  style.fill: "#fafafa"
+  style.stroke: "#9e9e9e"
+  lipgloss: {label: "charm.land/lipgloss/v2"; shape: circle}
+  bubbletea: {label: "charm.land/bubbletea/v2"; shape: circle}
+  yaml: {label: "go-faster/yaml"; shape: circle}
+  toml: {label: "pelletier/go-toml/v2"; shape: circle}
+  term: {label: "golang.org/x/term"; shape: circle}
+  branded: {label: "go-branded-id"; shape: circle}
+}
+
+root -> enum: uses
+root -> term: uses
+root -> branded: uses
+
+delimited -> root: imports
+serialization -> root: imports
+markup -> root: imports
+markup -> escape: imports
+table -> root: imports
+d2 -> root: imports
+d2 -> escape: imports
+graph -> root: imports
+graph -> escape: imports
+plantuml -> root: imports
+
+table -> lipgloss: imports
+serialization -> yaml: imports
+serialization -> toml: imports
+
+nom -> root: imports
+nom -> lipgloss: imports
+tui -> nom: imports
+tui -> bubbletea: imports
+tui -> lipgloss: imports
+
+integration -> root: tests
+examples -> root: demos
