@@ -186,6 +186,12 @@ linters:
             - sync
             - testing
             - time
+            - log
+            - github.com/charmbracelet/x/ansi
+            - github.com/onsi/ginkgo/v2
+            - github.com/onsi/gomega
+            - github.com/charmbracelet/x/exp/golden
+            - github.com/mattn/go-runewidth
         examples:
           allow:
             - $STDERR
@@ -211,6 +217,9 @@ linters:
           files:
             - examples/**/*.go
         main:
+          files:
+            - "**/*.go"
+            - "!**/*_test.go"
           allow:
             - $STDERR
             - $GITHUB_ACTION
@@ -256,6 +265,9 @@ linters:
             - sync
             - testing
             - time
+            - log
+            - github.com/charmbracelet/x/ansi
+            - github.com/mattn/go-runewidth
     exhaustruct:
       exclude:
         - os/exec.Cmd
