@@ -9,7 +9,7 @@ require (
 	github.com/larsartmann/go-output/delimited v0.10.1
 	github.com/larsartmann/go-output/graph v0.6.3
 	github.com/larsartmann/go-output/markup v0.6.3
-	github.com/larsartmann/go-output/nom v0.7.2
+	github.com/larsartmann/go-output/nom v0.10.1
 	github.com/larsartmann/go-output/plantuml v0.6.3
 	github.com/larsartmann/go-output/serialization v0.10.1
 	github.com/larsartmann/go-output/table v0.6.3
@@ -19,7 +19,7 @@ require (
 
 require (
 	charm.land/bubbletea/v2 v2.0.7 // indirect
-	charm.land/lipgloss/v2 v2.0.3 // indirect
+	charm.land/lipgloss/v2 v2.0.4 // indirect
 	github.com/charmbracelet/colorprofile v0.4.3 // indirect
 	github.com/charmbracelet/ultraviolet v0.0.0-20260608091853-35bcb7319efa // indirect
 	github.com/charmbracelet/x/ansi v0.11.7 // indirect
