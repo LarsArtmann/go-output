@@ -17,7 +17,7 @@ func newTestTree(nodeCount int) *nom.DependencyTree {
 		tree.AddActivity(id, name, []nom.ActivityID{"root"})
 	}
 
-	tree.EnsureBuild()
+	_ = tree.GetRootNodes()
 
 	return tree
 }

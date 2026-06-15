@@ -1,7 +1,6 @@
 package tui
 
 import (
-	"errors"
 	"testing"
 	"time"
 
@@ -189,7 +188,7 @@ func TestBubbleTeaProgressReporter_ReportError(t *testing.T) {
 
 	reporter := NewBubbleTeaProgressReporter()
 	reporter.ReportProgress(50.0)
-	reporter.ReportError(errors.New("disk full"))
+	reporter.ReportError(errDiskFull)
 
 	if reporter.model.workflowState != WorkflowStateErrored {
 		t.Errorf("workflow state = %v, want Errored", reporter.model.workflowState)
@@ -200,7 +199,7 @@ func TestBubbleTeaProgressReporter_ReportError_CannotTransitionFromIdle(t *testi
 	t.Parallel()
 
 	reporter := NewBubbleTeaProgressReporter()
-	reporter.ReportError(errors.New("fail"))
+	reporter.ReportError(errTestFail)
 
 	if reporter.model.workflowState != WorkflowStateIdle {
 		t.Errorf("cannot transition from idle to errored, state = %v", reporter.model.workflowState)

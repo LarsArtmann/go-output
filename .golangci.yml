@@ -373,6 +373,15 @@ linters:
         linters:
           - paralleltest
       - path: _test\.go$
+        linters:
+          - errcheck
+          - forcetypeassert
+          - err113
+      - path: _test\.go$
+        text: (?:G104)
+        linters:
+          - gosec
+      - path: _test\.go$
         text: (?:make it a constant|but such constant)
         linters:
           - goconst

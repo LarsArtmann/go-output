@@ -243,7 +243,7 @@ func TestProgressModel_SelectedNodeHighlight(t *testing.T) {
 	tree := nom.NewDependencyTree()
 	_ = tree.AddActivity(nom.ActivityID("step-a"), "Step A", nil)
 	_ = tree.AddActivity(nom.ActivityID("step-b"), "Step B", []nom.ActivityID{"step-a"})
-	tree.EnsureBuild()
+	_ = tree.GetRootNodes()
 
 	model.dependencyTree = tree
 	model.selectedNode = nom.ActivityID("step-a")

@@ -210,7 +210,7 @@ func TestProgressModel_MouseClick_SelectsNode(t *testing.T) {
 	tree := setupTestTree(model)
 	_ = tree.AddActivity(nom.ActivityID("step-a"), "Step A", nil)
 	_ = tree.AddActivity(nom.ActivityID("step-b"), "Step B", []nom.ActivityID{"step-a"})
-	tree.EnsureBuild()
+	_ = tree.GetRootNodes()
 	model.visibleNodes = tree.VisibleNodes(20)
 
 	// Click on the first tree line (line 0 relative to tree = line 7 absolute with chrome)
@@ -235,7 +235,7 @@ func TestProgressModel_MouseClick_ToggleOffNode(t *testing.T) {
 
 	tree := setupTestTree(model)
 	_ = tree.AddActivity(nom.ActivityID("step-a"), "Step A", nil)
-	tree.EnsureBuild()
+	_ = tree.GetRootNodes()
 	model.visibleNodes = tree.VisibleNodes(20)
 	model.selectedNode = nom.ActivityID("step-a")
 
@@ -260,7 +260,7 @@ func TestProgressModel_MouseClick_IgnoresRightClick(t *testing.T) {
 
 	tree := nom.NewDependencyTree()
 	_ = tree.AddActivity(nom.ActivityID("step-a"), "Step A", nil)
-	tree.EnsureBuild()
+	_ = tree.GetRootNodes()
 
 	model.dependencyTree = tree
 	model.visibleNodes = tree.VisibleNodes(20)
