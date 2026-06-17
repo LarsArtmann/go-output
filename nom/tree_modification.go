@@ -29,6 +29,10 @@ func (dt *DependencyTree) AddActivity(
 		}
 		// Primary parent is the first dependency; others are secondary parents (display only)
 		if i == 0 {
+			// Remove from old parent's Children to prevent phantom edges on re-parenting
+			if node.Parent != nil && node.Parent != depNode {
+				node.Parent.removeChild(node.ActivityID)
+			}
 			node.Parent = depNode
 			if !depNode.hasChild(node.ActivityID) {
 				depNode.Children = append(depNode.Children, node)

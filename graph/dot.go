@@ -87,15 +87,42 @@ func (r *DOTRenderer) SetSplines(style SplineStyle) *DOTRenderer {
 	return r
 }
 
+// isValidNumericSep reports whether s is a valid DOT nodesep/ranksep value:
+// a non-negative number (int or float) without any characters that could
+// inject attributes or statements.
+func isValidNumericSep(s string) bool {
+	if s == "" {
+		return false
+	}
+	hasDigit := false
+	for _, c := range s {
+		switch {
+		case c >= '0' && c <= '9':
+			hasDigit = true
+		case c == '.':
+			// allowed — decimal point
+		default:
+			return false
+		}
+	}
+	return hasDigit
+}
+
 // SetNodeSep sets the minimum space between two adjacent nodes in the same rank.
+// The value must be numeric (e.g., "0.5", "2") to prevent DOT injection.
 func (r *DOTRenderer) SetNodeSep(sep string) *DOTRenderer {
-	r.nodesep = sep
+	if isValidNumericSep(sep) {
+		r.nodesep = sep
+	}
 	return r
 }
 
 // SetRankSep sets the minimum space between two consecutive ranks.
+// The value must be numeric (e.g., "0.5", "2") to prevent DOT injection.
 func (r *DOTRenderer) SetRankSep(sep string) *DOTRenderer {
-	r.ranksep = sep
+	if isValidNumericSep(sep) {
+		r.ranksep = sep
+	}
 	return r
 }
 
@@ -193,11 +220,11 @@ func (r *DOTRenderer) writeEdge(b *strings.Builder, edge output.GraphEdge) {
 	}
 
 	if edge.Style.Color != "" {
-		attrs = append(attrs, "color="+edge.Style.Color)
+		attrs = append(attrs, "color="+escape.DOT(edge.Style.Color))
 	}
 
 	if edge.Style.Style != "" {
-		attrs = append(attrs, "style="+edge.Style.Style)
+		attrs = append(attrs, "style="+escape.DOT(edge.Style.Style))
 	}
 
 	if len(attrs) > 0 {

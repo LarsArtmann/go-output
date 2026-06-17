@@ -70,6 +70,13 @@ func (n *ActivityNode) hasChild(id ActivityID) bool {
 	})
 }
 
+// removeChild removes the child with the given activity ID, if present.
+func (n *ActivityNode) removeChild(id ActivityID) {
+	n.Children = slices.DeleteFunc(n.Children, func(c *ActivityNode) bool {
+		return c.ActivityID == id
+	})
+}
+
 // hasSecondaryParent returns true if this node already has the given activity ID
 // as a secondary parent.
 func (n *ActivityNode) hasSecondaryParent(id ActivityID) bool {
