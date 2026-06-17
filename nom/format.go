@@ -39,7 +39,10 @@ func FormatDuration(duration time.Duration) string {
 	}
 
 	if duration < time.Minute {
-		return fmt.Sprintf(TimingFormat, duration.Seconds())
+		// Use integer math (tenths of a second) to avoid float rounding
+		// across the minute boundary (59.95s would display as "60.0s" with %.1f).
+		tenths := int(duration / (100 * time.Millisecond))
+		return fmt.Sprintf("%d.%ds", tenths/10, tenths%10)
 	}
 
 	minutes := int(duration.Minutes())

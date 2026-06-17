@@ -16,6 +16,7 @@ func TestFormatDuration(t *testing.T) {
 		{"milliseconds", 500 * time.Millisecond, "500ms"},
 		{"1 second", 1 * time.Second, "1.0s"},
 		{"1.5 seconds", 1500 * time.Millisecond, "1.5s"},
+		{"59.95 seconds boundary", 59950 * time.Millisecond, "59.9s"},
 		{"1 minute", 1 * time.Minute, "1m"},
 		{"1 minute 30 seconds", 90 * time.Second, "1m30s"},
 		{"2 minutes", 2 * time.Minute, "2m"},
