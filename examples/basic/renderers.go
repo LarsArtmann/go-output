@@ -204,15 +204,66 @@ func renderDiagram(projects []Project, createRenderer func(*output.TableData) ou
 }
 
 func renderMermaid(projects []Project) {
-	renderDiagram(projects, func(data *output.TableData) output.Renderer {
-		return graph.MermaidFromTableData(data)
+	renderer := graph.NewMermaidRenderer()
+	renderer.SetCodeFence(false)
+
+	for _, p := range projects {
+		renderer.AddNode(output.GraphNode{
+			ID:    output.NewBrandedID[output.GraphNodeIDBrand](p.Name),
+			Label: output.NewBrandedID[output.GraphNodeLabelBrand](p.Name),
+			Style: output.GraphStyle{
+				FillColor:   "#e8a838",
+				StrokeColor: "#4a4030",
+				FontColor:   "#14110d",
+			},
+		})
+	}
+
+	renderer.AddEdge(output.GraphEdge{
+		From: output.NewBrandedID[output.GraphNodeIDBrand]("Alpha"),
+		To:   output.NewBrandedID[output.GraphNodeIDBrand]("Beta"),
 	})
+	renderer.AddEdge(output.GraphEdge{
+		From: output.NewBrandedID[output.GraphNodeIDBrand]("Alpha"),
+		To:   output.NewBrandedID[output.GraphNodeIDBrand]("Beta"),
+	})
+
+	// Removes the duplicate Alpha -> Beta edge before rendering.
+	renderer.DedupEdges()
+
+	out, err := renderer.Render()
+	if err != nil {
+		shared.HandleError(err)
+	}
+
+	fmt.Println(out)
 }
 
 func renderDOT(projects []Project) {
-	renderDiagram(projects, func(data *output.TableData) output.Renderer {
-		return graph.DOTFromTableData(data)
+	renderer := graph.NewDOTRenderer().
+		SetRankDir(graph.RankDirLR).
+		SetSplines(graph.SplineSpline).
+		SetNodeSep("0.8").
+		SetRankSep("1.0")
+
+	for _, p := range projects {
+		renderer.AddNode(output.GraphNode{
+			ID:    output.NewBrandedID[output.GraphNodeIDBrand](p.Name),
+			Label: output.NewBrandedID[output.GraphNodeLabelBrand](p.Name),
+		})
+	}
+
+	renderer.AddEdge(output.GraphEdge{
+		From: output.NewBrandedID[output.GraphNodeIDBrand]("Alpha"),
+		To:   output.NewBrandedID[output.GraphNodeIDBrand]("Beta"),
 	})
+
+	out, err := renderer.Render()
+	if err != nil {
+		shared.HandleError(err)
+	}
+
+	fmt.Println(out)
 }
 
 func renderJSONL(projects []Project) {
@@ -259,6 +310,10 @@ func renderPlantUML(projects []Project) {
 		diagram.AddNode(output.GraphNode{
 			ID:    output.NewBrandedID[output.GraphNodeIDBrand](p.Name),
 			Label: output.NewBrandedID[output.GraphNodeLabelBrand](p.Name),
+			Style: output.GraphStyle{
+				FillColor:   "#e8a838",
+				StrokeColor: "#4a4030",
+			},
 		})
 		diagram.AddEdge(output.GraphEdge{
 			From:  output.NewBrandedID[output.GraphNodeIDBrand]("projects"),
