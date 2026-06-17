@@ -1,11 +1,11 @@
 github.com/larsartmann/go-branded-id v0.3.1 h1:n53Vz3MCUy3S8YfW/v+zxL/qT96iiXZOT6p46HZysyA=
 github.com/larsartmann/go-branded-id v0.3.1/go.mod h1:fiv3t1PyNCITnE/8KtymGCUz7tQRuQxF+8oqNdFmA/Y=
-github.com/larsartmann/go-output/delimited v0.11.0 h1:18UijSClF9INucFuYn+3oFVD5CA0NGCcr/7z+A8Whi4=
-github.com/larsartmann/go-output/delimited v0.11.0/go.mod h1:I07JLGCiEkytr/lNppqVy7f+916XSCqTbEorOn4jeBM=
-github.com/larsartmann/go-output/enum v0.11.0 h1:IrBD0p0/H4nuI0RMcczXH/5clSTCvjcr829Wm10NWwM=
-github.com/larsartmann/go-output/enum v0.11.0/go.mod h1:pNUDybeebo7Lto/hU/rE6901JshdXdzaoMO185Z4hG8=
-github.com/larsartmann/go-output/testhelpers v0.11.0 h1:1Z7wWGzl6UKXfVd8k7V4ubyvxPbWpa0z4EmuwkQ1JKo=
-github.com/larsartmann/go-output/testhelpers v0.11.0/go.mod h1:HXirIrpJiVpIJ1CaI9MbmOUP26eC4JKApaFqAAe5+s8=
+github.com/larsartmann/go-output/delimited v0.12.0 h1:BasJOLcQSFnWJwdOkGIr+4oULzUuCOHuUeVcgZfDL0E=
+github.com/larsartmann/go-output/delimited v0.12.0/go.mod h1:y+22O34FAtDoDQ9dYw0rNBiGCGGs31stwMRDiLcPCLY=
+github.com/larsartmann/go-output/enum v0.12.0 h1:DZUWsT9kgiN8bfFuz4+vDh6LVRsApjHcQfJ6MnNm6aY=
+github.com/larsartmann/go-output/enum v0.12.0/go.mod h1:pNUDybeebo7Lto/hU/rE6901JshdXdzaoMO185Z4hG8=
+github.com/larsartmann/go-output/testhelpers v0.12.0 h1:6ZrskzT/lQQq/PQtFHrSb+pmPtKf079rKw9enA1Ppew=
+github.com/larsartmann/go-output/testhelpers v0.12.0/go.mod h1:HXirIrpJiVpIJ1CaI9MbmOUP26eC4JKApaFqAAe5+s8=
 golang.org/x/sys v0.46.0 h1:noSf2Fq6F8DBgS+LysIkx7rIExoNHJsxOAtPp4rthXw=
 golang.org/x/sys v0.46.0/go.mod h1:4GL1E5IUh+htKOUEOaiffhrAeqysfVGipDYzABqnCmw=
 golang.org/x/term v0.44.0 h1:0rLvDRCtNj0gZkyIXhCyOb2OAzEhLVqc4B+hrsBhrmc=
