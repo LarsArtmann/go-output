@@ -14,6 +14,10 @@ func NewBrandedID[Brand any](value string) id.ID[Brand, string] {
 }
 
 // D2NodeID is a branded identifier for D2 diagram nodes.
+//
+// TODO(split-brain m6): This type is re-exported in d2/d2.go as `type D2NodeID = output.D2NodeID`.
+// The brand struct D2NodeIDBrand also lives here in root, not in d2/ where it logically belongs.
+// In the next minor version, consider moving D2-specific brands to the d2 module.
 type D2NodeID = id.ID[D2NodeIDBrand, string]
 
 // D2NodeLabel is a branded identifier for D2 diagram node labels.

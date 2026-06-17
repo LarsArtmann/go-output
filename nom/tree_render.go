@@ -13,6 +13,9 @@ import (
 // walks each root tree recursively, building proper box-drawing prefixes (├──, └──, │).
 //
 // If maxWidth is > 0, long activity lines are truncated with "…" so they fit.
+// TODO(split-brain M4): This Render(maxHeight) signature differs from both
+// output.Renderer.Render() (string, error) and InlineRenderer.Render() (void).
+// Consider renaming to Format(maxHeight) in the next minor version.
 func (dt *DependencyTree) Render(maxHeight int) string {
 	return dt.RenderWithWidth(maxHeight, 0)
 }
