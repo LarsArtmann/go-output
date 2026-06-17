@@ -39,9 +39,10 @@ type InlineRenderer struct {
 	appName    string
 	noColor    bool
 
-	tickMu     sync.Mutex
-	cancelFn   context.CancelFunc
-	tickerDone chan struct{}
+	tickMu      sync.Mutex
+	cancelFn    context.CancelFunc
+	tickerDone  chan struct{}
+	refreshChan chan struct{}
 }
 
 // NewInlineRenderer creates an inline renderer bound to the given subscriber and writer.
@@ -111,8 +112,9 @@ func (r *InlineRenderer) Render() {
 	}
 
 	maxH := r.effectiveMaxHeight()
+	maxW := r.effectiveMaxWidth()
 
-	frame := tree.Render(maxH)
+	frame := tree.RenderWithWidth(maxH, maxW)
 
 	if frame == msgNoActivitiesToDisplay {
 		return
@@ -123,7 +125,11 @@ func (r *InlineRenderer) Render() {
 		frame += "\n" + summary
 	}
 
-	lines := strings.Count(frame, "\n") + 1
+	// Count physical lines including wrapping so the next redraw lands correctly.
+	physicalLines := PhysicalLineCount(frame, maxW)
+	if physicalLines == 0 {
+		return
+	}
 
 	var output string
 
@@ -139,7 +145,8 @@ func (r *InlineRenderer) Render() {
 		var rebuilt strings.Builder
 
 		for i, line := range frameLines {
-			rebuilt.WriteString(ansiClearLine + line)
+			rebuilt.WriteString(ansiClearLine)
+			rebuilt.WriteString(line)
 
 			if i < len(frameLines)-1 {
 				rebuilt.WriteString("\n")
@@ -153,7 +160,7 @@ func (r *InlineRenderer) Render() {
 
 	r.write(output)
 
-	r.prevLines = lines
+	r.prevLines = physicalLines
 }
 
 // write writes a string to the renderer's writer, ignoring errors.
@@ -176,10 +183,12 @@ func (r *InlineRenderer) Finish(workflowErr error) {
 		r.write(fmt.Sprintf(ansiCursorUpN, r.prevLines) + "\r")
 
 		for range r.prevLines {
-			r.write(ansiClearLine + "\n")
+			r.write(ansiClearLine)
+			r.write("\n")
 		}
 
-		r.write(fmt.Sprintf(ansiCursorUpN, r.prevLines) + "\r")
+		r.write(fmt.Sprintf(ansiCursorUpN, r.prevLines))
+		r.write("\r")
 		r.prevLines = 0
 	}
 
@@ -194,20 +203,25 @@ func (r *InlineRenderer) Finish(workflowErr error) {
 		}
 	}
 
-	status := "completed successfully."
+	elapsed := time.Since(r.startTime)
+
+	elapsedStr := ""
+	if !r.startTime.IsZero() {
+		elapsedStr = " after " + FormatDuration(elapsed)
+	}
+
+	status := "completed successfully" + elapsedStr + "."
+	colorCode := "\033[32m" // green
+
 	if workflowErr != nil {
-		status = fmt.Sprintf("failed: %v", workflowErr)
+		status = "failed: " + workflowErr.Error() + elapsedStr
+		colorCode = "\033[31m" // red
 	}
 
 	if r.noColor {
 		r.writef("%s %s\n", r.appName, status)
 	} else {
-		c := "\033[32m" // green
-		if workflowErr != nil {
-			c = "\033[31m" // red
-		}
-
-		r.writef("%s%s %s\033[0m\n", c, r.appName, status)
+		r.writef("%s%s %s\033[0m\n", colorCode, r.appName, status)
 	}
 }
 
@@ -225,22 +239,54 @@ func (r *InlineRenderer) Start(ctx context.Context, interval time.Duration) {
 	ctx, cancel := context.WithCancel(ctx)
 	r.cancelFn = cancel
 	r.tickerDone = make(chan struct{})
+	r.refreshChan = make(chan struct{}, 1)
 
-	go func() {
-		defer close(r.tickerDone)
+	go r.refreshLoop(ctx, interval)
+}
 
-		ticker := time.NewTicker(interval)
-		defer ticker.Stop()
+// Refresh signals the background loop to redraw as soon as possible.
+// Safe to call even when Start has not been called.
+func (r *InlineRenderer) Refresh() {
+	r.tickMu.Lock()
+	defer r.tickMu.Unlock()
 
-		for {
-			select {
-			case <-ctx.Done():
-				return
-			case <-ticker.C:
-				r.Render()
-			}
+	if r.refreshChan == nil {
+		return
+	}
+
+	select {
+	case r.refreshChan <- struct{}{}:
+	default:
+	}
+}
+
+// refreshLoop drives the periodic redraw. It renders on every tick, on explicit
+// refresh signals, and at least once per second so elapsed timers stay current.
+func (r *InlineRenderer) refreshLoop(ctx context.Context, interval time.Duration) {
+	defer close(r.tickerDone)
+
+	if interval <= 0 {
+		interval = 100 * time.Millisecond
+	}
+
+	ticker := time.NewTicker(interval)
+	defer ticker.Stop()
+
+	maxFrame := time.NewTicker(time.Second)
+	defer maxFrame.Stop()
+
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case <-r.refreshChan:
+			r.Render()
+		case <-ticker.C:
+			r.Render()
+		case <-maxFrame.C:
+			r.Render()
 		}
-	}()
+	}
 }
 
 // Stop terminates the background refresh goroutine started by Start.
@@ -254,11 +300,12 @@ func (r *InlineRenderer) Stop() {
 		<-r.tickerDone
 		r.cancelFn = nil
 		r.tickerDone = nil
+		r.refreshChan = nil
 	}
 }
 
 // effectiveMaxHeight returns the maxHeight if set, otherwise detects
-// terminal height from stderr fd, falling back to 50.
+// terminal height from writer fd, falling back to 50.
 func (r *InlineRenderer) effectiveMaxHeight() int {
 	if r.maxHeight > 0 {
 		return r.maxHeight
@@ -271,6 +318,12 @@ func (r *InlineRenderer) effectiveMaxHeight() int {
 	}
 
 	return 50
+}
+
+// effectiveMaxWidth returns the terminal width if the writer is a terminal,
+// otherwise a sensible default for non-terminal writers.
+func (r *InlineRenderer) effectiveMaxWidth() int {
+	return GetTerminalWidth(r.writer)
 }
 
 // renderSummary builds a one-line NOM-style summary bar.

@@ -142,3 +142,91 @@ func TestDependencyTree_Render_PhaseStyling(t *testing.T) {
 		t.Errorf("render should contain phase symbol %q, got:\n%s", SymbolPhase, got)
 	}
 }
+
+func TestDependencyTree_Render_PriorityOrdering(t *testing.T) {
+	t.Parallel()
+
+	dt := NewDependencyTree()
+	dt.AddActivity(ActivityID("phase:build"), "Build Phase", nil)
+	dt.AddActivity(ActivityID("compile"), "Compile", []ActivityID{"phase:build"})
+	dt.AddActivity(ActivityID("test"), "Run Tests", []ActivityID{"phase:build"})
+	dt.AddActivity(ActivityID("lint"), "Lint Code", []ActivityID{"phase:build"})
+	dt.AddActivity(ActivityID("deploy"), "Deploy", []ActivityID{"phase:build"})
+
+	now := time.Date(2026, 6, 10, 12, 0, 0, 0, time.UTC)
+
+	setStatusWithElapsed(
+		dt,
+		ActivityID("phase:build"),
+		ActivityStatusRunning,
+		SymbolRunning,
+		ColorRunning,
+		now,
+		5*time.Second,
+	)
+	setStatusWithElapsed(
+		dt,
+		ActivityID("compile"),
+		ActivityStatusCompleted,
+		SymbolCompleted,
+		ColorCompleted,
+		now,
+		2*time.Second,
+	)
+	setStatusWithElapsed(dt, ActivityID("test"), ActivityStatusRunning, SymbolRunning, ColorRunning, now, 3*time.Second)
+	setStatusWithElapsed(dt, ActivityID("lint"), ActivityStatusPending, SymbolPaused, ColorPaused, time.Time{}, 0)
+	setStatusWithElapsed(dt, ActivityID("deploy"), ActivityStatusFailed, SymbolFailed, ColorFailed, now, 1*time.Second)
+
+	got := dt.Render(10)
+
+	// Children should appear in priority order: failed, running, pending, completed.
+	failedIdx := strings.Index(got, "Deploy")
+	runningIdx := strings.Index(got, "Run Tests")
+	pendingIdx := strings.Index(got, "Lint Code")
+	completedIdx := strings.Index(got, "Compile")
+
+	for _, idx := range []int{failedIdx, runningIdx, pendingIdx, completedIdx} {
+		if idx == -1 {
+			t.Fatalf("expected all four activities in output, got:\n%s", got)
+		}
+	}
+
+	if failedIdx >= runningIdx || runningIdx >= pendingIdx || pendingIdx >= completedIdx {
+		t.Errorf("activities not in priority order; indices failed=%d running=%d pending=%d completed=%d\n%s",
+			failedIdx, runningIdx, pendingIdx, completedIdx, got)
+	}
+
+	// With limited height, failed and running must survive over completed.
+	limited := dt.Render(3)
+	if !strings.Contains(limited, "Deploy") {
+		t.Errorf("limited render should keep failed activity, got:\n%s", limited)
+	}
+
+	if !strings.Contains(limited, "Run Tests") {
+		t.Errorf("limited render should keep running activity, got:\n%s", limited)
+	}
+
+	if strings.Contains(limited, "Compile") {
+		t.Errorf("limited render should drop completed activity, got:\n%s", limited)
+	}
+}
+
+func TestDependencyTree_RenderWithWidth_TruncatesLongNames(t *testing.T) {
+	t.Parallel()
+
+	dt := NewDependencyTree()
+	dt.AddActivity(ActivityID("a"), "This is a very long activity name that will not fit", nil)
+
+	now := time.Now()
+	dt.UpdateActivityStatus(ActivityID("a"), ActivityStatusRunning, SymbolRunning, ColorRunning, now, 0)
+
+	wide := dt.RenderWithWidth(10, 80)
+	if strings.Contains(wide, "…") {
+		t.Errorf("wide render should not truncate, got:\n%s", wide)
+	}
+
+	narrow := dt.RenderWithWidth(10, 20)
+	if !strings.Contains(narrow, "…") {
+		t.Errorf("narrow render should truncate with ellipsis, got:\n%s", narrow)
+	}
+}

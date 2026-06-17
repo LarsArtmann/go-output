@@ -3,6 +3,7 @@ package nom
 import (
 	"os"
 	"path/filepath"
+	"slices"
 	"sync"
 	"time"
 )
@@ -70,8 +71,28 @@ func (tc *TimingCache) Record(activityName string, duration time.Duration) error
 	return nil
 }
 
-// GetAverage returns the average duration for an activity.
-func (tc *TimingCache) GetAverage(activityName string) time.Duration {
+// medianDuration returns the median of a slice of durations. The input is not
+// mutated.
+func medianDuration(durations []time.Duration) time.Duration {
+	if len(durations) == 0 {
+		return 0
+	}
+
+	sorted := make([]time.Duration, len(durations))
+	copy(sorted, durations)
+	slices.Sort(sorted)
+
+	mid := len(sorted) / 2
+	if len(sorted)%2 == 1 {
+		return sorted[mid]
+	}
+
+	return (sorted[mid-1] + sorted[mid]) / 2
+}
+
+// GetMedian returns the median duration for an activity. Median is more robust
+// than mean when one run is an outlier (e.g. cold cache).
+func (tc *TimingCache) GetMedian(activityName string) time.Duration {
 	tc.mu.RLock()
 	defer tc.mu.RUnlock()
 
@@ -79,34 +100,24 @@ func (tc *TimingCache) GetAverage(activityName string) time.Duration {
 	if !exists || len(history) == 0 {
 		return 0
 	}
-	// Calculate average
-	var sum time.Duration
-	for _, d := range history {
-		sum += d
-	}
 
-	return sum / time.Duration(len(history))
+	return medianDuration(history)
 }
 
-// GetAll returns all cached averages.
+// GetAll returns all cached medians.
 func (tc *TimingCache) GetAll() map[string]time.Duration {
 	tc.mu.RLock()
 	defer tc.mu.RUnlock()
 
-	averages := make(map[string]time.Duration)
+	medians := make(map[string]time.Duration)
 
 	for name, history := range tc.cache {
 		if len(history) > 0 {
-			var sum time.Duration
-			for _, d := range history {
-				sum += d
-			}
-
-			averages[name] = sum / time.Duration(len(history))
+			medians[name] = medianDuration(history)
 		}
 	}
 
-	return averages
+	return medians
 }
 
 func (tc *TimingCache) getHistory(activityName string) []time.Duration {

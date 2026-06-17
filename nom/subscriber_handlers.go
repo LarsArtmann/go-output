@@ -157,9 +157,9 @@ func (ns *NOMStyleSubscriber) handleActivityStarted(
 	activity := ns.getOrCreateActivity(aa.GetActivityID(), aa.GetActivityName())
 	activity.SetRunning()
 
-	avgDuration := ns.timingCache.GetAverage(aa.GetActivityName().String())
-	if avgDuration > 0 {
-		activity.SetEstimatedTime(avgDuration)
+	medianDuration := ns.timingCache.GetMedian(aa.GetActivityName().String())
+	if medianDuration > 0 {
+		activity.SetEstimatedTime(medianDuration)
 	}
 
 	var deps []ActivityID

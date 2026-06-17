@@ -276,7 +276,7 @@ func (m *ProgressModel) renderDependencyTree() string {
 	}
 
 	if m.scrollOffset > 0 {
-		return m.dependencyTree.Render(0)
+		return m.dependencyTree.RenderWithWidth(0, m.width)
 	}
 
 	treeHeight := m.height - chromeLines
@@ -307,14 +307,23 @@ func (m *ProgressModel) renderDependencyTree() string {
 	return strings.Join(lines, "\n")
 }
 
-// renderNOMSummaryBar creates the NOM-style summary bar.
+// renderNOMSummaryBar creates the NOM-style summary bar, colored by workflow state.
 func (m *ProgressModel) renderNOMSummaryBar() string {
 	running, completed, failed, pending := m.getActivityCounts()
 	elapsed := time.Since(m.startTime)
 	summary := buildNOMSummary(running, completed, failed, pending, elapsed)
-	style := createSummaryStyle()
+	baseStyle := createSummaryStyle()
 
-	return style.Render(summary)
+	switch m.workflowState {
+	case WorkflowStateIdle, WorkflowStateRunning:
+		return baseStyle.Render(summary)
+	case WorkflowStateCompleted:
+		return baseStyle.Foreground(colors.success).Render("✅ " + summary)
+	case WorkflowStateErrored:
+		return baseStyle.Foreground(colors.err).Render("❌ " + summary)
+	default:
+		return baseStyle.Render(summary)
+	}
 }
 
 // getActivityCounts returns counts of activities in each state.

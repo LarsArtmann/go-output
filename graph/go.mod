@@ -17,7 +17,7 @@ replace (
 )
 
 require (
-	github.com/larsartmann/go-branded-id v0.3.0 // indirect
+	github.com/larsartmann/go-branded-id v0.3.1 // indirect
 	github.com/larsartmann/go-output/enum v0.10.1 // indirect
 	golang.org/x/sys v0.46.0 // indirect
 	golang.org/x/term v0.44.0 // indirect

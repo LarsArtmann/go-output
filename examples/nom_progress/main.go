@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -43,13 +44,16 @@ func main() {
 	})
 
 	activities := []struct {
-		id   string
-		name string
+		id     string
+		name   string
+		status nom.ActivityStatus
+		delay  time.Duration
 	}{
-		{"fetch", "Fetch Dependencies"},
-		{"compile", "Compile Sources"},
-		{"test", "Run Tests"},
-		{"package", "Package Binary"},
+		{"fetch", "Fetch Dependencies", nom.ActivityStatusCompleted, 50 * time.Millisecond},
+		{"compile", "Compile Sources", nom.ActivityStatusCompleted, 100 * time.Millisecond},
+		{"test", "Run Tests", nom.ActivityStatusRunning, 200 * time.Millisecond},
+		{"lint", "Lint Code", nom.ActivityStatusFailed, 0},
+		{"package", "Package Binary", nom.ActivityStatusPending, 0},
 	}
 
 	for _, a := range activities {
@@ -59,14 +63,23 @@ func main() {
 			aName:     nom.NewActivityName(a.name),
 		})
 
-		time.Sleep(100 * time.Millisecond)
+		time.Sleep(a.delay)
 
-		_ = subscriber.OnEvent(ctx, &workflowEvent{
-			eventType: "activity.completed",
-			aID:       nom.NewActivityID(a.id),
-			aName:     nom.NewActivityName(a.name),
-			duration:  100 * time.Millisecond,
-		})
+		if a.status == nom.ActivityStatusCompleted {
+			_ = subscriber.OnEvent(ctx, &workflowEvent{
+				eventType: "activity.completed",
+				aID:       nom.NewActivityID(a.id),
+				aName:     nom.NewActivityName(a.name),
+				duration:  a.delay,
+			})
+		} else if a.status == nom.ActivityStatusFailed {
+			_ = subscriber.OnEvent(ctx, &workflowEvent{
+				eventType: "activity.failed",
+				aID:       nom.NewActivityID(a.id),
+				aName:     nom.NewActivityName(a.name),
+				err:       errors.New("lint check failed"),
+			})
+		}
 	}
 
 	subscriber.UpdateRunningActivityElapsed()
@@ -74,8 +87,11 @@ func main() {
 
 	tree := subscriber.GetDependencyTree()
 
-	fmt.Println("=== NOM Dependency Tree ===")
+	fmt.Println("=== NOM Dependency Tree (priority-ordered) ===")
+	fmt.Println("Failed/Running activities appear first when height is limited.")
 
+	fmt.Println(tree.Render(3))
+	fmt.Println()
 	fmt.Println(tree.Render(20))
 
 	running, completed, failed, pending := subscriber.GetActivityCounts()

@@ -257,9 +257,9 @@ func TestNOMTimingCache_Integration(t *testing.T) {
 		cache.Record("build", 7*time.Second)
 		cache.Record("build", 3*time.Second)
 
-		avg := cache.GetAverage("build")
-		if avg != 5*time.Second {
-			t.Errorf("average = %v, want %v", avg, 5*time.Second)
+		median := cache.GetMedian("build")
+		if median != 5*time.Second {
+			t.Errorf("median = %v, want %v", median, 5*time.Second)
 		}
 	})
 

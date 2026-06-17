@@ -32,7 +32,7 @@ func TestNewTimingCache(t *testing.T) {
 	}
 }
 
-func TestTimingCache_RecordAndGetAverage(t *testing.T) {
+func TestTimingCache_RecordAndGetMedian(t *testing.T) {
 	t.Parallel()
 
 	tc := NewTimingCache()
@@ -40,20 +40,37 @@ func TestTimingCache_RecordAndGetAverage(t *testing.T) {
 	tc.Record("build", 5*time.Second)
 	tc.Record("build", 3*time.Second)
 
-	avg := tc.GetAverage("build")
-	if avg == 0 {
-		t.Error("expected non-zero average after recording")
+	median := tc.GetMedian("build")
+	if median == 0 {
+		t.Error("expected non-zero median after recording")
 	}
 }
 
-func TestTimingCache_GetAverage_NoHistory(t *testing.T) {
+func TestTimingCache_GetMedian_RobustToOutlier(t *testing.T) {
 	t.Parallel()
 
 	tc := NewTimingCache()
 
-	avg := tc.GetAverage("nonexistent")
-	if avg != 0 {
-		t.Errorf("expected 0 for nonexistent activity, got %v", avg)
+	tc.Record("build", 3*time.Second)
+	tc.Record("build", 3*time.Second)
+	tc.Record("build", 3*time.Second)
+	tc.Record("build", 3*time.Second)
+	tc.Record("build", 60*time.Second) // outlier
+
+	median := tc.GetMedian("build")
+	if median != 3*time.Second {
+		t.Errorf("median = %v, want %v (outlier ignored)", median, 3*time.Second)
+	}
+}
+
+func TestTimingCache_GetMedian_NoHistory(t *testing.T) {
+	t.Parallel()
+
+	tc := NewTimingCache()
+
+	median := tc.GetMedian("nonexistent")
+	if median != 0 {
+		t.Errorf("expected 0 for nonexistent activity, got %v", median)
 	}
 }
 
@@ -108,7 +125,7 @@ func TestTimingCache_Clear(t *testing.T) {
 	tc.Record("build", 5*time.Second)
 	tc.Clear()
 
-	if tc.GetAverage("build") != 0 {
+	if tc.GetMedian("build") != 0 {
 		t.Error("expected 0 after Clear()")
 	}
 }
@@ -120,7 +137,7 @@ func TestTimingCache_Remove(t *testing.T) {
 	tc.Record("build", 5*time.Second)
 	tc.remove("build")
 
-	if tc.GetAverage("build") != 0 {
+	if tc.GetMedian("build") != 0 {
 		t.Error("expected 0 after Remove()")
 	}
 }
@@ -169,9 +186,9 @@ func TestTimingCache_SaveAndLoad(t *testing.T) {
 		t.Error("cache should be loaded after Load()")
 	}
 
-	avg := tc2.GetAverage("build")
-	if avg == 0 {
-		t.Error("expected non-zero average after loading from file")
+	median := tc2.GetMedian("build")
+	if median == 0 {
+		t.Error("expected non-zero median after loading from file")
 	}
 
 	time.Sleep(50 * time.Millisecond)

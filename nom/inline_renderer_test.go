@@ -243,6 +243,37 @@ func TestInlineRenderer_StartStop_Idempotent(t *testing.T) {
 	renderer.Stop()
 }
 
+func TestInlineRenderer_Refresh_TriggersRender(t *testing.T) {
+	sub := NewNOMStyleSubscriber()
+
+	var buf bytes.Buffer
+
+	renderer := NewInlineRenderer(sub, &buf, 10)
+
+	ctx := context.Background()
+	_ = sub.OnEvent(ctx, &testEvent{
+		eventType: EventWorkflowStarted,
+		wID:       WorkflowID("wf-1"),
+	})
+	_ = sub.OnEvent(ctx, &testEvent{
+		eventType: EventActivityStarted,
+		aID:       ActivityID("step1"),
+		aName:     ActivityName("Step 1"),
+	})
+
+	renderer.Start(ctx, time.Hour) // very long interval
+	defer renderer.Stop()
+
+	buf.Reset()
+	renderer.Refresh()
+
+	time.Sleep(50 * time.Millisecond)
+
+	if !strings.Contains(buf.String(), "Step 1") {
+		t.Errorf("Refresh should trigger a render, got:\n%s", buf.String())
+	}
+}
+
 func TestInlineRenderer_MaxHeightZero_UsesFallback(t *testing.T) {
 	sub := NewNOMStyleSubscriber()
 

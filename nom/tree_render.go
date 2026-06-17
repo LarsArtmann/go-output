@@ -5,12 +5,21 @@ import (
 	"strings"
 
 	"charm.land/lipgloss/v2"
+	"github.com/mattn/go-runewidth"
 )
 
 // Render generates NOM-style tree rendering using depth-first forest walk.
 // Ports the algorithm from nix-output-monitor's showForest:
 // walks each root tree recursively, building proper box-drawing prefixes (├──, └──, │).
+//
+// If maxWidth is > 0, long activity lines are truncated with "…" so they fit.
 func (dt *DependencyTree) Render(maxHeight int) string {
+	return dt.RenderWithWidth(maxHeight, 0)
+}
+
+// RenderWithWidth generates the tree rendering with an optional terminal width
+// constraint. A maxWidth of 0 disables truncation.
+func (dt *DependencyTree) RenderWithWidth(maxHeight, maxWidth int) string {
 	dt.mu.RLock()
 	needsBuild := !dt.loaded
 	dt.mu.RUnlock()
@@ -42,7 +51,7 @@ func (dt *DependencyTree) Render(maxHeight int) string {
 	var lines []string
 
 	for _, entry := range visible {
-		lines = append(lines, dt.renderLine(entry))
+		lines = append(lines, dt.renderLine(entry, maxWidth))
 	}
 
 	return strings.Join(lines, "\n")
@@ -55,7 +64,10 @@ type visibleEntry struct {
 	isRoot    bool
 }
 
-// collectVisibleNodes walks the forest depth-first, collecting nodes to display.
+// collectVisibleNodes returns the most interesting nodes to display, up to maxHeight,
+// preserving tree prefixes. Children at each level are sorted by status (failed > running >
+// paused > pending > completed), then by elapsed time, so the user sees the currently
+// important concurrent work first when screen space is limited.
 func (dt *DependencyTree) collectVisibleNodes(maxHeight int) []visibleEntry {
 	var visible []visibleEntry
 
@@ -71,6 +83,7 @@ func (dt *DependencyTree) collectVisibleNodes(maxHeight int) []visibleEntry {
 }
 
 // walkSubtree recursively walks the tree depth-first, building proper NOM-style prefixes.
+// Children are traversed in priority order (failed/running first, completed last).
 func (dt *DependencyTree) walkSubtree(
 	node *TreeNode,
 	prefix string,
@@ -100,7 +113,8 @@ func (dt *DependencyTree) walkSubtree(
 
 	*visible = append(*visible, entry)
 
-	if len(node.Children) == 0 {
+	children := dt.childPriority(node)
+	if len(children) == 0 {
 		return
 	}
 
@@ -114,7 +128,7 @@ func (dt *DependencyTree) walkSubtree(
 		childIndent = prefix + "│   "
 	}
 
-	for i, child := range node.Children {
+	for i, child := range children {
 		if len(*visible) >= maxHeight {
 			return
 		}
@@ -122,7 +136,7 @@ func (dt *DependencyTree) walkSubtree(
 		dt.walkSubtree(
 			child,
 			childIndent,
-			i == len(node.Children)-1,
+			i == len(children)-1,
 			false,
 			visible,
 			maxHeight,
@@ -130,8 +144,9 @@ func (dt *DependencyTree) walkSubtree(
 	}
 }
 
-// renderLine renders a single line for a visible entry.
-func (dt *DependencyTree) renderLine(entry visibleEntry) string {
+// renderLine renders a single line for a visible entry. If maxWidth > 0, the
+// activity name is truncated so the whole line fits the terminal.
+func (dt *DependencyTree) renderLine(entry visibleEntry, maxWidth int) string {
 	node := entry.node
 	symbol := node.Symbol
 	color := node.Color
@@ -169,12 +184,17 @@ func (dt *DependencyTree) renderLine(entry visibleEntry) string {
 			Render(" ⬅ depends on " + strings.Join(depNames, ", "))
 	}
 
+	fullPrefix := entry.prefix + entry.connector
+
+	if maxWidth > 0 {
+		available := maxWidth - runewidth.StringWidth(fullPrefix)
+		activityDisplay = TruncateVisible(activityDisplay, available)
+	}
+
 	style := lipgloss.NewStyle().
 		Foreground(color).
 		Width(0).
 		Inline(true)
-
-	fullPrefix := entry.prefix + entry.connector
 
 	return style.Render(fullPrefix + activityDisplay)
 }
