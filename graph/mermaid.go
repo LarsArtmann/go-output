@@ -38,20 +38,37 @@ func renderMermaidTableData(w io.Writer, data *output.TableData, _ output.Render
 // MermaidRenderer implements the GraphRenderer interface for Mermaid diagrams.
 type MermaidRenderer struct {
 	output.GraphRendererState
+
+	// codeFence controls whether output is wrapped in a ```mermaid fence.
+	// Default true for backwards compatibility. Set false via SetCodeFence
+	// for raw flowchart syntax (.mmd files, Mermaid CLI, embedded diagrams).
+	codeFence bool
 }
 
-// NewMermaidRenderer creates a new MermaidRenderer.
+// NewMermaidRenderer creates a new MermaidRenderer with the code fence enabled.
 func NewMermaidRenderer() *MermaidRenderer {
 	return &MermaidRenderer{
 		GraphRendererState: output.NewGraphRendererState(),
+		codeFence:          true,
 	}
+}
+
+// SetCodeFence controls whether Render wraps output in a ```mermaid fence.
+// Pass false for raw flowchart syntax consumed by .mmd files, the Mermaid CLI,
+// or programmatic APIs that expect bare flowchart syntax.
+func (r *MermaidRenderer) SetCodeFence(enabled bool) *MermaidRenderer {
+	r.codeFence = enabled
+	return r
 }
 
 // Render returns the Mermaid diagram as a string.
 func (r *MermaidRenderer) Render() (string, error) {
 	var b strings.Builder
 
-	b.WriteString("```mermaid\n")
+	if r.codeFence {
+		b.WriteString("```mermaid\n")
+	}
+
 	b.WriteString("flowchart TD\n")
 
 	for _, node := range r.Nodes() {
@@ -69,10 +86,11 @@ func (r *MermaidRenderer) Render() (string, error) {
 		_, _ = fmt.Fprintf(&b, "    %s -->%s %s\n", edge.From.Get(), label, edge.To.Get())
 	}
 
-	b.WriteString("\n    %% Styling\n")
-	b.WriteString("    classDef default fill:#f9f,stroke:#333,stroke-width:4px\n")
+	r.writeNodeStyles(&b)
 
-	b.WriteString("```\n")
+	if r.codeFence {
+		b.WriteString("```\n")
+	}
 
 	return b.String(), nil
 }
@@ -97,6 +115,50 @@ func (r *MermaidRenderer) getMermaidShape(shape output.GraphShape) (string, stri
 	default:
 		return "[", "]"
 	}
+}
+
+// writeNodeStyles emits per-node Mermaid style directives for nodes that have
+// a non-zero GraphStyle. This replaces the previous hardcoded pink classDef,
+// giving consumers full control over node appearance.
+func (r *MermaidRenderer) writeNodeStyles(b *strings.Builder) {
+	wroteAny := false
+
+	for _, node := range r.Nodes() {
+		parts := mermaidStyleParts(node.Style)
+		if len(parts) == 0 {
+			continue
+		}
+
+		if !wroteAny {
+			b.WriteString("\n    %% Styling\n")
+			wroteAny = true
+		}
+
+		_, _ = fmt.Fprintf(b, "    style %s %s\n", node.ID.Get(), strings.Join(parts, ","))
+	}
+}
+
+// mermaidStyleParts converts a GraphStyle into Mermaid style key-value pairs.
+func mermaidStyleParts(s output.GraphStyle) []string {
+	var parts []string
+
+	if s.FillColor != "" {
+		parts = append(parts, "fill:"+s.FillColor)
+	}
+
+	if s.StrokeColor != "" {
+		parts = append(parts, "stroke:"+s.StrokeColor)
+	}
+
+	if s.FontColor != "" {
+		parts = append(parts, "color:"+s.FontColor)
+	}
+
+	if s.FontSize > 0 {
+		parts = append(parts, fmt.Sprintf("font-size:%dpx", s.FontSize))
+	}
+
+	return parts
 }
 
 // MermaidFromTableData creates a Mermaid flowchart from table data.

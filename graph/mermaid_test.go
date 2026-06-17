@@ -210,6 +210,74 @@ func TestMermaidFromTableDataNil(t *testing.T) {
 	}
 }
 
+func TestMermaidRendererNoCodeFence(t *testing.T) {
+	t.Parallel()
+
+	renderer := NewMermaidRenderer()
+	renderer.SetCodeFence(false)
+	renderer.SetNodes(testNodesAB())
+	renderer.SetEdges(testEdgesAB())
+
+	out, err := renderer.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
+	if strings.Contains(out, "```mermaid") {
+		t.Errorf("Raw output should not contain code fence, got: %s", out)
+	}
+
+	assertContains(t, out, "flowchart TD", "Raw output should still contain flowchart declaration")
+	assertContains(t, out, "A[Node A]", "Raw output should still contain nodes")
+}
+
+//nolint:exhaustruct // Test files use partial struct initialization
+func TestMermaidRendererWithNodeStyle(t *testing.T) {
+	t.Parallel()
+
+	renderer := NewMermaidRenderer()
+	renderer.SetNodes([]output.GraphNode{
+		{
+			ID:    output.NewBrandedID[output.GraphNodeIDBrand]("A"),
+			Label: output.NewBrandedID[output.GraphNodeLabelBrand]("Styled"),
+			Shape: output.ShapeBox,
+			Style: output.GraphStyle{
+				FillColor:   "#e8a838",
+				StrokeColor: "#4a4030",
+				FontColor:   "#14110d",
+				FontSize:    14,
+			},
+		},
+	})
+	renderer.SetEdges([]output.GraphEdge{})
+
+	out, err := renderer.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
+	assertContains(t, out, "style A fill:#e8a838,stroke:#4a4030,color:#14110d,font-size:14px",
+		"Output should contain per-node style directive")
+	assertContains(t, out, "% Styling", "Styling section should be present")
+}
+
+func TestMermaidRendererNoStyleNoStylingSection(t *testing.T) {
+	t.Parallel()
+
+	renderer := NewMermaidRenderer()
+	renderer.SetNodes(testNodesAB())
+	renderer.SetEdges(testEdgesAB())
+
+	out, err := renderer.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
+	if strings.Contains(out, "Styling") {
+		t.Errorf("Nodes without style should not emit styling section, got: %s", out)
+	}
+}
+
 func TestMermaidFromTreeWithEmptyID(t *testing.T) {
 	t.Parallel()
 
