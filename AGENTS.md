@@ -117,6 +117,7 @@ nix flake check                # Verify formatting + pre-commit hooks
 # Nix apps (iterate all 16 modules automatically)
 nix run .#build                # Build all modules
 nix run .#test                 # Test all modules
+nix run .#test-race            # Race-test nom + tui (concurrency-sensitive modules)
 nix run .#lint                 # Lint all modules
 nix run .#tidy                 # go mod tidy all modules
 nix run .#setup-workspace      # Generate go.work from go.work.example
@@ -169,19 +170,19 @@ EOF
 
 | Package       | Coverage | Module |
 | ------------- | -------- | ------ |
-| output (root) | 96.3%    | root   |
-| delimited     | 90.2%    | own    |
-| serialization | 91.4%    | own    |
-| markup        | 93.9%    | own    |
-| d2            | 100%     | own    |
-| graph         | 96.0%    | own    |
+| output (root) | 96.5%    | root   |
+| delimited     | 91.7%    | own    |
+| serialization | 91.0%    | own    |
+| markup        | 94.3%    | own    |
+| d2            | 97.0%    | own    |
+| graph         | 96.5%    | own    |
 | enum          | 100%     | own    |
 | escape        | 100%     | own    |
-| table         | 100%     | own    |
-| testhelpers   | 91.3%    | own    |
+| table         | 98.6%    | own    |
+| testhelpers   | 90.7%    | own    |
 | integration   | 95.5%    | own    |
-| nom           | 93.1%    | own    |
-| tui           | 84.2%    | own    |
+| nom           | 91.8%    | own    |
+| tui           | 88.8%    | own    |
 | gentest       | 96.2%    | root   |
 
 ## Testing

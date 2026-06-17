@@ -6,6 +6,33 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+
+- **`nix run .#test-race`** — new nix app running `go test -race -count=1` for the `nom/` and `tui/` concurrency-sensitive modules.
+- **`ActivityStatus.Interest()`** — priority ordering is now a method on the enum type, replacing the standalone `activityInterest()` function.
+- **Completed-subtree collapsing** — under height pressure, completed children are elided to prioritize active work (running, failed, pending).
+- **Completion percentage in summary bar** — shows `(N%)` where N = (completed + failed) / total.
+- **iTerm2 synchronized updates** — inline renderer frames wrapped in `\x1b[?2026h/l` for flicker-free redraws.
+- **E2E smoke test** for inline renderer lifecycle (Start → events → Refresh → Stop → Finish).
+- **Benchmarks** for `RenderWithWidth` and `childPriority` hot paths.
+- **Dedicated tests** for `elideCompletedUnderPressure` and `ActivityStatus.Interest()`.
+
+### Changed
+
+- **TOML renderer wraps rows in `[[row]]`** — TOML cannot encode a bare `[]map[string]string` as document root; rows are now nested under a named key producing valid array-of-tables syntax.
+- **ANSI parsing delegated to `charmbracelet/x/ansi`** — `StripANSI`, `VisibleWidth`, `TruncateVisible` now delegate to `ansi.Strip`, `ansi.StringWidth`, `ansi.Truncate`, removing 128 lines of hand-rolled scanner code. Direct `runewidth` dependency eliminated.
+- **`Finish()` now calls `Stop()` first** — prevents concurrent tree access between the background render goroutine and the final render.
+- **`RenderNode` signature documented** — the second parameter is now named `visibleNodes` (was `_ []*TreeNode`), honestly documenting it as reserved for future width-aware truncation.
+- **`log.Printf` → `slog.Error`** in TUI lifecycle per how-to-golang policy.
+- **Test refresh rendezvous** — replaced `time.Sleep(50ms)` with deterministic `renderNotify` channel in `TestInlineRenderer_Refresh_TriggersRender`.
+
+### Fixed
+
+- **TOML round-trip test failure** — `nix run .#test` was red on integration/serialization due to `toml: cannot encode a []map[string]string as a document root`.
+- **TUI data races** — `go test -race` in tui/ failed on 18 tests; reporter tests now use `newTestReporter()` helper that prevents the real Bubble Tea program from starting.
+- **Registry test pollution** — `TestRegisterTableDataMarshaler_ConcurrentAccess` leaked "race-test-*" formats into the global registry; `TestRegisteredTableDataFormats` now checks known-good formats instead of asserting all are valid.
+- **Dead code in `elideCompletedUnderPressure`** — removed unreachable guard `visibleCount+maxHeight <= 0`.
+
 ## [0.9.0] - 2026-06-12
 
 ### Added
