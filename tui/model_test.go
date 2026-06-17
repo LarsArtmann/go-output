@@ -286,3 +286,108 @@ func TestProgressModel_MouseClick_IgnoresRightClick(t *testing.T) {
 		t.Error("right click should not select a node")
 	}
 }
+
+func TestProgressModel_UpdateWorkflowCompletionState(t *testing.T) {
+	t.Parallel()
+
+	t.Run("failed activities transition to Errored", func(t *testing.T) {
+		t.Parallel()
+
+		model := newTestModel()
+		model.workflowState = WorkflowStateRunning
+		model.displayMode = DisplayModeNOM
+
+		ctx := context.Background()
+		_ = model.nomSubscriber.OnEvent(ctx, &testEvent{
+			eventType: "workflow.started",
+			wID:       nom.WorkflowID("wf-1"),
+		})
+		_ = model.nomSubscriber.OnEvent(ctx, &testEvent{
+			eventType: "activity.started",
+			aID:       nom.ActivityID("test"),
+			aName:     nom.ActivityName("Test"),
+		})
+		_ = model.nomSubscriber.OnEvent(ctx, &testEvent{
+			eventType: "activity.failed",
+			aID:       nom.ActivityID("test"),
+			aName:     nom.ActivityName("Test"),
+			err:       errTestFail,
+		})
+
+		model.updateWorkflowCompletionState()
+
+		if model.workflowState != WorkflowStateErrored {
+			t.Errorf("state = %v, want Errored (failed > 0)", model.workflowState)
+		}
+	})
+
+	t.Run("all completed transitions to Completed", func(t *testing.T) {
+		t.Parallel()
+
+		model := newTestModel()
+		model.workflowState = WorkflowStateRunning
+		model.displayMode = DisplayModeNOM
+
+		ctx := context.Background()
+		_ = model.nomSubscriber.OnEvent(ctx, &testEvent{
+			eventType: "workflow.started",
+			wID:       nom.WorkflowID("wf-1"),
+		})
+		_ = model.nomSubscriber.OnEvent(ctx, &testEvent{
+			eventType: "activity.started",
+			aID:       nom.ActivityID("build"),
+			aName:     nom.ActivityName("Build"),
+		})
+		_ = model.nomSubscriber.OnEvent(ctx, &testEvent{
+			eventType: "activity.completed",
+			aID:       nom.ActivityID("build"),
+			aName:     nom.ActivityName("Build"),
+			duration:  5 * time.Second,
+		})
+
+		model.updateWorkflowCompletionState()
+
+		if model.workflowState != WorkflowStateCompleted {
+			t.Errorf("state = %v, want Completed (running=0, completed>0)", model.workflowState)
+		}
+	})
+
+	t.Run("still running stays Running", func(t *testing.T) {
+		t.Parallel()
+
+		model := newTestModel()
+		model.workflowState = WorkflowStateRunning
+		model.displayMode = DisplayModeNOM
+
+		ctx := context.Background()
+		_ = model.nomSubscriber.OnEvent(ctx, &testEvent{
+			eventType: "workflow.started",
+			wID:       nom.WorkflowID("wf-1"),
+		})
+		_ = model.nomSubscriber.OnEvent(ctx, &testEvent{
+			eventType: "activity.started",
+			aID:       nom.ActivityID("active"),
+			aName:     nom.ActivityName("Active"),
+		})
+
+		model.updateWorkflowCompletionState()
+
+		if model.workflowState != WorkflowStateRunning {
+			t.Errorf("state = %v, want Running (still has running activities)", model.workflowState)
+		}
+	})
+}
+
+func TestBubbleTeaProgressReporter_Stop_NoProgramIsSafe(t *testing.T) {
+	t.Parallel()
+
+	pr := newTestReporter()
+
+	// Stop() should be safe to call when no program was started (pr.program == nil)
+	pr.Stop()
+
+	// Verify the reporter is still usable
+	if pr.Subscriber() == nil {
+		t.Error("Subscriber() should still return a valid subscriber after Stop()")
+	}
+}
