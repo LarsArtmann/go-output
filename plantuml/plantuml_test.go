@@ -185,3 +185,48 @@ func TestPlantUMLDiagramAddNodeExistingID(t *testing.T) {
 		t.Errorf("expected 'Updated' to replace 'Original', got %q", out)
 	}
 }
+
+//nolint:exhaustruct // Test files use partial struct initialization
+func TestPlantUMLDiagramWithNodeStyle(t *testing.T) {
+	t.Parallel()
+
+	d := NewPlantUMLDiagram()
+	d.AddNode(output.GraphNode{
+		ID:    output.NewBrandedID[output.GraphNodeIDBrand]("svc"),
+		Label: output.NewBrandedID[output.GraphNodeLabelBrand]("Service"),
+		Style: output.GraphStyle{
+			FillColor:   "#e8a838",
+			StrokeColor: "#4a4030",
+			FontColor:   "#14110d",
+		},
+	})
+
+	out, err := d.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
+	testhelpers.AssertAllContained(
+		t, out,
+		"#e8a838;line:#4a4030;text:#14110d",
+		"Service",
+	)
+}
+
+func TestPlantUMLDiagramNoStyleNoColorSpec(t *testing.T) {
+	t.Parallel()
+
+	d := NewPlantUMLDiagram()
+	d.AddNode(graphtest.NewTestNode("svc", "Plain"))
+
+	out, err := d.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
+	if strings.Contains(out, "#[") {
+		t.Errorf("Node without style should not emit color spec, got: %s", out)
+	}
+
+	testhelpers.AssertContains(t, out, "[Plain]", "Node label should still render")
+}

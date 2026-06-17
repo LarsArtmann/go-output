@@ -54,7 +54,12 @@ func (d *PlantUMLDiagram) Render() (string, error) {
 	b.WriteString("skinparam defaultFontSize 12\n\n")
 
 	for _, node := range d.Nodes() {
-		fmt.Fprintf(&b, "[%s] as %s\n", node.Label.Get(), sanitizePlantUMLID(node.ID.Get()))
+		colorSpec := plantumlColorSpec(node.Style)
+		if colorSpec != "" {
+			fmt.Fprintf(&b, "[%s] as %s %s\n", node.Label.Get(), sanitizePlantUMLID(node.ID.Get()), colorSpec)
+		} else {
+			fmt.Fprintf(&b, "[%s] as %s\n", node.Label.Get(), sanitizePlantUMLID(node.ID.Get()))
+		}
 	}
 
 	b.WriteString("\n")
@@ -81,4 +86,33 @@ func (d *PlantUMLDiagram) Render() (string, error) {
 // sanitizePlantUMLID converts a string to a valid PlantUML identifier.
 func sanitizePlantUMLID(s string) string {
 	return escape.SlugifyID(s)
+}
+
+// plantumlColorSpec converts a GraphStyle into a PlantUML color specification
+// string for per-element styling. Returns empty string when no colors are set.
+//
+// PlantUML syntax: the spec starts with '#' and joins attributes with ';'.
+// Example: #e8a838;line:#4a4030;text:#14110d
+func plantumlColorSpec(s output.GraphStyle) string {
+	var parts []string
+
+	if s.FillColor != "" {
+		parts = append(parts, s.FillColor)
+	}
+
+	if s.StrokeColor != "" {
+		parts = append(parts, "line:"+s.StrokeColor)
+	}
+
+	if s.FontColor != "" {
+		parts = append(parts, "text:"+s.FontColor)
+	}
+
+	result := strings.Join(parts, ";")
+
+	if result != "" && !strings.HasPrefix(result, "#") {
+		result = "#" + result
+	}
+
+	return result
 }
