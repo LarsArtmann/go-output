@@ -178,8 +178,11 @@ func (r *InlineRenderer) writef(format string, args ...any) {
 }
 
 // Finish clears the in-place frame and prints the final static tree.
-// Call this once when the workflow completes.
+// Call this once when the workflow completes. It stops the background
+// refresh loop before rendering to avoid concurrent tree access.
 func (r *InlineRenderer) Finish(workflowErr error) {
+	r.Stop()
+
 	tree := r.subscriber.GetDependencyTree()
 
 	if r.prevLines > 0 {

@@ -315,3 +315,93 @@ func TestInlineRenderer_MaxHeightZero_UsesFallback(t *testing.T) {
 		t.Errorf("expected tree capped to ~50 lines with 2-line summary, got %d lines", lines)
 	}
 }
+
+func TestInlineRenderer_EndToEnd_Lifecycle(t *testing.T) {
+	t.Parallel()
+
+	sub := NewNOMStyleSubscriber()
+
+	var buf bytes.Buffer
+
+	renderer := NewInlineRenderer(sub, &buf, 10)
+	renderer.renderNotify = make(chan struct{}, 1)
+
+	ctx := context.Background()
+
+	// Start the workflow
+	_ = sub.OnEvent(ctx, &testEvent{
+		eventType: EventWorkflowStarted,
+		wID:       WorkflowID("wf-e2e"),
+		wName:     WorkflowName("E2E Test"),
+	})
+
+	// Register activities with mixed states
+	_ = sub.OnEvent(ctx, &testEvent{
+		eventType: EventActivityStarted,
+		aID:       ActivityID("build"),
+		aName:     ActivityName("Build Project"),
+	})
+	_ = sub.OnEvent(ctx, &testEvent{
+		eventType: EventActivityCompleted,
+		aID:       ActivityID("build"),
+		aName:     ActivityName("Build Project"),
+		duration:  2 * time.Second,
+	})
+	_ = sub.OnEvent(ctx, &testEvent{
+		eventType: EventActivityStarted,
+		aID:       ActivityID("test"),
+		aName:     ActivityName("Run Tests"),
+	})
+
+	renderer.SetStartTime(time.Now().Add(-3 * time.Second))
+
+	// Start the background renderer
+	renderer.Start(ctx, time.Hour)
+
+	// Trigger initial render via refresh
+	renderer.Refresh()
+
+	// Wait for initial render
+	select {
+	case <-renderer.renderNotify:
+	case <-time.After(time.Second):
+		t.Fatal("initial render did not complete within 1s")
+	}
+
+	buf.Reset()
+
+	// Trigger a refresh
+	renderer.Refresh()
+
+	select {
+	case <-renderer.renderNotify:
+	case <-time.After(time.Second):
+		t.Fatal("refresh render did not complete within 1s")
+	}
+
+	output := buf.String()
+
+	if !strings.Contains(output, "Build Project") {
+		t.Errorf("render should contain completed activity, got:\n%s", output)
+	}
+
+	if !strings.Contains(output, "Run Tests") {
+		t.Errorf("render should contain running activity, got:\n%s", output)
+	}
+
+	if !strings.Contains(output, "%") {
+		t.Errorf("summary should show completion percentage, got:\n%s", output)
+	}
+
+	// Stop background loop before finish to avoid concurrent tree access
+	renderer.Stop()
+
+	// Finish the workflow
+	renderer.Finish(nil)
+
+	finalOutput := buf.String()
+
+	if !strings.Contains(finalOutput, "completed successfully") {
+		t.Errorf("finish should print success message, got:\n%s", finalOutput[-min(len(finalOutput), 200):])
+	}
+}

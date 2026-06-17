@@ -82,6 +82,37 @@ func (dt *DependencyTree) collectVisibleNodes(maxHeight int) []visibleEntry {
 	return visible
 }
 
+// elideCompletedUnderPressure removes completed children when height is limited
+// and expanding all children would overflow the available space. This ensures
+// that active work (running, failed, pending) is prioritized over completed
+// history when the viewport is constrained.
+func (dt *DependencyTree) elideCompletedUnderPressure(children []*TreeNode, maxHeight, visibleCount int) []*TreeNode {
+	if maxHeight <= 0 || visibleCount+maxHeight <= 0 {
+		return children
+	}
+
+	remaining := maxHeight - visibleCount
+	if remaining >= len(children) {
+		return children
+	}
+
+	var active []*TreeNode
+
+	for _, child := range children {
+		if child.Status == ActivityStatusCompleted {
+			continue
+		}
+
+		active = append(active, child)
+	}
+
+	if len(active) < len(children) {
+		return active
+	}
+
+	return children
+}
+
 // walkSubtree recursively walks the tree depth-first, building proper NOM-style prefixes.
 // Children are traversed in priority order (failed/running first, completed last).
 func (dt *DependencyTree) walkSubtree(
@@ -117,6 +148,8 @@ func (dt *DependencyTree) walkSubtree(
 	if len(children) == 0 {
 		return
 	}
+
+	children = dt.elideCompletedUnderPressure(children, maxHeight, len(*visible))
 
 	var childIndent string
 

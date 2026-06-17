@@ -5,25 +5,6 @@ import (
 	"time"
 )
 
-// activityInterest maps statuses to display priority. Lower value = more interesting.
-// Order: failed > running > paused > pending > completed.
-func activityInterest(status ActivityStatus) int {
-	switch status {
-	case ActivityStatusFailed:
-		return 0
-	case ActivityStatusRunning:
-		return 1
-	case ActivityStatusPaused:
-		return 2
-	case ActivityStatusPending:
-		return 3
-	case ActivityStatusCompleted:
-		return 4
-	default:
-		return 5
-	}
-}
-
 // sortKey captures the display priority of a node. Lower values sort first.
 type sortKey struct {
 	interest int
@@ -66,7 +47,7 @@ func (dt *DependencyTree) childPriority(node *TreeNode) []*TreeNode {
 // sortKeyForNode returns the display sort key for a node.
 func sortKeyForNode(node *TreeNode) sortKey {
 	return sortKey{
-		interest:   activityInterest(node.Status),
+		interest:   node.Status.Interest(),
 		elapsed:    node.CurrentElapsed,
 		activityID: node.ActivityID,
 	}

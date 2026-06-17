@@ -71,3 +71,22 @@ func (as ActivityStatus) GetColor() color.Color {
 		return ColorInfo
 	}
 }
+
+// Interest returns the display priority for sorting: lower = more interesting.
+// Order: failed > running > paused > pending > completed.
+func (as ActivityStatus) Interest() int {
+	switch as {
+	case ActivityStatusFailed:
+		return 0
+	case ActivityStatusRunning:
+		return 1
+	case ActivityStatusPaused:
+		return 2
+	case ActivityStatusPending:
+		return 3
+	case ActivityStatusCompleted:
+		return 4
+	default:
+		return 5
+	}
+}
