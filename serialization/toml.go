@@ -66,11 +66,29 @@ func NewTOMLTableRenderer() *TOMLTableRenderer {
 }
 
 //nolint:gochecknoglobals // Constant-like value for empty TOML output.
-var emptyTOML = "[]\n"
+var emptyTOML = "\n"
 
-// Render returns the table data as a TOML string.
+// tomlTableKey is the key used for the array-of-tables wrapper.
+// TOML cannot encode a bare top-level array, so rows are nested under this key.
+const tomlTableKey = "row"
+
+// Render returns the table data as a TOML string using array-of-tables syntax.
 func (r *TOMLTableRenderer) Render() (string, error) {
-	return renderTable(r.Data(), emptyTOML, "toml", toml.Marshal)
+	data := r.Data()
+	if data == nil || len(data.Headers) == 0 {
+		return emptyTOML, nil
+	}
+
+	rows := data.ToMapSlice()
+
+	wrapped := map[string]any{tomlTableKey: rows}
+
+	b, err := toml.Marshal(wrapped)
+	if err != nil {
+		return "", fmt.Errorf("marshal toml table (%d rows): %w", len(rows), err)
+	}
+
+	return string(b), nil
 }
 
 func renderTOMLTableData(w io.Writer, data *output.TableData, _ output.RenderOptions) error {

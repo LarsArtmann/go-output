@@ -178,9 +178,8 @@ func TestRoundTripYAML(t *testing.T) {
 }
 
 // TestRoundTripTOML verifies TableData → TOML → verify content.
-// TOML does not support top-level arrays, so the output uses [[array_of_tables]]
-// syntax which cannot be unmarshalled into a Go slice. Instead we verify
-// the output contains expected data in correct TOML format.
+// TOML does not support top-level arrays, so rows are wrapped under a [[row]]
+// key using array-of-tables syntax.
 func TestRoundTripTOML(t *testing.T) {
 	t.Parallel()
 
@@ -193,14 +192,14 @@ func TestRoundTripTOML(t *testing.T) {
 
 	result := string(b)
 
+	if !strings.HasPrefix(result, "[[row]]") {
+		t.Errorf("TOML should start with [[row]] array-of-tables syntax, got: %s", result[:min(len(result), 50)])
+	}
+
 	testhelpers.AssertContains(t, result, "Name = 'Alice'", "TOML should contain Alice row")
 	testhelpers.AssertContains(t, result, "Score = '95'", "TOML should contain Score 95")
 	testhelpers.AssertContains(t, result, "Active = 'false'", "TOML should contain Active false")
 	testhelpers.AssertContains(t, result, "Name = 'Bob'", "TOML should contain Bob row")
-
-	if !strings.HasPrefix(result, "[[]]") {
-		t.Errorf("TOML should use array-of-tables syntax, got: %s", result[:min(len(result), 50)])
-	}
 }
 
 // TestRoundTripJSONL verifies TableData → JSONL → parse → verify.

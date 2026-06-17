@@ -106,8 +106,28 @@ func TestTOMLTableRenderer(t *testing.T) {
 			t.Fatalf("Render() error = %v", err)
 		}
 
-		if out != "[]\n" {
-			t.Errorf("expected '[]\\n', got %q", out)
+		if out != "\n" {
+			t.Errorf("expected '\\n', got %q", out)
+		}
+	})
+
+	t.Run("with rows uses array-of-tables syntax", func(t *testing.T) {
+		t.Parallel()
+
+		r := NewTOMLTableRenderer()
+		r.SetHeaders([]string{"Name", "Value"})
+		r.AddRow([]string{"Alpha", "100"})
+		r.AddRow([]string{"Beta", "200"})
+
+		out, err := r.Render()
+		if err != nil {
+			t.Fatalf("Render() error = %v", err)
+		}
+
+		assertAllContained(t, out, "Alpha", "Beta")
+
+		if !strings.Contains(out, "[[row]]") {
+			t.Errorf("TOML output should use [[row]] array-of-tables syntax, got:\n%s", out)
 		}
 	})
 }
@@ -143,6 +163,10 @@ func TestMarshalTOMLFromTableData(t *testing.T) {
 		result := string(b)
 		if !strings.Contains(result, "Alpha") {
 			t.Error("TOML output should contain 'Alpha'")
+		}
+
+		if !strings.Contains(result, "[[row]]") {
+			t.Error("TOML output should use [[row]] array-of-tables syntax")
 		}
 	})
 }

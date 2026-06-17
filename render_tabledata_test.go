@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"io"
+	"slices"
 	"strconv"
 	"strings"
 	"sync"
@@ -300,15 +301,10 @@ func TestRegisteredTableDataFormats(t *testing.T) {
 
 	formats := RegisteredTableDataFormats()
 
-	// At minimum, Markdown and Tree are registered by root init().
-	if len(formats) < 2 {
-		t.Errorf("expected at least 2 registered formats, got %d", len(formats))
-	}
-
-	// All returned values must be valid Format constants.
-	for _, f := range formats {
-		if !f.IsValid() {
-			t.Errorf("registered format %q is not a valid Format", f)
+	// Root init() registers Markdown and Tree as TableData marshalers.
+	for _, exp := range []Format{FormatMarkdown, FormatTree} {
+		if !slices.Contains(formats, exp) {
+			t.Errorf("expected format %q to be registered, but it was not. Registered: %v", exp, formats)
 		}
 	}
 }
