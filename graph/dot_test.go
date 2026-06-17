@@ -186,3 +186,40 @@ func TestDOTFromTreeNil(t *testing.T) {
 		t.Fatal("DOTFromTree(nil) should return non-nil renderer")
 	}
 }
+
+func TestDOTRendererConfigurableLayout(t *testing.T) {
+	t.Parallel()
+
+	renderer := NewDOTRenderer().
+		SetRankDir("LR").
+		SetSplines("spline").
+		SetNodeSep("0.8").
+		SetRankSep("1.0")
+	renderer.SetNodes(testNodesAB())
+	renderer.SetEdges(testEdgesAB())
+
+	out, err := renderer.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
+	assertContains(t, out, "rankdir=LR", "Output should use custom rankdir")
+	assertContains(t, out, "splines=spline", "Output should use custom splines")
+	assertContains(t, out, "nodesep=0.8", "Output should use custom nodesep")
+	assertContains(t, out, "ranksep=1.0", "Output should use custom ranksep")
+}
+
+func TestDOTRendererDefaultLayout(t *testing.T) {
+	t.Parallel()
+
+	renderer := NewDOTRenderer()
+	renderer.SetNodes(testNodesAB())
+
+	out, err := renderer.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
+	assertContains(t, out, "rankdir=TB", "Default rankdir should be TB")
+	assertContains(t, out, "splines=ortho", "Default splines should be ortho")
+}

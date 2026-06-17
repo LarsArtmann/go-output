@@ -41,6 +41,10 @@ type DOTRenderer struct {
 
 	directed bool
 	graphID  string
+	rankdir  string
+	splines  string
+	nodesep  string
+	ranksep  string
 }
 
 // newDOTRenderer creates a new DOTRenderer with the specified direction.
@@ -49,6 +53,10 @@ func newDOTRenderer(directed bool) *DOTRenderer {
 		GraphRendererState: output.NewGraphRendererState(),
 		directed:           directed,
 		graphID:            "G",
+		rankdir:            "TB",
+		splines:            "ortho",
+		nodesep:            "0.5",
+		ranksep:            "0.5",
 	}
 }
 
@@ -67,6 +75,32 @@ func (r *DOTRenderer) SetGraphID(id string) {
 	r.graphID = id
 }
 
+// SetRankDir sets the graph layout direction. Valid values: "TB" (top-to-bottom,
+// default), "LR" (left-to-right), "BT" (bottom-to-top), "RL" (right-to-left).
+func (r *DOTRenderer) SetRankDir(direction string) *DOTRenderer {
+	r.rankdir = direction
+	return r
+}
+
+// SetSplines sets the edge routing style. Valid values: "ortho" (default),
+// "spline", "polyline", "line", "curved".
+func (r *DOTRenderer) SetSplines(style string) *DOTRenderer {
+	r.splines = style
+	return r
+}
+
+// SetNodeSep sets the minimum space between two adjacent nodes in the same rank.
+func (r *DOTRenderer) SetNodeSep(sep string) *DOTRenderer {
+	r.nodesep = sep
+	return r
+}
+
+// SetRankSep sets the minimum space between two consecutive ranks.
+func (r *DOTRenderer) SetRankSep(sep string) *DOTRenderer {
+	r.ranksep = sep
+	return r
+}
+
 // Render returns the DOT graph as a string.
 func (r *DOTRenderer) Render() (string, error) {
 	var b strings.Builder
@@ -81,10 +115,10 @@ func (r *DOTRenderer) Render() (string, error) {
 	b.WriteString(" {\n")
 
 	b.WriteString("  // Graph attributes\n")
-	b.WriteString("  rankdir=TB;\n")
-	b.WriteString("  splines=ortho;\n")
-	b.WriteString("  nodesep=0.5;\n")
-	b.WriteString("  ranksep=0.5;\n\n")
+	fmt.Fprintf(&b, "  rankdir=%s;\n", r.rankdir)
+	fmt.Fprintf(&b, "  splines=%s;\n", r.splines)
+	fmt.Fprintf(&b, "  nodesep=%s;\n", r.nodesep)
+	fmt.Fprintf(&b, "  ranksep=%s;\n\n", r.ranksep)
 
 	b.WriteString("  // Default node attributes\n")
 	b.WriteString("  node [\n")
