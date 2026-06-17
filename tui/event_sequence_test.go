@@ -126,6 +126,7 @@ func TestProgressModel_EventSequence_PreRegisterThenStart(t *testing.T) {
 
 	// Before tick: subscriber already has the pre-registered activities
 	running, completed, failed, pending := model.nomSubscriber.GetActivityCounts()
+
 	total := running + completed + failed + pending
 	if total != 2 {
 		t.Errorf("activities before tick = %d, want 2", total)
@@ -137,6 +138,7 @@ func TestProgressModel_EventSequence_PreRegisterThenStart(t *testing.T) {
 
 	// After tick: activities should be synced to subscriber
 	running, completed, failed, pending = m.nomSubscriber.GetActivityCounts()
+
 	total = running + completed + failed + pending
 	if total != 2 {
 		t.Errorf("activities after tick = %d, want 2", total)

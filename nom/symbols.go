@@ -1,6 +1,10 @@
 package nom
 
-import "charm.land/lipgloss/v2"
+import (
+	"image/color"
+
+	"charm.land/lipgloss/v2"
+)
 
 // ============================================================================
 // NOM-STYLE SYMBOL CONSTANTS
@@ -31,20 +35,39 @@ const (
 // ============================================================================
 // COLOR MAPPING FOR ACTIVITY STATES
 // ============================================================================
-// ColorRunning is the color for running activities (yellow, matching NOM).
-var ColorRunning = lipgloss.Color("11")
+// SemanticColors holds the ANSI color codes for activity states and phases.
+// Immutable after initialization — do not mutate at runtime.
+//
+//nolint:gochecknoglobals // immutable theme configuration
+type SemanticColors struct {
+	Running   color.Color
+	Completed color.Color
+	Paused    color.Color
+	Failed    color.Color
+	Info      color.Color
+	Phase     color.Color
+}
 
-// ColorCompleted is the color for completed activities (green).
-var ColorCompleted = lipgloss.Color("10")
+// Colors is the default color theme for activity states. Mirrors the 4 semantic
+// colors used by tui/colors.go (success≈Completed, warning≈Running,
+// err≈Failed, dim≈Paused). See split-brain M1 in SPLIT-BRAIN.html.
+//
+//nolint:gochecknoglobals // immutable theme configuration
+var Colors = SemanticColors{
+	Running:   lipgloss.Color("11"),
+	Completed: lipgloss.Color("10"),
+	Paused:    lipgloss.Color("8"),
+	Failed:    lipgloss.Color("9"),
+	Info:      lipgloss.Color("14"),
+	Phase:     lipgloss.Color("13"),
+}
 
-// ColorPaused is the color for paused activities (gray).
-var ColorPaused = lipgloss.Color("8")
-
-// ColorFailed is the color for failed activities (red).
-var ColorFailed = lipgloss.Color("9")
-
-// ColorInfo is the color for information (cyan).
-var ColorInfo = lipgloss.Color("14")
-
-// ColorPhase is the color for phase/group nodes (magenta).
-var ColorPhase = lipgloss.Color("13")
+// Deprecated backward-compatible aliases. Use Colors.X instead.
+var (
+	ColorRunning   = Colors.Running
+	ColorCompleted = Colors.Completed
+	ColorPaused    = Colors.Paused
+	ColorFailed    = Colors.Failed
+	ColorInfo      = Colors.Info
+	ColorPhase     = Colors.Phase
+)

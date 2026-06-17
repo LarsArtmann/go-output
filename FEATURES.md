@@ -217,17 +217,17 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 
 ### NOM-style Real-time Progress (`nom/` module)
 
-| Feature                              | Status           | Notes                                                                                                                  |
-| ------------------------------------ | ---------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| **NOMStyleSubscriber**               | FULLY_FUNCTIONAL | Event-driven subscriber implementing `EventSubscriber`. Routes string-based events without sharing concrete types      |
-| **DependencyTree**                   | FULLY_FUNCTIONAL | Hierarchical activity visualization. Priority filtering (Running > Failed > Pending > Completed), depth-aware prefixes |
-| **InlineRenderer**                   | FULLY_FUNCTIONAL | Real-time inline terminal renderer. Start/Stop/Finish lifecycle, cursor hiding, no-color mode, ANSI redraw             |
+| Feature                              | Status               | Notes                                                                                                                                                                                                           |
+| ------------------------------------ | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **NOMStyleSubscriber**               | FULLY_FUNCTIONAL     | Event-driven subscriber implementing `EventSubscriber`. Routes string-based events without sharing concrete types                                                                                               |
+| **DependencyTree**                   | FULLY_FUNCTIONAL     | Hierarchical activity visualization. Priority filtering (Running > Failed > Pending > Completed), depth-aware prefixes                                                                                          |
+| **InlineRenderer**                   | FULLY_FUNCTIONAL     | Real-time inline terminal renderer. Start/Stop/Finish lifecycle, cursor hiding, no-color mode, ANSI redraw                                                                                                      |
 | **TimingCache**                      | PARTIALLY_FUNCTIONAL | Persists activity durations as CSV at `~/.cache/nom-timing.csv`. Async saves, caps 10 entries/activity. **Known issue:** unbounded `saveAsync` goroutines can race on the same file under burst load (TODO #20) |
-| **ActivityStatus enum**              | FULLY_FUNCTIONAL | 5 states: Running, Failed, Paused, Pending, Completed                                                                  |
-| **Branded IDs**                      | FULLY_FUNCTIONAL | `ActivityID`, `ActivityName`, `WorkflowID`, `WorkflowName` — compile-time type safety                                  |
-| **Event accessor interfaces**        | FULLY_FUNCTIONAL | `WorkflowEventAccessor`, `ActivityEventAccessor`, `DurationAccessor`, `ErrorAccessor` — type-assertion routing         |
-| **Activity symbols**                 | FULLY_FUNCTIONAL | `SymbolRunning`, `SymbolCompleted`, `SymbolFailed`, `SymbolPaused`, `SymbolDownload`, `SymbolUpload`, `SymbolTiming`   |
-| **Lazy build (double-checked lock)** | FULLY_FUNCTIONAL | `DependencyTree.Build()`/`EnsureBuild()` use `buildOnce`/`loaded` to prevent rebuild under read lock                   |
+| **ActivityStatus enum**              | FULLY_FUNCTIONAL     | 5 states: Running, Failed, Paused, Pending, Completed                                                                                                                                                           |
+| **Branded IDs**                      | FULLY_FUNCTIONAL     | `ActivityID`, `ActivityName`, `WorkflowID`, `WorkflowName` — compile-time type safety                                                                                                                           |
+| **Event accessor interfaces**        | FULLY_FUNCTIONAL     | `WorkflowEventAccessor`, `ActivityEventAccessor`, `DurationAccessor`, `ErrorAccessor` — type-assertion routing                                                                                                  |
+| **Activity symbols**                 | FULLY_FUNCTIONAL     | `SymbolRunning`, `SymbolCompleted`, `SymbolFailed`, `SymbolPaused`, `SymbolDownload`, `SymbolUpload`, `SymbolTiming`                                                                                            |
+| **Lazy build (double-checked lock)** | FULLY_FUNCTIONAL     | `DependencyTree.Build()`/`EnsureBuild()` use `buildOnce`/`loaded` to prevent rebuild under read lock                                                                                                            |
 
 ### Bubble Tea Interactive TUI (`tui/` module)
 
