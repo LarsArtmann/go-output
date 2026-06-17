@@ -9,8 +9,8 @@ func (dt *DependencyTree) Clear() {
 	dt.mu.Lock()
 	defer dt.mu.Unlock()
 
-	dt.nodes = make(map[ActivityID]*TreeNode)
-	dt.roots = make([]*TreeNode, 0)
+	dt.nodes = make(map[ActivityID]*ActivityNode)
+	dt.roots = make([]*ActivityNode, 0)
 	dt.order = make([]ActivityID, 0)
 	dt.loaded = false
 	dt.buildOnce = sync.Once{}

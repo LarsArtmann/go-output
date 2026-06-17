@@ -43,9 +43,6 @@ var ColorPaused = lipgloss.Color("8")
 // ColorFailed is the color for failed activities (red).
 var ColorFailed = lipgloss.Color("9")
 
-// ColorWarning is the color for warnings (yellow).
-var ColorWarning = lipgloss.Color("11")
-
 // ColorInfo is the color for information (cyan).
 var ColorInfo = lipgloss.Color("14")
 

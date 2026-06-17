@@ -15,7 +15,7 @@ func (dt *DependencyTree) AddActivity(
 	// Create or update the node
 	node, exists := dt.nodes[activityID]
 	if !exists {
-		node = newTreeNode(activityID, activityName)
+		node = newActivityNode(activityID, activityName)
 		dt.nodes[activityID] = node
 	}
 
@@ -24,7 +24,7 @@ func (dt *DependencyTree) AddActivity(
 	for i, depID := range dependencies {
 		depNode, exists := dt.nodes[depID]
 		if !exists {
-			depNode = newTreeNode(depID, depID.String())
+			depNode = newActivityNode(depID, depID.String())
 			dt.nodes[depID] = depNode
 		}
 		// Primary parent is the first dependency; others are secondary parents (display only)

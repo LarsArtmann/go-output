@@ -12,7 +12,7 @@ func (dt *DependencyTree) getDisplayActivities() []ActivityID {
 }
 
 // GetNode returns a node by activity ID.
-func (dt *DependencyTree) GetNode(activityID ActivityID) *TreeNode {
+func (dt *DependencyTree) GetNode(activityID ActivityID) *ActivityNode {
 	dt.mu.RLock()
 	defer dt.mu.RUnlock()
 
@@ -21,7 +21,7 @@ func (dt *DependencyTree) GetNode(activityID ActivityID) *TreeNode {
 
 // GetRootNodes returns all root nodes, building the tree first if needed.
 // Uses double-checked locking to avoid building under a read lock (deadlock prevention).
-func (dt *DependencyTree) GetRootNodes() []*TreeNode {
+func (dt *DependencyTree) GetRootNodes() []*ActivityNode {
 	dt.mu.RLock()
 	loaded := dt.loaded
 	dt.mu.RUnlock()
@@ -53,19 +53,19 @@ func (dt *DependencyTree) EnsureBuild() {
 	}
 }
 
-func (dt *DependencyTree) snapshotRoots() []*TreeNode {
+func (dt *DependencyTree) snapshotRoots() []*ActivityNode {
 	roots := dt.GetRootNodes()
-	snapshot := make([]*TreeNode, len(roots))
+	snapshot := make([]*ActivityNode, len(roots))
 	copy(snapshot, roots)
 
 	return snapshot
 }
 
-func (dt *DependencyTree) findNodesByStatus(status ActivityStatus) []*TreeNode {
+func (dt *DependencyTree) findNodesByStatus(status ActivityStatus) []*ActivityNode {
 	dt.mu.RLock()
 	defer dt.mu.RUnlock()
 
-	var result []*TreeNode
+	var result []*ActivityNode
 
 	for _, node := range dt.nodes {
 		if node.Status == status {

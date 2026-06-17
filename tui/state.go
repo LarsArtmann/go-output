@@ -106,13 +106,16 @@ type ProgressModel struct {
 	// Using enum prevents invalid states (e.g., NOM mode without subscriber)
 	displayMode DisplayMode
 	// NOM-style visualization fields (fully integrated and functional)
+	// activities is a deep-copy snapshot refreshed each tick via
+	// syncNOMSubscriber(). It is NOT the live data — the subscriber owns the truth.
 	activities     map[nom.ActivityID]*nom.ActivityDisplayState
+	// dependencyTree is a cached *pointer* to the subscriber's tree (not a copy).
+	// Refreshed each tick via syncNOMSubscriber(). Safe to read between ticks.
 	dependencyTree *nom.DependencyTree
-	timingCache    *nom.TimingCache
 	nomSubscriber  *nom.NOMStyleSubscriber
 	showHelp       bool
 	cancelFunc     context.CancelFunc
 	selectedNode   nom.ActivityID
-	visibleNodes   []*nom.TreeNode
+	visibleNodes   []*nom.ActivityNode
 	treeStartLine  int
 }

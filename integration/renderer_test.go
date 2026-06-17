@@ -162,10 +162,8 @@ func TestD2FormatContent(t *testing.T) {
 	}
 }
 
-type renderer interface{ Render() (string, error) }
-
 // testRendererNotEmpty tests that a renderer produces non-empty output.
-func testRendererNotEmpty[R renderer](
+func testRendererNotEmpty[R output.Renderer](
 	t *testing.T,
 	createRenderer func(*output.TableData) R,
 	name string,

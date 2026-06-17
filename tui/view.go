@@ -181,10 +181,10 @@ func (m *ProgressModel) renderStep(step ProgressStep, isLast bool) string {
 
 	if step.CompletedAt != nil {
 		duration := step.CompletedAt.Sub(step.StartTime)
-		timing = fmt.Sprintf(TimingFormat, duration.Seconds())
+		timing = fmt.Sprintf(timingFormatWithIcon, duration.Seconds())
 	} else if step.IsActive {
 		elapsed := time.Since(step.StartTime)
-		timing = fmt.Sprintf(TimingFormat, elapsed.Seconds())
+		timing = fmt.Sprintf(timingFormatWithIcon, elapsed.Seconds())
 	}
 	// Step progress info
 	stepInfo := ""
@@ -287,7 +287,7 @@ func (m *ProgressModel) renderDependencyTree() string {
 	m.visibleNodes = m.dependencyTree.VisibleNodes(treeHeight)
 
 	if len(m.visibleNodes) == 0 {
-		return "No activities to display"
+		return MsgNoActivitiesToDisplay
 	}
 
 	var lines []string

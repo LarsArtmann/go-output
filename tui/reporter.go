@@ -37,7 +37,6 @@ func NewProgressModel() *ProgressModel {
 		displayMode:    DisplayModeUniversal,
 		activities:     make(map[nom.ActivityID]*nom.ActivityDisplayState),
 		dependencyTree: nom.NewDependencyTree(),
-		timingCache:    nom.NewTimingCache(),
 		nomSubscriber:  nom.NewNOMStyleSubscriber(),
 	}
 }

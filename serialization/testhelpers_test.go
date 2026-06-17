@@ -47,13 +47,7 @@ func assertValidYAML(t *testing.T, output string) {
 	}
 }
 
-type graphRenderer interface {
-	output.Renderer
-	SetNodes([]output.GraphNode)
-	SetEdges([]output.GraphEdge)
-}
-
-func testGraphRendererNodeWithShape(t *testing.T, r graphRenderer, wantShape string) {
+func testGraphRendererNodeWithShape(t *testing.T, r output.GraphRenderer, wantShape string) {
 	t.Helper()
 
 	r.SetNodes([]output.GraphNode{newTestNodeWithShape("A", "Node A", output.ShapeDiamond)})

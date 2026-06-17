@@ -1,431 +1,693 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Split-Brain Audit — go-output</title>
-<style>
-  :root {
-    --bg: #0d1117;
-    --bg-elev: #161b22;
-    --bg-card: #1c232c;
-    --bg-code: #0a0e14;
-    --border: #30363d;
-    --border-soft: #21262d;
-    --text: #e6edf3;
-    --text-dim: #9da7b3;
-    --text-faint: #6e7681;
-    --accent: #58a6ff;
-    --critical: #ff6b6b;
-    --critical-bg: rgba(255, 107, 107, 0.08);
-    --critical-border: rgba(255, 107, 107, 0.35);
-    --major: #ffa657;
-    --major-bg: rgba(255, 166, 87, 0.08);
-    --major-border: rgba(255, 166, 87, 0.35);
-    --minor: #d29922;
-    --minor-bg: rgba(210, 153, 34, 0.08);
-    --minor-border: rgba(210, 153, 34, 0.35);
-    --ok: #3fb950;
-    --ok-bg: rgba(63, 185, 80, 0.08);
-    --mono: ui-monospace, "SF Mono", "JetBrains Mono", "Fira Code", Menlo, Consolas, monospace;
-    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-  }
-  * { box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
-  body {
-    margin: 0;
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--sans);
-    line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
-  }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Split-Brain Audit — go-output</title>
+    <style>
+      :root {
+        --bg: #0d1117;
+        --bg-elev: #161b22;
+        --bg-card: #1c232c;
+        --bg-code: #0a0e14;
+        --border: #30363d;
+        --border-soft: #21262d;
+        --text: #e6edf3;
+        --text-dim: #9da7b3;
+        --text-faint: #6e7681;
+        --accent: #58a6ff;
+        --critical: #ff6b6b;
+        --critical-bg: rgba(255, 107, 107, 0.08);
+        --critical-border: rgba(255, 107, 107, 0.35);
+        --major: #ffa657;
+        --major-bg: rgba(255, 166, 87, 0.08);
+        --major-border: rgba(255, 166, 87, 0.35);
+        --minor: #d29922;
+        --minor-bg: rgba(210, 153, 34, 0.08);
+        --minor-border: rgba(210, 153, 34, 0.35);
+        --ok: #3fb950;
+        --ok-bg: rgba(63, 185, 80, 0.08);
+        --mono: ui-monospace, "SF Mono", "JetBrains Mono", "Fira Code", Menlo, Consolas, monospace;
+        --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--sans);
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+      }
 
-  /* ---------- Header ---------- */
-  header.hero {
-    background: linear-gradient(180deg, #161b22 0%, #0d1117 100%);
-    border-bottom: 1px solid var(--border);
-    padding: 3rem 2rem 2rem;
-  }
-  .hero-inner { max-width: 1100px; margin: 0 auto; }
-  .hero .eyebrow {
-    color: var(--text-faint);
-    font-size: 0.8rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    margin: 0 0 0.5rem;
-  }
-  h1 {
-    font-size: 2.6rem;
-    margin: 0 0 0.5rem;
-    letter-spacing: -0.02em;
-    background: linear-gradient(90deg, #ff6b6b 0%, #ffa657 50%, #d29922 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-  .hero p.lede {
-    color: var(--text-dim);
-    font-size: 1.1rem;
-    max-width: 720px;
-    margin: 0.5rem 0 0;
-  }
-  .hero .meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1.5rem;
-    margin-top: 1.5rem;
-    color: var(--text-faint);
-    font-size: 0.85rem;
-    font-family: var(--mono);
-  }
-  .hero .meta span b { color: var(--text-dim); font-weight: 600; }
+      /* ---------- Header ---------- */
+      header.hero {
+        background: linear-gradient(180deg, #161b22 0%, #0d1117 100%);
+        border-bottom: 1px solid var(--border);
+        padding: 3rem 2rem 2rem;
+      }
+      .hero-inner {
+        max-width: 1100px;
+        margin: 0 auto;
+      }
+      .hero .eyebrow {
+        color: var(--text-faint);
+        font-size: 0.8rem;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        margin: 0 0 0.5rem;
+      }
+      h1 {
+        font-size: 2.6rem;
+        margin: 0 0 0.5rem;
+        letter-spacing: -0.02em;
+        background: linear-gradient(90deg, #ff6b6b 0%, #ffa657 50%, #d29922 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .hero p.lede {
+        color: var(--text-dim);
+        font-size: 1.1rem;
+        max-width: 720px;
+        margin: 0.5rem 0 0;
+      }
+      .hero .meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+        color: var(--text-faint);
+        font-size: 0.85rem;
+        font-family: var(--mono);
+      }
+      .hero .meta span b {
+        color: var(--text-dim);
+        font-weight: 600;
+      }
 
-  /* ---------- Stat dashboard ---------- */
-  .stats {
-    max-width: 1100px;
-    margin: 2rem auto 0;
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 1rem;
-  }
-  .stat {
-    background: var(--bg-card);
-    border: 1px solid var(--border-soft);
-    border-radius: 12px;
-    padding: 1.2rem 1rem;
-    text-align: center;
-    transition: transform 0.15s ease, border-color 0.15s ease;
-  }
-  .stat:hover { transform: translateY(-2px); border-color: var(--border); }
-  .stat .num { font-size: 2.2rem; font-weight: 700; line-height: 1; font-family: var(--mono); }
-  .stat .label { font-size: 0.75rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 0.4rem; }
-  .stat.crit .num { color: var(--critical); }
-  .stat.maj .num { color: var(--major); }
-  .stat.min .num { color: var(--minor); }
-  .stat.total .num { color: var(--accent); }
-  .stat.time .num { color: var(--ok); }
+      /* ---------- Stat dashboard ---------- */
+      .stats {
+        max-width: 1100px;
+        margin: 2rem auto 0;
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 1rem;
+      }
+      .stat {
+        background: var(--bg-card);
+        border: 1px solid var(--border-soft);
+        border-radius: 12px;
+        padding: 1.2rem 1rem;
+        text-align: center;
+        transition:
+          transform 0.15s ease,
+          border-color 0.15s ease;
+      }
+      .stat:hover {
+        transform: translateY(-2px);
+        border-color: var(--border);
+      }
+      .stat .num {
+        font-size: 2.2rem;
+        font-weight: 700;
+        line-height: 1;
+        font-family: var(--mono);
+      }
+      .stat .label {
+        font-size: 0.75rem;
+        color: var(--text-faint);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-top: 0.4rem;
+      }
+      .stat.crit .num {
+        color: var(--critical);
+      }
+      .stat.maj .num {
+        color: var(--major);
+      }
+      .stat.min .num {
+        color: var(--minor);
+      }
+      .stat.total .num {
+        color: var(--accent);
+      }
+      .stat.time .num {
+        color: var(--ok);
+      }
 
-  /* ---------- Toolbar ---------- */
-  nav.toolbar {
-    position: sticky;
-    top: 0;
-    z-index: 50;
-    background: rgba(13, 17, 23, 0.85);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border);
-    padding: 0.75rem 2rem;
-  }
-  .toolbar-inner { max-width: 1100px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; }
-  .filter-btn {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    color: var(--text-dim);
-    padding: 0.4rem 0.85rem;
-    border-radius: 8px;
-    font-size: 0.82rem;
-    cursor: pointer;
-    font-family: var(--sans);
-    transition: all 0.15s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-  }
-  .filter-btn:hover { border-color: var(--accent); color: var(--text); }
-  .filter-btn.active { background: var(--accent); color: #0d1117; border-color: var(--accent); font-weight: 600; }
-  .filter-btn .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
-  .dot.crit { background: var(--critical); }
-  .dot.maj { background: var(--major); }
-  .dot.min { background: var(--minor); }
-  .search-wrap { margin-left: auto; flex: 0 1 280px; min-width: 160px; }
-  .search-wrap input {
-    width: 100%;
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    color: var(--text);
-    padding: 0.45rem 0.8rem;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    font-family: var(--mono);
-    outline: none;
-  }
-  .search-wrap input:focus { border-color: var(--accent); }
+      /* ---------- Toolbar ---------- */
+      nav.toolbar {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        background: rgba(13, 17, 23, 0.85);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--border);
+        padding: 0.75rem 2rem;
+      }
+      .toolbar-inner {
+        max-width: 1100px;
+        margin: 0 auto;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem;
+        align-items: center;
+      }
+      .filter-btn {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        color: var(--text-dim);
+        padding: 0.4rem 0.85rem;
+        border-radius: 8px;
+        font-size: 0.82rem;
+        cursor: pointer;
+        font-family: var(--sans);
+        transition: all 0.15s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+      .filter-btn:hover {
+        border-color: var(--accent);
+        color: var(--text);
+      }
+      .filter-btn.active {
+        background: var(--accent);
+        color: #0d1117;
+        border-color: var(--accent);
+        font-weight: 600;
+      }
+      .filter-btn .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        display: inline-block;
+      }
+      .dot.crit {
+        background: var(--critical);
+      }
+      .dot.maj {
+        background: var(--major);
+      }
+      .dot.min {
+        background: var(--minor);
+      }
+      .search-wrap {
+        margin-left: auto;
+        flex: 0 1 280px;
+        min-width: 160px;
+      }
+      .search-wrap input {
+        width: 100%;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        color: var(--text);
+        padding: 0.45rem 0.8rem;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-family: var(--mono);
+        outline: none;
+      }
+      .search-wrap input:focus {
+        border-color: var(--accent);
+      }
 
-  /* ---------- Main ---------- */
-  main { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+      /* ---------- Main ---------- */
+      main {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
 
-  .section-h {
-    font-size: 1.5rem;
-    margin: 2.5rem 0 1rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid var(--border-soft);
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-  }
-  .section-h .count {
-    font-size: 0.85rem;
-    color: var(--text-faint);
-    font-family: var(--mono);
-    background: var(--bg-card);
-    padding: 0.1rem 0.5rem;
-    border-radius: 6px;
-  }
+      .section-h {
+        font-size: 1.5rem;
+        margin: 2.5rem 0 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--border-soft);
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+      }
+      .section-h .count {
+        font-size: 0.85rem;
+        color: var(--text-faint);
+        font-family: var(--mono);
+        background: var(--bg-card);
+        padding: 0.1rem 0.5rem;
+        border-radius: 6px;
+      }
 
-  /* ---------- Finding card ---------- */
-  .finding {
-    background: var(--bg-card);
-    border: 1px solid var(--border-soft);
-    border-radius: 12px;
-    padding: 1.6rem 1.8rem;
-    margin: 1.2rem 0;
-    border-left: 4px solid var(--border);
-    transition: border-color 0.15s ease;
-  }
-  .finding.critical { border-left-color: var(--critical); background: var(--critical-bg); }
-  .finding.major { border-left-color: var(--major); }
-  .finding.minor { border-left-color: var(--minor); }
-  .finding-head { display: flex; flex-wrap: wrap; align-items: center; gap: 0.7rem; margin-bottom: 0.3rem; }
-  .finding-id {
-    font-family: var(--mono);
-    font-size: 0.75rem;
-    color: var(--text-faint);
-    background: var(--bg);
-    border: 1px solid var(--border-soft);
-    padding: 0.15rem 0.5rem;
-    border-radius: 6px;
-  }
-  .badge {
-    font-size: 0.7rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    padding: 0.2rem 0.6rem;
-    border-radius: 20px;
-    border: 1px solid;
-  }
-  .badge.critical { color: var(--critical); border-color: var(--critical-border); background: var(--critical-bg); }
-  .badge.major { color: var(--major); border-color: var(--major-border); background: var(--major-bg); }
-  .badge.minor { color: var(--minor); border-color: var(--minor-border); background: var(--minor-bg); }
-  .finding h3 { font-size: 1.2rem; margin: 0; flex: 1 1 100%; }
-  .finding .concept {
-    font-family: var(--mono);
-    color: var(--accent);
-    font-size: 0.85rem;
-    margin: 0;
-  }
-  .finding p { margin: 0.7rem 0; color: var(--text-dim); }
-  .finding p strong { color: var(--text); }
+      /* ---------- Finding card ---------- */
+      .finding {
+        background: var(--bg-card);
+        border: 1px solid var(--border-soft);
+        border-radius: 12px;
+        padding: 1.6rem 1.8rem;
+        margin: 1.2rem 0;
+        border-left: 4px solid var(--border);
+        transition: border-color 0.15s ease;
+      }
+      .finding.critical {
+        border-left-color: var(--critical);
+        background: var(--critical-bg);
+      }
+      .finding.major {
+        border-left-color: var(--major);
+      }
+      .finding.minor {
+        border-left-color: var(--minor);
+      }
+      .finding-head {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.7rem;
+        margin-bottom: 0.3rem;
+      }
+      .finding-id {
+        font-family: var(--mono);
+        font-size: 0.75rem;
+        color: var(--text-faint);
+        background: var(--bg);
+        border: 1px solid var(--border-soft);
+        padding: 0.15rem 0.5rem;
+        border-radius: 6px;
+      }
+      .badge {
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        padding: 0.2rem 0.6rem;
+        border-radius: 20px;
+        border: 1px solid;
+      }
+      .badge.critical {
+        color: var(--critical);
+        border-color: var(--critical-border);
+        background: var(--critical-bg);
+      }
+      .badge.major {
+        color: var(--major);
+        border-color: var(--major-border);
+        background: var(--major-bg);
+      }
+      .badge.minor {
+        color: var(--minor);
+        border-color: var(--minor-border);
+        background: var(--minor-bg);
+      }
+      .finding h3 {
+        font-size: 1.2rem;
+        margin: 0;
+        flex: 1 1 100%;
+      }
+      .finding .concept {
+        font-family: var(--mono);
+        color: var(--accent);
+        font-size: 0.85rem;
+        margin: 0;
+      }
+      .finding p {
+        margin: 0.7rem 0;
+        color: var(--text-dim);
+      }
+      .finding p strong {
+        color: var(--text);
+      }
 
-  .file-ref {
-    font-family: var(--mono);
-    font-size: 0.82rem;
-    background: var(--bg-code);
-    border: 1px solid var(--border-soft);
-    padding: 0.3rem 0.6rem;
-    border-radius: 6px;
-    display: inline-block;
-    margin: 0.2rem 0.4rem 0.2rem 0;
-    color: var(--accent);
-    cursor: pointer;
-    transition: background 0.15s;
-  }
-  .file-ref:hover { background: var(--border-soft); }
-  .file-ref .loc { color: var(--text-faint); }
+      .file-ref {
+        font-family: var(--mono);
+        font-size: 0.82rem;
+        background: var(--bg-code);
+        border: 1px solid var(--border-soft);
+        padding: 0.3rem 0.6rem;
+        border-radius: 6px;
+        display: inline-block;
+        margin: 0.2rem 0.4rem 0.2rem 0;
+        color: var(--accent);
+        cursor: pointer;
+        transition: background 0.15s;
+      }
+      .file-ref:hover {
+        background: var(--border-soft);
+      }
+      .file-ref .loc {
+        color: var(--text-faint);
+      }
 
-  pre.code {
-    background: var(--bg-code);
-    border: 1px solid var(--border-soft);
-    border-radius: 8px;
-    padding: 1rem 1.2rem;
-    overflow-x: auto;
-    font-family: var(--mono);
-    font-size: 0.83rem;
-    line-height: 1.5;
-    margin: 0.8rem 0;
-  }
-  pre.code .kw { color: #ff7b72; }
-  pre.code .ty { color: #79c0ff; }
-  pre.code .st { color: #a5d6ff; }
-  pre.code .cm { color: #6e7681; font-style: italic; }
-  pre.code .fn { color: #d2a8ff; }
-  pre.code .add { color: #3fb950; }
-  pre.code .del { color: #ff6b6b; }
-  pre.code .hl { background: rgba(255, 166, 87, 0.15); display: inline-block; width: 100%; margin: 0 -1.2rem; padding: 0 1.2rem; }
+      pre.code {
+        background: var(--bg-code);
+        border: 1px solid var(--border-soft);
+        border-radius: 8px;
+        padding: 1rem 1.2rem;
+        overflow-x: auto;
+        font-family: var(--mono);
+        font-size: 0.83rem;
+        line-height: 1.5;
+        margin: 0.8rem 0;
+      }
+      pre.code .kw {
+        color: #ff7b72;
+      }
+      pre.code .ty {
+        color: #79c0ff;
+      }
+      pre.code .st {
+        color: #a5d6ff;
+      }
+      pre.code .cm {
+        color: #6e7681;
+        font-style: italic;
+      }
+      pre.code .fn {
+        color: #d2a8ff;
+      }
+      pre.code .add {
+        color: #3fb950;
+      }
+      pre.code .del {
+        color: #ff6b6b;
+      }
+      pre.code .hl {
+        background: rgba(255, 166, 87, 0.15);
+        display: inline-block;
+        width: 100%;
+        margin: 0 -1.2rem;
+        padding: 0 1.2rem;
+      }
 
-  .fix, .why {
-    border-radius: 8px;
-    padding: 0.9rem 1.1rem;
-    margin: 0.7rem 0;
-    font-size: 0.92rem;
-  }
-  .fix { background: var(--ok-bg); border: 1px solid rgba(63, 185, 80, 0.2); }
-  .why { background: var(--major-bg); border: 1px solid var(--major-border); }
-  .fix h4, .why h4 { margin: 0 0 0.4rem; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; }
-  .fix h4 { color: var(--ok); }
-  .why h4 { color: var(--major); }
-  .fix p, .why p { margin: 0.3rem 0; color: var(--text-dim); }
-  .fix ol, .fix ul { margin: 0.4rem 0; padding-left: 1.3rem; color: var(--text-dim); }
-  .fix li { margin: 0.3rem 0; }
-  .fix code, .why code, p code {
-    font-family: var(--mono);
-    background: var(--bg-code);
-    padding: 0.1rem 0.35rem;
-    border-radius: 4px;
-    font-size: 0.85em;
-    color: var(--accent);
-  }
+      .fix,
+      .why {
+        border-radius: 8px;
+        padding: 0.9rem 1.1rem;
+        margin: 0.7rem 0;
+        font-size: 0.92rem;
+      }
+      .fix {
+        background: var(--ok-bg);
+        border: 1px solid rgba(63, 185, 80, 0.2);
+      }
+      .why {
+        background: var(--major-bg);
+        border: 1px solid var(--major-border);
+      }
+      .fix h4,
+      .why h4 {
+        margin: 0 0 0.4rem;
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+      .fix h4 {
+        color: var(--ok);
+      }
+      .why h4 {
+        color: var(--major);
+      }
+      .fix p,
+      .why p {
+        margin: 0.3rem 0;
+        color: var(--text-dim);
+      }
+      .fix ol,
+      .fix ul {
+        margin: 0.4rem 0;
+        padding-left: 1.3rem;
+        color: var(--text-dim);
+      }
+      .fix li {
+        margin: 0.3rem 0;
+      }
+      .fix code,
+      .why code,
+      p code {
+        font-family: var(--mono);
+        background: var(--bg-code);
+        padding: 0.1rem 0.35rem;
+        border-radius: 4px;
+        font-size: 0.85em;
+        color: var(--accent);
+      }
 
-  .effort {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    font-size: 0.78rem;
-    color: var(--text-faint);
-    font-family: var(--mono);
-  }
-  .effort .bars { display: inline-flex; gap: 2px; }
-  .effort .bar { width: 6px; height: 12px; border-radius: 2px; background: var(--border); }
-  .effort .bar.on { background: var(--ok); }
+      .effort {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.78rem;
+        color: var(--text-faint);
+        font-family: var(--mono);
+      }
+      .effort .bars {
+        display: inline-flex;
+        gap: 2px;
+      }
+      .effort .bar {
+        width: 6px;
+        height: 12px;
+        border-radius: 2px;
+        background: var(--border);
+      }
+      .effort .bar.on {
+        background: var(--ok);
+      }
 
-  /* ---------- TOC ---------- */
-  .toc {
-    background: var(--bg-elev);
-    border: 1px solid var(--border-soft);
-    border-radius: 12px;
-    padding: 1.2rem 1.5rem;
-    margin: 2rem 0;
-  }
-  .toc h2 { margin: 0 0 0.8rem; font-size: 1.1rem; }
-  .toc ol { margin: 0; padding-left: 1.4rem; columns: 2; column-gap: 2rem; }
-  .toc li { margin: 0.25rem 0; break-inside: avoid; }
-  .toc a { color: var(--text-dim); text-decoration: none; font-size: 0.88rem; }
-  .toc a:hover { color: var(--accent); }
-  .toc a .sev { font-size: 0.7rem; margin-left: 0.4rem; }
+      /* ---------- TOC ---------- */
+      .toc {
+        background: var(--bg-elev);
+        border: 1px solid var(--border-soft);
+        border-radius: 12px;
+        padding: 1.2rem 1.5rem;
+        margin: 2rem 0;
+      }
+      .toc h2 {
+        margin: 0 0 0.8rem;
+        font-size: 1.1rem;
+      }
+      .toc ol {
+        margin: 0;
+        padding-left: 1.4rem;
+        columns: 2;
+        column-gap: 2rem;
+      }
+      .toc li {
+        margin: 0.25rem 0;
+        break-inside: avoid;
+      }
+      .toc a {
+        color: var(--text-dim);
+        text-decoration: none;
+        font-size: 0.88rem;
+      }
+      .toc a:hover {
+        color: var(--accent);
+      }
+      .toc a .sev {
+        font-size: 0.7rem;
+        margin-left: 0.4rem;
+      }
 
-  /* ---------- Methodology ---------- */
-  .method {
-    background: var(--bg-elev);
-    border: 1px solid var(--border-soft);
-    border-radius: 12px;
-    padding: 1.5rem 1.8rem;
-    margin: 2rem 0;
-  }
-  .method h2 { margin-top: 0; }
-  .method ul { color: var(--text-dim); padding-left: 1.3rem; }
-  .method li { margin: 0.4rem 0; }
+      /* ---------- Methodology ---------- */
+      .method {
+        background: var(--bg-elev);
+        border: 1px solid var(--border-soft);
+        border-radius: 12px;
+        padding: 1.5rem 1.8rem;
+        margin: 2rem 0;
+      }
+      .method h2 {
+        margin-top: 0;
+      }
+      .method ul {
+        color: var(--text-dim);
+        padding-left: 1.3rem;
+      }
+      .method li {
+        margin: 0.4rem 0;
+      }
 
-  footer {
-    border-top: 1px solid var(--border);
-    padding: 2rem;
-    text-align: center;
-    color: var(--text-faint);
-    font-size: 0.85rem;
-    font-family: var(--mono);
-  }
+      footer {
+        border-top: 1px solid var(--border);
+        padding: 2rem;
+        text-align: center;
+        color: var(--text-faint);
+        font-size: 0.85rem;
+        font-family: var(--mono);
+      }
 
-  .empty-msg {
-    text-align: center;
-    padding: 3rem;
-    color: var(--text-faint);
-    font-family: var(--mono);
-    display: none;
-  }
+      .empty-msg {
+        text-align: center;
+        padding: 3rem;
+        color: var(--text-faint);
+        font-family: var(--mono);
+        display: none;
+      }
 
-  @media (max-width: 760px) {
-    .stats { grid-template-columns: repeat(2, 1fr); }
-    .toc ol { columns: 1; }
-    h1 { font-size: 1.9rem; }
-    .search-wrap { flex: 1 1 100%; }
-  }
-</style>
-</head>
-<body>
+      @media (max-width: 760px) {
+        .stats {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .toc ol {
+          columns: 1;
+        }
+        h1 {
+          font-size: 1.9rem;
+        }
+        .search-wrap {
+          flex: 1 1 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="hero">
+      <div class="hero-inner">
+        <p class="eyebrow">Architecture Health Audit · Data Model Integrity</p>
+        <h1>Split-Brain Report</h1>
+        <p class="lede">
+          A deep audit of
+          <code
+            style="
+              font-family: var(--mono);
+              background: var(--bg-card);
+              padding: 0.1rem 0.4rem;
+              border-radius: 4px;
+            "
+            >go-output</code
+          >
+          for duplicate type definitions, multiple sources of truth, and inconsistent modeling of
+          the same concept. Each finding includes exact file:line references, the root cause, and a
+          concrete fix a junior developer can execute.
+        </p>
+        <div class="meta">
+          <span>📅 <b>2026-06-17</b></span>
+          <span>🔍 <b>20 findings</b></span>
+          <span>📦 <b>16 modules scanned</b></span>
+          <span>🎯 <b>Go 1.26 workspace</b></span>
+        </div>
+      </div>
 
-<header class="hero">
-  <div class="hero-inner">
-    <p class="eyebrow">Architecture Health Audit · Data Model Integrity</p>
-    <h1>Split-Brain Report</h1>
-    <p class="lede">
-      A deep audit of <code style="font-family:var(--mono);background:var(--bg-card);padding:0.1rem 0.4rem;border-radius:4px;">go-output</code>
-      for duplicate type definitions, multiple sources of truth, and inconsistent modeling of the same concept.
-      Each finding includes exact file:line references, the root cause, and a concrete fix a junior developer can execute.
-    </p>
-    <div class="meta">
-      <span>📅 <b>2026-06-17</b></span>
-      <span>🔍 <b>20 findings</b></span>
-      <span>📦 <b>16 modules scanned</b></span>
-      <span>🎯 <b>Go 1.26 workspace</b></span>
-    </div>
-  </div>
+      <div class="stats">
+        <div class="stat total">
+          <div class="num" id="stat-total">20</div>
+          <div class="label">Total Findings</div>
+        </div>
+        <div class="stat crit">
+          <div class="num">5</div>
+          <div class="label">Critical</div>
+        </div>
+        <div class="stat maj">
+          <div class="num">9</div>
+          <div class="label">Major</div>
+        </div>
+        <div class="stat min">
+          <div class="num">6</div>
+          <div class="label">Minor</div>
+        </div>
+        <div class="stat time">
+          <div class="num">~2d</div>
+          <div class="label">Est. Effort</div>
+        </div>
+      </div>
+    </header>
 
-  <div class="stats">
-    <div class="stat total"><div class="num" id="stat-total">20</div><div class="label">Total Findings</div></div>
-    <div class="stat crit"><div class="num">5</div><div class="label">Critical</div></div>
-    <div class="stat maj"><div class="num">9</div><div class="label">Major</div></div>
-    <div class="stat min"><div class="num">6</div><div class="label">Minor</div></div>
-    <div class="stat time"><div class="num">~2d</div><div class="label">Est. Effort</div></div>
-  </div>
-</header>
+    <nav class="toolbar">
+      <div class="toolbar-inner">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="critical">
+          <span class="dot crit"></span>Critical
+        </button>
+        <button class="filter-btn" data-filter="major"><span class="dot maj"></span>Major</button>
+        <button class="filter-btn" data-filter="minor"><span class="dot min"></span>Minor</button>
+        <div class="search-wrap">
+          <input
+            type="text"
+            id="search"
+            placeholder="Search findings… (e.g. TreeNode, color, Render)"
+            autocomplete="off"
+          />
+        </div>
+      </div>
+    </nav>
 
-<nav class="toolbar">
-  <div class="toolbar-inner">
-    <button class="filter-btn active" data-filter="all">All</button>
-    <button class="filter-btn" data-filter="critical"><span class="dot crit"></span>Critical</button>
-    <button class="filter-btn" data-filter="major"><span class="dot maj"></span>Major</button>
-    <button class="filter-btn" data-filter="minor"><span class="dot min"></span>Minor</button>
-    <div class="search-wrap">
-      <input type="text" id="search" placeholder="Search findings… (e.g. TreeNode, color, Render)" autocomplete="off">
-    </div>
-  </div>
-</nav>
+    <main>
+      <div class="method">
+        <h2>🧭 What is a "Split-Brain"?</h2>
+        <p style="color: var(--text-dim); margin-top: 0">
+          A split-brain issue is when the <strong>same real-world concept</strong> is modeled in
+          <strong>two or more places</strong>
+          that can independently drift. It is the architectural root cause behind "I changed it here
+          but forgot there" bugs. There are three flavors, all hunted in this audit:
+        </p>
+        <ul>
+          <li>
+            <strong>Exact duplicates</strong> — same name &amp; shape redefined in another package
+            (silent drift risk).
+          </li>
+          <li>
+            <strong>Near-duplicates</strong> — different names but the same concept; a translation
+            layer keeps them in sync by hand (brittle).
+          </li>
+          <li>
+            <strong>Multiple sources of truth</strong> — two live copies of the same data kept in
+            sync manually (race-prone).
+          </li>
+        </ul>
+        <p style="color: var(--text-dim); margin-bottom: 0">
+          <strong>How to read severity:</strong>
+          <span style="color: var(--critical)">Critical</span> = a true bug or data-integrity risk,
+          fix now. <span style="color: var(--major)">Major</span> = high drift risk, fix this
+          sprint. <span style="color: var(--minor)">Minor</span> = acceptable but worth a note.
+        </p>
+      </div>
 
-<main>
+      <div class="toc">
+        <h2>📑 Findings Index</h2>
+        <ol id="toc-list"></ol>
+      </div>
 
-  <div class="method">
-    <h2>🧭 What is a "Split-Brain"?</h2>
-    <p style="color:var(--text-dim);margin-top:0;">
-      A split-brain issue is when the <strong>same real-world concept</strong> is modeled in <strong>two or more places</strong>
-      that can independently drift. It is the architectural root cause behind "I changed it here but forgot there" bugs.
-      There are three flavors, all hunted in this audit:
-    </p>
-    <ul>
-      <li><strong>Exact duplicates</strong> — same name &amp; shape redefined in another package (silent drift risk).</li>
-      <li><strong>Near-duplicates</strong> — different names but the same concept; a translation layer keeps them in sync by hand (brittle).</li>
-      <li><strong>Multiple sources of truth</strong> — two live copies of the same data kept in sync manually (race-prone).</li>
-    </ul>
-    <p style="color:var(--text-dim);margin-bottom:0;">
-      <strong>How to read severity:</strong>
-      <span style="color:var(--critical)">Critical</span> = a true bug or data-integrity risk, fix now.
-      <span style="color:var(--major)">Major</span> = high drift risk, fix this sprint.
-      <span style="color:var(--minor)">Minor</span> = acceptable but worth a note.
-    </p>
-  </div>
+      <!-- ============================ CRITICAL ============================ -->
+      <h2 class="section-h">🔴 Critical — True Split-Brain Bugs <span class="count">5</span></h2>
 
-  <div class="toc">
-    <h2>📑 Findings Index</h2>
-    <ol id="toc-list"></ol>
-  </div>
-
-  <!-- ============================ CRITICAL ============================ -->
-  <h2 class="section-h">🔴 Critical — True Split-Brain Bugs <span class="count">5</span></h2>
-
-  <!-- C1 -->
-  <div class="finding critical" data-sev="critical" data-keywords="treenode nom output collision name type struct tree dependency">
-    <div class="finding-head">
-      <span class="finding-id">C1</span>
-      <span class="badge critical">Critical</span>
-      <span class="effort">Effort <span class="bars"><span class="bar on"></span><span class="bar on"></span><span class="bar"></span></span> medium</span>
-    </div>
-    <h3>Two completely different structs both named <code>TreeNode</code></h3>
-    <p class="concept">output.TreeNode  vs  nom.TreeNode</p>
-    <p>The exported name <code>TreeNode</code> is defined twice for <strong>unrelated concepts</strong>. Anyone importing both packages
-      must qualify every reference, and code review cannot tell at a glance which tree a <code>TreeNode</code> belongs to.</p>
-    <div>
-      <span class="file-ref">tree.go<span class="loc">:19</span></span>
-      <span class="file-ref">nom/tree.go<span class="loc">:14</span></span>
-    </div>
-<pre class="code"><span class="cm">// tree.go:19 — generic hierarchical node for diagram FORMATS (D2/DOT/Mermaid/PlantUML)</span>
+      <!-- C1 -->
+      <div
+        class="finding critical"
+        data-sev="critical"
+        data-keywords="treenode nom output collision name type struct tree dependency"
+      >
+        <div class="finding-head">
+          <span class="finding-id">C1</span>
+          <span class="badge critical">Critical</span>
+          <span class="effort"
+            >Effort
+            <span class="bars"
+              ><span class="bar on"></span><span class="bar on"></span><span class="bar"></span
+            ></span>
+            medium</span
+          >
+        </div>
+        <h3>Two completely different structs both named <code>TreeNode</code></h3>
+        <p class="concept">output.TreeNode vs nom.TreeNode</p>
+        <p>
+          The exported name <code>TreeNode</code> is defined twice for
+          <strong>unrelated concepts</strong>. Anyone importing both packages must qualify every
+          reference, and code review cannot tell at a glance which tree a
+          <code>TreeNode</code> belongs to.
+        </p>
+        <div>
+          <span class="file-ref">tree.go<span class="loc">:19</span></span>
+          <span class="file-ref">nom/tree.go<span class="loc">:14</span></span>
+        </div>
+        <pre
+          class="code"
+        ><span class="cm">// tree.go:19 — generic hierarchical node for diagram FORMATS (D2/DOT/Mermaid/PlantUML)</span>
 <span class="kw">type</span> <span class="ty">TreeNode</span> <span class="kw">struct</span> {
     <span class="ty">ID</span> <span class="ty">TreeNodeID</span>
     <span class="ty">Label</span> <span class="ty">TreeNodeLabel</span>
@@ -443,35 +705,74 @@
     <span class="ty">Depth</span> <span class="kw">int</span>
     <span class="ty">IsRoot</span>, <span class="ty">IsDisplayed</span> <span class="kw">bool</span>
 }</pre>
-    <div class="why"><h4>⚠️ Why it's dangerous</h4>
-      <p>The TUI module imports <strong>both</strong>. A field like <code>node.Children</code> resolves to a different slice type
-        depending on which import the file pulled in. The names lie about what they are.</p></div>
-    <div class="fix"><h4>✅ How to fix</h4>
-      <ol>
-        <li>Rename <code>nom.TreeNode</code> → <code>nom.ActivityNode</code> (it models an <em>activity</em> in the dependency tree, not a generic tree node).</li>
-        <li>Use a project-wide find/replace scoped to the <code>nom/</code> and <code>tui/</code> packages.</li>
-        <li>Run <code>nix run .#test</code> — the compiler will list every reference that needs updating.</li>
-        <li>The root <code>output.TreeNode</code> stays unchanged (it is the canonical, generic one).</li>
-      </ol></div>
-  </div>
+        <div class="why">
+          <h4>⚠️ Why it's dangerous</h4>
+          <p>
+            The TUI module imports <strong>both</strong>. A field like
+            <code>node.Children</code> resolves to a different slice type depending on which import
+            the file pulled in. The names lie about what they are.
+          </p>
+        </div>
+        <div class="fix">
+          <h4>✅ How to fix</h4>
+          <ol>
+            <li>
+              Rename <code>nom.TreeNode</code> → <code>nom.ActivityNode</code> (it models an
+              <em>activity</em> in the dependency tree, not a generic tree node).
+            </li>
+            <li>
+              Use a project-wide find/replace scoped to the <code>nom/</code> and
+              <code>tui/</code> packages.
+            </li>
+            <li>
+              Run <code>nix run .#test</code> — the compiler will list every reference that needs
+              updating.
+            </li>
+            <li>
+              The root <code>output.TreeNode</code> stays unchanged (it is the canonical, generic
+              one).
+            </li>
+          </ol>
+        </div>
+      </div>
 
-  <!-- C2 -->
-  <div class="finding critical" data-sev="critical" data-keywords="progressmodel nomsubscriber state duplication sync activities dependencytree timingcache source of truth">
-    <div class="finding-head">
-      <span class="finding-id">C2</span>
-      <span class="badge critical">Critical</span>
-      <span class="effort">Effort <span class="bars"><span class="bar on"></span><span class="bar on"></span><span class="bar on"></span></span> high</span>
-    </div>
-    <h3><code>ProgressModel</code> holds a hand-synced copy of <code>NOMStyleSubscriber</code> state</h3>
-    <p class="concept">Two live sources of truth for activities · dependencyTree · timingCache</p>
-    <p>The TUI model stores its <strong>own copies</strong> of the subscriber's internal maps and then manually re-syncs them every
-      100&nbsp;ms tick. If the sync is ever skipped, reordered, or a new field is added to one side but not the other, the UI shows stale data.</p>
-    <div>
-      <span class="file-ref">tui/state.go<span class="loc">:109-117</span></span>
-      <span class="file-ref">tui/model.go<span class="loc">:182-196</span></span>
-      <span class="file-ref">nom/nom_subscriber.go<span class="loc">:9-22</span></span>
-    </div>
-<pre class="code"><span class="cm">// tui/state.go:109 — the model keeps its OWN copies…</span>
+      <!-- C2 -->
+      <div
+        class="finding critical"
+        data-sev="critical"
+        data-keywords="progressmodel nomsubscriber state duplication sync activities dependencytree timingcache source of truth"
+      >
+        <div class="finding-head">
+          <span class="finding-id">C2</span>
+          <span class="badge critical">Critical</span>
+          <span class="effort"
+            >Effort
+            <span class="bars"
+              ><span class="bar on"></span><span class="bar on"></span><span class="bar on"></span
+            ></span>
+            high</span
+          >
+        </div>
+        <h3>
+          <code>ProgressModel</code> holds a hand-synced copy of
+          <code>NOMStyleSubscriber</code> state
+        </h3>
+        <p class="concept">
+          Two live sources of truth for activities · dependencyTree · timingCache
+        </p>
+        <p>
+          The TUI model stores its <strong>own copies</strong> of the subscriber's internal maps and
+          then manually re-syncs them every 100&nbsp;ms tick. If the sync is ever skipped,
+          reordered, or a new field is added to one side but not the other, the UI shows stale data.
+        </p>
+        <div>
+          <span class="file-ref">tui/state.go<span class="loc">:109-117</span></span>
+          <span class="file-ref">tui/model.go<span class="loc">:182-196</span></span>
+          <span class="file-ref">nom/nom_subscriber.go<span class="loc">:9-22</span></span>
+        </div>
+        <pre
+          class="code"
+        ><span class="cm">// tui/state.go:109 — the model keeps its OWN copies…</span>
 <span class="kw">type</span> <span class="ty">ProgressModel</span> <span class="kw">struct</span> {
 <span class="hl">    <span class="ty">activities</span>     <span class="kw">map</span>[<span class="ty">ActivityID</span>]*<span class="ty">ActivityDisplayState</span></span>
 <span class="hl">    <span class="ty">dependencyTree</span> *<span class="ty">DependencyTree</span></span>
@@ -486,69 +787,142 @@
 <span class="hl">    m.<span class="ty">activities</span>     = m.<span class="ty">nomSubscriber</span>.<span class="fn">GetActivities</span>()</span>
 <span class="hl">    m.<span class="ty">dependencyTree</span> = m.<span class="ty">nomSubscriber</span>.<span class="fn">GetDependencyTree</span>()</span>
 }</pre>
-    <div class="why"><h4>⚠️ Why it's dangerous</h4>
-      <p>There are now <strong>two copies</strong> of the activity map and dependency tree alive in memory. Any render code that reads
-        <code>m.activities</code> reads a snapshot that may be one tick behind the subscriber. Adding a new field to
-        <code>NOMStyleSubscriber</code> silently leaves the model's copy out of sync.</p></div>
-    <div class="fix"><h4>✅ How to fix</h4>
-      <ol>
-        <li>Remove the duplicated fields (<code>activities</code>, <code>dependencyTree</code>, <code>timingCache</code>) from <code>ProgressModel</code>.</li>
-        <li>Replace every read of <code>m.activities</code> with a delegated call: <code>m.nomSubscriber.GetActivities()</code>.</li>
-        <li>Keep <code>syncNOMSubscriber()</code> only for the <em>mutating</em> calls (<code>UpdateRunningActivityElapsed</code>, <code>SyncActivityTimingToTree</code>) and the workflow-state transition logic.</li>
-        <li>Cache locally <em>only</em> if a profiler proves <code>GetActivities()</code> is a hot-path cost — and then cache in one place with a clear <code>// cached snapshot</code> comment.</li>
-      </ol></div>
-  </div>
+        <div class="why">
+          <h4>⚠️ Why it's dangerous</h4>
+          <p>
+            There are now <strong>two copies</strong> of the activity map and dependency tree alive
+            in memory. Any render code that reads <code>m.activities</code> reads a snapshot that
+            may be one tick behind the subscriber. Adding a new field to
+            <code>NOMStyleSubscriber</code> silently leaves the model's copy out of sync.
+          </p>
+        </div>
+        <div class="fix">
+          <h4>✅ How to fix</h4>
+          <ol>
+            <li>
+              Remove the duplicated fields (<code>activities</code>, <code>dependencyTree</code>,
+              <code>timingCache</code>) from <code>ProgressModel</code>.
+            </li>
+            <li>
+              Replace every read of <code>m.activities</code> with a delegated call:
+              <code>m.nomSubscriber.GetActivities()</code>.
+            </li>
+            <li>
+              Keep <code>syncNOMSubscriber()</code> only for the <em>mutating</em> calls
+              (<code>UpdateRunningActivityElapsed</code>, <code>SyncActivityTimingToTree</code>) and
+              the workflow-state transition logic.
+            </li>
+            <li>
+              Cache locally <em>only</em> if a profiler proves <code>GetActivities()</code> is a
+              hot-path cost — and then cache in one place with a clear
+              <code>// cached snapshot</code> comment.
+            </li>
+          </ol>
+        </div>
+      </div>
 
-  <!-- C3 -->
-  <div class="finding critical" data-sev="critical" data-keywords="timingformat constant format string emoji seconds collision nom tui">
-    <div class="finding-head">
-      <span class="finding-id">C3</span>
-      <span class="badge critical">Critical</span>
-      <span class="effort">Effort <span class="bars"><span class="bar on"></span><span class="bar"></span><span class="bar"></span></span> low</span>
-    </div>
-    <h3><code>TimingFormat</code> — same name, different value, silent rendering mismatch</h3>
-    <p class="concept">nom.TimingFormat = "%.1fs"   vs   tui.TimingFormat = "⏱️ %.1fs"</p>
-    <p>Two constants with the identical name format durations in seconds — but the TUI version embeds a <code>⏱️</code> emoji
-      prefix while the NOM version does not. A developer searching for "TimingFormat" will assume they are equivalent. They are not.</p>
-    <div>
-      <span class="file-ref">nom/format.go<span class="loc">:32</span></span>
-      <span class="file-ref">tui/constants.go<span class="loc">:6</span></span>
-    </div>
-<pre class="code"><span class="cm">// nom/format.go:32</span>
+      <!-- C3 -->
+      <div
+        class="finding critical"
+        data-sev="critical"
+        data-keywords="timingformat constant format string emoji seconds collision nom tui"
+      >
+        <div class="finding-head">
+          <span class="finding-id">C3</span>
+          <span class="badge critical">Critical</span>
+          <span class="effort"
+            >Effort
+            <span class="bars"
+              ><span class="bar on"></span><span class="bar"></span><span class="bar"></span
+            ></span>
+            low</span
+          >
+        </div>
+        <h3><code>TimingFormat</code> — same name, different value, silent rendering mismatch</h3>
+        <p class="concept">nom.TimingFormat = "%.1fs" vs tui.TimingFormat = "⏱️ %.1fs"</p>
+        <p>
+          Two constants with the identical name format durations in seconds — but the TUI version
+          embeds a <code>⏱️</code> emoji prefix while the NOM version does not. A developer
+          searching for "TimingFormat" will assume they are equivalent. They are not.
+        </p>
+        <div>
+          <span class="file-ref">nom/format.go<span class="loc">:32</span></span>
+          <span class="file-ref">tui/constants.go<span class="loc">:6</span></span>
+        </div>
+        <pre class="code"><span class="cm">// nom/format.go:32</span>
 <span class="kw">const</span> <span class="ty">TimingFormat</span> = <span class="st">"%.1fs"</span>            <span class="cm">// used by FormatDuration()</span>
 
 <span class="cm">// tui/constants.go:6</span>
 <span class="kw">const</span> (
     <span class="ty">TimingFormat</span> = <span class="st">"⏱️ %.1fs"</span>       <span class="cm">// emoji baked into the format string</span>
 )</pre>
-    <div class="why"><h4>⚠️ Why it's dangerous</h4>
-      <p>NOM deliberately separates the symbol from the duration (<code>SymbolTiming + FormatDuration()</code> in
-        <code>nom/format.go:58</code>). The TUI constant bakes the symbol in. "Fixing" one to match the other introduces a double-emoji
-        or missing-emoji rendering regression with no compiler error.</p></div>
-    <div class="fix"><h4>✅ How to fix</h4>
-      <ol>
-        <li>Decide on one canonical pattern: <strong>symbol separate from format string</strong> (NOM's approach is more flexible).</li>
-        <li>Rename <code>tui.TimingFormat</code> → <code>tui.timingFormatWithIcon</code> (unexport it) OR delete it and compose <code>"⏱️ " + nom.FormatDuration(t)</code> at the call site.</li>
-        <li>grep for every <code>Sprintf(TimingFormat</code> call to confirm nothing relied on the emoji being embedded.</li>
-      </ol></div>
-  </div>
+        <div class="why">
+          <h4>⚠️ Why it's dangerous</h4>
+          <p>
+            NOM deliberately separates the symbol from the duration (<code
+              >SymbolTiming + FormatDuration()</code
+            >
+            in <code>nom/format.go:58</code>). The TUI constant bakes the symbol in. "Fixing" one to
+            match the other introduces a double-emoji or missing-emoji rendering regression with no
+            compiler error.
+          </p>
+        </div>
+        <div class="fix">
+          <h4>✅ How to fix</h4>
+          <ol>
+            <li>
+              Decide on one canonical pattern:
+              <strong>symbol separate from format string</strong> (NOM's approach is more flexible).
+            </li>
+            <li>
+              Rename <code>tui.TimingFormat</code> → <code>tui.timingFormatWithIcon</code> (unexport
+              it) OR delete it and compose <code>"⏱️ " + nom.FormatDuration(t)</code> at the call
+              site.
+            </li>
+            <li>
+              grep for every <code>Sprintf(TimingFormat</code> call to confirm nothing relied on the
+              emoji being embedded.
+            </li>
+          </ol>
+        </div>
+      </div>
 
-  <!-- C4 -->
-  <div class="finding critical" data-sev="critical" data-keywords="graphrenderer interface redeclaration duplicate test serialization graphrenderer">
-    <div class="finding-head">
-      <span class="finding-id">C4</span>
-      <span class="badge critical">Critical</span>
-      <span class="effort">Effort <span class="bars"><span class="bar on"></span><span class="bar"></span><span class="bar"></span></span> low</span>
-    </div>
-    <h3><code>graphRenderer</code> is a byte-for-byte re-declaration of <code>output.GraphRenderer</code></h3>
-    <p class="concept">Test-only duplicate that will silently drift if the real interface gains a method</p>
-    <p>A private interface in the serialization test helpers exactly mirrors the canonical interface. Go permits this, but it means a
-      change to <code>output.GraphRenderer</code> will not break the test until runtime.</p>
-    <div>
-      <span class="file-ref">serialization/testhelpers_test.go<span class="loc">:50-54</span></span>
-      <span class="file-ref">graph.go<span class="loc">:8-14</span></span>
-    </div>
-<pre class="code"><span class="cm">// serialization/testhelpers_test.go:50 — the COPY</span>
+      <!-- C4 -->
+      <div
+        class="finding critical"
+        data-sev="critical"
+        data-keywords="graphrenderer interface redeclaration duplicate test serialization graphrenderer"
+      >
+        <div class="finding-head">
+          <span class="finding-id">C4</span>
+          <span class="badge critical">Critical</span>
+          <span class="effort"
+            >Effort
+            <span class="bars"
+              ><span class="bar on"></span><span class="bar"></span><span class="bar"></span
+            ></span>
+            low</span
+          >
+        </div>
+        <h3>
+          <code>graphRenderer</code> is a byte-for-byte re-declaration of
+          <code>output.GraphRenderer</code>
+        </h3>
+        <p class="concept">
+          Test-only duplicate that will silently drift if the real interface gains a method
+        </p>
+        <p>
+          A private interface in the serialization test helpers exactly mirrors the canonical
+          interface. Go permits this, but it means a change to
+          <code>output.GraphRenderer</code> will not break the test until runtime.
+        </p>
+        <div>
+          <span class="file-ref"
+            >serialization/testhelpers_test.go<span class="loc">:50-54</span></span
+          >
+          <span class="file-ref">graph.go<span class="loc">:8-14</span></span>
+        </div>
+        <pre class="code"><span class="cm">// serialization/testhelpers_test.go:50 — the COPY</span>
 <span class="kw">type</span> <span class="ty">graphRenderer</span> <span class="kw">interface</span> {
     <span class="ty">output</span>.<span class="ty">Renderer</span>
     <span class="fn">SetNodes</span>([]<span class="ty">output</span>.<span class="ty">GraphNode</span>)
@@ -561,61 +935,106 @@
     <span class="fn">SetNodes</span>(<span class="ty">nodes</span> []<span class="ty">GraphNode</span>)
     <span class="fn">SetEdges</span>(<span class="ty">edges</span> []<span class="ty">GraphEdge</span>)
 }</pre>
-    <div class="fix"><h4>✅ How to fix</h4>
-      <ol>
-        <li>Delete the <code>graphRenderer</code> type alias entirely.</li>
-        <li>Change the generic helper <code>testGraphRendererNodeWithShape[R graphRenderer]</code> to use <code>[R output.GraphRenderer]</code>.</li>
-        <li>The function already lives in a <code>_test.go</code> file so importing <code>output</code> is fine.</li>
-      </ol></div>
-  </div>
+        <div class="fix">
+          <h4>✅ How to fix</h4>
+          <ol>
+            <li>Delete the <code>graphRenderer</code> type alias entirely.</li>
+            <li>
+              Change the generic helper
+              <code>testGraphRendererNodeWithShape[R graphRenderer]</code> to use
+              <code>[R output.GraphRenderer]</code>.
+            </li>
+            <li>
+              The function already lives in a <code>_test.go</code> file so importing
+              <code>output</code> is fine.
+            </li>
+          </ol>
+        </div>
+      </div>
 
-  <!-- C5 -->
-  <div class="finding critical" data-sev="critical" data-keywords="renderer interface redeclaration duplicate test integration render">
-    <div class="finding-head">
-      <span class="finding-id">C5</span>
-      <span class="badge critical">Critical</span>
-      <span class="effort">Effort <span class="bars"><span class="bar on"></span><span class="bar"></span><span class="bar"></span></span> low</span>
-    </div>
-    <h3><code>renderer</code> is a re-declaration of <code>output.Renderer</code></h3>
-    <p class="concept">Same anti-pattern as C4, in the integration test suite</p>
-    <div>
-      <span class="file-ref">integration/renderer_test.go<span class="loc">:165</span></span>
-      <span class="file-ref">renderer.go<span class="loc">:4-7</span></span>
-    </div>
-<pre class="code"><span class="cm">// integration/renderer_test.go:165</span>
+      <!-- C5 -->
+      <div
+        class="finding critical"
+        data-sev="critical"
+        data-keywords="renderer interface redeclaration duplicate test integration render"
+      >
+        <div class="finding-head">
+          <span class="finding-id">C5</span>
+          <span class="badge critical">Critical</span>
+          <span class="effort"
+            >Effort
+            <span class="bars"
+              ><span class="bar on"></span><span class="bar"></span><span class="bar"></span
+            ></span>
+            low</span
+          >
+        </div>
+        <h3><code>renderer</code> is a re-declaration of <code>output.Renderer</code></h3>
+        <p class="concept">Same anti-pattern as C4, in the integration test suite</p>
+        <div>
+          <span class="file-ref">integration/renderer_test.go<span class="loc">:165</span></span>
+          <span class="file-ref">renderer.go<span class="loc">:4-7</span></span>
+        </div>
+        <pre class="code"><span class="cm">// integration/renderer_test.go:165</span>
 <span class="kw">type</span> <span class="ty">renderer</span> <span class="kw">interface</span>{ <span class="fn">Render</span>() (<span class="kw">string</span>, <span class="kw">error</span>) }
 
 <span class="cm">// renderer.go:4 — the canonical contract</span>
 <span class="kw">type</span> <span class="ty">Renderer</span> <span class="kw">interface</span> { <span class="fn">Render</span>() (<span class="kw">string</span>, <span class="kw">error</span>) }</pre>
-    <div class="fix"><h4>✅ How to fix</h4>
-      <ol>
-        <li>Delete the local <code>renderer</code> interface.</li>
-        <li>Update the generic helper signature <code>testRendererNotEmpty[R renderer]</code> → <code>[R output.Renderer]</code>.</li>
-        <li>Idiomatic Go consumer-side interfaces are fine <em>only when</em> they intentionally narrow the contract — here it is identical, so it is pure drift risk.</li>
-      </ol></div>
-  </div>
+        <div class="fix">
+          <h4>✅ How to fix</h4>
+          <ol>
+            <li>Delete the local <code>renderer</code> interface.</li>
+            <li>
+              Update the generic helper signature <code>testRendererNotEmpty[R renderer]</code> →
+              <code>[R output.Renderer]</code>.
+            </li>
+            <li>
+              Idiomatic Go consumer-side interfaces are fine <em>only when</em> they intentionally
+              narrow the contract — here it is identical, so it is pure drift risk.
+            </li>
+          </ol>
+        </div>
+      </div>
 
-  <!-- ============================ MAJOR ============================ -->
-  <h2 class="section-h" style="color:var(--major);">🟠 Major — High Drift Risk <span class="count">9</span></h2>
+      <!-- ============================ MAJOR ============================ -->
+      <h2 class="section-h" style="color: var(--major)">
+        🟠 Major — High Drift Risk <span class="count">9</span>
+      </h2>
 
-  <!-- M1 -->
-  <div class="finding major" data-sev="major" data-keywords="color lipgloss ansi symbols colors theme scattered three modules semantic green yellow red">
-    <div class="finding-head">
-      <span class="finding-id">M1</span>
-      <span class="badge major">Major</span>
-      <span class="effort">Effort <span class="bars"><span class="bar on"></span><span class="bar on"></span><span class="bar"></span></span> medium</span>
-    </div>
-    <h3>Three independent color systems for the same semantic colors</h3>
-    <p class="concept">root ANSI strings · tui lipgloss struct · nom lipgloss vars — green/yellow/red/gray each defined 2-3 times</p>
-    <p>The same four semantic colors (green=success, yellow=warning/running, red=error/failed, gray=dim/paused) are defined
-      <strong>independently</strong> in three modules with the same ANSI codes but different names. There is also an
-      <strong>intra-package duplicate</strong>: <code>nom.ColorWarning</code> and <code>nom.ColorRunning</code> are the same value.</p>
-    <div>
-      <span class="file-ref">color.go<span class="loc">:12-20</span></span>
-      <span class="file-ref">tui/colors.go<span class="loc">:27-38</span></span>
-      <span class="file-ref">nom/symbols.go<span class="loc">:35-53</span></span>
-    </div>
-<pre class="code"><span class="cm">// SAME colors, THREE homes:</span>
+      <!-- M1 -->
+      <div
+        class="finding major"
+        data-sev="major"
+        data-keywords="color lipgloss ansi symbols colors theme scattered three modules semantic green yellow red"
+      >
+        <div class="finding-head">
+          <span class="finding-id">M1</span>
+          <span class="badge major">Major</span>
+          <span class="effort"
+            >Effort
+            <span class="bars"
+              ><span class="bar on"></span><span class="bar on"></span><span class="bar"></span
+            ></span>
+            medium</span
+          >
+        </div>
+        <h3>Three independent color systems for the same semantic colors</h3>
+        <p class="concept">
+          root ANSI strings · tui lipgloss struct · nom lipgloss vars — green/yellow/red/gray each
+          defined 2-3 times
+        </p>
+        <p>
+          The same four semantic colors (green=success, yellow=warning/running, red=error/failed,
+          gray=dim/paused) are defined <strong>independently</strong> in three modules with the same
+          ANSI codes but different names. There is also an <strong>intra-package duplicate</strong>:
+          <code>nom.ColorWarning</code> and <code>nom.ColorRunning</code> are the same value.
+        </p>
+        <div>
+          <span class="file-ref">color.go<span class="loc">:12-20</span></span>
+          <span class="file-ref">tui/colors.go<span class="loc">:27-38</span></span>
+          <span class="file-ref">nom/symbols.go<span class="loc">:35-53</span></span>
+        </div>
+        <pre class="code"><span class="cm">// SAME colors, THREE homes:</span>
 <span class="cm">// root:  ansiGreen="\033[32m"   ansiCyan="\033[36m"   …  (raw escape strings)</span>
 <span class="cm">// tui:   success: lipgloss.Color("10")  warning: lipgloss.Color("11")  err: lipgloss.Color("9")</span>
 <span class="cm">// nom:   ColorCompleted=lipgloss.Color("10") ColorFailed=lipgloss.Color("9") ColorWarning=lipgloss.Color("11")</span>
@@ -623,33 +1042,67 @@
 <span class="cm">// BONUS intra-package duplicate in nom/symbols.go:</span>
 <span class="kw">var</span> <span class="ty">ColorRunning</span> = <span class="fn">lipgloss</span>.<span class="fn">Color</span>(<span class="st">"11"</span>)   <span class="cm">// :35</span>
 <span class="kw">var</span> <span class="ty">ColorWarning</span>  = <span class="fn">lipgloss</span>.<span class="fn">Color</span>(<span class="st">"11"</span>)   <span class="cm">// :47  ← identical value, different name</span></pre>
-    <div class="why"><h4>⚠️ Why it's dangerous</h4>
-      <p>If the design system changes "success" from green to teal, you must hunt three files. The root uses raw ANSI strings while
-        nom/tui use <code>lipgloss.Color</code> — so the root colors and the lipgloss colors are not even comparable types.</p></div>
-    <div class="fix"><h4>✅ How to fix</h4>
-      <ul>
-        <li><strong>Quick win:</strong> delete <code>nom.ColorWarning</code> (it equals <code>ColorRunning</code>); replace usages with <code>ColorRunning</code>.</li>
-        <li><strong>Structural:</strong> create a shared <code>nom.Theme</code> type (lipgloss-based) that the <code>tui</code> package consumes, since <code>tui</code> already depends on <code>nom</code>. Move the 4 semantic colors there once.</li>
-        <li>The root raw-ANSI colors (<code>ansiGreen</code> etc.) can stay — they serve the zero-dependency root module — but document that they mirror the lipgloss values.</li>
-      </ul></div>
-  </div>
+        <div class="why">
+          <h4>⚠️ Why it's dangerous</h4>
+          <p>
+            If the design system changes "success" from green to teal, you must hunt three files.
+            The root uses raw ANSI strings while nom/tui use <code>lipgloss.Color</code> — so the
+            root colors and the lipgloss colors are not even comparable types.
+          </p>
+        </div>
+        <div class="fix">
+          <h4>✅ How to fix</h4>
+          <ul>
+            <li>
+              <strong>Quick win:</strong> delete <code>nom.ColorWarning</code> (it equals
+              <code>ColorRunning</code>); replace usages with <code>ColorRunning</code>.
+            </li>
+            <li>
+              <strong>Structural:</strong> create a shared <code>nom.Theme</code> type
+              (lipgloss-based) that the <code>tui</code> package consumes, since
+              <code>tui</code> already depends on <code>nom</code>. Move the 4 semantic colors there
+              once.
+            </li>
+            <li>
+              The root raw-ANSI colors (<code>ansiGreen</code> etc.) can stay — they serve the
+              zero-dependency root module — but document that they mirror the lipgloss values.
+            </li>
+          </ul>
+        </div>
+      </div>
 
-  <!-- M2 -->
-  <div class="finding major" data-sev="major" data-keywords="detectnocolor isnocolor isci terminal detection no_color divergent env">
-    <div class="finding-head">
-      <span class="finding-id">M2</span>
-      <span class="badge major">Major</span>
-      <span class="effort">Effort <span class="bars"><span class="bar on"></span><span class="bar"></span><span class="bar"></span></span> low</span>
-    </div>
-    <h3>Two divergent "should I disable color?" detectors</h3>
-    <p class="concept">nom.detectNoColor() checks TERM=dumb + CI · root isNoColor()+isCI() checks 5 CI vars but NOT TERM=dumb</p>
-    <p>Both functions answer the same question ("is color disabled?") with different rules, so the same terminal can be color-enabled
-      for the root renderers and color-disabled for the NOM inline renderer.</p>
-    <div>
-      <span class="file-ref">nom/inline_renderer.go<span class="loc">:81-95</span></span>
-      <span class="file-ref">color.go<span class="loc">:107-117</span></span>
-    </div>
-<pre class="code"><span class="cm">// nom/inline_renderer.go:81</span>
+      <!-- M2 -->
+      <div
+        class="finding major"
+        data-sev="major"
+        data-keywords="detectnocolor isnocolor isci terminal detection no_color divergent env"
+      >
+        <div class="finding-head">
+          <span class="finding-id">M2</span>
+          <span class="badge major">Major</span>
+          <span class="effort"
+            >Effort
+            <span class="bars"
+              ><span class="bar on"></span><span class="bar"></span><span class="bar"></span
+            ></span>
+            low</span
+          >
+        </div>
+        <h3>Two divergent "should I disable color?" detectors</h3>
+        <p class="concept">
+          nom.detectNoColor() checks TERM=dumb + CI · root isNoColor()+isCI() checks 5 CI vars but
+          NOT TERM=dumb
+        </p>
+        <p>
+          Both functions answer the same question ("is color disabled?") with different rules, so
+          the same terminal can be color-enabled for the root renderers and color-disabled for the
+          NOM inline renderer.
+        </p>
+        <div>
+          <span class="file-ref">nom/inline_renderer.go<span class="loc">:81-95</span></span>
+          <span class="file-ref">color.go<span class="loc">:107-117</span></span>
+        </div>
+        <pre class="code"><span class="cm">// nom/inline_renderer.go:81</span>
 <span class="kw">func</span> <span class="fn">detectNoColor</span>() <span class="kw">bool</span> {
     <span class="kw">return</span> <span class="fn">os</span>.<span class="fn">Getenv</span>(<span class="st">"NO_COLOR"</span>) != <span class="st">""</span> ||
            <span class="fn">os</span>.<span class="fn">Getenv</span>(<span class="st">"TERM"</span>) == <span class="st">"dumb"</span> ||   <span class="cm">// ← root does NOT check this</span>
@@ -663,30 +1116,57 @@
            <span class="fn">os</span>.<span class="fn">Getenv</span>(<span class="st">"GITLAB_CI"</span>) != <span class="st">""</span> || <span class="fn">os</span>.<span class="fn">Getenv</span>(<span class="st">"JENKINS_URL"</span>) != <span class="st">""</span> ||
            <span class="fn">os</span>.<span class="fn">Getenv</span>(<span class="st">"BUILDKITE"</span>) != <span class="st">""</span>   <span class="cm">// ← nom does NOT check these 4</span>
 }</pre>
-    <div class="fix"><h4>✅ How to fix</h4>
-      <ul>
-        <li>The modules can't share code (root is zero-dep, nom is separate) — so the goal is <strong>identical logic in two places</strong>, clearly cross-referenced.</li>
-        <li>Align both to the <strong>union</strong> of checks: <code>NO_COLOR</code> + <code>TERM=dumb</code> + all 5 CI vars.</li>
-        <li>Add a comment in each: <code>// Mirrors color.go isNoColor()+isCI(). Keep in sync.</code></li>
-        <li>Optional: add a shared test table in <code>testhelpers/</code> of env-var combos that both detectors must agree on.</li>
-      </ul></div>
-  </div>
+        <div class="fix">
+          <h4>✅ How to fix</h4>
+          <ul>
+            <li>
+              The modules can't share code (root is zero-dep, nom is separate) — so the goal is
+              <strong>identical logic in two places</strong>, clearly cross-referenced.
+            </li>
+            <li>
+              Align both to the <strong>union</strong> of checks: <code>NO_COLOR</code> +
+              <code>TERM=dumb</code> + all 5 CI vars.
+            </li>
+            <li>
+              Add a comment in each:
+              <code>// Mirrors color.go isNoColor()+isCI(). Keep in sync.</code>
+            </li>
+            <li>
+              Optional: add a shared test table in <code>testhelpers/</code> of env-var combos that
+              both detectors must agree on.
+            </li>
+          </ul>
+        </div>
+      </div>
 
-  <!-- M3 -->
-  <div class="finding major" data-sev="major" data-keywords="no activities to display message string literal constant hardcoded nom tui view">
-    <div class="finding-head">
-      <span class="finding-id">M3</span>
-      <span class="badge major">Major</span>
-      <span class="effort">Effort <span class="bars"><span class="bar on"></span><span class="bar"></span><span class="bar"></span></span> low</span>
-    </div>
-    <h3>The user-facing string "No activities to display" exists in three forms</h3>
-    <p class="concept">unexported const · exported const · hardcoded literal — in the SAME package one bypasses its own constant</p>
-    <div>
-      <span class="file-ref">nom/tree.go<span class="loc">:10</span></span>
-      <span class="file-ref">tui/constants.go<span class="loc">:16</span></span>
-      <span class="file-ref">tui/view.go<span class="loc">:290</span></span>
-    </div>
-<pre class="code"><span class="cm">// nom/tree.go:10</span>
+      <!-- M3 -->
+      <div
+        class="finding major"
+        data-sev="major"
+        data-keywords="no activities to display message string literal constant hardcoded nom tui view"
+      >
+        <div class="finding-head">
+          <span class="finding-id">M3</span>
+          <span class="badge major">Major</span>
+          <span class="effort"
+            >Effort
+            <span class="bars"
+              ><span class="bar on"></span><span class="bar"></span><span class="bar"></span
+            ></span>
+            low</span
+          >
+        </div>
+        <h3>The user-facing string "No activities to display" exists in three forms</h3>
+        <p class="concept">
+          unexported const · exported const · hardcoded literal — in the SAME package one bypasses
+          its own constant
+        </p>
+        <div>
+          <span class="file-ref">nom/tree.go<span class="loc">:10</span></span>
+          <span class="file-ref">tui/constants.go<span class="loc">:16</span></span>
+          <span class="file-ref">tui/view.go<span class="loc">:290</span></span>
+        </div>
+        <pre class="code"><span class="cm">// nom/tree.go:10</span>
 <span class="kw">const</span> <span class="ty">msgNoActivitiesToDisplay</span> = <span class="st">"No activities to display"</span>
 
 <span class="cm">// tui/constants.go:16</span>
@@ -696,85 +1176,172 @@
 <span class="kw">if</span> <span class="fn">len</span>(m.<span class="ty">visibleNodes</span>) == <span class="st">0</span> {
 <span class="hl">    <span class="kw">return</span> <span class="st">"No activities to display"</span>   <span class="cm">// hardcoded literal</span></span>
 }</pre>
-    <div class="fix"><h4>✅ How to fix</h4>
-      <ol>
-        <li>In <code>tui/view.go:290</code> replace the literal with <code>MsgNoActivitiesToDisplay</code>.</li>
-        <li>Decide the canonical home: since <code>tui</code> imports <code>nom</code>, either reuse <code>nom</code>'s value via a re-export, or keep both but cross-reference with a comment.</li>
-      </ol></div>
-  </div>
+        <div class="fix">
+          <h4>✅ How to fix</h4>
+          <ol>
+            <li>
+              In <code>tui/view.go:290</code> replace the literal with
+              <code>MsgNoActivitiesToDisplay</code>.
+            </li>
+            <li>
+              Decide the canonical home: since <code>tui</code> imports <code>nom</code>, either
+              reuse <code>nom</code>'s value via a re-export, or keep both but cross-reference with
+              a comment.
+            </li>
+          </ol>
+        </div>
+      </div>
 
-  <!-- M4 -->
-  <div class="finding major" data-sev="major" data-keywords="render signature incompatible void error inline renderer dependency tree method overload">
-    <div class="finding-head">
-      <span class="finding-id">M4</span>
-      <span class="badge major">Major</span>
-      <span class="effort">Effort <span class="bars"><span class="bar on"></span><span class="bar on"></span><span class="bar"></span></span> medium</span>
-    </div>
-    <h3>Three incompatible <code>Render()</code> contracts share the same name</h3>
-    <p class="concept">output.Renderer returns (string,error) · nom.InlineRenderer returns nothing · nom.DependencyTree takes an arg</p>
-    <div>
-      <span class="file-ref">renderer.go<span class="loc">:6</span></span>
-      <span class="file-ref">nom/inline_renderer.go<span class="loc">:104</span></span>
-      <span class="file-ref">nom/tree_render.go<span class="loc">:16</span></span>
-    </div>
-<pre class="code"><span class="ty">Renderer</span>.<span class="fn">Render</span>() (<span class="kw">string</span>, <span class="kw">error</span>)              <span class="cm">// canonical — returns string + error</span>
+      <!-- M4 -->
+      <div
+        class="finding major"
+        data-sev="major"
+        data-keywords="render signature incompatible void error inline renderer dependency tree method overload"
+      >
+        <div class="finding-head">
+          <span class="finding-id">M4</span>
+          <span class="badge major">Major</span>
+          <span class="effort"
+            >Effort
+            <span class="bars"
+              ><span class="bar on"></span><span class="bar on"></span><span class="bar"></span
+            ></span>
+            medium</span
+          >
+        </div>
+        <h3>Three incompatible <code>Render()</code> contracts share the same name</h3>
+        <p class="concept">
+          output.Renderer returns (string,error) · nom.InlineRenderer returns nothing ·
+          nom.DependencyTree takes an arg
+        </p>
+        <div>
+          <span class="file-ref">renderer.go<span class="loc">:6</span></span>
+          <span class="file-ref">nom/inline_renderer.go<span class="loc">:104</span></span>
+          <span class="file-ref">nom/tree_render.go<span class="loc">:16</span></span>
+        </div>
+        <pre
+          class="code"
+        ><span class="ty">Renderer</span>.<span class="fn">Render</span>() (<span class="kw">string</span>, <span class="kw">error</span>)              <span class="cm">// canonical — returns string + error</span>
 <span class="ty">InlineRenderer</span>.<span class="fn">Render</span>()                       <span class="cm">// writes to io.Writer, returns nothing</span>
 <span class="ty">DependencyTree</span>.<span class="fn">Render</span>(<span class="ty">maxHeight</span> <span class="kw">int</span>) <span class="kw">string</span>  <span class="cm">// takes a param, swallows errors into the string</span></pre>
-    <div class="why"><h4>⚠️ Why it's dangerous</h4>
-      <p>A reader seeing <code>x.Render()</code> cannot know the contract without checking the type. <code>DependencyTree.Render</code> silently
-        encodes errors into its return string, which is the opposite philosophy from <code>output.Renderer</code>.</p></div>
-    <div class="fix"><h4>✅ How to fix</h4>
-      <ul>
-        <li>Rename <code>InlineRenderer.Render()</code> → <code>Draw()</code> or <code>Flush()</code> (it writes to a writer, not returns a string).</li>
-        <li>Rename <code>DependencyTree.Render(maxHeight)</code> → <code>RenderString(maxHeight)</code> or <code>Format(maxHeight)</code> to signal the different signature.</li>
-        <li>Reserve <code>Render() (string, error)</code> as the project-wide verb for the <code>output.Renderer</code> contract.</li>
-      </ul></div>
-  </div>
+        <div class="why">
+          <h4>⚠️ Why it's dangerous</h4>
+          <p>
+            A reader seeing <code>x.Render()</code> cannot know the contract without checking the
+            type. <code>DependencyTree.Render</code> silently encodes errors into its return string,
+            which is the opposite philosophy from <code>output.Renderer</code>.
+          </p>
+        </div>
+        <div class="fix">
+          <h4>✅ How to fix</h4>
+          <ul>
+            <li>
+              Rename <code>InlineRenderer.Render()</code> → <code>Draw()</code> or
+              <code>Flush()</code> (it writes to a writer, not returns a string).
+            </li>
+            <li>
+              Rename <code>DependencyTree.Render(maxHeight)</code> →
+              <code>RenderString(maxHeight)</code> or <code>Format(maxHeight)</code> to signal the
+              different signature.
+            </li>
+            <li>
+              Reserve <code>Render() (string, error)</code> as the project-wide verb for the
+              <code>output.Renderer</code> contract.
+            </li>
+          </ul>
+        </div>
+      </div>
 
-  <!-- M5 -->
-  <div class="finding major" data-sev="major" data-keywords="shape graphshape naming collision format capability visual node shapebox shapetable prefix">
-    <div class="finding-head">
-      <span class="finding-id">M5</span>
-      <span class="badge major">Major</span>
-      <span class="effort">Effort <span class="bars"><span class="bar on"></span><span class="bar on"></span><span class="bar"></span></span> medium</span>
-    </div>
-    <h3><code>Shape</code> and <code>GraphShape</code> share a prefix and live in the same package</h3>
-    <p class="concept">output.Shape = data capability (table/tree/graph) · output.GraphShape = visual node shape (box/ellipse)</p>
-    <p>Both are in package <code>output</code>. <code>ShapeBox</code> is a <code>GraphShape</code> while <code>ShapeTable</code> is a <code>Shape</code>. The constant prefix
-      <code>Shape…</code> is overloaded, so autocomplete and grep return a confusing mix.</p>
-    <div>
-      <span class="file-ref">shape.go<span class="loc">:10</span></span>
-      <span class="file-ref">graph.go<span class="loc">:41-53</span></span>
-    </div>
-<pre class="code"><span class="cm">// shape.go:10 — what data SHAPES a format supports</span>
+      <!-- M5 -->
+      <div
+        class="finding major"
+        data-sev="major"
+        data-keywords="shape graphshape naming collision format capability visual node shapebox shapetable prefix"
+      >
+        <div class="finding-head">
+          <span class="finding-id">M5</span>
+          <span class="badge major">Major</span>
+          <span class="effort"
+            >Effort
+            <span class="bars"
+              ><span class="bar on"></span><span class="bar on"></span><span class="bar"></span
+            ></span>
+            medium</span
+          >
+        </div>
+        <h3>
+          <code>Shape</code> and <code>GraphShape</code> share a prefix and live in the same package
+        </h3>
+        <p class="concept">
+          output.Shape = data capability (table/tree/graph) · output.GraphShape = visual node shape
+          (box/ellipse)
+        </p>
+        <p>
+          Both are in package <code>output</code>. <code>ShapeBox</code> is a
+          <code>GraphShape</code> while <code>ShapeTable</code> is a <code>Shape</code>. The
+          constant prefix <code>Shape…</code> is overloaded, so autocomplete and grep return a
+          confusing mix.
+        </p>
+        <div>
+          <span class="file-ref">shape.go<span class="loc">:10</span></span>
+          <span class="file-ref">graph.go<span class="loc">:41-53</span></span>
+        </div>
+        <pre
+          class="code"
+        ><span class="cm">// shape.go:10 — what data SHAPES a format supports</span>
 <span class="kw">type</span> <span class="ty">Shape</span> <span class="kw">string</span>   <span class="cm">// ShapeTable, ShapeTree, ShapeGraph</span>
 
 <span class="cm">// graph.go:41 — what a node LOOKS like</span>
 <span class="kw">type</span> <span class="ty">GraphShape</span> <span class="kw">string</span>   <span class="cm">// ShapeBox, ShapeEllipse, ShapeDiamond…</span>
 <span class="cm">//                       ^^^^^^^^ same "Shape" prefix, different enum!</span></pre>
-    <div class="fix"><h4>✅ How to fix</h4>
-      <ul>
-        <li>Rename the visual-node enum constants: <code>ShapeBox</code> → <code>NodeShapeBox</code>, <code>ShapeEllipse</code> → <code>NodeShapeEllipse</code>, etc.</li>
-        <li>Or rename the type <code>GraphShape</code> → <code>NodeShape</code> and re-prefix all its constants.</li>
-        <li>This is an exported API change — gate behind the next minor version and update the CHANGELOG.</li>
-      </ul></div>
-  </div>
+        <div class="fix">
+          <h4>✅ How to fix</h4>
+          <ul>
+            <li>
+              Rename the visual-node enum constants: <code>ShapeBox</code> →
+              <code>NodeShapeBox</code>, <code>ShapeEllipse</code> → <code>NodeShapeEllipse</code>,
+              etc.
+            </li>
+            <li>
+              Or rename the type <code>GraphShape</code> → <code>NodeShape</code> and re-prefix all
+              its constants.
+            </li>
+            <li>
+              This is an exported API change — gate behind the next minor version and update the
+              CHANGELOG.
+            </li>
+          </ul>
+        </div>
+      </div>
 
-  <!-- M6 -->
-  <div class="finding major" data-sev="major" data-keywords="graphshape d2nodeshape node shape enum translation graphshapetod2 box rectangle ellipse oval vocabulary">
-    <div class="finding-head">
-      <span class="finding-id">M6</span>
-      <span class="badge major">Major</span>
-      <span class="effort">Effort <span class="bars"><span class="bar on"></span><span class="bar on"></span><span class="bar"></span></span> medium</span>
-    </div>
-    <h3>Two node-shape enums with a hand-written, lossy translation layer</h3>
-    <p class="concept">output.GraphShape (box/ellipse) ↔ d2.D2NodeShape (rectangle/oval) bridged by graphShapeToD2()</p>
-    <div>
-      <span class="file-ref">graph.go<span class="loc">:41-53</span></span>
-      <span class="file-ref">d2/d2_enum.go<span class="loc">:58-82</span></span>
-      <span class="file-ref">d2/d2_convert.go<span class="loc">:63</span></span>
-    </div>
-<pre class="code"><span class="cm">// output.GraphShape uses DOT vocabulary</span>
+      <!-- M6 -->
+      <div
+        class="finding major"
+        data-sev="major"
+        data-keywords="graphshape d2nodeshape node shape enum translation graphshapetod2 box rectangle ellipse oval vocabulary"
+      >
+        <div class="finding-head">
+          <span class="finding-id">M6</span>
+          <span class="badge major">Major</span>
+          <span class="effort"
+            >Effort
+            <span class="bars"
+              ><span class="bar on"></span><span class="bar on"></span><span class="bar"></span
+            ></span>
+            medium</span
+          >
+        </div>
+        <h3>Two node-shape enums with a hand-written, lossy translation layer</h3>
+        <p class="concept">
+          output.GraphShape (box/ellipse) ↔ d2.D2NodeShape (rectangle/oval) bridged by
+          graphShapeToD2()
+        </p>
+        <div>
+          <span class="file-ref">graph.go<span class="loc">:41-53</span></span>
+          <span class="file-ref">d2/d2_enum.go<span class="loc">:58-82</span></span>
+          <span class="file-ref">d2/d2_convert.go<span class="loc">:63</span></span>
+        </div>
+        <pre class="code"><span class="cm">// output.GraphShape uses DOT vocabulary</span>
 <span class="ty">ShapeBox</span>=<span class="st">"box"</span>  <span class="ty">ShapeEllipse</span>=<span class="st">"ellipse"</span>  <span class="ty">ShapeDiamond</span>=<span class="st">"diamond"</span> …
 
 <span class="cm">// d2.D2NodeShape uses D2 vocabulary (different words for the SAME shapes)</span>
@@ -782,80 +1349,146 @@
 
 <span class="cm">// d2/d2_convert.go:63 keeps them in sync by hand — a shape added to one side silently drops</span>
 <span class="kw">func</span> <span class="fn">graphShapeToD2</span>(s <span class="ty">output</span>.<span class="ty">GraphShape</span>) <span class="ty">D2NodeShape</span> { <span class="cm">/* switch with a default fallback */</span> }</pre>
-    <div class="fix"><h4>✅ How to fix</h4>
-      <ul>
-        <li>Add a test that asserts every <code>output.GraphShape</code> maps to a non-default <code>D2NodeShape</code> (fails when a new shape is added unhandled).</li>
-        <li>Long term: consider a single canonical shape enum in root, with format-specific renderers translating to their keywords — one source of truth.</li>
-      </ul></div>
-  </div>
+        <div class="fix">
+          <h4>✅ How to fix</h4>
+          <ul>
+            <li>
+              Add a test that asserts every <code>output.GraphShape</code> maps to a non-default
+              <code>D2NodeShape</code> (fails when a new shape is added unhandled).
+            </li>
+            <li>
+              Long term: consider a single canonical shape enum in root, with format-specific
+              renderers translating to their keywords — one source of truth.
+            </li>
+          </ul>
+        </div>
+      </div>
 
-  <!-- M7 -->
-  <div class="finding major" data-sev="major" data-keywords="d2direction rankdir direction enum no bridge down right left tb lr vocabulary">
-    <div class="finding-head">
-      <span class="finding-id">M7</span>
-      <span class="badge major">Major</span>
-      <span class="effort">Effort <span class="bars"><span class="bar on"></span><span class="bar on"></span><span class="bar"></span></span> medium</span>
-    </div>
-    <h3>Two layout-direction enums with no bridge between them</h3>
-    <p class="concept">d2.D2Direction ("down"/"right"/…) vs graph.RankDir ("TB"/"LR"/…) — same concept, incompatible vocabularies</p>
-    <div>
-      <span class="file-ref">d2/d2_enum.go<span class="loc">:11-19</span></span>
-      <span class="file-ref">graph/dot_enum.go<span class="loc">:8-16</span></span>
-    </div>
-<pre class="code"><span class="cm">// d2/d2_enum.go</span>
+      <!-- M7 -->
+      <div
+        class="finding major"
+        data-sev="major"
+        data-keywords="d2direction rankdir direction enum no bridge down right left tb lr vocabulary"
+      >
+        <div class="finding-head">
+          <span class="finding-id">M7</span>
+          <span class="badge major">Major</span>
+          <span class="effort"
+            >Effort
+            <span class="bars"
+              ><span class="bar on"></span><span class="bar on"></span><span class="bar"></span
+            ></span>
+            medium</span
+          >
+        </div>
+        <h3>Two layout-direction enums with no bridge between them</h3>
+        <p class="concept">
+          d2.D2Direction ("down"/"right"/…) vs graph.RankDir ("TB"/"LR"/…) — same concept,
+          incompatible vocabularies
+        </p>
+        <div>
+          <span class="file-ref">d2/d2_enum.go<span class="loc">:11-19</span></span>
+          <span class="file-ref">graph/dot_enum.go<span class="loc">:8-16</span></span>
+        </div>
+        <pre class="code"><span class="cm">// d2/d2_enum.go</span>
 <span class="ty">D2Direction</span>: <span class="st">""</span>(down), <span class="st">"right"</span>, <span class="st">"left"</span>, <span class="st">"up"</span>
 
 <span class="cm">// graph/dot_enum.go</span>
 <span class="ty">RankDir</span>:     <span class="st">"TB"</span>, <span class="st">"LR"</span>, <span class="st">"BT"</span>, <span class="st">"RL"</span>
 <span class="cm">// There is NO conversion function. A user who sets D2Direction="right" cannot</span>
 <span class="cm">// get the equivalent RankDir for DOT without writing the mapping themselves.</span></pre>
-    <div class="fix"><h4>✅ How to fix</h4>
-      <ul>
-        <li>Introduce a canonical <code>output.Direction</code> enum in root (Down/Right/Up/Left).</li>
-        <li>Have both <code>D2Direction</code> and <code>RankDir</code> translate to/from it. Now there is one concept with two renderings.</li>
-      </ul></div>
-  </div>
+        <div class="fix">
+          <h4>✅ How to fix</h4>
+          <ul>
+            <li>
+              Introduce a canonical <code>output.Direction</code> enum in root (Down/Right/Up/Left).
+            </li>
+            <li>
+              Have both <code>D2Direction</code> and <code>RankDir</code> translate to/from it. Now
+              there is one concept with two renderings.
+            </li>
+          </ul>
+        </div>
+      </div>
 
-  <!-- M8 -->
-  <div class="finding major" data-sev="major" data-keywords="style structs graphstyle edgestyle d2nodestyle d2strokestyle d2edgestyle fillcolor stroke naming inconsistent">
-    <div class="finding-head">
-      <span class="finding-id">M8</span>
-      <span class="badge major">Major</span>
-      <span class="effort">Effort <span class="bars"><span class="bar on"></span><span class="bar on"></span><span class="bar"></span></span> medium</span>
-    </div>
-    <h3>Five overlapping style structs with inconsistent field names</h3>
-    <p class="concept">GraphStyle.FillColor ↔ D2NodeStyle.Fill · GraphStyle.StrokeColor ↔ D2StrokeStyle.Stroke · …</p>
-    <div>
-      <span class="file-ref">graph.go<span class="loc">:103, 136</span></span>
-      <span class="file-ref">d2/d2.go<span class="loc">:17, 36, 113</span></span>
-      <span class="file-ref">d2/d2_convert.go<span class="loc">:84-92</span></span>
-    </div>
-<pre class="code"><span class="ty">GraphStyle</span>    { <span class="ty">FillColor</span>, <span class="ty">StrokeColor</span>, <span class="ty">FontColor</span>, <span class="ty">FontSize</span> }
+      <!-- M8 -->
+      <div
+        class="finding major"
+        data-sev="major"
+        data-keywords="style structs graphstyle edgestyle d2nodestyle d2strokestyle d2edgestyle fillcolor stroke naming inconsistent"
+      >
+        <div class="finding-head">
+          <span class="finding-id">M8</span>
+          <span class="badge major">Major</span>
+          <span class="effort"
+            >Effort
+            <span class="bars"
+              ><span class="bar on"></span><span class="bar on"></span><span class="bar"></span
+            ></span>
+            medium</span
+          >
+        </div>
+        <h3>Five overlapping style structs with inconsistent field names</h3>
+        <p class="concept">
+          GraphStyle.FillColor ↔ D2NodeStyle.Fill · GraphStyle.StrokeColor ↔ D2StrokeStyle.Stroke ·
+          …
+        </p>
+        <div>
+          <span class="file-ref">graph.go<span class="loc">:103, 136</span></span>
+          <span class="file-ref">d2/d2.go<span class="loc">:17, 36, 113</span></span>
+          <span class="file-ref">d2/d2_convert.go<span class="loc">:84-92</span></span>
+        </div>
+        <pre
+          class="code"
+        ><span class="ty">GraphStyle</span>    { <span class="ty">FillColor</span>, <span class="ty">StrokeColor</span>, <span class="ty">FontColor</span>, <span class="ty">FontSize</span> }
 <span class="ty">EdgeStyle</span>     { <span class="ty">Color</span>, <span class="ty">Style</span>, <span class="ty">ArrowHead</span>, <span class="ty">ArrowTail</span> }
 <span class="ty">D2StrokeStyle</span> { <span class="ty">Stroke</span>, <span class="ty">StrokeWidth</span>, <span class="ty">StrokeDash</span>, <span class="ty">FontSize</span>, <span class="ty">FontColor</span> }
 <span class="ty">D2NodeStyle</span>   { <span class="ty">D2StrokeStyle</span>; <span class="ty">Fill</span>, <span class="ty">Opacity</span>, <span class="ty">Shadow</span>… }
 <span class="cm">// FillColor → Fill,  StrokeColor → Stroke  — non-obvious renames in the converter</span></pre>
-    <div class="fix"><h4>✅ How to fix</h4>
-      <ul>
-        <li>Align field names where the concept is identical (<code>Fill</code> everywhere, not <code>FillColor</code> in one and <code>Fill</code> in another).</li>
-        <li>D2 staying richer is fine — just make the shared subset use identical names so the converter becomes a near-1:1 copy.</li>
-      </ul></div>
-  </div>
+        <div class="fix">
+          <h4>✅ How to fix</h4>
+          <ul>
+            <li>
+              Align field names where the concept is identical (<code>Fill</code> everywhere, not
+              <code>FillColor</code> in one and <code>Fill</code> in another).
+            </li>
+            <li>
+              D2 staying richer is fine — just make the shared subset use identical names so the
+              converter becomes a near-1:1 copy.
+            </li>
+          </ul>
+        </div>
+      </div>
 
-  <!-- M9 -->
-  <div class="finding major" data-sev="major" data-keywords="delimitedwriter tabledatawriter interface drift writefooter example basic csv duplicated">
-    <div class="finding-head">
-      <span class="finding-id">M9</span>
-      <span class="badge major">Major</span>
-      <span class="effort">Effort <span class="bars"><span class="bar on"></span><span class="bar"></span><span class="bar"></span></span> low</span>
-    </div>
-    <h3>Example re-declares a writer interface and it has already drifted</h3>
-    <p class="concept">examples/basic.delimitedWriter adds WriteFooter() that the real delimited.tableDataWriter lacks</p>
-    <div>
-      <span class="file-ref">examples/basic/renderers.go<span class="loc">:75-81</span></span>
-      <span class="file-ref">delimited/csv.go<span class="loc">:82-87</span></span>
-    </div>
-<pre class="code"><span class="cm">// delimited/csv.go:82 — the REAL internal abstraction</span>
+      <!-- M9 -->
+      <div
+        class="finding major"
+        data-sev="major"
+        data-keywords="delimitedwriter tabledatawriter interface drift writefooter example basic csv duplicated"
+      >
+        <div class="finding-head">
+          <span class="finding-id">M9</span>
+          <span class="badge major">Major</span>
+          <span class="effort"
+            >Effort
+            <span class="bars"
+              ><span class="bar on"></span><span class="bar"></span><span class="bar"></span
+            ></span>
+            low</span
+          >
+        </div>
+        <h3>Example re-declares a writer interface and it has already drifted</h3>
+        <p class="concept">
+          examples/basic.delimitedWriter adds WriteFooter() that the real delimited.tableDataWriter
+          lacks
+        </p>
+        <div>
+          <span class="file-ref">examples/basic/renderers.go<span class="loc">:75-81</span></span>
+          <span class="file-ref">delimited/csv.go<span class="loc">:82-87</span></span>
+        </div>
+        <pre
+          class="code"
+        ><span class="cm">// delimited/csv.go:82 — the REAL internal abstraction</span>
 <span class="kw">type</span> <span class="ty">tableDataWriter</span> <span class="kw">interface</span> {
     <span class="fn">WriteHeader</span>(<span class="ty">cols</span> []<span class="kw">string</span>) <span class="kw">error</span>
     <span class="fn">WriteRow</span>(<span class="ty">values</span> []<span class="kw">string</span>) <span class="kw">error</span>
@@ -869,181 +1502,343 @@
 <span class="hl">    <span class="fn">WriteFooter</span>(<span class="ty">values</span> []<span class="kw">string</span>) <span class="kw">error</span>   <span class="cm">// ← extra method; real one lacks it</span></span>
     <span class="fn">Flush</span>(); <span class="fn">Error</span>() <span class="kw">error</span>
 }</pre>
-    <div class="fix"><h4>✅ How to fix</h4>
-      <ol>
-        <li>Either remove the example's custom interface and use the concrete <code>*csv.Writer</code> / <code>*tsv.Writer</code> directly, or</li>
-        <li>Update <code>delimited.tableDataWriter</code> to include <code>WriteFooter</code> (both <code>csv.Writer</code> and <code>tsv.Writer</code> already implement it) and keep them aligned.</li>
-      </ol></div>
-  </div>
+        <div class="fix">
+          <h4>✅ How to fix</h4>
+          <ol>
+            <li>
+              Either remove the example's custom interface and use the concrete
+              <code>*csv.Writer</code> / <code>*tsv.Writer</code> directly, or
+            </li>
+            <li>
+              Update <code>delimited.tableDataWriter</code> to include
+              <code>WriteFooter</code> (both <code>csv.Writer</code> and
+              <code>tsv.Writer</code> already implement it) and keep them aligned.
+            </li>
+          </ol>
+        </div>
+      </div>
 
-  <!-- ============================ MINOR ============================ -->
-  <h2 class="section-h" style="color:var(--minor);">🟡 Minor — Acceptable, Documented for Awareness <span class="count">6</span></h2>
+      <!-- ============================ MINOR ============================ -->
+      <h2 class="section-h" style="color: var(--minor)">
+        🟡 Minor — Acceptable, Documented for Awareness <span class="count">6</span>
+      </h2>
 
-  <!-- m1 -->
-  <div class="finding minor" data-sev="minor" data-keywords="unknown fallback status string statusstringunknown workflowstatestringunknown duplicated">
-    <div class="finding-head">
-      <span class="finding-id">m1</span>
-      <span class="badge minor">Minor</span>
-      <span class="effort">Effort <span class="bars"><span class="bar on"></span><span class="bar"></span><span class="bar"></span></span> trivial</span>
-    </div>
-    <h3>Duplicated <code>"unknown"</code> fallback sentinel</h3>
-    <span class="file-ref">nom/activity_status.go<span class="loc">:37</span></span>
-    <span class="file-ref">tui/state.go<span class="loc">:30</span></span>
-    <p>Both define <code>"unknown"</code> as the fallback for an unrecognized status. Genuinely separate domains, but the magic string is duplicated.</p>
-    <div class="fix"><h4>✅ Fix</h4><p>Acceptable as-is. If touched, centralize in <code>testhelpers</code> or just add a cross-reference comment.</p></div>
-  </div>
+      <!-- m1 -->
+      <div
+        class="finding minor"
+        data-sev="minor"
+        data-keywords="unknown fallback status string statusstringunknown workflowstatestringunknown duplicated"
+      >
+        <div class="finding-head">
+          <span class="finding-id">m1</span>
+          <span class="badge minor">Minor</span>
+          <span class="effort"
+            >Effort
+            <span class="bars"
+              ><span class="bar on"></span><span class="bar"></span><span class="bar"></span
+            ></span>
+            trivial</span
+          >
+        </div>
+        <h3>Duplicated <code>"unknown"</code> fallback sentinel</h3>
+        <span class="file-ref">nom/activity_status.go<span class="loc">:37</span></span>
+        <span class="file-ref">tui/state.go<span class="loc">:30</span></span>
+        <p>
+          Both define <code>"unknown"</code> as the fallback for an unrecognized status. Genuinely
+          separate domains, but the magic string is duplicated.
+        </p>
+        <div class="fix">
+          <h4>✅ Fix</h4>
+          <p>
+            Acceptable as-is. If touched, centralize in <code>testhelpers</code> or just add a
+            cross-reference comment.
+          </p>
+        </div>
+      </div>
 
-  <!-- m2 -->
-  <div class="finding minor" data-sev="minor" data-keywords="event string literals scattered workflow.started activity.completed constants bypass event.go">
-    <div class="finding-head">
-      <span class="finding-id">m2</span>
-      <span class="badge minor">Minor</span>
-      <span class="effort">Effort <span class="bars"><span class="bar on"></span><span class="bar"></span><span class="bar"></span></span> low</span>
-    </div>
-    <h3>30+ bare event-string literals bypass the centralized constants</h3>
-    <span class="file-ref">nom/event.go<span class="loc">:9-16</span></span> (defines constants)
-    <p><code>nom/event.go</code> correctly defines <code>EventWorkflowStarted = "workflow.started"</code> etc., but tests and examples across
-      <code>tui/</code>, <code>integration/</code>, <code>examples/</code> hardcode the strings. A typo like <code>"workfow.started"</code> would silently break dispatch.</p>
-    <div class="fix"><h4>✅ Fix</h4><p>Replace bare literals with <code>nom.EventWorkflowStarted</code> etc. Mechanical find/replace; the constants already exist.</p></div>
-  </div>
+      <!-- m2 -->
+      <div
+        class="finding minor"
+        data-sev="minor"
+        data-keywords="event string literals scattered workflow.started activity.completed constants bypass event.go"
+      >
+        <div class="finding-head">
+          <span class="finding-id">m2</span>
+          <span class="badge minor">Minor</span>
+          <span class="effort"
+            >Effort
+            <span class="bars"
+              ><span class="bar on"></span><span class="bar"></span><span class="bar"></span
+            ></span>
+            low</span
+          >
+        </div>
+        <h3>30+ bare event-string literals bypass the centralized constants</h3>
+        <span class="file-ref">nom/event.go<span class="loc">:9-16</span></span> (defines constants)
+        <p>
+          <code>nom/event.go</code> correctly defines
+          <code>EventWorkflowStarted = "workflow.started"</code> etc., but tests and examples across
+          <code>tui/</code>, <code>integration/</code>, <code>examples/</code> hardcode the strings.
+          A typo like <code>"workfow.started"</code> would silently break dispatch.
+        </p>
+        <div class="fix">
+          <h4>✅ Fix</h4>
+          <p>
+            Replace bare literals with <code>nom.EventWorkflowStarted</code> etc. Mechanical
+            find/replace; the constants already exist.
+          </p>
+        </div>
+      </div>
 
-  <!-- m3 -->
-  <div class="finding minor" data-sev="minor" data-keywords="workflowstate activitystatus lifecycle enum overlap running completed failed errored different domain">
-    <div class="finding-head">
-      <span class="finding-id">m3</span>
-      <span class="badge minor">Minor</span>
-      <span class="effort">Effort <span class="bars"></span> n/a</span>
-    </div>
-    <h3><code>WorkflowState</code> vs <code>ActivityStatus</code> — overlapping but genuinely different</h3>
-    <span class="file-ref">tui/state.go<span class="loc">:15-22</span></span>
-    <span class="file-ref">nom/activity_status.go<span class="loc">:9-17</span></span>
-    <p>Both contain <code>Running</code> and <code>Completed</code>, but they model different lifecycles (whole workflow vs single activity).
-      <code>Failed</code> ≈ <code>Errored</code>; <code>Paused</code> only exists for activities. <strong>Not a bug</strong> — listed to prevent a future "merge them" mistake.</p>
-    <div class="fix"><h4>✅ Fix</h4><p>No action. Document the distinction in a comment so nobody tries to unify them.</p></div>
-  </div>
+      <!-- m3 -->
+      <div
+        class="finding minor"
+        data-sev="minor"
+        data-keywords="workflowstate activitystatus lifecycle enum overlap running completed failed errored different domain"
+      >
+        <div class="finding-head">
+          <span class="finding-id">m3</span>
+          <span class="badge minor">Minor</span>
+          <span class="effort">Effort <span class="bars"></span> n/a</span>
+        </div>
+        <h3>
+          <code>WorkflowState</code> vs <code>ActivityStatus</code> — overlapping but genuinely
+          different
+        </h3>
+        <span class="file-ref">tui/state.go<span class="loc">:15-22</span></span>
+        <span class="file-ref">nom/activity_status.go<span class="loc">:9-17</span></span>
+        <p>
+          Both contain <code>Running</code> and <code>Completed</code>, but they model different
+          lifecycles (whole workflow vs single activity). <code>Failed</code> ≈
+          <code>Errored</code>; <code>Paused</code> only exists for activities.
+          <strong>Not a bug</strong> — listed to prevent a future "merge them" mistake.
+        </p>
+        <div class="fix">
+          <h4>✅ Fix</h4>
+          <p>No action. Document the distinction in a comment so nobody tries to unify them.</p>
+        </div>
+      </div>
 
-  <!-- m4 -->
-  <div class="finding minor" data-sev="minor" data-keywords="format architecture docs stale graphedge style field missing documentation drifted">
-    <div class="finding-head">
-      <span class="finding-id">m4</span>
-      <span class="badge minor">Minor</span>
-      <span class="effort">Effort <span class="bars"><span class="bar on"></span><span class="bar"></span><span class="bar"></span></span> trivial</span>
-    </div>
-    <h3>Docs copy of <code>GraphEdge</code> is stale (missing <code>Style</code> field)</h3>
-    <span class="file-ref">docs/FORMAT_ARCHITECTURE.md<span class="loc">:104-108</span></span>
-    <span class="file-ref">graph.go<span class="loc">:114-124</span></span>
-    <p>The architecture doc re-declares core types and has drifted — <code>GraphEdge.Style</code> was added in code but not the doc. The doc also duplicates the full interface surface.</p>
-    <div class="fix"><h4>✅ Fix</h4><p>Either regenerate the doc from source, or replace the inline type copies with links to <code>graph.go</code>.</p></div>
-  </div>
+      <!-- m4 -->
+      <div
+        class="finding minor"
+        data-sev="minor"
+        data-keywords="format architecture docs stale graphedge style field missing documentation drifted"
+      >
+        <div class="finding-head">
+          <span class="finding-id">m4</span>
+          <span class="badge minor">Minor</span>
+          <span class="effort"
+            >Effort
+            <span class="bars"
+              ><span class="bar on"></span><span class="bar"></span><span class="bar"></span
+            ></span>
+            trivial</span
+          >
+        </div>
+        <h3>Docs copy of <code>GraphEdge</code> is stale (missing <code>Style</code> field)</h3>
+        <span class="file-ref">docs/FORMAT_ARCHITECTURE.md<span class="loc">:104-108</span></span>
+        <span class="file-ref">graph.go<span class="loc">:114-124</span></span>
+        <p>
+          The architecture doc re-declares core types and has drifted —
+          <code>GraphEdge.Style</code> was added in code but not the doc. The doc also duplicates
+          the full interface surface.
+        </p>
+        <div class="fix">
+          <h4>✅ Fix</h4>
+          <p>
+            Either regenerate the doc from source, or replace the inline type copies with links to
+            <code>graph.go</code>.
+          </p>
+        </div>
+      </div>
 
-  <!-- m5 -->
-  <div class="finding minor" data-sev="minor" data-keywords="getworkflowid return type collision workflowid string accessor subscriber incompatible">
-    <div class="finding-head">
-      <span class="finding-id">m5</span>
-      <span class="badge minor">Minor</span>
-      <span class="effort">Effort <span class="bars"><span class="bar on"></span><span class="bar"></span><span class="bar"></span></span> low</span>
-    </div>
-    <h3><code>GetWorkflowID()</code> returns different types in two places</h3>
-    <span class="file-ref">nom/subscriber_handlers.go<span class="loc">:34</span></span> → <code>WorkflowID</code>
-    <span class="file-ref">nom/state_accessors.go<span class="loc">:43</span></span> → <code>string</code>
-    <p>Same method name, two return types within the same module. Not a compile conflict, but confusing — which one is "real"?</p>
-    <div class="fix"><h4>✅ Fix</h4><p>Make the accessor return the branded <code>WorkflowID</code> type for consistency with the event accessor.</p></div>
-  </div>
+      <!-- m5 -->
+      <div
+        class="finding minor"
+        data-sev="minor"
+        data-keywords="getworkflowid return type collision workflowid string accessor subscriber incompatible"
+      >
+        <div class="finding-head">
+          <span class="finding-id">m5</span>
+          <span class="badge minor">Minor</span>
+          <span class="effort"
+            >Effort
+            <span class="bars"
+              ><span class="bar on"></span><span class="bar"></span><span class="bar"></span
+            ></span>
+            low</span
+          >
+        </div>
+        <h3><code>GetWorkflowID()</code> returns different types in two places</h3>
+        <span class="file-ref">nom/subscriber_handlers.go<span class="loc">:34</span></span> →
+        <code>WorkflowID</code>
+        <span class="file-ref">nom/state_accessors.go<span class="loc">:43</span></span> →
+        <code>string</code>
+        <p>
+          Same method name, two return types within the same module. Not a compile conflict, but
+          confusing — which one is "real"?
+        </p>
+        <div class="fix">
+          <h4>✅ Fix</h4>
+          <p>
+            Make the accessor return the branded <code>WorkflowID</code> type for consistency with
+            the event accessor.
+          </p>
+        </div>
+      </div>
 
-  <!-- m6 -->
-  <div class="finding minor" data-sev="minor" data-keywords="d2nodeid graphnodeid re-export alias three layers canonical path ambiguity brand location">
-    <div class="finding-head">
-      <span class="finding-id">m6</span>
-      <span class="badge minor">Minor</span>
-      <span class="effort">Effort <span class="bars"><span class="bar on"></span><span class="bar on"></span><span class="bar"></span></span> medium</span>
-    </div>
-    <h3>Branded IDs re-exported through 3 layers — canonical path is ambiguous</h3>
-    <span class="file-ref">ids.go<span class="loc">:17,29</span></span>
-    <span class="file-ref">d2/d2.go<span class="loc">:11,14</span></span>
-    <span class="file-ref">graph/reexports.go<span class="loc">:6,14,21</span></span>
-    <p><code>D2NodeID</code> is reachable as <code>output.D2NodeID</code>, <code>d2.D2NodeID</code>, and <code>id.ID[D2NodeIDBrand, string]</code>. The brand structs
-      live in <em>root</em> even for D2-specific IDs. Intentional for ergonomics, but callers don't know which import is canonical.</p>
-    <div class="fix"><h4>✅ Fix</h4><p>Pick one canonical path per type and document it in the doc.go of each module. The brand structs ideally live with their primary consumer.</p></div>
-  </div>
+      <!-- m6 -->
+      <div
+        class="finding minor"
+        data-sev="minor"
+        data-keywords="d2nodeid graphnodeid re-export alias three layers canonical path ambiguity brand location"
+      >
+        <div class="finding-head">
+          <span class="finding-id">m6</span>
+          <span class="badge minor">Minor</span>
+          <span class="effort"
+            >Effort
+            <span class="bars"
+              ><span class="bar on"></span><span class="bar on"></span><span class="bar"></span
+            ></span>
+            medium</span
+          >
+        </div>
+        <h3>Branded IDs re-exported through 3 layers — canonical path is ambiguous</h3>
+        <span class="file-ref">ids.go<span class="loc">:17,29</span></span>
+        <span class="file-ref">d2/d2.go<span class="loc">:11,14</span></span>
+        <span class="file-ref">graph/reexports.go<span class="loc">:6,14,21</span></span>
+        <p>
+          <code>D2NodeID</code> is reachable as <code>output.D2NodeID</code>,
+          <code>d2.D2NodeID</code>, and <code>id.ID[D2NodeIDBrand, string]</code>. The brand structs
+          live in <em>root</em> even for D2-specific IDs. Intentional for ergonomics, but callers
+          don't know which import is canonical.
+        </p>
+        <div class="fix">
+          <h4>✅ Fix</h4>
+          <p>
+            Pick one canonical path per type and document it in the doc.go of each module. The brand
+            structs ideally live with their primary consumer.
+          </p>
+        </div>
+      </div>
 
-  <div class="empty-msg" id="empty-msg">No findings match your filter. Try clearing the search.</div>
+      <div class="empty-msg" id="empty-msg">
+        No findings match your filter. Try clearing the search.
+      </div>
 
-  <div class="method" style="margin-top:3rem;">
-    <h2>🛠️ Recommended Fix Order (Pareto)</h2>
-    <p style="color:var(--text-dim);margin-top:0;">Tackle in this order to eliminate the most drift risk for the least effort:</p>
-    <ol style="color:var(--text-dim);">
-      <li><strong>C4 + C5</strong> (test redeclarations) — delete &amp; re-type generics. ~20 min, zero risk.</li>
-      <li><strong>C3 + M3</strong> (TimingFormat + hardcoded message) — rename/replace constants. ~30 min.</li>
-      <li><strong>M1 quick-win</strong> — delete the intra-package <code>nom.ColorWarning</code> duplicate. ~5 min.</li>
-      <li><strong>C1</strong> (TreeNode rename) — mechanical, compiler-guided. ~1 hr.</li>
-      <li><strong>M2</strong> (align color detectors) — union the env checks, add sync comments. ~30 min.</li>
-      <li><strong>M4</strong> (rename non-canonical Render methods) — touches nom/tui API. ~1 hr.</li>
-      <li><strong>C2</strong> (collapse ProgressModel duplication) — architectural, needs care + tests. ~half day.</li>
-      <li><strong>M5–M8</strong> (enum/struct alignment) — batch in a dedicated naming-pass PR, gated to next minor.</li>
-      <li><strong>m2</strong> (event literal cleanup) — mechanical sweep. ~30 min.</li>
-    </ol>
-  </div>
+      <div class="method" style="margin-top: 3rem">
+        <h2>🛠️ Recommended Fix Order (Pareto)</h2>
+        <p style="color: var(--text-dim); margin-top: 0">
+          Tackle in this order to eliminate the most drift risk for the least effort:
+        </p>
+        <ol style="color: var(--text-dim)">
+          <li>
+            <strong>C4 + C5</strong> (test redeclarations) — delete &amp; re-type generics. ~20 min,
+            zero risk.
+          </li>
+          <li>
+            <strong>C3 + M3</strong> (TimingFormat + hardcoded message) — rename/replace constants.
+            ~30 min.
+          </li>
+          <li>
+            <strong>M1 quick-win</strong> — delete the intra-package
+            <code>nom.ColorWarning</code> duplicate. ~5 min.
+          </li>
+          <li><strong>C1</strong> (TreeNode rename) — mechanical, compiler-guided. ~1 hr.</li>
+          <li>
+            <strong>M2</strong> (align color detectors) — union the env checks, add sync comments.
+            ~30 min.
+          </li>
+          <li>
+            <strong>M4</strong> (rename non-canonical Render methods) — touches nom/tui API. ~1 hr.
+          </li>
+          <li>
+            <strong>C2</strong> (collapse ProgressModel duplication) — architectural, needs care +
+            tests. ~half day.
+          </li>
+          <li>
+            <strong>M5–M8</strong> (enum/struct alignment) — batch in a dedicated naming-pass PR,
+            gated to next minor.
+          </li>
+          <li><strong>m2</strong> (event literal cleanup) — mechanical sweep. ~30 min.</li>
+        </ol>
+      </div>
+    </main>
 
-</main>
+    <footer>
+      go-output split-brain audit · generated 2026-06-17 · 20 findings across 16 modules · fix order
+      above
+    </footer>
 
-<footer>
-  go-output split-brain audit · generated 2026-06-17 · 20 findings across 16 modules · fix order above
-</footer>
+    <script>
+      // Build table of contents
+      const findings = [...document.querySelectorAll(".finding")];
+      const toc = document.getElementById("toc-list");
+      findings.forEach((f) => {
+        const id = f.querySelector(".finding-id").textContent;
+        const sev = f.dataset.sev;
+        const title = f.querySelector("h3").textContent;
+        const li = document.createElement("li");
+        const sevColor =
+          sev === "critical"
+            ? "var(--critical)"
+            : sev === "major"
+              ? "var(--major)"
+              : "var(--minor)";
+        li.innerHTML = `<a href="#${id}"><span style="color:${sevColor};font-family:var(--mono);">${id}</span> ${title}</a>`;
+        f.id = id;
+        toc.appendChild(li);
+      });
 
-<script>
-  // Build table of contents
-  const findings = [...document.querySelectorAll('.finding')];
-  const toc = document.getElementById('toc-list');
-  findings.forEach(f => {
-    const id = f.querySelector('.finding-id').textContent;
-    const sev = f.dataset.sev;
-    const title = f.querySelector('h3').textContent;
-    const li = document.createElement('li');
-    const sevColor = sev === 'critical' ? 'var(--critical)' : sev === 'major' ? 'var(--major)' : 'var(--minor)';
-    li.innerHTML = `<a href="#${id}"><span style="color:${sevColor};font-family:var(--mono);">${id}</span> ${title}</a>`;
-    f.id = id;
-    toc.appendChild(li);
-  });
+      // Filtering
+      const btns = document.querySelectorAll(".filter-btn");
+      const search = document.getElementById("search");
+      const emptyMsg = document.getElementById("empty-msg");
+      let activeFilter = "all";
 
-  // Filtering
-  const btns = document.querySelectorAll('.filter-btn');
-  const search = document.getElementById('search');
-  const emptyMsg = document.getElementById('empty-msg');
-  let activeFilter = 'all';
-
-  function applyFilters() {
-    const q = search.value.trim().toLowerCase();
-    let visible = 0;
-    findings.forEach(f => {
-      const sev = f.dataset.sev;
-      const text = (f.textContent + ' ' + (f.dataset.keywords || '')).toLowerCase();
-      const sevMatch = activeFilter === 'all' || sev === activeFilter;
-      const qMatch = !q || text.includes(q);
-      const show = sevMatch && qMatch;
-      f.style.display = show ? '' : 'none';
-      if (show) visible++;
-    });
-    emptyMsg.style.display = visible === 0 ? 'block' : 'none';
-    // Update section header counts visibility
-    document.querySelectorAll('.section-h').forEach(h => {
-      let next = h.nextElementSibling;
-      let anyVisible = false;
-      while (next && !next.classList.contains('section-h') && next.tagName !== 'FOOTER') {
-        if (next.classList && next.classList.contains('finding') && next.style.display !== 'none') { anyVisible = true; break; }
-        next = next.nextElementSibling;
+      function applyFilters() {
+        const q = search.value.trim().toLowerCase();
+        let visible = 0;
+        findings.forEach((f) => {
+          const sev = f.dataset.sev;
+          const text = (f.textContent + " " + (f.dataset.keywords || "")).toLowerCase();
+          const sevMatch = activeFilter === "all" || sev === activeFilter;
+          const qMatch = !q || text.includes(q);
+          const show = sevMatch && qMatch;
+          f.style.display = show ? "" : "none";
+          if (show) visible++;
+        });
+        emptyMsg.style.display = visible === 0 ? "block" : "none";
+        // Update section header counts visibility
+        document.querySelectorAll(".section-h").forEach((h) => {
+          let next = h.nextElementSibling;
+          let anyVisible = false;
+          while (next && !next.classList.contains("section-h") && next.tagName !== "FOOTER") {
+            if (
+              next.classList &&
+              next.classList.contains("finding") &&
+              next.style.display !== "none"
+            ) {
+              anyVisible = true;
+              break;
+            }
+            next = next.nextElementSibling;
+          }
+          h.style.display = anyVisible ? "" : "none";
+        });
       }
-      h.style.display = anyVisible ? '' : 'none';
-    });
-  }
 
-  btns.forEach(b => b.addEventListener('click', () => {
-    btns.forEach(x => x.classList.remove('active'));
-    b.classList.add('active');
-    activeFilter = b.dataset.filter;
-    applyFilters();
-  }));
-  search.addEventListener('input', applyFilters);
-</script>
-
-</body>
+      btns.forEach((b) =>
+        b.addEventListener("click", () => {
+          btns.forEach((x) => x.classList.remove("active"));
+          b.classList.add("active");
+          activeFilter = b.dataset.filter;
+          applyFilters();
+        }),
+      );
+      search.addEventListener("input", applyFilters);
+    </script>
+  </body>
 </html>

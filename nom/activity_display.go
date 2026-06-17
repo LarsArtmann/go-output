@@ -6,7 +6,7 @@ import (
 )
 
 // DisplayState holds the shared display fields synchronized between
-// ActivityDisplayState and TreeNode via SyncActivityTimingToTree.
+// ActivityDisplayState and ActivityNode via SyncActivityTimingToTree.
 type DisplayState struct {
 	Status         ActivityStatus
 	Symbol         string
@@ -21,7 +21,7 @@ type DisplayState struct {
 // ============================================================================
 // ActivityDisplayState represents the display state of an activity in NOM visualization.
 type ActivityDisplayState struct {
-	// Shared display state (synced to TreeNode)
+	// Shared display state (synced to ActivityNode)
 	DisplayState
 
 	// Core activity information

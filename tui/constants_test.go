@@ -7,8 +7,8 @@ import (
 func TestConstants(t *testing.T) {
 	t.Parallel()
 
-	if TimingFormat == "" {
-		t.Error("TimingFormat should not be empty")
+	if timingFormatWithIcon == "" {
+		t.Error("timingFormatWithIcon should not be empty")
 	}
 
 	if SeparatorLineEquals == "" {

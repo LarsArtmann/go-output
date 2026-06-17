@@ -2,6 +2,7 @@ package nom
 
 import (
 	"fmt"
+	"strings"
 	"time"
 )
 
@@ -88,7 +89,7 @@ func GetActivitySummaryString(running, uploading, downloading, total int) string
 
 	if len(parts) > 0 {
 		parts = append(parts, fmt.Sprintf("%s%d", SymbolTotal, total))
-		return fmt.Sprintf("%s", parts)
+		return strings.Join(parts, "")
 	}
 
 	if total > 0 {
@@ -104,9 +105,9 @@ func ShouldDisplayTiming(duration time.Duration) bool {
 	return duration >= time.Second
 }
 
-// FormatTreeNodeTiming formats timing information for a TreeNode in NOM style.
+// FormatActivityNodeTiming formats timing information for a ActivityNode in NOM style.
 // Includes conditional display (hide if < 1s) and appropriate symbols.
-func FormatTreeNodeTiming(status ActivityStatus, elapsed, estimated time.Duration) string {
+func FormatActivityNodeTiming(status ActivityStatus, elapsed, estimated time.Duration) string {
 	switch status {
 	case ActivityStatusRunning, ActivityStatusCompleted, ActivityStatusFailed:
 		if elapsed > 0 && ShouldDisplayTiming(elapsed) {

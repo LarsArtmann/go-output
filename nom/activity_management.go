@@ -51,7 +51,7 @@ func (ns *NOMStyleSubscriber) SetActivityState(activity *ActivityDisplayState) {
 }
 
 // SyncActivityTimingToTree synchronizes display state (status, symbol, color,
-// timing) from ActivityDisplayState to its corresponding TreeNode.
+// timing) from ActivityDisplayState to its corresponding ActivityNode.
 //
 // Both structures duplicate the display fields for their respective consumers
 // (TUI status list vs. dependency tree rendering). This helper keeps them

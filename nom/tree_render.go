@@ -58,7 +58,7 @@ func (dt *DependencyTree) RenderWithWidth(maxHeight, maxWidth int) string {
 }
 
 type visibleEntry struct {
-	node      *TreeNode
+	node      *ActivityNode
 	prefix    string
 	connector string
 	isRoot    bool
@@ -86,7 +86,7 @@ func (dt *DependencyTree) collectVisibleNodes(maxHeight int) []visibleEntry {
 // and expanding all children would overflow the available space. This ensures
 // that active work (running, failed, pending) is prioritized over completed
 // history when the viewport is constrained.
-func (dt *DependencyTree) elideCompletedUnderPressure(children []*TreeNode, maxHeight, visibleCount int) []*TreeNode {
+func (dt *DependencyTree) elideCompletedUnderPressure(children []*ActivityNode, maxHeight, visibleCount int) []*ActivityNode {
 	if maxHeight <= 0 {
 		return children
 	}
@@ -96,7 +96,7 @@ func (dt *DependencyTree) elideCompletedUnderPressure(children []*TreeNode, maxH
 		return children
 	}
 
-	var active []*TreeNode
+	var active []*ActivityNode
 
 	for _, child := range children {
 		if child.Status == ActivityStatusCompleted {
@@ -116,7 +116,7 @@ func (dt *DependencyTree) elideCompletedUnderPressure(children []*TreeNode, maxH
 // walkSubtree recursively walks the tree depth-first, building proper NOM-style prefixes.
 // Children are traversed in priority order (failed/running first, completed last).
 func (dt *DependencyTree) walkSubtree(
-	node *TreeNode,
+	node *ActivityNode,
 	prefix string,
 	isLastSibling bool,
 	isRoot bool,
@@ -191,7 +191,7 @@ func (dt *DependencyTree) renderLine(entry visibleEntry, maxWidth int) string {
 
 	activityDisplay := fmt.Sprintf("%s %s", symbol, node.ActivityName)
 
-	timingInfo := FormatTreeNodeTiming(
+	timingInfo := FormatActivityNodeTiming(
 		node.Status,
 		node.CurrentElapsed,
 		node.EstimatedTime,
@@ -235,7 +235,7 @@ func (dt *DependencyTree) renderLine(entry visibleEntry, maxWidth int) string {
 // VisibleNodes returns the ordered list of tree nodes that would be displayed
 // for the given maxHeight, in priority order (failed > running > paused >
 // pending > completed).
-func (dt *DependencyTree) VisibleNodes(maxHeight int) []*TreeNode {
+func (dt *DependencyTree) VisibleNodes(maxHeight int) []*ActivityNode {
 	dt.mu.RLock()
 	needsBuild := !dt.loaded
 	dt.mu.RUnlock()
@@ -254,7 +254,7 @@ func (dt *DependencyTree) VisibleNodes(maxHeight int) []*TreeNode {
 	}
 
 	visible := dt.collectVisibleNodes(maxHeight)
-	nodes := make([]*TreeNode, len(visible))
+	nodes := make([]*ActivityNode, len(visible))
 
 	for i, entry := range visible {
 		nodes[i] = entry.node
@@ -268,7 +268,7 @@ func (dt *DependencyTree) VisibleNodes(maxHeight int) []*TreeNode {
 // callers that need width-aware rendering; it is currently unused by this
 // method but accepted to support future width-truncation without a breaking
 // API change.
-func (dt *DependencyTree) RenderNode(node *TreeNode, visibleNodes []*TreeNode) string {
+func (dt *DependencyTree) RenderNode(node *ActivityNode, visibleNodes []*ActivityNode) string {
 	symbol := node.Symbol
 	color := node.Color
 
@@ -279,7 +279,7 @@ func (dt *DependencyTree) RenderNode(node *TreeNode, visibleNodes []*TreeNode) s
 
 	activityDisplay := fmt.Sprintf("%s %s", symbol, node.ActivityName)
 
-	timingInfo := FormatTreeNodeTiming(
+	timingInfo := FormatActivityNodeTiming(
 		node.Status,
 		node.CurrentElapsed,
 		node.EstimatedTime,
@@ -296,6 +296,6 @@ func (dt *DependencyTree) RenderNode(node *TreeNode, visibleNodes []*TreeNode) s
 		Render(activityDisplay)
 }
 
-func isPhaseNode(node *TreeNode) bool {
+func isPhaseNode(node *ActivityNode) bool {
 	return strings.HasPrefix(string(node.ActivityID), "phase:")
 }

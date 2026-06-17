@@ -10,8 +10,8 @@ const (
 	msgNoActivitiesToDisplay = "No activities to display"
 )
 
-// TreeNode represents a node in the dependency tree.
-type TreeNode struct {
+// ActivityNode represents a node in the dependency tree.
+type ActivityNode struct {
 	// Shared display state (synced from ActivityDisplayState)
 	DisplayState
 
@@ -19,8 +19,8 @@ type TreeNode struct {
 	ActivityID   ActivityID
 	ActivityName string
 	// Tree structure
-	Parent           *TreeNode
-	Children         []*TreeNode
+	Parent           *ActivityNode
+	Children         []*ActivityNode
 	SecondaryParents []ActivityID // Non-primary dependencies (for display only)
 	Depth            int
 	// Display state
@@ -32,8 +32,8 @@ type TreeNode struct {
 type DependencyTree struct {
 	mu        sync.RWMutex
 	buildOnce sync.Once
-	nodes     map[ActivityID]*TreeNode // All nodes by activity ID
-	roots     []*TreeNode              // Root nodes (no dependencies)
+	nodes     map[ActivityID]*ActivityNode // All nodes by activity ID
+	roots     []*ActivityNode              // Root nodes (no dependencies)
 	order     []ActivityID             // Display order (smart filtered)
 	loaded    bool                     // Whether tree has been built
 }
@@ -41,16 +41,16 @@ type DependencyTree struct {
 // NewDependencyTree creates a new dependency tree.
 func NewDependencyTree() *DependencyTree {
 	return &DependencyTree{
-		nodes:  make(map[ActivityID]*TreeNode),
-		roots:  make([]*TreeNode, 0),
+		nodes:  make(map[ActivityID]*ActivityNode),
+		roots:  make([]*ActivityNode, 0),
 		order:  make([]ActivityID, 0),
 		loaded: false,
 	}
 }
 
-// newTreeNode creates a new TreeNode with pending status.
-func newTreeNode(id ActivityID, name string) *TreeNode {
-	return &TreeNode{
+// newActivityNode creates a new ActivityNode with pending status.
+func newActivityNode(id ActivityID, name string) *ActivityNode {
+	return &ActivityNode{
 		ActivityID:   id,
 		ActivityName: name,
 		DisplayState: DisplayState{
@@ -58,20 +58,20 @@ func newTreeNode(id ActivityID, name string) *TreeNode {
 			Symbol: SymbolPaused,
 			Color:  ColorPaused,
 		},
-		Children:    make([]*TreeNode, 0),
+		Children:    make([]*ActivityNode, 0),
 		IsDisplayed: true,
 	}
 }
 
 // hasChild returns true if this node already has a child with the given activity ID.
-func (n *TreeNode) hasChild(id ActivityID) bool {
-	return slices.ContainsFunc(n.Children, func(c *TreeNode) bool {
+func (n *ActivityNode) hasChild(id ActivityID) bool {
+	return slices.ContainsFunc(n.Children, func(c *ActivityNode) bool {
 		return c.ActivityID == id
 	})
 }
 
 // hasSecondaryParent returns true if this node already has the given activity ID
 // as a secondary parent.
-func (n *TreeNode) hasSecondaryParent(id ActivityID) bool {
+func (n *ActivityNode) hasSecondaryParent(id ActivityID) bool {
 	return slices.Contains(n.SecondaryParents, id)
 }

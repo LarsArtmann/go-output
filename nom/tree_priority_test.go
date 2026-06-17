@@ -8,7 +8,7 @@ import (
 func TestElideCompletedUnderPressure(t *testing.T) {
 	t.Parallel()
 
-	completedNode := &TreeNode{
+	completedNode := &ActivityNode{
 		ActivityID:   ActivityID("c1"),
 		ActivityName: "Completed Step",
 		DisplayState: DisplayState{
@@ -16,7 +16,7 @@ func TestElideCompletedUnderPressure(t *testing.T) {
 			CurrentElapsed: 5 * time.Second,
 		},
 	}
-	runningNode := &TreeNode{
+	runningNode := &ActivityNode{
 		ActivityID:   ActivityID("r1"),
 		ActivityName: "Running Step",
 		DisplayState: DisplayState{
@@ -29,7 +29,7 @@ func TestElideCompletedUnderPressure(t *testing.T) {
 
 	tests := []struct {
 		name         string
-		children     []*TreeNode
+		children     []*ActivityNode
 		maxHeight    int
 		visibleCount int
 		wantLen      int
@@ -37,7 +37,7 @@ func TestElideCompletedUnderPressure(t *testing.T) {
 	}{
 		{
 			name:         "no height pressure keeps all children",
-			children:     []*TreeNode{completedNode, runningNode},
+			children:     []*ActivityNode{completedNode, runningNode},
 			maxHeight:    100,
 			visibleCount: 1,
 			wantLen:      2,
@@ -45,7 +45,7 @@ func TestElideCompletedUnderPressure(t *testing.T) {
 		},
 		{
 			name:         "unlimited height keeps all children",
-			children:     []*TreeNode{completedNode, runningNode},
+			children:     []*ActivityNode{completedNode, runningNode},
 			maxHeight:    0,
 			visibleCount: 1,
 			wantLen:      2,
@@ -53,7 +53,7 @@ func TestElideCompletedUnderPressure(t *testing.T) {
 		},
 		{
 			name:         "height pressure elides completed",
-			children:     []*TreeNode{completedNode, runningNode},
+			children:     []*ActivityNode{completedNode, runningNode},
 			maxHeight:    2,
 			visibleCount: 1,
 			wantLen:      1,
@@ -61,7 +61,7 @@ func TestElideCompletedUnderPressure(t *testing.T) {
 		},
 		{
 			name:         "only completed children under pressure returns empty",
-			children:     []*TreeNode{completedNode},
+			children:     []*ActivityNode{completedNode},
 			maxHeight:    1,
 			visibleCount: 1,
 			wantLen:      0,
@@ -75,7 +75,7 @@ func TestElideCompletedUnderPressure(t *testing.T) {
 		},
 		{
 			name:         "all active children kept even under pressure",
-			children:     []*TreeNode{runningNode},
+			children:     []*ActivityNode{runningNode},
 			maxHeight:    1,
 			visibleCount: 1,
 			wantLen:      1,

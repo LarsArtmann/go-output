@@ -105,6 +105,7 @@ type GraphEdge struct {
     From  GraphNodeID
     To    GraphNodeID
     Label GraphNodeLabel
+    Style EdgeStyle
 }
 ```
 

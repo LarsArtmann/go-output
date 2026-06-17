@@ -87,13 +87,13 @@ func TestShouldDisplayTiming(t *testing.T) {
 	}
 }
 
-func TestFormatTreeNodeTiming(t *testing.T) {
+func TestFormatActivityNodeTiming(t *testing.T) {
 	t.Parallel()
 
 	t.Run("running with visible timing", func(t *testing.T) {
 		t.Parallel()
 
-		got := FormatTreeNodeTiming(ActivityStatusRunning, 5*time.Second, 0)
+		got := FormatActivityNodeTiming(ActivityStatusRunning, 5*time.Second, 0)
 		if got == "" {
 			t.Error("expected non-empty timing for running status")
 		}
@@ -102,7 +102,7 @@ func TestFormatTreeNodeTiming(t *testing.T) {
 	t.Run("running with sub-second elapsed returns empty", func(t *testing.T) {
 		t.Parallel()
 
-		got := FormatTreeNodeTiming(ActivityStatusRunning, 100*time.Millisecond, 0)
+		got := FormatActivityNodeTiming(ActivityStatusRunning, 100*time.Millisecond, 0)
 		if got != "" {
 			t.Errorf("expected empty for sub-second, got %q", got)
 		}
@@ -111,7 +111,7 @@ func TestFormatTreeNodeTiming(t *testing.T) {
 	t.Run("pending with estimated time", func(t *testing.T) {
 		t.Parallel()
 
-		got := FormatTreeNodeTiming(ActivityStatusPending, 0, 10*time.Second)
+		got := FormatActivityNodeTiming(ActivityStatusPending, 0, 10*time.Second)
 		if got == "" {
 			t.Error("expected non-empty timing for pending with estimate")
 		}
@@ -120,7 +120,7 @@ func TestFormatTreeNodeTiming(t *testing.T) {
 	t.Run("completed with elapsed", func(t *testing.T) {
 		t.Parallel()
 
-		got := FormatTreeNodeTiming(ActivityStatusCompleted, 3*time.Second, 0)
+		got := FormatActivityNodeTiming(ActivityStatusCompleted, 3*time.Second, 0)
 		if got == "" {
 			t.Error("expected non-empty timing for completed")
 		}
@@ -129,7 +129,7 @@ func TestFormatTreeNodeTiming(t *testing.T) {
 	t.Run("failed with elapsed", func(t *testing.T) {
 		t.Parallel()
 
-		got := FormatTreeNodeTiming(ActivityStatusFailed, 2*time.Second, 0)
+		got := FormatActivityNodeTiming(ActivityStatusFailed, 2*time.Second, 0)
 		if got == "" {
 			t.Error("expected non-empty timing for failed")
 		}
@@ -138,7 +138,7 @@ func TestFormatTreeNodeTiming(t *testing.T) {
 	t.Run("paused with elapsed", func(t *testing.T) {
 		t.Parallel()
 
-		got := FormatTreeNodeTiming(ActivityStatusPaused, 2*time.Second, 0)
+		got := FormatActivityNodeTiming(ActivityStatusPaused, 2*time.Second, 0)
 		if got == "" {
 			t.Error("expected non-empty timing for paused")
 		}
@@ -147,7 +147,7 @@ func TestFormatTreeNodeTiming(t *testing.T) {
 	t.Run("zero elapsed returns empty", func(t *testing.T) {
 		t.Parallel()
 
-		got := FormatTreeNodeTiming(ActivityStatusRunning, 0, 0)
+		got := FormatActivityNodeTiming(ActivityStatusRunning, 0, 0)
 		if got != "" {
 			t.Errorf("expected empty for zero elapsed, got %q", got)
 		}

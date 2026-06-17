@@ -9,7 +9,7 @@ func (dt *DependencyTree) Build() error {
 	dt.mu.Lock()
 	defer dt.mu.Unlock()
 	// Clear existing roots
-	dt.roots = make([]*TreeNode, 0)
+	dt.roots = make([]*ActivityNode, 0)
 	// Find root nodes (no parent)
 	for _, node := range dt.nodes {
 		if node.Parent == nil {
@@ -33,7 +33,7 @@ func (dt *DependencyTree) Build() error {
 }
 
 // calculateDepth recursively calculates the depth of each node.
-func (dt *DependencyTree) calculateDepth(node *TreeNode, depth int) {
+func (dt *DependencyTree) calculateDepth(node *ActivityNode, depth int) {
 	node.Depth = depth
 	for _, child := range node.Children {
 		dt.calculateDepth(child, depth+1)

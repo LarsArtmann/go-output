@@ -104,8 +104,11 @@ func isTerminalByEnv(envVars ...string) bool {
 	return false
 }
 
+// isNoColor reports whether color output should be suppressed via NO_COLOR or TERM=dumb.
+// Mirrors nom.detectNoColor — keep in sync.
 func isNoColor() bool {
-	return os.Getenv("NO_COLOR") != ""
+	return os.Getenv("NO_COLOR") != "" ||
+		os.Getenv("TERM") == "dumb"
 }
 
 func isCI() bool {

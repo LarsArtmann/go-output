@@ -29,12 +29,12 @@ func (k sortKey) less(other sortKey) bool {
 }
 
 // childPriority sorts a node's children by display priority without mutating the original slice.
-func (dt *DependencyTree) childPriority(node *TreeNode) []*TreeNode {
+func (dt *DependencyTree) childPriority(node *ActivityNode) []*ActivityNode {
 	if len(node.Children) == 0 {
 		return nil
 	}
 
-	sorted := make([]*TreeNode, len(node.Children))
+	sorted := make([]*ActivityNode, len(node.Children))
 	copy(sorted, node.Children)
 
 	sort.SliceStable(sorted, func(i, j int) bool {
@@ -45,7 +45,7 @@ func (dt *DependencyTree) childPriority(node *TreeNode) []*TreeNode {
 }
 
 // sortKeyForNode returns the display sort key for a node.
-func sortKeyForNode(node *TreeNode) sortKey {
+func sortKeyForNode(node *ActivityNode) sortKey {
 	return sortKey{
 		interest:   node.Status.Interest(),
 		elapsed:    node.CurrentElapsed,

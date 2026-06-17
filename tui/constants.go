@@ -2,8 +2,11 @@ package tui
 
 // Display Format Constants - Standardized display format strings.
 const (
-	// Timing Display Format.
-	TimingFormat = "⏱️ %.1fs"
+	// timingFormatWithIcon is the TUI-specific timing format that bakes in the
+	// ⏱️ icon. This intentionally differs from nom.TimingFormat (which is just
+	// "%.1fs") because the TUI step-display integrates the icon into the format
+	// string, while nom composes icon + duration separately.
+	timingFormatWithIcon = "⏱️ %.1fs"
 )
 
 // Separator Lines - Standardized separator line patterns.
