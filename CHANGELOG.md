@@ -30,7 +30,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - **TOML round-trip test failure** — `nix run .#test` was red on integration/serialization due to `toml: cannot encode a []map[string]string as a document root`.
 - **TUI data races** — `go test -race` in tui/ failed on 18 tests; reporter tests now use `newTestReporter()` helper that prevents the real Bubble Tea program from starting.
-- **Registry test pollution** — `TestRegisterTableDataMarshaler_ConcurrentAccess` leaked "race-test-*" formats into the global registry; `TestRegisteredTableDataFormats` now checks known-good formats instead of asserting all are valid.
+- **Registry test pollution** — `TestRegisterTableDataMarshaler_ConcurrentAccess` leaked "race-test-\*" formats into the global registry; `TestRegisteredTableDataFormats` now checks known-good formats instead of asserting all are valid.
 - **Dead code in `elideCompletedUnderPressure`** — removed unreachable guard `visibleCount+maxHeight <= 0`.
 
 ## [0.9.0] - 2026-06-12
