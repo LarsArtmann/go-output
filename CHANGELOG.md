@@ -6,6 +6,32 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Changed — Split-Brain Elimination
+
+- **`nom.TreeNode` renamed to `nom.ActivityNode`** — eliminates exported name collision with `output.TreeNode` (the generic diagram tree node). Mechanical rename across 12 nom/ files + tui/ references.
+- **`tui.TimingFormat` renamed to `tui.timingFormatWithIcon`** (unexported) — eliminates name collision with `nom.TimingFormat`. The TUI version bakes in the `⏱️` emoji; the NOM version keeps symbol separate from format string.
+- **`nom.detectNoColor()` now checks terminal** — aligned with root's `isStdoutTerminal()` gate. Previously nom would emit ANSI color codes even when piped to a file.
+- **`delimited.tableDataWriter` interface now includes `WriteFooter`** — footer rows are written via the dedicated `WriteFooter` method instead of `WriteRow`, matching the streaming API and example code.
+- **`nom.GetWorkflowID()` returns `WorkflowID` instead of `string`** — matches the `WorkflowEventAccessor` interface return type.
+- **Color detection aligned** — root `isNoColor()` now checks `TERM=dumb`; nom `detectNoColor()` now checks all 5 CI env vars (`CI`, `GITHUB_ACTIONS`, `GITLAB_CI`, `JENKINS_URL`, `BUILDKITE`). Both now use identical logic.
+- **Dead code removed** — `nom.ColorWarning` (identical value to `ColorRunning`, zero callers), `tui.ProgressModel.timingCache` (stored but never read).
+
+### Fixed
+
+- **Test interface redeclarations eliminated** — `serialization/testhelpers_test.go` now uses `output.GraphRenderer` directly instead of a re-declared `graphRenderer`. `integration/renderer_test.go` now uses `output.Renderer` directly instead of a re-declared `renderer`.
+- **All bare event-string literals replaced with `nom.Event*` constants** — 34 literals across `nom/subscriber_test.go`, `tui/`, `integration/`, `examples/` now use `nom.EventWorkflowStarted`, `nom.EventActivityCompleted`, etc.
+- **Hardcoded `"No activities to display"` literal** in `tui/view.go` replaced with `MsgNoActivitiesToDisplay` constant.
+
+### Removed
+
+- **`nom.ColorWarning`** — was identical to `ColorRunning` (`lipgloss.Color("11")`) with zero callers.
+- **`tui.ProgressModel.timingCache` field** — stored a `*nom.TimingCache` that was never read.
+
+### Added
+
+- **Cross-reference comments** on `nom.StatusStringUnknown` / `tui.WorkflowStateStringUnknown` documenting both use `"unknown"` for the same purpose.
+- **TODO markers** for deferred API-breaking fixes: M4 (Render method naming), M5 (ShapeBox prefix collision), M6/M7 (direction enum bridge), M8 (style struct field alignment), m6 (branded ID canonical paths).
+
 ## [0.12.0] - 2026-06-17
 
 ### Added

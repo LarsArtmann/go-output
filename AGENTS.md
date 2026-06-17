@@ -4,7 +4,7 @@
 
 A reusable Go library for CLI applications providing consistent output formatting across 16 formats (Table, JSON, CSV, TSV, Markdown, XML, YAML, HTML, Tree, D2, Mermaid, DOT, JSONL, AsciiDoc, TOML, PlantUML) with type-safe enum-based configuration, a Shape capability matrix, and NOM-style real-time progress visualization.
 
-**Updated:** 2026-06-12
+**Updated:** 2026-06-17
 
 ## Location
 
@@ -209,8 +209,8 @@ go test -bench=. -benchmem ./...  # Benchmarks
 11. **WithFooterStyle option**: `table.WithFooterStyle(func(lipgloss.Style) lipgloss.Style)` provides composable footer styling for lipgloss tables. Receives the base style (with padding) and returns the styled result.
 12. **lipgloss style caching**: `table.buildStyleFunc` pre-allocates the base `lipgloss.NewStyle().Padding(0, 1)` once and reuses it for all rows, eliminating per-row allocations in the hot path.
 13. **NodeEdgeAppender interface**: `AddTreeNodes` accepts `NodeEdgeAppender` (AddNode/AddEdge methods) instead of raw `*[]GraphNode`/`*[]GraphEdge` pointers, providing controlled mutation without exposing internal state.
-14. **NOM event-driven architecture**: `nom.NOMStyleSubscriber` implements `EventSubscriber` with type-assertion-based accessor interfaces (`WorkflowEventAccessor`, `ActivityEventAccessor`, `DurationAccessor`, `ErrorAccessor`). String-based event routing (`"workflow.started"`, `"activity.completed"`) avoids circular dependencies — no concrete event types shared between modules.
-15. **NOM dependency tree**: `nom.DependencyTree` renders hierarchical activity visualization with **priority-based child sorting** (Failed > Running > Paused > Pending > Completed; ties broken by elapsed time then activity ID), depth-aware tree prefixes (`├──`/`└──`), and thread-safe concurrent access. `buildOnce`/`loaded` double-checked locking prevents rebuild under read lock.
+14. **NOM event-driven architecture**: `nom.NOMStyleSubscriber` implements `EventSubscriber` with type-assertion-based accessor interfaces (`WorkflowEventAccessor`, `ActivityEventAccessor`, `DurationAccessor`, `ErrorAccessor`). Event routing uses `nom.Event*` string constants (e.g., `nom.EventWorkflowStarted`, `nom.EventActivityCompleted`) — bare string literals were eliminated as a split-brain fix.
+15. **NOM dependency tree**: `nom.DependencyTree` renders hierarchical activity visualization with **priority-based child sorting** (Failed > Running > Paused > Pending > Completed; ties broken by elapsed time then activity ID), depth-aware tree prefixes (`├──`/`└──`), and thread-safe concurrent access. `buildOnce`/`loaded` double-checked locking prevents rebuild under read lock. Tree nodes are `nom.ActivityNode` (renamed from `TreeNode` to avoid collision with `output.TreeNode`).
 16. **NOM timing cache**: `nom.TimingCache` persists activity duration history as CSV at `~/.cache/nom-timing.csv`. Uses **median** of the last ≤10 entries for robust estimates. Async saves via `saveAsync()` (snapshots data under RLock, writes without lock). Caps history at 10 entries per activity.
 17. **NOM inline renderer**: `nom.InlineRenderer` redraws in-place without alt-screen takeover. Supports `Refresh()` for on-demand updates, a 1-second max-frame timer so elapsed timers stay current, and terminal-width-aware truncation with `…`. Physical line counts account for wrapping so cursor-up math stays correct.
 18. **TUI state machine**: `tui.WorkflowState` enforces `Idle → Running → Completed/Errored` transitions via `CanTransitionTo()`. Terminal states reject updates and ticks. `BubbleTeaProgressReporter` uses double-checked locking for lazy TUI start.

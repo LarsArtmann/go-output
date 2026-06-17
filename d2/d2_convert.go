@@ -57,6 +57,11 @@ func graphEdgeToD2(e output.GraphEdge) D2Edge {
 		From:  output.NewBrandedID[output.D2NodeIDBrand](e.From.Get()),
 		To:    output.NewBrandedID[output.D2NodeIDBrand](e.To.Get()),
 		Label: output.NewBrandedID[output.D2NodeLabelBrand](e.Label.Get()),
+		Style: D2EdgeStyle{
+			D2StrokeStyle: D2StrokeStyle{
+				Stroke: e.Style.Color,
+			},
+		},
 	}
 }
 
@@ -85,8 +90,9 @@ func graphStyleToD2(s output.GraphStyle) D2NodeStyle {
 	return D2NodeStyle{
 		Fill: s.FillColor,
 		D2StrokeStyle: D2StrokeStyle{
-			Stroke:   s.StrokeColor,
-			FontSize: s.FontSize,
+			Stroke:    s.StrokeColor,
+			FontSize:  s.FontSize,
+			FontColor: s.FontColor,
 		},
 	}
 }
