@@ -64,18 +64,27 @@ func isMermaidIdentRune(r rune) bool {
 }
 
 // slugIDReplacer sanitizes strings for use as identifiers across diagram formats.
-// Replaces spaces, hyphens, and slashes with underscores.
+// Replaces identifier-hostile characters with underscores.
 //
 //nolint:gochecknoglobals // Reusable strings.Replacer, safe to share.
 var slugIDReplacer = strings.NewReplacer(
 	" ", "_",
 	"-", "_",
 	"/", "_",
+	".", "_",
+	"*", "_",
+	"[", "_",
+	"]", "_",
+	"{", "_",
+	"}", "_",
+	"(", "_",
+	")", "_",
 )
 
 // SlugifyID sanitizes a string for use as a diagram node identifier.
-// It replaces spaces, hyphens, and slashes with underscores — characters
-// that are problematic in D2, DOT, Mermaid, and PlantUML identifiers.
+// It replaces spaces, hyphens, slashes, dots, asterisks, and brackets with
+// underscores — characters that are problematic in D2, DOT, Mermaid, and
+// PlantUML identifiers.
 func SlugifyID(s string) string {
 	return slugIDReplacer.Replace(s)
 }
