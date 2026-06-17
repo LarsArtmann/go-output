@@ -220,7 +220,6 @@ func TestProgressModel_Init(t *testing.T) {
 	t.Parallel()
 
 	model := &ProgressModel{
-		messages:      make([]string, 0),
 		steps:         make([]ProgressStep, 0),
 		startTime:     time.Now(),
 		workflowState: WorkflowStateIdle,

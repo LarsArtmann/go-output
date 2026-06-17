@@ -92,7 +92,6 @@ type ProgressStep struct {
 // ProgressModel holds the state for the Bubble Tea progress display.
 type ProgressModel struct {
 	// Core progress data
-	messages        []string
 	currentProgress float64
 	steps           []ProgressStep
 	// Display state

@@ -29,7 +29,6 @@ type BubbleTeaProgressReporter struct {
 // NewProgressModel creates a new ProgressModel with default initialization.
 func NewProgressModel() *ProgressModel {
 	return &ProgressModel{
-		messages:       make([]string, 0),
 		steps:          make([]ProgressStep, 0),
 		startTime:      time.Now(),
 		lastUpdate:     time.Now(),
@@ -154,8 +153,6 @@ func (pr *BubbleTeaProgressReporter) ReportMessage(message string) {
 	}
 
 	pr.model.currentMessage = message
-	pr.model.messages = append(pr.model.messages, fmt.Sprintf("[%s] %s",
-		time.Now().Format("15:04:05"), message))
 	pr.sendToProgram(ProgressUpdateMsg{
 		Type:    MessageUpdate,
 		Message: message,

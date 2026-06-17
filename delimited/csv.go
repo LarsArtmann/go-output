@@ -82,6 +82,7 @@ func (c *CSVWriter) Error() error {
 type tableDataWriter interface {
 	WriteHeader(cols []string) error
 	WriteRow(values []string) error
+	WriteFooter(values []string) error
 	Flush()
 	Error() error
 }
@@ -113,7 +114,7 @@ func marshalFromTableData(
 	}
 
 	if data.HasFooter() {
-		if err := w.WriteRow(data.Footer); err != nil {
+		if err := w.WriteFooter(data.Footer); err != nil {
 			return nil, fmt.Errorf("write %s footer: %w", name, err)
 		}
 	}

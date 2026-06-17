@@ -77,8 +77,8 @@ func (r *InlineRenderer) SetAppName(name string) {
 	r.appName = name
 }
 
-// detectNoColor checks environment variables for color suppression.
-// Mirrors color.go isNoColor()+isCI() — keep in sync.
+// detectNoColor checks if color output should be suppressed.
+// Mirrors color.go isNoColor()+isCI()+isStdoutTerminal() — keep in sync.
 func detectNoColor() bool {
 	if os.Getenv("NO_COLOR") != "" {
 		return true
@@ -88,11 +88,15 @@ func detectNoColor() bool {
 		return true
 	}
 
-	return os.Getenv("CI") != "" ||
+	if os.Getenv("CI") != "" ||
 		os.Getenv("GITHUB_ACTIONS") != "" ||
 		os.Getenv("GITLAB_CI") != "" ||
 		os.Getenv("JENKINS_URL") != "" ||
-		os.Getenv("BUILDKITE") != ""
+		os.Getenv("BUILDKITE") != "" {
+		return true
+	}
+
+	return !term.IsTerminal(int(os.Stdout.Fd()))
 }
 
 // SetStartTime sets the workflow start time for elapsed display.
