@@ -20,6 +20,8 @@ const (
 	ansiClearScreen = "\033[2J\033[H"
 	ansiHideCursor  = "\033[?25l"
 	ansiShowCursor  = "\033[?25h"
+	ansiSyncBegin   = "\033[?2026h"
+	ansiSyncEnd     = "\033[?2026l"
 )
 
 // InlineRenderer renders the NOM dependency tree to a writer using ANSI
@@ -159,7 +161,7 @@ func (r *InlineRenderer) Render() {
 
 	output += frame + "\n"
 
-	r.write(output)
+	r.write(ansiSyncBegin + output + ansiSyncEnd)
 
 	r.prevLines = physicalLines
 }
@@ -375,6 +377,11 @@ func (r *InlineRenderer) renderSummary() string {
 	}
 
 	summary := strings.Join(parts, " ") + fmt.Sprintf(" %s%d", SymbolTotal, total)
+
+	if total > 0 {
+		pct := (completed + failed) * 100 / total
+		summary += fmt.Sprintf(" (%d%%)", pct)
+	}
 
 	visualWidth := ansi.StringWidth(summary)
 	border := strings.Repeat("─", max(visualWidth+2, 3))

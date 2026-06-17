@@ -165,6 +165,10 @@ func TestInlineRenderer_SummaryBar(t *testing.T) {
 	if !strings.Contains(output, SymbolTiming) {
 		t.Errorf("summary should include timing, got:\n%s", output)
 	}
+
+	if !strings.Contains(output, "%") {
+		t.Errorf("summary should include completion percentage, got:\n%s", output)
+	}
 }
 
 func TestInlineRenderer_NilSubscriber(t *testing.T) {
