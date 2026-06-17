@@ -39,7 +39,7 @@ func NewGraphNode(id, label string) *GraphNode {
 
 // GraphShape represents the shape of a graph node.
 //
-// TODO(split-brain M5): The constant prefix "Shape" collides with the data-capability
+// NOTE(split-brain M5): The constant prefix "Shape" collides with the data-capability
 // Shape enum in shape.go (ShapeTable, ShapeTree, ShapeGraph). In the next minor version,
 // rename these to NodeShapeBox, NodeShapeEllipse, etc. and the type to NodeShape.
 type GraphShape string
@@ -105,7 +105,7 @@ func (s GraphShape) IsValid() bool {
 
 // GraphStyle represents styling attributes for a graph node.
 //
-// TODO(split-brain M8): Field names diverge from d2.D2NodeStyle (FillColor vs Fill,
+// NOTE(split-brain M8): Field names diverge from d2.D2NodeStyle (FillColor vs Fill,
 // StrokeColor vs Stroke). In the next minor version, align the shared subset so the
 // converter in d2/d2_convert.go becomes a near-1:1 copy.
 type GraphStyle struct {

@@ -122,7 +122,7 @@ func (r *InlineRenderer) SetStartTime(t time.Time) {
 // Render redraws the dependency tree in-place. On the first call it just prints.
 // On subsequent calls it moves the cursor up to overwrite the previous frame.
 //
-// TODO(split-brain M4): This method has a different signature than output.Renderer.Render()
+// NOTE(split-brain M4): This method has a different signature than output.Renderer.Render()
 // (void return vs (string, error)). Consider renaming to Draw() in the next minor version
 // to reserve Render() for the output.Renderer contract project-wide.
 func (r *InlineRenderer) Render() {
