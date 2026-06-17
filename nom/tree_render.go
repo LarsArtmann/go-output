@@ -200,7 +200,8 @@ func (dt *DependencyTree) renderLine(entry visibleEntry, maxWidth int) string {
 }
 
 // VisibleNodes returns the ordered list of tree nodes that would be displayed
-// for the given maxHeight, in depth-first tree order.
+// for the given maxHeight, in priority order (failed > running > paused >
+// pending > completed).
 func (dt *DependencyTree) VisibleNodes(maxHeight int) []*TreeNode {
 	dt.mu.RLock()
 	needsBuild := !dt.loaded

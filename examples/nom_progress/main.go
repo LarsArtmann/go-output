@@ -9,6 +9,9 @@ import (
 	"github.com/larsartmann/go-output/nom"
 )
 
+// errLintFailed is a static error used by the example to demonstrate a failed activity.
+var errLintFailed = errors.New("lint check failed")
+
 type workflowEvent struct {
 	eventType string
 	wID       nom.WorkflowID
@@ -65,20 +68,23 @@ func main() {
 
 		time.Sleep(a.delay)
 
-		if a.status == nom.ActivityStatusCompleted {
+		switch a.status {
+		case nom.ActivityStatusCompleted:
 			_ = subscriber.OnEvent(ctx, &workflowEvent{
 				eventType: "activity.completed",
 				aID:       nom.NewActivityID(a.id),
 				aName:     nom.NewActivityName(a.name),
 				duration:  a.delay,
 			})
-		} else if a.status == nom.ActivityStatusFailed {
+		case nom.ActivityStatusFailed:
 			_ = subscriber.OnEvent(ctx, &workflowEvent{
 				eventType: "activity.failed",
 				aID:       nom.NewActivityID(a.id),
 				aName:     nom.NewActivityName(a.name),
-				err:       errors.New("lint check failed"),
+				err:       errLintFailed,
 			})
+		case nom.ActivityStatusPending, nom.ActivityStatusRunning, nom.ActivityStatusPaused:
+			// left as-is for the demo
 		}
 	}
 

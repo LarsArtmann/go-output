@@ -262,12 +262,12 @@ func TestInlineRenderer_Refresh_TriggersRender(t *testing.T) {
 	})
 
 	renderer.Start(ctx, time.Hour) // very long interval
-	defer renderer.Stop()
 
 	buf.Reset()
 	renderer.Refresh()
 
 	time.Sleep(50 * time.Millisecond)
+	renderer.Stop()
 
 	if !strings.Contains(buf.String(), "Step 1") {
 		t.Errorf("Refresh should trigger a render, got:\n%s", buf.String())
