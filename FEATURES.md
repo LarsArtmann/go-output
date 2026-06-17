@@ -208,6 +208,8 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 | **escape.MermaidID()**   | FULLY_FUNCTIONAL | Sanitizes for Mermaid node identifiers (alphanumeric + underscore) |
 | **escape.MermaidSlug()** | FULLY_FUNCTIONAL | Fallback slug sanitization (spaces/hyphens/slashes → underscores)  |
 | **escape.MermaidText()** | FULLY_FUNCTIONAL | Escapes brackets, braces, quotes, newlines for Mermaid labels      |
+| **escape.SlugifyID()**   | FULLY_FUNCTIONAL | Sanitizes strings for diagram node identifiers across D2/DOT/Mermaid/PlantUML |
+| **escape.PlantUML()**    | FULLY_FUNCTIONAL | Escapes `]`, newline, backslash, quote for PlantUML labels          |
 
 ---
 

@@ -55,6 +55,7 @@ func (d *PlantUMLDiagram) Render() (string, error) {
 
 	for _, node := range d.Nodes() {
 		colorSpec := plantumlColorSpec(node.Style)
+
 		label := escape.PlantUML(node.Label.Get())
 		if colorSpec != "" {
 			fmt.Fprintf(&b, "[%s] as %s %s\n", label, sanitizePlantUMLID(node.ID.Get()), colorSpec)

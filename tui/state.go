@@ -106,12 +106,10 @@ type ProgressModel struct {
 	// Display mode determines which visualization style to render
 	// Using enum prevents invalid states (e.g., NOM mode without subscriber)
 	displayMode DisplayMode
-	// NOM-style visualization fields (fully integrated and functional)
-	// activities is a deep-copy snapshot refreshed each tick via
-	// syncNOMSubscriber(). It is NOT the live data — the subscriber owns the truth.
-	activities map[nom.ActivityID]*nom.ActivityDisplayState
+	// NOM-style visualization fields
 	// dependencyTree is a cached *pointer* to the subscriber's tree (not a copy).
 	// Refreshed each tick via syncNOMSubscriber(). Safe to read between ticks.
+	// Activity counts are fetched on-demand via GetActivityCounts() — no cache needed.
 	dependencyTree *nom.DependencyTree
 	nomSubscriber  *nom.NOMStyleSubscriber
 	showHelp       bool

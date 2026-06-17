@@ -124,18 +124,22 @@ func TestProgressModel_EventSequence_PreRegisterThenStart(t *testing.T) {
 		nom.ActivityID("step1"), "Compile", []nom.ActivityID{"phase1"},
 	)
 
-	// Before tick: tree should be empty in model
-	if len(model.activities) != 0 {
-		t.Errorf("activities before tick = %d, want 0", len(model.activities))
+	// Before tick: subscriber already has the pre-registered activities
+	running, completed, failed, pending := model.nomSubscriber.GetActivityCounts()
+	total := running + completed + failed + pending
+	if total != 2 {
+		t.Errorf("activities before tick = %d, want 2", total)
 	}
 
 	// Send tick → sync subscriber state to model
 	updated, _ := model.Update(TickMsg(time.Now()))
 	m := updated.(*ProgressModel)
 
-	// After tick: activities and tree should be synced
-	if len(m.activities) != 2 {
-		t.Errorf("activities after tick = %d, want 2", len(m.activities))
+	// After tick: activities should be synced to subscriber
+	running, completed, failed, pending = m.nomSubscriber.GetActivityCounts()
+	total = running + completed + failed + pending
+	if total != 2 {
+		t.Errorf("activities after tick = %d, want 2", total)
 	}
 
 	if m.dependencyTree == nil {
@@ -224,9 +228,9 @@ func TestProgressModel_EventSequence_StepFailed(t *testing.T) {
 	m := updated.(*ProgressModel)
 
 	// Verify failed activity is present
-	act, ok := m.activities[nom.ActivityID("test")]
-	if !ok {
-		t.Fatal("failed activity should be in model")
+	act := m.nomSubscriber.GetActivity(nom.ActivityID("test"))
+	if act == nil {
+		t.Fatal("failed activity should be in subscriber")
 	}
 
 	if act.Status != nom.ActivityStatusFailed {

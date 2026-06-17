@@ -3,8 +3,6 @@ package tui
 import (
 	"testing"
 	"time"
-
-	"github.com/larsartmann/go-output/nom"
 )
 
 func TestNewBubbleTeaProgressReporter(t *testing.T) {
@@ -224,7 +222,6 @@ func TestProgressModel_Init(t *testing.T) {
 		startTime:     time.Now(),
 		workflowState: WorkflowStateIdle,
 		displayMode:   DisplayModeUniversal,
-		activities:    make(map[nom.ActivityID]*nom.ActivityDisplayState),
 	}
 
 	cmd := model.Init()

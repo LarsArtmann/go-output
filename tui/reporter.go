@@ -34,7 +34,6 @@ func NewProgressModel() *ProgressModel {
 		lastUpdate:     time.Now(),
 		workflowState:  WorkflowStateIdle,
 		displayMode:    DisplayModeUniversal,
-		activities:     make(map[nom.ActivityID]*nom.ActivityDisplayState),
 		dependencyTree: nom.NewDependencyTree(),
 		nomSubscriber:  nom.NewNOMStyleSubscriber(),
 	}

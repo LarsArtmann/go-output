@@ -31,7 +31,7 @@ func addTestActivity(model *ProgressModel, id, name string, statusFunc func(*nom
 		statusFunc(activity)
 	}
 
-	model.activities[nom.ActivityID(id)] = activity
+	model.nomSubscriber.SetActivityState(activity)
 }
 
 func setupTestTree(model *ProgressModel) *nom.DependencyTree {

@@ -7,8 +7,6 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
-
-	"github.com/larsartmann/go-output/nom"
 )
 
 func (m *ProgressModel) View() tea.View {
@@ -326,22 +324,9 @@ func (m *ProgressModel) renderNOMSummaryBar() string {
 	}
 }
 
-// getActivityCounts returns counts of activities in each state.
+// getActivityCounts delegates to the subscriber for counts.
 func (m *ProgressModel) getActivityCounts() (running, completed, failed, pending int) {
-	for _, activity := range m.activities {
-		switch activity.Status {
-		case nom.ActivityStatusRunning:
-			running++
-		case nom.ActivityStatusCompleted:
-			completed++
-		case nom.ActivityStatusFailed:
-			failed++
-		case nom.ActivityStatusPending, nom.ActivityStatusPaused:
-			pending++
-		}
-	}
-
-	return running, completed, failed, pending
+	return m.nomSubscriber.GetActivityCounts()
 }
 
 func (m *ProgressModel) renderHelpOverlay() string {

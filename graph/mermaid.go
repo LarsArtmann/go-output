@@ -83,7 +83,13 @@ func (r *MermaidRenderer) Render() (string, error) {
 			label = fmt.Sprintf("|%s|", escape.MermaidText(edge.Label.Get()))
 		}
 
-		_, _ = fmt.Fprintf(&b, "    %s -->%s %s\n", escape.MermaidID(edge.From.Get()), label, escape.MermaidID(edge.To.Get()))
+		_, _ = fmt.Fprintf(
+			&b,
+			"    %s -->%s %s\n",
+			escape.MermaidID(edge.From.Get()),
+			label,
+			escape.MermaidID(edge.To.Get()),
+		)
 	}
 
 	r.writeNodeStyles(&b)
