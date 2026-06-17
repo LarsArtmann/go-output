@@ -41,8 +41,8 @@ type DOTRenderer struct {
 
 	directed bool
 	graphID  string
-	rankdir  string
-	splines  string
+	rankdir  RankDir
+	splines  SplineStyle
 	nodesep  string
 	ranksep  string
 }
@@ -53,8 +53,8 @@ func newDOTRenderer(directed bool) *DOTRenderer {
 		GraphRendererState: output.NewGraphRendererState(),
 		directed:           directed,
 		graphID:            "G",
-		rankdir:            "TB",
-		splines:            "ortho",
+		rankdir:            RankDirTB,
+		splines:            SplineOrtho,
 		nodesep:            "0.5",
 		ranksep:            "0.5",
 	}
@@ -75,16 +75,14 @@ func (r *DOTRenderer) SetGraphID(id string) {
 	r.graphID = id
 }
 
-// SetRankDir sets the graph layout direction. Valid values: "TB" (top-to-bottom,
-// default), "LR" (left-to-right), "BT" (bottom-to-top), "RL" (right-to-left).
-func (r *DOTRenderer) SetRankDir(direction string) *DOTRenderer {
+// SetRankDir sets the graph layout direction (TB, LR, BT, RL).
+func (r *DOTRenderer) SetRankDir(direction RankDir) *DOTRenderer {
 	r.rankdir = direction
 	return r
 }
 
-// SetSplines sets the edge routing style. Valid values: "ortho" (default),
-// "spline", "polyline", "line", "curved".
-func (r *DOTRenderer) SetSplines(style string) *DOTRenderer {
+// SetSplines sets the edge routing style (ortho, spline, polyline, line, curved, none).
+func (r *DOTRenderer) SetSplines(style SplineStyle) *DOTRenderer {
 	r.splines = style
 	return r
 }
@@ -115,8 +113,8 @@ func (r *DOTRenderer) Render() (string, error) {
 	b.WriteString(" {\n")
 
 	b.WriteString("  // Graph attributes\n")
-	fmt.Fprintf(&b, "  rankdir=%s;\n", r.rankdir)
-	fmt.Fprintf(&b, "  splines=%s;\n", r.splines)
+	fmt.Fprintf(&b, "  rankdir=%s;\n", r.rankdir.String())
+	fmt.Fprintf(&b, "  splines=%s;\n", r.splines.String())
 	fmt.Fprintf(&b, "  nodesep=%s;\n", r.nodesep)
 	fmt.Fprintf(&b, "  ranksep=%s;\n\n", r.ranksep)
 

@@ -191,8 +191,8 @@ func TestDOTRendererConfigurableLayout(t *testing.T) {
 	t.Parallel()
 
 	renderer := NewDOTRenderer().
-		SetRankDir("LR").
-		SetSplines("spline").
+		SetRankDir(RankDirLR).
+		SetSplines(SplineSpline).
 		SetNodeSep("0.8").
 		SetRankSep("1.0")
 	renderer.SetNodes(testNodesAB())
