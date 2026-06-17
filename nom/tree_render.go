@@ -230,8 +230,12 @@ func (dt *DependencyTree) VisibleNodes(maxHeight int) []*TreeNode {
 	return nodes
 }
 
-// RenderNode renders a single node for external consumers (e.g., TUI mouse click highlight).
-func (dt *DependencyTree) RenderNode(node *TreeNode, _ []*TreeNode) string {
+// RenderNode renders a single node for external consumers (e.g., TUI mouse
+// click highlight). The visibleNodes parameter provides sibling context for
+// callers that need width-aware rendering; it is currently unused by this
+// method but accepted to support future width-truncation without a breaking
+// API change.
+func (dt *DependencyTree) RenderNode(node *TreeNode, visibleNodes []*TreeNode) string {
 	symbol := node.Symbol
 	color := node.Color
 

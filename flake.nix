@@ -138,6 +138,21 @@
               program = runForModules "test";
             };
 
+            test-race = {
+              type = "app";
+              program = pkgs.writeShellApplication {
+                name = "go-test-race";
+                runtimeInputs = [ go ];
+                text = ''
+                  set -euo pipefail
+                  for mod in nom tui; do
+                    echo ":: $mod :: go test -race -count=1 ./..."
+                    ( cd "$mod" && go test -race -count=1 ./... )
+                  done
+                '';
+              };
+            };
+
             build = {
               type = "app";
               program = runForModules "build";
