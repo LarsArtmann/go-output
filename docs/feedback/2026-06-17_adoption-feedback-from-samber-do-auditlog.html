@@ -1,0 +1,1078 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>go-output Adoption Feedback — from samber-do-auditlog</title>
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'none'; img-src 'none';"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* ============================================
+   go-output Feedback Report
+   Design: "Technical Audit Brief"
+   Palette: warm paper + amber accent (echoes
+   samber-do-auditlog's container telemetry aesthetic)
+   ============================================ */
+
+      :root {
+        --bg: #faf9f7;
+        --bg-card: #ffffff;
+        --bg-code: #f6f5f3;
+        --ink: #1a1a2e;
+        --ink-secondary: #475569;
+        --ink-muted: #94a3b8;
+        --hairline: #e8e6e1;
+        --amber: #b45309;
+        --amber-light: #fef3c7;
+        --teal: #0e7490;
+        --teal-light: #ecfeff;
+        --coral: #dc2626;
+        --coral-light: #fef2f2;
+        --max-width: 820px;
+        --sidebar-width: 200px;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        font-family:
+          "Inter",
+          system-ui,
+          -apple-system,
+          sans-serif;
+        background: var(--bg);
+        color: var(--ink);
+        line-height: 1.7;
+        font-size: 16px;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      /* --- Layout --- */
+
+      .layout {
+        display: flex;
+        max-width: calc(var(--max-width) + var(--sidebar-width) + 80px);
+        margin: 0 auto;
+        padding: 0 24px;
+        gap: 40px;
+      }
+
+      .sidebar {
+        width: var(--sidebar-width);
+        flex-shrink: 0;
+        position: sticky;
+        top: 0;
+        align-self: flex-start;
+        height: 100vh;
+        overflow-y: auto;
+        padding: 40px 0;
+        display: none;
+      }
+
+      .sidebar nav {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+
+      .sidebar .label {
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--ink-muted);
+        margin-bottom: 10px;
+      }
+
+      .sidebar a {
+        font-size: 13px;
+        color: var(--ink-secondary);
+        text-decoration: none;
+        padding: 5px 10px;
+        border-left: 2px solid transparent;
+        border-radius: 0 4px 4px 0;
+        transition: all 0.15s ease;
+        line-height: 1.4;
+      }
+
+      .sidebar a:hover {
+        color: var(--amber);
+        border-left-color: var(--amber);
+        background: var(--amber-light);
+      }
+
+      .main {
+        width: 100%;
+        max-width: var(--max-width);
+        padding: 0 0 80px;
+      }
+
+      @media (min-width: 1100px) {
+        .sidebar {
+          display: block;
+        }
+      }
+
+      /* --- Typography --- */
+
+      h1,
+      h2,
+      h3,
+      h4 {
+        font-family: "Space Grotesk", sans-serif;
+        font-weight: 600;
+        line-height: 1.25;
+        color: var(--ink);
+      }
+
+      h2 {
+        font-size: 28px;
+        margin: 56px 0 20px;
+        padding-bottom: 12px;
+        border-bottom: 2px solid var(--hairline);
+        letter-spacing: -0.02em;
+      }
+
+      h2 .num {
+        color: var(--amber);
+        font-weight: 700;
+        margin-right: 10px;
+      }
+
+      h3 {
+        font-size: 19px;
+        margin: 32px 0 12px;
+        letter-spacing: -0.01em;
+      }
+
+      p {
+        margin-bottom: 16px;
+      }
+
+      a {
+        color: var(--amber);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+
+      strong {
+        font-weight: 600;
+        color: var(--ink);
+      }
+
+      code,
+      pre {
+        font-family: "JetBrains Mono", "Fira Code", monospace;
+        font-size: 13.5px;
+      }
+
+      code {
+        background: var(--bg-code);
+        padding: 2px 6px;
+        border-radius: 4px;
+        color: var(--ink);
+      }
+
+      pre {
+        background: var(--bg-code);
+        border: 1px solid var(--hairline);
+        border-radius: 8px;
+        padding: 18px 20px;
+        overflow-x: auto;
+        line-height: 1.6;
+        margin: 16px 0;
+      }
+
+      pre code {
+        background: none;
+        padding: 0;
+      }
+
+      /* --- Hero --- */
+
+      .hero {
+        padding: 64px 0 48px;
+        border-bottom: 1px solid var(--hairline);
+        margin-bottom: 8px;
+      }
+
+      .hero .eyebrow {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--amber);
+        letter-spacing: 0.05em;
+        margin-bottom: 16px;
+      }
+
+      .hero h1 {
+        font-size: 38px;
+        font-weight: 700;
+        line-height: 1.15;
+        letter-spacing: -0.03em;
+        margin-bottom: 20px;
+        max-width: 700px;
+      }
+
+      .hero .subtitle {
+        font-size: 17px;
+        color: var(--ink-secondary);
+        max-width: 620px;
+        margin-bottom: 28px;
+      }
+
+      .hero .meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .tag {
+        font-size: 12px;
+        font-weight: 500;
+        padding: 5px 12px;
+        border-radius: 20px;
+        border: 1px solid var(--hairline);
+        color: var(--ink-secondary);
+        background: var(--bg-card);
+      }
+
+      .tag.amber {
+        color: var(--amber);
+        border-color: #fcd34d;
+        background: var(--amber-light);
+      }
+
+      @media (max-width: 600px) {
+        .hero {
+          padding: 40px 0 32px;
+        }
+        .hero h1 {
+          font-size: 28px;
+        }
+      }
+
+      /* --- Scorecard --- */
+
+      .scorecard {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 12px;
+        margin: 32px 0;
+      }
+
+      .score-card {
+        background: var(--bg-card);
+        border: 1px solid var(--hairline);
+        border-radius: 10px;
+        padding: 18px 16px;
+        text-align: center;
+      }
+
+      .score-card .score {
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 32px;
+        font-weight: 700;
+        line-height: 1;
+        margin-bottom: 6px;
+      }
+
+      .score-card .label {
+        font-size: 12px;
+        color: var(--ink-secondary);
+        font-weight: 500;
+      }
+
+      .score-good .score {
+        color: var(--teal);
+      }
+      .score-warn .score {
+        color: var(--amber);
+      }
+      .score-bad .score {
+        color: var(--coral);
+      }
+
+      /* --- Issue cards --- */
+
+      .issue {
+        background: var(--bg-card);
+        border: 1px solid var(--hairline);
+        border-radius: 12px;
+        padding: 28px;
+        margin: 20px 0;
+      }
+
+      .issue-critical {
+        border-left: 4px solid var(--coral);
+      }
+      .issue-important {
+        border-left: 4px solid var(--amber);
+      }
+      .issue-nice {
+        border-left: 4px solid var(--teal);
+      }
+
+      .issue .severity {
+        display: inline-block;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        padding: 3px 10px;
+        border-radius: 4px;
+        margin-bottom: 12px;
+      }
+
+      .severity-critical {
+        background: var(--coral-light);
+        color: var(--coral);
+      }
+      .severity-important {
+        background: var(--amber-light);
+        color: var(--amber);
+      }
+      .severity-nice {
+        background: var(--teal-light);
+        color: var(--teal);
+      }
+
+      .issue h3 {
+        margin-top: 0;
+      }
+
+      .issue .where {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12px;
+        color: var(--ink-muted);
+        margin-bottom: 14px;
+      }
+
+      /* --- Callout --- */
+
+      .callout {
+        border-radius: 10px;
+        padding: 18px 22px;
+        margin: 20px 0;
+        font-size: 15px;
+      }
+
+      .callout-teal {
+        background: var(--teal-light);
+        border: 1px solid #a5f3fc;
+      }
+      .callout-amber {
+        background: var(--amber-light);
+        border: 1px solid #fde68a;
+      }
+
+      .callout strong {
+        display: block;
+        margin-bottom: 4px;
+      }
+
+      /* --- Comparison table --- */
+
+      .compare {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 16px 0;
+        font-size: 14px;
+      }
+
+      .compare th,
+      .compare td {
+        text-align: left;
+        padding: 10px 14px;
+        border-bottom: 1px solid var(--hairline);
+      }
+
+      .compare th {
+        font-family: "Space Grotesk", sans-serif;
+        font-weight: 600;
+        font-size: 13px;
+        color: var(--ink-secondary);
+        background: var(--bg-code);
+      }
+
+      .compare td:first-child {
+        font-weight: 500;
+      }
+
+      .compare .yes {
+        color: var(--teal);
+        font-weight: 600;
+      }
+      .compare .no {
+        color: var(--coral);
+        font-weight: 600;
+      }
+
+      /* --- Dep tree diagram --- */
+
+      .dep-tree {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13px;
+        line-height: 1.8;
+        background: var(--bg-code);
+        border: 1px solid var(--hairline);
+        border-radius: 8px;
+        padding: 20px 24px;
+        margin: 16px 0;
+        overflow-x: auto;
+        white-space: pre;
+      }
+
+      .dep-tree .root {
+        color: var(--amber);
+        font-weight: 600;
+      }
+      .dep-tree .unwanted {
+        color: var(--coral);
+      }
+      .dep-tree .ok {
+        color: var(--ink-secondary);
+      }
+
+      /* --- Strength list --- */
+
+      .strengths {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+        margin: 20px 0;
+      }
+
+      .strength {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 14px 16px;
+        background: var(--teal-light);
+        border: 1px solid #a5f3fc;
+        border-radius: 8px;
+      }
+
+      .strength .check {
+        color: var(--teal);
+        font-weight: 700;
+        font-size: 18px;
+        flex-shrink: 0;
+        line-height: 1.5;
+      }
+
+      .strength .text {
+        font-size: 14.5px;
+      }
+      .strength .text strong {
+        display: block;
+        margin-bottom: 2px;
+      }
+      .strength .text span {
+        color: var(--ink-secondary);
+      }
+
+      /* --- Footer --- */
+
+      .footer {
+        margin-top: 64px;
+        padding: 32px 0;
+        border-top: 1px solid var(--hairline);
+        text-align: center;
+        font-size: 13px;
+        color: var(--ink-muted);
+      }
+
+      .footer a {
+        color: var(--ink-secondary);
+      }
+
+      /* --- Misc --- */
+
+      ul,
+      ol {
+        padding-left: 22px;
+        margin-bottom: 16px;
+      }
+      li {
+        margin-bottom: 8px;
+      }
+
+      .highlight {
+        background: var(--amber-light);
+        padding: 1px 4px;
+        border-radius: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="layout">
+      <!-- Sidebar TOC -->
+      <aside class="sidebar">
+        <nav>
+          <div class="label">Contents</div>
+          <a href="#verdict">Verdict</a>
+          <a href="#scorecard">Scorecard</a>
+          <a href="#strengths">Strengths</a>
+          <a href="#critical">Critical Gaps</a>
+          <a href="#style">1. No Theme Injection</a>
+          <a href="#dedup">2. No Edge Dedup</a>
+          <a href="#fence">3. Markdown Fence</a>
+          <a href="#deps">4. Dependency Bloat</a>
+          <a href="#important">Important Gaps</a>
+          <a href="#slug">5. SlugifyID Gaps</a>
+          <a href="#hardcode">6. Hardcoded DOT Attrs</a>
+          <a href="#writer">7. No Writer API</a>
+          <a href="#stability">8. Pre-v1 Risk</a>
+          <a href="#proposal">API Proposal</a>
+        </nav>
+      </aside>
+
+      <!-- Main content -->
+      <main class="main">
+        <!-- Hero -->
+        <header class="hero">
+          <div class="eyebrow">FEEDBACK REPORT &middot; 2026-06-17</div>
+          <h1>What would make me adopt go-output</h1>
+          <p class="subtitle">
+            An honest, code-referenced review from the perspective of
+            <strong>samber-do-auditlog</strong> — a DI container observability plugin that exports
+            dependency graphs as Mermaid, PlantUML, JSON, and interactive HTML. I wanted to use your
+            library. Here's what stopped me, and what would change my mind.
+          </p>
+          <div class="meta">
+            <span class="tag amber">Reviewer: samber-do-auditlog v0.0.4</span>
+            <span class="tag">Library: go-output v0.11.0</span>
+            <span class="tag">Focus: graph + plantuml modules</span>
+          </div>
+        </header>
+
+        <!-- Scorecard -->
+        <section id="scorecard" class="scorecard">
+          <div class="score-card score-good">
+            <div class="score">8</div>
+            <div class="label">Formats</div>
+          </div>
+          <div class="score-card score-good">
+            <div class="score">100%</div>
+            <div class="label">escape module coverage</div>
+          </div>
+          <div class="score-card score-bad">
+            <div class="score">0</div>
+            <div class="label">Renderers using GraphStyle</div>
+          </div>
+          <div class="score-card score-warn">
+            <div class="score">11</div>
+            <div class="label">External deps for diagram-only use</div>
+          </div>
+        </section>
+
+        <!-- ============ STRENGTHS ============ -->
+        <section id="strengths">
+          <h2><span class="num">&#9670;</span>What's already excellent</h2>
+          <p>
+            Before the criticism: this library gets a lot right. The architecture is thoughtful, the
+            multi-module workspace is well-executed, and the escape package is genuinely
+            best-in-class. These are the foundations that made me want to adopt it in the first
+            place:
+          </p>
+
+          <div class="strengths">
+            <div class="strength">
+              <div class="check">+</div>
+              <div class="text">
+                <strong>Multi-module isolation done right</strong>
+                <span
+                  >Lipgloss stays in <code>table/</code>, Bubble Tea stays in <code>tui/</code>.
+                  Importing the root pulls only <code>x/term</code>. This is the correct way to
+                  structure a formatting library.</span
+                >
+              </div>
+            </div>
+            <div class="strength">
+              <div class="check">+</div>
+              <div class="text">
+                <strong>The <code>escape/</code> package is perfect</strong>
+                <span
+                  >Zero dependencies. <code>MermaidID</code>, <code>MermaidText</code>,
+                  <code>SlugifyID</code>, <code>D2</code>, <code>DOT</code> — all correct, all
+                  tested. I borrowed these concepts locally. This module alone is worth publishing
+                  standalone.</span
+                >
+              </div>
+            </div>
+            <div class="strength">
+              <div class="check">+</div>
+              <div class="text">
+                <strong>Shape capability matrix</strong>
+                <span
+                  >The <code>Format &#8594; []Shape</code> registry with
+                  <code>f.Supports(shape)</code> and <code>FormatsForShape(shape)</code> is elegant.
+                  Runtime format selection from CLI flags becomes trivial.</span
+                >
+              </div>
+            </div>
+            <div class="strength">
+              <div class="check">+</div>
+              <div class="text">
+                <strong>Branded phantom ID types</strong>
+                <span
+                  ><code>GraphNodeID</code> vs <code>TreeNodeID</code> vs <code>D2NodeID</code> —
+                  compile-time safety preventing ID mixups. This is the kind of type-level design
+                  most Go libraries skip.</span
+                >
+              </div>
+            </div>
+            <div class="strength">
+              <div class="check">+</div>
+              <div class="text">
+                <strong>Cross-shape conversion</strong>
+                <span
+                  ><code>TableData &#8594; Graph</code>, <code>Tree &#8594; Graph</code> — the
+                  <code>SetNodesFromTableData</code> and <code>AddTreeNodes</code> patterns make the
+                  data models composable rather than siloed.</span
+                >
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ VERDICT ============ -->
+        <section id="verdict">
+          <div class="callout callout-amber">
+            <strong>The bottom line</strong>
+            I declined to adopt go-output for diagram rendering. Not because it's bad — but because
+            the diagram renderers are
+            <strong>opinionated where they should be configurable</strong>, and
+            <strong>configurable where they should be invisible</strong>. The escape package is the
+            exception: it's exactly right. Fix the four issues below and I'd adopt it tomorrow.
+          </div>
+        </section>
+
+        <!-- ============ CRITICAL ============ -->
+        <section id="critical">
+          <h2><span class="num">01</span>Critical gaps blocking adoption</h2>
+          <p>These four issues are why I ship local code instead of importing your library.</p>
+
+          <!-- Issue 1: No theme injection -->
+          <div class="issue issue-critical" id="style">
+            <span class="severity severity-critical">Blocking &middot; High impact</span>
+            <h3>GraphStyle is dead code in Mermaid and PlantUML</h3>
+            <div class="where">graph/mermaid.go:51-78 &middot; plantuml/plantuml.go:49-79</div>
+            <p>
+              The <code>GraphStyle</code> struct exists with <code>FillColor</code>,
+              <code>StrokeColor</code>, <code>FontColor</code>, and <code>FontSize</code> — but
+              <strong>only the DOT renderer reads it</strong>. Mermaid ignores it entirely. PlantUML
+              ignores it entirely. I verified this by grepping for <code>Style</code>,
+              <code>FillColor</code>, and <code>StrokeColor</code> in both files: zero matches in
+              Mermaid, only hardcoded <code>skinparam</code> in PlantUML.
+            </p>
+            <p>Meanwhile, the Mermaid renderer hardcodes a <strong>pink classDef</strong>:</p>
+            <pre><code>// graph/mermaid.go:73 — hardcoded, cannot be overridden
+b.WriteString("    classDef default fill:#f9f,stroke:#333,stroke-width:4px\n")</code></pre>
+            <p>
+              My plugin uses a deliberate warm-amber palette (<code>#e8a838</code> on
+              <code>#14110d</code>) across its HTML visualization. Switching to go-output would
+              replace that with pink. For any library whose value proposition includes visual
+              consistency, this is a non-starter.
+            </p>
+            <div class="callout callout-teal">
+              <strong>Fix: wire GraphStyle into all renderers</strong>
+              Mermaid: emit <code>style &lt;node-id&gt; fill:#xxx,stroke:#yyy</code> per node when
+              Style is set. PlantUML: emit individual <code>skinparam</code> or inline color
+              directives. Also add a <code>WithTheme(Theme)</code> option for global defaults.
+            </div>
+          </div>
+
+          <!-- Issue 2: No edge dedup -->
+          <div class="issue issue-critical" id="dedup">
+            <span class="severity severity-critical">Blocking &middot; Data correctness</span>
+            <h3>No edge deduplication in GraphRendererState</h3>
+            <div class="where">graph.go:148-155 &middot; AddEdge just appends</div>
+            <p>
+              <code>AddEdge</code> is a raw <code>append</code> with no dedup. If a dependency graph
+              produces duplicate edges (common with transitive dependencies), the rendered diagram
+              shows visual noise — multiple identical arrows stacked on top of each other.
+            </p>
+            <p>
+              I tested this: adding <code>A&#8594;B</code> twice renders two identical edges. My
+              plugin's local <code>writeDiagram</code> deduplicates via a
+              <code>seen map[string]struct{}</code>. The consumer shouldn't have to implement this.
+            </p>
+            <pre><code>// What the consumer has to do today:
+seen := make(map[string]struct{})
+for _, edge := range edges {
+    key := edge.From.Get() + "->" + edge.To.Get()
+    if _, ok := seen[key]; ok { continue }
+    seen[key] = struct{}{}
+    renderer.AddEdge(edge)
+}
+
+// What it should be:
+renderer.AddEdge(edge) // dedup handled internally</code></pre>
+            <div class="callout callout-teal">
+              <strong
+                >Fix: add <code>SetEdgesDeduplicated([]GraphEdge)</code> or dedup in
+                <code>Render()</code></strong
+              >
+              A simple <code>from + "->" + to</code> key in a <code>map[string]struct{}</code> is
+              all it takes. Optionally dedup on <code>(from, to, label)</code> to allow parallel
+              edges with different labels.
+            </div>
+          </div>
+
+          <!-- Issue 3: Markdown fence -->
+          <div class="issue issue-critical" id="fence">
+            <span class="severity severity-critical">Blocking &middot; Output contract</span>
+            <h3>Mermaid output is locked behind a markdown code fence</h3>
+            <div class="where">
+              graph/mermaid.go:54 &middot; <code>b.WriteString("```mermaid\n")</code>
+            </div>
+            <p>
+              <code>MermaidRenderer.Render()</code> wraps its output in
+              <code>```mermaid ... ```</code>. This assumes the output is going into a Markdown
+              document. But many tools expect <strong>raw flowchart syntax</strong>:
+              <code>.mmd</code> files, the Mermaid CLI, embedded diagrams in HTML, programmatic
+              APIs. The fence is wrong for all of those.
+            </p>
+            <pre><code>// Current output — fence is hardcoded, cannot be removed
+```mermaid
+flowchart TD
+    a[b]
+```
+
+// What raw .mmd consumers need
+flowchart TD
+    a[b]</code></pre>
+            <div class="callout callout-teal">
+              <strong>Fix: make the fence optional</strong>
+              Add <code>WithCodeFence(bool)</code> (default <code>false</code> for raw output). Or
+              provide <code>RenderRaw()</code> alongside <code>Render()</code>. The fence is a
+              presentation concern, not a rendering concern.
+            </div>
+          </div>
+
+          <!-- Issue 4: Dependency bloat -->
+          <div class="issue issue-critical" id="deps">
+            <span class="severity severity-critical">Blocking &middot; Module graph pollution</span>
+            <h3>Importing any sub-module transitively pulls YAML + TOML dependencies</h3>
+            <div class="where">go.mod (root) &middot; requires serialization v0.11.0</div>
+            <p>
+              The README claims:
+              <em
+                >"<code>go get go-output</code> pulls ZERO lipgloss deps, ZERO bubbletea deps, ZERO
+                yaml deps, ZERO toml deps"</em
+              >. This is true for the root module alone. But
+              <strong>any sub-module import pulls the root as a dependency</strong>, and the root's
+              <code>go.mod</code> requires <code>serialization v0.11.0</code> — which transitively
+              brings <code>go-faster/yaml</code> and <code>go-toml/v2</code> into every consumer's
+              module graph.
+            </p>
+            <p>I measured this. Importing only <code>graph</code> + <code>plantuml</code>:</p>
+
+            <div class="dep-tree">
+              <span class="root">go-output/graph</span> (what I wanted) └──
+              <span class="root">go-output</span> (root, required by graph) ├──
+              <span class="unwanted">go-output/serialization</span> ← I never asked for this │ ├──
+              <span class="unwanted">go-faster/yaml v0.4.6</span> ← 7 transitive deps │ ├──
+              <span class="unwanted">go-toml/v2 v2.4.0</span> ← 0 deps but module bloat │ ├──
+              <span class="unwanted">go-faster/jx v1.2.0</span> ← JSON encoder │ └──
+              <span class="unwanted">segmentio/asm v1.2.1</span> ← assembly optimizations ├──
+              go-output/enum <span class="ok">← fine</span> ├── go-branded-id v0.3.1
+              <span class="ok">← fine</span> └── golang.org/x/term <span class="ok">← fine</span>
+
+              <span class="unwanted">11 unwanted external modules for a diagram renderer</span>
+            </div>
+
+            <p>
+              For a plugin whose entire value proposition is
+              <strong>minimal-overhead observability</strong>, adding YAML and TOML libraries to the
+              dependency tree for Mermaid output is a hard sell.
+            </p>
+            <div class="callout callout-teal">
+              <strong
+                >Fix: remove <code>serialization</code> from root
+                <code>go.mod</code> requires</strong
+              >
+              The root package's source code doesn't import serialization in any non-test file. It's
+              only in <code>go.mod</code> because <code>go mod tidy</code> detected it in
+              <code>examples/</code> and <code>integration/</code> test helpers. Move those to a
+              separate test module, or mark serialization as <code>// indirect</code>. The root
+              should require only: <code>enum</code>, <code>go-branded-id</code>,
+              <code>x/term</code>.
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ IMPORTANT ============ -->
+        <section id="important">
+          <h2><span class="num">02</span>Important gaps for production use</h2>
+          <p>These wouldn't block a prototype, but they'd make me think twice before shipping.</p>
+
+          <!-- Issue 5: SlugifyID -->
+          <div class="issue issue-important" id="slug">
+            <span class="severity severity-important">Bug &middot; Collision risk</span>
+            <h3>SlugifyID doesn't handle dots, brackets, or asterisks</h3>
+            <div class="where">
+              escape/escape.go:70-74 &middot; only replaces space, hyphen, slash
+            </div>
+            <p>
+              <code>SlugifyID</code> replaces <code>&#32;&#45;&#47;</code> with underscores — but
+              not <code>&#46;&#42;&#91;&#93;</code>. Two services named <code>foo.bar</code> and
+              <code>foo_bar</code> would produce identical slug IDs, causing a silent node collision
+              in PlantUML (which uses <code>SlugifyID</code> for <code>sanitizePlantUMLID</code>).
+            </p>
+            <pre><code>// Current replacer — missing . * [ ] { } ( )
+var slugIDReplacer = strings.NewReplacer(
+    " ", "_",
+    "-", "_",
+    "/", "_",
+)
+
+// Should be — cover all identifier-hostile chars
+var slugIDReplacer = strings.NewReplacer(
+    " ", "_", "-", "_", "/", "_",
+    ".", "_", "*", "_",
+    "[", "_", "]", "_",
+    "{", "_", "}", "_",
+    "(", "_", ")", "_",
+)</code></pre>
+          </div>
+
+          <!-- Issue 6: Hardcoded DOT attributes -->
+          <div class="issue issue-important" id="hardcode">
+            <span class="severity severity-important">Configurability</span>
+            <h3>DOT renderer hardcodes layout attributes</h3>
+            <div class="where">graph/dot.go:84-87</div>
+            <p>
+              <code>rankdir=TB</code>, <code>splines=ortho</code>, <code>nodesep=0.5</code>,
+              <code>ranksep=0.5</code> are all hardcoded. These are layout decisions the consumer
+              should control. A left-to-right service graph needs <code>rankdir=LR</code>. A dense
+              graph needs tighter spacing. The DOT renderer should expose these as configuration.
+            </p>
+            <pre><code>// Current — hardcoded in Render()
+b.WriteString("  rankdir=TB;\n")
+b.WriteString("  splines=ortho;\n")
+b.WriteString("  nodesep=0.5;\n")
+b.WriteString("  ranksep=0.5;\n\n")
+
+// Should be configurable
+type DOTRenderer struct {
+    output.GraphRendererState
+    directed bool
+    graphID  string
+    rankdir  string  // "TB" (default), "LR", "BT", "RL"
+    splines  string  // "ortho" (default), "spline", "polyline", "line"
+    // ...
+}</code></pre>
+          </div>
+
+          <!-- Issue 7: No Writer API -->
+          <div class="issue issue-important" id="writer">
+            <span class="severity severity-important">Scalability</span>
+            <h3>All renderers return string — no io.Writer support for diagrams</h3>
+            <div class="where">renderer.go:4-7 &middot; Renderer.Render() (string, error)</div>
+            <p>
+              Every renderer returns <code>(string, error)</code>. For large dependency graphs (500+
+              services), the entire diagram is buffered in memory before writing.
+              <code>StreamingRenderer</code> exists but only HTML implements it. The diagram
+              renderers should support <code>io.Writer</code> directly to avoid the string
+              allocation.
+            </p>
+            <div class="callout callout-amber">
+              <strong>Compounding factor</strong>
+              The <code>renderMermaidTableData</code> function (mermaid.go:24) calls
+              <code>Render()</code> to get a string, then <code>fmt.Fprintln(w, out)</code> to write
+              it. That's a full double-buffer: builder &#8594; string &#8594; writer. For 500 nodes
+              this is measurable.
+            </div>
+          </div>
+
+          <!-- Issue 8: Pre-v1 stability -->
+          <div class="issue issue-nice" id="stability">
+            <span class="severity severity-nice">Risk &middot; Ecosystem</span>
+            <h3>Pre-v1 with no stability promise for diagram APIs</h3>
+            <div class="where">All modules at v0.11.0</div>
+            <p>
+              At v0.11.0 across a multi-module workspace, there's no stability guarantee. A consumer
+              embedding go-output in a library that other people depend on needs to know the
+              <code>GraphRenderer</code> interface won't break between minor versions. Consider
+              documenting which APIs are stable (like the root <code>Renderer</code> interface) vs
+              experimental (like D2's rich domain model).
+            </p>
+          </div>
+        </section>
+
+        <!-- ============ PROPOSAL ============ -->
+        <section id="proposal">
+          <h2><span class="num">03</span>What the API could look like</h2>
+          <p>
+            If these four critical fixes were implemented, adopting go-output would be a net
+            positive. Here's what the consumer experience would look like:
+          </p>
+
+          <pre><code>// Today: 60 lines of local diagram code, zero deps
+// Tomorrow: 15 lines, one import, full feature set
+
+import (
+    "github.com/larsartmann/go-output"
+    "github.com/larsartmann/go-output/graph"
+    "github.com/larsartmann/go-output/plantuml"
+)
+
+func WriteMermaid(w io.Writer, report Report) error {
+    r := graph.NewMermaidRenderer()
+
+    // Apply my theme — not pink defaults
+    r.SetTheme(graph.Theme{
+        PrimaryColor:   "#e8a838",
+        PrimaryText:    "#14110d",
+        PrimaryBorder:  "#4a4030",
+        LineColor:      "#9a8d78",
+    })
+    r.SetDirection("TD")
+    r.SetCodeFence(false) // raw flowchart, no markdown wrapper
+
+    // Add nodes with per-node styling
+    for _, svc := range report.Services {
+        r.AddNode(output.GraphNode{
+            ID:    output.NewBrandedID[output.GraphNodeIDBrand](svc.ScopeID + "_" + svc.ServiceName),
+            Label: output.NewBrandedID[output.GraphNodeLabelBrand](svc.ServiceName),
+            Shape: output.ShapeBox,
+        })
+    }
+
+    // Add edges — dedup handled internally
+    for _, svc := range report.Services {
+        for _, dep := range svc.Dependencies {
+            r.AddEdge(output.NewGraphEdge(svc.ServiceName, dep.ServiceName))
+        }
+    }
+
+    out, err := r.Render()
+    if err != nil {
+        return fmt.Errorf("render mermaid: %w", err)
+    }
+
+    _, err = io.WriteString(w, out)
+    return err
+}</code></pre>
+
+          <div class="callout callout-teal">
+            <strong>This is the target</strong>
+            Theme injection, raw output, internal dedup, and a clean dependency tree. With these
+            four fixes, go-output goes from "I'll borrow your escape package" to "I'll delete my
+            diagram code and import yours."
+          </div>
+        </section>
+
+        <!-- ============ SUMMARY TABLE ============ -->
+        <section id="summary">
+          <h2><span class="num">04</span>Fix priority matrix</h2>
+
+          <table class="compare">
+            <thead>
+              <tr>
+                <th>Issue</th>
+                <th>Severity</th>
+                <th>Impact</th>
+                <th>Effort</th>
+                <th>File(s)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Wire GraphStyle into Mermaid + PlantUML</td>
+                <td class="no">Critical</td>
+                <td>High</td>
+                <td>Medium</td>
+                <td>mermaid.go, plantuml.go</td>
+              </tr>
+              <tr>
+                <td>Edge deduplication in AddEdge or Render</td>
+                <td class="no">Critical</td>
+                <td>High</td>
+                <td>Low</td>
+                <td>graph.go</td>
+              </tr>
+              <tr>
+                <td>Make markdown code fence optional</td>
+                <td class="no">Critical</td>
+                <td>Medium</td>
+                <td>Trivial</td>
+                <td>mermaid.go</td>
+              </tr>
+              <tr>
+                <td>Remove serialization from root go.mod</td>
+                <td class="no">Critical</td>
+                <td>High</td>
+                <td>Low</td>
+                <td>go.mod</td>
+              </tr>
+              <tr>
+                <td>Expand SlugifyID character set</td>
+                <td class="no">Important</td>
+                <td>Medium</td>
+                <td>Trivial</td>
+                <td>escape/escape.go</td>
+              </tr>
+              <tr>
+                <td>Configurable DOT layout attributes</td>
+                <td class="no">Important</td>
+                <td>Medium</td>
+                <td>Low</td>
+                <td>dot.go</td>
+              </tr>
+              <tr>
+                <td>io.Writer support for diagram renderers</td>
+                <td class="no">Important</td>
+                <td>Medium</td>
+                <td>Medium</td>
+                <td>renderer.go, all renderers</td>
+              </tr>
+              <tr>
+                <td>Stability promise for diagram APIs</td>
+                <td class="yes">Nice</td>
+                <td>Low</td>
+                <td>Trivial</td>
+                <td>docs</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <!-- ============ FOOTER ============ -->
+        <footer class="footer">
+          <p>
+            Generated 2026-06-17 by
+            <a href="https://github.com/larsartmann/samber-do-auditlog">samber-do-auditlog</a>
+            &middot; Reviewed against go-output v0.11.0 &middot; All claims verified against source
+            code
+          </p>
+        </footer>
+      </main>
+    </div>
+  </body>
+</html>
