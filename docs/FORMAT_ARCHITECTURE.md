@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document describes the extensible format architecture for go-output, supporting 12 output formats across 3 data shapes in a unified way.
+This document describes the extensible format architecture for go-output, supporting 16 output formats across 3 data shapes in a unified way.
 
 ## Data Shapes
 
@@ -21,9 +21,13 @@ Formats are classified by the data shapes they support. Each format may support 
 | yaml     |     Y      |     Y     |     Y      |
 | html     |     Y      |     Y     |            |
 | tree     |            |     Y     |            |
-| d2       |     Y      |           |     Y      |
-| mermaid  |     Y      |           |     Y      |
-| dot      |     Y      |           |     Y      |
+| d2       |     Y      |     Y     |     Y      |
+| mermaid  |     Y      |     Y     |     Y      |
+| dot      |     Y      |     Y     |     Y      |
+| jsonl    |     Y      |           |            |
+| asciidoc |     Y      |           |            |
+| toml     |     Y      |     Y     |     Y      |
+| plantuml |     Y      |     Y     |     Y      |
 
 ### Querying Capabilities
 
@@ -35,7 +39,7 @@ output.FormatJSON.Supports(output.ShapeTable) // true
 output.FormatD2.Shapes() // [ShapeTable, ShapeGraph]
 
 // Get all formats that support a shape
-output.FormatsForShape(output.ShapeGraph) // [json, yaml, d2, mermaid, dot]
+output.FormatsForShape(output.ShapeGraph) // [json, yaml, d2, mermaid, dot, toml, plantuml]
 ```
 
 ### Deprecated Methods

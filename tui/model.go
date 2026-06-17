@@ -124,6 +124,10 @@ func (m *ProgressModel) handleMouseClick(msg tea.MouseClickMsg) (tea.Model, tea.
 		return m, nil
 	}
 
+	// Map the physical Y coordinate to a visibleNodes index. This assumes
+	// one terminal line per node, which holds because the tree is rendered
+	// via RenderWithWidth(maxHeight, maxWidth) which truncates long lines
+	// to prevent wrapping.
 	treeLine := mouse.Y - m.treeStartLine - chromeLinesAboveTree + m.scrollOffset
 	if treeLine < 0 || treeLine >= len(m.visibleNodes) {
 		m.selectedNode = ""
