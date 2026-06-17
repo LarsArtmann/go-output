@@ -38,7 +38,7 @@ func setupWithWorkflow(t *testing.T) (*NOMStyleSubscriber, context.Context) {
 	ctx := context.Background()
 
 	ns.OnEvent(ctx, &testEvent{
-		eventType: "workflow.started",
+		eventType: EventWorkflowStarted,
 		workflow:  true,
 		wID:       WorkflowID("wf-1"),
 	})
@@ -51,7 +51,7 @@ func sendActivityStarted(t *testing.T, ns *NOMStyleSubscriber, ctx context.Conte
 	t.Helper()
 
 	err := ns.OnEvent(ctx, &testEvent{
-		eventType: "activity.started",
+		eventType: EventActivityStarted,
 		activity:  true,
 		aID:       id,
 		aName:     name,
@@ -121,7 +121,7 @@ func TestNOMStyleSubscriber_Reset(t *testing.T) {
 	ctx := context.Background()
 
 	ns.OnEvent(ctx, &testEvent{
-		eventType: "workflow.started",
+		eventType: EventWorkflowStarted,
 		workflow:  true,
 		wID:       WorkflowID("wf-1"),
 		wName:     WorkflowName("CI"),
@@ -155,7 +155,7 @@ func TestNOMStyleSubscriber_WorkflowStarted(t *testing.T) {
 	ctx := context.Background()
 
 	err := ns.OnEvent(ctx, &testEvent{
-		eventType: "workflow.started",
+		eventType: EventWorkflowStarted,
 		workflow:  true,
 		wID:       WorkflowID("wf-1"),
 		wName:     WorkflowName("Deploy"),
@@ -187,7 +187,7 @@ func TestNOMStyleSubscriber_WorkflowCompleted(t *testing.T) {
 	ns, ctx := setupWithWorkflow(t)
 
 	err := ns.OnEvent(ctx, &testEvent{
-		eventType: "workflow.completed",
+		eventType: EventWorkflowCompleted,
 		workflow:  true,
 		wID:       WorkflowID("wf-1"),
 	})
@@ -206,7 +206,7 @@ func TestNOMStyleSubscriber_WorkflowFailed(t *testing.T) {
 	ns, ctx := setupWithWorkflow(t)
 
 	err := ns.OnEvent(ctx, &testEvent{
-		eventType: "workflow.failed",
+		eventType: EventWorkflowFailed,
 		err:       errors.New("timeout"),
 	})
 	if err != nil {
@@ -224,7 +224,7 @@ func TestNOMStyleSubscriber_ActivityStarted(t *testing.T) {
 	ns, ctx := setupWithWorkflow(t)
 
 	err := ns.OnEvent(ctx, &testEvent{
-		eventType: "activity.started",
+		eventType: EventActivityStarted,
 		activity:  true,
 		aID:       ActivityID("a1"),
 		aName:     ActivityName("Build"),
@@ -254,7 +254,7 @@ func TestNOMStyleSubscriber_ActivityCompleted(t *testing.T) {
 	sendActivityStarted(t, ns, ctx, ActivityID("a1"), ActivityName("Build"))
 
 	err := ns.OnEvent(ctx, &testEvent{
-		eventType: "activity.completed",
+		eventType: EventActivityCompleted,
 		activity:  true,
 		aID:       ActivityID("a1"),
 		aName:     ActivityName("Build"),
@@ -283,7 +283,7 @@ func TestNOMStyleSubscriber_ActivityFailed(t *testing.T) {
 	testErr := errors.New("build failed")
 
 	err := ns.OnEvent(ctx, &testEvent{
-		eventType: "activity.failed",
+		eventType: EventActivityFailed,
 		activity:  true,
 		aID:       ActivityID("a1"),
 		aName:     ActivityName("Build"),
@@ -332,7 +332,7 @@ func TestNOMStyleSubscriber_EventWithoutAccessor(t *testing.T) {
 	ns := NewNOMStyleSubscriber()
 	ctx := context.Background()
 
-	err := ns.OnEvent(ctx, &minimalEvent{eventType: "workflow.started"})
+	err := ns.OnEvent(ctx, &minimalEvent{eventType: EventWorkflowStarted})
 	if err != nil {
 		t.Errorf("event without accessor should not return error: %v", err)
 	}
@@ -359,7 +359,7 @@ func TestNOMStyleSubscriber_GetActivityCounts(t *testing.T) {
 	sendActivityStarted(t, ns, ctx, ActivityID("a2"), ActivityName("Test"))
 
 	ns.OnEvent(ctx, &testEvent{
-		eventType: "activity.completed",
+		eventType: EventActivityCompleted,
 		activity:  true,
 		aID:       ActivityID("a1"),
 		aName:     ActivityName("Build"),
