@@ -74,7 +74,7 @@ func (r *MermaidRenderer) Render() (string, error) {
 	for _, node := range r.Nodes() {
 		prefix, suffix := r.getMermaidShape(node.Shape)
 		label := escape.MermaidText(node.Label.Get())
-		_, _ = fmt.Fprintf(&b, "    %s%s%s%s\n", node.ID.Get(), prefix, label, suffix)
+		_, _ = fmt.Fprintf(&b, "    %s%s%s%s\n", escape.MermaidID(node.ID.Get()), prefix, label, suffix)
 	}
 
 	for _, edge := range r.Edges() {
@@ -83,7 +83,7 @@ func (r *MermaidRenderer) Render() (string, error) {
 			label = fmt.Sprintf("|%s|", escape.MermaidText(edge.Label.Get()))
 		}
 
-		_, _ = fmt.Fprintf(&b, "    %s -->%s %s\n", edge.From.Get(), label, edge.To.Get())
+		_, _ = fmt.Fprintf(&b, "    %s -->%s %s\n", escape.MermaidID(edge.From.Get()), label, escape.MermaidID(edge.To.Get()))
 	}
 
 	r.writeNodeStyles(&b)

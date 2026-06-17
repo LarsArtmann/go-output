@@ -110,3 +110,20 @@ var mermaidTextReplacer = strings.NewReplacer(
 func MermaidText(s string) string {
 	return mermaidTextReplacer.Replace(s)
 }
+
+// plantumlReplacer escapes characters that break PlantUML component notation
+// and edge labels: right bracket (closes [label]), newline (breaks the line),
+// and backslash/quote for general string safety.
+//
+//nolint:gochecknoglobals // Reusable strings.Replacer, safe to share.
+var plantumlReplacer = strings.NewReplacer(
+	"]", "\\]",
+	"\n", "\\n",
+	`\`, `\\`,
+	`"`, `\"`,
+)
+
+// PlantUML escapes special characters for PlantUML labels and text.
+func PlantUML(s string) string {
+	return plantumlReplacer.Replace(s)
+}

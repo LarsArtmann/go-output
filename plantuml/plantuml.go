@@ -55,10 +55,11 @@ func (d *PlantUMLDiagram) Render() (string, error) {
 
 	for _, node := range d.Nodes() {
 		colorSpec := plantumlColorSpec(node.Style)
+		label := escape.PlantUML(node.Label.Get())
 		if colorSpec != "" {
-			fmt.Fprintf(&b, "[%s] as %s %s\n", node.Label.Get(), sanitizePlantUMLID(node.ID.Get()), colorSpec)
+			fmt.Fprintf(&b, "[%s] as %s %s\n", label, sanitizePlantUMLID(node.ID.Get()), colorSpec)
 		} else {
-			fmt.Fprintf(&b, "[%s] as %s\n", node.Label.Get(), sanitizePlantUMLID(node.ID.Get()))
+			fmt.Fprintf(&b, "[%s] as %s\n", label, sanitizePlantUMLID(node.ID.Get()))
 		}
 	}
 
@@ -67,7 +68,7 @@ func (d *PlantUMLDiagram) Render() (string, error) {
 	for _, edge := range d.Edges() {
 		label := ""
 		if !edge.Label.IsZero() {
-			label = " : " + edge.Label.Get()
+			label = " : " + escape.PlantUML(edge.Label.Get())
 		}
 
 		fmt.Fprintf(

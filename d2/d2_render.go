@@ -269,11 +269,11 @@ func (*D2Diagram) writeNodeRefs(b *strings.Builder, node D2Node) {
 	}
 
 	if node.Icon != "" {
-		fmt.Fprintf(b, "  icon: %s\n", node.Icon)
+		fmt.Fprintf(b, "  icon: %s\n", escape.D2(node.Icon))
 	}
 
 	if node.Link != "" {
-		fmt.Fprintf(b, "  link: %s\n", node.Link)
+		fmt.Fprintf(b, "  link: %s\n", escape.D2(node.Link))
 	}
 
 	if node.Tooltip != "" {
