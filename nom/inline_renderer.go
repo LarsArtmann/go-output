@@ -41,7 +41,7 @@ type InlineRenderer struct {
 	appName    string
 	noColor    bool
 
-	tickMu       sync.Mutex
+	tickMu       sync.RWMutex
 	cancelFn     context.CancelFunc
 	tickerDone   chan struct{}
 	refreshChan  chan struct{}
@@ -62,18 +62,27 @@ func NewInlineRenderer(subscriber *NOMStyleSubscriber, writer io.Writer, maxHeig
 }
 
 // SetHideCursor controls whether the cursor is hidden during rendering (default: true).
+// Must be called before Start(); concurrent calls after Start race with the render loop.
 func (r *InlineRenderer) SetHideCursor(hide bool) {
+	r.tickMu.Lock()
+	defer r.tickMu.Unlock()
 	r.hideCursor = hide
 }
 
 // SetNoColor forces colorless output. By default, colors are enabled unless
 // NO_COLOR, TERM=dumb, or lacking a terminal is detected.
+// Must be called before Start(); concurrent calls after Start race with the render loop.
 func (r *InlineRenderer) SetNoColor(noColor bool) {
+	r.tickMu.Lock()
+	defer r.tickMu.Unlock()
 	r.noColor = noColor
 }
 
 // SetAppName sets the application name for success/failure messages (default: "Workflow").
+// Must be called before Start(); concurrent calls after Start race with the render loop.
 func (r *InlineRenderer) SetAppName(name string) {
+	r.tickMu.Lock()
+	defer r.tickMu.Unlock()
 	r.appName = name
 }
 
@@ -100,7 +109,10 @@ func detectNoColor() bool {
 }
 
 // SetStartTime sets the workflow start time for elapsed display.
+// Must be called before Start(); concurrent calls after Start race with the render loop.
 func (r *InlineRenderer) SetStartTime(t time.Time) {
+	r.tickMu.Lock()
+	defer r.tickMu.Unlock()
 	r.startTime = t
 }
 
@@ -114,6 +126,11 @@ func (r *InlineRenderer) Render() {
 	if r.subscriber == nil {
 		return
 	}
+
+	// Snapshot config under RLock to avoid racing with setters.
+	r.tickMu.RLock()
+	hideCursor := r.hideCursor
+	r.tickMu.RUnlock()
 
 	r.subscriber.UpdateRunningActivityElapsed()
 	r.subscriber.SyncActivityTimingToTree()
@@ -146,7 +163,7 @@ func (r *InlineRenderer) Render() {
 	var output string
 
 	if r.prevLines == 0 {
-		if r.hideCursor {
+		if hideCursor {
 			output = ansiHideCursor
 		}
 	} else {
@@ -380,7 +397,10 @@ func (r *InlineRenderer) renderSummary() string {
 	total := running + completed + failed + pending
 
 	if !r.startTime.IsZero() {
-		elapsed := time.Since(r.startTime)
+		r.tickMu.RLock()
+		startTime := r.startTime
+		r.tickMu.RUnlock()
+		elapsed := time.Since(startTime)
 		parts = append(parts, fmt.Sprintf("%s%s", SymbolTiming, FormatDuration(elapsed)))
 	}
 
