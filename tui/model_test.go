@@ -14,6 +14,17 @@ func newTestModel() *ProgressModel {
 	return NewProgressModel()
 }
 
+// newTestReporter creates a reporter that never starts the real Bubble Tea
+// program. Setting started=true causes ensureStarted() to be a no-op, so
+// reporter methods (ReportMessage, ReportProgress, etc.) mutate model fields
+// directly without spawning a goroutine that races with test assertions.
+func newTestReporter() *BubbleTeaProgressReporter {
+	r := NewBubbleTeaProgressReporter()
+	r.started = true
+
+	return r
+}
+
 func addTestActivity(model *ProgressModel, id, name string, statusFunc func(*nom.ActivityDisplayState)) {
 	activity := nom.NewActivityDisplayState(nom.ActivityID(id), nom.ActivityName(name))
 	if statusFunc != nil {

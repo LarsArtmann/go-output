@@ -99,7 +99,7 @@ func TestBubbleTeaProgressReporter_ReportProgress(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			reporter := NewBubbleTeaProgressReporter()
+			reporter := newTestReporter()
 			reporter.ReportProgress(tt.progress)
 
 			if reporter.model.workflowState != tt.wantState {
@@ -112,7 +112,7 @@ func TestBubbleTeaProgressReporter_ReportProgress(t *testing.T) {
 func TestBubbleTeaProgressReporter_ReportMessage(t *testing.T) {
 	t.Parallel()
 
-	reporter := NewBubbleTeaProgressReporter()
+	reporter := newTestReporter()
 	reporter.ReportMessage("Building project")
 
 	if reporter.model.currentMessage != "Building project" {
@@ -130,7 +130,7 @@ func TestBubbleTeaProgressReporter_ReportStep(t *testing.T) {
 	t.Run("creates active step", func(t *testing.T) {
 		t.Parallel()
 
-		reporter := NewBubbleTeaProgressReporter()
+		reporter := newTestReporter()
 		reporter.ReportStep(1, 5, "Compile")
 
 		if len(reporter.model.steps) != 1 {
@@ -153,7 +153,7 @@ func TestBubbleTeaProgressReporter_ReportStep(t *testing.T) {
 	t.Run("completes when current >= total", func(t *testing.T) {
 		t.Parallel()
 
-		reporter := NewBubbleTeaProgressReporter()
+		reporter := newTestReporter()
 		reporter.ReportStep(1, 5, "Compile")
 		reporter.ReportStep(5, 5, "Compile")
 
@@ -169,7 +169,7 @@ func TestBubbleTeaProgressReporter_ReportStep(t *testing.T) {
 	t.Run("updates existing step", func(t *testing.T) {
 		t.Parallel()
 
-		reporter := NewBubbleTeaProgressReporter()
+		reporter := newTestReporter()
 		reporter.ReportStep(1, 5, "Compile")
 		reporter.ReportStep(3, 5, "Compile")
 
@@ -186,7 +186,7 @@ func TestBubbleTeaProgressReporter_ReportStep(t *testing.T) {
 func TestBubbleTeaProgressReporter_ReportError(t *testing.T) {
 	t.Parallel()
 
-	reporter := NewBubbleTeaProgressReporter()
+	reporter := newTestReporter()
 	reporter.ReportProgress(50.0)
 	reporter.ReportError(errDiskFull)
 
@@ -198,7 +198,7 @@ func TestBubbleTeaProgressReporter_ReportError(t *testing.T) {
 func TestBubbleTeaProgressReporter_ReportError_CannotTransitionFromIdle(t *testing.T) {
 	t.Parallel()
 
-	reporter := NewBubbleTeaProgressReporter()
+	reporter := newTestReporter()
 	reporter.ReportError(errTestFail)
 
 	if reporter.model.workflowState != WorkflowStateIdle {
@@ -209,7 +209,7 @@ func TestBubbleTeaProgressReporter_ReportError_CannotTransitionFromIdle(t *testi
 func TestBubbleTeaProgressReporter_SendToProgram_NilProgram(t *testing.T) {
 	t.Parallel()
 
-	reporter := NewBubbleTeaProgressReporter()
+	reporter := newTestReporter()
 	reporter.sendToProgram(ProgressUpdateMsg{
 		Type:     ProgressUpdate,
 		Progress: 50.0,

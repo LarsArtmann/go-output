@@ -76,22 +76,13 @@ func TestBubbleTeaProgressReporter_SetDisplayMode(t *testing.T) {
 func TestBubbleTeaProgressReporter_EnsureStarted_Idempotent(t *testing.T) {
 	t.Parallel()
 
-	pr := NewBubbleTeaProgressReporter()
+	pr := newTestReporter() // started=true, no real program
 
-	// First call: starts the TUI.
-	pr.ensureStarted()
-
-	// Capture started state — second call should be a no-op.
-	startedAfterFirst := pr.started
-	if !startedAfterFirst {
-		t.Error("ensureStarted() should set started=true on first call")
-	}
-
-	// Second call should not panic, even when started is already true.
+	// Calling ensureStarted() when already started should be a no-op.
 	pr.ensureStarted()
 
 	if !pr.started {
-		t.Error("started should remain true after second ensureStarted()")
+		t.Error("started should remain true after ensureStarted()")
 	}
 
 	// Verify Subscriber is reachable through the started reporter.
@@ -103,10 +94,7 @@ func TestBubbleTeaProgressReporter_EnsureStarted_Idempotent(t *testing.T) {
 func TestBubbleTeaProgressReporter_StartNoOpIfAlreadyStarted(t *testing.T) {
 	t.Parallel()
 
-	pr := NewBubbleTeaProgressReporter()
-
-	// Pre-start the reporter.
-	pr.started = true
+	pr := newTestReporter()
 
 	// Start() should be a no-op when already started (no panic, no double-launch).
 	pr.Start()

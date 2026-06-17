@@ -131,7 +131,7 @@ func TestProgressModel_EventSequence_PreRegisterThenStart(t *testing.T) {
 func TestProgressModel_EventSequence_StepLifecycle(t *testing.T) {
 	t.Parallel()
 
-	reporter := NewBubbleTeaProgressReporter()
+	reporter := newTestReporter()
 
 	// Report step started (1/3)
 	reporter.ReportStep(1, 3, "Compile")
