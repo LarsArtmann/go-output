@@ -11,11 +11,11 @@
 
 All four critical gaps and three of the four important gaps identified in the feedback report have been resolved. The one remaining important item (`io.Writer` support for diagram renderers) is already possible via the existing `StreamingRenderer` adapter, so no new API surface was added.
 
-| Severity | Resolved | Count |
-|----------|----------|-------|
-| Critical | Yes | 4/4 |
-| Important | Yes | 3/4 |
-| Nice | Yes | 1/1 |
+| Severity  | Resolved | Count |
+| --------- | -------- | ----- |
+| Critical  | Yes      | 4/4   |
+| Important | Yes      | 3/4   |
+| Nice      | Yes      | 1/1   |
 
 ---
 

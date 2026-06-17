@@ -3,16 +3,16 @@ module github.com/larsartmann/go-output/examples
 go 1.26.3
 
 require (
-	github.com/larsartmann/go-output v0.11.0
-	github.com/larsartmann/go-output/d2 v0.11.0
-	github.com/larsartmann/go-output/delimited v0.11.0
-	github.com/larsartmann/go-output/graph v0.11.0
-	github.com/larsartmann/go-output/markup v0.11.0
-	github.com/larsartmann/go-output/nom v0.11.0
-	github.com/larsartmann/go-output/plantuml v0.11.0
-	github.com/larsartmann/go-output/serialization v0.11.0
-	github.com/larsartmann/go-output/table v0.11.0
-	github.com/larsartmann/go-output/tui v0.11.0
+	github.com/larsartmann/go-output v0.12.0
+	github.com/larsartmann/go-output/d2 v0.12.0
+	github.com/larsartmann/go-output/delimited v0.12.0
+	github.com/larsartmann/go-output/graph v0.12.0
+	github.com/larsartmann/go-output/markup v0.12.0
+	github.com/larsartmann/go-output/nom v0.12.0
+	github.com/larsartmann/go-output/plantuml v0.12.0
+	github.com/larsartmann/go-output/serialization v0.12.0
+	github.com/larsartmann/go-output/table v0.12.0
+	github.com/larsartmann/go-output/tui v0.12.0
 )
 
 require (
@@ -30,8 +30,8 @@ require (
 	github.com/go-faster/jx v1.2.0 // indirect
 	github.com/go-faster/yaml v0.4.6 // indirect
 	github.com/larsartmann/go-branded-id v0.3.1 // indirect
-	github.com/larsartmann/go-output/enum v0.11.0 // indirect
-	github.com/larsartmann/go-output/escape v0.11.0 // indirect
+	github.com/larsartmann/go-output/enum v0.12.0 // indirect
+	github.com/larsartmann/go-output/escape v0.12.0 // indirect
 	github.com/lucasb-eyer/go-colorful v1.4.0 // indirect
 	github.com/mattn/go-runewidth v0.0.24 // indirect
 	github.com/muesli/cancelreader v0.2.2 // indirect
