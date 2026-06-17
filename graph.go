@@ -154,6 +154,31 @@ func (m *GraphRendererState) AddEdge(edge GraphEdge) {
 	m.edges = append(m.edges, edge)
 }
 
+// DedupEdges removes duplicate edges in-place. Two edges are considered
+// duplicates if they share the same From and To node IDs. The first occurrence
+// is kept; subsequent duplicates are silently discarded. Edges with different
+// labels between the same node pair are also considered duplicates — if you
+// need parallel edges, do not call this method.
+func (m *GraphRendererState) DedupEdges() {
+	if len(m.edges) <= 1 {
+		return
+	}
+
+	seen := make(map[string]struct{}, len(m.edges))
+	deduped := make([]GraphEdge, 0, len(m.edges))
+
+	for _, edge := range m.edges {
+		key := edge.From.Get() + "\x00" + edge.To.Get()
+		if _, ok := seen[key]; ok {
+			continue
+		}
+		seen[key] = struct{}{}
+		deduped = append(deduped, edge)
+	}
+
+	m.edges = deduped
+}
+
 // NodeEdgeAppender is implemented by types that can add nodes and edges.
 type NodeEdgeAppender interface {
 	AddNode(node GraphNode)

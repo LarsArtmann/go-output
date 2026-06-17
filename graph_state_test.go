@@ -181,6 +181,39 @@ func TestGraphRendererState_AddEdge(t *testing.T) {
 	assertSliceLen(t, "Edges", m.Edges(), 1)
 }
 
+func TestGraphRendererState_DedupEdges(t *testing.T) {
+	t.Parallel()
+
+	m := NewGraphRendererState()
+	m.AddEdge(GraphEdge{From: NewBrandedID[GraphNodeIDBrand]("a"), To: NewBrandedID[GraphNodeIDBrand]("b")})
+	m.AddEdge(GraphEdge{From: NewBrandedID[GraphNodeIDBrand]("a"), To: NewBrandedID[GraphNodeIDBrand]("b")})
+	m.AddEdge(GraphEdge{From: NewBrandedID[GraphNodeIDBrand]("b"), To: NewBrandedID[GraphNodeIDBrand]("c")})
+	m.AddEdge(GraphEdge{From: NewBrandedID[GraphNodeIDBrand]("a"), To: NewBrandedID[GraphNodeIDBrand]("b")})
+
+	m.DedupEdges()
+
+	assertSliceLen(t, "Edges after dedup", m.Edges(), 2)
+}
+
+func TestGraphRendererState_DedupEdgesEmpty(t *testing.T) {
+	t.Parallel()
+
+	m := NewGraphRendererState()
+	m.DedupEdges()
+
+	assertSliceLen(t, "Edges", m.Edges(), 0)
+}
+
+func TestGraphRendererState_DedupEdgesSingle(t *testing.T) {
+	t.Parallel()
+
+	m := NewGraphRendererState()
+	m.AddEdge(GraphEdge{From: NewBrandedID[GraphNodeIDBrand]("a"), To: NewBrandedID[GraphNodeIDBrand]("b")})
+	m.DedupEdges()
+
+	assertSliceLen(t, "Edges", m.Edges(), 1)
+}
+
 func TestGraphRendererState_AddRowEdges(t *testing.T) {
 	t.Parallel()
 
