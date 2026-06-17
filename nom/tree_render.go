@@ -86,7 +86,10 @@ func (dt *DependencyTree) collectVisibleNodes(maxHeight int) []visibleEntry {
 // and expanding all children would overflow the available space. This ensures
 // that active work (running, failed, pending) is prioritized over completed
 // history when the viewport is constrained.
-func (dt *DependencyTree) elideCompletedUnderPressure(children []*ActivityNode, maxHeight, visibleCount int) []*ActivityNode {
+func (dt *DependencyTree) elideCompletedUnderPressure(
+	children []*ActivityNode,
+	maxHeight, visibleCount int,
+) []*ActivityNode {
 	if maxHeight <= 0 {
 		return children
 	}

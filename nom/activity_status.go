@@ -34,6 +34,8 @@ func (as ActivityStatus) String() string {
 	}
 }
 
+// StatusStringUnknown is the fallback for unrecognized activity statuses.
+// Mirrors tui.WorkflowStateStringUnknown — both use "unknown" for the same semantic purpose.
 const StatusStringUnknown = "unknown"
 
 // GetSymbol returns the NOM-style symbol for the status.

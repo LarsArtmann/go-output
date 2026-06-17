@@ -41,7 +41,7 @@ func main() {
 	ctx := context.Background()
 
 	_ = subscriber.OnEvent(ctx, &workflowEvent{
-		eventType: "workflow.started",
+		eventType: nom.EventWorkflowStarted,
 		wID:       nom.NewWorkflowID("build-42"),
 		wName:     nom.NewWorkflowName("CI Pipeline"),
 	})
@@ -61,7 +61,7 @@ func main() {
 
 	for _, a := range activities {
 		_ = subscriber.OnEvent(ctx, &workflowEvent{
-			eventType: "activity.started",
+			eventType: nom.EventActivityStarted,
 			aID:       nom.NewActivityID(a.id),
 			aName:     nom.NewActivityName(a.name),
 		})
@@ -71,14 +71,14 @@ func main() {
 		switch a.status {
 		case nom.ActivityStatusCompleted:
 			_ = subscriber.OnEvent(ctx, &workflowEvent{
-				eventType: "activity.completed",
+				eventType: nom.EventActivityCompleted,
 				aID:       nom.NewActivityID(a.id),
 				aName:     nom.NewActivityName(a.name),
 				duration:  a.delay,
 			})
 		case nom.ActivityStatusFailed:
 			_ = subscriber.OnEvent(ctx, &workflowEvent{
-				eventType: "activity.failed",
+				eventType: nom.EventActivityFailed,
 				aID:       nom.NewActivityID(a.id),
 				aName:     nom.NewActivityName(a.name),
 				err:       errLintFailed,
@@ -108,7 +108,7 @@ func main() {
 	fmt.Printf("Summary: %s\n", summary)
 
 	_ = subscriber.OnEvent(ctx, &workflowEvent{
-		eventType: "workflow.completed",
+		eventType: nom.EventWorkflowCompleted,
 		wID:       nom.NewWorkflowID("build-42"),
 	})
 

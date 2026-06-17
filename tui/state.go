@@ -27,7 +27,9 @@ const (
 	WorkflowStateStringRunning   = "running"
 	WorkflowStateStringCompleted = "completed"
 	WorkflowStateStringErrored   = "errored"
-	WorkflowStateStringUnknown   = "unknown"
+	// WorkflowStateStringUnknown is the fallback for unrecognized workflow states.
+	// Mirrors nom.StatusStringUnknown — both use "unknown" for the same purpose.
+	WorkflowStateStringUnknown = "unknown"
 )
 
 // String returns the string representation of the workflow state.
@@ -108,7 +110,7 @@ type ProgressModel struct {
 	// NOM-style visualization fields (fully integrated and functional)
 	// activities is a deep-copy snapshot refreshed each tick via
 	// syncNOMSubscriber(). It is NOT the live data — the subscriber owns the truth.
-	activities     map[nom.ActivityID]*nom.ActivityDisplayState
+	activities map[nom.ActivityID]*nom.ActivityDisplayState
 	// dependencyTree is a cached *pointer* to the subscriber's tree (not a copy).
 	// Refreshed each tick via syncNOMSubscriber(). Safe to read between ticks.
 	dependencyTree *nom.DependencyTree

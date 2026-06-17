@@ -21,7 +21,7 @@ func TestNOMSubscriber_Integration(t *testing.T) {
 		ctx := context.Background()
 
 		if err := subscriber.OnEvent(ctx, &nomTestEvent{
-			eventType: "workflow.started",
+			eventType: nom.EventWorkflowStarted,
 			wID:       nom.NewWorkflowID("ci-1"),
 			wName:     nom.NewWorkflowName("CI Pipeline"),
 		}); err != nil {
@@ -37,7 +37,7 @@ func TestNOMSubscriber_Integration(t *testing.T) {
 		}
 
 		if err := subscriber.OnEvent(ctx, &nomTestEvent{
-			eventType: "activity.started",
+			eventType: nom.EventActivityStarted,
 			aID:       nom.NewActivityID("build"),
 			aName:     nom.NewActivityName("Build Project"),
 		}); err != nil {
@@ -62,7 +62,7 @@ func TestNOMSubscriber_Integration(t *testing.T) {
 		subscriber.SyncActivityTimingToTree()
 
 		if err := subscriber.OnEvent(ctx, &nomTestEvent{
-			eventType: "activity.completed",
+			eventType: nom.EventActivityCompleted,
 			aID:       nom.NewActivityID("build"),
 			aName:     nom.NewActivityName("Build Project"),
 			duration:  5 * time.Second,
@@ -301,7 +301,7 @@ func mustUpdateActivityStatus(
 // startActivity sends an activity.started event and discards any error.
 func startActivity(sub *nom.NOMStyleSubscriber, ctx context.Context, id, name string) {
 	_ = sub.OnEvent(ctx, &nomTestEvent{
-		eventType: "activity.started",
+		eventType: nom.EventActivityStarted,
 		aID:       nom.NewActivityID(id),
 		aName:     nom.NewActivityName(name),
 	})
@@ -311,7 +311,7 @@ func startActivity(sub *nom.NOMStyleSubscriber, ctx context.Context, id, name st
 // Use for tests that only care about downstream behavior, not event errors.
 func fireWorkflowStarted(sub *nom.NOMStyleSubscriber, ctx context.Context, id, name string) {
 	_ = sub.OnEvent(ctx, &nomTestEvent{
-		eventType: "workflow.started",
+		eventType: nom.EventWorkflowStarted,
 		wID:       nom.NewWorkflowID(id),
 		wName:     nom.NewWorkflowName(name),
 	})
@@ -320,7 +320,7 @@ func fireWorkflowStarted(sub *nom.NOMStyleSubscriber, ctx context.Context, id, n
 // completeActivity sends an activity.completed event and discards any error.
 func completeActivity(sub *nom.NOMStyleSubscriber, ctx context.Context, id, name string, duration time.Duration) {
 	_ = sub.OnEvent(ctx, &nomTestEvent{
-		eventType: "activity.completed",
+		eventType: nom.EventActivityCompleted,
 		aID:       nom.NewActivityID(id),
 		aName:     nom.NewActivityName(name),
 		duration:  duration,

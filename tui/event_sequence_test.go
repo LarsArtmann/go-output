@@ -40,7 +40,7 @@ func startActivity(t *testing.T, model *ProgressModel, ctx context.Context, id n
 	t.Helper()
 
 	_ = model.nomSubscriber.OnEvent(ctx, &testEvent{
-		eventType: "activity.started",
+		eventType: nom.EventActivityStarted,
 		aID:       id,
 		aName:     name,
 	})
@@ -51,7 +51,7 @@ func startWorkflow(t *testing.T, model *ProgressModel, ctx context.Context, id n
 	t.Helper()
 
 	_ = model.nomSubscriber.OnEvent(ctx, &testEvent{
-		eventType: "workflow.started",
+		eventType: nom.EventWorkflowStarted,
 		wID:       id,
 	})
 }
@@ -68,14 +68,14 @@ func TestProgressModel_EventSequence_WorkflowStartToTick(t *testing.T) {
 	// Start workflow in subscriber
 	ctx := context.Background()
 	model.nomSubscriber.OnEvent(ctx, &testEvent{
-		eventType: "workflow.started",
+		eventType: nom.EventWorkflowStarted,
 		wID:       nom.WorkflowID("wf-1"),
 		wName:     nom.WorkflowName("Test"),
 	})
 
 	// Pre-register an activity
 	model.nomSubscriber.OnEvent(ctx, &testEvent{
-		eventType: "activity.started",
+		eventType: nom.EventActivityStarted,
 		aID:       nom.ActivityID("build"),
 		aName:     nom.ActivityName("Build"),
 	})
@@ -202,18 +202,18 @@ func TestProgressModel_EventSequence_StepFailed(t *testing.T) {
 
 	ctx := context.Background()
 	model.nomSubscriber.OnEvent(ctx, &testEvent{
-		eventType: "workflow.started",
+		eventType: nom.EventWorkflowStarted,
 		wID:       nom.WorkflowID("wf-1"),
 	})
 
 	// Set up subscriber with a failed activity
 	model.nomSubscriber.OnEvent(ctx, &testEvent{
-		eventType: "activity.started",
+		eventType: nom.EventActivityStarted,
 		aID:       nom.ActivityID("test"),
 		aName:     nom.ActivityName("Run Tests"),
 	})
 	model.nomSubscriber.OnEvent(ctx, &testEvent{
-		eventType: "activity.failed",
+		eventType: nom.EventActivityFailed,
 		aID:       nom.ActivityID("test"),
 		aName:     nom.ActivityName("Run Tests"),
 		err:       errors.New("test failure"),

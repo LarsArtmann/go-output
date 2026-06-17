@@ -40,11 +40,11 @@ func (ns *NOMStyleSubscriber) IsWorkflowRunning() bool {
 }
 
 // GetWorkflowID returns current workflow ID.
-func (ns *NOMStyleSubscriber) GetWorkflowID() string {
+func (ns *NOMStyleSubscriber) GetWorkflowID() WorkflowID {
 	ns.mu.RLock()
 	defer ns.mu.RUnlock()
 
-	return ns.workflowID.String()
+	return ns.workflowID
 }
 
 // GetWorkflowName returns current workflow name.

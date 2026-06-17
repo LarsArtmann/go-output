@@ -34,8 +34,8 @@ type DependencyTree struct {
 	buildOnce sync.Once
 	nodes     map[ActivityID]*ActivityNode // All nodes by activity ID
 	roots     []*ActivityNode              // Root nodes (no dependencies)
-	order     []ActivityID             // Display order (smart filtered)
-	loaded    bool                     // Whether tree has been built
+	order     []ActivityID                 // Display order (smart filtered)
+	loaded    bool                         // Whether tree has been built
 }
 
 // NewDependencyTree creates a new dependency tree.
