@@ -8,7 +8,6 @@ import (
 
 	"github.com/larsartmann/go-output"
 	"github.com/larsartmann/go-output/delimited"
-	"github.com/larsartmann/go-output/serialization"
 	"github.com/larsartmann/go-output/testhelpers"
 )
 
@@ -133,25 +132,6 @@ func TestRenderDataAsMarkdown(t *testing.T) {
 	testhelpers.AssertContains(t, mdStr, "|----", "Markdown should contain separator")
 }
 
-func TestRenderDataAsYAML(t *testing.T) {
-	t.Parallel()
-
-	// Given: User has project data
-	data := output.NewTableData([]string{"Name", "Health"})
-	data.AddRow([]string{"Alpha", "90%"})
-
-	// When: I render it as YAML
-	yamlBytes, err := serialization.MarshalYAML(data)
-	if err != nil {
-		t.Fatalf("MarshalYAML() error = %v", err)
-	}
-
-	// Then: I get valid YAML
-	yamlStr := string(yamlBytes)
-	testhelpers.AssertContains(t, yamlStr, "Name", "YAML should contain field name")
-	testhelpers.AssertContains(t, yamlStr, "Alpha", "YAML should contain data")
-}
-
 // User Journey: CLI Developer wants to handle edge cases gracefully
 
 func TestHandleEdgeCases(t *testing.T) {
@@ -159,8 +139,8 @@ func TestHandleEdgeCases(t *testing.T) {
 		t.Parallel()
 
 		data := output.NewTableData([]string{})
-		if _, err := serialization.MarshalJSON(data); err != nil {
-			t.Errorf("MarshalJSON on empty data should not error: %v", err)
+		if _, err := output.MarshalJSONIndent(data, "", ""); err != nil {
+			t.Errorf("MarshalJSONIndent on empty data should not error: %v", err)
 		}
 	})
 
