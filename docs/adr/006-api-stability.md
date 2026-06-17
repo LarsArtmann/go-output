@@ -33,6 +33,30 @@ All exported symbols across all modules are now **frozen**. The following guaran
 - New `RenderOptions` fields
 - New sub-modules
 
+### Diagram API Stability Tiers
+
+As of v0.12.0, diagram renderer APIs are categorized into stability tiers:
+
+**Stable (frozen through v1.x):**
+- `GraphRenderer` interface (`SetNodes`, `SetEdges`, `Render`)
+- `GraphNode`, `GraphEdge`, `GraphStyle`, `EdgeStyle` structs
+- `GraphRendererState` (`AddNode`, `AddEdge`, `SetNodes`, `SetEdges`, `Nodes`, `Edges`)
+- `DOTRenderer` core API (`NewDOTRenderer`, `SetGraphID`)
+- `MermaidRenderer` core API (`NewMermaidRenderer`, `Render`)
+- `PlantUMLDiagram` core API (`NewPlantUMLDiagram`, `AddNode`, `AddEdge`)
+
+**Stable (added v0.12.0):**
+- `GraphRendererState.DedupEdges()` — edge deduplication
+- `MermaidRenderer.SetCodeFence(bool)` — markdown fence control
+- `DOTRenderer.SetRankDir(RankDir)` / `SetSplines(SplineStyle)` / `SetNodeSep` / `SetRankSep`
+- `RankDir` and `SplineStyle` typed enums with `Parse`/`String`/`IsValid`/`AllowedValues`
+- `GraphStyle` field on `GraphNode` is now honored by all three renderers (DOT, Mermaid, PlantUML)
+
+**Experimental (may change before v1.0):**
+- D2 rich domain model (`D2Node`, `D2Edge`, `D2Class`, SQL tables, arrow types)
+- NOM/TUI progress visualization APIs
+- BDD test utilities
+
 ### API Issues Found and Fixed
 
 1. **Capability matrix incomplete**: `FormatD2`, `FormatMermaid`, `FormatDOT`, `FormatPlantUML` were missing `ShapeTree` despite having `*FromTree()` conversion functions. `FormatTOML` was missing `ShapeGraph` despite having `TOMLGraphRenderer`. Fixed in `shape.go`.
