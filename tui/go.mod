@@ -6,7 +6,7 @@ require (
 	charm.land/bubbletea/v2 v2.0.7
 	charm.land/lipgloss/v2 v2.0.4
 	github.com/charmbracelet/x/ansi v0.11.7
-	github.com/larsartmann/go-output/nom v0.10.1
+	github.com/larsartmann/go-output/nom v0.11.0
 )
 
 require (
