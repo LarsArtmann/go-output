@@ -26,6 +26,7 @@ type TreeNode struct {
 	// Metadata holds arbitrary key-value pairs for custom data.
 	Metadata map[string]string
 	parent   *TreeNode
+	depth    int // cached depth (root = 0), set in AddChild
 }
 
 // NewTreeNode creates a new TreeNode with the given ID and label.
@@ -43,19 +44,21 @@ func NewTreeNode(id, label string) *TreeNode {
 func (n *TreeNode) AddChild(child *TreeNode) {
 	child.parent = n
 	n.Children = append(n.Children, child)
+	child.propagateDepth(n.depth + 1)
+}
+
+// propagateDepth sets the depth for this node and all descendants recursively.
+// Called from AddChild to handle subtrees that change depth when re-parented.
+func (n *TreeNode) propagateDepth(d int) {
+	n.depth = d
+	for _, c := range n.Children {
+		c.propagateDepth(d + 1)
+	}
 }
 
 // Depth returns the depth of this node in the tree (root = 0).
 func (n *TreeNode) Depth() int {
-	depth := 0
-
-	current := n
-	for current.Parent() != nil {
-		depth++
-		current = current.Parent()
-	}
-
-	return depth
+	return n.depth
 }
 
 // Parent returns the parent node (nil for root).

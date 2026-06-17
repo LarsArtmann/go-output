@@ -9,8 +9,8 @@ import (
 // ============================================================================
 // OPERATION TYPE SYMBOLS
 // ============================================================================
-// GetOperationSymbol returns symbol for an operation type.
-func GetOperationSymbol(operationType string) string {
+// OperationSymbol returns the symbol for an operation type.
+func OperationSymbol(operationType string) string {
 	switch operationType {
 	case OperationTypeDownload:
 		return SymbolDownload

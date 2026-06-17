@@ -66,6 +66,7 @@ func NewInlineRenderer(subscriber *NOMStyleSubscriber, writer io.Writer, maxHeig
 func (r *InlineRenderer) SetHideCursor(hide bool) {
 	r.tickMu.Lock()
 	defer r.tickMu.Unlock()
+
 	r.hideCursor = hide
 }
 
@@ -75,6 +76,7 @@ func (r *InlineRenderer) SetHideCursor(hide bool) {
 func (r *InlineRenderer) SetNoColor(noColor bool) {
 	r.tickMu.Lock()
 	defer r.tickMu.Unlock()
+
 	r.noColor = noColor
 }
 
@@ -83,6 +85,7 @@ func (r *InlineRenderer) SetNoColor(noColor bool) {
 func (r *InlineRenderer) SetAppName(name string) {
 	r.tickMu.Lock()
 	defer r.tickMu.Unlock()
+
 	r.appName = name
 }
 
@@ -113,6 +116,7 @@ func detectNoColor() bool {
 func (r *InlineRenderer) SetStartTime(t time.Time) {
 	r.tickMu.Lock()
 	defer r.tickMu.Unlock()
+
 	r.startTime = t
 }
 
@@ -400,6 +404,7 @@ func (r *InlineRenderer) renderSummary() string {
 		r.tickMu.RLock()
 		startTime := r.startTime
 		r.tickMu.RUnlock()
+
 		elapsed := time.Since(startTime)
 		parts = append(parts, fmt.Sprintf("%s%s", SymbolTiming, FormatDuration(elapsed)))
 	}

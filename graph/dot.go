@@ -94,7 +94,9 @@ func isValidNumericSep(s string) bool {
 	if s == "" {
 		return false
 	}
+
 	hasDigit := false
+
 	for _, c := range s {
 		switch {
 		case c >= '0' && c <= '9':
@@ -105,6 +107,7 @@ func isValidNumericSep(s string) bool {
 			return false
 		}
 	}
+
 	return hasDigit
 }
 
@@ -114,6 +117,7 @@ func (r *DOTRenderer) SetNodeSep(sep string) *DOTRenderer {
 	if isValidNumericSep(sep) {
 		r.nodesep = sep
 	}
+
 	return r
 }
 
@@ -123,6 +127,7 @@ func (r *DOTRenderer) SetRankSep(sep string) *DOTRenderer {
 	if isValidNumericSep(sep) {
 		r.ranksep = sep
 	}
+
 	return r
 }
 

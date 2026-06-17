@@ -35,7 +35,7 @@ func TestFormatDuration(t *testing.T) {
 	}
 }
 
-func TestGetOperationSymbol(t *testing.T) {
+func TestOperationSymbol(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
@@ -54,9 +54,9 @@ func TestGetOperationSymbol(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			got := GetOperationSymbol(tt.opType)
+			got := OperationSymbol(tt.opType)
 			if got != tt.want {
-				t.Errorf("GetOperationSymbol(%q) = %q, want %q", tt.opType, got, tt.want)
+				t.Errorf("OperationSymbol(%q) = %q, want %q", tt.opType, got, tt.want)
 			}
 		})
 	}

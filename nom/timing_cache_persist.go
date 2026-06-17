@@ -58,6 +58,7 @@ func (tc *TimingCache) loadLocked() error {
 		if err != nil {
 			continue
 		}
+
 		duration = time.Duration(nanos)
 
 		history := newCache[activityName]
@@ -66,6 +67,7 @@ func (tc *TimingCache) loadLocked() error {
 		if len(history) > maxCachedEntries {
 			history = history[len(history)-maxCachedEntries:]
 		}
+
 		newCache[activityName] = history
 	}
 
@@ -121,6 +123,7 @@ func writeCacheToFile(filePath string, data map[string][]time.Duration) error {
 	for name := range data {
 		names = append(names, name)
 	}
+
 	slices.Sort(names)
 
 	for _, activityName := range names {

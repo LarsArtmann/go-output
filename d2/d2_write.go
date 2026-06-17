@@ -40,7 +40,12 @@ func (*D2Diagram) writeStyleColors(b *strings.Builder, s D2StrokeStyle, indent s
 
 func (*D2Diagram) writeStyleEffects(b *strings.Builder, s D2NodeStyle, indent string) {
 	if s.Opacity > 0 {
-		fmt.Fprintf(b, "%sstyle.opacity: %g\n", indent, s.Opacity)
+		opacity := s.Opacity
+		if opacity > 1 {
+			opacity = 1 // clamp to valid D2 range [0.0, 1.0]
+		}
+
+		fmt.Fprintf(b, "%sstyle.opacity: %g\n", indent, opacity)
 	}
 
 	if s.Shadow {

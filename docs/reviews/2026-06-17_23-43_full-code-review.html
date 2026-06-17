@@ -1,239 +1,715 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Full Code Review — go-output</title>
-<style>
-  :root {
-    --bg: #0d1117; --bg-elev: #161b22; --bg-card: #1c232c; --bg-code: #0a0e14;
-    --border: #30363d; --border-soft: #21262d;
-    --text: #e6edf3; --text-dim: #9da7b3; --text-faint: #6e7681;
-    --accent: #58a6ff; --critical: #ff6b6b; --major: #ffa657; --minor: #d29922; --ok: #3fb950;
-    --mono: ui-monospace, "SF Mono", "JetBrains Mono", "Fira Code", Menlo, Consolas, monospace;
-    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-  }
-  * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--sans); line-height: 1.6; }
-  header.hero { background: linear-gradient(180deg, #161b22, #0d1117); border-bottom: 1px solid var(--border); padding: 3rem 2rem 2rem; }
-  .hero-inner { max-width: 1100px; margin: 0 auto; }
-  .eyebrow { color: var(--text-faint); font-size: 0.8rem; letter-spacing: 0.15em; text-transform: uppercase; margin: 0 0 0.5rem; }
-  h1 { font-size: 2.4rem; margin: 0 0 0.5rem; letter-spacing: -0.02em; }
-  .lede { color: var(--text-dim); font-size: 1.1rem; margin: 0 0 1rem; }
-  .meta { color: var(--text-faint); font-size: 0.85rem; }
-  main { max-width: 1100px; margin: 0 auto; padding: 2rem; }
-  h2 { font-size: 1.5rem; margin: 2.5rem 0 1rem; border-bottom: 1px solid var(--border-soft); padding-bottom: 0.5rem; }
-  h3 { font-size: 1.15rem; margin: 1.5rem 0 0.75rem; color: var(--accent); }
-  .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
-  .stat { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem; text-align: center; }
-  .stat .num { font-size: 2rem; font-weight: 700; }
-  .stat .label { color: var(--text-dim); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
-  .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 0.75rem 0; }
-  .card-problem { border-color: rgba(255,107,107,0.3); background: rgba(255,107,107,0.05); }
-  .card-warning { border-color: rgba(255,166,87,0.3); background: rgba(255,166,87,0.05); }
-  .card-solution { border-color: rgba(63,185,80,0.3); background: rgba(63,185,80,0.05); }
-  .card-head { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; }
-  .badge { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600; font-family: var(--mono); }
-  .badge-critical { background: rgba(255,107,107,0.15); color: var(--critical); }
-  .badge-major { background: rgba(255,166,87,0.15); color: var(--major); }
-  .badge-minor { background: rgba(210,153,34,0.15); color: var(--minor); }
-  .badge-ok { background: rgba(63,185,80,0.15); color: var(--ok); }
-  .badge-fixed { background: rgba(88,166,255,0.15); color: var(--accent); }
-  table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
-  th, td { text-align: left; padding: 0.6rem 0.8rem; border-bottom: 1px solid var(--border-soft); }
-  th { color: var(--text-dim); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
-  tr:hover td { background: rgba(88,166,255,0.04); }
-  code { font-family: var(--mono); font-size: 0.85em; background: var(--bg-code); padding: 0.1rem 0.35rem; border-radius: 3px; color: var(--accent); }
-  pre { background: var(--bg-code); border: 1px solid var(--border-soft); border-radius: 6px; padding: 1rem; overflow-x: auto; }
-  pre code { background: none; padding: 0; }
-  .file-ref { color: var(--text-faint); font-family: var(--mono); font-size: 0.8rem; }
-  footer { text-align: center; color: var(--text-faint); font-size: 0.8rem; padding: 2rem; border-top: 1px solid var(--border-soft); margin-top: 2rem; }
-</style>
-</head>
-<body>
-<header class="hero">
-  <div class="hero-inner">
-    <p class="eyebrow">Full Code Review · Senior Staff Architect Audit</p>
-    <h1>Full Code Review — go-output</h1>
-    <p class="lede">Comprehensive review of 226 Go files across 17 modules — every production and test file visited, issues categorized by severity, and high-impact fixes applied on the spot.</p>
-    <p class="meta">📅 2026-06-17 · 🔍 226 files reviewed · 📦 17 modules · 🎯 Go 1.26 workspace</p>
-  </div>
-</header>
-<main>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Full Code Review — go-output</title>
+    <style>
+      :root {
+        --bg: #0d1117;
+        --bg-elev: #161b22;
+        --bg-card: #1c232c;
+        --bg-code: #0a0e14;
+        --border: #30363d;
+        --border-soft: #21262d;
+        --text: #e6edf3;
+        --text-dim: #9da7b3;
+        --text-faint: #6e7681;
+        --accent: #58a6ff;
+        --critical: #ff6b6b;
+        --major: #ffa657;
+        --minor: #d29922;
+        --ok: #3fb950;
+        --mono: ui-monospace, "SF Mono", "JetBrains Mono", "Fira Code", Menlo, Consolas, monospace;
+        --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--sans);
+        line-height: 1.6;
+      }
+      header.hero {
+        background: linear-gradient(180deg, #161b22, #0d1117);
+        border-bottom: 1px solid var(--border);
+        padding: 3rem 2rem 2rem;
+      }
+      .hero-inner {
+        max-width: 1100px;
+        margin: 0 auto;
+      }
+      .eyebrow {
+        color: var(--text-faint);
+        font-size: 0.8rem;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        margin: 0 0 0.5rem;
+      }
+      h1 {
+        font-size: 2.4rem;
+        margin: 0 0 0.5rem;
+        letter-spacing: -0.02em;
+      }
+      .lede {
+        color: var(--text-dim);
+        font-size: 1.1rem;
+        margin: 0 0 1rem;
+      }
+      .meta {
+        color: var(--text-faint);
+        font-size: 0.85rem;
+      }
+      main {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      h2 {
+        font-size: 1.5rem;
+        margin: 2.5rem 0 1rem;
+        border-bottom: 1px solid var(--border-soft);
+        padding-bottom: 0.5rem;
+      }
+      h3 {
+        font-size: 1.15rem;
+        margin: 1.5rem 0 0.75rem;
+        color: var(--accent);
+      }
+      .stat-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 1rem;
+        margin: 1.5rem 0;
+      }
+      .stat {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 1.25rem;
+        text-align: center;
+      }
+      .stat .num {
+        font-size: 2rem;
+        font-weight: 700;
+      }
+      .stat .label {
+        color: var(--text-dim);
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 1.25rem 1.5rem;
+        margin: 0.75rem 0;
+      }
+      .card-problem {
+        border-color: rgba(255, 107, 107, 0.3);
+        background: rgba(255, 107, 107, 0.05);
+      }
+      .card-warning {
+        border-color: rgba(255, 166, 87, 0.3);
+        background: rgba(255, 166, 87, 0.05);
+      }
+      .card-solution {
+        border-color: rgba(63, 185, 80, 0.3);
+        background: rgba(63, 185, 80, 0.05);
+      }
+      .card-head {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+      }
+      .badge {
+        display: inline-block;
+        padding: 0.15rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        font-family: var(--mono);
+      }
+      .badge-critical {
+        background: rgba(255, 107, 107, 0.15);
+        color: var(--critical);
+      }
+      .badge-major {
+        background: rgba(255, 166, 87, 0.15);
+        color: var(--major);
+      }
+      .badge-minor {
+        background: rgba(210, 153, 34, 0.15);
+        color: var(--minor);
+      }
+      .badge-ok {
+        background: rgba(63, 185, 80, 0.15);
+        color: var(--ok);
+      }
+      .badge-fixed {
+        background: rgba(88, 166, 255, 0.15);
+        color: var(--accent);
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1rem 0;
+        font-size: 0.9rem;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 0.6rem 0.8rem;
+        border-bottom: 1px solid var(--border-soft);
+      }
+      th {
+        color: var(--text-dim);
+        font-weight: 600;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      tr:hover td {
+        background: rgba(88, 166, 255, 0.04);
+      }
+      code {
+        font-family: var(--mono);
+        font-size: 0.85em;
+        background: var(--bg-code);
+        padding: 0.1rem 0.35rem;
+        border-radius: 3px;
+        color: var(--accent);
+      }
+      pre {
+        background: var(--bg-code);
+        border: 1px solid var(--border-soft);
+        border-radius: 6px;
+        padding: 1rem;
+        overflow-x: auto;
+      }
+      pre code {
+        background: none;
+        padding: 0;
+      }
+      .file-ref {
+        color: var(--text-faint);
+        font-family: var(--mono);
+        font-size: 0.8rem;
+      }
+      footer {
+        text-align: center;
+        color: var(--text-faint);
+        font-size: 0.8rem;
+        padding: 2rem;
+        border-top: 1px solid var(--border-soft);
+        margin-top: 2rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="hero">
+      <div class="hero-inner">
+        <p class="eyebrow">Full Code Review · Senior Staff Architect Audit</p>
+        <h1>Full Code Review — go-output</h1>
+        <p class="lede">
+          Comprehensive review of 226 Go files across 17 modules — every production and test file
+          visited, issues categorized by severity, and high-impact fixes applied on the spot.
+        </p>
+        <p class="meta">
+          📅 2026-06-17 · 🔍 226 files reviewed · 📦 17 modules · 🎯 Go 1.26 workspace
+        </p>
+      </div>
+    </header>
+    <main>
+      <div class="stat-grid">
+        <div class="stat">
+          <div class="num" style="color: var(--accent)">226</div>
+          <div class="label">Files Reviewed</div>
+        </div>
+        <div class="stat">
+          <div class="num" style="color: var(--critical)">2</div>
+          <div class="label">Critical (Fixed)</div>
+        </div>
+        <div class="stat">
+          <div class="num" style="color: var(--major)">12</div>
+          <div class="label">Major Issues</div>
+        </div>
+        <div class="stat">
+          <div class="num" style="color: var(--minor)">20</div>
+          <div class="label">Minor Issues</div>
+        </div>
+        <div class="stat">
+          <div class="num" style="color: var(--ok)">10</div>
+          <div class="label">Fixed On The Spot</div>
+        </div>
+        <div class="stat">
+          <div class="num" style="color: var(--accent)">7</div>
+          <div class="label">Deferred (Breaking)</div>
+        </div>
+      </div>
 
-<div class="stat-grid">
-  <div class="stat"><div class="num" style="color:var(--accent)">226</div><div class="label">Files Reviewed</div></div>
-  <div class="stat"><div class="num" style="color:var(--critical)">2</div><div class="label">Critical (Fixed)</div></div>
-  <div class="stat"><div class="num" style="color:var(--major)">12</div><div class="label">Major Issues</div></div>
-  <div class="stat"><div class="num" style="color:var(--minor)">20</div><div class="label">Minor Issues</div></div>
-  <div class="stat"><div class="num" style="color:var(--ok)">10</div><div class="label">Fixed On The Spot</div></div>
-  <div class="stat"><div class="num" style="color:var(--accent)">7</div><div class="label">Deferred (Breaking)</div></div>
-</div>
+      <h2>🎯 Scope & Methodology</h2>
+      <div class="card">
+        <p>
+          Every <code>.go</code> file across all 17 modules was reviewed against the architect
+          checklist: type safety, error handling, naming, dead code, data model integrity,
+          concurrency, file size limits (350 lines), integration gaps, and generics usage. The
+          review was conducted via parallel sub-agents, each assigned a module cluster with the full
+          checklist and known-issues context.
+        </p>
+        <p>
+          <strong>Modules reviewed:</strong> root (output), nom, tui, d2, graph, plantuml,
+          delimited, serialization, markup, table, escape, enum, testhelpers, integration, examples,
+          bdd, testhelpers/graphtest.
+        </p>
+      </div>
 
-<h2>🎯 Scope & Methodology</h2>
-<div class="card">
-  <p>Every <code>.go</code> file across all 17 modules was reviewed against the architect checklist: type safety, error handling, naming, dead code, data model integrity, concurrency, file size limits (350 lines), integration gaps, and generics usage. The review was conducted via parallel sub-agents, each assigned a module cluster with the full checklist and known-issues context.</p>
-  <p><strong>Modules reviewed:</strong> root (output), nom, tui, d2, graph, plantuml, delimited, serialization, markup, table, escape, enum, testhelpers, integration, examples, bdd, testhelpers/graphtest.</p>
-</div>
+      <h2>🔴 Critical — Fixed On The Spot</h2>
 
-<h2>🔴 Critical — Fixed On The Spot</h2>
+      <div class="card card-problem">
+        <div class="card-head">
+          <span class="badge badge-critical">Critical</span>
+          <span class="badge badge-fixed">Fixed ✅</span>
+          <strong>GetActivitySummaryString returned bracketed Go slice repr</strong>
+        </div>
+        <p class="file-ref">nom/format.go:91</p>
+        <p>
+          <code>fmt.Sprintf("%s", parts)</code> formatted a <code>[]string</code> as Go's native
+          slice representation (<code>[⏵3 ↑2 ∑5]</code> with brackets and spaces) instead of the
+          documented flat string <code>"⏵3↑2∑5"</code>. A public API silently producing wrong
+          output.
+        </p>
+        <p><strong>Fix:</strong> <code>strings.Join(parts, "")</code></p>
+      </div>
 
-<div class="card card-problem">
-  <div class="card-head">
-    <span class="badge badge-critical">Critical</span>
-    <span class="badge badge-fixed">Fixed ✅</span>
-    <strong>GetActivitySummaryString returned bracketed Go slice repr</strong>
-  </div>
-  <p class="file-ref">nom/format.go:91</p>
-  <p><code>fmt.Sprintf("%s", parts)</code> formatted a <code>[]string</code> as Go's native slice representation (<code>[⏵3 ↑2 ∑5]</code> with brackets and spaces) instead of the documented flat string <code>"⏵3↑2∑5"</code>. A public API silently producing wrong output.</p>
-  <p><strong>Fix:</strong> <code>strings.Join(parts, "")</code></p>
-</div>
+      <div class="card card-problem">
+        <div class="card-head">
+          <span class="badge badge-critical">Critical</span>
+          <span class="badge badge-fixed">Fixed ✅</span>
+          <strong>FormatDuration displayed "60.0s" for sub-minute durations</strong>
+        </div>
+        <p class="file-ref">nom/format.go:36-42</p>
+        <p>
+          <code>fmt.Sprintf("%.1fs", duration.Seconds())</code> rounds 59.95s to "60.0s" — a
+          sub-minute duration displayed as exactly one minute. The float crosses the integer
+          boundary before the <code>&lt; time.Minute</code> guard catches it.
+        </p>
+        <p>
+          <strong>Fix:</strong> Switched to integer math (tenths of a second):
+          <code>tenths := int(duration / (100 * time.Millisecond))</code>
+        </p>
+      </div>
 
-<div class="card card-problem">
-  <div class="card-head">
-    <span class="badge badge-critical">Critical</span>
-    <span class="badge badge-fixed">Fixed ✅</span>
-    <strong>FormatDuration displayed "60.0s" for sub-minute durations</strong>
-  </div>
-  <p class="file-ref">nom/format.go:36-42</p>
-  <p><code>fmt.Sprintf("%.1fs", duration.Seconds())</code> rounds 59.95s to "60.0s" — a sub-minute duration displayed as exactly one minute. The float crosses the integer boundary before the <code>&lt; time.Minute</code> guard catches it.</p>
-  <p><strong>Fix:</strong> Switched to integer math (tenths of a second): <code>tenths := int(duration / (100 * time.Millisecond))</code></p>
-</div>
+      <h2>🟠 Major — Fixed On The Spot</h2>
 
-<h2>🟠 Major — Fixed On The Spot</h2>
+      <div class="card card-warning">
+        <div class="card-head">
+          <span class="badge badge-major">Major</span>
+          <span class="badge badge-fixed">Fixed ✅</span>
+          <strong>DOT and Mermaid double-escaping in TableData conversion</strong>
+        </div>
+        <p class="file-ref">graph/dot.go:219-221 · graph/mermaid.go:172-175</p>
+        <p>
+          <code>DOTFromTableData</code> and <code>MermaidFromTableData</code> pre-escaped labels in
+          the <code>SetNodesFromTableData</code> callback, then <code>writeNode</code>/<code
+            >Render()</code
+          >
+          escaped them again at render time. For DOT this compounded backslashes and quotes (<code
+            >hello"world</code
+          >
+          → <code>hello\\\"world</code>).
+        </p>
+        <p>
+          <strong>Fix:</strong> Removed pre-escaping; render-time escape is the single source of
+          truth. Also made <code>SetNodesFromTableData</code>'s callback nil-safe.
+        </p>
+      </div>
 
-<div class="card card-warning">
-  <div class="card-head">
-    <span class="badge badge-major">Major</span>
-    <span class="badge badge-fixed">Fixed ✅</span>
-    <strong>DOT and Mermaid double-escaping in TableData conversion</strong>
-  </div>
-  <p class="file-ref">graph/dot.go:219-221 · graph/mermaid.go:172-175</p>
-  <p><code>DOTFromTableData</code> and <code>MermaidFromTableData</code> pre-escaped labels in the <code>SetNodesFromTableData</code> callback, then <code>writeNode</code>/<code>Render()</code> escaped them again at render time. For DOT this compounded backslashes and quotes (<code>hello"world</code> → <code>hello\\\"world</code>).</p>
-  <p><strong>Fix:</strong> Removed pre-escaping; render-time escape is the single source of truth. Also made <code>SetNodesFromTableData</code>'s callback nil-safe.</p>
-</div>
+      <div class="card card-warning">
+        <div class="card-head">
+          <span class="badge badge-major">Major</span>
+          <span class="badge badge-fixed">Fixed ✅</span>
+          <strong>D2 conversion silently dropped edge color and node font-color</strong>
+        </div>
+        <p class="file-ref">d2/d2_convert.go:55-61, 84-92</p>
+        <p>
+          <code>graphEdgeToD2</code> mapped only From/To/Label — all
+          <code>EdgeStyle</code> information was lost. <code>graphStyleToD2</code> dropped
+          <code>GraphStyle.FontColor</code>.
+        </p>
+        <p>
+          <strong>Fix:</strong> Mapped <code>EdgeStyle.Color</code> →
+          <code>D2StrokeStyle.Stroke</code> and added <code>FontColor</code> to the node style
+          conversion.
+        </p>
+      </div>
 
-<div class="card card-warning">
-  <div class="card-head">
-    <span class="badge badge-major">Major</span>
-    <span class="badge badge-fixed">Fixed ✅</span>
-    <strong>D2 conversion silently dropped edge color and node font-color</strong>
-  </div>
-  <p class="file-ref">d2/d2_convert.go:55-61, 84-92</p>
-  <p><code>graphEdgeToD2</code> mapped only From/To/Label — all <code>EdgeStyle</code> information was lost. <code>graphStyleToD2</code> dropped <code>GraphStyle.FontColor</code>.</p>
-  <p><strong>Fix:</strong> Mapped <code>EdgeStyle.Color</code> → <code>D2StrokeStyle.Stroke</code> and added <code>FontColor</code> to the node style conversion.</p>
-</div>
+      <div class="card card-warning">
+        <div class="card-head">
+          <span class="badge badge-major">Major</span>
+          <span class="badge badge-fixed">Fixed ✅</span>
+          <strong>Escaping gaps in D2, Mermaid, and PlantUML renderers</strong>
+        </div>
+        <p class="file-ref">
+          d2/d2_render.go:272,276 · graph/mermaid.go:77,86 · plantuml/plantuml.go:59-70
+        </p>
+        <p>
+          D2: Icon and Link fields were written raw while all other string fields were escaped.
+          Mermaid: node/edge IDs in the direct-graph path were unsanitized (tree path already used
+          <code>escape.MermaidID</code>). PlantUML: labels had zero escaping.
+        </p>
+        <p>
+          <strong>Fix:</strong> Applied <code>escape.D2()</code> to Icon/Link,
+          <code>escape.MermaidID()</code> to IDs, and added a new
+          <code>escape.PlantUML()</code> function for PlantUML labels.
+        </p>
+      </div>
 
-<div class="card card-warning">
-  <div class="card-head">
-    <span class="badge badge-major">Major</span>
-    <span class="badge badge-fixed">Fixed ✅</span>
-    <strong>Escaping gaps in D2, Mermaid, and PlantUML renderers</strong>
-  </div>
-  <p class="file-ref">d2/d2_render.go:272,276 · graph/mermaid.go:77,86 · plantuml/plantuml.go:59-70</p>
-  <p>D2: Icon and Link fields were written raw while all other string fields were escaped. Mermaid: node/edge IDs in the direct-graph path were unsanitized (tree path already used <code>escape.MermaidID</code>). PlantUML: labels had zero escaping.</p>
-  <p><strong>Fix:</strong> Applied <code>escape.D2()</code> to Icon/Link, <code>escape.MermaidID()</code> to IDs, and added a new <code>escape.PlantUML()</code> function for PlantUML labels.</p>
-</div>
+      <div class="card card-warning">
+        <div class="card-head">
+          <span class="badge badge-major">Major</span>
+          <span class="badge badge-fixed">Fixed ✅</span>
+          <strong>TUI ProgressModel.messages — unbounded memory leak</strong>
+        </div>
+        <p class="file-ref">tui/state.go:95 · tui/reporter.go:157</p>
+        <p>
+          <code>messages []string</code> was appended to on every <code>ReportMessage</code> call
+          but never read or rendered anywhere — unbounded growth for the lifetime of the process.
+        </p>
+        <p><strong>Fix:</strong> Removed the field, the append, and the initializer.</p>
+      </div>
 
-<div class="card card-warning">
-  <div class="card-head">
-    <span class="badge badge-major">Major</span>
-    <span class="badge badge-fixed">Fixed ✅</span>
-    <strong>TUI ProgressModel.messages — unbounded memory leak</strong>
-  </div>
-  <p class="file-ref">tui/state.go:95 · tui/reporter.go:157</p>
-  <p><code>messages []string</code> was appended to on every <code>ReportMessage</code> call but never read or rendered anywhere — unbounded growth for the lifetime of the process.</p>
-  <p><strong>Fix:</strong> Removed the field, the append, and the initializer.</p>
-</div>
+      <h2>🟡 Major — Open (TODO_LIST.md)</h2>
 
-<h2>🟡 Major — Open (TODO_LIST.md)</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Severity</th>
+            <th>Location</th>
+            <th>Issue</th>
+            <th>Fix</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>20</td>
+            <td><span class="badge badge-critical">Critical</span></td>
+            <td class="file-ref">nom/timing_cache.go:68</td>
+            <td>
+              Unbounded <code>saveAsync</code> goroutines racing on same file → CSV corruption under
+              burst load
+            </td>
+            <td>Single goroutine + channel debounce, or mutex serialization</td>
+          </tr>
+          <tr>
+            <td>21</td>
+            <td><span class="badge badge-major">Major</span></td>
+            <td class="file-ref">nom/inline_renderer.go:65-99</td>
+            <td>
+              Setter methods mutate fields without synchronization while refreshLoop goroutine reads
+              them
+            </td>
+            <td>Guard with mutex or atomic types</td>
+          </tr>
+          <tr>
+            <td>22</td>
+            <td><span class="badge badge-critical">Critical</span></td>
+            <td class="file-ref">tui/reporter.go:103-209</td>
+            <td>
+              BubbleTeaProgressReporter mutates model fields from caller goroutine while Bubble Tea
+              event loop reads/writes same fields
+            </td>
+            <td>Route all model mutations through <code>tea.Program.Send</code></td>
+          </tr>
+          <tr>
+            <td>24</td>
+            <td><span class="badge badge-major">Major</span></td>
+            <td class="file-ref">nom/tree_modification.go:31</td>
+            <td>Re-parenting leaves phantom edges in old parent's Children slice</td>
+            <td>Remove from old parent before reassigning</td>
+          </tr>
+          <tr>
+            <td>23</td>
+            <td><span class="badge badge-minor">Minor</span></td>
+            <td class="file-ref">nom/timing_cache_persist.go:61</td>
+            <td>Loaded history not capped to maxCachedEntries during load</td>
+            <td>Apply cap during load</td>
+          </tr>
+          <tr>
+            <td>25</td>
+            <td><span class="badge badge-major">Major</span></td>
+            <td class="file-ref">tui/state.go:83-90</td>
+            <td>ProgressStep allows impossible state (CompletedAt != nil && IsActive)</td>
+            <td>Make IsActive a derived method</td>
+          </tr>
+          <tr>
+            <td>26</td>
+            <td><span class="badge badge-minor">Minor</span></td>
+            <td class="file-ref">tui/display.go:3-8</td>
+            <td>DisplayMode is stringly-typed (should be int enum like WorkflowState)</td>
+            <td>Change to <code>type DisplayMode int</code></td>
+          </tr>
+          <tr>
+            <td>27</td>
+            <td><span class="badge badge-minor">Minor</span></td>
+            <td class="file-ref">graph.go:144-153</td>
+            <td>EdgeStyle.Style is free-form string instead of typed enum</td>
+            <td>Create LineStyle enum (solid/dashed/dotted)</td>
+          </tr>
+          <tr>
+            <td>29</td>
+            <td><span class="badge badge-minor">Minor</span></td>
+            <td class="file-ref">tui/view.go (381 lines)</td>
+            <td>File exceeds 350-line limit</td>
+            <td>Split into render_universal.go + render_nom.go</td>
+          </tr>
+          <tr>
+            <td>30</td>
+            <td><span class="badge badge-minor">Minor</span></td>
+            <td class="file-ref">nom/inline_renderer.go (393 lines)</td>
+            <td>File exceeds 350-line limit</td>
+            <td>Split summary + lifecycle into separate files</td>
+          </tr>
+          <tr>
+            <td>31</td>
+            <td><span class="badge badge-major">Major</span></td>
+            <td class="file-ref">graph/dot.go:118-119</td>
+            <td>nodesep/ranksep injection — raw user strings in DOT output</td>
+            <td>Validate as numeric</td>
+          </tr>
+          <tr>
+            <td>32</td>
+            <td><span class="badge badge-minor">Minor</span></td>
+            <td class="file-ref">graph/dot.go:196-200</td>
+            <td>Edge style attrs (Color, Style) not escaped in writeEdge</td>
+            <td>Escape or validate against enum</td>
+          </tr>
+        </tbody>
+      </table>
 
-<table>
-  <thead>
-    <tr><th>#</th><th>Severity</th><th>Location</th><th>Issue</th><th>Fix</th></tr>
-  </thead>
-  <tbody>
-    <tr><td>20</td><td><span class="badge badge-critical">Critical</span></td><td class="file-ref">nom/timing_cache.go:68</td><td>Unbounded <code>saveAsync</code> goroutines racing on same file → CSV corruption under burst load</td><td>Single goroutine + channel debounce, or mutex serialization</td></tr>
-    <tr><td>21</td><td><span class="badge badge-major">Major</span></td><td class="file-ref">nom/inline_renderer.go:65-99</td><td>Setter methods mutate fields without synchronization while refreshLoop goroutine reads them</td><td>Guard with mutex or atomic types</td></tr>
-    <tr><td>22</td><td><span class="badge badge-critical">Critical</span></td><td class="file-ref">tui/reporter.go:103-209</td><td>BubbleTeaProgressReporter mutates model fields from caller goroutine while Bubble Tea event loop reads/writes same fields</td><td>Route all model mutations through <code>tea.Program.Send</code></td></tr>
-    <tr><td>24</td><td><span class="badge badge-major">Major</span></td><td class="file-ref">nom/tree_modification.go:31</td><td>Re-parenting leaves phantom edges in old parent's Children slice</td><td>Remove from old parent before reassigning</td></tr>
-    <tr><td>23</td><td><span class="badge badge-minor">Minor</span></td><td class="file-ref">nom/timing_cache_persist.go:61</td><td>Loaded history not capped to maxCachedEntries during load</td><td>Apply cap during load</td></tr>
-    <tr><td>25</td><td><span class="badge badge-major">Major</span></td><td class="file-ref">tui/state.go:83-90</td><td>ProgressStep allows impossible state (CompletedAt != nil && IsActive)</td><td>Make IsActive a derived method</td></tr>
-    <tr><td>26</td><td><span class="badge badge-minor">Minor</span></td><td class="file-ref">tui/display.go:3-8</td><td>DisplayMode is stringly-typed (should be int enum like WorkflowState)</td><td>Change to <code>type DisplayMode int</code></td></tr>
-    <tr><td>27</td><td><span class="badge badge-minor">Minor</span></td><td class="file-ref">graph.go:144-153</td><td>EdgeStyle.Style is free-form string instead of typed enum</td><td>Create LineStyle enum (solid/dashed/dotted)</td></tr>
-    <tr><td>29</td><td><span class="badge badge-minor">Minor</span></td><td class="file-ref">tui/view.go (381 lines)</td><td>File exceeds 350-line limit</td><td>Split into render_universal.go + render_nom.go</td></tr>
-    <tr><td>30</td><td><span class="badge badge-minor">Minor</span></td><td class="file-ref">nom/inline_renderer.go (393 lines)</td><td>File exceeds 350-line limit</td><td>Split summary + lifecycle into separate files</td></tr>
-    <tr><td>31</td><td><span class="badge badge-major">Major</span></td><td class="file-ref">graph/dot.go:118-119</td><td>nodesep/ranksep injection — raw user strings in DOT output</td><td>Validate as numeric</td></tr>
-    <tr><td>32</td><td><span class="badge badge-minor">Minor</span></td><td class="file-ref">graph/dot.go:196-200</td><td>Edge style attrs (Color, Style) not escaped in writeEdge</td><td>Escape or validate against enum</td></tr>
-  </tbody>
-</table>
+      <h2>🟢 Strong Patterns — Good Work Preserved</h2>
 
-<h2>🟢 Strong Patterns — Good Work Preserved</h2>
+      <div class="card card-solution">
+        <div class="card-head">
+          <span class="badge badge-ok">Strong</span>
+          <strong>Multi-module zero-dependency architecture</strong>
+        </div>
+        <p>
+          Root module has ZERO imports from any sub-module. Users get zero transitive deps from
+          modules they don't import. Verified via <code>go mod graph</code>. This is the project's
+          crown jewel.
+        </p>
+      </div>
+      <div class="card card-solution">
+        <div class="card-head">
+          <span class="badge badge-ok">Strong</span>
+          <strong>Generic formatRegistry[T] pattern</strong>
+        </div>
+        <p>
+          Three separate mutex+map patterns consolidated into one generic
+          <code>formatRegistry[T]</code> backing capability matrix, TableDataMarshaler, and
+          AnyDataMarshaler registries. Thread-safe, DRY, type-safe.
+        </p>
+      </div>
+      <div class="card card-solution">
+        <div class="card-head">
+          <span class="badge badge-ok">Strong</span>
+          <strong>Shape capability matrix (ADR 002)</strong>
+        </div>
+        <p>
+          Single source of truth mapping Format → Shapes. Queryable bidirectionally. Sub-modules
+          register via <code>init()</code>, root provides defaults. Elegant extensible design.
+        </p>
+      </div>
+      <div class="card card-solution">
+        <div class="card-head">
+          <span class="badge badge-ok">Strong</span> <strong>Branded ID phantom types</strong>
+        </div>
+        <p>
+          Compile-time type safety preventing mixing D2NodeID/TreeNodeID/GraphNodeID via
+          <code>go-branded-id</code>. Impossible to accidentally pass the wrong ID type.
+        </p>
+      </div>
+      <div class="card card-solution">
+        <div class="card-head">
+          <span class="badge badge-ok">Strong</span> <strong>Escape module centralization</strong>
+        </div>
+        <p>
+          All format-specific escaping in a zero-dependency <code>escape/</code> module with
+          <code>strings.NewReplacer</code> for single-pass, 1-allocation escaping. Now covers D2,
+          DOT, XML, HTML, MermaidID, MermaidText, SlugifyID, and PlantUML.
+        </p>
+      </div>
+      <div class="card card-solution">
+        <div class="card-head">
+          <span class="badge badge-ok">Strong</span>
+          <strong>96.5% root coverage, 90%+ everywhere</strong>
+        </div>
+        <p>
+          All 17 modules maintain 88%+ test coverage. Integration tests verify all 16 formats. Fuzz
+          tests for markdown and D2 enums. Benchmarks for all hot paths.
+        </p>
+      </div>
 
-<div class="card card-solution">
-  <div class="card-head"><span class="badge badge-ok">Strong</span> <strong>Multi-module zero-dependency architecture</strong></div>
-  <p>Root module has ZERO imports from any sub-module. Users get zero transitive deps from modules they don't import. Verified via <code>go mod graph</code>. This is the project's crown jewel.</p>
-</div>
-<div class="card card-solution">
-  <div class="card-head"><span class="badge badge-ok">Strong</span> <strong>Generic formatRegistry[T] pattern</strong></div>
-  <p>Three separate mutex+map patterns consolidated into one generic <code>formatRegistry[T]</code> backing capability matrix, TableDataMarshaler, and AnyDataMarshaler registries. Thread-safe, DRY, type-safe.</p>
-</div>
-<div class="card card-solution">
-  <div class="card-head"><span class="badge badge-ok">Strong</span> <strong>Shape capability matrix (ADR 002)</strong></div>
-  <p>Single source of truth mapping Format → Shapes. Queryable bidirectionally. Sub-modules register via <code>init()</code>, root provides defaults. Elegant extensible design.</p>
-</div>
-<div class="card card-solution">
-  <div class="card-head"><span class="badge badge-ok">Strong</span> <strong>Branded ID phantom types</strong></div>
-  <p>Compile-time type safety preventing mixing D2NodeID/TreeNodeID/GraphNodeID via <code>go-branded-id</code>. Impossible to accidentally pass the wrong ID type.</p>
-</div>
-<div class="card card-solution">
-  <div class="card-head"><span class="badge badge-ok">Strong</span> <strong>Escape module centralization</strong></div>
-  <p>All format-specific escaping in a zero-dependency <code>escape/</code> module with <code>strings.NewReplacer</code> for single-pass, 1-allocation escaping. Now covers D2, DOT, XML, HTML, MermaidID, MermaidText, SlugifyID, and PlantUML.</p>
-</div>
-<div class="card card-solution">
-  <div class="card-head"><span class="badge badge-ok">Strong</span> <strong>96.5% root coverage, 90%+ everywhere</strong></div>
-  <p>All 17 modules maintain 88%+ test coverage. Integration tests verify all 16 formats. Fuzz tests for markdown and D2 enums. Benchmarks for all hot paths.</p>
-</div>
+      <h2>📋 Deferred API-Breaking Changes (Post-v1)</h2>
+      <p>
+        These have in-code <code>TODO(split-brain ...)</code> markers and are tracked in
+        TODO_LIST.md P6:
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Issue</th>
+            <th>Why Deferred</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>M4</td>
+            <td>Rename non-canonical Render() methods</td>
+            <td>Exported API change</td>
+          </tr>
+          <tr>
+            <td>M5</td>
+            <td>Rename GraphShape → NodeShape constants</td>
+            <td>Exported API change</td>
+          </tr>
+          <tr>
+            <td>M6</td>
+            <td>Document canonical branded-ID import path</td>
+            <td>Exported API change</td>
+          </tr>
+          <tr>
+            <td>M7</td>
+            <td>Add output.Direction bridge enum</td>
+            <td>Exported API change</td>
+          </tr>
+          <tr>
+            <td>M8</td>
+            <td>Align style struct field names across formats</td>
+            <td>Exported API change</td>
+          </tr>
+          <tr>
+            <td>12</td>
+            <td>Unify Marshaler → Renderer terminology</td>
+            <td>Exported API change</td>
+          </tr>
+          <tr>
+            <td>13</td>
+            <td>RenderOptions.GraphID dead code</td>
+            <td>Exported API change</td>
+          </tr>
+        </tbody>
+      </table>
 
-<h2>📋 Deferred API-Breaking Changes (Post-v1)</h2>
-<p>These have in-code <code>TODO(split-brain ...)</code> markers and are tracked in TODO_LIST.md P6:</p>
-<table>
-  <thead><tr><th>ID</th><th>Issue</th><th>Why Deferred</th></tr></thead>
-  <tbody>
-    <tr><td>M4</td><td>Rename non-canonical Render() methods</td><td>Exported API change</td></tr>
-    <tr><td>M5</td><td>Rename GraphShape → NodeShape constants</td><td>Exported API change</td></tr>
-    <tr><td>M6</td><td>Document canonical branded-ID import path</td><td>Exported API change</td></tr>
-    <tr><td>M7</td><td>Add output.Direction bridge enum</td><td>Exported API change</td></tr>
-    <tr><td>M8</td><td>Align style struct field names across formats</td><td>Exported API change</td></tr>
-    <tr><td>12</td><td>Unify Marshaler → Renderer terminology</td><td>Exported API change</td></tr>
-    <tr><td>13</td><td>RenderOptions.GraphID dead code</td><td>Exported API change</td></tr>
-  </tbody>
-</table>
-
-<h2>📊 Module Health Summary</h2>
-<table>
-  <thead><tr><th>Module</th><th>Files</th><th>Status</th><th>Notes</th></tr></thead>
-  <tbody>
-    <tr><td>root (output)</td><td>30</td><td><span class="badge badge-ok">Clean</span></td><td>Strong types, registry, ColorMode wiring</td></tr>
-    <tr><td>nom</td><td>28</td><td><span class="badge badge-major">3 Open</span></td><td>Goroutine race, setter race, tree re-parenting</td></tr>
-    <tr><td>tui</td><td>15</td><td><span class="badge badge-critical">4 Open</span></td><td>Reporter data race, impossible states, file size, dead code</td></tr>
-    <tr><td>d2</td><td>17</td><td><span class="badge badge-ok">Fixed</span></td><td>Conversion data loss + escaping gaps fixed</td></tr>
-    <tr><td>graph</td><td>13</td><td><span class="badge badge-minor">2 Open</span></td><td>nodesep injection, edge style escaping</td></tr>
-    <tr><td>plantuml</td><td>7</td><td><span class="badge badge-ok">Fixed</span></td><td>Label escaping added</td></tr>
-    <tr><td>delimited</td><td>6</td><td><span class="badge badge-ok">Clean</span></td><td>Shared marshalFromTableData dedup correct</td></tr>
-    <tr><td>serialization</td><td>14</td><td><span class="badge badge-ok">Fixed</span></td><td>Doc refs fixed; footer skip is intentional</td></tr>
-    <tr><td>markup</td><td>8</td><td><span class="badge badge-ok">Clean</span></td><td>HTML auto-escaping correct</td></tr>
-    <tr><td>table</td><td>5</td><td><span class="badge badge-ok">Clean</span></td><td>ColorMode propagated correctly</td></tr>
-    <tr><td>escape</td><td>2</td><td><span class="badge badge-ok">Enhanced</span></td><td>Added PlantUML escape function</td></tr>
-    <tr><td>enum</td><td>2</td><td><span class="badge badge-ok">Clean</span></td><td>Zero-dep generic utilities</td></tr>
-    <tr><td>testhelpers</td><td>5</td><td><span class="badge badge-ok">Clean</span></td><td>Zero-dep shared assertions</td></tr>
-    <tr><td>integration</td><td>6</td><td><span class="badge badge-ok">Fixed</span></td><td>Test interface redeclarations removed</td></tr>
-  </tbody>
-</table>
-
-</main>
-<footer>
-  go-output full code review · generated 2026-06-17 · 226 files across 17 modules · 10 fixed on the spot · 12 open majors · 7 deferred breaking changes
-</footer>
-</body>
+      <h2>📊 Module Health Summary</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Module</th>
+            <th>Files</th>
+            <th>Status</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>root (output)</td>
+            <td>30</td>
+            <td><span class="badge badge-ok">Clean</span></td>
+            <td>Strong types, registry, ColorMode wiring</td>
+          </tr>
+          <tr>
+            <td>nom</td>
+            <td>28</td>
+            <td><span class="badge badge-major">3 Open</span></td>
+            <td>Goroutine race, setter race, tree re-parenting</td>
+          </tr>
+          <tr>
+            <td>tui</td>
+            <td>15</td>
+            <td><span class="badge badge-critical">4 Open</span></td>
+            <td>Reporter data race, impossible states, file size, dead code</td>
+          </tr>
+          <tr>
+            <td>d2</td>
+            <td>17</td>
+            <td><span class="badge badge-ok">Fixed</span></td>
+            <td>Conversion data loss + escaping gaps fixed</td>
+          </tr>
+          <tr>
+            <td>graph</td>
+            <td>13</td>
+            <td><span class="badge badge-minor">2 Open</span></td>
+            <td>nodesep injection, edge style escaping</td>
+          </tr>
+          <tr>
+            <td>plantuml</td>
+            <td>7</td>
+            <td><span class="badge badge-ok">Fixed</span></td>
+            <td>Label escaping added</td>
+          </tr>
+          <tr>
+            <td>delimited</td>
+            <td>6</td>
+            <td><span class="badge badge-ok">Clean</span></td>
+            <td>Shared marshalFromTableData dedup correct</td>
+          </tr>
+          <tr>
+            <td>serialization</td>
+            <td>14</td>
+            <td><span class="badge badge-ok">Fixed</span></td>
+            <td>Doc refs fixed; footer skip is intentional</td>
+          </tr>
+          <tr>
+            <td>markup</td>
+            <td>8</td>
+            <td><span class="badge badge-ok">Clean</span></td>
+            <td>HTML auto-escaping correct</td>
+          </tr>
+          <tr>
+            <td>table</td>
+            <td>5</td>
+            <td><span class="badge badge-ok">Clean</span></td>
+            <td>ColorMode propagated correctly</td>
+          </tr>
+          <tr>
+            <td>escape</td>
+            <td>2</td>
+            <td><span class="badge badge-ok">Enhanced</span></td>
+            <td>Added PlantUML escape function</td>
+          </tr>
+          <tr>
+            <td>enum</td>
+            <td>2</td>
+            <td><span class="badge badge-ok">Clean</span></td>
+            <td>Zero-dep generic utilities</td>
+          </tr>
+          <tr>
+            <td>testhelpers</td>
+            <td>5</td>
+            <td><span class="badge badge-ok">Clean</span></td>
+            <td>Zero-dep shared assertions</td>
+          </tr>
+          <tr>
+            <td>integration</td>
+            <td>6</td>
+            <td><span class="badge badge-ok">Fixed</span></td>
+            <td>Test interface redeclarations removed</td>
+          </tr>
+        </tbody>
+      </table>
+    </main>
+    <footer>
+      go-output full code review · generated 2026-06-17 · 226 files across 17 modules · 10 fixed on
+      the spot · 12 open majors · 7 deferred breaking changes
+    </footer>
+  </body>
 </html>
