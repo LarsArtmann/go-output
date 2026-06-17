@@ -86,7 +86,13 @@ type ProgressStep struct {
 	Message     string
 	StartTime   time.Time
 	CompletedAt *time.Time
-	IsActive    bool
+}
+
+// IsActive returns true if the step is still in progress (not completed).
+// Derived from CompletedAt to make the impossible state
+// (CompletedAt != nil && active) unrepresentable.
+func (s ProgressStep) IsActive() bool {
+	return s.CompletedAt == nil
 }
 
 // ProgressModel holds the state for the Bubble Tea progress display.

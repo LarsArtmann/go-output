@@ -1,8 +1,9 @@
 package tui
 
-type DisplayMode string
+// DisplayMode controls which visualization style the TUI renders.
+type DisplayMode int
 
 const (
-	DisplayModeNOM       DisplayMode = "nom"
-	DisplayModeUniversal DisplayMode = "universal"
+	DisplayModeUniversal DisplayMode = iota
+	DisplayModeNOM
 )

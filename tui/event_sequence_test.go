@@ -177,7 +177,7 @@ func TestProgressModel_EventSequence_StepLifecycle(t *testing.T) {
 		t.Errorf("current = %d, want 1", step.Current)
 	}
 
-	if !step.IsActive {
+	if !step.IsActive() {
 		t.Error("step should be active")
 	}
 
@@ -189,7 +189,7 @@ func TestProgressModel_EventSequence_StepLifecycle(t *testing.T) {
 		t.Errorf("current = %d, want 3", step.Current)
 	}
 
-	if step.IsActive {
+	if step.IsActive() {
 		t.Error("step should not be active after completion")
 	}
 

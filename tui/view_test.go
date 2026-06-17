@@ -80,8 +80,8 @@ func TestProgressModel_RenderSteps(t *testing.T) {
 	model := newTestModel()
 	now := time.Now()
 	model.steps = []ProgressStep{
-		{Message: "Step 1", Current: 5, Total: 5, CompletedAt: &now, IsActive: false},
-		{Message: "Step 2", Current: 3, Total: 5, StartTime: now, IsActive: true},
+		{Message: "Step 1", Current: 5, Total: 5, CompletedAt: &now},
+		{Message: "Step 2", Current: 3, Total: 5, StartTime: now},
 	}
 
 	output := model.renderSteps()

@@ -168,12 +168,11 @@ func (pr *BubbleTeaProgressReporter) ReportStep(current, total uint, message str
 	stepFound := false
 
 	for i := range pr.model.steps {
-		if pr.model.steps[i].Message == message || pr.model.steps[i].IsActive {
+		if pr.model.steps[i].Message == message || pr.model.steps[i].IsActive() {
 			pr.model.steps[i].Current = current
 			pr.model.steps[i].Total = total
 			pr.model.steps[i].Message = message
 
-			pr.model.steps[i].IsActive = current < total
 			if current >= total && pr.model.steps[i].CompletedAt == nil {
 				now := time.Now()
 				pr.model.steps[i].CompletedAt = &now
@@ -191,7 +190,6 @@ func (pr *BubbleTeaProgressReporter) ReportStep(current, total uint, message str
 			Total:     total,
 			Message:   message,
 			StartTime: time.Now(),
-			IsActive:  current < total,
 		}
 		pr.model.steps = append(pr.model.steps, step)
 	}

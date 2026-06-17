@@ -158,7 +158,7 @@ func stepIconAndStyle(step ProgressStep) (string, lipgloss.Style) {
 		return "✅", lipgloss.NewStyle().Foreground(colors.success)
 	}
 
-	if step.IsActive {
+	if step.IsActive() {
 		return "🔄", lipgloss.NewStyle().Foreground(colors.warning)
 	}
 
@@ -180,7 +180,7 @@ func (m *ProgressModel) renderStep(step ProgressStep, isLast bool) string {
 	if step.CompletedAt != nil {
 		duration := step.CompletedAt.Sub(step.StartTime)
 		timing = fmt.Sprintf(timingFormatWithIcon, duration.Seconds())
-	} else if step.IsActive {
+	} else if step.IsActive() {
 		elapsed := time.Since(step.StartTime)
 		timing = fmt.Sprintf(timingFormatWithIcon, elapsed.Seconds())
 	}
@@ -225,7 +225,7 @@ func (m *ProgressModel) renderSummaryBar() string {
 	for _, step := range m.steps {
 		if step.CompletedAt != nil {
 			completedSteps++
-		} else if step.IsActive {
+		} else if step.IsActive() {
 			inProgressSteps++
 		}
 	}

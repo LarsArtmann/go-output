@@ -143,7 +143,7 @@ func TestBubbleTeaProgressReporter_ReportStep(t *testing.T) {
 			t.Errorf("step current = %d, want 1", reporter.model.steps[0].Current)
 		}
 
-		if !reporter.model.steps[0].IsActive {
+		if !reporter.model.steps[0].IsActive() {
 			t.Error("step should be active (1 < 5)")
 		}
 	})
@@ -159,7 +159,7 @@ func TestBubbleTeaProgressReporter_ReportStep(t *testing.T) {
 			t.Error("step should be completed when updated to current >= total")
 		}
 
-		if reporter.model.steps[0].IsActive {
+		if reporter.model.steps[0].IsActive() {
 			t.Error("step should not be active when current >= total")
 		}
 	})
