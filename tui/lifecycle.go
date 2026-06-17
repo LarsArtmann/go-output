@@ -1,7 +1,7 @@
 package tui
 
 import (
-	"log"
+	"log/slog"
 
 	tea "charm.land/bubbletea/v2"
 )
@@ -23,7 +23,7 @@ func (pr *BubbleTeaProgressReporter) ensureStarted() {
 			go func() {
 				if _, err := pr.program.Run(); err != nil {
 					// TUI errors are non-fatal, continue execution
-					log.Printf("TUI program error: %v", err)
+					slog.Error("TUI program error", "error", err)
 				}
 			}()
 

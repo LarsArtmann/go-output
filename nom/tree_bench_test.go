@@ -81,3 +81,35 @@ func BenchmarkDependencyTree_VisibleNodes(b *testing.B) {
 		})
 	}
 }
+
+func BenchmarkDependencyTree_RenderWithWidth(b *testing.B) {
+	for _, size := range []int{100, 500} {
+		b.Run(fmt.Sprintf("%dNodes", size), func(b *testing.B) {
+			dt := buildBenchmarkTree(size)
+			maxVisible := size / 2
+
+			b.ResetTimer()
+
+			for b.Loop() {
+				if dt.RenderWithWidth(maxVisible, 80) == "" {
+					b.Fatal("RenderWithWidth() should produce output")
+				}
+			}
+		})
+	}
+}
+
+func BenchmarkDependencyTree_ChildPriority(b *testing.B) {
+	dt := buildBenchmarkTree(500)
+
+	root := dt.GetNode(ActivityID("root"))
+	if root == nil {
+		b.Fatal("root node not found")
+	}
+
+	b.ResetTimer()
+
+	for b.Loop() {
+		_ = dt.childPriority(root)
+	}
+}

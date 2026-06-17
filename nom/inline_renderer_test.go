@@ -249,6 +249,7 @@ func TestInlineRenderer_Refresh_TriggersRender(t *testing.T) {
 	var buf bytes.Buffer
 
 	renderer := NewInlineRenderer(sub, &buf, 10)
+	renderer.renderNotify = make(chan struct{}, 1)
 
 	ctx := context.Background()
 	_ = sub.OnEvent(ctx, &testEvent{
@@ -266,7 +267,13 @@ func TestInlineRenderer_Refresh_TriggersRender(t *testing.T) {
 	buf.Reset()
 	renderer.Refresh()
 
-	time.Sleep(50 * time.Millisecond)
+	select {
+	case <-renderer.renderNotify:
+		// render completed
+	case <-time.After(time.Second):
+		t.Fatal("refresh did not trigger a render within 1s")
+	}
+
 	renderer.Stop()
 
 	if !strings.Contains(buf.String(), "Step 1") {

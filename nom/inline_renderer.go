@@ -39,10 +39,11 @@ type InlineRenderer struct {
 	appName    string
 	noColor    bool
 
-	tickMu      sync.Mutex
-	cancelFn    context.CancelFunc
-	tickerDone  chan struct{}
-	refreshChan chan struct{}
+	tickMu       sync.Mutex
+	cancelFn     context.CancelFunc
+	tickerDone   chan struct{}
+	refreshChan  chan struct{}
+	renderNotify chan struct{} // test hook: signaled after each render if non-nil
 }
 
 // NewInlineRenderer creates an inline renderer bound to the given subscriber and writer.
@@ -280,11 +281,25 @@ func (r *InlineRenderer) refreshLoop(ctx context.Context, interval time.Duration
 		case <-ctx.Done():
 			return
 		case <-r.refreshChan:
-			r.Render()
+			r.renderAndNotify()
 		case <-ticker.C:
-			r.Render()
+			r.renderAndNotify()
 		case <-maxFrame.C:
-			r.Render()
+			r.renderAndNotify()
+		}
+	}
+}
+
+// renderAndNotify calls Render and, if a renderNotify channel is set,
+// sends a non-blocking signal. This provides deterministic synchronization
+// for tests without affecting production behavior.
+func (r *InlineRenderer) renderAndNotify() {
+	r.Render()
+
+	if r.renderNotify != nil {
+		select {
+		case r.renderNotify <- struct{}{}:
+		default:
 		}
 	}
 }
