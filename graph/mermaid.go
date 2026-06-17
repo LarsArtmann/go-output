@@ -171,7 +171,6 @@ func MermaidFromTableData(data *output.TableData) *MermaidRenderer {
 
 	renderer.SetNodesFromTableData(data, func(_ int, n *output.GraphNode) {
 		n.Shape = output.ShapeBox
-		n.Label = output.NewBrandedID[output.GraphNodeLabelBrand](escape.MermaidText(n.Label.Get()))
 	})
 
 	return renderer

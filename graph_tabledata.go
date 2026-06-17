@@ -67,7 +67,9 @@ func (m *GraphRendererState) SetNodesFromTableData(
 	nodes := NodesFromTableData(data, DefaultGraphNodeLabel)
 
 	for i := range nodes {
-		modifyNode(i, &nodes[i])
+		if modifyNode != nil {
+			modifyNode(i, &nodes[i])
+		}
 	}
 
 	m.nodes = append(m.nodes, nodes...)

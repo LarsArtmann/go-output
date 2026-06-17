@@ -216,9 +216,7 @@ func DOTFromTableData(data *output.TableData) *DOTRenderer {
 		return renderer
 	}
 
-	renderer.SetNodesFromTableData(data, func(_ int, n *output.GraphNode) {
-		n.Label = output.NewBrandedID[output.GraphNodeLabelBrand](escape.DOT(n.Label.Get()))
-	})
+	renderer.SetNodesFromTableData(data, nil)
 
 	return renderer
 }
