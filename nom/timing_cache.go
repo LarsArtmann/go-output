@@ -23,6 +23,7 @@ const (
 // TimingCache manages activity duration history and averages.
 type TimingCache struct {
 	mu           sync.RWMutex
+	saveMu       sync.Mutex                // serializes file writes to prevent concurrent truncation
 	cache        map[string][]time.Duration // activity name -> duration history
 	filePath     string                     // Path to cache file
 	loaded       bool                       // Whether cache has been loaded

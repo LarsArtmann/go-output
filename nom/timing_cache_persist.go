@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"slices"
 	"strconv"
 	"time"
 )
@@ -53,13 +54,18 @@ func (tc *TimingCache) loadLocked() error {
 
 		var duration time.Duration
 
-		_, err := fmt.Sscanf(record[1], "%d", &duration)
+		nanos, err := strconv.ParseInt(record[1], 10, 64)
 		if err != nil {
 			continue
 		}
+		duration = time.Duration(nanos)
 
 		history := newCache[activityName]
 		history = append(history, duration)
+		// Cap at maxCachedEntries during load to prevent unbounded growth from hand-edited files
+		if len(history) > maxCachedEntries {
+			history = history[len(history)-maxCachedEntries:]
+		}
 		newCache[activityName] = history
 	}
 
@@ -111,8 +117,14 @@ func writeCacheToFile(filePath string, data map[string][]time.Duration) error {
 
 	writer := csv.NewWriter(file)
 
-	for activityName, history := range data {
-		for _, duration := range history {
+	names := make([]string, 0, len(data))
+	for name := range data {
+		names = append(names, name)
+	}
+	slices.Sort(names)
+
+	for _, activityName := range names {
+		for _, duration := range data[activityName] {
 			record := []string{
 				activityName,
 				strconv.FormatInt(duration.Nanoseconds(), 10),
@@ -144,6 +156,9 @@ func (tc *TimingCache) saveAsync() {
 	defer tc.pendingSaves.Done()
 
 	dataCopy, filePath := tc.snapshotData()
+
+	tc.saveMu.Lock()
+	defer tc.saveMu.Unlock()
 
 	if err := writeCacheToFile(filePath, dataCopy); err != nil {
 		log.Printf("nom: async cache save failed: %v", err)
