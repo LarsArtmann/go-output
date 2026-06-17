@@ -5,6 +5,8 @@
 // Tree and graph renderers implement output.TreeOutputRenderer and output.GraphRenderer
 // respectively, marshaling data structures using the appropriate encoding library.
 //
-// Use MarshalJSONFromTableData, MarshalYAMLFromTableData, etc. for one-shot
-// marshaling, or use the typed renderer constructors for incremental building.
+// Use MarshalJSON, MarshalYAML, or MarshalTOML for one-shot marshaling of any
+// value, or MarshalTOMLFromTableData / MarshalJSONLFromTableData for TableData.
+// JSON and YAML TableData use the renderer-based dispatch (JSONTableRenderer,
+// YAMLTableRenderer) via the output.RenderTableData registry.
 package serialization

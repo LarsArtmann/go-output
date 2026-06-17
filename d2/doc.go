@@ -9,7 +9,8 @@
 // # Quick Start
 //
 //	diagram := d2.NewD2Diagram()
-//	diagram.AddNode(d2.NewD2Node("server", "Web Server"))
-//	diagram.AddEdge(d2.NewD2Edge("server", "db"))
-//	output, _ := diagram.Render()
+//	diagram.AddNodeSimple("server", "Web Server")
+//	diagram.AddNodeSimple("db", "Database")
+//	diagram.AddEdgeSimple("server", "db")
+//	result, _ := diagram.Render()
 package d2
