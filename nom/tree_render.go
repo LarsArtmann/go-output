@@ -87,7 +87,7 @@ func (dt *DependencyTree) collectVisibleNodes(maxHeight int) []visibleEntry {
 // that active work (running, failed, pending) is prioritized over completed
 // history when the viewport is constrained.
 func (dt *DependencyTree) elideCompletedUnderPressure(children []*TreeNode, maxHeight, visibleCount int) []*TreeNode {
-	if maxHeight <= 0 || visibleCount+maxHeight <= 0 {
+	if maxHeight <= 0 {
 		return children
 	}
 
