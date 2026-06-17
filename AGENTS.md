@@ -277,6 +277,11 @@ import "github.com/larsartmann/go-output/nom"                  // NOM progress v
 import "github.com/larsartmann/go-output/tui"                  // Bubble Tea interactive TUI (optional)
 ```
 
+`go get github.com/larsartmann/go-output` now requires only the root
+dependencies (`go-branded-id`, `x/term`, `delimited`, `enum`,
+`testhelpers`). YAML/TOML libraries are pulled only when you import
+`serialization/`.
+
 ### Mono-Version Tagging
 
 All modules are released in lockstep with the same version. Every release creates tags for every module:
@@ -289,6 +294,7 @@ This ensures `go get github.com/larsartmann/go-output/table@vX.Y.Z` resolves cor
 ## Architecture Notes
 
 - **Root has ZERO sub-module imports** — verified via `go mod graph`. Users get zero transitive deps from sub-modules they don't import.
+- Root's `go.mod` no longer requires `serialization`, so importing `graph/`, `plantuml/`, or `d2/` no longer transitively pulls in `go-faster/yaml`, `go-toml/v2`, `go-faster/jx`, or `segmentio/asm`.
 - Root no longer imports `go-faster/yaml` or `escape` in production code — these deps are isolated in serialization/ and markup/ respectively
 - D2 has richer types than generic graph (shapes, arrows, SQL tables, classes) — lives in `d2/` module with its own `D2Node`/`D2Edge` types
 - D2 re-exports `D2NodeID`/`D2NodeLabel` from root so users don't need to import both `d2` and `output` for ID construction
@@ -307,10 +313,14 @@ This ensures `go get github.com/larsartmann/go-output/table@vX.Y.Z` resolves cor
 - Markdown rendering uses bold headers and dim separators when color is enabled
 - Multi-module workspace with 15 independent modules (see ADR 001)
 - Shape capability matrix (ADR 002) uses `formatRegistry[T]` generic registry pattern: `RegisterFormatShapes()` in each sub-module's `init()`. Root registers defaults for all formats as fallback. Query with `f.Supports(shape)`. Same generic `formatRegistry[T]` backs `TableDataMarshaler` and `AnyDataMarshaler` registries, eliminating 3 separate mutex+map boilerplates.
-- API stability audit (ADR 006) completed — all exported symbols frozen, capability matrix fixed (D2/Mermaid/DOT/PlantUML now declare ShapeTree, TOML now declares ShapeGraph)
+- API stability audit (ADR 006) completed — all exported symbols frozen, capability matrix fixed (D2/Mermaid/DOT/PlantUML now declare ShapeTree, TOML now declares ShapeGraph); ADR updated with diagram renderer stability tiers
 - Round-trip integration tests in `integration/roundtrip_test.go` verify 16 formats: 8 parseable round-trips (JSON, CSV, TSV, YAML, TOML, JSONL, XML, HTML) + 8 structural verifications (Markdown, Table, Tree, AsciiDoc, D2, Mermaid, DOT, PlantUML)
 - `format.go` split into focused files: `format.go` (Format enum), `shape.go` (Shape + capability matrix), `renderer.go` (Renderer/TableRenderer interfaces) — `format_deprecated.go` deleted
-- `escape.SlugifyID()` unifies ID sanitization (spaces, hyphens, slashes → underscores) across D2, DOT, Mermaid, and PlantUML tree node ID generation
+- `escape.SlugifyID()` unifies ID sanitization (spaces, hyphens, slashes, dots, asterisks, brackets, braces, parentheses → underscores) across D2, DOT, Mermaid, and PlantUML tree node ID generation
+- `GraphRendererState.DedupEdges()` removes duplicate `(from, to)` edges in-place
+- `GraphStyle` is honored by DOT, Mermaid, and PlantUML renderers for per-node colors
+- `MermaidRenderer.SetCodeFence(bool)` toggles markdown code fence; default `true` preserves backwards compatibility
+- `DOTRenderer` exposes configurable layout via `RankDir`/`SplineStyle` typed enums and `SetNodeSep`/`SetRankSep`
 - `tableDataBase` exported as `TableDataStore` with `Data()` getter — allows sub-modules to access unexported `data` field
 - `marshal.go` exports `MarshalJSONIndent()` — used by integration, examples, and tests. `MarshalFormat`/`UnmarshalFormat` removed — inlined into serialization/ and markup/ callers
 - Root format files (CSV, TSV, JSON, YAML, XML, HTML, Streaming) extracted to delimited/, serialization/, markup/ modules respectively

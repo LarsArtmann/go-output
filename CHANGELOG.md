@@ -6,6 +6,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+
+- **`MermaidRenderer.SetCodeFence(bool)`** — raw flowchart syntax for `.mmd` files, Mermaid CLI, and embedded diagrams.
+- **Per-node `GraphStyle` in Mermaid and PlantUML** — `fill`, `stroke`, `font-color`, and `font-size` are now honored. Replaces the hardcoded pink Mermaid classDef and rigid PlantUML skinparam defaults.
+- **`GraphRendererState.DedupEdges()`** — removes duplicate edges by `(from, to)` in-place.
+- **DOT typed layout enums** — `RankDir` and `SplineStyle` make invalid layout values unrepresentable, with `Parse`/`String`/`IsValid`/`AllowedValues`.
+- **`DOTRenderer.SetRankDir(RankDir)`**, **`SetSplines(SplineStyle)`**, **`SetNodeSep`**, **`SetRankSep`** — configurable DOT layout attributes (defaults preserved).
+
+### Changed
+
+- **Root `go.mod` no longer requires `serialization`** — importing `graph`, `plantuml`, or `d2` no longer transitively pulls `go-faster/yaml`, `go-toml/v2`, `go-faster/jx`, or `segmentio/asm` into consumers.
+- **Diagram renderer API stability documented** — ADR 006 now defines stable/experimental tiers for `GraphRenderer`, Mermaid, DOT, PlantUML, D2, and NOM/TUI APIs.
+
+### Fixed
+
+- **`escape.SlugifyID`** now handles dots, asterisks, brackets, braces, and parentheses, preventing silent node ID collisions like `foo.bar` ↔ `foo_bar`.
+
 ## [0.11.0] - 2026-06-17
 
 ### Added
