@@ -1,21 +1,11 @@
 package serialization
 
 import (
-	"strings"
 	"testing"
 
 	"github.com/larsartmann/go-output"
+	"github.com/larsartmann/go-output/testhelpers"
 )
-
-func assertAllContained(t *testing.T, haystack string, needles ...string) {
-	t.Helper()
-
-	for _, n := range needles {
-		if !strings.Contains(haystack, n) {
-			t.Errorf("should contain %q", n)
-		}
-	}
-}
 
 func TestTOMLGraphRenderer_Empty(t *testing.T) {
 	t.Parallel()
@@ -27,7 +17,7 @@ func TestTOMLGraphRenderer_Empty(t *testing.T) {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	assertAllContained(t, out, "nodes")
+	testhelpers.AssertAllContained(t, out, "nodes")
 }
 
 func TestTOMLGraphRenderer_WithNodesAndEdges(t *testing.T) {
@@ -42,7 +32,7 @@ func TestTOMLGraphRenderer_WithNodesAndEdges(t *testing.T) {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	assertAllContained(t, out, "Node A", "Node B")
+	testhelpers.AssertAllContained(t, out, "Node A", "Node B")
 }
 
 func TestTOMLGraphRenderer_EdgeWithLabel(t *testing.T) {
@@ -57,7 +47,7 @@ func TestTOMLGraphRenderer_EdgeWithLabel(t *testing.T) {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	assertAllContained(t, out, "connects")
+	testhelpers.AssertAllContained(t, out, "connects")
 }
 
 func TestTOMLTreeRenderer(t *testing.T) {
@@ -78,7 +68,7 @@ func TestTOMLTreeRenderer(t *testing.T) {
 			t.Fatalf("Render() error = %v", err)
 		}
 
-		assertAllContained(t, out, "Root", "Child")
+		testhelpers.AssertAllContained(t, out, "Root", "Child")
 	})
 
 	t.Run("nil root returns empty", func(t *testing.T) {
@@ -112,6 +102,6 @@ func TestTOMLTreeRenderer(t *testing.T) {
 			t.Fatalf("Render() error = %v", err)
 		}
 
-		assertAllContained(t, out, "Grandchild")
+		testhelpers.AssertAllContained(t, out, "Grandchild")
 	})
 }

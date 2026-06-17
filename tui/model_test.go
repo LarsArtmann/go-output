@@ -298,15 +298,8 @@ func TestProgressModel_UpdateWorkflowCompletionState(t *testing.T) {
 		model.displayMode = DisplayModeNOM
 
 		ctx := context.Background()
-		_ = model.nomSubscriber.OnEvent(ctx, &testEvent{
-			eventType: "workflow.started",
-			wID:       nom.WorkflowID("wf-1"),
-		})
-		_ = model.nomSubscriber.OnEvent(ctx, &testEvent{
-			eventType: "activity.started",
-			aID:       nom.ActivityID("test"),
-			aName:     nom.ActivityName("Test"),
-		})
+		startWorkflow(t, model, ctx, nom.WorkflowID("wf-1"))
+		startActivity(t, model, ctx, nom.ActivityID("test"), nom.ActivityName("Test"))
 		_ = model.nomSubscriber.OnEvent(ctx, &testEvent{
 			eventType: "activity.failed",
 			aID:       nom.ActivityID("test"),
@@ -329,15 +322,8 @@ func TestProgressModel_UpdateWorkflowCompletionState(t *testing.T) {
 		model.displayMode = DisplayModeNOM
 
 		ctx := context.Background()
-		_ = model.nomSubscriber.OnEvent(ctx, &testEvent{
-			eventType: "workflow.started",
-			wID:       nom.WorkflowID("wf-1"),
-		})
-		_ = model.nomSubscriber.OnEvent(ctx, &testEvent{
-			eventType: "activity.started",
-			aID:       nom.ActivityID("build"),
-			aName:     nom.ActivityName("Build"),
-		})
+		startWorkflow(t, model, ctx, nom.WorkflowID("wf-1"))
+		startActivity(t, model, ctx, nom.ActivityID("build"), nom.ActivityName("Build"))
 		_ = model.nomSubscriber.OnEvent(ctx, &testEvent{
 			eventType: "activity.completed",
 			aID:       nom.ActivityID("build"),
@@ -360,15 +346,8 @@ func TestProgressModel_UpdateWorkflowCompletionState(t *testing.T) {
 		model.displayMode = DisplayModeNOM
 
 		ctx := context.Background()
-		_ = model.nomSubscriber.OnEvent(ctx, &testEvent{
-			eventType: "workflow.started",
-			wID:       nom.WorkflowID("wf-1"),
-		})
-		_ = model.nomSubscriber.OnEvent(ctx, &testEvent{
-			eventType: "activity.started",
-			aID:       nom.ActivityID("active"),
-			aName:     nom.ActivityName("Active"),
-		})
+		startWorkflow(t, model, ctx, nom.WorkflowID("wf-1"))
+		startActivity(t, model, ctx, nom.ActivityID("active"), nom.ActivityName("Active"))
 
 		model.updateWorkflowCompletionState()
 

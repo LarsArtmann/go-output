@@ -62,6 +62,30 @@ func TestAssertContains(t *testing.T) {
 	})
 }
 
+func TestAssertAllContained(t *testing.T) {
+	t.Parallel()
+
+	AssertAllContained(t, "hello world", "hello", "world")
+
+	t.Run("missing needle", func(t *testing.T) {
+		t.Parallel()
+
+		mock := &testing.T{}
+
+		AssertAllContained(mock, "hello", "missing")
+
+		if !mock.Failed() {
+			t.Error("expected failure for missing needle")
+		}
+	})
+
+	t.Run("no needles", func(t *testing.T) {
+		t.Parallel()
+
+		AssertAllContained(t, "anything")
+	})
+}
+
 func TestAssertEqual(t *testing.T) {
 	t.Parallel()
 

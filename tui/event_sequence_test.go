@@ -34,6 +34,28 @@ func (e *testEvent) GetDuration() time.Duration        { return e.duration }
 func (e *testEvent) GetError() error                   { return e.err }
 func (e *testEvent) GetDependencies() []nom.ActivityID { return e.dependencies }
 
+// startActivity fires an activity.started event on the model's NOM subscriber.
+// Common test setup boilerplate; collapses a 5-line OnEvent block to one call.
+func startActivity(t *testing.T, model *ProgressModel, ctx context.Context, id nom.ActivityID, name nom.ActivityName) {
+	t.Helper()
+
+	_ = model.nomSubscriber.OnEvent(ctx, &testEvent{
+		eventType: "activity.started",
+		aID:       id,
+		aName:     name,
+	})
+}
+
+// startWorkflow fires a workflow.started event on the model's NOM subscriber.
+func startWorkflow(t *testing.T, model *ProgressModel, ctx context.Context, id nom.WorkflowID) {
+	t.Helper()
+
+	_ = model.nomSubscriber.OnEvent(ctx, &testEvent{
+		eventType: "workflow.started",
+		wID:       id,
+	})
+}
+
 // TestProgressModel_EventSequence_WorkflowStartToTick verifies that when
 // the NOM subscriber reports a running workflow, a tick transitions the
 // model from Idle to Running and syncs the tree.

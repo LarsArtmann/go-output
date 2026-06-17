@@ -321,9 +321,17 @@ This ensures `go get github.com/larsartmann/go-output/table@vX.Y.Z` resolves cor
 
 ## Code Duplication Policy
 
-**Updated:** 2026-05-30
+**Updated:** 2026-06-17
 
 At `art-dupl -t 50` (industry standard), this codebase has **zero actionable clones**.
+
+At `art-dupl -t 25` (moderate), **3 clone groups** remain. All 3 are idiomatic test code with different data values that extracting would harm readability:
+
+| File                                           | Pattern                                                                 | Why accepted                                                                                                  |
+| ---------------------------------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `nom/tree_priority_test.go:38-45, 46-53`       | Table-driven test cases varying only `maxHeight` (100 vs 0)             | Table-driven test with same shape, different data — idiomatic Go test code                                    |
+| `testhelpers/helpers_test.go:264-268, 282-286` | `t.Run` subtests for `AssertLineCount` with different inputs            | Subtest boilerplate with different data — idiomatic Go test code                                              |
+| `tui/reporter_test.go:144-146, 180-182`        | Field assertions `if reporter.model.steps[0].Current != N` (N=1 vs N=3) | Verification of different expected values — idiomatic Go test code; abstraction would obscure the test intent |
 
 At `art-dupl -t 15` (aggressive), ~50 clone groups appear. These are categorized as:
 
@@ -337,6 +345,13 @@ At `art-dupl -t 15` (aggressive), ~50 clone groups appear. These are categorized
 ### Key Decisions
 
 - `testhelpers` is **zero-dep by design** — cannot import `output`. Cross-module test helpers must stay local or use table-driven patterns within each module
+- `assertAllContained` lives in `testhelpers` (zero-dep, only `strings` + `testing`) — used by `markup`, `plantuml`, and `serialization` tests
+- `isMermaidIdentRune` lives in `escape/escape.go` (private) — shared between `MermaidID` production code and the fuzz invariant test
 - `serialization/render.go` has `renderViaRenderer()` shared helper for YAML/TOML (identical `render*TableData` bodies)
 - `graphtest.NewTestNode`/`TestEdgeAB` used in serialization, graph, d2, plantuml benches — not in examples (must show full API)
+- nom test helpers `registerActivity`, `sendActivityStarted` — nom-package-private (cannot be imported across modules because test events have module-specific types)
+- tui test helpers `startActivity`, `startWorkflow`, `startHelper` — tui-package-private for the same reason
+- integration test helpers `startActivity`, `completeActivity`, `fireWorkflowStarted`, `mustUpdateActivityStatus` — package-private
+- d2 test helpers `newD2NodeID`, `newD2NodeLabel` (in `d2/helpers_test.go`) — eliminate `output.NewBrandedID[output.D2NodeIDBrand]("X")` boilerplate
+- `assertMapRow` lives in `integration/roundtrip_test.go` (package-private) — variadic key/value pair verifier for round-trip tests
 - **Threshold 15 is too aggressive for action** — use t=30-40 for meaningful dedup work

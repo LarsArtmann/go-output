@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/larsartmann/go-output"
+	"github.com/larsartmann/go-output/testhelpers"
 )
 
 func TestMarshalTOML(t *testing.T) {
@@ -93,7 +94,7 @@ func TestTOMLTableRenderer(t *testing.T) {
 			t.Fatalf("Render() error = %v", err)
 		}
 
-		assertAllContained(t, out, "Alpha", "Beta")
+		testhelpers.AssertAllContained(t, out, "Alpha", "Beta")
 	})
 
 	t.Run("nil data returns empty marker", func(t *testing.T) {
@@ -124,7 +125,7 @@ func TestTOMLTableRenderer(t *testing.T) {
 			t.Fatalf("Render() error = %v", err)
 		}
 
-		assertAllContained(t, out, "Alpha", "Beta")
+		testhelpers.AssertAllContained(t, out, "Alpha", "Beta")
 
 		if !strings.Contains(out, "[[row]]") {
 			t.Errorf("TOML output should use [[row]] array-of-tables syntax, got:\n%s", out)

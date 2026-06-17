@@ -216,8 +216,8 @@ func TestD2NodeWithClass(t *testing.T) {
 		D2StrokeStyle: D2StrokeStyle{Stroke: "darkred"},
 	})
 	d.AddNode(D2Node{ //nolint:exhaustruct // Test uses minimal required fields
-		ID:    output.NewBrandedID[output.D2NodeIDBrand]("alert"),
-		Label: output.NewBrandedID[output.D2NodeLabelBrand]("Alert"),
+		ID:    newD2NodeID("alert"),
+		Label: newD2NodeLabel("Alert"),
 		Class: "important",
 	})
 

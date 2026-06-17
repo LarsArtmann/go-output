@@ -61,6 +61,23 @@ func sendActivityStarted(t *testing.T, ns *NOMStyleSubscriber, ctx context.Conte
 	}
 }
 
+// registerActivity fires an activity.registered event with optional dependencies.
+// Use for golden test setup where the same workflow is repeated across frames.
+func registerActivity(
+	ns *NOMStyleSubscriber,
+	ctx context.Context,
+	id ActivityID,
+	name ActivityName,
+	deps ...ActivityID,
+) {
+	_ = ns.OnEvent(ctx, &testEvent{
+		eventType: EventActivityRegistered,
+		aID:       id,
+		aName:     name,
+		deps:      deps,
+	})
+}
+
 func TestNewNOMStyleSubscriber(t *testing.T) {
 	t.Parallel()
 

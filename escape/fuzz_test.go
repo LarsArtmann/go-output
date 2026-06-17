@@ -72,9 +72,7 @@ func FuzzMermaidID(f *testing.F) {
 		}
 
 		for _, r := range result {
-			valid := (r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') ||
-				(r >= '0' && r <= '9') || r == '_'
-			if !valid {
+			if !isMermaidIdentRune(r) {
 				t.Errorf("MermaidID(%q) = %q, invalid rune %q", s, result, r)
 			}
 		}

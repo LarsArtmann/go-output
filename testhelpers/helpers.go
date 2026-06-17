@@ -31,6 +31,18 @@ func AssertContains(t *testing.T, output, substr, msg string) {
 	}
 }
 
+// AssertAllContained checks that haystack contains every needle, failing
+// for the first missing one with a descriptive message.
+func AssertAllContained(t *testing.T, haystack string, needles ...string) {
+	t.Helper()
+
+	for _, n := range needles {
+		if !strings.Contains(haystack, n) {
+			t.Errorf("should contain %q", n)
+		}
+	}
+}
+
 // AssertEqual checks that got equals want, failing with descriptive error.
 func AssertEqual[T comparable](t *testing.T, name string, input any, got, want T) {
 	t.Helper()

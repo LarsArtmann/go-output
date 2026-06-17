@@ -7,18 +7,9 @@ import (
 	"testing"
 
 	"github.com/larsartmann/go-output"
+	"github.com/larsartmann/go-output/testhelpers"
 	"github.com/larsartmann/go-output/testhelpers/graphtest"
 )
-
-func assertAllContained(t *testing.T, haystack string, needles ...string) {
-	t.Helper()
-
-	for _, n := range needles {
-		if !strings.Contains(haystack, n) {
-			t.Errorf("should contain %q", n)
-		}
-	}
-}
 
 // errWriter always returns an error from Write.
 type errWriter struct{}
@@ -42,7 +33,7 @@ func TestPlantUMLDiagramRender(t *testing.T) {
 			t.Fatalf("Render() error = %v", err)
 		}
 
-		assertAllContained(t, out, "@startuml", "@enduml")
+		testhelpers.AssertAllContained(t, out, "@startuml", "@enduml")
 	})
 
 	t.Run("with nodes and edges", func(t *testing.T) {
@@ -58,7 +49,7 @@ func TestPlantUMLDiagramRender(t *testing.T) {
 			t.Fatalf("Render() error = %v", err)
 		}
 
-		assertAllContained(t, out, "Service A", "Service B", "calls")
+		testhelpers.AssertAllContained(t, out, "Service A", "Service B", "calls")
 	})
 }
 
@@ -103,7 +94,7 @@ func TestPlantUMLFromTableData(t *testing.T) {
 			t.Fatalf("Render() error = %v", err)
 		}
 
-		assertAllContained(t, out, "@startuml")
+		testhelpers.AssertAllContained(t, out, "@startuml")
 	})
 
 	t.Run("with data", func(t *testing.T) {
@@ -120,7 +111,7 @@ func TestPlantUMLFromTableData(t *testing.T) {
 			t.Fatalf("Render() error = %v", err)
 		}
 
-		assertAllContained(t, out, "@startuml")
+		testhelpers.AssertAllContained(t, out, "@startuml")
 	})
 }
 
@@ -140,7 +131,7 @@ func TestRenderPlantUMLTableData(t *testing.T) {
 			t.Fatalf("RenderTableData plantuml: %v", err)
 		}
 
-		assertAllContained(t, buf.String(), "@startuml", "Alpha")
+		testhelpers.AssertAllContained(t, buf.String(), "@startuml", "Alpha")
 	})
 
 	t.Run("propagates writer error", func(t *testing.T) {
@@ -173,7 +164,7 @@ func TestPlantUMLFromTree_Branches(t *testing.T) {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	assertAllContained(t, out, "Parent", "Child", "Grandchild")
+	testhelpers.AssertAllContained(t, out, "Parent", "Child", "Grandchild")
 }
 
 func TestPlantUMLDiagramAddNodeExistingID(t *testing.T) {

@@ -148,29 +148,10 @@ func TestInlineRendererGolden_FirstFrame(t *testing.T) {
 		eventType: EventWorkflowStarted,
 		wID:       WorkflowID("wf-1"),
 	})
-	_ = sub.OnEvent(ctx, &testEvent{
-		eventType: EventActivityRegistered,
-		aID:       ActivityID("phase:build"),
-		aName:     ActivityName("Build"),
-	})
-	_ = sub.OnEvent(ctx, &testEvent{
-		eventType: EventActivityRegistered,
-		aID:       ActivityID("compile"),
-		aName:     ActivityName("Compile"),
-		deps:      []ActivityID{"phase:build"},
-	})
-	_ = sub.OnEvent(ctx, &testEvent{
-		eventType: EventActivityRegistered,
-		aID:       ActivityID("test"),
-		aName:     ActivityName("Run Tests"),
-		deps:      []ActivityID{"phase:build"},
-	})
-	_ = sub.OnEvent(ctx, &testEvent{
-		eventType: EventActivityRegistered,
-		aID:       ActivityID("lint"),
-		aName:     ActivityName("Lint"),
-		deps:      []ActivityID{"phase:build"},
-	})
+	registerActivity(sub, ctx, ActivityID("phase:build"), ActivityName("Build"))
+	registerActivity(sub, ctx, ActivityID("compile"), ActivityName("Compile"), "phase:build")
+	registerActivity(sub, ctx, ActivityID("test"), ActivityName("Run Tests"), "phase:build")
+	registerActivity(sub, ctx, ActivityID("lint"), ActivityName("Lint"), "phase:build")
 
 	renderer.Render()
 
@@ -192,23 +173,9 @@ func TestInlineRendererGolden_SecondFrame(t *testing.T) {
 		eventType: EventWorkflowStarted,
 		wID:       WorkflowID("wf-1"),
 	})
-	_ = sub.OnEvent(ctx, &testEvent{
-		eventType: EventActivityRegistered,
-		aID:       ActivityID("phase:build"),
-		aName:     ActivityName("Build"),
-	})
-	_ = sub.OnEvent(ctx, &testEvent{
-		eventType: EventActivityRegistered,
-		aID:       ActivityID("compile"),
-		aName:     ActivityName("Compile"),
-		deps:      []ActivityID{"phase:build"},
-	})
-	_ = sub.OnEvent(ctx, &testEvent{
-		eventType: EventActivityRegistered,
-		aID:       ActivityID("lint"),
-		aName:     ActivityName("Lint"),
-		deps:      []ActivityID{"phase:build"},
-	})
+	registerActivity(sub, ctx, ActivityID("phase:build"), ActivityName("Build"))
+	registerActivity(sub, ctx, ActivityID("compile"), ActivityName("Compile"), "phase:build")
+	registerActivity(sub, ctx, ActivityID("lint"), ActivityName("Lint"), "phase:build")
 
 	renderer.Render()
 	buf.Reset()

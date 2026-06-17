@@ -178,28 +178,11 @@ func TestNOMSubscriber_RenderNodeVisibleNodes_Integration(t *testing.T) {
 	subscriber := nom.NewNOMStyleSubscriber()
 	ctx := context.Background()
 
-	_ = subscriber.OnEvent(ctx, &nomTestEvent{
-		eventType: "workflow.started",
-		wID:       nom.NewWorkflowID("w1"),
-		wName:     nom.NewWorkflowName("Pipeline"),
-	})
+	fireWorkflowStarted(subscriber, ctx, "w1", "Pipeline")
 
-	_ = subscriber.OnEvent(ctx, &nomTestEvent{
-		eventType: "activity.started",
-		aID:       nom.NewActivityID("build"),
-		aName:     nom.NewActivityName("Build"),
-	})
-	_ = subscriber.OnEvent(ctx, &nomTestEvent{
-		eventType: "activity.started",
-		aID:       nom.NewActivityID("test"),
-		aName:     nom.NewActivityName("Test"),
-	})
-	_ = subscriber.OnEvent(ctx, &nomTestEvent{
-		eventType: "activity.completed",
-		aID:       nom.NewActivityID("build"),
-		aName:     nom.NewActivityName("Build"),
-		duration:  3 * time.Second,
-	})
+	startActivity(subscriber, ctx, "build", "Build")
+	startActivity(subscriber, ctx, "test", "Test")
+	completeActivity(subscriber, ctx, "build", "Build", 3*time.Second)
 
 	subscriber.UpdateRunningActivityElapsed()
 	subscriber.SyncActivityTimingToTree()
@@ -313,4 +296,33 @@ func mustUpdateActivityStatus(
 	if err := tree.UpdateActivityStatus(id, status, symbol, c, startTime, estimated); err != nil {
 		t.Fatalf("UpdateActivityStatus(%s): %v", id, err)
 	}
+}
+
+// startActivity sends an activity.started event and discards any error.
+func startActivity(sub *nom.NOMStyleSubscriber, ctx context.Context, id, name string) {
+	_ = sub.OnEvent(ctx, &nomTestEvent{
+		eventType: "activity.started",
+		aID:       nom.NewActivityID(id),
+		aName:     nom.NewActivityName(name),
+	})
+}
+
+// fireWorkflowStarted sends a workflow.started event and discards any error.
+// Use for tests that only care about downstream behavior, not event errors.
+func fireWorkflowStarted(sub *nom.NOMStyleSubscriber, ctx context.Context, id, name string) {
+	_ = sub.OnEvent(ctx, &nomTestEvent{
+		eventType: "workflow.started",
+		wID:       nom.NewWorkflowID(id),
+		wName:     nom.NewWorkflowName(name),
+	})
+}
+
+// completeActivity sends an activity.completed event and discards any error.
+func completeActivity(sub *nom.NOMStyleSubscriber, ctx context.Context, id, name string, duration time.Duration) {
+	_ = sub.OnEvent(ctx, &nomTestEvent{
+		eventType: "activity.completed",
+		aID:       nom.NewActivityID(id),
+		aName:     nom.NewActivityName(name),
+		duration:  duration,
+	})
 }

@@ -43,8 +43,7 @@ func MermaidID(id string) string {
 	var result strings.Builder
 
 	for _, r := range id {
-		if (r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') ||
-			(r >= '0' && r <= '9') || r == '_' {
+		if isMermaidIdentRune(r) {
 			result.WriteRune(r)
 		}
 	}
@@ -54,6 +53,14 @@ func MermaidID(id string) string {
 	}
 
 	return result.String()
+}
+
+// isMermaidIdentRune reports whether r is valid in a Mermaid node identifier
+// (ASCII letter, digit, or underscore). Centralized so fuzz tests can verify
+// MermaidID's output invariant without duplicating the predicate.
+func isMermaidIdentRune(r rune) bool {
+	return (r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') ||
+		(r >= '0' && r <= '9') || r == '_'
 }
 
 // slugIDReplacer sanitizes strings for use as identifiers across diagram formats.

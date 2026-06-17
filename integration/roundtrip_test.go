@@ -58,7 +58,21 @@ func parseDelimited(t *testing.T, input string, comma rune) [][]string {
 	return records
 }
 
-// assertCell verifies that records[row][col] equals want.
+// assertMapRow checks that parsed[row] contains the given key/value pairs.
+// Fails the test on the first mismatch. Use for round-trip verification of
+// parsed structured output. kv must contain an even number of arguments
+// (key, value pairs).
+func assertMapRow(t *testing.T, parsed []map[string]string, row int, kv ...string) {
+	t.Helper()
+
+	for i := 0; i+1 < len(kv); i += 2 {
+		key, want := kv[i], kv[i+1]
+		if got := parsed[row][key]; got != want {
+			t.Errorf("row %d = %v, want %s=%q", row, parsed[row], key, want)
+		}
+	}
+}
+
 func assertCell(t *testing.T, name string, records [][]string, row, col int, want string) {
 	t.Helper()
 
@@ -102,13 +116,8 @@ func TestRoundTripJSON(t *testing.T) {
 		t.Fatalf("expected 2 rows, got %d", len(parsed))
 	}
 
-	if parsed[0]["Name"] != "Alice" || parsed[0]["Score"] != "95" {
-		t.Errorf("row 0 = %v, want Name=Alice Score=95", parsed[0])
-	}
-
-	if parsed[1]["Name"] != "Bob" || parsed[1]["Active"] != "false" {
-		t.Errorf("row 1 = %v, want Name=Bob Active=false", parsed[1])
-	}
+	assertMapRow(t, parsed, 0, "Name", "Alice", "Score", "95")
+	assertMapRow(t, parsed, 1, "Name", "Bob", "Active", "false")
 }
 
 // TestRoundTripCSV verifies TableData → CSV → parse → verify.

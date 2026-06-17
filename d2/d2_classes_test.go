@@ -3,8 +3,6 @@ package d2
 import (
 	"strings"
 	"testing"
-
-	"github.com/larsartmann/go-output"
 )
 
 func TestD2ClassesDeterministic(t *testing.T) {
@@ -15,8 +13,8 @@ func TestD2ClassesDeterministic(t *testing.T) {
 	d.AddClass("alpha", D2NodeStyle{Fill: "red"})
 	d.AddClass("beta", D2NodeStyle{Fill: "green"})
 	d.AddNode(D2Node{ //nolint:exhaustruct // Test uses minimal required fields
-		ID:    output.NewBrandedID[output.D2NodeIDBrand]("n1"),
-		Label: output.NewBrandedID[output.D2NodeLabelBrand]("N1"),
+		ID:    newD2NodeID("n1"),
+		Label: newD2NodeLabel("N1"),
 		Class: "alpha",
 	})
 
