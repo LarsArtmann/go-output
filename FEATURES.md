@@ -199,17 +199,17 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 
 ## Escape/Sanitization
 
-| Feature                  | Status           | Notes                                                              |
-| ------------------------ | ---------------- | ------------------------------------------------------------------ |
-| **escape.HTML()**        | FULLY_FUNCTIONAL | Uses `html.EscapeString` from stdlib                               |
-| **escape.XML()**         | FULLY_FUNCTIONAL | Uses `html.EscapeString` + `&apos;` for apostrophe                 |
-| **escape.D2()**          | FULLY_FUNCTIONAL | Escapes `\`, `"`, `\n`, `\t` for D2 diagram strings                |
-| **escape.DOT()**         | FULLY_FUNCTIONAL | Escapes `\`, `"`, `\n` for DOT/Graphviz strings                    |
-| **escape.MermaidID()**   | FULLY_FUNCTIONAL | Sanitizes for Mermaid node identifiers (alphanumeric + underscore) |
-| **escape.MermaidSlug()** | FULLY_FUNCTIONAL | Fallback slug sanitization (spaces/hyphens/slashes → underscores)  |
-| **escape.MermaidText()** | FULLY_FUNCTIONAL | Escapes brackets, braces, quotes, newlines for Mermaid labels      |
+| Feature                  | Status           | Notes                                                                         |
+| ------------------------ | ---------------- | ----------------------------------------------------------------------------- |
+| **escape.HTML()**        | FULLY_FUNCTIONAL | Uses `html.EscapeString` from stdlib                                          |
+| **escape.XML()**         | FULLY_FUNCTIONAL | Uses `html.EscapeString` + `&apos;` for apostrophe                            |
+| **escape.D2()**          | FULLY_FUNCTIONAL | Escapes `\`, `"`, `\n`, `\t` for D2 diagram strings                           |
+| **escape.DOT()**         | FULLY_FUNCTIONAL | Escapes `\`, `"`, `\n` for DOT/Graphviz strings                               |
+| **escape.MermaidID()**   | FULLY_FUNCTIONAL | Sanitizes for Mermaid node identifiers (alphanumeric + underscore)            |
+| **escape.MermaidSlug()** | FULLY_FUNCTIONAL | Fallback slug sanitization (spaces/hyphens/slashes → underscores)             |
+| **escape.MermaidText()** | FULLY_FUNCTIONAL | Escapes brackets, braces, quotes, newlines for Mermaid labels                 |
 | **escape.SlugifyID()**   | FULLY_FUNCTIONAL | Sanitizes strings for diagram node identifiers across D2/DOT/Mermaid/PlantUML |
-| **escape.PlantUML()**    | FULLY_FUNCTIONAL | Escapes `]`, newline, backslash, quote for PlantUML labels          |
+| **escape.PlantUML()**    | FULLY_FUNCTIONAL | Escapes `]`, newline, backslash, quote for PlantUML labels                    |
 
 ---
 
@@ -222,7 +222,7 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 | **NOMStyleSubscriber**               | FULLY_FUNCTIONAL | Event-driven subscriber implementing `EventSubscriber`. Routes string-based events without sharing concrete types      |
 | **DependencyTree**                   | FULLY_FUNCTIONAL | Hierarchical activity visualization. Priority filtering (Running > Failed > Pending > Completed), depth-aware prefixes |
 | **InlineRenderer**                   | FULLY_FUNCTIONAL | Real-time inline terminal renderer. Start/Stop/Finish lifecycle, cursor hiding, no-color mode, ANSI redraw             |
-| **TimingCache**                      | FULLY_FUNCTIONAL | Persists activity durations as CSV at `~/.cache/nom-timing.csv`. Async saves, caps 10 entries/activity                 |
+| **TimingCache**                      | PARTIALLY_FUNCTIONAL | Persists activity durations as CSV at `~/.cache/nom-timing.csv`. Async saves, caps 10 entries/activity. **Known issue:** unbounded `saveAsync` goroutines can race on the same file under burst load (TODO #20) |
 | **ActivityStatus enum**              | FULLY_FUNCTIONAL | 5 states: Running, Failed, Paused, Pending, Completed                                                                  |
 | **Branded IDs**                      | FULLY_FUNCTIONAL | `ActivityID`, `ActivityName`, `WorkflowID`, `WorkflowName` — compile-time type safety                                  |
 | **Event accessor interfaces**        | FULLY_FUNCTIONAL | `WorkflowEventAccessor`, `ActivityEventAccessor`, `DurationAccessor`, `ErrorAccessor` — type-assertion routing         |
@@ -320,8 +320,9 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 
 ---
 
-**Last audited:** 2026-06-15
-**Total features:** 160
-**Fully functional:** 151
+**Last audited:** 2026-06-17
+**Total features:** 162
+**Fully functional:** 150
+**Partially functional:** 1 (TimingCache — concurrency issue)
 **Removed:** 9 (FormatCategory, OutputFormat, SortBy, FilledStrings, Register, Create, Unregister, RegisteredFormats, IsRegistered)
-**Known issues:** 0
+**Known issues:** 1 (TimingCache goroutine race — TODO #20)
