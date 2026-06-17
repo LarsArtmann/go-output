@@ -63,12 +63,12 @@ type SplineStyle string
 
 // SplineStyle constants define the valid edge routing styles for DOT graphs.
 const (
-	SplineOrtho     SplineStyle = "ortho"     // Orthogonal routing (default)
-	SplineSpline    SplineStyle = "spline"    // Curved splines
-	SplinePolyline  SplineStyle = "polyline"  // Straight line segments
-	SplineLine      SplineStyle = "line"      // Straight lines
-	SplineCurved    SplineStyle = "curved"    // Curved routing
-	SplineNone      SplineStyle = "none"      // No edge routing
+	SplineOrtho    SplineStyle = "ortho"    // Orthogonal routing (default)
+	SplineSpline   SplineStyle = "spline"   // Curved splines
+	SplinePolyline SplineStyle = "polyline" // Straight line segments
+	SplineLine     SplineStyle = "line"     // Straight lines
+	SplineCurved   SplineStyle = "curved"   // Curved routing
+	SplineNone     SplineStyle = "none"     // No edge routing
 )
 
 //nolint:gochecknoglobals // Global variable used for value iteration.

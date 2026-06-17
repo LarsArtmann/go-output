@@ -172,7 +172,9 @@ func (m *GraphRendererState) DedupEdges() {
 		if _, ok := seen[key]; ok {
 			continue
 		}
+
 		seen[key] = struct{}{}
+
 		deduped = append(deduped, edge)
 	}
 

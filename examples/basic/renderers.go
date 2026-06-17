@@ -191,18 +191,6 @@ func renderTree(projects []Project) {
 	fmt.Println(out)
 }
 
-func renderDiagram(projects []Project, createRenderer func(*output.TableData) output.Renderer) {
-	data := projectsToTableData(projects)
-	renderer := createRenderer(data)
-
-	out, err := renderer.Render()
-	if err != nil {
-		shared.HandleError(err)
-	}
-
-	fmt.Println(out)
-}
-
 func renderMermaid(projects []Project) {
 	renderer := graph.NewMermaidRenderer()
 	renderer.SetCodeFence(false)

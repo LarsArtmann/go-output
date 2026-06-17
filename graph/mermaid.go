@@ -131,6 +131,7 @@ func (r *MermaidRenderer) writeNodeStyles(b *strings.Builder) {
 
 		if !wroteAny {
 			b.WriteString("\n    %% Styling\n")
+
 			wroteAny = true
 		}
 

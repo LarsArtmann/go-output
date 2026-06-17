@@ -23,6 +23,7 @@ func TestParseRankDir(t *testing.T) {
 			if err != nil {
 				t.Fatalf("ParseRankDir(%q) error = %v", tt.input, err)
 			}
+
 			if got != tt.want {
 				t.Errorf("ParseRankDir(%q) = %v, want %v", tt.input, got, tt.want)
 			}
@@ -86,6 +87,7 @@ func TestParseSplineStyle(t *testing.T) {
 			if err != nil {
 				t.Fatalf("ParseSplineStyle(%q) error = %v", tt.input, err)
 			}
+
 			if got != tt.want {
 				t.Errorf("ParseSplineStyle(%q) = %v, want %v", tt.input, got, tt.want)
 			}

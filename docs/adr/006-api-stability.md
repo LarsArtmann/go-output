@@ -38,6 +38,7 @@ All exported symbols across all modules are now **frozen**. The following guaran
 As of v0.12.0, diagram renderer APIs are categorized into stability tiers:
 
 **Stable (frozen through v1.x):**
+
 - `GraphRenderer` interface (`SetNodes`, `SetEdges`, `Render`)
 - `GraphNode`, `GraphEdge`, `GraphStyle`, `EdgeStyle` structs
 - `GraphRendererState` (`AddNode`, `AddEdge`, `SetNodes`, `SetEdges`, `Nodes`, `Edges`)
@@ -46,6 +47,7 @@ As of v0.12.0, diagram renderer APIs are categorized into stability tiers:
 - `PlantUMLDiagram` core API (`NewPlantUMLDiagram`, `AddNode`, `AddEdge`)
 
 **Stable (added v0.12.0):**
+
 - `GraphRendererState.DedupEdges()` — edge deduplication
 - `MermaidRenderer.SetCodeFence(bool)` — markdown fence control
 - `DOTRenderer.SetRankDir(RankDir)` / `SetSplines(SplineStyle)` / `SetNodeSep` / `SetRankSep`
@@ -53,6 +55,7 @@ As of v0.12.0, diagram renderer APIs are categorized into stability tiers:
 - `GraphStyle` field on `GraphNode` is now honored by all three renderers (DOT, Mermaid, PlantUML)
 
 **Experimental (may change before v1.0):**
+
 - D2 rich domain model (`D2Node`, `D2Edge`, `D2Class`, SQL tables, arrow types)
 - NOM/TUI progress visualization APIs
 - BDD test utilities

@@ -92,7 +92,7 @@ func sanitizePlantUMLID(s string) string {
 // string for per-element styling. Returns empty string when no colors are set.
 //
 // PlantUML syntax: the spec starts with '#' and joins attributes with ';'.
-// Example: #e8a838;line:#4a4030;text:#14110d
+// Example: #e8a838;line:#4a4030;text:#14110d.
 func plantumlColorSpec(s output.GraphStyle) string {
 	var parts []string
 
