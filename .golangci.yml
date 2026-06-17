@@ -143,7 +143,6 @@ linters:
             - sync
             - testing
             - time
-            - unicode/utf8
             - github.com/larsartmann/go-output
             - github.com/larsartmann/go-output/enum
             - github.com/larsartmann/go-output/internal/gentest
@@ -267,9 +266,7 @@ linters:
             - testing
             - time
             - log
-            - unicode/utf8
             - github.com/charmbracelet/x/ansi
-            - github.com/mattn/go-runewidth
     exhaustruct:
       exclude:
         - os/exec.Cmd

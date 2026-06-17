@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"charm.land/lipgloss/v2"
-	"github.com/mattn/go-runewidth"
+	"github.com/charmbracelet/x/ansi"
 )
 
 // Render generates NOM-style tree rendering using depth-first forest walk.
@@ -187,7 +187,7 @@ func (dt *DependencyTree) renderLine(entry visibleEntry, maxWidth int) string {
 	fullPrefix := entry.prefix + entry.connector
 
 	if maxWidth > 0 {
-		available := maxWidth - runewidth.StringWidth(fullPrefix)
+		available := maxWidth - ansi.StringWidth(fullPrefix)
 		activityDisplay = TruncateVisible(activityDisplay, available)
 	}
 
