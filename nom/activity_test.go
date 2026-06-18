@@ -39,8 +39,8 @@ func TestActivity_SetRunning(t *testing.T) {
 		t.Error("expected running")
 	}
 
-	if a.StartedAt.IsZero() {
-		t.Error("StartedAt should be set")
+	if a.StartTime.IsZero() {
+		t.Error("StartTime should be set")
 	}
 
 	if a.Shape != output.NodeShapeBox {
@@ -64,12 +64,12 @@ func TestActivity_SetCompleted(t *testing.T) {
 		t.Error("expected completed")
 	}
 
-	if a.EndedAt.IsZero() {
-		t.Error("EndedAt should be set")
+	if a.EndTime.IsZero() {
+		t.Error("EndTime should be set")
 	}
 
-	if !a.StartedAt.Before(a.EndedAt) {
-		t.Error("StartedAt should be before EndedAt")
+	if !a.StartTime.Before(a.EndTime) {
+		t.Error("StartTime should be before EndTime")
 	}
 
 	if a.Shape != output.NodeShapeRect {

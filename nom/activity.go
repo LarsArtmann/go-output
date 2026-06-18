@@ -1,6 +1,7 @@
 package nom
 
 import (
+	"image/color"
 	"time"
 
 	"github.com/larsartmann/go-output"
@@ -15,16 +16,22 @@ type Activity struct {
 
 	// Status is the typed domain state (pending/running/completed/failed/paused).
 	Status ActivityStatus
-	// StartedAt is when the activity transitioned to Running (zero if not started).
-	StartedAt time.Time
-	// EndedAt is when the activity transitioned to Completed or Failed.
-	EndedAt time.Time
-	// Estimate is the predicted duration from the timing cache (zero if unknown).
-	Estimate time.Duration
+	// StartTime is when the activity transitioned to Running (zero if not started).
+	StartTime time.Time
+	// EndTime is when the activity transitioned to Completed or Failed.
+	EndTime time.Time
+	// EstimatedTime is the predicted duration from the timing cache (zero if unknown).
+	EstimatedTime time.Duration
 	// Err holds the failure error if Status == ActivityStatusFailed.
 	Err error
 	// OperationType labels the activity for prefix symbols ("download", "upload", "").
 	OperationType string
+	// Symbol is the NOM-style display symbol (cached from Status for rendering).
+	Symbol string
+	// Color is the lipgloss terminal color (cached from Status for rendering).
+	Color color.Color
+	// CurrentElapsed is updated periodically for running activities.
+	CurrentElapsed time.Duration
 }
 
 // NewActivity creates an Activity with a branded GraphNode ID and default
@@ -43,8 +50,8 @@ func NewActivity(id, name string) *Activity {
 // SetRunning transitions the activity to running and stamps StartedAt.
 func (a *Activity) SetRunning() {
 	a.Status = ActivityStatusRunning
-	a.StartedAt = time.Now()
-	a.EndedAt = time.Time{}
+	a.StartTime = time.Now()
+	a.EndTime = time.Time{}
 	a.Err = nil
 	a.applyVisualStyle()
 }
@@ -52,7 +59,7 @@ func (a *Activity) SetRunning() {
 // SetCompleted transitions the activity to completed and stamps EndedAt.
 func (a *Activity) SetCompleted() {
 	a.Status = ActivityStatusCompleted
-	a.EndedAt = time.Now()
+	a.EndTime = time.Now()
 	a.applyVisualStyle()
 }
 
@@ -60,31 +67,31 @@ func (a *Activity) SetCompleted() {
 func (a *Activity) SetFailed(err error) {
 	a.Status = ActivityStatusFailed
 	a.Err = err
-	a.EndedAt = time.Now()
+	a.EndTime = time.Now()
 	a.applyVisualStyle()
 }
 
 // SetEstimatedTime sets the predicted duration from the timing cache.
 func (a *Activity) SetEstimatedTime(d time.Duration) {
-	a.Estimate = d
+	a.EstimatedTime = d
 }
 
-// Elapsed returns the duration since StartedAt if running, or EndedAt-StartedAt
+// Elapsed returns the duration since StartTime if running, or EndTime-StartTime
 // if finished. Returns zero if not started or if StartTime is zero.
 func (a *Activity) Elapsed() time.Duration {
-	if a.StartedAt.IsZero() {
+	if a.StartTime.IsZero() {
 		return 0
 	}
 
 	if a.Status == ActivityStatusRunning {
-		return time.Since(a.StartedAt)
+		return time.Since(a.StartTime)
 	}
 
-	if !a.EndedAt.IsZero() {
-		return a.EndedAt.Sub(a.StartedAt)
+	if !a.EndTime.IsZero() {
+		return a.EndTime.Sub(a.StartTime)
 	}
 
-	return time.Since(a.StartedAt)
+	return time.Since(a.StartTime)
 }
 
 // IsRunning returns true if the activity is currently in the running state.
@@ -101,4 +108,6 @@ func (a *Activity) IsFailed() bool { return a.Status == ActivityStatusFailed }
 func (a *Activity) applyVisualStyle() {
 	a.Shape = a.Status.NodeShape()
 	a.Style = a.Status.GraphStyle()
+	a.Symbol = a.Status.GetSymbol()
+	a.Color = a.Status.GetColor()
 }

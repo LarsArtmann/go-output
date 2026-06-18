@@ -31,6 +31,7 @@ func NewActivityStore() *ActivityStore {
 func (s *ActivityStore) Upsert(a *Activity) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
+
 	s.activities[a.ID] = a
 }
 
@@ -38,7 +39,9 @@ func (s *ActivityStore) Upsert(a *Activity) {
 func (s *ActivityStore) Get(id output.GraphNodeID) (*Activity, bool) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
+
 	a, ok := s.activities[id]
+
 	return a, ok
 }
 
@@ -46,10 +49,12 @@ func (s *ActivityStore) Get(id output.GraphNodeID) (*Activity, bool) {
 func (s *ActivityStore) All() []*Activity {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
+
 	out := make([]*Activity, 0, len(s.activities))
 	for _, a := range s.activities {
 		out = append(out, a)
 	}
+
 	return out
 }
 
@@ -57,6 +62,7 @@ func (s *ActivityStore) All() []*Activity {
 func (s *ActivityStore) AddEdge(from, to output.GraphNodeID) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
+
 	s.edges = append(s.edges, output.GraphEdge{From: from, To: to})
 }
 
@@ -65,10 +71,12 @@ func (s *ActivityStore) AddEdge(from, to output.GraphNodeID) {
 func (s *ActivityStore) Nodes() []output.GraphNode {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
+
 	out := make([]output.GraphNode, 0, len(s.activities))
 	for _, a := range s.activities {
 		out = append(out, a.GraphNode)
 	}
+
 	return out
 }
 
@@ -77,8 +85,10 @@ func (s *ActivityStore) Nodes() []output.GraphNode {
 func (s *ActivityStore) Edges() []output.GraphEdge {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
+
 	out := make([]output.GraphEdge, len(s.edges))
 	copy(out, s.edges)
+
 	return out
 }
 
@@ -94,11 +104,13 @@ func (s *ActivityStore) Roots() []output.GraphNodeID {
 	}
 
 	var roots []output.GraphNodeID
+
 	for id := range s.activities {
 		if !hasParent[id] {
 			roots = append(roots, id)
 		}
 	}
+
 	return roots
 }
 
@@ -107,6 +119,7 @@ func (s *ActivityStore) Roots() []output.GraphNodeID {
 func (s *ActivityStore) Counts() (running, completed, failed, pending int) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
+
 	for _, a := range s.activities {
 		switch a.Status {
 		case ActivityStatusRunning:
@@ -119,6 +132,7 @@ func (s *ActivityStore) Counts() (running, completed, failed, pending int) {
 			pending++
 		}
 	}
+
 	return running, completed, failed, pending
 }
 
@@ -126,6 +140,7 @@ func (s *ActivityStore) Counts() (running, completed, failed, pending int) {
 func (s *ActivityStore) Size() int {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
+
 	return len(s.activities)
 }
 
@@ -133,6 +148,7 @@ func (s *ActivityStore) Size() int {
 func (s *ActivityStore) Clear() {
 	s.mu.Lock()
 	defer s.mu.Unlock()
+
 	s.activities = make(map[output.GraphNodeID]*Activity)
 	s.edges = make([]output.GraphEdge, 0)
 }
