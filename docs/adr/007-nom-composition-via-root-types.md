@@ -55,7 +55,7 @@ diagram, _ := dot.Render()
 | `ActivityStore` with `Nodes()`/`Edges()`       | ✅ Done                             |
 | `ActivityNode` embeds `Activity`               | ✅ Done                             |
 | `MultiSubscriber` fanout                       | ✅ Done                             |
-| `ActivityStore` wired into subscriber          | ✅ Done → removed (ghost system)   |
+| `ActivityStore` wired into subscriber          | ✅ Done → removed (ghost system)    |
 | Diagram export tests                           | ✅ Done (3 tests, race-clean)       |
 | `ActivityDisplayState` → `Activity` migration  | ✅ Done — single source of truth    |
 | `SyncActivityTimingToTree` elimination         | ✅ Done — shared pointer            |
@@ -67,4 +67,4 @@ diagram, _ := dot.Render()
 - nom/ now depends on `github.com/larsartmann/go-output` (root)
 - Diagram export of progress state is possible with 3 lines of code
 - Multiple subscribers can receive one event stream via `MultiSubscriber`
-- The `DisplayState` struct and `SyncActivityTimingToTree` have been eliminated (shared *Activity pointer model)
+- The `DisplayState` struct and `SyncActivityTimingToTree` have been eliminated (shared \*Activity pointer model)

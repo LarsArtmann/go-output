@@ -197,7 +197,10 @@
               type = "app";
               program = pkgs.writeShellApplication {
                 name = "go-govulncheck";
-                runtimeInputs = [ go pkgs.govulncheck ];
+                runtimeInputs = [
+                  go
+                  pkgs.govulncheck
+                ];
                 text = ''
                   set -euo pipefail
                   for mod in ${pkgs.lib.concatStringsSep " " modules}; do
