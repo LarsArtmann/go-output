@@ -3,6 +3,8 @@ package nom
 import (
 	"context"
 	"time"
+
+	"github.com/larsartmann/go-output"
 )
 
 // OnEvent implements EventSubscriber interface
@@ -175,6 +177,15 @@ func (ns *NOMStyleSubscriber) handleActivityStarted(
 		return err
 	}
 
+	// Mirror to ActivityStore for diagram export
+	ns.syncToStore(aa.GetActivityID(), activity)
+	for _, dep := range deps {
+		ns.store.AddEdge(
+			output.NewBrandedID[output.GraphNodeIDBrand](string(dep)),
+			output.NewBrandedID[output.GraphNodeIDBrand](string(aa.GetActivityID())),
+		)
+	}
+
 	return ns.dependencyTree.UpdateActivityStatus(
 		aa.GetActivityID(),
 		activity.Status,
@@ -207,11 +218,21 @@ func (ns *NOMStyleSubscriber) handleActivityRegistered(
 		deps = da.GetDependencies()
 	}
 
-	return ns.dependencyTree.AddActivity(
+	if err := ns.dependencyTree.AddActivity(
 		aa.GetActivityID(),
 		aa.GetActivityName().String(),
 		deps,
-	)
+	); err != nil {
+		return err
+	}
+
+	// Mirror to ActivityStore for diagram export
+	activity := ns.activities[aa.GetActivityID()]
+	if activity != nil {
+		ns.syncToStore(aa.GetActivityID(), activity)
+	}
+
+	return nil
 }
 
 // updateActivityStateAfterExecution handles common logic for completing/failing activities.
@@ -227,6 +248,9 @@ func (ns *NOMStyleSubscriber) updateActivityStateAfterExecution(
 			return err
 		}
 	}
+
+	// Mirror to ActivityStore for diagram export
+	ns.syncToStore(activityID, activity)
 
 	return ns.dependencyTree.UpdateActivityStatus(
 		activityID,

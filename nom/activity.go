@@ -2,6 +2,7 @@ package nom
 
 import (
 	"image/color"
+	"maps"
 	"time"
 
 	"github.com/larsartmann/go-output"
@@ -112,12 +113,12 @@ func (a *Activity) Copy() *Activity {
 	if a.Dependencies != nil {
 		cpy.Dependencies = append([]string{}, a.Dependencies...)
 	}
+
 	if a.Metadata != nil {
 		cpy.Metadata = make(map[string]string, len(a.Metadata))
-		for k, v := range a.Metadata {
-			cpy.Metadata[k] = v
-		}
+		maps.Copy(cpy.Metadata, a.Metadata)
 	}
+
 	return &cpy
 }
 

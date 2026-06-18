@@ -105,3 +105,20 @@ func syncActivityToNode(node *ActivityNode, ads *ActivityDisplayState) {
 	node.Shape = ads.Status.NodeShape()
 	node.Style = ads.Status.GraphStyle()
 }
+
+// syncToStore mirrors an ActivityDisplayState update into the ActivityStore
+// so diagram export (Nodes()/Edges()) stays current.
+func (ns *NOMStyleSubscriber) syncToStore(id ActivityID, ads *ActivityDisplayState) {
+	a := NewActivity(string(id), ads.ActivityName.String())
+	a.Status = ads.Status
+	a.Symbol = ads.Symbol
+	a.Color = ads.Color
+	a.StartTime = ads.StartTime
+	a.EndTime = ads.EndTime
+	a.EstimatedTime = ads.EstimatedTime
+	a.CurrentElapsed = ads.CurrentElapsed
+	a.OperationType = ads.OperationType
+	a.Err = ads.Error
+	a.applyVisualStyle()
+	ns.store.Upsert(a)
+}
