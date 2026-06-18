@@ -5,6 +5,7 @@ import (
 
 	"github.com/larsartmann/go-output"
 	"github.com/larsartmann/go-output/serialization"
+	"github.com/larsartmann/go-output/testhelpers/graphtest"
 )
 
 //nolint:testableexamples // Demonstration example, output is dynamic
@@ -107,10 +108,7 @@ func ExampleNewJSONGraphRenderer() {
 		},
 	})
 	renderer.SetEdges([]output.GraphEdge{
-		{
-			From: output.NewBrandedID[output.GraphNodeIDBrand]("a"),
-			To:   output.NewBrandedID[output.GraphNodeIDBrand]("b"),
-		},
+		graphtest.NewTestEdge("a", "b", ""),
 	})
 
 	result, err := renderer.Render()

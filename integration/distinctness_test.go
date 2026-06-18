@@ -34,10 +34,14 @@ func TestActivityNodeDistinctFromTreeNode(t *testing.T) {
 
 	// The real assertion: distinct type names. If they were the same type,
 	// reflect.TypeOf would match. They must not.
-	nomType := reflect.TypeOf(nomNode).String()
-	rootType := reflect.TypeOf(rootNode).String()
+	nomType := reflect.TypeFor[nom.ActivityNode]().String()
+
+	rootType := reflect.TypeFor[output.TreeNode]().String()
 	if nomType == rootType {
-		t.Fatalf("nom.ActivityNode and output.TreeNode resolved to the same type %q — C1 split-brain regression", nomType)
+		t.Fatalf(
+			"nom.ActivityNode and output.TreeNode resolved to the same type %q — C1 split-brain regression",
+			nomType,
+		)
 	}
 
 	// The nom type must not even be named "TreeNode" anymore.

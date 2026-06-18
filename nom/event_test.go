@@ -27,6 +27,7 @@ func TestEventConstantsUnique(t *testing.T) {
 		if prev, dup := seen[e.val]; dup {
 			t.Errorf("event constant %q duplicates %q (both = %q)", e.name, prev, e.val)
 		}
+
 		seen[e.val] = e.name
 	}
 
