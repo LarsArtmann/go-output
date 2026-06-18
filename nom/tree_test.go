@@ -5,6 +5,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/larsartmann/go-output/testhelpers"
 )
 
 func TestNewDependencyTree(t *testing.T) {
@@ -34,9 +36,7 @@ func TestDependencyTree_AddActivity(t *testing.T) {
 			t.Fatal("node should exist after AddActivity")
 		}
 
-		if node.Label.Get() != "Activity A" {
-			t.Errorf("ActivityName = %q, want %q", node.Label.Get(), "Activity A")
-		}
+		testhelpers.AssertEqual(t, "ActivityName", "", node.Label.Get(), "Activity A")
 	})
 
 	t.Run("activity with dependency creates parent-child", func(t *testing.T) {

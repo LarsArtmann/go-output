@@ -131,7 +131,11 @@ func TestRenderPlantUMLTableData(t *testing.T) {
 		data := output.NewTableData([]string{"Name"})
 		data.AddRow([]string{"Alpha"})
 
-		err := output.RenderTableData(data, output.FormatPlantUML, output.RenderOptions{Writer: &testhelpers.ErrorWriter{}})
+		err := output.RenderTableData(
+			data,
+			output.FormatPlantUML,
+			output.RenderOptions{Writer: &testhelpers.ErrorWriter{}},
+		)
 		if err == nil {
 			t.Fatal("expected error from errWriter")
 		}

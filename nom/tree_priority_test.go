@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/larsartmann/go-output"
+	"github.com/larsartmann/go-output/testhelpers"
 )
 
 func TestElideCompletedUnderPressure(t *testing.T) {
@@ -132,9 +133,7 @@ func TestActivityStatus_Interest(t *testing.T) {
 			t.Parallel()
 
 			got := tt.status.Interest()
-			if got != tt.want {
-				t.Errorf("%s.Interest() = %d, want %d", tt.status, got, tt.want)
-			}
+						testhelpers.AssertEqual(t, "ActivityStatus.Interest", tt.status, got, tt.want)
 		})
 	}
 

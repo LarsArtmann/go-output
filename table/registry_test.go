@@ -38,7 +38,11 @@ func TestRenderStyledTableData(t *testing.T) {
 		data := output.NewTableData([]string{"Name"})
 		data.AddRow([]string{"Alpha"})
 
-		err := output.RenderTableData(data, output.FormatTable, output.RenderOptions{Writer: &testhelpers.ErrorWriter{}})
+		err := output.RenderTableData(
+			data,
+			output.FormatTable,
+			output.RenderOptions{Writer: &testhelpers.ErrorWriter{}},
+		)
 		if err == nil {
 			t.Fatal("expected error from errWriter")
 		}

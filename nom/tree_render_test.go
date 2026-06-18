@@ -4,6 +4,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/larsartmann/go-output/testhelpers"
 )
 
 func TestDependencyTree_EnsureBuild(t *testing.T) {
@@ -92,9 +94,7 @@ func TestDependencyTree_AddActivity_UpdateExisting(t *testing.T) {
 	dt.AddActivity(ActivityID("a"), "Updated", nil)
 
 	node := dt.GetNode(ActivityID("a"))
-	if node.Label.Get() != "Updated" {
-		t.Errorf("ActivityName = %q, want %q", node.Label.Get(), "Updated")
-	}
+	testhelpers.AssertEqual(t, "ActivityName", "", node.Label.Get(), "Updated")
 }
 
 func TestDependencyTree_Render_SecondaryDependencies(t *testing.T) {

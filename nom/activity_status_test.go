@@ -2,6 +2,8 @@ package nom
 
 import (
 	"testing"
+
+	"github.com/larsartmann/go-output/testhelpers"
 )
 
 func TestActivityStatus_String(t *testing.T) {
@@ -24,9 +26,7 @@ func TestActivityStatus_String(t *testing.T) {
 			t.Parallel()
 
 			got := tt.status.String()
-			if got != tt.want {
-				t.Errorf("ActivityStatus(%d).String() = %q, want %q", tt.status, got, tt.want)
-			}
+						testhelpers.AssertEqual(t, "ActivityStatus.String", tt.status, got, tt.want)
 		})
 	}
 }
@@ -51,9 +51,7 @@ func TestActivityStatus_GetSymbol(t *testing.T) {
 			t.Parallel()
 
 			got := tt.status.GetSymbol()
-			if got != tt.want {
-				t.Errorf("ActivityStatus(%d).GetSymbol() = %q, want %q", tt.status, got, tt.want)
-			}
+						testhelpers.AssertEqual(t, "ActivityStatus.GetSymbol", tt.status, got, tt.want)
 		})
 	}
 }

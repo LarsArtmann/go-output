@@ -7,6 +7,24 @@ import (
 	"github.com/larsartmann/go-output"
 )
 
+// assertActivityShape checks that a.Shape equals want, failing with label.
+func assertActivityShape(t *testing.T, a *Activity, want output.NodeShape, label string) {
+	t.Helper()
+
+	if a.Shape != want {
+		t.Errorf("Shape = %v, want %s", a.Shape, label)
+	}
+}
+
+// assertActivityFill checks that a.Style.Fill equals want.
+func assertActivityFill(t *testing.T, a *Activity, want string) {
+	t.Helper()
+
+	if a.Style.Fill != want {
+		t.Errorf("Fill = %q, want %q", a.Style.Fill, want)
+	}
+}
+
 func TestNewActivity(t *testing.T) {
 	t.Parallel()
 
@@ -43,13 +61,8 @@ func TestActivity_SetRunning(t *testing.T) {
 		t.Error("StartTime should be set")
 	}
 
-	if a.Shape != output.NodeShapeBox {
-		t.Errorf("Shape = %v, want Box (running)", a.Shape)
-	}
-
-	if a.Style.Fill != "#16a34a" {
-		t.Errorf("Fill = %q, want green", a.Style.Fill)
-	}
+	assertActivityShape(t, a, output.NodeShapeBox, "Box (running)")
+	assertActivityFill(t, a, "#16a34a")
 }
 
 func TestActivity_SetCompleted(t *testing.T) {
@@ -92,13 +105,8 @@ func TestActivity_SetFailed(t *testing.T) {
 		t.Error("Err should be set")
 	}
 
-	if a.Shape != output.NodeShapeDiamond {
-		t.Errorf("Shape = %v, want Diamond (failed)", a.Shape)
-	}
-
-	if a.Style.Fill != "#dc2626" {
-		t.Errorf("Fill = %q, want red", a.Style.Fill)
-	}
+	assertActivityShape(t, a, output.NodeShapeDiamond, "Diamond (failed)")
+	assertActivityFill(t, a, "#dc2626")
 }
 
 func TestActivity_Elapsed(t *testing.T) {

@@ -15,6 +15,15 @@ func newTestTimingCache(path string, loaded bool) *TimingCache {
 	}
 }
 
+// assertCacheFileExists fails the test if path does not exist.
+func assertCacheFileExists(t *testing.T, path, message string) {
+	t.Helper()
+
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		t.Fatal(message)
+	}
+}
+
 func TestNewTimingCache(t *testing.T) {
 	t.Parallel()
 
@@ -172,9 +181,7 @@ func TestTimingCache_SaveAndLoad(t *testing.T) {
 		t.Fatalf("Save() error: %v", err)
 	}
 
-	if _, err := os.Stat(cachePath); os.IsNotExist(err) {
-		t.Fatal("cache file was not created")
-	}
+	assertCacheFileExists(t, cachePath, "cache file was not created")
 
 	tc2 := newTestTimingCache(cachePath, false)
 
@@ -251,9 +258,7 @@ func TestWriteCacheToFile_Success(t *testing.T) {
 		t.Fatalf("writeCacheToFile() error: %v", err)
 	}
 
-	if _, err := os.Stat(cachePath); os.IsNotExist(err) {
-		t.Fatal("cache file was not created")
-	}
+	assertCacheFileExists(t, cachePath, "cache file was not created")
 }
 
 func TestRecord_TriggersAsyncSave(t *testing.T) {
@@ -269,9 +274,7 @@ func TestRecord_TriggersAsyncSave(t *testing.T) {
 	tc.Record("build", 5*time.Second)
 	tc.waitPendingSaves()
 
-	if _, err := os.Stat(cachePath); os.IsNotExist(err) {
-		t.Fatal("async save should have created cache file")
-	}
+	assertCacheFileExists(t, cachePath, "async save should have created cache file")
 }
 
 func TestRecord_AsyncSaveFailureDoesNotBlock(t *testing.T) {

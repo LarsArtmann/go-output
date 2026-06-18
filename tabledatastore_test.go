@@ -128,9 +128,7 @@ func TestNewGraphNode(t *testing.T) {
 		t.Errorf("ID = %q, want %q", node.ID.Get(), "id1")
 	}
 
-	if node.Label.Get() != "Label 1" {
-		t.Errorf("Label = %q, want %q", node.Label.Get(), "Label 1")
-	}
+	assertLabel(t, "Label", node.Label.Get(), "Label 1")
 
 	if node.Shape != NodeShapeBox {
 		t.Errorf("Shape = %v, want %v", node.Shape, NodeShapeBox)
@@ -144,6 +142,15 @@ func TestNewGraphNode(t *testing.T) {
 // fixedRenderer is a test helper that returns a fixed string.
 type fixedRenderer struct {
 	output string
+}
+
+// assertLabel checks that got equals want, failing with a descriptive error.
+func assertLabel(t *testing.T, name, got, want string) {
+	t.Helper()
+
+	if got != want {
+		t.Errorf("%s = %q, want %q", name, got, want)
+	}
 }
 
 func (f *fixedRenderer) Render() (string, error) { return f.output, nil }
