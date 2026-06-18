@@ -1,6 +1,7 @@
 package tui
 
 import (
+	"fmt"
 	"time"
 
 	tea "charm.land/bubbletea/v2"
@@ -37,6 +38,12 @@ func (m *ProgressModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m.handleMouseClick(msg)
 	case ProgressUpdateMsg:
 		return m.handleProgressUpdate(msg)
+	case StepUpdateMsg:
+		return m.handleStepUpdate(msg)
+	case ErrorMsg:
+		return m.handleError(msg)
+	case StateTransitionMsg:
+		return m.handleStateTransition(msg)
 	case TickMsg:
 		return m.handleTick(msg)
 	case CancelMsg:
@@ -201,4 +208,57 @@ func (m *ProgressModel) updateWorkflowCompletionState() {
 	} else if running == 0 && completed > 0 {
 		m.workflowState = WorkflowStateCompleted
 	}
+}
+
+// handleStepUpdate processes a step-based progress update on the TUI goroutine.
+// It creates a new step or updates an existing matching/active step.
+func (m *ProgressModel) handleStepUpdate(msg StepUpdateMsg) (tea.Model, tea.Cmd) {
+	if !m.workflowState.CanAcceptUpdates() {
+		return m, nil
+	}
+
+	m.lastUpdate = time.Now()
+
+	for i := range m.steps {
+		if m.steps[i].Message == msg.Message || m.steps[i].IsActive() {
+			m.steps[i].Current = msg.Current
+			m.steps[i].Total = msg.Total
+			m.steps[i].Message = msg.Message
+
+			if msg.Current >= msg.Total && m.steps[i].CompletedAt == nil {
+				now := time.Now()
+				m.steps[i].CompletedAt = &now
+			}
+
+			return m, nil
+		}
+	}
+
+	m.steps = append(m.steps, ProgressStep{
+		Current:   msg.Current,
+		Total:     msg.Total,
+		Message:   msg.Message,
+		StartTime: time.Now(),
+	})
+
+	return m, nil
+}
+
+// handleError transitions to Errored state and displays the error message.
+func (m *ProgressModel) handleError(msg ErrorMsg) (tea.Model, tea.Cmd) {
+	if m.workflowState.CanTransitionTo(WorkflowStateErrored) {
+		m.workflowState = WorkflowStateErrored
+		m.currentMessage = fmt.Sprintf("Error: %v", msg.Err)
+	}
+
+	return m, nil
+}
+
+// handleStateTransition applies a validated workflow state transition.
+func (m *ProgressModel) handleStateTransition(msg StateTransitionMsg) (tea.Model, tea.Cmd) {
+	if m.workflowState.CanTransitionTo(msg.NewState) {
+		m.workflowState = msg.NewState
+	}
+
+	return m, nil
 }

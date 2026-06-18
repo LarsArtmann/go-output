@@ -1,7 +1,7 @@
 # TODO_LIST.md — go-output
 
 **Last updated:** 2026-06-18
-**Open items:** 10
+**Open items:** 9
 **Blocked:** 1 (needs owner decision)
 
 All items below are **verified open** against the current code (2026-06-18).
@@ -10,9 +10,7 @@ All items below are **verified open** against the current code (2026-06-18).
 
 ## P1 — Correctness & Concurrency (non-breaking)
 
-| #   | Task                                                                                                                                                                                                                                                | Effort | Status |
-| --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | ------ |
-| 22  | **Fix TUI reporter data race** — `BubbleTeaProgressReporter` mutates `pr.model.*` fields from the caller goroutine while Bubble Tea's event loop reads/writes the same fields via `Update()`. Route all model mutations through `tea.Program.Send`. | High   | Open   |
+_All clear._
 
 ## P2 — Type Safety (non-breaking, but exported API)
 
@@ -61,43 +59,43 @@ These have in-code `NOTE(split-brain ...)` markers for traceability.
 
 ## Resolved This Session (2026-06-17/18) — Do Not Redo
 
-| Task                                                                | Resolution                                                            |
-| ------------------------------------------------------------------- | --------------------------------------------------------------------- |
-| `FormatDuration` displaying "60.0s" at 59.95s                       | **Fixed** — integer math (tenths) prevents float rounding             |
-| `GetActivitySummaryString` returned bracketed Go slice repr         | **Fixed** — `strings.Join` instead of `fmt.Sprintf("%s", parts)`      |
-| DOT/Mermaid double-escaping in TableData conversion                 | **Fixed** — removed pre-escape; render-time escape is single source   |
-| D2 Icon/Link fields not escaped                                     | **Fixed** — `escape.D2()` applied                                     |
-| PlantUML labels not escaped                                         | **Fixed** — added `escape.PlantUML()`, applied to all label emissions |
-| Mermaid node/edge IDs not sanitized in graph Render()               | **Fixed** — `escape.MermaidID()` applied                              |
-| GraphEdge.Style and GraphStyle.FontColor dropped in D2 conversion   | **Fixed** — edge color and font-color now mapped                      |
-| d2/doc.go example referenced nonexistent constructors               | **Fixed** — updated to AddNodeSimple/AddEdgeSimple                    |
-| serialization/doc.go referenced nonexistent Marshal functions       | **Fixed** — updated to actual API entry points                        |
-| TUI `ProgressModel.messages` unbounded memory leak (never rendered) | **Fixed** — field and append removed                                  |
-| Timing cache goroutine race (unbounded saveAsync on same file)      | **Fixed** — saveMu serializes file writes (TODO #20)                  |
-| Timing cache entries not capped on load                             | **Fixed** — maxCachedEntries applied during load (TODO #23)           |
-| Timing cache parse asymmetry (Sscanf vs FormatInt)                  | **Fixed** — strconv.ParseInt for symmetry                             |
-| Timing cache non-deterministic write order                          | **Fixed** — sorted keys before writing                                |
-| InlineRenderer config setter data race                              | **Fixed** — tickMu (RWMutex) guards all setters and reads (TODO #21)  |
-| Tree re-parenting phantom edges                                     | **Fixed** — removeChild from old parent before reassigning (TODO #24) |
-| DOT nodesep/ranksep injection                                       | **Fixed** — numeric validation (TODO #31)                             |
-| DOT edge style attrs not escaped                                    | **Fixed** — escape.DOT applied (TODO #32)                             |
-| `GetOperationSymbol` redundant Get prefix                           | **Fixed** — renamed to `OperationSymbol` (TODO #7)                    |
-| `TreeNode.Depth()` O(n) parent-chain walk                           | **Fixed** — cached field with subtree propagation (TODO #10)          |
-| `D2NodeStyle.Opacity` no bounds validation                          | **Fixed** — clamped to [0.0, 1.0] (TODO #11)                          |
-| `ProgressStep.IsActive` allowed impossible state                    | **Fixed** — derived method from CompletedAt (TODO #25)                |
-| `DisplayMode` stringly-typed                                        | **Fixed** — int enum with iota (TODO #26)                             |
-| `tui/view.go` over 350-line limit                                   | **Fixed** — split to render_nom.go (TODO #29)                         |
-| `nom/inline_renderer.go` over 350-line limit                        | **Fixed** — split to inline_renderer_summary.go (TODO #30)            |
-| Split-brain C1: duplicate `TreeNode` type                           | **Fixed** — renamed to `nom.ActivityNode`                             |
-| Split-brain C2: ProgressModel duplicating subscriber state          | **Fixed** — activities field removed                                  |
-| Split-brain C3: `TimingFormat` constant divergence                  | **Fixed**                                                             |
-| Split-brain C4/C5: test-only interface redeclarations               | **Fixed** — use canonical types                                       |
-| Split-brain M1: `ColorWarning` duplicate of `ColorRunning`          | **Fixed** — deleted                                                   |
-| Split-brain M2: divergent color detection logic                     | **Fixed** — aligned to union of env checks                            |
-| Split-brain M3: hardcoded "No activities to display"                | **Fixed** — uses constant                                             |
-| Split-brain M9: example `delimitedWriter` interface drift           | **Fixed**                                                             |
-| Split-brain m2: bare event string literals                          | **Fixed** — replaced with `Event*` constants                          |
-| Split-brain m4: stale GraphEdge in FORMAT_ARCHITECTURE.md           | **Fixed** — added `Style EdgeStyle` field                             |
+| Task                                                                | Resolution                                                                                                                                       |
+| ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `FormatDuration` displaying "60.0s" at 59.95s                       | **Fixed** — integer math (tenths) prevents float rounding                                                                                        |
+| `GetActivitySummaryString` returned bracketed Go slice repr         | **Fixed** — `strings.Join` instead of `fmt.Sprintf("%s", parts)`                                                                                 |
+| DOT/Mermaid double-escaping in TableData conversion                 | **Fixed** — removed pre-escape; render-time escape is single source                                                                              |
+| D2 Icon/Link fields not escaped                                     | **Fixed** — `escape.D2()` applied                                                                                                                |
+| PlantUML labels not escaped                                         | **Fixed** — added `escape.PlantUML()`, applied to all label emissions                                                                            |
+| Mermaid node/edge IDs not sanitized in graph Render()               | **Fixed** — `escape.MermaidID()` applied                                                                                                         |
+| GraphEdge.Style and GraphStyle.FontColor dropped in D2 conversion   | **Fixed** — edge color and font-color now mapped                                                                                                 |
+| d2/doc.go example referenced nonexistent constructors               | **Fixed** — updated to AddNodeSimple/AddEdgeSimple                                                                                               |
+| serialization/doc.go referenced nonexistent Marshal functions       | **Fixed** — updated to actual API entry points                                                                                                   |
+| TUI `ProgressModel.messages` unbounded memory leak (never rendered) | **Fixed** — field and append removed                                                                                                             |
+| Timing cache goroutine race (unbounded saveAsync on same file)      | **Fixed** — saveMu serializes file writes (TODO #20)                                                                                             |
+| Timing cache entries not capped on load                             | **Fixed** — maxCachedEntries applied during load (TODO #23)                                                                                      |
+| Timing cache parse asymmetry (Sscanf vs FormatInt)                  | **Fixed** — strconv.ParseInt for symmetry                                                                                                        |
+| Timing cache non-deterministic write order                          | **Fixed** — sorted keys before writing                                                                                                           |
+| InlineRenderer config setter data race                              | **Fixed** — tickMu (RWMutex) guards all setters and reads (TODO #21)                                                                             |
+| Tree re-parenting phantom edges                                     | **Fixed** — removeChild from old parent before reassigning (TODO #24)                                                                            |
+| DOT nodesep/ranksep injection                                       | **Fixed** — numeric validation (TODO #31)                                                                                                        |
+| DOT edge style attrs not escaped                                    | **Fixed** — escape.DOT applied (TODO #32)                                                                                                        |
+| `GetOperationSymbol` redundant Get prefix                           | **Fixed** — renamed to `OperationSymbol` (TODO #7)                                                                                               |
+| `TreeNode.Depth()` O(n) parent-chain walk                           | **Fixed** — cached field with subtree propagation (TODO #10)                                                                                     |
+| `D2NodeStyle.Opacity` no bounds validation                          | **Fixed** — clamped to [0.0, 1.0] (TODO #11)                                                                                                     |
+| `ProgressStep.IsActive` allowed impossible state                    | **Fixed** — derived method from CompletedAt (TODO #25)                                                                                           |
+| `DisplayMode` stringly-typed                                        | **Fixed** — int enum with iota (TODO #26)                                                                                                        |
+| `tui/view.go` over 350-line limit                                   | **Fixed** — split to render_nom.go (TODO #29)                                                                                                    |
+| `nom/inline_renderer.go` over 350-line limit                        | **Fixed** — split to inline_renderer_summary.go (TODO #30)                                                                                       |
+| Split-brain C1: duplicate `TreeNode` type                           | **Fixed** — renamed to `nom.ActivityNode`                                                                                                        |
+| Split-brain C2: ProgressModel duplicating subscriber state          | **Fixed** — activities field removed                                                                                                             |
+| Split-brain C3: `TimingFormat` constant divergence                  | **Fixed**                                                                                                                                        |
+| Split-brain C4/C5: test-only interface redeclarations               | **Fixed** — use canonical types                                                                                                                  |
+| Split-brain M1: `ColorWarning` duplicate of `ColorRunning`          | **Fixed** — deleted                                                                                                                              |
+| Split-brain M2: divergent color detection logic                     | **Fixed** — aligned to union of env checks                                                                                                       |
+| Split-brain M3: hardcoded "No activities to display"                | **Fixed** — uses constant                                                                                                                        |
+| Split-brain M9: example `delimitedWriter` interface drift           | **Fixed**                                                                                                                                        |
+| Split-brain m2: bare event string literals                          | **Fixed** — replaced with `Event*` constants                                                                                                     |
+| TUI reporter data race (pr.model.\* mutated from caller goroutine)  | **Fixed** — reporter owns workflowState (mutex-protected); all model mutations via send()→model.Update; concurrent stress tests added (TODO #22) |
 
 ---
 

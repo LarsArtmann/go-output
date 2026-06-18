@@ -2,7 +2,6 @@ package tui
 
 import (
 	"context"
-	"fmt"
 	"sync"
 	"time"
 
@@ -19,11 +18,22 @@ import (
 // ============================================================================
 // BubbleTeaProgressReporter implements universal-workflow's ProgressReporter interface
 // using Bubble Tea for rich TUI display inspired by `nh darwin switch`.
+//
+// Concurrency model:
+//   - The reporter owns a workflowState field (protected by mu) used solely for
+//     decision logic (should this update be accepted?).
+//   - The model owns its own workflowState on the TUI goroutine for rendering.
+//   - ALL model field mutations flow through send(), which dispatches to either
+//     prog.Send (production: queued for TUI goroutine) or model.Update (test
+//     mode: synchronous). The reporter NEVER touches model fields directly.
+//   - This eliminates the data race where the caller goroutine and the TUI
+//     goroutine both mutated shared model fields.
 type BubbleTeaProgressReporter struct {
-	mu      sync.RWMutex
-	model   *ProgressModel
-	program *tea.Program
-	started bool
+	mu            sync.RWMutex
+	model         *ProgressModel
+	program       *tea.Program
+	started       bool
+	workflowState WorkflowState // reporter-authoritative state for decision logic
 }
 
 // NewProgressModel creates a new ProgressModel with default initialization.
@@ -47,8 +57,8 @@ func NewProgressModel() *ProgressModel {
 func NewBubbleTeaProgressReporter() *BubbleTeaProgressReporter {
 	// Don't start the program yet - wait for first progress report
 	return &BubbleTeaProgressReporter{
-		model:   NewProgressModel(),
-		started: false,
+		model:         NewProgressModel(),
+		workflowState: WorkflowStateIdle,
 	}
 }
 
@@ -60,6 +70,7 @@ func (pr *BubbleTeaProgressReporter) Subscriber() *nom.NOMStyleSubscriber {
 
 // SetCancelFunc sets the context cancellation function called on ctrl+c.
 // This allows the TUI to cancel the running workflow when the user presses ctrl+c.
+// Must be called before Start().
 func (pr *BubbleTeaProgressReporter) SetCancelFunc(fn context.CancelFunc) {
 	pr.model.cancelFunc = fn
 }
@@ -71,43 +82,64 @@ func (pr *BubbleTeaProgressReporter) SetDisplayMode(mode DisplayMode) {
 	pr.model.displayMode = mode
 }
 
-// transitionWorkflowState safely transitions the workflow to a new state.
+// transitionWorkflowState transitions the reporter's authoritative workflow
+// state and sends a StateTransitionMsg so the model stays in sync.
 func (pr *BubbleTeaProgressReporter) transitionWorkflowState(newState WorkflowState) bool {
-	if pr.model.workflowState.CanTransitionTo(newState) {
-		pr.model.workflowState = newState
-		return true
+	pr.mu.Lock()
+
+	ok := pr.workflowState.CanTransitionTo(newState)
+	if ok {
+		pr.workflowState = newState
+	}
+	pr.mu.Unlock()
+
+	if ok {
+		pr.send(StateTransitionMsg{NewState: newState})
 	}
 
-	return false
+	return ok
 }
 
 // isWorkflowActive returns true if the workflow is in a state that accepts updates.
 func (pr *BubbleTeaProgressReporter) isWorkflowActive() bool {
-	return pr.model.workflowState.CanAcceptUpdates()
-}
-
-// sendToProgram sends a progress update message to the Bubble Tea program
-// This helper eliminates double-locking bug by locking once per call.
-func (pr *BubbleTeaProgressReporter) sendToProgram(msg ProgressUpdateMsg) {
 	pr.mu.RLock()
 	defer pr.mu.RUnlock()
 
+	return pr.workflowState.CanAcceptUpdates()
+}
+
+// send dispatches a message to the TUI program if running, or processes it
+// synchronously on the model when no program is attached (test/pre-start mode).
+// The exclusive lock serializes model.Update calls in test mode, preventing
+// concurrent field mutations. In production, prog.Send is a non-blocking
+// channel write so the lock contention is negligible.
+func (pr *BubbleTeaProgressReporter) send(msg tea.Msg) {
+	pr.mu.Lock()
+	defer pr.mu.Unlock()
+
 	if pr.program != nil {
 		pr.program.Send(msg)
+		return
 	}
+
+	// Test/pre-start mode: apply directly to the model so tests can verify state.
+	pr.model.Update(msg)
 }
 
 // ReportError transitions the workflow to error state (not part of universal-workflow interface).
 func (pr *BubbleTeaProgressReporter) ReportError(err error) {
 	pr.ensureStarted()
-	// Transition to error state
-	if pr.transitionWorkflowState(WorkflowStateErrored) {
-		// Update current message to show the error
-		pr.model.currentMessage = fmt.Sprintf("Error: %v", err)
-		pr.sendToProgram(ProgressUpdateMsg{
-			Type:    MessageUpdate,
-			Message: pr.model.currentMessage,
-		})
+
+	pr.mu.Lock()
+
+	canError := pr.workflowState.CanTransitionTo(WorkflowStateErrored)
+	if canError {
+		pr.workflowState = WorkflowStateErrored
+	}
+	pr.mu.Unlock()
+
+	if canError {
+		pr.send(ErrorMsg{Err: err})
 	}
 }
 
@@ -119,11 +151,21 @@ func (pr *BubbleTeaProgressReporter) ReportError(err error) {
 func (pr *BubbleTeaProgressReporter) ensureStartedAndActive() bool {
 	pr.ensureStarted()
 
-	if pr.model.workflowState == WorkflowStateIdle {
-		pr.transitionWorkflowState(WorkflowStateRunning)
+	pr.mu.Lock()
+
+	needStart := pr.workflowState == WorkflowStateIdle
+	if needStart {
+		pr.workflowState = WorkflowStateRunning
 	}
 
-	return pr.isWorkflowActive()
+	active := pr.workflowState.CanAcceptUpdates()
+	pr.mu.Unlock()
+
+	if needStart {
+		pr.send(StateTransitionMsg{NewState: WorkflowStateRunning})
+	}
+
+	return active
 }
 
 // ReportProgress implements universal-workflow ProgressReporter interface
@@ -133,12 +175,14 @@ func (pr *BubbleTeaProgressReporter) ReportProgress(percent float64) {
 		return
 	}
 
-	pr.model.currentProgress = percent
-	if percent >= 100.0 {
-		pr.transitionWorkflowState(WorkflowStateCompleted)
+	pr.mu.Lock()
+	if percent >= 100.0 && pr.workflowState.CanTransitionTo(WorkflowStateCompleted) {
+		pr.workflowState = WorkflowStateCompleted
 	}
+	pr.mu.Unlock()
 
-	pr.sendToProgram(ProgressUpdateMsg{
+	// The model self-transitions to Completed when it receives progress >= 100.
+	pr.send(ProgressUpdateMsg{
 		Type:     ProgressUpdate,
 		Progress: percent,
 	})
@@ -151,8 +195,7 @@ func (pr *BubbleTeaProgressReporter) ReportMessage(message string) {
 		return
 	}
 
-	pr.model.currentMessage = message
-	pr.sendToProgram(ProgressUpdateMsg{
+	pr.send(ProgressUpdateMsg{
 		Type:    MessageUpdate,
 		Message: message,
 	})
@@ -164,38 +207,8 @@ func (pr *BubbleTeaProgressReporter) ReportStep(current, total uint, message str
 	if !pr.ensureStartedAndActive() {
 		return
 	}
-	// Update or create step
-	stepFound := false
 
-	for i := range pr.model.steps {
-		if pr.model.steps[i].Message == message || pr.model.steps[i].IsActive() {
-			pr.model.steps[i].Current = current
-			pr.model.steps[i].Total = total
-			pr.model.steps[i].Message = message
-
-			if current >= total && pr.model.steps[i].CompletedAt == nil {
-				now := time.Now()
-				pr.model.steps[i].CompletedAt = &now
-			}
-
-			stepFound = true
-
-			break
-		}
-	}
-
-	if !stepFound {
-		step := ProgressStep{
-			Current:   current,
-			Total:     total,
-			Message:   message,
-			StartTime: time.Now(),
-		}
-		pr.model.steps = append(pr.model.steps, step)
-	}
-
-	pr.sendToProgram(ProgressUpdateMsg{
-		Type:    StepUpdate,
+	pr.send(StepUpdateMsg{
 		Current: current,
 		Total:   total,
 		Message: message,

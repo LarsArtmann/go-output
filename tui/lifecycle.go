@@ -38,19 +38,25 @@ func (pr *BubbleTeaProgressReporter) ensureStarted() {
 // Stop gracefully stops the TUI progress display with completion state.
 func (pr *BubbleTeaProgressReporter) Stop() {
 	pr.mu.Lock()
-	defer pr.mu.Unlock()
 
-	if pr.program != nil {
-		// Transition to completed state
-		pr.transitionWorkflowState(WorkflowStateCompleted)
-		pr.program.Send(ProgressUpdateMsg{
-			Type:     ProgressUpdate,
-			Progress: 100.0,
-		})
-		// In NOM mode, auto-exit after completion
-		if pr.model.displayMode == DisplayModeNOM {
-			pr.program.Send(tea.Quit)
-		}
+	canComplete := pr.workflowState.CanTransitionTo(WorkflowStateCompleted)
+	if canComplete {
+		pr.workflowState = WorkflowStateCompleted
+	}
+
+	nomMode := pr.model.displayMode == DisplayModeNOM
+	prog := pr.program
+	pr.mu.Unlock()
+
+	// The model self-transitions to Completed from the 100% progress update.
+	pr.send(ProgressUpdateMsg{
+		Type:     ProgressUpdate,
+		Progress: 100.0,
+	})
+
+	// In NOM mode with a real program, signal graceful shutdown.
+	if prog != nil && nomMode {
+		prog.Send(tea.Quit)
 	}
 }
 

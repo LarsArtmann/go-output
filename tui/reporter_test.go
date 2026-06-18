@@ -204,11 +204,11 @@ func TestBubbleTeaProgressReporter_ReportError_CannotTransitionFromIdle(t *testi
 	}
 }
 
-func TestBubbleTeaProgressReporter_SendToProgram_NilProgram(t *testing.T) {
+func TestBubbleTeaProgressReporter_Send_NilProgram(t *testing.T) {
 	t.Parallel()
 
 	reporter := newTestReporter()
-	reporter.sendToProgram(ProgressUpdateMsg{
+	reporter.send(ProgressUpdateMsg{
 		Type:     ProgressUpdate,
 		Progress: 50.0,
 	})
