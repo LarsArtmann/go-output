@@ -1,7 +1,6 @@
 package tui
 
 import (
-	"errors"
 	"strings"
 	"testing"
 	"time"
@@ -154,7 +153,7 @@ func TestProgressModel_RenderNOMSummaryBar(t *testing.T) {
 
 	model := newTestModel()
 	model.startTime = time.Now()
-	addTestActivity(model, "a", "A", func(a *nom.ActivityDisplayState) { a.SetRunning() })
+	addTestActivity(model, "a", "A", nom.ActivityStatusRunning)
 
 	output := model.renderNOMSummaryBar()
 	if output == "" {
@@ -268,11 +267,11 @@ func TestProgressModel_GetActivityCounts_AllStatuses(t *testing.T) {
 	t.Parallel()
 
 	model := newTestModel()
-	addTestActivity(model, "running", "R", func(a *nom.ActivityDisplayState) { a.SetRunning() })
-	addTestActivity(model, "completed", "C", func(a *nom.ActivityDisplayState) { a.SetCompleted() })
-	addTestActivity(model, "failed", "F", func(a *nom.ActivityDisplayState) { a.SetFailed(errors.New("fail")) })
+	addTestActivity(model, "running", "R", nom.ActivityStatusRunning)
+	addTestActivity(model, "completed", "C", nom.ActivityStatusCompleted)
+	addTestActivity(model, "failed", "F", nom.ActivityStatusFailed)
 
-	addTestActivity(model, "paused", "P", func(a *nom.ActivityDisplayState) { a.Status = nom.ActivityStatusPaused })
+	addTestActivity(model, "paused", "P", nom.ActivityStatusPaused)
 
 	counts := model.getActivityCounts()
 	if counts.Running != 1 {

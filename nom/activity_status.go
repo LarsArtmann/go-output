@@ -5,7 +5,13 @@ import "image/color"
 // ============================================================================
 // ACTIVITY STATUS ENUM
 // ============================================================================
-// ActivityStatus represents the display status of an activity.
+// ActivityStatus represents the lifecycle stage of a single activity within a
+// workflow. It is intentionally SEPARATE from tui.WorkflowState (which tracks
+// the whole-workflow lifecycle) — do NOT merge them. They share Running and
+// Completed values but model different domains: an activity can be Paused while
+// the workflow is still Running; a workflow Errored while individual activities
+// report Failed. Split-brain finding m3: documented to prevent a future
+// "unify these enums" mistake.
 type ActivityStatus int
 
 const (

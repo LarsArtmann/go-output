@@ -2,6 +2,7 @@ package tui
 
 import (
 	"context"
+	"errors"
 	"testing"
 	"time"
 
@@ -25,10 +26,16 @@ func newTestReporter() *BubbleTeaProgressReporter {
 	return r
 }
 
-func addTestActivity(model *ProgressModel, id, name string, statusFunc func(*nom.ActivityDisplayState)) {
+func addTestActivity(model *ProgressModel, id, name string, status nom.ActivityStatus) {
 	activity := nom.NewActivityDisplayState(nom.ActivityID(id), nom.ActivityName(name))
-	if statusFunc != nil {
-		statusFunc(activity)
+	activity.Status = status
+	switch status {
+	case nom.ActivityStatusRunning:
+		activity.SetRunning()
+	case nom.ActivityStatusCompleted:
+		activity.SetCompleted()
+	case nom.ActivityStatusFailed:
+		activity.SetFailed(errors.New("test failure"))
 	}
 
 	model.nomSubscriber.SetActivityState(activity)
@@ -153,8 +160,8 @@ func TestProgressModel_GetActivityCounts(t *testing.T) {
 	t.Parallel()
 
 	model := newTestModel()
-	addTestActivity(model, "a", "A", func(a *nom.ActivityDisplayState) { a.SetRunning() })
-	addTestActivity(model, "b", "B", func(a *nom.ActivityDisplayState) { a.SetCompleted() })
+	addTestActivity(model, "a", "A", nom.ActivityStatusRunning)
+	addTestActivity(model, "b", "B", nom.ActivityStatusCompleted)
 
 	counts := model.getActivityCounts()
 	if counts.Running != 1 {

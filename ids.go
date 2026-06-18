@@ -19,6 +19,8 @@ func NewBrandedID[Brand any](value string) id.ID[Brand, string] {
 type D2NodeID = id.ID[D2NodeIDBrand, string]
 
 // D2NodeLabel is a branded identifier for D2 diagram node labels.
+// Canonical import path: github.com/larsartmann/go-output (root).
+// The d2 module re-exports this as d2.D2NodeLabel for convenience.
 type D2NodeLabel = id.ID[D2NodeLabelBrand, string]
 
 // TreeNodeID is a branded identifier for tree nodes.
@@ -33,10 +35,14 @@ type GraphNodeID = id.ID[GraphNodeIDBrand, string]
 // GraphNodeLabel is a branded identifier for graph node labels.
 type GraphNodeLabel = id.ID[GraphNodeLabelBrand, string]
 
-// D2NodeIDBrand is the brand type for D2 node IDs.
+// D2NodeIDBrand is the brand type for D2 node IDs. Lives in root so the
+// type alias D2NodeID is visible to both root and d2/ callers without a
+// circular import. Split-brain finding m6: root is the canonical home;
+// d2.D2NodeID is a convenience re-export (type alias), not a second definition.
 type D2NodeIDBrand struct{}
 
-// D2NodeLabelBrand is the brand type for D2 node labels.
+// D2NodeLabelBrand is the brand type for D2 node labels. See D2NodeIDBrand
+// for why brand types live in root rather than d2/.
 type D2NodeLabelBrand struct{}
 
 // TreeNodeIDBrand is the brand type for tree node IDs.
