@@ -158,7 +158,7 @@ func TestDependencyTree_Render_PriorityOrdering(t *testing.T) {
 		ActivityID("phase:build"),
 		ActivityStatusRunning,
 		SymbolRunning,
-		ColorRunning,
+		Colors.Running,
 		now,
 		5*time.Second,
 	)
@@ -167,13 +167,29 @@ func TestDependencyTree_Render_PriorityOrdering(t *testing.T) {
 		ActivityID("compile"),
 		ActivityStatusCompleted,
 		SymbolCompleted,
-		ColorCompleted,
+		Colors.Completed,
 		now,
 		2*time.Second,
 	)
-	setStatusWithElapsed(dt, ActivityID("test"), ActivityStatusRunning, SymbolRunning, ColorRunning, now, 3*time.Second)
-	setStatusWithElapsed(dt, ActivityID("lint"), ActivityStatusPending, SymbolPaused, ColorPaused, time.Time{}, 0)
-	setStatusWithElapsed(dt, ActivityID("deploy"), ActivityStatusFailed, SymbolFailed, ColorFailed, now, 1*time.Second)
+	setStatusWithElapsed(
+		dt,
+		ActivityID("test"),
+		ActivityStatusRunning,
+		SymbolRunning,
+		Colors.Running,
+		now,
+		3*time.Second,
+	)
+	setStatusWithElapsed(dt, ActivityID("lint"), ActivityStatusPending, SymbolPaused, Colors.Paused, time.Time{}, 0)
+	setStatusWithElapsed(
+		dt,
+		ActivityID("deploy"),
+		ActivityStatusFailed,
+		SymbolFailed,
+		Colors.Failed,
+		now,
+		1*time.Second,
+	)
 
 	got := dt.RenderString(10)
 

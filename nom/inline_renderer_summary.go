@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"charm.land/lipgloss/v2"
 	"github.com/charmbracelet/x/ansi"
 	"golang.org/x/term"
 )
@@ -50,17 +51,18 @@ func (r *InlineRenderer) Finish(workflowErr error) {
 	}
 
 	status := "completed successfully" + elapsedStr + "."
-	colorCode := "\033[32m" // green
+	statusColor := Colors.Completed
 
 	if workflowErr != nil {
 		status = "failed: " + workflowErr.Error() + elapsedStr
-		colorCode = "\033[31m" // red
+		statusColor = Colors.Failed
 	}
 
+	line := fmt.Sprintf("%s %s", r.appName, status)
 	if r.noColor {
-		r.writef("%s %s\n", r.appName, status)
+		r.write(line + "\n")
 	} else {
-		r.writef("%s%s %s\033[0m\n", colorCode, r.appName, status)
+		r.write(lipgloss.NewStyle().Foreground(statusColor).Render(line) + "\n")
 	}
 }
 

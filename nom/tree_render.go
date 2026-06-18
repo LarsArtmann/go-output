@@ -193,7 +193,7 @@ func (dt *DependencyTree) renderLine(entry visibleEntry, maxWidth int) string {
 
 	if node.IsPhase() {
 		symbol = SymbolPhase
-		color = ColorPhase
+		color = Colors.Phase
 	}
 
 	activityDisplay := fmt.Sprintf("%s %s", symbol, node.Label.Get())
@@ -220,7 +220,7 @@ func (dt *DependencyTree) renderLine(entry visibleEntry, maxWidth int) string {
 		}
 
 		activityDisplay += lipgloss.NewStyle().
-			Foreground(ColorInfo).
+			Foreground(Colors.Info).
 			Render(" ⬅ depends on " + strings.Join(depNames, ", "))
 	}
 
@@ -276,7 +276,7 @@ func (dt *DependencyTree) RenderNode(node *ActivityNode, visibleNodes []*Activit
 
 	if node.IsPhase() {
 		symbol = SymbolPhase
-		color = ColorPhase
+		color = Colors.Phase
 	}
 
 	activityDisplay := fmt.Sprintf("%s %s", symbol, node.Label.Get())

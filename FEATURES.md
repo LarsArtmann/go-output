@@ -224,7 +224,7 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 | **InlineRenderer**                   | FULLY_FUNCTIONAL | Real-time inline terminal renderer. Start/Stop/Finish lifecycle, cursor hiding, no-color mode, ANSI redraw                                |
 | **TimingCache**                      | FULLY_FUNCTIONAL | Persists activity durations as CSV at `~/.cache/nom-timing.csv`. Serialized saves (saveMu), caps 10 entries/activity, applies cap on load |
 | **ActivityStatus enum**              | FULLY_FUNCTIONAL | 5 states: Running, Failed, Paused, Pending, Completed                                                                                     |
-| **Branded IDs**                      | FULLY_FUNCTIONAL | `ActivityID`, `ActivityName`, `WorkflowID`, `WorkflowName` — compile-time type safety                                                     |
+| **Branded IDs**                      | FULLY_FUNCTIONAL | `ActivityID`, `ActivityName`, `WorkflowID`, `WorkflowName` — named types over `string` (phantom-branding upgrade tracked in TODO §E)      |
 | **Event accessor interfaces**        | FULLY_FUNCTIONAL | `WorkflowEventAccessor`, `ActivityEventAccessor`, `DurationAccessor`, `ErrorAccessor` — type-assertion routing                            |
 | **Activity symbols**                 | FULLY_FUNCTIONAL | `SymbolRunning`, `SymbolCompleted`, `SymbolFailed`, `SymbolPaused`, `SymbolDownload`, `SymbolUpload`, `SymbolTiming`                      |
 | **Lazy build (double-checked lock)** | FULLY_FUNCTIONAL | `DependencyTree.Build()`/`EnsureBuild()` use `buildOnce`/`loaded` to prevent rebuild under read lock                                      |

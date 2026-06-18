@@ -66,17 +66,17 @@ func (as ActivityStatus) GetSymbol() string {
 func (as ActivityStatus) GetColor() color.Color {
 	switch as {
 	case ActivityStatusPending:
-		return ColorPaused
+		return Colors.Paused
 	case ActivityStatusRunning:
-		return ColorRunning
+		return Colors.Running
 	case ActivityStatusCompleted:
-		return ColorCompleted
+		return Colors.Completed
 	case ActivityStatusFailed:
-		return ColorFailed
+		return Colors.Failed
 	case ActivityStatusPaused:
-		return ColorPaused
+		return Colors.Paused
 	default:
-		return ColorInfo
+		return Colors.Info
 	}
 }
 

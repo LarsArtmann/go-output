@@ -4,7 +4,7 @@ go 1.26.3
 
 require (
 	github.com/larsartmann/go-output v0.12.0
-	github.com/larsartmann/go-output/escape v0.0.0-00010101000000-000000000000
+	github.com/larsartmann/go-output/escape v0.12.0
 	github.com/larsartmann/go-output/testhelpers v0.12.0
 )
 

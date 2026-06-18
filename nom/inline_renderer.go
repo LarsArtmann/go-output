@@ -195,11 +195,6 @@ func (r *InlineRenderer) write(s string) {
 	_, _ = fmt.Fprint(r.writer, s)
 }
 
-// writef writes a formatted string to the renderer's writer, ignoring errors.
-func (r *InlineRenderer) writef(format string, args ...any) {
-	_, _ = fmt.Fprintf(r.writer, format, args...)
-}
-
 // Start begins periodic background rendering at the given interval.
 // Call Stop to terminate the background goroutine.
 // The context can be used to cancel independently of Stop.

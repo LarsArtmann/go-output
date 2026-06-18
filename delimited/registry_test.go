@@ -7,15 +7,8 @@ import (
 	"testing"
 
 	"github.com/larsartmann/go-output"
+	"github.com/larsartmann/go-output/testhelpers"
 )
-
-var errWriteFailed = errors.New("write failed")
-
-type failWriter struct{}
-
-func (f *failWriter) Write(_ []byte) (int, error) {
-	return 0, errWriteFailed
-}
 
 var errMarshalFailed = errors.New("marshal failed")
 
@@ -58,7 +51,7 @@ func TestRenderDelimitedTableData_WriterError(t *testing.T) {
 	data := output.NewTableData([]string{"Name"})
 	data.AddRow([]string{"Alice"})
 
-	err := renderDelimitedTableData(&failWriter{}, data, MarshalCSVFromTableData, "csv")
+	err := renderDelimitedTableData(&testhelpers.ErrorWriter{}, data, MarshalCSVFromTableData, "csv")
 	if err == nil {
 		t.Fatal("expected error from failWriter")
 	}
