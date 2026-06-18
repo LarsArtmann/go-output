@@ -223,3 +223,28 @@ func TestDOTRendererDefaultLayout(t *testing.T) {
 	assertContains(t, out, "rankdir=TB", "Default rankdir should be TB")
 	assertContains(t, out, "splines=ortho", "Default splines should be ortho")
 }
+
+func TestDOTRendererSetDirection(t *testing.T) {
+	t.Parallel()
+
+	cases := []struct {
+		dir  output.Direction
+		want string
+	}{
+		{output.DirectionDown, "rankdir=TB"},
+		{output.DirectionRight, "rankdir=LR"},
+		{output.DirectionUp, "rankdir=BT"},
+		{output.DirectionLeft, "rankdir=RL"},
+	}
+	for _, tc := range cases {
+		renderer := NewDOTRenderer().SetDirection(tc.dir)
+		renderer.SetNodes(testNodesAB())
+
+		out, err := renderer.Render()
+		if err != nil {
+			t.Fatalf("Render() error = %v", err)
+		}
+
+		assertContains(t, out, tc.want, "SetDirection should produce expected rankdir")
+	}
+}

@@ -81,6 +81,15 @@ func (r *DOTRenderer) SetRankDir(direction RankDir) *DOTRenderer {
 	return r
 }
 
+// SetDirection sets the graph layout direction from the canonical
+// output.Direction enum. This bridges D2 and DOT vocabulary through a single
+// type — prefer this over SetRankDir when the direction value originates from
+// shared code or user input that is format-agnostic.
+func (r *DOTRenderer) SetDirection(d output.Direction) *DOTRenderer {
+	r.rankdir = RankDir(d.ToRankDir())
+	return r
+}
+
 // SetSplines sets the edge routing style (ortho, spline, polyline, line, curved, none).
 func (r *DOTRenderer) SetSplines(style SplineStyle) *DOTRenderer {
 	r.splines = style
