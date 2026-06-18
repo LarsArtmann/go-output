@@ -844,8 +844,9 @@
               <td><span class="pill fixed">Fixed</span></td>
               <td class="evidence">
                 <code>output.Direction</code> (direction.go:6) + ToD2Direction/ToRankDir (:17,:27);
-                <code>DOTRenderer.SetDirection(output.Direction)</code> (graph/dot.go:84) bridges the
-                canonical enum into DOT-specific RankDir. Table-driven test covers all 4 directions
+                <code>DOTRenderer.SetDirection(output.Direction)</code> (graph/dot.go:84) bridges
+                the canonical enum into DOT-specific RankDir. Table-driven test covers all 4
+                directions
               </td>
             </tr>
             <tr class="ok">
@@ -920,17 +921,18 @@
           the correct zero-copy model; (2) <code>C3</code>'s literal was at
           <code>tui/render_nom.go:53</code>, not <code>view.go:290</code>; (3) <code>M6</code>'s
           test documents that box/rect intentionally emit no shape attribute (map to default); (4)
-          <code>M7</code> now fully wired: <code>SetDirection(output.Direction)</code> on DOTRenderer
-          bridges the canonical enum into graph/.
+          <code>M7</code> now fully wired: <code>SetDirection(output.Direction)</code> on
+          DOTRenderer bridges the canonical enum into graph/.
         </div>
 
         <p style="color: var(--text-dim); margin-bottom: 0">
-          <strong>🛡️ New-split-brain check:</strong> systematically scanned all exported type/interface/
-          const/var definitions across all 15 modules for duplicate names with different values.
-          Result: <strong>zero new split-brains</strong>. Each new shared type (<code>envdetect/</code>,
-          <code>output.Direction</code>, <code>output.NodeShape</code>, <code>nom.SemanticColors</code>,
-          <code>nodeShapeToD2</code>) is the single canonical definition; consumers import rather than
-          re-declare. Build + test + race + lint + govulncheck pass clean across all 15 modules.
+          <strong>🛡️ New-split-brain check:</strong> systematically scanned all exported
+          type/interface/ const/var definitions across all 15 modules for duplicate names with
+          different values. Result: <strong>zero new split-brains</strong>. Each new shared type
+          (<code>envdetect/</code>, <code>output.Direction</code>, <code>output.NodeShape</code>,
+          <code>nom.SemanticColors</code>, <code>nodeShapeToD2</code>) is the single canonical
+          definition; consumers import rather than re-declare. Build + test + race + lint +
+          govulncheck pass clean across all 15 modules.
         </p>
       </div>
 
@@ -1350,8 +1352,8 @@
               ANSI-code duplication.
             </li>
             <li>
-              TUI-specific colors (<code>title</code>, <code>selectBG</code>, <code>helpFG</code>...)
-              stay local — they have no nom equivalent.
+              TUI-specific colors (<code>title</code>, <code>selectBG</code>,
+              <code>helpFG</code>...) stay local — they have no nom equivalent.
             </li>
             <li>
               The root raw-ANSI colors (<code>ansiGreen</code> etc.) stay — they serve the
