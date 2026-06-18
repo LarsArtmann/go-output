@@ -1,6 +1,10 @@
 package nom
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/larsartmann/go-output/testhelpers"
+)
 
 func TestActivityID_Methods(t *testing.T) {
 	t.Parallel()
@@ -70,9 +74,7 @@ func TestParseActivityID(t *testing.T) {
 				t.Fatalf("unexpected error: %v", err)
 			}
 
-			if got != tt.want {
-				t.Errorf("ParseActivityID(%q) = %q, want %q", tt.input, got, tt.want)
-			}
+			testhelpers.AssertEqual(t, "ParseActivityID", tt.input, got, tt.want)
 		})
 	}
 }
@@ -137,9 +139,7 @@ func TestParseWorkflowID(t *testing.T) {
 				t.Fatalf("unexpected error: %v", err)
 			}
 
-			if got != tt.want {
-				t.Errorf("ParseWorkflowID(%q) = %q, want %q", tt.input, got, tt.want)
-			}
+			testhelpers.AssertEqual(t, "ParseWorkflowID", tt.input, got, tt.want)
 		})
 	}
 }

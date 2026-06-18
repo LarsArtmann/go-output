@@ -176,7 +176,7 @@ func TestGraphRendererState_AddEdge(t *testing.T) {
 	t.Parallel()
 
 	m := NewGraphRendererState()
-	m.AddEdge(GraphEdge{From: NewBrandedID[GraphNodeIDBrand]("a"), To: NewBrandedID[GraphNodeIDBrand]("b")})
+	m.AddEdge(newTestEdge("a", "b"))
 
 	assertSliceLen(t, "Edges", m.Edges(), 1)
 }
@@ -185,10 +185,10 @@ func TestGraphRendererState_DedupEdges(t *testing.T) {
 	t.Parallel()
 
 	m := NewGraphRendererState()
-	m.AddEdge(GraphEdge{From: NewBrandedID[GraphNodeIDBrand]("a"), To: NewBrandedID[GraphNodeIDBrand]("b")})
-	m.AddEdge(GraphEdge{From: NewBrandedID[GraphNodeIDBrand]("a"), To: NewBrandedID[GraphNodeIDBrand]("b")})
-	m.AddEdge(GraphEdge{From: NewBrandedID[GraphNodeIDBrand]("b"), To: NewBrandedID[GraphNodeIDBrand]("c")})
-	m.AddEdge(GraphEdge{From: NewBrandedID[GraphNodeIDBrand]("a"), To: NewBrandedID[GraphNodeIDBrand]("b")})
+	m.AddEdge(newTestEdge("a", "b"))
+	m.AddEdge(newTestEdge("a", "b"))
+	m.AddEdge(newTestEdge("b", "c"))
+	m.AddEdge(newTestEdge("a", "b"))
 
 	m.DedupEdges()
 
@@ -208,7 +208,7 @@ func TestGraphRendererState_DedupEdgesSingle(t *testing.T) {
 	t.Parallel()
 
 	m := NewGraphRendererState()
-	m.AddEdge(GraphEdge{From: NewBrandedID[GraphNodeIDBrand]("a"), To: NewBrandedID[GraphNodeIDBrand]("b")})
+	m.AddEdge(newTestEdge("a", "b"))
 	m.DedupEdges()
 
 	assertSliceLen(t, "Edges", m.Edges(), 1)
@@ -248,6 +248,14 @@ func assertSliceLen[T any](t *testing.T, name string, slice []T, want int) {
 
 	if len(slice) != want {
 		t.Errorf("%s() len = %d, want %d", name, len(slice), want)
+	}
+}
+
+// newTestEdge builds a GraphEdge with branded IDs from plain strings.
+func newTestEdge(from, to string) GraphEdge {
+	return GraphEdge{
+		From: NewBrandedID[GraphNodeIDBrand](from),
+		To:   NewBrandedID[GraphNodeIDBrand](to),
 	}
 }
 
