@@ -180,7 +180,17 @@
 
             tidy = {
               type = "app";
-              program = runForModules "mod tidy";
+              program = pkgs.writeShellApplication {
+                name = "go-mod-tidy";
+                runtimeInputs = [ go ];
+                text = ''
+                  set -euo pipefail
+                  for mod in ${pkgs.lib.concatStringsSep " " modules}; do
+                    echo ":: $mod :: go mod tidy"
+                    ( cd "$mod" && go mod tidy )
+                  done
+                '';
+              };
             };
 
             setup-workspace = {

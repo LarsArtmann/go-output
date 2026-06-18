@@ -31,6 +31,7 @@ require (
 	github.com/go-faster/yaml v0.4.6 // indirect
 	github.com/larsartmann/go-branded-id v0.3.1 // indirect
 	github.com/larsartmann/go-output/enum v0.12.0 // indirect
+	github.com/larsartmann/go-output/envdetect v0.12.0 // indirect
 	github.com/larsartmann/go-output/escape v0.12.0 // indirect
 	github.com/lucasb-eyer/go-colorful v1.4.0 // indirect
 	github.com/mattn/go-runewidth v0.0.24 // indirect
@@ -50,6 +51,7 @@ replace (
 	github.com/larsartmann/go-output/d2 => ../d2
 	github.com/larsartmann/go-output/delimited => ../delimited
 	github.com/larsartmann/go-output/enum => ../enum
+	github.com/larsartmann/go-output/envdetect => ../envdetect
 	github.com/larsartmann/go-output/escape => ../escape
 	github.com/larsartmann/go-output/graph => ../graph
 	github.com/larsartmann/go-output/markup => ../markup

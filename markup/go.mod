@@ -11,6 +11,7 @@ require (
 require (
 	github.com/larsartmann/go-branded-id v0.3.1 // indirect
 	github.com/larsartmann/go-output/enum v0.12.0 // indirect
+	github.com/larsartmann/go-output/envdetect v0.12.0 // indirect
 	golang.org/x/sys v0.46.0 // indirect
 	golang.org/x/term v0.44.0 // indirect
 )
@@ -18,6 +19,7 @@ require (
 replace (
 	github.com/larsartmann/go-output => ../
 	github.com/larsartmann/go-output/delimited => ../delimited
+	github.com/larsartmann/go-output/envdetect => ../envdetect
 	github.com/larsartmann/go-output/escape => ../escape
 	github.com/larsartmann/go-output/testhelpers => ../testhelpers
 )
