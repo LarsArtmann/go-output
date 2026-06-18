@@ -62,10 +62,7 @@ func TestEdgesAB() []output.GraphEdge {
 func TestEdgesABC() []output.GraphEdge {
 	return []output.GraphEdge{
 		TestEdgeAB(""),
-		{
-			From: output.NewBrandedID[output.GraphNodeIDBrand]("B"),
-			To:   output.NewBrandedID[output.GraphNodeIDBrand]("C"),
-		},
+		NewTestEdge("B", "C", ""),
 	}
 }
 
