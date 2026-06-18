@@ -2,9 +2,13 @@ package nom
 
 import (
 	"cmp"
+	"errors"
 	"slices"
 	"sync"
 )
+
+// ErrActivityNotFound is returned when an activity cannot be found in the tree.
+var ErrActivityNotFound = errors.New("activity not found")
 
 const (
 	// msgNoActivitiesToDisplay is shown when dependency tree is empty.
@@ -14,8 +18,9 @@ const (
 // ActivityNode represents a node in the dependency tree.
 type ActivityNode struct {
 	// Activity is the source of truth (embeds GraphNode + Status + timing).
-	// Synced from the subscriber's Activity via SyncActivityTimingToTree.
-	Activity
+	// Shared by pointer with the subscriber's activities map — mutations are
+	// instantly visible to both with zero sync overhead.
+	*Activity
 
 	// Tree structure
 	Parent           *ActivityNode
@@ -49,10 +54,8 @@ func NewDependencyTree() *DependencyTree {
 
 // newActivityNode creates a new ActivityNode with pending status.
 func newActivityNode(id ActivityID, name string) *ActivityNode {
-	a := NewActivity(string(id), name)
-
 	return &ActivityNode{
-		Activity:    *a,
+		Activity:    NewActivity(string(id), name),
 		Children:    make([]*ActivityNode, 0),
 		IsDisplayed: true,
 	}

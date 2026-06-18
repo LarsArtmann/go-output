@@ -1,11 +1,11 @@
 package nom
 
-// GetActivities returns a copy of all activity display states.
-func (ns *NOMStyleSubscriber) GetActivities() map[ActivityID]*ActivityDisplayState {
+// GetActivities returns a copy of all activities.
+func (ns *NOMStyleSubscriber) GetActivities() map[ActivityID]*Activity {
 	ns.mu.RLock()
 	defer ns.mu.RUnlock()
-	// Return a deep copy to prevent external modification
-	result := make(map[ActivityID]*ActivityDisplayState)
+
+	result := make(map[ActivityID]*Activity, len(ns.activities))
 	for id, activity := range ns.activities {
 		result[id] = activity.Copy()
 	}
@@ -13,10 +13,10 @@ func (ns *NOMStyleSubscriber) GetActivities() map[ActivityID]*ActivityDisplaySta
 	return result
 }
 
-// GetActivity returns a specific activity display state.
+// GetActivity returns a specific activity.
 func (ns *NOMStyleSubscriber) GetActivity(
 	activityID ActivityID,
-) *ActivityDisplayState {
+) *Activity {
 	ns.mu.RLock()
 	defer ns.mu.RUnlock()
 

@@ -47,14 +47,14 @@ func TestReset_ClearsAllState(t *testing.T) {
 	ns := NewNOMStyleSubscriber()
 
 	// Populate state.
-	ns.activities = map[ActivityID]*ActivityDisplayState{
-		NewActivityID("a1"): NewActivityDisplayState(NewActivityID("a1"), "Activity 1"),
+	ns.activities = map[ActivityID]*Activity{
+		NewActivityID("a1"): NewActivity("a1", "Activity 1"),
 	}
 	ns.workflowID = NewWorkflowID("wf-1")
 	ns.workflowName = NewWorkflowName("Workflow 1")
 	ns.startTime = time.Now()
 	ns.isRunning = true
-	ns.dependencyTree.AddActivity(NewActivityID("a1"), "Activity 1", nil)
+	ns.dependencyTree.AddActivity(NewActivityID("a1"), NewActivity("a1", "Activity 1"), nil)
 
 	ns.Reset()
 

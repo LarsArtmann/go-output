@@ -89,7 +89,7 @@ func (ns *NOMStyleSubscriber) handleWorkflowStarted(
 	// ProgressBridge.Start()). Only initialize empty maps on a fresh start
 	// so callers can register phases/steps before workflow.started.
 	if ns.activities == nil {
-		ns.activities = make(map[ActivityID]*ActivityDisplayState)
+		ns.activities = make(map[ActivityID]*Activity)
 	}
 
 	if ns.dependencyTree == nil {
@@ -131,10 +131,10 @@ func (ns *NOMStyleSubscriber) handleWorkflowFailed(
 func (ns *NOMStyleSubscriber) getOrCreateActivity(
 	activityID ActivityID,
 	activityName ActivityName,
-) *ActivityDisplayState {
+) *Activity {
 	activity, exists := ns.activities[activityID]
 	if !exists {
-		activity = NewActivityDisplayState(activityID, activityName)
+		activity = NewActivity(string(activityID), activityName.String())
 		ns.activities[activityID] = activity
 	}
 
@@ -174,21 +174,12 @@ func (ns *NOMStyleSubscriber) handleActivityStarted(
 		activity.SetEstimatedTime(medianDuration)
 	}
 
-	if err := ns.dependencyTree.AddActivity(
+	// The tree shares the Activity pointer — mutations above are instantly
+	// visible to the tree node without any sync call.
+	return ns.dependencyTree.AddActivity(
 		aa.GetActivityID(),
-		aa.GetActivityName().String(),
+		activity,
 		extractDependencies(event),
-	); err != nil {
-		return err
-	}
-
-	return ns.dependencyTree.UpdateActivityStatus(
-		aa.GetActivityID(),
-		activity.Status,
-		activity.Symbol,
-		activity.Color,
-		activity.StartTime,
-		activity.EstimatedTime,
 	)
 }
 
@@ -207,40 +198,12 @@ func (ns *NOMStyleSubscriber) handleActivityRegistered(
 	ns.mu.Lock()
 	defer ns.mu.Unlock()
 
-	ns.getOrCreateActivity(aa.GetActivityID(), aa.GetActivityName())
+	activity := ns.getOrCreateActivity(aa.GetActivityID(), aa.GetActivityName())
 
-	if err := ns.dependencyTree.AddActivity(
+	return ns.dependencyTree.AddActivity(
 		aa.GetActivityID(),
-		aa.GetActivityName().String(),
+		activity,
 		extractDependencies(event),
-	); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// updateActivityStateAfterExecution handles common logic for completing/failing activities.
-// Records timing data and updates activity status in the dependency tree.
-func (ns *NOMStyleSubscriber) updateActivityStateAfterExecution(
-	activityID ActivityID,
-	activityName ActivityName,
-	activity *ActivityDisplayState,
-	duration time.Duration,
-) error {
-	if duration > 0 {
-		if err := ns.timingCache.Record(activityName.String(), duration); err != nil {
-			return err
-		}
-	}
-
-	return ns.dependencyTree.UpdateActivityStatus(
-		activityID,
-		activity.Status,
-		activity.Symbol,
-		activity.Color,
-		activity.StartTime,
-		activity.EstimatedTime,
 	)
 }
 
@@ -260,7 +223,7 @@ func (ns *NOMStyleSubscriber) handleActivityCompleted(
 	activity := ns.getOrCreateActivity(aa.GetActivityID(), aa.GetActivityName())
 	activity.SetCompleted()
 
-	return ns.finalizeActivityExecution(event, aa, activity)
+	return ns.recordTimingAndPersist(event, aa)
 }
 
 // handleActivityFailed handles activity failed event.
@@ -285,24 +248,24 @@ func (ns *NOMStyleSubscriber) handleActivityFailed(
 
 	activity.SetFailed(eventErr)
 
-	return ns.finalizeActivityExecution(event, aa, activity)
+	return ns.recordTimingAndPersist(event, aa)
 }
 
-// finalizeActivityExecution extracts duration from the event and updates activity state.
-func (ns *NOMStyleSubscriber) finalizeActivityExecution(
+// recordTimingAndPersist extracts duration from the event and records it
+// to the timing cache. The activity's state was already updated by the caller
+// via the shared Activity pointer, so no tree sync is needed.
+func (ns *NOMStyleSubscriber) recordTimingAndPersist(
 	event Event,
 	aa ActivityEventAccessor,
-	activity *ActivityDisplayState,
 ) error {
-	var duration time.Duration
 	if da, ok := event.(DurationAccessor); ok {
-		duration = da.GetDuration()
+		duration := da.GetDuration()
+		if duration > 0 {
+			if err := ns.timingCache.Record(aa.GetActivityName().String(), duration); err != nil {
+				return err
+			}
+		}
 	}
 
-	return ns.updateActivityStateAfterExecution(
-		aa.GetActivityID(),
-		aa.GetActivityName(),
-		activity,
-		duration,
-	)
+	return nil
 }

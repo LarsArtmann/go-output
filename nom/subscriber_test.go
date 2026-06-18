@@ -266,8 +266,8 @@ func TestNOMStyleSubscriber_ActivityStarted(t *testing.T) {
 		t.Errorf("activity status = %v, want Running", activity.Status)
 	}
 
-	if activity.ActivityName != ActivityName("Build") {
-		t.Errorf("activity name = %q, want %q", activity.ActivityName, "Build")
+	if activity.Label.Get() != "Build" {
+		t.Errorf("activity name = %q, want %q", activity.Label.Get(), "Build")
 	}
 }
 
@@ -327,7 +327,7 @@ func TestNOMStyleSubscriber_ActivityFailed(t *testing.T) {
 		t.Errorf("activity status = %v, want Failed", activity.Status)
 	}
 
-	if activity.Error == nil {
+	if activity.Err == nil {
 		t.Error("activity should have error")
 	}
 }
@@ -412,13 +412,13 @@ func TestNOMStyleSubscriber_GetActivityCounts_PausedAndFailed(t *testing.T) {
 
 	ns := NewNOMStyleSubscriber()
 
-	paused := NewActivityDisplayState(ActivityID("p1"), ActivityName("Wait"))
+	paused := NewActivity("p1", "Wait")
 	paused.Status = ActivityStatusPaused
-	ns.SetActivityState(paused)
+	ns.SetActivityState(ActivityID("p1"), paused)
 
-	failed := NewActivityDisplayState(ActivityID("f1"), ActivityName("Build"))
+	failed := NewActivity("f1", "Build")
 	failed.SetFailed(errors.New("crash"))
-	ns.SetActivityState(failed)
+	ns.SetActivityState(ActivityID("f1"), failed)
 
 	counts := ns.GetActivityCounts()
 	if counts.Running != 0 {
@@ -468,36 +468,14 @@ func TestNOMStyleSubscriber_UpdateRunningActivityElapsed(t *testing.T) {
 	}
 }
 
-func TestNOMStyleSubscriber_SyncActivityTimingToTree(t *testing.T) {
-	t.Parallel()
-
-	ns, ctx := setupWithWorkflow(t)
-	sendActivityStarted(t, ns, ctx, ActivityID("a1"), ActivityName("Build"))
-
-	time.Sleep(10 * time.Millisecond)
-	ns.UpdateRunningActivityElapsed()
-	ns.SyncActivityTimingToTree()
-
-	tree := ns.GetDependencyTree()
-
-	node := tree.GetNode(ActivityID("a1"))
-	if node == nil {
-		t.Fatal("tree node should exist")
-	}
-
-	if node.CurrentElapsed <= 0 {
-		t.Error("tree node CurrentElapsed should be positive after sync")
-	}
-}
-
 func TestNOMStyleSubscriber_SetActivityState(t *testing.T) {
 	t.Parallel()
 
 	ns := NewNOMStyleSubscriber()
-	activity := NewActivityDisplayState(ActivityID("custom"), ActivityName("Custom"))
+	activity := NewActivity("custom", "Custom")
 	activity.SetRunning()
 
-	ns.SetActivityState(activity)
+	ns.SetActivityState(ActivityID("custom"), activity)
 
 	got := ns.GetActivity(ActivityID("custom"))
 	if got == nil {

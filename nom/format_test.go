@@ -192,7 +192,7 @@ func TestFormatTimingInfo(t *testing.T) {
 	t.Run("running activity shows elapsed", func(t *testing.T) {
 		t.Parallel()
 
-		ads := NewActivityDisplayState(ActivityID("a"), ActivityName("A"))
+		ads := NewActivity("a", "A")
 		ads.SetRunning()
 
 		got := FormatTimingInfo(ads)
@@ -204,7 +204,7 @@ func TestFormatTimingInfo(t *testing.T) {
 	t.Run("completed activity shows duration", func(t *testing.T) {
 		t.Parallel()
 
-		ads := NewActivityDisplayState(ActivityID("a"), ActivityName("A"))
+		ads := NewActivity("a", "A")
 		ads.SetRunning()
 		time.Sleep(10 * time.Millisecond)
 		ads.SetCompleted()
@@ -218,7 +218,7 @@ func TestFormatTimingInfo(t *testing.T) {
 	t.Run("pending with estimated time shows average", func(t *testing.T) {
 		t.Parallel()
 
-		ads := NewActivityDisplayState(ActivityID("a"), ActivityName("A"))
+		ads := NewActivity("a", "A")
 		ads.SetEstimatedTime(5 * time.Second)
 
 		got := FormatTimingInfo(ads)
@@ -230,7 +230,7 @@ func TestFormatTimingInfo(t *testing.T) {
 	t.Run("pending without estimated time returns empty", func(t *testing.T) {
 		t.Parallel()
 
-		ads := NewActivityDisplayState(ActivityID("a"), ActivityName("A"))
+		ads := NewActivity("a", "A")
 
 		got := FormatTimingInfo(ads)
 		if got != "" {

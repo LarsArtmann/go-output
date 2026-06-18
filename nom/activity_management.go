@@ -57,51 +57,10 @@ func (ns *NOMStyleSubscriber) UpdateRunningActivityElapsed() {
 	}
 }
 
-// SetActivityState sets an activity's display state (for testing purposes).
-func (ns *NOMStyleSubscriber) SetActivityState(activity *ActivityDisplayState) {
+// SetActivityState sets an activity's state (for testing purposes).
+func (ns *NOMStyleSubscriber) SetActivityState(id ActivityID, activity *Activity) {
 	ns.mu.Lock()
 	defer ns.mu.Unlock()
 
-	ns.activities[activity.ActivityID] = activity
-}
-
-// SyncActivityTimingToTree synchronizes display state (status, symbol, color,
-// timing) from ActivityDisplayState to its corresponding ActivityNode.
-//
-// Both structures duplicate the display fields for their respective consumers
-// (TUI status list vs. dependency tree rendering). This helper keeps them
-// aligned; callers should invoke it after any state mutation and before
-// rendering. The tree's own mutex is acquired internally.
-func (ns *NOMStyleSubscriber) SyncActivityTimingToTree() {
-	ns.mu.Lock()
-	defer ns.mu.Unlock()
-
-	for activityID, activity := range ns.activities {
-		node := ns.dependencyTree.GetNode(activityID)
-		if node == nil {
-			// Tree node doesn't exist yet - skip
-			continue
-		}
-
-		// Sync fields from ActivityDisplayState to ActivityNode's embedded Activity.
-		syncActivityToNode(node, activity)
-	}
-}
-
-// syncActivityToNode copies display fields from ActivityDisplayState to an
-// ActivityNode's embedded Activity, including Shape/Style for diagram export.
-// This is the bridge sync that will be eliminated once the subscriber stores
-// Activities directly.
-func syncActivityToNode(node *ActivityNode, ads *ActivityDisplayState) {
-	node.Status = ads.Status
-	node.Symbol = ads.Symbol
-	node.Color = ads.Color
-	node.StartTime = ads.StartTime
-	node.EstimatedTime = ads.EstimatedTime
-	node.CurrentElapsed = ads.CurrentElapsed
-	node.EndTime = ads.EndTime
-	node.OperationType = ads.OperationType
-	node.Err = ads.Error
-	node.Shape = ads.Status.NodeShape()
-	node.Style = ads.Status.GraphStyle()
+	ns.activities[id] = activity
 }

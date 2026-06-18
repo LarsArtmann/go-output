@@ -131,7 +131,6 @@ func (r *InlineRenderer) Draw() {
 	r.tickMu.RUnlock()
 
 	r.subscriber.UpdateRunningActivityElapsed()
-	r.subscriber.SyncActivityTimingToTree()
 
 	tree := r.subscriber.GetDependencyTree()
 	if tree == nil {

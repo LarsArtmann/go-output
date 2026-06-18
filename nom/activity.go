@@ -60,18 +60,26 @@ func (a *Activity) SetRunning() {
 	a.applyVisualStyle()
 }
 
-// SetCompleted transitions the activity to completed and stamps EndedAt.
+// SetCompleted transitions the activity to completed, stamps EndedAt, and
+// finalizes CurrentElapsed so renderers show the total run duration.
 func (a *Activity) SetCompleted() {
 	a.Status = ActivityStatusCompleted
 	a.EndTime = time.Now()
+	if !a.StartTime.IsZero() {
+		a.CurrentElapsed = a.EndTime.Sub(a.StartTime)
+	}
 	a.applyVisualStyle()
 }
 
-// SetFailed transitions the activity to failed, records the error, and stamps EndedAt.
+// SetFailed transitions the activity to failed, records the error, stamps
+// EndedAt, and finalizes CurrentElapsed.
 func (a *Activity) SetFailed(err error) {
 	a.Status = ActivityStatusFailed
 	a.Err = err
 	a.EndTime = time.Now()
+	if !a.StartTime.IsZero() {
+		a.CurrentElapsed = a.EndTime.Sub(a.StartTime)
+	}
 	a.applyVisualStyle()
 }
 
@@ -129,4 +137,18 @@ func (a *Activity) applyVisualStyle() {
 	a.Style = a.Status.GraphStyle()
 	a.Symbol = a.Status.GetSymbol()
 	a.Color = a.Status.GetColor()
+}
+
+// SetPaused transitions the activity to paused.
+func (a *Activity) SetPaused() {
+	a.Status = ActivityStatusPaused
+	a.applyVisualStyle()
+}
+
+func (a *Activity) setOperationType(operationType string) {
+	a.OperationType = operationType
+}
+
+func (a *Activity) addDependency(dep string) {
+	a.Dependencies = append(a.Dependencies, dep)
 }

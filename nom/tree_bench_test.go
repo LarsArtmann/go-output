@@ -10,8 +10,11 @@ func buildBenchmarkTree(nodeCount int) *DependencyTree {
 	dt := NewDependencyTree()
 	now := time.Now()
 
-	dt.AddActivity(ActivityID("root"), "Root", nil)
-	dt.UpdateActivityStatus(ActivityID("root"), ActivityStatusRunning, SymbolRunning, ColorRunning, now, 0)
+	dt.AddActivity(ActivityID("root"), NewActivity("root", "Root"), nil)
+	node := dt.GetNode(ActivityID("root"))
+	node.Status = ActivityStatusRunning
+	node.applyVisualStyle()
+	node.StartTime = now
 
 	for i := 1; i < nodeCount; i++ {
 		id := ActivityID(fmt.Sprintf("step-%04d", i))
@@ -24,23 +27,20 @@ func buildBenchmarkTree(nodeCount int) *DependencyTree {
 			deps = []ActivityID{ActivityID(fmt.Sprintf("step-%04d", i-1))}
 		}
 
-		dt.AddActivity(id, name, deps)
+		dt.AddActivity(id, NewActivity(string(id), name), deps)
 
 		status := ActivityStatusPending
-		symbol := SymbolPaused
-		color := ColorPaused
 
 		if i < nodeCount/3 {
 			status = ActivityStatusCompleted
-			symbol = SymbolCompleted
-			color = ColorCompleted
 		} else if i < nodeCount*2/3 {
 			status = ActivityStatusRunning
-			symbol = SymbolRunning
-			color = ColorRunning
 		}
 
-		dt.UpdateActivityStatus(id, status, symbol, color, now, 0)
+		n := dt.GetNode(id)
+		n.Status = status
+		n.applyVisualStyle()
+		n.StartTime = now
 	}
 
 	dt.EnsureBuild()

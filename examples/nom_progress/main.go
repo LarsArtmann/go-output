@@ -89,7 +89,6 @@ func main() {
 	}
 
 	subscriber.UpdateRunningActivityElapsed()
-	subscriber.SyncActivityTimingToTree()
 
 	tree := subscriber.GetDependencyTree()
 

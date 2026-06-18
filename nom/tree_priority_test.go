@@ -13,7 +13,7 @@ func TestElideCompletedUnderPressure(t *testing.T) {
 
 	mkNode := func(id, name string, status ActivityStatus, elapsed time.Duration) *ActivityNode {
 		return &ActivityNode{
-			Activity: Activity{
+			Activity: &Activity{
 				GraphNode: output.GraphNode{
 					ID:    output.NewBrandedID[output.GraphNodeIDBrand](id),
 					Label: output.NewBrandedID[output.GraphNodeLabelBrand](name),

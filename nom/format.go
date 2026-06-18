@@ -56,7 +56,7 @@ func FormatDuration(duration time.Duration) string {
 }
 
 // FormatTimingInfo formats timing information for an activity.
-func FormatTimingInfo(state *ActivityDisplayState) string {
+func FormatTimingInfo(state *Activity) string {
 	if state.IsRunning() {
 		elapsed := time.Since(state.StartTime)
 		return fmt.Sprintf("%s%s", SymbolTiming, FormatDuration(elapsed))

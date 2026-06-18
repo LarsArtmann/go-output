@@ -12,7 +12,7 @@ func TestDependencyTree_EnsureBuild(t *testing.T) {
 	t.Parallel()
 
 	dt := NewDependencyTree()
-	dt.AddActivity(ActivityID("a"), "A", nil)
+	dt.AddActivity(ActivityID("a"), NewActivity("a", "A"), nil)
 
 	dt.EnsureBuild()
 
@@ -26,10 +26,10 @@ func TestDependencyTree_TreePrefix_RootNode(t *testing.T) {
 	t.Parallel()
 
 	dt := NewDependencyTree()
-	dt.AddActivity(ActivityID("root"), "Root", nil)
-	dt.AddActivity(ActivityID("child"), "Child", []ActivityID{"root"})
-	dt.UpdateActivityStatus(ActivityID("root"), ActivityStatusRunning, SymbolRunning, ColorRunning, time.Now(), 0)
-	dt.UpdateActivityStatus(ActivityID("child"), ActivityStatusPending, SymbolPaused, ColorPaused, time.Time{}, 0)
+	dt.AddActivity(ActivityID("root"), NewActivity("root", "Root"), nil)
+	dt.AddActivity(ActivityID("child"), NewActivity("child", "Child"), []ActivityID{"root"})
+	testSetStatus(dt, ActivityID("root"), ActivityStatusRunning, time.Now())
+	testSetStatus(dt, ActivityID("child"), ActivityStatusPending, time.Time{})
 
 	got := dt.RenderString(10)
 	if got == "" {
@@ -41,8 +41,8 @@ func TestDependencyTree_Render_PausedStatus(t *testing.T) {
 	t.Parallel()
 
 	dt := NewDependencyTree()
-	dt.AddActivity(ActivityID("a"), "A", nil)
-	dt.UpdateActivityStatus(ActivityID("a"), ActivityStatusPaused, SymbolPaused, ColorPaused, time.Now(), 0)
+	dt.AddActivity(ActivityID("a"), NewActivity("a", "A"), nil)
+	testSetStatus(dt, ActivityID("a"), ActivityStatusPaused, time.Now())
 
 	got := dt.RenderString(10)
 	if got == "" {
@@ -54,12 +54,12 @@ func TestDependencyTree_Render_FailedPriority(t *testing.T) {
 	t.Parallel()
 
 	dt := NewDependencyTree()
-	dt.AddActivity(ActivityID("a"), "A", nil)
-	dt.AddActivity(ActivityID("b"), "B", nil)
-	dt.AddActivity(ActivityID("c"), "C", nil)
-	dt.UpdateActivityStatus(ActivityID("a"), ActivityStatusCompleted, SymbolCompleted, ColorCompleted, time.Now(), 0)
-	dt.UpdateActivityStatus(ActivityID("b"), ActivityStatusFailed, SymbolFailed, ColorFailed, time.Now(), 0)
-	dt.UpdateActivityStatus(ActivityID("c"), ActivityStatusPending, SymbolPaused, ColorPaused, time.Time{}, 0)
+	dt.AddActivity(ActivityID("a"), NewActivity("a", "A"), nil)
+	dt.AddActivity(ActivityID("b"), NewActivity("b", "B"), nil)
+	dt.AddActivity(ActivityID("c"), NewActivity("c", "C"), nil)
+	testSetStatus(dt, ActivityID("a"), ActivityStatusCompleted, time.Now())
+	testSetStatus(dt, ActivityID("b"), ActivityStatusFailed, time.Now())
+	testSetStatus(dt, ActivityID("c"), ActivityStatusPending, time.Time{})
 
 	got := dt.RenderString(3)
 	if got == "" {
@@ -72,7 +72,7 @@ func TestDependencyTree_AddActivity_WithNonExistentDependency(t *testing.T) {
 
 	dt := NewDependencyTree()
 
-	err := dt.AddActivity(ActivityID("child"), "Child", []ActivityID{"nonexistent"})
+	err := dt.AddActivity(ActivityID("child"), NewActivity("child", "Child"), []ActivityID{"nonexistent"})
 	if err != nil {
 		t.Fatalf("AddActivity() error: %v", err)
 	}
@@ -90,8 +90,8 @@ func TestDependencyTree_AddActivity_UpdateExisting(t *testing.T) {
 	t.Parallel()
 
 	dt := NewDependencyTree()
-	dt.AddActivity(ActivityID("a"), "Original", nil)
-	dt.AddActivity(ActivityID("a"), "Updated", nil)
+	dt.AddActivity(ActivityID("a"), NewActivity("a", "Original"), nil)
+	dt.AddActivity(ActivityID("a"), NewActivity("a", "Updated"), nil)
 
 	node := dt.GetNode(ActivityID("a"))
 	testhelpers.AssertEqual(t, "ActivityName", "", node.Label.Get(), "Updated")
@@ -101,9 +101,9 @@ func TestDependencyTree_Render_SecondaryDependencies(t *testing.T) {
 	t.Parallel()
 
 	dt := NewDependencyTree()
-	dt.AddActivity(ActivityID("phase"), "Phase", nil)
-	dt.AddActivity(ActivityID("step1"), "Step1", []ActivityID{"phase"})
-	dt.AddActivity(ActivityID("step2"), "Step2", []ActivityID{"phase", "step1"})
+	dt.AddActivity(ActivityID("phase"), NewActivity("phase", "Phase"), nil)
+	dt.AddActivity(ActivityID("step1"), NewActivity("step1", "Step1"), []ActivityID{"phase"})
+	dt.AddActivity(ActivityID("step2"), NewActivity("step2", "Step2"), []ActivityID{"phase", "step1"})
 
 	got := dt.RenderString(10)
 	if got == "" {
@@ -124,11 +124,11 @@ func TestDependencyTree_Render_PhaseStyling(t *testing.T) {
 	t.Parallel()
 
 	dt := NewDependencyTree()
-	dt.AddActivity(ActivityID("phase:build"), "Build", nil)
-	dt.AddActivity(ActivityID("compile"), "Compile", []ActivityID{"phase:build"})
+	dt.AddActivity(ActivityID("phase:build"), NewActivity("phase:build", "Build"), nil)
+	dt.AddActivity(ActivityID("compile"), NewActivity("compile", "Compile"), []ActivityID{"phase:build"})
 
 	now := time.Now()
-	dt.UpdateActivityStatus(ActivityID("phase:build"), ActivityStatusRunning, SymbolRunning, ColorRunning, now, 0)
+	testSetStatus(dt, ActivityID("phase:build"), ActivityStatusRunning, now)
 
 	got := dt.RenderString(10)
 	if got == "" {
@@ -145,11 +145,11 @@ func TestDependencyTree_Render_PriorityOrdering(t *testing.T) {
 	t.Parallel()
 
 	dt := NewDependencyTree()
-	dt.AddActivity(ActivityID("phase:build"), "Build Phase", nil)
-	dt.AddActivity(ActivityID("compile"), "Compile", []ActivityID{"phase:build"})
-	dt.AddActivity(ActivityID("test"), "Run Tests", []ActivityID{"phase:build"})
-	dt.AddActivity(ActivityID("lint"), "Lint Code", []ActivityID{"phase:build"})
-	dt.AddActivity(ActivityID("deploy"), "Deploy", []ActivityID{"phase:build"})
+	dt.AddActivity(ActivityID("phase:build"), NewActivity("phase:build", "Build Phase"), nil)
+	dt.AddActivity(ActivityID("compile"), NewActivity("compile", "Compile"), []ActivityID{"phase:build"})
+	dt.AddActivity(ActivityID("test"), NewActivity("test", "Run Tests"), []ActivityID{"phase:build"})
+	dt.AddActivity(ActivityID("lint"), NewActivity("lint", "Lint Code"), []ActivityID{"phase:build"})
+	dt.AddActivity(ActivityID("deploy"), NewActivity("deploy", "Deploy"), []ActivityID{"phase:build"})
 
 	now := time.Date(2026, 6, 10, 12, 0, 0, 0, time.UTC)
 
@@ -213,10 +213,10 @@ func TestDependencyTree_RenderWithWidth_TruncatesLongNames(t *testing.T) {
 	t.Parallel()
 
 	dt := NewDependencyTree()
-	dt.AddActivity(ActivityID("a"), "This is a very long activity name that will not fit", nil)
+	dt.AddActivity(ActivityID("a"), NewActivity("a", "This is a very long activity name that will not fit"), nil)
 
 	now := time.Now()
-	dt.UpdateActivityStatus(ActivityID("a"), ActivityStatusRunning, SymbolRunning, ColorRunning, now, 0)
+	testSetStatus(dt, ActivityID("a"), ActivityStatusRunning, now)
 
 	wide := dt.RenderWithWidth(10, 80)
 	if strings.Contains(wide, "…") {

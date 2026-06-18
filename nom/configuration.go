@@ -25,7 +25,7 @@ func (ns *NOMStyleSubscriber) Reset() {
 	ns.mu.Lock()
 	defer ns.mu.Unlock()
 
-	ns.activities = make(map[ActivityID]*ActivityDisplayState)
+	ns.activities = make(map[ActivityID]*Activity)
 	ns.dependencyTree.Clear()
 	ns.workflowID = ""
 	ns.workflowName = WorkflowName("")

@@ -1,7 +1,6 @@
 package nom
 
 import (
-	"errors"
 	"strings"
 	"testing"
 	"time"
@@ -26,7 +25,7 @@ func TestDependencyTree_AddActivity(t *testing.T) {
 
 		dt := NewDependencyTree()
 
-		err := dt.AddActivity(ActivityID("a"), "Activity A", nil)
+		err := dt.AddActivity(ActivityID("a"), NewActivity("a", "Activity A"), nil)
 		if err != nil {
 			t.Fatalf("AddActivity() error: %v", err)
 		}
@@ -44,12 +43,12 @@ func TestDependencyTree_AddActivity(t *testing.T) {
 
 		dt := NewDependencyTree()
 
-		err := dt.AddActivity(ActivityID("parent"), "Parent", nil)
+		err := dt.AddActivity(ActivityID("parent"), NewActivity("parent", "Parent"), nil)
 		if err != nil {
 			t.Fatalf("AddActivity() error: %v", err)
 		}
 
-		err = dt.AddActivity(ActivityID("child"), "Child", []ActivityID{"parent"})
+		err = dt.AddActivity(ActivityID("child"), NewActivity("child", "Child"), []ActivityID{"parent"})
 		if err != nil {
 			t.Fatalf("AddActivity() error: %v", err)
 		}
@@ -72,8 +71,8 @@ func TestDependencyTree_Build(t *testing.T) {
 	t.Parallel()
 
 	dt := NewDependencyTree()
-	dt.AddActivity(ActivityID("a"), "A", nil)
-	dt.AddActivity(ActivityID("b"), "B", nil)
+	dt.AddActivity(ActivityID("a"), NewActivity("a", "A"), nil)
+	dt.AddActivity(ActivityID("b"), NewActivity("b", "B"), nil)
 
 	err := dt.Build()
 	if err != nil {
@@ -100,9 +99,9 @@ func TestDependencyTree_Build_DepthCalculation(t *testing.T) {
 	t.Parallel()
 
 	dt := NewDependencyTree()
-	dt.AddActivity(ActivityID("a"), "A", nil)
-	dt.AddActivity(ActivityID("b"), "B", []ActivityID{"a"})
-	dt.AddActivity(ActivityID("c"), "C", []ActivityID{"b"})
+	dt.AddActivity(ActivityID("a"), NewActivity("a", "A"), nil)
+	dt.AddActivity(ActivityID("b"), NewActivity("b", "B"), []ActivityID{"a"})
+	dt.AddActivity(ActivityID("c"), NewActivity("c", "C"), []ActivityID{"b"})
 
 	dt.Build()
 
@@ -116,7 +115,7 @@ func TestDependencyTree_GetDisplayActivities(t *testing.T) {
 	t.Parallel()
 
 	dt := NewDependencyTree()
-	dt.AddActivity(ActivityID("a"), "A", nil)
+	dt.AddActivity(ActivityID("a"), NewActivity("a", "A"), nil)
 
 	activities := dt.getDisplayActivities()
 	if activities == nil {
@@ -128,10 +127,10 @@ func TestDependencyTree_FindNodesByStatus(t *testing.T) {
 	t.Parallel()
 
 	dt := NewDependencyTree()
-	dt.AddActivity(ActivityID("a"), "A", nil)
-	dt.AddActivity(ActivityID("b"), "B", nil)
-	dt.UpdateActivityStatus(ActivityID("a"), ActivityStatusRunning, SymbolRunning, ColorRunning, time.Now(), 0)
-	dt.UpdateActivityStatus(ActivityID("b"), ActivityStatusCompleted, SymbolCompleted, ColorCompleted, time.Now(), 0)
+	dt.AddActivity(ActivityID("a"), NewActivity("a", "A"), nil)
+	dt.AddActivity(ActivityID("b"), NewActivity("b", "B"), nil)
+	testSetStatus(dt, ActivityID("a"), ActivityStatusRunning, time.Now())
+	testSetStatus(dt, ActivityID("b"), ActivityStatusCompleted, time.Now())
 
 	running := dt.findNodesByStatus(ActivityStatusRunning)
 	if len(running) != 1 {
@@ -147,7 +146,7 @@ func TestDependencyTree_Clear(t *testing.T) {
 	t.Parallel()
 
 	dt := NewDependencyTree()
-	dt.AddActivity(ActivityID("a"), "A", nil)
+	dt.AddActivity(ActivityID("a"), NewActivity("a", "A"), nil)
 	dt.Build()
 
 	dt.Clear()
@@ -162,8 +161,8 @@ func TestDependencyTree_SnapshotRoots(t *testing.T) {
 	t.Parallel()
 
 	dt := NewDependencyTree()
-	dt.AddActivity(ActivityID("a"), "A", nil)
-	dt.AddActivity(ActivityID("b"), "B", nil)
+	dt.AddActivity(ActivityID("a"), NewActivity("a", "A"), nil)
+	dt.AddActivity(ActivityID("b"), NewActivity("b", "B"), nil)
 
 	snapshot := dt.snapshotRoots()
 	if len(snapshot) != 2 {
@@ -171,26 +170,16 @@ func TestDependencyTree_SnapshotRoots(t *testing.T) {
 	}
 }
 
-func TestDependencyTree_UpdateActivityStatus(t *testing.T) {
+func TestDependencyTree_DirectStatusMutation(t *testing.T) {
 	t.Parallel()
 
 	t.Run("existing node", func(t *testing.T) {
 		t.Parallel()
 
 		dt := NewDependencyTree()
-		dt.AddActivity(ActivityID("a"), "A", nil)
+		dt.AddActivity(ActivityID("a"), NewActivity("a", "A"), nil)
 
-		err := dt.UpdateActivityStatus(
-			ActivityID("a"),
-			ActivityStatusRunning,
-			SymbolRunning,
-			ColorRunning,
-			time.Now(),
-			5*time.Second,
-		)
-		if err != nil {
-			t.Fatalf("UpdateActivityStatus() error: %v", err)
-		}
+		testSetStatus(dt, ActivityID("a"), ActivityStatusRunning, time.Now())
 
 		node := dt.GetNode(ActivityID("a"))
 		if node.Status != ActivityStatusRunning {
@@ -202,26 +191,12 @@ func TestDependencyTree_UpdateActivityStatus(t *testing.T) {
 		}
 	})
 
-	t.Run("nonexistent node returns error", func(t *testing.T) {
+	t.Run("nonexistent node is no-op", func(t *testing.T) {
 		t.Parallel()
 
 		dt := NewDependencyTree()
-
-		err := dt.UpdateActivityStatus(
-			ActivityID("nonexistent"),
-			ActivityStatusRunning,
-			SymbolRunning,
-			ColorRunning,
-			time.Now(),
-			0,
-		)
-		if err == nil {
-			t.Error("expected error for nonexistent activity")
-		}
-
-		if !errors.Is(err, ErrActivityNotFound) {
-			t.Errorf("error should wrap ErrActivityNotFound, got: %v", err)
-		}
+		testSetStatus(dt, ActivityID("nonexistent"), ActivityStatusRunning, time.Now())
+		// No panic, no error — the shared-pointer model makes this a no-op.
 	})
 }
 
@@ -243,8 +218,8 @@ func TestDependencyTree_Render(t *testing.T) {
 		t.Parallel()
 
 		dt := NewDependencyTree()
-		dt.AddActivity(ActivityID("a"), "Activity A", nil)
-		dt.UpdateActivityStatus(ActivityID("a"), ActivityStatusRunning, SymbolRunning, ColorRunning, time.Now(), 0)
+		dt.AddActivity(ActivityID("a"), NewActivity("a", "Activity A"), nil)
+		testSetStatus(dt, ActivityID("a"), ActivityStatusRunning, time.Now())
 
 		got := dt.RenderString(10)
 		if got == "" {
@@ -259,7 +234,7 @@ func TestDependencyTree_Render(t *testing.T) {
 
 		for i := range 10 {
 			id := ActivityID(string(rune('a' + i)))
-			dt.AddActivity(id, string(rune('a'+i)), nil)
+			dt.AddActivity(id, NewActivity(string(id), string(rune('a'+i))), nil)
 		}
 
 		got := dt.RenderString(3)
@@ -273,12 +248,12 @@ func TestDependencyTree_AddActivity_DedupSecondaryParents(t *testing.T) {
 	t.Parallel()
 
 	dt := NewDependencyTree()
-	dt.AddActivity(ActivityID("phase"), "Phase", nil)
-	dt.AddActivity(ActivityID("step1"), "Step1", []ActivityID{"phase"})
+	dt.AddActivity(ActivityID("phase"), NewActivity("phase", "Phase"), nil)
+	dt.AddActivity(ActivityID("step1"), NewActivity("step1", "Step1"), []ActivityID{"phase"})
 
 	// Add step2 with same secondary dep twice (simulating re-registration)
-	dt.AddActivity(ActivityID("step2"), "Step2", []ActivityID{"phase", "step1"})
-	dt.AddActivity(ActivityID("step2"), "Step2", []ActivityID{"phase", "step1"})
+	dt.AddActivity(ActivityID("step2"), NewActivity("step2", "Step2"), []ActivityID{"phase", "step1"})
+	dt.AddActivity(ActivityID("step2"), NewActivity("step2", "Step2"), []ActivityID{"phase", "step1"})
 
 	node := dt.GetNode(ActivityID("step2"))
 	if len(node.SecondaryParents) != 1 {
@@ -290,8 +265,8 @@ func TestDependencyTree_RenderNode(t *testing.T) {
 	t.Parallel()
 
 	dt := NewDependencyTree()
-	dt.AddActivity(ActivityID("root"), "Root Task", nil)
-	dt.AddActivity(ActivityID("child"), "Child Task", []ActivityID{"root"})
+	dt.AddActivity(ActivityID("root"), NewActivity("root", "Root Task"), nil)
+	dt.AddActivity(ActivityID("child"), NewActivity("child", "Child Task"), []ActivityID{"root"})
 
 	nodes := dt.VisibleNodes(10)
 	if len(nodes) == 0 {
@@ -315,9 +290,9 @@ func TestDependencyTree_VisibleNodes(t *testing.T) {
 		t.Parallel()
 
 		dt := NewDependencyTree()
-		dt.AddActivity(ActivityID("a"), "A", nil)
-		dt.AddActivity(ActivityID("b"), "B", nil)
-		dt.AddActivity(ActivityID("c"), "C", nil)
+		dt.AddActivity(ActivityID("a"), NewActivity("a", "A"), nil)
+		dt.AddActivity(ActivityID("b"), NewActivity("b", "B"), nil)
+		dt.AddActivity(ActivityID("c"), NewActivity("c", "C"), nil)
 
 		visible := dt.VisibleNodes(2)
 		if len(visible) != 2 {
@@ -329,8 +304,8 @@ func TestDependencyTree_VisibleNodes(t *testing.T) {
 		t.Parallel()
 
 		dt := NewDependencyTree()
-		dt.AddActivity(ActivityID("a"), "A", nil)
-		dt.AddActivity(ActivityID("b"), "B", nil)
+		dt.AddActivity(ActivityID("a"), NewActivity("a", "A"), nil)
+		dt.AddActivity(ActivityID("b"), NewActivity("b", "B"), nil)
 
 		visible := dt.VisibleNodes(0)
 		if len(visible) != 2 {

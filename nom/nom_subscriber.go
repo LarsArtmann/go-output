@@ -18,7 +18,7 @@ type ActivityReader interface {
 // NOMStyleSubscriber implements EventSubscriber to provide NOM-style visualization.
 type NOMStyleSubscriber struct {
 	mu             sync.RWMutex
-	activities     map[ActivityID]*ActivityDisplayState
+	activities     map[ActivityID]*Activity
 	dependencyTree *DependencyTree
 	timingCache    *TimingCache
 	workflowID     WorkflowID
@@ -31,7 +31,7 @@ type NOMStyleSubscriber struct {
 // NewNOMStyleSubscriber creates a new NOM-style subscriber.
 func NewNOMStyleSubscriber() *NOMStyleSubscriber {
 	return &NOMStyleSubscriber{
-		activities:     make(map[ActivityID]*ActivityDisplayState),
+		activities:     make(map[ActivityID]*Activity),
 		dependencyTree: NewDependencyTree(),
 		timingCache:    NewTimingCache(),
 		isRunning:      false,
@@ -54,25 +54,22 @@ func (ns *NOMStyleSubscriber) Store() ActivityReader {
 }
 
 // subscriberView adapts NOMStyleSubscriber to the ActivityReader interface.
-// It projects the subscriber's ActivityDisplayState map to GraphNode/Edge
-// slices on-demand under the subscriber's read lock.
+// It projects the subscriber's Activity map to GraphNode/Edge slices on-demand
+// under the subscriber's read lock.
 type subscriberView struct {
 	ns *NOMStyleSubscriber
 }
 
 // Nodes projects all activities as output.GraphNode values for diagram export.
+// Since Activity embeds output.GraphNode, the projection is a direct copy —
+// Shape/Style are always in sync with Status via applyVisualStyle().
 func (v *subscriberView) Nodes() []output.GraphNode {
 	v.ns.mu.RLock()
 	defer v.ns.mu.RUnlock()
 
 	out := make([]output.GraphNode, 0, len(v.ns.activities))
-	for id, ads := range v.ns.activities {
-		out = append(out, output.GraphNode{
-			ID:    output.NewBrandedID[output.GraphNodeIDBrand](string(id)),
-			Label: output.NewBrandedID[output.GraphNodeLabelBrand](ads.ActivityName.String()),
-			Shape: ads.Status.NodeShape(),
-			Style: ads.Status.GraphStyle(),
-		})
+	for _, a := range v.ns.activities {
+		out = append(out, a.GraphNode)
 	}
 
 	return out
