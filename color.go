@@ -79,20 +79,40 @@ func (c ColorMode) ShouldColor() bool {
 	case ColorModeNever:
 		return false
 	case ColorModeAuto:
-		return isStdoutTerminal() && !isNoColor() && !isCI()
+		return stdoutIsTerminal() && !noColorEnv() && !ciEnv()
 	default:
 		return false
 	}
 }
 
-func isStdoutTerminal() bool {
-	if isTerminalByEnv("GO_OUTPUT_FORCE_COLOR", "FORCE_COLOR") {
-		return true
+// Detection functions are overridable variables for deterministic testing.
+// Tests can swap these to control ShouldColor() output without relying on
+// the real TTY, env vars, or CI environment.
+//
+//nolint:gochecknoglobals // Overridable for test determinism (#9).
+var (
+	stdoutIsTerminal = func() bool {
+		if isTerminalByEnv("GO_OUTPUT_FORCE_COLOR", "FORCE_COLOR") {
+			return true
+		}
+
+		//nolint:gosec // File descriptors are always small positive integers.
+		return term.IsTerminal(int(os.Stdout.Fd()))
 	}
 
-	//nolint:gosec // File descriptors are always small positive integers.
-	return term.IsTerminal(int(os.Stdout.Fd()))
-}
+	noColorEnv = func() bool {
+		return os.Getenv("NO_COLOR") != "" ||
+			os.Getenv("TERM") == "dumb"
+	}
+
+	ciEnv = func() bool {
+		return os.Getenv("CI") != "" ||
+			os.Getenv("GITHUB_ACTIONS") != "" ||
+			os.Getenv("GITLAB_CI") != "" ||
+			os.Getenv("JENKINS_URL") != "" ||
+			os.Getenv("BUILDKITE") != ""
+	}
+)
 
 func isTerminalByEnv(envVars ...string) bool {
 	for _, env := range envVars {
@@ -102,23 +122,4 @@ func isTerminalByEnv(envVars ...string) bool {
 	}
 
 	return false
-}
-
-// isNoColor reports whether color output should be suppressed via NO_COLOR or TERM=dumb.
-// Mirrors nom.detectNoColor — kept inline because nom/ cannot import root
-// (would add output + transitive deps to nom's closure). Keep in sync.
-func isNoColor() bool {
-	return os.Getenv("NO_COLOR") != "" ||
-		os.Getenv("TERM") == "dumb"
-}
-
-// isCI reports whether the process is running inside a CI environment.
-// Mirrors nom.detectNoColor's CI branch — kept inline for the same reason.
-// Keep in sync.
-func isCI() bool {
-	return os.Getenv("CI") != "" ||
-		os.Getenv("GITHUB_ACTIONS") != "" ||
-		os.Getenv("GITLAB_CI") != "" ||
-		os.Getenv("JENKINS_URL") != "" ||
-		os.Getenv("BUILDKITE") != ""
 }

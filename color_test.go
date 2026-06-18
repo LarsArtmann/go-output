@@ -6,46 +6,47 @@ import (
 	"github.com/larsartmann/go-output/testhelpers"
 )
 
-func TestIsNoColor(t *testing.T) {
-	t.Setenv("NO_COLOR", "") // Clear NO_COLOR
+func TestNoColorEnv(t *testing.T) {
+	t.Setenv("NO_COLOR", "")
 
-	if isNoColor() {
-		t.Error("isNoColor() should return false when NO_COLOR is not set")
+	if noColorEnv() {
+		t.Error("noColorEnv() should return false when NO_COLOR is not set")
 	}
 
 	t.Setenv("NO_COLOR", "1")
 
-	if !isNoColor() {
-		t.Error("isNoColor() should return true when NO_COLOR is set")
+	if !noColorEnv() {
+		t.Error("noColorEnv() should return true when NO_COLOR is set")
 	}
 }
 
-func TestIsCI(t *testing.T) {
+func TestCIEnv(t *testing.T) {
 	ciVars := []string{"CI", "GITHUB_ACTIONS", "GITLAB_CI", "JENKINS_URL", "BUILDKITE"}
+
 	for _, v := range ciVars {
-		t.Setenv(v, "") // Clear CI vars
+		t.Setenv(v, "")
 	}
 
-	if isCI() {
-		t.Error("isCI() should return false when no CI env vars are set")
+	if ciEnv() {
+		t.Error("ciEnv() should return false when no CI env vars are set")
 	}
 
 	t.Setenv("CI", "true")
 
-	if !isCI() {
-		t.Error("isCI() should return true when CI is set")
+	if !ciEnv() {
+		t.Error("ciEnv() should return true when CI is set")
 	}
 
 	t.Setenv("CI", "")
 	t.Setenv("GITHUB_ACTIONS", "true")
 
-	if !isCI() {
-		t.Error("isCI() should return true when GITHUB_ACTIONS is set")
+	if !ciEnv() {
+		t.Error("ciEnv() should return true when GITHUB_ACTIONS is set")
 	}
 }
 
 func TestIsTerminalByEnv(t *testing.T) {
-	t.Setenv("FORCE_COLOR", "") // Clear FORCE_COLOR
+	t.Setenv("FORCE_COLOR", "")
 
 	if isTerminalByEnv("FORCE_COLOR") {
 		t.Error("isTerminalByEnv() should return false when env is not set")
@@ -120,7 +121,7 @@ func TestColorModeIsValid(t *testing.T) {
 
 func TestColorModeShouldColor(t *testing.T) {
 	t.Parallel()
-	// Test explicit modes
+
 	if !ColorModeAlways.ShouldColor() {
 		t.Error("ColorModeAlways.ShouldColor() should return true")
 	}
@@ -128,9 +129,6 @@ func TestColorModeShouldColor(t *testing.T) {
 	if ColorModeNever.ShouldColor() {
 		t.Error("ColorModeNever.ShouldColor() should return false")
 	}
-
-	// Auto mode depends on environment
-	_ = ColorModeAuto.ShouldColor() // Just ensure it doesn't panic
 }
 
 func TestColorModeShouldColorDefault(t *testing.T) {
@@ -142,10 +140,65 @@ func TestColorModeShouldColorDefault(t *testing.T) {
 	}
 }
 
-func TestIsStdoutTerminalWithForceColor(t *testing.T) {
+func TestColorModeShouldColorAuto_Deterministic(t *testing.T) {
+	t.Setenv("NO_COLOR", "")
+	t.Setenv("TERM", "")
+	t.Setenv("CI", "")
+	t.Setenv("GITHUB_ACTIONS", "")
+	t.Setenv("GITLAB_CI", "")
+	t.Setenv("JENKINS_URL", "")
+	t.Setenv("BUILDKITE", "")
+	t.Setenv("GO_OUTPUT_FORCE_COLOR", "")
+	t.Setenv("FORCE_COLOR", "")
+
+	// Override detection functions for deterministic testing.
+	origTerminal := stdoutIsTerminal
+	origNoColor := noColorEnv
+	origCI := ciEnv
+
+	t.Cleanup(func() {
+		stdoutIsTerminal = origTerminal
+		noColorEnv = origNoColor
+		ciEnv = origCI
+	})
+
+	// Case 1: TTY + no NO_COLOR + not CI → color.
+	stdoutIsTerminal = func() bool { return true }
+	noColorEnv = func() bool { return false }
+	ciEnv = func() bool { return false }
+
+	if !ColorModeAuto.ShouldColor() {
+		t.Error("Auto should color when TTY + no NO_COLOR + not CI")
+	}
+
+	// Case 2: NO_COLOR set → no color.
+	noColorEnv = func() bool { return true }
+
+	if ColorModeAuto.ShouldColor() {
+		t.Error("Auto should not color when NO_COLOR is set")
+	}
+
+	// Case 3: CI environment → no color.
+	noColorEnv = func() bool { return false }
+	ciEnv = func() bool { return true }
+
+	if ColorModeAuto.ShouldColor() {
+		t.Error("Auto should not color in CI")
+	}
+
+	// Case 4: Not a TTY → no color.
+	ciEnv = func() bool { return false }
+	stdoutIsTerminal = func() bool { return false }
+
+	if ColorModeAuto.ShouldColor() {
+		t.Error("Auto should not color when not a TTY")
+	}
+}
+
+func TestStdoutIsTerminalWithForceColor(t *testing.T) {
 	t.Setenv("GO_OUTPUT_FORCE_COLOR", "1")
 
-	if !isStdoutTerminal() {
-		t.Error("isStdoutTerminal() should return true with GO_OUTPUT_FORCE_COLOR=1")
+	if !stdoutIsTerminal() {
+		t.Error("stdoutIsTerminal() should return true with GO_OUTPUT_FORCE_COLOR=1")
 	}
 }
