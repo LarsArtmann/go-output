@@ -57,7 +57,7 @@ func (m *ProgressModel) renderDependencyTree() string {
 
 	for _, node := range m.visibleNodes {
 		line := m.dependencyTree.RenderNode(node, m.visibleNodes)
-		if m.selectedNode != "" && node.ActivityID == m.selectedNode {
+		if m.selectedNode != "" && nom.ActivityID(node.ID.Get()) == m.selectedNode {
 			line = lipgloss.NewStyle().
 				Background(colors.selectBG).
 				Foreground(colors.selectFG).
