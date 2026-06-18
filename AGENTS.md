@@ -62,7 +62,7 @@ These are non-obvious from reading code alone — the "how does this even work" 
 - **ColorMode wiring — three mechanisms, use the right one**: `table.New(table.WithColorMode(...))` (functional option), `ASCIITreeRenderer.SetColorMode(...)` / `MarkdownTable.SetColorMode(...)` (setter), `RenderTableData(data, fmt, RenderOptions{ColorMode: ...})` (dispatch field). `ColorModeAuto` detects terminal via `x/term`, respects `NO_COLOR`/`CI`/`FORCE_COLOR`.
 - **Composition via `GraphRendererState`**: DOT/Mermaid/PlantUML renderers embed root's `GraphRendererState` for shared node/edge state via `AddNode`/`AddEdge`. `AddTreeNodes` accepts the `NodeEdgeAppender` interface (not raw slice pointers). `TableDataStore` exposes `Data()` so sub-modules share the table data field.
 - **Branded IDs**: Phantom types (`D2NodeID`, `TreeNodeID`, ...) via `go-branded-id` prevent mixing ID types at compile time. `d2/` re-exports `D2NodeID`/`D2NodeLabel` from root so users need only one import.
-- **All renderers implement `Render() (string, error)`**: Use `MustRender(r)` in tests/examples for the panic-on-error shortcut.
+- **Render naming convention**: `Render() (string, error)` is the project-wide canonical contract for `output.Renderer` and its implementations — use `MustRender(r)` in tests. `nom.InlineRenderer.Draw()` is reserved for terminal redraws (void, writes to `io.Writer`). `nom.DependencyTree.RenderString(maxHeight)` returns a formatted string (errors encoded into the string, not returned separately). Split-brain M4 fixed: `Render()` is no longer overloaded across incompatible signatures.
 
 ## Gotchas
 
