@@ -217,9 +217,9 @@ type RenderOptions struct {
 
 All runtime dispatch is backed by a single generic, thread-safe container — `formatRegistry[T]` in [`registry.go`](../registry.go) — replacing what was previously three separate mutex+map boilerplates:
 
-| Registry             | Value type           | Populated by                                                                        | Queried by               |
-| -------------------- | -------------------- | ----------------------------------------------------------------------------------- | ------------------------ |
-| `formatCapabilities` | `[]Shape`            | root `init()` + sub-module overrides                                                | `Format.Supports/Shapes` |
+| Registry             | Value type          | Populated by                                                                        | Queried by               |
+| -------------------- | ------------------- | ----------------------------------------------------------------------------------- | ------------------------ |
+| `formatCapabilities` | `[]Shape`           | root `init()` + sub-module overrides                                                | `Format.Supports/Shapes` |
 | `tableDataRegistry`  | `TableDataRenderer` | delimited, serialization, markup, d2, graph, plantuml, table, root (markdown, tree) | `RenderTableData`        |
 | `anyDataRegistry`    | `AnyDataRenderer`   | serialization (JSON, YAML, TOML)                                                    | `RenderAnyData`          |
 

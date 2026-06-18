@@ -81,7 +81,7 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 | **Shape enum**        | FULLY_FUNCTIONAL | 3 shape constants. `ParseShape()`, `String()`, `IsValid()`, `AllowedValues()`                                  |
 | **ColorMode enum**    | FULLY_FUNCTIONAL | `auto`, `always`, `never`. `ParseColorMode()`, `ShouldColor()`. Wired into table, tree, markdown renderers     |
 | **SortBy enum**       | REMOVED          | Deleted — zero external callers. Use `slices.SortStableFunc` + `cmp.Compare` (stdlib)                          |
-| **NodeShape enum**   | FULLY_FUNCTIONAL | 8 node shapes (box, ellipse, diamond, circle, cylinder, hexagon, parallelogram, rect)                          |
+| **NodeShape enum**    | FULLY_FUNCTIONAL | 8 node shapes (box, ellipse, diamond, circle, cylinder, hexagon, parallelogram, rect)                          |
 | **D2Direction enum**  | FULLY_FUNCTIONAL | 4 directions (down, right, left, up). Default is down                                                          |
 | **D2NodeShape enum**  | FULLY_FUNCTIONAL | 20 shapes (rectangle, circle, diamond, hexagon, cloud, person, queue, sql_table, class, code, etc.)            |
 | **D2ArrowType enum**  | FULLY_FUNCTIONAL | 11 arrow types (arrow, triangle, diamond, circle, filled, box, cross, CF variants)                             |

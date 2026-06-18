@@ -6,6 +6,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### v1.0.0 Preparation — Breaking Changes
+
+**Removed:**
+- `RenderOptions.GraphID` — dead code, no marshaler ever read it. Use `DOTRenderer.SetGraphID()` directly.
+
+**Renamed (breaking):**
+- `GraphShape` → `NodeShape` (type), `ShapeBox` → `NodeShapeBox`, `ShapeEllipse` → `NodeShapeEllipse`, etc. — disambiguated from data-capability `Shape` enum (`ShapeTable`, `ShapeTree`, `ShapeGraph`)
+- `GraphStyle.FillColor` → `Fill`, `GraphStyle.StrokeColor` → `Stroke` — aligned with `D2NodeStyle` field names
+- `EdgeStyle.Style` field → `EdgeStyle.Line` (type changed from `string` to `LineStyle`)
+- `TableDataMarshaler` → `TableDataRenderer`, `AnyDataMarshaler` → `AnyDataRenderer` — unified terminology
+- `RegisterTableDataMarshaler` → `RegisterTableDataRenderer`, `RegisterAnyDataMarshaler` → `RegisterAnyDataRenderer`
+
+**Added:**
+- `LineStyle` enum (`LineStyleSolid`, `LineStyleDashed`, `LineStyleDotted`) with `IsValid()`/`String()` — replaces free-form string on `EdgeStyle.Style`
+- `Direction` enum (`DirectionDown`/`Up`/`Left`/`Right`) with `ToD2Direction()`/`ToRankDir()` — bridges D2 and DOT layout vocabulary
+- `ActivityCounts` struct with `Running`/`Completed`/`Failed`/`Pending` fields and `Total()` method — replaces 4 unnamed int returns from `GetActivityCounts()`
+
+**Changed (non-breaking):**
+- `ColorModeAuto.ShouldColor()` detection functions are now overridable variables (`stdoutIsTerminal`, `noColorEnv`, `ciEnv`) for deterministic testing
+- `BubbleTeaProgressReporter` no longer mutates model fields directly from caller goroutine — all mutations flow through `send()` → `model.Update()`, eliminating the data race (#22)
+
 ### Changed — Split-Brain Elimination
 
 - **`nom.TreeNode` renamed to `nom.ActivityNode`** — eliminates exported name collision with `output.TreeNode` (the generic diagram tree node). Mechanical rename across 12 nom/ files + tui/ references.

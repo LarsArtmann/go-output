@@ -19,7 +19,7 @@ Every term below should mean the **same thing** to everyone who reads it.
 | **Branded ID**         | A phantom-typed identifier (e.g., `D2NodeID`, `TreeNodeID`)            | Prevents mixing different ID types at compile time                           |
 | **GraphRendererState** | Shared state holder for graph renderers (nodes, edges)                 | Embedded by DOTRenderer and MermaidRenderer in `graph/` module               |
 | **ColorMode**          | Terminal color output mode: auto, always, never                        | Respects `NO_COLOR`, CI env vars, TTY detection                              |
-| **Registry**           | Format→marshaler dispatch map for `RenderTableData`                    | `RegisterTableDataRenderer(format, fn)` — sub-modules register in `init()`  |
+| **Registry**           | Format→marshaler dispatch map for `RenderTableData`                    | `RegisterTableDataRenderer(format, fn)` — sub-modules register in `init()`   |
 
 ## Entities
 
@@ -34,7 +34,7 @@ Every term below should mean the **same thing** to everyone who reads it.
 
 | Term             | Definition                                                         | Context                                   |
 | ---------------- | ------------------------------------------------------------------ | ----------------------------------------- |
-| **NodeShape**   | Visual shape for a graph node: rectangle, diamond, ellipse, etc.   | DOT and Mermaid renderers interpret these |
+| **NodeShape**    | Visual shape for a graph node: rectangle, diamond, ellipse, etc.   | DOT and Mermaid renderers interpret these |
 | **EdgeStyle**    | Visual style for a graph edge: solid, dashed, dotted               | Used in DOT renderer                      |
 | **D2NodeShape**  | D2-specific node shape: rectangle, circle, hexagon, cylinder, etc. | 20 shapes supported in `d2/` module       |
 | **D2ArrowType**  | D2-specific arrow head style                                       | 11 arrow types in `d2/` module            |
