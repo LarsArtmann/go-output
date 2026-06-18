@@ -8,9 +8,6 @@ import (
 	"github.com/larsartmann/go-output/testhelpers"
 )
 
-// errWriteFailed aliases testhelpers.ErrWrite for backward-compatible error checks.
-var errWriteFailed = testhelpers.ErrWrite
-
 func TestRenderGraphTableData(t *testing.T) {
 	t.Parallel()
 
