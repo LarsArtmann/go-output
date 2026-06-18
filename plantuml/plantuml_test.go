@@ -195,8 +195,8 @@ func TestPlantUMLDiagramWithNodeStyle(t *testing.T) {
 		ID:    output.NewBrandedID[output.GraphNodeIDBrand]("svc"),
 		Label: output.NewBrandedID[output.GraphNodeLabelBrand]("Service"),
 		Style: output.GraphStyle{
-			FillColor:   "#e8a838",
-			StrokeColor: "#4a4030",
+			Fill:   "#e8a838",
+			Stroke: "#4a4030",
 			FontColor:   "#14110d",
 		},
 	})

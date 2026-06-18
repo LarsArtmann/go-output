@@ -126,15 +126,11 @@ func (s NodeShape) IsValid() bool {
 }
 
 // GraphStyle represents styling attributes for a graph node.
-//
-// NOTE(split-brain M8): Field names diverge from d2.D2NodeStyle (FillColor vs Fill,
-// StrokeColor vs Stroke). In the next minor version, align the shared subset so the
-// converter in d2/d2_convert.go becomes a near-1:1 copy.
 type GraphStyle struct {
-	// FillColor is the background color (e.g., "#f9f9f9").
-	FillColor string
-	// StrokeColor is the border color.
-	StrokeColor string
+	// Fill is the background color (e.g., "#f9f9f9").
+	Fill string
+	// Stroke is the border color.
+	Stroke string
 	// FontColor is the text color.
 	FontColor string
 	// FontSize is the text size in points.

@@ -88,9 +88,9 @@ func graphShapeToD2(s output.NodeShape) D2NodeShape {
 
 func graphStyleToD2(s output.GraphStyle) D2NodeStyle {
 	return D2NodeStyle{
-		Fill: s.FillColor,
+		Fill: s.Fill,
 		D2StrokeStyle: D2StrokeStyle{
-			Stroke:    s.StrokeColor,
+			Stroke:    s.Stroke,
 			FontSize:  s.FontSize,
 			FontColor: s.FontColor,
 		},

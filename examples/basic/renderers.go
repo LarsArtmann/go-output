@@ -199,8 +199,8 @@ func renderMermaid(projects []Project) {
 			ID:    output.NewBrandedID[output.GraphNodeIDBrand](p.Name),
 			Label: output.NewBrandedID[output.GraphNodeLabelBrand](p.Name),
 			Style: output.GraphStyle{
-				FillColor:   "#e8a838",
-				StrokeColor: "#4a4030",
+				Fill:   "#e8a838",
+				Stroke: "#4a4030",
 				FontColor:   "#14110d",
 			},
 		})
@@ -291,8 +291,8 @@ func renderPlantUML(projects []Project) {
 			ID:    output.NewBrandedID[output.GraphNodeIDBrand](p.Name),
 			Label: output.NewBrandedID[output.GraphNodeLabelBrand](p.Name),
 			Style: output.GraphStyle{
-				FillColor:   "#e8a838",
-				StrokeColor: "#4a4030",
+				Fill:   "#e8a838",
+				Stroke: "#4a4030",
 			},
 		})
 		diagram.AddEdge(output.GraphEdge{

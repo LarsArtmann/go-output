@@ -277,8 +277,8 @@ func TestD2GraphStyleConversion(t *testing.T) {
 			ID:    output.NewBrandedID[output.GraphNodeIDBrand]("styled"),
 			Label: output.NewBrandedID[output.GraphNodeLabelBrand]("Styled"),
 			Style: output.GraphStyle{
-				FillColor:   "blue",
-				StrokeColor: "black",
+				Fill:   "blue",
+				Stroke: "black",
 				FontSize:    14,
 			},
 		},

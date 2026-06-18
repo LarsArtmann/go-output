@@ -184,8 +184,8 @@ func (r *DOTRenderer) writeNode(b *strings.Builder, node output.GraphNode) {
 	b.WriteString("\"\n")
 
 	r.writeNodeAttr(b, "shape", string(node.Shape), node.Shape != "")
-	r.writeNodeAttr(b, "fillcolor", node.Style.FillColor, node.Style.FillColor != "")
-	r.writeNodeAttr(b, "color", node.Style.StrokeColor, node.Style.StrokeColor != "")
+	r.writeNodeAttr(b, "fillcolor", node.Style.Fill, node.Style.Fill != "")
+	r.writeNodeAttr(b, "color", node.Style.Stroke, node.Style.Stroke != "")
 
 	b.WriteString("  ];\n")
 }

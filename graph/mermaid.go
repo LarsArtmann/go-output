@@ -149,12 +149,12 @@ func (r *MermaidRenderer) writeNodeStyles(b *strings.Builder) {
 func mermaidStyleParts(s output.GraphStyle) []string {
 	var parts []string
 
-	if s.FillColor != "" {
-		parts = append(parts, "fill:"+s.FillColor)
+	if s.Fill != "" {
+		parts = append(parts, "fill:"+s.Fill)
 	}
 
-	if s.StrokeColor != "" {
-		parts = append(parts, "stroke:"+s.StrokeColor)
+	if s.Stroke != "" {
+		parts = append(parts, "stroke:"+s.Stroke)
 	}
 
 	if s.FontColor != "" {

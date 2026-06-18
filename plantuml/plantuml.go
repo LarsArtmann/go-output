@@ -98,12 +98,12 @@ func sanitizePlantUMLID(s string) string {
 func plantumlColorSpec(s output.GraphStyle) string {
 	var parts []string
 
-	if s.FillColor != "" {
-		parts = append(parts, s.FillColor)
+	if s.Fill != "" {
+		parts = append(parts, s.Fill)
 	}
 
-	if s.StrokeColor != "" {
-		parts = append(parts, "line:"+s.StrokeColor)
+	if s.Stroke != "" {
+		parts = append(parts, "line:"+s.Stroke)
 	}
 
 	if s.FontColor != "" {

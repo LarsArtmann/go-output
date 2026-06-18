@@ -117,8 +117,8 @@ func TestGraphShapeIsValid(t *testing.T) {
 
 func newTestGraphStyle(fontSize int) output.GraphStyle {
 	return output.GraphStyle{
-		FillColor:   "red",
-		StrokeColor: "blue",
+		Fill:   "red",
+		Stroke: "blue",
 		FontColor:   "green",
 		FontSize:    fontSize,
 	}
@@ -161,8 +161,8 @@ func TestGraphNodeStyle(t *testing.T) {
 func testGraphStyleFields(t *testing.T, style output.GraphStyle, wantFontSize int) {
 	testhelpers.TestStructFields(
 		t,
-		testhelpers.StringField("FillColor", style.FillColor, "red"),
-		testhelpers.StringField("StrokeColor", style.StrokeColor, "blue"),
+		testhelpers.StringField("Fill", style.Fill, "red"),
+		testhelpers.StringField("Stroke", style.Stroke, "blue"),
 		testhelpers.StringField("FontColor", style.FontColor, "green"),
 		testhelpers.IntField("FontSize", style.FontSize, wantFontSize),
 	)
