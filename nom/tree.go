@@ -57,18 +57,21 @@ func newActivityNode(id ActivityID, name string) *ActivityNode {
 	}
 }
 
+// nodeHasID returns a predicate matching nodes whose ID equals the given value.
+func nodeHasID(id ActivityID) func(*ActivityNode) bool {
+	return func(c *ActivityNode) bool {
+		return c.ID.Get() == string(id)
+	}
+}
+
 // hasChild returns true if this node already has a child with the given activity ID.
 func (n *ActivityNode) hasChild(id ActivityID) bool {
-	return slices.ContainsFunc(n.Children, func(c *ActivityNode) bool {
-		return c.ID.Get() == string(id)
-	})
+	return slices.ContainsFunc(n.Children, nodeHasID(id))
 }
 
 // removeChild removes the child with the given activity ID, if present.
 func (n *ActivityNode) removeChild(id ActivityID) {
-	n.Children = slices.DeleteFunc(n.Children, func(c *ActivityNode) bool {
-		return c.ID.Get() == string(id)
-	})
+	n.Children = slices.DeleteFunc(n.Children, nodeHasID(id))
 }
 
 // hasSecondaryParent returns true if this node already has the given activity ID

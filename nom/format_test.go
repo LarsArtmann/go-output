@@ -30,7 +30,7 @@ func TestFormatDuration(t *testing.T) {
 			t.Parallel()
 
 			got := FormatDuration(tt.duration)
-						testhelpers.AssertEqual(t, "FormatDuration", tt.duration, got, tt.want)
+			testhelpers.AssertEqual(t, "FormatDuration", tt.duration, got, tt.want)
 		})
 	}
 }
@@ -81,7 +81,7 @@ func TestShouldDisplayTiming(t *testing.T) {
 			t.Parallel()
 
 			got := ShouldDisplayTiming(tt.duration)
-						testhelpers.AssertEqual(t, "ShouldDisplayTiming", tt.duration, got, tt.want)
+			testhelpers.AssertEqual(t, "ShouldDisplayTiming", tt.duration, got, tt.want)
 		})
 	}
 }

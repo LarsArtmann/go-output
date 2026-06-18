@@ -1,10 +1,5 @@
 package nom
 
-import (
-	"cmp"
-	"slices"
-)
-
 func (dt *DependencyTree) getDisplayActivities() []ActivityID {
 	dt.mu.RLock()
 	defer dt.mu.RUnlock()
@@ -74,9 +69,7 @@ func (dt *DependencyTree) findNodesByStatus(status ActivityStatus) []*ActivityNo
 		}
 	}
 
-	slices.SortStableFunc(result, func(a, b *ActivityNode) int {
-		return cmp.Compare(a.ID.Get(), b.ID.Get())
-	})
+	sortNodesByID(result)
 
 	return result
 }

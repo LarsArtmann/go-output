@@ -26,7 +26,7 @@ func TestActivityStatus_String(t *testing.T) {
 			t.Parallel()
 
 			got := tt.status.String()
-						testhelpers.AssertEqual(t, "ActivityStatus.String", tt.status, got, tt.want)
+			testhelpers.AssertEqual(t, "ActivityStatus.String", tt.status, got, tt.want)
 		})
 	}
 }
@@ -51,7 +51,7 @@ func TestActivityStatus_GetSymbol(t *testing.T) {
 			t.Parallel()
 
 			got := tt.status.GetSymbol()
-						testhelpers.AssertEqual(t, "ActivityStatus.GetSymbol", tt.status, got, tt.want)
+			testhelpers.AssertEqual(t, "ActivityStatus.GetSymbol", tt.status, got, tt.want)
 		})
 	}
 }

@@ -133,7 +133,7 @@ func TestActivityStatus_Interest(t *testing.T) {
 			t.Parallel()
 
 			got := tt.status.Interest()
-						testhelpers.AssertEqual(t, "ActivityStatus.Interest", tt.status, got, tt.want)
+			testhelpers.AssertEqual(t, "ActivityStatus.Interest", tt.status, got, tt.want)
 		})
 	}
 
