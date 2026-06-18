@@ -271,12 +271,7 @@ func TestInlineRenderer_Refresh_TriggersRender(t *testing.T) {
 	buf.Reset()
 	renderer.Refresh()
 
-	select {
-	case <-renderer.renderNotify:
-		// render completed
-	case <-time.After(time.Second):
-		t.Fatal("refresh did not trigger a render within 1s")
-	}
+	waitForRender(t, renderer, "refresh")
 
 	renderer.Stop()
 
@@ -361,23 +356,14 @@ func TestInlineRenderer_EndToEnd_Lifecycle(t *testing.T) {
 	// Trigger initial render via refresh
 	renderer.Refresh()
 
-	// Wait for initial render
-	select {
-	case <-renderer.renderNotify:
-	case <-time.After(time.Second):
-		t.Fatal("initial render did not complete within 1s")
-	}
+	waitForRender(t, renderer, "initial render")
 
 	buf.Reset()
 
 	// Trigger a refresh
 	renderer.Refresh()
 
-	select {
-	case <-renderer.renderNotify:
-	case <-time.After(time.Second):
-		t.Fatal("refresh render did not complete within 1s")
-	}
+	waitForRender(t, renderer, "refresh render")
 
 	output := buf.String()
 
@@ -403,5 +389,17 @@ func TestInlineRenderer_EndToEnd_Lifecycle(t *testing.T) {
 
 	if !strings.Contains(finalOutput, "completed successfully") {
 		t.Errorf("finish should print success message, got:\n%s", finalOutput[-min(len(finalOutput), 200):])
+	}
+}
+
+// waitForRender blocks until the inline renderer signals that a render
+// completed, or fails the test if the timeout elapses.
+func waitForRender(t *testing.T, renderer *InlineRenderer, label string) {
+	t.Helper()
+
+	select {
+	case <-renderer.renderNotify:
+	case <-time.After(time.Second):
+		t.Fatalf("%s did not complete within 1s", label)
 	}
 }

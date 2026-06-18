@@ -74,11 +74,7 @@ func TestProgressModel_EventSequence_WorkflowStartToTick(t *testing.T) {
 	})
 
 	// Pre-register an activity
-	model.nomSubscriber.OnEvent(ctx, &testEvent{
-		eventType: nom.EventActivityStarted,
-		aID:       nom.ActivityID("build"),
-		aName:     nom.ActivityName("Build"),
-	})
+	startActivity(t, model, ctx, "build", "Build")
 
 	// Initial state
 	if model.workflowState != WorkflowStateIdle {

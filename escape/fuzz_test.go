@@ -5,6 +5,17 @@ import (
 	"testing"
 )
 
+// assertEscaped fails the test if the input contains `input` but the result
+// does not contain its escaped form. Used by fuzz tests to assert escape
+// invariants in a single line.
+func assertEscaped(t *testing.T, fn, s, result, input, output string) {
+	t.Helper()
+
+	if strings.Contains(s, input) && !strings.Contains(result, output) {
+		t.Errorf("%s(%q) = %q, %s not escaped", fn, s, result, input)
+	}
+}
+
 func FuzzD2(f *testing.F) {
 	f.Add("")
 	f.Add(`hello "world"`)
@@ -15,13 +26,8 @@ func FuzzD2(f *testing.F) {
 	f.Fuzz(func(t *testing.T, s string) {
 		result := D2(s)
 
-		if strings.Contains(s, `\`) && !strings.Contains(result, `\\`) {
-			t.Errorf("D2(%q) = %q, backslash not escaped", s, result)
-		}
-
-		if strings.Contains(s, `"`) && !strings.Contains(result, `\"`) {
-			t.Errorf("D2(%q) = %q, quote not escaped", s, result)
-		}
+		assertEscaped(t, "D2", s, result, `\`, `\\`)
+		assertEscaped(t, "D2", s, result, `"`, `\"`)
 	})
 }
 
@@ -34,13 +40,8 @@ func FuzzXML(f *testing.F) {
 	f.Fuzz(func(t *testing.T, s string) {
 		result := XML(s)
 
-		if strings.Contains(s, "<") && !strings.Contains(result, "&lt;") {
-			t.Errorf("XML(%q) = %q, < not escaped", s, result)
-		}
-
-		if strings.Contains(s, "&") && !strings.Contains(result, "&amp;") {
-			t.Errorf("XML(%q) = %q, & not escaped", s, result)
-		}
+		assertEscaped(t, "XML", s, result, "<", "&lt;")
+		assertEscaped(t, "XML", s, result, "&", "&amp;")
 	})
 }
 
@@ -52,9 +53,7 @@ func FuzzHTML(f *testing.F) {
 	f.Fuzz(func(t *testing.T, s string) {
 		result := HTML(s)
 
-		if strings.Contains(s, "<") && !strings.Contains(result, "&lt;") {
-			t.Errorf("HTML(%q) = %q, < not escaped", s, result)
-		}
+		assertEscaped(t, "HTML", s, result, "<", "&lt;")
 	})
 }
 

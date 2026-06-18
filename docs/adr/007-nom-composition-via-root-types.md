@@ -7,12 +7,12 @@
 
 The `nom/` module reinvented root's graph concepts with inferior types:
 
-| nom/ (before) | root/ (already existed) | Problem |
-|---|---|---|
-| `ActivityNode` + `ActivityDisplayState` (two types, duplicated fields) | `output.GraphNode` (one type) | Split-brain: `SyncActivityTimingToTree()` required before every render |
-| `ActivityID string` (plain) | `output.GraphNodeID` (branded phantom type) | No type safety |
-| `InlineRenderer.Render()` (void) | `output.Renderer.Render() (string, error)` | Contract violation (split-brain M4) |
-| No diagram export possible | `output.GraphRenderer` (DOT/Mermaid/D2/PlantUML) | Entire feature class blocked |
+| nom/ (before)                                                          | root/ (already existed)                          | Problem                                                                |
+| ---------------------------------------------------------------------- | ------------------------------------------------ | ---------------------------------------------------------------------- |
+| `ActivityNode` + `ActivityDisplayState` (two types, duplicated fields) | `output.GraphNode` (one type)                    | Split-brain: `SyncActivityTimingToTree()` required before every render |
+| `ActivityID string` (plain)                                            | `output.GraphNodeID` (branded phantom type)      | No type safety                                                         |
+| `InlineRenderer.Render()` (void)                                       | `output.Renderer.Render() (string, error)`       | Contract violation (split-brain M4)                                    |
+| No diagram export possible                                             | `output.GraphRenderer` (DOT/Mermaid/D2/PlantUML) | Entire feature class blocked                                           |
 
 ## Decision
 
@@ -40,27 +40,27 @@ diagram, _ := dot.Render()
 
 ## Trade-offs
 
-| Concern | Decision | Rationale |
-|---|---|---|
-| nom/ gains root dep | Accepted | Root deps are tiny (branded-id, enum, x/term). No lipgloss/bubbletea/yaml/toml pulled. |
-| Color model stays split | Intentional | `GraphStyle` (hex strings) for diagram export; lipgloss `color.Color` for terminal. Different concerns. |
-| Bridge sync (syncToStore) | Temporary | Will be eliminated when subscriber migrates from `ActivityDisplayState` to `Activity` directly. |
+| Concern                   | Decision    | Rationale                                                                                               |
+| ------------------------- | ----------- | ------------------------------------------------------------------------------------------------------- |
+| nom/ gains root dep       | Accepted    | Root deps are tiny (branded-id, enum, x/term). No lipgloss/bubbletea/yaml/toml pulled.                  |
+| Color model stays split   | Intentional | `GraphStyle` (hex strings) for diagram export; lipgloss `color.Color` for terminal. Different concerns. |
+| Bridge sync (syncToStore) | Temporary   | Will be eliminated when subscriber migrates from `ActivityDisplayState` to `Activity` directly.         |
 
 ## Implementation Status
 
-| Component | Status |
-|---|---|
-| `Activity` type (embeds GraphNode) | ✅ Done |
-| `ActivityStatus.NodeShape()` / `.GraphStyle()` | ✅ Done |
-| `ActivityStore` with `Nodes()`/`Edges()` | ✅ Done |
-| `ActivityNode` embeds `Activity` | ✅ Done |
-| `MultiSubscriber` fanout | ✅ Done |
-| `ActivityStore` wired into subscriber | ✅ Done (bridge sync) |
-| Diagram export tests | ✅ Done (3 tests, race-clean) |
-| `ActivityDisplayState` → `Activity` migration | 🔲 Future sprint |
-| `SyncActivityTimingToTree` elimination | 🔲 Future sprint |
-| `InlineRenderer.Render()` contract fix (M4) | 🔲 Future sprint |
-| `tui/` migration to new types | 🔲 Future sprint |
+| Component                                      | Status                        |
+| ---------------------------------------------- | ----------------------------- |
+| `Activity` type (embeds GraphNode)             | ✅ Done                       |
+| `ActivityStatus.NodeShape()` / `.GraphStyle()` | ✅ Done                       |
+| `ActivityStore` with `Nodes()`/`Edges()`       | ✅ Done                       |
+| `ActivityNode` embeds `Activity`               | ✅ Done                       |
+| `MultiSubscriber` fanout                       | ✅ Done                       |
+| `ActivityStore` wired into subscriber          | ✅ Done (bridge sync)         |
+| Diagram export tests                           | ✅ Done (3 tests, race-clean) |
+| `ActivityDisplayState` → `Activity` migration  | 🔲 Future sprint              |
+| `SyncActivityTimingToTree` elimination         | 🔲 Future sprint              |
+| `InlineRenderer.Render()` contract fix (M4)    | 🔲 Future sprint              |
+| `tui/` migration to new types                  | 🔲 Future sprint              |
 
 ## Consequences
 

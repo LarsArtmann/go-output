@@ -74,6 +74,7 @@ func (v *subscriberView) Nodes() []output.GraphNode {
 			Style: ads.Status.GraphStyle(),
 		})
 	}
+
 	return out
 }
 
@@ -84,10 +85,12 @@ func (v *subscriberView) Edges() []output.GraphEdge {
 
 	// Derive edges from the dependency tree's parent-child relationships.
 	tree := v.ns.dependencyTree
+
 	tree.mu.RLock()
 	defer tree.mu.RUnlock()
 
 	var edges []output.GraphEdge
+
 	for _, node := range tree.nodes {
 		parentID := node.ID.Get()
 		for _, child := range node.Children {
@@ -97,5 +100,6 @@ func (v *subscriberView) Edges() []output.GraphEdge {
 			})
 		}
 	}
+
 	return edges
 }

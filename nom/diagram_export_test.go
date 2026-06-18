@@ -49,9 +49,11 @@ func TestDiagramExport_SubscriberProjection(t *testing.T) {
 		if n.ID.Get() == "" {
 			t.Error("empty node ID")
 		}
+
 		if n.Shape == "" {
 			t.Errorf("node %q has empty Shape", n.ID.Get())
 		}
+
 		if n.Style.Fill == "" {
 			t.Errorf("node %q has empty Style.Fill", n.ID.Get())
 		}
@@ -87,6 +89,7 @@ func TestDiagramExport_StatusShapes(t *testing.T) {
 	store.Upsert(failed)
 
 	nodes := store.Nodes()
+
 	shapes := make(map[string]string)
 	for _, n := range nodes {
 		shapes[n.ID.Get()] = string(n.Shape)
@@ -95,6 +98,7 @@ func TestDiagramExport_StatusShapes(t *testing.T) {
 	if shapes["build"] == shapes["test"] {
 		t.Error("running and completed should have different shapes")
 	}
+
 	if shapes["test"] == shapes["lint"] {
 		t.Error("completed and failed should have different shapes")
 	}

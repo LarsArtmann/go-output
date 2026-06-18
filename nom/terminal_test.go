@@ -146,6 +146,7 @@ var colorDetectionVars = []string{
 // starts from a known clean state. Each is restored automatically by t.Setenv.
 func clearColorDetectionEnv(t *testing.T) {
 	t.Helper()
+
 	for _, env := range colorDetectionVars {
 		t.Setenv(env, "")
 	}

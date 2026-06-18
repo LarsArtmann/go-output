@@ -144,6 +144,7 @@ func (m *ProgressModel) handleMouseClick(msg tea.MouseClickMsg) (tea.Model, tea.
 	}
 
 	node := m.visibleNodes[treeLine]
+
 	nodeID := nom.ActivityID(node.ID.Get())
 	if m.selectedNode == nodeID {
 		m.selectedNode = ""
