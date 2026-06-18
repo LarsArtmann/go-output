@@ -145,6 +145,7 @@ linters:
             - time
             - github.com/larsartmann/go-output
             - github.com/larsartmann/go-output/enum
+            - github.com/larsartmann/go-output/envdetect
             - github.com/larsartmann/go-output/internal/gentest
             - github.com/larsartmann/go-output/escape
             - github.com/larsartmann/go-output/table
@@ -225,6 +226,7 @@ linters:
             - $GITHUB_ACTION
             - github.com/larsartmann/go-output
             - github.com/larsartmann/go-output/enum
+            - github.com/larsartmann/go-output/envdetect
             - github.com/larsartmann/go-output/internal/gentest
             - github.com/larsartmann/go-output/escape
             - github.com/larsartmann/go-output/table

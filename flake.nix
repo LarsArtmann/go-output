@@ -46,6 +46,7 @@
             "delimited"
             "d2"
             "enum"
+            "envdetect"
             "escape"
             "examples"
             "graph"
@@ -56,6 +57,7 @@
             "serialization"
             "table"
             "testhelpers"
+            "testhelpers/graphtest"
             "tui"
           ];
 
