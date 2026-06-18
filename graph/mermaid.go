@@ -102,21 +102,21 @@ func (r *MermaidRenderer) Render() (string, error) {
 }
 
 // getMermaidShape returns the prefix and suffix for a Mermaid shape.
-func (r *MermaidRenderer) getMermaidShape(shape output.GraphShape) (string, string) {
+func (r *MermaidRenderer) getMermaidShape(shape output.NodeShape) (string, string) {
 	switch shape {
-	case output.ShapeDiamond:
+	case output.NodeShapeDiamond:
 		return "{", "}"
-	case output.ShapeEllipse:
+	case output.NodeShapeEllipse:
 		return "(", ")"
-	case output.ShapeCircle:
+	case output.NodeShapeCircle:
 		return "((", "))"
-	case output.ShapeHexagon:
+	case output.NodeShapeHexagon:
 		return "{{", "}}"
-	case output.ShapeCylinder:
+	case output.NodeShapeCylinder:
 		return "[(", ")]"
-	case output.ShapeParallelogram:
+	case output.NodeShapeParallelogram:
 		return "[/", "/]"
-	case output.ShapeBox, output.ShapeRect:
+	case output.NodeShapeBox, output.NodeShapeRect:
 		return "[", "]"
 	default:
 		return "[", "]"
@@ -176,7 +176,7 @@ func MermaidFromTableData(data *output.TableData) *MermaidRenderer {
 	}
 
 	renderer.SetNodesFromTableData(data, func(_ int, n *output.GraphNode) {
-		n.Shape = output.ShapeBox
+		n.Shape = output.NodeShapeBox
 	})
 
 	return renderer
@@ -208,6 +208,6 @@ func (r *MermaidRenderer) addTreeNodes(node *output.TreeNode, parentID string) {
 		node,
 		parentID,
 		mermaidTreeNodeID,
-		output.ShapeBox,
+		output.NodeShapeBox,
 	)
 }

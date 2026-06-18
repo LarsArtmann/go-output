@@ -94,7 +94,7 @@ func TestErrorTypes(t *testing.T) {
 	}{
 		{"InvalidColorModeError", &InvalidColorModeError{Value: "bad"}, "invalid color mode: bad"},
 		{"InvalidShapeError", &InvalidShapeError{Value: "bad"}, "invalid shape: bad"},
-		{"InvalidGraphShapeError", &InvalidGraphShapeError{Value: "bad"}, "invalid graph shape: bad"},
+		{"InvalidNodeShapeError", &InvalidNodeShapeError{Value: "bad"}, "invalid graph shape: bad"},
 	}
 
 	for _, tt := range tests {
@@ -132,8 +132,8 @@ func TestNewGraphNode(t *testing.T) {
 		t.Errorf("Label = %q, want %q", node.Label.Get(), "Label 1")
 	}
 
-	if node.Shape != ShapeBox {
-		t.Errorf("Shape = %v, want %v", node.Shape, ShapeBox)
+	if node.Shape != NodeShapeBox {
+		t.Errorf("Shape = %v, want %v", node.Shape, NodeShapeBox)
 	}
 
 	if node.Metadata == nil {

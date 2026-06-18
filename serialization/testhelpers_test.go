@@ -50,7 +50,7 @@ func assertValidYAML(t *testing.T, output string) {
 func testGraphRendererNodeWithShape(t *testing.T, r output.GraphRenderer, wantShape string) {
 	t.Helper()
 
-	r.SetNodes([]output.GraphNode{newTestNodeWithShape("A", "Node A", output.ShapeDiamond)})
+	r.SetNodes([]output.GraphNode{newTestNodeWithShape("A", "Node A", output.NodeShapeDiamond)})
 	r.SetEdges(nil)
 
 	got, err := r.Render()

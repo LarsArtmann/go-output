@@ -73,7 +73,7 @@ func FuzzGraphNodeRoundTrip(f *testing.F) {
 	f.Add("", "", "")
 
 	f.Fuzz(func(t *testing.T, id, label, shapeStr string) {
-		shape, err := output.ParseGraphShape(shapeStr)
+		shape, err := output.ParseNodeShape(shapeStr)
 		if err != nil {
 			return
 		}

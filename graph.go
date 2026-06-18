@@ -22,7 +22,7 @@ type GraphNode struct {
 	// Label is the display text for the node.
 	Label GraphNodeLabel
 	// Shape defines the visual shape (box, ellipse, diamond, etc.).
-	Shape GraphShape
+	Shape NodeShape
 	// Style contains optional visual styling attributes.
 	Style GraphStyle
 	// Metadata holds arbitrary key-value pairs for custom data.
@@ -34,40 +34,36 @@ func NewGraphNode(id, label string) *GraphNode {
 	return &GraphNode{
 		ID:       NewBrandedID[GraphNodeIDBrand](id),
 		Label:    NewBrandedID[GraphNodeLabelBrand](label),
-		Shape:    ShapeBox,
+		Shape:    NodeShapeBox,
 		Metadata: make(map[string]string),
 	}
 }
 
-// GraphShape represents the shape of a graph node.
-//
-// NOTE(split-brain M5): The constant prefix "Shape" collides with the data-capability
-// Shape enum in shape.go (ShapeTable, ShapeTree, ShapeGraph). In the next minor version,
-// rename these to NodeShapeBox, NodeShapeEllipse, etc. and the type to NodeShape.
-type GraphShape string
+// NodeShape represents the shape of a graph node.
+type NodeShape string
 
-// GraphShape constants define the available shapes for graph nodes.
+// NodeShape constants define the available shapes for graph nodes.
 const (
-	ShapeBox           GraphShape = "box"
-	ShapeEllipse       GraphShape = "ellipse"
-	ShapeDiamond       GraphShape = "diamond"
-	ShapeCircle        GraphShape = "circle"
-	ShapeCylinder      GraphShape = "cylinder"
-	ShapeHexagon       GraphShape = "hexagon"
-	ShapeParallelogram GraphShape = "parallelogram"
-	ShapeRect          GraphShape = "rect"
+	NodeShapeBox           NodeShape = "box"
+	NodeShapeEllipse       NodeShape = "ellipse"
+	NodeShapeDiamond       NodeShape = "diamond"
+	NodeShapeCircle        NodeShape = "circle"
+	NodeShapeCylinder      NodeShape = "cylinder"
+	NodeShapeHexagon       NodeShape = "hexagon"
+	NodeShapeParallelogram NodeShape = "parallelogram"
+	NodeShapeRect          NodeShape = "rect"
 )
 
 //nolint:gochecknoglobals // Global variable used for value iteration.
-var graphShapeValues = []GraphShape{
-	ShapeBox,
-	ShapeEllipse,
-	ShapeDiamond,
-	ShapeCircle,
-	ShapeCylinder,
-	ShapeHexagon,
-	ShapeParallelogram,
-	ShapeRect,
+var nodeShapeValues = []NodeShape{
+	NodeShapeBox,
+	NodeShapeEllipse,
+	NodeShapeDiamond,
+	NodeShapeCircle,
+	NodeShapeCylinder,
+	NodeShapeHexagon,
+	NodeShapeParallelogram,
+	NodeShapeRect,
 }
 
 // LineStyle represents the visual style of a line (edge).
@@ -94,39 +90,39 @@ func (l LineStyle) IsValid() bool {
 // String returns the string representation of the LineStyle.
 func (l LineStyle) String() string { return string(l) }
 
-// InvalidGraphShapeError is returned when an invalid graph shape is provided.
-type InvalidGraphShapeError struct {
+// InvalidNodeShapeError is returned when an invalid graph shape is provided.
+type InvalidNodeShapeError struct {
 	Value string
 }
 
 // Error returns a descriptive error message for the invalid graph shape.
-func (e *InvalidGraphShapeError) Error() string {
+func (e *InvalidNodeShapeError) Error() string {
 	return "invalid graph shape: " + e.Value
 }
 
-// ParseGraphShape converts a string to GraphShape, returning an error if invalid.
-func ParseGraphShape(s string) (GraphShape, error) {
-	v, err := enum.Parse(graphShapeValues, s, func(g GraphShape) string { return string(g) })
+// ParseNodeShape converts a string to NodeShape, returning an error if invalid.
+func ParseNodeShape(s string) (NodeShape, error) {
+	v, err := enum.Parse(nodeShapeValues, s, func(g NodeShape) string { return string(g) })
 	if err != nil {
-		return "", &InvalidGraphShapeError{Value: s}
+		return "", &InvalidNodeShapeError{Value: s}
 	}
 
 	return v, nil
 }
 
 // String returns the string representation of the graph shape.
-func (s GraphShape) String() string {
+func (s NodeShape) String() string {
 	return string(s)
 }
 
 // AllowedValues returns all valid graph shape values.
-func (s GraphShape) AllowedValues() []string {
-	return enum.AllowedValues(graphShapeValues)
+func (s NodeShape) AllowedValues() []string {
+	return enum.AllowedValues(nodeShapeValues)
 }
 
 // IsValid checks if the graph shape is valid.
-func (s GraphShape) IsValid() bool {
-	return enum.Contains(graphShapeValues, s)
+func (s NodeShape) IsValid() bool {
+	return enum.Contains(nodeShapeValues, s)
 }
 
 // GraphStyle represents styling attributes for a graph node.
@@ -225,7 +221,7 @@ type NodeEdgeAppender interface {
 func AddTreeNodes(
 	a NodeEdgeAppender,
 	node *TreeNode, parentID string,
-	idFunc TreeNodeIDFunc, shape GraphShape,
+	idFunc TreeNodeIDFunc, shape NodeShape,
 ) {
 	nodeID := idFunc(node)
 	graphNodeID := NewBrandedID[GraphNodeIDBrand](nodeID)

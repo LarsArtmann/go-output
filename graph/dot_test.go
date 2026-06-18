@@ -52,7 +52,7 @@ func TestDOTRendererWithStyles(t *testing.T) {
 		{
 			ID:    output.NewBrandedID[output.GraphNodeIDBrand]("A"),
 			Label: output.NewBrandedID[output.GraphNodeLabelBrand]("Styled Node"),
-			Shape: output.ShapeEllipse,
+			Shape: output.NodeShapeEllipse,
 			Style: output.GraphStyle{
 				FillColor:   "#ff0000",
 				StrokeColor: "#000000",

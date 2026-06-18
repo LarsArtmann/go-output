@@ -21,8 +21,8 @@ func TestGraphNode(t *testing.T) {
 		t.Errorf("Label = %q, want %q", node.Label, "Test Label")
 	}
 
-	if node.Shape != output.ShapeBox {
-		t.Errorf("Shape = %v, want %v", node.Shape, output.ShapeBox)
+	if node.Shape != output.NodeShapeBox {
+		t.Errorf("Shape = %v, want %v", node.Shape, output.NodeShapeBox)
 	}
 
 	if node.Metadata == nil {
@@ -44,45 +44,45 @@ func TestGraphEdge(t *testing.T) {
 }
 
 func TestParseGraphShape(t *testing.T) {
-	tests := []testhelpers.ParseEnumTestCase[output.GraphShape]{
-		{Name: "box", Input: "box", Want: output.ShapeBox},
-		{Name: "ellipse", Input: "ellipse", Want: output.ShapeEllipse},
-		{Name: "diamond", Input: "diamond", Want: output.ShapeDiamond},
-		{Name: "circle", Input: "circle", Want: output.ShapeCircle},
-		{Name: "cylinder", Input: "cylinder", Want: output.ShapeCylinder},
-		{Name: "hexagon", Input: "hexagon", Want: output.ShapeHexagon},
-		{Name: "parallelogram", Input: "parallelogram", Want: output.ShapeParallelogram},
-		{Name: "rect", Input: "rect", Want: output.ShapeRect},
+	tests := []testhelpers.ParseEnumTestCase[output.NodeShape]{
+		{Name: "box", Input: "box", Want: output.NodeShapeBox},
+		{Name: "ellipse", Input: "ellipse", Want: output.NodeShapeEllipse},
+		{Name: "diamond", Input: "diamond", Want: output.NodeShapeDiamond},
+		{Name: "circle", Input: "circle", Want: output.NodeShapeCircle},
+		{Name: "cylinder", Input: "cylinder", Want: output.NodeShapeCylinder},
+		{Name: "hexagon", Input: "hexagon", Want: output.NodeShapeHexagon},
+		{Name: "parallelogram", Input: "parallelogram", Want: output.NodeShapeParallelogram},
+		{Name: "rect", Input: "rect", Want: output.NodeShapeRect},
 		{Name: "invalid", Input: "invalid", WantErr: true},
 		{Name: "empty", Input: "", WantErr: true},
 	}
 	testhelpers.TestParseEnum(
 		t,
-		"output.ParseGraphShape",
-		output.ParseGraphShape,
+		"output.ParseNodeShape",
+		output.ParseNodeShape,
 		tests,
-		func(a, b output.GraphShape) bool { return a == b },
+		func(a, b output.NodeShape) bool { return a == b },
 	)
 }
 
 func TestGraphShapeString(t *testing.T) {
-	tests := []testhelpers.StringEnumTestCase[output.GraphShape]{
-		{Value: output.ShapeBox, Want: "box"},
-		{Value: output.ShapeEllipse, Want: "ellipse"},
-		{Value: output.ShapeDiamond, Want: "diamond"},
-		{Value: output.ShapeCircle, Want: "circle"},
+	tests := []testhelpers.StringEnumTestCase[output.NodeShape]{
+		{Value: output.NodeShapeBox, Want: "box"},
+		{Value: output.NodeShapeEllipse, Want: "ellipse"},
+		{Value: output.NodeShapeDiamond, Want: "diamond"},
+		{Value: output.NodeShapeCircle, Want: "circle"},
 	}
 
 	testhelpers.TestEnumString(
 		t,
-		"output.GraphShape.String",
+		"output.NodeShape.String",
 		tests,
-		func(s output.GraphShape) string { return s.String() },
+		func(s output.NodeShape) string { return s.String() },
 	)
 }
 
 func TestGraphShapeAllowedValues(t *testing.T) {
-	got := output.ShapeBox.AllowedValues()
+	got := output.NodeShapeBox.AllowedValues()
 	want := []string{
 		"box",
 		"ellipse",
@@ -100,10 +100,10 @@ func TestGraphShapeAllowedValues(t *testing.T) {
 func TestGraphShapeIsValid(t *testing.T) {
 	t.Parallel()
 
-	testhelpers.TestEnumIsValid(t, []output.GraphShape{
-		output.ShapeBox,
-		output.ShapeEllipse,
-		output.ShapeDiamond,
+	testhelpers.TestEnumIsValid(t, []output.NodeShape{
+		output.NodeShapeBox,
+		output.NodeShapeEllipse,
+		output.NodeShapeDiamond,
 		"invalid",
 		"",
 	}, []bool{

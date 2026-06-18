@@ -7,20 +7,20 @@ import (
 func TestParseGraphShape(t *testing.T) {
 	t.Parallel()
 
-	got, err := ParseGraphShape("rect")
+	got, err := ParseNodeShape("rect")
 	if err != nil {
-		t.Fatalf("ParseGraphShape error: %v", err)
+		t.Fatalf("ParseNodeShape error: %v", err)
 	}
 
 	if string(got) != "rect" {
-		t.Errorf("ParseGraphShape = %q, want %q", got, "rect")
+		t.Errorf("ParseNodeShape = %q, want %q", got, "rect")
 	}
 }
 
 func TestParseGraphShape_Invalid(t *testing.T) {
 	t.Parallel()
 
-	_, err := ParseGraphShape("invalid")
+	_, err := ParseNodeShape("invalid")
 	if err == nil {
 		t.Error("expected error for invalid shape")
 	}
@@ -29,7 +29,7 @@ func TestParseGraphShape_Invalid(t *testing.T) {
 func TestGraphShape_AllowedValues(t *testing.T) {
 	t.Parallel()
 
-	values := ShapeRect.AllowedValues()
+	values := NodeShapeRect.AllowedValues()
 
 	if len(values) == 0 {
 		t.Error("AllowedValues should return non-empty slice")
@@ -39,11 +39,11 @@ func TestGraphShape_AllowedValues(t *testing.T) {
 func TestGraphShape_IsValid(t *testing.T) {
 	t.Parallel()
 
-	if !ShapeRect.IsValid() {
-		t.Error("ShapeRect should be valid")
+	if !NodeShapeRect.IsValid() {
+		t.Error("NodeShapeRect should be valid")
 	}
 
-	invalid := GraphShape("invalid")
+	invalid := NodeShape("invalid")
 
 	if invalid.IsValid() {
 		t.Error("invalid shape should not be valid")
@@ -85,7 +85,7 @@ func TestAddTreeNodes(t *testing.T) {
 	AddTreeNodes(
 		&m, root, "",
 		func(n *TreeNode) string { return n.ID.Get() },
-		ShapeRect,
+		NodeShapeRect,
 	)
 
 	if len(m.Nodes()) != 2 {

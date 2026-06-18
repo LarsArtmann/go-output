@@ -225,17 +225,17 @@ func TestD2GraphShapeConversion(t *testing.T) {
 
 	tests := []struct {
 		name  string
-		shape output.GraphShape
+		shape output.NodeShape
 		want  string
 	}{
-		{"box implicit rectangle", output.ShapeBox, ""},
-		{"rect implicit rectangle", output.ShapeRect, ""},
-		{"ellipse to oval", output.ShapeEllipse, "oval"},
-		{"diamond to diamond", output.ShapeDiamond, "diamond"},
-		{"circle to circle", output.ShapeCircle, "circle"},
-		{"cylinder to cylinder", output.ShapeCylinder, "cylinder"},
-		{"hexagon to hexagon", output.ShapeHexagon, "hexagon"},
-		{"parallelogram to parallelogram", output.ShapeParallelogram, "parallelogram"},
+		{"box implicit rectangle", output.NodeShapeBox, ""},
+		{"rect implicit rectangle", output.NodeShapeRect, ""},
+		{"ellipse to oval", output.NodeShapeEllipse, "oval"},
+		{"diamond to diamond", output.NodeShapeDiamond, "diamond"},
+		{"circle to circle", output.NodeShapeCircle, "circle"},
+		{"cylinder to cylinder", output.NodeShapeCylinder, "cylinder"},
+		{"hexagon to hexagon", output.NodeShapeHexagon, "hexagon"},
+		{"parallelogram to parallelogram", output.NodeShapeParallelogram, "parallelogram"},
 	}
 
 	for _, tt := range tests {

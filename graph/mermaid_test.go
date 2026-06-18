@@ -34,7 +34,7 @@ func TestMermaidRendererWithDiamond(t *testing.T) {
 
 	renderer := NewMermaidRenderer()
 	renderer.SetNodes(
-		[]output.GraphNode{newTestNodeWithShape("decision", "Decision", output.ShapeDiamond)},
+		[]output.GraphNode{newTestNodeWithShape("decision", "Decision", output.NodeShapeDiamond)},
 	)
 	renderer.SetEdges([]output.GraphEdge{})
 
@@ -133,18 +133,18 @@ func TestMermaidRendererAllShapes(t *testing.T) {
 
 	tests := []struct {
 		name      string
-		shape     output.GraphShape
+		shape     output.NodeShape
 		wantLeft  string
 		wantRight string
 	}{
-		{"Box", output.ShapeBox, "[", "]"},
-		{"Rect", output.ShapeRect, "[", "]"},
-		{"Diamond", output.ShapeDiamond, "{", "}"},
-		{"Ellipse", output.ShapeEllipse, "(", ")"},
-		{"Circle", output.ShapeCircle, "((", "))"},
-		{"Hexagon", output.ShapeHexagon, "{{", "}}"},
-		{"Cylinder", output.ShapeCylinder, "[(", ")]"},
-		{"Parallelogram", output.ShapeParallelogram, "[/", "/]"},
+		{"Box", output.NodeShapeBox, "[", "]"},
+		{"Rect", output.NodeShapeRect, "[", "]"},
+		{"Diamond", output.NodeShapeDiamond, "{", "}"},
+		{"Ellipse", output.NodeShapeEllipse, "(", ")"},
+		{"Circle", output.NodeShapeCircle, "((", "))"},
+		{"Hexagon", output.NodeShapeHexagon, "{{", "}}"},
+		{"Cylinder", output.NodeShapeCylinder, "[(", ")]"},
+		{"Parallelogram", output.NodeShapeParallelogram, "[/", "/]"},
 	}
 
 	for _, tt := range tests {
@@ -240,7 +240,7 @@ func TestMermaidRendererWithNodeStyle(t *testing.T) {
 		{
 			ID:    output.NewBrandedID[output.GraphNodeIDBrand]("A"),
 			Label: output.NewBrandedID[output.GraphNodeLabelBrand]("Styled"),
-			Shape: output.ShapeBox,
+			Shape: output.NodeShapeBox,
 			Style: output.GraphStyle{
 				FillColor:   "#e8a838",
 				StrokeColor: "#4a4030",

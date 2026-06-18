@@ -65,21 +65,21 @@ func graphEdgeToD2(e output.GraphEdge) D2Edge {
 	}
 }
 
-func graphShapeToD2(s output.GraphShape) D2NodeShape {
+func graphShapeToD2(s output.NodeShape) D2NodeShape {
 	switch s {
-	case output.ShapeBox, output.ShapeRect:
+	case output.NodeShapeBox, output.NodeShapeRect:
 		return D2ShapeRectangle
-	case output.ShapeEllipse:
+	case output.NodeShapeEllipse:
 		return D2ShapeOval
-	case output.ShapeDiamond:
+	case output.NodeShapeDiamond:
 		return D2ShapeDiamond
-	case output.ShapeCircle:
+	case output.NodeShapeCircle:
 		return D2ShapeCircle
-	case output.ShapeCylinder:
+	case output.NodeShapeCylinder:
 		return D2ShapeCylinder
-	case output.ShapeHexagon:
+	case output.NodeShapeHexagon:
 		return D2ShapeHexagon
-	case output.ShapeParallelogram:
+	case output.NodeShapeParallelogram:
 		return D2ShapeParallelogram
 	default:
 		return D2ShapeRectangle

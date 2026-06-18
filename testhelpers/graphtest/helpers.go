@@ -16,7 +16,7 @@ func NewTestNode(id, label string) output.GraphNode {
 }
 
 // NewTestNodeWithShape creates a GraphNode with shape for testing.
-func NewTestNodeWithShape(id, label string, shape output.GraphShape) output.GraphNode {
+func NewTestNodeWithShape(id, label string, shape output.NodeShape) output.GraphNode {
 	return output.GraphNode{
 		ID:    output.NewBrandedID[output.GraphNodeIDBrand](id),
 		Label: output.NewBrandedID[output.GraphNodeLabelBrand](label),
