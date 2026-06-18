@@ -5,6 +5,9 @@ use (
 	./bdd
 	./delimited
 	./d2
+	./enum
+	./envdetect
+	./escape
 	./examples
 	./graph
 	./integration
