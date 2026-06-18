@@ -5,6 +5,13 @@
 // interface and can be populated from output.TableData (via SetNodesFromTableData)
 // or output.TreeNode (via AddTreeNodes helper).
 //
+// # Branded IDs
+//
+// GraphNodeID and GraphNodeLabel are type aliases re-exported from the root
+// package (output.GraphNodeID / output.GraphNodeLabel). The canonical import path
+// is the root package; graph.GraphNodeID exists only as an ergonomic convenience.
+// There is exactly one definition. See split-brain m6.
+//
 // # Quick Start
 //
 //	renderer := graph.NewDOTRenderer()
