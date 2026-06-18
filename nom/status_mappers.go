@@ -28,33 +28,33 @@ func (s ActivityStatus) GraphStyle() output.GraphStyle {
 	switch s {
 	case ActivityStatusFailed:
 		return output.GraphStyle{
-			Fill:  "#dc2626", // red-600
-			Stroke: "#991b1b", // red-800
-			FontColor:  "#ffffff",
+			Fill:      "#dc2626", // red-600
+			Stroke:    "#991b1b", // red-800
+			FontColor: "#ffffff",
 		}
 	case ActivityStatusRunning:
 		return output.GraphStyle{
-			Fill:  "#16a34a", // green-600
-			Stroke: "#15803d", // green-700
-			FontColor:  "#ffffff",
+			Fill:      "#16a34a", // green-600
+			Stroke:    "#15803d", // green-700
+			FontColor: "#ffffff",
 		}
 	case ActivityStatusCompleted:
 		return output.GraphStyle{
-			Fill:  "#6b7280", // gray-500
-			Stroke: "#4b5563", // gray-600
-			FontColor:  "#ffffff",
+			Fill:      "#6b7280", // gray-500
+			Stroke:    "#4b5563", // gray-600
+			FontColor: "#ffffff",
 		}
 	case ActivityStatusPaused:
 		return output.GraphStyle{
-			Fill:  "#f59e0b", // amber-500
-			Stroke: "#d97706", // amber-600
-			FontColor:  "#000000",
+			Fill:      "#f59e0b", // amber-500
+			Stroke:    "#d97706", // amber-600
+			FontColor: "#000000",
 		}
 	case ActivityStatusPending:
 		return output.GraphStyle{
-			Fill:  "#e5e7eb", // gray-200
-			Stroke: "#9ca3af", // gray-400
-			FontColor:  "#374151", // gray-700
+			Fill:      "#e5e7eb", // gray-200
+			Stroke:    "#9ca3af", // gray-400
+			FontColor: "#374151", // gray-700
 		}
 	default:
 		return output.GraphStyle{}

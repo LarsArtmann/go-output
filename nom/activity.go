@@ -36,6 +36,7 @@ func NewActivity(id, name string) *Activity {
 	a.ID = output.NewBrandedID[output.GraphNodeIDBrand](id)
 	a.Label = output.NewBrandedID[output.GraphNodeLabelBrand](name)
 	a.applyVisualStyle()
+
 	return a
 }
 
@@ -74,12 +75,15 @@ func (a *Activity) Elapsed() time.Duration {
 	if a.StartedAt.IsZero() {
 		return 0
 	}
+
 	if a.Status == ActivityStatusRunning {
 		return time.Since(a.StartedAt)
 	}
+
 	if !a.EndedAt.IsZero() {
 		return a.EndedAt.Sub(a.StartedAt)
 	}
+
 	return time.Since(a.StartedAt)
 }
 
