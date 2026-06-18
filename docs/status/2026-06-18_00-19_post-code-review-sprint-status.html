@@ -1,271 +1,876 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Status Report — go-output — 2026-06-18</title>
-<style>
-  :root {
-    --bg: #0d1117; --bg-elev: #161b22; --bg-card: #1c232c; --bg-code: #0a0e14;
-    --border: #30363d; --border-soft: #21262d;
-    --text: #e6edf3; --text-dim: #9da7b3; --text-faint: #6e7681;
-    --accent: #58a6ff; --critical: #ff6b6b; --major: #ffa657; --minor: #d29922; --ok: #3fb950;
-    --mono: ui-monospace, "SF Mono", "JetBrains Mono", "Fira Code", Menlo, Consolas, monospace;
-    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-  }
-  * { box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
-  body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--sans); line-height: 1.6; }
-  header.hero { background: linear-gradient(180deg, #161b22, #0d1117); border-bottom: 1px solid var(--border); padding: 3rem 2rem 2rem; }
-  .hero-inner { max-width: 1100px; margin: 0 auto; }
-  .eyebrow { color: var(--text-faint); font-size: 0.8rem; letter-spacing: 0.15em; text-transform: uppercase; margin: 0 0 0.5rem; }
-  h1 { font-size: 2.4rem; margin: 0 0 0.5rem; letter-spacing: -0.02em; }
-  .lede { color: var(--text-dim); font-size: 1.1rem; margin: 0 0 1rem; }
-  .meta { color: var(--text-faint); font-size: 0.85rem; }
-  main { max-width: 1100px; margin: 0 auto; padding: 2rem; }
-  h2 { font-size: 1.5rem; margin: 2.5rem 0 1rem; border-bottom: 1px solid var(--border-soft); padding-bottom: 0.5rem; }
-  h3 { font-size: 1.15rem; margin: 1.5rem 0 0.75rem; color: var(--accent); }
-  .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
-  .stat { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem; text-align: center; }
-  .stat .num { font-size: 2rem; font-weight: 700; }
-  .stat .label { color: var(--text-dim); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
-  .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 0.75rem 0; }
-  .card-problem { border-color: rgba(255,107,107,0.3); background: rgba(255,107,107,0.05); }
-  .card-warning { border-color: rgba(255,166,87,0.3); background: rgba(255,166,87,0.05); }
-  .card-solution { border-color: rgba(63,185,80,0.3); background: rgba(63,185,80,0.05); }
-  .badge { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600; font-family: var(--mono); }
-  .badge-critical { background: rgba(255,107,107,0.15); color: var(--critical); }
-  .badge-major { background: rgba(255,166,87,0.15); color: var(--major); }
-  .badge-minor { background: rgba(210,153,34,0.15); color: var(--minor); }
-  .badge-ok { background: rgba(63,185,80,0.15); color: var(--ok); }
-  table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
-  th, td { text-align: left; padding: 0.5rem 0.7rem; border-bottom: 1px solid var(--border-soft); vertical-align: top; }
-  th { color: var(--text-dim); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
-  tr:hover td { background: rgba(88,166,255,0.04); }
-  code { font-family: var(--mono); font-size: 0.85em; background: var(--bg-code); padding: 0.1rem 0.35rem; border-radius: 3px; color: var(--accent); }
-  .file-ref { color: var(--text-faint); font-family: var(--mono); font-size: 0.8rem; }
-  .callout { background: rgba(88,166,255,0.08); border-left: 3px solid var(--accent); padding: 1rem 1.5rem; border-radius: 0 8px 8px 0; margin: 1.5rem 0; }
-  footer { text-align: center; color: var(--text-faint); font-size: 0.8rem; padding: 2rem; border-top: 1px solid var(--border-soft); margin-top: 2rem; }
-</style>
-</head>
-<body>
-<header class="hero">
-  <div class="hero-inner">
-    <p class="eyebrow">Comprehensive Status Report</p>
-    <h1>go-output — Post Code-Review Sprint</h1>
-    <p class="lede">35 commits since v0.12.0. Two critical bugs fixed, 4 concurrency races eliminated, 2 type-safety improvements shipped, zero lint issues across 17 modules. The codebase is healthier than it has ever been.</p>
-    <p class="meta">📅 2026-06-18 00:19 · 🔍 228 Go files · 📦 17 modules · 🎯 Go 1.26 · 🏥 96.2% root coverage</p>
-  </div>
-</header>
-<main>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Status Report — go-output — 2026-06-18</title>
+    <style>
+      :root {
+        --bg: #0d1117;
+        --bg-elev: #161b22;
+        --bg-card: #1c232c;
+        --bg-code: #0a0e14;
+        --border: #30363d;
+        --border-soft: #21262d;
+        --text: #e6edf3;
+        --text-dim: #9da7b3;
+        --text-faint: #6e7681;
+        --accent: #58a6ff;
+        --critical: #ff6b6b;
+        --major: #ffa657;
+        --minor: #d29922;
+        --ok: #3fb950;
+        --mono: ui-monospace, "SF Mono", "JetBrains Mono", "Fira Code", Menlo, Consolas, monospace;
+        --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--sans);
+        line-height: 1.6;
+      }
+      header.hero {
+        background: linear-gradient(180deg, #161b22, #0d1117);
+        border-bottom: 1px solid var(--border);
+        padding: 3rem 2rem 2rem;
+      }
+      .hero-inner {
+        max-width: 1100px;
+        margin: 0 auto;
+      }
+      .eyebrow {
+        color: var(--text-faint);
+        font-size: 0.8rem;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        margin: 0 0 0.5rem;
+      }
+      h1 {
+        font-size: 2.4rem;
+        margin: 0 0 0.5rem;
+        letter-spacing: -0.02em;
+      }
+      .lede {
+        color: var(--text-dim);
+        font-size: 1.1rem;
+        margin: 0 0 1rem;
+      }
+      .meta {
+        color: var(--text-faint);
+        font-size: 0.85rem;
+      }
+      main {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      h2 {
+        font-size: 1.5rem;
+        margin: 2.5rem 0 1rem;
+        border-bottom: 1px solid var(--border-soft);
+        padding-bottom: 0.5rem;
+      }
+      h3 {
+        font-size: 1.15rem;
+        margin: 1.5rem 0 0.75rem;
+        color: var(--accent);
+      }
+      .stat-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 1rem;
+        margin: 1.5rem 0;
+      }
+      .stat {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 1.25rem;
+        text-align: center;
+      }
+      .stat .num {
+        font-size: 2rem;
+        font-weight: 700;
+      }
+      .stat .label {
+        color: var(--text-dim);
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 1.25rem 1.5rem;
+        margin: 0.75rem 0;
+      }
+      .card-problem {
+        border-color: rgba(255, 107, 107, 0.3);
+        background: rgba(255, 107, 107, 0.05);
+      }
+      .card-warning {
+        border-color: rgba(255, 166, 87, 0.3);
+        background: rgba(255, 166, 87, 0.05);
+      }
+      .card-solution {
+        border-color: rgba(63, 185, 80, 0.3);
+        background: rgba(63, 185, 80, 0.05);
+      }
+      .badge {
+        display: inline-block;
+        padding: 0.15rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        font-family: var(--mono);
+      }
+      .badge-critical {
+        background: rgba(255, 107, 107, 0.15);
+        color: var(--critical);
+      }
+      .badge-major {
+        background: rgba(255, 166, 87, 0.15);
+        color: var(--major);
+      }
+      .badge-minor {
+        background: rgba(210, 153, 34, 0.15);
+        color: var(--minor);
+      }
+      .badge-ok {
+        background: rgba(63, 185, 80, 0.15);
+        color: var(--ok);
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1rem 0;
+        font-size: 0.9rem;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 0.5rem 0.7rem;
+        border-bottom: 1px solid var(--border-soft);
+        vertical-align: top;
+      }
+      th {
+        color: var(--text-dim);
+        font-weight: 600;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      tr:hover td {
+        background: rgba(88, 166, 255, 0.04);
+      }
+      code {
+        font-family: var(--mono);
+        font-size: 0.85em;
+        background: var(--bg-code);
+        padding: 0.1rem 0.35rem;
+        border-radius: 3px;
+        color: var(--accent);
+      }
+      .file-ref {
+        color: var(--text-faint);
+        font-family: var(--mono);
+        font-size: 0.8rem;
+      }
+      .callout {
+        background: rgba(88, 166, 255, 0.08);
+        border-left: 3px solid var(--accent);
+        padding: 1rem 1.5rem;
+        border-radius: 0 8px 8px 0;
+        margin: 1.5rem 0;
+      }
+      footer {
+        text-align: center;
+        color: var(--text-faint);
+        font-size: 0.8rem;
+        padding: 2rem;
+        border-top: 1px solid var(--border-soft);
+        margin-top: 2rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="hero">
+      <div class="hero-inner">
+        <p class="eyebrow">Comprehensive Status Report</p>
+        <h1>go-output — Post Code-Review Sprint</h1>
+        <p class="lede">
+          35 commits since v0.12.0. Two critical bugs fixed, 4 concurrency races eliminated, 2
+          type-safety improvements shipped, zero lint issues across 17 modules. The codebase is
+          healthier than it has ever been.
+        </p>
+        <p class="meta">
+          📅 2026-06-18 00:19 · 🔍 228 Go files · 📦 17 modules · 🎯 Go 1.26 · 🏥 96.2% root
+          coverage
+        </p>
+      </div>
+    </header>
+    <main>
+      <!-- STAT CARDS -->
+      <div class="stat-grid">
+        <div class="stat">
+          <div class="num" style="color: var(--ok)">35</div>
+          <div class="label">Commits Since v0.12.0</div>
+        </div>
+        <div class="stat">
+          <div class="num" style="color: var(--ok)">0</div>
+          <div class="label">Critical Bugs Open</div>
+        </div>
+        <div class="stat">
+          <div class="num" style="color: var(--major)">1</div>
+          <div class="label">Open Race Condition</div>
+        </div>
+        <div class="stat">
+          <div class="num" style="color: var(--ok)">0</div>
+          <div class="label">Lint Issues</div>
+        </div>
+        <div class="stat">
+          <div class="num" style="color: var(--ok)">0</div>
+          <div class="label">Files >350 Lines</div>
+        </div>
+        <div class="stat">
+          <div class="num" style="color: var(--accent)">151</div>
+          <div class="label">Fully Functional Features</div>
+        </div>
+        <div class="stat">
+          <div class="num" style="color: var(--accent)">10</div>
+          <div class="label">Open TODO Items</div>
+        </div>
+        <div class="stat">
+          <div class="num" style="color: var(--minor)">7</div>
+          <div class="label">Deferred (Breaking)</div>
+        </div>
+      </div>
 
-<!-- STAT CARDS -->
-<div class="stat-grid">
-  <div class="stat"><div class="num" style="color:var(--ok)">35</div><div class="label">Commits Since v0.12.0</div></div>
-  <div class="stat"><div class="num" style="color:var(--ok)">0</div><div class="label">Critical Bugs Open</div></div>
-  <div class="stat"><div class="num" style="color:var(--major)">1</div><div class="label">Open Race Condition</div></div>
-  <div class="stat"><div class="num" style="color:var(--ok)">0</div><div class="label">Lint Issues</div></div>
-  <div class="stat"><div class="num" style="color:var(--ok)">0</div><div class="label">Files >350 Lines</div></div>
-  <div class="stat"><div class="num" style="color:var(--accent)">151</div><div class="label">Fully Functional Features</div></div>
-  <div class="stat"><div class="num" style="color:var(--accent)">10</div><div class="label">Open TODO Items</div></div>
-  <div class="stat"><div class="num" style="color:var(--minor)">7</div><div class="label">Deferred (Breaking)</div></div>
-</div>
+      <!-- SECTION A: FULLY DONE -->
+      <h2>✅ A) FULLY DONE</h2>
+      <div class="card card-solution">
+        <p><strong>Two critical correctness bugs eliminated:</strong></p>
+        <ul>
+          <li>
+            <code>FormatDuration(59.95s)</code> displayed "60.0s" — fixed with integer math (tenths
+            of a second)
+          </li>
+          <li>
+            <code>GetActivitySummaryString</code> returned Go slice repr
+            <code>"[⏵3 ↑2 ∑5]"</code> instead of <code>"⏵3↑2∑5"</code> — fixed with
+            <code>strings.Join</code>
+          </li>
+        </ul>
+      </div>
+      <div class="card card-solution">
+        <p><strong>Four concurrency races eliminated:</strong></p>
+        <ul>
+          <li>
+            Timing cache unbounded goroutines racing on same CSV file → serialized with
+            <code>saveMu</code>
+          </li>
+          <li>
+            InlineRenderer setters mutating fields while refresh loop reads → guarded with
+            <code>tickMu</code> (RWMutex)
+          </li>
+          <li>
+            Tree re-parenting phantom edges → <code>removeChild</code> from old parent before
+            reassigning
+          </li>
+          <li>DOT nodesep/ranksep injection → numeric validation rejects non-numeric input</li>
+        </ul>
+      </div>
+      <div class="card card-solution">
+        <p><strong>Six escaping/security gaps closed:</strong></p>
+        <ul>
+          <li>
+            DOT/Mermaid double-escaping in TableData conversion (compounded backslashes/quotes)
+          </li>
+          <li>D2 Icon/Link fields written raw while siblings were escaped</li>
+          <li>Mermaid node/edge IDs unsanitized in direct-graph Render()</li>
+          <li>
+            PlantUML labels had zero escaping — new <code>escape.PlantUML()</code> function added
+          </li>
+          <li>DOT edge style attrs (Color, Style) written raw → now <code>escape.DOT()</code>'d</li>
+          <li>D2 conversion silently dropped edge color and node font-color</li>
+        </ul>
+      </div>
+      <div class="card card-solution">
+        <p><strong>Three type-safety improvements shipped:</strong></p>
+        <ul>
+          <li>
+            <code>ProgressStep.IsActive</code> bool → derived method (impossible state eliminated)
+          </li>
+          <li><code>DisplayMode</code> string → int enum (matches WorkflowState pattern)</li>
+          <li>
+            <code>TreeNode.Depth()</code> O(n) walk → O(1) cached field with subtree propagation
+          </li>
+        </ul>
+      </div>
+      <div class="card card-solution">
+        <p><strong>Split-brain audit: 20 findings, 14 resolved:</strong></p>
+        <ul>
+          <li>
+            <strong>5 Critical:</strong> TreeNode rename (C1), ProgressModel dedup (C2),
+            TimingFormat (C3), test redeclarations (C4/C5) — all fixed
+          </li>
+          <li>
+            <strong>5 Major (safe):</strong> ColorWarning dup (M1), color detection (M2), hardcoded
+            literal (M3), event literals (m2), doc drift (m4) — all fixed
+          </li>
+          <li>
+            <strong>7 Major (breaking):</strong> M4/M5/M6/M7/M8 — deferred with
+            <code>NOTE(split-brain)</code> markers for v1
+          </li>
+        </ul>
+      </div>
+      <div class="card card-solution">
+        <p><strong>File size, naming, polish:</strong></p>
+        <ul>
+          <li><code>tui/view.go</code> split 366→240 lines (new <code>render_nom.go</code>)</li>
+          <li>
+            <code>nom/inline_renderer.go</code> split 427→300 lines (new
+            <code>inline_renderer_summary.go</code>)
+          </li>
+          <li>
+            <code>GetOperationSymbol</code> → <code>OperationSymbol</code> (dropped redundant Get
+            prefix)
+          </li>
+          <li><code>D2NodeStyle.Opacity</code> clamped to [0.0, 1.0]</li>
+          <li>Broken doc examples in d2/doc.go and serialization/doc.go fixed</li>
+          <li>Timing cache: entries capped on load, sorted write order, strconv parse symmetry</li>
+        </ul>
+      </div>
+      <div class="card card-solution">
+        <p><strong>Documentation deliverables:</strong></p>
+        <ul>
+          <li><code>TODO_LIST.md</code> updated: 34 resolved items, 10 open, 7 deferred</li>
+          <li>
+            <code>FEATURES.md</code> updated: 151 fully functional, 0 known issues,
+            <code>escape.PlantUML()</code> added
+          </li>
+          <li><code>docs/reviews/</code> full-code-review HTML report (226 files reviewed)</li>
+          <li>
+            6 deferred API-breaking changes tracked with <code>NOTE(split-brain)</code> in-code
+            markers
+          </li>
+        </ul>
+      </div>
 
-<!-- SECTION A: FULLY DONE -->
-<h2>✅ A) FULLY DONE</h2>
-<div class="card card-solution">
-<p><strong>Two critical correctness bugs eliminated:</strong></p>
-<ul>
-  <li><code>FormatDuration(59.95s)</code> displayed "60.0s" — fixed with integer math (tenths of a second)</li>
-  <li><code>GetActivitySummaryString</code> returned Go slice repr <code>"[⏵3 ↑2 ∑5]"</code> instead of <code>"⏵3↑2∑5"</code> — fixed with <code>strings.Join</code></li>
-</ul>
-</div>
-<div class="card card-solution">
-<p><strong>Four concurrency races eliminated:</strong></p>
-<ul>
-  <li>Timing cache unbounded goroutines racing on same CSV file → serialized with <code>saveMu</code></li>
-  <li>InlineRenderer setters mutating fields while refresh loop reads → guarded with <code>tickMu</code> (RWMutex)</li>
-  <li>Tree re-parenting phantom edges → <code>removeChild</code> from old parent before reassigning</li>
-  <li>DOT nodesep/ranksep injection → numeric validation rejects non-numeric input</li>
-</ul>
-</div>
-<div class="card card-solution">
-<p><strong>Six escaping/security gaps closed:</strong></p>
-<ul>
-  <li>DOT/Mermaid double-escaping in TableData conversion (compounded backslashes/quotes)</li>
-  <li>D2 Icon/Link fields written raw while siblings were escaped</li>
-  <li>Mermaid node/edge IDs unsanitized in direct-graph Render()</li>
-  <li>PlantUML labels had zero escaping — new <code>escape.PlantUML()</code> function added</li>
-  <li>DOT edge style attrs (Color, Style) written raw → now <code>escape.DOT()</code>'d</li>
-  <li>D2 conversion silently dropped edge color and node font-color</li>
-</ul>
-</div>
-<div class="card card-solution">
-<p><strong>Three type-safety improvements shipped:</strong></p>
-<ul>
-  <li><code>ProgressStep.IsActive</code> bool → derived method (impossible state eliminated)</li>
-  <li><code>DisplayMode</code> string → int enum (matches WorkflowState pattern)</li>
-  <li><code>TreeNode.Depth()</code> O(n) walk → O(1) cached field with subtree propagation</li>
-</ul>
-</div>
-<div class="card card-solution">
-<p><strong>Split-brain audit: 20 findings, 14 resolved:</strong></p>
-<ul>
-  <li><strong>5 Critical:</strong> TreeNode rename (C1), ProgressModel dedup (C2), TimingFormat (C3), test redeclarations (C4/C5) — all fixed</li>
-  <li><strong>5 Major (safe):</strong> ColorWarning dup (M1), color detection (M2), hardcoded literal (M3), event literals (m2), doc drift (m4) — all fixed</li>
-  <li><strong>7 Major (breaking):</strong> M4/M5/M6/M7/M8 — deferred with <code>NOTE(split-brain)</code> markers for v1</li>
-</ul>
-</div>
-<div class="card card-solution">
-<p><strong>File size, naming, polish:</strong></p>
-<ul>
-  <li><code>tui/view.go</code> split 366→240 lines (new <code>render_nom.go</code>)</li>
-  <li><code>nom/inline_renderer.go</code> split 427→300 lines (new <code>inline_renderer_summary.go</code>)</li>
-  <li><code>GetOperationSymbol</code> → <code>OperationSymbol</code> (dropped redundant Get prefix)</li>
-  <li><code>D2NodeStyle.Opacity</code> clamped to [0.0, 1.0]</li>
-  <li>Broken doc examples in d2/doc.go and serialization/doc.go fixed</li>
-  <li>Timing cache: entries capped on load, sorted write order, strconv parse symmetry</li>
-</ul>
-</div>
-<div class="card card-solution">
-<p><strong>Documentation deliverables:</strong></p>
-<ul>
-  <li><code>TODO_LIST.md</code> updated: 34 resolved items, 10 open, 7 deferred</li>
-  <li><code>FEATURES.md</code> updated: 151 fully functional, 0 known issues, <code>escape.PlantUML()</code> added</li>
-  <li><code>docs/reviews/</code> full-code-review HTML report (226 files reviewed)</li>
-  <li>6 deferred API-breaking changes tracked with <code>NOTE(split-brain)</code> in-code markers</li>
-</ul>
-</div>
+      <!-- SECTION B: PARTIALLY DONE -->
+      <h2>🟠 B) PARTIALLY DONE</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Status</th>
+            <th>What's Left</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>TUI Reporter data race (#22)</strong></td>
+            <td><span class="badge badge-major">Partially mitigated</span></td>
+            <td>
+              The ProgressModel <code>activities</code> duplication (C2) was eliminated. But
+              <code>BubbleTeaProgressReporter</code> still directly mutates
+              <code>pr.model.*</code> fields (workflowState, steps, currentProgress) from the caller
+              goroutine. The proper fix routes ALL mutations through <code>tea.Program.Send</code>,
+              but that's an architectural change to the reporter's entire API surface.
+            </td>
+          </tr>
+          <tr>
+            <td><strong>API stability for v1</strong></td>
+            <td><span class="badge badge-minor">ADR 006 frozen</span></td>
+            <td>
+              228 exported symbols frozen. 7 API-breaking changes deferred (M4-M8, #12-13). All
+              documented with NOTE markers. Ready for v1.0.0 tag but owner hasn't pulled the
+              trigger.
+            </td>
+          </tr>
+          <tr>
+            <td><strong>LSP diagnostics (stale)</strong></td>
+            <td><span class="badge badge-minor">Known noise</span></td>
+            <td>
+              gopls shows ~49 stale errors (GetOperationSymbol, TreeNode references) from the
+              concurrent session's rename. Build/test/lint all pass clean. Needs
+              <code>lsp_restart</code> to clear cache.
+            </td>
+          </tr>
+        </tbody>
+      </table>
 
-<!-- SECTION B: PARTIALLY DONE -->
-<h2>🟠 B) PARTIALLY DONE</h2>
-<table>
-  <thead><tr><th>Item</th><th>Status</th><th>What's Left</th></tr></thead>
-  <tbody>
-    <tr>
-      <td><strong>TUI Reporter data race (#22)</strong></td>
-      <td><span class="badge badge-major">Partially mitigated</span></td>
-      <td>The ProgressModel <code>activities</code> duplication (C2) was eliminated. But <code>BubbleTeaProgressReporter</code> still directly mutates <code>pr.model.*</code> fields (workflowState, steps, currentProgress) from the caller goroutine. The proper fix routes ALL mutations through <code>tea.Program.Send</code>, but that's an architectural change to the reporter's entire API surface.</td>
-    </tr>
-    <tr>
-      <td><strong>API stability for v1</strong></td>
-      <td><span class="badge badge-minor">ADR 006 frozen</span></td>
-      <td>228 exported symbols frozen. 7 API-breaking changes deferred (M4-M8, #12-13). All documented with NOTE markers. Ready for v1.0.0 tag but owner hasn't pulled the trigger.</td>
-    </tr>
-    <tr>
-      <td><strong>LSP diagnostics (stale)</strong></td>
-      <td><span class="badge badge-minor">Known noise</span></td>
-      <td>gopls shows ~49 stale errors (GetOperationSymbol, TreeNode references) from the concurrent session's rename. Build/test/lint all pass clean. Needs <code>lsp_restart</code> to clear cache.</td>
-    </tr>
-  </tbody>
-</table>
+      <!-- SECTION C: NOT STARTED -->
+      <h2>⚪ C) NOT STARTED</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Effort</th>
+            <th>Why Not Started</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>EdgeStyle.Style → typed LineStyle enum (#27)</strong></td>
+            <td>Medium</td>
+            <td>Exported API change — deferred per ADR 006 freeze</td>
+          </tr>
+          <tr>
+            <td><strong>GetActivityCounts() → struct return (#28)</strong></td>
+            <td>Low</td>
+            <td>Exported API change — deferred per ADR 006 freeze</td>
+          </tr>
+          <tr>
+            <td><strong>v1.0.0 release (#16)</strong></td>
+            <td>Low</td>
+            <td>Needs owner decision on TableData API (#15)</td>
+          </tr>
+          <tr>
+            <td><strong>Community: r/golang, Awesome Go (#14)</strong></td>
+            <td>Low</td>
+            <td>Post-v1.0.0 marketing</td>
+          </tr>
+          <tr>
+            <td><strong>BDD tests for TUI reporter (#22 fix verification)</strong></td>
+            <td>Medium</td>
+            <td>Depends on reporter architecture change</td>
+          </tr>
+        </tbody>
+      </table>
 
-<!-- SECTION C: NOT STARTED -->
-<h2>⚪ C) NOT STARTED</h2>
-<table>
-  <thead><tr><th>Item</th><th>Effort</th><th>Why Not Started</th></tr></thead>
-  <tbody>
-    <tr><td><strong>EdgeStyle.Style → typed LineStyle enum (#27)</strong></td><td>Medium</td><td>Exported API change — deferred per ADR 006 freeze</td></tr>
-    <tr><td><strong>GetActivityCounts() → struct return (#28)</strong></td><td>Low</td><td>Exported API change — deferred per ADR 006 freeze</td></tr>
-    <tr><td><strong>v1.0.0 release (#16)</strong></td><td>Low</td><td>Needs owner decision on TableData API (#15)</td></tr>
-    <tr><td><strong>Community: r/golang, Awesome Go (#14)</strong></td><td>Low</td><td>Post-v1.0.0 marketing</td></tr>
-    <tr><td><strong>BDD tests for TUI reporter (#22 fix verification)</strong></td><td>Medium</td><td>Depends on reporter architecture change</td></tr>
-  </tbody>
-</table>
+      <!-- SECTION D: TOTALLY FUCKED UP -->
+      <h2>🔴 D) TOTALLY FUCKED UP</h2>
+      <div class="card card-problem">
+        <div class="card-head">
+          <span class="badge badge-critical">Critical</span>
+          <strong>Concurrent sessions collided on the same repo</strong>
+        </div>
+        <p>
+          During this sprint, a concurrent session was actively refactoring the same working tree in
+          real-time. I watched the build flip from broken→green mid-stream as it completed the
+          <code>TreeNode</code>→<code>ActivityNode</code> rename. My edits were swept into their
+          commits without attribution. The <code>SPLIT-BRAIN.html</code> audit report was modified
+          by the other session. This caused significant confusion and required defensive
+          verification after every commit.
+        </p>
+        <p>
+          <strong>Impact:</strong> No permanent damage — all changes were beneficial. But the
+          coordination overhead was real, and the risk of overwriting each other's work was high.
+        </p>
+      </div>
+      <div class="card card-problem">
+        <div class="card-head">
+          <span class="badge badge-major">Major</span>
+          <strong>Stale LSP diagnostics polluting the IDE</strong>
+        </div>
+        <p>
+          gopls reports ~49 phantom errors (<code>FormatTreeNodeTiming</code>,
+          <code>TreeNode</code>, <code>GetOperationSymbol</code>) that don't exist in the actual
+          build. The rename from <code>TreeNode</code>→<code>ActivityNode</code> and
+          <code>GetOperationSymbol</code>→<code>OperationSymbol</code> happened but gopls cache
+          wasn't invalidated. This creates false alarm fatigue.
+        </p>
+      </div>
 
-<!-- SECTION D: TOTALLY FUCKED UP -->
-<h2>🔴 D) TOTALLY FUCKED UP</h2>
-<div class="card card-problem">
-  <div class="card-head"><span class="badge badge-critical">Critical</span> <strong>Concurrent sessions collided on the same repo</strong></div>
-  <p>During this sprint, a concurrent session was actively refactoring the same working tree in real-time. I watched the build flip from broken→green mid-stream as it completed the <code>TreeNode</code>→<code>ActivityNode</code> rename. My edits were swept into their commits without attribution. The <code>SPLIT-BRAIN.html</code> audit report was modified by the other session. This caused significant confusion and required defensive verification after every commit.</p>
-  <p><strong>Impact:</strong> No permanent damage — all changes were beneficial. But the coordination overhead was real, and the risk of overwriting each other's work was high.</p>
-</div>
-<div class="card card-problem">
-  <div class="card-head"><span class="badge badge-major">Major</span> <strong>Stale LSP diagnostics polluting the IDE</strong></div>
-  <p>gopls reports ~49 phantom errors (<code>FormatTreeNodeTiming</code>, <code>TreeNode</code>, <code>GetOperationSymbol</code>) that don't exist in the actual build. The rename from <code>TreeNode</code>→<code>ActivityNode</code> and <code>GetOperationSymbol</code>→<code>OperationSymbol</code> happened but gopls cache wasn't invalidated. This creates false alarm fatigue.</p>
-</div>
+      <!-- SECTION E: IMPROVEMENTS -->
+      <h2>💡 E) WHAT WE SHOULD IMPROVE</h2>
+      <div class="card">
+        <ol>
+          <li>
+            <strong>Single-session discipline:</strong> Never run two agent sessions on the same
+            repo simultaneously. The collision risk is too high. If parallel work is needed, use
+            branches.
+          </li>
+          <li>
+            <strong>LSP cache invalidation:</strong> After renames, the LSP should be restarted. Add
+            a post-rename step to the workflow.
+          </li>
+          <li>
+            <strong>BDD coverage for concurrency:</strong> The race fixes (#20, #21) were verified
+            with <code>-race</code> but not with BDD specs. Critical concurrency paths deserve
+            Ginkgo specifications.
+          </li>
+          <li>
+            <strong>Property-based testing for escape functions:</strong> The escape package now has
+            8 functions. Property tests (gopter) would verify idempotency and round-trip properties
+            systematically.
+          </li>
+          <li>
+            <strong>Integration test for DOT injection:</strong> The nodesep/ranksep validation
+            (#31) should have an integration test that attempts injection and verifies rejection.
+          </li>
+          <li>
+            <strong>Fuzz tests for D2/Mermaid/PlantUML renderers:</strong> Only D2 has fuzz
+            coverage. The escaping gaps we found prove the other renderers need it too.
+          </li>
+          <li>
+            <strong>API versioning strategy:</strong> The 7 deferred breaking changes need a
+            concrete v1→v2 migration plan, not just NOTE markers.
+          </li>
+        </ol>
+      </div>
 
-<!-- SECTION E: IMPROVEMENTS -->
-<h2>💡 E) WHAT WE SHOULD IMPROVE</h2>
-<div class="card">
-<ol>
-  <li><strong>Single-session discipline:</strong> Never run two agent sessions on the same repo simultaneously. The collision risk is too high. If parallel work is needed, use branches.</li>
-  <li><strong>LSP cache invalidation:</strong> After renames, the LSP should be restarted. Add a post-rename step to the workflow.</li>
-  <li><strong>BDD coverage for concurrency:</strong> The race fixes (#20, #21) were verified with <code>-race</code> but not with BDD specs. Critical concurrency paths deserve Ginkgo specifications.</li>
-  <li><strong>Property-based testing for escape functions:</strong> The escape package now has 8 functions. Property tests (gopter) would verify idempotency and round-trip properties systematically.</li>
-  <li><strong>Integration test for DOT injection:</strong> The nodesep/ranksep validation (#31) should have an integration test that attempts injection and verifies rejection.</li>
-  <li><strong>Fuzz tests for D2/Mermaid/PlantUML renderers:</strong> Only D2 has fuzz coverage. The escaping gaps we found prove the other renderers need it too.</li>
-  <li><strong>API versioning strategy:</strong> The 7 deferred breaking changes need a concrete v1→v2 migration plan, not just NOTE markers.</li>
-</ol>
-</div>
+      <!-- SECTION F: TOP 25 NEXT -->
+      <h2>🎯 F) Top 25 Things to Get Done Next</h2>
+      <p>Sorted by impact (high → low), then effort (low → high within same impact tier).</p>
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Impact</th>
+            <th>Effort</th>
+            <th>Task</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td><span class="badge badge-critical">Critical</span></td>
+            <td>High</td>
+            <td>
+              <strong>Fix TUI reporter data race (#22)</strong> — route all model mutations through
+              <code>tea.Program.Send</code>. Last remaining concurrency bug.
+            </td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td><span class="badge badge-critical">Critical</span></td>
+            <td>Low</td>
+            <td><strong>Restart LSP</strong> to clear ~49 stale diagnostics polluting the IDE</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td><span class="badge badge-major">High</span></td>
+            <td>Low</td>
+            <td>
+              <strong>Decision on TableData API (#15)</strong> — exported fields vs getters. Blocks
+              v1.0.0.
+            </td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td><span class="badge badge-major">High</span></td>
+            <td>Low</td>
+            <td>
+              <strong>Cut v1.0.0 tag (#16)</strong> — API frozen per ADR 006, 228 symbols stable,
+              zero lint
+            </td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td><span class="badge badge-major">High</span></td>
+            <td>Low</td>
+            <td>
+              <strong>Community launch (#14)</strong> — post to r/golang, submit to Awesome Go
+            </td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td><span class="badge badge-major">High</span></td>
+            <td>Medium</td>
+            <td>
+              <strong>Add fuzz tests for Mermaid, DOT, PlantUML renderers</strong> — escaping gaps
+              prove they're needed
+            </td>
+          </tr>
+          <tr>
+            <td>7</td>
+            <td><span class="badge badge-major">High</span></td>
+            <td>Medium</td>
+            <td>
+              <strong>BDD specs for TUI reporter</strong> — critical user journey, currently only
+              unit-tested
+            </td>
+          </tr>
+          <tr>
+            <td>8</td>
+            <td><span class="badge badge-minor">Medium</span></td>
+            <td>Medium</td>
+            <td>
+              <strong>EdgeStyle.Style → LineStyle typed enum (#27)</strong> — prevents invalid line
+              styles at compile time
+            </td>
+          </tr>
+          <tr>
+            <td>9</td>
+            <td><span class="badge badge-minor">Medium</span></td>
+            <td>Low</td>
+            <td>
+              <strong>GetActivityCounts() → ActivityCounts struct (#28)</strong> — prevents arg-swap
+              bugs
+            </td>
+          </tr>
+          <tr>
+            <td>10</td>
+            <td><span class="badge badge-minor">Medium</span></td>
+            <td>Medium</td>
+            <td>
+              <strong>Property-based tests for escape package</strong> — verify idempotency across
+              all 8 functions
+            </td>
+          </tr>
+          <tr>
+            <td>11</td>
+            <td><span class="badge badge-minor">Medium</span></td>
+            <td>Low</td>
+            <td>
+              <strong>Integration test for DOT injection prevention</strong> — verify
+              nodesep/ranksep validation rejects crafted input
+            </td>
+          </tr>
+          <tr>
+            <td>12</td>
+            <td><span class="badge badge-minor">Medium</span></td>
+            <td>Low</td>
+            <td><strong>Rename examples/shared.HandleError → Must (#8)</strong></td>
+          </tr>
+          <tr>
+            <td>13</td>
+            <td><span class="badge badge-minor">Medium</span></td>
+            <td>Low</td>
+            <td><strong>Make ColorModeAuto.ShouldColor() deterministic (#9)</strong></td>
+          </tr>
+          <tr>
+            <td>14</td>
+            <td><span class="badge badge-minor">Medium</span></td>
+            <td>Medium</td>
+            <td>
+              <strong>D2 addTreeNodes → delegate to output.AddTreeNodes</strong> — eliminate
+              reimplemented tree traversal
+            </td>
+          </tr>
+          <tr>
+            <td>15</td>
+            <td><span class="badge badge-minor">Medium</span></td>
+            <td>Low</td>
+            <td>
+              <strong>Add PlantUML shape mapping</strong> — GraphShape currently ignored;
+              DOT/Mermaid/D2 all map shapes
+            </td>
+          </tr>
+          <tr>
+            <td>16</td>
+            <td><span class="badge badge-minor">Medium</span></td>
+            <td>Low</td>
+            <td>
+              <strong
+                >D2 dead condition:
+                <code>d.direction != "" && d.direction != D2DirDown</code></strong
+              >
+              — D2DirDown is "", second clause always true
+            </td>
+          </tr>
+          <tr>
+            <td>17</td>
+            <td><span class="badge badge-minor">Medium</span></td>
+            <td>Low</td>
+            <td>
+              <strong>Remove dead <code>diagramType</code> field in PlantUML</strong> — set but
+              never read
+            </td>
+          </tr>
+          <tr>
+            <td>18</td>
+            <td><span class="badge badge-minor">Medium</span></td>
+            <td>Medium</td>
+            <td>
+              <strong>v1→v2 migration plan for deferred API changes</strong> — M4/M5/M6/M7/M8 need
+              concrete roadmap
+            </td>
+          </tr>
+          <tr>
+            <td>19</td>
+            <td><span class="badge badge-ok">Low</span></td>
+            <td>Low</td>
+            <td>
+              <strong
+                >D2 <code>d2ArrowTypeValues</code> redundant <code>D2ArrowNone</code> check in
+                IsValid()</strong
+              >
+            </td>
+          </tr>
+          <tr>
+            <td>20</td>
+            <td><span class="badge badge-ok">Low</span></td>
+            <td>Low</td>
+            <td>
+              <strong
+                >Rename <code>allD2Constraints</code> → <code>d2ConstraintValues</code></strong
+              >
+              for naming consistency
+            </td>
+          </tr>
+          <tr>
+            <td>21</td>
+            <td><span class="badge badge-ok">Low</span></td>
+            <td>Low</td>
+            <td>
+              <strong
+                >serialization: change <code>var emptyYAML/TOML/JSONL</code> to
+                <code>const</code></strong
+              >
+            </td>
+          </tr>
+          <tr>
+            <td>22</td>
+            <td><span class="badge badge-ok">Low</span></td>
+            <td>Low</td>
+            <td>
+              <strong>nom/doc.go: write real package documentation</strong> — currently just an
+              ellipsis placeholder
+            </td>
+          </tr>
+          <tr>
+            <td>23</td>
+            <td><span class="badge badge-ok">Low</span></td>
+            <td>Low</td>
+            <td>
+              <strong
+                >nom: remove dead <code>getDisplayActivities()</code> and never-populated
+                <code>order</code> field</strong
+              >
+            </td>
+          </tr>
+          <tr>
+            <td>24</td>
+            <td><span class="badge badge-ok">Low</span></td>
+            <td>Low</td>
+            <td>
+              <strong>nom: remove dead <code>IsDisplayed</code> field on ActivityNode</strong> — set
+              but never read
+            </td>
+          </tr>
+          <tr>
+            <td>25</td>
+            <td><span class="badge badge-ok">Low</span></td>
+            <td>Low</td>
+            <td>
+              <strong>tui: remove dead <code>SeparatorLineEquals</code> constant</strong> — never
+              used in production
+            </td>
+          </tr>
+        </tbody>
+      </table>
 
-<!-- SECTION F: TOP 25 NEXT -->
-<h2>🎯 F) Top 25 Things to Get Done Next</h2>
-<p>Sorted by impact (high → low), then effort (low → high within same impact tier).</p>
-<table>
-  <thead><tr><th>#</th><th>Impact</th><th>Effort</th><th>Task</th></tr></thead>
-  <tbody>
-    <tr><td>1</td><td><span class="badge badge-critical">Critical</span></td><td>High</td><td><strong>Fix TUI reporter data race (#22)</strong> — route all model mutations through <code>tea.Program.Send</code>. Last remaining concurrency bug.</td></tr>
-    <tr><td>2</td><td><span class="badge badge-critical">Critical</span></td><td>Low</td><td><strong>Restart LSP</strong> to clear ~49 stale diagnostics polluting the IDE</td></tr>
-    <tr><td>3</td><td><span class="badge badge-major">High</span></td><td>Low</td><td><strong>Decision on TableData API (#15)</strong> — exported fields vs getters. Blocks v1.0.0.</td></tr>
-    <tr><td>4</td><td><span class="badge badge-major">High</span></td><td>Low</td><td><strong>Cut v1.0.0 tag (#16)</strong> — API frozen per ADR 006, 228 symbols stable, zero lint</td></tr>
-    <tr><td>5</td><td><span class="badge badge-major">High</span></td><td>Low</td><td><strong>Community launch (#14)</strong> — post to r/golang, submit to Awesome Go</td></tr>
-    <tr><td>6</td><td><span class="badge badge-major">High</span></td><td>Medium</td><td><strong>Add fuzz tests for Mermaid, DOT, PlantUML renderers</strong> — escaping gaps prove they're needed</td></tr>
-    <tr><td>7</td><td><span class="badge badge-major">High</span></td><td>Medium</td><td><strong>BDD specs for TUI reporter</strong> — critical user journey, currently only unit-tested</td></tr>
-    <tr><td>8</td><td><span class="badge badge-minor">Medium</span></td><td>Medium</td><td><strong>EdgeStyle.Style → LineStyle typed enum (#27)</strong> — prevents invalid line styles at compile time</td></tr>
-    <tr><td>9</td><td><span class="badge badge-minor">Medium</span></td><td>Low</td><td><strong>GetActivityCounts() → ActivityCounts struct (#28)</strong> — prevents arg-swap bugs</td></tr>
-    <tr><td>10</td><td><span class="badge badge-minor">Medium</span></td><td>Medium</td><td><strong>Property-based tests for escape package</strong> — verify idempotency across all 8 functions</td></tr>
-    <tr><td>11</td><td><span class="badge badge-minor">Medium</span></td><td>Low</td><td><strong>Integration test for DOT injection prevention</strong> — verify nodesep/ranksep validation rejects crafted input</td></tr>
-    <tr><td>12</td><td><span class="badge badge-minor">Medium</span></td><td>Low</td><td><strong>Rename examples/shared.HandleError → Must (#8)</strong></td></tr>
-    <tr><td>13</td><td><span class="badge badge-minor">Medium</span></td><td>Low</td><td><strong>Make ColorModeAuto.ShouldColor() deterministic (#9)</strong></td></tr>
-    <tr><td>14</td><td><span class="badge badge-minor">Medium</span></td><td>Medium</td><td><strong>D2 addTreeNodes → delegate to output.AddTreeNodes</strong> — eliminate reimplemented tree traversal</td></tr>
-    <tr><td>15</td><td><span class="badge badge-minor">Medium</span></td><td>Low</td><td><strong>Add PlantUML shape mapping</strong> — GraphShape currently ignored; DOT/Mermaid/D2 all map shapes</td></tr>
-    <tr><td>16</td><td><span class="badge badge-minor">Medium</span></td><td>Low</td><td><strong>D2 dead condition: <code>d.direction != "" && d.direction != D2DirDown</code></strong> — D2DirDown is "", second clause always true</td></tr>
-    <tr><td>17</td><td><span class="badge badge-minor">Medium</span></td><td>Low</td><td><strong>Remove dead <code>diagramType</code> field in PlantUML</strong> — set but never read</td></tr>
-    <tr><td>18</td><td><span class="badge badge-minor">Medium</span></td><td>Medium</td><td><strong>v1→v2 migration plan for deferred API changes</strong> — M4/M5/M6/M7/M8 need concrete roadmap</td></tr>
-    <tr><td>19</td><td><span class="badge badge-ok">Low</span></td><td>Low</td><td><strong>D2 <code>d2ArrowTypeValues</code> redundant <code>D2ArrowNone</code> check in IsValid()</strong></td></tr>
-    <tr><td>20</td><td><span class="badge badge-ok">Low</span></td><td>Low</td><td><strong>Rename <code>allD2Constraints</code> → <code>d2ConstraintValues</code></strong> for naming consistency</td></tr>
-    <tr><td>21</td><td><span class="badge badge-ok">Low</span></td><td>Low</td><td><strong>serialization: change <code>var emptyYAML/TOML/JSONL</code> to <code>const</code></strong></td></tr>
-    <tr><td>22</td><td><span class="badge badge-ok">Low</span></td><td>Low</td><td><strong>nom/doc.go: write real package documentation</strong> — currently just an ellipsis placeholder</td></tr>
-    <tr><td>23</td><td><span class="badge badge-ok">Low</span></td><td>Low</td><td><strong>nom: remove dead <code>getDisplayActivities()</code> and never-populated <code>order</code> field</strong></td></tr>
-    <tr><td>24</td><td><span class="badge badge-ok">Low</span></td><td>Low</td><td><strong>nom: remove dead <code>IsDisplayed</code> field on ActivityNode</strong> — set but never read</td></tr>
-    <tr><td>25</td><td><span class="badge badge-ok">Low</span></td><td>Low</td><td><strong>tui: remove dead <code>SeparatorLineEquals</code> constant</strong> — never used in production</td></tr>
-  </tbody>
-</table>
+      <!-- SECTION G: TOP QUESTION -->
+      <h2>❓ G) Top Question I Cannot Figure Out</h2>
+      <div class="callout">
+        <h3 style="margin-top: 0">
+          Should the TUI reporter data race (#22) be fixed now or deferred to v1?
+        </h3>
+        <p>
+          The <code>BubbleTeaProgressReporter</code> mutates <code>pr.model.*</code> fields
+          (workflowState, steps, currentProgress) directly from the caller's goroutine while Bubble
+          Tea's event loop goroutine concurrently reads/writes the same fields via
+          <code>Update()</code>. This is a real data race detectable by <code>-race</code>.
+        </p>
+        <p>
+          <strong>The fix:</strong> Route ALL model mutations through
+          <code>tea.Program.Send</code> — no direct field writes from the reporter. This means
+          changing the reporter's entire API surface: <code>ReportStep</code>,
+          <code>ReportProgress</code>, <code>ReportError</code>, <code>ReportMessage</code>, and
+          <code>transitionWorkflowState</code> would all send messages instead of mutating directly.
+        </p>
+        <p>
+          <strong>Why I can't decide:</strong> This is an <em>exported API change</em> to the TUI
+          module's reporter interface. ADR 006 says "all exported symbols frozen." But #22 is also
+          the <em>last remaining concurrency bug</em> — a correctness issue, not a naming
+          preference. Does the API freeze cover internal field access patterns of exported types, or
+          just method signatures? I don't know where to draw the line.
+        </p>
+      </div>
 
-<!-- SECTION G: TOP QUESTION -->
-<h2>❓ G) Top Question I Cannot Figure Out</h2>
-<div class="callout">
-  <h3 style="margin-top:0">Should the TUI reporter data race (#22) be fixed now or deferred to v1?</h3>
-  <p>The <code>BubbleTeaProgressReporter</code> mutates <code>pr.model.*</code> fields (workflowState, steps, currentProgress) directly from the caller's goroutine while Bubble Tea's event loop goroutine concurrently reads/writes the same fields via <code>Update()</code>. This is a real data race detectable by <code>-race</code>.</p>
-  <p><strong>The fix:</strong> Route ALL model mutations through <code>tea.Program.Send</code> — no direct field writes from the reporter. This means changing the reporter's entire API surface: <code>ReportStep</code>, <code>ReportProgress</code>, <code>ReportError</code>, <code>ReportMessage</code>, and <code>transitionWorkflowState</code> would all send messages instead of mutating directly.</p>
-  <p><strong>Why I can't decide:</strong> This is an <em>exported API change</em> to the TUI module's reporter interface. ADR 006 says "all exported symbols frozen." But #22 is also the <em>last remaining concurrency bug</em> — a correctness issue, not a naming preference. Does the API freeze cover internal field access patterns of exported types, or just method signatures? I don't know where to draw the line.</p>
-</div>
-
-<!-- HEALTH SUMMARY -->
-<h2>📊 Project Health Summary</h2>
-<table>
-  <thead><tr><th>Metric</th><th>Value</th><th>Trend</th></tr></thead>
-  <tbody>
-    <tr><td>Modules</td><td>17</td><td>➡️ Stable</td></tr>
-    <tr><td>Go files</td><td>228</td><td>⬆️ +2 (splits)</td></tr>
-    <tr><td>Total LOC</td><td>30,827</td><td>➡️ Stable</td></tr>
-    <tr><td>Root coverage</td><td>96.2%</td><td>➡️ Stable</td></tr>
-    <tr><td>Lint issues</td><td>0</td><td>✅ Zero maintained</td></tr>
-    <tr><td>Build</td><td>✅ All 16 modules</td><td>✅ Green</td></tr>
-    <tr><td>Tests</td><td>✅ All 16 modules</td><td>✅ Green (incl. -race on nom/tui)</td></tr>
-    <tr><td>Files >350 lines</td><td>0</td><td>✅ Fixed this session</td></tr>
-    <tr><td>Critical bugs</td><td>0</td><td>✅ Fixed this session</td></tr>
-    <tr><td>Known issues</td><td>0</td><td>✅ TimingCache fixed</td></tr>
-    <tr><td>Fully functional features</td><td>151</td><td>⬆️ TimingCache upgraded</td></tr>
-    <tr><td>Open TODO items</td><td>10</td><td>⬇️ From 21 to 10</td></tr>
-    <tr><td>Deferred breaking changes</td><td>7</td><td>➡️ Tracked with NOTE markers</td></tr>
-  </tbody>
-</table>
-
-</main>
-<footer>
-  go-output comprehensive status report · generated 2026-06-18 00:19 · 35 commits since v0.12.0 · 0 critical bugs · 0 lint issues · 0 known issues
-</footer>
-</body>
+      <!-- HEALTH SUMMARY -->
+      <h2>📊 Project Health Summary</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Value</th>
+            <th>Trend</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Modules</td>
+            <td>17</td>
+            <td>➡️ Stable</td>
+          </tr>
+          <tr>
+            <td>Go files</td>
+            <td>228</td>
+            <td>⬆️ +2 (splits)</td>
+          </tr>
+          <tr>
+            <td>Total LOC</td>
+            <td>30,827</td>
+            <td>➡️ Stable</td>
+          </tr>
+          <tr>
+            <td>Root coverage</td>
+            <td>96.2%</td>
+            <td>➡️ Stable</td>
+          </tr>
+          <tr>
+            <td>Lint issues</td>
+            <td>0</td>
+            <td>✅ Zero maintained</td>
+          </tr>
+          <tr>
+            <td>Build</td>
+            <td>✅ All 16 modules</td>
+            <td>✅ Green</td>
+          </tr>
+          <tr>
+            <td>Tests</td>
+            <td>✅ All 16 modules</td>
+            <td>✅ Green (incl. -race on nom/tui)</td>
+          </tr>
+          <tr>
+            <td>Files >350 lines</td>
+            <td>0</td>
+            <td>✅ Fixed this session</td>
+          </tr>
+          <tr>
+            <td>Critical bugs</td>
+            <td>0</td>
+            <td>✅ Fixed this session</td>
+          </tr>
+          <tr>
+            <td>Known issues</td>
+            <td>0</td>
+            <td>✅ TimingCache fixed</td>
+          </tr>
+          <tr>
+            <td>Fully functional features</td>
+            <td>151</td>
+            <td>⬆️ TimingCache upgraded</td>
+          </tr>
+          <tr>
+            <td>Open TODO items</td>
+            <td>10</td>
+            <td>⬇️ From 21 to 10</td>
+          </tr>
+          <tr>
+            <td>Deferred breaking changes</td>
+            <td>7</td>
+            <td>➡️ Tracked with NOTE markers</td>
+          </tr>
+        </tbody>
+      </table>
+    </main>
+    <footer>
+      go-output comprehensive status report · generated 2026-06-18 00:19 · 35 commits since v0.12.0
+      · 0 critical bugs · 0 lint issues · 0 known issues
+    </footer>
+  </body>
 </html>
