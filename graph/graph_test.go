@@ -117,10 +117,10 @@ func TestGraphShapeIsValid(t *testing.T) {
 
 func newTestGraphStyle(fontSize int) output.GraphStyle {
 	return output.GraphStyle{
-		Fill:   "red",
-		Stroke: "blue",
-		FontColor:   "green",
-		FontSize:    fontSize,
+		Fill:      "red",
+		Stroke:    "blue",
+		FontColor: "green",
+		FontSize:  fontSize,
 	}
 }
 

@@ -8,11 +8,8 @@ import (
 )
 
 // D2Direction constants for diagram layout direction.
-//
-// NOTE(split-brain M6/M7): D2Direction uses D2 vocabulary ("down"/"right") while
-// graph.RankDir uses DOT vocabulary ("TB"/"LR"). There is no bridge between them.
-// In the next minor version, introduce a canonical output.Direction enum in root
-// and have both translate to/from it.
+// Use output.Direction for cross-format portability; D2Direction stays
+// for D2-specific APIs. Convert via Direction.ToD2Direction().
 type D2Direction string
 
 // D2 direction constants.

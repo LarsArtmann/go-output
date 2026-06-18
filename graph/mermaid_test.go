@@ -242,10 +242,10 @@ func TestMermaidRendererWithNodeStyle(t *testing.T) {
 			Label: output.NewBrandedID[output.GraphNodeLabelBrand]("Styled"),
 			Shape: output.NodeShapeBox,
 			Style: output.GraphStyle{
-				Fill:   "#e8a838",
-				Stroke: "#4a4030",
-				FontColor:   "#14110d",
-				FontSize:    14,
+				Fill:      "#e8a838",
+				Stroke:    "#4a4030",
+				FontColor: "#14110d",
+				FontSize:  14,
 			},
 		},
 	})
