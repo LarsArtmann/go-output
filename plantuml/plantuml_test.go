@@ -2,7 +2,6 @@ package plantuml
 
 import (
 	"bytes"
-	"errors"
 	"strings"
 	"testing"
 
@@ -11,14 +10,8 @@ import (
 	"github.com/larsartmann/go-output/testhelpers/graphtest"
 )
 
-// errWriter always returns an error from Write.
-type errWriter struct{}
-
-func (errWriter) Write(p []byte) (int, error) {
-	return 0, errWriteFailed
-}
-
-var errWriteFailed = errors.New("write failed")
+// errWriteFailed aliases testhelpers.ErrWrite for backward-compatible error checks.
+var errWriteFailed = testhelpers.ErrWrite
 
 func TestPlantUMLDiagramRender(t *testing.T) {
 	t.Parallel()
@@ -138,7 +131,7 @@ func TestRenderPlantUMLTableData(t *testing.T) {
 		data := output.NewTableData([]string{"Name"})
 		data.AddRow([]string{"Alpha"})
 
-		err := output.RenderTableData(data, output.FormatPlantUML, output.RenderOptions{Writer: &errWriter{}})
+		err := output.RenderTableData(data, output.FormatPlantUML, output.RenderOptions{Writer: &testhelpers.ErrorWriter{}})
 		if err == nil {
 			t.Fatal("expected error from errWriter")
 		}

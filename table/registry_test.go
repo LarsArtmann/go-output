@@ -2,20 +2,14 @@ package table
 
 import (
 	"bytes"
-	"errors"
 	"testing"
 
 	"github.com/larsartmann/go-output"
+	"github.com/larsartmann/go-output/testhelpers"
 )
 
-// errWriter always returns an error from Write.
-type errWriter struct{}
-
-func (errWriter) Write(p []byte) (int, error) {
-	return 0, errWriteFailed
-}
-
-var errWriteFailed = errors.New("write failed")
+// errWriteFailed aliases testhelpers.ErrWrite for backward-compatible error checks.
+var errWriteFailed = testhelpers.ErrWrite
 
 func TestRenderStyledTableData(t *testing.T) {
 	t.Parallel()
@@ -44,7 +38,7 @@ func TestRenderStyledTableData(t *testing.T) {
 		data := output.NewTableData([]string{"Name"})
 		data.AddRow([]string{"Alpha"})
 
-		err := output.RenderTableData(data, output.FormatTable, output.RenderOptions{Writer: &errWriter{}})
+		err := output.RenderTableData(data, output.FormatTable, output.RenderOptions{Writer: &testhelpers.ErrorWriter{}})
 		if err == nil {
 			t.Fatal("expected error from errWriter")
 		}
