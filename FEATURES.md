@@ -222,7 +222,7 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 | **NOMStyleSubscriber**               | FULLY_FUNCTIONAL     | Event-driven subscriber implementing `EventSubscriber`. Routes string-based events without sharing concrete types                                                                                               |
 | **DependencyTree**                   | FULLY_FUNCTIONAL     | Hierarchical activity visualization. Priority filtering (Running > Failed > Pending > Completed), depth-aware prefixes                                                                                          |
 | **InlineRenderer**                   | FULLY_FUNCTIONAL     | Real-time inline terminal renderer. Start/Stop/Finish lifecycle, cursor hiding, no-color mode, ANSI redraw                                                                                                      |
-| **TimingCache**                      | PARTIALLY_FUNCTIONAL | Persists activity durations as CSV at `~/.cache/nom-timing.csv`. Async saves, caps 10 entries/activity. **Known issue:** unbounded `saveAsync` goroutines can race on the same file under burst load (TODO #20) |
+| **TimingCache**                      | FULLY_FUNCTIONAL     | Persists activity durations as CSV at `~/.cache/nom-timing.csv`. Serialized saves (saveMu), caps 10 entries/activity, applies cap on load                                                        |
 | **ActivityStatus enum**              | FULLY_FUNCTIONAL     | 5 states: Running, Failed, Paused, Pending, Completed                                                                                                                                                           |
 | **Branded IDs**                      | FULLY_FUNCTIONAL     | `ActivityID`, `ActivityName`, `WorkflowID`, `WorkflowName` — compile-time type safety                                                                                                                           |
 | **Event accessor interfaces**        | FULLY_FUNCTIONAL     | `WorkflowEventAccessor`, `ActivityEventAccessor`, `DurationAccessor`, `ErrorAccessor` — type-assertion routing                                                                                                  |
@@ -320,9 +320,9 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 
 ---
 
-**Last audited:** 2026-06-17
+**Last audited:** 2026-06-18
 **Total features:** 162
-**Fully functional:** 150
-**Partially functional:** 1 (TimingCache — concurrency issue)
+**Fully functional:** 151
+**Partially functional:** 0
 **Removed:** 9 (FormatCategory, OutputFormat, SortBy, FilledStrings, Register, Create, Unregister, RegisteredFormats, IsRegistered)
-**Known issues:** 1 (TimingCache goroutine race — TODO #20)
+**Known issues:** 0
