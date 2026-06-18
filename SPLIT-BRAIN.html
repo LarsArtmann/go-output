@@ -655,11 +655,11 @@
           <div class="label">Addressed</div>
         </div>
         <div class="stat time">
-          <div class="num">14</div>
+          <div class="num">16</div>
           <div class="label">Fixed in code</div>
         </div>
         <div class="stat min">
-          <div class="num">6</div>
+          <div class="num">4</div>
           <div class="label">Documented (by design)</div>
         </div>
         <div class="stat crit">
@@ -727,11 +727,11 @@
         <h2>🔬 Re-Verification Pass — 2026-06-18</h2>
         <p style="color: var(--text-dim); margin-top: 0">
           Every file:line reference below was re-read against the current source to confirm the fix
-          is real, not just documented. Result: <strong>20/20 addressed</strong> (14 fixed in code ·
-          6 documented as acceptable by design) and <strong>0 new split-brains introduced</strong>.
-          The 6 "documented" findings were always by-design (separate modules, intentional
-          ergonomics, or YAGNI) — each now carries an explicit cross-reference comment so the
-          duplication cannot drift silently.
+          is real, not just documented. Result: <strong>20/20 addressed</strong> (16 fixed in code ·
+          4 documented as acceptable by design) and <strong>0 new split-brains introduced</strong>.
+          The 4 "documented" findings were always by-design (genuinely different concepts or
+          intentional ergonomic re-exports) — each now carries an explicit cross-reference comment
+          so the duplication cannot drift silently.
         </p>
         <table class="verify-tbl">
           <thead>
@@ -789,11 +789,13 @@
             </tr>
             <tr class="ok">
               <td class="id">M1</td>
-              <td><span class="pill doc">Documented</span></td>
+              <td><span class="pill fixed">Fixed</span></td>
               <td class="evidence">
                 <code>ColorWarning</code> deleted; <code>SemanticColors</code> struct
-                (nom/symbols.go:42) + cross-ref comment (:51). tui keeps its own richer theme
-                (title/select/help fields) — documented mirror, intentionally separate
+                (nom/symbols.go:42). tui/colors.go delegates its 4 semantic colors
+                (success/warning/err/dim) to <code>nom.Colors.Completed/Running/Failed/Paused</code>
+                — nom is the single source of truth. TUI-only colors (title, selection, help) stay
+                local
               </td>
             </tr>
             <tr class="ok">
@@ -839,11 +841,11 @@
             </tr>
             <tr class="ok">
               <td class="id">M7</td>
-              <td><span class="pill doc">Documented</span></td>
+              <td><span class="pill fixed">Fixed</span></td>
               <td class="evidence">
-                <code>output.Direction</code> (direction.go:6) + ToD2Direction/ToRankDir (:17,:27).
-                One-directional bridge (canonical → format); reverse parse is YAGNI; graph.RankDir
-                standalone, documented
+                <code>output.Direction</code> (direction.go:6) + ToD2Direction/ToRankDir (:17,:27);
+                <code>DOTRenderer.SetDirection(output.Direction)</code> (graph/dot.go:84) bridges the
+                canonical enum into DOT-specific RankDir. Table-driven test covers all 4 directions
               </td>
             </tr>
             <tr class="ok">
@@ -918,16 +920,17 @@
           the correct zero-copy model; (2) <code>C3</code>'s literal was at
           <code>tui/render_nom.go:53</code>, not <code>view.go:290</code>; (3) <code>M6</code>'s
           test documents that box/rect intentionally emit no shape attribute (map to default); (4)
-          <code>M7</code> ships a one-directional bridge — reverse parsing was deemed YAGNI.
+          <code>M7</code> now fully wired: <code>SetDirection(output.Direction)</code> on DOTRenderer
+          bridges the canonical enum into graph/.
         </div>
 
         <p style="color: var(--text-dim); margin-bottom: 0">
-          <strong>🛡️ New-split-brain check:</strong> scanned the new shared modules and enums
-          introduced by the fixes (<code>envdetect/</code>, <code>output.Direction</code>,
-          <code>output.NodeShape</code>, <code>nom.SemanticColors</code>,
-          <code>nodeShapeToD2</code>). Each is the single canonical definition; consumers import
-          rather than re-declare. No new duplicate type definitions or competing sources of truth
-          were introduced. Build + test + lint pass clean across all 18 modules.
+          <strong>🛡️ New-split-brain check:</strong> systematically scanned all exported type/interface/
+          const/var definitions across all 15 modules for duplicate names with different values.
+          Result: <strong>zero new split-brains</strong>. Each new shared type (<code>envdetect/</code>,
+          <code>output.Direction</code>, <code>output.NodeShape</code>, <code>nom.SemanticColors</code>,
+          <code>nodeShapeToD2</code>) is the single canonical definition; consumers import rather than
+          re-declare. Build + test + race + lint + govulncheck pass clean across all 15 modules.
         </p>
       </div>
 
@@ -1334,21 +1337,25 @@
           </p>
         </div>
         <div class="fix">
-          <h4>✅ How to fix</h4>
+          <h4>✅ Resolution (verified)</h4>
           <ul>
             <li>
-              <strong>Quick win:</strong> delete <code>nom.ColorWarning</code> (it equals
-              <code>ColorRunning</code>); replace usages with <code>ColorRunning</code>.
+              <code>nom.ColorWarning</code> deleted; <code>SemanticColors</code> struct created
+              (nom/symbols.go:42) as the canonical color palette.
             </li>
             <li>
-              <strong>Structural:</strong> create a shared <code>nom.Theme</code> type
-              (lipgloss-based) that the <code>tui</code> package consumes, since
-              <code>tui</code> already depends on <code>nom</code>. Move the 4 semantic colors there
-              once.
+              <code>tui/colors.go</code> delegates its 4 semantic colors
+              (<code>success</code>/<code>warning</code>/<code>err</code>/<code>dim</code>) to
+              <code>nom.Colors.Completed/Running/Failed/Paused</code> — one source of truth, zero
+              ANSI-code duplication.
             </li>
             <li>
-              The root raw-ANSI colors (<code>ansiGreen</code> etc.) can stay — they serve the
-              zero-dependency root module — but document that they mirror the lipgloss values.
+              TUI-specific colors (<code>title</code>, <code>selectBG</code>, <code>helpFG</code>...)
+              stay local — they have no nom equivalent.
+            </li>
+            <li>
+              The root raw-ANSI colors (<code>ansiGreen</code> etc.) stay — they serve the
+              zero-dependency root module.
             </li>
           </ul>
         </div>
@@ -1701,10 +1708,10 @@
               and renders to either format's vocabulary — the common use case.
             </li>
             <li>
-              Reverse parsing (D2/DOT string → Direction) was deemed YAGNI and not built, so
-              <code>graph.RankDir</code> remains a standalone accepting type. This is a documented
-              one-directional bridge, not a round-trip — acceptable because users set direction in
-              the canonical enum, not by parsing format strings.
+              <code>DOTRenderer.SetDirection(output.Direction)</code> (graph/dot.go:84) bridges the
+              canonical enum into DOT-specific RankDir. Table-driven test covers all 4 directions.
+              <code>graph.RankDir</code> remains as the DOT-native accepting type for callers who
+              work directly in DOT vocabulary.
             </li>
           </ul>
         </div>
