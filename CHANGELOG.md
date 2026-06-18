@@ -18,7 +18,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - **`nom.ActivityNode`** now embeds `nom.Activity` (which embeds `output.GraphNode`) instead of `DisplayState`. Removed fields: `ActivityNode.ActivityID`, `ActivityNode.ActivityName`. Use `node.ID.Get()` and `node.Label.Get()` from the embedded `GraphNode` instead.
 
-### v1.0.0 Preparation — Breaking Changes
+### Breaking Changes (0.x — pre-1.0 API cleanup)
 
 **Removed:**
 
@@ -31,6 +31,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - `EdgeStyle.Style` field → `EdgeStyle.Line` (type changed from `string` to `LineStyle`)
 - `TableDataMarshaler` → `TableDataRenderer`, `AnyDataMarshaler` → `AnyDataRenderer` — unified terminology
 - `RegisterTableDataMarshaler` → `RegisterTableDataRenderer`, `RegisterAnyDataMarshaler` → `RegisterAnyDataRenderer`
+- `nom.InlineRenderer.Render()` → `nom.InlineRenderer.Draw()` — resolves split-brain M4: `Render()` is now reserved for the `output.Renderer` contract `(string, error)` project-wide. `Draw()` writes a frame to the configured `io.Writer` (void return).
+- `nom.DependencyTree.Render(maxHeight)` → `nom.DependencyTree.RenderString(maxHeight)` — same finding: the bare-string return (errors encoded into the string) is now distinguished from the canonical `(string, error)` contract.
 
 **Added:**
 
@@ -50,8 +52,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **`nom.detectNoColor()` now checks terminal** — aligned with root's `isStdoutTerminal()` gate. Previously nom would emit ANSI color codes even when piped to a file.
 - **`delimited.tableDataWriter` interface now includes `WriteFooter`** — footer rows are written via the dedicated `WriteFooter` method instead of `WriteRow`, matching the streaming API and example code.
 - **`nom.GetWorkflowID()` returns `WorkflowID` instead of `string`** — matches the `WorkflowEventAccessor` interface return type.
-- **Color detection aligned** — root `isNoColor()` now checks `TERM=dumb`; nom `detectNoColor()` now checks all 5 CI env vars (`CI`, `GITHUB_ACTIONS`, `GITLAB_CI`, `JENKINS_URL`, `BUILDKITE`). Both now use identical logic.
+- **Color detection aligned** — root `isNoColor()` now checks `TERM=dumb`; nom `detectNoColor()` now checks all 5 CI env vars (`CI`, `GITHUB_ACTIONS`, `GITLAB_CI`, `JENKINS_URL`, `BUILDKITE`). Both now delegate to the shared **`envdetect`** module (`envdetect.IsCI()` / `envdetect.IsNoColor()`) — a new zero-dependency module that is the single source of truth for CI/NO_COLOR detection across root and nom/.
 - **Dead code removed** — `nom.ColorWarning` (identical value to `ColorRunning`, zero callers), `tui.ProgressModel.timingCache` (stored but never read).
+- **`ActivityStatus` documented as intentionally separate from `tui.WorkflowState`** (split-brain m3) — they share `Running`/`Completed` values but model different lifecycles (single activity vs whole workflow). Doc comment prevents a future "unify these enums" mistake.
+- **Canonical branded-ID paths documented** (split-brain m6) — `D2NodeID`/`D2NodeLabel` brand types live in root so both root and `d2/` callers see the type alias without a circular import. `d2.D2NodeID` is a convenience re-export, not a second definition.
 
 ### Fixed
 

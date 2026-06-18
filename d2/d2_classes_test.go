@@ -12,11 +12,7 @@ func TestD2ClassesDeterministic(t *testing.T) {
 	d.AddClass("zebra", D2NodeStyle{Fill: "black"})
 	d.AddClass("alpha", D2NodeStyle{Fill: "red"})
 	d.AddClass("beta", D2NodeStyle{Fill: "green"})
-	d.AddNode(D2Node{ //nolint:exhaustruct // Test uses minimal required fields
-		ID:    newD2NodeID("n1"),
-		Label: newD2NodeLabel("N1"),
-		Class: "alpha",
-	})
+	d.AddNode(newD2ClassNode("n1", "N1", "alpha"))
 
 	got1, err := d.Render()
 	if err != nil {

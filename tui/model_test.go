@@ -55,6 +55,7 @@ func clickAt(model *ProgressModel, clickY int) *ProgressModel {
 	updatedModel, _ := model.Update(tea.MouseClickMsg{
 		X: 5, Y: clickY, Button: tea.MouseLeft,
 	})
+
 	return updatedModel.(*ProgressModel)
 }
 
@@ -242,6 +243,7 @@ func TestProgressModel_MouseClick_SelectsNode(t *testing.T) {
 
 	// Click on the first tree line (line 0 relative to tree = line 7 absolute with chrome)
 	clickY := model.treeStartLine + chromeLinesAboveTree + 0
+
 	m := clickAt(model, clickY)
 	if m.selectedNode != nom.ActivityID("step-a") {
 		t.Errorf("selectedNode = %q, want %q", m.selectedNode, "step-a")
@@ -263,6 +265,7 @@ func TestProgressModel_MouseClick_ToggleOffNode(t *testing.T) {
 	model.selectedNode = nom.ActivityID("step-a")
 
 	clickY := model.treeStartLine + chromeLinesAboveTree + 0
+
 	m := clickAt(model, clickY)
 	if m.selectedNode != "" {
 		t.Errorf("second click should deselect, got %q", m.selectedNode)

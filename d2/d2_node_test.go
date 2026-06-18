@@ -215,11 +215,7 @@ func TestD2NodeWithClass(t *testing.T) {
 
 		D2StrokeStyle: D2StrokeStyle{Stroke: "darkred"},
 	})
-	d.AddNode(D2Node{ //nolint:exhaustruct // Test uses minimal required fields
-		ID:    newD2NodeID("alert"),
-		Label: newD2NodeLabel("Alert"),
-		Class: "important",
-	})
+	d.AddNode(newD2ClassNode("alert", "Alert", "important"))
 
 	got, err := d.Render()
 	if err != nil {
