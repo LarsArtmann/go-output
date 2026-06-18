@@ -16,6 +16,18 @@ func assertEscaped(t *testing.T, fn, s, result, input, output string) {
 	}
 }
 
+// assertStripped fails the test if the input contains `ch` and the result
+// also contains it — i.e. the raw character survived transformation. Used
+// by fuzz tests that verify characters are rewritten (not just escaped) by
+// the function under test.
+func assertStripped(t *testing.T, fn, s, result, ch string) {
+	t.Helper()
+
+	if strings.Contains(s, ch) && strings.Contains(result, ch) {
+		t.Errorf("%s(%q) = %q, %s not stripped", fn, s, result, ch)
+	}
+}
+
 func FuzzD2(f *testing.F) {
 	f.Add("")
 	f.Add(`hello "world"`)
@@ -87,13 +99,8 @@ func FuzzMermaidText(f *testing.F) {
 	f.Fuzz(func(t *testing.T, s string) {
 		result := MermaidText(s)
 
-		if strings.Contains(s, `"`) && strings.Contains(result, `"`) {
-			t.Errorf("MermaidText(%q) = %q, quotes not escaped", s, result)
-		}
-
-		if strings.Contains(s, "[") && strings.Contains(result, "[") {
-			t.Errorf("MermaidText(%q) = %q, brackets not escaped", s, result)
-		}
+		assertStripped(t, "MermaidText", s, result, `"`)
+		assertStripped(t, "MermaidText", s, result, "[")
 	})
 }
 
