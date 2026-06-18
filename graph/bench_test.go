@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/larsartmann/go-output"
+	"github.com/larsartmann/go-output/testhelpers/graphtest"
 )
 
 func generateBenchmarkNodes(n int) []output.GraphNode {
@@ -18,10 +19,7 @@ func generateBenchmarkNodes(n int) []output.GraphNode {
 func generateBenchmarkEdges(n int) []output.GraphEdge {
 	edges := make([]output.GraphEdge, n)
 	for i := range edges {
-		edges[i] = output.GraphEdge{
-			From: output.NewBrandedID[output.GraphNodeIDBrand]("node"),
-			To:   output.NewBrandedID[output.GraphNodeIDBrand]("node"),
-		}
+		edges[i] = graphtest.NewTestEdge("node", "node", "")
 	}
 
 	return edges

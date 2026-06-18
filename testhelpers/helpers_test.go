@@ -261,11 +261,20 @@ func TestIntField(t *testing.T) {
 func TestAssertLineCount(t *testing.T) {
 	t.Parallel()
 
-	t.Run("correct line count", func(t *testing.T) {
-		t.Parallel()
+	for _, tc := range []struct {
+		name    string
+		input   string
+		wantLen int
+	}{
+		{"correct line count", "a\nb\nc", 3},
+		{"trims whitespace", "a\nb\n", 2},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
 
-		AssertLineCount(t, "three lines", "a\nb\nc", 3)
-	})
+			AssertLineCount(t, tc.name, tc.input, tc.wantLen)
+		})
+	}
 
 	t.Run("wrong line count", func(t *testing.T) {
 		t.Parallel()
@@ -277,12 +286,6 @@ func TestAssertLineCount(t *testing.T) {
 		if !mock.Failed() {
 			t.Error("expected failure for wrong line count")
 		}
-	})
-
-	t.Run("trims whitespace", func(t *testing.T) {
-		t.Parallel()
-
-		AssertLineCount(t, "trailing newline", "a\nb\n", 2)
 	})
 }
 

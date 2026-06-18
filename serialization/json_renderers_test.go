@@ -1,7 +1,6 @@
 package serialization
 
 import (
-	"strings"
 	"testing"
 
 	"github.com/larsartmann/go-output"
@@ -122,9 +121,7 @@ func TestJSONGraphRenderer_Empty(t *testing.T) {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	if !strings.Contains(got, `"nodes"`) || !strings.Contains(got, `"edges"`) {
-		t.Errorf("should contain nodes and edges, got %q", got)
-	}
+	assertAllContained(t, got, `"nodes"`, `"edges"`)
 }
 
 func TestJSONGraphRenderer_WithNodesAndEdges(t *testing.T) {

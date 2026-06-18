@@ -11,6 +11,8 @@ import (
 
 var assertContains = testhelpers.AssertContains
 
+var assertAllContained = testhelpers.AssertAllContained
+
 var assertOutputContains = testhelpers.AssertOutputContains
 
 var assertMarshalError = testhelpers.AssertMarshalError

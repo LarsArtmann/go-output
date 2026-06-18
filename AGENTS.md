@@ -32,6 +32,7 @@ This project uses Go workspace modules. Each sub-package with its own `go.mod` i
 | ----------------------- | ------ | ------------------------------------------------------------------ | ----------------------------------------- |
 | Root (`package output`) | ✅     | enum, escape, yaml, x/term, branded-id, testhelpers                | Core types + formatters                   |
 | `enum/`                 | ✅     | testhelpers (tests only)                                           | Generic enum utilities                    |
+| `envdetect/`            | ✅     | None                                                               | Shared CI / NO_COLOR env detection        |
 | `escape/`               | ✅     | None                                                               | Format-specific escaping                  |
 | `testhelpers/`          | ✅     | None                                                               | Shared test assertions (non-internal)     |
 | `d2/`                   | ✅     | root, escape, testhelpers                                          | D2 diagram renderer (rich domain model)   |
@@ -57,12 +58,13 @@ serialization → root, go-faster/yaml, go-toml/v2
 markup        → root, escape
 plantuml      → root
 enum          → testhelpers (tests only)
+envdetect     → (none) — shared CI / NO_COLOR helpers
 escape        → (none)
 testhelpers   → (none) — zero deps, shared test assertions
 d2            → root, escape, testhelpers
 graph         → root, escape, testhelpers
 table         → root, lipgloss/v2
-nom           → lipgloss/v2
+nom           → envdetect, lipgloss/v2
 tui           → nom, bubbletea/v2, lipgloss/v2
 integration   → root, delimited, serialization, markup, table, d2, graph, plantuml, nom, tui
 examples      → root, delimited, serialization, markup, table, d2, graph, plantuml, nom, tui
@@ -333,25 +335,30 @@ This ensures `go get github.com/larsartmann/go-output/table@vX.Y.Z` resolves cor
 
 **Updated:** 2026-06-18
 
-At `art-dupl -t 50` (industry standard), this codebase has **zero actionable clones**.
-
-At `art-dupl -t 25` (moderate), **6 clone groups** remain. All are explicitly accepted per the dedup-skill decision checklist:
-
-| File                                                              | Pattern                                                                                        | Why accepted                                                                                                                                                                                                                        |
-| ----------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `color.go:119-123` ↔ `nom/inline_renderer.go:104-108`             | CI env-var detection (`CI`, `GITHUB_ACTIONS`, `GITLAB_CI`, `JENKINS_URL`, `BUILDKITE`)         | Module boundary: `nom/` is intentionally minimal (lipgloss-only) and cannot import root without adding transitive deps. New `envdetect/` module would be over-abstraction for ~5 lines. Both copies documented with sync rationale. |
-| `examples/basic/renderers.go:22-25` ↔ `graph/bench_test.go:21-24` | `output.GraphEdge{From: NewBrandedID(...), To: NewBrandedID(...)}` struct literal              | Different intent: example constant (`Alpha → Beta`) vs benchmark fixture (self-loop `node → node`). Different files, different values, different purpose — extract would obscure both.                                              |
-| `nom/tree_priority_test.go:38-45, 46-53`                          | Table-driven test cases varying only `maxHeight` (100 vs 0)                                    | Table-driven test with same shape, different data — idiomatic Go test code                                                                                                                                                          |
-| `tui/event_sequence_test.go:77-81, 216-220`                       | `OnEvent(&testEvent{eventType: nom.EventActivityStarted, ...})` setup with different IDs/names | Per-test setup that differs by activity ID/name — idiomatic Go test code                                                                                                                                                            |
-| `testhelpers/helpers_test.go:264-268, 282-286`                    | `t.Run` subtests for `AssertLineCount` with different inputs                                   | Subtest boilerplate with different data — idiomatic Go test code                                                                                                                                                                    |
-| `tui/reporter_test.go:142-144, 178-180`                           | Field assertions `if reporter.model.steps[0].Current != N` (N=1 vs N=3)                        | Verification of different expected values — idiomatic Go test code; abstraction would obscure the test intent                                                                                                                       |
+At `art-dupl -t 24` (user-specified threshold), this codebase has **zero actionable clones**. All 15 originally-reported clone groups at t=24 have been resolved through helper extraction, table-driven test conversion, or use of existing helpers (`testhelpers.AssertAllContained`, `graphtest.NewTestEdge`).
 
 **Recent refactor (2026-06-18):**
 
-- Exported `delimited.tableDataWriter` as `delimited.Writer` interface (type alias kept internally to avoid changing `marshalFromTableData` signature)
-- Removed duplicate `delimitedWriter` interface in `examples/basic/renderers.go` — now uses `delimited.Writer`
-- Extracted `alphaToBetaEdge` package var in `examples/basic/renderers.go` to consolidate 3 identical `output.GraphEdge{}` literals used across Mermaid and DOT renderers
-- Strengthened "keep in sync" comments on `color.go` / `nom/inline_renderer.go` to document the module-boundary rationale for the kept CI-detection duplication
+- Created `envdetect/` module (zero deps) with `IsCI()` and `IsNoColor()` helpers. Root `color.go` and `nom/inline_renderer.go` now both delegate to envdetect, eliminating the long-standing CI env-var detection duplication
+- Added `startActivity`/`startWorkflow` helpers in `tui/event_sequence_test.go` to collapse 5-line `OnEvent` setup blocks
+- Added `sendWorkflowStarted` helper in `nom/subscriber_test.go` (returns error so callers can choose to assert or ignore)
+- Added `diagramFireWorkflow` / `diagramFireActivity` helpers in `nom/diagram_export_test.go` to collapse 4 OnEvent setup blocks
+- Added `assertSingleStep` and `assertStepCurrent` helpers in `tui/testhelpers_test.go` to dedup step verification across `reporter_test.go` and `event_sequence_test.go`
+- Added `assertChildParentID` helper in `nom/tree_helpers_test.go` (new file) to dedup parent-ID checks between `tree_test.go` and `tree_render_test.go`
+- Added `waitForRender` helper in `nom/inline_renderer_test.go` to dedup 3 render-wait-with-timeout blocks
+- Added `assertEscaped` helper in `escape/fuzz_test.go` to dedup invariant check pattern across 3 fuzz tests
+- Added `assertAllContained` alias in `serialization/testhelpers_test.go`; use it in `json_renderers_test.go` to dedup double-Contains check
+- Used `testhelpers.AssertAllContained` in `integration/test_helpers_test.go` for the same pattern
+- Switched `graph/bench_test.go` to use `graphtest.NewTestEdge` instead of inline `output.GraphEdge{...}` literal
+- Switched `testhelpers/helpers_test.go` `TestAssertLineCount` to table-driven for the two simple success subtests
+- Consolidated `nom/tree_priority_test.go` `ActivityNode` setup via local `mkNode` factory; merged the duplicate "non-pressure maxHeight" / "unlimited maxHeight" table cases (they test the same code path); preserved unlimited code-path coverage as a separate explicit subtest
+
+At `art-dupl -t 20` (aggressive), ~9 clone groups appear, all categorized as:
+
+| Category            | Description                                                        | Action                                 |
+| ------------------- | ------------------------------------------------------------------ | -------------------------------------- |
+| **Go test idioms**  | `OnEvent` setup, `t.Run`/`t.Parallel` boilerplate, table-driven cases | Accept — language patterns             |
+| **Module boundary** | Test helpers re-declared per module                                | Accept — Go design constraint          |
 
 At `art-dupl -t 15` (aggressive), ~50 clone groups appear. These are categorized as:
 

@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/larsartmann/go-output"
+	"github.com/larsartmann/go-output/testhelpers"
 )
 
 func TestAssertTableData(t *testing.T) {
@@ -51,9 +52,7 @@ func TestRenderMarkdownTable(t *testing.T) {
 
 	got := renderMarkdownTable([]string{"X", "Y"}, [][]string{{"1", "2"}})
 
-	if !strings.Contains(got, "X") || !strings.Contains(got, "1") {
-		t.Errorf("renderMarkdownTable() = %q, expected table content", got)
-	}
+	testhelpers.AssertAllContained(t, got, "X", "1")
 }
 
 func TestRenderSampleMarkdownTable(t *testing.T) {
