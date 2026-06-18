@@ -68,6 +68,36 @@ var graphShapeValues = []GraphShape{
 	ShapeRect,
 }
 
+// LineStyle represents the visual style of a line (edge).
+type LineStyle string
+
+const (
+	LineStyleSolid  LineStyle = "solid"
+	LineStyleDashed LineStyle = "dashed"
+	LineStyleDotted LineStyle = "dotted"
+)
+
+// lineStyleValues is the canonical list of valid LineStyle values.
+var lineStyleValues = []LineStyle{
+	LineStyleSolid,
+	LineStyleDashed,
+	LineStyleDotted,
+}
+
+// IsValid returns true if the LineStyle is a recognized value.
+func (l LineStyle) IsValid() bool {
+	for _, v := range lineStyleValues {
+		if l == v {
+			return true
+		}
+	}
+
+	return false
+}
+
+// String returns the string representation of the LineStyle.
+func (l LineStyle) String() string { return string(l) }
+
 // InvalidGraphShapeError is returned when an invalid graph shape is provided.
 type InvalidGraphShapeError struct {
 	Value string
@@ -144,8 +174,8 @@ func NewGraphEdge(from, to string) *GraphEdge {
 type EdgeStyle struct {
 	// Color is the edge line color.
 	Color string
-	// Style is the line style ("solid", "dashed", "dotted").
-	Style string
+	// Line is the line style (solid, dashed, dotted).
+	Line LineStyle
 	// ArrowHead is the arrowhead style at the target end.
 	ArrowHead string
 	// ArrowTail is the arrowhead style at the source end.

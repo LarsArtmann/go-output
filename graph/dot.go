@@ -228,8 +228,8 @@ func (r *DOTRenderer) writeEdge(b *strings.Builder, edge output.GraphEdge) {
 		attrs = append(attrs, "color="+escape.DOT(edge.Style.Color))
 	}
 
-	if edge.Style.Style != "" {
-		attrs = append(attrs, "style="+escape.DOT(edge.Style.Style))
+	if edge.Style.Line != "" {
+		attrs = append(attrs, "style="+escape.DOT(edge.Style.Line.String()))
 	}
 
 	if len(attrs) > 0 {

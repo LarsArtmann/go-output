@@ -135,7 +135,7 @@ func TestEdgeStyle(t *testing.T) {
 
 	style := output.EdgeStyle{
 		Color:     "black",
-		Style:     "dashed",
+		Line:      output.LineStyleDashed,
 		ArrowHead: "arrow",
 		ArrowTail: "arrow",
 	}
@@ -143,7 +143,7 @@ func TestEdgeStyle(t *testing.T) {
 	testhelpers.TestStructFields(
 		t,
 		testhelpers.StringField("Color", style.Color, "black"),
-		testhelpers.StringField("Style", style.Style, "dashed"),
+		testhelpers.StringField("Line", style.Line.String(), "dashed"),
 		testhelpers.StringField("ArrowHead", style.ArrowHead, "arrow"),
 		testhelpers.StringField("ArrowTail", style.ArrowTail, "arrow"),
 	)

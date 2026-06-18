@@ -6,7 +6,7 @@ This document describes the extensible format architecture for go-output: **16 o
 
 The 16 formats are: `table, json, csv, tsv, markdown, xml, d2, yaml, html, tree, mermaid, dot, jsonl, asciidoc, toml, plantuml`.
 
-> **Scope note.** This document covers the _data-rendering_ axis only. The `nom/` and `tui/` modules are a **separate, orthogonal subsystem** — real-time progress visualization — and are described in [Relationship to nom/ and tui/](#relationship-to-nom-and-tui). They are not formats and do not appear in the shape matrix.
+> **Scope note.** This document covers the _data-rendering_ axis only. The `nom/` and `tui/` modules are a **separate, orthogonal subsystem** — real-time progress visualization — and are described in [Relationship to nom/ and tui/](#relationship-to-nom-and-tui). They are not formats, do not appear in the shape matrix, share no types with root's `tree` renderer, and do not depend on the root package.
 
 ## Data Shapes
 
@@ -269,17 +269,31 @@ All three embed `GraphRendererState`, honor `GraphStyle` for per-node colors, an
 
 ## Relationship to nom/ and tui/
 
-`nom/` and `tui/` are **not output formats**. They are a separate, orthogonal subsystem for **real-time progress visualization** driven by an external workflow engine that emits events. They do not register in any of the three registries above, are not reachable via `RenderTableData`/`RenderAnyData`, and do not appear in the shape matrix. Root has zero imports from either module.
+`nom/` and `tui/` are **not output formats**. They are a separate, orthogonal subsystem for **real-time progress visualization** driven by an external workflow engine that emits events. They do not register in any of the three registries above, are not reachable via `RenderTableData`/`RenderAnyData`, and do not appear in the shape matrix. Root has zero imports from either module (verified: `nom/go.mod` requires only `lipgloss/v2` + stdlib-adjacent helpers — no `output` dependency).
 
-### nom/ — NOM-style progress (lipgloss-only)
+### "Isn't nom/ just a fancy real-time tree?"
 
-Event-driven, no Bubble Tea dependency. Consumes workflow/activity events and renders a dependency tree with timing estimates.
+The **rendered output** is a tree, yes. But "just a fancy tree" undersells what makes it NOM-style rather than a live-re-rendering of `output.TreeRenderer`. nom/ and root's `tree` renderer share the _word_ "tree" but **share no types and no code path**:
 
-- `nom.Event` / `nom.EventSubscriber` (`OnEvent`) — the integration contract. Event types are the `nom.Event*` constants (`EventWorkflowStarted`, `EventActivityStarted`, `EventActivityCompleted`, `EventActivityFailed`, …).
-- `nom.NOMStyleSubscriber` — implements `EventSubscriber`; uses type-assertion-based accessor interfaces (`WorkflowEventAccessor`, `ActivityEventAccessor`, `DurationAccessor`, `ErrorAccessor`) to read event payloads without coupling to a specific event type.
-- `nom.DependencyTree` — hierarchical activity visualization with priority-based child sorting (Failed > Running > Paused > Pending > Completed), depth-aware tree prefixes, and thread-safe concurrent access.
-- `nom.InlineRenderer` — redraws in place **without** alt-screen takeover; `Refresh()` for on-demand updates, a 1-second max-frame timer, terminal-width-aware truncation.
-- `nom.TimingCache` — persists activity duration history as CSV at `~/.cache/nom-timing.csv`; uses the median of the last ≤10 entries; async saves.
+| Concern             | Root `tree` format                  | `nom/`                                                                                                            |
+| ------------------- | ----------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| Data source         | Static `*output.TreeNode` graph     | Live `nom.Event` stream (`EventSubscriber.OnEvent`)                                                               |
+| Node type           | `output.TreeNode`                   | `nom.ActivityNode` (separate type, no embedding, no conversion path)                                              |
+| Ordering            | Insertion order                     | **Self-resorting**: Failed > Running > Paused > Pending > Completed; ties by elapsed-then-ID (`tree_priority.go`) |
+| Time-awareness      | None                                | Persistent cross-run CSV at `~/.cache/nom-timing.csv`; **median** of last ≤10 runs predicts pending durations     |
+| State model         | Single (`TreeNode`)                 | **Two**, synced: flat `ActivityDisplayState` + hierarchical `ActivityNode` (`SyncActivityTimingToTree`)           |
+| Lifecycle           | One-shot `Render() (string, error)` | `InlineRenderer` with Start/Stop/Refresh, ANSI cursor-up redraw, 1s max-frame timer                               |
+| Package dep on root | —                                   | **None** (cannot import `output` — would add transitive deps to nom's closure)                                    |
+
+Strip the timing cache and the priority resorting and yes, you'd be left with a fancy real-time tree. Those two features — **time prediction** and **adaptive ordering** — are what make it NOM.
+
+### nom/ architecture
+
+Event-driven; no Bubble Tea dependency. Three layers:
+
+- **Ingestion** — `nom.Event` / `nom.EventSubscriber` (`OnEvent`) is the integration contract. Event types are the `nom.Event*` constants (`EventWorkflowStarted`, `EventActivityStarted`, `EventActivityCompleted`, `EventActivityFailed`, …). `NOMStyleSubscriber` reads payloads via type-assertion accessor interfaces (`WorkflowEventAccessor`, `ActivityEventAccessor`, `DurationAccessor`, `ErrorAccessor`) so it never couples to a concrete event struct.
+- **State** — `NOMStyleSubscriber` owns the activity map, the `DependencyTree`, and the `TimingCache` under one `sync.RWMutex`. `ActivityDisplayState` is the flat record of record; `ActivityNode` is the derived tree view; both carry the shared `DisplayState` (status, symbol, color, timing).
+- **Rendering** — `DependencyTree` renders the priority-sorted hierarchy; `InlineRenderer` does the in-place ANSI redraw **without** alt-screen takeover (`Refresh()` for on-demand updates, terminal-width-aware truncation, cursor hide/show lifecycle).
 
 ### tui/ — Bubble Tea interactive TUI (depends on nom/)
 
