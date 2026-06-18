@@ -32,13 +32,16 @@ type Activity struct {
 	Color color.Color
 	// CurrentElapsed is updated periodically for running activities.
 	CurrentElapsed time.Duration
+	// Dependencies lists parent activity IDs (for tree rendering).
+	Dependencies []string
 }
 
 // NewActivity creates an Activity with a branded GraphNode ID and default
 // visual style derived from the pending status.
 func NewActivity(id, name string) *Activity {
 	a := &Activity{
-		Status: ActivityStatusPending,
+		Status:       ActivityStatusPending,
+		Dependencies: make([]string, 0),
 	}
 	a.ID = output.NewBrandedID[output.GraphNodeIDBrand](id)
 	a.Label = output.NewBrandedID[output.GraphNodeLabelBrand](name)
@@ -102,6 +105,21 @@ func (a *Activity) IsCompleted() bool { return a.Status == ActivityStatusComplet
 
 // IsFailed returns true if the activity has failed.
 func (a *Activity) IsFailed() bool { return a.Status == ActivityStatusFailed }
+
+// Copy creates a deep copy of the Activity.
+func (a *Activity) Copy() *Activity {
+	cpy := *a // shallow copy is fine for value types
+	if a.Dependencies != nil {
+		cpy.Dependencies = append([]string{}, a.Dependencies...)
+	}
+	if a.Metadata != nil {
+		cpy.Metadata = make(map[string]string, len(a.Metadata))
+		for k, v := range a.Metadata {
+			cpy.Metadata[k] = v
+		}
+	}
+	return &cpy
+}
 
 // applyVisualStyle sets the GraphNode Shape and Style from the current Status,
 // so diagram export (DOT/Mermaid/D2) automatically reflects the activity state.

@@ -49,6 +49,7 @@ func NewDependencyTree() *DependencyTree {
 // newActivityNode creates a new ActivityNode with pending status.
 func newActivityNode(id ActivityID, name string) *ActivityNode {
 	a := NewActivity(string(id), name)
+
 	return &ActivityNode{
 		Activity:    *a,
 		Children:    make([]*ActivityNode, 0),
