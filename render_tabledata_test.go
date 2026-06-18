@@ -268,7 +268,7 @@ func TestRenderTableData_ValidateRejectsFooterMismatch(t *testing.T) {
 	testhelpers.AssertErrorContains(t, err, "footer column count", "RenderTableData footer mismatch")
 }
 
-func TestRegisterTableDataMarshaler_ConcurrentAccess(t *testing.T) {
+func TestRegisterTableDataRenderer_ConcurrentAccess(t *testing.T) {
 	t.Parallel()
 
 	const goroutines = 100
@@ -289,7 +289,7 @@ func TestRegisterTableDataMarshaler_ConcurrentAccess(t *testing.T) {
 		go func() {
 			defer wg.Done()
 
-			_, _ = getTableDataMarshaler(Format("race-test-" + strconv.Itoa(i)))
+			_, _ = getTableDataRenderer(Format("race-test-" + strconv.Itoa(i)))
 		}()
 	}
 
@@ -301,7 +301,7 @@ func TestRegisteredTableDataFormats(t *testing.T) {
 
 	formats := RegisteredTableDataFormats()
 
-	// Root init() registers Markdown and Tree as TableData marshalers.
+	// Root init() registers Markdown and Tree as TableData renderers.
 	for _, exp := range []Format{FormatMarkdown, FormatTree} {
 		if !slices.Contains(formats, exp) {
 			t.Errorf("expected format %q to be registered, but it was not. Registered: %v", exp, formats)
@@ -314,7 +314,7 @@ func TestRegisteredAnyDataFormats(t *testing.T) {
 
 	formats := RegisteredAnyDataFormats()
 
-	// Root does not register any any-data marshalers in init(); this should
+	// Root does not register any any-data renderers in init(); this should
 	// return an empty slice (or whatever sub-modules have registered).
 	// Just verify the call is safe and returns no duplicates.
 	seen := make(map[Format]bool, len(formats))

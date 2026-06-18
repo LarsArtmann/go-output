@@ -275,15 +275,15 @@ All three embed `GraphRendererState`, honor `GraphStyle` for per-node colors, an
 
 The **rendered output** is a tree, yes. But "just a fancy tree" undersells what makes it NOM-style rather than a live-re-rendering of `output.TreeRenderer`. nom/ and root's `tree` renderer share the _word_ "tree" but **share no types and no code path**:
 
-| Concern             | Root `tree` format                  | `nom/`                                                                                                            |
-| ------------------- | ----------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| Data source         | Static `*output.TreeNode` graph     | Live `nom.Event` stream (`EventSubscriber.OnEvent`)                                                               |
-| Node type           | `output.TreeNode`                   | `nom.ActivityNode` (separate type, no embedding, no conversion path)                                              |
-| Ordering            | Insertion order                     | **Self-resorting**: Failed > Running > Paused > Pending > Completed; ties by elapsed-then-ID (`tree_priority.go`) |
-| Time-awareness      | None                                | Persistent cross-run CSV at `~/.cache/nom-timing.csv`; **median** of last ≤10 runs predicts pending durations     |
-| State model         | Single (`TreeNode`)                 | **Two**, synced: flat `ActivityDisplayState` + hierarchical `ActivityNode` (`SyncActivityTimingToTree`)           |
-| Lifecycle           | One-shot `Render() (string, error)` | `InlineRenderer` with Start/Stop/Refresh, ANSI cursor-up redraw, 1s max-frame timer                               |
-| Package dep on root | —                                   | **None** (cannot import `output` — would add transitive deps to nom's closure)                                    |
+| Concern             | Root `tree` format                  | `nom/`                                                                                                                                                                                                       |
+| ------------------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Data source         | Static `*output.TreeNode` graph     | Live `nom.Event` stream (`EventSubscriber.OnEvent`)                                                                                                                                                          |
+| Node type           | `output.TreeNode`                   | `nom.ActivityNode` (separate type, no embedding, no conversion path)                                                                                                                                         |
+| Ordering            | Insertion order                     | **Self-resorting**: Failed > Running > Paused > Pending > Completed; ties by elapsed-then-ID (`tree_priority.go`)                                                                                            |
+| Time-awareness      | None                                | Persistent cross-run CSV at `~/.cache/nom-timing.csv`; **median** of last ≤10 runs predicts pending durations                                                                                                |
+| State model         | Single (`TreeNode`)                 | `ActivityNode` embeds `Activity` (which embeds `output.GraphNode`); subscriber still holds a parallel `ActivityDisplayState` map bridged by `SyncActivityTimingToTree` (full unification tracked in ADR 007) |
+| Lifecycle           | One-shot `Render() (string, error)` | `InlineRenderer` with Start/Stop/Refresh, ANSI cursor-up redraw, 1s max-frame timer                                                                                                                          |
+| Package dep on root | —                                   | **Yes** — nom/ imports `output` for `GraphNode`/`GraphEdge`/`GraphStyle` types (ADR 007), enabling live diagram export via `Store()`. Adds only stdlib-like deps (branded-id, enum).                         |
 
 Strip the timing cache and the priority resorting and yes, you'd be left with a fancy real-time tree. Those two features — **time prediction** and **adaptive ordering** — are what make it NOM.
 
@@ -292,7 +292,7 @@ Strip the timing cache and the priority resorting and yes, you'd be left with a 
 Event-driven; no Bubble Tea dependency. Three layers:
 
 - **Ingestion** — `nom.Event` / `nom.EventSubscriber` (`OnEvent`) is the integration contract. Event types are the `nom.Event*` constants (`EventWorkflowStarted`, `EventActivityStarted`, `EventActivityCompleted`, `EventActivityFailed`, …). `NOMStyleSubscriber` reads payloads via type-assertion accessor interfaces (`WorkflowEventAccessor`, `ActivityEventAccessor`, `DurationAccessor`, `ErrorAccessor`) so it never couples to a concrete event struct.
-- **State** — `NOMStyleSubscriber` owns the activity map, the `DependencyTree`, and the `TimingCache` under one `sync.RWMutex`. `ActivityDisplayState` is the flat record of record; `ActivityNode` is the derived tree view; both carry the shared `DisplayState` (status, symbol, color, timing).
+- **State** — `NOMStyleSubscriber` owns the activity map, the `DependencyTree`, and the `TimingCache` under one `sync.RWMutex`. `ActivityNode` embeds the unified `Activity` type (which embeds `output.GraphNode`, so any `GraphRenderer` can export live progress as DOT/Mermaid/D2/PlantUML via `Store()`). The legacy `ActivityDisplayState` map remains the subscriber's primary store, bridged to tree nodes by `SyncActivityTimingToTree`; eliminating that bridge is the remaining ADR 007 work.
 - **Rendering** — `DependencyTree` renders the priority-sorted hierarchy; `InlineRenderer` does the in-place ANSI redraw **without** alt-screen takeover (`Refresh()` for on-demand updates, terminal-width-aware truncation, cursor hide/show lifecycle).
 
 ### tui/ — Bubble Tea interactive TUI (depends on nom/)

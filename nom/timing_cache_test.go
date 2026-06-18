@@ -15,6 +15,21 @@ func newTestTimingCache(path string, loaded bool) *TimingCache {
 	}
 }
 
+// newTempTimingCache returns a TimingCache backed by a per-test temp directory,
+// so Record()/saveAsync() writes never touch the real ~/.cache/nom-timing.csv.
+// It also waits for any pending async saves on cleanup to avoid goroutine leaks.
+func newTempTimingCache(t *testing.T) *TimingCache {
+	t.Helper()
+	tc := &TimingCache{
+		cache:    make(map[string][]time.Duration),
+		filePath: filepath.Join(t.TempDir(), cacheFilename),
+		loaded:   true,
+	}
+	t.Cleanup(tc.waitPendingSaves)
+
+	return tc
+}
+
 // assertCacheFileExists fails the test if path does not exist.
 func assertCacheFileExists(t *testing.T, path, message string) {
 	t.Helper()
@@ -44,7 +59,7 @@ func TestNewTimingCache(t *testing.T) {
 func TestTimingCache_RecordAndGetMedian(t *testing.T) {
 	t.Parallel()
 
-	tc := NewTimingCache()
+	tc := newTempTimingCache(t)
 
 	tc.Record("build", 5*time.Second)
 	tc.Record("build", 3*time.Second)
@@ -58,7 +73,7 @@ func TestTimingCache_RecordAndGetMedian(t *testing.T) {
 func TestTimingCache_GetMedian_RobustToOutlier(t *testing.T) {
 	t.Parallel()
 
-	tc := NewTimingCache()
+	tc := newTempTimingCache(t)
 
 	tc.Record("build", 3*time.Second)
 	tc.Record("build", 3*time.Second)
@@ -86,7 +101,7 @@ func TestTimingCache_GetMedian_NoHistory(t *testing.T) {
 func TestTimingCache_GetAll(t *testing.T) {
 	t.Parallel()
 
-	tc := NewTimingCache()
+	tc := newTempTimingCache(t)
 	tc.Record("build", 2*time.Second)
 	tc.Record("test", 4*time.Second)
 
@@ -99,7 +114,7 @@ func TestTimingCache_GetAll(t *testing.T) {
 func TestTimingCache_GetHistory(t *testing.T) {
 	t.Parallel()
 
-	tc := NewTimingCache()
+	tc := newTempTimingCache(t)
 	tc.Record("build", 1*time.Second)
 	tc.Record("build", 2*time.Second)
 
@@ -130,7 +145,7 @@ func TestTimingCache_GetHistory_NonExistent(t *testing.T) {
 func TestTimingCache_Clear(t *testing.T) {
 	t.Parallel()
 
-	tc := NewTimingCache()
+	tc := newTempTimingCache(t)
 	tc.Record("build", 5*time.Second)
 	tc.Clear()
 
@@ -142,7 +157,7 @@ func TestTimingCache_Clear(t *testing.T) {
 func TestTimingCache_Remove(t *testing.T) {
 	t.Parallel()
 
-	tc := NewTimingCache()
+	tc := newTempTimingCache(t)
 	tc.Record("build", 5*time.Second)
 	tc.remove("build")
 
@@ -154,7 +169,7 @@ func TestTimingCache_Remove(t *testing.T) {
 func TestTimingCache_MaxEntries(t *testing.T) {
 	t.Parallel()
 
-	tc := NewTimingCache()
+	tc := newTempTimingCache(t)
 
 	for i := range 15 {
 		tc.Record("build", time.Duration(i+1)*time.Second)

@@ -191,7 +191,7 @@ func (dt *DependencyTree) renderLine(entry visibleEntry, maxWidth int) string {
 	symbol := node.Symbol
 	color := node.Color
 
-	if isPhaseNode(node) {
+	if node.IsPhase() {
 		symbol = SymbolPhase
 		color = ColorPhase
 	}
@@ -274,7 +274,7 @@ func (dt *DependencyTree) RenderNode(node *ActivityNode, visibleNodes []*Activit
 	symbol := node.Symbol
 	color := node.Color
 
-	if isPhaseNode(node) {
+	if node.IsPhase() {
 		symbol = SymbolPhase
 		color = ColorPhase
 	}
@@ -303,6 +303,9 @@ func activityNodeStyle(color color.Color) lipgloss.Style {
 		Inline(true)
 }
 
-func isPhaseNode(node *ActivityNode) bool {
-	return strings.HasPrefix(node.ID.Get(), "phase:")
+// IsPhase reports whether this node represents a workflow phase. Phase
+// activity IDs follow the "phase:" prefix convention; such nodes render with
+// the phase symbol/color instead of the activity-status-derived styling.
+func (n *ActivityNode) IsPhase() bool {
+	return strings.HasPrefix(n.ID.Get(), "phase:")
 }

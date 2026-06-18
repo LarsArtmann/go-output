@@ -48,19 +48,19 @@ diagram, _ := dot.Render()
 
 ## Implementation Status
 
-| Component                                      | Status                        |
-| ---------------------------------------------- | ----------------------------- |
-| `Activity` type (embeds GraphNode)             | ✅ Done                       |
-| `ActivityStatus.NodeShape()` / `.GraphStyle()` | ✅ Done                       |
-| `ActivityStore` with `Nodes()`/`Edges()`       | ✅ Done                       |
-| `ActivityNode` embeds `Activity`               | ✅ Done                       |
-| `MultiSubscriber` fanout                       | ✅ Done                       |
-| `ActivityStore` wired into subscriber          | ✅ Done (bridge sync)         |
-| Diagram export tests                           | ✅ Done (3 tests, race-clean) |
-| `ActivityDisplayState` → `Activity` migration  | 🔲 Future sprint              |
-| `SyncActivityTimingToTree` elimination         | 🔲 Future sprint              |
-| `InlineRenderer.Render()` contract fix (M4)    | 🔲 Future sprint              |
-| `tui/` migration to new types                  | 🔲 Future sprint              |
+| Component                                      | Status                              |
+| ---------------------------------------------- | ----------------------------------- |
+| `Activity` type (embeds GraphNode)             | ✅ Done                             |
+| `ActivityStatus.NodeShape()` / `.GraphStyle()` | ✅ Done                             |
+| `ActivityStore` with `Nodes()`/`Edges()`       | ✅ Done                             |
+| `ActivityNode` embeds `Activity`               | ✅ Done                             |
+| `MultiSubscriber` fanout                       | ✅ Done                             |
+| `ActivityStore` wired into subscriber          | ✅ Done (bridge sync)               |
+| Diagram export tests                           | ✅ Done (3 tests, race-clean)       |
+| `ActivityDisplayState` → `Activity` migration  | 🔲 Future sprint                    |
+| `SyncActivityTimingToTree` elimination         | 🔲 Future sprint                    |
+| `InlineRenderer.Render()` contract fix (M4)    | ✅ Done — `Draw()` / `RenderString` |
+| `tui/` migration to new types                  | 🔲 Future sprint                    |
 
 ## Consequences
 

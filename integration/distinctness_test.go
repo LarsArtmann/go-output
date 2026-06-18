@@ -2,7 +2,8 @@
 package integration
 
 import (
-	"reflect"
+	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/larsartmann/go-output"
@@ -33,10 +34,10 @@ func TestActivityNodeDistinctFromTreeNode(t *testing.T) {
 	_, _ = nomNode, rootNode
 
 	// The real assertion: distinct type names. If they were the same type,
-	// reflect.TypeOf would match. They must not.
-	nomType := reflect.TypeFor[nom.ActivityNode]().String()
+	// the formatted names would match. They must not.
+	nomType := fmt.Sprintf("%T", nom.ActivityNode{})
+	rootType := fmt.Sprintf("%T", output.TreeNode{})
 
-	rootType := reflect.TypeFor[output.TreeNode]().String()
 	if nomType == rootType {
 		t.Fatalf(
 			"nom.ActivityNode and output.TreeNode resolved to the same type %q — C1 split-brain regression",
@@ -45,7 +46,7 @@ func TestActivityNodeDistinctFromTreeNode(t *testing.T) {
 	}
 
 	// The nom type must not even be named "TreeNode" anymore.
-	if nomType == "TreeNode" {
+	if strings.HasSuffix(nomType, "TreeNode") {
 		t.Errorf("nom dependency-tree node is named %q — should be ActivityNode (C1)", nomType)
 	}
 }

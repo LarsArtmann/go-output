@@ -21,20 +21,20 @@ type RenderOptions struct {
 // TableDataRenderer renders TableData in a specific format to a writer.
 type TableDataRenderer func(w io.Writer, data *TableData, opts RenderOptions) error
 
-//nolint:gochecknoglobals // Registry for TableData marshalers, populated by sub-module init().
+//nolint:gochecknoglobals // Registry for TableData renderers, populated by sub-module init().
 var tableDataRegistry = newFormatRegistry[TableDataRenderer]()
 
-// RegisterTableDataRenderer registers a marshaler for a format.
+// RegisterTableDataRenderer registers a renderer for a format.
 // Sub-modules call this from their init() to enable RenderTableData dispatch.
-func RegisterTableDataRenderer(format Format, marshaler TableDataRenderer) {
-	tableDataRegistry.register(format, marshaler)
+func RegisterTableDataRenderer(format Format, renderer TableDataRenderer) {
+	tableDataRegistry.register(format, renderer)
 }
 
-func getTableDataMarshaler(format Format) (TableDataRenderer, bool) {
+func getTableDataRenderer(format Format) (TableDataRenderer, bool) {
 	return tableDataRegistry.get(format)
 }
 
-//nolint:gochecknoinits // Registers Markdown and Tree TableData marshalers for registry-based dispatch.
+//nolint:gochecknoinits // Registers Markdown and Tree TableData renderers for registry-based dispatch.
 func init() {
 	RegisterTableDataRenderer(FormatMarkdown, renderMarkdownTableData)
 	RegisterTableDataRenderer(FormatTree, renderTreeTableData)
@@ -58,7 +58,7 @@ func RenderTableData(data *TableData, format Format, opts RenderOptions) error {
 		w = os.Stdout
 	}
 
-	if m, ok := getTableDataMarshaler(format); ok {
+	if m, ok := getTableDataRenderer(format); ok {
 		return m(w, data, opts)
 	}
 
@@ -123,41 +123,41 @@ func renderTreeTableData(w io.Writer, data *TableData, opts RenderOptions) error
 // AnyDataRenderer renders arbitrary data (any) in a specific format to a writer.
 type AnyDataRenderer func(w io.Writer, data any, opts RenderOptions) error
 
-//nolint:gochecknoglobals // Registry for any-data marshalers, populated by sub-module init().
+//nolint:gochecknoglobals // Registry for any-data renderers, populated by sub-module init().
 var anyDataRegistry = newFormatRegistry[AnyDataRenderer]()
 
-// RegisterAnyDataRenderer registers a marshaler for arbitrary (non-TableData) data.
+// RegisterAnyDataRenderer registers a renderer for arbitrary (non-TableData) data.
 // Sub-modules call this from their init() to enable RenderAnyData dispatch.
-func RegisterAnyDataRenderer(format Format, marshaler AnyDataRenderer) {
-	anyDataRegistry.register(format, marshaler)
+func RegisterAnyDataRenderer(format Format, renderer AnyDataRenderer) {
+	anyDataRegistry.register(format, renderer)
 }
 
-func getAnyDataMarshaler(format Format) (AnyDataRenderer, bool) {
+func getAnyDataRenderer(format Format) (AnyDataRenderer, bool) {
 	return anyDataRegistry.get(format)
 }
 
 // RenderAnyData renders arbitrary data in the given format and writes to w (or os.Stdout).
 // Supports formats that registered an AnyDataRenderer (typically JSON, YAML, TOML).
-// Returns UnsupportedFormatError if no marshaler is registered for the format.
+// Returns UnsupportedFormatError if no renderer is registered for the format.
 func RenderAnyData(data any, format Format, opts RenderOptions) error {
 	w := opts.Writer
 	if w == nil {
 		w = os.Stdout
 	}
 
-	if m, ok := getAnyDataMarshaler(format); ok {
+	if m, ok := getAnyDataRenderer(format); ok {
 		return m(w, data, opts)
 	}
 
 	return &UnsupportedFormatError{Format: format}
 }
 
-// RegisteredTableDataFormats returns all formats with registered TableDataMarshalers.
+// RegisteredTableDataFormats returns all formats with registered TableDataRenderers.
 func RegisteredTableDataFormats() []Format {
 	return tableDataRegistry.formats()
 }
 
-// RegisteredAnyDataFormats returns all formats with registered AnyDataMarshalers.
+// RegisteredAnyDataFormats returns all formats with registered AnyDataRenderers.
 func RegisteredAnyDataFormats() []Format {
 	return anyDataRegistry.formats()
 }

@@ -1,24 +1,24 @@
 # TODO_LIST.md — go-output
 
 **Last updated:** 2026-06-18
-**Open items:** 3
-**Blocked:** 1 (needs owner decision)
+**Open items:** 2
+**Blocked:** 2 (needs owner decision)
 
 ---
 
 ## Open Items
 
-| #   | Task                                                                                                                                            | Effort | Status                      |
-| --- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------ | --------------------------- |
-| M4  | **Rename non-canonical Render methods** — `InlineRenderer.Render()` → `Draw()`, `DependencyTree.Render(h)` → `Format(h)`. Pure naming refactor. | Medium | Open                        |
-| 14  | **Community: Post to r/golang, submit to Awesome Go**                                                                                           | Low    | Open (needs owner account)  |
-| 16  | **Cut `v1.0.0` tag** — API declared frozen/ready (ADR 006), still at v0.12.x                                                                    | Low    | Open (needs owner decision) |
+| #   | Task                                                                         | Effort | Status                      |
+| --- | ---------------------------------------------------------------------------- | ------ | --------------------------- |
+| 14  | **Community: Post to r/golang, submit to Awesome Go**                        | Low    | Open (needs owner account)  |
+| 16  | **Cut `v1.0.0` tag** — API declared frozen/ready (ADR 006), still at v0.12.x | Low    | Open (needs owner decision) |
 
 ### Blocked — Needs Owner Decision
 
 | #   | Question                                                                                                                                                                                                                                                                 |
 | --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | 15  | **Should `TableData` use exported fields or getters for v1?** Current: both exist (`Headers` + `GetHeaders()`). Option A: exported fields only. Option B: unexported + validated setters. Option C: keep both for v0.x. Affects every consumer; v1 stability commitment. |
+| O8  | **Keep standalone `ActivityStore` or remove (YAGNI)?** Only used in tests; subscriber projects `ActivityReader` directly. Keep if replay/file-load use cases are real; else delete.                                                                                      |
 
 ---
 
@@ -57,6 +57,10 @@
 | No bridge between D2Direction and RankDir                         | **Fixed** — added `output.Direction` (M7)                                    |
 | D2NodeID canonical import path undocumented                       | **Fixed** — doc comment added (M6)                                           |
 | `Marshaler` terminology inconsistent with `Renderer`              | **Fixed** — renamed to `TableDataRenderer`/`AnyDataRenderer` (#12)           |
+| M4: `Render()` name collision (InlineRenderer/DependencyTree)     | **Fixed** — `Draw()` / `RenderString`/`RenderWithWidth`; zero NOTE markers   |
+| `reflect` depguard violation in integration tests                 | **Fixed** — replaced with `fmt.Sprintf("%T")` (no reflect import)            |
+| Stale `getTableDataMarshaler` naming                              | **Fixed** — renamed to `getTableDataRenderer`/`getAnyDataRenderer`           |
+| Nom timing cache tests wrote to real `~/.cache`                   | **Fixed** — `newTempTimingCache(t)` uses `t.TempDir()` + cleanup wait        |
 | #8: `HandleError` → `Must` suggestion                             | **Won't-fix** — `HandleError` is honest; `Must` implies panic                |
 
 ---
