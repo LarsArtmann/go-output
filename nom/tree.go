@@ -1,6 +1,7 @@
 package nom
 
 import (
+	"cmp"
 	"slices"
 	"sync"
 )
@@ -62,6 +63,13 @@ func nodeHasID(id ActivityID) func(*ActivityNode) bool {
 	return func(c *ActivityNode) bool {
 		return c.ID.Get() == string(id)
 	}
+}
+
+// sortNodesByID sorts a slice of ActivityNode in place by ID for deterministic display order.
+func sortNodesByID(nodes []*ActivityNode) {
+	slices.SortStableFunc(nodes, func(a, b *ActivityNode) int {
+		return cmp.Compare(a.ID.Get(), b.ID.Get())
+	})
 }
 
 // hasChild returns true if this node already has a child with the given activity ID.
