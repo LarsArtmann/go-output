@@ -61,7 +61,7 @@ func TestDependencyTreeRenderGolden_PhaseSteps(t *testing.T) {
 	setStatusWithElapsed(dt, ActivityID("lint"), ActivityStatusPending, SymbolPaused, ColorPaused, time.Time{}, 0)
 	setStatusWithElapsed(dt, ActivityID("deploy"), ActivityStatusFailed, SymbolFailed, ColorFailed, now, 1*time.Second)
 
-	got := dt.Render(10)
+	got := dt.RenderString(10)
 	golden.RequireEqual(t, got)
 }
 
@@ -81,7 +81,7 @@ func TestDependencyTreeRenderGolden_SecondaryDeps(t *testing.T) {
 	setStatusWithElapsed(dt, ActivityID("step1"), ActivityStatusCompleted, SymbolCompleted, ColorCompleted, now, 0)
 	setStatusWithElapsed(dt, ActivityID("step2"), ActivityStatusPending, SymbolPaused, ColorPaused, time.Time{}, 0)
 
-	got := dt.Render(10)
+	got := dt.RenderString(10)
 	golden.RequireEqual(t, got)
 }
 
@@ -129,7 +129,7 @@ func TestDependencyTreeRenderGolden_MixedStates(t *testing.T) {
 	setStatusWithElapsed(dt, ActivityID("failed"), ActivityStatusFailed, SymbolFailed, ColorFailed, now, 1*time.Second)
 	setStatusWithElapsed(dt, ActivityID("pending"), ActivityStatusPending, SymbolPaused, ColorPaused, time.Time{}, 0)
 
-	got := dt.Render(10)
+	got := dt.RenderString(10)
 	golden.RequireEqual(t, got)
 }
 
@@ -150,7 +150,7 @@ func TestInlineRendererGolden_FirstFrame(t *testing.T) {
 	registerActivity(sub, ctx, ActivityID("test"), ActivityName("Run Tests"), "phase:build")
 	registerActivity(sub, ctx, ActivityID("lint"), ActivityName("Lint"), "phase:build")
 
-	renderer.Render()
+	renderer.Draw()
 
 	golden.RequireEqual(t, buf.String())
 }
@@ -171,12 +171,12 @@ func TestInlineRendererGolden_SecondFrame(t *testing.T) {
 	registerActivity(sub, ctx, ActivityID("compile"), ActivityName("Compile"), "phase:build")
 	registerActivity(sub, ctx, ActivityID("lint"), ActivityName("Lint"), "phase:build")
 
-	renderer.Render()
+	renderer.Draw()
 	buf.Reset()
 
 	sendActivityStarted(t, sub, ctx, ActivityID("compile"), ActivityName("Compile"))
 
-	renderer.Render()
+	renderer.Draw()
 
 	golden.RequireEqual(t, buf.String())
 }

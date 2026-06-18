@@ -233,7 +233,7 @@ func TestDependencyTree_Render(t *testing.T) {
 
 		dt := NewDependencyTree()
 
-		got := dt.Render(10)
+		got := dt.RenderString(10)
 		if got != msgNoActivitiesToDisplay {
 			t.Errorf("Render() on empty tree = %q, want %q", got, msgNoActivitiesToDisplay)
 		}
@@ -246,7 +246,7 @@ func TestDependencyTree_Render(t *testing.T) {
 		dt.AddActivity(ActivityID("a"), "Activity A", nil)
 		dt.UpdateActivityStatus(ActivityID("a"), ActivityStatusRunning, SymbolRunning, ColorRunning, time.Now(), 0)
 
-		got := dt.Render(10)
+		got := dt.RenderString(10)
 		if got == "" {
 			t.Error("Render() should not return empty string for non-empty tree")
 		}
@@ -262,7 +262,7 @@ func TestDependencyTree_Render(t *testing.T) {
 			dt.AddActivity(id, string(rune('a'+i)), nil)
 		}
 
-		got := dt.Render(3)
+		got := dt.RenderString(3)
 		if got == "" {
 			t.Error("Render() should not return empty")
 		}

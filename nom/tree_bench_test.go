@@ -57,7 +57,7 @@ func BenchmarkDependencyTree_Render(b *testing.B) {
 			b.ResetTimer()
 
 			for b.Loop() {
-				if dt.Render(maxVisible) == "" {
+				if dt.RenderString(maxVisible) == "" {
 					b.Fatal("Render() should produce output")
 				}
 			}

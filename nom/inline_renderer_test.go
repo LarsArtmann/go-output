@@ -23,7 +23,7 @@ func TestInlineRenderer_FirstRender_NoAnsiEscapes(t *testing.T) {
 	_ = sendWorkflowStarted(sub, ctx, WorkflowID("wf-1"), "")
 	sendActivityStarted(t, sub, ctx, ActivityID("step1"), ActivityName("Step 1"))
 
-	renderer.Render()
+	renderer.Draw()
 
 	output := buf.String()
 	if output == "" {
@@ -48,10 +48,10 @@ func TestInlineRenderer_SubsequentRender_MovesCursor(t *testing.T) {
 	_ = sendWorkflowStarted(sub, ctx, WorkflowID("wf-1"), "")
 	sendActivityStarted(t, sub, ctx, ActivityID("step1"), ActivityName("Step 1"))
 
-	renderer.Render()
+	renderer.Draw()
 	buf.Reset()
 
-	renderer.Render()
+	renderer.Draw()
 
 	output := buf.String()
 	if !strings.Contains(output, "\033[") || !strings.Contains(output, "A") {
@@ -72,7 +72,7 @@ func TestInlineRenderer_Finish_ClearsFrame(t *testing.T) {
 	_ = sendWorkflowStarted(sub, ctx, WorkflowID("wf-1"), "")
 	sendActivityStarted(t, sub, ctx, ActivityID("step1"), ActivityName("Step 1"))
 
-	renderer.Render()
+	renderer.Draw()
 	buf.Reset()
 
 	renderer.Finish(nil)
@@ -99,7 +99,7 @@ func TestInlineRenderer_Finish_WithError(t *testing.T) {
 	ctx := context.Background()
 	_ = sendWorkflowStarted(sub, ctx, WorkflowID("wf-1"), "")
 
-	renderer.Render()
+	renderer.Draw()
 	buf.Reset()
 
 	renderer.Finish(errors.New("test failure"))
@@ -124,7 +124,7 @@ func TestInlineRenderer_SummaryBar(t *testing.T) {
 	sendActivityStarted(t, sub, ctx, ActivityID("step1"), ActivityName("Step 1"))
 
 	renderer.SetStartTime(time.Now().Add(-5 * time.Second))
-	renderer.Render()
+	renderer.Draw()
 
 	output := buf.String()
 	if !strings.Contains(output, "╭") {
@@ -147,7 +147,7 @@ func TestInlineRenderer_NilSubscriber(t *testing.T) {
 
 	renderer := NewInlineRenderer(nil, &buf, 10)
 
-	renderer.Render()
+	renderer.Draw()
 
 	if buf.String() != "" {
 		t.Error("render with nil subscriber should produce no output")
@@ -163,7 +163,7 @@ func TestInlineRenderer_EmptyTree(t *testing.T) {
 
 	renderer := NewInlineRenderer(sub, &buf, 10)
 
-	renderer.Render()
+	renderer.Draw()
 
 	if buf.String() != "" {
 		t.Error("render with empty tree should produce no output")
@@ -251,7 +251,7 @@ func TestInlineRenderer_MaxHeightZero_UsesFallback(t *testing.T) {
 			ActivityName(fmt.Sprintf("Step %d", i)))
 	}
 
-	renderer.Render()
+	renderer.Draw()
 
 	output := buf.String()
 

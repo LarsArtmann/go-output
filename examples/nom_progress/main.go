@@ -96,9 +96,9 @@ func main() {
 	fmt.Println("=== NOM Dependency Tree (priority-ordered) ===")
 	fmt.Println("Failed/Running activities appear first when height is limited.")
 
-	fmt.Println(tree.Render(3))
+	fmt.Println(tree.RenderString(3))
 	fmt.Println()
-	fmt.Println(tree.Render(20))
+	fmt.Println(tree.RenderString(20))
 
 	counts := subscriber.GetActivityCounts()
 	fmt.Printf("\nRunning: %d, Completed: %d, Failed: %d, Pending: %d\n",

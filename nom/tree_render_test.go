@@ -31,7 +31,7 @@ func TestDependencyTree_TreePrefix_RootNode(t *testing.T) {
 	dt.UpdateActivityStatus(ActivityID("root"), ActivityStatusRunning, SymbolRunning, ColorRunning, time.Now(), 0)
 	dt.UpdateActivityStatus(ActivityID("child"), ActivityStatusPending, SymbolPaused, ColorPaused, time.Time{}, 0)
 
-	got := dt.Render(10)
+	got := dt.RenderString(10)
 	if got == "" {
 		t.Error("Render() should produce output")
 	}
@@ -44,7 +44,7 @@ func TestDependencyTree_Render_PausedStatus(t *testing.T) {
 	dt.AddActivity(ActivityID("a"), "A", nil)
 	dt.UpdateActivityStatus(ActivityID("a"), ActivityStatusPaused, SymbolPaused, ColorPaused, time.Now(), 0)
 
-	got := dt.Render(10)
+	got := dt.RenderString(10)
 	if got == "" {
 		t.Error("Render() should produce output for paused status")
 	}
@@ -61,7 +61,7 @@ func TestDependencyTree_Render_FailedPriority(t *testing.T) {
 	dt.UpdateActivityStatus(ActivityID("b"), ActivityStatusFailed, SymbolFailed, ColorFailed, time.Now(), 0)
 	dt.UpdateActivityStatus(ActivityID("c"), ActivityStatusPending, SymbolPaused, ColorPaused, time.Time{}, 0)
 
-	got := dt.Render(3)
+	got := dt.RenderString(3)
 	if got == "" {
 		t.Error("Render() should produce output")
 	}
@@ -105,7 +105,7 @@ func TestDependencyTree_Render_SecondaryDependencies(t *testing.T) {
 	dt.AddActivity(ActivityID("step1"), "Step1", []ActivityID{"phase"})
 	dt.AddActivity(ActivityID("step2"), "Step2", []ActivityID{"phase", "step1"})
 
-	got := dt.Render(10)
+	got := dt.RenderString(10)
 	if got == "" {
 		t.Fatal("Render() should produce output")
 	}
@@ -130,7 +130,7 @@ func TestDependencyTree_Render_PhaseStyling(t *testing.T) {
 	now := time.Now()
 	dt.UpdateActivityStatus(ActivityID("phase:build"), ActivityStatusRunning, SymbolRunning, ColorRunning, now, 0)
 
-	got := dt.Render(10)
+	got := dt.RenderString(10)
 	if got == "" {
 		t.Fatal("Render() should produce output")
 	}
@@ -175,7 +175,7 @@ func TestDependencyTree_Render_PriorityOrdering(t *testing.T) {
 	setStatusWithElapsed(dt, ActivityID("lint"), ActivityStatusPending, SymbolPaused, ColorPaused, time.Time{}, 0)
 	setStatusWithElapsed(dt, ActivityID("deploy"), ActivityStatusFailed, SymbolFailed, ColorFailed, now, 1*time.Second)
 
-	got := dt.Render(10)
+	got := dt.RenderString(10)
 
 	// Children should appear in priority order: failed, running, pending, completed.
 	failedIdx := strings.Index(got, "Deploy")
@@ -195,7 +195,7 @@ func TestDependencyTree_Render_PriorityOrdering(t *testing.T) {
 	}
 
 	// With limited height, failed and running must survive over completed.
-	limited := dt.Render(3)
+	limited := dt.RenderString(3)
 	if !strings.Contains(limited, "Deploy") {
 		t.Errorf("limited render should keep failed activity, got:\n%s", limited)
 	}

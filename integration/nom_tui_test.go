@@ -92,7 +92,7 @@ func TestNOMSubscriber_Integration(t *testing.T) {
 			t.Errorf("pending = %d, want 0", counts.Pending)
 		}
 
-		rendered := tree.Render(10)
+		rendered := tree.RenderString(10)
 		if rendered == "" {
 			t.Error("tree render should not be empty")
 		}
@@ -127,7 +127,7 @@ func TestNOMDependencyTree_Integration(t *testing.T) {
 		mustUpdateActivityStatus(t, tree, nom.NewActivityID("grandchild"),
 			nom.ActivityStatusFailed, nom.SymbolFailed, nom.ColorFailed, time.Now(), 0)
 
-		rendered := tree.Render(10)
+		rendered := tree.RenderString(10)
 		if rendered == "" {
 			t.Error("tree render should not be empty")
 		}

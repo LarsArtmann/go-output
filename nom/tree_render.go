@@ -8,15 +8,15 @@ import (
 	"github.com/charmbracelet/x/ansi"
 )
 
-// Render generates NOM-style tree rendering using depth-first forest walk.
+// RenderString generates NOM-style tree rendering as a string using depth-first forest walk.
 // Ports the algorithm from nix-output-monitor's showForest:
 // walks each root tree recursively, building proper box-drawing prefixes (├──, └──, │).
 //
 // If maxWidth is > 0, long activity lines are truncated with "…" so they fit.
-// NOTE(split-brain M4): This Render(maxHeight) signature differs from both
-// output.Renderer.Render() (string, error) and InlineRenderer.Render() (void).
-// Consider renaming to Format(maxHeight) in the next minor version.
-func (dt *DependencyTree) Render(maxHeight int) string {
+// Split-brain M4 resolved: renamed from Render(maxHeight) to distinguish from
+// the output.Renderer.Render() (string, error) contract. This method returns a
+// bare string (errors are encoded into the string itself, not returned separately).
+func (dt *DependencyTree) RenderString(maxHeight int) string {
 	return dt.RenderWithWidth(maxHeight, 0)
 }
 

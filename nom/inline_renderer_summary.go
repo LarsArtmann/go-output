@@ -36,7 +36,7 @@ func (r *InlineRenderer) Finish(workflowErr error) {
 	}
 
 	if tree != nil {
-		final := tree.Render(0)
+		final := tree.RenderString(0)
 		if final != msgNoActivitiesToDisplay {
 			r.write(final + "\n")
 		}

@@ -116,10 +116,11 @@ func (r *InlineRenderer) SetStartTime(t time.Time) {
 // Render redraws the dependency tree in-place. On the first call it just prints.
 // On subsequent calls it moves the cursor up to overwrite the previous frame.
 //
-// NOTE(split-brain M4): This method has a different signature than output.Renderer.Render()
-// (void return vs (string, error)). Consider renaming to Draw() in the next minor version
-// to reserve Render() for the output.Renderer contract project-wide.
-func (r *InlineRenderer) Render() {
+// Draw renders one frame to the configured io.Writer. Unlike output.Renderer.Render()
+// (which returns (string, error)), Draw writes directly to the writer and returns nothing —
+// it is an incremental terminal redraw, not a one-shot format render.
+// Split-brain M4 resolved: Render() is now reserved for the output.Renderer contract.
+func (r *InlineRenderer) Draw() {
 	if r.subscriber == nil {
 		return
 	}
@@ -264,11 +265,11 @@ func (r *InlineRenderer) refreshLoop(ctx context.Context, interval time.Duration
 	}
 }
 
-// renderAndNotify calls Render and, if a renderNotify channel is set,
+// renderAndNotify calls Draw and, if a renderNotify channel is set,
 // sends a non-blocking signal. This provides deterministic synchronization
 // for tests without affecting production behavior.
 func (r *InlineRenderer) renderAndNotify() {
-	r.Render()
+	r.Draw()
 
 	if r.renderNotify != nil {
 		select {
