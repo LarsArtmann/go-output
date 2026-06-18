@@ -105,12 +105,16 @@ func isTerminalByEnv(envVars ...string) bool {
 }
 
 // isNoColor reports whether color output should be suppressed via NO_COLOR or TERM=dumb.
-// Mirrors nom.detectNoColor — keep in sync.
+// Mirrors nom.detectNoColor — kept inline because nom/ cannot import root
+// (would add output + transitive deps to nom's closure). Keep in sync.
 func isNoColor() bool {
 	return os.Getenv("NO_COLOR") != "" ||
 		os.Getenv("TERM") == "dumb"
 }
 
+// isCI reports whether the process is running inside a CI environment.
+// Mirrors nom.detectNoColor's CI branch — kept inline for the same reason.
+// Keep in sync.
 func isCI() bool {
 	return os.Getenv("CI") != "" ||
 		os.Getenv("GITHUB_ACTIONS") != "" ||

@@ -88,8 +88,10 @@ func (r *InlineRenderer) SetAppName(name string) {
 	r.appName = name
 }
 
-// detectNoColor checks if color output should be suppressed.
-// Mirrors color.go isNoColor()+isCI()+isStdoutTerminal() — keep in sync.
+// detectNoColor reports whether color output should be suppressed in the
+// NOM inline renderer. Inlined from output.isNoColor() + isCI() because
+// nom/ cannot import root (would add output + transitive deps to nom's
+// closure). Mirrors color.go isNoColor()+isCI()+isStdoutTerminal() — keep in sync.
 func detectNoColor() bool {
 	if os.Getenv("NO_COLOR") != "" {
 		return true

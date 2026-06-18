@@ -331,17 +331,27 @@ This ensures `go get github.com/larsartmann/go-output/table@vX.Y.Z` resolves cor
 
 ## Code Duplication Policy
 
-**Updated:** 2026-06-17
+**Updated:** 2026-06-18
 
 At `art-dupl -t 50` (industry standard), this codebase has **zero actionable clones**.
 
-At `art-dupl -t 25` (moderate), **3 clone groups** remain. All 3 are idiomatic test code with different data values that extracting would harm readability:
+At `art-dupl -t 25` (moderate), **6 clone groups** remain. All are explicitly accepted per the dedup-skill decision checklist:
 
-| File                                           | Pattern                                                                 | Why accepted                                                                                                  |
-| ---------------------------------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| `nom/tree_priority_test.go:38-45, 46-53`       | Table-driven test cases varying only `maxHeight` (100 vs 0)             | Table-driven test with same shape, different data — idiomatic Go test code                                    |
-| `testhelpers/helpers_test.go:264-268, 282-286` | `t.Run` subtests for `AssertLineCount` with different inputs            | Subtest boilerplate with different data — idiomatic Go test code                                              |
-| `tui/reporter_test.go:144-146, 180-182`        | Field assertions `if reporter.model.steps[0].Current != N` (N=1 vs N=3) | Verification of different expected values — idiomatic Go test code; abstraction would obscure the test intent |
+| File                                                              | Pattern                                                                                        | Why accepted                                                                                                                                                                                                                        |
+| ----------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `color.go:119-123` ↔ `nom/inline_renderer.go:104-108`             | CI env-var detection (`CI`, `GITHUB_ACTIONS`, `GITLAB_CI`, `JENKINS_URL`, `BUILDKITE`)         | Module boundary: `nom/` is intentionally minimal (lipgloss-only) and cannot import root without adding transitive deps. New `envdetect/` module would be over-abstraction for ~5 lines. Both copies documented with sync rationale. |
+| `examples/basic/renderers.go:22-25` ↔ `graph/bench_test.go:21-24` | `output.GraphEdge{From: NewBrandedID(...), To: NewBrandedID(...)}` struct literal              | Different intent: example constant (`Alpha → Beta`) vs benchmark fixture (self-loop `node → node`). Different files, different values, different purpose — extract would obscure both.                                              |
+| `nom/tree_priority_test.go:38-45, 46-53`                          | Table-driven test cases varying only `maxHeight` (100 vs 0)                                    | Table-driven test with same shape, different data — idiomatic Go test code                                                                                                                                                          |
+| `tui/event_sequence_test.go:77-81, 216-220`                       | `OnEvent(&testEvent{eventType: nom.EventActivityStarted, ...})` setup with different IDs/names | Per-test setup that differs by activity ID/name — idiomatic Go test code                                                                                                                                                            |
+| `testhelpers/helpers_test.go:264-268, 282-286`                    | `t.Run` subtests for `AssertLineCount` with different inputs                                   | Subtest boilerplate with different data — idiomatic Go test code                                                                                                                                                                    |
+| `tui/reporter_test.go:142-144, 178-180`                           | Field assertions `if reporter.model.steps[0].Current != N` (N=1 vs N=3)                        | Verification of different expected values — idiomatic Go test code; abstraction would obscure the test intent                                                                                                                       |
+
+**Recent refactor (2026-06-18):**
+
+- Exported `delimited.tableDataWriter` as `delimited.Writer` interface (type alias kept internally to avoid changing `marshalFromTableData` signature)
+- Removed duplicate `delimitedWriter` interface in `examples/basic/renderers.go` — now uses `delimited.Writer`
+- Extracted `alphaToBetaEdge` package var in `examples/basic/renderers.go` to consolidate 3 identical `output.GraphEdge{}` literals used across Mermaid and DOT renderers
+- Strengthened "keep in sync" comments on `color.go` / `nom/inline_renderer.go` to document the module-boundary rationale for the kept CI-detection duplication
 
 At `art-dupl -t 15` (aggressive), ~50 clone groups appear. These are categorized as:
 
@@ -364,4 +374,6 @@ At `art-dupl -t 15` (aggressive), ~50 clone groups appear. These are categorized
 - integration test helpers `startActivity`, `completeActivity`, `fireWorkflowStarted`, `mustUpdateActivityStatus` — package-private
 - d2 test helpers `newD2NodeID`, `newD2NodeLabel` (in `d2/helpers_test.go`) — eliminate `output.NewBrandedID[output.D2NodeIDBrand]("X")` boilerplate
 - `assertMapRow` lives in `integration/roundtrip_test.go` (package-private) — variadic key/value pair verifier for round-trip tests
+- `delimited.tableDataWriter` is a type alias for the exported `delimited.Writer` interface (keeps the unexported name for internal ergonomics while exposing the contract to callers like the examples module)
+- **CI/NO_COLOR env detection kept inline in both `color.go` and `nom/inline_renderer.go`** — the `nom/` module is intentionally lipgloss-only with no transitive deps on root, so creating a shared `envdetect/` module would add more complexity (17th module + go.work + flake.nix + docs churn) than the 5-line duplication saves
 - **Threshold 15 is too aggressive for action** — use t=30-40 for meaningful dedup work

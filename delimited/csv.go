@@ -78,14 +78,21 @@ func (c *CSVWriter) Error() error {
 	return c.writer.Error()
 }
 
-// tableDataWriter is the common interface for CSV and TSV writers used by marshalFromTableData.
-type tableDataWriter interface {
+// Writer is the common interface implemented by CSVWriter and TSVWriter.
+// It exposes the row-streaming API (header / row / footer) plus Flush and
+// Error for inspecting the underlying buffered writer.
+type Writer interface {
 	WriteHeader(cols []string) error
 	WriteRow(values []string) error
 	WriteFooter(values []string) error
 	Flush()
 	Error() error
 }
+
+// tableDataWriter is the unexported alias used internally so the
+// marshalFromTableData generic helper doesn't depend on the public Writer
+// type. tableDataWriter == delimited.Writer structurally; keep them in sync.
+type tableDataWriter = Writer
 
 // marshalFromTableData marshals TableData using any delimited writer (CSV or TSV).
 func marshalFromTableData(

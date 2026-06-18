@@ -17,6 +17,13 @@ import (
 	"github.com/larsartmann/go-output/table"
 )
 
+// alphaToBetaEdge is a sample graph edge shared by the Mermaid and DOT
+// renderers, demonstrating the same edge construction across formats.
+var alphaToBetaEdge = output.GraphEdge{
+	From: output.NewBrandedID[output.GraphNodeIDBrand]("Alpha"),
+	To:   output.NewBrandedID[output.GraphNodeIDBrand]("Beta"),
+}
+
 func renderTable(projects []Project) {
 	tbl := table.New(table.WithColorMode(colorMode))
 	tbl.SetHeaders("Name", "Health", "Complexity")
@@ -72,15 +79,7 @@ func renderTSV(projects []Project) {
 	renderDelimited(w, projects)
 }
 
-type delimitedWriter interface {
-	WriteHeader(cols []string) error
-	WriteRow(values []string) error
-	WriteFooter(values []string) error
-	Flush()
-	Error() error
-}
-
-func renderDelimited(w delimitedWriter, projects []Project) {
+func renderDelimited(w delimited.Writer, projects []Project) {
 	err := w.WriteHeader(projectHeaders)
 	if err != nil {
 		shared.HandleError(err)
@@ -207,14 +206,10 @@ func renderMermaid(projects []Project) {
 		})
 	}
 
-	renderer.AddEdge(output.GraphEdge{
-		From: output.NewBrandedID[output.GraphNodeIDBrand]("Alpha"),
-		To:   output.NewBrandedID[output.GraphNodeIDBrand]("Beta"),
-	})
-	renderer.AddEdge(output.GraphEdge{
-		From: output.NewBrandedID[output.GraphNodeIDBrand]("Alpha"),
-		To:   output.NewBrandedID[output.GraphNodeIDBrand]("Beta"),
-	})
+	// The same edge added twice demonstrates the DedupEdges() feature.
+	for range 2 {
+		renderer.AddEdge(alphaToBetaEdge)
+	}
 
 	// Removes the duplicate Alpha -> Beta edge before rendering.
 	renderer.DedupEdges()
@@ -241,10 +236,7 @@ func renderDOT(projects []Project) {
 		})
 	}
 
-	renderer.AddEdge(output.GraphEdge{
-		From: output.NewBrandedID[output.GraphNodeIDBrand]("Alpha"),
-		To:   output.NewBrandedID[output.GraphNodeIDBrand]("Beta"),
-	})
+	renderer.AddEdge(alphaToBetaEdge)
 
 	out, err := renderer.Render()
 	if err != nil {
