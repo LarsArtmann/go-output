@@ -202,10 +202,10 @@ func (m *ProgressModel) syncNOMSubscriber() {
 }
 
 func (m *ProgressModel) updateWorkflowCompletionState() {
-	running, completed, failed, _ := m.nomSubscriber.GetActivityCounts()
-	if failed > 0 {
+	counts := m.nomSubscriber.GetActivityCounts()
+	if counts.Failed > 0 {
 		m.workflowState = WorkflowStateErrored
-	} else if running == 0 && completed > 0 {
+	} else if counts.Running == 0 && counts.Completed > 0 {
 		m.workflowState = WorkflowStateCompleted
 	}
 }

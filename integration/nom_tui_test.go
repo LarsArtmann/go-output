@@ -75,21 +75,21 @@ func TestNOMSubscriber_Integration(t *testing.T) {
 			t.Error("build activity should be completed")
 		}
 
-		running, completed, failed, pending := subscriber.GetActivityCounts()
-		if running != 0 {
-			t.Errorf("running = %d, want 0", running)
+		counts := subscriber.GetActivityCounts()
+		if counts.Running != 0 {
+			t.Errorf("running = %d, want 0", counts.Running)
 		}
 
-		if completed != 1 {
-			t.Errorf("completed = %d, want 1", completed)
+		if counts.Completed != 1 {
+			t.Errorf("completed = %d, want 1", counts.Completed)
 		}
 
-		if failed != 0 {
-			t.Errorf("failed = %d, want 0", failed)
+		if counts.Failed != 0 {
+			t.Errorf("failed = %d, want 0", counts.Failed)
 		}
 
-		if pending != 0 {
-			t.Errorf("pending = %d, want 0", pending)
+		if counts.Pending != 0 {
+			t.Errorf("pending = %d, want 0", counts.Pending)
 		}
 
 		rendered := tree.Render(10)

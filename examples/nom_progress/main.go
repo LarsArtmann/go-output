@@ -100,11 +100,11 @@ func main() {
 	fmt.Println()
 	fmt.Println(tree.Render(20))
 
-	running, completed, failed, pending := subscriber.GetActivityCounts()
+	counts := subscriber.GetActivityCounts()
 	fmt.Printf("\nRunning: %d, Completed: %d, Failed: %d, Pending: %d\n",
-		running, completed, failed, pending)
+		counts.Running, counts.Completed, counts.Failed, counts.Pending)
 
-	summary := nom.GetActivitySummaryString(running, 0, 0, running+completed+failed+pending)
+	summary := nom.GetActivitySummaryString(counts.Running, 0, 0, counts.Total())
 	fmt.Printf("Summary: %s\n", summary)
 
 	_ = subscriber.OnEvent(ctx, &workflowEvent{

@@ -1,6 +1,8 @@
 package output
 
 import (
+	"slices"
+
 	"github.com/larsartmann/go-output/enum"
 )
 
@@ -86,13 +88,7 @@ var lineStyleValues = []LineStyle{
 
 // IsValid returns true if the LineStyle is a recognized value.
 func (l LineStyle) IsValid() bool {
-	for _, v := range lineStyleValues {
-		if l == v {
-			return true
-		}
-	}
-
-	return false
+	return slices.Contains(lineStyleValues, l)
 }
 
 // String returns the string representation of the LineStyle.

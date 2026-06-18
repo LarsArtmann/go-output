@@ -274,21 +274,21 @@ func TestProgressModel_GetActivityCounts_AllStatuses(t *testing.T) {
 
 	addTestActivity(model, "paused", "P", func(a *nom.ActivityDisplayState) { a.Status = nom.ActivityStatusPaused })
 
-	running, completed, failed, pending := model.getActivityCounts()
-	if running != 1 {
-		t.Errorf("running = %d, want 1", running)
+	counts := model.getActivityCounts()
+	if counts.Running != 1 {
+		t.Errorf("running = %d, want 1", counts.Running)
 	}
 
-	if completed != 1 {
-		t.Errorf("completed = %d, want 1", completed)
+	if counts.Completed != 1 {
+		t.Errorf("completed = %d, want 1", counts.Completed)
 	}
 
-	if failed != 1 {
-		t.Errorf("failed = %d, want 1", failed)
+	if counts.Failed != 1 {
+		t.Errorf("failed = %d, want 1", counts.Failed)
 	}
 
-	if pending != 1 {
-		t.Errorf("pending = %d, want 1 (paused counts as pending)", pending)
+	if counts.Pending != 1 {
+		t.Errorf("pending = %d, want 1 (paused counts as pending)", counts.Pending)
 	}
 }
 

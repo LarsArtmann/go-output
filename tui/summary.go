@@ -42,30 +42,30 @@ func buildUniversalSummary(
 }
 
 // buildActivityCountsSummary builds a summary string with activity counts using NOM symbols.
-func buildActivityCountsSummary(running, completed, failed, pending int) string {
+func buildActivityCountsSummary(counts nom.ActivityCounts) string {
 	var parts []string
-	if running > 0 {
-		parts = append(parts, fmt.Sprintf("%s%d", nom.SymbolRunning, running))
+	if counts.Running > 0 {
+		parts = append(parts, fmt.Sprintf("%s%d", nom.SymbolRunning, counts.Running))
 	}
 
-	if completed > 0 {
-		parts = append(parts, fmt.Sprintf("%s%d", nom.SymbolCompleted, completed))
+	if counts.Completed > 0 {
+		parts = append(parts, fmt.Sprintf("%s%d", nom.SymbolCompleted, counts.Completed))
 	}
 
-	if failed > 0 {
-		parts = append(parts, fmt.Sprintf("%s%d", nom.SymbolFailed, failed))
+	if counts.Failed > 0 {
+		parts = append(parts, fmt.Sprintf("%s%d", nom.SymbolFailed, counts.Failed))
 	}
 
-	if pending > 0 {
-		parts = append(parts, fmt.Sprintf("%s%d", nom.SymbolPaused, pending))
+	if counts.Pending > 0 {
+		parts = append(parts, fmt.Sprintf("%s%d", nom.SymbolPaused, counts.Pending))
 	}
 
 	return strings.Join(parts, " ")
 }
 
 // buildNOMSummary builds a NOM-style summary string.
-func buildNOMSummary(running, completed, failed, pending int, elapsed time.Duration) string {
-	summary := buildActivityCountsSummary(running, completed, failed, pending)
+func buildNOMSummary(counts nom.ActivityCounts, elapsed time.Duration) string {
+	summary := buildActivityCountsSummary(counts)
 	if summary != "" {
 		summary += " | "
 	}

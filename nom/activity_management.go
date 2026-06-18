@@ -4,27 +4,42 @@ import (
 	"time"
 )
 
+// ActivityCounts holds counts of activities grouped by status.
+type ActivityCounts struct {
+	Running   int
+	Completed int
+	Failed    int
+	Pending   int
+}
+
+// Total returns the sum of all activity counts.
+func (c ActivityCounts) Total() int {
+	return c.Running + c.Completed + c.Failed + c.Pending
+}
+
 // GetActivityCounts returns counts of activities by status.
-func (ns *NOMStyleSubscriber) GetActivityCounts() (running, completed, failed, pending int) {
+func (ns *NOMStyleSubscriber) GetActivityCounts() ActivityCounts {
 	ns.mu.RLock()
 	defer ns.mu.RUnlock()
+
+	var c ActivityCounts
 
 	for _, activity := range ns.activities {
 		switch activity.Status {
 		case ActivityStatusRunning:
-			running++
+			c.Running++
 		case ActivityStatusCompleted:
-			completed++
+			c.Completed++
 		case ActivityStatusFailed:
-			failed++
+			c.Failed++
 		case ActivityStatusPending:
-			pending++
+			c.Pending++
 		case ActivityStatusPaused:
-			pending++ // Paused activities counted as pending
+			c.Pending++ // Paused activities counted as pending
 		}
 	}
 
-	return running, completed, failed, pending
+	return c
 }
 
 // UpdateRunningActivityElapsed updates elapsed time for all currently running activities.

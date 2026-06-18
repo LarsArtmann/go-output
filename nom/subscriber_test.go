@@ -365,21 +365,21 @@ func TestNOMStyleSubscriber_GetActivityCounts(t *testing.T) {
 		aName:     ActivityName("Build"),
 	})
 
-	running, completed, failed, pending := ns.GetActivityCounts()
-	if running != 1 {
-		t.Errorf("running = %d, want 1", running)
+	counts := ns.GetActivityCounts()
+	if counts.Running != 1 {
+		t.Errorf("running = %d, want 1", counts.Running)
 	}
 
-	if completed != 1 {
-		t.Errorf("completed = %d, want 1", completed)
+	if counts.Completed != 1 {
+		t.Errorf("completed = %d, want 1", counts.Completed)
 	}
 
-	if failed != 0 {
-		t.Errorf("failed = %d, want 0", failed)
+	if counts.Failed != 0 {
+		t.Errorf("failed = %d, want 0", counts.Failed)
 	}
 
-	if pending != 0 {
-		t.Errorf("pending = %d, want 0", pending)
+	if counts.Pending != 0 {
+		t.Errorf("pending = %d, want 0", counts.Pending)
 	}
 }
 
@@ -396,21 +396,21 @@ func TestNOMStyleSubscriber_GetActivityCounts_PausedAndFailed(t *testing.T) {
 	failed.SetFailed(errors.New("crash"))
 	ns.SetActivityState(failed)
 
-	running, completed, failedCount, pending := ns.GetActivityCounts()
-	if running != 0 {
-		t.Errorf("running = %d, want 0", running)
+	counts := ns.GetActivityCounts()
+	if counts.Running != 0 {
+		t.Errorf("running = %d, want 0", counts.Running)
 	}
 
-	if completed != 0 {
-		t.Errorf("completed = %d, want 0", completed)
+	if counts.Completed != 0 {
+		t.Errorf("completed = %d, want 0", counts.Completed)
 	}
 
-	if failedCount != 1 {
-		t.Errorf("failed = %d, want 1", failedCount)
+	if counts.Failed != 1 {
+		t.Errorf("failed = %d, want 1", counts.Failed)
 	}
 
-	if pending != 1 {
-		t.Errorf("pending = %d, want 1 (paused counts as pending)", pending)
+	if counts.Pending != 1 {
+		t.Errorf("pending = %d, want 1 (paused counts as pending)", counts.Pending)
 	}
 }
 

@@ -5,6 +5,8 @@ import (
 	"time"
 
 	"charm.land/lipgloss/v2"
+
+	"github.com/larsartmann/go-output/nom"
 )
 
 // renderNOMStyle creates a NOM-style display with dependency tree.
@@ -70,9 +72,9 @@ func (m *ProgressModel) renderDependencyTree() string {
 
 // renderNOMSummaryBar creates the NOM-style summary bar, colored by workflow state.
 func (m *ProgressModel) renderNOMSummaryBar() string {
-	running, completed, failed, pending := m.getActivityCounts()
+	counts := m.getActivityCounts()
 	elapsed := time.Since(m.startTime)
-	summary := buildNOMSummary(running, completed, failed, pending, elapsed)
+	summary := buildNOMSummary(counts, elapsed)
 	baseStyle := createSummaryStyle()
 
 	switch m.workflowState {
@@ -88,7 +90,7 @@ func (m *ProgressModel) renderNOMSummaryBar() string {
 }
 
 // getActivityCounts delegates to the subscriber for counts.
-func (m *ProgressModel) getActivityCounts() (running, completed, failed, pending int) {
+func (m *ProgressModel) getActivityCounts() nom.ActivityCounts {
 	return m.nomSubscriber.GetActivityCounts()
 }
 

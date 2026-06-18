@@ -3,6 +3,8 @@ package tui
 import (
 	"testing"
 	"time"
+
+	"github.com/larsartmann/go-output/nom"
 )
 
 func TestFormatElapsedTime(t *testing.T) {
@@ -28,22 +30,19 @@ func TestBuildActivityCountsSummary(t *testing.T) {
 
 	tests := []struct {
 		name      string
-		running   int
-		completed int
-		failed    int
-		pending   int
+		counts    nom.ActivityCounts
 		wantEmpty bool
 	}{
-		{"all zero returns empty", 0, 0, 0, 0, true},
-		{"with counts", 1, 2, 1, 3, false},
-		{"only running", 3, 0, 0, 0, false},
+		{"all zero returns empty", nom.ActivityCounts{}, true},
+		{"with counts", nom.ActivityCounts{Running: 1, Completed: 2, Failed: 1, Pending: 3}, false},
+		{"only running", nom.ActivityCounts{Running: 3}, false},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			got := buildActivityCountsSummary(tt.running, tt.completed, tt.failed, tt.pending)
+			got := buildActivityCountsSummary(tt.counts)
 			if tt.wantEmpty && got != "" {
 				t.Errorf("expected empty, got %q", got)
 			}
@@ -59,19 +58,19 @@ func TestBuildNOMSummary(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		name                     string
-		ok, fail, skip, activity int
-		duration                 time.Duration
+		name     string
+		counts   nom.ActivityCounts
+		duration time.Duration
 	}{
-		{"with activity counts", 1, 2, 0, 1, 10 * time.Second},
-		{"with zero counts still shows timing", 0, 0, 0, 0, 5 * time.Second},
+		{"with activity counts", nom.ActivityCounts{Running: 1, Completed: 2, Failed: 0, Pending: 1}, 10 * time.Second},
+		{"with zero counts still shows timing", nom.ActivityCounts{}, 5 * time.Second},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			got := buildNOMSummary(tt.ok, tt.fail, tt.skip, tt.activity, tt.duration)
+			got := buildNOMSummary(tt.counts, tt.duration)
 			if got == "" {
 				t.Error("expected non-empty summary")
 			}

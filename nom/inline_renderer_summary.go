@@ -88,27 +88,27 @@ func (r *InlineRenderer) effectiveMaxWidth() int {
 
 // renderSummary builds a one-line NOM-style summary bar.
 func (r *InlineRenderer) renderSummary() string {
-	running, completed, failed, pending := r.subscriber.GetActivityCounts()
+	counts := r.subscriber.GetActivityCounts()
 
 	var parts []string
 
-	if running > 0 {
-		parts = append(parts, fmt.Sprintf("%s%d", SymbolRunning, running))
+	if counts.Running > 0 {
+		parts = append(parts, fmt.Sprintf("%s%d", SymbolRunning, counts.Running))
 	}
 
-	if completed > 0 {
-		parts = append(parts, fmt.Sprintf("%s%d", SymbolCompleted, completed))
+	if counts.Completed > 0 {
+		parts = append(parts, fmt.Sprintf("%s%d", SymbolCompleted, counts.Completed))
 	}
 
-	if failed > 0 {
-		parts = append(parts, fmt.Sprintf("%s%d", SymbolFailed, failed))
+	if counts.Failed > 0 {
+		parts = append(parts, fmt.Sprintf("%s%d", SymbolFailed, counts.Failed))
 	}
 
-	if pending > 0 {
-		parts = append(parts, fmt.Sprintf("%s%d", SymbolPaused, pending))
+	if counts.Pending > 0 {
+		parts = append(parts, fmt.Sprintf("%s%d", SymbolPaused, counts.Pending))
 	}
 
-	total := running + completed + failed + pending
+	total := counts.Total()
 
 	if !r.startTime.IsZero() {
 		r.tickMu.RLock()
@@ -126,7 +126,7 @@ func (r *InlineRenderer) renderSummary() string {
 	summary := strings.Join(parts, " ") + fmt.Sprintf(" %s%d", SymbolTotal, total)
 
 	if total > 0 {
-		pct := (completed + failed) * 100 / total
+		pct := (counts.Completed + counts.Failed) * 100 / total
 		summary += fmt.Sprintf(" (%d%%)", pct)
 	}
 
