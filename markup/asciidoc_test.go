@@ -155,9 +155,7 @@ func TestEscapeAsciiDoc(t *testing.T) {
 			t.Parallel()
 
 			got := escapeAsciiDoc(tt.input)
-			if got != tt.want {
-				t.Errorf("escapeAsciiDoc(%q) = %q, want %q", tt.input, got, tt.want)
-			}
+			testhelpers.AssertEqual(t, "escapeAsciiDoc", tt.input, got, tt.want)
 		})
 	}
 }

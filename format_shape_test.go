@@ -56,9 +56,7 @@ func TestParseShape(t *testing.T) {
 				return
 			}
 
-			if got != tt.want {
-				t.Errorf("ParseShape(%q) = %v, want %v", tt.input, got, tt.want)
-			}
+			testhelpers.AssertEqual(t, "ParseShape", tt.input, got, tt.want)
 		})
 	}
 }

@@ -71,9 +71,7 @@ func TestSanitizePlantUMLID(t *testing.T) {
 			t.Parallel()
 
 			got := sanitizePlantUMLID(tt.input)
-			if got != tt.want {
-				t.Errorf("sanitizePlantUMLID(%q) = %q, want %q", tt.input, got, tt.want)
-			}
+			testhelpers.AssertEqual(t, "sanitizePlantUMLID", tt.input, got, tt.want)
 		})
 	}
 }

@@ -1,6 +1,10 @@
 package graph
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/larsartmann/go-output/testhelpers"
+)
 
 func TestParseRankDir(t *testing.T) {
 	t.Parallel()
@@ -24,9 +28,7 @@ func TestParseRankDir(t *testing.T) {
 				t.Fatalf("ParseRankDir(%q) error = %v", tt.input, err)
 			}
 
-			if got != tt.want {
-				t.Errorf("ParseRankDir(%q) = %v, want %v", tt.input, got, tt.want)
-			}
+			testhelpers.AssertEqual(t, "ParseRankDir", tt.input, got, tt.want)
 		})
 	}
 }
@@ -88,9 +90,7 @@ func TestParseSplineStyle(t *testing.T) {
 				t.Fatalf("ParseSplineStyle(%q) error = %v", tt.input, err)
 			}
 
-			if got != tt.want {
-				t.Errorf("ParseSplineStyle(%q) = %v, want %v", tt.input, got, tt.want)
-			}
+			testhelpers.AssertEqual(t, "ParseSplineStyle", tt.input, got, tt.want)
 		})
 	}
 }

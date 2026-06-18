@@ -62,7 +62,14 @@ func sendActivityStarted(t *testing.T, ns *NOMStyleSubscriber, ctx context.Conte
 }
 
 // sendActivityCompleted fires an activity.completed event with the given ID, name, and duration.
-func sendActivityCompleted(t *testing.T, ns *NOMStyleSubscriber, ctx context.Context, id ActivityID, name ActivityName, duration time.Duration) {
+func sendActivityCompleted(
+	t *testing.T,
+	ns *NOMStyleSubscriber,
+	ctx context.Context,
+	id ActivityID,
+	name ActivityName,
+	duration time.Duration,
+) {
 	t.Helper()
 
 	err := ns.OnEvent(ctx, &testEvent{
