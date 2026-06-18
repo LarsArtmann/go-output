@@ -25,24 +25,19 @@ type Activity struct {
 	EstimatedTime time.Duration
 	// Err holds the failure error if Status == ActivityStatusFailed.
 	Err error
-	// OperationType labels the activity for prefix symbols ("download", "upload", "").
-	OperationType string
 	// Symbol is the NOM-style display symbol (cached from Status for rendering).
 	Symbol string
 	// Color is the lipgloss terminal color (cached from Status for rendering).
 	Color color.Color
 	// CurrentElapsed is updated periodically for running activities.
 	CurrentElapsed time.Duration
-	// Dependencies lists parent activity IDs (for tree rendering).
-	Dependencies []string
 }
 
 // NewActivity creates an Activity with a branded GraphNode ID and default
 // visual style derived from the pending status.
 func NewActivity(id, name string) *Activity {
 	a := &Activity{
-		Status:       ActivityStatusPending,
-		Dependencies: make([]string, 0),
+		Status: ActivityStatusPending,
 	}
 	a.ID = output.NewBrandedID[output.GraphNodeIDBrand](id)
 	a.Label = output.NewBrandedID[output.GraphNodeLabelBrand](name)
@@ -122,9 +117,6 @@ func (a *Activity) IsFailed() bool { return a.Status == ActivityStatusFailed }
 // Copy creates a deep copy of the Activity.
 func (a *Activity) Copy() *Activity {
 	cpy := *a // shallow copy is fine for value types
-	if a.Dependencies != nil {
-		cpy.Dependencies = append([]string{}, a.Dependencies...)
-	}
 
 	if a.Metadata != nil {
 		cpy.Metadata = make(map[string]string, len(a.Metadata))
@@ -147,12 +139,4 @@ func (a *Activity) applyVisualStyle() {
 func (a *Activity) SetPaused() {
 	a.Status = ActivityStatusPaused
 	a.applyVisualStyle()
-}
-
-func (a *Activity) setOperationType(operationType string) {
-	a.OperationType = operationType
-}
-
-func (a *Activity) addDependency(dep string) {
-	a.Dependencies = append(a.Dependencies, dep)
 }
