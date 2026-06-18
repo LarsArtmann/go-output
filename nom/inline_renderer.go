@@ -10,6 +10,8 @@ import (
 	"time"
 
 	"golang.org/x/term"
+
+	"github.com/larsartmann/go-output/envdetect"
 )
 
 const (
@@ -89,26 +91,16 @@ func (r *InlineRenderer) SetAppName(name string) {
 }
 
 // detectNoColor reports whether color output should be suppressed in the
-// NOM inline renderer. Inlined from output.isNoColor() + isCI() because
-// nom/ cannot import root (would add output + transitive deps to nom's
-// closure). Mirrors color.go isNoColor()+isCI()+isStdoutTerminal() — keep in sync.
+// NOM inline renderer. The CI and NO_COLOR portions delegate to
+// envdetect so root and nom stay aligned. The terminal fallback uses
+// term.IsTerminal directly because stdoutIsTerminal closures from root
+// are not available here.
 func detectNoColor() bool {
-	if os.Getenv("NO_COLOR") != "" {
+	if envdetect.IsNoColor() || envdetect.IsCI() {
 		return true
 	}
 
-	if os.Getenv("TERM") == "dumb" {
-		return true
-	}
-
-	if os.Getenv("CI") != "" ||
-		os.Getenv("GITHUB_ACTIONS") != "" ||
-		os.Getenv("GITLAB_CI") != "" ||
-		os.Getenv("JENKINS_URL") != "" ||
-		os.Getenv("BUILDKITE") != "" {
-		return true
-	}
-
+	//nolint:gosec // File descriptors are always small positive integers.
 	return !term.IsTerminal(int(os.Stdout.Fd()))
 }
 

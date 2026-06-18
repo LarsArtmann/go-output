@@ -10,26 +10,21 @@ import (
 func TestElideCompletedUnderPressure(t *testing.T) {
 	t.Parallel()
 
-	completedNode := &ActivityNode{
-		Activity: Activity{
-			GraphNode: output.GraphNode{
-				ID:    output.NewBrandedID[output.GraphNodeIDBrand]("c1"),
-				Label: output.NewBrandedID[output.GraphNodeLabelBrand]("Completed Step"),
+	mkNode := func(id, name string, status ActivityStatus, elapsed time.Duration) *ActivityNode {
+		return &ActivityNode{
+			Activity: Activity{
+				GraphNode: output.GraphNode{
+					ID:    output.NewBrandedID[output.GraphNodeIDBrand](id),
+					Label: output.NewBrandedID[output.GraphNodeLabelBrand](name),
+				},
+				Status:         status,
+				CurrentElapsed: elapsed,
 			},
-			Status:         ActivityStatusCompleted,
-			CurrentElapsed: 5 * time.Second,
-		},
+		}
 	}
-	runningNode := &ActivityNode{
-		Activity: Activity{
-			GraphNode: output.GraphNode{
-				ID:    output.NewBrandedID[output.GraphNodeIDBrand]("r1"),
-				Label: output.NewBrandedID[output.GraphNodeLabelBrand]("Running Step"),
-			},
-			Status:         ActivityStatusRunning,
-			CurrentElapsed: 2 * time.Second,
-		},
-	}
+
+	completedNode := mkNode("c1", "Completed Step", ActivityStatusCompleted, 5*time.Second)
+	runningNode := mkNode("r1", "Running Step", ActivityStatusRunning, 2*time.Second)
 
 	dt := NewDependencyTree()
 
@@ -42,17 +37,9 @@ func TestElideCompletedUnderPressure(t *testing.T) {
 		wantIDs      []string
 	}{
 		{
-			name:         "no height pressure keeps all children",
+			name:         "non-pressure maxHeight keeps all children",
 			children:     []*ActivityNode{completedNode, runningNode},
 			maxHeight:    100,
-			visibleCount: 1,
-			wantLen:      2,
-			wantIDs:      []string{"c1", "r1"},
-		},
-		{
-			name:         "unlimited height keeps all children",
-			children:     []*ActivityNode{completedNode, runningNode},
-			maxHeight:    0,
 			visibleCount: 1,
 			wantLen:      2,
 			wantIDs:      []string{"c1", "r1"},
@@ -88,6 +75,20 @@ func TestElideCompletedUnderPressure(t *testing.T) {
 			wantIDs:      []string{"r1"},
 		},
 	}
+
+	// Unlimited (maxHeight <= 0) is a separate code path that short-circuits
+	// before the elision logic, so verify it independently.
+	t.Run("unlimited maxHeight keeps all children", func(t *testing.T) {
+		t.Parallel()
+
+		got := dt.elideCompletedUnderPressure(
+			[]*ActivityNode{completedNode, runningNode}, 0, 1,
+		)
+
+		if len(got) != 2 {
+			t.Errorf("unlimited maxHeight should return all children, got %d", len(got))
+		}
+	})
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

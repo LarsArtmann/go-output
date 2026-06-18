@@ -131,17 +131,13 @@ func TestBubbleTeaProgressReporter_ReportStep(t *testing.T) {
 		reporter := newTestReporter()
 		reporter.ReportStep(1, 5, "Compile")
 
-		if len(reporter.model.steps) != 1 {
-			t.Fatalf("steps count = %d, want 1", len(reporter.model.steps))
-		}
+		assertSingleStep(t, reporter)
 
 		if reporter.model.steps[0].Message != "Compile" {
 			t.Errorf("step message = %q, want %q", reporter.model.steps[0].Message, "Compile")
 		}
 
-		if reporter.model.steps[0].Current != 1 {
-			t.Errorf("step current = %d, want 1", reporter.model.steps[0].Current)
-		}
+		assertStepCurrent(t, reporter, 1)
 
 		if !reporter.model.steps[0].IsActive() {
 			t.Error("step should be active (1 < 5)")
@@ -175,9 +171,7 @@ func TestBubbleTeaProgressReporter_ReportStep(t *testing.T) {
 			t.Errorf("steps count = %d, want 1 (should update, not add)", len(reporter.model.steps))
 		}
 
-		if reporter.model.steps[0].Current != 3 {
-			t.Errorf("step current = %d, want 3", reporter.model.steps[0].Current)
-		}
+		assertStepCurrent(t, reporter, 3)
 	})
 }
 

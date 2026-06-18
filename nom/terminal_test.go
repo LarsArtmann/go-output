@@ -6,6 +6,8 @@ import (
 	"testing"
 
 	"golang.org/x/term"
+
+	"github.com/larsartmann/go-output/envdetect"
 )
 
 func TestVisibleWidth(t *testing.T) {
@@ -136,11 +138,8 @@ func TestPhysicalLineCount(t *testing.T) {
 }
 
 // colorDetectionVars are every environment variable detectNoColor consults.
-// Mirrors root color.go — see integration color-agreement test for the contract
-// that both detectors must agree on these.
-var colorDetectionVars = []string{
-	"NO_COLOR", "TERM", "CI", "GITHUB_ACTIONS", "GITLAB_CI", "JENKINS_URL", "BUILDKITE",
-}
+// Backed by envdetect.CIEnvVars so root and nom cannot drift apart.
+var colorDetectionVars = append([]string{"NO_COLOR", "TERM"}, envdetect.CIEnvVars...)
 
 // clearColorDetectionEnv clears every env var detectNoColor consults so a test
 // starts from a known clean state. Each is restored automatically by t.Setenv.

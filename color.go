@@ -6,6 +6,7 @@ import (
 	"golang.org/x/term"
 
 	"github.com/larsartmann/go-output/enum"
+	"github.com/larsartmann/go-output/envdetect"
 )
 
 // ANSI escape codes for terminal coloring.
@@ -100,18 +101,9 @@ var (
 		return term.IsTerminal(int(os.Stdout.Fd()))
 	}
 
-	noColorEnv = func() bool {
-		return os.Getenv("NO_COLOR") != "" ||
-			os.Getenv("TERM") == "dumb"
-	}
+	noColorEnv = envdetect.IsNoColor
 
-	ciEnv = func() bool {
-		return os.Getenv("CI") != "" ||
-			os.Getenv("GITHUB_ACTIONS") != "" ||
-			os.Getenv("GITLAB_CI") != "" ||
-			os.Getenv("JENKINS_URL") != "" ||
-			os.Getenv("BUILDKITE") != ""
-	}
+	ciEnv = envdetect.IsCI
 )
 
 func isTerminalByEnv(envVars ...string) bool {

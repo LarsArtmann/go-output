@@ -7,6 +7,7 @@ require (
 	github.com/charmbracelet/x/ansi v0.11.7
 	github.com/charmbracelet/x/exp/golden v0.0.0-20251106172358-54469c29c2bc
 	github.com/larsartmann/go-output v0.12.0
+	github.com/larsartmann/go-output/envdetect v0.12.0
 	golang.org/x/term v0.44.0
 )
 
@@ -31,4 +32,7 @@ require (
 	golang.org/x/sys v0.46.0 // indirect
 )
 
-replace github.com/larsartmann/go-output => ../
+replace (
+	github.com/larsartmann/go-output => ../
+	github.com/larsartmann/go-output/envdetect => ../envdetect
+)

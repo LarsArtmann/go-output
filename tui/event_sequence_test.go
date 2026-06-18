@@ -160,9 +160,7 @@ func TestProgressModel_EventSequence_StepLifecycle(t *testing.T) {
 	// Report step started (1/3)
 	reporter.ReportStep(1, 3, "Compile")
 
-	if len(reporter.model.steps) != 1 {
-		t.Fatalf("steps count = %d, want 1", len(reporter.model.steps))
-	}
+	assertSingleStep(t, reporter)
 
 	step := reporter.model.steps[0]
 	if step.Message != "Compile" {
@@ -209,11 +207,7 @@ func TestProgressModel_EventSequence_StepFailed(t *testing.T) {
 	})
 
 	// Set up subscriber with a failed activity
-	model.nomSubscriber.OnEvent(ctx, &testEvent{
-		eventType: nom.EventActivityStarted,
-		aID:       nom.ActivityID("test"),
-		aName:     nom.ActivityName("Run Tests"),
-	})
+	startActivity(t, model, ctx, "test", "Run Tests")
 	model.nomSubscriber.OnEvent(ctx, &testEvent{
 		eventType: nom.EventActivityFailed,
 		aID:       nom.ActivityID("test"),

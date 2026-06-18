@@ -15,28 +15,10 @@ func TestDiagramExport_SubscriberProjection(t *testing.T) {
 	subscriber := NewNOMStyleSubscriber()
 	ctx := context.Background()
 
-	_ = subscriber.OnEvent(ctx, &diagramTestEvent{
-		eventType: EventWorkflowStarted,
-		wID:       WorkflowID("build"),
-		wName:     WorkflowName("CI Build"),
-	})
-	_ = subscriber.OnEvent(ctx, &diagramTestEvent{
-		eventType: EventActivityStarted,
-		aID:       ActivityID("compile"),
-		aName:     ActivityName("Compile Sources"),
-	})
-	_ = subscriber.OnEvent(ctx, &diagramTestEvent{
-		eventType:    EventActivityStarted,
-		aID:          ActivityID("test"),
-		aName:        ActivityName("Run Tests"),
-		dependencies: []ActivityID{ActivityID("compile")},
-	})
-	_ = subscriber.OnEvent(ctx, &diagramTestEvent{
-		eventType:    EventActivityStarted,
-		aID:          ActivityID("deploy"),
-		aName:        ActivityName("Deploy"),
-		dependencies: []ActivityID{ActivityID("test")},
-	})
+	diagramFireWorkflow(t, subscriber, ctx, "build", "CI Build")
+	diagramFireActivity(t, subscriber, ctx, "compile", "Compile Sources")
+	diagramFireActivity(t, subscriber, ctx, "test", "Run Tests", "compile")
+	diagramFireActivity(t, subscriber, ctx, "deploy", "Deploy", "test")
 
 	reader := subscriber.Store()
 
@@ -148,3 +130,31 @@ func (e *diagramTestEvent) GetWorkflowName() WorkflowName { return e.wName }
 func (e *diagramTestEvent) GetActivityID() ActivityID     { return e.aID }
 func (e *diagramTestEvent) GetActivityName() ActivityName { return e.aName }
 func (e *diagramTestEvent) GetDependencies() []ActivityID { return e.dependencies }
+
+// diagramFireWorkflow fires a workflow.started event using diagramTestEvent.
+func diagramFireWorkflow(t *testing.T, ns *NOMStyleSubscriber, ctx context.Context, id, name string) {
+	t.Helper()
+
+	_ = ns.OnEvent(ctx, &diagramTestEvent{
+		eventType: EventWorkflowStarted,
+		wID:       WorkflowID(id),
+		wName:     WorkflowName(name),
+	})
+}
+
+// diagramFireActivity fires an activity.started event with optional dependencies.
+func diagramFireActivity(t *testing.T, ns *NOMStyleSubscriber, ctx context.Context, id, name string, deps ...string) {
+	t.Helper()
+
+	dependencies := make([]ActivityID, len(deps))
+	for i, dep := range deps {
+		dependencies[i] = ActivityID(dep)
+	}
+
+	_ = ns.OnEvent(ctx, &diagramTestEvent{
+		eventType:    EventActivityStarted,
+		aID:          ActivityID(id),
+		aName:        ActivityName(name),
+		dependencies: dependencies,
+	})
+}

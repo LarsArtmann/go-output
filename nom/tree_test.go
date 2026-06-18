@@ -59,9 +59,7 @@ func TestDependencyTree_AddActivity(t *testing.T) {
 			t.Fatal("child node should exist")
 		}
 
-		if child.Parent == nil || child.Parent.ID.Get() != "parent" {
-			t.Error("child's parent should be 'parent'")
-		}
+		assertChildParentID(t, child, "parent")
 
 		parent := dt.GetNode(ActivityID("parent"))
 		if len(parent.Children) != 1 || parent.Children[0].ID.Get() != "child" {

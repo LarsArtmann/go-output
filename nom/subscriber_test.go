@@ -61,6 +61,17 @@ func sendActivityStarted(t *testing.T, ns *NOMStyleSubscriber, ctx context.Conte
 	}
 }
 
+// sendWorkflowStarted fires a workflow.started event with the given ID and name.
+// Returns the error so callers can choose to assert or ignore it.
+func sendWorkflowStarted(ns *NOMStyleSubscriber, ctx context.Context, id WorkflowID, name WorkflowName) error {
+	return ns.OnEvent(ctx, &testEvent{
+		eventType: EventWorkflowStarted,
+		workflow:  true,
+		wID:       id,
+		wName:     name,
+	})
+}
+
 // registerActivity fires an activity.registered event with optional dependencies.
 // Use for golden test setup where the same workflow is repeated across frames.
 func registerActivity(
@@ -120,12 +131,7 @@ func TestNOMStyleSubscriber_Reset(t *testing.T) {
 	ns := NewNOMStyleSubscriber()
 	ctx := context.Background()
 
-	ns.OnEvent(ctx, &testEvent{
-		eventType: EventWorkflowStarted,
-		workflow:  true,
-		wID:       WorkflowID("wf-1"),
-		wName:     WorkflowName("CI"),
-	})
+	_ = sendWorkflowStarted(ns, ctx, WorkflowID("wf-1"), WorkflowName("CI"))
 	sendActivityStarted(t, ns, ctx, ActivityID("a1"), ActivityName("Build"))
 
 	ns.Reset()
@@ -154,12 +160,7 @@ func TestNOMStyleSubscriber_WorkflowStarted(t *testing.T) {
 	ns := NewNOMStyleSubscriber()
 	ctx := context.Background()
 
-	err := ns.OnEvent(ctx, &testEvent{
-		eventType: EventWorkflowStarted,
-		workflow:  true,
-		wID:       WorkflowID("wf-1"),
-		wName:     WorkflowName("Deploy"),
-	})
+	err := sendWorkflowStarted(ns, ctx, WorkflowID("wf-1"), WorkflowName("Deploy"))
 	if err != nil {
 		t.Fatalf("OnEvent() error: %v", err)
 	}
