@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added — nom/ Composition Refactor (ADR 007)
+
+- **`nom.Activity`** — unified activity type embedding `output.GraphNode` (ID, Label, Shape, Style, Metadata) + temporal domain fields (Status, StartTime, EndTime, EstimatedTime, Err, Dependencies). Single source of truth for identity, visual representation, and state.
+- **`nom.ActivityStatus.NodeShape()` / `.GraphStyle()`** — mappers from domain status to root's visual types. Same status now drives both terminal lipgloss styling AND diagram export (DOT/Mermaid/D2/PlantUML).
+- **`nom.ActivityStore`** — map-backed store with `Nodes() []output.GraphNode` / `Edges() []output.GraphEdge` projections. Any `output.GraphRenderer` can consume live progress state for diagram export.
+- **`nom.MultiSubscriber`** — `io.MultiWriter`-style fanout for `EventSubscriber`. Dispatches events to N subscribers; nil subscribers skipped; errors from one don't block others.
+- **`nom.NOMStyleSubscriber.Store()`** — exposes the `ActivityStore` for diagram export.
+
+### Changed (breaking)
+
+- **`nom.ActivityNode`** now embeds `nom.Activity` (which embeds `output.GraphNode`) instead of `DisplayState`. Removed fields: `ActivityNode.ActivityID`, `ActivityNode.ActivityName`. Use `node.ID.Get()` and `node.Label.Get()` from the embedded `GraphNode` instead.
+
 ### v1.0.0 Preparation — Breaking Changes
 
 **Removed:**
