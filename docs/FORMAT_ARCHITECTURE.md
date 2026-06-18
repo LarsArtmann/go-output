@@ -114,7 +114,7 @@ Data structures for graph/diagram outputs (defined in [`graph.go`](../graph.go))
 type GraphNode struct {
     ID       GraphNodeID
     Label    GraphNodeLabel
-    Shape    GraphShape
+    Shape    NodeShape
     Style    GraphStyle
     Metadata map[string]string
 }
@@ -220,10 +220,10 @@ All runtime dispatch is backed by a single generic, thread-safe container — `f
 | Registry             | Value type           | Populated by                                                                        | Queried by               |
 | -------------------- | -------------------- | ----------------------------------------------------------------------------------- | ------------------------ |
 | `formatCapabilities` | `[]Shape`            | root `init()` + sub-module overrides                                                | `Format.Supports/Shapes` |
-| `tableDataRegistry`  | `TableDataMarshaler` | delimited, serialization, markup, d2, graph, plantuml, table, root (markdown, tree) | `RenderTableData`        |
-| `anyDataRegistry`    | `AnyDataMarshaler`   | serialization (JSON, YAML, TOML)                                                    | `RenderAnyData`          |
+| `tableDataRegistry`  | `TableDataRenderer` | delimited, serialization, markup, d2, graph, plantuml, table, root (markdown, tree) | `RenderTableData`        |
+| `anyDataRegistry`    | `AnyDataRenderer`   | serialization (JSON, YAML, TOML)                                                    | `RenderAnyData`          |
 
-`RegisterTableDataMarshaler`, `RegisterAnyDataMarshaler`, `RegisterFormatShapes`, and the read-only `RegisteredTableDataFormats` / `RegisteredAnyDataFormats` helpers form the registration API.
+`RegisterTableDataRenderer`, `RegisterAnyDataRenderer`, `RegisterFormatShapes`, and the read-only `RegisteredTableDataFormats` / `RegisteredAnyDataFormats` helpers form the registration API.
 
 ### ColorMode
 

@@ -535,7 +535,7 @@ These interfaces will not change signature:
 - Adding new methods to existing types
 - Adding new `RenderOptions` fields
 - Adding new sub-modules
-- Adding new `RegisterTableDataMarshaler` entries
+- Adding new `RegisterTableDataRenderer` entries
 
 ## License
 
