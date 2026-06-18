@@ -75,7 +75,7 @@ const (
 	LineStyleDotted LineStyle = "dotted"
 )
 
-// lineStyleValues is the canonical list of valid LineStyle values.
+//nolint:gochecknoglobals // Global variable used for value iteration.
 var lineStyleValues = []LineStyle{
 	LineStyleSolid,
 	LineStyleDashed,
