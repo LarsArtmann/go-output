@@ -11,15 +11,10 @@ import (
 )
 
 func addRunningActivity(model *ProgressModel, id, name string) {
-	model.dependencyTree.AddActivity(nom.ActivityID(id), name, nil)
-	model.dependencyTree.UpdateActivityStatus(
-		nom.ActivityID(id),
-		nom.ActivityStatusRunning,
-		nom.SymbolRunning,
-		nom.ColorRunning,
-		time.Now(),
-		0,
-	)
+	activity := nom.NewActivity(id, name)
+	activity.SetRunning()
+
+	model.dependencyTree.AddActivity(nom.ActivityID(id), activity, nil)
 }
 
 func TestProgressModel_View_ZeroWidth(t *testing.T) {
@@ -242,8 +237,8 @@ func TestProgressModel_SelectedNodeHighlight(t *testing.T) {
 	model.workflowState = WorkflowStateRunning
 
 	tree := nom.NewDependencyTree()
-	_ = tree.AddActivity(nom.ActivityID("step-a"), "Step A", nil)
-	_ = tree.AddActivity(nom.ActivityID("step-b"), "Step B", []nom.ActivityID{"step-a"})
+	_ = tree.AddActivity(nom.ActivityID("step-a"), nom.NewActivity("step-a", "Step A"), nil)
+	_ = tree.AddActivity(nom.ActivityID("step-b"), nom.NewActivity("step-b", "Step B"), []nom.ActivityID{"step-a"})
 	_ = tree.GetRootNodes()
 
 	model.dependencyTree = tree

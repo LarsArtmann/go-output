@@ -59,7 +59,6 @@ func TestNOMSubscriber_Integration(t *testing.T) {
 		}
 
 		subscriber.UpdateRunningActivityElapsed()
-		subscriber.SyncActivityTimingToTree()
 
 		if err := subscriber.OnEvent(ctx, &nomTestEvent{
 			eventType: nom.EventActivityCompleted,
@@ -113,10 +112,10 @@ func TestNOMDependencyTree_Integration(t *testing.T) {
 
 		tree := nom.NewDependencyTree()
 
-		tree.AddActivity(nom.NewActivityID("root"), "Root Task", nil)
-		tree.AddActivity(nom.NewActivityID("child1"), "Child 1", []nom.ActivityID{"root"})
-		tree.AddActivity(nom.NewActivityID("child2"), "Child 2", []nom.ActivityID{"root"})
-		tree.AddActivity(nom.NewActivityID("grandchild"), "Grandchild", []nom.ActivityID{"child1"})
+		tree.AddActivity(nom.NewActivityID("root"), nom.NewActivity("root", "Root Task"), nil)
+		tree.AddActivity(nom.NewActivityID("child1"), nom.NewActivity("child1", "Child 1"), []nom.ActivityID{"root"})
+		tree.AddActivity(nom.NewActivityID("child2"), nom.NewActivity("child2", "Child 2"), []nom.ActivityID{"root"})
+		tree.AddActivity(nom.NewActivityID("grandchild"), nom.NewActivity("grandchild", "Grandchild"), []nom.ActivityID{"child1"})
 
 		mustUpdateActivityStatus(t, tree, nom.NewActivityID("root"),
 			nom.ActivityStatusCompleted, nom.SymbolCompleted, nom.ColorCompleted, time.Now(), 0)
@@ -185,7 +184,6 @@ func TestNOMSubscriber_RenderNodeVisibleNodes_Integration(t *testing.T) {
 	completeActivity(subscriber, ctx, "build", "Build", 3*time.Second)
 
 	subscriber.UpdateRunningActivityElapsed()
-	subscriber.SyncActivityTimingToTree()
 
 	tree := subscriber.GetDependencyTree()
 	if tree == nil {
@@ -286,16 +284,24 @@ func mustUpdateActivityStatus(
 	tree *nom.DependencyTree,
 	id nom.ActivityID,
 	status nom.ActivityStatus,
-	symbol string,
-	c color.Color,
+	_ string,
+	_ color.Color,
 	startTime time.Time,
-	estimated time.Duration,
+	_ time.Duration,
 ) {
 	t.Helper()
 
-	if err := tree.UpdateActivityStatus(id, status, symbol, c, startTime, estimated); err != nil {
-		t.Fatalf("UpdateActivityStatus(%s): %v", id, err)
+	node := tree.GetNode(id)
+	if node == nil {
+		t.Fatalf("node %s not found in tree", id)
 	}
+
+	node.Status = status
+	node.Symbol = status.GetSymbol()
+	node.Color = status.GetColor()
+	node.Shape = status.NodeShape()
+	node.Style = status.GraphStyle()
+	node.StartTime = startTime
 }
 
 // startActivity sends an activity.started event and discards any error.

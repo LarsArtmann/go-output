@@ -10,12 +10,12 @@ import (
 func newTestTree(nodeCount int) *nom.DependencyTree {
 	tree := nom.NewDependencyTree()
 
-	tree.AddActivity(nom.ActivityID("root"), "Root", nil)
+	tree.AddActivity(nom.ActivityID("root"), nom.NewActivity("root", "Root"), nil)
 
 	for i := 1; i < nodeCount; i++ {
 		id := nom.ActivityID(fmt.Sprintf("step-%d", i))
 		name := fmt.Sprintf("Step %d", i)
-		tree.AddActivity(id, name, []nom.ActivityID{"root"})
+		tree.AddActivity(id, nom.NewActivity(string(id), name), []nom.ActivityID{"root"})
 	}
 
 	_ = tree.GetRootNodes()

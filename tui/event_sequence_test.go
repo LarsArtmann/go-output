@@ -105,19 +105,15 @@ func TestProgressModel_EventSequence_PreRegisterThenStart(t *testing.T) {
 	model.displayMode = DisplayModeNOM
 
 	// Pre-register activities directly on the subscriber
-	model.nomSubscriber.SetActivityState(nom.NewActivityDisplayState(
-		nom.ActivityID("phase1"), nom.ActivityName("Build Phase"),
-	))
-	model.nomSubscriber.SetActivityState(nom.NewActivityDisplayState(
-		nom.ActivityID("step1"), nom.ActivityName("Compile"),
-	))
+	model.nomSubscriber.SetActivityState(nom.ActivityID("phase1"), nom.NewActivity("phase1", "Build Phase"))
+	model.nomSubscriber.SetActivityState(nom.ActivityID("step1"), nom.NewActivity("step1", "Compile"))
 
 	// Manually add to dependency tree
 	model.nomSubscriber.GetDependencyTree().AddActivity(
-		nom.ActivityID("phase1"), "Build Phase", nil,
+		nom.ActivityID("phase1"), nom.NewActivity("phase1", "Build Phase"), nil,
 	)
 	model.nomSubscriber.GetDependencyTree().AddActivity(
-		nom.ActivityID("step1"), "Compile", []nom.ActivityID{"phase1"},
+		nom.ActivityID("step1"), nom.NewActivity("step1", "Compile"), []nom.ActivityID{"phase1"},
 	)
 
 	// Before tick: subscriber already has the pre-registered activities
