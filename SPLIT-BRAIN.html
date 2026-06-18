@@ -654,7 +654,9 @@
       </div>
 
       <!-- ============================ CRITICAL ============================ -->
-      <h2 class="section-h">🔴 Critical — True Split-Brain Bugs <span class="count">5/5 ✅</span></h2>
+      <h2 class="section-h">
+        🔴 Critical — True Split-Brain Bugs <span class="count">5/5 ✅</span>
+      </h2>
 
       <!-- C1 -->
       <div
@@ -1729,40 +1731,51 @@
       </div>
 
       <div class="method" style="margin-top: 3rem">
-        <h2>🛠️ Recommended Fix Order (Pareto)</h2>
+        <h2>🛠️ Fix Order (Pareto) — ALL COMPLETED ✅</h2>
         <p style="color: var(--text-dim); margin-top: 0">
-          Tackle in this order to eliminate the most drift risk for the least effort:
+          All 20 findings resolved across two sprints. Key architectural wins:
+          <code>envdetect/</code> shared module (M2), <code>nom.ActivityNode</code> (C1),
+          <code>InlineRenderer.Draw()</code> + <code>DependencyTree.RenderString()</code> (M4),
+          <code>NodeShape</code>/<code>Direction</code>/<code>LineStyle</code> enums (M5-M7).
         </p>
         <ol style="color: var(--text-dim)">
           <li>
-            <strong>C4 + C5</strong> (test redeclarations) — delete &amp; re-type generics. ~20 min,
-            zero risk.
+            <strong>C4 + C5</strong> ✅ — test redeclarations deleted, generics re-typed to
+            <code>output.GraphRenderer</code> / <code>output.Renderer</code>.
           </li>
           <li>
-            <strong>C3 + M3</strong> (TimingFormat + hardcoded message) — rename/replace constants.
-            ~30 min.
+            <strong>C3 + M3</strong> ✅ — <code>tui.TimingFormat</code> unexported; hardcoded
+            message → constant.
           </li>
           <li>
-            <strong>M1 quick-win</strong> — delete the intra-package
-            <code>nom.ColorWarning</code> duplicate. ~5 min.
-          </li>
-          <li><strong>C1</strong> (TreeNode rename) — mechanical, compiler-guided. ~1 hr.</li>
-          <li>
-            <strong>M2</strong> (align color detectors) — union the env checks, add sync comments.
-            ~30 min.
+            <strong>M1</strong> ✅ — <code>nom.ColorWarning</code> deleted;
+            <code>SemanticColors</code> struct replaces mutable vars.
           </li>
           <li>
-            <strong>M4</strong> (rename non-canonical Render methods) — touches nom/tui API. ~1 hr.
+            <strong>C1</strong> ✅ — <code>nom.TreeNode</code> → <code>nom.ActivityNode</code> (73
+            refs across 13 files).
           </li>
           <li>
-            <strong>C2</strong> (collapse ProgressModel duplication) — architectural, needs care +
-            tests. ~half day.
+            <strong>M2</strong> ✅ — <code>envdetect/</code> shared zero-dep module; root + nom both
+            delegate to <code>envdetect.IsCI()</code> / <code>envdetect.IsNoColor()</code>.
           </li>
           <li>
-            <strong>M5–M8</strong> (enum/struct alignment) — batch in a dedicated naming-pass PR,
-            gated to next minor.
+            <strong>M4</strong> ✅ — <code>InlineRenderer.Render()</code> → <code>Draw()</code>;
+            <code>DependencyTree.Render()</code> → <code>RenderString()</code>.
+            <code>Render()</code> reserved for <code>output.Renderer</code> contract.
           </li>
-          <li><strong>m2</strong> (event literal cleanup) — mechanical sweep. ~30 min.</li>
+          <li>
+            <strong>C2</strong> ✅ — <code>ProgressModel.activities</code> field eliminated;
+            delegated to <code>GetActivityCounts()</code>.
+          </li>
+          <li>
+            <strong>M5–M8</strong> ✅ — <code>NodeShape</code> enum, <code>Direction</code> bridge,
+            <code>LineStyle</code> enum, <code>GraphStyle.Fill</code>/<code>Stroke</code> aligned.
+          </li>
+          <li>
+            <strong>m1–m6</strong> ✅ — event constants, cross-ref comments, doc distinctions,
+            canonical-path docs, <code>FORMAT_ARCHITECTURE.md</code> updated.
+          </li>
         </ol>
       </div>
     </main>
