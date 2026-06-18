@@ -355,10 +355,10 @@ At `art-dupl -t 24` (user-specified threshold), this codebase has **zero actiona
 
 At `art-dupl -t 20` (aggressive), ~9 clone groups appear, all categorized as:
 
-| Category            | Description                                                        | Action                                 |
-| ------------------- | ------------------------------------------------------------------ | -------------------------------------- |
-| **Go test idioms**  | `OnEvent` setup, `t.Run`/`t.Parallel` boilerplate, table-driven cases | Accept — language patterns             |
-| **Module boundary** | Test helpers re-declared per module                                | Accept — Go design constraint          |
+| Category            | Description                                                           | Action                        |
+| ------------------- | --------------------------------------------------------------------- | ----------------------------- |
+| **Go test idioms**  | `OnEvent` setup, `t.Run`/`t.Parallel` boilerplate, table-driven cases | Accept — language patterns    |
+| **Module boundary** | Test helpers re-declared per module                                   | Accept — Go design constraint |
 
 At `art-dupl -t 15` (aggressive), ~50 clone groups appear. These are categorized as:
 
