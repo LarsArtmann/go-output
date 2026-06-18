@@ -43,7 +43,7 @@ func TestGraphEdge(t *testing.T) {
 	}
 }
 
-func TestParseGraphShape(t *testing.T) {
+func TestParseNodeShape(t *testing.T) {
 	tests := []testhelpers.ParseEnumTestCase[output.NodeShape]{
 		{Name: "box", Input: "box", Want: output.NodeShapeBox},
 		{Name: "ellipse", Input: "ellipse", Want: output.NodeShapeEllipse},
@@ -65,7 +65,7 @@ func TestParseGraphShape(t *testing.T) {
 	)
 }
 
-func TestGraphShapeString(t *testing.T) {
+func TestNodeShapeString(t *testing.T) {
 	tests := []testhelpers.StringEnumTestCase[output.NodeShape]{
 		{Value: output.NodeShapeBox, Want: "box"},
 		{Value: output.NodeShapeEllipse, Want: "ellipse"},
@@ -81,7 +81,7 @@ func TestGraphShapeString(t *testing.T) {
 	)
 }
 
-func TestGraphShapeAllowedValues(t *testing.T) {
+func TestNodeShapeAllowedValues(t *testing.T) {
 	got := output.NodeShapeBox.AllowedValues()
 	want := []string{
 		"box",
@@ -97,7 +97,7 @@ func TestGraphShapeAllowedValues(t *testing.T) {
 	testhelpers.TestAllowedValues(t, "AllowedValues", got, want)
 }
 
-func TestGraphShapeIsValid(t *testing.T) {
+func TestNodeShapeIsValid(t *testing.T) {
 	t.Parallel()
 
 	testhelpers.TestEnumIsValid(t, []output.NodeShape{

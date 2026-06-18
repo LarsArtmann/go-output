@@ -47,7 +47,7 @@ func graphNodeToD2(n output.GraphNode) D2Node {
 	return D2Node{
 		ID:    output.NewBrandedID[output.D2NodeIDBrand](n.ID.Get()),
 		Label: output.NewBrandedID[output.D2NodeLabelBrand](n.Label.Get()),
-		Shape: graphShapeToD2(n.Shape),
+		Shape: nodeShapeToD2(n.Shape),
 		Style: graphStyleToD2(n.Style),
 	}
 }
@@ -65,7 +65,7 @@ func graphEdgeToD2(e output.GraphEdge) D2Edge {
 	}
 }
 
-func graphShapeToD2(s output.NodeShape) D2NodeShape {
+func nodeShapeToD2(s output.NodeShape) D2NodeShape {
 	switch s {
 	case output.NodeShapeBox, output.NodeShapeRect:
 		return D2ShapeRectangle

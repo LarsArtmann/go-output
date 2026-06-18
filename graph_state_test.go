@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestParseGraphShape(t *testing.T) {
+func TestParseNodeShape(t *testing.T) {
 	t.Parallel()
 
 	got, err := ParseNodeShape("rect")
@@ -26,7 +26,7 @@ func TestParseGraphShape_Invalid(t *testing.T) {
 	}
 }
 
-func TestGraphShape_AllowedValues(t *testing.T) {
+func TestNodeShape_AllowedValues(t *testing.T) {
 	t.Parallel()
 
 	values := NodeShapeRect.AllowedValues()
@@ -36,7 +36,7 @@ func TestGraphShape_AllowedValues(t *testing.T) {
 	}
 }
 
-func TestGraphShape_IsValid(t *testing.T) {
+func TestNodeShape_IsValid(t *testing.T) {
 	t.Parallel()
 
 	if !NodeShapeRect.IsValid() {

@@ -220,7 +220,7 @@ func TestD2GraphRendererInterface(t *testing.T) {
 	testhelpers.AssertContains(t, got, "a -> b", "should contain edge")
 }
 
-func TestD2GraphShapeConversion(t *testing.T) {
+func TestD2NodeShapeConversion(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
