@@ -61,6 +61,22 @@ func sendActivityStarted(t *testing.T, ns *NOMStyleSubscriber, ctx context.Conte
 	}
 }
 
+// sendActivityCompleted fires an activity.completed event with the given ID, name, and duration.
+func sendActivityCompleted(t *testing.T, ns *NOMStyleSubscriber, ctx context.Context, id ActivityID, name ActivityName, duration time.Duration) {
+	t.Helper()
+
+	err := ns.OnEvent(ctx, &testEvent{
+		eventType: EventActivityCompleted,
+		activity:  true,
+		aID:       id,
+		aName:     name,
+		duration:  duration,
+	})
+	if err != nil {
+		t.Fatalf("activity.completed OnEvent() error: %v", err)
+	}
+}
+
 // sendWorkflowStarted fires a workflow.started event with the given ID and name.
 // Returns the error so callers can choose to assert or ignore it.
 func sendWorkflowStarted(ns *NOMStyleSubscriber, ctx context.Context, id WorkflowID, name WorkflowName) error {

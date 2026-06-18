@@ -20,15 +20,8 @@ func TestInlineRenderer_FirstRender_NoAnsiEscapes(t *testing.T) {
 	renderer := NewInlineRenderer(sub, &buf, 10)
 
 	ctx := context.Background()
-	_ = sub.OnEvent(ctx, &testEvent{
-		eventType: EventWorkflowStarted,
-		wID:       WorkflowID("wf-1"),
-	})
-	_ = sub.OnEvent(ctx, &testEvent{
-		eventType: EventActivityStarted,
-		aID:       ActivityID("step1"),
-		aName:     ActivityName("Step 1"),
-	})
+	_ = sendWorkflowStarted(sub, ctx, WorkflowID("wf-1"), "")
+	sendActivityStarted(t, sub, ctx, ActivityID("step1"), ActivityName("Step 1"))
 
 	renderer.Render()
 
@@ -52,15 +45,8 @@ func TestInlineRenderer_SubsequentRender_MovesCursor(t *testing.T) {
 	renderer := NewInlineRenderer(sub, &buf, 10)
 
 	ctx := context.Background()
-	_ = sub.OnEvent(ctx, &testEvent{
-		eventType: EventWorkflowStarted,
-		wID:       WorkflowID("wf-1"),
-	})
-	_ = sub.OnEvent(ctx, &testEvent{
-		eventType: EventActivityStarted,
-		aID:       ActivityID("step1"),
-		aName:     ActivityName("Step 1"),
-	})
+	_ = sendWorkflowStarted(sub, ctx, WorkflowID("wf-1"), "")
+	sendActivityStarted(t, sub, ctx, ActivityID("step1"), ActivityName("Step 1"))
 
 	renderer.Render()
 	buf.Reset()
@@ -83,15 +69,8 @@ func TestInlineRenderer_Finish_ClearsFrame(t *testing.T) {
 	renderer := NewInlineRenderer(sub, &buf, 10)
 
 	ctx := context.Background()
-	_ = sub.OnEvent(ctx, &testEvent{
-		eventType: EventWorkflowStarted,
-		wID:       WorkflowID("wf-1"),
-	})
-	_ = sub.OnEvent(ctx, &testEvent{
-		eventType: EventActivityStarted,
-		aID:       ActivityID("step1"),
-		aName:     ActivityName("Step 1"),
-	})
+	_ = sendWorkflowStarted(sub, ctx, WorkflowID("wf-1"), "")
+	sendActivityStarted(t, sub, ctx, ActivityID("step1"), ActivityName("Step 1"))
 
 	renderer.Render()
 	buf.Reset()
@@ -118,10 +97,7 @@ func TestInlineRenderer_Finish_WithError(t *testing.T) {
 	renderer := NewInlineRenderer(sub, &buf, 10)
 
 	ctx := context.Background()
-	_ = sub.OnEvent(ctx, &testEvent{
-		eventType: EventWorkflowStarted,
-		wID:       WorkflowID("wf-1"),
-	})
+	_ = sendWorkflowStarted(sub, ctx, WorkflowID("wf-1"), "")
 
 	renderer.Render()
 	buf.Reset()
@@ -144,15 +120,8 @@ func TestInlineRenderer_SummaryBar(t *testing.T) {
 	renderer := NewInlineRenderer(sub, &buf, 20)
 
 	ctx := context.Background()
-	_ = sub.OnEvent(ctx, &testEvent{
-		eventType: EventWorkflowStarted,
-		wID:       WorkflowID("wf-1"),
-	})
-	_ = sub.OnEvent(ctx, &testEvent{
-		eventType: EventActivityStarted,
-		aID:       ActivityID("step1"),
-		aName:     ActivityName("Step 1"),
-	})
+	_ = sendWorkflowStarted(sub, ctx, WorkflowID("wf-1"), "")
+	sendActivityStarted(t, sub, ctx, ActivityID("step1"), ActivityName("Step 1"))
 
 	renderer.SetStartTime(time.Now().Add(-5 * time.Second))
 	renderer.Render()
@@ -209,15 +178,8 @@ func TestInlineRenderer_StartStop_PeriodicRender(t *testing.T) {
 	renderer := NewInlineRenderer(sub, &buf, 10)
 
 	ctx := context.Background()
-	_ = sub.OnEvent(ctx, &testEvent{
-		eventType: EventWorkflowStarted,
-		wID:       WorkflowID("wf-1"),
-	})
-	_ = sub.OnEvent(ctx, &testEvent{
-		eventType: EventActivityStarted,
-		aID:       ActivityID("step1"),
-		aName:     ActivityName("Step 1"),
-	})
+	_ = sendWorkflowStarted(sub, ctx, WorkflowID("wf-1"), "")
+	sendActivityStarted(t, sub, ctx, ActivityID("step1"), ActivityName("Step 1"))
 
 	renderer.Start(ctx, 50*time.Millisecond)
 	time.Sleep(180 * time.Millisecond)
@@ -256,15 +218,8 @@ func TestInlineRenderer_Refresh_TriggersRender(t *testing.T) {
 	renderer.renderNotify = make(chan struct{}, 1)
 
 	ctx := context.Background()
-	_ = sub.OnEvent(ctx, &testEvent{
-		eventType: EventWorkflowStarted,
-		wID:       WorkflowID("wf-1"),
-	})
-	_ = sub.OnEvent(ctx, &testEvent{
-		eventType: EventActivityStarted,
-		aID:       ActivityID("step1"),
-		aName:     ActivityName("Step 1"),
-	})
+	_ = sendWorkflowStarted(sub, ctx, WorkflowID("wf-1"), "")
+	sendActivityStarted(t, sub, ctx, ActivityID("step1"), ActivityName("Step 1"))
 
 	renderer.Start(ctx, time.Hour) // very long interval
 
@@ -288,17 +243,12 @@ func TestInlineRenderer_MaxHeightZero_UsesFallback(t *testing.T) {
 	renderer := NewInlineRenderer(sub, &buf, 0)
 
 	ctx := context.Background()
-	_ = sub.OnEvent(ctx, &testEvent{
-		eventType: EventWorkflowStarted,
-		wID:       WorkflowID("wf-1"),
-	})
+	_ = sendWorkflowStarted(sub, ctx, WorkflowID("wf-1"), "")
 
 	for i := range 60 {
-		_ = sub.OnEvent(ctx, &testEvent{
-			eventType: EventActivityStarted,
-			aID:       ActivityID(fmt.Sprintf("step%d", i)),
-			aName:     ActivityName(fmt.Sprintf("Step %d", i)),
-		})
+		sendActivityStarted(t, sub, ctx,
+			ActivityID(fmt.Sprintf("step%d", i)),
+			ActivityName(fmt.Sprintf("Step %d", i)))
 	}
 
 	renderer.Render()
@@ -324,29 +274,12 @@ func TestInlineRenderer_EndToEnd_Lifecycle(t *testing.T) {
 	ctx := context.Background()
 
 	// Start the workflow
-	_ = sub.OnEvent(ctx, &testEvent{
-		eventType: EventWorkflowStarted,
-		wID:       WorkflowID("wf-e2e"),
-		wName:     WorkflowName("E2E Test"),
-	})
+	_ = sendWorkflowStarted(sub, ctx, WorkflowID("wf-e2e"), WorkflowName("E2E Test"))
 
 	// Register activities with mixed states
-	_ = sub.OnEvent(ctx, &testEvent{
-		eventType: EventActivityStarted,
-		aID:       ActivityID("build"),
-		aName:     ActivityName("Build Project"),
-	})
-	_ = sub.OnEvent(ctx, &testEvent{
-		eventType: EventActivityCompleted,
-		aID:       ActivityID("build"),
-		aName:     ActivityName("Build Project"),
-		duration:  2 * time.Second,
-	})
-	_ = sub.OnEvent(ctx, &testEvent{
-		eventType: EventActivityStarted,
-		aID:       ActivityID("test"),
-		aName:     ActivityName("Run Tests"),
-	})
+	sendActivityStarted(t, sub, ctx, ActivityID("build"), ActivityName("Build Project"))
+	sendActivityCompleted(t, sub, ctx, ActivityID("build"), ActivityName("Build Project"), 2*time.Second)
+	sendActivityStarted(t, sub, ctx, ActivityID("test"), ActivityName("Run Tests"))
 
 	renderer.SetStartTime(time.Now().Add(-3 * time.Second))
 

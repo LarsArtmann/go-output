@@ -144,10 +144,7 @@ func TestInlineRendererGolden_FirstFrame(t *testing.T) {
 	renderer.SetNoColor(true)
 
 	ctx := context.Background()
-	_ = sub.OnEvent(ctx, &testEvent{
-		eventType: EventWorkflowStarted,
-		wID:       WorkflowID("wf-1"),
-	})
+	_ = sendWorkflowStarted(sub, ctx, WorkflowID("wf-1"), "")
 	registerActivity(sub, ctx, ActivityID("phase:build"), ActivityName("Build"))
 	registerActivity(sub, ctx, ActivityID("compile"), ActivityName("Compile"), "phase:build")
 	registerActivity(sub, ctx, ActivityID("test"), ActivityName("Run Tests"), "phase:build")
@@ -169,10 +166,7 @@ func TestInlineRendererGolden_SecondFrame(t *testing.T) {
 	renderer.SetNoColor(true)
 
 	ctx := context.Background()
-	_ = sub.OnEvent(ctx, &testEvent{
-		eventType: EventWorkflowStarted,
-		wID:       WorkflowID("wf-1"),
-	})
+	_ = sendWorkflowStarted(sub, ctx, WorkflowID("wf-1"), "")
 	registerActivity(sub, ctx, ActivityID("phase:build"), ActivityName("Build"))
 	registerActivity(sub, ctx, ActivityID("compile"), ActivityName("Compile"), "phase:build")
 	registerActivity(sub, ctx, ActivityID("lint"), ActivityName("Lint"), "phase:build")
@@ -180,11 +174,7 @@ func TestInlineRendererGolden_SecondFrame(t *testing.T) {
 	renderer.Render()
 	buf.Reset()
 
-	_ = sub.OnEvent(ctx, &testEvent{
-		eventType: EventActivityStarted,
-		aID:       ActivityID("compile"),
-		aName:     ActivityName("Compile"),
-	})
+	sendActivityStarted(t, sub, ctx, ActivityID("compile"), ActivityName("Compile"))
 
 	renderer.Render()
 
