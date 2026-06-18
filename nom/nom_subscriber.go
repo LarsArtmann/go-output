@@ -76,6 +76,10 @@ func (v *subscriberView) Nodes() []output.GraphNode {
 }
 
 // Edges projects the dependency tree's edges for diagram export.
+//
+// Lock ordering: acquires ns.mu.RLock first, then tree.mu.RLock.
+// This ordering (subscriber → tree) is consistent across all code paths
+// that nest both locks. Never reverse this order — it would deadlock.
 func (v *subscriberView) Edges() []output.GraphEdge {
 	v.ns.mu.RLock()
 	defer v.ns.mu.RUnlock()

@@ -3,7 +3,6 @@ package integration
 import (
 	"context"
 	"errors"
-	"image/color"
 	"testing"
 	"time"
 
@@ -122,13 +121,13 @@ func TestNOMDependencyTree_Integration(t *testing.T) {
 		)
 
 		mustUpdateActivityStatus(t, tree, nom.NewActivityID("root"),
-			nom.ActivityStatusCompleted, nom.SymbolCompleted, nom.ColorCompleted, time.Now(), 0)
+			nom.ActivityStatusCompleted, time.Now())
 		mustUpdateActivityStatus(t, tree, nom.NewActivityID("child1"),
-			nom.ActivityStatusRunning, nom.SymbolRunning, nom.ColorRunning, time.Now(), 10*time.Second)
+			nom.ActivityStatusRunning, time.Now())
 		mustUpdateActivityStatus(t, tree, nom.NewActivityID("child2"),
-			nom.ActivityStatusPending, nom.SymbolPaused, nom.ColorPaused, time.Time{}, 0)
+			nom.ActivityStatusPending, time.Time{})
 		mustUpdateActivityStatus(t, tree, nom.NewActivityID("grandchild"),
-			nom.ActivityStatusFailed, nom.SymbolFailed, nom.ColorFailed, time.Now(), 0)
+			nom.ActivityStatusFailed, time.Now())
 
 		rendered := tree.RenderString(10)
 		if rendered == "" {
@@ -280,18 +279,14 @@ func (e *nomTestEvent) GetActivityName() nom.ActivityName { return e.aName }
 func (e *nomTestEvent) GetDuration() time.Duration        { return e.duration }
 func (e *nomTestEvent) GetError() error                   { return e.err }
 
-// mustUpdateActivityStatus calls DependencyTree.UpdateActivityStatus and
-// fails the test on unexpected error. Test setup expects the activity to
-// exist, so any error is a programming bug.
+// mustUpdateActivityStatus directly mutates the shared *Activity pointer
+// on the tree node (symbol/color/shape are derived from status).
 func mustUpdateActivityStatus(
 	t *testing.T,
 	tree *nom.DependencyTree,
 	id nom.ActivityID,
 	status nom.ActivityStatus,
-	_ string,
-	_ color.Color,
 	startTime time.Time,
-	_ time.Duration,
 ) {
 	t.Helper()
 
