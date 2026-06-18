@@ -49,6 +49,6 @@ func sortKeyForNode(node *ActivityNode) sortKey {
 	return sortKey{
 		interest:   node.Status.Interest(),
 		elapsed:    node.CurrentElapsed,
-		activityID: node.ActivityID,
+		activityID: ActivityID(node.ID.Get()),
 	}
 }

@@ -3,23 +3,29 @@ package nom
 import (
 	"testing"
 	"time"
+
+	"github.com/larsartmann/go-output"
 )
 
 func TestElideCompletedUnderPressure(t *testing.T) {
 	t.Parallel()
 
 	completedNode := &ActivityNode{
-		ActivityID:   ActivityID("c1"),
-		ActivityName: "Completed Step",
-		DisplayState: DisplayState{
+		Activity: Activity{
+			GraphNode: output.GraphNode{
+				ID:    output.NewBrandedID[output.GraphNodeIDBrand]("c1"),
+				Label: output.NewBrandedID[output.GraphNodeLabelBrand]("Completed Step"),
+			},
 			Status:         ActivityStatusCompleted,
 			CurrentElapsed: 5 * time.Second,
 		},
 	}
 	runningNode := &ActivityNode{
-		ActivityID:   ActivityID("r1"),
-		ActivityName: "Running Step",
-		DisplayState: DisplayState{
+		Activity: Activity{
+			GraphNode: output.GraphNode{
+				ID:    output.NewBrandedID[output.GraphNodeIDBrand]("r1"),
+				Label: output.NewBrandedID[output.GraphNodeLabelBrand]("Running Step"),
+			},
 			Status:         ActivityStatusRunning,
 			CurrentElapsed: 2 * time.Second,
 		},
@@ -98,8 +104,8 @@ func TestElideCompletedUnderPressure(t *testing.T) {
 					break
 				}
 
-				if string(got[i].ActivityID) != wantID {
-					t.Errorf("child[%d] = %s, want %s", i, got[i].ActivityID, wantID)
+				if got[i].ID.Get() != wantID {
+					t.Errorf("child[%d] = %s, want %s", i, got[i].ID.Get(), wantID)
 				}
 			}
 		})

@@ -83,7 +83,25 @@ func (ns *NOMStyleSubscriber) SyncActivityTimingToTree() {
 			continue
 		}
 
-		// Copy display state from activity to tree node.
-		node.DisplayState = activity.DisplayState
+		// Sync fields from ActivityDisplayState to ActivityNode's embedded Activity.
+		syncActivityToNode(node, activity)
 	}
+}
+
+// syncActivityToNode copies display fields from ActivityDisplayState to an
+// ActivityNode's embedded Activity, including Shape/Style for diagram export.
+// This is the bridge sync that will be eliminated once the subscriber stores
+// Activities directly.
+func syncActivityToNode(node *ActivityNode, ads *ActivityDisplayState) {
+	node.Status = ads.Status
+	node.Symbol = ads.Symbol
+	node.Color = ads.Color
+	node.StartTime = ads.StartTime
+	node.EstimatedTime = ads.EstimatedTime
+	node.CurrentElapsed = ads.CurrentElapsed
+	node.EndTime = ads.EndTime
+	node.OperationType = ads.OperationType
+	node.Err = ads.Error
+	node.Shape = ads.Status.NodeShape()
+	node.Style = ads.Status.GraphStyle()
 }

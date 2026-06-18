@@ -20,7 +20,7 @@ func (dt *DependencyTree) Build() error {
 	}
 	// Sort root nodes by activity ID for consistent display
 	sort.Slice(dt.roots, func(i, j int) bool {
-		return string(dt.roots[i].ActivityID) < string(dt.roots[j].ActivityID)
+		return string(dt.roots[i].ID.Get()) < string(dt.roots[j].ID.Get())
 	})
 	// Calculate depths for all nodes
 	for _, root := range dt.roots {

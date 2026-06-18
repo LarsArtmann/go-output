@@ -34,8 +34,8 @@ func TestDependencyTree_AddActivity(t *testing.T) {
 			t.Fatal("node should exist after AddActivity")
 		}
 
-		if node.ActivityName != "Activity A" {
-			t.Errorf("ActivityName = %q, want %q", node.ActivityName, "Activity A")
+		if node.Label.Get() != "Activity A" {
+			t.Errorf("ActivityName = %q, want %q", node.Label.Get(), "Activity A")
 		}
 	})
 
@@ -59,12 +59,12 @@ func TestDependencyTree_AddActivity(t *testing.T) {
 			t.Fatal("child node should exist")
 		}
 
-		if child.Parent == nil || child.Parent.ActivityID != ActivityID("parent") {
+		if child.Parent == nil || child.Parent.ID.Get() != "parent" {
 			t.Error("child's parent should be 'parent'")
 		}
 
 		parent := dt.GetNode(ActivityID("parent"))
-		if len(parent.Children) != 1 || parent.Children[0].ActivityID != ActivityID("child") {
+		if len(parent.Children) != 1 || parent.Children[0].ID.Get() != "child" {
 			t.Error("parent should have child")
 		}
 	})
@@ -89,11 +89,11 @@ func TestDependencyTree_Build(t *testing.T) {
 
 	for _, root := range roots {
 		if !root.IsRoot {
-			t.Errorf("node %q should be a root", root.ActivityID)
+			t.Errorf("node %q should be a root", root.ID.Get())
 		}
 
 		if root.Depth != 0 {
-			t.Errorf("root %q depth = %d, want 0", root.ActivityID, root.Depth)
+			t.Errorf("root %q depth = %d, want 0", root.ID.Get(), root.Depth)
 		}
 	}
 }
@@ -140,8 +140,8 @@ func TestDependencyTree_FindNodesByStatus(t *testing.T) {
 		t.Errorf("expected 1 running node, got %d", len(running))
 	}
 
-	if running[0].ActivityID != ActivityID("a") {
-		t.Errorf("running node = %q, want %q", running[0].ActivityID, "a")
+	if running[0].ID.Get() != "a" {
+		t.Errorf("running node = %q, want %q", running[0].ID.Get(), "a")
 	}
 }
 

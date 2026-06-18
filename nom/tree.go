@@ -12,12 +12,10 @@ const (
 
 // ActivityNode represents a node in the dependency tree.
 type ActivityNode struct {
-	// Shared display state (synced from ActivityDisplayState)
-	DisplayState
+	// Activity is the source of truth (embeds GraphNode + Status + timing).
+	// Synced from the subscriber's Activity via SyncActivityTimingToTree.
+	Activity
 
-	// Core activity information
-	ActivityID   ActivityID
-	ActivityName string
 	// Tree structure
 	Parent           *ActivityNode
 	Children         []*ActivityNode
@@ -50,14 +48,9 @@ func NewDependencyTree() *DependencyTree {
 
 // newActivityNode creates a new ActivityNode with pending status.
 func newActivityNode(id ActivityID, name string) *ActivityNode {
+	a := NewActivity(string(id), name)
 	return &ActivityNode{
-		ActivityID:   id,
-		ActivityName: name,
-		DisplayState: DisplayState{
-			Status: ActivityStatusPending,
-			Symbol: SymbolPaused,
-			Color:  ColorPaused,
-		},
+		Activity:    *a,
 		Children:    make([]*ActivityNode, 0),
 		IsDisplayed: true,
 	}
@@ -66,14 +59,14 @@ func newActivityNode(id ActivityID, name string) *ActivityNode {
 // hasChild returns true if this node already has a child with the given activity ID.
 func (n *ActivityNode) hasChild(id ActivityID) bool {
 	return slices.ContainsFunc(n.Children, func(c *ActivityNode) bool {
-		return c.ActivityID == id
+		return c.ID.Get() == string(id)
 	})
 }
 
 // removeChild removes the child with the given activity ID, if present.
 func (n *ActivityNode) removeChild(id ActivityID) {
 	n.Children = slices.DeleteFunc(n.Children, func(c *ActivityNode) bool {
-		return c.ActivityID == id
+		return c.ID.Get() == string(id)
 	})
 }
 

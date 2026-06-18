@@ -74,7 +74,7 @@ func (dt *DependencyTree) findNodesByStatus(status ActivityStatus) []*ActivityNo
 	}
 
 	sort.Slice(result, func(i, j int) bool {
-		return string(result[i].ActivityID) < string(result[j].ActivityID)
+		return string(result[i].ID.Get()) < string(result[j].ID.Get())
 	})
 
 	return result

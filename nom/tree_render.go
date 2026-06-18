@@ -195,7 +195,7 @@ func (dt *DependencyTree) renderLine(entry visibleEntry, maxWidth int) string {
 		color = ColorPhase
 	}
 
-	activityDisplay := fmt.Sprintf("%s %s", symbol, node.ActivityName)
+	activityDisplay := fmt.Sprintf("%s %s", symbol, node.Label.Get())
 
 	timingInfo := FormatActivityNodeTiming(
 		node.Status,
@@ -212,7 +212,7 @@ func (dt *DependencyTree) renderLine(entry visibleEntry, maxWidth int) string {
 
 		for i, depID := range node.SecondaryParents {
 			if depNode, ok := dt.nodes[depID]; ok {
-				depNames[i] = depNode.ActivityName
+				depNames[i] = depNode.Label.Get()
 			} else {
 				depNames[i] = depID.String()
 			}
@@ -283,7 +283,7 @@ func (dt *DependencyTree) RenderNode(node *ActivityNode, visibleNodes []*Activit
 		color = ColorPhase
 	}
 
-	activityDisplay := fmt.Sprintf("%s %s", symbol, node.ActivityName)
+	activityDisplay := fmt.Sprintf("%s %s", symbol, node.Label.Get())
 
 	timingInfo := FormatActivityNodeTiming(
 		node.Status,
@@ -303,5 +303,5 @@ func (dt *DependencyTree) RenderNode(node *ActivityNode, visibleNodes []*Activit
 }
 
 func isPhaseNode(node *ActivityNode) bool {
-	return strings.HasPrefix(string(node.ActivityID), "phase:")
+	return strings.HasPrefix(string(node.ID.Get()), "phase:")
 }

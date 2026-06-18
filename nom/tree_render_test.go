@@ -81,7 +81,7 @@ func TestDependencyTree_AddActivity_WithNonExistentDependency(t *testing.T) {
 	}
 
 	child := dt.GetNode(ActivityID("child"))
-	if child.Parent == nil || child.Parent.ActivityID != ActivityID("nonexistent") {
+	if child.Parent == nil || child.Parent.ID.Get() != "nonexistent" {
 		t.Error("child's parent should be auto-created dependency")
 	}
 }
@@ -94,8 +94,8 @@ func TestDependencyTree_AddActivity_UpdateExisting(t *testing.T) {
 	dt.AddActivity(ActivityID("a"), "Updated", nil)
 
 	node := dt.GetNode(ActivityID("a"))
-	if node.ActivityName != "Updated" {
-		t.Errorf("ActivityName = %q, want %q", node.ActivityName, "Updated")
+	if node.Label.Get() != "Updated" {
+		t.Errorf("ActivityName = %q, want %q", node.Label.Get(), "Updated")
 	}
 }
 
