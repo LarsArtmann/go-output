@@ -7,6 +7,11 @@ import (
 	"github.com/larsartmann/go-output"
 )
 
+// graphNodeID is a test helper that builds a branded GraphNodeID from a plain string.
+func graphNodeID(s string) output.GraphNodeID {
+	return output.NewBrandedID[output.GraphNodeIDBrand](s)
+}
+
 // TestDiagramExport_SubscriberProjection proves the subscriber's Store()
 // correctly projects live progress state as output.GraphNode/Edge slices.
 func TestDiagramExport_SubscriberProjection(t *testing.T) {
@@ -95,14 +100,8 @@ func TestDiagramExport_EdgeStructure(t *testing.T) {
 	store.Upsert(NewActivity("b", "Beta"))
 	store.Upsert(NewActivity("c", "Gamma"))
 
-	store.AddEdge(
-		output.NewBrandedID[output.GraphNodeIDBrand]("a"),
-		output.NewBrandedID[output.GraphNodeIDBrand]("b"),
-	)
-	store.AddEdge(
-		output.NewBrandedID[output.GraphNodeIDBrand]("b"),
-		output.NewBrandedID[output.GraphNodeIDBrand]("c"),
-	)
+	store.AddEdge(graphNodeID("a"), graphNodeID("b"))
+	store.AddEdge(graphNodeID("b"), graphNodeID("c"))
 
 	edges := store.Edges()
 	if len(edges) != 2 {
