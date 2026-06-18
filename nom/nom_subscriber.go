@@ -47,5 +47,6 @@ func NewNOMStyleSubscriber() *NOMStyleSubscriber {
 func (ns *NOMStyleSubscriber) Store() *ActivityStore {
 	ns.mu.RLock()
 	defer ns.mu.RUnlock()
+
 	return ns.store
 }

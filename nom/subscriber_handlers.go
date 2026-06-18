@@ -179,6 +179,7 @@ func (ns *NOMStyleSubscriber) handleActivityStarted(
 
 	// Mirror to ActivityStore for diagram export
 	ns.syncToStore(aa.GetActivityID(), activity)
+
 	for _, dep := range deps {
 		ns.store.AddEdge(
 			output.NewBrandedID[output.GraphNodeIDBrand](string(dep)),

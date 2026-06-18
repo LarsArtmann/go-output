@@ -31,6 +31,7 @@ func NewMultiSubscriber(subscribers ...EventSubscriber) *MultiSubscriber {
 			subs = append(subs, s)
 		}
 	}
+
 	return &MultiSubscriber{subscribers: subs}
 }
 
@@ -39,8 +40,10 @@ func (m *MultiSubscriber) Add(s EventSubscriber) {
 	if s == nil {
 		return
 	}
+
 	m.mu.Lock()
 	defer m.mu.Unlock()
+
 	m.subscribers = append(m.subscribers, s)
 }
 
@@ -59,6 +62,7 @@ func (m *MultiSubscriber) OnEvent(ctx context.Context, event Event) error {
 			firstErr = err
 		}
 	}
+
 	return firstErr
 }
 
@@ -66,7 +70,9 @@ func (m *MultiSubscriber) OnEvent(ctx context.Context, event Event) error {
 func (m *MultiSubscriber) Subscribers() []EventSubscriber {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
+
 	out := make([]EventSubscriber, len(m.subscribers))
 	copy(out, m.subscribers)
+
 	return out
 }
