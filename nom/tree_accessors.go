@@ -1,7 +1,8 @@
 package nom
 
 import (
-	"sort"
+	"cmp"
+	"slices"
 )
 
 func (dt *DependencyTree) getDisplayActivities() []ActivityID {
@@ -73,8 +74,8 @@ func (dt *DependencyTree) findNodesByStatus(status ActivityStatus) []*ActivityNo
 		}
 	}
 
-	sort.Slice(result, func(i, j int) bool {
-		return string(result[i].ID.Get()) < string(result[j].ID.Get())
+	slices.SortStableFunc(result, func(a, b *ActivityNode) int {
+		return cmp.Compare(a.ID.Get(), b.ID.Get())
 	})
 
 	return result

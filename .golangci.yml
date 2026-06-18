@@ -135,6 +135,7 @@ linters:
             - fmt
             - html
             - io
+            - maps
             - os
             - slices
             - sort
@@ -258,6 +259,7 @@ linters:
             - html
             - image/color
             - io
+            - maps
             - os
             - path/filepath
             - slices

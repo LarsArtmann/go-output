@@ -303,5 +303,5 @@ func (dt *DependencyTree) RenderNode(node *ActivityNode, visibleNodes []*Activit
 }
 
 func isPhaseNode(node *ActivityNode) bool {
-	return strings.HasPrefix(string(node.ID.Get()), "phase:")
+	return strings.HasPrefix(node.ID.Get(), "phase:")
 }

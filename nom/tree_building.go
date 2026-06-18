@@ -1,7 +1,8 @@
 package nom
 
 import (
-	"sort"
+	"cmp"
+	"slices"
 )
 
 // Build constructs the tree structure and identifies root nodes.
@@ -19,8 +20,8 @@ func (dt *DependencyTree) Build() error {
 		}
 	}
 	// Sort root nodes by activity ID for consistent display
-	sort.Slice(dt.roots, func(i, j int) bool {
-		return string(dt.roots[i].ID.Get()) < string(dt.roots[j].ID.Get())
+	slices.SortStableFunc(dt.roots, func(a, b *ActivityNode) int {
+		return cmp.Compare(a.ID.Get(), b.ID.Get())
 	})
 	// Calculate depths for all nodes
 	for _, root := range dt.roots {

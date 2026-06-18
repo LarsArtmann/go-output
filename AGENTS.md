@@ -14,26 +14,26 @@ A reusable Go library for CLI output formatting (16 formats across table/tree/gr
 
 18 modules (root + 17 sub-modules). Each has its own `go.mod`; **deps live in `go.mod`, not here** — read the file for ground truth.
 
-| Module | Purpose |
-| --- | --- |
-| **root** (`output`) | Core types, Format/Shape enums, registries, Markdown, Tree, Graph state |
-| `delimited/` | CSV + TSV writers |
-| `serialization/` | JSON + YAML + TOML + JSONL |
-| `markup/` | XML + HTML + AsciiDoc + Streaming HTML |
-| `table/` | Lipgloss terminal tables |
-| `d2/` | D2 diagrams (rich domain model: shapes, arrows, SQL tables) |
-| `graph/` | DOT + Mermaid renderers (share root's `GraphRendererState`) |
-| `plantuml/` | PlantUML diagrams |
-| `nom/` | NOM-style real-time progress (dependency tree, timing cache, inline renderer) |
-| `tui/` | Bubble Tea interactive TUI (depends on nom) |
-| `enum/` | Generic enum utilities (zero deps) |
-| `escape/` | Format-specific escaping (zero deps) |
-| `envdetect/` | Shared CI / NO_COLOR env detection (zero deps; used by root + nom) |
-| `testhelpers/` | Shared test assertions (zero deps) |
-| `testhelpers/graphtest/` | Shared graph test fixtures |
-| `bdd/` | BDD test suite (Ginkgo/Gomega, test-only) |
-| `integration/` | Cross-module integration tests |
-| `examples/` | Usage examples |
+| Module                   | Purpose                                                                       |
+| ------------------------ | ----------------------------------------------------------------------------- |
+| **root** (`output`)      | Core types, Format/Shape enums, registries, Markdown, Tree, Graph state       |
+| `delimited/`             | CSV + TSV writers                                                             |
+| `serialization/`         | JSON + YAML + TOML + JSONL                                                    |
+| `markup/`                | XML + HTML + AsciiDoc + Streaming HTML                                        |
+| `table/`                 | Lipgloss terminal tables                                                      |
+| `d2/`                    | D2 diagrams (rich domain model: shapes, arrows, SQL tables)                   |
+| `graph/`                 | DOT + Mermaid renderers (share root's `GraphRendererState`)                   |
+| `plantuml/`              | PlantUML diagrams                                                             |
+| `nom/`                   | NOM-style real-time progress (dependency tree, timing cache, inline renderer) |
+| `tui/`                   | Bubble Tea interactive TUI (depends on nom)                                   |
+| `enum/`                  | Generic enum utilities (zero deps)                                            |
+| `escape/`                | Format-specific escaping (zero deps)                                          |
+| `envdetect/`             | Shared CI / NO_COLOR env detection (zero deps; used by root + nom)            |
+| `testhelpers/`           | Shared test assertions (zero deps)                                            |
+| `testhelpers/graphtest/` | Shared graph test fixtures                                                    |
+| `bdd/`                   | BDD test suite (Ginkgo/Gomega, test-only)                                     |
+| `integration/`           | Cross-module integration tests                                                |
+| `examples/`              | Usage examples                                                                |
 
 ## Commands
 
