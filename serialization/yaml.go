@@ -17,8 +17,8 @@ var (
 //nolint:gochecknoinits // Registers YAML TableData and AnyData marshalers plus format capabilities.
 func init() {
 	output.RegisterFormatShapes(output.FormatYAML, output.ShapeTable, output.ShapeTree, output.ShapeGraph)
-	output.RegisterTableDataMarshaler(output.FormatYAML, renderYAMLTableData)
-	output.RegisterAnyDataMarshaler(output.FormatYAML, renderYAMLAnyData)
+	output.RegisterTableDataRenderer(output.FormatYAML, renderYAMLTableData)
+	output.RegisterAnyDataRenderer(output.FormatYAML, renderYAMLAnyData)
 }
 
 func renderYAMLAnyData(w io.Writer, data any, _ output.RenderOptions) error {

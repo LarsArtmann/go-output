@@ -7,9 +7,9 @@ import (
 	"github.com/larsartmann/go-output"
 )
 
-//nolint:gochecknoinits // Registers PlantUML TableDataMarshaler for registry-based dispatch.
+//nolint:gochecknoinits // Registers PlantUML TableDataRenderer for registry-based dispatch.
 func init() {
-	output.RegisterTableDataMarshaler(output.FormatPlantUML, renderPlantUMLTableData)
+	output.RegisterTableDataRenderer(output.FormatPlantUML, renderPlantUMLTableData)
 }
 
 func renderPlantUMLTableData(w io.Writer, data *output.TableData, _ output.RenderOptions) error {

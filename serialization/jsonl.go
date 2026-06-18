@@ -18,7 +18,7 @@ var (
 //nolint:gochecknoinits // Registers JSONL TableData marshaler and format capabilities.
 func init() {
 	output.RegisterFormatShapes(output.FormatJSONL, output.ShapeTable)
-	output.RegisterTableDataMarshaler(output.FormatJSONL, renderJSONLTableData)
+	output.RegisterTableDataRenderer(output.FormatJSONL, renderJSONLTableData)
 }
 
 // JSONLWriter writes JSON Lines output — one JSON object per line.

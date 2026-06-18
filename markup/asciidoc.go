@@ -16,7 +16,7 @@ var (
 //nolint:gochecknoinits // Registers AsciiDoc TableData marshaler and format capabilities.
 func init() {
 	output.RegisterFormatShapes(output.FormatAsciiDoc, output.ShapeTable)
-	output.RegisterTableDataMarshaler(output.FormatAsciiDoc, renderAsciiDocTableData)
+	output.RegisterTableDataRenderer(output.FormatAsciiDoc, renderAsciiDocTableData)
 }
 
 // AsciiDocTableRenderer renders TableData as an AsciiDoc table.

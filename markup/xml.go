@@ -13,7 +13,7 @@ import (
 //nolint:gochecknoinits // Registers XML TableData marshaler and format capabilities.
 func init() {
 	output.RegisterFormatShapes(output.FormatXML, output.ShapeTable)
-	output.RegisterTableDataMarshaler(output.FormatXML, renderXMLTableData)
+	output.RegisterTableDataRenderer(output.FormatXML, renderXMLTableData)
 }
 
 // MarshalXML encodes v to XML.

@@ -17,8 +17,8 @@ var (
 //nolint:gochecknoinits // Registers TOML TableData and AnyData marshalers plus format capabilities.
 func init() {
 	output.RegisterFormatShapes(output.FormatTOML, output.ShapeTable, output.ShapeTree, output.ShapeGraph)
-	output.RegisterTableDataMarshaler(output.FormatTOML, renderTOMLTableData)
-	output.RegisterAnyDataMarshaler(output.FormatTOML, renderTOMLAnyData)
+	output.RegisterTableDataRenderer(output.FormatTOML, renderTOMLTableData)
+	output.RegisterAnyDataRenderer(output.FormatTOML, renderTOMLAnyData)
 }
 
 func renderTOMLAnyData(w io.Writer, data any, _ output.RenderOptions) error {

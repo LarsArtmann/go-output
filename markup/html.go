@@ -19,7 +19,7 @@ var (
 //nolint:gochecknoinits // Registers HTML TableData marshaler and format capabilities.
 func init() {
 	output.RegisterFormatShapes(output.FormatHTML, output.ShapeTable, output.ShapeTree)
-	output.RegisterTableDataMarshaler(output.FormatHTML, renderHTMLTableData)
+	output.RegisterTableDataRenderer(output.FormatHTML, renderHTMLTableData)
 }
 
 // HTMLRenderer implements the Renderer interface for HTML table output.

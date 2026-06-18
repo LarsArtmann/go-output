@@ -8,9 +8,9 @@ import (
 	"github.com/larsartmann/go-output/escape"
 )
 
-//nolint:gochecknoinits // Registers D2 TableDataMarshaler for registry-based dispatch.
+//nolint:gochecknoinits // Registers D2 TableDataRenderer for registry-based dispatch.
 func init() {
-	output.RegisterTableDataMarshaler(output.FormatD2, renderD2TableData)
+	output.RegisterTableDataRenderer(output.FormatD2, renderD2TableData)
 }
 
 func renderD2TableData(w io.Writer, data *output.TableData, _ output.RenderOptions) error {

@@ -280,7 +280,7 @@ func TestRegisterTableDataMarshaler_ConcurrentAccess(t *testing.T) {
 		go func() {
 			defer wg.Done()
 
-			RegisterTableDataMarshaler(
+			RegisterTableDataRenderer(
 				Format("race-test-"+strconv.Itoa(i)),
 				func(w io.Writer, data *TableData, opts RenderOptions) error { return nil },
 			)

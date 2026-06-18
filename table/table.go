@@ -17,9 +17,9 @@ var (
 	_ output.TableRenderer = (*tableRendererAdapter)(nil)
 )
 
-//nolint:gochecknoinits // Registers Table TableDataMarshaler for registry-based dispatch.
+//nolint:gochecknoinits // Registers Table TableDataRenderer for registry-based dispatch.
 func init() {
-	output.RegisterTableDataMarshaler(output.FormatTable, renderStyledTableData)
+	output.RegisterTableDataRenderer(output.FormatTable, renderStyledTableData)
 }
 
 func renderStyledTableData(w io.Writer, data *output.TableData, opts output.RenderOptions) error {

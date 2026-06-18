@@ -15,10 +15,10 @@ var (
 	_ output.GraphRenderer = (*MermaidRenderer)(nil)
 )
 
-//nolint:gochecknoinits // Registers Mermaid format capabilities and TableDataMarshaler.
+//nolint:gochecknoinits // Registers Mermaid format capabilities and TableDataRenderer.
 func init() {
 	output.RegisterFormatShapes(output.FormatMermaid, output.ShapeTable, output.ShapeTree, output.ShapeGraph)
-	output.RegisterTableDataMarshaler(output.FormatMermaid, renderMermaidTableData)
+	output.RegisterTableDataRenderer(output.FormatMermaid, renderMermaidTableData)
 }
 
 func renderMermaidTableData(w io.Writer, data *output.TableData, _ output.RenderOptions) error {

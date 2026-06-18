@@ -15,10 +15,10 @@ var (
 	_ output.GraphRenderer = (*DOTRenderer)(nil)
 )
 
-//nolint:gochecknoinits // Registers DOT format capabilities and TableDataMarshaler.
+//nolint:gochecknoinits // Registers DOT format capabilities and TableDataRenderer.
 func init() {
 	output.RegisterFormatShapes(output.FormatDOT, output.ShapeTable, output.ShapeTree, output.ShapeGraph)
-	output.RegisterTableDataMarshaler(output.FormatDOT, renderDOTTableData)
+	output.RegisterTableDataRenderer(output.FormatDOT, renderDOTTableData)
 }
 
 func renderDOTTableData(w io.Writer, data *output.TableData, _ output.RenderOptions) error {

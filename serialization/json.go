@@ -16,8 +16,8 @@ var (
 //nolint:gochecknoinits // Registers JSON TableData and AnyData marshalers plus format capabilities.
 func init() {
 	output.RegisterFormatShapes(output.FormatJSON, output.ShapeTable, output.ShapeTree, output.ShapeGraph)
-	output.RegisterTableDataMarshaler(output.FormatJSON, renderJSONTableData)
-	output.RegisterAnyDataMarshaler(output.FormatJSON, renderJSONAnyData)
+	output.RegisterTableDataRenderer(output.FormatJSON, renderJSONTableData)
+	output.RegisterAnyDataRenderer(output.FormatJSON, renderJSONAnyData)
 }
 
 func renderJSONAnyData(w io.Writer, data any, _ output.RenderOptions) error {

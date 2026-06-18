@@ -12,7 +12,7 @@ import (
 //nolint:gochecknoinits // Registers TSV TableData marshaler and format capabilities.
 func init() {
 	output.RegisterFormatShapes(output.FormatTSV, output.ShapeTable)
-	output.RegisterTableDataMarshaler(output.FormatTSV,
+	output.RegisterTableDataRenderer(output.FormatTSV,
 		func(w io.Writer, data *output.TableData, _ output.RenderOptions) error {
 			return renderDelimitedTableData(w, data, MarshalTSVFromTableData, "tsv")
 		})
