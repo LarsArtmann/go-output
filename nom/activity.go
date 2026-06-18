@@ -64,10 +64,12 @@ func (a *Activity) SetRunning() {
 // finalizes CurrentElapsed so renderers show the total run duration.
 func (a *Activity) SetCompleted() {
 	a.Status = ActivityStatusCompleted
+
 	a.EndTime = time.Now()
 	if !a.StartTime.IsZero() {
 		a.CurrentElapsed = a.EndTime.Sub(a.StartTime)
 	}
+
 	a.applyVisualStyle()
 }
 
@@ -76,10 +78,12 @@ func (a *Activity) SetCompleted() {
 func (a *Activity) SetFailed(err error) {
 	a.Status = ActivityStatusFailed
 	a.Err = err
+
 	a.EndTime = time.Now()
 	if !a.StartTime.IsZero() {
 		a.CurrentElapsed = a.EndTime.Sub(a.StartTime)
 	}
+
 	a.applyVisualStyle()
 }
 

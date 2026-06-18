@@ -8,9 +8,9 @@ import (
 //
 // IMPORTANT: The returned pointer is SHARED state. The caller is responsible
 // for synchronization when mutating it. The tree itself uses an internal
-// RWMutex, so individual method calls (AddActivity, UpdateActivityStatus,
-// Render, etc.) are safe. However, sequences of operations that read and
-// then write are not atomic with respect to concurrent subscribers.
+// RWMutex, so individual method calls (AddActivity, Render, etc.) are safe.
+// However, sequences of operations that read and then write are not atomic
+// with respect to concurrent subscribers.
 //
 // Typical use cases:
 //   - Read-only rendering: safe to call Render() at any time.

@@ -16,7 +16,7 @@ import (
 func setStatusWithElapsed(
 	dt *DependencyTree,
 	id ActivityID,
-	status ActivityStatus, _, _ interface{},
+	status ActivityStatus, _, _ any,
 	t time.Time, elapsed time.Duration,
 ) {
 	node := dt.nodes[id]

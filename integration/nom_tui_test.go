@@ -115,7 +115,11 @@ func TestNOMDependencyTree_Integration(t *testing.T) {
 		tree.AddActivity(nom.NewActivityID("root"), nom.NewActivity("root", "Root Task"), nil)
 		tree.AddActivity(nom.NewActivityID("child1"), nom.NewActivity("child1", "Child 1"), []nom.ActivityID{"root"})
 		tree.AddActivity(nom.NewActivityID("child2"), nom.NewActivity("child2", "Child 2"), []nom.ActivityID{"root"})
-		tree.AddActivity(nom.NewActivityID("grandchild"), nom.NewActivity("grandchild", "Grandchild"), []nom.ActivityID{"child1"})
+		tree.AddActivity(
+			nom.NewActivityID("grandchild"),
+			nom.NewActivity("grandchild", "Grandchild"),
+			[]nom.ActivityID{"child1"},
+		)
 
 		mustUpdateActivityStatus(t, tree, nom.NewActivityID("root"),
 			nom.ActivityStatusCompleted, nom.SymbolCompleted, nom.ColorCompleted, time.Now(), 0)
