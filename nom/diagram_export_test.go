@@ -3,13 +3,69 @@ package nom
 import (
 	"context"
 	"testing"
-
-	"github.com/larsartmann/go-output"
+	"time"
 )
 
-// graphNodeID is a test helper that builds a branded GraphNodeID from a plain string.
-func graphNodeID(s string) output.GraphNodeID {
-	return output.NewBrandedID[output.GraphNodeIDBrand](s)
+// TestDiagramExport_StatusShapes verifies distinct NodeShape per status.
+func TestDiagramExport_StatusShapes(t *testing.T) {
+	t.Parallel()
+
+	subscriber := NewNOMStyleSubscriber()
+	ctx := context.Background()
+
+	diagramFireWorkflow(t, subscriber, ctx, "wf", "Workflow")
+	diagramFireActivity(t, subscriber, ctx, "build", "Build")
+	diagramFireActivity(t, subscriber, ctx, "test", "Test")
+	diagramFireActivity(t, subscriber, ctx, "lint", "Lint")
+
+	// All start as Running; transition to different terminal states.
+	// testSetStatus mutates the shared *Activity pointer, so Store() sees it.
+	dt := subscriber.GetDependencyTree()
+	now := time.Now()
+	testSetStatus(dt, ActivityID("test"), ActivityStatusCompleted, now)
+	testSetStatus(dt, ActivityID("lint"), ActivityStatusFailed, now)
+
+	nodes := subscriber.Store().Nodes()
+
+	shapes := make(map[string]string)
+	for _, n := range nodes {
+		shapes[n.ID.Get()] = string(n.Shape)
+	}
+
+	if shapes["build"] == shapes["test"] {
+		t.Error("running and completed should have different shapes")
+	}
+
+	if shapes["test"] == shapes["lint"] {
+		t.Error("completed and failed should have different shapes")
+	}
+}
+
+// TestDiagramExport_EdgeStructure verifies dependency chain projection.
+func TestDiagramExport_EdgeStructure(t *testing.T) {
+	t.Parallel()
+
+	subscriber := NewNOMStyleSubscriber()
+	ctx := context.Background()
+
+	diagramFireWorkflow(t, subscriber, ctx, "wf", "Workflow")
+	diagramFireActivity(t, subscriber, ctx, "a", "Alpha")
+	diagramFireActivity(t, subscriber, ctx, "b", "Beta", "a")
+	diagramFireActivity(t, subscriber, ctx, "c", "Gamma", "b")
+
+	reader := subscriber.Store()
+
+	edges := reader.Edges()
+	if len(edges) != 2 {
+		t.Fatalf("Edges = %d, want 2 (a→b, b→c)", len(edges))
+	}
+
+	// Verify "a" is the root (no incoming edges).
+	for _, e := range edges {
+		if e.To.Get() == "a" {
+			t.Error("node 'a' should be a root with no incoming edges")
+		}
+	}
 }
 
 // TestDiagramExport_SubscriberProjection proves the subscriber's Store()
@@ -54,63 +110,6 @@ func TestDiagramExport_SubscriberProjection(t *testing.T) {
 	counts := subscriber.GetActivityCounts()
 	if counts.Running != 3 {
 		t.Errorf("running = %d, want 3", counts.Running)
-	}
-}
-
-// TestDiagramExport_StatusShapes verifies distinct NodeShape per status.
-func TestDiagramExport_StatusShapes(t *testing.T) {
-	t.Parallel()
-
-	store := NewActivityStore()
-
-	running := NewActivity("build", "Build")
-	running.SetRunning()
-	store.Upsert(running)
-
-	completed := NewActivity("test", "Test")
-	completed.SetCompleted()
-	store.Upsert(completed)
-
-	failed := NewActivity("lint", "Lint")
-	failed.SetFailed(errTestFailure)
-	store.Upsert(failed)
-
-	nodes := store.Nodes()
-
-	shapes := make(map[string]string)
-	for _, n := range nodes {
-		shapes[n.ID.Get()] = string(n.Shape)
-	}
-
-	if shapes["build"] == shapes["test"] {
-		t.Error("running and completed should have different shapes")
-	}
-
-	if shapes["test"] == shapes["lint"] {
-		t.Error("completed and failed should have different shapes")
-	}
-}
-
-// TestDiagramExport_EdgeStructure verifies dependency chain projection.
-func TestDiagramExport_EdgeStructure(t *testing.T) {
-	t.Parallel()
-
-	store := NewActivityStore()
-	store.Upsert(NewActivity("a", "Alpha"))
-	store.Upsert(NewActivity("b", "Beta"))
-	store.Upsert(NewActivity("c", "Gamma"))
-
-	store.AddEdge(graphNodeID("a"), graphNodeID("b"))
-	store.AddEdge(graphNodeID("b"), graphNodeID("c"))
-
-	edges := store.Edges()
-	if len(edges) != 2 {
-		t.Fatalf("Edges = %d, want 2", len(edges))
-	}
-
-	roots := store.Roots()
-	if len(roots) != 1 || roots[0].Get() != "a" {
-		t.Errorf("roots = %v, want [a]", roots)
 	}
 }
 

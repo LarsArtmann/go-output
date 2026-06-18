@@ -7,8 +7,8 @@ import (
 	"github.com/larsartmann/go-output"
 )
 
-// ActivityReader is the read-only contract for diagram export. Both
-// NOMStyleSubscriber and ActivityStore satisfy it, so any output.GraphRenderer
+// ActivityReader is the read-only contract for diagram export.
+// NOMStyleSubscriber satisfies it via Store(), so any output.GraphRenderer
 // (DOT, Mermaid, D2, PlantUML) can consume live progress state.
 type ActivityReader interface {
 	Nodes() []output.GraphNode
