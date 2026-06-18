@@ -18,7 +18,6 @@
 | #   | Question                                                                                                                                                                                                                                                                 |
 | --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | 15  | **Should `TableData` use exported fields or getters for v1?** Current: both exist (`Headers` + `GetHeaders()`). Option A: exported fields only. Option B: unexported + validated setters. Option C: keep both for v0.x. Affects every consumer; v1 stability commitment. |
-| O8  | **Keep standalone `ActivityStore` or remove (YAGNI)?** Only used in tests; subscriber projects `ActivityReader` directly. Keep if replay/file-load use cases are real; else delete.                                                                                      |
 
 ---
 
@@ -62,6 +61,14 @@
 | Stale `getTableDataMarshaler` naming                              | **Fixed** — renamed to `getTableDataRenderer`/`getAnyDataRenderer`           |
 | Nom timing cache tests wrote to real `~/.cache`                   | **Fixed** — `newTempTimingCache(t)` uses `t.TempDir()` + cleanup wait        |
 | #8: `HandleError` → `Must` suggestion                             | **Won't-fix** — `HandleError` is honest; `Must` implies panic                |
+| O8: `ActivityStore` YAGNI                                         | **Resolved** — removed as ghost system (155 LOC dead prod code)              |
+| nom/tui/bdd/envdetect missing from CI                             | **Fixed** — added to all ci.yml + release.yml loops                          |
+| Dead fields on `Activity` (Dependencies, OperationType)           | **Fixed** — removed unused fields + methods                                  |
+| Stale `mustUpdateActivityStatus` comment + unused params          | **Fixed** — updated comment, dropped 3 unused params                         |
+| Lock-ordering protocol undocumented                               | **Fixed** — documented `ns.mu → tree.mu` on subscriberView.Edges()           |
+| ADR 007 `tui/` migration status stale                             | **Fixed** — marked done (tests already use new types)                        |
+| 4 test files over 350-line limit                                  | **Fixed** — all split under 350 lines                                        |
+| No local govulncheck                                              | **Fixed** — added `nix run .#govulncheck` app                                |
 
 ---
 

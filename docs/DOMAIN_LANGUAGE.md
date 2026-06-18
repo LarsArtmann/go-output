@@ -29,6 +29,11 @@ Every term below should mean the **same thing** to everyone who reads it.
 | **DOTRenderer**     | A renderer producing DOT/Graphviz output                     | Lives in `graph/` module                  |
 | **MermaidRenderer** | A renderer producing Mermaid flowchart output                | Lives in `graph/` module                  |
 | **HTMLRenderer**    | A renderer producing styled HTML tables                      | Supports both table and tree shapes       |
+| **Activity**        | Unified source of truth for a workflow activity's state, timing, and visual style | Embeds `GraphNode` for diagram export; shared by pointer between subscriber and tree |
+| **DependencyTree**  | Hierarchical activity visualization with priority-based child sorting | `nom/` module — renders failed/running activities first                |
+| **ActivityReader**  | Read-only projection of activities as `GraphNode`/`GraphEdge` slices | `subscriber.Store()` returns this; any `GraphRenderer` can consume it   |
+| **TimingCache**     | Persisted activity duration history (CSV at `~/.cache/nom-timing.csv`) | Uses median of last ≤10 entries for robust estimates                    |
+| **NOMStyleSubscriber** | Event-driven subscriber that manages activities and drives the dependency tree | `nom/` module — implements `EventSubscriber` interface                  |
 
 ## Value Objects
 

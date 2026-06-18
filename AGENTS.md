@@ -46,6 +46,7 @@ nix run .#test             # Test all 18 modules
 nix run .#test-race        # Race-test nom + tui (concurrency-sensitive)
 nix run .#lint             # golangci-lint across all modules
 nix run .#tidy             # go mod tidy all modules
+nix run .#govulncheck      # govulncheck across all modules
 nix run .#setup-workspace  # Generate gitignored go.work from go.work.example
 nix fmt                    # Format .nix files
 nix flake check            # Formatting + pre-commit hooks
@@ -65,6 +66,7 @@ These are non-obvious from reading code alone — the "how does this even work" 
 - **Render naming convention**: `Render() (string, error)` is the project-wide canonical contract for `output.Renderer` and its implementations — use `MustRender(r)` in tests. `nom.InlineRenderer.Draw()` is reserved for terminal redraws (void, writes to `io.Writer`). `nom.DependencyTree.RenderString(maxHeight)` returns a formatted string (errors encoded into the string, not returned separately). Split-brain M4 fixed: `Render()` is no longer overloaded across incompatible signatures.
 - **Dedup workflow (do this BEFORE refactoring clones)**: Load the `deduplicate-code` skill → run `art-dupl -t 24` → for every clone group, apply the ADR 005 checklist in order: (1) generated/single-line/interface-compliance? → accept; (2) structural or semantic? if idiomatic Go test pattern (`strings.Contains`, `t.Errorf`, table-driven) → accept; (3) would abstraction help readability? if no → accept; (4) drift likely? if no → accept; (5) only fix **production** clones where identical logic is duplicated. Threshold ≤ t=15 surfaces ~100 groups that are almost all accepted test idioms — do NOT chase them. Zero actionable clones exist at t=50.
 - **nom phase detection is ID-prefix-based**: `ActivityNode.IsPhase()` checks the `"phase:"` ID prefix convention (replaces the old untyped `strings.HasPrefix` call). Phase nodes render with `SymbolPhase`/`ColorPhase` instead of status-derived styling.
+- **nom shared-pointer model**: `NOMStyleSubscriber` and `DependencyTree` share the same `*Activity` pointer — mutations via `SetRunning()`/`SetCompleted()` are instantly visible to both without any sync call. `ActivityNode` embeds `*Activity` (pointer, not value). Never introduce a second copy of activity state.
 
 ## Gotchas
 

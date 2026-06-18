@@ -18,8 +18,8 @@ type diagramEvent struct {
 	deps      []nom.ActivityID
 }
 
-func (e *diagramEvent) GetEventType() string          { return e.eventType }
-func (e *diagramEvent) GetActivityID() nom.ActivityID { return e.aID }
+func (e *diagramEvent) GetEventType() string              { return e.eventType }
+func (e *diagramEvent) GetActivityID() nom.ActivityID     { return e.aID }
 func (e *diagramEvent) GetActivityName() nom.ActivityName { return e.aName }
 func (e *diagramEvent) GetDependencies() []nom.ActivityID { return e.deps }
 
@@ -28,11 +28,12 @@ func main() {
 	ctx := context.Background()
 
 	// Build a CI pipeline: fetch → compile → {test, lint} → deploy
-	fire := func(eventType string, id, name string, deps ...string) {
+	fire := func(eventType, id, name string, deps ...string) {
 		depIDs := make([]nom.ActivityID, len(deps))
 		for i, d := range deps {
 			depIDs[i] = nom.ActivityID(d)
 		}
+
 		_ = subscriber.OnEvent(ctx, &diagramEvent{
 			eventType: eventType,
 			aID:       nom.ActivityID(id),
