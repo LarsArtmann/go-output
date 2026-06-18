@@ -24,7 +24,7 @@ jobs:
 
       - name: Build all modules
         run: |
-          for mod in . delimited serialization markup d2 graph plantuml enum escape testhelpers testhelpers/graphtest table integration examples; do
+          for mod in . delimited serialization markup d2 graph plantuml enum escape envdetect testhelpers testhelpers/graphtest table nom tui bdd integration examples; do
             echo "::group::Build $mod"
             (cd $mod && go build ./...)
             echo "::endgroup::"
@@ -32,7 +32,7 @@ jobs:
 
       - name: Test all modules
         run: |
-          for mod in . delimited serialization markup d2 graph plantuml enum escape testhelpers testhelpers/graphtest table integration examples; do
+          for mod in . delimited serialization markup d2 graph plantuml enum escape envdetect testhelpers testhelpers/graphtest table nom tui bdd integration examples; do
             echo "::group::Test $mod"
             (cd $mod && go test -v -race -coverprofile=cover.out ./...)
             echo "::endgroup::"
@@ -42,7 +42,7 @@ jobs:
         run: |
           MIN_COVERAGE=80
           FAILED=""
-          for mod in . delimited serialization markup d2 graph plantuml enum escape testhelpers testhelpers/graphtest table integration examples; do
+          for mod in . delimited serialization markup d2 graph plantuml enum escape envdetect testhelpers testhelpers/graphtest table nom tui bdd integration examples; do
             if [ -f "$mod/cover.out" ]; then
               COV=$(cd $mod && go tool cover -func=cover.out | grep total | awk '{print $3}' | sed 's/%//')
               echo "$mod: ${COV}% coverage"
@@ -59,7 +59,7 @@ jobs:
 
       - name: Check go mod tidy
         run: |
-          for mod in . delimited serialization markup d2 graph plantuml enum escape testhelpers testhelpers/graphtest table integration examples; do
+          for mod in . delimited serialization markup d2 graph plantuml enum escape envdetect testhelpers testhelpers/graphtest table nom tui bdd integration examples; do
             echo "::group::Mod tidy $mod"
             (cd $mod && cp go.mod go.mod.bak && cp go.sum go.sum.bak 2>/dev/null || true)
             (cd $mod && go mod tidy)
@@ -100,7 +100,7 @@ jobs:
       - name: Run govulncheck
         run: |
           go install golang.org/x/vuln/cmd/govulncheck@latest
-          for mod in . delimited serialization markup d2 graph plantuml enum escape testhelpers testhelpers/graphtest table integration examples; do
+          for mod in . delimited serialization markup d2 graph plantuml enum escape envdetect testhelpers testhelpers/graphtest table nom tui bdd integration examples; do
             echo "::group::govulncheck $mod"
             (cd $mod && govulncheck ./...)
             echo "::endgroup::"
