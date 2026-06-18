@@ -57,8 +57,8 @@ diagram, _ := dot.Render()
 | `MultiSubscriber` fanout                       | ✅ Done                             |
 | `ActivityStore` wired into subscriber          | ✅ Done (bridge sync)               |
 | Diagram export tests                           | ✅ Done (3 tests, race-clean)       |
-| `ActivityDisplayState` → `Activity` migration  | 🔲 Future sprint                    |
-| `SyncActivityTimingToTree` elimination         | 🔲 Future sprint                    |
+| `ActivityDisplayState` → `Activity` migration  | ✅ Done — single source of truth     |
+| `SyncActivityTimingToTree` elimination         | ✅ Done — shared pointer             |
 | `InlineRenderer.Render()` contract fix (M4)    | ✅ Done — `Draw()` / `RenderString` |
 | `tui/` migration to new types                  | 🔲 Future sprint                    |
 
