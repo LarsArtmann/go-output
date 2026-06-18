@@ -16,5 +16,7 @@ const (
 
 // Message Constants - Standardized UI message strings.
 const (
+	// MsgNoActivitiesToDisplay mirrors nom.msgNoActivitiesToDisplay — identical
+	// string, kept separate because tui renders its own view. See split-brain M3.
 	MsgNoActivitiesToDisplay = "No activities to display"
 )

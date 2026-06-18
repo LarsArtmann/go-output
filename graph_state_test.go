@@ -17,7 +17,7 @@ func TestParseNodeShape(t *testing.T) {
 	}
 }
 
-func TestParseGraphShape_Invalid(t *testing.T) {
+func TestParseNodeShape_Invalid(t *testing.T) {
 	t.Parallel()
 
 	_, err := ParseNodeShape("invalid")

@@ -12,28 +12,25 @@ A reusable Go library for CLI output formatting (16 formats across table/tree/gr
 
 ## Module Map
 
-18 modules (root + 17 sub-modules). Each has its own `go.mod`; **deps live in `go.mod`, not here** — read the file for ground truth.
+15 modules (root + 14 sub-modules). Each sub-module has its own `go.mod`; `enum`/`escape`/`envdetect` are root packages (no separate go.mod). **Deps live in `go.mod`, not here** — read the file for ground truth.
 
-| Module                   | Purpose                                                                       |
-| ------------------------ | ----------------------------------------------------------------------------- |
-| **root** (`output`)      | Core types, Format/Shape enums, registries, Markdown, Tree, Graph state       |
-| `delimited/`             | CSV + TSV writers                                                             |
-| `serialization/`         | JSON + YAML + TOML + JSONL                                                    |
-| `markup/`                | XML + HTML + AsciiDoc + Streaming HTML                                        |
-| `table/`                 | Lipgloss terminal tables                                                      |
-| `d2/`                    | D2 diagrams (rich domain model: shapes, arrows, SQL tables)                   |
-| `graph/`                 | DOT + Mermaid renderers (share root's `GraphRendererState`)                   |
-| `plantuml/`              | PlantUML diagrams                                                             |
-| `nom/`                   | NOM-style real-time progress (dependency tree, timing cache, inline renderer) |
-| `tui/`                   | Bubble Tea interactive TUI (depends on nom)                                   |
-| `enum/`                  | Generic enum utilities (zero deps)                                            |
-| `escape/`                | Format-specific escaping (zero deps)                                          |
-| `envdetect/`             | Shared CI / NO_COLOR env detection (zero deps; used by root + nom)            |
-| `testhelpers/`           | Shared test assertions (zero deps)                                            |
-| `testhelpers/graphtest/` | Shared graph test fixtures                                                    |
-| `bdd/`                   | BDD test suite (Ginkgo/Gomega, test-only)                                     |
-| `integration/`           | Cross-module integration tests                                                |
-| `examples/`              | Usage examples                                                                |
+| Module                   | Purpose                                                                                                                                                           |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **root** (`output`)      | Core types, Format/Shape enums, registries, Markdown, Tree, Graph state; also hosts `enum`/`escape`/`envdetect` packages (zero-dep utilities used by root itself) |
+| `delimited/`             | CSV + TSV writers                                                                                                                                                 |
+| `serialization/`         | JSON + YAML + TOML + JSONL                                                                                                                                        |
+| `markup/`                | XML + HTML + AsciiDoc + Streaming HTML                                                                                                                            |
+| `table/`                 | Lipgloss terminal tables                                                                                                                                          |
+| `d2/`                    | D2 diagrams (rich domain model: shapes, arrows, SQL tables)                                                                                                       |
+| `graph/`                 | DOT + Mermaid renderers (share root's `GraphRendererState`)                                                                                                       |
+| `plantuml/`              | PlantUML diagrams                                                                                                                                                 |
+| `nom/`                   | NOM-style real-time progress (dependency tree, timing cache, inline renderer)                                                                                     |
+| `tui/`                   | Bubble Tea interactive TUI (depends on nom)                                                                                                                       |
+| `testhelpers/`           | Shared test assertions (zero deps)                                                                                                                                |
+| `testhelpers/graphtest/` | Shared graph test fixtures                                                                                                                                        |
+| `bdd/`                   | BDD test suite (Ginkgo/Gomega, test-only)                                                                                                                         |
+| `integration/`           | Cross-module integration tests                                                                                                                                    |
+| `examples/`              | Usage examples                                                                                                                                                    |
 
 ## Commands
 
@@ -41,8 +38,8 @@ A reusable Go library for CLI output formatting (16 formats across table/tree/gr
 
 ```bash
 nix develop                # Dev shell (Go 1.26, golangci-lint, gopls)
-nix run .#build            # Build all 18 modules
-nix run .#test             # Test all 18 modules
+nix run .#build            # Build all 15 modules
+nix run .#test             # Test all 15 modules
 nix run .#test-race        # Race-test nom + tui (concurrency-sensitive)
 nix run .#lint             # golangci-lint across all modules
 nix run .#tidy             # go mod tidy all modules
@@ -74,12 +71,11 @@ Things that will silently break or that an agent would get wrong from code alone
 
 - **Never import a sub-module into root** — see Core Invariant above.
 - **`testhelpers/` is zero-dep by design** — it cannot import `output`. Cross-module test helpers must stay local to each module or use table-driven patterns.
-- **`internal/` is root-only** — Go forbids sub-modules from importing `internal/` packages. `internal/gentest` and `internal/testutils` are root-only; sub-modules inline their own test helpers.
 - **Depguard restricts imports** — `.golangci.yml` has explicit allow-lists. When a module gains a new sibling dep, add it to BOTH the `default` and `main` allow-lists or lint fails. Each module has its own `.golangci.yml` section.
-- **Every module's `go.mod` needs `replace` directives** for sibling deps, plus add the module to `flake.nix`'s `modules` list and `go.work.example`'s `use (...)` block.
-- **Mono-version tagging** — all 18 modules release in lockstep under the same `vX.Y.Z` (root tag + `submod/vX.Y.Z` tags). Never version a module independently.
+- **Every sub-module's `go.mod` needs `replace` directives** for sibling deps, plus add the module to `flake.nix`'s `modules` list and `go.work.example`'s `use (...)` block.
+- **Mono-version tagging** — all 15 modules release in lockstep under the same `vX.Y.Z` (root tag + `submod/vX.Y.Z` tags). Never version a module independently.
 - **NOM events use `nom.Event*` constants** (e.g., `nom.EventWorkflowStarted`), not bare string literals.
-- **`envdetect` centralizes CI/NO_COLOR detection** — root `color.go` and `nom/inline_renderer.go` both delegate to `envdetect.IsCI()` / `IsNoColor()`. Don't re-inline this logic.
+- **`envdetect` (now a root package) centralizes CI/NO_COLOR detection** — root `color.go` and `nom/inline_renderer.go` both delegate to `envdetect.IsCI()` / `IsNoColor()`. Don't re-inline this logic.
 - **Code duplication threshold is `art-dupl -t 24`** (project standard). Below t=20, reported clones are almost entirely Go test idioms or module-boundary re-declarations — both acceptable. See ADR 005.
 
 ## Pointers

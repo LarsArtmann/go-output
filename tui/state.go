@@ -10,7 +10,13 @@ import (
 // ============================================================================
 // STRONG TYPES FOR WORKFLOW STATE MANAGEMENT
 // ============================================================================
-// WorkflowState represents the current state of the workflow execution
+// WorkflowState represents the current state of the workflow execution.
+// It is intentionally SEPARATE from nom.ActivityStatus (which tracks a single
+// activity's lifecycle) — do NOT merge them. They share Running and Completed
+// values but model different domains: a workflow Errored while individual
+// activities report Failed; a workflow has no Paused state. Split-brain m3:
+// documented to prevent a future "unify these enums" mistake.
+//
 // This makes invalid states unrepresentable through strong typing.
 type WorkflowState uint8
 

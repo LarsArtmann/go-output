@@ -2,8 +2,6 @@ github.com/larsartmann/go-branded-id v0.3.1 h1:n53Vz3MCUy3S8YfW/v+zxL/qT96iiXZOT
 github.com/larsartmann/go-branded-id v0.3.1/go.mod h1:fiv3t1PyNCITnE/8KtymGCUz7tQRuQxF+8oqNdFmA/Y=
 github.com/larsartmann/go-output/delimited v0.12.0 h1:BasJOLcQSFnWJwdOkGIr+4oULzUuCOHuUeVcgZfDL0E=
 github.com/larsartmann/go-output/delimited v0.12.0/go.mod h1:y+22O34FAtDoDQ9dYw0rNBiGCGGs31stwMRDiLcPCLY=
-github.com/larsartmann/go-output/enum v0.12.0 h1:DZUWsT9kgiN8bfFuz4+vDh6LVRsApjHcQfJ6MnNm6aY=
-github.com/larsartmann/go-output/enum v0.12.0/go.mod h1:pNUDybeebo7Lto/hU/rE6901JshdXdzaoMO185Z4hG8=
 github.com/larsartmann/go-output/testhelpers v0.12.0 h1:6ZrskzT/lQQq/PQtFHrSb+pmPtKf079rKw9enA1Ppew=
 github.com/larsartmann/go-output/testhelpers v0.12.0/go.mod h1:HXirIrpJiVpIJ1CaI9MbmOUP26eC4JKApaFqAAe5+s8=
 golang.org/x/sys v0.46.0 h1:noSf2Fq6F8DBgS+LysIkx7rIExoNHJsxOAtPp4rthXw=

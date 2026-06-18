@@ -5,8 +5,6 @@ go 1.26.3
 require (
 	github.com/larsartmann/go-branded-id v0.3.1
 	github.com/larsartmann/go-output/delimited v0.12.0
-	github.com/larsartmann/go-output/enum v0.12.0
-	github.com/larsartmann/go-output/envdetect v0.12.0
 	github.com/larsartmann/go-output/testhelpers v0.12.0
 	golang.org/x/term v0.44.0
 )
@@ -14,8 +12,6 @@ require (
 replace (
 	github.com/larsartmann/go-output => ./
 	github.com/larsartmann/go-output/delimited => ./delimited
-	github.com/larsartmann/go-output/enum => ./enum
-	github.com/larsartmann/go-output/envdetect => ./envdetect
 	github.com/larsartmann/go-output/serialization => ./serialization
 	github.com/larsartmann/go-output/testhelpers => ./testhelpers
 	github.com/larsartmann/go-output/testhelpers/graphtest => ./testhelpers/graphtest

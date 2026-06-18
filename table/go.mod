@@ -19,8 +19,6 @@ require (
 	github.com/clipperhouse/displaywidth v0.11.0 // indirect
 	github.com/clipperhouse/uax29/v2 v2.7.0 // indirect
 	github.com/larsartmann/go-branded-id v0.3.1 // indirect
-	github.com/larsartmann/go-output/enum v0.12.0 // indirect
-	github.com/larsartmann/go-output/envdetect v0.12.0 // indirect
 	github.com/lucasb-eyer/go-colorful v1.4.0 // indirect
 	github.com/mattn/go-runewidth v0.0.24 // indirect
 	github.com/muesli/cancelreader v0.2.2 // indirect
@@ -34,8 +32,5 @@ require (
 
 replace (
 	github.com/larsartmann/go-output => ../
-	github.com/larsartmann/go-output/enum => ../enum
-	github.com/larsartmann/go-output/envdetect => ../envdetect
-	github.com/larsartmann/go-output/escape => ../escape
 	github.com/larsartmann/go-output/testhelpers => ../testhelpers
 )

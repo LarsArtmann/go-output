@@ -6,6 +6,13 @@
 // D2Arrow, and their respective styles. Use D2Diagram to compose and render
 // diagrams as D2 source code.
 //
+// # Branded IDs
+//
+// D2NodeID and D2NodeLabel are type aliases re-exported from the root package
+// (output.D2NodeID / output.D2NodeLabel). The canonical import path is the root
+// package; d2.D2NodeID exists only as an ergonomic convenience so callers need
+// not import two packages. There is exactly one definition. See split-brain m6.
+//
 // # Quick Start
 //
 //	diagram := d2.NewD2Diagram()

@@ -12,6 +12,8 @@ var ErrActivityNotFound = errors.New("activity not found")
 
 const (
 	// msgNoActivitiesToDisplay is shown when dependency tree is empty.
+	// Mirrors tui.MsgNoActivitiesToDisplay — identical string, kept separate
+	// because nom and tui are distinct modules. See split-brain M3.
 	msgNoActivitiesToDisplay = "No activities to display"
 )
 

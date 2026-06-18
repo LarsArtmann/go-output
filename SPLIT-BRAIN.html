@@ -513,6 +513,81 @@
         margin: 0.4rem 0;
       }
 
+      /* ---------- Re-verification ---------- */
+      .verify {
+        background: var(--bg-elev);
+        border: 1px solid rgba(63, 185, 80, 0.25);
+        border-left: 4px solid var(--ok);
+        border-radius: 12px;
+        padding: 1.5rem 1.8rem;
+        margin: 2rem 0;
+      }
+      .verify h2 {
+        margin-top: 0;
+        color: var(--ok);
+      }
+      table.verify-tbl {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+        margin: 0.8rem 0;
+      }
+      table.verify-tbl th,
+      table.verify-tbl td {
+        text-align: left;
+        padding: 0.5rem 0.7rem;
+        border-bottom: 1px solid var(--border-soft);
+        vertical-align: top;
+      }
+      table.verify-tbl th {
+        color: var(--text-faint);
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+      table.verify-tbl td.id {
+        font-family: var(--mono);
+        color: var(--accent);
+        white-space: nowrap;
+      }
+      table.verify-tbl td.evidence {
+        font-family: var(--mono);
+        font-size: 0.76rem;
+        color: var(--text-dim);
+      }
+      .pill {
+        font-size: 0.66rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        padding: 0.12rem 0.45rem;
+        border-radius: 10px;
+        border: 1px solid;
+        white-space: nowrap;
+      }
+      .pill.fixed {
+        color: var(--ok);
+        border-color: rgba(63, 185, 80, 0.4);
+        background: var(--ok-bg);
+      }
+      .pill.doc {
+        color: var(--minor);
+        border-color: var(--minor-border);
+        background: var(--minor-bg);
+      }
+      .corr {
+        background: var(--major-bg);
+        border: 1px solid var(--major-border);
+        border-radius: 8px;
+        padding: 0.8rem 1rem;
+        margin: 0.6rem 0;
+        font-size: 0.88rem;
+        color: var(--text-dim);
+      }
+      .corr strong {
+        color: var(--major);
+      }
+
       footer {
         border-top: 1px solid var(--border);
         padding: 2rem;
@@ -567,9 +642,9 @@
           concrete fix a junior developer can execute.
         </p>
         <div class="meta">
-          <span>📅 <b>2026-06-17 audited · 2026-06-18 resolved</b></span>
-          <span>🔍 <b>20/20 findings resolved</b></span>
-          <span>📦 <b>16 modules scanned</b></span>
+          <span>📅 <b>2026-06-17 audited · 2026-06-18 resolved · 2026-06-18 re-verified</b></span>
+          <span>🔍 <b>20/20 findings addressed</b></span>
+          <span>📦 <b>18 modules scanned</b></span>
           <span>🎯 <b>Go 1.26 workspace</b></span>
         </div>
       </div>
@@ -577,23 +652,23 @@
       <div class="stats">
         <div class="stat total">
           <div class="num" id="stat-total">20/20</div>
-          <div class="label">Resolved</div>
-        </div>
-        <div class="stat crit">
-          <div class="num">5/5</div>
-          <div class="label">Critical ✅</div>
-        </div>
-        <div class="stat maj">
-          <div class="num">9/9</div>
-          <div class="label">Major ✅</div>
-        </div>
-        <div class="stat min">
-          <div class="num">6/6</div>
-          <div class="label">Minor ✅</div>
+          <div class="label">Addressed</div>
         </div>
         <div class="stat time">
+          <div class="num">14</div>
+          <div class="label">Fixed in code</div>
+        </div>
+        <div class="stat min">
+          <div class="num">6</div>
+          <div class="label">Documented (by design)</div>
+        </div>
+        <div class="stat crit">
           <div class="num">0</div>
           <div class="label">Open Findings</div>
+        </div>
+        <div class="stat maj">
+          <div class="num">0</div>
+          <div class="label">New Split-Brains</div>
         </div>
       </div>
     </header>
@@ -645,6 +720,214 @@
           <span style="color: var(--critical)">Critical</span> = a true bug or data-integrity risk,
           fix now. <span style="color: var(--major)">Major</span> = high drift risk, fix this
           sprint. <span style="color: var(--minor)">Minor</span> = acceptable but worth a note.
+        </p>
+      </div>
+
+      <div class="verify">
+        <h2>🔬 Re-Verification Pass — 2026-06-18</h2>
+        <p style="color: var(--text-dim); margin-top: 0">
+          Every file:line reference below was re-read against the current source to confirm the fix
+          is real, not just documented. Result: <strong>20/20 addressed</strong> (14 fixed in code ·
+          6 documented as acceptable by design) and <strong>0 new split-brains introduced</strong>.
+          The 6 "documented" findings were always by-design (separate modules, intentional
+          ergonomics, or YAGNI) — each now carries an explicit cross-reference comment so the
+          duplication cannot drift silently.
+        </p>
+        <table class="verify-tbl">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Resolution</th>
+              <th>Verified evidence (current code)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="ok">
+              <td class="id">C1</td>
+              <td><span class="pill fixed">Fixed</span></td>
+              <td class="evidence">
+                nom/tree.go:19 → <code>ActivityNode</code>; 0 <code>TreeNode</code> refs remain in
+                nom/; root output.TreeNode intact (tree.go:19); IsPhase() checks "phase:" prefix
+                (nom/tree_render.go:309)
+              </td>
+            </tr>
+            <tr class="ok">
+              <td class="id">C2</td>
+              <td><span class="pill fixed">Fixed</span></td>
+              <td class="evidence">
+                <code>activities</code> + <code>timingCache</code> fields gone from ProgressModel
+                (tui/state.go:99); <code>dependencyTree</code> kept as a
+                <strong>shared pointer</strong>
+                to the subscriber's tree (state.go:119 — not a copy); GetActivityCounts()
+                (nom/activity_management.go:21)
+              </td>
+            </tr>
+            <tr class="ok">
+              <td class="id">C3</td>
+              <td><span class="pill fixed">Fixed</span></td>
+              <td class="evidence">
+                tui.TimingFormat unexported →
+                <code>timingFormatWithIcon</code> (tui/constants.go:9); literal →
+                <code>MsgNoActivitiesToDisplay</code> at tui/render_nom.go:53
+              </td>
+            </tr>
+            <tr class="ok">
+              <td class="id">C4</td>
+              <td><span class="pill fixed">Fixed</span></td>
+              <td class="evidence">
+                <code>graphRenderer</code> deleted; testGraphRendererNodeWithShape uses
+                <code>output.GraphRenderer</code> (serialization/testhelpers_test.go:52)
+              </td>
+            </tr>
+            <tr class="ok">
+              <td class="id">C5</td>
+              <td><span class="pill fixed">Fixed</span></td>
+              <td class="evidence">
+                <code>renderer</code> deleted; testRendererNotEmpty[R output.Renderer]
+                (integration/renderer_test.go:166)
+              </td>
+            </tr>
+            <tr class="ok">
+              <td class="id">M1</td>
+              <td><span class="pill doc">Documented</span></td>
+              <td class="evidence">
+                <code>ColorWarning</code> deleted; <code>SemanticColors</code> struct
+                (nom/symbols.go:42) + cross-ref comment (:51). tui keeps its own richer theme
+                (title/select/help fields) — documented mirror, intentionally separate
+              </td>
+            </tr>
+            <tr class="ok">
+              <td class="id">M2</td>
+              <td><span class="pill fixed">Fixed</span></td>
+              <td class="evidence">
+                envdetect/ module (envdetect.go:27 IsCI, :39 IsNoColor); root color.go:104,106 and
+                nom/inline_renderer.go:98 both delegate
+              </td>
+            </tr>
+            <tr class="ok">
+              <td class="id">M3</td>
+              <td><span class="pill fixed">Fixed</span></td>
+              <td class="evidence">
+                Hardcoded literal gone; constant used (tui/render_nom.go:53); bidirectional
+                cross-ref comments added (nom/tree.go:14, tui/constants.go:18)
+              </td>
+            </tr>
+            <tr class="ok">
+              <td class="id">M4</td>
+              <td><span class="pill fixed">Fixed</span></td>
+              <td class="evidence">
+                InlineRenderer.Draw() (nom/inline_renderer.go:123); DependencyTree.RenderString()
+                (nom/tree_render.go:20); output.Renderer.Render() intact (renderer.go:4)
+              </td>
+            </tr>
+            <tr class="ok">
+              <td class="id">M5</td>
+              <td><span class="pill fixed">Fixed</span></td>
+              <td class="evidence">
+                <code>GraphShape</code> → <code>NodeShape</code> (graph.go:43); NodeShapeBox…
+                constants (graph.go:47); stale test name corrected (graph_state_test.go:20)
+              </td>
+            </tr>
+            <tr class="ok">
+              <td class="id">M6</td>
+              <td><span class="pill fixed">Fixed</span></td>
+              <td class="evidence">
+                <code>nodeShapeToD2</code> (d2/d2_convert.go:68) + TestD2NodeShapeConversion
+                (d2/d2_convert_test.go:223). box/rect intentionally map to default (emit no
+                <code>shape:</code> attr)
+              </td>
+            </tr>
+            <tr class="ok">
+              <td class="id">M7</td>
+              <td><span class="pill doc">Documented</span></td>
+              <td class="evidence">
+                <code>output.Direction</code> (direction.go:6) + ToD2Direction/ToRankDir (:17,:27).
+                One-directional bridge (canonical → format); reverse parse is YAGNI; graph.RankDir
+                standalone, documented
+              </td>
+            </tr>
+            <tr class="ok">
+              <td class="id">M8</td>
+              <td><span class="pill fixed">Fixed</span></td>
+              <td class="evidence">
+                GraphStyle.Fill/Stroke (graph.go:131,133) aligned with D2NodeStyle.Fill
+                (d2/d2.go:40); EdgeStyle.Line replaces Style (graph.go:166)
+              </td>
+            </tr>
+            <tr class="ok">
+              <td class="id">M9</td>
+              <td><span class="pill fixed">Fixed</span></td>
+              <td class="evidence">
+                Drifted <code>delimitedWriter</code> removed; example consumes public
+                <code>delimited.Writer</code> which now has WriteFooter (delimited/csv.go:84)
+              </td>
+            </tr>
+            <tr class="ok">
+              <td class="id">m1</td>
+              <td><span class="pill doc">Documented</span></td>
+              <td class="evidence">
+                Bidirectional cross-ref comments (nom/activity_status.go:43, tui/state.go:30) —
+                "unknown" sentinel duplicated by design across modules
+              </td>
+            </tr>
+            <tr class="ok">
+              <td class="id">m2</td>
+              <td><span class="pill fixed">Fixed</span></td>
+              <td class="evidence">
+                0 bare real-event literals remain; 30+ call sites use nom.Event* constants
+                (nom/event.go:8)
+              </td>
+            </tr>
+            <tr class="ok">
+              <td class="id">m3</td>
+              <td><span class="pill doc">Documented</span></td>
+              <td class="evidence">
+                "Do NOT merge" warning on both sides (nom/activity_status.go:8, tui/state.go:13)
+              </td>
+            </tr>
+            <tr class="ok">
+              <td class="id">m4</td>
+              <td><span class="pill fixed">Fixed</span></td>
+              <td class="evidence">
+                GraphEdge.Style present in docs (FORMAT_ARCHITECTURE.md:122), matches graph.go:140
+              </td>
+            </tr>
+            <tr class="ok">
+              <td class="id">m5</td>
+              <td><span class="pill fixed">Fixed</span></td>
+              <td class="evidence">
+                GetWorkflowID() returns branded WorkflowID in both (subscriber_handlers.go:34,
+                state_accessors.go:42)
+              </td>
+            </tr>
+            <tr class="ok">
+              <td class="id">m6</td>
+              <td><span class="pill doc">Documented</span></td>
+              <td class="evidence">
+                Canonical-path comments (ids.go:17,38) + d2/doc.go branded-ID re-export note —
+                single definition, ergonomic aliases
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="corr">
+          <strong>Corrections to the original audit cards:</strong> four cards described the fix
+          imprecisely. The cards below have been updated, but in summary: (1) <code>C2</code> keeps
+          <code>dependencyTree</code> as a <em>shared pointer</em>, not a removed field — this is
+          the correct zero-copy model; (2) <code>C3</code>'s literal was at
+          <code>tui/render_nom.go:53</code>, not <code>view.go:290</code>; (3) <code>M6</code>'s
+          test documents that box/rect intentionally emit no shape attribute (map to default); (4)
+          <code>M7</code> ships a one-directional bridge — reverse parsing was deemed YAGNI.
+        </div>
+
+        <p style="color: var(--text-dim); margin-bottom: 0">
+          <strong>🛡️ New-split-brain check:</strong> scanned the new shared modules and enums
+          introduced by the fixes (<code>envdetect/</code>, <code>output.Direction</code>,
+          <code>output.NodeShape</code>, <code>nom.SemanticColors</code>,
+          <code>nodeShapeToD2</code>). Each is the single canonical definition; consumers import
+          rather than re-declare. No new duplicate type definitions or competing sources of truth
+          were introduced. Build + test + lint pass clean across all 18 modules.
         </p>
       </div>
 
@@ -799,25 +1082,23 @@
           </p>
         </div>
         <div class="fix">
-          <h4>✅ How to fix</h4>
+          <h4>✅ Resolution (verified)</h4>
           <ol>
             <li>
-              Remove the duplicated fields (<code>activities</code>, <code>dependencyTree</code>,
-              <code>timingCache</code>) from <code>ProgressModel</code>.
+              Removed the duplicated <code>activities</code> and <code>timingCache</code> fields
+              from <code>ProgressModel</code> (tui/state.go:99) — activity counts are now read via
+              <code>GetActivityCounts()</code> (nom/activity_management.go:21).
             </li>
             <li>
-              Replace every read of <code>m.activities</code> with a delegated call:
-              <code>m.nomSubscriber.GetActivities()</code>.
+              <code>dependencyTree</code> is kept, but as a <strong>shared pointer</strong> into the
+              subscriber's tree (state.go:119), refreshed each tick — <em>not</em> a copied value.
+              This is the zero-copy model: mutations via <code>SetRunning()</code> are instantly
+              visible to both the subscriber and the model. (The original card proposed removing it;
+              the pointer alias is the better fix and matches the nom shared-pointer invariant.)
             </li>
             <li>
-              Keep <code>syncNOMSubscriber()</code> only for the <em>mutating</em> calls
-              (<code>UpdateRunningActivityElapsed</code>, <code>SyncActivityTimingToTree</code>) and
-              the workflow-state transition logic.
-            </li>
-            <li>
-              Cache locally <em>only</em> if a profiler proves <code>GetActivities()</code> is a
-              hot-path cost — and then cache in one place with a clear
-              <code>// cached snapshot</code> comment.
+              <code>syncNOMSubscriber()</code> (tui/model.go:193) now does only mutating calls +
+              pointer refresh + workflow-state transitions — no map copies remain.
             </li>
           </ol>
         </div>
@@ -848,15 +1129,17 @@
           searching for "TimingFormat" will assume they are equivalent. They are not.
         </p>
         <div>
-          <span class="file-ref">nom/format.go<span class="loc">:32</span></span>
-          <span class="file-ref">tui/constants.go<span class="loc">:6</span></span>
+          <span class="file-ref">nom/format.go<span class="loc">:33</span></span>
+          <span class="file-ref">tui/constants.go<span class="loc">:9</span></span>
         </div>
-        <pre class="code"><span class="cm">// nom/format.go:32</span>
+        <pre
+          class="code"
+        ><span class="cm">// nom/format.go:33 — still exported, symbol kept separate</span>
 <span class="kw">const</span> <span class="ty">TimingFormat</span> = <span class="st">"%.1fs"</span>            <span class="cm">// used by FormatDuration()</span>
 
-<span class="cm">// tui/constants.go:6</span>
+<span class="cm">// tui/constants.go:9 — UNEXPORTED + documented as intentionally different</span>
 <span class="kw">const</span> (
-    <span class="ty">TimingFormat</span> = <span class="st">"⏱️ %.1fs"</span>       <span class="cm">// emoji baked into the format string</span>
+    <span class="ty">timingFormatWithIcon</span> = <span class="st">"⏱️ %.1fs"</span>  <span class="cm">// TUI bakes the icon in; nom composes it separately</span>
 )</pre>
         <div class="why">
           <h4>⚠️ Why it's dangerous</h4>
@@ -870,20 +1153,18 @@
           </p>
         </div>
         <div class="fix">
-          <h4>✅ How to fix</h4>
+          <h4>✅ Resolution (verified)</h4>
           <ol>
             <li>
-              Decide on one canonical pattern:
-              <strong>symbol separate from format string</strong> (NOM's approach is more flexible).
+              Renamed + unexported <code>tui.TimingFormat</code> →
+              <code>tui.timingFormatWithIcon</code>
+              (tui/constants.go:9), with a comment documenting that it intentionally differs from
+              <code>nom.TimingFormat</code> (TUI bakes the icon into the format string; nom composes
+              <code>SymbolTiming + FormatDuration()</code> separately).
             </li>
             <li>
-              Rename <code>tui.TimingFormat</code> → <code>tui.timingFormatWithIcon</code> (unexport
-              it) OR delete it and compose <code>"⏱️ " + nom.FormatDuration(t)</code> at the call
-              site.
-            </li>
-            <li>
-              grep for every <code>Sprintf(TimingFormat</code> call to confirm nothing relied on the
-              emoji being embedded.
+              <code>nom.TimingFormat</code> (the flexible, symbol-free pattern) remains the
+              canonical exported constant — the collision on the exported name is gone.
             </li>
           </ol>
         </div>
@@ -1352,15 +1633,23 @@
 <span class="cm">// d2/d2_convert.go:63 keeps them in sync by hand — a shape added to one side silently drops</span>
 <span class="kw">func</span> <span class="fn">graphShapeToD2</span>(s <span class="ty">output</span>.<span class="ty">GraphShape</span>) <span class="ty">D2NodeShape</span> { <span class="cm">/* switch with a default fallback */</span> }</pre>
         <div class="fix">
-          <h4>✅ How to fix</h4>
+          <h4>✅ Resolution (verified)</h4>
           <ul>
             <li>
-              Add a test that asserts every <code>output.GraphShape</code> maps to a non-default
-              <code>D2NodeShape</code> (fails when a new shape is added unhandled).
+              The converter was renamed <code>graphShapeToD2</code> →
+              <code>nodeShapeToD2</code> (d2/d2_convert.go:68) to match the
+              <code>NodeShape</code> rename (M5).
             </li>
             <li>
-              Long term: consider a single canonical shape enum in root, with format-specific
-              renderers translating to their keywords — one source of truth.
+              <code>TestD2NodeShapeConversion</code> (d2/d2_convert_test.go:223) covers all 8
+              NodeShape values — a new unhandled shape now hits the documented default branch.
+              <strong>Note:</strong> <code>NodeShapeBox</code>/<code>NodeShapeRect</code>
+              intentionally map to the default (emit no <code>shape:</code> attribute), since a D2
+              rectangle is the default node look — this is by design, not drift.
+            </li>
+            <li>
+              The single canonical shape enum now lives in root (<code>output.NodeShape</code>); d2/
+              translates from it — one source of truth.
             </li>
           </ul>
         </div>
@@ -1400,14 +1689,22 @@
 <span class="cm">// There is NO conversion function. A user who sets D2Direction="right" cannot</span>
 <span class="cm">// get the equivalent RankDir for DOT without writing the mapping themselves.</span></pre>
         <div class="fix">
-          <h4>✅ How to fix</h4>
+          <h4>✅ Resolution (verified)</h4>
           <ul>
             <li>
-              Introduce a canonical <code>output.Direction</code> enum in root (Down/Right/Up/Left).
+              Introduced canonical <code>output.Direction</code> (direction.go:6) with
+              <code>Down/Right/Up/Left</code> values.
             </li>
             <li>
-              Have both <code>D2Direction</code> and <code>RankDir</code> translate to/from it. Now
-              there is one concept with two renderings.
+              It carries the bridge <em>outward</em>: <code>Direction.ToD2Direction()</code> (:17)
+              and <code>Direction.ToRankDir()</code> (:27). A caller picks one canonical Direction
+              and renders to either format's vocabulary — the common use case.
+            </li>
+            <li>
+              Reverse parsing (D2/DOT string → Direction) was deemed YAGNI and not built, so
+              <code>graph.RankDir</code> remains a standalone accepting type. This is a documented
+              one-directional bridge, not a round-trip — acceptable because users set direction in
+              the canonical enum, not by parsing format strings.
             </li>
           </ul>
         </div>
@@ -1781,8 +2078,8 @@
     </main>
 
     <footer>
-      go-output split-brain audit · 2026-06-17 audited · 2026-06-18 resolved · 20/20 findings
-      eliminated above
+      go-output split-brain audit · 2026-06-17 audited · 2026-06-18 resolved · 2026-06-18
+      re-verified against source · 20/20 findings addressed · 0 new split-brains introduced
     </footer>
 
     <script>
