@@ -28,26 +28,26 @@ https://github.com/larsartmann/go-output
 
 This project uses Go workspace modules. Each sub-package with its own `go.mod` is an independent module:
 
-| Module                  | go.mod | Direct deps                                                        | Notes                                     |
-| ----------------------- | ------ | ------------------------------------------------------------------ | ----------------------------------------- |
-| Root (`package output`) | ✅     | branded-id, delimited, enum, envdetect, testhelpers, x/term        | Core types + formatters                   |
-| `enum/`                 | ✅     | — (testhelpers in tests)                                           | Generic enum utilities                    |
-| `envdetect/`            | ✅     | —                                                                  | Shared CI / NO_COLOR env detection        |
-| `escape/`               | ✅     | —                                                                  | Format-specific escaping                  |
-| `testhelpers/`          | ✅     | —                                                                  | Shared test assertions (non-internal)     |
-| `testhelpers/graphtest/`| ✅     | root                                                               | Shared graph test fixtures                |
-| `delimited/`            | ✅     | root, testhelpers                                                  | CSV + TSV writers                         |
-| `markup/`               | ✅     | root, escape, testhelpers                                          | XML + HTML + AsciiDoc + Streaming         |
-| `serialization/`        | ✅     | root, testhelpers, graphtest, yaml, toml/v2                        | JSON + YAML + TOML + JSONL                |
-| `d2/`                   | ✅     | root, enum, escape, testhelpers, graphtest                         | D2 diagram renderer (rich domain model)   |
-| `graph/`                | ✅     | root, enum, escape, testhelpers, graphtest                         | DOT + Mermaid renderers                   |
-| `plantuml/`             | ✅     | root, escape, testhelpers, graphtest                               | PlantUML diagram renderer                 |
-| `table/`                | ✅     | root, testhelpers, lipgloss/v2                                     | **Lipgloss isolated from root**           |
-| `nom/`                  | ✅     | root, envdetect, x/term, lipgloss/v2                               | NOM-style real-time progress              |
-| `tui/`                  | ✅     | nom, bubbletea/v2, lipgloss/v2                                     | Bubble Tea interactive TUI                |
-| `bdd/`                  | ✅     | root, delimited, serialization, ginkgo/v2, gomega                  | BDD test suite (test-only)                |
-| `integration/`          | ✅     | root, delimited, serialization, markup, table, d2, graph, plantuml, nom, tui, testhelpers | Cross-module tests             |
-| `examples/`             | ✅     | root, delimited, serialization, markup, table, d2, graph, plantuml, nom, tui | Usage examples                  |
+| Module                   | go.mod | Direct deps                                                                               | Notes                                   |
+| ------------------------ | ------ | ----------------------------------------------------------------------------------------- | --------------------------------------- |
+| Root (`package output`)  | ✅     | branded-id, delimited, enum, envdetect, testhelpers, x/term                               | Core types + formatters                 |
+| `enum/`                  | ✅     | — (testhelpers in tests)                                                                  | Generic enum utilities                  |
+| `envdetect/`             | ✅     | —                                                                                         | Shared CI / NO_COLOR env detection      |
+| `escape/`                | ✅     | —                                                                                         | Format-specific escaping                |
+| `testhelpers/`           | ✅     | —                                                                                         | Shared test assertions (non-internal)   |
+| `testhelpers/graphtest/` | ✅     | root                                                                                      | Shared graph test fixtures              |
+| `delimited/`             | ✅     | root, testhelpers                                                                         | CSV + TSV writers                       |
+| `markup/`                | ✅     | root, escape, testhelpers                                                                 | XML + HTML + AsciiDoc + Streaming       |
+| `serialization/`         | ✅     | root, testhelpers, graphtest, yaml, toml/v2                                               | JSON + YAML + TOML + JSONL              |
+| `d2/`                    | ✅     | root, enum, escape, testhelpers, graphtest                                                | D2 diagram renderer (rich domain model) |
+| `graph/`                 | ✅     | root, enum, escape, testhelpers, graphtest                                                | DOT + Mermaid renderers                 |
+| `plantuml/`              | ✅     | root, escape, testhelpers, graphtest                                                      | PlantUML diagram renderer               |
+| `table/`                 | ✅     | root, testhelpers, lipgloss/v2                                                            | **Lipgloss isolated from root**         |
+| `nom/`                   | ✅     | root, envdetect, x/term, lipgloss/v2                                                      | NOM-style real-time progress            |
+| `tui/`                   | ✅     | nom, bubbletea/v2, lipgloss/v2                                                            | Bubble Tea interactive TUI              |
+| `bdd/`                   | ✅     | root, delimited, serialization, ginkgo/v2, gomega                                         | BDD test suite (test-only)              |
+| `integration/`           | ✅     | root, delimited, serialization, markup, table, d2, graph, plantuml, nom, tui, testhelpers | Cross-module tests                      |
+| `examples/`              | ✅     | root, delimited, serialization, markup, table, d2, graph, plantuml, nom, tui              | Usage examples                          |
 
 `go.work` is gitignored (local dev only). Each module uses `replace` directives for standalone development.
 
