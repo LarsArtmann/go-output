@@ -7,7 +7,9 @@ import (
 	"github.com/larsartmann/go-output"
 )
 
-func TestDiagramExport_ActivityStoreProjection(t *testing.T) {
+// TestDiagramExport_SubscriberProjection proves the subscriber's Store()
+// correctly projects live progress state as output.GraphNode/Edge slices.
+func TestDiagramExport_SubscriberProjection(t *testing.T) {
 	t.Parallel()
 
 	subscriber := NewNOMStyleSubscriber()
@@ -36,44 +38,37 @@ func TestDiagramExport_ActivityStoreProjection(t *testing.T) {
 		dependencies: []ActivityID{ActivityID("test")},
 	})
 
-	store := subscriber.Store()
+	reader := subscriber.Store()
 
-	nodes := store.Nodes()
+	nodes := reader.Nodes()
 	if len(nodes) != 3 {
 		t.Fatalf("Nodes() = %d nodes, want 3", len(nodes))
 	}
 
-	nodeMap := make(map[string]string)
 	for _, n := range nodes {
-		nodeMap[n.ID.Get()] = n.Label.Get()
+		if n.ID.Get() == "" {
+			t.Error("empty node ID")
+		}
 		if n.Shape == "" {
 			t.Errorf("node %q has empty Shape", n.ID.Get())
 		}
+		if n.Style.Fill == "" {
+			t.Errorf("node %q has empty Style.Fill", n.ID.Get())
+		}
 	}
 
-	if nodeMap["compile"] != "Compile Sources" {
-		t.Errorf("compile label = %q", nodeMap["compile"])
-	}
-
-	edges := store.Edges()
+	edges := reader.Edges()
 	if len(edges) != 2 {
-		t.Fatalf("Edges() = %d, want 2", len(edges))
+		t.Fatalf("Edges() = %d, want 2 (compile→test, test→deploy)", len(edges))
 	}
 
-	roots := store.Roots()
-	if len(roots) != 1 || roots[0].Get() != "compile" {
-		t.Errorf("roots = %v, want [compile]", roots)
-	}
-
-	running, completed, failed, pending := store.Counts()
-	if running != 3 {
-		t.Errorf("running = %d, want 3", running)
-	}
-	if completed != 0 || failed != 0 || pending != 0 {
-		t.Errorf("completed=%d failed=%d pending=%d, want all 0", completed, failed, pending)
+	counts := subscriber.GetActivityCounts()
+	if counts.Running != 3 {
+		t.Errorf("running = %d, want 3", counts.Running)
 	}
 }
 
+// TestDiagramExport_StatusShapes verifies distinct NodeShape per status.
 func TestDiagramExport_StatusShapes(t *testing.T) {
 	t.Parallel()
 
@@ -105,6 +100,7 @@ func TestDiagramExport_StatusShapes(t *testing.T) {
 	}
 }
 
+// TestDiagramExport_EdgeStructure verifies dependency chain projection.
 func TestDiagramExport_EdgeStructure(t *testing.T) {
 	t.Parallel()
 

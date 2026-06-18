@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"os"
 	"testing"
+
+	"golang.org/x/term"
 )
 
 func TestVisibleWidth(t *testing.T) {
@@ -131,4 +133,60 @@ func TestPhysicalLineCount(t *testing.T) {
 			}
 		})
 	}
+}
+
+// colorDetectionVars are every environment variable detectNoColor consults.
+// Mirrors root color.go — see integration color-agreement test for the contract
+// that both detectors must agree on these.
+var colorDetectionVars = []string{
+	"NO_COLOR", "TERM", "CI", "GITHUB_ACTIONS", "GITLAB_CI", "JENKINS_URL", "BUILDKITE",
+}
+
+// clearColorDetectionEnv clears every env var detectNoColor consults so a test
+// starts from a known clean state. Each is restored automatically by t.Setenv.
+func clearColorDetectionEnv(t *testing.T) {
+	t.Helper()
+	for _, env := range colorDetectionVars {
+		t.Setenv(env, "")
+	}
+}
+
+// TestDetectNoColor covers the environment-driven suppression logic of
+// detectNoColor. It has zero coverage otherwise, yet it is the function that
+// must stay aligned with root output.isNoColor()+isCI() (M2 split-brain fix).
+func TestDetectNoColor(t *testing.T) {
+	suppressors := []struct {
+		name string
+		env  string
+		val  string
+	}{
+		{"NO_COLOR", "NO_COLOR", "1"},
+		{"TERM_dumb", "TERM", "dumb"},
+		{"CI", "CI", "true"},
+		{"GITHUB_ACTIONS", "GITHUB_ACTIONS", "true"},
+		{"GITLAB_CI", "GITLAB_CI", "true"},
+		{"JENKINS_URL", "JENKINS_URL", "https://jenkins.example"},
+		{"BUILDKITE", "BUILDKITE", "true"},
+	}
+
+	for _, tc := range suppressors {
+		t.Run(tc.name, func(t *testing.T) {
+			clearColorDetectionEnv(t)
+			t.Setenv(tc.env, tc.val)
+
+			if !detectNoColor() {
+				t.Errorf("detectNoColor() with %s=%q = false, want true (color suppressed)", tc.env, tc.val)
+			}
+		})
+	}
+
+	t.Run("all_clear_matches_terminal", func(t *testing.T) {
+		clearColorDetectionEnv(t)
+
+		//nolint:gosec // File descriptors are always small positive integers.
+		want := !term.IsTerminal(int(os.Stdout.Fd()))
+		if got := detectNoColor(); got != want {
+			t.Errorf("detectNoColor() with no suppressors = %v, want %v (=!term.IsTerminal(stdout))", got, want)
+		}
+	})
 }

@@ -3,30 +3,35 @@ package nom
 import (
 	"sync"
 	"time"
+
+	"github.com/larsartmann/go-output"
 )
+
+// ActivityReader is the read-only contract for diagram export. Both
+// NOMStyleSubscriber and ActivityStore satisfy it, so any output.GraphRenderer
+// (DOT, Mermaid, D2, PlantUML) can consume live progress state.
+type ActivityReader interface {
+	Nodes() []output.GraphNode
+	Edges() []output.GraphEdge
+}
 
 // NOMStyleSubscriber implements EventSubscriber to provide NOM-style visualization.
 type NOMStyleSubscriber struct {
-	mu sync.RWMutex
-	// Activity tracking
+	mu             sync.RWMutex
 	activities     map[ActivityID]*ActivityDisplayState
-	store          *ActivityStore // projection layer for diagram export (DOT/Mermaid/D2)
 	dependencyTree *DependencyTree
 	timingCache    *TimingCache
-	// Workflow state
-	workflowID   WorkflowID
-	workflowName WorkflowName
-	startTime    time.Time
-	isRunning    bool
-	// Configuration
-	enabled bool
+	workflowID     WorkflowID
+	workflowName   WorkflowName
+	startTime      time.Time
+	isRunning      bool
+	enabled        bool
 }
 
 // NewNOMStyleSubscriber creates a new NOM-style subscriber.
 func NewNOMStyleSubscriber() *NOMStyleSubscriber {
 	return &NOMStyleSubscriber{
 		activities:     make(map[ActivityID]*ActivityDisplayState),
-		store:          NewActivityStore(),
 		dependencyTree: NewDependencyTree(),
 		timingCache:    NewTimingCache(),
 		isRunning:      false,
@@ -34,9 +39,9 @@ func NewNOMStyleSubscriber() *NOMStyleSubscriber {
 	}
 }
 
-// Store returns the ActivityStore for diagram export. The store projects the
-// current activity state as output.GraphNode/output.GraphEdge slices, consumable
-// by any output.GraphRenderer (DOT, Mermaid, D2, PlantUML).
+// Store returns an ActivityReader for diagram export. The projection is
+// computed on-demand from the subscriber's current state — no bridge sync,
+// no third state copy, always current.
 //
 // Example:
 //
@@ -44,9 +49,53 @@ func NewNOMStyleSubscriber() *NOMStyleSubscriber {
 //	dot.SetNodes(subscriber.Store().Nodes())
 //	dot.SetEdges(subscriber.Store().Edges())
 //	diagram, _ := dot.Render()
-func (ns *NOMStyleSubscriber) Store() *ActivityStore {
-	ns.mu.RLock()
-	defer ns.mu.RUnlock()
+func (ns *NOMStyleSubscriber) Store() ActivityReader {
+	return &subscriberView{ns: ns}
+}
 
-	return ns.store
+// subscriberView adapts NOMStyleSubscriber to the ActivityReader interface.
+// It projects the subscriber's ActivityDisplayState map to GraphNode/Edge
+// slices on-demand under the subscriber's read lock.
+type subscriberView struct {
+	ns *NOMStyleSubscriber
+}
+
+// Nodes projects all activities as output.GraphNode values for diagram export.
+func (v *subscriberView) Nodes() []output.GraphNode {
+	v.ns.mu.RLock()
+	defer v.ns.mu.RUnlock()
+
+	out := make([]output.GraphNode, 0, len(v.ns.activities))
+	for id, ads := range v.ns.activities {
+		out = append(out, output.GraphNode{
+			ID:    output.NewBrandedID[output.GraphNodeIDBrand](string(id)),
+			Label: output.NewBrandedID[output.GraphNodeLabelBrand](ads.ActivityName.String()),
+			Shape: ads.Status.NodeShape(),
+			Style: ads.Status.GraphStyle(),
+		})
+	}
+	return out
+}
+
+// Edges projects the dependency tree's edges for diagram export.
+func (v *subscriberView) Edges() []output.GraphEdge {
+	v.ns.mu.RLock()
+	defer v.ns.mu.RUnlock()
+
+	// Derive edges from the dependency tree's parent-child relationships.
+	tree := v.ns.dependencyTree
+	tree.mu.RLock()
+	defer tree.mu.RUnlock()
+
+	var edges []output.GraphEdge
+	for _, node := range tree.nodes {
+		parentID := node.ID.Get()
+		for _, child := range node.Children {
+			edges = append(edges, output.GraphEdge{
+				From: output.NewBrandedID[output.GraphNodeIDBrand](parentID),
+				To:   output.NewBrandedID[output.GraphNodeIDBrand](child.ID.Get()),
+			})
+		}
+	}
+	return edges
 }
