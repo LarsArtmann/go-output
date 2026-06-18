@@ -1,354 +1,88 @@
-# go-output - Agent Instructions
+# go-output
 
-## Project Overview
+A reusable Go library for CLI output formatting (16 formats across table/tree/graph shapes) plus NOM-style real-time progress visualization. Multi-module Go workspace; root is intentionally dependency-light.
 
-A reusable Go library for CLI applications providing consistent output formatting across 16 formats (Table, JSON, CSV, TSV, Markdown, XML, YAML, HTML, Tree, D2, Mermaid, DOT, JSONL, AsciiDoc, TOML, PlantUML) with type-safe enum-based configuration, a Shape capability matrix, and NOM-style real-time progress visualization.
+## The Core Invariant
 
-**Updated:** 2026-06-18
+**Root (`package output`) has ZERO imports of any sub-module.** This is the load-bearing architectural rule. Everything else follows from it.
 
-## Location
+- `go get github.com/larsartmann/go-output` pulls NO lipgloss, NO bubbletea, NO yaml/toml, NO d2/graph/table/nom/tui deps.
+- Sub-modules self-register into root's registries via their own `init()` (see Patterns). Root never imports them back.
+- **Never** add an `import ".../table"`, `".../d2"`, `".../nom"`, etc. to a file in the root package. It breaks the entire dependency-isolation guarantee.
 
-`/home/lars/projects/go-output/`
+## Module Map
 
-## Repository
+18 modules (root + 17 sub-modules). Each has its own `go.mod`; **deps live in `go.mod`, not here** — read the file for ground truth.
 
-https://github.com/larsartmann/go-output
+| Module | Purpose |
+| --- | --- |
+| **root** (`output`) | Core types, Format/Shape enums, registries, Markdown, Tree, Graph state |
+| `delimited/` | CSV + TSV writers |
+| `serialization/` | JSON + YAML + TOML + JSONL |
+| `markup/` | XML + HTML + AsciiDoc + Streaming HTML |
+| `table/` | Lipgloss terminal tables |
+| `d2/` | D2 diagrams (rich domain model: shapes, arrows, SQL tables) |
+| `graph/` | DOT + Mermaid renderers (share root's `GraphRendererState`) |
+| `plantuml/` | PlantUML diagrams |
+| `nom/` | NOM-style real-time progress (dependency tree, timing cache, inline renderer) |
+| `tui/` | Bubble Tea interactive TUI (depends on nom) |
+| `enum/` | Generic enum utilities (zero deps) |
+| `escape/` | Format-specific escaping (zero deps) |
+| `envdetect/` | Shared CI / NO_COLOR env detection (zero deps; used by root + nom) |
+| `testhelpers/` | Shared test assertions (zero deps) |
+| `testhelpers/graphtest/` | Shared graph test fixtures |
+| `bdd/` | BDD test suite (Ginkgo/Gomega, test-only) |
+| `integration/` | Cross-module integration tests |
+| `examples/` | Usage examples |
 
-## Key Technologies
+## Commands
 
-- Go 1.26+
-- charm.land/lipgloss/v2 (terminal styling — **in table/, nom/, tui/ modules only, not root**)
-- charm.land/bubbletea/v2 (TUI framework — **in tui/ module only, not root**)
-- github.com/go-faster/yaml (YAML support — **in serialization/ module only, not root**)
-- github.com/pelletier/go-toml/v2 (TOML support — **in serialization/ module only, not root**)
-- golang.org/x/term (terminal detection)
-- github.com/larsartmann/go-branded-id (phantom types for type-safe IDs)
-
-## Multi-Module Workspace
-
-This project uses Go workspace modules. Each sub-package with its own `go.mod` is an independent module:
-
-| Module                   | go.mod | Direct deps                                                                               | Notes                                   |
-| ------------------------ | ------ | ----------------------------------------------------------------------------------------- | --------------------------------------- |
-| Root (`package output`)  | ✅     | branded-id, delimited, enum, envdetect, testhelpers, x/term                               | Core types + formatters                 |
-| `enum/`                  | ✅     | — (testhelpers in tests)                                                                  | Generic enum utilities                  |
-| `envdetect/`             | ✅     | —                                                                                         | Shared CI / NO_COLOR env detection      |
-| `escape/`                | ✅     | —                                                                                         | Format-specific escaping                |
-| `testhelpers/`           | ✅     | —                                                                                         | Shared test assertions (non-internal)   |
-| `testhelpers/graphtest/` | ✅     | root                                                                                      | Shared graph test fixtures              |
-| `delimited/`             | ✅     | root, testhelpers                                                                         | CSV + TSV writers                       |
-| `markup/`                | ✅     | root, escape, testhelpers                                                                 | XML + HTML + AsciiDoc + Streaming       |
-| `serialization/`         | ✅     | root, testhelpers, graphtest, yaml, toml/v2                                               | JSON + YAML + TOML + JSONL              |
-| `d2/`                    | ✅     | root, enum, escape, testhelpers, graphtest                                                | D2 diagram renderer (rich domain model) |
-| `graph/`                 | ✅     | root, enum, escape, testhelpers, graphtest                                                | DOT + Mermaid renderers                 |
-| `plantuml/`              | ✅     | root, escape, testhelpers, graphtest                                                      | PlantUML diagram renderer               |
-| `table/`                 | ✅     | root, testhelpers, lipgloss/v2                                                            | **Lipgloss isolated from root**         |
-| `nom/`                   | ✅     | root, envdetect, x/term, lipgloss/v2                                                      | NOM-style real-time progress            |
-| `tui/`                   | ✅     | nom, bubbletea/v2, lipgloss/v2                                                            | Bubble Tea interactive TUI              |
-| `bdd/`                   | ✅     | root, delimited, serialization, ginkgo/v2, gomega                                         | BDD test suite (test-only)              |
-| `integration/`           | ✅     | root, delimited, serialization, markup, table, d2, graph, plantuml, nom, tui, testhelpers | Cross-module tests                      |
-| `examples/`              | ✅     | root, delimited, serialization, markup, table, d2, graph, plantuml, nom, tui              | Usage examples                          |
-
-`go.work` is gitignored (local dev only). Each module uses `replace` directives for standalone development.
-
-**Key benefit:** `go get github.com/larsartmann/go-output` pulls ZERO lipgloss deps, ZERO bubbletea deps, ZERO yaml deps, ZERO toml deps, and ZERO d2/graph/plantuml/nom/tui deps. Users import only the modules they need.
-
-### Dependency Graph
-
-```
-root          → branded-id, delimited, enum, envdetect, testhelpers, x/term
-delimited     → root, testhelpers
-markup        → root, escape, testhelpers
-serialization → root, testhelpers, graphtest, go-faster/yaml, go-toml/v2
-plantuml      → root, escape, testhelpers, graphtest
-enum          → — (testhelpers in tests only)
-envdetect     → —
-escape        → —
-testhelpers   → —
-graphtest     → root
-d2            → root, enum, escape, testhelpers, graphtest
-graph         → root, enum, escape, testhelpers, graphtest
-table         → root, testhelpers, lipgloss/v2
-nom           → root, envdetect, x/term, lipgloss/v2
-tui           → nom, bubbletea/v2, lipgloss/v2
-bdd           → root, delimited, serialization, ginkgo/v2, gomega
-integration   → root, delimited, serialization, markup, table, d2, graph, plantuml, nom, tui, testhelpers
-examples      → root, delimited, serialization, markup, table, d2, graph, plantuml, nom, tui
-```
-
-**No circular dependencies.** Root has zero imports from d2/, graph/, table/, or any sub-module.
-
-## Project Structure
-
-```
-go-output/                    # Root module (package output) — core types, Markdown, Tree
-├── format.go                 # Format enum, ParseFormat, InvalidFormatError, AllFormats
-├── shape.go                  # Shape enum, capability matrix, Supports/Shapes/FormatsForShape
-├── renderer.go               # Renderer, MustRender, TableRenderer interfaces
-├── color.go                  # ColorMode enum + terminal detection (wired into table, tree, markdown)
-├── ids.go                    # BrandedID phantom types
-├── tabledata.go              # TableData, RowEdge, TableDataStore (exported for sub-modules)
-├── tree.go                   # TreeNode, TreeOutputRenderer, colored tree rendering
-├── graph.go                  # GraphNode, GraphEdge, GraphRenderer, GraphRendererState, AddTreeNodes
-├── markdown.go               # Markdown table renderer with ColorMode (bold headers, dim separators)
-├── marshal.go                # MarshalJSONIndent (used by integration, examples, tests)
-├── render_tabledata.go       # Registry-based TableData + AnyData dispatch with ColorMode in RenderOptions
-├── registry.go               # Generic formatRegistry[T] thread-safe registry (shape, tableData, anyData)
-├── streaming.go              # StreamingRenderer interface + adapter
-│
-├── delimited/                # MODULE: CSV + TSV writers and formatters
-├── serialization/            # MODULE: JSON + YAML + TOML + JSONL marshaling and renderers
-├── markup/                   # MODULE: XML + HTML + AsciiDoc + Streaming HTML renderers
-├── d2/                       # MODULE: D2 diagram renderer (rich domain model)
-├── graph/                    # MODULE: DOT + Mermaid renderers
-├── plantuml/                 # MODULE: PlantUML diagram renderer
-│
-├── enum/                     # MODULE: Generic enum utilities (zero deps)
-├── envdetect/                # MODULE: Shared CI / NO_COLOR env detection (zero deps)
-├── escape/                   # MODULE: Format-specific escaping (zero deps)
-├── testhelpers/              # MODULE: Shared test assertions (non-internal, zero deps)
-├── testhelpers/graphtest/    # MODULE: Shared graph test fixtures (nested sub-module)
-├── table/                    # MODULE: Lipgloss terminal tables (lipgloss isolated)
-├── nom/                     # MODULE: NOM-style real-time progress (dependency trees, timing cache)
-├── tui/                     # MODULE: Bubble Tea interactive TUI (depends on nom)
-├── bdd/                      # MODULE: BDD test suite (Ginkgo/Gomega, test-only)
-├── integration/              # MODULE: Cross-module integration tests
-└── examples/                 # MODULE: Usage examples
-```
-
-## Build Commands
+**Nix is the source of truth.** `go build ./...` from root only builds root — always use the flake apps, which iterate every module:
 
 ```bash
-# Nix (recommended)
-nix develop                    # Enter dev shell (Go 1.26, golangci-lint, gopls)
-nix develop .#ci               # CI dev shell (no gopls, smaller closure)
-nix fmt                        # Format .nix files
-nix flake check                # Verify formatting + pre-commit hooks
-
-# Nix apps (iterate all 18 modules automatically)
-nix run .#build                # Build all modules
-nix run .#test                 # Test all modules
-nix run .#test-race            # Race-test nom + tui (concurrency-sensitive modules)
-nix run .#lint                 # Lint all modules
-nix run .#tidy                 # go mod tidy all modules
-nix run .#setup-workspace      # Generate go.work from go.work.example
-
-# Inside nix develop (or with Go installed) — single module:
-go build ./...                  # Build root module
-go test ./...                   # Test root module
-golangci-lint run ./...         # Lint root module
-go mod tidy                     # Tidy root module
+nix develop                # Dev shell (Go 1.26, golangci-lint, gopls)
+nix run .#build            # Build all 18 modules
+nix run .#test             # Test all 18 modules
+nix run .#test-race        # Race-test nom + tui (concurrency-sensitive)
+nix run .#lint             # golangci-lint across all modules
+nix run .#tidy             # go mod tidy all modules
+nix run .#setup-workspace  # Generate gitignored go.work from go.work.example
+nix fmt                    # Format .nix files
+nix flake check            # Formatting + pre-commit hooks
 ```
 
-**Note:** `go.work` is gitignored. Run per-module commands or create a local `go.work`:
+Go checks are NOT in `nix flake check` (sandbox blocks `go mod download`); CI handles them. `.pre-commit-config.yaml` exists for non-Nix users.
 
-```bash
-cat > go.work << 'EOF'
-go 1.26.3
+## Patterns
 
-use (
-  .
-  ./bdd
-  ./delimited
-  ./d2
-  ./enum
-  ./envdetect
-  ./escape
-  ./examples
-  ./graph
-  ./integration
-  ./markup
-  ./nom
-  ./plantuml
-  ./serialization
-  ./table
-  ./testhelpers
-  ./testhelpers/graphtest
-  ./tui
-)
-EOF
-```
+These are non-obvious from reading code alone — the "how does this even work" knowledge.
 
-## Code Quality Standards
+- **Registry dispatch via `init()`**: Root's `RenderTableData()` / `RenderAnyData()` dispatch to registered marshalers, yet root imports no sub-module. Each sub-module calls `RegisterFormatShapes(...)` / registers its marshaler in its own `init()`. The generic `formatRegistry[T]` backs shape capabilities, tableData, and anyData registries. Importing a sub-module is what activates it.
+- **Shape capability matrix**: Each format declares which data shapes (table/tree/graph) it supports via `RegisterFormatShapes()` in `init()`. Query with `f.Supports(shape)` or `FormatsForShape(shape)`. See `docs/FORMAT_ARCHITECTURE.md`.
+- **ColorMode wiring — three mechanisms, use the right one**: `table.New(table.WithColorMode(...))` (functional option), `ASCIITreeRenderer.SetColorMode(...)` / `MarkdownTable.SetColorMode(...)` (setter), `RenderTableData(data, fmt, RenderOptions{ColorMode: ...})` (dispatch field). `ColorModeAuto` detects terminal via `x/term`, respects `NO_COLOR`/`CI`/`FORCE_COLOR`.
+- **Composition via `GraphRendererState`**: DOT/Mermaid/PlantUML renderers embed root's `GraphRendererState` for shared node/edge state via `AddNode`/`AddEdge`. `AddTreeNodes` accepts the `NodeEdgeAppender` interface (not raw slice pointers). `TableDataStore` exposes `Data()` so sub-modules share the table data field.
+- **Branded IDs**: Phantom types (`D2NodeID`, `TreeNodeID`, ...) via `go-branded-id` prevent mixing ID types at compile time. `d2/` re-exports `D2NodeID`/`D2NodeLabel` from root so users need only one import.
+- **All renderers implement `Render() (string, error)`**: Use `MustRender(r)` in tests/examples for the panic-on-error shortcut.
 
-- All code must pass `golangci-lint` with `.golangci.yml` configuration
-- Tests required for all public APIs
-- 90%+ test coverage target
-- File size limit: 350 lines per file
-- No code duplication (threshold: 30 tokens)
-- Each module's `go.mod` must have `replace` directives for sibling deps
-- Sub-modules must NOT import `internal/` packages from root (Go restriction)
+## Gotchas
 
-## Testing
+Things that will silently break or that an agent would get wrong from code alone.
 
-```bash
-go test ./...              # Unit tests (root module)
-go test -race ./...        # Race detector
-go test -cover ./...       # Coverage
-go test -bench=. -benchmem ./...  # Benchmarks
-```
+- **Never import a sub-module into root** — see Core Invariant above.
+- **`testhelpers/` is zero-dep by design** — it cannot import `output`. Cross-module test helpers must stay local to each module or use table-driven patterns.
+- **`internal/` is root-only** — Go forbids sub-modules from importing `internal/` packages. `internal/gentest` and `internal/testutils` are root-only; sub-modules inline their own test helpers.
+- **Depguard restricts imports** — `.golangci.yml` has explicit allow-lists. When a module gains a new sibling dep, add it to BOTH the `default` and `main` allow-lists or lint fails. Each module has its own `.golangci.yml` section.
+- **Every module's `go.mod` needs `replace` directives** for sibling deps, plus add the module to `flake.nix`'s `modules` list and `go.work.example`'s `use (...)` block.
+- **Mono-version tagging** — all 18 modules release in lockstep under the same `vX.Y.Z` (root tag + `submod/vX.Y.Z` tags). Never version a module independently.
+- **NOM events use `nom.Event*` constants** (e.g., `nom.EventWorkflowStarted`), not bare string literals.
+- **`envdetect` centralizes CI/NO_COLOR detection** — root `color.go` and `nom/inline_renderer.go` both delegate to `envdetect.IsCI()` / `IsNoColor()`. Don't re-inline this logic.
+- **Code duplication threshold is `art-dupl -t 24`** (project standard). Below t=20, reported clones are almost entirely Go test idioms or module-boundary re-declarations — both acceptable. See ADR 005.
 
-## Key Design Patterns
+## Pointers
 
-1. **Type-safe enums**: String constants with Parse/Validate via `enum` package. Every enum has `Parse()`, `String()`, `IsValid()`, `AllowedValues()`.
-2. **Shape capability matrix**: Each format declares supported data shapes via `RegisterFormatShapes(format, shapes...)` in `init()`. Root registers defaults; sub-modules override. Query with `f.Supports(shape)` or `FormatsForShape(shape)`.
-3. **Branded IDs**: Phantom types prevent mixing D2NodeID/TreeNodeID/etc via `go-branded-id`.
-4. **Interface-based design**: Renderer, GraphRenderer, TableRenderer, TreeOutputRenderer interfaces — all have `Render() (string, error)`. Use `MustRender(r)` for tests/examples.
-5. **Composition**: GraphRendererState in graph.go (root) provides shared state for DOT/Mermaid via AddNode/AddEdge methods. Sub-renderers pass `&r.GraphRendererState` to `AddTreeNodes` which uses the `NodeEdgeAppender` interface. TableDataStore in tabledata.go shared by delimited, markup, serialization via Data() getter.
-6. **Registry dispatch**: `RenderTableData()` and `RenderAnyData()` dispatch to registered marshaler functions. Sub-modules register via `init()`. Root has ZERO sub-module imports. All 16 formats register as `TableDataRenderer`; JSON/YAML/TOML also register as `AnyDataRenderer`.
-7. **ColorMode wired into renderers**: `ColorMode` (auto/always/never) controls ANSI color output. `table.New(WithColorMode(mode))` for lipgloss tables, `ASCIITreeRenderer.SetColorMode(mode)` for trees, `MarkdownTable.SetColorMode(mode)` for markdown, `RenderOptions.ColorMode` for `RenderTableData()` dispatch.
-8. **Footer row on TableData**: `TableData.Footer []string` provides an optional totals/summary row. Tabular renderers (CSV, TSV, Markdown, HTML, XML, AsciiDoc, Table) render it visually. HTML uses `<tfoot>` with `footer-cell` CSS class, XML uses `<footer>`, Markdown adds a second separator + bold footer (inherits column alignment). The `table.FooterProvider` optional interface enables `table.FromTableData()` to bold-style the footer. `CSVWriter.WriteFooter()` and `TSVWriter.WriteFooter()` provide explicit streaming footer methods. `TableData.Validate()` checks footer column count matches headers. Data formats (JSON, YAML, TOML, JSONL) and non-tabular formats (Tree, Graph) skip the footer.
-9. **Delimited dedup**: `delimited.marshalFromTableData()` is a shared helper used by both `MarshalCSVFromTableData` and `MarshalTSVFromTableData`, eliminating structural duplication via a `tableDataWriter` interface.
-10. **TableRenderer adapter pattern**: Both `MarkdownTable` and `table.Table` use fluent/builder APIs (returning `*Self`) incompatible with the void-returning `TableRenderer` interface. `AsTableRenderer()` adapter methods wrap the builder with void-returning delegates. Pattern: `md.AsTableRenderer()` for MarkdownTable, `tbl.AsTableRenderer()` for table.Table.
-11. **WithFooterStyle option**: `table.WithFooterStyle(func(lipgloss.Style) lipgloss.Style)` provides composable footer styling for lipgloss tables. Receives the base style (with padding) and returns the styled result.
-12. **lipgloss style caching**: `table.buildStyleFunc` pre-allocates the base `lipgloss.NewStyle().Padding(0, 1)` once and reuses it for all rows, eliminating per-row allocations in the hot path.
-13. **NodeEdgeAppender interface**: `AddTreeNodes` accepts `NodeEdgeAppender` (AddNode/AddEdge methods) instead of raw `*[]GraphNode`/`*[]GraphEdge` pointers, providing controlled mutation without exposing internal state.
-14. **NOM event-driven architecture**: `nom.NOMStyleSubscriber` implements `EventSubscriber` with type-assertion-based accessor interfaces (`WorkflowEventAccessor`, `ActivityEventAccessor`, `DurationAccessor`, `ErrorAccessor`). Event routing uses `nom.Event*` string constants (e.g., `nom.EventWorkflowStarted`, `nom.EventActivityCompleted`) — bare string literals were eliminated as a split-brain fix.
-15. **NOM dependency tree**: `nom.DependencyTree` renders hierarchical activity visualization with **priority-based child sorting** (Failed > Running > Paused > Pending > Completed; ties broken by elapsed time then activity ID), depth-aware tree prefixes (`├──`/`└──`), and thread-safe concurrent access. `buildOnce`/`loaded` double-checked locking prevents rebuild under read lock. Tree nodes are `nom.ActivityNode` (renamed from `TreeNode` to avoid collision with `output.TreeNode`).
-16. **NOM timing cache**: `nom.TimingCache` persists activity duration history as CSV at `~/.cache/nom-timing.csv`. Uses **median** of the last ≤10 entries for robust estimates. Async saves via `saveAsync()` (snapshots data under RLock, writes without lock). Caps history at 10 entries per activity.
-17. **NOM inline renderer**: `nom.InlineRenderer` redraws in-place without alt-screen takeover. Supports `Refresh()` for on-demand updates, a 1-second max-frame timer so elapsed timers stay current, and terminal-width-aware truncation with `…`. Physical line counts account for wrapping so cursor-up math stays correct.
-18. **TUI state machine**: `tui.WorkflowState` enforces `Idle → Running → Completed/Errored` transitions via `CanTransitionTo()`. Terminal states reject updates and ticks. `BubbleTeaProgressReporter` uses double-checked locking for lazy TUI start.
-19. **TUI display modes**: `DisplayModeNOM` and `DisplayModeUniversal` control rendering. Universal mode shows step-based progress (like `nh darwin switch`). NOM mode shows dependency tree + activity status. Both use lipgloss for ANSI styling. The NOM summary bar is colored by workflow state (success/error/neutral).
+Deeper knowledge lives in dedicated docs — read these before non-trivial work:
 
-## Common Tasks
-
-### Adding a New Output Format
-
-1. Add format constant to `format.go`
-2. Call `RegisterFormatShapes(FormatNew, ShapeTable, ...)` in your sub-module's `init()`
-3. Implement formatter — embed Renderer interface
-4. Add tests with >90% coverage
-5. Update CHANGELOG.md and README.md
-
-### Adding a New D2 Enum
-
-1. Add type + constants to `d2/d2_enum.go`
-2. Add values slice + Parse/IsValid/AllowedValues/String methods
-3. Add tests to `d2/d2_enum_test.go`
-
-### Adding a New Graph Renderer
-
-1. Create renderer in `graph/` module
-2. Embed `output.GraphRendererState` for shared node/edge state
-3. Implement `output.GraphRenderer` interface
-4. Add tests with >90% coverage
-
-### Using ColorMode
-
-All terminal renderers support `ColorMode` for controlling ANSI color output:
-
-```go
-// Table: functional options pattern
-tbl := table.New(table.WithColorMode(output.ColorModeAlways))
-
-// Tree: setter method
-tree := output.NewASCIITreeRenderer()
-tree.SetColorMode(output.ColorModeAlways)
-
-// Markdown: setter method (chains)
-md := output.NewMarkdownTable().SetColorMode(output.ColorModeAlways)
-
-// RenderTableData dispatch: pass via RenderOptions
-output.RenderTableData(data, output.FormatTree, output.RenderOptions{ColorMode: output.ColorModeAlways})
-```
-
-`ColorModeAuto` (default) detects terminal via `golang.org/x/term`, respects `NO_COLOR`, `CI`, `FORCE_COLOR`.
-
-### Sub-Module Usage Pattern
-
-Each sub-module is independently versioned. Users import only what they need:
-
-```go
-import "github.com/larsartmann/go-output"                  // core types + Markdown/Tree formatters
-import "github.com/larsartmann/go-output/delimited"          // CSV + TSV (optional)
-import "github.com/larsartmann/go-output/serialization"      // JSON + YAML + TOML + JSONL (optional)
-import "github.com/larsartmann/go-output/markup"             // XML + HTML + AsciiDoc + Streaming (optional)
-import "github.com/larsartmann/go-output/d2"                 // D2 diagrams (optional)
-import "github.com/larsartmann/go-output/graph"              // DOT + Mermaid (optional)
-import "github.com/larsartmann/go-output/table"              // Lipgloss tables (optional)
-import "github.com/larsartmann/go-output/plantuml"            // PlantUML diagrams (optional)
-import "github.com/larsartmann/go-output/nom"                  // NOM progress visualization (optional)
-import "github.com/larsartmann/go-output/tui"                  // Bubble Tea interactive TUI (optional)
-```
-
-`go get github.com/larsartmann/go-output` now requires only the root
-dependencies (`go-branded-id`, `x/term`, `delimited`, `enum`,
-`testhelpers`). YAML/TOML libraries are pulled only when you import
-`serialization/`.
-
-### Mono-Version Tagging
-
-All modules are released in lockstep with the same version. Every release creates tags for every module:
-
-- Root: `vX.Y.Z`
-- Sub-modules: `bdd/vX.Y.Z`, `d2/vX.Y.Z`, `delimited/vX.Y.Z`, `enum/vX.Y.Z`, `escape/vX.Y.Z`, `examples/vX.Y.Z`, `graph/vX.Y.Z`, `integration/vX.Y.Z`, `markup/vX.Y.Z`, `nom/vX.Y.Z`, `plantuml/vX.Y.Z`, `serialization/vX.Y.Z`, `table/vX.Y.Z`, `testhelpers/vX.Y.Z`, `testhelpers/graphtest/vX.Y.Z`, `tui/vX.Y.Z`
-
-This ensures `go get github.com/larsartmann/go-output/table@vX.Y.Z` resolves correctly instead of falling back to a stale `v0.0.0` pseudo-version.
-
-## Architecture Notes
-
-- **Root has ZERO sub-module imports** — verified via `go mod graph`. Users get zero transitive deps from sub-modules they don't import.
-- Root's `go.mod` no longer requires `serialization`, so importing `graph/`, `plantuml/`, or `d2/` no longer transitively pulls in `go-faster/yaml`, `go-toml/v2`, `go-faster/jx`, or `segmentio/asm`.
-- Root no longer imports `go-faster/yaml` or `escape` in production code — these deps are isolated in serialization/ and markup/ respectively
-- D2 has richer types than generic graph (shapes, arrows, SQL tables, classes) — lives in `d2/` module with its own `D2Node`/`D2Edge` types
-- D2 re-exports `D2NodeID`/`D2NodeLabel` from root so users don't need to import both `d2` and `output` for ID construction
-- DOT and Mermaid renderers live in `graph/` module, sharing `GraphRendererState` from root via accessor methods
-- Tree conversion has renderer-specific addTreeNodes in d2_convert, graph/dot, graph/mermaid — the generic AddTreeNodes in graph.go handles the common case via `NodeEdgeAppender` interface
-- Depguard config restricts imports
-- escape/ uses `html.EscapeString()` from stdlib for HTML, with `strings.ReplaceAll` for XML `&apos;`
-- escape/ uses `strings.NewReplacer` for D2/DOT and MermaidText (single-pass, 1 allocation instead of 4 chained ReplaceAll)
-- markup/asciidoc.go uses `strings.NewReplacer` for AsciiDoc escaping (|, \*, \_, `, ~, ^)
-- registry.go — generic `formatRegistry[T]` thread-safe registry, replacing 3 separate mutex+map patterns. Backs `formatCapabilities`, `tableDataRegistry`, and `anyDataRegistry`.
-- `ColorMode` wired into table (via `WithColorMode` functional option), tree (via `SetColorMode()`), markdown (via `SetColorMode()`), and `RenderTableData()` (via `RenderOptions.ColorMode`)
-- Tree rendering uses depth-based ANSI color cycling when color is enabled
-- Markdown rendering uses bold headers and dim separators when color is enabled
-- Multi-module workspace: root + 17 sub-modules (18 total; see ADR 001)
-- Shape capability matrix (ADR 002) uses `formatRegistry[T]` generic registry pattern: `RegisterFormatShapes()` in each sub-module's `init()`. Root registers defaults for all formats as fallback. Query with `f.Supports(shape)`. Same generic `formatRegistry[T]` backs `TableDataRenderer` and `AnyDataRenderer` registries, eliminating 3 separate mutex+map boilerplates.
-- API stability audit (ADR 006) completed — all exported symbols frozen, capability matrix fixed (D2/Mermaid/DOT/PlantUML now declare ShapeTree, TOML now declares ShapeGraph); ADR updated with diagram renderer stability tiers
-- Round-trip integration tests in `integration/roundtrip_test.go` verify 16 formats: 8 parseable round-trips (JSON, CSV, TSV, YAML, TOML, JSONL, XML, HTML) + 8 structural verifications (Markdown, Table, Tree, AsciiDoc, D2, Mermaid, DOT, PlantUML)
-- `escape.SlugifyID()` unifies ID sanitization (spaces, hyphens, slashes, dots, asterisks, brackets, braces, parentheses → underscores) across D2, DOT, Mermaid, and PlantUML tree node ID generation
-- `GraphRendererState.DedupEdges()` removes duplicate `(from, to)` edges in-place
-- `GraphStyle` is honored by DOT, Mermaid, and PlantUML renderers for per-node colors
-- `MermaidRenderer.SetCodeFence(bool)` toggles markdown code fence; default `true` preserves backwards compatibility
-- `DOTRenderer` exposes configurable layout via `RankDir`/`SplineStyle` typed enums and `SetNodeSep`/`SetRankSep`
-- `tableDataBase` exported as `TableDataStore` with `Data()` getter — allows sub-modules to access unexported `data` field
-- `marshal.go` exports `MarshalJSONIndent()` — used by integration, examples, and tests
-- `internal/gentest` and `internal/testutils` are root-only — sub-modules must inline helpers or create their own. Decision rationale: exposing test helpers publicly via `testhelpers/gentest` would freeze internal testing APIs; each module having its own test helpers allows independent evolution
-- Nix flake uses `flake-parts` + `treefmt-nix` + `git-hooks.nix` — no `gomod2nix` (library, 18 modules, no binary)
-- Go checks (build/test/lint) run via `nix run .#test` / `nix run .#lint` / `nix run .#build` — these iterate all 18 modules. Not in `nix flake check` because the Nix sandbox blocks `go mod download`; CI handles these reliably
-- `.pre-commit-config.yaml` exists for non-Nix users; `git-hooks.nix` auto-installs hooks for Nix users via `nix develop`
-
-## Code Duplication Policy
-
-At `art-dupl -t 24` (project threshold), the codebase has **zero actionable clones**.
-
-At `art-dupl -t 20` (aggressive), ~9 clone groups appear, all categorized as:
-
-| Category            | Description                                                           | Action                        |
-| ------------------- | --------------------------------------------------------------------- | ----------------------------- |
-| **Go test idioms**  | `OnEvent` setup, `t.Run`/`t.Parallel` boilerplate, table-driven cases | Accept — language patterns    |
-| **Module boundary** | Test helpers re-declared per module                                   | Accept — Go design constraint |
-
-At `art-dupl -t 15` (aggressive), ~50 clone groups appear. These are categorized as:
-
-| Category            | Description                                                        | Action                                 |
-| ------------------- | ------------------------------------------------------------------ | -------------------------------------- |
-| **Go test idioms**  | `strings.Contains` assertions, `t.Errorf` patterns, `t.Parallel()` | Accept — language patterns             |
-| **Module boundary** | Interface re-declarations, type aliases across modules             | Accept — Go design constraint          |
-| **Example/docs**    | Full API usage in `example_test.go` and `examples/`                | Accept — intentional for documentation |
-| **Single-line**     | `render*TableData` signatures, `init()` registrations              | Accept — interface compliance          |
-
-### Key Decisions
-
-- `testhelpers` is **zero-dep by design** — cannot import `output`. Cross-module test helpers must stay local or use table-driven patterns within each module
-- `assertAllContained` lives in `testhelpers` (zero-dep, only `strings` + `testing`) — used by `markup`, `plantuml`, and `serialization` tests
-- `isMermaidIdentRune` lives in `escape/escape.go` (private) — shared between `MermaidID` production code and the fuzz invariant test
-- `serialization/render.go` has `renderViaRenderer()` shared helper for YAML/TOML (identical `render*TableData` bodies)
-- `graphtest.NewTestNode`/`TestEdgeAB` used in serialization, graph, d2, plantuml benches — not in examples (must show full API)
-- nom test helpers `registerActivity`, `sendActivityStarted` — nom-package-private (cannot be imported across modules because test events have module-specific types)
-- tui test helpers `startActivity`, `startWorkflow`, `startHelper` — tui-package-private for the same reason
-- integration test helpers `startActivity`, `completeActivity`, `fireWorkflowStarted`, `mustUpdateActivityStatus` — package-private
-- d2 test helpers `newD2NodeID`, `newD2NodeLabel` (in `d2/helpers_test.go`) — eliminate `output.NewBrandedID[output.D2NodeIDBrand]("X")` boilerplate
-- `assertMapRow` lives in `integration/roundtrip_test.go` (package-private) — variadic key/value pair verifier for round-trip tests
-- `delimited.tableDataWriter` is a type alias for the exported `delimited.Writer` interface (keeps the unexported name for internal ergonomics while exposing the contract to callers like the examples module)
-- **Threshold 15 is too aggressive for action** — use t=30-40 for meaningful dedup work
+- `docs/DOMAIN_LANGUAGE.md` — ubiquitous language (Format, Shape, Renderer, TableData, TreeNode, GraphNode, ...)
+- `docs/FORMAT_ARCHITECTURE.md` — the 16 formats × 3 shapes matrix and registry internals
+- `docs/adr/` — 7 ADRs: multi-module workspace (001), shape matrix (002), d2/graph extraction (003), footer row (004), duplication thresholds (005), API stability (006), nom composition (007)
+- `FEATURES.md`, `TODO_LIST.md`, `CHANGELOG.md`, `README.md`

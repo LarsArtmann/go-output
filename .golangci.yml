@@ -424,6 +424,10 @@ linters:
         text: (?:gochecknoglobals|AllFormats)
         linters:
           - gochecknoglobals
+      - path: envdetect/envdetect\.go
+        text: (?:gochecknoglobals|CIEnvVars)
+        linters:
+          - gochecknoglobals
       - path: format\.go
         text: (?:already exists|make it a constant)
         linters:
