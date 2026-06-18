@@ -62,13 +62,8 @@ func (tc *TimingCache) loadLocked() error {
 		duration = time.Duration(nanos)
 
 		history := newCache[activityName]
-		history = append(history, duration)
 		// Cap at maxCachedEntries during load to prevent unbounded growth from hand-edited files
-		if len(history) > maxCachedEntries {
-			history = history[len(history)-maxCachedEntries:]
-		}
-
-		newCache[activityName] = history
+		newCache[activityName] = capHistory(append(history, duration))
 	}
 
 	if err := file.Close(); err != nil {

@@ -52,17 +52,23 @@ func NewTimingCache() *TimingCache {
 	}
 }
 
+// capHistory trims history to at most maxCachedEntries entries, keeping the
+// most recent samples. Used by both Record (in-memory) and load (disk) so the
+// cap is enforced consistently regardless of where the data came from.
+func capHistory(history []time.Duration) []time.Duration {
+	if len(history) > maxCachedEntries {
+		history = history[len(history)-maxCachedEntries:]
+	}
+
+	return history
+}
+
 // Record records a duration for an activity.
 func (tc *TimingCache) Record(activityName string, duration time.Duration) error {
 	tc.mu.Lock()
 	defer tc.mu.Unlock()
 	// Add duration to history
-	history := tc.cache[activityName]
-	history = append(history, duration)
-	// Keep only last maxCachedEntries entries
-	if len(history) > maxCachedEntries {
-		history = history[len(history)-maxCachedEntries:]
-	}
+	history := capHistory(append(tc.cache[activityName], duration))
 
 	tc.cache[activityName] = history
 	// Save to disk asynchronously (non-blocking)

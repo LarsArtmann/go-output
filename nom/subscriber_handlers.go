@@ -141,6 +141,18 @@ func (ns *NOMStyleSubscriber) getOrCreateActivity(
 	return activity
 }
 
+// extractDependencies returns the activity's dependencies if the event implements
+// DependenciesAccessor; otherwise it returns nil. Both handleActivityStarted and
+// handleActivityRegistered need this for AddActivity.
+func extractDependencies(event Event) []ActivityID {
+	var deps []ActivityID
+	if da, ok := event.(DependenciesAccessor); ok {
+		deps = da.GetDependencies()
+	}
+
+	return deps
+}
+
 // handleActivityStarted handles activity started event.
 func (ns *NOMStyleSubscriber) handleActivityStarted(
 	_ context.Context,
@@ -162,15 +174,10 @@ func (ns *NOMStyleSubscriber) handleActivityStarted(
 		activity.SetEstimatedTime(medianDuration)
 	}
 
-	var deps []ActivityID
-	if da, ok := event.(DependenciesAccessor); ok {
-		deps = da.GetDependencies()
-	}
-
 	if err := ns.dependencyTree.AddActivity(
 		aa.GetActivityID(),
 		aa.GetActivityName().String(),
-		deps,
+		extractDependencies(event),
 	); err != nil {
 		return err
 	}
@@ -202,20 +209,14 @@ func (ns *NOMStyleSubscriber) handleActivityRegistered(
 
 	ns.getOrCreateActivity(aa.GetActivityID(), aa.GetActivityName())
 
-	var deps []ActivityID
-	if da, ok := event.(DependenciesAccessor); ok {
-		deps = da.GetDependencies()
-	}
-
 	if err := ns.dependencyTree.AddActivity(
 		aa.GetActivityID(),
 		aa.GetActivityName().String(),
-		deps,
+		extractDependencies(event),
 	); err != nil {
 		return err
 	}
 
-	// Mirror to ActivityStore for diagram export
 	return nil
 }
 

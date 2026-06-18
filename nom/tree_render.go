@@ -2,6 +2,7 @@ package nom
 
 import (
 	"fmt"
+	"image/color"
 	"strings"
 
 	"charm.land/lipgloss/v2"
@@ -230,12 +231,7 @@ func (dt *DependencyTree) renderLine(entry visibleEntry, maxWidth int) string {
 		activityDisplay = TruncateVisible(activityDisplay, available)
 	}
 
-	style := lipgloss.NewStyle().
-		Foreground(color).
-		Width(0).
-		Inline(true)
-
-	return style.Render(fullPrefix + activityDisplay)
+	return activityNodeStyle(color).Render(fullPrefix + activityDisplay)
 }
 
 // VisibleNodes returns the ordered list of tree nodes that would be displayed
@@ -295,11 +291,16 @@ func (dt *DependencyTree) RenderNode(node *ActivityNode, visibleNodes []*Activit
 		activityDisplay += " " + timingInfo
 	}
 
+	return activityNodeStyle(color).Render(activityDisplay)
+}
+
+// activityNodeStyle builds the inline lipgloss style used for rendering a
+// single activity node label. Centralized so every site renders identically.
+func activityNodeStyle(color color.Color) lipgloss.Style {
 	return lipgloss.NewStyle().
 		Foreground(color).
 		Width(0).
-		Inline(true).
-		Render(activityDisplay)
+		Inline(true)
 }
 
 func isPhaseNode(node *ActivityNode) bool {
