@@ -227,7 +227,7 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 | **Branded IDs**                      | FULLY_FUNCTIONAL | `ActivityID`, `ActivityName`, `WorkflowID`, `WorkflowName` — named types over `string` (phantom-branding upgrade tracked in TODO §E)      |
 | **Event accessor interfaces**        | FULLY_FUNCTIONAL | `WorkflowEventAccessor`, `ActivityEventAccessor`, `DurationAccessor`, `ErrorAccessor` — type-assertion routing                            |
 | **Activity symbols**                 | FULLY_FUNCTIONAL | `SymbolRunning`, `SymbolCompleted`, `SymbolFailed`, `SymbolPaused`, `SymbolDownload`, `SymbolUpload`, `SymbolTiming`                      |
-| **Lazy build (double-checked lock)** | FULLY_FUNCTIONAL | `DependencyTree.Build()`/`EnsureBuild()` use `buildOnce`/`loaded` to prevent rebuild under read lock                                      |
+| **Lazy build (double-checked lock)** | FULLY_FUNCTIONAL | `DependencyTree.Build()`/`EnsureBuild()` use the `loaded` flag with double-checked locking to prevent rebuild under read lock                                      |
 
 ### Bubble Tea Interactive TUI (`tui/` module)
 
