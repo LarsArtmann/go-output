@@ -34,8 +34,9 @@ func getTableDataRenderer(format Format) (TableDataRenderer, bool) {
 	return tableDataRegistry.get(format)
 }
 
-//nolint:gochecknoinits // Registers the Tree TableData renderer for registry-based dispatch.
 // Markdown registers itself from the markdown/ sub-module's init().
+//
+//nolint:gochecknoinits // Registers the Tree TableData renderer for registry-based dispatch.
 func init() {
 	RegisterTableDataRenderer(FormatTree, renderTreeTableData)
 }
