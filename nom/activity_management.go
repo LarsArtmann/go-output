@@ -1,7 +1,6 @@
 package nom
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -55,22 +54,6 @@ func (c ActivityCounts) Summary() string {
 	}
 
 	return strings.Join(parts, " ")
-}
-
-// SummaryWithTotal renders the counts followed by the total symbol and
-// completion percentage, e.g. "⏵1 ✔2 ∑5 (40%)". This is the format used by
-// the inline renderer's summary box.
-func (c ActivityCounts) SummaryWithTotal() string {
-	summary := c.Summary()
-
-	total := c.Total()
-	summary += fmt.Sprintf(" %s%d", SymbolTotal, total)
-
-	if total > 0 {
-		summary += fmt.Sprintf(" (%d%%)", c.CompletionPercent())
-	}
-
-	return summary
 }
 
 // GetActivityCounts returns counts of activities by status.
