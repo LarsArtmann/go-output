@@ -83,12 +83,12 @@ func TestGetStateStyle(t *testing.T) {
 
 	tests := []struct {
 		name  string
-		state WorkflowState
+		state workflowState
 	}{
-		{"idle", WorkflowStateIdle},
-		{"running", WorkflowStateRunning},
-		{"completed", WorkflowStateCompleted},
-		{"errored", WorkflowStateErrored},
+		{"idle", workflowStateIdle},
+		{"running", workflowStateRunning},
+		{"completed", workflowStateCompleted},
+		{"errored", workflowStateErrored},
 	}
 
 	for _, tt := range tests {
@@ -108,7 +108,7 @@ func TestApplyStateSummary(t *testing.T) {
 	t.Run("with state summary", func(t *testing.T) {
 		t.Parallel()
 
-		summary, style := applyStateSummary("test", WorkflowStateCompleted, 5, 10*time.Second)
+		summary, style := applyStateSummary("test", workflowStateCompleted, 5, 10*time.Second)
 		if summary == "" {
 			t.Error("expected non-empty summary")
 		}
@@ -119,7 +119,7 @@ func TestApplyStateSummary(t *testing.T) {
 	t.Run("running state returns original summary", func(t *testing.T) {
 		t.Parallel()
 
-		summary, _ := applyStateSummary("original", WorkflowStateRunning, 0, 0)
+		summary, _ := applyStateSummary("original", workflowStateRunning, 0, 0)
 		if summary != "original" {
 			t.Errorf("summary = %q, want %q", summary, "original")
 		}

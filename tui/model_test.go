@@ -90,10 +90,10 @@ func TestProgressModel_Update_ProgressUpdateMsg(t *testing.T) {
 	t.Parallel()
 
 	model := newTestModel()
-	model.workflowState = WorkflowStateRunning
+	model.workflowState = workflowStateRunning
 
-	updatedModel, _ := model.Update(ProgressUpdateMsg{
-		Type:     ProgressUpdate,
+	updatedModel, _ := model.Update(progressUpdateMsg{
+		Type:     progressUpdate,
 		Progress: 75.0,
 	})
 
@@ -107,15 +107,15 @@ func TestProgressModel_Update_ProgressUpdateMsg_Completion(t *testing.T) {
 	t.Parallel()
 
 	model := newTestModel()
-	model.workflowState = WorkflowStateRunning
+	model.workflowState = workflowStateRunning
 
-	updatedModel, _ := model.Update(ProgressUpdateMsg{
-		Type:     ProgressUpdate,
+	updatedModel, _ := model.Update(progressUpdateMsg{
+		Type:     progressUpdate,
 		Progress: 100.0,
 	})
 
 	m := updatedModel.(*ProgressModel)
-	if m.workflowState != WorkflowStateCompleted {
+	if m.workflowState != workflowStateCompleted {
 		t.Errorf("workflow state = %v, want Completed", m.workflowState)
 	}
 }
@@ -124,10 +124,10 @@ func TestProgressModel_Update_ProgressUpdateMsg_MessageUpdate(t *testing.T) {
 	t.Parallel()
 
 	model := newTestModel()
-	model.workflowState = WorkflowStateRunning
+	model.workflowState = workflowStateRunning
 
-	updatedModel, _ := model.Update(ProgressUpdateMsg{
-		Type:    MessageUpdate,
+	updatedModel, _ := model.Update(progressUpdateMsg{
+		Type:    messageUpdate,
 		Message: "Deploying",
 	})
 
@@ -141,10 +141,10 @@ func TestProgressModel_Update_ProgressUpdateMsg_RejectedWhenCompleted(t *testing
 	t.Parallel()
 
 	model := newTestModel()
-	model.workflowState = WorkflowStateCompleted
+	model.workflowState = workflowStateCompleted
 
-	updatedModel, _ := model.Update(ProgressUpdateMsg{
-		Type:     ProgressUpdate,
+	updatedModel, _ := model.Update(progressUpdateMsg{
+		Type:     progressUpdate,
 		Progress: 50.0,
 	})
 
@@ -158,12 +158,12 @@ func TestProgressModel_Update_TickMsg_RejectedWhenNotRunning(t *testing.T) {
 	t.Parallel()
 
 	model := newTestModel()
-	model.workflowState = WorkflowStateIdle
+	model.workflowState = workflowStateIdle
 
-	updatedModel, _ := model.Update(TickMsg(time.Now()))
+	updatedModel, _ := model.Update(tickMsg(time.Now()))
 
 	m := updatedModel.(*ProgressModel)
-	if m.workflowState != WorkflowStateIdle {
+	if m.workflowState != workflowStateIdle {
 		t.Error("tick should not change state when idle")
 	}
 }

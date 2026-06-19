@@ -57,24 +57,6 @@ func TestProgressModel_MouseScrolling(t *testing.T) {
 	assertScrollOffset(t, m.scrollOffset, 5)
 }
 
-// TestProgressModel_CancelMessage verifies CancelMsg triggers quit.
-func TestProgressModel_CancelMessage(t *testing.T) {
-	t.Parallel()
-
-	model := newTestModel()
-
-	_, cmd := model.Update(CancelMsg{})
-
-	if cmd == nil {
-		t.Fatal("expected Quit command for CancelMsg")
-	}
-
-	msg := cmd()
-	if msg == nil {
-		t.Error("quit command should produce a message")
-	}
-}
-
 // TestProgressModel_ViewportScrolling verifies applyScrollViewport clips content.
 func TestProgressModel_ViewportScrolling(t *testing.T) {
 	t.Parallel()
@@ -141,7 +123,7 @@ func TestProgressModel_ResizeStress_RapidSequence(t *testing.T) {
 
 	model := newTestModel()
 	model.displayMode = DisplayModeNOM
-	model.workflowState = WorkflowStateRunning
+	model.workflowState = workflowStateRunning
 	model.dependencyTree = newTestTree(50)
 
 	resizes := []tea.WindowSizeMsg{
@@ -179,7 +161,7 @@ func TestProgressModel_Resize_ClampsScrollOffset(t *testing.T) {
 
 	model := newTestModel()
 	model.displayMode = DisplayModeNOM
-	model.workflowState = WorkflowStateRunning
+	model.workflowState = workflowStateRunning
 	model.width = 120
 	model.height = 40
 	model.dependencyTree = newTestTree(50)

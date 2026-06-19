@@ -88,7 +88,7 @@ func TestProgressModel_UpdateWorkflowCompletionState(t *testing.T) {
 		t.Parallel()
 
 		model := newTestModel()
-		model.workflowState = WorkflowStateRunning
+		model.workflowState = workflowStateRunning
 		model.displayMode = DisplayModeNOM
 
 		ctx := context.Background()
@@ -103,7 +103,7 @@ func TestProgressModel_UpdateWorkflowCompletionState(t *testing.T) {
 
 		model.updateWorkflowCompletionState()
 
-		if model.workflowState != WorkflowStateErrored {
+		if model.workflowState != workflowStateErrored {
 			t.Errorf("state = %v, want Errored (failed > 0)", model.workflowState)
 		}
 	})
@@ -112,7 +112,7 @@ func TestProgressModel_UpdateWorkflowCompletionState(t *testing.T) {
 		t.Parallel()
 
 		model := newTestModel()
-		model.workflowState = WorkflowStateRunning
+		model.workflowState = workflowStateRunning
 		model.displayMode = DisplayModeNOM
 
 		ctx := context.Background()
@@ -127,7 +127,7 @@ func TestProgressModel_UpdateWorkflowCompletionState(t *testing.T) {
 
 		model.updateWorkflowCompletionState()
 
-		if model.workflowState != WorkflowStateCompleted {
+		if model.workflowState != workflowStateCompleted {
 			t.Errorf("state = %v, want Completed (running=0, completed>0)", model.workflowState)
 		}
 	})
@@ -136,7 +136,7 @@ func TestProgressModel_UpdateWorkflowCompletionState(t *testing.T) {
 		t.Parallel()
 
 		model := newTestModel()
-		model.workflowState = WorkflowStateRunning
+		model.workflowState = workflowStateRunning
 		model.displayMode = DisplayModeNOM
 
 		ctx := context.Background()
@@ -145,7 +145,7 @@ func TestProgressModel_UpdateWorkflowCompletionState(t *testing.T) {
 
 		model.updateWorkflowCompletionState()
 
-		if model.workflowState != WorkflowStateRunning {
+		if model.workflowState != workflowStateRunning {
 			t.Errorf("state = %v, want Running (still has running activities)", model.workflowState)
 		}
 	})
@@ -160,7 +160,7 @@ func TestBubbleTeaProgressReporter_Stop_NoProgramIsSafe(t *testing.T) {
 	pr.Stop()
 
 	// Verify the reporter is still usable
-	if pr.Subscriber() == nil {
-		t.Error("Subscriber() should still return a valid subscriber after Stop()")
+	if pr.subscriber() == nil {
+		t.Error("subscriber() should still return a valid subscriber after Stop()")
 	}
 }

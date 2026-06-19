@@ -63,7 +63,7 @@ func TestBubbleTeaProgressReporter_ConcurrentAccess(t *testing.T) {
 	state := pr.workflowState
 	pr.mu.RUnlock()
 
-	if state == WorkflowStateIdle {
+	if state == workflowStateIdle {
 		t.Error("workflow should have transitioned away from Idle after concurrent reports")
 	}
 }
@@ -102,7 +102,7 @@ func TestBubbleTeaProgressReporter_ConcurrentReportProgress(t *testing.T) {
 	state := pr.workflowState
 	pr.mu.RUnlock()
 
-	if state != WorkflowStateCompleted {
+	if state != workflowStateCompleted {
 		t.Errorf("workflow state = %v, want Completed after concurrent 100%% reports", state)
 	}
 }

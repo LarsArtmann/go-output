@@ -26,7 +26,7 @@ func TestBubbleTeaProgressReporter_TransitionWorkflowState(t *testing.T) {
 	t.Run("idle to running is valid", func(t *testing.T) {
 		t.Parallel()
 
-		ok := reporter.transitionWorkflowState(WorkflowStateRunning)
+		ok := reporter.transitionWorkflowState(workflowStateRunning)
 		if !ok {
 			t.Error("transition from idle to running should succeed")
 		}
@@ -36,9 +36,9 @@ func TestBubbleTeaProgressReporter_TransitionWorkflowState(t *testing.T) {
 		t.Parallel()
 
 		r := NewBubbleTeaProgressReporter()
-		r.transitionWorkflowState(WorkflowStateRunning)
+		r.transitionWorkflowState(workflowStateRunning)
 
-		ok := r.transitionWorkflowState(WorkflowStateCompleted)
+		ok := r.transitionWorkflowState(workflowStateCompleted)
 		if !ok {
 			t.Error("transition from running to completed should succeed")
 		}
@@ -49,7 +49,7 @@ func TestBubbleTeaProgressReporter_TransitionWorkflowState(t *testing.T) {
 
 		r := NewBubbleTeaProgressReporter()
 
-		ok := r.transitionWorkflowState(WorkflowStateCompleted)
+		ok := r.transitionWorkflowState(workflowStateCompleted)
 		if ok {
 			t.Error("transition from idle to completed should fail")
 		}
@@ -72,8 +72,8 @@ func TestBubbleTeaProgressReporter_IsWorkflowActive(t *testing.T) {
 		t.Parallel()
 
 		reporter := NewBubbleTeaProgressReporter()
-		reporter.transitionWorkflowState(WorkflowStateRunning)
-		reporter.transitionWorkflowState(WorkflowStateCompleted)
+		reporter.transitionWorkflowState(workflowStateRunning)
+		reporter.transitionWorkflowState(workflowStateCompleted)
 
 		if reporter.isWorkflowActive() {
 			t.Error("completed state should not be active")
@@ -87,10 +87,10 @@ func TestBubbleTeaProgressReporter_ReportProgress(t *testing.T) {
 	tests := []struct {
 		name      string
 		progress  float64
-		wantState WorkflowState
+		wantState workflowState
 	}{
-		{"sets running on first report", 50.0, WorkflowStateRunning},
-		{"completes at 100%", 100.0, WorkflowStateCompleted},
+		{"sets running on first report", 50.0, workflowStateRunning},
+		{"completes at 100%", 100.0, workflowStateCompleted},
 	}
 
 	for _, tt := range tests {
@@ -117,7 +117,7 @@ func TestBubbleTeaProgressReporter_ReportMessage(t *testing.T) {
 		t.Errorf("message = %q, want %q", reporter.model.currentMessage, "Building project")
 	}
 
-	if reporter.model.workflowState != WorkflowStateRunning {
+	if reporter.model.workflowState != workflowStateRunning {
 		t.Errorf("workflow state = %v, want Running", reporter.model.workflowState)
 	}
 }
@@ -139,7 +139,7 @@ func TestBubbleTeaProgressReporter_ReportStep(t *testing.T) {
 
 		assertStepCurrent(t, reporter, 1)
 
-		if !reporter.model.steps[0].IsActive() {
+		if !reporter.model.steps[0].isActive() {
 			t.Error("step should be active (1 < 5)")
 		}
 	})
@@ -155,7 +155,7 @@ func TestBubbleTeaProgressReporter_ReportStep(t *testing.T) {
 			t.Error("step should be completed when updated to current >= total")
 		}
 
-		if reporter.model.steps[0].IsActive() {
+		if reporter.model.steps[0].isActive() {
 			t.Error("step should not be active when current >= total")
 		}
 	})
@@ -182,7 +182,7 @@ func TestBubbleTeaProgressReporter_ReportError(t *testing.T) {
 	reporter.ReportProgress(50.0)
 	reporter.ReportError(errDiskFull)
 
-	if reporter.model.workflowState != WorkflowStateErrored {
+	if reporter.model.workflowState != workflowStateErrored {
 		t.Errorf("workflow state = %v, want Errored", reporter.model.workflowState)
 	}
 }
@@ -193,7 +193,7 @@ func TestBubbleTeaProgressReporter_ReportError_CannotTransitionFromIdle(t *testi
 	reporter := newTestReporter()
 	reporter.ReportError(errTestFail)
 
-	if reporter.model.workflowState != WorkflowStateIdle {
+	if reporter.model.workflowState != workflowStateIdle {
 		t.Errorf("cannot transition from idle to errored, state = %v", reporter.model.workflowState)
 	}
 }
@@ -202,8 +202,8 @@ func TestBubbleTeaProgressReporter_Send_NilProgram(t *testing.T) {
 	t.Parallel()
 
 	reporter := newTestReporter()
-	reporter.send(ProgressUpdateMsg{
-		Type:     ProgressUpdate,
+	reporter.send(progressUpdateMsg{
+		Type:     progressUpdate,
 		Progress: 50.0,
 	})
 }
@@ -212,9 +212,9 @@ func TestProgressModel_Init(t *testing.T) {
 	t.Parallel()
 
 	model := &ProgressModel{
-		steps:         make([]ProgressStep, 0),
+		steps:         make([]progressStep, 0),
 		startTime:     time.Now(),
-		workflowState: WorkflowStateIdle,
+		workflowState: workflowStateIdle,
 		displayMode:   DisplayModeUniversal,
 	}
 

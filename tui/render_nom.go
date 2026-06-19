@@ -70,7 +70,7 @@ func (m *ProgressModel) renderDependencyTree() string {
 		m.visibleNodes = tree.VisibleNodes(treeHeight)
 
 		if len(m.visibleNodes) == 0 {
-			result = MsgNoActivitiesToDisplay
+			result = msgNoActivitiesToDisplay
 			return
 		}
 
@@ -102,11 +102,11 @@ func (m *ProgressModel) renderNOMSummaryBar() string {
 	baseStyle := createSummaryStyle()
 
 	switch m.workflowState {
-	case WorkflowStateIdle, WorkflowStateRunning:
+	case workflowStateIdle, workflowStateRunning:
 		return baseStyle.Render(summary)
-	case WorkflowStateCompleted:
+	case workflowStateCompleted:
 		return baseStyle.Foreground(colors.success).Render("✅ " + summary)
-	case WorkflowStateErrored:
+	case workflowStateErrored:
 		return baseStyle.Foreground(colors.err).Render("❌ " + summary)
 	default:
 		return baseStyle.Render(summary)

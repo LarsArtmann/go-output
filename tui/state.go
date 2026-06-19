@@ -10,7 +10,7 @@ import (
 // ============================================================================
 // STRONG TYPES FOR WORKFLOW STATE MANAGEMENT
 // ============================================================================
-// WorkflowState represents the current state of the workflow execution.
+// workflowState represents the current state of the workflow execution.
 // It is intentionally SEPARATE from nom.ActivityStatus (which tracks a single
 // activity's lifecycle) — do NOT merge them. They share Running and Completed
 // values but model different domains: a workflow Errored while individual
@@ -18,75 +18,75 @@ import (
 // documented to prevent a future "unify these enums" mistake.
 //
 // This makes invalid states unrepresentable through strong typing.
-type WorkflowState uint8
+type workflowState uint8
 
 const (
-	WorkflowStateIdle WorkflowState = iota
-	WorkflowStateRunning
-	WorkflowStateCompleted
-	WorkflowStateErrored
+	workflowStateIdle workflowState = iota
+	workflowStateRunning
+	workflowStateCompleted
+	workflowStateErrored
 )
 
-// WorkflowState String Constants.
+// workflowState String Constants.
 const (
-	WorkflowStateStringIdle      = "idle"
-	WorkflowStateStringRunning   = "running"
-	WorkflowStateStringCompleted = "completed"
-	WorkflowStateStringErrored   = "errored"
-	// WorkflowStateStringUnknown is the fallback for unrecognized workflow states.
+	workflowStateStringIdle      = "idle"
+	workflowStateStringRunning   = "running"
+	workflowStateStringCompleted = "completed"
+	workflowStateStringErrored   = "errored"
+	// workflowStateStringUnknown is the fallback for unrecognized workflow states.
 	// Mirrors nom.StatusStringUnknown — both use "unknown" for the same purpose.
-	WorkflowStateStringUnknown = "unknown"
+	workflowStateStringUnknown = "unknown"
 )
 
 // String returns the string representation of the workflow state.
-func (ws WorkflowState) String() string {
+func (ws workflowState) String() string {
 	switch ws {
-	case WorkflowStateIdle:
-		return WorkflowStateStringIdle
-	case WorkflowStateRunning:
-		return WorkflowStateStringRunning
-	case WorkflowStateCompleted:
-		return WorkflowStateStringCompleted
-	case WorkflowStateErrored:
-		return WorkflowStateStringErrored
+	case workflowStateIdle:
+		return workflowStateStringIdle
+	case workflowStateRunning:
+		return workflowStateStringRunning
+	case workflowStateCompleted:
+		return workflowStateStringCompleted
+	case workflowStateErrored:
+		return workflowStateStringErrored
 	default:
-		return WorkflowStateStringUnknown
+		return workflowStateStringUnknown
 	}
 }
 
-// CanAcceptUpdates returns whether this state allows progress updates.
-func (ws WorkflowState) CanAcceptUpdates() bool {
+// canAcceptUpdates returns whether this state allows progress updates.
+func (ws workflowState) canAcceptUpdates() bool {
 	switch ws {
-	case WorkflowStateIdle, WorkflowStateRunning:
+	case workflowStateIdle, workflowStateRunning:
 		return true
-	case WorkflowStateCompleted, WorkflowStateErrored:
+	case workflowStateCompleted, workflowStateErrored:
 		return false
 	default:
 		return false
 	}
 }
 
-// CanAcceptTicks returns whether this state allows timer ticks.
-func (ws WorkflowState) CanAcceptTicks() bool {
-	return ws == WorkflowStateIdle || ws == WorkflowStateRunning
+// canAcceptTicks returns whether this state allows timer ticks.
+func (ws workflowState) canAcceptTicks() bool {
+	return ws == workflowStateIdle || ws == workflowStateRunning
 }
 
-// CanTransitionTo checks if a transition to another state is valid.
-func (ws WorkflowState) CanTransitionTo(newState WorkflowState) bool {
+// canTransitionTo checks if a transition to another state is valid.
+func (ws workflowState) canTransitionTo(newState workflowState) bool {
 	switch ws {
-	case WorkflowStateIdle:
-		return newState == WorkflowStateRunning
-	case WorkflowStateRunning:
-		return newState == WorkflowStateCompleted || newState == WorkflowStateErrored
-	case WorkflowStateCompleted, WorkflowStateErrored:
+	case workflowStateIdle:
+		return newState == workflowStateRunning
+	case workflowStateRunning:
+		return newState == workflowStateCompleted || newState == workflowStateErrored
+	case workflowStateCompleted, workflowStateErrored:
 		return false // Terminal states
 	default:
 		return false
 	}
 }
 
-// ProgressStep represents a step-based progress item.
-type ProgressStep struct {
+// progressStep represents a step-based progress item.
+type progressStep struct {
 	Current     uint
 	Total       uint
 	Message     string
@@ -94,10 +94,10 @@ type ProgressStep struct {
 	CompletedAt *time.Time
 }
 
-// IsActive returns true if the step is still in progress (not completed).
+// isActive returns true if the step is still in progress (not completed).
 // Derived from CompletedAt to make the impossible state
 // (CompletedAt != nil && active) unrepresentable.
-func (s ProgressStep) IsActive() bool {
+func (s progressStep) isActive() bool {
 	return s.CompletedAt == nil
 }
 
@@ -105,7 +105,7 @@ func (s ProgressStep) IsActive() bool {
 type ProgressModel struct {
 	// Core progress data
 	currentProgress float64
-	steps           []ProgressStep
+	steps           []progressStep
 	// Display state
 	startTime    time.Time
 	lastUpdate   time.Time
@@ -113,7 +113,7 @@ type ProgressModel struct {
 	height       int
 	scrollOffset int
 	// Status tracking with strong types
-	workflowState  WorkflowState
+	workflowState  workflowState
 	currentMessage string
 	// Display mode determines which visualization style to render
 	// Using enum prevents invalid states (e.g., NOM mode without subscriber)

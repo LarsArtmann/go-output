@@ -39,9 +39,9 @@ func (pr *BubbleTeaProgressReporter) ensureStarted() {
 func (pr *BubbleTeaProgressReporter) Stop() {
 	pr.mu.Lock()
 
-	canComplete := pr.workflowState.CanTransitionTo(WorkflowStateCompleted)
+	canComplete := pr.workflowState.canTransitionTo(workflowStateCompleted)
 	if canComplete {
-		pr.workflowState = WorkflowStateCompleted
+		pr.workflowState = workflowStateCompleted
 	}
 
 	nomMode := pr.model.displayMode == DisplayModeNOM
@@ -49,8 +49,8 @@ func (pr *BubbleTeaProgressReporter) Stop() {
 	pr.mu.Unlock()
 
 	// The model self-transitions to Completed from the 100% progress update.
-	pr.send(ProgressUpdateMsg{
-		Type:     ProgressUpdate,
+	pr.send(progressUpdateMsg{
+		Type:     progressUpdate,
 		Progress: 100.0,
 	})
 

@@ -35,7 +35,7 @@ func TestProgressModel_View_UniversalMode(t *testing.T) {
 	model := newTestModel()
 	model.width = 80
 	model.height = 24
-	model.workflowState = WorkflowStateRunning
+	model.workflowState = workflowStateRunning
 	model.currentProgress = 50.0
 	model.currentMessage = "Building"
 
@@ -57,7 +57,7 @@ func TestProgressModel_View_NOMMode(t *testing.T) {
 	model := newTestModel()
 	model.width = 80
 	model.height = 24
-	model.workflowState = WorkflowStateRunning
+	model.workflowState = workflowStateRunning
 	model.displayMode = DisplayModeNOM
 
 	view := model.View()
@@ -73,7 +73,7 @@ func TestProgressModel_RenderSteps(t *testing.T) {
 
 	model := newTestModel()
 	now := time.Now()
-	model.steps = []ProgressStep{
+	model.steps = []progressStep{
 		{Message: "Step 1", Current: 5, Total: 5, CompletedAt: &now},
 		{Message: "Step 2", Current: 3, Total: 5, StartTime: now},
 	}
@@ -114,9 +114,9 @@ func TestProgressModel_RenderSummaryBar_Completed(t *testing.T) {
 
 	model := newTestModel()
 	model.startTime = time.Now()
-	model.workflowState = WorkflowStateCompleted
+	model.workflowState = workflowStateCompleted
 	now := time.Now()
-	model.steps = []ProgressStep{
+	model.steps = []progressStep{
 		{Message: "Step 1", CompletedAt: &now},
 	}
 
@@ -132,7 +132,7 @@ func TestProgressModel_RenderNOMStyle(t *testing.T) {
 	model := newTestModel()
 	model.width = 80
 	model.height = 24
-	model.workflowState = WorkflowStateRunning
+	model.workflowState = workflowStateRunning
 	model.displayMode = DisplayModeNOM
 	model.dependencyTree = nom.NewDependencyTree()
 	addRunningActivity(model, "a", "Activity A")
@@ -217,7 +217,7 @@ func TestProgressModel_HelpOverlay(t *testing.T) {
 		model := newTestModel()
 		model.width = 80
 		model.height = 24
-		model.workflowState = WorkflowStateRunning
+		model.workflowState = workflowStateRunning
 		model.showHelp = true
 
 		view := model.View()
@@ -234,7 +234,7 @@ func TestProgressModel_SelectedNodeHighlight(t *testing.T) {
 	model.width = 80
 	model.height = 24
 	model.displayMode = DisplayModeNOM
-	model.workflowState = WorkflowStateRunning
+	model.workflowState = workflowStateRunning
 
 	tree := nom.NewDependencyTree()
 	_ = tree.AddActivity(nom.ActivityID("step-a"), nom.NewActivity("step-a", "Step A"), nil)
@@ -303,7 +303,7 @@ func TestProgressModel_RenderUniversalWorkflowProgress_NoStepsNoProgress(t *test
 	model := newTestModel()
 	model.width = 80
 	model.height = 24
-	model.workflowState = WorkflowStateRunning
+	model.workflowState = workflowStateRunning
 
 	got := model.renderUniversalWorkflowProgress()
 	if got == "" {

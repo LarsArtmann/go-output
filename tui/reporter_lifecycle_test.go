@@ -11,13 +11,13 @@ func TestBubbleTeaProgressReporter_Subscriber(t *testing.T) {
 
 	pr := NewBubbleTeaProgressReporter()
 
-	sub := pr.Subscriber()
+	sub := pr.subscriber()
 	if sub == nil {
-		t.Fatal("Subscriber() should not return nil")
+		t.Fatal("subscriber() should not return nil")
 	}
 
 	if sub != pr.model.nomSubscriber {
-		t.Error("Subscriber() should return the model's nomSubscriber")
+		t.Error("subscriber() should return the model's nomSubscriber")
 	}
 }
 
@@ -86,8 +86,8 @@ func TestBubbleTeaProgressReporter_EnsureStarted_Idempotent(t *testing.T) {
 	}
 
 	// Verify Subscriber is reachable through the started reporter.
-	if pr.Subscriber() == nil {
-		t.Error("Subscriber() should still return a valid subscriber")
+	if pr.subscriber() == nil {
+		t.Error("subscriber() should still return a valid subscriber")
 	}
 }
 

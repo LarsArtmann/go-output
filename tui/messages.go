@@ -7,44 +7,41 @@ import (
 // ============================================================================
 // BUBBLE TEA MESSAGE TYPES
 // ============================================================================
-// UpdateType represents the type of progress update.
-type UpdateType int
+// updateType represents the type of progress update.
+type updateType int
 
 const (
-	ProgressUpdate UpdateType = iota
-	MessageUpdate
-	StepUpdate
+	progressUpdate updateType = iota
+	messageUpdate
+	stepUpdate
 )
 
-// ProgressUpdateMsg represents updates to the progress display.
-type ProgressUpdateMsg struct {
-	Type     UpdateType
+// progressUpdateMsg represents updates to the progress display.
+type progressUpdateMsg struct {
+	Type     updateType
 	Progress float64
 	Message  string
 	Current  uint
 	Total    uint
 }
 
-// StepUpdateMsg carries step-based progress data (current/total counters + message).
+// stepUpdateMsg carries step-based progress data (current/total counters + message).
 // Processed exclusively on the TUI goroutine via model.Update.
-type StepUpdateMsg struct {
+type stepUpdateMsg struct {
 	Current uint
 	Total   uint
 	Message string
 }
 
-// ErrorMsg carries an error to display and triggers transition to Errored state.
-type ErrorMsg struct {
+// errorMsg carries an error to display and triggers transition to Errored state.
+type errorMsg struct {
 	Err error
 }
 
-// StateTransitionMsg requests the model to transition to a new workflow state.
-type StateTransitionMsg struct {
-	NewState WorkflowState
+// stateTransitionMsg requests the model to transition to a new workflow state.
+type stateTransitionMsg struct {
+	NewState workflowState
 }
 
-// TickMsg represents a timer tick for real-time updates.
-type TickMsg time.Time
-
-// CancelMsg signals the TUI to shut down gracefully.
-type CancelMsg struct{}
+// tickMsg represents a timer tick for real-time updates.
+type tickMsg time.Time

@@ -33,16 +33,16 @@ type BubbleTeaProgressReporter struct {
 	model         *ProgressModel
 	program       *tea.Program
 	started       bool
-	workflowState WorkflowState // reporter-authoritative state for decision logic
+	workflowState workflowState // reporter-authoritative state for decision logic
 }
 
 // NewProgressModel creates a new ProgressModel with default initialization.
 func NewProgressModel() *ProgressModel {
 	return &ProgressModel{
-		steps:          make([]ProgressStep, 0),
+		steps:          make([]progressStep, 0),
 		startTime:      time.Now(),
 		lastUpdate:     time.Now(),
-		workflowState:  WorkflowStateIdle,
+		workflowState:  workflowStateIdle,
 		displayMode:    DisplayModeUniversal,
 		dependencyTree: nom.NewDependencyTree(),
 		nomSubscriber:  nom.NewNOMStyleSubscriber(),
@@ -58,13 +58,13 @@ func NewBubbleTeaProgressReporter() *BubbleTeaProgressReporter {
 	// Don't start the program yet - wait for first progress report
 	return &BubbleTeaProgressReporter{
 		model:         NewProgressModel(),
-		workflowState: WorkflowStateIdle,
+		workflowState: workflowStateIdle,
 	}
 }
 
 // Subscriber returns the internal NOM subscriber used by the TUI model.
 // Send events to this subscriber to populate the NOM-style dependency tree.
-func (pr *BubbleTeaProgressReporter) Subscriber() *nom.NOMStyleSubscriber {
+func (pr *BubbleTeaProgressReporter) subscriber() *nom.NOMStyleSubscriber {
 	return pr.model.nomSubscriber
 }
 
@@ -83,18 +83,18 @@ func (pr *BubbleTeaProgressReporter) SetDisplayMode(mode DisplayMode) {
 }
 
 // transitionWorkflowState transitions the reporter's authoritative workflow
-// state and sends a StateTransitionMsg so the model stays in sync.
-func (pr *BubbleTeaProgressReporter) transitionWorkflowState(newState WorkflowState) bool {
+// state and sends a stateTransitionMsg so the model stays in sync.
+func (pr *BubbleTeaProgressReporter) transitionWorkflowState(newState workflowState) bool {
 	pr.mu.Lock()
 
-	ok := pr.workflowState.CanTransitionTo(newState)
+	ok := pr.workflowState.canTransitionTo(newState)
 	if ok {
 		pr.workflowState = newState
 	}
 	pr.mu.Unlock()
 
 	if ok {
-		pr.send(StateTransitionMsg{NewState: newState})
+		pr.send(stateTransitionMsg{NewState: newState})
 	}
 
 	return ok
@@ -105,7 +105,7 @@ func (pr *BubbleTeaProgressReporter) isWorkflowActive() bool {
 	pr.mu.RLock()
 	defer pr.mu.RUnlock()
 
-	return pr.workflowState.CanAcceptUpdates()
+	return pr.workflowState.canAcceptUpdates()
 }
 
 // send dispatches a message to the TUI program if running, or processes it
@@ -132,14 +132,14 @@ func (pr *BubbleTeaProgressReporter) ReportError(err error) {
 
 	pr.mu.Lock()
 
-	canError := pr.workflowState.CanTransitionTo(WorkflowStateErrored)
+	canError := pr.workflowState.canTransitionTo(workflowStateErrored)
 	if canError {
-		pr.workflowState = WorkflowStateErrored
+		pr.workflowState = workflowStateErrored
 	}
 	pr.mu.Unlock()
 
 	if canError {
-		pr.send(ErrorMsg{Err: err})
+		pr.send(errorMsg{Err: err})
 	}
 }
 
@@ -153,16 +153,16 @@ func (pr *BubbleTeaProgressReporter) ensureStartedAndActive() bool {
 
 	pr.mu.Lock()
 
-	needStart := pr.workflowState == WorkflowStateIdle
+	needStart := pr.workflowState == workflowStateIdle
 	if needStart {
-		pr.workflowState = WorkflowStateRunning
+		pr.workflowState = workflowStateRunning
 	}
 
-	active := pr.workflowState.CanAcceptUpdates()
+	active := pr.workflowState.canAcceptUpdates()
 	pr.mu.Unlock()
 
 	if needStart {
-		pr.send(StateTransitionMsg{NewState: WorkflowStateRunning})
+		pr.send(stateTransitionMsg{NewState: workflowStateRunning})
 	}
 
 	return active
@@ -176,14 +176,14 @@ func (pr *BubbleTeaProgressReporter) ReportProgress(percent float64) {
 	}
 
 	pr.mu.Lock()
-	if percent >= 100.0 && pr.workflowState.CanTransitionTo(WorkflowStateCompleted) {
-		pr.workflowState = WorkflowStateCompleted
+	if percent >= 100.0 && pr.workflowState.canTransitionTo(workflowStateCompleted) {
+		pr.workflowState = workflowStateCompleted
 	}
 	pr.mu.Unlock()
 
 	// The model self-transitions to Completed when it receives progress >= 100.
-	pr.send(ProgressUpdateMsg{
-		Type:     ProgressUpdate,
+	pr.send(progressUpdateMsg{
+		Type:     progressUpdate,
 		Progress: percent,
 	})
 }
@@ -195,8 +195,8 @@ func (pr *BubbleTeaProgressReporter) ReportMessage(message string) {
 		return
 	}
 
-	pr.send(ProgressUpdateMsg{
-		Type:    MessageUpdate,
+	pr.send(progressUpdateMsg{
+		Type:    messageUpdate,
 		Message: message,
 	})
 }
@@ -208,7 +208,7 @@ func (pr *BubbleTeaProgressReporter) ReportStep(current, total uint, message str
 		return
 	}
 
-	pr.send(StepUpdateMsg{
+	pr.send(stepUpdateMsg{
 		Current: current,
 		Total:   total,
 		Message: message,

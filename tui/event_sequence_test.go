@@ -75,15 +75,15 @@ func TestProgressModel_EventSequence_WorkflowStartToTick(t *testing.T) {
 	startActivity(t, model, ctx, "build", "Build")
 
 	// Initial state
-	if model.workflowState != WorkflowStateIdle {
+	if model.workflowState != workflowStateIdle {
 		t.Fatalf("initial state = %v, want Idle", model.workflowState)
 	}
 
 	// Send tick → should sync NOM subscriber and transition to running
-	updated, _ := model.Update(TickMsg(time.Now()))
+	updated, _ := model.Update(tickMsg(time.Now()))
 	m := updated.(*ProgressModel)
 
-	if m.workflowState != WorkflowStateRunning {
+	if m.workflowState != workflowStateRunning {
 		t.Errorf("state after tick = %v, want Running", m.workflowState)
 	}
 
@@ -123,7 +123,7 @@ func TestProgressModel_EventSequence_PreRegisterThenStart(t *testing.T) {
 	}
 
 	// Send tick → sync subscriber state to model
-	updated, _ := model.Update(TickMsg(time.Now()))
+	updated, _ := model.Update(tickMsg(time.Now()))
 	m := updated.(*ProgressModel)
 
 	// After tick: activities should be synced to subscriber
@@ -165,7 +165,7 @@ func TestProgressModel_EventSequence_StepLifecycle(t *testing.T) {
 		t.Errorf("current = %d, want 1", step.Current)
 	}
 
-	if !step.IsActive() {
+	if !step.isActive() {
 		t.Error("step should be active")
 	}
 
@@ -177,7 +177,7 @@ func TestProgressModel_EventSequence_StepLifecycle(t *testing.T) {
 		t.Errorf("current = %d, want 3", step.Current)
 	}
 
-	if step.IsActive() {
+	if step.isActive() {
 		t.Error("step should not be active after completion")
 	}
 
@@ -210,7 +210,7 @@ func TestProgressModel_EventSequence_StepFailed(t *testing.T) {
 	})
 
 	// Sync via tick
-	updated, _ := model.Update(TickMsg(time.Now()))
+	updated, _ := model.Update(tickMsg(time.Now()))
 	m := updated.(*ProgressModel)
 
 	// Verify failed activity is present
@@ -240,22 +240,22 @@ func TestProgressModel_EventSequence_WorkflowComplete(t *testing.T) {
 	t.Parallel()
 
 	model := newTestModel()
-	model.workflowState = WorkflowStateRunning
+	model.workflowState = workflowStateRunning
 
 	// Send 100% progress → should transition to completed
-	updated, _ := model.Update(ProgressUpdateMsg{
-		Type:     ProgressUpdate,
+	updated, _ := model.Update(progressUpdateMsg{
+		Type:     progressUpdate,
 		Progress: 100.0,
 	})
 	m := updated.(*ProgressModel)
 
-	if m.workflowState != WorkflowStateCompleted {
+	if m.workflowState != workflowStateCompleted {
 		t.Errorf("state = %v, want Completed", m.workflowState)
 	}
 
 	// Reject further updates
-	updated, _ = m.Update(ProgressUpdateMsg{
-		Type:     ProgressUpdate,
+	updated, _ = m.Update(progressUpdateMsg{
+		Type:     progressUpdate,
 		Progress: 50.0,
 	})
 	m = updated.(*ProgressModel)

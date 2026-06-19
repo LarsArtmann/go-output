@@ -53,7 +53,7 @@ func TestProgressModel_RenderRacingActivityMutation(t *testing.T) {
 	}
 
 	// Sync once so the model caches the tree pointer (mirrors a real tick).
-	if _, _ = model.Update(TickMsg(time.Now())); false {
+	if _, _ = model.Update(tickMsg(time.Now())); false {
 		t.Fatal("unreachable")
 	}
 

@@ -8,14 +8,14 @@ func TestWorkflowState_String(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		state WorkflowState
+		state workflowState
 		want  string
 	}{
-		{WorkflowStateIdle, "idle"},
-		{WorkflowStateRunning, "running"},
-		{WorkflowStateCompleted, "completed"},
-		{WorkflowStateErrored, "errored"},
-		{WorkflowState(99), "unknown"},
+		{workflowStateIdle, "idle"},
+		{workflowStateRunning, "running"},
+		{workflowStateCompleted, "completed"},
+		{workflowStateErrored, "errored"},
+		{workflowState(99), "unknown"},
 	}
 
 	for _, tt := range tests {
@@ -24,7 +24,7 @@ func TestWorkflowState_String(t *testing.T) {
 
 			got := tt.state.String()
 			if got != tt.want {
-				t.Errorf("WorkflowState(%d).String() = %q, want %q", tt.state, got, tt.want)
+				t.Errorf("workflowState(%d).String() = %q, want %q", tt.state, got, tt.want)
 			}
 		})
 	}
@@ -34,27 +34,27 @@ func TestWorkflowState_CanAccept(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		state       WorkflowState
+		state       workflowState
 		wantUpdates bool
 		wantTicks   bool
 	}{
-		{WorkflowStateIdle, true, true},
-		{WorkflowStateRunning, true, true},
-		{WorkflowStateCompleted, false, false},
-		{WorkflowStateErrored, false, false},
-		{WorkflowState(99), false, false},
+		{workflowStateIdle, true, true},
+		{workflowStateRunning, true, true},
+		{workflowStateCompleted, false, false},
+		{workflowStateErrored, false, false},
+		{workflowState(99), false, false},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.state.String(), func(t *testing.T) {
 			t.Parallel()
 
-			if got := tt.state.CanAcceptUpdates(); got != tt.wantUpdates {
-				t.Errorf("CanAcceptUpdates() = %v, want %v", got, tt.wantUpdates)
+			if got := tt.state.canAcceptUpdates(); got != tt.wantUpdates {
+				t.Errorf("canAcceptUpdates() = %v, want %v", got, tt.wantUpdates)
 			}
 
-			if got := tt.state.CanAcceptTicks(); got != tt.wantTicks {
-				t.Errorf("CanAcceptTicks() = %v, want %v", got, tt.wantTicks)
+			if got := tt.state.canAcceptTicks(); got != tt.wantTicks {
+				t.Errorf("canAcceptTicks() = %v, want %v", got, tt.wantTicks)
 			}
 		})
 	}
@@ -64,29 +64,29 @@ func TestWorkflowState_CanTransitionTo(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		from WorkflowState
-		to   WorkflowState
+		from workflowState
+		to   workflowState
 		want bool
 	}{
-		{WorkflowStateIdle, WorkflowStateRunning, true},
-		{WorkflowStateIdle, WorkflowStateCompleted, false},
-		{WorkflowStateIdle, WorkflowStateErrored, false},
-		{WorkflowStateRunning, WorkflowStateCompleted, true},
-		{WorkflowStateRunning, WorkflowStateErrored, true},
-		{WorkflowStateRunning, WorkflowStateIdle, false},
-		{WorkflowStateCompleted, WorkflowStateRunning, false},
-		{WorkflowStateCompleted, WorkflowStateIdle, false},
-		{WorkflowStateErrored, WorkflowStateRunning, false},
-		{WorkflowState(99), WorkflowStateRunning, false},
+		{workflowStateIdle, workflowStateRunning, true},
+		{workflowStateIdle, workflowStateCompleted, false},
+		{workflowStateIdle, workflowStateErrored, false},
+		{workflowStateRunning, workflowStateCompleted, true},
+		{workflowStateRunning, workflowStateErrored, true},
+		{workflowStateRunning, workflowStateIdle, false},
+		{workflowStateCompleted, workflowStateRunning, false},
+		{workflowStateCompleted, workflowStateIdle, false},
+		{workflowStateErrored, workflowStateRunning, false},
+		{workflowState(99), workflowStateRunning, false},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.from.String()+"->"+tt.to.String(), func(t *testing.T) {
 			t.Parallel()
 
-			got := tt.from.CanTransitionTo(tt.to)
+			got := tt.from.canTransitionTo(tt.to)
 			if got != tt.want {
-				t.Errorf("CanTransitionTo() = %v, want %v", got, tt.want)
+				t.Errorf("canTransitionTo() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -95,23 +95,23 @@ func TestWorkflowState_CanTransitionTo(t *testing.T) {
 func TestWorkflowStateStringConstants(t *testing.T) {
 	t.Parallel()
 
-	if WorkflowStateStringIdle != "idle" {
-		t.Errorf("WorkflowStateStringIdle = %q, want %q", WorkflowStateStringIdle, "idle")
+	if workflowStateStringIdle != "idle" {
+		t.Errorf("workflowStateStringIdle = %q, want %q", workflowStateStringIdle, "idle")
 	}
 
-	if WorkflowStateStringRunning != "running" {
-		t.Errorf("WorkflowStateStringRunning = %q, want %q", WorkflowStateStringRunning, "running")
+	if workflowStateStringRunning != "running" {
+		t.Errorf("workflowStateStringRunning = %q, want %q", workflowStateStringRunning, "running")
 	}
 
-	if WorkflowStateStringCompleted != "completed" {
-		t.Errorf("WorkflowStateStringCompleted = %q, want %q", WorkflowStateStringCompleted, "completed")
+	if workflowStateStringCompleted != "completed" {
+		t.Errorf("workflowStateStringCompleted = %q, want %q", workflowStateStringCompleted, "completed")
 	}
 
-	if WorkflowStateStringErrored != "errored" {
-		t.Errorf("WorkflowStateStringErrored = %q, want %q", WorkflowStateStringErrored, "errored")
+	if workflowStateStringErrored != "errored" {
+		t.Errorf("workflowStateStringErrored = %q, want %q", workflowStateStringErrored, "errored")
 	}
 
-	if WorkflowStateStringUnknown != "unknown" {
-		t.Errorf("WorkflowStateStringUnknown = %q, want %q", WorkflowStateStringUnknown, "unknown")
+	if workflowStateStringUnknown != "unknown" {
+		t.Errorf("workflowStateStringUnknown = %q, want %q", workflowStateStringUnknown, "unknown")
 	}
 }

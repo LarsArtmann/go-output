@@ -7,30 +7,30 @@ import (
 func TestUpdateType(t *testing.T) {
 	t.Parallel()
 
-	if ProgressUpdate != 0 {
-		t.Errorf("ProgressUpdate = %d, want 0", ProgressUpdate)
+	if progressUpdate != 0 {
+		t.Errorf("progressUpdate = %d, want 0", progressUpdate)
 	}
 
-	if MessageUpdate != 1 {
-		t.Errorf("MessageUpdate = %d, want 1", MessageUpdate)
+	if messageUpdate != 1 {
+		t.Errorf("messageUpdate = %d, want 1", messageUpdate)
 	}
 
-	if StepUpdate != 2 {
-		t.Errorf("StepUpdate = %d, want 2", StepUpdate)
+	if stepUpdate != 2 {
+		t.Errorf("stepUpdate = %d, want 2", stepUpdate)
 	}
 }
 
 func TestProgressUpdateMsg(t *testing.T) {
 	t.Parallel()
 
-	msg := ProgressUpdateMsg{
-		Type:     ProgressUpdate,
+	msg := progressUpdateMsg{
+		Type:     progressUpdate,
 		Progress: 50.0,
 		Message:  "halfway",
 	}
 
-	if msg.Type != ProgressUpdate {
-		t.Errorf("Type = %d, want %d", msg.Type, ProgressUpdate)
+	if msg.Type != progressUpdate {
+		t.Errorf("Type = %d, want %d", msg.Type, progressUpdate)
 	}
 
 	if msg.Progress != 50.0 {

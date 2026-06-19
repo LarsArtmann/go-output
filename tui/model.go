@@ -15,16 +15,16 @@ const chromeLinesAboveTree = 5
 // ============================================================================
 // BUBBLE TEA MODEL IMPLEMENTATION
 // ============================================================================
-// TickCmd creates a recurring tick command for the progress model.
-func TickCmd() tea.Cmd {
+// tickCmd creates a recurring tick command for the progress model.
+func tickCmd() tea.Cmd {
 	return tea.Tick(100*time.Millisecond, func(t time.Time) tea.Msg {
-		return TickMsg(t)
+		return tickMsg(t)
 	})
 }
 
 // Init implements tea.Model interface.
 func (m *ProgressModel) Init() tea.Cmd {
-	return TickCmd()
+	return tickCmd()
 }
 
 // Update implements tea.Model interface with unified state management.
@@ -38,18 +38,16 @@ func (m *ProgressModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m.handleMouseWheel(msg)
 	case tea.MouseClickMsg:
 		return m.handleMouseClick(msg)
-	case ProgressUpdateMsg:
+	case progressUpdateMsg:
 		return m.handleProgressUpdate(msg)
-	case StepUpdateMsg:
+	case stepUpdateMsg:
 		return m.handleStepUpdate(msg)
-	case ErrorMsg:
+	case errorMsg:
 		return m.handleError(msg)
-	case StateTransitionMsg:
+	case stateTransitionMsg:
 		return m.handleStateTransition(msg)
-	case TickMsg:
+	case tickMsg:
 		return m.handleTick(msg)
-	case CancelMsg:
-		return m, tea.Quit
 	}
 
 	return m, nil
@@ -155,30 +153,30 @@ func (m *ProgressModel) handleMouseClick(msg tea.MouseClickMsg) (tea.Model, tea.
 	return m, nil
 }
 
-func (m *ProgressModel) handleProgressUpdate(msg ProgressUpdateMsg) (tea.Model, tea.Cmd) {
-	if !m.workflowState.CanAcceptUpdates() {
+func (m *ProgressModel) handleProgressUpdate(msg progressUpdateMsg) (tea.Model, tea.Cmd) {
+	if !m.workflowState.canAcceptUpdates() {
 		return m, nil
 	}
 
 	m.lastUpdate = time.Now()
 
 	switch msg.Type {
-	case ProgressUpdate:
+	case progressUpdate:
 		m.currentProgress = msg.Progress
-		if msg.Progress >= 100.0 && m.workflowState.CanTransitionTo(WorkflowStateCompleted) {
-			m.workflowState = WorkflowStateCompleted
+		if msg.Progress >= 100.0 && m.workflowState.canTransitionTo(workflowStateCompleted) {
+			m.workflowState = workflowStateCompleted
 		}
-	case MessageUpdate:
+	case messageUpdate:
 		m.currentMessage = msg.Message
-	case StepUpdate:
+	case stepUpdate:
 		// Step updates are handled in ReportStep method
 	}
 
 	return m, nil
 }
 
-func (m *ProgressModel) handleTick(msg TickMsg) (tea.Model, tea.Cmd) {
-	if !m.workflowState.CanAcceptTicks() {
+func (m *ProgressModel) handleTick(msg tickMsg) (tea.Model, tea.Cmd) {
+	if !m.workflowState.canAcceptTicks() {
 		return m, nil
 	}
 
@@ -187,7 +185,7 @@ func (m *ProgressModel) handleTick(msg TickMsg) (tea.Model, tea.Cmd) {
 		m.syncNOMSubscriber()
 	}
 
-	return m, TickCmd()
+	return m, tickCmd()
 }
 
 func (m *ProgressModel) syncNOMSubscriber() {
@@ -195,11 +193,11 @@ func (m *ProgressModel) syncNOMSubscriber() {
 
 	m.dependencyTree = m.nomSubscriber.GetDependencyTree()
 	if m.nomSubscriber.IsWorkflowRunning() {
-		if m.workflowState == WorkflowStateIdle {
-			m.workflowState = WorkflowStateRunning
+		if m.workflowState == workflowStateIdle {
+			m.workflowState = workflowStateRunning
 			m.startTime = m.nomSubscriber.GetStartTime()
 		}
-	} else if m.workflowState == WorkflowStateRunning {
+	} else if m.workflowState == workflowStateRunning {
 		m.updateWorkflowCompletionState()
 	}
 }
@@ -207,23 +205,23 @@ func (m *ProgressModel) syncNOMSubscriber() {
 func (m *ProgressModel) updateWorkflowCompletionState() {
 	counts := m.nomSubscriber.GetActivityCounts()
 	if counts.Failed > 0 {
-		m.workflowState = WorkflowStateErrored
+		m.workflowState = workflowStateErrored
 	} else if counts.Running == 0 && counts.Completed > 0 {
-		m.workflowState = WorkflowStateCompleted
+		m.workflowState = workflowStateCompleted
 	}
 }
 
 // handleStepUpdate processes a step-based progress update on the TUI goroutine.
 // It creates a new step or updates an existing matching/active step.
-func (m *ProgressModel) handleStepUpdate(msg StepUpdateMsg) (tea.Model, tea.Cmd) {
-	if !m.workflowState.CanAcceptUpdates() {
+func (m *ProgressModel) handleStepUpdate(msg stepUpdateMsg) (tea.Model, tea.Cmd) {
+	if !m.workflowState.canAcceptUpdates() {
 		return m, nil
 	}
 
 	m.lastUpdate = time.Now()
 
 	for i := range m.steps {
-		if m.steps[i].Message == msg.Message || m.steps[i].IsActive() {
+		if m.steps[i].Message == msg.Message || m.steps[i].isActive() {
 			m.steps[i].Current = msg.Current
 			m.steps[i].Total = msg.Total
 			m.steps[i].Message = msg.Message
@@ -237,7 +235,7 @@ func (m *ProgressModel) handleStepUpdate(msg StepUpdateMsg) (tea.Model, tea.Cmd)
 		}
 	}
 
-	m.steps = append(m.steps, ProgressStep{
+	m.steps = append(m.steps, progressStep{
 		Current:   msg.Current,
 		Total:     msg.Total,
 		Message:   msg.Message,
@@ -248,9 +246,9 @@ func (m *ProgressModel) handleStepUpdate(msg StepUpdateMsg) (tea.Model, tea.Cmd)
 }
 
 // handleError transitions to Errored state and displays the error message.
-func (m *ProgressModel) handleError(msg ErrorMsg) (tea.Model, tea.Cmd) {
-	if m.workflowState.CanTransitionTo(WorkflowStateErrored) {
-		m.workflowState = WorkflowStateErrored
+func (m *ProgressModel) handleError(msg errorMsg) (tea.Model, tea.Cmd) {
+	if m.workflowState.canTransitionTo(workflowStateErrored) {
+		m.workflowState = workflowStateErrored
 		m.currentMessage = fmt.Sprintf("Error: %v", msg.Err)
 	}
 
@@ -258,8 +256,8 @@ func (m *ProgressModel) handleError(msg ErrorMsg) (tea.Model, tea.Cmd) {
 }
 
 // handleStateTransition applies a validated workflow state transition.
-func (m *ProgressModel) handleStateTransition(msg StateTransitionMsg) (tea.Model, tea.Cmd) {
-	if m.workflowState.CanTransitionTo(msg.NewState) {
+func (m *ProgressModel) handleStateTransition(msg stateTransitionMsg) (tea.Model, tea.Cmd) {
+	if m.workflowState.canTransitionTo(msg.NewState) {
 		m.workflowState = msg.NewState
 	}
 

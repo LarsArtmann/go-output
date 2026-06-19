@@ -62,15 +62,15 @@ func buildNOMSummary(counts nom.ActivityCounts, elapsed time.Duration) string {
 }
 
 // getStateStyle returns the appropriate style for a workflow state.
-func getStateStyle(state WorkflowState) (string, color.Color) {
+func getStateStyle(state workflowState) (string, color.Color) {
 	switch state {
-	case WorkflowStateIdle:
+	case workflowStateIdle:
 		return "⏳ Workflow Idle | ⏱️ {time}s | Press 'q' or Ctrl+C to exit", colors.dim
-	case WorkflowStateRunning:
+	case workflowStateRunning:
 		return "", nil
-	case WorkflowStateCompleted:
+	case workflowStateCompleted:
 		return "✅ Workflow Complete: {completed}✓ | ⏱️ {time}s | Press 'q' or Ctrl+C to exit", colors.success
-	case WorkflowStateErrored:
+	case workflowStateErrored:
 		return "❌ Workflow Error: {completed}✓ | ⏱️ {time}s | Press 'q' or Ctrl+C to exit", colors.err
 	default:
 		return "", colors.info
@@ -80,7 +80,7 @@ func getStateStyle(state WorkflowState) (string, color.Color) {
 // applyStateSummary applies state-specific formatting to a summary.
 func applyStateSummary(
 	summary string,
-	state WorkflowState,
+	state workflowState,
 	completed int,
 	elapsed time.Duration,
 ) (string, lipgloss.Style) {
