@@ -50,7 +50,7 @@ func (c ActivityCounts) Summary() string {
 	}
 
 	if c.Pending > 0 {
-		parts = append(parts, string(SymbolPaused)+strconv.Itoa(c.Pending))
+		parts = append(parts, string(SymbolPending)+strconv.Itoa(c.Pending))
 	}
 
 	return strings.Join(parts, " ")
@@ -73,8 +73,6 @@ func (ns *NOMStyleSubscriber) GetActivityCounts() ActivityCounts {
 			c.Failed++
 		case ActivityStatusPending:
 			c.Pending++
-		case ActivityStatusPaused:
-			c.Pending++ // Paused activities counted as pending
 		}
 	}
 

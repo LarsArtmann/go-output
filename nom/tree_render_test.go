@@ -37,16 +37,16 @@ func TestDependencyTree_TreePrefix_RootNode(t *testing.T) {
 	}
 }
 
-func TestDependencyTree_Render_PausedStatus(t *testing.T) {
+func TestDependencyTree_Render_PendingStatus(t *testing.T) {
 	t.Parallel()
 
 	dt := NewDependencyTree()
 	dt.AddActivity(ActivityID("a"), NewActivity("a", "A"), nil)
-	testSetStatus(dt, ActivityID("a"), ActivityStatusPaused, time.Now())
+	testSetStatus(dt, ActivityID("a"), ActivityStatusPending, time.Time{})
 
 	got := dt.RenderString(10)
 	if got == "" {
-		t.Error("Render() should produce output for paused status")
+		t.Error("Render() should produce output for pending status")
 	}
 }
 
@@ -180,7 +180,7 @@ func TestDependencyTree_Render_PriorityOrdering(t *testing.T) {
 		now,
 		3*time.Second,
 	)
-	setStatusWithElapsed(dt, ActivityID("lint"), ActivityStatusPending, SymbolPaused, Colors.Paused, time.Time{}, 0)
+	setStatusWithElapsed(dt, ActivityID("lint"), ActivityStatusPending, SymbolPending, Colors.Pending, time.Time{}, 0)
 	setStatusWithElapsed(
 		dt,
 		ActivityID("deploy"),

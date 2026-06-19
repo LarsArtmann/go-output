@@ -37,7 +37,7 @@ func addTestActivity(model *ProgressModel, id, name string, status nom.ActivityS
 		activity.SetCompleted()
 	case nom.ActivityStatusFailed:
 		activity.SetFailed(errors.New("test failure"))
-	case nom.ActivityStatusPending, nom.ActivityStatusPaused:
+	case nom.ActivityStatusPending:
 		// No transition side-effects; Status is already set above.
 	}
 

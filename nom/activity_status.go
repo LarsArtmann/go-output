@@ -11,10 +11,10 @@ import (
 // ActivityStatus represents the lifecycle stage of a single activity within a
 // workflow. It is intentionally SEPARATE from tui.WorkflowState (which tracks
 // the whole-workflow lifecycle) — do NOT merge them. They share Running and
-// Completed values but model different domains: an activity can be Paused while
-// the workflow is still Running; a workflow Errored while individual activities
-// report Failed. Split-brain finding m3: documented to prevent a future
-// "unify these enums" mistake.
+// Completed values but model different domains: an activity can be Pending
+// while the workflow is still Running; a workflow Errored while individual
+// activities report Failed. Split-brain finding m3: documented to prevent a
+// future "unify these enums" mistake.
 type ActivityStatus int
 
 const (
@@ -22,7 +22,6 @@ const (
 	ActivityStatusRunning
 	ActivityStatusCompleted
 	ActivityStatusFailed
-	ActivityStatusPaused
 )
 
 // String returns the string representation of activity status.
@@ -36,8 +35,6 @@ func (as ActivityStatus) String() string {
 		return "completed"
 	case ActivityStatusFailed:
 		return "failed"
-	case ActivityStatusPaused:
-		return "paused"
 	default:
 		return StatusStringUnknown
 	}
@@ -51,15 +48,13 @@ const StatusStringUnknown = "unknown"
 func (as ActivityStatus) GetSymbol() Symbol {
 	switch as {
 	case ActivityStatusPending:
-		return SymbolPaused
+		return SymbolPending
 	case ActivityStatusRunning:
 		return SymbolRunning
 	case ActivityStatusCompleted:
 		return SymbolCompleted
 	case ActivityStatusFailed:
 		return SymbolFailed
-	case ActivityStatusPaused:
-		return SymbolPaused
 	default:
 		return "?"
 	}
@@ -69,36 +64,32 @@ func (as ActivityStatus) GetSymbol() Symbol {
 func (as ActivityStatus) GetColor() color.Color {
 	switch as {
 	case ActivityStatusPending:
-		return Colors.Paused
+		return Colors.Pending
 	case ActivityStatusRunning:
 		return Colors.Running
 	case ActivityStatusCompleted:
 		return Colors.Completed
 	case ActivityStatusFailed:
 		return Colors.Failed
-	case ActivityStatusPaused:
-		return Colors.Paused
 	default:
 		return Colors.Info
 	}
 }
 
 // Interest returns the display priority for sorting: lower = more interesting.
-// Order: failed > running > paused > pending > completed.
+// Order: failed > running > pending > completed.
 func (as ActivityStatus) Interest() int {
 	switch as {
 	case ActivityStatusFailed:
 		return 0
 	case ActivityStatusRunning:
 		return 1
-	case ActivityStatusPaused:
-		return 2
 	case ActivityStatusPending:
-		return 3
+		return 2
 	case ActivityStatusCompleted:
-		return 4
+		return 3
 	default:
-		return 5
+		return 4
 	}
 }
 
@@ -110,7 +101,6 @@ var AllActivityStatuses = []ActivityStatus{
 	ActivityStatusRunning,
 	ActivityStatusCompleted,
 	ActivityStatusFailed,
-	ActivityStatusPaused,
 }
 
 // ParseActivityStatus parses a string into an ActivityStatus.

@@ -42,7 +42,7 @@ func TestActivityCounts_Summary(t *testing.T) {
 		{"only running", ActivityCounts{Running: 3}, "⏵3"},
 		{"only completed", ActivityCounts{Completed: 2}, "✔2"},
 		{"running + completed", ActivityCounts{Running: 1, Completed: 2}, "⏵1 ✔2"},
-		{"all four", ActivityCounts{Running: 1, Completed: 2, Failed: 3, Pending: 4}, "⏵1 ✔2 ⚠3 ⏸4"},
+		{"all four", ActivityCounts{Running: 1, Completed: 2, Failed: 3, Pending: 4}, "⏵1 ✔2 ⚠3 ○4"},
 	}
 
 	for _, tt := range tests {

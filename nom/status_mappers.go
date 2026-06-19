@@ -12,8 +12,6 @@ func (s ActivityStatus) NodeShape() output.NodeShape {
 		return output.NodeShapeRect // rect = done, stable
 	case ActivityStatusRunning:
 		return output.NodeShapeBox // box = active work
-	case ActivityStatusPaused:
-		return output.NodeShapeHexagon // hexagon = interrupted
 	case ActivityStatusPending:
 		return output.NodeShapeEllipse // ellipse = waiting
 	default:
@@ -43,12 +41,6 @@ func (s ActivityStatus) GraphStyle() output.GraphStyle {
 			Fill:      "#6b7280", // gray-500
 			Stroke:    "#4b5563", // gray-600
 			FontColor: "#ffffff",
-		}
-	case ActivityStatusPaused:
-		return output.GraphStyle{
-			Fill:      "#f59e0b", // amber-500
-			Stroke:    "#d97706", // amber-600
-			FontColor: "#000000",
 		}
 	case ActivityStatusPending:
 		return output.GraphStyle{

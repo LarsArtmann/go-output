@@ -83,7 +83,7 @@ func main() {
 				aName:     nom.NewActivityName(a.name),
 				err:       errLintFailed,
 			})
-		case nom.ActivityStatusPending, nom.ActivityStatusRunning, nom.ActivityStatusPaused:
+		case nom.ActivityStatusPending, nom.ActivityStatusRunning:
 			// left as-is for the demo
 		}
 	}

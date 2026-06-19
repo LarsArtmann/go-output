@@ -123,9 +123,8 @@ func TestActivityStatus_Interest(t *testing.T) {
 	}{
 		{ActivityStatusFailed, 0},
 		{ActivityStatusRunning, 1},
-		{ActivityStatusPaused, 2},
-		{ActivityStatusPending, 3},
-		{ActivityStatusCompleted, 4},
+		{ActivityStatusPending, 2},
+		{ActivityStatusCompleted, 3},
 	}
 
 	for _, tt := range tests {

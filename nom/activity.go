@@ -116,9 +116,3 @@ func (a *Activity) applyVisualStyle() {
 	a.Symbol = a.Status.GetSymbol()
 	a.Color = a.Status.GetColor()
 }
-
-// SetPaused transitions the activity to paused.
-func (a *Activity) SetPaused() {
-	a.Status = ActivityStatusPaused
-	a.applyVisualStyle()
-}

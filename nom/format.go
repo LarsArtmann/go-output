@@ -85,10 +85,6 @@ func FormatActivityNodeTiming(status ActivityStatus, elapsed, estimated time.Dur
 		if estimated > 0 && ShouldDisplayTiming(estimated) {
 			return formatTimingWithSymbol(estimated, SymbolAverage)
 		}
-	case ActivityStatusPaused:
-		if elapsed > 0 && ShouldDisplayTiming(elapsed) {
-			return formatTimingWithSymbol(elapsed, SymbolPaused)
-		}
 	}
 
 	return ""

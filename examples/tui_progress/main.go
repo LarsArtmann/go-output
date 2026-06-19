@@ -46,8 +46,8 @@ func main() {
 	fmt.Printf("Timing cache path: %s\n", subscriber.GetTimingCache().GetFilePath())
 
 	fmt.Println("\n=== NOM Symbols ===")
-	fmt.Printf("Running: %s  Completed: %s  Failed: %s  Paused: %s\n",
-		nom.SymbolRunning, nom.SymbolCompleted, nom.SymbolFailed, nom.SymbolPaused)
+	fmt.Printf("Running: %s  Completed: %s  Failed: %s  Pending: %s\n",
+		nom.SymbolRunning, nom.SymbolCompleted, nom.SymbolFailed, nom.SymbolPending)
 	fmt.Printf("Download: %s  Upload: %s  Timing: %s\n",
 		nom.SymbolDownload, nom.SymbolUpload, nom.SymbolTiming)
 

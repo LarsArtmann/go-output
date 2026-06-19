@@ -120,7 +120,6 @@ func TestActivityStatus_NodeShape(t *testing.T) {
 		{ActivityStatusRunning, output.NodeShapeBox},
 		{ActivityStatusCompleted, output.NodeShapeRect},
 		{ActivityStatusFailed, output.NodeShapeDiamond},
-		{ActivityStatusPaused, output.NodeShapeHexagon},
 	}
 
 	for _, tc := range cases {
@@ -141,7 +140,6 @@ func TestActivityStatus_GraphStyle(t *testing.T) {
 		{ActivityStatusRunning},
 		{ActivityStatusCompleted},
 		{ActivityStatusFailed},
-		{ActivityStatusPaused},
 	}
 
 	for _, tc := range cases {

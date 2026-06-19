@@ -142,15 +142,6 @@ func TestFormatActivityNodeTiming(t *testing.T) {
 		}
 	})
 
-	t.Run("paused with elapsed", func(t *testing.T) {
-		t.Parallel()
-
-		got := FormatActivityNodeTiming(ActivityStatusPaused, 2*time.Second, 0)
-		if got == "" {
-			t.Error("expected non-empty timing for paused")
-		}
-	})
-
 	t.Run("zero elapsed returns empty", func(t *testing.T) {
 		t.Parallel()
 

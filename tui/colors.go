@@ -38,7 +38,7 @@ var colors = terminalColors{
 	title:    lipgloss.Color("39"),
 	success:  nom.Colors.Completed, // ANSI 10 — green
 	warning:  nom.Colors.Running,   // ANSI 11 — yellow
-	dim:      nom.Colors.Paused,    // ANSI 8 — gray
+	dim:      nom.Colors.Pending,   // ANSI 8 — gray
 	err:      nom.Colors.Failed,    // ANSI 9 — red
 	selectBG: lipgloss.Color("62"),
 	selectFG: lipgloss.Color("230"),

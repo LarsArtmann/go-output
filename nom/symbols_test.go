@@ -10,7 +10,7 @@ func TestSymbolConstants(t *testing.T) {
 	symbols := map[string]Symbol{
 		"SymbolRunning":   SymbolRunning,
 		"SymbolCompleted": SymbolCompleted,
-		"SymbolPaused":    SymbolPaused,
+		"SymbolPending":   SymbolPending,
 		"SymbolFailed":    SymbolFailed,
 		"SymbolDownload":  SymbolDownload,
 		"SymbolUpload":    SymbolUpload,

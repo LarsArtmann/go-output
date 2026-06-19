@@ -172,14 +172,14 @@ func TestNOMStyleSubscriber_GetActivityCounts(t *testing.T) {
 	}
 }
 
-func TestNOMStyleSubscriber_GetActivityCounts_PausedAndFailed(t *testing.T) {
+func TestNOMStyleSubscriber_GetActivityCounts_PendingAndFailed(t *testing.T) {
 	t.Parallel()
 
 	ns := newTestSubscriber(t)
 
-	paused := NewActivity("p1", "Wait")
-	paused.Status = ActivityStatusPaused
-	ns.SetActivityState(ActivityID("p1"), paused)
+	pending := NewActivity("p1", "Wait")
+	pending.Status = ActivityStatusPending
+	ns.SetActivityState(ActivityID("p1"), pending)
 
 	failed := NewActivity("f1", "Build")
 	failed.SetFailed(errors.New("crash"))
@@ -199,7 +199,7 @@ func TestNOMStyleSubscriber_GetActivityCounts_PausedAndFailed(t *testing.T) {
 	}
 
 	if counts.Pending != 1 {
-		t.Errorf("pending = %d, want 1 (paused counts as pending)", counts.Pending)
+		t.Errorf("pending = %d, want 1", counts.Pending)
 	}
 }
 

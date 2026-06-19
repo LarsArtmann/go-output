@@ -17,7 +17,6 @@ func TestActivityStatus_String(t *testing.T) {
 		{ActivityStatusRunning, "running"},
 		{ActivityStatusCompleted, "completed"},
 		{ActivityStatusFailed, "failed"},
-		{ActivityStatusPaused, "paused"},
 		{ActivityStatus(99), "unknown"},
 	}
 
@@ -38,11 +37,10 @@ func TestActivityStatus_GetSymbol(t *testing.T) {
 		status ActivityStatus
 		want   Symbol
 	}{
-		{ActivityStatusPending, SymbolPaused},
+		{ActivityStatusPending, SymbolPending},
 		{ActivityStatusRunning, SymbolRunning},
 		{ActivityStatusCompleted, SymbolCompleted},
 		{ActivityStatusFailed, SymbolFailed},
-		{ActivityStatusPaused, SymbolPaused},
 		{ActivityStatus(99), "?"},
 	}
 
@@ -66,7 +64,6 @@ func TestActivityStatus_GetColor(t *testing.T) {
 		{ActivityStatusRunning},
 		{ActivityStatusCompleted},
 		{ActivityStatusFailed},
-		{ActivityStatusPaused},
 		{ActivityStatus(99)},
 	}
 
