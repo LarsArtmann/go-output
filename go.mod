@@ -4,10 +4,10 @@ go 1.26.3
 
 require (
 	github.com/larsartmann/go-branded-id v0.3.1
-	github.com/larsartmann/go-output/delimited v0.12.0
-	github.com/larsartmann/go-output/enum v0.12.0
-	github.com/larsartmann/go-output/envdetect v0.12.0
-	github.com/larsartmann/go-output/testhelpers v0.12.0
+	github.com/larsartmann/go-output/delimited v0.13.0
+	github.com/larsartmann/go-output/enum v0.13.0
+	github.com/larsartmann/go-output/envdetect v0.13.0
+	github.com/larsartmann/go-output/testhelpers v0.13.0
 	golang.org/x/term v0.44.0
 )
 
@@ -22,8 +22,8 @@ replace (
 )
 
 require (
-	github.com/larsartmann/go-output/markdown v0.12.0
-	github.com/larsartmann/go-output/tree v0.12.0
+	github.com/larsartmann/go-output/markdown v0.13.0
+	github.com/larsartmann/go-output/tree v0.13.0
 	golang.org/x/sys v0.46.0 // indirect
 )
 

@@ -103,6 +103,8 @@ func (as ActivityStatus) Interest() int {
 }
 
 // AllActivityStatuses is the complete list of valid ActivityStatus values.
+//
+//nolint:gochecknoglobals // Global variable used for value iteration.
 var AllActivityStatuses = []ActivityStatus{
 	ActivityStatusPending,
 	ActivityStatusRunning,

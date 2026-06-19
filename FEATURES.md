@@ -257,24 +257,29 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 
 ## Multi-Module Architecture
 
-| Feature                            | Status           | Notes                                                                        |
-| ---------------------------------- | ---------------- | ---------------------------------------------------------------------------- |
-| **Root module** (`package output`) | FULLY_FUNCTIONAL | Core types + formatters. Zero lipgloss dependency                            |
-| **enum/**                          | FULLY_FUNCTIONAL | Generic enum utilities. Zero dependencies                                    |
-| **escape/**                        | FULLY_FUNCTIONAL | Format-specific escaping. Zero dependencies                                  |
-| **testhelpers/**                   | FULLY_FUNCTIONAL | Shared test assertions. Zero dependencies, publicly importable               |
-| **table/**                         | FULLY_FUNCTIONAL | Lipgloss terminal tables. Isolated from root module                          |
-| **integration/**                   | FULLY_FUNCTIONAL | Cross-module integration tests                                               |
-| **examples/**                      | FULLY_FUNCTIONAL | Working examples demonstrating all 16 formats                                |
-| **delimited/**                     | FULLY_FUNCTIONAL | CSV/TSV writers and marshalers. Isolated from root module                    |
-| **d2/**                            | FULLY_FUNCTIONAL | D2 diagram builder. Isolated from root module                                |
-| **graph/**                         | FULLY_FUNCTIONAL | DOT and Mermaid renderers. Isolated from root module                         |
-| **markup/**                        | FULLY_FUNCTIONAL | HTML, XML, AsciiDoc renderers. Isolated from root module                     |
-| **plantuml/**                      | FULLY_FUNCTIONAL | PlantUML diagram renderer. Isolated from root module                         |
-| **serialization/**                 | FULLY_FUNCTIONAL | JSON, YAML, TOML, JSONL renderers. Isolated from root module                 |
-| **nom/**                           | FULLY_FUNCTIONAL | NOM-style real-time progress (dependency trees, timing cache). Lipgloss-only |
-| **tui/**                           | FULLY_FUNCTIONAL | Bubble Tea interactive TUI (depends on nom + bubbletea + lipgloss)           |
-| **go.work**                        | FULLY_FUNCTIONAL | Gitignored. `go.work.example` provided for local development                 |
+| Feature                            | Status           | Notes                                                                         |
+| ---------------------------------- | ---------------- | ----------------------------------------------------------------------------- |
+| **Root module** (`package output`) | FULLY_FUNCTIONAL | Core types + formatters. Zero lipgloss dependency                             |
+| **enum/**                          | FULLY_FUNCTIONAL | Generic enum utilities. Zero dependencies                                     |
+| **escape/**                        | FULLY_FUNCTIONAL | Format-specific escaping. Zero dependencies                                   |
+| **envdetect/**                     | FULLY_FUNCTIONAL | Shared CI/NO_COLOR env detection. Zero dependencies                           |
+| **testhelpers/**                   | FULLY_FUNCTIONAL | Shared test assertions. Zero dependencies, publicly importable                |
+| **testhelpers/graphtest/**         | FULLY_FUNCTIONAL | Shared graph test fixtures. Zero dependencies                                 |
+| **table/**                         | FULLY_FUNCTIONAL | Lipgloss terminal tables. Isolated from root module                           |
+| **markdown/**                      | FULLY_FUNCTIONAL | Markdown table renderer. Self-registers via `init()`. Zero deps beyond root   |
+| **tree/**                          | FULLY_FUNCTIONAL | ASCII tree renderer (box-drawing, color cycling). Self-registers via `init()` |
+| **integration/**                   | FULLY_FUNCTIONAL | Cross-module integration tests                                                |
+| **examples/**                      | FULLY_FUNCTIONAL | Working examples demonstrating all 16 formats                                 |
+| **bdd/**                           | FULLY_FUNCTIONAL | BDD test suite (Ginkgo/Gomega). Test-only module                              |
+| **delimited/**                     | FULLY_FUNCTIONAL | CSV/TSV writers and marshalers. Isolated from root module                     |
+| **d2/**                            | FULLY_FUNCTIONAL | D2 diagram builder. Isolated from root module                                 |
+| **graph/**                         | FULLY_FUNCTIONAL | DOT and Mermaid renderers. Isolated from root module                          |
+| **markup/**                        | FULLY_FUNCTIONAL | HTML, XML, AsciiDoc renderers. Isolated from root module                      |
+| **plantuml/**                      | FULLY_FUNCTIONAL | PlantUML diagram renderer. Isolated from root module                          |
+| **serialization/**                 | FULLY_FUNCTIONAL | JSON, YAML, TOML, JSONL renderers. Isolated from root module                  |
+| **nom/**                           | FULLY_FUNCTIONAL | NOM-style real-time progress (dependency trees, timing cache). Lipgloss-only  |
+| **tui/**                           | FULLY_FUNCTIONAL | Bubble Tea interactive TUI (depends on nom + bubbletea + lipgloss)            |
+| **go.work**                        | FULLY_FUNCTIONAL | Gitignored. `go.work.example` provided for local development                  |
 
 ---
 
@@ -304,6 +309,10 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 | **ADR 004**                | FULLY_FUNCTIONAL | Footer row design decision                                 |
 | **ADR 005**                | FULLY_FUNCTIONAL | Code duplication thresholds decision                       |
 | **ADR 006**                | FULLY_FUNCTIONAL | Pre-v1 API stability guarantees                            |
+| **ADR 007**                | FULLY_FUNCTIONAL | nom composition via root types                             |
+| **ADR 008**                | FULLY_FUNCTIONAL | Dedup workflow decision (art-dupl threshold + checklist)   |
+| **RELEASE.md**             | FULLY_FUNCTIONAL | Release process for 20-module mono-version workspace       |
+| **ROADMAP.md**             | FULLY_FUNCTIONAL | Long-term direction and raw ideas                          |
 | **DOMAIN_LANGUAGE.md**     | FULLY_FUNCTIONAL | Domain vocabulary                                          |
 | **FORMAT_ARCHITECTURE.md** | FULLY_FUNCTIONAL | Format architecture documentation                          |
 
@@ -321,8 +330,8 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 ---
 
 **Last audited:** 2026-06-18
-**Total features:** 162
-**Fully functional:** 151
+**Total features:** 172
+**Fully functional:** 161
 **Partially functional:** 0
 **Removed:** 9 (FormatCategory, OutputFormat, SortBy, FilledStrings, Register, Create, Unregister, RegisteredFormats, IsRegistered)
 **Known issues:** 0
