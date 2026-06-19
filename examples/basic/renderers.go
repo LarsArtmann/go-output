@@ -16,6 +16,7 @@ import (
 	"github.com/larsartmann/go-output/plantuml"
 	"github.com/larsartmann/go-output/serialization"
 	"github.com/larsartmann/go-output/table"
+	"github.com/larsartmann/go-output/tree"
 )
 
 // alphaToBetaEdge is a sample graph edge shared by the Mermaid and DOT
@@ -170,7 +171,7 @@ func renderHTML(projects []Project) {
 }
 
 func renderTree(projects []Project) {
-	tree := output.NewASCIITreeRenderer()
+	tree := tree.NewASCIITreeRenderer()
 	tree.SetColorMode(colorMode)
 
 	root := output.NewTreeNode("root", "Projects")

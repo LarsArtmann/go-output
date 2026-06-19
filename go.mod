@@ -23,7 +23,10 @@ replace (
 
 require (
 	github.com/larsartmann/go-output/markdown v0.12.0
+	github.com/larsartmann/go-output/tree v0.12.0
 	golang.org/x/sys v0.46.0 // indirect
 )
 
 replace github.com/larsartmann/go-output/markdown => ./markdown
+
+replace github.com/larsartmann/go-output/tree => ./tree

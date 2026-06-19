@@ -12,6 +12,7 @@ import (
 	"github.com/larsartmann/go-output/plantuml"
 	"github.com/larsartmann/go-output/serialization"
 	"github.com/larsartmann/go-output/table"
+	"github.com/larsartmann/go-output/tree"
 )
 
 //nolint:cyclop // Complexity is inherent to format handling
@@ -166,7 +167,7 @@ func buildProjectTree(projects []TestProject) *output.TreeNode {
 }
 
 func renderTreeFormat(projects []TestProject) string {
-	tree := output.NewASCIITreeRenderer()
+	tree := tree.NewASCIITreeRenderer()
 	tree.SetRoot(buildProjectTree(projects))
 
 	out, err := tree.Render()

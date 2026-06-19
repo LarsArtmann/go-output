@@ -1,95 +1,61 @@
-package output
+// Package tree renders TableData as an ASCII tree.
+//
+// It is an optional format renderer: import it to activate Tree output
+// through output.RenderTableData, or use NewASCIITreeRenderer directly.
+//
+//	import "github.com/larsartmann/go-output/tree"
+//
+//	r := tree.NewASCIITreeRenderer()
+//	r.SetRoot(rootNode)
+//	out, _ := r.Render()
+package tree
 
 import (
 	"strconv"
 	"strings"
+
+	"github.com/larsartmann/go-output"
+)
+
+// Standard ANSI escape sequences for terminal styling. Local to this module
+// so tree stays dependency-free beyond the core output types.
+const (
+	ansiReset   = "\033[0m"
+	ansiBold    = "\033[1m"
+	ansiDim     = "\033[2m"
+	ansiCyan    = "\033[36m"
+	ansiBlue    = "\033[34m"
+	ansiGreen   = "\033[32m"
+	ansiMagenta = "\033[35m"
 )
 
 //nolint:gochecknoglobals // Color cycle lookup table for depth-based tree coloring.
 var depthColors = []string{ansiGreen, ansiBlue, ansiMagenta, ansiCyan}
 
-// TreeOutputRenderer defines the interface for tree format renderers.
-type TreeOutputRenderer interface {
-	Renderer
-	// SetRoot sets the root node of the tree.
-	SetRoot(node *TreeNode)
-}
-
-// TreeNode represents a node in a tree structure.
-type TreeNode struct {
-	// ID is the unique identifier for the node.
-	ID TreeNodeID
-	// Label is the display text for the node.
-	Label TreeNodeLabel
-	// Children holds the child nodes.
-	Children []*TreeNode
-	// Metadata holds arbitrary key-value pairs for custom data.
-	Metadata map[string]string
-	parent   *TreeNode
-	depth    int // cached depth (root = 0), set in AddChild
-}
-
-// NewTreeNode creates a new TreeNode with the given ID and label.
-func NewTreeNode(id, label string) *TreeNode {
-	return &TreeNode{
-		ID:       NewBrandedID[TreeNodeIDBrand](id),
-		Label:    NewBrandedID[TreeNodeLabelBrand](label),
-		Children: make([]*TreeNode, 0),
-		Metadata: make(map[string]string),
-		parent:   nil, // parent is set via AddChild
-	}
-}
-
-// AddChild adds a child node to this node.
-func (n *TreeNode) AddChild(child *TreeNode) {
-	child.parent = n
-	n.Children = append(n.Children, child)
-	child.propagateDepth(n.depth + 1)
-}
-
-// propagateDepth sets the depth for this node and all descendants recursively.
-// Called from AddChild to handle subtrees that change depth when re-parented.
-func (n *TreeNode) propagateDepth(d int) {
-	n.depth = d
-	for _, c := range n.Children {
-		c.propagateDepth(d + 1)
-	}
-}
-
-// Depth returns the depth of this node in the tree (root = 0).
-func (n *TreeNode) Depth() int {
-	return n.depth
-}
-
-// Parent returns the parent node (nil for root).
-func (n *TreeNode) Parent() *TreeNode {
-	return n.parent
-}
-
-// ASCIITreeRenderer implements the TreeOutputRenderer interface for ASCII tree output.
+// ASCIITreeRenderer implements the output.TreeOutputRenderer interface for ASCII tree output.
 type ASCIITreeRenderer struct {
-	root      *TreeNode
-	colorMode ColorMode
+	root      *output.TreeNode
+	colorMode output.ColorMode
 }
 
 // NewASCIITreeRenderer creates a new ASCIITreeRenderer.
 func NewASCIITreeRenderer() *ASCIITreeRenderer {
-	return &ASCIITreeRenderer{colorMode: ColorModeAuto} //nolint:exhaustruct // root is initialized lazily
+	return &ASCIITreeRenderer{colorMode: output.ColorModeAuto} //nolint:exhaustruct // root is initialized lazily
 }
 
 // SetColorMode sets the color mode for the tree renderer.
-func (r *ASCIITreeRenderer) SetColorMode(mode ColorMode) {
+func (r *ASCIITreeRenderer) SetColorMode(mode output.ColorMode) {
 	r.colorMode = mode
 }
 
 // Compile-time interface checks.
 var (
-	_ Renderer           = (*ASCIITreeRenderer)(nil)
-	_ TreeOutputRenderer = (*ASCIITreeRenderer)(nil)
+	_ output.Renderer           = (*ASCIITreeRenderer)(nil)
+	_ output.TreeOutputRenderer = (*ASCIITreeRenderer)(nil)
 )
 
 // SetRoot sets the root node of the tree.
-func (r *ASCIITreeRenderer) SetRoot(node *TreeNode) {
+func (r *ASCIITreeRenderer) SetRoot(node *output.TreeNode) {
 	r.root = node
 }
 
@@ -115,7 +81,7 @@ func (r *ASCIITreeRenderer) colorForDepth(depth int) string {
 
 func (r *ASCIITreeRenderer) renderNode(
 	b *strings.Builder,
-	node *TreeNode,
+	node *output.TreeNode,
 	prefix string,
 	isLast bool,
 	depth int,
@@ -186,27 +152,27 @@ func (r *ASCIITreeRenderer) renderNode(
 }
 
 // TreeRendererFromTableData converts TableData to a tree using the first column as hierarchy.
-func TreeRendererFromTableData(data *TableData) *ASCIITreeRenderer {
+func TreeRendererFromTableData(data *output.TableData) *ASCIITreeRenderer {
 	renderer := NewASCIITreeRenderer()
 	if data == nil || len(data.Rows) == 0 {
 		return renderer
 	}
 
 	// Build a simple tree from the data
-	root := NewTreeNode("root", "Data")
+	root := output.NewTreeNode("root", "Data")
 
 	if len(data.Headers) > 0 {
-		headerNode := NewTreeNode("headers", "Headers")
+		headerNode := output.NewTreeNode("headers", "Headers")
 		for _, h := range data.Headers {
-			headerNode.AddChild(NewTreeNode(h, h))
+			headerNode.AddChild(output.NewTreeNode(h, h))
 		}
 
 		root.AddChild(headerNode)
 	}
 
-	rowsNode := NewTreeNode("rows", "Rows")
+	rowsNode := output.NewTreeNode("rows", "Rows")
 	for i, row := range data.Rows {
-		rowNode := NewTreeNode("row-"+strconv.Itoa(i), "Row "+strconv.Itoa(i+1))
+		rowNode := output.NewTreeNode("row-"+strconv.Itoa(i), "Row "+strconv.Itoa(i+1))
 
 		for j, cell := range row {
 			var headerName string
@@ -216,7 +182,7 @@ func TreeRendererFromTableData(data *TableData) *ASCIITreeRenderer {
 				headerName = "Col " + strconv.Itoa(j)
 			}
 
-			rowNode.AddChild(NewTreeNode(headerName, cell))
+			rowNode.AddChild(output.NewTreeNode(headerName, cell))
 		}
 
 		rowsNode.AddChild(rowNode)

@@ -21,3 +21,5 @@ replace (
 	github.com/larsartmann/go-output/envdetect => ../envdetect
 	github.com/larsartmann/go-output/testhelpers => ../testhelpers
 )
+
+replace github.com/larsartmann/go-output/tree => ../tree

@@ -59,6 +59,7 @@
             "table"
             "testhelpers"
             "testhelpers/graphtest"
+            "tree"
             "tui"
           ];
 

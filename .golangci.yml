@@ -156,6 +156,7 @@ linters:
             - github.com/larsartmann/go-output/delimited
             - github.com/larsartmann/go-output/serialization
             - github.com/larsartmann/go-output/markdown
+            - github.com/larsartmann/go-output/tree
             - github.com/larsartmann/go-output/markup
             - github.com/larsartmann/go-output/plantuml
             - github.com/larsartmann/go-output/nom
@@ -210,6 +211,7 @@ linters:
             - github.com/larsartmann/go-output/delimited
             - github.com/larsartmann/go-output/graph
             - github.com/larsartmann/go-output/markdown
+            - github.com/larsartmann/go-output/tree
             - github.com/larsartmann/go-output/markup
             - github.com/larsartmann/go-output/serialization
             - github.com/larsartmann/go-output/table
@@ -238,6 +240,7 @@ linters:
             - github.com/larsartmann/go-output/delimited
             - github.com/larsartmann/go-output/serialization
             - github.com/larsartmann/go-output/markdown
+            - github.com/larsartmann/go-output/tree
             - github.com/larsartmann/go-output/markup
             - github.com/larsartmann/go-output/plantuml
             - github.com/larsartmann/go-output/nom
@@ -287,6 +290,7 @@ linters:
         - github.com/larsartmann/go-output/escape
         - github.com/larsartmann/go-output/graph
         - github.com/larsartmann/go-output/markdown
+        - github.com/larsartmann/go-output/tree
         - github.com/larsartmann/go-output/markup
         - github.com/larsartmann/go-output/serialization
         - github.com/larsartmann/go-output/table

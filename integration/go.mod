@@ -35,6 +35,7 @@ require (
 	github.com/larsartmann/go-output/envdetect v0.12.0 // indirect
 	github.com/larsartmann/go-output/escape v0.12.0 // indirect
 	github.com/larsartmann/go-output/markdown v0.12.0
+	github.com/larsartmann/go-output/tree v0.12.0
 	github.com/lucasb-eyer/go-colorful v1.4.0 // indirect
 	github.com/mattn/go-runewidth v0.0.24 // indirect
 	github.com/muesli/cancelreader v0.2.2 // indirect
@@ -70,3 +71,5 @@ replace github.com/larsartmann/go-output/envdetect => ../envdetect
 replace github.com/larsartmann/go-output/escape => ../escape
 
 replace github.com/larsartmann/go-output/markdown => ../markdown
+
+replace github.com/larsartmann/go-output/tree => ../tree

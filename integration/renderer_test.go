@@ -12,6 +12,7 @@ import (
 	"github.com/larsartmann/go-output/markup"
 	"github.com/larsartmann/go-output/serialization"
 	"github.com/larsartmann/go-output/testhelpers"
+	"github.com/larsartmann/go-output/tree"
 )
 
 func TestTableFormatContent(t *testing.T) {
@@ -128,7 +129,7 @@ func TestHTMLFullPage(t *testing.T) {
 func TestTreeFormatContent(t *testing.T) {
 	t.Parallel()
 
-	tree := output.NewASCIITreeRenderer()
+	tree := tree.NewASCIITreeRenderer()
 	root := output.NewTreeNode("root", "Projects")
 	child := output.NewTreeNode("child1", "Alpha")
 	root.AddChild(child)

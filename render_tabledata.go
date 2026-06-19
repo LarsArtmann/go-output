@@ -34,12 +34,9 @@ func getTableDataRenderer(format Format) (TableDataRenderer, bool) {
 	return tableDataRegistry.get(format)
 }
 
-// Markdown registers itself from the markdown/ sub-module's init().
-//
-//nolint:gochecknoinits // Registers the Tree TableData renderer for registry-based dispatch.
-func init() {
-	RegisterTableDataRenderer(FormatTree, renderTreeTableData)
-}
+// All format renderers (Markdown, Tree, CSV, JSON, etc.) self-register from
+// their respective sub-modules via init(). Root provides the registry but
+// registers no format itself.
 
 // RenderTableData renders TableData in the given format and writes to w (or os.Stdout).
 // It supports all registered formats when respective sub-modules are imported.
@@ -73,23 +70,6 @@ type UnsupportedFormatError struct {
 
 func (e *UnsupportedFormatError) Error() string {
 	return fmt.Sprintf("render table data: format %q not supported", e.Format)
-}
-
-func renderTreeTableData(w io.Writer, data *TableData, opts RenderOptions) error {
-	renderer := TreeRendererFromTableData(data)
-	renderer.SetColorMode(opts.ColorMode)
-
-	out, err := renderer.Render()
-	if err != nil {
-		return fmt.Errorf("render tree: %w", err)
-	}
-
-	_, err = fmt.Fprintln(w, out)
-	if err != nil {
-		return fmt.Errorf("write tree output: %w", err)
-	}
-
-	return nil
 }
 
 // AnyDataRenderer renders arbitrary data (any) in a specific format to a writer.

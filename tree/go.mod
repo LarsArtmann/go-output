@@ -1,10 +1,9 @@
-module github.com/larsartmann/go-output/markup
+module github.com/larsartmann/go-output/tree
 
 go 1.26.3
 
 require (
 	github.com/larsartmann/go-output v0.12.0
-	github.com/larsartmann/go-output/escape v0.12.0
 	github.com/larsartmann/go-output/testhelpers v0.12.0
 )
 
@@ -18,16 +17,9 @@ require (
 
 replace (
 	github.com/larsartmann/go-output => ../
-	github.com/larsartmann/go-output/delimited => ../delimited
+	github.com/larsartmann/go-output/enum => ../enum
+	github.com/larsartmann/go-output/envdetect => ../envdetect
 	github.com/larsartmann/go-output/testhelpers => ../testhelpers
 )
 
-replace github.com/larsartmann/go-output/enum => ../enum
-
-replace github.com/larsartmann/go-output/envdetect => ../envdetect
-
-replace github.com/larsartmann/go-output/escape => ../escape
-
 replace github.com/larsartmann/go-output/markdown => ../markdown
-
-replace github.com/larsartmann/go-output/tree => ../tree

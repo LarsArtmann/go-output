@@ -10,6 +10,7 @@ import (
 	"github.com/larsartmann/go-output/delimited"
 	"github.com/larsartmann/go-output/markdown"
 	"github.com/larsartmann/go-output/testhelpers"
+	_ "github.com/larsartmann/go-output/tree" // activate FormatTree registry
 )
 
 // User Journey: CLI Developer wants to add output formatting to their tool

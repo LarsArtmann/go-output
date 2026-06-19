@@ -7,4 +7,5 @@ import (
 	_ "github.com/larsartmann/go-output/delimited"
 	_ "github.com/larsartmann/go-output/markdown"
 	_ "github.com/larsartmann/go-output/serialization"
+	_ "github.com/larsartmann/go-output/tree"
 )
