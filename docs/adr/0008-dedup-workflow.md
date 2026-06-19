@@ -1,6 +1,6 @@
 # ADR 008: Dedup Workflow Decision
 
-**Date:** 2026-06-19
+**Date:** 2026-06-18
 **Status:** Accepted
 
 ## Context

@@ -22,10 +22,10 @@ github.com/clipperhouse/uax29/v2 v2.7.0 h1:+gs4oBZ2gPfVrKPthwbMzWZDaAFPGYK72F0NJ
 github.com/clipperhouse/uax29/v2 v2.7.0/go.mod h1:EFJ2TJMRUaplDxHKj1qAEhCtQPW2tJSwu5BF98AuoVM=
 github.com/larsartmann/go-branded-id v0.3.1 h1:n53Vz3MCUy3S8YfW/v+zxL/qT96iiXZOT6p46HZysyA=
 github.com/larsartmann/go-branded-id v0.3.1/go.mod h1:fiv3t1PyNCITnE/8KtymGCUz7tQRuQxF+8oqNdFmA/Y=
-github.com/larsartmann/go-output/delimited v0.12.0 h1:BasJOLcQSFnWJwdOkGIr+4oULzUuCOHuUeVcgZfDL0E=
-github.com/larsartmann/go-output/delimited v0.12.0/go.mod h1:y+22O34FAtDoDQ9dYw0rNBiGCGGs31stwMRDiLcPCLY=
-github.com/larsartmann/go-output/testhelpers v0.12.0 h1:6ZrskzT/lQQq/PQtFHrSb+pmPtKf079rKw9enA1Ppew=
-github.com/larsartmann/go-output/testhelpers v0.12.0/go.mod h1:HXirIrpJiVpIJ1CaI9MbmOUP26eC4JKApaFqAAe5+s8=
+github.com/larsartmann/go-output/delimited v0.13.0 h1:oeqYOn6u+qADSAOPaed2xYyzToYftqZAz6vCSqKvyX4=
+github.com/larsartmann/go-output/delimited v0.13.0/go.mod h1:3yn7z0JGM6ll6WtQyabIYX5+jaHbnLdg0tIz44tCp6Q=
+github.com/larsartmann/go-output/testhelpers v0.13.0 h1:Cs0xnf0KT6dNqc2GDxJvPiySTkBQntkqlBNKd+MW8R4=
+github.com/larsartmann/go-output/testhelpers v0.13.0/go.mod h1:W4rI3kVhlLVH69t6ueNIPg64sE17fsgtPB3qUyvxgos=
 github.com/lucasb-eyer/go-colorful v1.4.0 h1:UtrWVfLdarDgc44HcS7pYloGHJUjHV/4FwW4TvVgFr4=
 github.com/lucasb-eyer/go-colorful v1.4.0/go.mod h1:R4dSotOR9KMtayYi1e77YzuveK+i7ruzyGqttikkLy0=
 github.com/mattn/go-runewidth v0.0.24 h1:cpokDiIn0MGnhdHwuWnJBITySJ20QyNGnY2kR/ay2DU=

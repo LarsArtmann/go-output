@@ -1,10 +1,10 @@
-# Migration Guide: v0.12 → v1.0
+# Migration Guide: v0.12 → v0.13
 
-This document covers all breaking changes between v0.12.x and v1.0.0.
+This document covers all breaking changes between v0.12.x and v0.13.0.
 
 ## Summary
 
-The v1.0 release focuses on **composability** (root god-package split into smaller modules) and **type safety** (typed enums, branded IDs). Most changes are additive — existing code that imports specific sub-modules will continue to work. Code that imports the root `output` package directly may need updates.
+The v0.13.0 release focuses on **composability** (root god-package split into smaller modules) and **type safety** (typed enums, branded IDs). Most changes are additive — existing code that imports specific sub-modules will continue to work. Code that imports the root `output` package directly may need updates.
 
 ---
 
@@ -18,7 +18,7 @@ import "github.com/larsartmann/go-output"
 md := output.NewMarkdownTable()
 ```
 
-**After (v1.0):**
+**After (v0.13.0):**
 
 ```go
 import "github.com/larsartmann/go-output/markdown"
@@ -42,7 +42,7 @@ import "github.com/larsartmann/go-output"
 renderer := output.NewASCIITreeRenderer()
 ```
 
-**After (v1.0):**
+**After (v0.13.0):**
 
 ```go
 import "github.com/larsartmann/go-output/tree"
@@ -62,7 +62,7 @@ import _ "github.com/larsartmann/go-output/tree"
 
 **Before (v0.12):** `SymbolRunning` was an untyped string constant.
 
-**After (v1.0):** `SymbolRunning` is `type Symbol string`. Code that assigns a symbol to a `string` variable must convert:
+**After (v0.13.0):** `SymbolRunning` is `type Symbol string`. Code that assigns a symbol to a `string` variable must convert:
 
 ```go
 // Before: s := nom.SymbolRunning        // worked (untyped)
@@ -81,7 +81,7 @@ The `Activity.Symbol` field type also changed from `string` to `Symbol`.
 
 ## 5. Root no longer registers any format
 
-In v0.12, root's `init()` registered Markdown and Tree format renderers. In v1.0, root registers **no** format — all formats self-register from their sub-modules via their own `init()`. You must import the relevant sub-module to activate a format through `RenderTableData()`.
+In v0.12, root's `init()` registered Markdown and Tree format renderers. In v0.13.0, root registers **no** format — all formats self-register from their sub-modules via their own `init()`. You must import the relevant sub-module to activate a format through `RenderTableData()`.
 
 ---
 
