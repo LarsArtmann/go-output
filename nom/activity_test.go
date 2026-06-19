@@ -173,6 +173,7 @@ func TestActivity_Copy_NilMetadata(t *testing.T) {
 	if cpy == orig {
 		t.Fatal("Copy returned the same pointer, not a copy")
 	}
+
 	if cpy.Metadata != nil {
 		t.Errorf("Copy Metadata = %v, want nil (nil branch should preserve nil)", cpy.Metadata)
 	}

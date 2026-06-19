@@ -107,7 +107,6 @@ func TestMultiSubscriber_Subscribers(t *testing.T) {
 	// The returned slice is a snapshot copy: mutating it must not affect the
 	// underlying MultiSubscriber.
 	subs[0] = nil
-	subs = append(subs, nil)
 
 	if got := len(multi.Subscribers()); got != 2 {
 		t.Errorf("MultiSubscriber mutated via snapshot: len = %d, want 2", got)

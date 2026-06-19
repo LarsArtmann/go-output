@@ -326,15 +326,18 @@ func TestActivityNode_removeChild(t *testing.T) {
 	if parent.hasChild(ActivityID("a")) {
 		t.Error("child 'a' should be removed")
 	}
+
 	if !parent.hasChild(ActivityID("b")) {
 		t.Error("child 'b' should still be present")
 	}
+
 	if len(parent.Children) != 1 {
 		t.Errorf("len(Children) = %d, want 1", len(parent.Children))
 	}
 
 	// Removing a non-existent child must be a safe no-op.
 	parent.removeChild(ActivityID("missing"))
+
 	if len(parent.Children) != 1 {
 		t.Errorf("removing missing child changed Children: len = %d, want 1", len(parent.Children))
 	}

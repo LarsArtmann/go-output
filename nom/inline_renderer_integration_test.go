@@ -20,6 +20,7 @@ func TestInlineRenderer_FullWorkflowLifecycle(t *testing.T) {
 	sub := newTestSubscriber(t)
 
 	var buf bytes.Buffer
+
 	renderer := NewInlineRenderer(sub, &buf, 20)
 	renderer.SetNoColor(true)
 
@@ -37,6 +38,7 @@ func TestInlineRenderer_FullWorkflowLifecycle(t *testing.T) {
 	registerActivity(sub, ctx, ActivityID("deploy"), ActivityName("Deploy"), "phase:build")
 
 	renderer.Draw()
+
 	firstFrame := buf.String()
 	if !strings.Contains(firstFrame, "Build") {
 		t.Errorf("first frame missing phase label; got:\n%s", firstFrame)
@@ -51,6 +53,7 @@ func TestInlineRenderer_FullWorkflowLifecycle(t *testing.T) {
 	sendActivityStarted(t, sub, ctx, ActivityID("deploy"), ActivityName("Deploy"))
 
 	renderer.Draw()
+
 	midFrame := buf.String()
 	for _, want := range []string{"Compile", "Test", "Deploy"} {
 		if !strings.Contains(midFrame, want) {
@@ -88,9 +91,11 @@ func TestInlineRenderer_FullWorkflowLifecycle(t *testing.T) {
 	if counts.Completed != 2 {
 		t.Errorf("completed = %d, want 2", counts.Completed)
 	}
+
 	if counts.Failed != 1 {
 		t.Errorf("failed = %d, want 1", counts.Failed)
 	}
+
 	if counts.Running != 0 {
 		t.Errorf("running = %d, want 0 after Finish", counts.Running)
 	}

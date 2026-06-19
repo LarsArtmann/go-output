@@ -22,9 +22,30 @@ func TestVisibleWidth(t *testing.T) {
 		{"\x1b[31mhello\x1b[0m", 5},
 		{"⏵ run", 5},
 		{"…", 1},
-		{"中文", 4},   // CJK characters are double-width (2 each)
-		{"中a", 3},   // mixed CJK + ASCII
-		{"🎉", 2},   // emoji is double-width
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.input, func(t *testing.T) {
+			t.Parallel()
+
+			if got := VisibleWidth(tc.input); got != tc.want {
+				t.Errorf("VisibleWidth(%q) = %d, want %d", tc.input, got, tc.want)
+			}
+		})
+	}
+}
+
+//nolint:gosmopolitan // intentional wide-rune width test data (CJK + emoji)
+func TestVisibleWidth_WideRunes(t *testing.T) {
+	t.Parallel()
+
+	cases := []struct {
+		input string
+		want  int
+	}{
+		{"中文", 4}, // CJK characters are double-width (2 each)
+		{"中a", 3}, // mixed CJK + ASCII
+		{"🎉", 2},  // emoji is double-width
 	}
 
 	for _, tc := range cases {
@@ -50,6 +71,28 @@ func TestVisibleLineCount(t *testing.T) {
 		{"hello", 80, 1},
 		{"hello world", 5, 3},
 		{"\x1b[31mhello\x1b[0m", 3, 2},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.line, func(t *testing.T) {
+			t.Parallel()
+
+			if got := VisibleLineCount(tc.line, tc.termWidth); got != tc.want {
+				t.Errorf("VisibleLineCount(%q, %d) = %d, want %d", tc.line, tc.termWidth, got, tc.want)
+			}
+		})
+	}
+}
+
+//nolint:gosmopolitan // intentional wide-rune line-wrap test data
+func TestVisibleLineCount_WideRunes(t *testing.T) {
+	t.Parallel()
+
+	cases := []struct {
+		line      string
+		termWidth int
+		want      int
+	}{
 		{"中文", 2, 2}, // width-4 CJK over termWidth 2 -> 2 lines
 		{"中文", 4, 1}, // width-4 CJK fits exactly in termWidth 4 -> 1 line
 	}
