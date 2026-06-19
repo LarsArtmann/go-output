@@ -12,15 +12,17 @@ A reusable Go library for CLI output formatting (16 formats across table/tree/gr
 
 ## Module Map
 
-18 modules (root + 17 sub-modules). Each has its own `go.mod`; **deps live in `go.mod`, not here** — read the file for ground truth.
+20 modules (root + 19 sub-modules). Each has its own `go.mod`; **deps live in `go.mod`, not here** — read the file for ground truth.
 
 | Module                   | Purpose                                                                       |
 | ------------------------ | ----------------------------------------------------------------------------- |
-| **root** (`output`)      | Core types, Format/Shape enums, registries, Markdown, Tree, Graph state       |
+| **root** (`output`)      | Core types, Format/Shape enums, registries, TreeNode, Graph state, TableData  |
 | `delimited/`             | CSV + TSV writers                                                             |
 | `serialization/`         | JSON + YAML + TOML + JSONL                                                    |
 | `markup/`                | XML + HTML + AsciiDoc + Streaming HTML                                        |
 | `table/`                 | Lipgloss terminal tables                                                      |
+| `markdown/`              | Markdown table renderer (extracted from root)                                 |
+| `tree/`                  | ASCII tree renderer (extracted from root; TreeNode stays in root)             |
 | `d2/`                    | D2 diagrams (rich domain model: shapes, arrows, SQL tables)                   |
 | `graph/`                 | DOT + Mermaid renderers (share root's `GraphRendererState`)                   |
 | `plantuml/`              | PlantUML diagrams                                                             |
@@ -41,8 +43,8 @@ A reusable Go library for CLI output formatting (16 formats across table/tree/gr
 
 ```bash
 nix develop                # Dev shell (Go 1.26, golangci-lint, gopls)
-nix run .#build            # Build all 18 modules
-nix run .#test             # Test all 18 modules
+nix run .#build            # Build all 20 modules
+nix run .#test             # Test all 20 modules
 nix run .#test-race        # Race-test nom + tui (concurrency-sensitive)
 nix run .#lint             # golangci-lint across all modules
 nix run .#tidy             # go mod tidy all modules
@@ -78,7 +80,7 @@ Things that will silently break or that an agent would get wrong from code alone
 - **`internal/` is root-only (if added)** — Go forbids sub-modules from importing `internal/` packages, so any `internal/` package in root cannot be shared with sub-modules. Currently root has no `internal/` dir; sub-modules inline their own test helpers (shared zero-dep helpers live in the `testhelpers/` module).
 - **Depguard restricts imports** — `.golangci.yml` has explicit allow-lists. When a module gains a new sibling dep, add it to BOTH the `default` and `main` allow-lists or lint fails. Each module has its own `.golangci.yml` section.
 - **Every module's `go.mod` needs `replace` directives** for sibling deps, plus add the module to `flake.nix`'s `modules` list and `go.work.example`'s `use (...)` block.
-- **Mono-version tagging** — all 18 modules release in lockstep under the same `vX.Y.Z` (root tag + `submod/vX.Y.Z` tags). Never version a module independently.
+- **Mono-version tagging** — all 20 modules release in lockstep under the same `vX.Y.Z` (root tag + `submod/vX.Y.Z` tags). Never version a module independently.
 - **NOM events use `nom.Event*` constants** (e.g., `nom.EventWorkflowStarted`), not bare string literals.
 - **`envdetect` centralizes CI/NO_COLOR detection** — root `color.go` and `nom/inline_renderer.go` both delegate to `envdetect.IsCI()` / `IsNoColor()`. Don't re-inline this logic.
 - **Code duplication threshold is `art-dupl -t 24`** (project standard). Below t=20, reported clones are almost entirely Go test idioms or module-boundary re-declarations — both acceptable. See ADR 005.
