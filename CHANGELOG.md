@@ -6,6 +6,50 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-06-20
+
+**The first stable release.** The public API is now frozen per ADR 006. This
+release consolidates all post-0.13.0 work: pre-v1 API cleanup, rendering
+bug fixes, data-race elimination, and the removal of dead/speculative code.
+
+### Added — API Stability
+
+- **`nom.ActivityCounts.Summary()`** / **`.CompletionPercent()`** — single source of truth for count formatting, shared by the inline renderer and the TUI (eliminates the prior split-brain).
+- **`nom.AllActivityStatuses`** is now the complete iterable basis for `ParseActivityStatus`/`IsValid`/`AllowedValues`.
+
+### Changed — Breaking (v1.0 stabilization)
+
+These removals are safe to ship in a 1.0: every removed symbol had **zero production callers** (verified by codebase-wide grep).
+
+- **Removed the `ActivityStatusPaused` status.** It was fully decorated (symbol, color, shape, sort priority) but had no `EventActivityPaused` constant, no subscriber handler, and `SetPaused()` had zero callers — unreachable through the event system. `ActivityStatusPending` previously *reused* Paused's symbol/color, making the two indistinguishable; Pending now has its own honest identity.
+- **`SymbolPaused` → `SymbolPending`** (glyph `⏸` → `○`), **`SemanticColors.Paused` → `SemanticColors.Pending`**, and the deprecated `ColorPaused` alias is removed.
+- **`ActivityStatus.Interest()`** renumbered after Paused removal: `failed=0, running=1, pending=2, completed=3`.
+- **Removed deprecated functions:** `nom.EnsureBuild`, `nom.ParseActivityID`/`ParseWorkflowID`, `graph.NewGraphNodeID`/`NewGraphNodeLabel`, `delimited.MarshalTSV(any)` (+ `writeTSVData`, `ErrUnsupportedType`).
+- **Removed deprecated color aliases:** `ColorRunning`/`ColorCompleted`/`ColorFailed`/`ColorInfo`/`ColorPhase` — use the `Colors.X` fields.
+- **Removed speculative `OperationSymbol` + `OperationTypeDownload`/`OperationTypeUpload`** — a stringly-typed mapping with no production caller. `SymbolDownload`/`SymbolUpload` remain as palette members.
+- **`tui/` public surface minimized.** Unexported all internals not part of the public contract: Bubble Tea message types (`ProgressUpdateMsg`, `StepUpdateMsg`, `ErrorMsg`, `StateTransitionMsg`, `TickMsg`), `UpdateType` + constants, `WorkflowState` + 4 state constants + 4 string constants + state-query methods, `ProgressStep`, `TickCmd`, the `Subscriber()` accessor, and `MsgNoActivitiesToDisplay`. The public API is now `NewBubbleTeaProgressReporter` + `Report*` methods + `DisplayMode` config + `ProgressModel`. Removed dead `CancelMsg` and `SeparatorLineEquals`.
+
+### Fixed
+
+- **Data race in `InlineRenderer.renderSummary`** on `startTime` (TOCTOU) — snapshotted once under `tickMu.RLock()`.
+- **Deep-nested trees overflowed `maxWidth`** — the final styled line is now truncated to the terminal width.
+- **`FormatDuration` showed `90m` for ≥1h durations** — added hours branch (`1h`, `1h30m`, `24h`).
+- **`tui` rendered the NOM tree without the subscriber lock**, closing an activity-mutation race.
+- **Four inline-renderer races/deadlocks** closed (config setters, background refresh, Finish).
+- **`TimingCache.EnsureLoaded` blocked all concurrent `GetMedian` reads during file I/O** — now reads the file lock-free, then re-acquires the write lock to publish (mirrors `saveAsync`).
+
+### Removed — Dead Code
+
+- `nom.FormatTimingInfo` (buggier duplicate of `FormatActivityNodeTiming`), `nom.GetActivitySummaryString` (params named `uploading`/`downloading` but fed `completed`/`failed`), `nom.Activity.Elapsed()` (0 callers; would race), `nom.SummaryWithTotal()` (extracted but never wired).
+- `nom.DependencyTree` dead fields `buildOnce sync.Once` and `order []ActivityID`.
+
+### Tests
+
+- End-to-end integration test: full workflow → events → inline render → Finish.
+- `FormatDuration` fuzz test (full int64 ns range, 3M+ execs clean).
+- `formatActivityLabel` benchmark across all activity statuses.
+- Coverage for `Copy()` nil-metadata, `removeChild`, `StripANSI`, `MultiSubscriber.Subscribers()`, and CJK/emoji `VisibleWidth`/`VisibleLineCount`.
+
 ## [0.13.0] - 2026-06-18
 
 ### Added — New Modules

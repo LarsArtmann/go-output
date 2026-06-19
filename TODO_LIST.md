@@ -1,8 +1,8 @@
 # TODO_LIST.md — go-output
 
-**Last updated:** 2026-06-18
+**Last updated:** 2026-06-20
 **Open items:** 2
-**Blocked:** 2 (needs owner decision)
+**Blocked:** 0
 
 ---
 
@@ -11,17 +11,24 @@
 | #   | Task                                                                         | Effort | Status                      |
 | --- | ---------------------------------------------------------------------------- | ------ | --------------------------- |
 | 14  | **Community: Post to r/golang, submit to Awesome Go**                        | Low    | Open (needs owner account)  |
-| 16  | **Cut `v1.0.0` tag** — API declared frozen/ready (ADR 006), still at v0.12.x | Low    | Open (needs owner decision) |
-
-### Blocked — Needs Owner Decision
-
-| #   | Question                                                                                                                                                                                                                                                                 |
-| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 15  | **Should `TableData` use exported fields or getters for v1?** Current: both exist (`Headers` + `GetHeaders()`). Option A: exported fields only. Option B: unexported + validated setters. Option C: keep both for v0.x. Affects every consumer; v1 stability commitment. |
+| 16  | **Cut `v1.0.0` tag** — API frozen (ADR 006); CHANGELOG + full checklist done | Low    | Prepared — awaiting owner tag |
 
 ---
 
-## Resolved This Session (2026-06-17/18) — Do Not Redo
+## Resolved This Session (2026-06-20) — Do Not Redo
+
+| Task                                                              | Resolution                                                                                                                                         |
+| ----------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| #15 `TableData` fields vs getters for v1                          | **Resolved — keep both.** Getters (`GetHeaders`/`GetRows`/`GetFooter`) satisfy the `TableDataProvider` interface in `table/` + test doubles. Load-bearing, not duplication. |
+| `ActivityStatusPaused` / `SetPaused` (dead event path)           | **Removed.** No `EventActivityPaused`, zero callers, unreachable. `SymbolPaused`→`SymbolPending` (glyph ⏸→○); Pending given its own honest identity. |
+| Deprecated APIs (7 markers)                                       | **Removed.** `EnsureBuild`, `ParseActivityID`/`ParseWorkflowID`, `NewGraphNodeID`/`NewGraphNodeLabel`, `MarshalTSV(any)`, 6 color aliases — all had zero prod callers. Zero `Deprecated:` markers remain. |
+| `OperationSymbol` + `OperationType*` (speculative)               | **Removed.** Zero production callers; stringly-typed mapping to nowhere. `SymbolDownload`/`Upload` kept as palette. |
+| Over-exposed tui public API (~15 symbols)                         | **Unexported.** Msg types, `WorkflowState`, `ProgressStep`, `UpdateType`, `TickCmd`, etc. Public surface is now `NewBubbleTeaProgressReporter` + `Report*` + `DisplayMode` + `ProgressModel`. |
+| Pre-release checklist (build/test/race/lint/vuln/tidy)           | **All green.** 20/20 modules pass, 0 lint issues, `-race` clean, govulncheck 0 vulnerabilities, go mod tidy clean. |
+
+---
+
+## Resolved Earlier (Summary — details in git history)
 
 | Task                                                              | Resolution                                                                                                                                         |
 | ----------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
