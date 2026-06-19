@@ -285,15 +285,30 @@ for _, f := range output.FormatsForShape(output.ShapeGraph) {
 go get github.com/larsartmann/go-output
 ```
 
-Sub-modules for specific formats:
+Sub-modules for specific formats (import only what you need):
 
 ```bash
+# Format renderers
 go get github.com/larsartmann/go-output/delimited       # CSV + TSV writers
-go get github.com/larsartmann/go-output/serialization   # JSON + YAML marshaling
-go get github.com/larsartmann/go-output/markup          # XML + HTML + Streaming HTML
+go get github.com/larsartmann/go-output/serialization   # JSON + YAML + TOML + JSONL marshaling
+go get github.com/larsartmann/go-output/markup          # XML + HTML + AsciiDoc + Streaming HTML
 go get github.com/larsartmann/go-output/table           # Terminal tables with lipgloss
+go get github.com/larsartmann/go-output/markdown        # Markdown table renderer
+go get github.com/larsartmann/go-output/tree            # ASCII tree renderer
+
+# Diagram renderers
 go get github.com/larsartmann/go-output/d2              # D2 diagrams
 go get github.com/larsartmann/go-output/graph           # DOT + Mermaid renderers
+go get github.com/larsartmann/go-output/plantuml        # PlantUML diagrams
+
+# Progress visualization
+go get github.com/larsartmann/go-output/nom             # NOM-style real-time progress
+go get github.com/larsartmann/go-output/tui             # Interactive Bubble Tea TUI
+
+# Utilities (zero-dep, used internally)
+go get github.com/larsartmann/go-output/enum            # Generic enum utilities
+go get github.com/larsartmann/go-output/escape          # Format-specific escaping
+go get github.com/larsartmann/go-output/envdetect       # CI / NO_COLOR env detection
 ```
 
 ## Branded IDs

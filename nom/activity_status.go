@@ -1,6 +1,9 @@
 package nom
 
-import "image/color"
+import (
+	"image/color"
+	"slices"
+)
 
 // ============================================================================
 // ACTIVITY STATUS ENUM
@@ -122,13 +125,7 @@ func ParseActivityStatus(s string) (ActivityStatus, error) {
 
 // IsValid returns true if the status is a recognized ActivityStatus value.
 func (as ActivityStatus) IsValid() bool {
-	for _, valid := range AllActivityStatuses {
-		if as == valid {
-			return true
-		}
-	}
-
-	return false
+	return slices.Contains(AllActivityStatuses, as)
 }
 
 // AllowedValues returns all valid status strings for CLI help text and config.
