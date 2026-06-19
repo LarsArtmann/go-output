@@ -109,30 +109,6 @@ func TestActivity_SetFailed(t *testing.T) {
 	assertActivityFill(t, a, "#dc2626")
 }
 
-func TestActivity_Elapsed(t *testing.T) {
-	t.Parallel()
-
-	a := NewActivity("task", "Task")
-	if a.Elapsed() != 0 {
-		t.Error("pending activity should have zero elapsed")
-	}
-
-	a.SetRunning()
-	time.Sleep(time.Millisecond)
-
-	elapsed := a.Elapsed()
-	if elapsed <= 0 {
-		t.Error("running activity should have positive elapsed")
-	}
-
-	a.SetCompleted()
-
-	finalElapsed := a.Elapsed()
-	if finalElapsed <= 0 {
-		t.Error("completed activity should have positive elapsed")
-	}
-}
-
 func TestActivityStatus_NodeShape(t *testing.T) {
 	t.Parallel()
 

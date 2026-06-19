@@ -87,24 +87,6 @@ func (a *Activity) SetEstimatedTime(d time.Duration) {
 	a.EstimatedTime = d
 }
 
-// Elapsed returns the duration since StartTime if running, or EndTime-StartTime
-// if finished. Returns zero if not started or if StartTime is zero.
-func (a *Activity) Elapsed() time.Duration {
-	if a.StartTime.IsZero() {
-		return 0
-	}
-
-	if a.Status == ActivityStatusRunning {
-		return time.Since(a.StartTime)
-	}
-
-	if !a.EndTime.IsZero() {
-		return a.EndTime.Sub(a.StartTime)
-	}
-
-	return time.Since(a.StartTime)
-}
-
 // IsRunning returns true if the activity is currently in the running state.
 func (a *Activity) IsRunning() bool { return a.Status == ActivityStatusRunning }
 
