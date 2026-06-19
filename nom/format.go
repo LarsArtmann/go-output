@@ -45,14 +45,27 @@ func FormatDuration(duration time.Duration) string {
 		return fmt.Sprintf("%d.%ds", tenths/10, tenths%10)
 	}
 
-	minutes := int(duration.Minutes())
+	if duration < time.Hour {
+		minutes := int(duration.Minutes())
+		seconds := int(duration.Seconds()) % 60
 
-	seconds := int(duration.Seconds()) % 60
-	if seconds == 0 {
-		return fmt.Sprintf("%dm", minutes)
+		if seconds == 0 {
+			return fmt.Sprintf("%dm", minutes)
+		}
+
+		return fmt.Sprintf("%dm%ds", minutes, seconds)
 	}
 
-	return fmt.Sprintf("%dm%ds", minutes, seconds)
+	// Hours: avoid unwieldy "90m" or "1440m" for long-running workflows.
+	hours := int(duration.Hours())
+	remaining := duration - time.Duration(hours)*time.Hour
+	minutes := int(remaining.Minutes())
+
+	if minutes == 0 {
+		return fmt.Sprintf("%dh", hours)
+	}
+
+	return fmt.Sprintf("%dh%dm", hours, minutes)
 }
 
 // FormatTimingInfo formats timing information for an activity.

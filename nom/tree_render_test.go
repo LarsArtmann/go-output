@@ -244,3 +244,29 @@ func TestDependencyTree_RenderWithWidth_TruncatesLongNames(t *testing.T) {
 		t.Errorf("narrow render should truncate with ellipsis, got:\n%s", narrow)
 	}
 }
+
+// TestDependencyTree_RenderWithWidth_DeepNestingFitsMaxWidth is a regression
+// test: when the tree-drawing prefix (indentation + ├──/└──) alone exceeds
+// maxWidth, the renderer used to emit the full prefix and overflow the terminal.
+// Now every rendered line must fit within maxWidth.
+func TestDependencyTree_RenderWithWidth_DeepNestingFitsMaxWidth(t *testing.T) {
+	t.Parallel()
+
+	dt := NewDependencyTree()
+	dt.AddActivity(ActivityID("root"), NewActivity("root", "Root"), nil)
+	dt.AddActivity(ActivityID("c1"), NewActivity("c1", "Child1"), []ActivityID{"root"})
+	dt.AddActivity(ActivityID("c2"), NewActivity("c2", "Child2"), []ActivityID{"c1"})
+	dt.AddActivity(ActivityID("c3"), NewActivity("c3", "Child3"), []ActivityID{"c2"})
+	dt.AddActivity(ActivityID("c4"), NewActivity("c4", "Child4"), []ActivityID{"c3"})
+
+	for _, maxW := range []int{80, 40, 30, 20, 15, 10, 5, 3} {
+		got := dt.RenderWithWidth(20, maxW)
+		for line := range strings.SplitSeq(got, "\n") {
+			w := VisibleWidth(line)
+			if w > maxW {
+				t.Errorf("maxWidth=%d: line visible width %d exceeds limit: %q",
+					maxW, w, StripANSI(line))
+			}
+		}
+	}
+}

@@ -120,11 +120,14 @@ func (r *InlineRenderer) renderSummary() string {
 
 	total := counts.Total()
 
-	if !r.startTime.IsZero() {
-		r.tickMu.RLock()
-		startTime := r.startTime
-		r.tickMu.RUnlock()
+	// Snapshot startTime once under the lock. The previous code read
+	// r.startTime.IsZero() unlocked and then re-read r.startTime under RLock —
+	// a TOCTOU data race against SetStartTime (which takes tickMu.Lock).
+	r.tickMu.RLock()
+	startTime := r.startTime
+	r.tickMu.RUnlock()
 
+	if !startTime.IsZero() {
 		elapsed := time.Since(startTime)
 		parts = append(parts, fmt.Sprintf("%s%s", SymbolTiming, FormatDuration(elapsed)))
 	}

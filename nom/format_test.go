@@ -22,6 +22,14 @@ func TestFormatDuration(t *testing.T) {
 		{"1 minute", 1 * time.Minute, "1m"},
 		{"1 minute 30 seconds", 90 * time.Second, "1m30s"},
 		{"2 minutes", 2 * time.Minute, "2m"},
+		{"59 minutes", 59 * time.Minute, "59m"},
+		{"59 minutes 59 seconds", 59*time.Minute + 59*time.Second, "59m59s"},
+		{"1 hour exactly", 1 * time.Hour, "1h"},
+		{"1 hour 30 minutes", 90 * time.Minute, "1h30m"},
+		{"1 hour 30 minutes 45 seconds", 1*time.Hour + 30*time.Minute + 45*time.Second, "1h30m"},
+		{"2 hours", 2 * time.Hour, "2h"},
+		{"2 hours 5 minutes", 2*time.Hour + 5*time.Minute, "2h5m"},
+		{"24 hours", 24 * time.Hour, "24h"},
 		{"zero", 0, "0ms"},
 	}
 

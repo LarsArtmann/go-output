@@ -305,6 +305,48 @@ func TestInlineRenderer_Finish_RacingSetters(t *testing.T) {
 	}
 }
 
+// TestInlineRenderer_RenderSummary_RacingSetStartTime drives Draw() (which
+// calls renderSummary) while another goroutine flips SetStartTime. Before the
+// fix, renderSummary read r.startTime.IsZero() WITHOUT the lock and then
+// re-read r.startTime UNDER the lock — a classic TOCTOU data race. The snapshot
+// is now taken once under tickMu.RLock.
+func TestInlineRenderer_RenderSummary_RacingSetStartTime(t *testing.T) {
+	t.Parallel()
+
+	for range 20 {
+		sub := newTestSubscriber(t)
+
+		var buf safeBuffer
+
+		renderer := NewInlineRenderer(sub, &buf, 10)
+
+		ctx := context.Background()
+		_ = sendWorkflowStarted(sub, ctx, WorkflowID("wf-st"), "")
+		sendActivityStarted(t, sub, ctx, ActivityID("s"), ActivityName("S"))
+
+		stop := make(chan struct{})
+
+		go func() {
+			for {
+				select {
+				case <-stop:
+					return
+				default:
+					renderer.SetStartTime(time.Now())
+					renderer.SetStartTime(time.Time{})
+				}
+			}
+		}()
+
+		for range 100 {
+			renderer.Draw()
+			runtime.Gosched()
+		}
+
+		close(stop)
+	}
+}
+
 // cursorUpLines returns N from the first "\033[NA" escape in output, or 0.
 func cursorUpLines(output string) int {
 	m := cursorUpRe.FindStringSubmatch(output)

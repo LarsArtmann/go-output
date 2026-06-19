@@ -231,7 +231,17 @@ func (dt *DependencyTree) renderLine(entry visibleEntry, maxWidth int) string {
 		activityDisplay = TruncateVisible(activityDisplay, available)
 	}
 
-	return activityNodeStyle(color).Render(fullPrefix + activityDisplay)
+	rendered := activityNodeStyle(color).Render(fullPrefix + activityDisplay)
+
+	// When the tree-drawing prefix alone exceeds maxWidth (deeply nested tree
+	// on a narrow terminal), the content truncation above is not enough: the
+	// full prefix is still rendered and the line overflows, wrapping and
+	// desyncing the cursor. Guard by truncating the final styled line.
+	if maxWidth > 0 && VisibleWidth(rendered) > maxWidth {
+		rendered = TruncateVisible(rendered, maxWidth)
+	}
+
+	return rendered
 }
 
 // VisibleNodes returns the ordered list of tree nodes that would be displayed
