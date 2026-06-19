@@ -11,63 +11,63 @@
 
 ## a) FULLY DONE
 
-| Item | Status |
-|------|--------|
-| **Pareto plan written** with 1%/4%/20% breakdown + mermaid execution graph | Done (`docs/planning/2026-06-19_02-10_*.md`) |
-| **Bug #1 fixed: timing-cache test isolation** — `WithCachePath` option on `TimingCache` + `NOMStyleSubscriber`; `newTestSubscriber(t)` helper injected across 34 test sites; suite is now hermetic (no `~/.cache` writes) | Done |
-| **Bug #2 fixed: render_tabledata_test.go 355→265+98 lines** — registry tests extracted to `render_registry_test.go` | Done |
-| **`go mod tidy` across all modules** — escape version residue confirmed resolved | Done |
-| **Stale misleading proposal deleted** (`docs/modularization/2026-06-18_PROPOSAL.md`) — described the reverted merge | Done |
-| **AGENTS.md `internal/gentest`/`internal/testutils` false references corrected** — no `internal/` dir exists | Done |
-| **TODO_LIST.md false claims corrected** — timing-cache isolation now covers subscriber tests; test-file limit now includes the 5th file | Done |
-| **`markdown/` module extracted** — 289 lines moved out of root; self-registers `FormatMarkdown` via `init()`; all consumers updated | Done |
-| **`tree/` module extracted** — 229 lines moved out of root (ASCIITreeRenderer); TreeNode stays in root (shared by 15+ modules); self-registers `FormatTree` via `init()` | Done |
-| **Root no longer registers ANY format** — all 16 formats self-register from their sub-modules via `init()` | Done |
-| **AGENTS.md module map updated** (18→20 modules) | Done |
-| **Typed `Symbol` constants** — `type Symbol string`; 10 constants typed; propagated through `Activity.Symbol`, `GetSymbol()`, `OperationSymbol()`, `formatTimingWithSymbol()`; all callers updated | Done |
-| **`ActivityStatus` enum methods** — `ParseActivityStatus()`, `IsValid()`, `AllowedValues()`, `AllActivityStatuses` slice, `InvalidActivityStatusError` type | Done |
-| **README updated** — all 15 user-facing sub-modules listed with descriptions, grouped by category | Done |
-| **`RELEASE.md` written** — 20-module mono-version bump workflow, pre-release checklist, tagging, proxy verification, rollback | Done |
-| **`docs/MIGRATION_v0.12_to_v1.0.md` written** — all breaking changes documented (markdown/tree extraction, typed Symbol, GetSymbol return type) | Done |
-| **ADR 008 written** — dedup workflow decision (5-step checklist, t=24 threshold rationale) | Done |
-| **CI module loops fixed** — markdown + tree were MISSING from all 9 CI loops (build, test, coverage, tidy, govulncheck in ci.yml + 4 in release.yml); now added everywhere | Done |
-| **art-dupl CI gate added** — `duplication` job runs art-dupl at t=50 (non-blocking warning) | Done |
-| **All 20 modules build** (workspace + isolated GOWORK=off for markdown/tree) | Verified |
-| **All 20 modules test green** (763+ test functions) | Verified |
-| **Race tests clean** (nom + tui) | Verified |
-| **Lint: 0 issues across all 20 modules** | Verified |
-| **Zero TODO/FIXME/HACK in prod code** | Verified |
-| **All test files ≤350 lines** | Verified |
+| Item                                                                                                                                                                                                                      | Status                                       |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
+| **Pareto plan written** with 1%/4%/20% breakdown + mermaid execution graph                                                                                                                                                | Done (`docs/planning/2026-06-19_02-10_*.md`) |
+| **Bug #1 fixed: timing-cache test isolation** — `WithCachePath` option on `TimingCache` + `NOMStyleSubscriber`; `newTestSubscriber(t)` helper injected across 34 test sites; suite is now hermetic (no `~/.cache` writes) | Done                                         |
+| **Bug #2 fixed: render_tabledata_test.go 355→265+98 lines** — registry tests extracted to `render_registry_test.go`                                                                                                       | Done                                         |
+| **`go mod tidy` across all modules** — escape version residue confirmed resolved                                                                                                                                          | Done                                         |
+| **Stale misleading proposal deleted** (`docs/modularization/2026-06-18_PROPOSAL.md`) — described the reverted merge                                                                                                       | Done                                         |
+| **AGENTS.md `internal/gentest`/`internal/testutils` false references corrected** — no `internal/` dir exists                                                                                                              | Done                                         |
+| **TODO_LIST.md false claims corrected** — timing-cache isolation now covers subscriber tests; test-file limit now includes the 5th file                                                                                   | Done                                         |
+| **`markdown/` module extracted** — 289 lines moved out of root; self-registers `FormatMarkdown` via `init()`; all consumers updated                                                                                       | Done                                         |
+| **`tree/` module extracted** — 229 lines moved out of root (ASCIITreeRenderer); TreeNode stays in root (shared by 15+ modules); self-registers `FormatTree` via `init()`                                                  | Done                                         |
+| **Root no longer registers ANY format** — all 16 formats self-register from their sub-modules via `init()`                                                                                                                | Done                                         |
+| **AGENTS.md module map updated** (18→20 modules)                                                                                                                                                                          | Done                                         |
+| **Typed `Symbol` constants** — `type Symbol string`; 10 constants typed; propagated through `Activity.Symbol`, `GetSymbol()`, `OperationSymbol()`, `formatTimingWithSymbol()`; all callers updated                        | Done                                         |
+| **`ActivityStatus` enum methods** — `ParseActivityStatus()`, `IsValid()`, `AllowedValues()`, `AllActivityStatuses` slice, `InvalidActivityStatusError` type                                                               | Done                                         |
+| **README updated** — all 15 user-facing sub-modules listed with descriptions, grouped by category                                                                                                                         | Done                                         |
+| **`RELEASE.md` written** — 20-module mono-version bump workflow, pre-release checklist, tagging, proxy verification, rollback                                                                                             | Done                                         |
+| **`docs/MIGRATION_v0.12_to_v1.0.md` written** — all breaking changes documented (markdown/tree extraction, typed Symbol, GetSymbol return type)                                                                           | Done                                         |
+| **ADR 008 written** — dedup workflow decision (5-step checklist, t=24 threshold rationale)                                                                                                                                | Done                                         |
+| **CI module loops fixed** — markdown + tree were MISSING from all 9 CI loops (build, test, coverage, tidy, govulncheck in ci.yml + 4 in release.yml); now added everywhere                                                | Done                                         |
+| **art-dupl CI gate added** — `duplication` job runs art-dupl at t=50 (non-blocking warning)                                                                                                                               | Done                                         |
+| **All 20 modules build** (workspace + isolated GOWORK=off for markdown/tree)                                                                                                                                              | Verified                                     |
+| **All 20 modules test green** (763+ test functions)                                                                                                                                                                       | Verified                                     |
+| **Race tests clean** (nom + tui)                                                                                                                                                                                          | Verified                                     |
+| **Lint: 0 issues across all 20 modules**                                                                                                                                                                                  | Verified                                     |
+| **Zero TODO/FIXME/HACK in prod code**                                                                                                                                                                                     | Verified                                     |
+| **All test files ≤350 lines**                                                                                                                                                                                             | Verified                                     |
 
 ---
 
 ## b) PARTIALLY DONE
 
-| Item | Status | Gap |
-|------|--------|-----|
-| **Type-safety hardening** | Symbol type + ActivityStatus enums done | **Branding `ActivityID`/`WorkflowID` via `go-branded-id` deferred** — 293 references across 20 nom files; large refactor requiring careful test updates |
-| **GraphStyle typed colors** | Not done | `GraphStyle.Fill`/`Stroke`/`FontColor` still bare `string`; branded `Color` type would cascade across graph/, d2/, plantuml/ |
-| **benchstat CI baseline storage** | Benchmarks run in CI but output is discarded | No stored baseline, no benchstat comparison, no regression threshold |
-| **README module list** | 15 of 19 sub-modules listed | Omits `testhelpers`, `testhelpers/graphtest`, `bdd`, `integration` — intentionally, these are test/dev-only modules |
-| **Pre-commit Go hooks** | BuildFlow hook already runs gofumpt + golangci-lint + gomod-check | No standalone `go vet` step in git-hooks.nix (covered by golangci-lint's `vet` linter) |
+| Item                              | Status                                                            | Gap                                                                                                                                                     |
+| --------------------------------- | ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Type-safety hardening**         | Symbol type + ActivityStatus enums done                           | **Branding `ActivityID`/`WorkflowID` via `go-branded-id` deferred** — 293 references across 20 nom files; large refactor requiring careful test updates |
+| **GraphStyle typed colors**       | Not done                                                          | `GraphStyle.Fill`/`Stroke`/`FontColor` still bare `string`; branded `Color` type would cascade across graph/, d2/, plantuml/                            |
+| **benchstat CI baseline storage** | Benchmarks run in CI but output is discarded                      | No stored baseline, no benchstat comparison, no regression threshold                                                                                    |
+| **README module list**            | 15 of 19 sub-modules listed                                       | Omits `testhelpers`, `testhelpers/graphtest`, `bdd`, `integration` — intentionally, these are test/dev-only modules                                     |
+| **Pre-commit Go hooks**           | BuildFlow hook already runs gofumpt + golangci-lint + gomod-check | No standalone `go vet` step in git-hooks.nix (covered by golangci-lint's `vet` linter)                                                                  |
 
 ---
 
 ## c) NOT STARTED
 
-| Item | Impact | Notes |
-|------|--------|-------|
-| **Brand `ActivityID`/`WorkflowID`** via `go-branded-id` | 🔥🔥 | Eliminates ID-mixing class of bugs at compile time. 293 references. Requires touching every constructor, handler, test. |
-| **Typed `Color` for `GraphStyle`** | 🟡 | Branded Color type for Fill/Stroke/FontColor. Cascades to d2/, graph/, plantuml/ conversion code. |
-| **`core/` module extraction** | 🔥 | Move shared types (Format, Shape, ColorMode, TableData, GraphNode, registry interfaces) to a thin `core/` module. Root becomes registry + dispatch only. Riskier — may over-modularize. |
-| **`graphcore/` module extraction** | 🟡 | Move `GraphRendererState` + graph state out of root. 359 lines. Shared by d2/graph/plantuml. |
-| **`direction.go` relocation** | 🟢 | 40 lines; only used by graph modules. Could move to `graphcore/`. |
-| **Tag `envdetect/v0.12.0`** | 🟡 | envdetect was NEVER tagged. All modules use replace directives. Tagging eliminates fragility. |
-| **benchstat stored baseline** | 🟡 | Benchmarks execute but output is discarded — no comparison, no regression detection. |
-| **`go test -race` for ALL modules in CI** | — | Already done! CI already runs `-race` for every module. Previously thought missing; verified present. |
-| **BDD spec name verification** | 🟢 | Spec names should match post-extraction type names. Not verified this session. |
-| **GitHub release notes draft for v1.0.0** | 🟡 | Template not written. `docs/RELEASE_NOTES_v1.0.0.md` doesn't exist. |
-| **`TableData` API decision** (fields vs getters) | 🔥🔥🔥 | **Sole v1.0.0 freeze blocker.** Blocked on owner. Option A (fields only) / B (getters+setters) / C (keep both). |
+| Item                                                    | Impact | Notes                                                                                                                                                                                   |
+| ------------------------------------------------------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Brand `ActivityID`/`WorkflowID`** via `go-branded-id` | 🔥🔥   | Eliminates ID-mixing class of bugs at compile time. 293 references. Requires touching every constructor, handler, test.                                                                 |
+| **Typed `Color` for `GraphStyle`**                      | 🟡     | Branded Color type for Fill/Stroke/FontColor. Cascades to d2/, graph/, plantuml/ conversion code.                                                                                       |
+| **`core/` module extraction**                           | 🔥     | Move shared types (Format, Shape, ColorMode, TableData, GraphNode, registry interfaces) to a thin `core/` module. Root becomes registry + dispatch only. Riskier — may over-modularize. |
+| **`graphcore/` module extraction**                      | 🟡     | Move `GraphRendererState` + graph state out of root. 359 lines. Shared by d2/graph/plantuml.                                                                                            |
+| **`direction.go` relocation**                           | 🟢     | 40 lines; only used by graph modules. Could move to `graphcore/`.                                                                                                                       |
+| **Tag `envdetect/v0.12.0`**                             | 🟡     | envdetect was NEVER tagged. All modules use replace directives. Tagging eliminates fragility.                                                                                           |
+| **benchstat stored baseline**                           | 🟡     | Benchmarks execute but output is discarded — no comparison, no regression detection.                                                                                                    |
+| **`go test -race` for ALL modules in CI**               | —      | Already done! CI already runs `-race` for every module. Previously thought missing; verified present.                                                                                   |
+| **BDD spec name verification**                          | 🟢     | Spec names should match post-extraction type names. Not verified this session.                                                                                                          |
+| **GitHub release notes draft for v1.0.0**               | 🟡     | Template not written. `docs/RELEASE_NOTES_v1.0.0.md` doesn't exist.                                                                                                                     |
+| **`TableData` API decision** (fields vs getters)        | 🔥🔥🔥 | **Sole v1.0.0 freeze blocker.** Blocked on owner. Option A (fields only) / B (getters+setters) / C (keep both).                                                                         |
 
 ---
 
@@ -90,6 +90,7 @@
 ### 1. Root is still 1401 lines (was 1908 — 27% reduction, but still large)
 
 The 2 biggest remaining clusters:
+
 - **Graph state** (`graph.go` 282L + `graph_tabledata.go` 77L = 359L) — shared by d2/graph/plantuml; candidate for `graphcore/` extraction.
 - **TableData** (`tabledata.go` 245L + `render_tabledata.go` 115L = 360L) — core type + dispatch.
 
@@ -117,53 +118,53 @@ Sorted by **impact / effort ratio** (highest first):
 
 ### Tier 1 — Owner-blocked (cannot execute autonomously)
 
-| # | Task | Impact | Effort |
-|---|------|--------|--------|
-| 1 | **Decide `TableData` fields vs getters for v1** (Option A/B/C) | Critical | 5m |
-| 2 | **Cut `v1.0.0` tag** — API declared frozen (ADR 006) | Critical | 10m |
-| 3 | **Tag `envdetect/v0.12.0`** — eliminates replace fragility | High | 5m |
-| 4 | **Submit to r/golang + Awesome Go** | High | 30m |
+| #   | Task                                                           | Impact   | Effort |
+| --- | -------------------------------------------------------------- | -------- | ------ |
+| 1   | **Decide `TableData` fields vs getters for v1** (Option A/B/C) | Critical | 5m     |
+| 2   | **Cut `v1.0.0` tag** — API declared frozen (ADR 006)           | Critical | 10m    |
+| 3   | **Tag `envdetect/v0.12.0`** — eliminates replace fragility     | High     | 5m     |
+| 4   | **Submit to r/golang + Awesome Go**                            | High     | 30m    |
 
 ### Tier 2 — High-impact code work
 
-| # | Task | Impact | Effort |
-|---|------|--------|--------|
-| 5 | **Brand `ActivityID`/`WorkflowID`** via `go-branded-id` (293 refs) | 🔥🔥 | 2 hrs |
-| 6 | **Typed `Color` for `GraphStyle`** Fill/Stroke/FontColor | 🟡 | 30m |
-| 7 | **Extract `graphcore/`** — GraphRendererState + graph state (359L) | 🔥 | 3 hrs |
-| 8 | **Decide: `core/` module or keep types in root** | 🔥 | Design |
-| 9 | **BDD spec name verification** — specs match post-extraction names | 🟡 | 15m |
+| #   | Task                                                               | Impact | Effort |
+| --- | ------------------------------------------------------------------ | ------ | ------ |
+| 5   | **Brand `ActivityID`/`WorkflowID`** via `go-branded-id` (293 refs) | 🔥🔥   | 2 hrs  |
+| 6   | **Typed `Color` for `GraphStyle`** Fill/Stroke/FontColor           | 🟡     | 30m    |
+| 7   | **Extract `graphcore/`** — GraphRendererState + graph state (359L) | 🔥     | 3 hrs  |
+| 8   | **Decide: `core/` module or keep types in root**                   | 🔥     | Design |
+| 9   | **BDD spec name verification** — specs match post-extraction names | 🟡     | 15m    |
 
 ### Tier 3 — CI/process hardening
 
-| # | Task | Impact | Effort |
-|---|------|--------|--------|
-| 10 | **benchstat CI step** with stored baseline artifact | 🔥 | 30m |
-| 11 | **GitHub release notes draft** for v1.0.0 | 🟡 | 20m |
-| 12 | **Commit `go.work` or document workspace-first workflow** | 🟡 | 30m |
-| 13 | **Add `go work sync` to setup-workspace** app | 🟡 | 15m |
-| 14 | **art-dupl threshold tuning** — verify t=50 doesn't false-positive | 🟢 | 30m |
-| 15 | **CI: verify markdown/tree actually tested** after module loop fix | 🟢 | 5m |
+| #   | Task                                                               | Impact | Effort |
+| --- | ------------------------------------------------------------------ | ------ | ------ |
+| 10  | **benchstat CI step** with stored baseline artifact                | 🔥     | 30m    |
+| 11  | **GitHub release notes draft** for v1.0.0                          | 🟡     | 20m    |
+| 12  | **Commit `go.work` or document workspace-first workflow**          | 🟡     | 30m    |
+| 13  | **Add `go work sync` to setup-workspace** app                      | 🟡     | 15m    |
+| 14  | **art-dupl threshold tuning** — verify t=50 doesn't false-positive | 🟢     | 30m    |
+| 15  | **CI: verify markdown/tree actually tested** after module loop fix | 🟢     | 5m     |
 
 ### Tier 4 — Documentation
 
-| # | Task | Impact | Effort |
-|---|------|--------|--------|
-| 16 | **Document module dependency DAG** in FORMAT_ARCHITECTURE.md | 🟡 | 30m |
-| 17 | **Update `doc.go`** root package doc — remove stale markdown/tree refs | 🟡 | 10m |
-| 18 | **CHANGELOG.md** — document markdown/tree extraction + Symbol type | 🔥 | 20m |
-| 19 | **Update FEATURES.md** — mark markdown/ and tree/ as standalone modules | 🟡 | 15m |
-| 20 | **Godoc review** — new exported types (Symbol, ActivityStatus methods) documented | 🟡 | 15m |
+| #   | Task                                                                              | Impact | Effort |
+| --- | --------------------------------------------------------------------------------- | ------ | ------ |
+| 16  | **Document module dependency DAG** in FORMAT_ARCHITECTURE.md                      | 🟡     | 30m    |
+| 17  | **Update `doc.go`** root package doc — remove stale markdown/tree refs            | 🟡     | 10m    |
+| 18  | **CHANGELOG.md** — document markdown/tree extraction + Symbol type                | 🔥     | 20m    |
+| 19  | **Update FEATURES.md** — mark markdown/ and tree/ as standalone modules           | 🟡     | 15m    |
+| 20  | **Godoc review** — new exported types (Symbol, ActivityStatus methods) documented | 🟡     | 15m    |
 
 ### Tier 5 — Optional / future
 
-| # | Task | Impact | Effort |
-|---|------|--------|--------|
-| 21 | **`direction.go` relocation** to graphcore/ (40L, only used by graph) | 🟢 | 15m |
-| 22 | **`ids.go` relocation review** (58L, branded ID re-exports) | 🟢 | 15m |
-| 23 | **`streaming.go` review** (53L, is it core or separate?) | 🟢 | 15m |
-| 24 | **Run `deduplicate-code` skill** across root + new modules | 🟢 | 1 hr |
-| 25 | **CBOR format** (ROADMAP) — only on real user demand | 🟢 | 3 hrs |
+| #   | Task                                                                  | Impact | Effort |
+| --- | --------------------------------------------------------------------- | ------ | ------ |
+| 21  | **`direction.go` relocation** to graphcore/ (40L, only used by graph) | 🟢     | 15m    |
+| 22  | **`ids.go` relocation review** (58L, branded ID re-exports)           | 🟢     | 15m    |
+| 23  | **`streaming.go` review** (53L, is it core or separate?)              | 🟢     | 15m    |
+| 24  | **Run `deduplicate-code` skill** across root + new modules            | 🟢     | 1 hr   |
+| 25  | **CBOR format** (ROADMAP) — only on real user demand                  | 🟢     | 3 hrs  |
 
 ---
 
@@ -191,17 +192,17 @@ This is the single architectural decision that determines the project's long-ter
 
 ## Verification Summary
 
-| Check | Status | Notes |
-|-------|--------|-------|
-| `go build ./...` (all 20 modules) | ✅ | Workspace + isolated (markdown/tree) |
-| `go test ./...` (all 20 modules) | ✅ | 763+ test functions |
-| `go test -race` (nom + tui) | ✅ | Race-detector clean |
-| golangci-lint (all modules) | ✅ | 0 issues across 20 modules |
-| TODO/FIXME in prod `*.go` | ✅ | Zero |
-| Test files ≤350 lines | ✅ | All compliant |
-| Root prod lines | ✅ | 1401 (was 1908, −27%) |
-| Module count | ✅ | 20 (root + 19 sub-modules) |
-| Working tree | ✅ | Clean, up to date with origin |
+| Check                             | Status | Notes                                |
+| --------------------------------- | ------ | ------------------------------------ |
+| `go build ./...` (all 20 modules) | ✅     | Workspace + isolated (markdown/tree) |
+| `go test ./...` (all 20 modules)  | ✅     | 763+ test functions                  |
+| `go test -race` (nom + tui)       | ✅     | Race-detector clean                  |
+| golangci-lint (all modules)       | ✅     | 0 issues across 20 modules           |
+| TODO/FIXME in prod `*.go`         | ✅     | Zero                                 |
+| Test files ≤350 lines             | ✅     | All compliant                        |
+| Root prod lines                   | ✅     | 1401 (was 1908, −27%)                |
+| Module count                      | ✅     | 20 (root + 19 sub-modules)           |
+| Working tree                      | ✅     | Clean, up to date with origin        |
 
 ---
 
