@@ -159,3 +159,27 @@ var errTestFailure = &testError{"test failure"}
 type testError struct{ msg string }
 
 func (e *testError) Error() string { return e.msg }
+
+func TestActivity_Copy_NilMetadata(t *testing.T) {
+	t.Parallel()
+
+	orig := NewActivity("a1", "Build")
+	// NewActivity leaves Metadata nil — this exercises Copy's nil branch.
+	if orig.Metadata != nil {
+		t.Fatalf("precondition: NewActivity Metadata should be nil, got %v", orig.Metadata)
+	}
+
+	cpy := orig.Copy()
+	if cpy == orig {
+		t.Fatal("Copy returned the same pointer, not a copy")
+	}
+	if cpy.Metadata != nil {
+		t.Errorf("Copy Metadata = %v, want nil (nil branch should preserve nil)", cpy.Metadata)
+	}
+
+	// Mutating the copy must not affect the original.
+	cpy.Status = ActivityStatusFailed
+	if orig.Status == ActivityStatusFailed {
+		t.Error("mutating copy.Status affected the original Activity")
+	}
+}

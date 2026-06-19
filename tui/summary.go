@@ -56,7 +56,7 @@ func buildNOMSummary(counts nom.ActivityCounts, elapsed time.Duration) string {
 		summary += " | "
 	}
 
-	summary += fmt.Sprintf("%s%s", nom.SymbolTiming, formatElapsedTime(elapsed))
+	summary += string(nom.SymbolTiming) + formatElapsedTime(elapsed)
 
 	return summary
 }

@@ -43,33 +43,6 @@ func TestFormatDuration(t *testing.T) {
 	}
 }
 
-func TestOperationSymbol(t *testing.T) {
-	t.Parallel()
-
-	tests := []struct {
-		name    string
-		opType  string
-		want    Symbol
-		wantLen int
-	}{
-		{"download", OperationTypeDownload, SymbolDownload, 1},
-		{"upload", OperationTypeUpload, SymbolUpload, 1},
-		{"unknown", "unknown", "", 0},
-		{"empty", "", "", 0},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-
-			got := OperationSymbol(tt.opType)
-			if got != tt.want {
-				t.Errorf("OperationSymbol(%q) = %q, want %q", tt.opType, got, tt.want)
-			}
-		})
-	}
-}
-
 func TestShouldDisplayTiming(t *testing.T) {
 	t.Parallel()
 

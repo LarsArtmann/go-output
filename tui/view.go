@@ -209,7 +209,7 @@ func (m *ProgressModel) renderProgressBar() string {
 		width = m.width - widthSubtraction
 	}
 
-	filled := int((m.currentProgress / 100.0) * float64(width))
+	filled := int((m.currentProgress / percentScale) * float64(width))
 	bar := strings.Repeat("█", filled) + strings.Repeat("░", width-filled)
 	progressStyle := lipgloss.NewStyle().
 		Foreground(colors.info)

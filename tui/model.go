@@ -12,6 +12,11 @@ import (
 
 const chromeLinesAboveTree = 5
 
+// percentScale is the maximum progress value; progress is reported on a 0–100 scale,
+// so 100.0 means fully complete. Used both to normalize the progress bar fill and
+// to detect workflow completion.
+const percentScale = 100.0
+
 // ============================================================================
 // BUBBLE TEA MODEL IMPLEMENTATION
 // ============================================================================
@@ -163,7 +168,7 @@ func (m *ProgressModel) handleProgressUpdate(msg progressUpdateMsg) (tea.Model, 
 	switch msg.Type {
 	case progressUpdate:
 		m.currentProgress = msg.Progress
-		if msg.Progress >= 100.0 && m.workflowState.canTransitionTo(workflowStateCompleted) {
+		if msg.Progress >= percentScale && m.workflowState.canTransitionTo(workflowStateCompleted) {
 			m.workflowState = workflowStateCompleted
 		}
 	case messageUpdate:

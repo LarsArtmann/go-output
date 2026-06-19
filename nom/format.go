@@ -6,26 +6,6 @@ import (
 )
 
 // ============================================================================
-// OPERATION TYPE SYMBOLS
-// ============================================================================
-// OperationSymbol returns the symbol for an operation type.
-func OperationSymbol(operationType string) Symbol {
-	switch operationType {
-	case OperationTypeDownload:
-		return SymbolDownload
-	case OperationTypeUpload:
-		return SymbolUpload
-	default:
-		return ""
-	}
-}
-
-const (
-	OperationTypeDownload = "download"
-	OperationTypeUpload   = "upload"
-)
-
-// ============================================================================
 // TIMING FORMATTING HELPERS
 // ============================================================================
 // TimingFormat is the format string for displaying timing (NOM-style).

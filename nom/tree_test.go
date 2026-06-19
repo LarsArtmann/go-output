@@ -312,3 +312,30 @@ func TestDependencyTree_VisibleNodes(t *testing.T) {
 		}
 	})
 }
+
+func TestActivityNode_removeChild(t *testing.T) {
+	t.Parallel()
+
+	parent := newActivityNode(ActivityID("parent"), "Parent")
+	childA := newActivityNode(ActivityID("a"), "A")
+	childB := newActivityNode(ActivityID("b"), "B")
+	parent.Children = []*ActivityNode{childA, childB}
+
+	parent.removeChild(ActivityID("a"))
+
+	if parent.hasChild(ActivityID("a")) {
+		t.Error("child 'a' should be removed")
+	}
+	if !parent.hasChild(ActivityID("b")) {
+		t.Error("child 'b' should still be present")
+	}
+	if len(parent.Children) != 1 {
+		t.Errorf("len(Children) = %d, want 1", len(parent.Children))
+	}
+
+	// Removing a non-existent child must be a safe no-op.
+	parent.removeChild(ActivityID("missing"))
+	if len(parent.Children) != 1 {
+		t.Errorf("removing missing child changed Children: len = %d, want 1", len(parent.Children))
+	}
+}

@@ -29,15 +29,3 @@ func TestSymbolConstants(t *testing.T) {
 		})
 	}
 }
-
-func TestOperationTypeConstants(t *testing.T) {
-	t.Parallel()
-
-	if OperationTypeDownload != "download" {
-		t.Errorf("OperationTypeDownload = %q, want %q", OperationTypeDownload, "download")
-	}
-
-	if OperationTypeUpload != "upload" {
-		t.Errorf("OperationTypeUpload = %q, want %q", OperationTypeUpload, "upload")
-	}
-}

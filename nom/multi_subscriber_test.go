@@ -90,3 +90,26 @@ type multiTestEvent struct {
 }
 
 func (e *multiTestEvent) GetEventType() string { return e.eventType }
+
+func TestMultiSubscriber_Subscribers(t *testing.T) {
+	t.Parallel()
+
+	sink1 := &countingSubscriber{}
+	sink2 := &countingSubscriber{}
+
+	multi := NewMultiSubscriber(sink1, sink2)
+
+	subs := multi.Subscribers()
+	if len(subs) != 2 {
+		t.Fatalf("len(Subscribers()) = %d, want 2", len(subs))
+	}
+
+	// The returned slice is a snapshot copy: mutating it must not affect the
+	// underlying MultiSubscriber.
+	subs[0] = nil
+	subs = append(subs, nil)
+
+	if got := len(multi.Subscribers()); got != 2 {
+		t.Errorf("MultiSubscriber mutated via snapshot: len = %d, want 2", got)
+	}
+}

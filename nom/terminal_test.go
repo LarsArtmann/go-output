@@ -22,6 +22,9 @@ func TestVisibleWidth(t *testing.T) {
 		{"\x1b[31mhello\x1b[0m", 5},
 		{"⏵ run", 5},
 		{"…", 1},
+		{"中文", 4},   // CJK characters are double-width (2 each)
+		{"中a", 3},   // mixed CJK + ASCII
+		{"🎉", 2},   // emoji is double-width
 	}
 
 	for _, tc := range cases {
@@ -47,6 +50,8 @@ func TestVisibleLineCount(t *testing.T) {
 		{"hello", 80, 1},
 		{"hello world", 5, 3},
 		{"\x1b[31mhello\x1b[0m", 3, 2},
+		{"中文", 2, 2}, // width-4 CJK over termWidth 2 -> 2 lines
+		{"中文", 4, 1}, // width-4 CJK fits exactly in termWidth 4 -> 1 line
 	}
 
 	for _, tc := range cases {
@@ -110,6 +115,32 @@ func TestGetTerminalWidth_Stderr(t *testing.T) {
 	got := GetTerminalWidth(os.Stderr)
 	if got <= 0 {
 		t.Errorf("GetTerminalWidth(os.Stderr) = %d, want > 0", got)
+	}
+}
+
+func TestStripANSI(t *testing.T) {
+	t.Parallel()
+
+	cases := []struct {
+		name  string
+		input string
+		want  string
+	}{
+		{"plain", "hello", "hello"},
+		{"empty", "", ""},
+		{"color", "\x1b[31mhello\x1b[0m", "hello"},
+		{"cursor_reset", "\x1b[2K\x1b[1;1Hline", "line"},
+		{"nested", "\x1b[1m\x1b[31mbold red\x1b[0m", "bold red"},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			if got := StripANSI(tc.input); got != tc.want {
+				t.Errorf("StripANSI(%q) = %q, want %q", tc.input, got, tc.want)
+			}
+		})
 	}
 }
 
