@@ -189,16 +189,39 @@ func (tc *TimingCache) GetFilePath() string {
 	return tc.filePath
 }
 
-// EnsureLoaded loads the cache if not already loaded.
+// EnsureLoaded loads the cache if not already loaded. File I/O happens outside
+// the lock so concurrent GetMedian/GetAll calls are not blocked during disk reads.
 func (tc *TimingCache) EnsureLoaded() error {
+	tc.mu.RLock()
+
+	if tc.loaded {
+		tc.mu.RUnlock()
+		return nil
+	}
+
+	filePath := tc.filePath
+	tc.mu.RUnlock()
+
+	// Read and parse the file without holding any lock.
+	newCache, err := readCacheFile(filePath)
+	if err != nil {
+		return err
+	}
+
+	// Publish under the write lock. Another goroutine may have loaded
+	// concurrently — take its result if so (last-writer-wins on the file,
+	// but both read the same file so it doesn't matter).
 	tc.mu.Lock()
 	defer tc.mu.Unlock()
 
 	if tc.loaded {
-		return nil
+		return nil // another goroutine already loaded
 	}
 
-	return tc.loadLocked()
+	tc.cache = newCache
+	tc.loaded = true
+
+	return nil
 }
 
 func (tc *TimingCache) waitPendingSaves() {

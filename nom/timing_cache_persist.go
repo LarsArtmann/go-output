@@ -16,19 +16,31 @@ func (tc *TimingCache) Load() error {
 	tc.mu.Lock()
 	defer tc.mu.Unlock()
 
-	return tc.loadLocked()
-}
-
-// loadLocked loads the cache from disk (caller must hold tc.mu).
-func (tc *TimingCache) loadLocked() error {
-	if _, err := os.Stat(tc.filePath); os.IsNotExist(err) {
-		tc.loaded = true
+	if tc.loaded {
 		return nil
 	}
 
-	file, err := os.Open(tc.filePath)
+	newCache, err := readCacheFile(tc.filePath)
 	if err != nil {
-		return fmt.Errorf("failed to open cache file: %w", err)
+		return err
+	}
+
+	tc.cache = newCache
+	tc.loaded = true
+
+	return nil
+}
+
+// readCacheFile reads and parses the cache file without holding any lock.
+// Returns an empty (non-nil) map if the file doesn't exist.
+func readCacheFile(filePath string) (map[string][]time.Duration, error) {
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		return make(map[string][]time.Duration), nil
+	}
+
+	file, err := os.Open(filePath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to open cache file: %w", err)
 	}
 
 	reader := csv.NewReader(file)
@@ -37,10 +49,10 @@ func (tc *TimingCache) loadLocked() error {
 	if err != nil {
 		closeErr := file.Close()
 		if closeErr != nil {
-			return fmt.Errorf("failed to read cache file: %w, close failed: %w", err, closeErr)
+			return nil, fmt.Errorf("failed to read cache file: %w, close failed: %w", err, closeErr)
 		}
 
-		return fmt.Errorf("failed to read cache file: %w", err)
+		return nil, fmt.Errorf("failed to read cache file: %w", err)
 	}
 
 	newCache := make(map[string][]time.Duration)
@@ -52,14 +64,12 @@ func (tc *TimingCache) loadLocked() error {
 
 		activityName := record[0]
 
-		var duration time.Duration
-
 		nanos, err := strconv.ParseInt(record[1], 10, 64)
 		if err != nil {
 			continue
 		}
 
-		duration = time.Duration(nanos)
+		duration := time.Duration(nanos)
 
 		history := newCache[activityName]
 		// Cap at maxCachedEntries during load to prevent unbounded growth from hand-edited files
@@ -67,13 +77,10 @@ func (tc *TimingCache) loadLocked() error {
 	}
 
 	if err := file.Close(); err != nil {
-		return fmt.Errorf("failed to close cache file %q: %w", tc.filePath, err)
+		return nil, fmt.Errorf("failed to close cache file %q: %w", filePath, err)
 	}
 
-	tc.cache = newCache
-	tc.loaded = true
-
-	return nil
+	return newCache, nil
 }
 
 // snapshotData creates a deep copy of the cache map under RLock, then releases the lock.
