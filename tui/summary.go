@@ -15,9 +15,10 @@ import (
 	"github.com/larsartmann/go-output/nom"
 )
 
-// formatElapsedTime formats elapsed time for display.
+// formatElapsedTime formats elapsed time for display using nom.FormatDuration
+// to ensure consistent duration formatting (ms/s/m/h) across nom and tui.
 func formatElapsedTime(elapsed time.Duration) string {
-	return fmt.Sprintf("%.1fs", elapsed.Seconds())
+	return nom.FormatDuration(elapsed)
 }
 
 // createSummaryStyle creates the base style for summary bars.
@@ -41,26 +42,11 @@ func buildUniversalSummary(
 	return summary
 }
 
-// buildActivityCountsSummary builds a summary string with activity counts using NOM symbols.
+// buildActivityCountsSummary builds a summary string with activity counts using
+// NOM symbols. Delegates to nom.ActivityCounts.Summary() so formatting stays
+// consistent with the inline renderer.
 func buildActivityCountsSummary(counts nom.ActivityCounts) string {
-	var parts []string
-	if counts.Running > 0 {
-		parts = append(parts, fmt.Sprintf("%s%d", nom.SymbolRunning, counts.Running))
-	}
-
-	if counts.Completed > 0 {
-		parts = append(parts, fmt.Sprintf("%s%d", nom.SymbolCompleted, counts.Completed))
-	}
-
-	if counts.Failed > 0 {
-		parts = append(parts, fmt.Sprintf("%s%d", nom.SymbolFailed, counts.Failed))
-	}
-
-	if counts.Pending > 0 {
-		parts = append(parts, fmt.Sprintf("%s%d", nom.SymbolPaused, counts.Pending))
-	}
-
-	return strings.Join(parts, " ")
+	return counts.Summary()
 }
 
 // buildNOMSummary builds a NOM-style summary string.

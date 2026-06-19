@@ -1,6 +1,9 @@
 package nom
 
 import (
+	"fmt"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -15,6 +18,59 @@ type ActivityCounts struct {
 // Total returns the sum of all activity counts.
 func (c ActivityCounts) Total() int {
 	return c.Running + c.Completed + c.Failed + c.Pending
+}
+
+// CompletionPercent returns the percentage of activities that have reached a
+// terminal state (completed or failed). Returns 0 when there are no activities.
+func (c ActivityCounts) CompletionPercent() int {
+	total := c.Total()
+	if total == 0 {
+		return 0
+	}
+
+	return (c.Completed + c.Failed) * 100 / total
+}
+
+// Summary renders the counts as a NOM-style status string using typed symbols,
+// e.g. "⏵1 ✔2 ⚠3 ⏸4". Empty categories are omitted. Returns "" when all counts
+// are zero. This is the single source of truth for count formatting — both
+// InlineRenderer.renderSummary and tui.buildActivityCountsSummary delegate here.
+func (c ActivityCounts) Summary() string {
+	var parts []string
+
+	if c.Running > 0 {
+		parts = append(parts, string(SymbolRunning)+strconv.Itoa(c.Running))
+	}
+
+	if c.Completed > 0 {
+		parts = append(parts, string(SymbolCompleted)+strconv.Itoa(c.Completed))
+	}
+
+	if c.Failed > 0 {
+		parts = append(parts, string(SymbolFailed)+strconv.Itoa(c.Failed))
+	}
+
+	if c.Pending > 0 {
+		parts = append(parts, string(SymbolPaused)+strconv.Itoa(c.Pending))
+	}
+
+	return strings.Join(parts, " ")
+}
+
+// SummaryWithTotal renders the counts followed by the total symbol and
+// completion percentage, e.g. "⏵1 ✔2 ∑5 (40%)". This is the format used by
+// the inline renderer's summary box.
+func (c ActivityCounts) SummaryWithTotal() string {
+	summary := c.Summary()
+
+	total := c.Total()
+	summary += fmt.Sprintf(" %s%d", SymbolTotal, total)
+
+	if total > 0 {
+		summary += fmt.Sprintf(" (%d%%)", c.CompletionPercent())
+	}
+
+	return summary
 }
 
 // GetActivityCounts returns counts of activities by status.

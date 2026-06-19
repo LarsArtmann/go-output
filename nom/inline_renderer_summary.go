@@ -100,32 +100,19 @@ func (r *InlineRenderer) effectiveMaxWidth() int {
 func (r *InlineRenderer) renderSummary() string {
 	counts := r.subscriber.GetActivityCounts()
 
-	var parts []string
-
-	if counts.Running > 0 {
-		parts = append(parts, fmt.Sprintf("%s%d", SymbolRunning, counts.Running))
-	}
-
-	if counts.Completed > 0 {
-		parts = append(parts, fmt.Sprintf("%s%d", SymbolCompleted, counts.Completed))
-	}
-
-	if counts.Failed > 0 {
-		parts = append(parts, fmt.Sprintf("%s%d", SymbolFailed, counts.Failed))
-	}
-
-	if counts.Pending > 0 {
-		parts = append(parts, fmt.Sprintf("%s%d", SymbolPaused, counts.Pending))
-	}
-
-	total := counts.Total()
-
 	// Snapshot startTime once under the lock. The previous code read
 	// r.startTime.IsZero() unlocked and then re-read r.startTime under RLock —
 	// a TOCTOU data race against SetStartTime (which takes tickMu.Lock).
 	r.tickMu.RLock()
 	startTime := r.startTime
 	r.tickMu.RUnlock()
+
+	var parts []string
+
+	countsStr := counts.Summary()
+	if countsStr != "" {
+		parts = append(parts, countsStr)
+	}
 
 	if !startTime.IsZero() {
 		elapsed := time.Since(startTime)
@@ -136,11 +123,10 @@ func (r *InlineRenderer) renderSummary() string {
 		return ""
 	}
 
-	summary := strings.Join(parts, " ") + fmt.Sprintf(" %s%d", SymbolTotal, total)
+	summary := strings.Join(parts, " ") + fmt.Sprintf(" %s%d", SymbolTotal, counts.Total())
 
-	if total > 0 {
-		pct := (counts.Completed + counts.Failed) * 100 / total
-		summary += fmt.Sprintf(" (%d%%)", pct)
+	if counts.Total() > 0 {
+		summary += fmt.Sprintf(" (%d%%)", counts.CompletionPercent())
 	}
 
 	visualWidth := ansi.StringWidth(summary)
