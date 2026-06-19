@@ -263,6 +263,48 @@ func TestInlineRenderer_RenderRacingActivityMutation(t *testing.T) {
 
 var cursorUpRe = regexp.MustCompile(`\x1b\[(\d+)A`)
 
+// TestInlineRenderer_Finish_RacingSetters drives Finish() while another
+// goroutine flips the config setters (SetStartTime/SetAppName/SetNoColor/
+// SetHideCursor). All setters take tickMu.Lock; Finish read startTime/appName/
+// noColor/hideCursor unlocked, which -race flagged. The snapshot-under-RLock
+// at the top of Finish closes it.
+func TestInlineRenderer_Finish_RacingSetters(t *testing.T) {
+	t.Parallel()
+
+	for range 20 {
+		sub := newTestSubscriber(t)
+
+		var buf safeBuffer
+
+		renderer := NewInlineRenderer(sub, &buf, 10)
+
+		ctx := context.Background()
+		_ = sendWorkflowStarted(sub, ctx, WorkflowID("wf-fin"), "")
+		sendActivityStarted(t, sub, ctx, ActivityID("s"), ActivityName("S"))
+		renderer.SetStartTime(time.Now())
+		renderer.Draw() // establish a frame so Finish has prevLines to clear
+
+		stop := make(chan struct{})
+
+		go func() {
+			for {
+				select {
+				case <-stop:
+					return
+				default:
+					renderer.SetStartTime(time.Now())
+					renderer.SetAppName("X")
+					renderer.SetNoColor(true)
+					renderer.SetHideCursor(false)
+				}
+			}
+		}()
+
+		renderer.Finish(errors.New("done"))
+		close(stop)
+	}
+}
+
 // cursorUpLines returns N from the first "\033[NA" escape in output, or 0.
 func cursorUpLines(output string) int {
 	m := cursorUpRe.FindStringSubmatch(output)

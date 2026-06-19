@@ -20,6 +20,15 @@ func (r *InlineRenderer) Finish(workflowErr error) {
 	r.renderMu.Lock()
 	defer r.renderMu.Unlock()
 
+	// Snapshot config under tickMu.RLock so SetStartTime/SetAppName/SetNoColor/
+	// SetHideCursor can't race the reads below (they all take tickMu.Lock).
+	r.tickMu.RLock()
+	startTime := r.startTime
+	appName := r.appName
+	noColor := r.noColor
+	hideCursor := r.hideCursor
+	r.tickMu.RUnlock()
+
 	if r.prevLines > 0 {
 		r.write(fmt.Sprintf(ansiCursorUpN, r.prevLines) + "\r")
 
@@ -33,7 +42,7 @@ func (r *InlineRenderer) Finish(workflowErr error) {
 		r.prevLines = 0
 	}
 
-	if r.hideCursor {
+	if hideCursor {
 		r.write(ansiShowCursor)
 	}
 
@@ -42,10 +51,10 @@ func (r *InlineRenderer) Finish(workflowErr error) {
 		r.write(final + "\n")
 	}
 
-	elapsed := time.Since(r.startTime)
+	elapsed := time.Since(startTime)
 
 	elapsedStr := ""
-	if !r.startTime.IsZero() {
+	if !startTime.IsZero() {
 		elapsedStr = " after " + FormatDuration(elapsed)
 	}
 
@@ -57,8 +66,8 @@ func (r *InlineRenderer) Finish(workflowErr error) {
 		statusColor = Colors.Failed
 	}
 
-	line := fmt.Sprintf("%s %s", r.appName, status)
-	if r.noColor {
+	line := fmt.Sprintf("%s %s", appName, status)
+	if noColor {
 		r.write(line + "\n")
 	} else {
 		r.write(lipgloss.NewStyle().Foreground(statusColor).Render(line) + "\n")
