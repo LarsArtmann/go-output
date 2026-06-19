@@ -1,12 +1,30 @@
-package output
+// Package markdown renders TableData as Markdown tables.
+//
+// It is an optional format renderer: import it to activate Markdown output
+// through output.RenderTableData, or use NewMarkdownTable directly.
+//
+//	import "github.com/larsartmann/go-output/markdown"
+//
+//	_ = markdown.NewMarkdownTable()
+package markdown
 
 import (
 	"fmt"
 	"strings"
+
+	"github.com/larsartmann/go-output"
+)
+
+// Standard ANSI escape sequences for terminal styling. Local to this module
+// so markdown stays dependency-free beyond the core output types.
+const (
+	ansiReset = "\033[0m"
+	ansiBold  = "\033[1m"
+	ansiDim   = "\033[2m"
 )
 
 // Compile-time interface check.
-var _ Renderer = (*MarkdownTable)(nil)
+var _ output.Renderer = (*MarkdownTable)(nil)
 
 // Alignment represents text alignment within a table cell.
 type Alignment int
@@ -31,7 +49,7 @@ type MarkdownTable struct {
 	rows      [][]string
 	footer    []string
 	align     []Alignment
-	colorMode ColorMode
+	colorMode output.ColorMode
 }
 
 // NewMarkdownTable creates a new MarkdownTable.
@@ -40,12 +58,12 @@ func NewMarkdownTable() *MarkdownTable {
 		headers:   nil,
 		rows:      nil,
 		align:     nil,
-		colorMode: ColorModeAuto, //nolint:exhaustruct // align set via SetHeaders
+		colorMode: output.ColorModeAuto, //nolint:exhaustruct // align set via SetHeaders
 	}
 }
 
 // NewMarkdownTableFromData creates a MarkdownTable populated from TableData.
-func NewMarkdownTableFromData(data *TableData) *MarkdownTable {
+func NewMarkdownTableFromData(data *output.TableData) *MarkdownTable {
 	m := NewMarkdownTable()
 	m.SetHeaders(data.Headers)
 
@@ -61,7 +79,7 @@ func NewMarkdownTableFromData(data *TableData) *MarkdownTable {
 }
 
 // SetColorMode sets the color mode for terminal output.
-func (m *MarkdownTable) SetColorMode(mode ColorMode) *MarkdownTable {
+func (m *MarkdownTable) SetColorMode(mode output.ColorMode) *MarkdownTable {
 	m.colorMode = mode
 	return m
 }
@@ -284,6 +302,6 @@ func (a *markdownTableAdapter) AddRow(row []string)         { a.inner.AddRow(row
 
 // AsTableRenderer returns a TableRenderer that delegates to this MarkdownTable.
 // This adapts the fluent API (returning *MarkdownTable) to the TableRenderer interface.
-func (m *MarkdownTable) AsTableRenderer() TableRenderer {
+func (m *MarkdownTable) AsTableRenderer() output.TableRenderer {
 	return &markdownTableAdapter{inner: m}
 }

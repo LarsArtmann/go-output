@@ -1,8 +1,10 @@
-package output
+package markdown
 
 import (
 	"strings"
 	"testing"
+
+	"github.com/larsartmann/go-output"
 )
 
 func TestMarkdownTable(t *testing.T) {
@@ -166,7 +168,7 @@ func TestNewMarkdownTable(t *testing.T) {
 func TestNewMarkdownTableFromData(t *testing.T) {
 	t.Parallel()
 
-	data := NewTableData([]string{"Name", "Status"})
+	data := output.NewTableData([]string{"Name", "Status"})
 	data.AddRow([]string{"Project A", "Active"})
 	data.AddRow([]string{"Project B", "Inactive"})
 
@@ -186,7 +188,7 @@ func TestNewMarkdownTableFromData(t *testing.T) {
 func TestNewMarkdownTableFromDataEmpty(t *testing.T) {
 	t.Parallel()
 
-	data := NewTableData(nil)
+	data := output.NewTableData(nil)
 	m := NewMarkdownTableFromData(data)
 
 	got, err := m.Render()
@@ -203,7 +205,7 @@ func TestMarkdownColorModeNever(t *testing.T) {
 	t.Parallel()
 
 	m := newMarkdownTableWithSingleRow()
-	m.SetColorMode(ColorModeNever)
+	m.SetColorMode(output.ColorModeNever)
 
 	got, err := m.Render()
 	if err != nil {
@@ -211,11 +213,11 @@ func TestMarkdownColorModeNever(t *testing.T) {
 	}
 
 	if strings.Contains(got, ansiBold) {
-		t.Error("ColorModeNever should not produce ANSI escape codes")
+		t.Error("output.ColorModeNever should not produce ANSI escape codes")
 	}
 
 	if strings.Contains(got, ansiDim) {
-		t.Error("ColorModeNever should not produce dim ANSI codes")
+		t.Error("output.ColorModeNever should not produce dim ANSI codes")
 	}
 
 	assertContains(t, got, "Name", "should contain header text without ANSI")
@@ -226,16 +228,16 @@ func TestMarkdownColorModeAlways(t *testing.T) {
 	t.Parallel()
 
 	m := newMarkdownTableWithSingleRow()
-	m.SetColorMode(ColorModeAlways)
+	m.SetColorMode(output.ColorModeAlways)
 
 	got, err := m.Render()
 	if err != nil {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	assertContains(t, got, ansiBold, "ColorModeAlways should bold headers")
-	assertContains(t, got, ansiReset, "ColorModeAlways should reset after bold")
-	assertContains(t, got, ansiDim, "ColorModeAlways should dim separators")
+	assertContains(t, got, ansiBold, "output.ColorModeAlways should bold headers")
+	assertContains(t, got, ansiReset, "output.ColorModeAlways should reset after bold")
+	assertContains(t, got, ansiDim, "output.ColorModeAlways should dim separators")
 	assertContains(t, got, "Name", "should contain header text")
 	assertContains(t, got, "Alice", "should contain data row")
 }

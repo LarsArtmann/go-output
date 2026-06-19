@@ -11,6 +11,7 @@ import (
 	"github.com/larsartmann/go-output/delimited"
 	"github.com/larsartmann/go-output/examples/shared"
 	"github.com/larsartmann/go-output/graph"
+	"github.com/larsartmann/go-output/markdown"
 	"github.com/larsartmann/go-output/markup"
 	"github.com/larsartmann/go-output/plantuml"
 	"github.com/larsartmann/go-output/serialization"
@@ -52,7 +53,7 @@ func renderJSON(projects []Project) {
 }
 
 func renderMarkdown(projects []Project) {
-	md := output.NewMarkdownTable().SetColorMode(colorMode)
+	md := markdown.NewMarkdownTable().SetColorMode(colorMode)
 	md.SetHeaders([]string{"Name", "Health", "Complexity"})
 
 	for _, p := range projects {

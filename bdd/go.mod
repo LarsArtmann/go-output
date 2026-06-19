@@ -21,6 +21,7 @@ require (
 	github.com/larsartmann/go-branded-id v0.3.1 // indirect
 	github.com/larsartmann/go-output/enum v0.12.0 // indirect
 	github.com/larsartmann/go-output/envdetect v0.12.0 // indirect
+	github.com/larsartmann/go-output/markdown v0.12.0
 	github.com/pelletier/go-toml/v2 v2.4.0 // indirect
 	github.com/segmentio/asm v1.2.1 // indirect
 	go.uber.org/automaxprocs v1.6.0 // indirect
@@ -46,3 +47,5 @@ replace github.com/larsartmann/go-output/enum => ../enum
 replace github.com/larsartmann/go-output/envdetect => ../envdetect
 
 replace github.com/larsartmann/go-output/escape => ../escape
+
+replace github.com/larsartmann/go-output/markdown => ../markdown

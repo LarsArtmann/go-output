@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/larsartmann/go-output"
+	"github.com/larsartmann/go-output/markdown"
 	"github.com/larsartmann/go-output/serialization"
 )
 
@@ -33,7 +34,7 @@ func assertTableData(t *testing.T, data *output.TableData, expectedCols, expecte
 
 // renderMarkdownTable renders a markdown table with the given headers and rows.
 func renderMarkdownTable(headers []string, rows [][]string) string {
-	md := output.NewMarkdownTable()
+	md := markdown.NewMarkdownTable()
 	md.SetHeaders(headers)
 
 	for _, row := range rows {
@@ -47,7 +48,7 @@ func renderMarkdownTable(headers []string, rows [][]string) string {
 
 // renderSampleMarkdownTable returns a rendered markdown table with sample project data.
 func renderSampleMarkdownTable() string {
-	md := output.NewMarkdownTable()
+	md := markdown.NewMarkdownTable()
 	md.SetHeaders([]string{headerName, headerHealth})
 	md.AddRow([]string{sampleAlpha, sampleHealth})
 

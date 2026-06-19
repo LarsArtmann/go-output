@@ -51,6 +51,7 @@
             "examples"
             "graph"
             "integration"
+            "markdown"
             "markup"
             "nom"
             "plantuml"

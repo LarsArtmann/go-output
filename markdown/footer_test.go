@@ -1,8 +1,10 @@
-package output
+package markdown
 
 import (
 	"strings"
 	"testing"
+
+	"github.com/larsartmann/go-output"
 )
 
 func testMarkdownFooter(t *testing.T) {
@@ -58,7 +60,7 @@ func testMarkdownFooter(t *testing.T) {
 	t.Run("footer from TableData", func(t *testing.T) {
 		t.Parallel()
 
-		data := NewTableData([]string{"Item", "Qty"})
+		data := output.NewTableData([]string{"Item", "Qty"})
 		data.AddRow([]string{"Apple", "5"})
 		data.Footer = []string{"Sum", "5"}
 

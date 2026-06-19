@@ -44,7 +44,10 @@ func TestRegisteredTableDataFormats(t *testing.T) {
 
 	formats := RegisteredTableDataFormats()
 
-	// Root init() registers Markdown and Tree as TableData renderers.
+	// Root init() registers the Tree TableData renderer. Other formats
+	// (Markdown, CSV, JSON, ...) self-register from their sub-modules when
+	// imported — e.g. the markdown import in userjourney_test activates
+	// FormatMarkdown in this test binary.
 	for _, exp := range []Format{FormatMarkdown, FormatTree} {
 		if !slices.Contains(formats, exp) {
 			t.Errorf("expected format %q to be registered, but it was not. Registered: %v", exp, formats)

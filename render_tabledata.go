@@ -34,9 +34,9 @@ func getTableDataRenderer(format Format) (TableDataRenderer, bool) {
 	return tableDataRegistry.get(format)
 }
 
-//nolint:gochecknoinits // Registers Markdown and Tree TableData renderers for registry-based dispatch.
+//nolint:gochecknoinits // Registers the Tree TableData renderer for registry-based dispatch.
+// Markdown registers itself from the markdown/ sub-module's init().
 func init() {
-	RegisterTableDataRenderer(FormatMarkdown, renderMarkdownTableData)
 	RegisterTableDataRenderer(FormatTree, renderTreeTableData)
 }
 
@@ -72,35 +72,6 @@ type UnsupportedFormatError struct {
 
 func (e *UnsupportedFormatError) Error() string {
 	return fmt.Sprintf("render table data: format %q not supported", e.Format)
-}
-
-func renderMarkdownTableData(w io.Writer, data *TableData, opts RenderOptions) error {
-	if opts.Title != "" {
-		_, err := fmt.Fprintf(w, "# %s\n\n", opts.Title)
-		if err != nil {
-			return fmt.Errorf("write markdown title: %w", err)
-		}
-
-		_, err = fmt.Fprintf(w, "%d rows\n\n", data.RowCount())
-		if err != nil {
-			return fmt.Errorf("write markdown row count: %w", err)
-		}
-	}
-
-	mdTable := NewMarkdownTableFromData(data)
-	mdTable.SetColorMode(opts.ColorMode)
-
-	out, err := mdTable.Render()
-	if err != nil {
-		return fmt.Errorf("render markdown: %w", err)
-	}
-
-	_, err = fmt.Fprintln(w, out)
-	if err != nil {
-		return fmt.Errorf("write markdown output: %w", err)
-	}
-
-	return nil
 }
 
 func renderTreeTableData(w io.Writer, data *TableData, opts RenderOptions) error {

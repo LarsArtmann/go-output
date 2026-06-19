@@ -21,4 +21,9 @@ replace (
 	github.com/larsartmann/go-output/testhelpers/graphtest => ./testhelpers/graphtest
 )
 
-require golang.org/x/sys v0.46.0 // indirect
+require (
+	github.com/larsartmann/go-output/markdown v0.12.0
+	golang.org/x/sys v0.46.0 // indirect
+)
+
+replace github.com/larsartmann/go-output/markdown => ./markdown

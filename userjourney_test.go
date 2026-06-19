@@ -8,6 +8,7 @@ import (
 
 	"github.com/larsartmann/go-output"
 	"github.com/larsartmann/go-output/delimited"
+	"github.com/larsartmann/go-output/markdown"
 	"github.com/larsartmann/go-output/testhelpers"
 )
 
@@ -117,7 +118,7 @@ func TestRenderDataAsMarkdown(t *testing.T) {
 	t.Parallel()
 
 	// When: I render it as Markdown
-	md := output.NewMarkdownTable()
+	md := markdown.NewMarkdownTable()
 	md.SetHeaders([]string{"Name", "Health"})
 	md.AddRow([]string{"Alpha", "90%"})
 
@@ -148,7 +149,7 @@ func TestHandleEdgeCases(t *testing.T) {
 		t.Parallel()
 
 		// Given: User creates table without headers
-		md := output.NewMarkdownTable()
+		md := markdown.NewMarkdownTable()
 
 		// When: I render it
 		result, err := md.Render()

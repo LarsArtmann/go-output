@@ -5,5 +5,6 @@ package bdd_test
 // real, format-specific registrations rather than root's defaults.
 import (
 	_ "github.com/larsartmann/go-output/delimited"
+	_ "github.com/larsartmann/go-output/markdown"
 	_ "github.com/larsartmann/go-output/serialization"
 )

@@ -9,6 +9,7 @@ import (
 	"github.com/larsartmann/go-output"
 	"github.com/larsartmann/go-output/d2"
 	"github.com/larsartmann/go-output/graph"
+	"github.com/larsartmann/go-output/markdown"
 	"github.com/larsartmann/go-output/markup"
 	"github.com/larsartmann/go-output/plantuml"
 	"github.com/larsartmann/go-output/table"
@@ -96,7 +97,7 @@ func TestRoundTripMarkdown(t *testing.T) {
 
 	data := roundTripData()
 
-	md := output.NewMarkdownTableFromData(data)
+	md := markdown.NewMarkdownTableFromData(data)
 
 	out, err := md.Render()
 	if err != nil {
