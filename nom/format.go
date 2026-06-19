@@ -68,25 +68,6 @@ func FormatDuration(duration time.Duration) string {
 	return fmt.Sprintf("%dh%dm", hours, minutes)
 }
 
-// FormatTimingInfo formats timing information for an activity.
-func FormatTimingInfo(state *Activity) string {
-	if state.IsRunning() {
-		elapsed := time.Since(state.StartTime)
-		return fmt.Sprintf("%s%s", SymbolTiming, FormatDuration(elapsed))
-	}
-
-	if state.IsCompleted() && !state.StartTime.IsZero() && !state.EndTime.IsZero() {
-		duration := state.EndTime.Sub(state.StartTime)
-		return fmt.Sprintf("%s%s", SymbolTiming, FormatDuration(duration))
-	}
-
-	if state.EstimatedTime > 0 {
-		return fmt.Sprintf("%s%s", SymbolAverage, FormatDuration(state.EstimatedTime))
-	}
-
-	return ""
-}
-
 // GetActivitySummaryString generates a summary string for multiple activities
 // Format: "⏵3↑2∑5" (3 running, 2 uploading, 5 total).
 func GetActivitySummaryString(running, uploading, downloading, total int) string {
