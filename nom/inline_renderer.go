@@ -172,7 +172,7 @@ func (r *InlineRenderer) Draw() {
 		// Move back to the top of the previous frame and repaint every line.
 		var b strings.Builder
 
-		b.WriteString(fmt.Sprintf(ansiCursorUpN, prevLines))
+		fmt.Fprintf(&b, ansiCursorUpN, prevLines)
 		b.WriteString("\r")
 
 		frameLines := strings.Split(frame, "\n")
@@ -197,7 +197,7 @@ func (r *InlineRenderer) Draw() {
 				b.WriteString(ansiClearLine)
 			}
 
-			b.WriteString(fmt.Sprintf(ansiCursorUpN, extra))
+			fmt.Fprintf(&b, ansiCursorUpN, extra)
 			b.WriteString("\r")
 		}
 

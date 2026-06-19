@@ -40,6 +40,26 @@ func (ns *NOMStyleSubscriber) RenderTree(maxHeight, maxWidth int) (string, bool)
 	return ns.dependencyTree.RenderWithWidth(maxHeight, maxWidth), true
 }
 
+// WithSubscriberRLock runs fn while holding the subscriber's read lock, so the
+// shared *Activity fields (Status/Symbol/Color/timing) cannot be mutated by a
+// concurrent event handler (SetRunning/SetCompleted/SetFailed) during fn.
+//
+// Use this when you already hold a *DependencyTree reference (for example a
+// cached pointer that aliases ns.dependencyTree in production) and need to
+// read its Activity fields race-free. Holding this lock is what makes the read
+// safe — the tree pointer you read inside fn is the caller's choice.
+//
+// fn MUST NOT call back into the subscriber's own RLock-taking methods
+// (GetActivityCounts, RenderTree, UpdateRunningActivityElapsed, ...):
+// sync.RWMutex recursive RLock against a waiting writer deadlocks. Perform any
+// such calls outside fn.
+func (ns *NOMStyleSubscriber) WithSubscriberRLock(fn func()) {
+	ns.mu.RLock()
+	defer ns.mu.RUnlock()
+
+	fn()
+}
+
 // GetTimingCache returns timing cache.
 func (ns *NOMStyleSubscriber) GetTimingCache() *TimingCache {
 	ns.mu.RLock()
