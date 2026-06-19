@@ -6,21 +6,38 @@ import (
 
 // GetDependencyTree returns the dependency tree.
 //
-// IMPORTANT: The returned pointer is SHARED state. The caller is responsible
-// for synchronization when mutating it. The tree itself uses an internal
-// RWMutex, so individual method calls (AddActivity, Render, etc.) are safe.
-// However, sequences of operations that read and then write are not atomic
-// with respect to concurrent subscribers.
+// IMPORTANT: The returned pointer is SHARED state. The tree's internal RWMutex
+// guards the STRUCTURE (nodes/roots/children), but the nodes embed the shared
+// *Activity pointer, whose fields (Status, Symbol, Color, timing) are mutated
+// by event handlers under the subscriber's ns.mu — NOT the tree's lock. Reading
+// those fields via Render/RenderWithWidth WITHOUT holding ns.mu therefore races
+// concurrent SetRunning/SetCompleted/SetFailed calls.
 //
-// Typical use cases:
-//   - Read-only rendering: safe to call Render() at any time.
-//   - Mutation: prefer calling subscriber methods that route through the
-//     subscriber's lock instead of mutating the tree directly.
+// For read-only rendering, prefer RenderTree, which takes ns.mu.RLock for you.
+// Callers that grab the raw tree must hold the subscriber's read lock
+// themselves while walking it.
 func (ns *NOMStyleSubscriber) GetDependencyTree() *DependencyTree {
 	ns.mu.RLock()
 	defer ns.mu.RUnlock()
 
 	return ns.dependencyTree
+}
+
+// RenderTree renders the dependency tree while holding the subscriber's read
+// lock, so the shared Activity fields cannot be mutated mid-render by a
+// concurrent event handler (SetRunning/SetCompleted/SetFailed update Status,
+// Symbol, Color and timing on the same *Activity pointer). Reading those
+// fields unlocked is a data race that produces garbled/sort-inconsistent
+// frames. Returns (rendered, false) when there is no tree yet.
+func (ns *NOMStyleSubscriber) RenderTree(maxHeight, maxWidth int) (string, bool) {
+	ns.mu.RLock()
+	defer ns.mu.RUnlock()
+
+	if ns.dependencyTree == nil {
+		return "", false
+	}
+
+	return ns.dependencyTree.RenderWithWidth(maxHeight, maxWidth), true
 }
 
 // GetTimingCache returns timing cache.

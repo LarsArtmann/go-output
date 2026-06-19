@@ -43,6 +43,7 @@ type InlineRenderer struct {
 	noColor    bool
 
 	tickMu       sync.RWMutex
+	renderMu     sync.Mutex // serializes Draw/Finish terminal writes + prevLines
 	cancelFn     context.CancelFunc
 	tickerDone   chan struct{}
 	refreshChan  chan struct{}
@@ -125,6 +126,9 @@ func (r *InlineRenderer) Draw() {
 		return
 	}
 
+	r.renderMu.Lock()
+	defer r.renderMu.Unlock()
+
 	// Snapshot config under RLock to avoid racing with setters.
 	r.tickMu.RLock()
 	hideCursor := r.hideCursor
@@ -132,17 +136,14 @@ func (r *InlineRenderer) Draw() {
 
 	r.subscriber.UpdateRunningActivityElapsed()
 
-	tree := r.subscriber.GetDependencyTree()
-	if tree == nil {
-		return
-	}
-
 	maxH := r.effectiveMaxHeight()
 	maxW := r.effectiveMaxWidth()
 
-	frame := tree.RenderWithWidth(maxH, maxW)
-
-	if frame == msgNoActivitiesToDisplay {
+	// Render under the subscriber's read lock: the nodes embed the shared
+	// *Activity pointer whose fields event handlers mutate (SetFailed etc.).
+	// Rendering unlocked races those writes and yields garbled frames.
+	frame, hasTree := r.subscriber.RenderTree(maxH, maxW)
+	if !hasTree || frame == msgNoActivitiesToDisplay {
 		return
 	}
 
@@ -159,30 +160,51 @@ func (r *InlineRenderer) Draw() {
 
 	var output string
 
-	if r.prevLines == 0 {
+	prevLines := r.prevLines
+
+	if prevLines == 0 {
 		if hideCursor {
 			output = ansiHideCursor
 		}
+
+		output += frame + "\n"
 	} else {
-		output = fmt.Sprintf(ansiCursorUpN, r.prevLines) + "\r"
+		// Move back to the top of the previous frame and repaint every line.
+		var b strings.Builder
+
+		b.WriteString(fmt.Sprintf(ansiCursorUpN, prevLines))
+		b.WriteString("\r")
 
 		frameLines := strings.Split(frame, "\n")
 
-		var rebuilt strings.Builder
-
 		for i, line := range frameLines {
-			rebuilt.WriteString(ansiClearLine)
-			rebuilt.WriteString(line)
+			b.WriteString(ansiClearLine)
+			b.WriteString(line)
 
 			if i < len(frameLines)-1 {
-				rebuilt.WriteString("\n")
+				b.WriteString("\n")
 			}
 		}
 
-		frame = rebuilt.String()
-	}
+		// When the frame shrank, the previous (taller) frame's tail is still on
+		// screen below the new content. Wipe those leftover lines and park the
+		// cursor just beneath the new frame so the next redraw lines up. Without
+		// this, shrinking trees (e.g. completed children pruned under height
+		// pressure) leave ghost lines behind.
+		if extra := prevLines - physicalLines; extra > 0 {
+			for range extra {
+				b.WriteString("\n")
+				b.WriteString(ansiClearLine)
+			}
 
-	output += frame + "\n"
+			b.WriteString(fmt.Sprintf(ansiCursorUpN, extra))
+			b.WriteString("\r")
+		}
+
+		b.WriteString("\n")
+
+		output = b.String()
+	}
 
 	r.write(ansiSyncBegin + output + ansiSyncEnd)
 
@@ -275,15 +297,27 @@ func (r *InlineRenderer) renderAndNotify() {
 
 // Stop terminates the background refresh goroutine started by Start.
 // It is safe to call Stop even if Start was never called.
+//
+// The cancel + wait happens OUTSIDE tickMu: the refresh loop's Draw() takes
+// tickMu.RLock(), so holding the write lock across <-tickerDone would deadlock
+// whenever Stop races a render already in flight (the loop could never acquire
+// RLock to finish, so tickerDone would never close).
 func (r *InlineRenderer) Stop() {
 	r.tickMu.Lock()
-	defer r.tickMu.Unlock()
+	cancelFn := r.cancelFn
+	done := r.tickerDone
+	r.tickMu.Unlock()
 
-	if r.cancelFn != nil {
-		r.cancelFn()
-		<-r.tickerDone
-		r.cancelFn = nil
-		r.tickerDone = nil
-		r.refreshChan = nil
+	if cancelFn == nil {
+		return
 	}
+
+	cancelFn()
+	<-done
+
+	r.tickMu.Lock()
+	r.cancelFn = nil
+	r.tickerDone = nil
+	r.refreshChan = nil
+	r.tickMu.Unlock()
 }

@@ -17,7 +17,8 @@ import (
 func (r *InlineRenderer) Finish(workflowErr error) {
 	r.Stop()
 
-	tree := r.subscriber.GetDependencyTree()
+	r.renderMu.Lock()
+	defer r.renderMu.Unlock()
 
 	if r.prevLines > 0 {
 		r.write(fmt.Sprintf(ansiCursorUpN, r.prevLines) + "\r")
@@ -36,11 +37,9 @@ func (r *InlineRenderer) Finish(workflowErr error) {
 		r.write(ansiShowCursor)
 	}
 
-	if tree != nil {
-		final := tree.RenderString(0)
-		if final != msgNoActivitiesToDisplay {
-			r.write(final + "\n")
-		}
+	// Render under the subscriber's read lock (same reason as Draw).
+	if final, ok := r.subscriber.RenderTree(0, 0); ok && final != msgNoActivitiesToDisplay {
+		r.write(final + "\n")
 	}
 
 	elapsed := time.Since(r.startTime)
