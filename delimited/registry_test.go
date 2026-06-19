@@ -101,29 +101,3 @@ func TestMarshalDelimitedFromTableData_NoHeaders(t *testing.T) {
 		})
 	}
 }
-
-func TestMarshalTSV_Slice(t *testing.T) {
-	t.Parallel()
-
-	b, err := MarshalTSV([]string{"Alice", "30"})
-	if err != nil {
-		t.Fatalf("MarshalTSV slice: %v", err)
-	}
-
-	if !strings.Contains(string(b), "Alice") {
-		t.Errorf("expected Alice in output, got %q", string(b))
-	}
-}
-
-func TestMarshalTSV_UnsupportedType(t *testing.T) {
-	t.Parallel()
-
-	_, err := MarshalTSV(42)
-	if err == nil {
-		t.Fatal("expected error for unsupported type")
-	}
-
-	if !errors.Is(err, ErrUnsupportedType) {
-		t.Errorf("expected ErrUnsupportedType, got %v", err)
-	}
-}

@@ -27,21 +27,6 @@ func (dt *DependencyTree) GetRootNodes() []*ActivityNode {
 	return dt.roots
 }
 
-// EnsureBuild guarantees the tree is built at least once between AddActivity calls.
-// AddActivity resets loaded so the next GetRootNodes/EnsureBuild will rebuild.
-//
-// Deprecated: EnsureBuild is exported for cross-module test use only. Production
-// code should use GetRootNodes() or VisibleNodes(), which build implicitly.
-func (dt *DependencyTree) EnsureBuild() {
-	dt.mu.RLock()
-	loaded := dt.loaded
-	dt.mu.RUnlock()
-
-	if !loaded {
-		_ = dt.Build() // Best-effort; Build currently never errors.
-	}
-}
-
 func (dt *DependencyTree) snapshotRoots() []*ActivityNode {
 	roots := dt.GetRootNodes()
 	snapshot := make([]*ActivityNode, len(roots))

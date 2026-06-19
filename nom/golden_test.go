@@ -35,7 +35,7 @@ func setStatusWithElapsed(
 
 // TestDependencyTreeRenderGolden_PhaseSteps renders a tree with a phase node
 // and multiple child steps in various states. Uses "phase:" prefix for
-// phase-styled rendering (SymbolPhase/ColorPhase).
+// phase-styled rendering (SymbolPhase/Colors.Phase).
 func TestDependencyTreeRenderGolden_PhaseSteps(t *testing.T) {
 	t.Parallel()
 

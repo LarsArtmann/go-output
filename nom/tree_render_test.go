@@ -8,20 +8,6 @@ import (
 	"github.com/larsartmann/go-output/testhelpers"
 )
 
-func TestDependencyTree_EnsureBuild(t *testing.T) {
-	t.Parallel()
-
-	dt := NewDependencyTree()
-	dt.AddActivity(ActivityID("a"), NewActivity("a", "A"), nil)
-
-	dt.EnsureBuild()
-
-	roots := dt.GetRootNodes()
-	if len(roots) != 1 {
-		t.Errorf("expected 1 root after EnsureBuild, got %d", len(roots))
-	}
-}
-
 func TestDependencyTree_TreePrefix_RootNode(t *testing.T) {
 	t.Parallel()
 

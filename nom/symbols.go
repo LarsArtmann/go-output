@@ -69,12 +69,3 @@ var Colors = SemanticColors{
 	Info:      lipgloss.Color("14"),
 	Phase:     lipgloss.Color("13"),
 }
-
-// Deprecated backward-compatible aliases. Use Colors.X instead.
-var (
-	ColorRunning   = Colors.Running
-	ColorCompleted = Colors.Completed
-	ColorFailed    = Colors.Failed
-	ColorInfo      = Colors.Info
-	ColorPhase     = Colors.Phase
-)

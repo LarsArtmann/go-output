@@ -56,16 +56,16 @@ func TestRenderGraphTableData(t *testing.T) {
 	}
 }
 
-func TestNewGraphNodeIDAndLabel(t *testing.T) {
+func TestBrandedGraphNodeIDAndLabel(t *testing.T) {
 	t.Parallel()
 
-	id := NewGraphNodeID("svc-a")
+	id := output.NewBrandedID[output.GraphNodeIDBrand]("svc-a")
 	if id.Get() != "svc-a" {
-		t.Errorf("NewGraphNodeID Get = %q, want %q", id.Get(), "svc-a")
+		t.Errorf("GraphNodeID Get = %q, want %q", id.Get(), "svc-a")
 	}
 
-	label := NewGraphNodeLabel("Service A")
+	label := output.NewBrandedID[output.GraphNodeLabelBrand]("Service A")
 	if label.Get() != "Service A" {
-		t.Errorf("NewGraphNodeLabel Get = %q, want %q", label.Get(), "Service A")
+		t.Errorf("GraphNodeLabel Get = %q, want %q", label.Get(), "Service A")
 	}
 }

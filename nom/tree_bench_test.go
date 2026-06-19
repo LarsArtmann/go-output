@@ -43,7 +43,7 @@ func buildBenchmarkTree(nodeCount int) *DependencyTree {
 		n.StartTime = now
 	}
 
-	dt.EnsureBuild()
+	_ = dt.Build()
 
 	return dt
 }

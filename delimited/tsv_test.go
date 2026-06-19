@@ -53,34 +53,42 @@ func TestTSVWriterMultipleRows(t *testing.T) {
 	}
 }
 
-func TestMarshalTSV(t *testing.T) {
+func TestTSVWriterRows(t *testing.T) {
 	t.Parallel()
 
-	data := [][]string{
+	rows := [][]string{
 		{"Name", "Value"},
 		{"Alpha", "100"},
 		{"Beta", "200"},
 	}
 
-	result, err := MarshalTSV(data)
-	if err != nil {
-		t.Fatalf("MarshalTSV() error = %v", err)
+	var buf strings.Builder
+
+	w := NewTSVWriter(&buf)
+	if err := w.WriteRows(rows); err != nil {
+		t.Fatalf("WriteRows() error = %v", err)
 	}
 
-	tsv := string(result)
+	w.Flush()
+
+	tsv := buf.String()
 	assertContains(t, tsv, "Alpha", "TSV should contain Alpha")
 	assertContains(t, tsv, "\t", "TSV should use tabs")
 }
 
-func TestMarshalTSVSingleRow(t *testing.T) {
+func TestTSVWriterSingleRow(t *testing.T) {
 	t.Parallel()
 
-	result, err := MarshalTSV([]string{"A", "B", "C"})
-	if err != nil {
-		t.Fatalf("MarshalTSV() error = %v", err)
+	var buf strings.Builder
+
+	w := NewTSVWriter(&buf)
+	if err := w.WriteRow([]string{"A", "B", "C"}); err != nil {
+		t.Fatalf("WriteRow() error = %v", err)
 	}
 
-	assertContains(t, string(result), "A\tB\tC", "should marshal single row")
+	w.Flush()
+
+	assertContains(t, buf.String(), "A\tB\tC", "should marshal single row")
 }
 
 func TestTSVWriterRowError(t *testing.T) {

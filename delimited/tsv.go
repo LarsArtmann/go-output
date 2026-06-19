@@ -1,10 +1,7 @@
 package delimited
 
 import (
-	"errors"
-	"fmt"
 	"io"
-	"strings"
 
 	"github.com/larsartmann/go-output"
 )
@@ -22,9 +19,6 @@ func init() {
 type TSVWriter struct {
 	writer *DelimitedWriter
 }
-
-// ErrUnsupportedType is returned when an unsupported type is provided for TSV marshaling.
-var ErrUnsupportedType = errors.New("unsupported type")
 
 // NewTSVWriter creates a new TSVWriter.
 func NewTSVWriter(w io.Writer) *TSVWriter {
@@ -61,52 +55,6 @@ func (t *TSVWriter) Flush() {
 // Error returns any error from the writer.
 func (t *TSVWriter) Error() error {
 	return t.writer.Error()
-}
-
-// MarshalTSV marshals data as TSV.
-//
-// Deprecated: Use MarshalTSVFromTableData for type-safe marshaling from TableData,
-// or construct a TSVWriter directly for streaming. The any-based type switch will
-// be removed in a future version.
-func MarshalTSV(data any) ([]byte, error) {
-	var builder strings.Builder
-
-	tsvWriter := NewTSVWriter(&builder)
-
-	err := writeTSVData(tsvWriter, data)
-	if err != nil {
-		return nil, fmt.Errorf("write tsv data: %w", err)
-	}
-
-	tsvWriter.Flush()
-
-	err = tsvWriter.Error()
-	if err != nil {
-		return nil, fmt.Errorf("flush tsv writer: %w", err)
-	}
-
-	return []byte(builder.String()), nil
-}
-
-func writeTSVData(w *TSVWriter, data any) error {
-	switch v := data.(type) {
-	case [][]string:
-		for _, row := range v {
-			err := w.WriteRow(row)
-			if err != nil {
-				return fmt.Errorf("write row: %w", err)
-			}
-		}
-	case []string:
-		err := w.WriteRow(v)
-		if err != nil {
-			return fmt.Errorf("write single row: %w", err)
-		}
-	default:
-		return fmt.Errorf("%w: %T", ErrUnsupportedType, data)
-	}
-
-	return nil
 }
 
 // MarshalTSVFromTableData marshals TableData as TSV with a header row.
