@@ -3,6 +3,7 @@ package integration
 import (
 	"context"
 	"errors"
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -16,7 +17,7 @@ func TestNOMSubscriber_Integration(t *testing.T) {
 	t.Run("full workflow lifecycle through events", func(t *testing.T) {
 		t.Parallel()
 
-		subscriber := nom.NewNOMStyleSubscriber()
+		subscriber := nom.NewNOMStyleSubscriber(nom.WithCachePath(filepath.Join(t.TempDir(), "nom-timing.csv")))
 		ctx := context.Background()
 
 		if err := subscriber.OnEvent(ctx, &nomTestEvent{
@@ -177,7 +178,7 @@ func TestTUIProgressReporter_Integration(t *testing.T) {
 func TestNOMSubscriber_RenderNodeVisibleNodes_Integration(t *testing.T) {
 	t.Parallel()
 
-	subscriber := nom.NewNOMStyleSubscriber()
+	subscriber := nom.NewNOMStyleSubscriber(nom.WithCachePath(filepath.Join(t.TempDir(), "nom-timing.csv")))
 	ctx := context.Background()
 
 	fireWorkflowStarted(subscriber, ctx, "w1", "Pipeline")

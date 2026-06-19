@@ -13,7 +13,7 @@ import (
 func TestInlineRenderer_FirstRender_NoAnsiEscapes(t *testing.T) {
 	t.Parallel()
 
-	sub := NewNOMStyleSubscriber()
+	sub := newTestSubscriber(t)
 
 	var buf bytes.Buffer
 
@@ -38,7 +38,7 @@ func TestInlineRenderer_FirstRender_NoAnsiEscapes(t *testing.T) {
 func TestInlineRenderer_SubsequentRender_MovesCursor(t *testing.T) {
 	t.Parallel()
 
-	sub := NewNOMStyleSubscriber()
+	sub := newTestSubscriber(t)
 
 	var buf bytes.Buffer
 
@@ -62,7 +62,7 @@ func TestInlineRenderer_SubsequentRender_MovesCursor(t *testing.T) {
 func TestInlineRenderer_Finish_ClearsFrame(t *testing.T) {
 	t.Parallel()
 
-	sub := NewNOMStyleSubscriber()
+	sub := newTestSubscriber(t)
 
 	var buf bytes.Buffer
 
@@ -90,7 +90,7 @@ func TestInlineRenderer_Finish_ClearsFrame(t *testing.T) {
 func TestInlineRenderer_Finish_WithError(t *testing.T) {
 	t.Parallel()
 
-	sub := NewNOMStyleSubscriber()
+	sub := newTestSubscriber(t)
 
 	var buf bytes.Buffer
 
@@ -113,7 +113,7 @@ func TestInlineRenderer_Finish_WithError(t *testing.T) {
 func TestInlineRenderer_SummaryBar(t *testing.T) {
 	t.Parallel()
 
-	sub := NewNOMStyleSubscriber()
+	sub := newTestSubscriber(t)
 
 	var buf bytes.Buffer
 
@@ -157,7 +157,7 @@ func TestInlineRenderer_NilSubscriber(t *testing.T) {
 func TestInlineRenderer_EmptyTree(t *testing.T) {
 	t.Parallel()
 
-	sub := NewNOMStyleSubscriber()
+	sub := newTestSubscriber(t)
 
 	var buf bytes.Buffer
 
@@ -171,7 +171,7 @@ func TestInlineRenderer_EmptyTree(t *testing.T) {
 }
 
 func TestInlineRenderer_StartStop_PeriodicRender(t *testing.T) {
-	sub := NewNOMStyleSubscriber()
+	sub := newTestSubscriber(t)
 
 	var buf bytes.Buffer
 
@@ -194,7 +194,7 @@ func TestInlineRenderer_StartStop_PeriodicRender(t *testing.T) {
 }
 
 func TestInlineRenderer_StartStop_Idempotent(t *testing.T) {
-	sub := NewNOMStyleSubscriber()
+	sub := newTestSubscriber(t)
 
 	var buf bytes.Buffer
 
@@ -210,7 +210,7 @@ func TestInlineRenderer_StartStop_Idempotent(t *testing.T) {
 }
 
 func TestInlineRenderer_Refresh_TriggersRender(t *testing.T) {
-	sub := NewNOMStyleSubscriber()
+	sub := newTestSubscriber(t)
 
 	var buf bytes.Buffer
 
@@ -236,7 +236,7 @@ func TestInlineRenderer_Refresh_TriggersRender(t *testing.T) {
 }
 
 func TestInlineRenderer_MaxHeightZero_UsesFallback(t *testing.T) {
-	sub := NewNOMStyleSubscriber()
+	sub := newTestSubscriber(t)
 
 	var buf bytes.Buffer
 
@@ -264,7 +264,7 @@ func TestInlineRenderer_MaxHeightZero_UsesFallback(t *testing.T) {
 func TestInlineRenderer_EndToEnd_Lifecycle(t *testing.T) {
 	t.Parallel()
 
-	sub := NewNOMStyleSubscriber()
+	sub := newTestSubscriber(t)
 
 	var buf bytes.Buffer
 

@@ -59,7 +59,7 @@
 | M4: `Render()` name collision (InlineRenderer/DependencyTree)     | **Fixed** — `Draw()` / `RenderString`/`RenderWithWidth`; zero NOTE markers   |
 | `reflect` depguard violation in integration tests                 | **Fixed** — replaced with `fmt.Sprintf("%T")` (no reflect import)            |
 | Stale `getTableDataMarshaler` naming                              | **Fixed** — renamed to `getTableDataRenderer`/`getAnyDataRenderer`           |
-| Nom timing cache tests wrote to real `~/.cache`                   | **Fixed** — `newTempTimingCache(t)` uses `t.TempDir()` + cleanup wait        |
+| Nom timing cache tests wrote to real `~/.cache`                   | **Fixed** — `newTempTimingCache(t)` isolates direct cache tests; `WithCachePath` + `newTestSubscriber(t)` isolate all subscriber/integration tests        |
 | #8: `HandleError` → `Must` suggestion                             | **Won't-fix** — `HandleError` is honest; `Must` implies panic                |
 | O8: `ActivityStore` YAGNI                                         | **Resolved** — removed as ghost system (155 LOC dead prod code)              |
 | nom/tui/bdd/envdetect missing from CI                             | **Fixed** — added to all ci.yml + release.yml loops                          |
@@ -67,7 +67,7 @@
 | Stale `mustUpdateActivityStatus` comment + unused params          | **Fixed** — updated comment, dropped 3 unused params                         |
 | Lock-ordering protocol undocumented                               | **Fixed** — documented `ns.mu → tree.mu` on subscriberView.Edges()           |
 | ADR 007 `tui/` migration status stale                             | **Fixed** — marked done (tests already use new types)                        |
-| 4 test files over 350-line limit                                  | **Fixed** — all split under 350 lines                                        |
+| Test files over 350-line limit                                     | **Fixed** — all split under 350 lines (incl. `render_tabledata_test.go` → `render_registry_test.go`) |
 | No local govulncheck                                              | **Fixed** — added `nix run .#govulncheck` app                                |
 
 ---

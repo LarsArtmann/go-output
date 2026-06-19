@@ -105,7 +105,7 @@ func TestDependencyTreeRenderGolden_MixedStates(t *testing.T) {
 func TestInlineRendererGolden_FirstFrame(t *testing.T) {
 	t.Parallel()
 
-	sub := NewNOMStyleSubscriber()
+	sub := newTestSubscriber(t)
 
 	var buf bytes.Buffer
 
@@ -127,7 +127,7 @@ func TestInlineRendererGolden_FirstFrame(t *testing.T) {
 func TestInlineRendererGolden_SecondFrame(t *testing.T) {
 	t.Parallel()
 
-	sub := NewNOMStyleSubscriber()
+	sub := newTestSubscriber(t)
 
 	var buf bytes.Buffer
 

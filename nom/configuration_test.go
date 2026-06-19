@@ -11,7 +11,7 @@ func TestSetEnabledAndIsEnabled(t *testing.T) {
 	t.Run("default state is enabled", func(t *testing.T) {
 		t.Parallel()
 
-		ns := NewNOMStyleSubscriber()
+		ns := newTestSubscriber(t)
 		if !ns.IsEnabled() {
 			t.Error("default subscriber should be enabled")
 		}
@@ -20,7 +20,7 @@ func TestSetEnabledAndIsEnabled(t *testing.T) {
 	t.Run("disable sets IsEnabled to false", func(t *testing.T) {
 		t.Parallel()
 
-		ns := NewNOMStyleSubscriber()
+		ns := newTestSubscriber(t)
 		ns.SetEnabled(false)
 
 		if ns.IsEnabled() {
@@ -31,7 +31,7 @@ func TestSetEnabledAndIsEnabled(t *testing.T) {
 	t.Run("re-enable sets IsEnabled to true", func(t *testing.T) {
 		t.Parallel()
 
-		ns := NewNOMStyleSubscriber()
+		ns := newTestSubscriber(t)
 		ns.SetEnabled(false)
 		ns.SetEnabled(true)
 
@@ -44,7 +44,7 @@ func TestSetEnabledAndIsEnabled(t *testing.T) {
 func TestReset_ClearsAllState(t *testing.T) {
 	t.Parallel()
 
-	ns := NewNOMStyleSubscriber()
+	ns := newTestSubscriber(t)
 
 	// Populate state.
 	ns.activities = map[ActivityID]*Activity{

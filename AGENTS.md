@@ -75,7 +75,7 @@ Things that will silently break or that an agent would get wrong from code alone
 
 - **Never import a sub-module into root** — see Core Invariant above.
 - **`testhelpers/` is zero-dep by design** — it cannot import `output`. Cross-module test helpers must stay local to each module or use table-driven patterns.
-- **`internal/` is root-only** — Go forbids sub-modules from importing `internal/` packages. `internal/gentest` and `internal/testutils` are root-only; sub-modules inline their own test helpers.
+- **`internal/` is root-only (if added)** — Go forbids sub-modules from importing `internal/` packages, so any `internal/` package in root cannot be shared with sub-modules. Currently root has no `internal/` dir; sub-modules inline their own test helpers (shared zero-dep helpers live in the `testhelpers/` module).
 - **Depguard restricts imports** — `.golangci.yml` has explicit allow-lists. When a module gains a new sibling dep, add it to BOTH the `default` and `main` allow-lists or lint fails. Each module has its own `.golangci.yml` section.
 - **Every module's `go.mod` needs `replace` directives** for sibling deps, plus add the module to `flake.nix`'s `modules` list and `go.work.example`'s `use (...)` block.
 - **Mono-version tagging** — all 18 modules release in lockstep under the same `vX.Y.Z` (root tag + `submod/vX.Y.Z` tags). Never version a module independently.

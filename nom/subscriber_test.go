@@ -34,7 +34,7 @@ func (e *testEvent) GetDependencies() []ActivityID { return e.deps }
 func setupWithWorkflow(t *testing.T) (*NOMStyleSubscriber, context.Context) {
 	t.Helper()
 
-	ns := NewNOMStyleSubscriber()
+	ns := newTestSubscriber(t)
 	ctx := context.Background()
 
 	ns.OnEvent(ctx, &testEvent{
@@ -115,7 +115,7 @@ func registerActivity(
 func TestNewNOMStyleSubscriber(t *testing.T) {
 	t.Parallel()
 
-	ns := NewNOMStyleSubscriber()
+	ns := newTestSubscriber(t)
 	if ns == nil {
 		t.Fatal("NewNOMStyleSubscriber() returned nil")
 	}
@@ -132,7 +132,7 @@ func TestNewNOMStyleSubscriber(t *testing.T) {
 func TestNOMStyleSubscriber_Configuration(t *testing.T) {
 	t.Parallel()
 
-	ns := NewNOMStyleSubscriber()
+	ns := newTestSubscriber(t)
 
 	ns.SetEnabled(false)
 
@@ -151,7 +151,7 @@ func TestNOMStyleSubscriber_Reset(t *testing.T) {
 	t.Parallel()
 
 	// Reset test uses a custom workflow name to verify it gets cleared.
-	ns := NewNOMStyleSubscriber()
+	ns := newTestSubscriber(t)
 	ctx := context.Background()
 
 	_ = sendWorkflowStarted(ns, ctx, WorkflowID("wf-1"), WorkflowName("CI"))
@@ -180,7 +180,7 @@ func TestNOMStyleSubscriber_Reset(t *testing.T) {
 func TestNOMStyleSubscriber_WorkflowStarted(t *testing.T) {
 	t.Parallel()
 
-	ns := NewNOMStyleSubscriber()
+	ns := newTestSubscriber(t)
 	ctx := context.Background()
 
 	err := sendWorkflowStarted(ns, ctx, WorkflowID("wf-1"), WorkflowName("Deploy"))

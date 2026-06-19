@@ -100,7 +100,7 @@ func TestNOMStyleSubscriber_ActivityFailed(t *testing.T) {
 func TestNOMStyleSubscriber_UnknownEventType(t *testing.T) {
 	t.Parallel()
 
-	ns := NewNOMStyleSubscriber()
+	ns := newTestSubscriber(t)
 	ctx := context.Background()
 
 	err := ns.OnEvent(ctx, &testEvent{eventType: "unknown.event"})
@@ -118,7 +118,7 @@ func (e *minimalEvent) GetEventType() string { return e.eventType }
 func TestNOMStyleSubscriber_EventWithoutAccessor(t *testing.T) {
 	t.Parallel()
 
-	ns := NewNOMStyleSubscriber()
+	ns := newTestSubscriber(t)
 	ctx := context.Background()
 
 	err := ns.OnEvent(ctx, &minimalEvent{eventType: EventWorkflowStarted})
@@ -175,7 +175,7 @@ func TestNOMStyleSubscriber_GetActivityCounts(t *testing.T) {
 func TestNOMStyleSubscriber_GetActivityCounts_PausedAndFailed(t *testing.T) {
 	t.Parallel()
 
-	ns := NewNOMStyleSubscriber()
+	ns := newTestSubscriber(t)
 
 	paused := NewActivity("p1", "Wait")
 	paused.Status = ActivityStatusPaused
@@ -206,7 +206,7 @@ func TestNOMStyleSubscriber_GetActivityCounts_PausedAndFailed(t *testing.T) {
 func TestNOMStyleSubscriber_GetActivity_NotFound(t *testing.T) {
 	t.Parallel()
 
-	ns := NewNOMStyleSubscriber()
+	ns := newTestSubscriber(t)
 
 	activity := ns.GetActivity(ActivityID("nonexistent"))
 	if activity != nil {
@@ -236,7 +236,7 @@ func TestNOMStyleSubscriber_UpdateRunningActivityElapsed(t *testing.T) {
 func TestNOMStyleSubscriber_SetActivityState(t *testing.T) {
 	t.Parallel()
 
-	ns := NewNOMStyleSubscriber()
+	ns := newTestSubscriber(t)
 	activity := NewActivity("custom", "Custom")
 	activity.SetRunning()
 
@@ -255,7 +255,7 @@ func TestNOMStyleSubscriber_SetActivityState(t *testing.T) {
 func TestNOMStyleSubscriber_GetDependencyTree(t *testing.T) {
 	t.Parallel()
 
-	ns := NewNOMStyleSubscriber()
+	ns := newTestSubscriber(t)
 
 	tree := ns.GetDependencyTree()
 	if tree == nil {
@@ -266,7 +266,7 @@ func TestNOMStyleSubscriber_GetDependencyTree(t *testing.T) {
 func TestNOMStyleSubscriber_GetTimingCache(t *testing.T) {
 	t.Parallel()
 
-	ns := NewNOMStyleSubscriber()
+	ns := newTestSubscriber(t)
 
 	cache := ns.GetTimingCache()
 	if cache == nil {

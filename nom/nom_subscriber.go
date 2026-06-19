@@ -28,15 +28,33 @@ type NOMStyleSubscriber struct {
 	enabled        bool
 }
 
+// SubscriberOption configures a NOMStyleSubscriber at construction time.
+type SubscriberOption func(*NOMStyleSubscriber)
+
+// WithCachePath overrides the default timing-cache file path
+// (~/.cache/nom-timing.csv). Tests inject a temp directory so the suite never
+// reads or writes the real home directory, keeping it hermetic.
+func WithCachePath(path string) SubscriberOption {
+	return func(ns *NOMStyleSubscriber) {
+		ns.timingCache = NewTimingCache(withFilePath(path))
+	}
+}
+
 // NewNOMStyleSubscriber creates a new NOM-style subscriber.
-func NewNOMStyleSubscriber() *NOMStyleSubscriber {
-	return &NOMStyleSubscriber{
+func NewNOMStyleSubscriber(opts ...SubscriberOption) *NOMStyleSubscriber {
+	ns := &NOMStyleSubscriber{
 		activities:     make(map[ActivityID]*Activity),
 		dependencyTree: NewDependencyTree(),
 		timingCache:    NewTimingCache(),
 		isRunning:      false,
 		enabled:        true,
 	}
+
+	for _, opt := range opts {
+		opt(ns)
+	}
+
+	return ns
 }
 
 // Store returns an ActivityReader for diagram export. The projection is

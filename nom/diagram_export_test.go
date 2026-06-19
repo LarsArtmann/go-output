@@ -10,7 +10,7 @@ import (
 func TestDiagramExport_StatusShapes(t *testing.T) {
 	t.Parallel()
 
-	subscriber := NewNOMStyleSubscriber()
+	subscriber := newTestSubscriber(t)
 	ctx := context.Background()
 
 	diagramFireWorkflow(t, subscriber, ctx, "wf", "Workflow")
@@ -45,7 +45,7 @@ func TestDiagramExport_StatusShapes(t *testing.T) {
 func TestDiagramExport_EdgeStructure(t *testing.T) {
 	t.Parallel()
 
-	subscriber := NewNOMStyleSubscriber()
+	subscriber := newTestSubscriber(t)
 	ctx := context.Background()
 
 	diagramFireWorkflow(t, subscriber, ctx, "wf", "Workflow")
@@ -73,7 +73,7 @@ func TestDiagramExport_EdgeStructure(t *testing.T) {
 func TestDiagramExport_SubscriberProjection(t *testing.T) {
 	t.Parallel()
 
-	subscriber := NewNOMStyleSubscriber()
+	subscriber := newTestSubscriber(t)
 	ctx := context.Background()
 
 	diagramFireWorkflow(t, subscriber, ctx, "build", "CI Build")

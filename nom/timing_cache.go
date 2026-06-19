@@ -30,8 +30,18 @@ type TimingCache struct {
 	pendingSaves sync.WaitGroup             // tracks in-flight saveAsync goroutines
 }
 
-// NewTimingCache creates a new timing cache.
-func NewTimingCache() *TimingCache {
+// TimingCacheOption configures a TimingCache at construction time.
+type TimingCacheOption func(*TimingCache)
+
+// withFilePath returns an option that overrides the default cache file path.
+// Used to isolate the cache to a temp directory in tests.
+func withFilePath(path string) TimingCacheOption {
+	return func(tc *TimingCache) { tc.filePath = path }
+}
+
+// NewTimingCache creates a new timing cache backed by ~/.cache/nom-timing.csv
+// by default. Pass options to override (e.g. tests inject a temp path).
+func NewTimingCache(opts ...TimingCacheOption) *TimingCache {
 	homeDir, err := os.UserHomeDir()
 	if err != nil || homeDir == "" {
 		homeDir = os.TempDir()
@@ -45,11 +55,17 @@ func NewTimingCache() *TimingCache {
 		cachePath = filepath.Join(os.TempDir(), cacheDir, cacheFilename)
 	}
 
-	return &TimingCache{
+	tc := &TimingCache{
 		cache:    make(map[string][]time.Duration),
 		filePath: cachePath,
 		loaded:   false,
 	}
+
+	for _, opt := range opts {
+		opt(tc)
+	}
+
+	return tc
 }
 
 // capHistory trims history to at most maxCachedEntries entries, keeping the
