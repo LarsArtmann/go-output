@@ -63,6 +63,7 @@ GOFLAGS="" go list -m github.com/larsartmann/go-output/nom@vX.Y.Z
 ## CI Automation
 
 The `.github/workflows/release.yml` workflow automates tagging when a tag is pushed. It:
+
 - Runs the full test suite
 - Cross-compiles binaries for examples
 - Publishes to the Go proxy

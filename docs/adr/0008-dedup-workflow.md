@@ -20,6 +20,7 @@ We adopt a 5-step checklist for evaluating every clone group reported by `art-du
 ## Rationale
 
 At threshold `t=15`, approximately 100 clone groups are reported. Analysis showed that ~95% are either:
+
 - Table-driven test idioms (acceptable duplication)
 - Module-boundary re-declarations (structural, not semantic)
 - Interface conformance (each implementation must satisfy the interface)

@@ -11,6 +11,7 @@ The v1.0 release focuses on **composability** (root god-package split into small
 ## 1. Markdown renderer extracted to `markdown/` module
 
 **Before (v0.12):**
+
 ```go
 import "github.com/larsartmann/go-output"
 
@@ -18,6 +19,7 @@ md := output.NewMarkdownTable()
 ```
 
 **After (v1.0):**
+
 ```go
 import "github.com/larsartmann/go-output/markdown"
 
@@ -33,6 +35,7 @@ import _ "github.com/larsartmann/go-output/markdown"
 ## 2. Tree renderer extracted to `tree/` module
 
 **Before (v0.12):**
+
 ```go
 import "github.com/larsartmann/go-output"
 
@@ -40,6 +43,7 @@ renderer := output.NewASCIITreeRenderer()
 ```
 
 **After (v1.0):**
+
 ```go
 import "github.com/larsartmann/go-output/tree"
 
