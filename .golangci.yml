@@ -144,6 +144,8 @@ linters:
             - sync
             - testing
             - time
+            - regexp
+            - runtime
             - github.com/larsartmann/go-output
             - github.com/larsartmann/go-output/enum
             - github.com/larsartmann/go-output/envdetect

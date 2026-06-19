@@ -39,6 +39,7 @@ func TestProgressModel_RenderRacingActivityMutation(t *testing.T) {
 	})
 
 	const groupID = nom.ActivityID("group")
+
 	ids := make([]nom.ActivityID, 10)
 
 	for i := range ids {
@@ -94,15 +95,11 @@ func TestProgressModel_RenderRacingActivityMutation(t *testing.T) {
 	}
 
 	// Renderer: the View() runs on a single goroutine (as bubbletea guarantees).
-	wg.Add(1)
-
-	go func() {
-		defer wg.Done()
-
+	wg.Go(func() {
 		for range 80 {
 			_ = model.View()
 		}
-	}()
+	})
 
 	wg.Wait()
 }
