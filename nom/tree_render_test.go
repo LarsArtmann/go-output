@@ -136,7 +136,7 @@ func TestDependencyTree_Render_PhaseStyling(t *testing.T) {
 	}
 
 	// Phase node should use phase symbol
-	if !strings.Contains(got, SymbolPhase) {
+	if !strings.Contains(got, string(SymbolPhase)) {
 		t.Errorf("render should contain phase symbol %q, got:\n%s", SymbolPhase, got)
 	}
 }

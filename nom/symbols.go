@@ -9,27 +9,35 @@ import (
 // ============================================================================
 // NOM-STYLE SYMBOL CONSTANTS
 // ============================================================================.
+
+// Symbol is a typed string constant representing a visual status indicator.
+// Typing prevents accidental mixing with arbitrary strings.
+type Symbol string
+
+// String returns the underlying string value of the symbol.
+func (s Symbol) String() string { return string(s) }
+
 const (
 	// SymbolRunning represents an activity currently executing.
-	SymbolRunning = "⏵"
+	SymbolRunning Symbol = "⏵"
 	// SymbolCompleted represents a successfully completed activity.
-	SymbolCompleted = "✔"
+	SymbolCompleted Symbol = "✔"
 	// SymbolPaused represents a paused or waiting activity.
-	SymbolPaused = "⏸"
+	SymbolPaused Symbol = "⏸"
 	// SymbolFailed represents a failed activity.
-	SymbolFailed = "⚠"
+	SymbolFailed Symbol = "⚠"
 	// SymbolDownload represents a download operation.
-	SymbolDownload = "↓"
+	SymbolDownload Symbol = "↓"
 	// SymbolUpload represents an upload operation.
-	SymbolUpload = "↑"
+	SymbolUpload Symbol = "↑"
 	// SymbolTiming represents timing information.
-	SymbolTiming = "⏱️"
+	SymbolTiming Symbol = "⏱️"
 	// SymbolAverage represents average duration.
-	SymbolAverage = "∅"
+	SymbolAverage Symbol = "∅"
 	// SymbolTotal represents total count/summary.
-	SymbolTotal = "∑"
+	SymbolTotal Symbol = "∑"
 	// SymbolPhase represents a phase/group node in the tree.
-	SymbolPhase = "◈"
+	SymbolPhase Symbol = "◈"
 )
 
 // ============================================================================

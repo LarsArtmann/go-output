@@ -26,7 +26,7 @@ type Activity struct {
 	// Err holds the failure error if Status == ActivityStatusFailed.
 	Err error
 	// Symbol is the NOM-style display symbol (cached from Status for rendering).
-	Symbol string
+	Symbol Symbol
 	// Color is the lipgloss terminal color (cached from Status for rendering).
 	Color color.Color
 	// CurrentElapsed is updated periodically for running activities.

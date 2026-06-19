@@ -131,7 +131,7 @@ func TestInlineRenderer_SummaryBar(t *testing.T) {
 		t.Errorf("render should include summary box, got:\n%s", output)
 	}
 
-	if !strings.Contains(output, SymbolTiming) {
+	if !strings.Contains(output, string(SymbolTiming)) {
 		t.Errorf("summary should include timing, got:\n%s", output)
 	}
 

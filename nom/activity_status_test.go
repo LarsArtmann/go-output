@@ -36,7 +36,7 @@ func TestActivityStatus_GetSymbol(t *testing.T) {
 
 	tests := []struct {
 		status ActivityStatus
-		want   string
+		want   Symbol
 	}{
 		{ActivityStatusPending, SymbolPaused},
 		{ActivityStatusRunning, SymbolRunning},

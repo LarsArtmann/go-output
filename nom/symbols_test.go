@@ -7,7 +7,7 @@ import (
 func TestSymbolConstants(t *testing.T) {
 	t.Parallel()
 
-	symbols := map[string]string{
+	symbols := map[string]Symbol{
 		"SymbolRunning":   SymbolRunning,
 		"SymbolCompleted": SymbolCompleted,
 		"SymbolPaused":    SymbolPaused,

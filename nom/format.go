@@ -10,7 +10,7 @@ import (
 // OPERATION TYPE SYMBOLS
 // ============================================================================
 // OperationSymbol returns the symbol for an operation type.
-func OperationSymbol(operationType string) string {
+func OperationSymbol(operationType string) Symbol {
 	switch operationType {
 	case OperationTypeDownload:
 		return SymbolDownload
@@ -129,6 +129,6 @@ func FormatActivityNodeTiming(status ActivityStatus, elapsed, estimated time.Dur
 	return ""
 }
 
-func formatTimingWithSymbol(d time.Duration, symbol string) string {
+func formatTimingWithSymbol(d time.Duration, symbol Symbol) string {
 	return fmt.Sprintf("%s%s", symbol, FormatDuration(d))
 }

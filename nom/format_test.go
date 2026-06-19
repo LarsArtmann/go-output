@@ -41,7 +41,7 @@ func TestOperationSymbol(t *testing.T) {
 	tests := []struct {
 		name    string
 		opType  string
-		want    string
+		want    Symbol
 		wantLen int
 	}{
 		{"download", OperationTypeDownload, SymbolDownload, 1},

@@ -45,7 +45,7 @@ func (as ActivityStatus) String() string {
 const StatusStringUnknown = "unknown"
 
 // GetSymbol returns the NOM-style symbol for the status.
-func (as ActivityStatus) GetSymbol() string {
+func (as ActivityStatus) GetSymbol() Symbol {
 	switch as {
 	case ActivityStatusPending:
 		return SymbolPaused
@@ -97,4 +97,55 @@ func (as ActivityStatus) Interest() int {
 	default:
 		return 5
 	}
+}
+
+// AllActivityStatuses is the complete list of valid ActivityStatus values.
+var AllActivityStatuses = []ActivityStatus{
+	ActivityStatusPending,
+	ActivityStatusRunning,
+	ActivityStatusCompleted,
+	ActivityStatusFailed,
+	ActivityStatusPaused,
+}
+
+// ParseActivityStatus parses a string into an ActivityStatus.
+// Returns an error for unrecognized values.
+func ParseActivityStatus(s string) (ActivityStatus, error) {
+	for _, status := range AllActivityStatuses {
+		if status.String() == s {
+			return status, nil
+		}
+	}
+
+	return ActivityStatusPending, &InvalidActivityStatusError{Value: s}
+}
+
+// IsValid returns true if the status is a recognized ActivityStatus value.
+func (as ActivityStatus) IsValid() bool {
+	for _, valid := range AllActivityStatuses {
+		if as == valid {
+			return true
+		}
+	}
+
+	return false
+}
+
+// AllowedValues returns all valid status strings for CLI help text and config.
+func (ActivityStatus) AllowedValues() []string {
+	out := make([]string, len(AllActivityStatuses))
+	for i, s := range AllActivityStatuses {
+		out[i] = s.String()
+	}
+
+	return out
+}
+
+// InvalidActivityStatusError represents an invalid activity status.
+type InvalidActivityStatusError struct {
+	Value string
+}
+
+func (e *InvalidActivityStatusError) Error() string {
+	return "invalid activity status: " + e.Value
 }
