@@ -1,0 +1,1120 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Report Title</title>
+    <style>
+      /* =========================================================================
+         BAUHAUS DARK — Dashboard template
+         Design language: form follows function. Primary colors on graphite.
+         Zero external dependencies: system fonts, no CDN, no build step.
+         Token architecture: see references/bauhaus-tokens.md
+         ========================================================================= */
+
+      :root {
+        /* --- Primitive palette (Bauhaus Dark) --- */
+        --color-graphite: #0e0e10;
+        --color-graphite-2: #18181d;
+        --color-graphite-3: #16161a;
+        --color-bone: #f4f4f0;
+        --color-red: #ff6b6b;
+        --color-blue: #6eb5ff;
+        --color-yellow: #f4d35e;
+        --color-amber: #ffb347;
+        --color-hairline: rgba(244, 244, 240, 0.12);
+        --color-hairline-strong: rgba(244, 244, 240, 0.25);
+
+        /* --- Semantic layer (shared vocabulary with editorial template) --- */
+        --surface: var(--color-graphite);
+        --surface-raised: var(--color-graphite-2);
+        --surface-sunken: var(--color-graphite-3);
+        --text: var(--color-bone);
+        --text-muted: rgba(244, 244, 240, 0.72);
+        --text-faint: rgba(244, 244, 240, 0.45);
+        --border: var(--color-hairline);
+        --border-strong: var(--color-hairline-strong);
+        --accent: var(--color-amber);
+        --problem: var(--color-red);
+        --solution: var(--color-blue);
+        --warning: var(--color-yellow);
+
+        /* --- Backward-compatible aliases (do not break consumer skills) --- */
+        --bg: var(--surface);
+        --bg-elevated: var(--surface-raised);
+        --bg-sunken: var(--surface-sunken);
+        --bg-card: var(--surface-raised);
+        --bg-code: var(--surface-sunken);
+        --ink: var(--text);
+        --ink-secondary: var(--text-muted);
+        --ink-muted: var(--text-faint);
+        --rose: var(--problem);
+        --rose-glow: color-mix(in srgb, var(--problem) 15%, transparent);
+        --emerald: var(--solution);
+        --emerald-glow: color-mix(in srgb, var(--solution) 15%, transparent);
+        --amber-glow: color-mix(in srgb, var(--warning) 15%, transparent);
+        --coral: var(--problem);
+        --coral-light: color-mix(in srgb, var(--problem) 15%, transparent);
+        --teal: var(--solution);
+        --teal-light: color-mix(in srgb, var(--solution) 15%, transparent);
+        --amber-light: color-mix(in srgb, var(--warning) 20%, transparent);
+
+        /* --- Shape --- */
+        --radius: 0px; /* Bauhaus default: sharp corners */
+        --radius-sm: 0px;
+
+        /* --- Type stacks (system only — zero external fonts) --- */
+        --font-heading:
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+        --font-body:
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+        --font-mono:
+          ui-monospace, "Cascadia Code", "Source Code Pro", "JetBrains Mono", Menlo, Consolas,
+          monospace;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      /* Sticky-header offset for anchor jumps */
+      section[id],
+      [id] {
+        scroll-margin-top: 60px;
+      }
+
+      body {
+        background: var(--surface);
+        color: var(--text);
+        font-family: var(--font-body);
+        font-size: 15px;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      /* --- Full-bleed top bar --- */
+      .top-bar {
+        background: var(--text);
+        color: var(--surface);
+        padding: 0.6rem 2rem;
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      /* --- Layout: optional sticky sidebar TOC --- */
+      .layout {
+        display: flex;
+        gap: 2.5rem;
+        padding: 2rem;
+      }
+      .sidebar {
+        width: 220px;
+        flex-shrink: 0;
+        position: sticky;
+        top: 1rem;
+        align-self: flex-start;
+        height: calc(100vh - 2rem);
+        overflow-y: auto;
+        display: none;
+      }
+      .sidebar nav {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+      }
+      .sidebar .label {
+        font-family: var(--font-mono);
+        font-size: 0.68rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--accent);
+        margin-bottom: 0.75rem;
+        padding-bottom: 0.4rem;
+        border-bottom: 2px solid var(--border-strong);
+      }
+      .sidebar a {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        text-decoration: none;
+        padding: 0.45rem 0.75rem;
+        border-left: 2px solid transparent;
+        transition: all 0.15s ease;
+        line-height: 1.4;
+        font-weight: 500;
+      }
+      .sidebar a:hover,
+      .sidebar a.active {
+        color: var(--accent);
+        border-left-color: var(--accent);
+        background: color-mix(in srgb, var(--accent) 8%, transparent);
+      }
+      .main {
+        flex: 1;
+        min-width: 0;
+      }
+
+      /* --- Headings --- */
+      h1,
+      h2,
+      h3,
+      h4 {
+        font-family: var(--font-heading);
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+      h1 {
+        font-size: clamp(1.8rem, 4vw, 2.6rem);
+        line-height: 1.1;
+        margin: 0 0 0.6rem;
+      }
+      h2 {
+        font-size: 1.4rem;
+        margin: 2.5rem 0 1rem;
+        padding-bottom: 0.4rem;
+        border-bottom: 2px solid var(--border-strong);
+        display: flex;
+        align-items: baseline;
+        gap: 0.6rem;
+      }
+      h2 .num {
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+        color: var(--accent);
+        font-weight: 700;
+        letter-spacing: 0.06em;
+      }
+      h3 {
+        font-size: 1.1rem;
+        margin: 0 0 0.4rem;
+        font-weight: 700;
+      }
+      h4 {
+        font-size: 0.98rem;
+        margin: 0 0 0.3rem;
+        font-weight: 700;
+      }
+      p {
+        margin: 0 0 1rem;
+      }
+
+      /* --- Hero --- */
+      .hero {
+        padding: 1.5rem 0 1.5rem;
+        margin-bottom: 1.5rem;
+        border-bottom: 2px solid var(--border-strong);
+      }
+      .hero-badge {
+        display: inline-block;
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--surface);
+        background: var(--accent);
+        padding: 0.3rem 0.7rem;
+        margin-bottom: 0.9rem;
+      }
+      .hero-subtitle {
+        font-size: 1.05rem;
+        color: var(--text-muted);
+        max-width: 70ch;
+        margin: 0;
+      }
+
+      /* Bauhaus signature: geometric shape cluster (optional) */
+      .hero-shapes {
+        position: relative;
+        height: 80px;
+        margin-bottom: 1rem;
+      }
+      .hero-shapes .circle {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 56px;
+        height: 56px;
+        background: var(--problem);
+        border-radius: 50%;
+      }
+      .hero-shapes .square {
+        position: absolute;
+        top: 24px;
+        left: 72px;
+        width: 48px;
+        height: 48px;
+        background: var(--solution);
+      }
+      .hero-shapes .tri {
+        position: absolute;
+        top: 8px;
+        left: 140px;
+        width: 0;
+        height: 0;
+        border-left: 28px solid transparent;
+        border-right: 28px solid transparent;
+        border-bottom: 48px solid var(--warning);
+      }
+
+      /* --- General cards --- */
+      .card {
+        background: var(--surface-raised);
+        border: 1px solid var(--border);
+        padding: 1.1rem 1.3rem;
+        margin-bottom: 1rem;
+        border-left: 4px solid var(--border-strong);
+      }
+      .card-problem {
+        border-left-color: var(--problem);
+        background: color-mix(in srgb, var(--problem) 8%, var(--surface-raised));
+      }
+      .card-solution {
+        border-left-color: var(--solution);
+        background: color-mix(in srgb, var(--solution) 8%, var(--surface-raised));
+      }
+      .card-warning {
+        border-left-color: var(--warning);
+        background: color-mix(in srgb, var(--warning) 8%, var(--surface-raised));
+      }
+
+      /* --- Issue cards --- */
+      .issue {
+        background: var(--surface-raised);
+        border: 1px solid var(--border);
+        padding: 1.1rem 1.3rem;
+        margin-bottom: 1rem;
+        border-left: 4px solid var(--border-strong);
+      }
+      .issue-critical {
+        border-left-color: var(--problem);
+        background: color-mix(in srgb, var(--problem) 8%, var(--surface-raised));
+      }
+      .issue-important {
+        border-left-color: var(--warning);
+        background: color-mix(in srgb, var(--warning) 8%, var(--surface-raised));
+      }
+      .issue-nice {
+        border-left-color: var(--solution);
+        background: color-mix(in srgb, var(--solution) 8%, var(--surface-raised));
+      }
+      .issue h3 {
+        margin-bottom: 0.3rem;
+      }
+      .issue .where {
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+        color: var(--text-faint);
+        margin: 0.2rem 0 0.6rem;
+      }
+      .issue p:last-child {
+        margin-bottom: 0;
+      }
+
+      /* --- Severity badges (used inside issue cards) --- */
+      .severity {
+        display: inline-block;
+        font-family: var(--font-mono);
+        font-size: 0.62rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        padding: 0.2rem 0.55rem;
+        margin-bottom: 0.6rem;
+        color: var(--surface);
+      }
+      .severity-critical {
+        background: var(--problem);
+      }
+      .severity-important {
+        background: var(--warning);
+      }
+      .severity-nice {
+        background: var(--solution);
+      }
+
+      /* --- Inline badges (used in tables) --- */
+      .badge {
+        display: inline-block;
+        font-family: var(--font-mono);
+        font-size: 0.62rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        padding: 0.18rem 0.5rem;
+        border: 1px solid var(--border-strong);
+        color: var(--text-muted);
+      }
+      .badge-critical {
+        color: var(--problem);
+        border-color: var(--problem);
+      }
+      .badge-high {
+        color: var(--warning);
+        border-color: var(--warning);
+      }
+      .badge-medium {
+        color: var(--accent);
+        border-color: var(--accent);
+      }
+      .badge-low {
+        color: var(--text-muted);
+      }
+      .badge-fixed {
+        color: var(--solution);
+        border-color: var(--solution);
+      }
+
+      /* --- Callouts (used inside issues or standalone) --- */
+      .callout {
+        margin: 0.8rem 0 0;
+        padding: 0.7rem 0.9rem;
+        border-left: 3px solid var(--border-strong);
+        background: color-mix(in srgb, var(--text) 5%, transparent);
+        font-size: 0.9rem;
+      }
+      .callout strong {
+        display: inline-block;
+        margin-right: 0.4rem;
+      }
+      .callout-solution {
+        border-left-color: var(--solution);
+        background: color-mix(in srgb, var(--solution) 10%, transparent);
+      }
+      .callout-warning {
+        border-left-color: var(--warning);
+        background: color-mix(in srgb, var(--warning) 10%, transparent);
+      }
+
+      /* --- Stat cards / scorecards (aliased vocabulary) --- */
+      .stat-grid,
+      .scorecard {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 0.75rem;
+        margin: 1rem 0 1.5rem;
+      }
+      .stat-card,
+      .score-card {
+        background: var(--surface-raised);
+        border: 1px solid var(--border);
+        padding: 1.1rem 1rem;
+        position: relative;
+      }
+      .stat-card::before,
+      .score-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: var(--border-strong);
+      }
+      .stat-bad,
+      .score-bad {
+        /* default top bar already set */
+      }
+      .stat-bad::before,
+      .score-bad::before {
+        background: var(--problem);
+      }
+      .stat-good::before,
+      .score-good::before {
+        background: var(--solution);
+      }
+      .stat-warn::before,
+      .score-warn::before {
+        background: var(--warning);
+      }
+      .stat-value,
+      .score {
+        font-family: var(--font-heading);
+        font-size: 2rem;
+        font-weight: 800;
+        line-height: 1;
+        letter-spacing: -0.03em;
+        color: var(--text);
+      }
+      .stat-bad .stat-value,
+      .score-bad .score {
+        color: var(--problem);
+      }
+      .stat-good .stat-value,
+      .score-good .score {
+        color: var(--solution);
+      }
+      .stat-warn .stat-value,
+      .score-warn .score {
+        color: var(--warning);
+      }
+      .stat-label,
+      .score-card .label {
+        font-family: var(--font-mono);
+        font-size: 0.65rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--text-faint);
+        margin-top: 0.5rem;
+      }
+
+      /* --- Strengths list --- */
+      .strengths {
+        display: grid;
+        gap: 0.5rem;
+        margin: 1rem 0 1.5rem;
+      }
+      .strength {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 0.8rem;
+        padding: 0.7rem 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .strength .check {
+        font-family: var(--font-mono);
+        font-weight: 700;
+        color: var(--solution);
+        font-size: 1.1rem;
+        line-height: 1.4;
+      }
+      .strength .text strong {
+        display: block;
+        margin-bottom: 0.15rem;
+      }
+      .strength .text span {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+      }
+
+      /* --- Tables --- */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1rem 0 1.5rem;
+        font-size: 0.9rem;
+      }
+      th {
+        text-align: left;
+        padding: 0.6rem 0.9rem;
+        background: var(--surface-raised);
+        color: var(--text-faint);
+        font-family: var(--font-mono);
+        font-size: 0.66rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        border-bottom: 1px solid var(--border-strong);
+      }
+      td {
+        padding: 0.6rem 0.9rem;
+        border-bottom: 1px solid var(--border);
+      }
+      tr:hover td {
+        background: var(--surface-raised);
+      }
+
+      /* --- Before/After comparison --- */
+      .compare-header {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+        margin: 1rem 0 0.5rem;
+      }
+      .compare-before,
+      .compare-after {
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        padding: 0.4rem 0.7rem;
+        color: var(--surface);
+      }
+      .compare-before {
+        background: var(--problem);
+      }
+      .compare-after {
+        background: var(--solution);
+      }
+      .compare-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+      }
+      .compare-row pre {
+        margin: 0;
+      }
+
+      /* --- Code blocks + syntax highlighting --- */
+      pre {
+        background: var(--surface-sunken);
+        border: 1px solid var(--border);
+        padding: 1rem 1.2rem;
+        margin: 1rem 0;
+        font-family: var(--font-mono);
+        font-size: 0.82rem;
+        line-height: 1.65;
+        overflow-x: auto;
+      }
+      code {
+        font-family: var(--font-mono);
+      }
+      .tok-keyword {
+        color: var(--accent);
+      } /* func, type, struct, if, return */
+      .tok-type {
+        color: var(--warning);
+      } /* int, string, bool, error */
+      .tok-string {
+        color: var(--solution);
+      } /* "quoted strings" */
+      .tok-comment {
+        color: var(--text-faint);
+        font-style: italic;
+      }
+      .tok-func {
+        color: #74a9ff;
+      } /* function names */
+      .tok-number {
+        color: var(--accent);
+      } /* 42, 3.14 */
+      .tok-generic {
+        color: var(--problem);
+      } /* T, ID in generics */
+      .tok-builtin {
+        color: #4dd9ff;
+      } /* make, len, append */
+      .tok-punct {
+        color: var(--text-muted);
+      } /* { } ( ) ; = : */
+      .tok-attr {
+        color: var(--accent);
+      } /* Nix attribute names */
+
+      /* --- Dependency tree / ASCII diagrams --- */
+      .dep-tree {
+        background: var(--surface-sunken);
+        border: 1px solid var(--border);
+        padding: 1rem 1.2rem;
+        margin: 1rem 0;
+        font-family: var(--font-mono);
+        font-size: 0.82rem;
+        line-height: 1.7;
+        white-space: pre;
+        overflow-x: auto;
+      }
+      .dep-tree .root {
+        color: var(--accent);
+        font-weight: 700;
+      }
+      .dep-tree .ok {
+        color: var(--solution);
+      }
+      .dep-tree .unwanted {
+        color: var(--problem);
+      }
+
+      /* --- Inline node-and-arrow diagrams --- */
+      .diagram {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 1rem;
+        margin: 1rem 0;
+        background: var(--surface-raised);
+        border: 1px solid var(--border);
+      }
+      .node {
+        display: inline-block;
+        padding: 0.35rem 0.7rem;
+        font-family: var(--font-mono);
+        font-size: 0.8rem;
+        font-weight: 600;
+        background: var(--surface-sunken);
+        border: 1px solid var(--border-strong);
+      }
+      .node-core {
+        background: var(--accent);
+        color: var(--surface);
+        border-color: var(--accent);
+      }
+      .node-problem {
+        background: var(--problem);
+        color: var(--surface);
+        border-color: var(--problem);
+      }
+      .node-good {
+        background: var(--solution);
+        color: var(--surface);
+        border-color: var(--solution);
+      }
+      .arrow {
+        color: var(--text-faint);
+        font-family: var(--font-mono);
+      }
+
+      /* --- Grids (responsive) --- */
+      .grid-2 {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+        margin: 1rem 0;
+      }
+      .grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        margin: 1rem 0;
+      }
+
+      /* --- Inline TOC (alternative to sidebar) --- */
+      .toc {
+        background: var(--surface-raised);
+        border: 1px solid var(--border);
+        border-left: 3px solid var(--accent);
+        padding: 1rem 1.3rem;
+        margin: 1rem 0 1.5rem;
+      }
+      .toc h3 {
+        margin-bottom: 0.5rem;
+      }
+      .toc ul {
+        list-style: none;
+        padding: 0;
+      }
+      .toc li {
+        margin: 0.25rem 0;
+      }
+      .toc a {
+        color: var(--text-muted);
+        text-decoration: none;
+        font-size: 0.9rem;
+      }
+      .toc a:hover {
+        color: var(--accent);
+      }
+
+      /* --- Migration / numbered steps --- */
+      .migration-step {
+        display: grid;
+        grid-template-columns: 48px 1fr;
+        gap: 1rem;
+        margin: 1rem 0;
+        padding: 1rem;
+        background: var(--surface-raised);
+        border: 1px solid var(--border);
+        border-left: 3px solid var(--accent);
+      }
+      .migration-num {
+        font-family: var(--font-mono);
+        font-weight: 800;
+        font-size: 1.5rem;
+        color: var(--accent);
+        line-height: 1;
+      }
+      .migration-content h4 {
+        margin-bottom: 0.2rem;
+      }
+      .migration-content p {
+        margin-bottom: 0;
+        color: var(--text-muted);
+        font-size: 0.92rem;
+      }
+
+      /* --- Footer --- */
+      .footer {
+        margin-top: 2rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border);
+        font-size: 0.8rem;
+        color: var(--text-faint);
+        font-family: var(--font-mono);
+      }
+
+      /* --- Responsive --- */
+      @media (min-width: 1024px) {
+        .sidebar {
+          display: block;
+        }
+      }
+      @media (max-width: 768px) {
+        .layout {
+          flex-direction: column;
+          padding: 1rem;
+        }
+        .top-bar {
+          padding: 0.6rem 1rem;
+          flex-wrap: wrap;
+          gap: 0.3rem;
+        }
+        .grid-2,
+        .grid-3 {
+          grid-template-columns: 1fr;
+        }
+        .compare-header,
+        .compare-row {
+          grid-template-columns: 1fr;
+        }
+        .stat-grid,
+        .scorecard {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .migration-step {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="top-bar">
+      <span>PARETO EXECUTION PLAN</span>
+      <span>2026-06-20</span>
+      <span>v0.13.0 -> v1.0.0 prep</span>
+    </div>
+
+    <div class="layout">
+      <aside class="sidebar" data-nav>
+        <nav>
+          <div class="label">Contents</div>
+          <a href="#summary">Summary</a>
+          <a href="#decisions">Decisions Resolved</a>
+          <a href="#graph">Execution Graph</a>
+          <a href="#tier1">Tier 1 - v1.0 Path</a>
+          <a href="#tier2">Tier 2 - Hardening</a>
+          <a href="#tier3">Tier 3 - Polish</a>
+          <a href="#deferred">Deferred</a>
+        </nav>
+      </aside>
+
+      <main class="main">
+        <div class="hero">
+          <div class="hero-shapes">
+            <div class="circle"></div>
+            <div class="square"></div>
+            <div class="tri"></div>
+          </div>
+          <div class="hero-badge">Pareto Plan &middot; Full Execution</div>
+          <h1>v1.0 Release &amp; Hardening Plan</h1>
+          <p class="hero-subtitle">Every open TODO consolidated, sorted by impact/effort, broken into max-12-minute tasks. Ship v1.0 cleanup, then harden, then polish.</p>
+        </div>
+
+        <nav class="toc">
+          <h3>Contents</h3>
+          <ul>
+            <li><a href="#summary">Summary</a></li>
+            <li><a href="#decisions">Decisions Resolved</a></li>
+            <li><a href="#graph">Execution Graph</a></li>
+            <li><a href="#tier1">Tier 1 &mdash; v1.0 Critical Path</a></li>
+            <li><a href="#tier2">Tier 2 &mdash; Quality Hardening</a></li>
+            <li><a href="#tier3">Tier 3 &mdash; Polish</a></li>
+            <li><a href="#deferred">Deferred / Owner-Gated</a></li>
+          </ul>
+        </nav>
+
+        <h2 id="summary"><span class="num">00</span>Summary</h2>
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-value">21</div>
+            <div class="stat-label">Total Tasks</div>
+          </div>
+          <div class="stat-card stat-bad">
+            <div class="stat-value">6</div>
+            <div class="stat-label">Tier 1 (v1.0 path)</div>
+          </div>
+          <div class="stat-card stat-warn">
+            <div class="stat-value">6</div>
+            <div class="stat-label">Tier 2 (hardening)</div>
+          </div>
+          <div class="stat-card stat-good">
+            <div class="stat-value">4</div>
+            <div class="stat-label">Decisions Closed</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">5</div>
+            <div class="stat-label">Deferred</div>
+          </div>
+        </div>
+
+        <div class="card card-solution">
+          <h4>Research findings that shaped this plan</h4>
+          <ul>
+            <li><strong>Zero inline TODO/FIXME comments</strong> anywhere in the codebase &mdash; all work items come from docs, not code markers.</li>
+            <li><strong>All 11 deprecated symbols have ZERO production callers</strong> (5 functions + 6 color aliases) &mdash; safe to delete outright.</li>
+            <li><strong>Paused is a fully-decorated dead end:</strong> symbols, colors, shapes, sort priority all defined, but no <code>EventActivityPaused</code> constant, no handler, and <code>SetPaused()</code> has zero callers. The only way to reach it is direct field assignment in tests.</li>
+            <li><strong>Bonus smell:</strong> <code>ActivityStatusPending</code> reuses Paused's symbol/color &mdash; Pending and Paused are visually indistinguishable. Fixing this is folded into the Paused removal.</li>
+            <li><strong>TableData getters are load-bearing</strong> (back the <code>TableDataProvider</code> interface in <code>table/table.go</code> + test doubles) &mdash; NOT redundant duplication. Closes TODO #15.</li>
+          </ul>
+        </div>
+
+        <h2 id="decisions"><span class="num">01</span>Decisions Resolved</h2>
+        <p>Resolved during research so execution can proceed without blocking on ambiguity. Each is reversible pre-v1.0.</p>
+
+        <div class="issue issue-critical">
+          <span class="severity severity-critical">Decision</span>
+          <h3>D1 &mdash; SetPaused / ActivityStatusPaused: REMOVE</h3>
+          <div class="where">nom/activity_status.go, nom/activity.go, nom/status_mappers.go</div>
+          <p>Option B chosen over wiring (Option A). Rationale: zero callers, no event path, YAGNI ("don't build for imagined future needs"), pre-v1 experimental API. Pending reusing Paused's color/symbol is a real ambiguity bug that removal also fixes. <strong>Reversible:</strong> if a real CI pause/resume use case emerges, re-add WITH a proper event path before v1.0 stabilization.</p>
+          <div class="callout callout-warning">
+            <strong>Veto window</strong> Owner can object before v1.0 tag &mdash; this is the single most opinionated call in the plan.
+          </div>
+        </div>
+
+        <div class="issue issue-nice">
+          <span class="severity severity-nice">Closed</span>
+          <h3>D2 &mdash; TableData fields vs getters (#15): KEEP BOTH</h3>
+          <div class="where">tabledata.go:79, table/table.go:44</div>
+          <p><code>GetHeaders()</code>/<code>GetRows()</code> satisfy the <code>TableDataProvider</code> interface consumed by <code>table/table.go</code> and test doubles. They are load-bearing abstraction, not redundant accessors. Document the rationale; no code change.</p>
+        </div>
+
+        <div class="issue issue-nice">
+          <span class="severity severity-nice">Closed</span>
+          <h3>D3 &mdash; otter/v2 for TimingCache: KEEP hand-rolled</h3>
+          <div class="where">nom/timing_cache.go</div>
+          <p>The cache is a capped map+slice, already concurrency-safe with lock-free reads (fixed last sprint), eviction handled. Adding a dependency for a solved, tiny, hot-tuned structure violates the root-light philosophy. Document rationale; no code change.</p>
+        </div>
+
+        <div class="issue issue-nice">
+          <span class="severity severity-nice">Verified</span>
+          <h3>D6 &mdash; go.work gitignored (#22/#23): ALREADY DONE</h3>
+          <div class="where">.gitignore:19-20</div>
+          <p><code>go.work</code> and <code>go.work.sum</code> are gitignored; <code>go.work.example</code> is tracked and current. No action beyond a docs note.</p>
+        </div>
+
+        <h2 id="graph"><span class="num">02</span>Execution Graph</h2>
+        <div class="callout callout-solution">
+          <strong>Flow</strong> Decisions inform the v1.0 path &rarr; Tier 1 unblocks the release &rarr; Tier 2 hardens &rarr; Tier 3 polishes. The v1.0.0 tag is prepared but explicitly NOT cut (owner action).
+        </div>
+        <div style="background: var(--surface-sunken); border: 1px solid var(--border); padding: 12px; margin: 16px 0; overflow-x: auto;">
+<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" data-d2-version="v0.7.1" preserveAspectRatio="xMinYMin meet" viewBox="0 0 2136 1639"><svg class="d2-1193674125 d2-svg" width="2136" height="1639" viewBox="-89 -89 2136 1639"><rect x="-89.000000" y="-89.000000" width="2136.000000" height="1639.000000" rx="0.000000" fill="#FFFFFF" class=" fill-N7" stroke-width="0" /><style type="text/css"><![CDATA[
+.d2-1193674125 .text {
+	font-family: "d2-1193674125-font-regular";
+}
+@font-face {
+	font-family: d2-1193674125-font-regular;
+	src: url("data:application/font-woff;base64,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");
+}
+.d2-1193674125 .text-bold {
+	font-family: "d2-1193674125-font-bold";
+}
+@font-face {
+	font-family: d2-1193674125-font-bold;
+	src: url("data:application/font-woff;base64,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");
+}
+.d2-1193674125 .text-italic {
+	font-family: "d2-1193674125-font-italic";
+}
+@font-face {
+	font-family: d2-1193674125-font-italic;
+	src: url("data:application/font-woff;base64,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");
+}]]></style><style type="text/css"><![CDATA[.shape {
+  shape-rendering: geometricPrecision;
+  stroke-linejoin: round;
+}
+.connection {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.blend {
+  mix-blend-mode: multiply;
+  opacity: 0.5;
+}
+
+		.d2-1193674125 .fill-N1{fill:#0A0F25;}
+		.d2-1193674125 .fill-N2{fill:#676C7E;}
+		.d2-1193674125 .fill-N3{fill:#9499AB;}
+		.d2-1193674125 .fill-N4{fill:#CFD2DD;}
+		.d2-1193674125 .fill-N5{fill:#DEE1EB;}
+		.d2-1193674125 .fill-N6{fill:#EEF1F8;}
+		.d2-1193674125 .fill-N7{fill:#FFFFFF;}
+		.d2-1193674125 .fill-B1{fill:#0D32B2;}
+		.d2-1193674125 .fill-B2{fill:#0D32B2;}
+		.d2-1193674125 .fill-B3{fill:#E3E9FD;}
+		.d2-1193674125 .fill-B4{fill:#E3E9FD;}
+		.d2-1193674125 .fill-B5{fill:#EDF0FD;}
+		.d2-1193674125 .fill-B6{fill:#F7F8FE;}
+		.d2-1193674125 .fill-AA2{fill:#4A6FF3;}
+		.d2-1193674125 .fill-AA4{fill:#EDF0FD;}
+		.d2-1193674125 .fill-AA5{fill:#F7F8FE;}
+		.d2-1193674125 .fill-AB4{fill:#EDF0FD;}
+		.d2-1193674125 .fill-AB5{fill:#F7F8FE;}
+		.d2-1193674125 .stroke-N1{stroke:#0A0F25;}
+		.d2-1193674125 .stroke-N2{stroke:#676C7E;}
+		.d2-1193674125 .stroke-N3{stroke:#9499AB;}
+		.d2-1193674125 .stroke-N4{stroke:#CFD2DD;}
+		.d2-1193674125 .stroke-N5{stroke:#DEE1EB;}
+		.d2-1193674125 .stroke-N6{stroke:#EEF1F8;}
+		.d2-1193674125 .stroke-N7{stroke:#FFFFFF;}
+		.d2-1193674125 .stroke-B1{stroke:#0D32B2;}
+		.d2-1193674125 .stroke-B2{stroke:#0D32B2;}
+		.d2-1193674125 .stroke-B3{stroke:#E3E9FD;}
+		.d2-1193674125 .stroke-B4{stroke:#E3E9FD;}
+		.d2-1193674125 .stroke-B5{stroke:#EDF0FD;}
+		.d2-1193674125 .stroke-B6{stroke:#F7F8FE;}
+		.d2-1193674125 .stroke-AA2{stroke:#4A6FF3;}
+		.d2-1193674125 .stroke-AA4{stroke:#EDF0FD;}
+		.d2-1193674125 .stroke-AA5{stroke:#F7F8FE;}
+		.d2-1193674125 .stroke-AB4{stroke:#EDF0FD;}
+		.d2-1193674125 .stroke-AB5{stroke:#F7F8FE;}
+		.d2-1193674125 .background-color-N1{background-color:#0A0F25;}
+		.d2-1193674125 .background-color-N2{background-color:#676C7E;}
+		.d2-1193674125 .background-color-N3{background-color:#9499AB;}
+		.d2-1193674125 .background-color-N4{background-color:#CFD2DD;}
+		.d2-1193674125 .background-color-N5{background-color:#DEE1EB;}
+		.d2-1193674125 .background-color-N6{background-color:#EEF1F8;}
+		.d2-1193674125 .background-color-N7{background-color:#FFFFFF;}
+		.d2-1193674125 .background-color-B1{background-color:#0D32B2;}
+		.d2-1193674125 .background-color-B2{background-color:#0D32B2;}
+		.d2-1193674125 .background-color-B3{background-color:#E3E9FD;}
+		.d2-1193674125 .background-color-B4{background-color:#E3E9FD;}
+		.d2-1193674125 .background-color-B5{background-color:#EDF0FD;}
+		.d2-1193674125 .background-color-B6{background-color:#F7F8FE;}
+		.d2-1193674125 .background-color-AA2{background-color:#4A6FF3;}
+		.d2-1193674125 .background-color-AA4{background-color:#EDF0FD;}
+		.d2-1193674125 .background-color-AA5{background-color:#F7F8FE;}
+		.d2-1193674125 .background-color-AB4{background-color:#EDF0FD;}
+		.d2-1193674125 .background-color-AB5{background-color:#F7F8FE;}
+		.d2-1193674125 .color-N1{color:#0A0F25;}
+		.d2-1193674125 .color-N2{color:#676C7E;}
+		.d2-1193674125 .color-N3{color:#9499AB;}
+		.d2-1193674125 .color-N4{color:#CFD2DD;}
+		.d2-1193674125 .color-N5{color:#DEE1EB;}
+		.d2-1193674125 .color-N6{color:#EEF1F8;}
+		.d2-1193674125 .color-N7{color:#FFFFFF;}
+		.d2-1193674125 .color-B1{color:#0D32B2;}
+		.d2-1193674125 .color-B2{color:#0D32B2;}
+		.d2-1193674125 .color-B3{color:#E3E9FD;}
+		.d2-1193674125 .color-B4{color:#E3E9FD;}
+		.d2-1193674125 .color-B5{color:#EDF0FD;}
+		.d2-1193674125 .color-B6{color:#F7F8FE;}
+		.d2-1193674125 .color-AA2{color:#4A6FF3;}
+		.d2-1193674125 .color-AA4{color:#EDF0FD;}
+		.d2-1193674125 .color-AA5{color:#F7F8FE;}
+		.d2-1193674125 .color-AB4{color:#EDF0FD;}
+		.d2-1193674125 .color-AB5{color:#F7F8FE;}.appendix text.text{fill:#0A0F25}.md{--color-fg-default:#0A0F25;--color-fg-muted:#676C7E;--color-fg-subtle:#9499AB;--color-canvas-default:#FFFFFF;--color-canvas-subtle:#EEF1F8;--color-border-default:#0D32B2;--color-border-muted:#0D32B2;--color-neutral-muted:#EEF1F8;--color-accent-fg:#0D32B2;--color-accent-emphasis:#0D32B2;--color-attention-subtle:#676C7E;--color-danger-fg:red;}.sketch-overlay-B1{fill:url(#streaks-darker-d2-1193674125);mix-blend-mode:lighten}.sketch-overlay-B2{fill:url(#streaks-darker-d2-1193674125);mix-blend-mode:lighten}.sketch-overlay-B3{fill:url(#streaks-bright-d2-1193674125);mix-blend-mode:darken}.sketch-overlay-B4{fill:url(#streaks-bright-d2-1193674125);mix-blend-mode:darken}.sketch-overlay-B5{fill:url(#streaks-bright-d2-1193674125);mix-blend-mode:darken}.sketch-overlay-B6{fill:url(#streaks-bright-d2-1193674125);mix-blend-mode:darken}.sketch-overlay-AA2{fill:url(#streaks-dark-d2-1193674125);mix-blend-mode:overlay}.sketch-overlay-AA4{fill:url(#streaks-bright-d2-1193674125);mix-blend-mode:darken}.sketch-overlay-AA5{fill:url(#streaks-bright-d2-1193674125);mix-blend-mode:darken}.sketch-overlay-AB4{fill:url(#streaks-bright-d2-1193674125);mix-blend-mode:darken}.sketch-overlay-AB5{fill:url(#streaks-bright-d2-1193674125);mix-blend-mode:darken}.sketch-overlay-N1{fill:url(#streaks-darker-d2-1193674125);mix-blend-mode:lighten}.sketch-overlay-N2{fill:url(#streaks-dark-d2-1193674125);mix-blend-mode:overlay}.sketch-overlay-N3{fill:url(#streaks-normal-d2-1193674125);mix-blend-mode:color-burn}.sketch-overlay-N4{fill:url(#streaks-normal-d2-1193674125);mix-blend-mode:color-burn}.sketch-overlay-N5{fill:url(#streaks-bright-d2-1193674125);mix-blend-mode:darken}.sketch-overlay-N6{fill:url(#streaks-bright-d2-1193674125);mix-blend-mode:darken}.sketch-overlay-N7{fill:url(#streaks-bright-d2-1193674125);mix-blend-mode:darken}.light-code{display: block}.dark-code{display: none}]]></style><g class="djE="><g class="shape" ><rect x="12.000000" y="400.000000" width="1408.000000" height="182.000000" stroke="#0D32B2" fill="#ffb347" class=" stroke-B1" style="stroke-width:2;" /></g><text x="716.000000" y="433.000000" fill="#0e0e10" class="text-bold" style="text-anchor:middle;font-size:28px">v1.0 Critical Path — 1% to 51%</text></g><g class="aGFyZGVuaW5n"><g class="shape" ><rect x="175.000000" y="652.000000" width="1081.000000" height="182.000000" stroke="#0D32B2" fill="#6eb5ff" class=" stroke-B1" style="stroke-width:2;" /></g><text x="715.500000" y="685.000000" fill="#0e0e10" class="text-bold" style="text-anchor:middle;font-size:28px">Quality Hardening — 4% to 64%</text></g><g class="cG9saXNo"><g class="shape" ><rect x="294.000000" y="904.000000" width="843.000000" height="166.000000" stroke="#0D32B2" fill="#f4d35e" class=" stroke-B1" style="stroke-width:2;" /></g><text x="715.500000" y="937.000000" fill="#0e0e10" class="text-bold" style="text-anchor:middle;font-size:28px">Polish — 20% to 80%</text></g><g class="ZGVjaXNpb25z"><g class="shape" ><rect x="154.000000" y="12.000000" width="1123.000000" height="182.000000" stroke="#0D32B2" fill="#2a2a30" class=" stroke-B2" style="stroke-width:2;stroke-dasharray:8.000000,7.892511;" /></g><text x="715.500000" y="45.000000" fill="#f4f4f0" class="text" style="text-anchor:middle;font-size:28px">Decisions Resolved (research)</text></g><g class="ZGVmZXJyZWQ="><g class="shape" ><rect x="1297.000000" y="12.000000" width="555.000000" height="182.000000" stroke="#0D32B2" fill="#2a2a30" class=" stroke-B2" style="stroke-width:2;stroke-dasharray:8.000000,7.892511;" /></g><text x="1574.500000" y="45.000000" fill="#f4f4f0" class="text" style="text-anchor:middle;font-size:28px">Deferred / Owner-Gated</text></g><g class="dDE="><g class="shape" ><rect x="1872.000000" y="128.000000" width="60.000000" height="66.000000" stroke="#0D32B2" fill="#F7F8FE" class=" stroke-B1 fill-B6" style="stroke-width:2;" /></g><text x="1902.000000" y="166.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px">t1</text></g><g class="dDI="><g class="shape" ><rect x="1872.000000" y="264.000000" width="60.000000" height="66.000000" stroke="#0D32B2" fill="#F7F8FE" class=" stroke-B1 fill-B6" style="stroke-width:2;" /></g><text x="1902.000000" y="302.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px">t2</text></g><g class="dDM="><g class="shape" ><rect x="1872.000000" y="458.000000" width="60.000000" height="66.000000" stroke="#0D32B2" fill="#F7F8FE" class=" stroke-B1 fill-B6" style="stroke-width:2;" /></g><text x="1902.000000" y="496.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px">t3</text></g><g class="dDQ="><g class="shape" ><rect x="1872.000000" y="710.000000" width="61.000000" height="66.000000" stroke="#0D32B2" fill="#F7F8FE" class=" stroke-B1 fill-B6" style="stroke-width:2;" /></g><text x="1902.500000" y="748.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px">t4</text></g><g class="dDU="><g class="shape" ><rect x="1872.000000" y="954.000000" width="60.000000" height="66.000000" stroke="#0D32B2" fill="#F7F8FE" class=" stroke-B1 fill-B6" style="stroke-width:2;" /></g><text x="1902.000000" y="992.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px">t5</text></g><g class="dDY="><g class="shape" ><rect x="1872.000000" y="1140.000000" width="60.000000" height="66.000000" stroke="#0D32B2" fill="#F7F8FE" class=" stroke-B1 fill-B6" style="stroke-width:2;" /></g><text x="1902.000000" y="1178.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px">t6</text></g><g class="dGFn"><g class="shape" ><rect x="1868.000000" y="1383.000000" width="69.000000" height="66.000000" stroke="#0D32B2" fill="#F7F8FE" class=" stroke-B1 fill-B6" style="stroke-width:2;" /></g><text x="1902.500000" y="1421.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px">tag</text></g><g class="djEudDE="><g class="shape" ><rect x="62.000000" y="450.000000" width="234.000000" height="82.000000" stroke="#0D32B2" fill="#ff6b6b" class=" stroke-B1" style="stroke-width:2;" /></g><text x="179.000000" y="488.500000" fill="#0e0e10" class="text-bold" style="text-anchor:middle;font-size:16px"><tspan x="179.000000" dy="0.000000">T1 Remove Paused feature</tspan><tspan x="179.000000" dy="18.500000">+ give Pending own styling</tspan></text></g><g class="djEudDI="><g class="shape" ><rect x="316.000000" y="450.000000" width="219.000000" height="82.000000" stroke="#0D32B2" fill="#EDF0FD" class=" stroke-B1 fill-B5" style="stroke-width:2;" /></g><text x="425.500000" y="488.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="425.500000" dy="0.000000">T2 Remove 5 deprecated</tspan><tspan x="425.500000" dy="18.500000">functions (0 callers)</tspan></text></g><g class="djEudDM="><g class="shape" ><rect x="555.000000" y="450.000000" width="219.000000" height="82.000000" stroke="#0D32B2" fill="#EDF0FD" class=" stroke-B1 fill-B5" style="stroke-width:2;" /></g><text x="664.500000" y="488.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="664.500000" dy="0.000000">T3 Remove 6 deprecated</tspan><tspan x="664.500000" dy="18.500000">color aliases</tspan></text></g><g class="djEudDQ="><g class="shape" ><rect x="794.000000" y="450.000000" width="161.000000" height="82.000000" stroke="#0D32B2" fill="#EDF0FD" class=" stroke-B1 fill-B5" style="stroke-width:2;" /></g><text x="874.500000" y="488.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="874.500000" dy="0.000000">T4 Unexport ~15</tspan><tspan x="874.500000" dy="18.500000">tui internals</tspan></text></g><g class="djEudDU="><g class="shape" ><rect x="975.000000" y="450.000000" width="175.000000" height="82.000000" stroke="#0D32B2" fill="#EDF0FD" class=" stroke-B1 fill-B5" style="stroke-width:2;" /></g><text x="1062.500000" y="488.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="1062.500000" dy="0.000000">T5 Extract shared</tspan><tspan x="1062.500000" dy="18.500000">testevent package</tspan></text></g><g class="djEudDY="><g class="shape" ><rect x="1170.000000" y="450.000000" width="200.000000" height="82.000000" stroke="#0D32B2" fill="#EDF0FD" class=" stroke-B1 fill-B5" style="stroke-width:2;" /></g><text x="1270.000000" y="488.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="1270.000000" dy="0.000000">T6 v1.0.0 release prep</tspan><tspan x="1270.000000" dy="18.500000">(changelog, no tag)</tspan></text></g><g class="aGFyZGVuaW5nLnQ3"><g class="shape" ><rect x="225.000000" y="702.000000" width="257.000000" height="82.000000" stroke="#0D32B2" fill="#EDF0FD" class=" stroke-B1 fill-B5" style="stroke-width:2;" /></g><text x="353.500000" y="740.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="353.500000" dy="0.000000">T7 Integration test</tspan><tspan x="353.500000" dy="18.500000">(workflow to render to Finish)</tspan></text></g><g class="aGFyZGVuaW5nLnQ4"><g class="shape" ><rect x="502.000000" y="702.000000" width="267.000000" height="82.000000" stroke="#0D32B2" fill="#EDF0FD" class=" stroke-B1 fill-B5" style="stroke-width:2;" /></g><text x="635.500000" y="740.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="635.500000" dy="0.000000">T8 Fill coverage gaps</tspan><tspan x="635.500000" dy="18.500000">(Copy, StripANSI, removeChild)</tspan></text></g><g class="aGFyZGVuaW5nLnQ5"><g class="shape" ><rect x="789.000000" y="702.000000" width="206.000000" height="82.000000" stroke="#0D32B2" fill="#EDF0FD" class=" stroke-B1 fill-B5" style="stroke-width:2;" /></g><text x="892.000000" y="740.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="892.000000" dy="0.000000">T9 Unicode width tests</tspan><tspan x="892.000000" dy="18.500000">(CJK + emoji)</tspan></text></g><g class="aGFyZGVuaW5nLnQxMA=="><g class="shape" ><rect x="1015.000000" y="702.000000" width="191.000000" height="82.000000" stroke="#0D32B2" fill="#EDF0FD" class=" stroke-B1 fill-B5" style="stroke-width:2;" /></g><text x="1110.500000" y="740.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="1110.500000" dy="0.000000">T10 strconv + named</tspan><tspan x="1110.500000" dy="18.500000">constant in tui</tspan></text></g><g class="cG9saXNoLnQxMw=="><g class="shape" ><rect x="344.000000" y="954.000000" width="224.000000" height="66.000000" stroke="#0D32B2" fill="#EDF0FD" class=" stroke-B1 fill-B5" style="stroke-width:2;" /></g><text x="456.000000" y="992.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px">T13 Fuzz FormatDuration</text></g><g class="cG9saXNoLnQxNA=="><g class="shape" ><rect x="588.000000" y="954.000000" width="264.000000" height="66.000000" stroke="#0D32B2" fill="#EDF0FD" class=" stroke-B1 fill-B5" style="stroke-width:2;" /></g><text x="720.000000" y="992.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px">T14 Bench formatActivityLabel</text></g><g class="cG9saXNoLnQxNg=="><g class="shape" ><rect x="872.000000" y="954.000000" width="215.000000" height="66.000000" stroke="#0D32B2" fill="#EDF0FD" class=" stroke-B1 fill-B5" style="stroke-width:2;" /></g><text x="979.500000" y="992.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px">T16 CI badge to README</text></g><g class="ZGVjaXNpb25zLmQx"><g class="shape" ><rect x="204.000000" y="70.000000" width="208.000000" height="66.000000" stroke="#0D32B2" fill="#EDF0FD" class=" stroke-B1 fill-B5" style="stroke-width:2;" /></g><text x="308.000000" y="108.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px">D1 SetPaused: REMOVE</text></g><g class="ZGVjaXNpb25zLmQy"><g class="shape" ><rect x="432.000000" y="62.000000" width="237.000000" height="82.000000" stroke="#0D32B2" fill="#EDF0FD" class=" stroke-B1 fill-B5" style="stroke-width:2;" /></g><text x="550.500000" y="100.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="550.500000" dy="0.000000">D2 TableData getters: KEEP</tspan><tspan x="550.500000" dy="18.500000">(load-bearing interface)</tspan></text></g><g class="ZGVjaXNpb25zLmQz"><g class="shape" ><rect x="689.000000" y="70.000000" width="277.000000" height="66.000000" stroke="#0D32B2" fill="#EDF0FD" class=" stroke-B1 fill-B5" style="stroke-width:2;" /></g><text x="827.500000" y="108.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px">D3 otter cache: KEEP hand-rolled</text></g><g class="ZGVjaXNpb25zLmQ2"><g class="shape" ><rect x="986.000000" y="70.000000" width="241.000000" height="66.000000" stroke="#0D32B2" fill="#EDF0FD" class=" stroke-B1 fill-B5" style="stroke-width:2;" /></g><text x="1106.500000" y="108.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px">D6 go.work gitignore: DONE</text></g><g class="ZGVmZXJyZWQudGFn"><g class="shape" ><rect x="1347.000000" y="70.000000" width="206.000000" height="66.000000" stroke="#0D32B2" fill="#EDF0FD" class=" stroke-B1 fill-B5" style="stroke-width:2;" /></g><text x="1450.000000" y="108.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px">v1.0.0 TAG: owner cuts</text></g><g class="ZGVmZXJyZWQuZGVlcA=="><g class="shape" ><rect x="1573.000000" y="62.000000" width="229.000000" height="82.000000" stroke="#0D32B2" fill="#EDF0FD" class=" stroke-B1 fill-B5" style="stroke-width:2;" /></g><text x="1687.500000" y="100.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="1687.500000" dy="0.000000">Deep review graph/d2/tui:</tspan><tspan x="1687.500000" dy="18.500000">next sprints</tspan></text></g><g class="KHQxIC0mZ3Q7IHQyKVswXQ=="><marker id="mk-d2-1193674125-3488378134" markerWidth="10.000000" markerHeight="12.000000" refX="7.000000" refY="6.000000" viewBox="0.000000 0.000000 10.000000 12.000000" orient="auto" markerUnits="userSpaceOnUse"> <polygon points="0.000000,0.000000 10.000000,6.000000 0.000000,12.000000" fill="#0D32B2" class="connection fill-B1" stroke-width="2" /> </marker><path d="M 1902.500000 196.000000 L 1902.500000 260.000000" stroke="#0D32B2" fill="none" class="connection stroke-B1" style="stroke-width:2;" marker-end="url(#mk-d2-1193674125-3488378134)" mask="url(#d2-1193674125)" /></g><g class="KHQyIC0mZ3Q7IHQzKVswXQ=="><path d="M 1902.500000 332.000000 L 1902.500000 454.000000" stroke="#0D32B2" fill="none" class="connection stroke-B1" style="stroke-width:2;" marker-end="url(#mk-d2-1193674125-3488378134)" mask="url(#d2-1193674125)" /></g><g class="KHQzIC0mZ3Q7IHQ0KVswXQ=="><path d="M 1902.500000 526.000000 L 1902.500000 706.000000" stroke="#0D32B2" fill="none" class="connection stroke-B1" style="stroke-width:2;" marker-end="url(#mk-d2-1193674125-3488378134)" mask="url(#d2-1193674125)" /></g><g class="KHQ0IC0mZ3Q7IHQ1KVswXQ=="><path d="M 1902.500000 778.000000 L 1902.500000 950.000000" stroke="#0D32B2" fill="none" class="connection stroke-B1" style="stroke-width:2;" marker-end="url(#mk-d2-1193674125-3488378134)" mask="url(#d2-1193674125)" /></g><g class="KHQ1IC0mZ3Q7IHQ2KVswXQ=="><path d="M 1902.500000 1022.000000 L 1902.500000 1136.000000" stroke="#0D32B2" fill="none" class="connection stroke-B1" style="stroke-width:2;" marker-end="url(#mk-d2-1193674125-3488378134)" mask="url(#d2-1193674125)" /></g><g class="KHYxIC0mZ3Q7IGhhcmRlbmluZylbMF0="><path d="M 716.000000 584.000000 L 716.000000 648.000000" stroke="#0D32B2" fill="none" class="connection stroke-B1" style="stroke-width:2;" marker-end="url(#mk-d2-1193674125-3488378134)" mask="url(#d2-1193674125)" /></g><g class="KGhhcmRlbmluZyAtJmd0OyBwb2xpc2gpWzBd"><path d="M 716.000000 836.000000 L 716.000000 900.000000" stroke="#0D32B2" fill="none" class="connection stroke-B1" style="stroke-width:2;" marker-end="url(#mk-d2-1193674125-3488378134)" mask="url(#d2-1193674125)" /></g><g class="KGRlY2lzaW9ucyAtJmd0OyB2MSlbMF0="><path d="M 716.000000 196.000000 L 716.000000 396.000000" stroke="#0D32B2" fill="none" class="connection stroke-B1" style="stroke-width:2;" marker-end="url(#mk-d2-1193674125-3488378134)" mask="url(#d2-1193674125)" /><text x="716.500000" y="303.000000" fill="#676C7E" class="text-italic fill-N2" style="text-anchor:middle;font-size:16px">informs</text></g><g class="KHQ2IC0mZ3Q7IHRhZylbMF0="><path d="M 1902.500000 1208.000000 L 1902.500000 1379.000000" stroke="#0D32B2" fill="none" class="connection stroke-B1" style="stroke-width:2;" marker-end="url(#mk-d2-1193674125-3488378134)" mask="url(#d2-1193674125)" /><text x="1903.000000" y="1292.000000" fill="#676C7E" class="text-italic fill-N2" style="text-anchor:middle;font-size:16px"><tspan x="1903.000000" dy="0.000000">prepares,</tspan><tspan x="1903.000000" dy="18.500000">does NOT cut</tspan></text></g><mask id="d2-1193674125" maskUnits="userSpaceOnUse" x="-89" y="-89" width="2136" height="1639">
+<rect x="-89" y="-89" width="2136" height="1639" fill="white"></rect>
+<rect x="689.000000" y="287.000000" width="55" height="21" fill="black"></rect>
+<rect x="1857.000000" y="1276.000000" width="92" height="37" fill="black"></rect>
+</mask></svg></svg>
+        </div>
+
+        <h2 id="tier1"><span class="num">03</span>Tier 1 &mdash; v1.0 Critical Path (1% &rarr; 51%)</h2>
+        <p>The 6 tasks that ship the v1.0 release. Executed first, verified after each.</p>
+        <table>
+          <thead>
+            <tr><th>#</th><th>Task</th><th>Files</th><th>Effort</th><th>Impact</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>T1</td><td>Remove <code>ActivityStatusPaused</code> + <code>SetPaused()</code> + all paused render cases; give Pending its own distinct symbol/color</td><td>nom/activity_status.go, activity.go, status_mappers.go, activity_management.go, format.go, symbols.go</td><td><span class="badge badge-medium">Med</span></td><td><span class="badge badge-critical">High</span></td></tr>
+            <tr><td>T2</td><td>Remove 5 deprecated functions (0 prod callers): EnsureBuild, ParseActivityID, ParseWorkflowID, NewGraphNodeID, NewGraphNodeLabel, MarshalTSV(any)</td><td>nom/tree_accessors.go, nom/types.go, graph/reexports.go, delimited/tsv.go + tests</td><td><span class="badge badge-low">Low</span></td><td><span class="badge badge-critical">High</span></td></tr>
+            <tr><td>T3</td><td>Remove 6 deprecated color aliases (ColorRunning/Completed/Paused/Failed/Info/Phase)</td><td>nom/symbols.go + tests</td><td><span class="badge badge-low">Low</span></td><td><span class="badge badge-high">Med</span></td></tr>
+            <tr><td>T4</td><td>Unexport ~15 tui internals (msg types, state-check methods, constants) never used outside tui/</td><td>tui/*.go</td><td><span class="badge badge-medium">Med</span></td><td><span class="badge badge-critical">High</span></td></tr>
+            <tr><td>T5</td><td>Extract shared <code>testevent</code> package to testhelpers/ (5 duplicate Event structs)</td><td>testhelpers/testevent/, nom, tui, integration, examples</td><td><span class="badge badge-medium">Med</span></td><td><span class="badge badge-high">Med</span></td></tr>
+            <tr><td>T6</td><td>v1.0.0 release prep: CHANGELOG [Unreleased]&rarr;[1.0.0], final full verify (build/test/race/lint/vuln). <strong>Do NOT cut tag.</strong></td><td>CHANGELOG.md, RELEASE.md</td><td><span class="badge badge-low">Low</span></td><td><span class="badge badge-critical">High</span></td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="tier2"><span class="num">04</span>Tier 2 &mdash; Quality Hardening (4% &rarr; 64%)</h2>
+        <p>Coverage, correctness, and integration confidence.</p>
+        <table>
+          <thead>
+            <tr><th>#</th><th>Task</th><th>Files</th><th>Effort</th><th>Impact</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>T7</td><td>Integration test: full workflow &rarr; events &rarr; inline render &rarr; Finish</td><td>nom/inline_renderer_integration_test.go</td><td><span class="badge badge-medium">Med</span></td><td><span class="badge badge-high">Med</span></td></tr>
+            <tr><td>T8</td><td>Fill coverage gaps: Copy() nil-metadata, StripANSI, removeChild, MultiSubscriber.Subscribers()</td><td>nom/*_test.go</td><td><span class="badge badge-low">Low</span></td><td><span class="badge badge-low">Low</span></td></tr>
+            <tr><td>T9</td><td>VisibleLineCount test for wide Unicode (CJK, emoji)</td><td>nom/*_test.go</td><td><span class="badge badge-low">Low</span></td><td><span class="badge badge-medium">Med</span></td></tr>
+            <tr><td>T10</td><td>Replace <code>fmt.Sprintf("%s%d")</code> with strconv; extract <code>100.0</code> completion threshold to named constant</td><td>tui/summary.go</td><td><span class="badge badge-low">Low</span></td><td><span class="badge badge-low">Low</span></td></tr>
+            <tr><td>T11</td><td>OperationType: convert bare string constants to typed enum OR remove if unused</td><td>nom (audit first)</td><td><span class="badge badge-low">Low</span></td><td><span class="badge badge-medium">Med</span></td></tr>
+            <tr><td>T12</td><td>SymbolDownload/SymbolUpload: wire into summary or remove if dead</td><td>nom/symbols.go</td><td><span class="badge badge-low">Low</span></td><td><span class="badge badge-low">Low</span></td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="tier3"><span class="num">05</span>Tier 3 &mdash; Polish (20% &rarr; 80%)</h2>
+        <p>Lowest effort-to-impact, but cheap and improve confidence/marketing.</p>
+        <table>
+          <thead>
+            <tr><th>#</th><th>Task</th><th>Files</th><th>Effort</th><th>Impact</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>T13</td><td>Fuzz test FormatDuration (property-based: monotonic, no panics, sane output)</td><td>nom/format_fuzz_test.go</td><td><span class="badge badge-medium">Med</span></td><td><span class="badge badge-medium">Med</span></td></tr>
+            <tr><td>T14</td><td>Benchmark formatActivityLabel under high node count</td><td>nom/format_bench_test.go</td><td><span class="badge badge-low">Low</span></td><td><span class="badge badge-low">Low</span></td></tr>
+            <tr><td>T16</td><td>Add CI badge to README (verify .github/workflows exists first)</td><td>README.md</td><td><span class="badge badge-low">Low</span></td><td><span class="badge badge-medium">Med</span></td></tr>
+            <tr><td>T17</td><td>Confirm graph/d2/tui modules green via quality scan (deep review deferred)</td><td>nix run .#lint/.#test</td><td><span class="badge badge-low">Low</span></td><td><span class="badge badge-medium">Med</span></td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="deferred"><span class="num">&diams;</span>Deferred / Owner-Gated</h2>
+        <p>Included for completeness; explicitly out of scope for this execution sprint with rationale.</p>
+        <table>
+          <thead>
+            <tr><th>Item</th><th>Why deferred</th><th>Trigger to resume</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>v1.0.0 tag</strong></td><td>TODO_LIST #16: explicit "needs owner decision"; irreversible release act</td><td>Owner sign-off &mdash; one-command procedure documented in RELEASE.md</td></tr>
+            <tr><td><strong>Deep review: graph/d2/tui</strong></td><td>Each is a multi-hour from-scratch review (nom took 3 rounds); doing it shallowly violates the quality bar</td><td>Dedicated next sprints</td></tr>
+            <tr><td><strong>BDD tests for nom</strong></td><td>&#128308; effort; bdd module already exists; separate concern</td><td>After v1.0 stabilization</td></tr>
+            <tr><td><strong>Community post (#14)</strong></td><td>Needs owner's personal account (r/golang, Awesome Go)</td><td>Owner action</td></tr>
+            <tr><td><strong>CBOR format (ROADMAP)</strong></td><td>No trigger / no concrete user demand</td><td>A real binary-output use case surfaces</td></tr>
+          </tbody>
+        </table>
+
+        <footer class="footer">
+          Generated 2026-06-20 &middot; Pareto execution plan &middot; verified against codebase at v0.13.0
+        </footer>
+      </main>
+    </div>
+
+    <script>
+      (function () {
+        if (!("IntersectionObserver" in window)) return;
+        var nav = document.querySelector("[data-nav]");
+        if (!nav) return;
+        var links = nav.querySelectorAll('a[href^="#"]');
+        var ids = Array.from(links).map(function (l) {
+          return l.getAttribute("href").slice(1);
+        });
+        var sections = ids
+          .map(function (id) {
+            return document.getElementById(id);
+          })
+          .filter(Boolean);
+        if (!sections.length) return;
+        var observer = new IntersectionObserver(
+          function (entries) {
+            entries.forEach(function (entry) {
+              if (entry.isIntersecting) {
+                links.forEach(function (link) {
+                  link.classList.toggle(
+                    "active",
+                    link.getAttribute("href") === "#" + entry.target.id,
+                  );
+                });
+              }
+            });
+          },
+          { rootMargin: "-80px 0px -60% 0px", threshold: 0 },
+        );
+        sections.forEach(function (s) {
+          observer.observe(s);
+        });
+      })();
+    </script>
+  </body>
+</html>
