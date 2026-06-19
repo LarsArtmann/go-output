@@ -103,8 +103,7 @@ func main() {
 	fmt.Printf("\nRunning: %d, Completed: %d, Failed: %d, Pending: %d\n",
 		counts.Running, counts.Completed, counts.Failed, counts.Pending)
 
-	summary := nom.GetActivitySummaryString(counts.Running, 0, 0, counts.Total())
-	fmt.Printf("Summary: %s\n", summary)
+	fmt.Printf("Summary: %s\n", counts.Summary())
 
 	_ = subscriber.OnEvent(ctx, &workflowEvent{
 		eventType: nom.EventWorkflowCompleted,

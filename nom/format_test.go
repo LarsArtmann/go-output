@@ -160,36 +160,3 @@ func TestFormatActivityNodeTiming(t *testing.T) {
 		}
 	})
 }
-
-func TestGetActivitySummaryString(t *testing.T) {
-	t.Parallel()
-
-	tests := []struct {
-		name      string
-		running   int
-		completed int
-		failed    int
-		total     int
-		wantEmpty bool
-	}{
-		{"all zero returns empty", 0, 0, 0, 0, true},
-		{"only total", 0, 0, 0, 5, false},
-		{"with running", 3, 0, 0, 5, false},
-		{"with all categories", 1, 2, 3, 10, false},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-
-			got := GetActivitySummaryString(tt.running, tt.completed, tt.failed, tt.total)
-			if tt.wantEmpty && got != "" {
-				t.Errorf("expected empty, got %q", got)
-			}
-
-			if !tt.wantEmpty && got == "" {
-				t.Error("expected non-empty")
-			}
-		})
-	}
-}

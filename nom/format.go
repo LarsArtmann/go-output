@@ -2,7 +2,6 @@ package nom
 
 import (
 	"fmt"
-	"strings"
 	"time"
 )
 
@@ -66,34 +65,6 @@ func FormatDuration(duration time.Duration) string {
 	}
 
 	return fmt.Sprintf("%dh%dm", hours, minutes)
-}
-
-// GetActivitySummaryString generates a summary string for multiple activities
-// Format: "⏵3↑2∑5" (3 running, 2 uploading, 5 total).
-func GetActivitySummaryString(running, uploading, downloading, total int) string {
-	var parts []string
-	if running > 0 {
-		parts = append(parts, fmt.Sprintf("%s%d", SymbolRunning, running))
-	}
-
-	if uploading > 0 {
-		parts = append(parts, fmt.Sprintf("%s%d", SymbolUpload, uploading))
-	}
-
-	if downloading > 0 {
-		parts = append(parts, fmt.Sprintf("%s%d", SymbolDownload, downloading))
-	}
-
-	if len(parts) > 0 {
-		parts = append(parts, fmt.Sprintf("%s%d", SymbolTotal, total))
-		return strings.Join(parts, "")
-	}
-
-	if total > 0 {
-		return fmt.Sprintf("%s%d", SymbolTotal, total)
-	}
-
-	return ""
 }
 
 // ShouldDisplayTiming determines if timing should be displayed.
