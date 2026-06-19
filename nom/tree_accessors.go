@@ -1,12 +1,5 @@
 package nom
 
-func (dt *DependencyTree) getDisplayActivities() []ActivityID {
-	dt.mu.RLock()
-	defer dt.mu.RUnlock()
-
-	return dt.order
-}
-
 // GetNode returns a node by activity ID.
 func (dt *DependencyTree) GetNode(activityID ActivityID) *ActivityNode {
 	dt.mu.RLock()
@@ -34,8 +27,8 @@ func (dt *DependencyTree) GetRootNodes() []*ActivityNode {
 	return dt.roots
 }
 
-// EnsureBuild guarantees the tree is built at most once between AddActivity calls.
-// AddActivity resets buildOnce so the next GetRootNodes/EnsureBuild will rebuild.
+// EnsureBuild guarantees the tree is built at least once between AddActivity calls.
+// AddActivity resets loaded so the next GetRootNodes/EnsureBuild will rebuild.
 //
 // Deprecated: EnsureBuild is exported for cross-module test use only. Production
 // code should use GetRootNodes() or VisibleNodes(), which build implicitly.

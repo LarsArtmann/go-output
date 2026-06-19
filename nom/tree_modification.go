@@ -1,8 +1,6 @@
 package nom
 
 import (
-	"sync"
-
 	"github.com/larsartmann/go-output"
 )
 
@@ -57,7 +55,6 @@ func (dt *DependencyTree) AddActivity(
 	}
 
 	dt.loaded = false // Need to rebuild
-	dt.buildOnce = sync.Once{}
 
 	return nil
 }

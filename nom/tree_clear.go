@@ -1,9 +1,5 @@
 package nom
 
-import (
-	"sync"
-)
-
 // Clear removes all nodes from the tree.
 func (dt *DependencyTree) Clear() {
 	dt.mu.Lock()
@@ -11,7 +7,5 @@ func (dt *DependencyTree) Clear() {
 
 	dt.nodes = make(map[ActivityID]*ActivityNode)
 	dt.roots = make([]*ActivityNode, 0)
-	dt.order = make([]ActivityID, 0)
 	dt.loaded = false
-	dt.buildOnce = sync.Once{}
 }

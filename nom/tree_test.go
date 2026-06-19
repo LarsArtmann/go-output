@@ -111,18 +111,6 @@ func TestDependencyTree_Build_DepthCalculation(t *testing.T) {
 	}
 }
 
-func TestDependencyTree_GetDisplayActivities(t *testing.T) {
-	t.Parallel()
-
-	dt := NewDependencyTree()
-	dt.AddActivity(ActivityID("a"), NewActivity("a", "A"), nil)
-
-	activities := dt.getDisplayActivities()
-	if activities == nil {
-		t.Error("GetDisplayActivities() should not return nil")
-	}
-}
-
 func TestDependencyTree_FindNodesByStatus(t *testing.T) {
 	t.Parallel()
 

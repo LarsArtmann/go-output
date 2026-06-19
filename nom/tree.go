@@ -36,12 +36,10 @@ type ActivityNode struct {
 
 // DependencyTree manages the hierarchical structure of activities and their dependencies.
 type DependencyTree struct {
-	mu        sync.RWMutex
-	buildOnce sync.Once
-	nodes     map[ActivityID]*ActivityNode // All nodes by activity ID
-	roots     []*ActivityNode              // Root nodes (no dependencies)
-	order     []ActivityID                 // Display order (smart filtered)
-	loaded    bool                         // Whether tree has been built
+	mu     sync.RWMutex
+	nodes  map[ActivityID]*ActivityNode // All nodes by activity ID
+	roots  []*ActivityNode              // Root nodes (no dependencies)
+	loaded bool                         // Whether tree has been built
 }
 
 // NewDependencyTree creates a new dependency tree.
@@ -49,7 +47,6 @@ func NewDependencyTree() *DependencyTree {
 	return &DependencyTree{
 		nodes:  make(map[ActivityID]*ActivityNode),
 		roots:  make([]*ActivityNode, 0),
-		order:  make([]ActivityID, 0),
 		loaded: false,
 	}
 }
