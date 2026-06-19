@@ -184,19 +184,21 @@ func (dt *DependencyTree) walkSubtree(
 	}
 }
 
-// renderLine renders a single line for a visible entry. If maxWidth > 0, the
-// activity name is truncated so the whole line fits the terminal.
-func (dt *DependencyTree) renderLine(entry visibleEntry, maxWidth int) string {
-	node := entry.node
+// formatActivityLabel builds the core display string for a single activity
+// node: phase-aware symbol + label + timing info. Shared by renderLine (inline
+// tree rendering) and RenderNode (standalone TUI rendering) so every site
+// produces identical label formatting. Returns the unstyled display and the
+// status-derived color for the caller to apply.
+func formatActivityLabel(node *ActivityNode) (display string, c color.Color) {
 	symbol := node.Symbol
-	color := node.Color
+	c = node.Color
 
 	if node.IsPhase() {
 		symbol = SymbolPhase
-		color = Colors.Phase
+		c = Colors.Phase
 	}
 
-	activityDisplay := fmt.Sprintf("%s %s", symbol, node.Label.Get())
+	display = fmt.Sprintf("%s %s", symbol, node.Label.Get())
 
 	timingInfo := FormatActivityNodeTiming(
 		node.Status,
@@ -205,8 +207,18 @@ func (dt *DependencyTree) renderLine(entry visibleEntry, maxWidth int) string {
 	)
 
 	if timingInfo != "" {
-		activityDisplay += " " + timingInfo
+		display += " " + timingInfo
 	}
+
+	return display, c
+}
+
+// renderLine renders a single line for a visible entry. If maxWidth > 0, the
+// activity name is truncated so the whole line fits the terminal.
+func (dt *DependencyTree) renderLine(entry visibleEntry, maxWidth int) string {
+	node := entry.node
+
+	activityDisplay, color := formatActivityLabel(node)
 
 	if len(node.SecondaryParents) > 0 {
 		depNames := make([]string, len(node.SecondaryParents))
@@ -281,27 +293,8 @@ func (dt *DependencyTree) VisibleNodes(maxHeight int) []*ActivityNode {
 // method but accepted to support future width-truncation without a breaking
 // API change.
 func (dt *DependencyTree) RenderNode(node *ActivityNode, visibleNodes []*ActivityNode) string {
-	symbol := node.Symbol
-	color := node.Color
-
-	if node.IsPhase() {
-		symbol = SymbolPhase
-		color = Colors.Phase
-	}
-
-	activityDisplay := fmt.Sprintf("%s %s", symbol, node.Label.Get())
-
-	timingInfo := FormatActivityNodeTiming(
-		node.Status,
-		node.CurrentElapsed,
-		node.EstimatedTime,
-	)
-
-	if timingInfo != "" {
-		activityDisplay += " " + timingInfo
-	}
-
-	return activityNodeStyle(color).Render(activityDisplay)
+	display, color := formatActivityLabel(node)
+	return activityNodeStyle(color).Render(display)
 }
 
 // activityNodeStyle builds the inline lipgloss style used for rendering a
