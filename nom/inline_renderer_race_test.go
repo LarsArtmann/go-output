@@ -361,13 +361,3 @@ func cursorUpLines(output string) int {
 
 	return n
 }
-
-// stripSync removes the ANSI synchronisation wrapping written around each frame
-// (kept for future height-based assertions).
-func stripSync(s string) string {
-	s = strings.ReplaceAll(s, ansiSyncBegin, "")
-	s = strings.ReplaceAll(s, ansiSyncEnd, "")
-	s = strings.ReplaceAll(s, ansiHideCursor, "")
-
-	return s
-}

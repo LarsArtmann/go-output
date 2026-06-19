@@ -266,7 +266,7 @@ func TestDependencyTree_RenderNode(t *testing.T) {
 		t.Error("RenderNode should produce non-empty output")
 	}
 
-	if !contains(out, "Root") {
+	if !strings.Contains(out, "Root") {
 		t.Errorf("RenderNode output should contain node name, got: %q", out)
 	}
 }
@@ -311,8 +311,4 @@ func TestDependencyTree_VisibleNodes(t *testing.T) {
 			t.Errorf("VisibleNodes on empty tree = %d, want 0", len(visible))
 		}
 	})
-}
-
-func contains(s, substr string) bool {
-	return strings.Contains(s, substr)
 }
