@@ -6,6 +6,40 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.16.0] - 2026-06-20
+
+Feature release: NOM-style rendering capabilities ported from the original
+nix-output-monitor, plus a consolidation of the inline renderer's locking
+model and CI/environment hardening. All new features are **backward-compatible**
+— host/download/node-class are dormant opt-in annotations that render only
+when populated.
+
+### Added — NOM Feature Ports
+
+- **`NodeClass` (root/twig/leaf)** — `ActivityNode.Class()` mirrors NOM's `mapRootsTwigsAndLeaves`. Root nodes now render **bold** so top-level activities stand out from intermediaries and leaves. (Golden files regenerated for the intentional root-styling change.)
+- **Host column** — `ActivitySnapshot.Host` + optional `HostAccessor` event interface. Rendered as a dim `@host` tag when an event populates it; dormant otherwise. Mirrors NOM's host column.
+- **Per-activity download progress bars** — `ActivitySnapshot.Download` (`DownloadProgress{Downloaded, Total int64}`) + optional `DownloadAccessor`. Rendered as a compact `▕████░░░░▏ 45%` bar while an activity is running; dormant otherwise. `formatBytes` renders human-readable sizes.
+- **Height-pressure collapse marker** — when completed children are elided under `maxHeight` pressure, the renderer emits a faint `⋯ N completed` line so the collapsed work is visible rather than silently gone.
+- **`SetMaxHeight`** — updates the tree-height cap at runtime, race-free (read via the lock-protected `snapshotConfig`).
+- **`SetPlainText`** — runtime override for plain, append-only output (no cursor/sync escape codes). `plainText` is now part of `rendererConfig`, consistent with all other config.
+
+### Added — Tests & Tooling
+
+- **`scripts/pre-tag-check.sh`** (from v0.15.0, now exercised) — builds and tests every module with `-race` on the concurrency-sensitive ones before a tag is cut.
+- **`nom_progress` example smoke test** — guards against the blank-render regression class.
+- **Inline-renderer failure integration test** — verifies a failed activity + propagated workflow error surface through `Draw` and `Finish`.
+- **Render-lock contention benchmarks** — `RenderUnderStepChurn`, `SnapshotActivities_Parallel`, `InlineRenderer_Draw`, `DrawWithChurn`.
+- **`NodeClass`, host/download, collapse-marker, `DownloadProgress.Fraction` unit tests.**
+
+### Changed — Consolidations
+
+- **Single config snapshot** — `Draw`, `Finish`, and `renderSummary` each did scattered `tickMu.RLock` field reads (and `renderSummary` re-acquired the lock `Draw` already held). Replaced with one `snapshotConfig()` returning an immutable `rendererConfig`. `maxHeight` is now part of the snapshot. `renderMu` stays separate — merging would reintroduce the documented `Stop()` deadlock.
+- **Inline renderer CI degradation** — `detectPlainText()` (evaluated at construction) returns true under `envdetect.IsCI()`; `Draw` then appends frames line-by-line instead of cursor-up/clear-line/sync codes that corrupt captured CI logs.
+
+### Fixed
+
+- **Cyclop lint violations** in `Draw` and `walkSubtree` (both exceeded 13 after feature additions) — extracted `buildRedrawOutput` and `appendCollapseMarker` as focused helpers.
+
 ## [0.15.0] - 2026-06-20
 
 Design-smell cleanup following the v0.14.0 type-model refactor. Two breaking
