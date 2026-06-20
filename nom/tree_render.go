@@ -266,7 +266,14 @@ func (dt *DependencyTree) renderLine(
 		activityDisplay = TruncateVisible(activityDisplay, available)
 	}
 
-	rendered := activityNodeStyle(color).Render(fullPrefix + activityDisplay)
+	style := activityNodeStyle(color)
+	// Roots anchor the tree — render them bold so the top-level activities
+	// stand out from their twigs/leaves (NOM root/twig/leaf styling).
+	if node.Class() == NodeClassRoot {
+		style = style.Bold(true)
+	}
+
+	rendered := style.Render(fullPrefix + activityDisplay)
 
 	if maxWidth > 0 && VisibleWidth(rendered) > maxWidth {
 		rendered = TruncateVisible(rendered, maxWidth)

@@ -93,3 +93,27 @@ func (n *ActivityNode) removeChild(id ActivityID) {
 func (n *ActivityNode) hasSecondaryParent(id ActivityID) bool {
 	return slices.Contains(n.SecondaryParents, id)
 }
+
+// NodeClass classifies a tree node by its structural position, mirroring NOM's
+// mapRootsTwigsAndLeaves. Roots anchor the tree, leaves are terminal activities
+// (the actual deliverables), and twigs are the intermediaries between them.
+type NodeClass string
+
+const (
+	NodeClassRoot NodeClass = "root"
+	NodeClassTwig NodeClass = "twig"
+	NodeClassLeaf NodeClass = "leaf"
+)
+
+// Class returns the node's structural classification. A root has no parent
+// (or IsRoot); a leaf has no children; everything else is a twig.
+func (n *ActivityNode) Class() NodeClass {
+	switch {
+	case n.IsRoot || n.Parent == nil:
+		return NodeClassRoot
+	case len(n.Children) == 0:
+		return NodeClassLeaf
+	default:
+		return NodeClassTwig
+	}
+}

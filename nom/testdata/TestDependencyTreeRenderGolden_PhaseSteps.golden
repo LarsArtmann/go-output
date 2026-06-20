@@ -1,4 +1,4 @@
-[95m◈ Build Phase ⏱️5.0s[m
+[1;95m◈ Build Phase ⏱️5.0s[m
 [91m├── ⚠ Deploy ⏱️1.0s[m
 [93m├── ⏵ Run Tests ⏱️3.0s[m
 [90m├── ○ Lint Code[m
