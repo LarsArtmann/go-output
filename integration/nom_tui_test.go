@@ -56,8 +56,6 @@ func TestNOMSubscriber_Integration(t *testing.T) {
 			t.Fatal("dependency tree should exist")
 		}
 
-		subscriber.UpdateRunningActivityElapsed()
-
 		if err := subscriber.OnEvent(ctx, nom.ActivityCompleted{
 			ID:       nom.NewActivityID("build"),
 			Name:     nom.NewActivityName("Build Project"),
@@ -197,8 +195,6 @@ func TestNOMSubscriber_RenderNodeVisibleNodes_Integration(t *testing.T) {
 	startActivity(subscriber, ctx, "build", "Build")
 	startActivity(subscriber, ctx, "test", "Test")
 	completeActivity(subscriber, ctx, "build", "Build", 3*time.Second)
-
-	subscriber.UpdateRunningActivityElapsed()
 
 	tree := subscriber.GetDependencyTree()
 	if tree == nil {

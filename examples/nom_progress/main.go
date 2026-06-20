@@ -60,8 +60,6 @@ func main() {
 		}
 	}
 
-	subscriber.UpdateRunningActivityElapsed()
-
 	snaps := subscriber.SnapshotActivities()
 
 	fmt.Println("=== NOM Dependency Tree (priority-ordered) ===")

@@ -56,7 +56,6 @@ func TestNomProgressExampleSmokeTest(t *testing.T) {
 		}
 	}
 
-	subscriber.UpdateRunningActivityElapsed()
 	snaps := subscriber.SnapshotActivities()
 
 	if len(snaps) == 0 {

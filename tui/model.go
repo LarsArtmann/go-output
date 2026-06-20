@@ -192,8 +192,6 @@ func (m *ProgressModel) handleTick(msg tickMsg) (tea.Model, tea.Cmd) {
 }
 
 func (m *ProgressModel) syncNOMSubscriber() {
-	m.nomSubscriber.UpdateRunningActivityElapsed()
-
 	m.dependencyTree = m.nomSubscriber.GetDependencyTree()
 	if m.nomSubscriber.IsWorkflowRunning() {
 		if m.workflowState == workflowStateIdle {

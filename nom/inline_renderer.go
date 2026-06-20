@@ -198,8 +198,6 @@ func (r *InlineRenderer) Draw() {
 
 	cfg := r.snapshotConfig()
 
-	r.subscriber.UpdateRunningActivityElapsed()
-
 	maxH := r.effectiveMaxHeight(cfg.maxHeight)
 	maxW := r.effectiveMaxWidth()
 

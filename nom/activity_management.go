@@ -3,7 +3,6 @@ package nom
 import (
 	"strconv"
 	"strings"
-	"time"
 )
 
 // ActivityCounts holds counts of activities grouped by status.
@@ -24,13 +23,13 @@ func applyCountsDelta(c *ActivityCounts, from, to ActivityStatus) {
 		return
 	}
 
-	countsForStatus(c, from, -1)
-	countsForStatus(c, to, +1)
+	adjustStatusCount(c, from, -1)
+	adjustStatusCount(c, to, +1)
 }
 
-// countsForStatus applies a delta (+1 or -1) to the count bucket for the
+// adjustStatusCount applies a delta (+1 or -1) to the count bucket for the
 // given status.
-func countsForStatus(c *ActivityCounts, status ActivityStatus, delta int) {
+func adjustStatusCount(c *ActivityCounts, status ActivityStatus, delta int) {
 	switch status {
 	case ActivityStatusRunning:
 		c.Running += delta
@@ -96,21 +95,6 @@ func (ns *NOMStyleSubscriber) GetActivityCounts() ActivityCounts {
 	return ns.counts
 }
 
-// UpdateRunningActivityElapsed updates elapsed time for all currently running activities.
-// This should be called periodically (e.g., on each tick) to ensure timing displays are current.
-func (ns *NOMStyleSubscriber) UpdateRunningActivityElapsed() {
-	ns.mu.Lock()
-	defer ns.mu.Unlock()
-
-	now := time.Now()
-
-	for _, activity := range ns.activities {
-		if activity.Status == ActivityStatusRunning && !activity.StartTime.IsZero() {
-			activity.CurrentElapsed = now.Sub(activity.StartTime)
-		}
-	}
-}
-
 // SetActivityState sets an activity's state (for testing purposes).
 // Maintains the count cache: if replacing an existing activity, the old
 // status is decremented before the new one is counted.
@@ -119,9 +103,9 @@ func (ns *NOMStyleSubscriber) SetActivityState(id ActivityID, activity *Activity
 	defer ns.mu.Unlock()
 
 	if old, exists := ns.activities[id]; exists {
-		countsForStatus(&ns.counts, old.Status, -1)
+		adjustStatusCount(&ns.counts, old.Status, -1)
 	}
 
-	countsForStatus(&ns.counts, activity.Status, +1)
+	adjustStatusCount(&ns.counts, activity.Status, +1)
 	ns.activities[id] = activity
 }

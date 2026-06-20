@@ -37,8 +37,6 @@ type Activity struct {
 	Symbol Symbol
 	// Color is the lipgloss terminal color (cached from Status for rendering).
 	Color color.Color
-	// CurrentElapsed is updated periodically for running activities.
-	CurrentElapsed time.Duration
 	// Host optionally names where the activity runs (e.g. a build machine).
 	// Populated from ActivityStarted.Host; rendered when non-empty.
 	Host string
@@ -83,29 +81,22 @@ func (a *Activity) SetRunning() {
 	a.applyDisplayStyle()
 }
 
-// SetCompleted transitions the activity to completed, stamps EndedAt, and
-// finalizes CurrentElapsed so renderers show the total run duration.
+// SetCompleted transitions the activity to completed and stamps EndTime.
 func (a *Activity) SetCompleted() {
 	a.Status = ActivityStatusCompleted
 
 	a.EndTime = time.Now()
-	if !a.StartTime.IsZero() {
-		a.CurrentElapsed = a.EndTime.Sub(a.StartTime)
-	}
 
 	a.applyDisplayStyle()
 }
 
-// SetFailed transitions the activity to failed, records the error, stamps
-// EndedAt, and finalizes CurrentElapsed.
+// SetFailed transitions the activity to failed, records the error, and
+// stamps EndTime.
 func (a *Activity) SetFailed(err error) {
 	a.Status = ActivityStatusFailed
 	a.Err = err
 
 	a.EndTime = time.Now()
-	if !a.StartTime.IsZero() {
-		a.CurrentElapsed = a.EndTime.Sub(a.StartTime)
-	}
 
 	a.applyDisplayStyle()
 }
@@ -142,4 +133,26 @@ func (a *Activity) Copy() *Activity {
 func (a *Activity) applyDisplayStyle() {
 	a.Symbol = a.Status.GetSymbol()
 	a.Color = a.Status.GetColor()
+}
+
+// elapsedAt returns the elapsed time for this activity as of the given moment.
+// For running activities: now - StartTime. For terminal (completed/failed):
+// EndTime - StartTime (the finalized duration). Returns 0 for pending or
+// un-started activities. This is the derived replacement for the old
+// per-tick-mutated CurrentElapsed field.
+func (a *Activity) elapsedAt(now time.Time) time.Duration {
+	if a.StartTime.IsZero() {
+		return 0
+	}
+
+	if a.Status == ActivityStatusRunning {
+		return now.Sub(a.StartTime)
+	}
+
+	// Terminal state: use finalized EndTime if available.
+	if !a.EndTime.IsZero() {
+		return a.EndTime.Sub(a.StartTime)
+	}
+
+	return 0
 }

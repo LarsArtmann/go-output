@@ -175,22 +175,26 @@ func TestNOMStyleSubscriber_GetActivity_NotFound(t *testing.T) {
 	}
 }
 
-func TestNOMStyleSubscriber_UpdateRunningActivityElapsed(t *testing.T) {
+func TestSnapshotActivities_DerivesRunningElapsed(t *testing.T) {
 	t.Parallel()
 
 	ns, ctx := setupWithWorkflow(t)
 	sendActivityStarted(t, ns, ctx, ActivityID("a1"), ActivityName("Build"))
 
 	time.Sleep(10 * time.Millisecond)
-	ns.UpdateRunningActivityElapsed()
 
-	activity := ns.GetActivity(ActivityID("a1"))
-	if activity == nil {
-		t.Fatal("activity should exist")
+	// SnapshotActivities must derive elapsed from StartTime for running activities.
+	// The old per-tick UpdateRunningActivityElapsed mutation path is gone — the
+	// snapshot is now the single source of truth for display timing.
+	snaps := ns.SnapshotActivities()
+
+	snap, ok := snaps[ActivityID("a1")]
+	if !ok {
+		t.Fatal("snapshot missing activity a1")
 	}
 
-	if activity.CurrentElapsed <= 0 {
-		t.Error("CurrentElapsed should be positive after UpdateRunningActivityElapsed()")
+	if snap.CurrentElapsed <= 0 {
+		t.Error("snapshot CurrentElapsed should be positive for a running activity after time has passed")
 	}
 }
 

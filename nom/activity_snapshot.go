@@ -62,10 +62,16 @@ func (d DownloadProgress) Fraction() float64 {
 // copies the fields, then releases. The returned map is safe to read without
 // any further locking. This is the race-free way to obtain activity state for
 // rendering — the tree walk reads only the immutable snapshot data.
+//
+// CurrentElapsed is DERIVED here from StartTime/EndTime/Status rather than
+// read from a per-tick-mutated field. This eliminates UpdateRunningActivityElapsed
+// and its O(n) write-per-tick scan: running activities compute now-StartTime
+// at snapshot time; terminal activities use EndTime-StartTime.
 func (ns *NOMStyleSubscriber) SnapshotActivities() map[ActivityID]ActivitySnapshot {
 	ns.mu.RLock()
 	defer ns.mu.RUnlock()
 
+	now := time.Now()
 	snapshots := make(map[ActivityID]ActivitySnapshot, len(ns.activities))
 
 	for id, activity := range ns.activities {
@@ -75,7 +81,7 @@ func (ns *NOMStyleSubscriber) SnapshotActivities() map[ActivityID]ActivitySnapsh
 			Status:         activity.Status,
 			Symbol:         activity.Symbol,
 			Color:          activity.Color,
-			CurrentElapsed: activity.CurrentElapsed,
+			CurrentElapsed: activity.elapsedAt(now),
 			EstimatedTime:  activity.EstimatedTime,
 			Host:           activity.Host,
 			Download:       activity.Download,
