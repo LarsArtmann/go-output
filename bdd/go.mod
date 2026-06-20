@@ -3,7 +3,7 @@ module github.com/larsartmann/go-output/bdd
 go 1.26.3
 
 require (
-	github.com/larsartmann/go-output v0.16.0
+	github.com/larsartmann/go-output v0.17.0
 	github.com/larsartmann/go-output/delimited v0.13.0
 	github.com/larsartmann/go-output/serialization v0.13.0
 	github.com/onsi/ginkgo/v2 v2.23.4

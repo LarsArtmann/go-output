@@ -38,6 +38,8 @@ func TestNomProgressExampleSmokeTest(t *testing.T) {
 		}
 
 		switch a.status {
+		case nom.ActivityStatusPending, nom.ActivityStatusRunning:
+			// Non-terminal: ActivityStarted is the only event; no transition to fire.
 		case nom.ActivityStatusCompleted:
 			if err := subscriber.OnEvent(ctx, nom.ActivityCompleted{
 				ID:       nom.NewActivityID(a.id),

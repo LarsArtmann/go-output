@@ -3,7 +3,7 @@ module github.com/larsartmann/go-output/graph
 go 1.26.3
 
 require (
-	github.com/larsartmann/go-output v0.16.0
+	github.com/larsartmann/go-output v0.17.0
 	github.com/larsartmann/go-output/enum v0.13.0
 	github.com/larsartmann/go-output/escape v0.13.0
 	github.com/larsartmann/go-output/testhelpers v0.13.0

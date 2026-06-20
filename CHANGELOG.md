@@ -6,13 +6,34 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
-### Changed — Performance
+## [0.17.0] - 2026-06-20
 
-- **`GetActivityCounts()` is now O(1)** instead of O(n) per render frame. The subscriber maintains an incrementally-updated `ActivityCounts` cache (`applyCountsDelta` on every state transition). Previously, the summary bar scanned all activities every tick (~10×/sec); now it reads a pre-computed value. At 10,000 activities this is ~1000× faster (flat ~10ns regardless of count, verified by benchmark). This ports the core algorithmic advantage of upstream nix-output-monitor's `DependencySummary` monoid.
+Breaking type-model release. Three refactors harden the NOM event and activity
+types into typed, sealed, decoupled domain forms, removing string-based
+dispatch, leaky framework coupling, and lying name conventions. ADR 006 marks
+NOM APIs experimental pre-v1.0, so these breaking changes are permitted. The
+render hot-path O(n) elimination ships as non-breaking performance work in the
+same release.
 
-### Removed — Per-tick write path eliminated
+### Changed — Breaking (NOM type-model hardening)
 
-- **`UpdateRunningActivityElapsed()` deleted.** `CurrentElapsed` is now derived at snapshot time from `StartTime`/`EndTime`/`Status` inside `SnapshotActivities()`, eliminating the per-tick O(n) write scan that ran every 100ms. The `CurrentElapsed` field was removed from `Activity` (it was only ever read into the snapshot). Renderers read `ActivitySnapshot.CurrentElapsed` unchanged — the snapshot is the single source of truth for display timing. Callers that invoked `UpdateRunningActivityElapsed()` (inline renderer, TUI, examples, integration tests) simply drop the call; snapshots are always current.
+- **`Event` is now a sealed sum type.** The `Event` interface carries an unexported `isEvent()` marker; concrete structs (`WorkflowStarted`, `ActivityCompleted`, …) replace the open interface + `GetEventType()` string dispatch. All five optional accessor interfaces (`WorkflowEventAccessor`, `DependenciesAccessor`, `HostAccessor`, `DownloadAccessor`, `KindAccessor`) are deleted — handlers read event fields directly via an exhaustive Go type switch. This makes silent event-routing typos a compile error instead of a runtime drop. Callers that implemented local accessor structs (tests, examples, integration) drop the boilerplate (~420 net lines) and construct concrete event types directly.
+- **`ActivityKind` replaces the `"phase:"` ID-prefix convention.** Phase detection was `strings.HasPrefix(id, "phase:")` — a lying name that claimed to signal kind but was an opaque string matched at render time. `ActivityKind` (`ActivityKindTask` / `ActivityKindPhase`) is set at construction via `NewPhase()` and threaded through `ActivitySnapshot` (`snap.IsPhase()`). `isPhaseID` and the dead `ActivityNode.IsPhase()` (zero callers) are deleted. Callers that prefixed IDs with `"phase:"` to obtain phase rendering now call `NewPhase(id, name)` instead.
+- **`Activity` no longer embeds `output.GraphNode`.** The domain type leaked diagram-export concerns (`Shape`, `Style`, `Metadata`) into the domain model and required `applyVisualStyle()` to mutate graph fields on every lifecycle transition. `Activity` now holds only identity + lifecycle + NOM display state (`ID`/`Label` are direct branded-type fields); `Shape` and `GraphStyle` are projected from `Status` at `subscriberView.Nodes()`, so the framework coupling lives at the export boundary. `applyVisualStyle()` becomes the slim `applyDisplayStyle()` (terminal `Symbol`/`Color` only).
+- **`Activity.CurrentElapsed` field removed** (see Performance below). Callers reading elapsed off `*Activity` now read `ActivitySnapshot.CurrentElapsed`.
+
+### Changed — Performance (render hot-path O(n) elimination)
+
+- **`GetActivityCounts()` is now O(1)** instead of O(n) per render frame. The subscriber maintains an incrementally-updated `ActivityCounts` cache (`applyCountsDelta` on every state transition). Previously, the summary bar scanned all activities every tick (~10×/sec); now it reads a pre-computed value. At 10,000 activities this is ~1000× faster (flat ~10ns regardless of count, verified by benchmark). This ports the core algorithmic advantage of upstream nix-output-monitor's `DependencySummary` monoid. The invariant is verified by `TestActivityCountsCache_LifecycleConsistency` (brute-force recount vs cache after every event).
+- **`UpdateRunningActivityElapsed()` deleted.** `CurrentElapsed` is now derived at snapshot time from `StartTime`/`EndTime`/`Status` inside `SnapshotActivities()` (`activity.elapsedAt(now)`), eliminating the per-tick O(n) write scan that ran every 100ms. Renderers read `ActivitySnapshot.CurrentElapsed` unchanged — the snapshot is the single source of truth for display timing. Callers that invoked `UpdateRunningActivityElapsed()` (inline renderer, TUI, examples, integration tests) simply drop the call; snapshots are always current by derivation.
+
+### Changed — Other
+
+- **Lockstep dependency bump.** All 17 sub-module `go.mod` files now reference root `v0.16.0` (tui also `nom/v0.16.0`), reflecting the mono-version tagging policy. Sub-modules build against root unchanged since the v0.17.0 breaking changes are nom-internal.
+
+### Fixed
+
+- **Restored `CODE_OF_CONDUCT.md`.** The file was auto-deleted by the BuildFlow pre-commit hook during the v0.16.0 lockstep dep bump (the same recurring issue documented in AGENTS.md "Gotchas" that struck the v0.14.0 release). Restored from the last known-good revision.
 
 ## [0.16.0] - 2026-06-20
 

@@ -3,16 +3,16 @@ module github.com/larsartmann/go-output/examples
 go 1.26.3
 
 require (
-	github.com/larsartmann/go-output v0.16.0
+	github.com/larsartmann/go-output v0.17.0
 	github.com/larsartmann/go-output/d2 v0.13.0
 	github.com/larsartmann/go-output/delimited v0.13.0
 	github.com/larsartmann/go-output/graph v0.13.0
 	github.com/larsartmann/go-output/markup v0.13.0
-	github.com/larsartmann/go-output/nom v0.16.0
+	github.com/larsartmann/go-output/nom v0.17.0
 	github.com/larsartmann/go-output/plantuml v0.13.0
 	github.com/larsartmann/go-output/serialization v0.13.0
 	github.com/larsartmann/go-output/table v0.13.0
-	github.com/larsartmann/go-output/tui v0.16.0
+	github.com/larsartmann/go-output/tui v0.17.0
 )
 
 require (
