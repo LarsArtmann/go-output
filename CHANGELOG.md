@@ -6,35 +6,42 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
-## [1.0.0] - 2026-06-20
+### Fixed
 
-**The first stable release.** The public API is now frozen per ADR 006. This
-release consolidates all post-0.13.0 work: pre-v1 API cleanup, rendering
-bug fixes, data-race elimination, and the removal of dead/speculative code.
+- **`tui.Subscriber()` re-exported** — the v0.14.0 hardening unexported it, but BuildFlow (the primary external consumer) needs it to dispatch lifecycle events. Re-exported as public API.
+- **Compile-broken integration test, TUI test, and example** after v0.14.0 refactor — rewritten to use `SnapshotActivities` + `RenderWithSnapshots`.
+
+### Changed
+
+- **Deleted nil-snapshot footgun wrappers**: `RenderString`, `RenderWithWidth`, `VisibleNodes` — they silently passed nil snapshots, producing blank labels. Callers now use `RenderWithSnapshots(snapshots, maxHeight, maxWidth)` / `VisibleNodesWithSnapshots(snapshots, maxHeight)`.
+- **`AddActivity` signature simplified**: removed the dead `*Activity` parameter (it was silently discarded after the snapshot refactor). New: `AddActivity(id ActivityID, deps []ActivityID)`.
+
+## [0.14.0] - 2026-06-20
+
+Pre-v1 cleanup, rendering bug fixes, data-race elimination, and dead-code removal.
 
 ### Added — API Stability
 
+- **`nom.ActivitySnapshot`** — immutable value copy of mutable activity fields, taken under the subscriber's read lock via `SnapshotActivities()`. The dependency tree renderer consumes snapshots instead of reading a shared pointer, eliminating the data race at the type level.
+- **`nom.DependencyTree.RenderWithSnapshots(snapshots, maxHeight, maxWidth)`** / **`VisibleNodesWithSnapshots(snapshots, maxHeight)`** — the explicit snapshot-consuming render API.
 - **`nom.ActivityCounts.Summary()`** / **`.CompletionPercent()`** — single source of truth for count formatting, shared by the inline renderer and the TUI (eliminates the prior split-brain).
-- **`nom.AllActivityStatuses`** is now the complete iterable basis for `ParseActivityStatus`/`IsValid`/`AllowedValues`.
 
-### Changed — Breaking (v1.0 stabilization)
+### Changed — Breaking
 
-These removals are safe to ship in a 1.0: every removed symbol had **zero production callers** (verified by codebase-wide grep).
-
+- **Eliminated the shared `*Activity` pointer from `ActivityNode`.** This was the root cause of every NOM renderer data race — event handlers mutated the same `*Activity` the renderer read, with no synchronization. `ActivityNode` now holds only an `ActivityID` and tree structure. All mutable fields are consumed via `ActivitySnapshot`. The lock-based bandaid (`RenderTree`, `WithSubscriberRLock`) is deleted.
 - **Removed the `ActivityStatusPaused` status.** It was fully decorated (symbol, color, shape, sort priority) but had no `EventActivityPaused` constant, no subscriber handler, and `SetPaused()` had zero callers — unreachable through the event system. `ActivityStatusPending` previously _reused_ Paused's symbol/color, making the two indistinguishable; Pending now has its own honest identity.
 - **`SymbolPaused` → `SymbolPending`** (glyph `⏸` → `○`), **`SemanticColors.Paused` → `SemanticColors.Pending`**, and the deprecated `ColorPaused` alias is removed.
 - **`ActivityStatus.Interest()`** renumbered after Paused removal: `failed=0, running=1, pending=2, completed=3`.
 - **Removed deprecated functions:** `nom.EnsureBuild`, `nom.ParseActivityID`/`ParseWorkflowID`, `graph.NewGraphNodeID`/`NewGraphNodeLabel`, `delimited.MarshalTSV(any)` (+ `writeTSVData`, `ErrUnsupportedType`).
 - **Removed deprecated color aliases:** `ColorRunning`/`ColorCompleted`/`ColorFailed`/`ColorInfo`/`ColorPhase` — use the `Colors.X` fields.
 - **Removed speculative `OperationSymbol` + `OperationTypeDownload`/`OperationTypeUpload`** — a stringly-typed mapping with no production caller. `SymbolDownload`/`SymbolUpload` remain as palette members.
-- **`tui/` public surface minimized.** Unexported all internals not part of the public contract: Bubble Tea message types (`ProgressUpdateMsg`, `StepUpdateMsg`, `ErrorMsg`, `StateTransitionMsg`, `TickMsg`), `UpdateType` + constants, `WorkflowState` + 4 state constants + 4 string constants + state-query methods, `ProgressStep`, `TickCmd`, the `Subscriber()` accessor, and `MsgNoActivitiesToDisplay`. The public API is now `NewBubbleTeaProgressReporter` + `Report*` methods + `DisplayMode` config + `ProgressModel`. Removed dead `CancelMsg` and `SeparatorLineEquals`.
+- **`tui/` public surface minimized.** Unexported internals not part of the public contract: Bubble Tea message types, `UpdateType`, `WorkflowState`, `ProgressStep`, `TickCmd`, `MsgNoActivitiesToDisplay`. (`Subscriber()` was later re-exported — see [Unreleased].) Removed dead `CancelMsg` and `SeparatorLineEquals`.
 
 ### Fixed
 
 - **Data race in `InlineRenderer.renderSummary`** on `startTime` (TOCTOU) — snapshotted once under `tickMu.RLock()`.
 - **Deep-nested trees overflowed `maxWidth`** — the final styled line is now truncated to the terminal width.
 - **`FormatDuration` showed `90m` for ≥1h durations** — added hours branch (`1h`, `1h30m`, `24h`).
-- **`tui` rendered the NOM tree without the subscriber lock**, closing an activity-mutation race.
 - **Four inline-renderer races/deadlocks** closed (config setters, background refresh, Finish).
 - **`TimingCache.EnsureLoaded` blocked all concurrent `GetMedian` reads during file I/O** — now reads the file lock-free, then re-acquires the write lock to publish (mirrors `saveAsync`).
 
