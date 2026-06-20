@@ -39,6 +39,7 @@ func (dt *DependencyTree) childPriority(
 	sort.SliceStable(sorted, func(i, j int) bool {
 		ki := sortKeyForNode(sorted[i], snapshots)
 		kj := sortKeyForNode(sorted[j], snapshots)
+
 		return ki.less(kj)
 	})
 

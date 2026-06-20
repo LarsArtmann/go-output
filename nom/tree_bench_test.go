@@ -13,6 +13,7 @@ func buildBenchmarkTree(nodeCount int) (*DependencyTree, map[ActivityID]Activity
 	_ = now
 
 	dt.AddActivity(ActivityID("root"), nil)
+
 	snaps[ActivityID("root")] = ActivitySnapshot{
 		Label: "Root", Status: ActivityStatusRunning,
 		Symbol: ActivityStatusRunning.GetSymbol(), Color: ActivityStatusRunning.GetColor(),

@@ -87,6 +87,7 @@ func TestDependencyTree_AddActivity_UpdateExisting(t *testing.T) {
 	if node == nil {
 		t.Fatal("node should exist")
 	}
+
 	if node.ID != ActivityID("a") {
 		t.Errorf("ID = %q, want %q", node.ID, "a")
 	}
@@ -180,9 +181,11 @@ func TestDependencyTree_Render_PriorityOrdering(t *testing.T) {
 	if !strings.Contains(limited, "Deploy") {
 		t.Errorf("limited render should keep failed activity, got:\n%s", limited)
 	}
+
 	if !strings.Contains(limited, "Run Tests") {
 		t.Errorf("limited render should keep running activity, got:\n%s", limited)
 	}
+
 	if strings.Contains(limited, "Compile") {
 		t.Errorf("limited render should drop completed activity, got:\n%s", limited)
 	}

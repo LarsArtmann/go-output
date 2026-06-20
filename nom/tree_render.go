@@ -218,6 +218,7 @@ func (dt *DependencyTree) renderLine(
 
 		for i, depID := range node.SecondaryParents {
 			depSnap := lookupSnapshot(snapshots, depID)
+
 			depNames[i] = depSnap.Label
 			if depNames[i] == "" {
 				depNames[i] = depID.String()

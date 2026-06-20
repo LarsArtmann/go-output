@@ -148,19 +148,19 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 
 ## Serialization Helpers
 
-| Feature                                  | Status           | Notes                                                  |
-| ---------------------------------------- | ---------------- | ------------------------------------------------------ |
-| **MarshalJSON / UnmarshalJSON**          | FULLY_FUNCTIONAL | Wrapper over `encoding/json` with type-context errors  |
-| **MarshalJSONIndent**                    | FULLY_FUNCTIONAL | Indented JSON with configurable prefix/indent          |
-| **MarshalYAML / UnmarshalYAML**          | FULLY_FUNCTIONAL | Wrapper over `go-faster/yaml` with type-context errors |
-| **MarshalXML / MarshalXMLIndent**        | FULLY_FUNCTIONAL | Wrapper over `encoding/xml` with type-context errors   |
-| **MarshalCSVFromTableData**              | FULLY_FUNCTIONAL | One-shot CSV from `TableData`                          |
-| **MarshalTSVFromTableData**            | FULLY_FUNCTIONAL | One-shot TSV from `TableData`; `TSVWriter` for streaming raw rows        |
-| **MarshalXMLFromTableData**              | FULLY_FUNCTIONAL | One-shot XML from `TableData`                          |
-| **MarshalTOML / UnmarshalTOML**          | FULLY_FUNCTIONAL | Wrapper over `go-toml/v2` with type-context errors     |
-| **MarshalJSONLFromTableData**            | FULLY_FUNCTIONAL | One-shot JSON Lines from `TableData`                   |
-| **MarshalAsciiDocFromTableData**         | FULLY_FUNCTIONAL | One-shot AsciiDoc table from `TableData`               |
-| **MarshalTOMLFromTableData**             | FULLY_FUNCTIONAL | One-shot TOML from `TableData`                         |
+| Feature                           | Status           | Notes                                                             |
+| --------------------------------- | ---------------- | ----------------------------------------------------------------- |
+| **MarshalJSON / UnmarshalJSON**   | FULLY_FUNCTIONAL | Wrapper over `encoding/json` with type-context errors             |
+| **MarshalJSONIndent**             | FULLY_FUNCTIONAL | Indented JSON with configurable prefix/indent                     |
+| **MarshalYAML / UnmarshalYAML**   | FULLY_FUNCTIONAL | Wrapper over `go-faster/yaml` with type-context errors            |
+| **MarshalXML / MarshalXMLIndent** | FULLY_FUNCTIONAL | Wrapper over `encoding/xml` with type-context errors              |
+| **MarshalCSVFromTableData**       | FULLY_FUNCTIONAL | One-shot CSV from `TableData`                                     |
+| **MarshalTSVFromTableData**       | FULLY_FUNCTIONAL | One-shot TSV from `TableData`; `TSVWriter` for streaming raw rows |
+| **MarshalXMLFromTableData**       | FULLY_FUNCTIONAL | One-shot XML from `TableData`                                     |
+| **MarshalTOML / UnmarshalTOML**   | FULLY_FUNCTIONAL | Wrapper over `go-toml/v2` with type-context errors                |
+| **MarshalJSONLFromTableData**     | FULLY_FUNCTIONAL | One-shot JSON Lines from `TableData`                              |
+| **MarshalAsciiDocFromTableData**  | FULLY_FUNCTIONAL | One-shot AsciiDoc table from `TableData`                          |
+| **MarshalTOMLFromTableData**      | FULLY_FUNCTIONAL | One-shot TOML from `TableData`                                    |
 
 ---
 
@@ -217,17 +217,17 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 
 ### NOM-style Real-time Progress (`nom/` module)
 
-| Feature                              | Status           | Notes                                                                                                                                     |
-| ------------------------------------ | ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| **NOMStyleSubscriber**               | FULLY_FUNCTIONAL | Event-driven subscriber implementing `EventSubscriber`. Routes string-based events without sharing concrete types                         |
-| **DependencyTree**                   | FULLY_FUNCTIONAL | Hierarchical activity visualization. Priority filtering (Running > Failed > Pending > Completed), depth-aware prefixes                    |
-| **InlineRenderer**                   | FULLY_FUNCTIONAL | Real-time inline terminal renderer. Start/Stop/Finish lifecycle, cursor hiding, no-color mode, ANSI redraw                                |
-| **TimingCache**                      | FULLY_FUNCTIONAL | Persists activity durations as CSV at `~/.cache/nom-timing.csv`. Serialized saves (saveMu), caps 10 entries/activity, applies cap on load |
-| **ActivityStatus enum**              | FULLY_FUNCTIONAL | 4 states: Pending, Running, Completed, Failed (with symbol/color/shape mapping)                          |
-| **Branded IDs**                      | FULLY_FUNCTIONAL | `ActivityID`, `ActivityName`, `WorkflowID`, `WorkflowName` — named types over `string` (phantom-branding upgrade tracked in TODO §E)      |
-| **Event accessor interfaces**        | FULLY_FUNCTIONAL | `WorkflowEventAccessor`, `ActivityEventAccessor`, `DurationAccessor`, `ErrorAccessor` — type-assertion routing                            |
+| Feature                              | Status           | Notes                                                                                                                                                                |
+| ------------------------------------ | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **NOMStyleSubscriber**               | FULLY_FUNCTIONAL | Event-driven subscriber implementing `EventSubscriber`. Routes string-based events without sharing concrete types                                                    |
+| **DependencyTree**                   | FULLY_FUNCTIONAL | Hierarchical activity visualization. Priority filtering (Running > Failed > Pending > Completed), depth-aware prefixes                                               |
+| **InlineRenderer**                   | FULLY_FUNCTIONAL | Real-time inline terminal renderer. Start/Stop/Finish lifecycle, cursor hiding, no-color mode, ANSI redraw                                                           |
+| **TimingCache**                      | FULLY_FUNCTIONAL | Persists activity durations as CSV at `~/.cache/nom-timing.csv`. Serialized saves (saveMu), caps 10 entries/activity, applies cap on load                            |
+| **ActivityStatus enum**              | FULLY_FUNCTIONAL | 4 states: Pending, Running, Completed, Failed (with symbol/color/shape mapping)                                                                                      |
+| **Branded IDs**                      | FULLY_FUNCTIONAL | `ActivityID`, `ActivityName`, `WorkflowID`, `WorkflowName` — named types over `string` (phantom-branding upgrade tracked in TODO §E)                                 |
+| **Event accessor interfaces**        | FULLY_FUNCTIONAL | `WorkflowEventAccessor`, `ActivityEventAccessor`, `DurationAccessor`, `ErrorAccessor` — type-assertion routing                                                       |
 | **Activity symbols**                 | FULLY_FUNCTIONAL | `SymbolRunning`, `SymbolCompleted`, `SymbolFailed`, `SymbolPending`, `SymbolDownload`, `SymbolUpload`, `SymbolTiming`, `SymbolAverage`, `SymbolTotal`, `SymbolPhase` |
-| **Lazy build (double-checked lock)** | FULLY_FUNCTIONAL | `DependencyTree.Build()` uses the `loaded` flag with double-checked locking to prevent rebuild under read lock                            |
+| **Lazy build (double-checked lock)** | FULLY_FUNCTIONAL | `DependencyTree.Build()` uses the `loaded` flag with double-checked locking to prevent rebuild under read lock                                                       |
 
 ### Bubble Tea Interactive TUI (`tui/` module)
 

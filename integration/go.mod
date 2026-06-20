@@ -9,7 +9,7 @@ require (
 	github.com/larsartmann/go-output/delimited v0.13.0
 	github.com/larsartmann/go-output/graph v0.13.0
 	github.com/larsartmann/go-output/markup v0.13.0
-	github.com/larsartmann/go-output/nom v0.13.0
+	github.com/larsartmann/go-output/nom v0.14.0
 	github.com/larsartmann/go-output/plantuml v0.13.0
 	github.com/larsartmann/go-output/serialization v0.13.0
 	github.com/larsartmann/go-output/table v0.13.0
