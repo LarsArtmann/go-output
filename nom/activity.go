@@ -15,7 +15,11 @@ import (
 type Activity struct {
 	output.GraphNode
 
-	// Status is the typed domain state (pending/running/completed/failed/paused).
+	// Kind is the topological classification (Task or Phase). Set at
+	// construction, never changes. Distinct from Status, which is the
+	// lifecycle state. Phase nodes render with SymbolPhase/Colors.Phase.
+	Kind ActivityKind
+	// Status is the typed domain state (pending/running/completed/failed).
 	Status ActivityStatus
 	// StartTime is when the activity transitioned to Running (zero if not started).
 	StartTime time.Time
@@ -39,10 +43,24 @@ type Activity struct {
 	Download DownloadProgress
 }
 
-// NewActivity creates an Activity with a branded GraphNode ID and default
-// visual style derived from the pending status.
+// NewActivity creates a Task Activity with a branded GraphNode ID and default
+// visual style derived from the pending status. Use NewPhase for grouping nodes.
 func NewActivity(id, name string) *Activity {
+	return newActivity(id, name, ActivityKindTask)
+}
+
+// NewPhase creates a Phase Activity — a grouping node whose children are the
+// real deliverables. Phase nodes render with SymbolPhase/Colors.Phase
+// regardless of their lifecycle Status. The kind is fixed at construction and
+// never changes.
+func NewPhase(id, name string) *Activity {
+	return newActivity(id, name, ActivityKindPhase)
+}
+
+// newActivity is the shared constructor; Kind selects Task vs Phase rendering.
+func newActivity(id, name string, kind ActivityKind) *Activity {
 	a := &Activity{
+		Kind:   kind,
 		Status: ActivityStatusPending,
 	}
 	a.ID = output.NewBrandedID[output.GraphNodeIDBrand](id)
@@ -101,6 +119,10 @@ func (a *Activity) IsCompleted() bool { return a.Status == ActivityStatusComplet
 
 // IsFailed returns true if the activity has failed.
 func (a *Activity) IsFailed() bool { return a.Status == ActivityStatusFailed }
+
+// IsPhase reports whether this activity is a Phase grouping node (Kind ==
+// ActivityKindPhase), as opposed to a concrete Task.
+func (a *Activity) IsPhase() bool { return a.Kind.IsPhase() }
 
 // Copy creates a deep copy of the Activity.
 func (a *Activity) Copy() *Activity {

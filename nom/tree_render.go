@@ -201,11 +201,11 @@ func appendCollapseMarker(visible *[]visibleEntry, indent string, collapsedDone 
 // formatActivityLabel builds the core display string for a single activity
 // snapshot: phase-aware symbol + label + timing info. Returns the unstyled
 // display and the status-derived color for the caller to apply.
-func formatActivityLabel(snap ActivitySnapshot, id ActivityID) (display string, c color.Color) {
+func formatActivityLabel(snap ActivitySnapshot) (display string, c color.Color) {
 	symbol := snap.Symbol
 	c = snap.Color
 
-	if isPhaseID(id) {
+	if snap.IsPhase() {
 		symbol = SymbolPhase
 		c = Colors.Phase
 	}
@@ -292,7 +292,7 @@ func (dt *DependencyTree) renderLine(
 	node := entry.node
 	snap := lookupSnapshot(snapshots, node.ID)
 
-	activityDisplay, color := formatActivityLabel(snap, node.ID)
+	activityDisplay, color := formatActivityLabel(snap)
 
 	if len(node.SecondaryParents) > 0 {
 		depNames := make([]string, len(node.SecondaryParents))
@@ -376,7 +376,7 @@ func (dt *DependencyTree) RenderNode(
 	snapshots map[ActivityID]ActivitySnapshot,
 ) string {
 	snap := lookupSnapshot(snapshots, node.ID)
-	display, color := formatActivityLabel(snap, node.ID)
+	display, color := formatActivityLabel(snap)
 
 	return activityNodeStyle(color).Render(display)
 }
@@ -386,16 +386,6 @@ func activityNodeStyle(color color.Color) lipgloss.Style {
 		Foreground(color).
 		Width(0).
 		Inline(true)
-}
-
-// IsPhase reports whether this node represents a workflow phase.
-func (n *ActivityNode) IsPhase() bool {
-	return isPhaseID(n.ID)
-}
-
-// isPhaseID checks whether an activity ID follows the "phase:" prefix convention.
-func isPhaseID(id ActivityID) bool {
-	return strings.HasPrefix(string(id), "phase:")
 }
 
 // lookupSnapshot returns the snapshot for id, or a blank pending snapshot if

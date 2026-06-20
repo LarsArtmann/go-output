@@ -126,11 +126,11 @@ func TestDependencyTree_Render_PhaseStyling(t *testing.T) {
 	t.Parallel()
 
 	dt := NewDependencyTree()
-	dt.AddActivity(ActivityID("phase:build"), nil)
-	dt.AddActivity(ActivityID("compile"), []ActivityID{"phase:build"})
+	dt.AddActivity(ActivityID("build"), nil)
+	dt.AddActivity(ActivityID("compile"), []ActivityID{"build"})
 
 	snaps := newSnapshotBuilder()
-	snaps.set(ActivityID("phase:build"), "Build", ActivityStatusRunning, 0)
+	snaps.setPhase(ActivityID("build"), "Build", ActivityStatusRunning, 0)
 	snaps.set(ActivityID("compile"), "Compile", ActivityStatusPending, 0)
 
 	got := dt.RenderWithSnapshots(snaps.snaps, 10, 0)
@@ -147,14 +147,14 @@ func TestDependencyTree_Render_PriorityOrdering(t *testing.T) {
 	t.Parallel()
 
 	dt := NewDependencyTree()
-	dt.AddActivity(ActivityID("phase:build"), nil)
-	dt.AddActivity(ActivityID("compile"), []ActivityID{"phase:build"})
-	dt.AddActivity(ActivityID("test"), []ActivityID{"phase:build"})
-	dt.AddActivity(ActivityID("lint"), []ActivityID{"phase:build"})
-	dt.AddActivity(ActivityID("deploy"), []ActivityID{"phase:build"})
+	dt.AddActivity(ActivityID("build"), nil)
+	dt.AddActivity(ActivityID("compile"), []ActivityID{"build"})
+	dt.AddActivity(ActivityID("test"), []ActivityID{"build"})
+	dt.AddActivity(ActivityID("lint"), []ActivityID{"build"})
+	dt.AddActivity(ActivityID("deploy"), []ActivityID{"build"})
 
 	snaps := newSnapshotBuilder()
-	snaps.set(ActivityID("phase:build"), "Build Phase", ActivityStatusRunning, 5*time.Second)
+	snaps.setPhase(ActivityID("build"), "Build Phase", ActivityStatusRunning, 5*time.Second)
 	snaps.set(ActivityID("compile"), "Compile", ActivityStatusCompleted, 2*time.Second)
 	snaps.set(ActivityID("test"), "Run Tests", ActivityStatusRunning, 3*time.Second)
 	snaps.set(ActivityID("lint"), "Lint Code", ActivityStatusPending, 0)

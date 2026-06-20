@@ -15,6 +15,7 @@ type testEvent struct {
 	wName     WorkflowName
 	aID       ActivityID
 	aName     ActivityName
+	kind      ActivityKind
 	deps      []ActivityID
 	duration  time.Duration
 	err       error
@@ -26,6 +27,7 @@ func (e *testEvent) GetWorkflowID() WorkflowID     { return e.wID }
 func (e *testEvent) GetWorkflowName() WorkflowName { return e.wName }
 func (e *testEvent) GetActivityID() ActivityID     { return e.aID }
 func (e *testEvent) GetActivityName() ActivityName { return e.aName }
+func (e *testEvent) GetKind() ActivityKind         { return e.kind }
 func (e *testEvent) GetDuration() time.Duration    { return e.duration }
 func (e *testEvent) GetError() error               { return e.err }
 func (e *testEvent) GetDependencies() []ActivityID { return e.deps }
@@ -108,6 +110,24 @@ func registerActivity(
 		eventType: EventActivityRegistered,
 		aID:       id,
 		aName:     name,
+		deps:      deps,
+	})
+}
+
+// registerPhase fires an activity.registered event with Kind=Phase, so the
+// node renders as a phase grouping (SymbolPhase/Colors.Phase).
+func registerPhase(
+	ns *NOMStyleSubscriber,
+	ctx context.Context,
+	id ActivityID,
+	name ActivityName,
+	deps ...ActivityID,
+) {
+	_ = ns.OnEvent(ctx, &testEvent{
+		eventType: EventActivityRegistered,
+		aID:       id,
+		aName:     name,
+		kind:      ActivityKindPhase,
 		deps:      deps,
 	})
 }

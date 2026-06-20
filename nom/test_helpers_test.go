@@ -27,12 +27,23 @@ func newSnapshotBuilder() *snapshotBuilder {
 
 func (b *snapshotBuilder) set(id ActivityID, label string, status ActivityStatus, elapsed time.Duration) {
 	b.snaps[id] = ActivitySnapshot{
+		Kind:           ActivityKindTask,
 		Label:          label,
 		Status:         status,
 		Symbol:         status.GetSymbol(),
 		Color:          status.GetColor(),
 		CurrentElapsed: elapsed,
 	}
+}
+
+// setPhase is like set but marks the node as a Phase grouping (renders with
+// SymbolPhase/Colors.Phase). The kind is fixed; only the lifecycle status
+// changes over time.
+func (b *snapshotBuilder) setPhase(id ActivityID, label string, status ActivityStatus, elapsed time.Duration) {
+	b.set(id, label, status, elapsed)
+	s := b.snaps[id]
+	s.Kind = ActivityKindPhase
+	b.snaps[id] = s
 }
 
 func (b *snapshotBuilder) snapshot(id ActivityID) ActivitySnapshot {

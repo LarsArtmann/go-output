@@ -64,6 +64,12 @@ type DependenciesAccessor interface {
 	GetDependencies() []ActivityID
 }
 
+// KindAccessor optionally classifies the activity as a Task (default) or a
+// Phase grouping node. Events that don't implement this create a Task.
+type KindAccessor interface {
+	GetKind() ActivityKind
+}
+
 // HostAccessor optionally names where an activity runs (e.g. a build machine).
 // Rendered as a dim tag when non-empty. Backward-compatible: events that don't
 // implement it simply leave Host unset.
@@ -141,14 +147,22 @@ func (ns *NOMStyleSubscriber) handleWorkflowFailed(
 }
 
 // getOrCreateActivity retrieves an existing activity or creates a new one.
+// The kind only applies on first creation; an existing activity keeps its
+// original kind (set at construction, never changes).
 // Must be called while holding ns.mu lock.
 func (ns *NOMStyleSubscriber) getOrCreateActivity(
 	activityID ActivityID,
 	activityName ActivityName,
+	kind ActivityKind,
 ) *Activity {
 	activity, exists := ns.activities[activityID]
 	if !exists {
-		activity = NewActivity(string(activityID), activityName.String())
+		if kind.IsPhase() {
+			activity = NewPhase(string(activityID), activityName.String())
+		} else {
+			activity = NewActivity(string(activityID), activityName.String())
+		}
+
 		ns.activities[activityID] = activity
 	}
 
@@ -167,6 +181,16 @@ func extractDependencies(event Event) []ActivityID {
 	return deps
 }
 
+// extractKind returns the activity's kind if the event implements KindAccessor;
+// otherwise it defaults to Task. Kind is fixed at first creation.
+func extractKind(event Event) ActivityKind {
+	if ka, ok := event.(KindAccessor); ok {
+		return ka.GetKind()
+	}
+
+	return ActivityKindTask
+}
+
 // handleActivityStarted handles activity started event.
 func (ns *NOMStyleSubscriber) handleActivityStarted(
 	_ context.Context,
@@ -180,7 +204,7 @@ func (ns *NOMStyleSubscriber) handleActivityStarted(
 	ns.mu.Lock()
 	defer ns.mu.Unlock()
 
-	activity := ns.getOrCreateActivity(aa.GetActivityID(), aa.GetActivityName())
+	activity := ns.getOrCreateActivity(aa.GetActivityID(), aa.GetActivityName(), extractKind(event))
 	activity.SetRunning()
 
 	// Optional host/download annotations — dormant unless the event carries them.
@@ -221,7 +245,7 @@ func (ns *NOMStyleSubscriber) handleActivityRegistered(
 	ns.mu.Lock()
 	defer ns.mu.Unlock()
 
-	ns.getOrCreateActivity(aa.GetActivityID(), aa.GetActivityName())
+	ns.getOrCreateActivity(aa.GetActivityID(), aa.GetActivityName(), extractKind(event))
 
 	return ns.dependencyTree.AddActivity(
 		aa.GetActivityID(),
@@ -242,7 +266,7 @@ func (ns *NOMStyleSubscriber) handleActivityCompleted(
 	ns.mu.Lock()
 	defer ns.mu.Unlock()
 
-	activity := ns.getOrCreateActivity(aa.GetActivityID(), aa.GetActivityName())
+	activity := ns.getOrCreateActivity(aa.GetActivityID(), aa.GetActivityName(), extractKind(event))
 	activity.SetCompleted()
 
 	return ns.recordTimingAndPersist(event, aa)
@@ -261,7 +285,7 @@ func (ns *NOMStyleSubscriber) handleActivityFailed(
 	ns.mu.Lock()
 	defer ns.mu.Unlock()
 
-	activity := ns.getOrCreateActivity(aa.GetActivityID(), aa.GetActivityName())
+	activity := ns.getOrCreateActivity(aa.GetActivityID(), aa.GetActivityName(), extractKind(event))
 
 	var eventErr error
 	if ea, ok := event.(ErrorAccessor); ok {

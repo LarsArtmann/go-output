@@ -13,14 +13,14 @@ func TestDependencyTreeRenderGolden_PhaseSteps(t *testing.T) {
 	t.Parallel()
 
 	dt := NewDependencyTree()
-	dt.AddActivity(ActivityID("phase:build"), nil)
-	dt.AddActivity(ActivityID("compile"), []ActivityID{"phase:build"})
-	dt.AddActivity(ActivityID("test"), []ActivityID{"phase:build"})
-	dt.AddActivity(ActivityID("lint"), []ActivityID{"phase:build"})
-	dt.AddActivity(ActivityID("deploy"), []ActivityID{"phase:build"})
+	dt.AddActivity(ActivityID("build"), nil)
+	dt.AddActivity(ActivityID("compile"), []ActivityID{"build"})
+	dt.AddActivity(ActivityID("test"), []ActivityID{"build"})
+	dt.AddActivity(ActivityID("lint"), []ActivityID{"build"})
+	dt.AddActivity(ActivityID("deploy"), []ActivityID{"build"})
 
 	snaps := newSnapshotBuilder()
-	snaps.set(ActivityID("phase:build"), "Build Phase", ActivityStatusRunning, 5*time.Second)
+	snaps.setPhase(ActivityID("build"), "Build Phase", ActivityStatusRunning, 5*time.Second)
 	snaps.set(ActivityID("compile"), "Compile", ActivityStatusCompleted, 2*time.Second)
 	snaps.set(ActivityID("test"), "Run Tests", ActivityStatusRunning, 3*time.Second)
 	snaps.set(ActivityID("lint"), "Lint Code", ActivityStatusPending, 0)
@@ -34,12 +34,12 @@ func TestDependencyTreeRenderGolden_SecondaryDeps(t *testing.T) {
 	t.Parallel()
 
 	dt := NewDependencyTree()
-	dt.AddActivity(ActivityID("phase:main"), nil)
-	dt.AddActivity(ActivityID("step1"), []ActivityID{"phase:main"})
-	dt.AddActivity(ActivityID("step2"), []ActivityID{"phase:main", "step1"})
+	dt.AddActivity(ActivityID("main"), nil)
+	dt.AddActivity(ActivityID("step1"), []ActivityID{"main"})
+	dt.AddActivity(ActivityID("step2"), []ActivityID{"main", "step1"})
 
 	snaps := newSnapshotBuilder()
-	snaps.set(ActivityID("phase:main"), "Phase", ActivityStatusRunning, 0)
+	snaps.setPhase(ActivityID("main"), "Phase", ActivityStatusRunning, 0)
 	snaps.set(ActivityID("step1"), "Step 1", ActivityStatusCompleted, 0)
 	snaps.set(ActivityID("step2"), "Step 2", ActivityStatusPending, 0)
 
@@ -80,10 +80,10 @@ func TestInlineRendererGolden_FirstFrame(t *testing.T) {
 
 	ctx := context.Background()
 	_ = sendWorkflowStarted(sub, ctx, WorkflowID("wf-1"), "")
-	registerActivity(sub, ctx, ActivityID("phase:build"), ActivityName("Build"))
-	registerActivity(sub, ctx, ActivityID("compile"), ActivityName("Compile"), "phase:build")
-	registerActivity(sub, ctx, ActivityID("test"), ActivityName("Run Tests"), "phase:build")
-	registerActivity(sub, ctx, ActivityID("lint"), ActivityName("Lint"), "phase:build")
+	registerPhase(sub, ctx, ActivityID("build"), ActivityName("Build"))
+	registerActivity(sub, ctx, ActivityID("compile"), ActivityName("Compile"), "build")
+	registerActivity(sub, ctx, ActivityID("test"), ActivityName("Run Tests"), "build")
+	registerActivity(sub, ctx, ActivityID("lint"), ActivityName("Lint"), "build")
 
 	renderer.Draw()
 
@@ -102,9 +102,9 @@ func TestInlineRendererGolden_SecondFrame(t *testing.T) {
 
 	ctx := context.Background()
 	_ = sendWorkflowStarted(sub, ctx, WorkflowID("wf-1"), "")
-	registerActivity(sub, ctx, ActivityID("phase:build"), ActivityName("Build"))
-	registerActivity(sub, ctx, ActivityID("compile"), ActivityName("Compile"), "phase:build")
-	registerActivity(sub, ctx, ActivityID("lint"), ActivityName("Lint"), "phase:build")
+	registerPhase(sub, ctx, ActivityID("build"), ActivityName("Build"))
+	registerActivity(sub, ctx, ActivityID("compile"), ActivityName("Compile"), "build")
+	registerActivity(sub, ctx, ActivityID("lint"), ActivityName("Lint"), "build")
 
 	renderer.Draw()
 	buf.Reset()

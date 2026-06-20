@@ -32,10 +32,10 @@ func TestInlineRenderer_FullWorkflowLifecycle(t *testing.T) {
 	}
 
 	// 2. Register a phase with three dependent activities.
-	registerActivity(sub, ctx, ActivityID("phase:build"), ActivityName("Build"))
-	registerActivity(sub, ctx, ActivityID("compile"), ActivityName("Compile"), "phase:build")
-	registerActivity(sub, ctx, ActivityID("test"), ActivityName("Test"), "phase:build")
-	registerActivity(sub, ctx, ActivityID("deploy"), ActivityName("Deploy"), "phase:build")
+	registerPhase(sub, ctx, ActivityID("build"), ActivityName("Build"))
+	registerActivity(sub, ctx, ActivityID("compile"), ActivityName("Compile"), "build")
+	registerActivity(sub, ctx, ActivityID("test"), ActivityName("Test"), "build")
+	registerActivity(sub, ctx, ActivityID("deploy"), ActivityName("Deploy"), "build")
 
 	renderer.Draw()
 

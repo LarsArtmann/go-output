@@ -11,6 +11,9 @@ import (
 // directly, eliminating the data race between event handlers (SetRunning etc.)
 // and rendering.
 type ActivitySnapshot struct {
+	// Kind is the topological classification (Task or Phase), set at the
+	// activity's construction. Drives phase-specific symbol/color overrides.
+	Kind           ActivityKind
 	Label          string
 	Status         ActivityStatus
 	Symbol         Symbol
@@ -26,6 +29,10 @@ type ActivitySnapshot struct {
 	// activity download bars.
 	Download DownloadProgress
 }
+
+// IsPhase reports whether the snapshotted activity is a Phase grouping node.
+// Renderers use this to apply SymbolPhase/Colors.Phase overrides.
+func (s ActivitySnapshot) IsPhase() bool { return s.Kind.IsPhase() }
 
 // DownloadProgress is an optional byte-level progress indicator for an activity
 // (e.g. a dependency download). Zero-value means "no download in progress".
@@ -63,6 +70,7 @@ func (ns *NOMStyleSubscriber) SnapshotActivities() map[ActivityID]ActivitySnapsh
 
 	for id, activity := range ns.activities {
 		snapshots[id] = ActivitySnapshot{
+			Kind:           activity.Kind,
 			Label:          activity.Label.Get(),
 			Status:         activity.Status,
 			Symbol:         activity.Symbol,

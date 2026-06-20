@@ -18,7 +18,6 @@ func BenchmarkFormatActivityLabel(b *testing.B) {
 
 	for _, tc := range statuses {
 		b.Run(tc.name, func(b *testing.B) {
-			id := ActivityID("compile")
 			snap := ActivitySnapshot{
 				Label:          "Compile Source Files",
 				Status:         tc.status,
@@ -31,7 +30,7 @@ func BenchmarkFormatActivityLabel(b *testing.B) {
 			b.ReportAllocs()
 
 			for range b.N {
-				_, _ = formatActivityLabel(snap, id)
+				_, _ = formatActivityLabel(snap)
 			}
 		})
 	}

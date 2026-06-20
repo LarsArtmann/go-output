@@ -17,7 +17,7 @@ func TestFormatActivityLabel_HostTag(t *testing.T) {
 		Host:   "builder-1",
 	}
 
-	display, _ := formatActivityLabel(snap, ActivityID("build"))
+	display, _ := formatActivityLabel(snap)
 	if !strings.Contains(display, "@builder-1") {
 		t.Errorf("expected host tag @builder-1 in display, got: %q", display)
 	}
@@ -33,7 +33,7 @@ func TestFormatActivityLabel_HostDormantWhenEmpty(t *testing.T) {
 		Color:  ActivityStatusRunning.GetColor(),
 	}
 
-	display, _ := formatActivityLabel(snap, ActivityID("build"))
+	display, _ := formatActivityLabel(snap)
 	if strings.Contains(display, "@") {
 		t.Errorf("host tag should be absent when Host is empty, got: %q", display)
 	}
@@ -50,7 +50,7 @@ func TestFormatActivityLabel_DownloadBar(t *testing.T) {
 		Download: DownloadProgress{Downloaded: 50, Total: 100},
 	}
 
-	display, _ := formatActivityLabel(snap, ActivityID("fetch"))
+	display, _ := formatActivityLabel(snap)
 	if !strings.Contains(display, "50%") {
 		t.Errorf("expected 50%% in download bar, got: %q", display)
 	}
@@ -72,7 +72,7 @@ func TestFormatActivityLabel_DownloadBarDormantWhenCompleted(t *testing.T) {
 		Download: DownloadProgress{Downloaded: 100, Total: 100},
 	}
 
-	display, _ := formatActivityLabel(snap, ActivityID("fetch"))
+	display, _ := formatActivityLabel(snap)
 	if strings.Contains(display, "▕") {
 		t.Errorf("completed activity should not render a download bar, got: %q", display)
 	}
