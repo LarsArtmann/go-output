@@ -169,6 +169,18 @@ func (r *InlineRenderer) SetMaxHeight(maxHeight int) {
 	r.maxHeight = maxHeight
 }
 
+// SetPlainText forces plain, append-only output (no cursor/sync escape codes).
+// By default, plainText is auto-detected at construction via detectPlainText()
+// (true under CI). Use this to override at runtime — e.g. when a downstream
+// wrapper discovers the writer is not a terminal after startup.
+// Thread-safe: may be called before or during the render loop.
+func (r *InlineRenderer) SetPlainText(plain bool) {
+	r.tickMu.Lock()
+	defer r.tickMu.Unlock()
+
+	r.plainText = plain
+}
+
 // Render redraws the dependency tree in-place. On the first call it just prints.
 // On subsequent calls it moves the cursor up to overwrite the previous frame.
 //
