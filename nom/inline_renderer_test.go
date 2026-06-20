@@ -336,3 +336,42 @@ func waitForRender(t *testing.T, renderer *InlineRenderer, label string) {
 		t.Fatalf("%s did not complete within 1s", label)
 	}
 }
+
+func TestInlineRenderer_CIMode_PlainTextNoCursorCodes(t *testing.T) {
+	// detectPlainText() is evaluated at construction, so CI must be set first.
+	// Not parallel: the env var affects renderer construction.
+	t.Setenv("CI", "true")
+
+	sub := newTestSubscriber(t)
+
+	var buf bytes.Buffer
+
+	renderer := NewInlineRenderer(sub, &buf, 10)
+
+	if !renderer.plainText {
+		t.Fatal("expected plainText=true when CI=true")
+	}
+
+	ctx := context.Background()
+	_ = sendWorkflowStarted(sub, ctx, WorkflowID("wf-ci"), "")
+	sendActivityStarted(t, sub, ctx, ActivityID("step1"), ActivityName("CI Step"))
+
+	renderer.Draw()
+	buf.Reset()
+	renderer.Draw() // second draw — in plain mode, no cursor-up/sync codes
+
+	output := buf.String()
+
+	if strings.Contains(output, ansiCursorUp) {
+		t.Errorf("CI plain mode must not emit cursor-up codes, got:\n%q", output)
+	}
+
+	if strings.Contains(output, ansiSyncBegin) || strings.Contains(output, ansiSyncEnd) {
+		t.Errorf("CI plain mode must not emit sync-region codes, got:\n%q", output)
+	}
+
+	// Plain mode still renders the activity label.
+	if !strings.Contains(output, "CI Step") {
+		t.Errorf("CI plain mode should still render the activity label, got:\n%q", output)
+	}
+}

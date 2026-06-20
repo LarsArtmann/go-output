@@ -41,6 +41,11 @@ type InlineRenderer struct {
 	startTime  time.Time
 	appName    string
 	noColor    bool
+	// plainText is set once at construction when the output is not an
+	// interactive terminal (CI, piped, redirected). In plain mode Draw skips
+	// cursor-manipulation/sync escape codes that corrupt non-interactive logs,
+	// appending each frame on its own line instead.
+	plainText bool
 
 	tickMu       sync.RWMutex
 	renderMu     sync.Mutex // serializes Draw/Finish terminal writes + prevLines
@@ -89,7 +94,16 @@ func NewInlineRenderer(subscriber *NOMStyleSubscriber, writer io.Writer, maxHeig
 		hideCursor: true,
 		appName:    "Workflow",
 		noColor:    detectNoColor(),
+		plainText:  detectPlainText(),
 	}
+}
+
+// detectPlainText reports whether the renderer should emit plain, append-only
+// output. Triggered under CI (where in-place cursor-manipulation and
+// sync-region escape codes corrupt captured logs), Draw then appends frames
+// line-by-line instead of overwriting in place.
+func detectPlainText() bool {
+	return envdetect.IsCI()
 }
 
 // SetHideCursor controls whether the cursor is hidden during rendering (default: true).
@@ -175,6 +189,15 @@ func (r *InlineRenderer) Draw() {
 	summary := r.renderSummary(cfg.startTime)
 	if summary != "" {
 		frame += "\n" + summary
+	}
+
+	// Plain-text mode (CI / non-terminal): append the frame without cursor or
+	// sync escape codes, which would corrupt captured logs. prevLines stays 0
+	// so Finish never tries to scroll back over overwritten lines.
+	if r.plainText {
+		r.write(frame + "\n")
+
+		return
 	}
 
 	// Count physical lines including wrapping so the next redraw lands correctly.
