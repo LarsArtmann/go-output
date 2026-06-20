@@ -9,24 +9,9 @@ import (
 	"github.com/charmbracelet/x/ansi"
 )
 
-// RenderString generates NOM-style tree rendering as a string using depth-first
-// forest walk. Convenience wrapper for callers that don't have snapshots (e.g.
-// tests, one-off renders). Production renderers should call RenderWithSnapshots
-// to avoid the shared-*Activity-pointer data race.
-func (dt *DependencyTree) RenderString(maxHeight int) string {
-	return dt.RenderWithWidth(maxHeight, 0)
-}
-
-// RenderWithWidth generates the tree rendering with an optional terminal width
-// constraint. Convenience wrapper that creates empty snapshots — callers that
-// need race-free rendering should use RenderWithSnapshots instead.
-func (dt *DependencyTree) RenderWithWidth(maxHeight, maxWidth int) string {
-	return dt.RenderWithSnapshots(nil, maxHeight, maxWidth)
-}
-
 // RenderWithSnapshots generates the tree rendering using immutable activity
 // snapshots instead of reading the shared *Activity pointer. This is the
-// race-free render path: snapshots are taken under the subscriber's read lock
+// canonical render path: snapshots are taken under the subscriber's read lock
 // once, then the tree walk reads only immutable data. A nil snapshots map is
 // treated as "all activities pending with blank labels" — useful for tests
 // that build trees structurally without a subscriber.
@@ -260,14 +245,9 @@ func (dt *DependencyTree) renderLine(
 	return rendered
 }
 
-// VisibleNodes returns the ordered list of tree nodes that would be displayed
-// for the given maxHeight, in priority order. Uses snapshots for status-based
-// sorting. Callers that need rendered labels should use RenderWithSnapshots.
-func (dt *DependencyTree) VisibleNodes(maxHeight int) []*ActivityNode {
-	return dt.VisibleNodesWithSnapshots(nil, maxHeight)
-}
-
-// VisibleNodesWithSnapshots is the race-free variant of VisibleNodes.
+// VisibleNodesWithSnapshots returns the ordered list of tree nodes that would
+// be displayed for the given maxHeight, in priority order. Uses snapshots for
+// status-based sorting.
 func (dt *DependencyTree) VisibleNodesWithSnapshots(
 	snapshots map[ActivityID]ActivitySnapshot,
 	maxHeight int,

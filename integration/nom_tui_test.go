@@ -91,7 +91,7 @@ func TestNOMSubscriber_Integration(t *testing.T) {
 			t.Errorf("pending = %d, want 0", counts.Pending)
 		}
 
-		rendered := tree.RenderString(10)
+		rendered := tree.RenderWithSnapshots(nil, 10, 0)
 		if rendered == "" {
 			t.Error("tree render should not be empty")
 		}

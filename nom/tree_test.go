@@ -168,7 +168,7 @@ func TestDependencyTree_Render(t *testing.T) {
 
 		dt := NewDependencyTree()
 
-		got := dt.RenderString(10)
+		got := dt.RenderWithSnapshots(nil, 10, 0)
 		if got != msgNoActivitiesToDisplay {
 			t.Errorf("Render() on empty tree = %q, want %q", got, msgNoActivitiesToDisplay)
 		}
@@ -199,7 +199,7 @@ func TestDependencyTree_Render(t *testing.T) {
 			dt.AddActivity(id, nil)
 		}
 
-		got := dt.RenderString(3)
+		got := dt.RenderWithSnapshots(nil, 3, 0)
 		if got == "" {
 			t.Error("Render should not return empty")
 		}
@@ -257,7 +257,7 @@ func TestDependencyTree_VisibleNodes(t *testing.T) {
 		dt.AddActivity(ActivityID("b"), nil)
 		dt.AddActivity(ActivityID("c"), nil)
 
-		visible := dt.VisibleNodes(2)
+		visible := dt.VisibleNodesWithSnapshots(nil, 2)
 		if len(visible) != 2 {
 			t.Errorf("VisibleNodes(2) = %d nodes, want 2", len(visible))
 		}
@@ -270,7 +270,7 @@ func TestDependencyTree_VisibleNodes(t *testing.T) {
 		dt.AddActivity(ActivityID("a"), nil)
 		dt.AddActivity(ActivityID("b"), nil)
 
-		visible := dt.VisibleNodes(0)
+		visible := dt.VisibleNodesWithSnapshots(nil, 0)
 		if len(visible) != 2 {
 			t.Errorf("VisibleNodes(0) = %d nodes, want 2", len(visible))
 		}
@@ -281,7 +281,7 @@ func TestDependencyTree_VisibleNodes(t *testing.T) {
 
 		dt := NewDependencyTree()
 
-		visible := dt.VisibleNodes(10)
+		visible := dt.VisibleNodesWithSnapshots(nil, 10)
 		if len(visible) != 0 {
 			t.Errorf("VisibleNodes on empty tree = %d, want 0", len(visible))
 		}
