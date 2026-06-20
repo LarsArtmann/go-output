@@ -270,11 +270,28 @@ func TestRenderWithSnapshots_CollapseMarkerUnderHeightPressure(t *testing.T) {
 	// maxHeight=4: root + 2 running + 1 collapse-marker line for the 4 completed.
 	rendered := tree.RenderWithSnapshots(snaps.snaps, 4, 0)
 
-	if !strings.Contains(rendered, "completed") {
-		t.Errorf("expected a collapse marker mentioning elided completed children\ngot:\n%s", rendered)
+	// The marker must be a dedicated tree line with the ellipsis + exact count.
+	// Asserting the glyph alone is weak (could match elsewhere); assert the
+	// full "⋯ 4 completed" phrase appears on its own line with a connector.
+	var markerFound bool
+
+	for line := range strings.SplitSeq(rendered, "\n") {
+		if strings.Contains(line, "⋯") && strings.Contains(line, "4 completed") &&
+			(strings.Contains(line, "├──") || strings.Contains(line, "└──")) {
+			markerFound = true
+			break
+		}
 	}
 
-	if !strings.Contains(rendered, "⋯") {
-		t.Errorf("expected ellipsis marker for collapsed children\ngot:\n%s", rendered)
+	if !markerFound {
+		t.Errorf("expected a tree line like '├── ⋯ 4 completed'\ngot:\n%s", rendered)
+	}
+
+	// And the 4 completed children themselves must be elided (not rendered).
+	for i := range 4 {
+		if strings.Contains(rendered, fmt.Sprintf("Child %d", i)) {
+			t.Errorf("completed child %d should be elided under height pressure\ngot:\n%s",
+				i, rendered)
+		}
 	}
 }
