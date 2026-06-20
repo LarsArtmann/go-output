@@ -4,22 +4,22 @@ import (
 	"strings"
 	"testing"
 	"time"
-
-	"github.com/larsartmann/go-output/testhelpers"
 )
 
 func TestDependencyTree_TreePrefix_RootNode(t *testing.T) {
 	t.Parallel()
 
 	dt := NewDependencyTree()
-	dt.AddActivity(ActivityID("root"), NewActivity("root", "Root"), nil)
-	dt.AddActivity(ActivityID("child"), NewActivity("child", "Child"), []ActivityID{"root"})
-	testSetStatus(dt, ActivityID("root"), ActivityStatusRunning, time.Now())
-	testSetStatus(dt, ActivityID("child"), ActivityStatusPending, time.Time{})
+	dt.AddActivity(ActivityID("root"), nil, nil)
+	dt.AddActivity(ActivityID("child"), nil, []ActivityID{"root"})
 
-	got := dt.RenderString(10)
+	snaps := newSnapshotBuilder()
+	snaps.set(ActivityID("root"), "Root", ActivityStatusRunning, 0)
+	snaps.set(ActivityID("child"), "Child", ActivityStatusPending, 0)
+
+	got := dt.RenderWithSnapshots(snaps.snaps, 10, 0)
 	if got == "" {
-		t.Error("Render() should produce output")
+		t.Error("Render should produce output")
 	}
 }
 
@@ -27,12 +27,14 @@ func TestDependencyTree_Render_PendingStatus(t *testing.T) {
 	t.Parallel()
 
 	dt := NewDependencyTree()
-	dt.AddActivity(ActivityID("a"), NewActivity("a", "A"), nil)
-	testSetStatus(dt, ActivityID("a"), ActivityStatusPending, time.Time{})
+	dt.AddActivity(ActivityID("a"), nil, nil)
 
-	got := dt.RenderString(10)
+	snaps := newSnapshotBuilder()
+	snaps.set(ActivityID("a"), "A", ActivityStatusPending, 0)
+
+	got := dt.RenderWithSnapshots(snaps.snaps, 10, 0)
 	if got == "" {
-		t.Error("Render() should produce output for pending status")
+		t.Error("Render should produce output for pending status")
 	}
 }
 
@@ -40,16 +42,18 @@ func TestDependencyTree_Render_FailedPriority(t *testing.T) {
 	t.Parallel()
 
 	dt := NewDependencyTree()
-	dt.AddActivity(ActivityID("a"), NewActivity("a", "A"), nil)
-	dt.AddActivity(ActivityID("b"), NewActivity("b", "B"), nil)
-	dt.AddActivity(ActivityID("c"), NewActivity("c", "C"), nil)
-	testSetStatus(dt, ActivityID("a"), ActivityStatusCompleted, time.Now())
-	testSetStatus(dt, ActivityID("b"), ActivityStatusFailed, time.Now())
-	testSetStatus(dt, ActivityID("c"), ActivityStatusPending, time.Time{})
+	dt.AddActivity(ActivityID("a"), nil, nil)
+	dt.AddActivity(ActivityID("b"), nil, nil)
+	dt.AddActivity(ActivityID("c"), nil, nil)
 
-	got := dt.RenderString(3)
+	snaps := newSnapshotBuilder()
+	snaps.set(ActivityID("a"), "A", ActivityStatusCompleted, 0)
+	snaps.set(ActivityID("b"), "B", ActivityStatusFailed, 0)
+	snaps.set(ActivityID("c"), "C", ActivityStatusPending, 0)
+
+	got := dt.RenderWithSnapshots(snaps.snaps, 3, 0)
 	if got == "" {
-		t.Error("Render() should produce output")
+		t.Error("Render should produce output")
 	}
 }
 
@@ -58,7 +62,7 @@ func TestDependencyTree_AddActivity_WithNonExistentDependency(t *testing.T) {
 
 	dt := NewDependencyTree()
 
-	err := dt.AddActivity(ActivityID("child"), NewActivity("child", "Child"), []ActivityID{"nonexistent"})
+	err := dt.AddActivity(ActivityID("child"), nil, []ActivityID{"nonexistent"})
 	if err != nil {
 		t.Fatalf("AddActivity() error: %v", err)
 	}
@@ -76,24 +80,34 @@ func TestDependencyTree_AddActivity_UpdateExisting(t *testing.T) {
 	t.Parallel()
 
 	dt := NewDependencyTree()
-	dt.AddActivity(ActivityID("a"), NewActivity("a", "Original"), nil)
-	dt.AddActivity(ActivityID("a"), NewActivity("a", "Updated"), nil)
+	dt.AddActivity(ActivityID("a"), nil, nil)
+	dt.AddActivity(ActivityID("a"), nil, nil)
 
 	node := dt.GetNode(ActivityID("a"))
-	testhelpers.AssertEqual(t, "ActivityName", "", node.Label.Get(), "Updated")
+	if node == nil {
+		t.Fatal("node should exist")
+	}
+	if node.ID != ActivityID("a") {
+		t.Errorf("ID = %q, want %q", node.ID, "a")
+	}
 }
 
 func TestDependencyTree_Render_SecondaryDependencies(t *testing.T) {
 	t.Parallel()
 
 	dt := NewDependencyTree()
-	dt.AddActivity(ActivityID("phase"), NewActivity("phase", "Phase"), nil)
-	dt.AddActivity(ActivityID("step1"), NewActivity("step1", "Step1"), []ActivityID{"phase"})
-	dt.AddActivity(ActivityID("step2"), NewActivity("step2", "Step2"), []ActivityID{"phase", "step1"})
+	dt.AddActivity(ActivityID("phase"), nil, nil)
+	dt.AddActivity(ActivityID("step1"), nil, []ActivityID{"phase"})
+	dt.AddActivity(ActivityID("step2"), nil, []ActivityID{"phase", "step1"})
 
-	got := dt.RenderString(10)
+	snaps := newSnapshotBuilder()
+	snaps.set(ActivityID("phase"), "Phase", ActivityStatusPending, 0)
+	snaps.set(ActivityID("step1"), "Step1", ActivityStatusPending, 0)
+	snaps.set(ActivityID("step2"), "Step2", ActivityStatusPending, 0)
+
+	got := dt.RenderWithSnapshots(snaps.snaps, 10, 0)
 	if got == "" {
-		t.Fatal("Render() should produce output")
+		t.Fatal("Render should produce output")
 	}
 
 	if !strings.Contains(got, "depends on") {
@@ -110,18 +124,18 @@ func TestDependencyTree_Render_PhaseStyling(t *testing.T) {
 	t.Parallel()
 
 	dt := NewDependencyTree()
-	dt.AddActivity(ActivityID("phase:build"), NewActivity("phase:build", "Build"), nil)
-	dt.AddActivity(ActivityID("compile"), NewActivity("compile", "Compile"), []ActivityID{"phase:build"})
+	dt.AddActivity(ActivityID("phase:build"), nil, nil)
+	dt.AddActivity(ActivityID("compile"), nil, []ActivityID{"phase:build"})
 
-	now := time.Now()
-	testSetStatus(dt, ActivityID("phase:build"), ActivityStatusRunning, now)
+	snaps := newSnapshotBuilder()
+	snaps.set(ActivityID("phase:build"), "Build", ActivityStatusRunning, 0)
+	snaps.set(ActivityID("compile"), "Compile", ActivityStatusPending, 0)
 
-	got := dt.RenderString(10)
+	got := dt.RenderWithSnapshots(snaps.snaps, 10, 0)
 	if got == "" {
-		t.Fatal("Render() should produce output")
+		t.Fatal("Render should produce output")
 	}
 
-	// Phase node should use phase symbol
 	if !strings.Contains(got, string(SymbolPhase)) {
 		t.Errorf("render should contain phase symbol %q, got:\n%s", SymbolPhase, got)
 	}
@@ -131,55 +145,21 @@ func TestDependencyTree_Render_PriorityOrdering(t *testing.T) {
 	t.Parallel()
 
 	dt := NewDependencyTree()
-	dt.AddActivity(ActivityID("phase:build"), NewActivity("phase:build", "Build Phase"), nil)
-	dt.AddActivity(ActivityID("compile"), NewActivity("compile", "Compile"), []ActivityID{"phase:build"})
-	dt.AddActivity(ActivityID("test"), NewActivity("test", "Run Tests"), []ActivityID{"phase:build"})
-	dt.AddActivity(ActivityID("lint"), NewActivity("lint", "Lint Code"), []ActivityID{"phase:build"})
-	dt.AddActivity(ActivityID("deploy"), NewActivity("deploy", "Deploy"), []ActivityID{"phase:build"})
+	dt.AddActivity(ActivityID("phase:build"), nil, nil)
+	dt.AddActivity(ActivityID("compile"), nil, []ActivityID{"phase:build"})
+	dt.AddActivity(ActivityID("test"), nil, []ActivityID{"phase:build"})
+	dt.AddActivity(ActivityID("lint"), nil, []ActivityID{"phase:build"})
+	dt.AddActivity(ActivityID("deploy"), nil, []ActivityID{"phase:build"})
 
-	now := time.Date(2026, 6, 10, 12, 0, 0, 0, time.UTC)
+	snaps := newSnapshotBuilder()
+	snaps.set(ActivityID("phase:build"), "Build Phase", ActivityStatusRunning, 5*time.Second)
+	snaps.set(ActivityID("compile"), "Compile", ActivityStatusCompleted, 2*time.Second)
+	snaps.set(ActivityID("test"), "Run Tests", ActivityStatusRunning, 3*time.Second)
+	snaps.set(ActivityID("lint"), "Lint Code", ActivityStatusPending, 0)
+	snaps.set(ActivityID("deploy"), "Deploy", ActivityStatusFailed, 1*time.Second)
 
-	setStatusWithElapsed(
-		dt,
-		ActivityID("phase:build"),
-		ActivityStatusRunning,
-		SymbolRunning,
-		Colors.Running,
-		now,
-		5*time.Second,
-	)
-	setStatusWithElapsed(
-		dt,
-		ActivityID("compile"),
-		ActivityStatusCompleted,
-		SymbolCompleted,
-		Colors.Completed,
-		now,
-		2*time.Second,
-	)
-	setStatusWithElapsed(
-		dt,
-		ActivityID("test"),
-		ActivityStatusRunning,
-		SymbolRunning,
-		Colors.Running,
-		now,
-		3*time.Second,
-	)
-	setStatusWithElapsed(dt, ActivityID("lint"), ActivityStatusPending, SymbolPending, Colors.Pending, time.Time{}, 0)
-	setStatusWithElapsed(
-		dt,
-		ActivityID("deploy"),
-		ActivityStatusFailed,
-		SymbolFailed,
-		Colors.Failed,
-		now,
-		1*time.Second,
-	)
+	got := dt.RenderWithSnapshots(snaps.snaps, 10, 0)
 
-	got := dt.RenderString(10)
-
-	// Children should appear in priority order: failed, running, pending, completed.
 	failedIdx := strings.Index(got, "Deploy")
 	runningIdx := strings.Index(got, "Run Tests")
 	pendingIdx := strings.Index(got, "Lint Code")
@@ -196,16 +176,13 @@ func TestDependencyTree_Render_PriorityOrdering(t *testing.T) {
 			failedIdx, runningIdx, pendingIdx, completedIdx, got)
 	}
 
-	// With limited height, failed and running must survive over completed.
-	limited := dt.RenderString(3)
+	limited := dt.RenderWithSnapshots(snaps.snaps, 3, 0)
 	if !strings.Contains(limited, "Deploy") {
 		t.Errorf("limited render should keep failed activity, got:\n%s", limited)
 	}
-
 	if !strings.Contains(limited, "Run Tests") {
 		t.Errorf("limited render should keep running activity, got:\n%s", limited)
 	}
-
 	if strings.Contains(limited, "Compile") {
 		t.Errorf("limited render should drop completed activity, got:\n%s", limited)
 	}
@@ -215,38 +192,41 @@ func TestDependencyTree_RenderWithWidth_TruncatesLongNames(t *testing.T) {
 	t.Parallel()
 
 	dt := NewDependencyTree()
-	dt.AddActivity(ActivityID("a"), NewActivity("a", "This is a very long activity name that will not fit"), nil)
+	dt.AddActivity(ActivityID("a"), nil, nil)
 
-	now := time.Now()
-	testSetStatus(dt, ActivityID("a"), ActivityStatusRunning, now)
+	snaps := newSnapshotBuilder()
+	snaps.set(ActivityID("a"), "This is a very long activity name that will not fit", ActivityStatusRunning, 0)
 
-	wide := dt.RenderWithWidth(10, 80)
+	wide := dt.RenderWithSnapshots(snaps.snaps, 10, 80)
 	if strings.Contains(wide, "…") {
 		t.Errorf("wide render should not truncate, got:\n%s", wide)
 	}
 
-	narrow := dt.RenderWithWidth(10, 20)
+	narrow := dt.RenderWithSnapshots(snaps.snaps, 10, 20)
 	if !strings.Contains(narrow, "…") {
 		t.Errorf("narrow render should truncate with ellipsis, got:\n%s", narrow)
 	}
 }
 
-// TestDependencyTree_RenderWithWidth_DeepNestingFitsMaxWidth is a regression
-// test: when the tree-drawing prefix (indentation + ├──/└──) alone exceeds
-// maxWidth, the renderer used to emit the full prefix and overflow the terminal.
-// Now every rendered line must fit within maxWidth.
 func TestDependencyTree_RenderWithWidth_DeepNestingFitsMaxWidth(t *testing.T) {
 	t.Parallel()
 
 	dt := NewDependencyTree()
-	dt.AddActivity(ActivityID("root"), NewActivity("root", "Root"), nil)
-	dt.AddActivity(ActivityID("c1"), NewActivity("c1", "Child1"), []ActivityID{"root"})
-	dt.AddActivity(ActivityID("c2"), NewActivity("c2", "Child2"), []ActivityID{"c1"})
-	dt.AddActivity(ActivityID("c3"), NewActivity("c3", "Child3"), []ActivityID{"c2"})
-	dt.AddActivity(ActivityID("c4"), NewActivity("c4", "Child4"), []ActivityID{"c3"})
+	dt.AddActivity(ActivityID("root"), nil, nil)
+	dt.AddActivity(ActivityID("c1"), nil, []ActivityID{"root"})
+	dt.AddActivity(ActivityID("c2"), nil, []ActivityID{"c1"})
+	dt.AddActivity(ActivityID("c3"), nil, []ActivityID{"c2"})
+	dt.AddActivity(ActivityID("c4"), nil, []ActivityID{"c3"})
+
+	snaps := newSnapshotBuilder()
+	snaps.set(ActivityID("root"), "Root", ActivityStatusPending, 0)
+	snaps.set(ActivityID("c1"), "Child1", ActivityStatusPending, 0)
+	snaps.set(ActivityID("c2"), "Child2", ActivityStatusPending, 0)
+	snaps.set(ActivityID("c3"), "Child3", ActivityStatusPending, 0)
+	snaps.set(ActivityID("c4"), "Child4", ActivityStatusPending, 0)
 
 	for _, maxW := range []int{80, 40, 30, 20, 15, 10, 5, 3} {
-		got := dt.RenderWithWidth(20, maxW)
+		got := dt.RenderWithSnapshots(snaps.snaps, 20, maxW)
 		for line := range strings.SplitSeq(got, "\n") {
 			w := VisibleWidth(line)
 			if w > maxW {

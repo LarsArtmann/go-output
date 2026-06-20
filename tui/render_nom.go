@@ -34,64 +34,49 @@ func (m *ProgressModel) renderNOMStyle() string {
 
 // renderDependencyTree renders the activity dependency tree in NOM style.
 //
-// The whole walk runs under the subscriber's read lock: the tree nodes embed a
-// shared *Activity pointer whose fields event handlers mutate
-// (SetRunning/SetCompleted/SetFailed) on dispatcher goroutines, and reading
-// them unlocked races those writes — producing garbled frames and failing
-// -race. m.dependencyTree is the cached pointer set by syncNOMSubscriber; in
-// production it aliases the subscriber's tree, so holding ns.mu makes reading
-// its Activity fields safe. We MUST NOT call other subscriber accessors
-// (GetActivityCounts, RenderTree, …) inside the callback: recursive RLock
-// against a waiting writer deadlocks.
+// Uses immutable ActivitySnapshot data for all field reads — no shared
+// *Activity pointer is accessed, so event handlers (SetRunning/SetCompleted/
+// SetFailed) mutating activities on dispatcher goroutines cannot race the
+// render. The snapshot is taken under the subscriber's read lock (brief),
+// then the tree walk reads only immutable data (no lock held).
 func (m *ProgressModel) renderDependencyTree() string {
-	// m.dependencyTree is the "synced at least once" flag (set by
-	// syncNOMSubscriber). Reading just the pointer is non-racy under
-	// bubbletea's serialized Update/View. The actual Activity fields are read
-	// under the subscriber's read lock below.
 	if m.dependencyTree == nil || m.nomSubscriber == nil {
 		return ""
 	}
 
-	var result string
+	snapshots := m.nomSubscriber.SnapshotActivities()
+	tree := m.dependencyTree
 
-	m.nomSubscriber.WithSubscriberRLock(func() {
-		tree := m.dependencyTree
+	if m.scrollOffset > 0 {
+		return tree.RenderWithSnapshots(snapshots, 0, m.width)
+	}
 
-		if m.scrollOffset > 0 {
-			result = tree.RenderWithWidth(0, m.width)
-			return
+	treeHeight := m.height - chromeLines
+	if treeHeight <= 0 {
+		treeHeight = defaultTreeHeight
+	}
+
+	m.visibleNodes = tree.VisibleNodesWithSnapshots(snapshots, treeHeight)
+
+	if len(m.visibleNodes) == 0 {
+		return msgNoActivitiesToDisplay
+	}
+
+	lines := make([]string, 0, len(m.visibleNodes))
+
+	for _, node := range m.visibleNodes {
+		line := tree.RenderNode(node, m.visibleNodes, snapshots)
+		if m.selectedNode != "" && node.ID == m.selectedNode {
+			line = lipgloss.NewStyle().
+				Background(colors.selectBG).
+				Foreground(colors.selectFG).
+				Render(line)
 		}
 
-		treeHeight := m.height - chromeLines
-		if treeHeight <= 0 {
-			treeHeight = defaultTreeHeight
-		}
+		lines = append(lines, line)
+	}
 
-		m.visibleNodes = tree.VisibleNodes(treeHeight)
-
-		if len(m.visibleNodes) == 0 {
-			result = msgNoActivitiesToDisplay
-			return
-		}
-
-		lines := make([]string, 0, len(m.visibleNodes))
-
-		for _, node := range m.visibleNodes {
-			line := tree.RenderNode(node, m.visibleNodes)
-			if m.selectedNode != "" && nom.ActivityID(node.ID.Get()) == m.selectedNode {
-				line = lipgloss.NewStyle().
-					Background(colors.selectBG).
-					Foreground(colors.selectFG).
-					Render(line)
-			}
-
-			lines = append(lines, line)
-		}
-
-		result = strings.Join(lines, "\n")
-	})
-
-	return result
+	return strings.Join(lines, "\n")
 }
 
 // renderNOMSummaryBar creates the NOM-style summary bar, colored by workflow state.

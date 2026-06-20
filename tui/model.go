@@ -6,8 +6,6 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 	"github.com/charmbracelet/x/ansi"
-
-	"github.com/larsartmann/go-output/nom"
 )
 
 const chromeLinesAboveTree = 5
@@ -148,7 +146,7 @@ func (m *ProgressModel) handleMouseClick(msg tea.MouseClickMsg) (tea.Model, tea.
 
 	node := m.visibleNodes[treeLine]
 
-	nodeID := nom.ActivityID(node.ID.Get())
+	nodeID := node.ID
 	if m.selectedNode == nodeID {
 		m.selectedNode = ""
 	} else {

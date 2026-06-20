@@ -9,96 +9,62 @@ import (
 	"github.com/charmbracelet/x/exp/golden"
 )
 
-// setStatusWithElapsed updates activity status, timing, and derived visual
-// style directly on the shared Activity pointer. The symbol/color params are
-// ignored (derived from status via applyVisualStyle) but kept for call-site
-// readability and backward compatibility with golden snapshots.
-func setStatusWithElapsed(
-	dt *DependencyTree,
-	id ActivityID,
-	status ActivityStatus, _, _ any,
-	t time.Time, elapsed time.Duration,
-) {
-	node := dt.nodes[id]
-	if node == nil {
-		return
-	}
-
-	node.Status = status
-	node.applyVisualStyle()
-	node.StartTime = t
-
-	if elapsed > 0 {
-		node.CurrentElapsed = elapsed
-	}
-}
-
-// TestDependencyTreeRenderGolden_PhaseSteps renders a tree with a phase node
-// and multiple child steps in various states. Uses "phase:" prefix for
-// phase-styled rendering (SymbolPhase/Colors.Phase).
 func TestDependencyTreeRenderGolden_PhaseSteps(t *testing.T) {
 	t.Parallel()
 
 	dt := NewDependencyTree()
-	dt.AddActivity(ActivityID("phase:build"), NewActivity("phase:build", "Build Phase"), nil)
-	dt.AddActivity(ActivityID("compile"), NewActivity("compile", "Compile"), []ActivityID{"phase:build"})
-	dt.AddActivity(ActivityID("test"), NewActivity("test", "Run Tests"), []ActivityID{"phase:build"})
-	dt.AddActivity(ActivityID("lint"), NewActivity("lint", "Lint Code"), []ActivityID{"phase:build"})
-	dt.AddActivity(ActivityID("deploy"), NewActivity("deploy", "Deploy"), []ActivityID{"phase:build"})
+	dt.AddActivity(ActivityID("phase:build"), nil, nil)
+	dt.AddActivity(ActivityID("compile"), nil, []ActivityID{"phase:build"})
+	dt.AddActivity(ActivityID("test"), nil, []ActivityID{"phase:build"})
+	dt.AddActivity(ActivityID("lint"), nil, []ActivityID{"phase:build"})
+	dt.AddActivity(ActivityID("deploy"), nil, []ActivityID{"phase:build"})
 
-	now := time.Date(2026, 6, 10, 12, 0, 0, 0, time.UTC)
+	snaps := newSnapshotBuilder()
+	snaps.set(ActivityID("phase:build"), "Build Phase", ActivityStatusRunning, 5*time.Second)
+	snaps.set(ActivityID("compile"), "Compile", ActivityStatusCompleted, 2*time.Second)
+	snaps.set(ActivityID("test"), "Run Tests", ActivityStatusRunning, 3*time.Second)
+	snaps.set(ActivityID("lint"), "Lint Code", ActivityStatusPending, 0)
+	snaps.set(ActivityID("deploy"), "Deploy", ActivityStatusFailed, 1*time.Second)
 
-	setStatusWithElapsed(dt, ActivityID("phase:build"), ActivityStatusRunning, nil, nil, now, 5*time.Second)
-	setStatusWithElapsed(dt, ActivityID("compile"), ActivityStatusCompleted, nil, nil, now, 2*time.Second)
-	setStatusWithElapsed(dt, ActivityID("test"), ActivityStatusRunning, nil, nil, now, 3*time.Second)
-	setStatusWithElapsed(dt, ActivityID("lint"), ActivityStatusPending, nil, nil, time.Time{}, 0)
-	setStatusWithElapsed(dt, ActivityID("deploy"), ActivityStatusFailed, nil, nil, now, 1*time.Second)
-
-	got := dt.RenderString(10)
+	got := dt.RenderWithSnapshots(snaps.snaps, 10, 0)
 	golden.RequireEqual(t, got)
 }
 
-// TestDependencyTreeRenderGolden_SecondaryDeps renders secondary dependency
-// labels when an activity depends on multiple parents.
 func TestDependencyTreeRenderGolden_SecondaryDeps(t *testing.T) {
 	t.Parallel()
 
 	dt := NewDependencyTree()
-	dt.AddActivity(ActivityID("phase:main"), NewActivity("phase:main", "Phase"), nil)
-	dt.AddActivity(ActivityID("step1"), NewActivity("step1", "Step 1"), []ActivityID{"phase:main"})
-	dt.AddActivity(ActivityID("step2"), NewActivity("step2", "Step 2"), []ActivityID{"phase:main", "step1"})
+	dt.AddActivity(ActivityID("phase:main"), nil, nil)
+	dt.AddActivity(ActivityID("step1"), nil, []ActivityID{"phase:main"})
+	dt.AddActivity(ActivityID("step2"), nil, []ActivityID{"phase:main", "step1"})
 
-	now := time.Date(2026, 6, 10, 12, 0, 0, 0, time.UTC)
+	snaps := newSnapshotBuilder()
+	snaps.set(ActivityID("phase:main"), "Phase", ActivityStatusRunning, 0)
+	snaps.set(ActivityID("step1"), "Step 1", ActivityStatusCompleted, 0)
+	snaps.set(ActivityID("step2"), "Step 2", ActivityStatusPending, 0)
 
-	setStatusWithElapsed(dt, ActivityID("phase:main"), ActivityStatusRunning, nil, nil, now, 0)
-	setStatusWithElapsed(dt, ActivityID("step1"), ActivityStatusCompleted, nil, nil, now, 0)
-	setStatusWithElapsed(dt, ActivityID("step2"), ActivityStatusPending, nil, nil, time.Time{}, 0)
-
-	got := dt.RenderString(10)
+	got := dt.RenderWithSnapshots(snaps.snaps, 10, 0)
 	golden.RequireEqual(t, got)
 }
 
-// TestDependencyTreeRenderGolden_MixedStates renders activities in all
-// possible states: running, completed, failed, pending.
 func TestDependencyTreeRenderGolden_MixedStates(t *testing.T) {
 	t.Parallel()
 
 	dt := NewDependencyTree()
-	dt.AddActivity(ActivityID("root"), NewActivity("root", "Workflow"), nil)
-	dt.AddActivity(ActivityID("running"), NewActivity("running", "Running Step"), []ActivityID{"root"})
-	dt.AddActivity(ActivityID("completed"), NewActivity("completed", "Completed Step"), []ActivityID{"root"})
-	dt.AddActivity(ActivityID("failed"), NewActivity("failed", "Failed Step"), []ActivityID{"root"})
-	dt.AddActivity(ActivityID("pending"), NewActivity("pending", "Pending Step"), []ActivityID{"root"})
+	dt.AddActivity(ActivityID("root"), nil, nil)
+	dt.AddActivity(ActivityID("running"), nil, []ActivityID{"root"})
+	dt.AddActivity(ActivityID("completed"), nil, []ActivityID{"root"})
+	dt.AddActivity(ActivityID("failed"), nil, []ActivityID{"root"})
+	dt.AddActivity(ActivityID("pending"), nil, []ActivityID{"root"})
 
-	now := time.Date(2026, 6, 10, 12, 0, 0, 0, time.UTC)
+	snaps := newSnapshotBuilder()
+	snaps.set(ActivityID("root"), "Workflow", ActivityStatusRunning, 10*time.Second)
+	snaps.set(ActivityID("running"), "Running Step", ActivityStatusRunning, 5*time.Second)
+	snaps.set(ActivityID("completed"), "Completed Step", ActivityStatusCompleted, 2*time.Second)
+	snaps.set(ActivityID("failed"), "Failed Step", ActivityStatusFailed, 1*time.Second)
+	snaps.set(ActivityID("pending"), "Pending Step", ActivityStatusPending, 0)
 
-	setStatusWithElapsed(dt, ActivityID("root"), ActivityStatusRunning, nil, nil, now, 10*time.Second)
-	setStatusWithElapsed(dt, ActivityID("running"), ActivityStatusRunning, nil, nil, now, 5*time.Second)
-	setStatusWithElapsed(dt, ActivityID("completed"), ActivityStatusCompleted, nil, nil, now, 2*time.Second)
-	setStatusWithElapsed(dt, ActivityID("failed"), ActivityStatusFailed, nil, nil, now, 1*time.Second)
-	setStatusWithElapsed(dt, ActivityID("pending"), ActivityStatusPending, nil, nil, time.Time{}, 0)
-
-	got := dt.RenderString(10)
+	got := dt.RenderWithSnapshots(snaps.snaps, 10, 0)
 	golden.RequireEqual(t, got)
 }
 

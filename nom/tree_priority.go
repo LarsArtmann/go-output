@@ -5,17 +5,12 @@ import (
 	"time"
 )
 
-// sortKey captures the display priority of a node. Lower values sort first.
 type sortKey struct {
-	interest int
-	// For equal interest, longer elapsed time sorts first so long-running work
-	// is more visible than work that just started.
-	elapsed time.Duration
-	// Stable tie-breaker for deterministic output.
+	interest   int
+	elapsed    time.Duration
 	activityID ActivityID
 }
 
-// less reports whether this key should sort before other.
 func (k sortKey) less(other sortKey) bool {
 	if k.interest != other.interest {
 		return k.interest < other.interest
@@ -28,8 +23,12 @@ func (k sortKey) less(other sortKey) bool {
 	return k.activityID < other.activityID
 }
 
-// childPriority sorts a node's children by display priority without mutating the original slice.
-func (dt *DependencyTree) childPriority(node *ActivityNode) []*ActivityNode {
+// childPriority sorts a node's children by display priority using immutable
+// snapshots for status/elapsed data.
+func (dt *DependencyTree) childPriority(
+	node *ActivityNode,
+	snapshots map[ActivityID]ActivitySnapshot,
+) []*ActivityNode {
 	if len(node.Children) == 0 {
 		return nil
 	}
@@ -38,17 +37,23 @@ func (dt *DependencyTree) childPriority(node *ActivityNode) []*ActivityNode {
 	copy(sorted, node.Children)
 
 	sort.SliceStable(sorted, func(i, j int) bool {
-		return sortKeyForNode(sorted[i]).less(sortKeyForNode(sorted[j]))
+		ki := sortKeyForNode(sorted[i], snapshots)
+		kj := sortKeyForNode(sorted[j], snapshots)
+		return ki.less(kj)
 	})
 
 	return sorted
 }
 
-// sortKeyForNode returns the display sort key for a node.
-func sortKeyForNode(node *ActivityNode) sortKey {
+func sortKeyForNode(
+	node *ActivityNode,
+	snapshots map[ActivityID]ActivitySnapshot,
+) sortKey {
+	snap := lookupSnapshot(snapshots, node.ID)
+
 	return sortKey{
-		interest:   node.Status.Interest(),
-		elapsed:    node.CurrentElapsed,
-		activityID: ActivityID(node.ID.Get()),
+		interest:   snap.Status.Interest(),
+		elapsed:    snap.CurrentElapsed,
+		activityID: node.ID,
 	}
 }

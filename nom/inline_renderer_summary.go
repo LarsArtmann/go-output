@@ -46,8 +46,8 @@ func (r *InlineRenderer) Finish(workflowErr error) {
 		r.write(ansiShowCursor)
 	}
 
-	// Render under the subscriber's read lock (same reason as Draw).
-	if final, ok := r.subscriber.RenderTree(0, 0); ok && final != msgNoActivitiesToDisplay {
+	// Render from immutable snapshot (same race-free path as Draw).
+	if final, ok := r.subscriber.RenderSnapshot(0, 0); ok && final != msgNoActivitiesToDisplay {
 		r.write(final + "\n")
 	}
 

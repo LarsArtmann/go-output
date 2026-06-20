@@ -4,8 +4,6 @@ import (
 	"strings"
 	"testing"
 	"time"
-
-	"github.com/larsartmann/go-output/testhelpers"
 )
 
 func TestNewDependencyTree(t *testing.T) {
@@ -25,7 +23,7 @@ func TestDependencyTree_AddActivity(t *testing.T) {
 
 		dt := NewDependencyTree()
 
-		err := dt.AddActivity(ActivityID("a"), NewActivity("a", "Activity A"), nil)
+		err := dt.AddActivity(ActivityID("a"), nil, nil)
 		if err != nil {
 			t.Fatalf("AddActivity() error: %v", err)
 		}
@@ -35,7 +33,9 @@ func TestDependencyTree_AddActivity(t *testing.T) {
 			t.Fatal("node should exist after AddActivity")
 		}
 
-		testhelpers.AssertEqual(t, "ActivityName", "", node.Label.Get(), "Activity A")
+		if node.ID != ActivityID("a") {
+			t.Errorf("node.ID = %q, want %q", node.ID, "a")
+		}
 	})
 
 	t.Run("activity with dependency creates parent-child", func(t *testing.T) {
@@ -43,12 +43,12 @@ func TestDependencyTree_AddActivity(t *testing.T) {
 
 		dt := NewDependencyTree()
 
-		err := dt.AddActivity(ActivityID("parent"), NewActivity("parent", "Parent"), nil)
+		err := dt.AddActivity(ActivityID("parent"), nil, nil)
 		if err != nil {
 			t.Fatalf("AddActivity() error: %v", err)
 		}
 
-		err = dt.AddActivity(ActivityID("child"), NewActivity("child", "Child"), []ActivityID{"parent"})
+		err = dt.AddActivity(ActivityID("child"), nil, []ActivityID{"parent"})
 		if err != nil {
 			t.Fatalf("AddActivity() error: %v", err)
 		}
@@ -61,7 +61,7 @@ func TestDependencyTree_AddActivity(t *testing.T) {
 		assertChildParentID(t, child, "parent")
 
 		parent := dt.GetNode(ActivityID("parent"))
-		if len(parent.Children) != 1 || parent.Children[0].ID.Get() != "child" {
+		if len(parent.Children) != 1 || parent.Children[0].ID != "child" {
 			t.Error("parent should have child")
 		}
 	})
@@ -71,8 +71,8 @@ func TestDependencyTree_Build(t *testing.T) {
 	t.Parallel()
 
 	dt := NewDependencyTree()
-	dt.AddActivity(ActivityID("a"), NewActivity("a", "A"), nil)
-	dt.AddActivity(ActivityID("b"), NewActivity("b", "B"), nil)
+	dt.AddActivity(ActivityID("a"), nil, nil)
+	dt.AddActivity(ActivityID("b"), nil, nil)
 
 	err := dt.Build()
 	if err != nil {
@@ -86,11 +86,11 @@ func TestDependencyTree_Build(t *testing.T) {
 
 	for _, root := range roots {
 		if !root.IsRoot {
-			t.Errorf("node %q should be a root", root.ID.Get())
+			t.Errorf("node %q should be a root", root.ID)
 		}
 
 		if root.Depth != 0 {
-			t.Errorf("root %q depth = %d, want 0", root.ID.Get(), root.Depth)
+			t.Errorf("root %q depth = %d, want 0", root.ID, root.Depth)
 		}
 	}
 }
@@ -99,9 +99,9 @@ func TestDependencyTree_Build_DepthCalculation(t *testing.T) {
 	t.Parallel()
 
 	dt := NewDependencyTree()
-	dt.AddActivity(ActivityID("a"), NewActivity("a", "A"), nil)
-	dt.AddActivity(ActivityID("b"), NewActivity("b", "B"), []ActivityID{"a"})
-	dt.AddActivity(ActivityID("c"), NewActivity("c", "C"), []ActivityID{"b"})
+	dt.AddActivity(ActivityID("a"), nil, nil)
+	dt.AddActivity(ActivityID("b"), nil, []ActivityID{"a"})
+	dt.AddActivity(ActivityID("c"), nil, []ActivityID{"b"})
 
 	dt.Build()
 
@@ -115,18 +115,20 @@ func TestDependencyTree_FindNodesByStatus(t *testing.T) {
 	t.Parallel()
 
 	dt := NewDependencyTree()
-	dt.AddActivity(ActivityID("a"), NewActivity("a", "A"), nil)
-	dt.AddActivity(ActivityID("b"), NewActivity("b", "B"), nil)
-	testSetStatus(dt, ActivityID("a"), ActivityStatusRunning, time.Now())
-	testSetStatus(dt, ActivityID("b"), ActivityStatusCompleted, time.Now())
+	dt.AddActivity(ActivityID("a"), nil, nil)
+	dt.AddActivity(ActivityID("b"), nil, nil)
 
-	running := dt.findNodesByStatus(ActivityStatusRunning)
+	snaps := newSnapshotBuilder()
+	snaps.set(ActivityID("a"), "A", ActivityStatusRunning, 0)
+	snaps.set(ActivityID("b"), "B", ActivityStatusCompleted, 0)
+
+	running := dt.findNodesByStatus(ActivityStatusRunning, snaps.snaps)
 	if len(running) != 1 {
 		t.Errorf("expected 1 running node, got %d", len(running))
 	}
 
-	if running[0].ID.Get() != "a" {
-		t.Errorf("running node = %q, want %q", running[0].ID.Get(), "a")
+	if running[0].ID != "a" {
+		t.Errorf("running node = %q, want %q", running[0].ID, "a")
 	}
 }
 
@@ -134,7 +136,7 @@ func TestDependencyTree_Clear(t *testing.T) {
 	t.Parallel()
 
 	dt := NewDependencyTree()
-	dt.AddActivity(ActivityID("a"), NewActivity("a", "A"), nil)
+	dt.AddActivity(ActivityID("a"), nil, nil)
 	dt.Build()
 
 	dt.Clear()
@@ -149,43 +151,13 @@ func TestDependencyTree_SnapshotRoots(t *testing.T) {
 	t.Parallel()
 
 	dt := NewDependencyTree()
-	dt.AddActivity(ActivityID("a"), NewActivity("a", "A"), nil)
-	dt.AddActivity(ActivityID("b"), NewActivity("b", "B"), nil)
+	dt.AddActivity(ActivityID("a"), nil, nil)
+	dt.AddActivity(ActivityID("b"), nil, nil)
 
 	snapshot := dt.snapshotRoots()
 	if len(snapshot) != 2 {
 		t.Errorf("expected 2 roots, got %d", len(snapshot))
 	}
-}
-
-func TestDependencyTree_DirectStatusMutation(t *testing.T) {
-	t.Parallel()
-
-	t.Run("existing node", func(t *testing.T) {
-		t.Parallel()
-
-		dt := NewDependencyTree()
-		dt.AddActivity(ActivityID("a"), NewActivity("a", "A"), nil)
-
-		testSetStatus(dt, ActivityID("a"), ActivityStatusRunning, time.Now())
-
-		node := dt.GetNode(ActivityID("a"))
-		if node.Status != ActivityStatusRunning {
-			t.Errorf("Status = %v, want Running", node.Status)
-		}
-
-		if node.Symbol != SymbolRunning {
-			t.Errorf("Symbol = %q, want %q", node.Symbol, SymbolRunning)
-		}
-	})
-
-	t.Run("nonexistent node is no-op", func(t *testing.T) {
-		t.Parallel()
-
-		dt := NewDependencyTree()
-		testSetStatus(dt, ActivityID("nonexistent"), ActivityStatusRunning, time.Now())
-		// No panic, no error — the shared-pointer model makes this a no-op.
-	})
 }
 
 func TestDependencyTree_Render(t *testing.T) {
@@ -206,12 +178,14 @@ func TestDependencyTree_Render(t *testing.T) {
 		t.Parallel()
 
 		dt := NewDependencyTree()
-		dt.AddActivity(ActivityID("a"), NewActivity("a", "Activity A"), nil)
-		testSetStatus(dt, ActivityID("a"), ActivityStatusRunning, time.Now())
+		dt.AddActivity(ActivityID("a"), nil, nil)
 
-		got := dt.RenderString(10)
+		snaps := newSnapshotBuilder()
+		snaps.set(ActivityID("a"), "Activity A", ActivityStatusRunning, 0)
+
+		got := dt.RenderWithSnapshots(snaps.snaps, 10, 0)
 		if got == "" {
-			t.Error("Render() should not return empty string for non-empty tree")
+			t.Error("Render should not return empty string for non-empty tree")
 		}
 	})
 
@@ -222,12 +196,12 @@ func TestDependencyTree_Render(t *testing.T) {
 
 		for i := range 10 {
 			id := ActivityID(string(rune('a' + i)))
-			dt.AddActivity(id, NewActivity(string(id), string(rune('a'+i))), nil)
+			dt.AddActivity(id, nil, nil)
 		}
 
 		got := dt.RenderString(3)
 		if got == "" {
-			t.Error("Render() should not return empty")
+			t.Error("Render should not return empty")
 		}
 	})
 }
@@ -236,12 +210,11 @@ func TestDependencyTree_AddActivity_DedupSecondaryParents(t *testing.T) {
 	t.Parallel()
 
 	dt := NewDependencyTree()
-	dt.AddActivity(ActivityID("phase"), NewActivity("phase", "Phase"), nil)
-	dt.AddActivity(ActivityID("step1"), NewActivity("step1", "Step1"), []ActivityID{"phase"})
+	dt.AddActivity(ActivityID("phase"), nil, nil)
+	dt.AddActivity(ActivityID("step1"), nil, []ActivityID{"phase"})
 
-	// Add step2 with same secondary dep twice (simulating re-registration)
-	dt.AddActivity(ActivityID("step2"), NewActivity("step2", "Step2"), []ActivityID{"phase", "step1"})
-	dt.AddActivity(ActivityID("step2"), NewActivity("step2", "Step2"), []ActivityID{"phase", "step1"})
+	dt.AddActivity(ActivityID("step2"), nil, []ActivityID{"phase", "step1"})
+	dt.AddActivity(ActivityID("step2"), nil, []ActivityID{"phase", "step1"})
 
 	node := dt.GetNode(ActivityID("step2"))
 	if len(node.SecondaryParents) != 1 {
@@ -253,15 +226,19 @@ func TestDependencyTree_RenderNode(t *testing.T) {
 	t.Parallel()
 
 	dt := NewDependencyTree()
-	dt.AddActivity(ActivityID("root"), NewActivity("root", "Root Task"), nil)
-	dt.AddActivity(ActivityID("child"), NewActivity("child", "Child Task"), []ActivityID{"root"})
+	dt.AddActivity(ActivityID("root"), nil, nil)
+	dt.AddActivity(ActivityID("child"), nil, []ActivityID{"root"})
 
-	nodes := dt.VisibleNodes(10)
+	snaps := newSnapshotBuilder()
+	snaps.set(ActivityID("root"), "Root Task", ActivityStatusRunning, 0)
+	snaps.set(ActivityID("child"), "Child Task", ActivityStatusPending, 0)
+
+	nodes := dt.VisibleNodesWithSnapshots(snaps.snaps, 10)
 	if len(nodes) == 0 {
 		t.Fatal("expected at least one display node")
 	}
 
-	out := dt.RenderNode(nodes[0], nil)
+	out := dt.RenderNode(nodes[0], nil, snaps.snaps)
 	if out == "" {
 		t.Error("RenderNode should produce non-empty output")
 	}
@@ -272,15 +249,13 @@ func TestDependencyTree_RenderNode(t *testing.T) {
 }
 
 func TestDependencyTree_VisibleNodes(t *testing.T) {
-	t.Parallel()
-
 	t.Run("returns nodes up to maxHeight", func(t *testing.T) {
 		t.Parallel()
 
 		dt := NewDependencyTree()
-		dt.AddActivity(ActivityID("a"), NewActivity("a", "A"), nil)
-		dt.AddActivity(ActivityID("b"), NewActivity("b", "B"), nil)
-		dt.AddActivity(ActivityID("c"), NewActivity("c", "C"), nil)
+		dt.AddActivity(ActivityID("a"), nil, nil)
+		dt.AddActivity(ActivityID("b"), nil, nil)
+		dt.AddActivity(ActivityID("c"), nil, nil)
 
 		visible := dt.VisibleNodes(2)
 		if len(visible) != 2 {
@@ -292,8 +267,8 @@ func TestDependencyTree_VisibleNodes(t *testing.T) {
 		t.Parallel()
 
 		dt := NewDependencyTree()
-		dt.AddActivity(ActivityID("a"), NewActivity("a", "A"), nil)
-		dt.AddActivity(ActivityID("b"), NewActivity("b", "B"), nil)
+		dt.AddActivity(ActivityID("a"), nil, nil)
+		dt.AddActivity(ActivityID("b"), nil, nil)
 
 		visible := dt.VisibleNodes(0)
 		if len(visible) != 2 {
@@ -316,9 +291,9 @@ func TestDependencyTree_VisibleNodes(t *testing.T) {
 func TestActivityNode_removeChild(t *testing.T) {
 	t.Parallel()
 
-	parent := newActivityNode(ActivityID("parent"), "Parent")
-	childA := newActivityNode(ActivityID("a"), "A")
-	childB := newActivityNode(ActivityID("b"), "B")
+	parent := newActivityNode(ActivityID("parent"), "")
+	childA := newActivityNode(ActivityID("a"), "")
+	childB := newActivityNode(ActivityID("b"), "")
 	parent.Children = []*ActivityNode{childA, childB}
 
 	parent.removeChild(ActivityID("a"))
@@ -335,10 +310,33 @@ func TestActivityNode_removeChild(t *testing.T) {
 		t.Errorf("len(Children) = %d, want 1", len(parent.Children))
 	}
 
-	// Removing a non-existent child must be a safe no-op.
 	parent.removeChild(ActivityID("missing"))
 
 	if len(parent.Children) != 1 {
 		t.Errorf("removing missing child changed Children: len = %d, want 1", len(parent.Children))
+	}
+}
+
+// TestDependencyTree_SnapshotRendering_VerifiesStatusInOutput ensures the
+// snapshot-based render path reflects the activity's status correctly. This
+// replaces the old TestDependencyTree_DirectStatusMutation test which mutated
+// node.Activity fields directly (no longer possible — the node stores only ID).
+func TestDependencyTree_SnapshotRendering_VerifiesStatusInOutput(t *testing.T) {
+	t.Parallel()
+
+	dt := NewDependencyTree()
+	dt.AddActivity(ActivityID("a"), nil, nil)
+
+	snaps := newSnapshotBuilder()
+	snaps.set(ActivityID("a"), "Activity A", ActivityStatusRunning, 5*time.Second)
+
+	got := dt.RenderWithSnapshots(snaps.snaps, 10, 0)
+
+	if !strings.Contains(got, string(SymbolRunning)) {
+		t.Errorf("render should contain running symbol, got:\n%s", got)
+	}
+
+	if !strings.Contains(got, "Activity A") {
+		t.Errorf("render should contain label, got:\n%s", got)
 	}
 }

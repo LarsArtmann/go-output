@@ -139,10 +139,9 @@ func (r *InlineRenderer) Draw() {
 	maxH := r.effectiveMaxHeight()
 	maxW := r.effectiveMaxWidth()
 
-	// Render under the subscriber's read lock: the nodes embed the shared
-	// *Activity pointer whose fields event handlers mutate (SetFailed etc.).
-	// Rendering unlocked races those writes and yields garbled frames.
-	frame, hasTree := r.subscriber.RenderTree(maxH, maxW)
+	// Render from an immutable snapshot — no lock held during the tree walk,
+	// so event handlers can proceed concurrently without racing the render.
+	frame, hasTree := r.subscriber.RenderSnapshot(maxH, maxW)
 	if !hasTree || frame == msgNoActivitiesToDisplay {
 		return
 	}

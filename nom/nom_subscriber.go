@@ -111,11 +111,11 @@ func (v *subscriberView) Edges() []output.GraphEdge {
 	var edges []output.GraphEdge
 
 	for _, node := range tree.nodes {
-		parentID := node.ID.Get()
+		parentID := string(node.ID)
 		for _, child := range node.Children {
 			edges = append(edges, output.GraphEdge{
 				From: output.NewBrandedID[output.GraphNodeIDBrand](parentID),
-				To:   output.NewBrandedID[output.GraphNodeIDBrand](child.ID.Get()),
+				To:   output.NewBrandedID[output.GraphNodeIDBrand](string(child.ID)),
 			})
 		}
 	}

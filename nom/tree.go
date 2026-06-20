@@ -18,11 +18,13 @@ const (
 )
 
 // ActivityNode represents a node in the dependency tree.
+// Holds ONLY tree structure + an ID for snapshot lookup. The mutable Activity
+// fields (Status/Symbol/Color/timing) are never read from the node —
+// rendering uses ActivitySnapshot values taken under the subscriber's lock.
+// This makes the render-vs-event-handler data race unrepresentable.
 type ActivityNode struct {
-	// Activity is the source of truth (embeds GraphNode + Status + timing).
-	// Shared by pointer with the subscriber's activities map — mutations are
-	// instantly visible to both with zero sync overhead.
-	*Activity
+	// ID identifies the activity for snapshot lookup at render time.
+	ID ActivityID
 
 	// Tree structure
 	Parent           *ActivityNode
@@ -51,10 +53,12 @@ func NewDependencyTree() *DependencyTree {
 	}
 }
 
-// newActivityNode creates a new ActivityNode with pending status.
-func newActivityNode(id ActivityID, name string) *ActivityNode {
+// newActivityNode creates a structural placeholder node for a dependency
+// that has not been registered with a full Activity yet (e.g. a parent ID
+// referenced before its own activity.started event arrives).
+func newActivityNode(id ActivityID, _ string) *ActivityNode {
 	return &ActivityNode{
-		Activity:    NewActivity(string(id), name),
+		ID:          id,
 		Children:    make([]*ActivityNode, 0),
 		IsDisplayed: true,
 	}
@@ -63,14 +67,14 @@ func newActivityNode(id ActivityID, name string) *ActivityNode {
 // nodeHasID returns a predicate matching nodes whose ID equals the given value.
 func nodeHasID(id ActivityID) func(*ActivityNode) bool {
 	return func(c *ActivityNode) bool {
-		return c.ID.Get() == string(id)
+		return c.ID == id
 	}
 }
 
 // sortNodesByID sorts a slice of ActivityNode in place by ID for deterministic display order.
 func sortNodesByID(nodes []*ActivityNode) {
 	slices.SortStableFunc(nodes, func(a, b *ActivityNode) int {
-		return cmp.Compare(a.ID.Get(), b.ID.Get())
+		return cmp.Compare(string(a.ID), string(b.ID))
 	})
 }
 

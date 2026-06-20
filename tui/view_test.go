@@ -1,6 +1,7 @@
 package tui
 
 import (
+	"context"
 	"strings"
 	"testing"
 	"time"
@@ -236,12 +237,19 @@ func TestProgressModel_SelectedNodeHighlight(t *testing.T) {
 	model.displayMode = DisplayModeNOM
 	model.workflowState = workflowStateRunning
 
-	tree := nom.NewDependencyTree()
-	_ = tree.AddActivity(nom.ActivityID("step-a"), nom.NewActivity("step-a", "Step A"), nil)
-	_ = tree.AddActivity(nom.ActivityID("step-b"), nom.NewActivity("step-b", "Step B"), []nom.ActivityID{"step-a"})
-	_ = tree.GetRootNodes()
+	ctx := context.Background()
+	_ = model.nomSubscriber.OnEvent(ctx, &testEvent{
+		eventType: nom.EventWorkflowStarted,
+		wID:       nom.WorkflowID("wf-1"),
+	})
+	startActivity(t, model, ctx, nom.ActivityID("step-a"), nom.ActivityName("Step A"))
+	startActivity(t, model, ctx, nom.ActivityID("step-b"), nom.ActivityName("Step B"))
 
-	model.dependencyTree = tree
+	// Sync tree from subscriber
+	if _, _ = model.Update(tickMsg(time.Now())); false {
+		t.Fatal("unreachable")
+	}
+
 	model.selectedNode = nom.ActivityID("step-a")
 
 	view := model.View()

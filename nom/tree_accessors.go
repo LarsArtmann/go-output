@@ -35,14 +35,18 @@ func (dt *DependencyTree) snapshotRoots() []*ActivityNode {
 	return snapshot
 }
 
-func (dt *DependencyTree) findNodesByStatus(status ActivityStatus) []*ActivityNode {
+func (dt *DependencyTree) findNodesByStatus(
+	status ActivityStatus,
+	snapshots map[ActivityID]ActivitySnapshot,
+) []*ActivityNode {
 	dt.mu.RLock()
 	defer dt.mu.RUnlock()
 
 	var result []*ActivityNode
 
 	for _, node := range dt.nodes {
-		if node.Status == status {
+		snap := lookupSnapshot(snapshots, node.ID)
+		if snap.Status == status {
 			result = append(result, node)
 		}
 	}

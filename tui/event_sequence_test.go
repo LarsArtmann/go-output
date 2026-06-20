@@ -229,8 +229,11 @@ func TestProgressModel_EventSequence_StepFailed(t *testing.T) {
 		t.Fatal("failed node should be in tree")
 	}
 
-	if node.Status != nom.ActivityStatusFailed {
-		t.Errorf("node status = %v, want Failed", node.Status)
+	// Verify tree shows failed status via snapshot
+	snaps := m.nomSubscriber.SnapshotActivities()
+	snap := snaps[nom.ActivityID("test")]
+	if snap.Status != nom.ActivityStatusFailed {
+		t.Errorf("node status = %v, want Failed", snap.Status)
 	}
 }
 

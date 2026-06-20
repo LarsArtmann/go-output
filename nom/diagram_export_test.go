@@ -2,6 +2,7 @@ package nom
 
 import (
 	"context"
+	"errors"
 	"testing"
 	"time"
 )
@@ -19,11 +20,17 @@ func TestDiagramExport_StatusShapes(t *testing.T) {
 	diagramFireActivity(t, subscriber, ctx, "lint", "Lint")
 
 	// All start as Running; transition to different terminal states.
-	// testSetStatus mutates the shared *Activity pointer, so Store() sees it.
-	dt := subscriber.GetDependencyTree()
 	now := time.Now()
-	testSetStatus(dt, ActivityID("test"), ActivityStatusCompleted, now)
-	testSetStatus(dt, ActivityID("lint"), ActivityStatusFailed, now)
+	_ = now
+
+	sendActivityCompleted(t, subscriber, ctx, ActivityID("test"), ActivityName("Test"), 0)
+	_ = subscriber.OnEvent(ctx, &testEvent{
+		eventType: EventActivityFailed,
+		activity:  true,
+		aID:       ActivityID("lint"),
+		aName:     ActivityName("Lint"),
+		err:       errors.New("lint failed"),
+	})
 
 	nodes := subscriber.Store().Nodes()
 

@@ -9,21 +9,31 @@ import (
 	"github.com/charmbracelet/x/ansi"
 )
 
-// RenderString generates NOM-style tree rendering as a string using depth-first forest walk.
-// Ports the algorithm from nix-output-monitor's showForest:
-// walks each root tree recursively, building proper box-drawing prefixes (├──, └──, │).
-//
-// If maxWidth is > 0, long activity lines are truncated with "…" so they fit.
-// Split-brain M4 resolved: renamed from Render(maxHeight) to distinguish from
-// the output.Renderer.Render() (string, error) contract. This method returns a
-// bare string (errors are encoded into the string itself, not returned separately).
+// RenderString generates NOM-style tree rendering as a string using depth-first
+// forest walk. Convenience wrapper for callers that don't have snapshots (e.g.
+// tests, one-off renders). Production renderers should call RenderWithSnapshots
+// to avoid the shared-*Activity-pointer data race.
 func (dt *DependencyTree) RenderString(maxHeight int) string {
 	return dt.RenderWithWidth(maxHeight, 0)
 }
 
 // RenderWithWidth generates the tree rendering with an optional terminal width
-// constraint. A maxWidth of 0 disables truncation.
+// constraint. Convenience wrapper that creates empty snapshots — callers that
+// need race-free rendering should use RenderWithSnapshots instead.
 func (dt *DependencyTree) RenderWithWidth(maxHeight, maxWidth int) string {
+	return dt.RenderWithSnapshots(nil, maxHeight, maxWidth)
+}
+
+// RenderWithSnapshots generates the tree rendering using immutable activity
+// snapshots instead of reading the shared *Activity pointer. This is the
+// race-free render path: snapshots are taken under the subscriber's read lock
+// once, then the tree walk reads only immutable data. A nil snapshots map is
+// treated as "all activities pending with blank labels" — useful for tests
+// that build trees structurally without a subscriber.
+func (dt *DependencyTree) RenderWithSnapshots(
+	snapshots map[ActivityID]ActivitySnapshot,
+	maxHeight, maxWidth int,
+) string {
 	dt.mu.RLock()
 	needsBuild := !dt.loaded
 	dt.mu.RUnlock()
@@ -46,7 +56,7 @@ func (dt *DependencyTree) RenderWithWidth(maxHeight, maxWidth int) string {
 		return msgNoActivitiesToDisplay
 	}
 
-	visible := dt.collectVisibleNodes(maxHeight)
+	visible := dt.collectVisibleNodes(snapshots, maxHeight)
 
 	if len(visible) == 0 {
 		return msgNoActivitiesToDisplay
@@ -55,7 +65,7 @@ func (dt *DependencyTree) RenderWithWidth(maxHeight, maxWidth int) string {
 	var lines []string
 
 	for _, entry := range visible {
-		lines = append(lines, dt.renderLine(entry, maxWidth))
+		lines = append(lines, dt.renderLine(entry, snapshots, maxWidth))
 	}
 
 	return strings.Join(lines, "\n")
@@ -68,15 +78,14 @@ type visibleEntry struct {
 	isRoot    bool
 }
 
-// collectVisibleNodes returns the most interesting nodes to display, up to maxHeight,
-// preserving tree prefixes. Children at each level are sorted by status (failed > running >
-// paused > pending > completed), then by elapsed time, so the user sees the currently
-// important concurrent work first when screen space is limited.
-func (dt *DependencyTree) collectVisibleNodes(maxHeight int) []visibleEntry {
+func (dt *DependencyTree) collectVisibleNodes(
+	snapshots map[ActivityID]ActivitySnapshot,
+	maxHeight int,
+) []visibleEntry {
 	var visible []visibleEntry
 
 	for _, root := range dt.roots {
-		dt.walkSubtree(root, "", true, true, &visible, maxHeight)
+		dt.walkSubtree(root, "", true, true, &visible, snapshots, maxHeight)
 
 		if len(visible) >= maxHeight {
 			break
@@ -86,12 +95,9 @@ func (dt *DependencyTree) collectVisibleNodes(maxHeight int) []visibleEntry {
 	return visible
 }
 
-// elideCompletedUnderPressure removes completed children when height is limited
-// and expanding all children would overflow the available space. This ensures
-// that active work (running, failed, pending) is prioritized over completed
-// history when the viewport is constrained.
 func (dt *DependencyTree) elideCompletedUnderPressure(
 	children []*ActivityNode,
+	snapshots map[ActivityID]ActivitySnapshot,
 	maxHeight, visibleCount int,
 ) []*ActivityNode {
 	if maxHeight <= 0 {
@@ -106,7 +112,8 @@ func (dt *DependencyTree) elideCompletedUnderPressure(
 	var active []*ActivityNode
 
 	for _, child := range children {
-		if child.Status == ActivityStatusCompleted {
+		snap := lookupSnapshot(snapshots, child.ID)
+		if snap.Status == ActivityStatusCompleted {
 			continue
 		}
 
@@ -120,14 +127,13 @@ func (dt *DependencyTree) elideCompletedUnderPressure(
 	return children
 }
 
-// walkSubtree recursively walks the tree depth-first, building proper NOM-style prefixes.
-// Children are traversed in priority order (failed/running first, completed last).
 func (dt *DependencyTree) walkSubtree(
 	node *ActivityNode,
 	prefix string,
 	isLastSibling bool,
 	isRoot bool,
 	visible *[]visibleEntry,
+	snapshots map[ActivityID]ActivitySnapshot,
 	maxHeight int,
 ) {
 	if len(*visible) >= maxHeight {
@@ -151,12 +157,12 @@ func (dt *DependencyTree) walkSubtree(
 
 	*visible = append(*visible, entry)
 
-	children := dt.childPriority(node)
+	children := dt.childPriority(node, snapshots)
 	if len(children) == 0 {
 		return
 	}
 
-	children = dt.elideCompletedUnderPressure(children, maxHeight, len(*visible))
+	children = dt.elideCompletedUnderPressure(children, snapshots, maxHeight, len(*visible))
 
 	var childIndent string
 
@@ -179,31 +185,30 @@ func (dt *DependencyTree) walkSubtree(
 			i == len(children)-1,
 			false,
 			visible,
+			snapshots,
 			maxHeight,
 		)
 	}
 }
 
 // formatActivityLabel builds the core display string for a single activity
-// node: phase-aware symbol + label + timing info. Shared by renderLine (inline
-// tree rendering) and RenderNode (standalone TUI rendering) so every site
-// produces identical label formatting. Returns the unstyled display and the
-// status-derived color for the caller to apply.
-func formatActivityLabel(node *ActivityNode) (display string, c color.Color) {
-	symbol := node.Symbol
-	c = node.Color
+// snapshot: phase-aware symbol + label + timing info. Returns the unstyled
+// display and the status-derived color for the caller to apply.
+func formatActivityLabel(snap ActivitySnapshot, id ActivityID) (display string, c color.Color) {
+	symbol := snap.Symbol
+	c = snap.Color
 
-	if node.IsPhase() {
+	if isPhaseID(id) {
 		symbol = SymbolPhase
 		c = Colors.Phase
 	}
 
-	display = fmt.Sprintf("%s %s", symbol, node.Label.Get())
+	display = fmt.Sprintf("%s %s", symbol, snap.Label)
 
 	timingInfo := FormatActivityNodeTiming(
-		node.Status,
-		node.CurrentElapsed,
-		node.EstimatedTime,
+		snap.Status,
+		snap.CurrentElapsed,
+		snap.EstimatedTime,
 	)
 
 	if timingInfo != "" {
@@ -213,20 +218,23 @@ func formatActivityLabel(node *ActivityNode) (display string, c color.Color) {
 	return display, c
 }
 
-// renderLine renders a single line for a visible entry. If maxWidth > 0, the
-// activity name is truncated so the whole line fits the terminal.
-func (dt *DependencyTree) renderLine(entry visibleEntry, maxWidth int) string {
+func (dt *DependencyTree) renderLine(
+	entry visibleEntry,
+	snapshots map[ActivityID]ActivitySnapshot,
+	maxWidth int,
+) string {
 	node := entry.node
+	snap := lookupSnapshot(snapshots, node.ID)
 
-	activityDisplay, color := formatActivityLabel(node)
+	activityDisplay, color := formatActivityLabel(snap, node.ID)
 
 	if len(node.SecondaryParents) > 0 {
 		depNames := make([]string, len(node.SecondaryParents))
 
 		for i, depID := range node.SecondaryParents {
-			if depNode, ok := dt.nodes[depID]; ok {
-				depNames[i] = depNode.Label.Get()
-			} else {
+			depSnap := lookupSnapshot(snapshots, depID)
+			depNames[i] = depSnap.Label
+			if depNames[i] == "" {
 				depNames[i] = depID.String()
 			}
 		}
@@ -245,10 +253,6 @@ func (dt *DependencyTree) renderLine(entry visibleEntry, maxWidth int) string {
 
 	rendered := activityNodeStyle(color).Render(fullPrefix + activityDisplay)
 
-	// When the tree-drawing prefix alone exceeds maxWidth (deeply nested tree
-	// on a narrow terminal), the content truncation above is not enough: the
-	// full prefix is still rendered and the line overflows, wrapping and
-	// desyncing the cursor. Guard by truncating the final styled line.
 	if maxWidth > 0 && VisibleWidth(rendered) > maxWidth {
 		rendered = TruncateVisible(rendered, maxWidth)
 	}
@@ -257,9 +261,17 @@ func (dt *DependencyTree) renderLine(entry visibleEntry, maxWidth int) string {
 }
 
 // VisibleNodes returns the ordered list of tree nodes that would be displayed
-// for the given maxHeight, in priority order (failed > running > paused >
-// pending > completed).
+// for the given maxHeight, in priority order. Uses snapshots for status-based
+// sorting. Callers that need rendered labels should use RenderWithSnapshots.
 func (dt *DependencyTree) VisibleNodes(maxHeight int) []*ActivityNode {
+	return dt.VisibleNodesWithSnapshots(nil, maxHeight)
+}
+
+// VisibleNodesWithSnapshots is the race-free variant of VisibleNodes.
+func (dt *DependencyTree) VisibleNodesWithSnapshots(
+	snapshots map[ActivityID]ActivitySnapshot,
+	maxHeight int,
+) []*ActivityNode {
 	dt.mu.RLock()
 	needsBuild := !dt.loaded
 	dt.mu.RUnlock()
@@ -277,7 +289,7 @@ func (dt *DependencyTree) VisibleNodes(maxHeight int) []*ActivityNode {
 		maxHeight = len(dt.nodes)
 	}
 
-	visible := dt.collectVisibleNodes(maxHeight)
+	visible := dt.collectVisibleNodes(snapshots, maxHeight)
 	nodes := make([]*ActivityNode, len(visible))
 
 	for i, entry := range visible {
@@ -288,17 +300,18 @@ func (dt *DependencyTree) VisibleNodes(maxHeight int) []*ActivityNode {
 }
 
 // RenderNode renders a single node for external consumers (e.g., TUI mouse
-// click highlight). The visibleNodes parameter provides sibling context for
-// callers that need width-aware rendering; it is currently unused by this
-// method but accepted to support future width-truncation without a breaking
-// API change.
-func (dt *DependencyTree) RenderNode(node *ActivityNode, visibleNodes []*ActivityNode) string {
-	display, color := formatActivityLabel(node)
+// click highlight). Uses the snapshot for label/color/symbol.
+func (dt *DependencyTree) RenderNode(
+	node *ActivityNode,
+	_ []*ActivityNode,
+	snapshots map[ActivityID]ActivitySnapshot,
+) string {
+	snap := lookupSnapshot(snapshots, node.ID)
+	display, color := formatActivityLabel(snap, node.ID)
+
 	return activityNodeStyle(color).Render(display)
 }
 
-// activityNodeStyle builds the inline lipgloss style used for rendering a
-// single activity node label. Centralized so every site renders identically.
 func activityNodeStyle(color color.Color) lipgloss.Style {
 	return lipgloss.NewStyle().
 		Foreground(color).
@@ -306,9 +319,34 @@ func activityNodeStyle(color color.Color) lipgloss.Style {
 		Inline(true)
 }
 
-// IsPhase reports whether this node represents a workflow phase. Phase
-// activity IDs follow the "phase:" prefix convention; such nodes render with
-// the phase symbol/color instead of the activity-status-derived styling.
+// IsPhase reports whether this node represents a workflow phase.
 func (n *ActivityNode) IsPhase() bool {
-	return strings.HasPrefix(n.ID.Get(), "phase:")
+	return isPhaseID(n.ID)
+}
+
+// isPhaseID checks whether an activity ID follows the "phase:" prefix convention.
+func isPhaseID(id ActivityID) bool {
+	return strings.HasPrefix(string(id), "phase:")
+}
+
+// lookupSnapshot returns the snapshot for id, or a blank pending snapshot if
+// the activity hasn't been registered yet (e.g. a structural placeholder for
+// a dependency that hasn't received its activity.started event).
+func lookupSnapshot(snapshots map[ActivityID]ActivitySnapshot, id ActivityID) ActivitySnapshot {
+	if snapshots == nil {
+		return blankSnapshot
+	}
+
+	if snap, ok := snapshots[id]; ok {
+		return snap
+	}
+
+	return blankSnapshot
+}
+
+var blankSnapshot = ActivitySnapshot{
+	Label:  "",
+	Status: ActivityStatusPending,
+	Symbol: SymbolPending,
+	Color:  Colors.Pending,
 }

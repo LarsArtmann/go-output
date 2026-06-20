@@ -6,9 +6,6 @@ import (
 	"time"
 )
 
-// newTestSubscriber returns a NOMStyleSubscriber whose timing cache is isolated
-// to a per-test temp directory, so no test ever reads or writes the real
-// ~/.cache/nom-timing.csv. It also drains pending async saves on cleanup.
 func newTestSubscriber(t *testing.T) *NOMStyleSubscriber {
 	t.Helper()
 	ns := NewNOMStyleSubscriber(WithCachePath(filepath.Join(t.TempDir(), cacheFilename)))
@@ -17,16 +14,32 @@ func newTestSubscriber(t *testing.T) *NOMStyleSubscriber {
 	return ns
 }
 
-// testSetStatus is a test helper that mutates the shared Activity pointer
-// directly, replacing the old UpdateActivityStatus API. Symbol/color are
-// derived from status via applyVisualStyle.
-func testSetStatus(dt *DependencyTree, id ActivityID, status ActivityStatus, startTime time.Time) {
-	node := dt.GetNode(id)
-	if node == nil {
-		return
-	}
+// snapshotBuilder accumulates ActivitySnapshot values for test rendering
+// without a subscriber. Replaces the old pattern of mutating node.Status/
+// node.Symbol directly on the shared *Activity pointer.
+type snapshotBuilder struct {
+	snaps map[ActivityID]ActivitySnapshot
+}
 
-	node.Status = status
-	node.applyVisualStyle()
-	node.StartTime = startTime
+func newSnapshotBuilder() *snapshotBuilder {
+	return &snapshotBuilder{snaps: make(map[ActivityID]ActivitySnapshot)}
+}
+
+func (b *snapshotBuilder) set(id ActivityID, label string, status ActivityStatus, elapsed time.Duration) {
+	b.snaps[id] = ActivitySnapshot{
+		Label:          label,
+		Status:         status,
+		Symbol:         status.GetSymbol(),
+		Color:          status.GetColor(),
+		CurrentElapsed: elapsed,
+	}
+}
+
+func (b *snapshotBuilder) snapshot(id ActivityID) ActivitySnapshot {
+	return b.snaps[id]
+}
+
+func (b *snapshotBuilder) has(id ActivityID) bool {
+	_, ok := b.snaps[id]
+	return ok
 }

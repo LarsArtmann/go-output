@@ -14,7 +14,7 @@ func assertChildParentID(t *testing.T, child *ActivityNode, wantParentID string)
 		return
 	}
 
-	if got := child.Parent.ID.Get(); got != wantParentID {
+	if got := string(child.Parent.ID); got != wantParentID {
 		t.Errorf("child's parent ID = %q, want %q", got, wantParentID)
 	}
 }
