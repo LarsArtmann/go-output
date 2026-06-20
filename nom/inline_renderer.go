@@ -50,6 +50,35 @@ type InlineRenderer struct {
 	renderNotify chan struct{} // test hook: signaled after each render if non-nil
 }
 
+// rendererConfig is an immutable snapshot of every configurable InlineRenderer
+// field, captured under tickMu.RLock in one read. Draw/Finish/renderSummary all
+// consume a single snapshot instead of doing scattered, piecemeal field reads
+// (which were both racy for lock-free fields like maxHeight and redundant —
+// renderSummary re-acquired the lock Draw already held).
+type rendererConfig struct {
+	hideCursor bool
+	noColor    bool
+	appName    string
+	startTime  time.Time
+	maxHeight  int
+}
+
+// snapshotConfig returns an immutable copy of all renderer configuration under
+// a single tickMu.RLock. Callers then read freely without holding the lock,
+// so the potentially slow terminal write (under renderMu) never blocks setters.
+func (r *InlineRenderer) snapshotConfig() rendererConfig {
+	r.tickMu.RLock()
+	defer r.tickMu.RUnlock()
+
+	return rendererConfig{
+		hideCursor: r.hideCursor,
+		noColor:    r.noColor,
+		appName:    r.appName,
+		startTime:  r.startTime,
+		maxHeight:  r.maxHeight,
+	}
+}
+
 // NewInlineRenderer creates an inline renderer bound to the given subscriber and writer.
 // maxHeight caps the tree height; 0 means unlimited.
 func NewInlineRenderer(subscriber *NOMStyleSubscriber, writer io.Writer, maxHeight int) *InlineRenderer {
@@ -129,14 +158,11 @@ func (r *InlineRenderer) Draw() {
 	r.renderMu.Lock()
 	defer r.renderMu.Unlock()
 
-	// Snapshot config under RLock to avoid racing with setters.
-	r.tickMu.RLock()
-	hideCursor := r.hideCursor
-	r.tickMu.RUnlock()
+	cfg := r.snapshotConfig()
 
 	r.subscriber.UpdateRunningActivityElapsed()
 
-	maxH := r.effectiveMaxHeight()
+	maxH := r.effectiveMaxHeight(cfg.maxHeight)
 	maxW := r.effectiveMaxWidth()
 
 	// Render from an immutable snapshot — no lock held during the tree walk,
@@ -146,7 +172,7 @@ func (r *InlineRenderer) Draw() {
 		return
 	}
 
-	summary := r.renderSummary()
+	summary := r.renderSummary(cfg.startTime)
 	if summary != "" {
 		frame += "\n" + summary
 	}
@@ -162,7 +188,7 @@ func (r *InlineRenderer) Draw() {
 	prevLines := r.prevLines
 
 	if prevLines == 0 {
-		if hideCursor {
+		if cfg.hideCursor {
 			output = ansiHideCursor
 		}
 

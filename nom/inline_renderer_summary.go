@@ -20,14 +20,9 @@ func (r *InlineRenderer) Finish(workflowErr error) {
 	r.renderMu.Lock()
 	defer r.renderMu.Unlock()
 
-	// Snapshot config under tickMu.RLock so SetStartTime/SetAppName/SetNoColor/
-	// SetHideCursor can't race the reads below (they all take tickMu.Lock).
-	r.tickMu.RLock()
-	startTime := r.startTime
-	appName := r.appName
-	noColor := r.noColor
-	hideCursor := r.hideCursor
-	r.tickMu.RUnlock()
+	// Snapshot all config once so SetStartTime/SetAppName/SetNoColor/SetHideCursor
+	// can't race the reads below.
+	cfg := r.snapshotConfig()
 
 	if r.prevLines > 0 {
 		r.write(fmt.Sprintf(ansiCursorUpN, r.prevLines) + "\r")
@@ -42,7 +37,7 @@ func (r *InlineRenderer) Finish(workflowErr error) {
 		r.prevLines = 0
 	}
 
-	if hideCursor {
+	if cfg.hideCursor {
 		r.write(ansiShowCursor)
 	}
 
@@ -51,10 +46,10 @@ func (r *InlineRenderer) Finish(workflowErr error) {
 		r.write(final + "\n")
 	}
 
-	elapsed := time.Since(startTime)
+	elapsed := time.Since(cfg.startTime)
 
 	elapsedStr := ""
-	if !startTime.IsZero() {
+	if !cfg.startTime.IsZero() {
 		elapsedStr = " after " + FormatDuration(elapsed)
 	}
 
@@ -66,19 +61,19 @@ func (r *InlineRenderer) Finish(workflowErr error) {
 		statusColor = Colors.Failed
 	}
 
-	line := fmt.Sprintf("%s %s", appName, status)
-	if noColor {
+	line := fmt.Sprintf("%s %s", cfg.appName, status)
+	if cfg.noColor {
 		r.write(line + "\n")
 	} else {
 		r.write(lipgloss.NewStyle().Foreground(statusColor).Render(line) + "\n")
 	}
 }
 
-// effectiveMaxHeight returns the maxHeight if set, otherwise detects
+// effectiveMaxHeight returns the given maxHeight if set, otherwise detects
 // terminal height from writer fd, falling back to 50.
-func (r *InlineRenderer) effectiveMaxHeight() int {
-	if r.maxHeight > 0 {
-		return r.maxHeight
+func (r *InlineRenderer) effectiveMaxHeight(maxHeight int) int {
+	if maxHeight > 0 {
+		return maxHeight
 	}
 
 	if f, ok := r.writer.(*os.File); ok {
@@ -96,16 +91,11 @@ func (r *InlineRenderer) effectiveMaxWidth() int {
 	return GetTerminalWidth(r.writer)
 }
 
-// renderSummary builds a one-line NOM-style summary bar.
-func (r *InlineRenderer) renderSummary() string {
+// renderSummary builds a one-line NOM-style summary bar. It takes the
+// already-snapshotted startTime so it does not re-acquire tickMu (Draw, its
+// only caller, already holds renderMu and snapshotted the full config).
+func (r *InlineRenderer) renderSummary(startTime time.Time) string {
 	counts := r.subscriber.GetActivityCounts()
-
-	// Snapshot startTime once under the lock. The previous code read
-	// r.startTime.IsZero() unlocked and then re-read r.startTime under RLock —
-	// a TOCTOU data race against SetStartTime (which takes tickMu.Lock).
-	r.tickMu.RLock()
-	startTime := r.startTime
-	r.tickMu.RUnlock()
 
 	var parts []string
 
