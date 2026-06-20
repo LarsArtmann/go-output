@@ -216,7 +216,53 @@ func formatActivityLabel(snap ActivitySnapshot, id ActivityID) (display string, 
 		display += " " + timingInfo
 	}
 
+	// Optional host tag (dormant unless the event carried one).
+	if snap.Host != "" {
+		display += " @" + snap.Host
+	}
+
+	// Optional download progress bar — only while the activity is actively
+	// running; a completed/failed download no longer needs a live bar.
+	if snap.Status == ActivityStatusRunning && snap.Download.HasDownload() {
+		display += " " + formatDownloadBar(snap.Download, downloadBarWidth)
+	}
+
 	return display, c
+}
+
+const downloadBarWidth = 10
+
+// formatDownloadBar renders a compact NOM-style byte-progress bar like
+// "▕████░░░░▏ 45%". When the total is unknown it shows transferred bytes only.
+func formatDownloadBar(d DownloadProgress, width int) string {
+	if width < 4 {
+		width = 4
+	}
+
+	if d.Total <= 0 {
+		return fmt.Sprintf("%s %s", SymbolDownload, formatBytes(d.Downloaded))
+	}
+
+	filled := min(int(d.Fraction()*float64(width)), width)
+
+	bar := strings.Repeat("█", filled) + strings.Repeat("░", width-filled)
+	pct := int(d.Fraction() * 100)
+
+	return fmt.Sprintf("▕%s▏ %d%%", bar, pct)
+}
+
+// formatBytes renders a byte count in a human-readable binary form (KiB, MiB…).
+func formatBytes(b int64) string {
+	switch {
+	case b >= 1<<30:
+		return fmt.Sprintf("%.1fGiB", float64(b)/float64(1<<30))
+	case b >= 1<<20:
+		return fmt.Sprintf("%.1fMiB", float64(b)/float64(1<<20))
+	case b >= 1<<10:
+		return fmt.Sprintf("%.1fKiB", float64(b)/float64(1<<10))
+	default:
+		return fmt.Sprintf("%dB", b)
+	}
 }
 
 func (dt *DependencyTree) renderLine(

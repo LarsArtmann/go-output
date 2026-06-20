@@ -64,6 +64,20 @@ type DependenciesAccessor interface {
 	GetDependencies() []ActivityID
 }
 
+// HostAccessor optionally names where an activity runs (e.g. a build machine).
+// Rendered as a dim tag when non-empty. Backward-compatible: events that don't
+// implement it simply leave Host unset.
+type HostAccessor interface {
+	GetHost() string
+}
+
+// DownloadAccessor optionally reports byte-progress for an activity (e.g. a
+// dependency download). Rendered as a progress bar when active. Backward-
+// compatible: events that don't implement it leave Download at zero.
+type DownloadAccessor interface {
+	GetDownload() DownloadProgress
+}
+
 // handleWorkflowStarted handles workflow started event.
 func (ns *NOMStyleSubscriber) handleWorkflowStarted(
 	_ context.Context,
@@ -168,6 +182,15 @@ func (ns *NOMStyleSubscriber) handleActivityStarted(
 
 	activity := ns.getOrCreateActivity(aa.GetActivityID(), aa.GetActivityName())
 	activity.SetRunning()
+
+	// Optional host/download annotations — dormant unless the event carries them.
+	if ha, ok := event.(HostAccessor); ok {
+		activity.Host = ha.GetHost()
+	}
+
+	if da, ok := event.(DownloadAccessor); ok {
+		activity.Download = da.GetDownload()
+	}
 
 	medianDuration := ns.timingCache.GetMedian(aa.GetActivityName().String())
 	if medianDuration > 0 {

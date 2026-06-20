@@ -31,6 +31,12 @@ type Activity struct {
 	Color color.Color
 	// CurrentElapsed is updated periodically for running activities.
 	CurrentElapsed time.Duration
+	// Host optionally names where the activity runs (e.g. a build machine).
+	// Populated from HostAccessor events; rendered when non-empty.
+	Host string
+	// Download optionally tracks byte-progress for the activity. Populated from
+	// DownloadAccessor events; rendered as a progress bar when active.
+	Download DownloadProgress
 }
 
 // NewActivity creates an Activity with a branded GraphNode ID and default
