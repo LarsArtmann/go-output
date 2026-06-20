@@ -375,3 +375,55 @@ func TestInlineRenderer_CIMode_PlainTextNoCursorCodes(t *testing.T) {
 		t.Errorf("CI plain mode should still render the activity label, got:\n%q", output)
 	}
 }
+
+func TestInlineRenderer_SetMaxHeight_TakesEffect(t *testing.T) {
+	t.Parallel()
+
+	sub := newTestSubscriber(t)
+
+	var buf bytes.Buffer
+
+	renderer := NewInlineRenderer(sub, &buf, 20)
+
+	ctx := context.Background()
+	_ = sendWorkflowStarted(sub, ctx, WorkflowID("wf-h"), "")
+
+	steps := []string{"alpha", "bravo", "charlie", "delta", "echo"}
+	for _, name := range steps {
+		sendActivityStarted(t, sub, ctx, ActivityID(name), ActivityName(name))
+	}
+
+	// Cap to 2 lines; only the highest-priority activities should surface.
+	renderer.SetMaxHeight(2)
+	renderer.Draw()
+
+	capped := buf.String()
+	if capped == "" {
+		t.Fatal("expected non-empty output after SetMaxHeight")
+	}
+
+	// Raise the cap and redraw — more activities should now be visible.
+	renderer.SetMaxHeight(20)
+	buf.Reset()
+	renderer.Draw()
+
+	full := buf.String()
+
+	// Count how many distinct activity labels appear in each render.
+	cappedVisible, fullVisible := 0, 0
+
+	for _, name := range steps {
+		if strings.Contains(capped, name) {
+			cappedVisible++
+		}
+
+		if strings.Contains(full, name) {
+			fullVisible++
+		}
+	}
+
+	if cappedVisible >= fullVisible {
+		t.Errorf("SetMaxHeight(2) should show fewer activities than SetMaxHeight(20): "+
+			"capped=%d full=%d\ncapped:\n%q\nfull:\n%q", cappedVisible, fullVisible, capped, full)
+	}
+}

@@ -107,7 +107,7 @@ func detectPlainText() bool {
 }
 
 // SetHideCursor controls whether the cursor is hidden during rendering (default: true).
-// Must be called before Start(); concurrent calls after Start race with the render loop.
+// Thread-safe: may be called before or during the render loop.
 func (r *InlineRenderer) SetHideCursor(hide bool) {
 	r.tickMu.Lock()
 	defer r.tickMu.Unlock()
@@ -117,7 +117,7 @@ func (r *InlineRenderer) SetHideCursor(hide bool) {
 
 // SetNoColor forces colorless output. By default, colors are enabled unless
 // NO_COLOR, TERM=dumb, or lacking a terminal is detected.
-// Must be called before Start(); concurrent calls after Start race with the render loop.
+// Thread-safe: may be called before or during the render loop.
 func (r *InlineRenderer) SetNoColor(noColor bool) {
 	r.tickMu.Lock()
 	defer r.tickMu.Unlock()
@@ -126,7 +126,7 @@ func (r *InlineRenderer) SetNoColor(noColor bool) {
 }
 
 // SetAppName sets the application name for success/failure messages (default: "Workflow").
-// Must be called before Start(); concurrent calls after Start race with the render loop.
+// Thread-safe: may be called before or during the render loop.
 func (r *InlineRenderer) SetAppName(name string) {
 	r.tickMu.Lock()
 	defer r.tickMu.Unlock()
@@ -149,12 +149,22 @@ func detectNoColor() bool {
 }
 
 // SetStartTime sets the workflow start time for elapsed display.
-// Must be called before Start(); concurrent calls after Start race with the render loop.
+// Thread-safe: may be called before or during the render loop.
 func (r *InlineRenderer) SetStartTime(t time.Time) {
 	r.tickMu.Lock()
 	defer r.tickMu.Unlock()
 
 	r.startTime = t
+}
+
+// SetMaxHeight updates the cap on rendered tree height (0 = unlimited).
+// Safe to call concurrently with the render loop: Draw reads maxHeight via the
+// lock-protected snapshotConfig(), so a resize takes effect on the next frame.
+func (r *InlineRenderer) SetMaxHeight(maxHeight int) {
+	r.tickMu.Lock()
+	defer r.tickMu.Unlock()
+
+	r.maxHeight = maxHeight
 }
 
 // Render redraws the dependency tree in-place. On the first call it just prints.
