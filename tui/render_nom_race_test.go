@@ -32,10 +32,9 @@ func TestProgressModel_RenderRacingActivityMutation(t *testing.T) {
 
 	ctx := context.Background()
 
-	_ = model.nomSubscriber.OnEvent(ctx, &testEvent{
-		eventType: nom.EventWorkflowStarted,
-		wID:       nom.WorkflowID("wf-tui-race"),
-		wName:     nom.WorkflowName("Race"),
+	_ = model.nomSubscriber.OnEvent(ctx, nom.WorkflowStarted{
+		ID:   nom.WorkflowID("wf-tui-race"),
+		Name: nom.WorkflowName("Race"),
 	})
 
 	const groupID = nom.ActivityID("group")
@@ -44,11 +43,10 @@ func TestProgressModel_RenderRacingActivityMutation(t *testing.T) {
 
 	for i := range ids {
 		ids[i] = nom.ActivityID(fmt.Sprintf("act%d", i))
-		_ = model.nomSubscriber.OnEvent(ctx, &testEvent{
-			eventType:    nom.EventActivityRegistered,
-			aID:          ids[i],
-			aName:        nom.ActivityName(fmt.Sprintf("Act %d", i)),
-			dependencies: []nom.ActivityID{groupID},
+		_ = model.nomSubscriber.OnEvent(ctx, nom.ActivityRegistered{
+			ID:   ids[i],
+			Name: nom.ActivityName(fmt.Sprintf("Act %d", i)),
+			Deps: []nom.ActivityID{groupID},
 		})
 	}
 
@@ -70,25 +68,17 @@ func TestProgressModel_RenderRacingActivityMutation(t *testing.T) {
 			for j := range 15 {
 				switch j % 3 {
 				case 0:
-					_ = model.nomSubscriber.OnEvent(ctx, &testEvent{
-						eventType: nom.EventActivityStarted,
-						aID:       id,
-						aName:     nom.ActivityName("Act"),
-					})
+					_ = model.nomSubscriber.OnEvent(ctx, nom.ActivityStarted{ID: id, Name: nom.ActivityName("Act")})
 				case 1:
-					_ = model.nomSubscriber.OnEvent(ctx, &testEvent{
-						eventType: nom.EventActivityCompleted,
-						aID:       id,
-						aName:     nom.ActivityName("Act"),
-						duration:  3 * time.Millisecond,
-					})
+					_ = model.nomSubscriber.OnEvent(
+						ctx,
+						nom.ActivityCompleted{ID: id, Name: nom.ActivityName("Act"), Duration: 3 * time.Millisecond},
+					)
 				case 2:
-					_ = model.nomSubscriber.OnEvent(ctx, &testEvent{
-						eventType: nom.EventActivityFailed,
-						aID:       id,
-						aName:     nom.ActivityName("Act"),
-						err:       errors.New("boom"),
-					})
+					_ = model.nomSubscriber.OnEvent(
+						ctx,
+						nom.ActivityFailed{ID: id, Name: nom.ActivityName("Act"), Err: errors.New("boom")},
+					)
 				}
 			}
 		}(id)

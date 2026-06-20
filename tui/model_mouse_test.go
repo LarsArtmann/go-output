@@ -94,11 +94,10 @@ func TestProgressModel_UpdateWorkflowCompletionState(t *testing.T) {
 		ctx := context.Background()
 		startWorkflow(t, model, ctx, nom.WorkflowID("wf-1"))
 		startActivity(t, model, ctx, nom.ActivityID("test"), nom.ActivityName("Test"))
-		_ = model.nomSubscriber.OnEvent(ctx, &testEvent{
-			eventType: nom.EventActivityFailed,
-			aID:       nom.ActivityID("test"),
-			aName:     nom.ActivityName("Test"),
-			err:       errTestFail,
+		_ = model.nomSubscriber.OnEvent(ctx, nom.ActivityFailed{
+			ID:   nom.ActivityID("test"),
+			Name: nom.ActivityName("Test"),
+			Err:  errTestFail,
 		})
 
 		model.updateWorkflowCompletionState()
@@ -118,11 +117,10 @@ func TestProgressModel_UpdateWorkflowCompletionState(t *testing.T) {
 		ctx := context.Background()
 		startWorkflow(t, model, ctx, nom.WorkflowID("wf-1"))
 		startActivity(t, model, ctx, nom.ActivityID("build"), nom.ActivityName("Build"))
-		_ = model.nomSubscriber.OnEvent(ctx, &testEvent{
-			eventType: nom.EventActivityCompleted,
-			aID:       nom.ActivityID("build"),
-			aName:     nom.ActivityName("Build"),
-			duration:  5 * time.Second,
+		_ = model.nomSubscriber.OnEvent(ctx, nom.ActivityCompleted{
+			ID:       nom.ActivityID("build"),
+			Name:     nom.ActivityName("Build"),
+			Duration: 5 * time.Second,
 		})
 
 		model.updateWorkflowCompletionState()

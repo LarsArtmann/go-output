@@ -9,24 +9,6 @@ import (
 	"github.com/larsartmann/go-output/nom"
 )
 
-// smokeTestEvent is a minimal event for driving the subscriber in the smoke test.
-type smokeTestEvent struct {
-	eventType string
-	aID       nom.ActivityID
-	aName     nom.ActivityName
-	duration  time.Duration
-}
-
-func (e *smokeTestEvent) GetEventType() string          { return e.eventType }
-func (e *smokeTestEvent) GetWorkflowID() nom.WorkflowID { return nom.NewWorkflowID("smoke") }
-func (e *smokeTestEvent) GetWorkflowName() nom.WorkflowName {
-	return nom.NewWorkflowName("Smoke")
-}
-func (e *smokeTestEvent) GetActivityID() nom.ActivityID     { return e.aID }
-func (e *smokeTestEvent) GetActivityName() nom.ActivityName { return e.aName }
-func (e *smokeTestEvent) GetDuration() time.Duration        { return e.duration }
-func (e *smokeTestEvent) GetError() error                   { return nil }
-
 // TestNomProgressExampleSmokeTest guards against the v0.15.0 regression class:
 // rendering with snapshots must produce non-blank, labelled output. The deleted
 // footgun wrappers (RenderString etc.) silently rendered blanks on nil
@@ -48,29 +30,26 @@ func TestNomProgressExampleSmokeTest(t *testing.T) {
 	}
 
 	for _, a := range activities {
-		if err := subscriber.OnEvent(ctx, &smokeTestEvent{
-			eventType: nom.EventActivityStarted,
-			aID:       nom.NewActivityID(a.id),
-			aName:     nom.NewActivityName(a.name),
+		if err := subscriber.OnEvent(ctx, nom.ActivityStarted{
+			ID:   nom.NewActivityID(a.id),
+			Name: nom.NewActivityName(a.name),
 		}); err != nil {
 			t.Fatalf("OnEvent(started %q): %v", a.id, err)
 		}
 
 		switch a.status {
 		case nom.ActivityStatusCompleted:
-			if err := subscriber.OnEvent(ctx, &smokeTestEvent{
-				eventType: nom.EventActivityCompleted,
-				aID:       nom.NewActivityID(a.id),
-				aName:     nom.NewActivityName(a.name),
-				duration:  a.delay,
+			if err := subscriber.OnEvent(ctx, nom.ActivityCompleted{
+				ID:       nom.NewActivityID(a.id),
+				Name:     nom.NewActivityName(a.name),
+				Duration: a.delay,
 			}); err != nil {
 				t.Fatalf("OnEvent(completed %q): %v", a.id, err)
 			}
 		case nom.ActivityStatusFailed:
-			if err := subscriber.OnEvent(ctx, &smokeTestEvent{
-				eventType: nom.EventActivityFailed,
-				aID:       nom.NewActivityID(a.id),
-				aName:     nom.NewActivityName(a.name),
+			if err := subscriber.OnEvent(ctx, nom.ActivityFailed{
+				ID:   nom.NewActivityID(a.id),
+				Name: nom.NewActivityName(a.name),
 			}); err != nil {
 				t.Fatalf("OnEvent(failed %q): %v", a.id, err)
 			}

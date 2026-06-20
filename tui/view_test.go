@@ -238,9 +238,8 @@ func TestProgressModel_SelectedNodeHighlight(t *testing.T) {
 	model.workflowState = workflowStateRunning
 
 	ctx := context.Background()
-	_ = model.nomSubscriber.OnEvent(ctx, &testEvent{
-		eventType: nom.EventWorkflowStarted,
-		wID:       nom.WorkflowID("wf-1"),
+	_ = model.nomSubscriber.OnEvent(ctx, nom.WorkflowStarted{
+		ID: nom.WorkflowID("wf-1"),
 	})
 	startActivity(t, model, ctx, nom.ActivityID("step-a"), nom.ActivityName("Step A"))
 	startActivity(t, model, ctx, nom.ActivityID("step-b"), nom.ActivityName("Step B"))

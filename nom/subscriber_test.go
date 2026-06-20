@@ -7,31 +7,6 @@ import (
 	"time"
 )
 
-type testEvent struct {
-	eventType string
-	workflow  bool
-	activity  bool
-	wID       WorkflowID
-	wName     WorkflowName
-	aID       ActivityID
-	aName     ActivityName
-	kind      ActivityKind
-	deps      []ActivityID
-	duration  time.Duration
-	err       error
-}
-
-func (e *testEvent) GetEventType() string { return e.eventType }
-
-func (e *testEvent) GetWorkflowID() WorkflowID     { return e.wID }
-func (e *testEvent) GetWorkflowName() WorkflowName { return e.wName }
-func (e *testEvent) GetActivityID() ActivityID     { return e.aID }
-func (e *testEvent) GetActivityName() ActivityName { return e.aName }
-func (e *testEvent) GetKind() ActivityKind         { return e.kind }
-func (e *testEvent) GetDuration() time.Duration    { return e.duration }
-func (e *testEvent) GetError() error               { return e.err }
-func (e *testEvent) GetDependencies() []ActivityID { return e.deps }
-
 // setupWithWorkflow creates a subscriber and fires workflow.started.
 func setupWithWorkflow(t *testing.T) (*NOMStyleSubscriber, context.Context) {
 	t.Helper()
@@ -39,11 +14,7 @@ func setupWithWorkflow(t *testing.T) (*NOMStyleSubscriber, context.Context) {
 	ns := newTestSubscriber(t)
 	ctx := context.Background()
 
-	ns.OnEvent(ctx, &testEvent{
-		eventType: EventWorkflowStarted,
-		workflow:  true,
-		wID:       WorkflowID("wf-1"),
-	})
+	_ = ns.OnEvent(ctx, WorkflowStarted{ID: WorkflowID("wf-1")})
 
 	return ns, ctx
 }
@@ -52,13 +23,7 @@ func setupWithWorkflow(t *testing.T) (*NOMStyleSubscriber, context.Context) {
 func sendActivityStarted(t *testing.T, ns *NOMStyleSubscriber, ctx context.Context, id ActivityID, name ActivityName) {
 	t.Helper()
 
-	err := ns.OnEvent(ctx, &testEvent{
-		eventType: EventActivityStarted,
-		activity:  true,
-		aID:       id,
-		aName:     name,
-	})
-	if err != nil {
+	if err := ns.OnEvent(ctx, ActivityStarted{ID: id, Name: name}); err != nil {
 		t.Fatalf("activity.started OnEvent() error: %v", err)
 	}
 }
@@ -74,14 +39,7 @@ func sendActivityCompleted(
 ) {
 	t.Helper()
 
-	err := ns.OnEvent(ctx, &testEvent{
-		eventType: EventActivityCompleted,
-		activity:  true,
-		aID:       id,
-		aName:     name,
-		duration:  duration,
-	})
-	if err != nil {
+	if err := ns.OnEvent(ctx, ActivityCompleted{ID: id, Name: name, Duration: duration}); err != nil {
 		t.Fatalf("activity.completed OnEvent() error: %v", err)
 	}
 }
@@ -89,12 +47,7 @@ func sendActivityCompleted(
 // sendWorkflowStarted fires a workflow.started event with the given ID and name.
 // Returns the error so callers can choose to assert or ignore it.
 func sendWorkflowStarted(ns *NOMStyleSubscriber, ctx context.Context, id WorkflowID, name WorkflowName) error {
-	return ns.OnEvent(ctx, &testEvent{
-		eventType: EventWorkflowStarted,
-		workflow:  true,
-		wID:       id,
-		wName:     name,
-	})
+	return ns.OnEvent(ctx, WorkflowStarted{ID: id, Name: name})
 }
 
 // registerActivity fires an activity.registered event with optional dependencies.
@@ -106,12 +59,7 @@ func registerActivity(
 	name ActivityName,
 	deps ...ActivityID,
 ) {
-	_ = ns.OnEvent(ctx, &testEvent{
-		eventType: EventActivityRegistered,
-		aID:       id,
-		aName:     name,
-		deps:      deps,
-	})
+	_ = ns.OnEvent(ctx, ActivityRegistered{ID: id, Name: name, Deps: deps})
 }
 
 // registerPhase fires an activity.registered event with Kind=Phase, so the
@@ -123,13 +71,7 @@ func registerPhase(
 	name ActivityName,
 	deps ...ActivityID,
 ) {
-	_ = ns.OnEvent(ctx, &testEvent{
-		eventType: EventActivityRegistered,
-		aID:       id,
-		aName:     name,
-		kind:      ActivityKindPhase,
-		deps:      deps,
-	})
+	_ = ns.OnEvent(ctx, ActivityRegistered{ID: id, Name: name, Kind: ActivityKindPhase, Deps: deps})
 }
 
 func TestNewNOMStyleSubscriber(t *testing.T) {
@@ -230,11 +172,7 @@ func TestNOMStyleSubscriber_WorkflowCompleted(t *testing.T) {
 
 	ns, ctx := setupWithWorkflow(t)
 
-	err := ns.OnEvent(ctx, &testEvent{
-		eventType: EventWorkflowCompleted,
-		workflow:  true,
-		wID:       WorkflowID("wf-1"),
-	})
+	err := ns.OnEvent(ctx, WorkflowCompleted{ID: WorkflowID("wf-1")})
 	if err != nil {
 		t.Fatalf("OnEvent() error: %v", err)
 	}
@@ -249,10 +187,7 @@ func TestNOMStyleSubscriber_WorkflowFailed(t *testing.T) {
 
 	ns, ctx := setupWithWorkflow(t)
 
-	err := ns.OnEvent(ctx, &testEvent{
-		eventType: EventWorkflowFailed,
-		err:       errors.New("timeout"),
-	})
+	err := ns.OnEvent(ctx, WorkflowFailed{ID: WorkflowID("wf-1"), Err: errors.New("timeout")})
 	if err != nil {
 		t.Fatalf("OnEvent() error: %v", err)
 	}

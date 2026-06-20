@@ -2,10 +2,11 @@ package nom
 
 import "testing"
 
-// TestEventConstantsUnique guards against the silent-typo-drop failure mode:
-// if two event constants share a value, an event dispatched to one is silently
-// routed to both handlers. This also guards the m2 fix (bare literals → constants)
-// by asserting the constants are the only routing keys in use.
+// TestEventConstantsUnique guards against duplicate event-name constants.
+// Event dispatch is now an exhaustive type switch on sealed concrete types
+// (not string matching), so a duplicate constant can no longer cause silent
+// misrouting — but duplicate names would still confuse logging/metrics, so
+// this guard remains valuable.
 func TestEventConstantsUnique(t *testing.T) {
 	t.Parallel()
 

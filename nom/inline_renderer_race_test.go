@@ -239,12 +239,10 @@ func TestInlineRenderer_RenderRacingActivityMutation(t *testing.T) {
 				case 1:
 					sendActivityCompleted(t, sub, ctx, id, ActivityName("Act"), 5*time.Millisecond)
 				case 2:
-					_ = sub.OnEvent(ctx, &testEvent{
-						eventType: EventActivityFailed,
-						activity:  true,
-						aID:       id,
-						aName:     ActivityName("Act"),
-						err:       errors.New("boom"),
+					_ = sub.OnEvent(ctx, ActivityFailed{
+						ID:   id,
+						Name: ActivityName("Act"),
+						Err:  errors.New("boom"),
 					})
 				}
 			}

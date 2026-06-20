@@ -24,12 +24,10 @@ func TestDiagramExport_StatusShapes(t *testing.T) {
 	_ = now
 
 	sendActivityCompleted(t, subscriber, ctx, ActivityID("test"), ActivityName("Test"), 0)
-	_ = subscriber.OnEvent(ctx, &testEvent{
-		eventType: EventActivityFailed,
-		activity:  true,
-		aID:       ActivityID("lint"),
-		aName:     ActivityName("Lint"),
-		err:       errors.New("lint failed"),
+	_ = subscriber.OnEvent(ctx, ActivityFailed{
+		ID:   ActivityID("lint"),
+		Name: ActivityName("Lint"),
+		Err:  errors.New("lint failed"),
 	})
 
 	nodes := subscriber.Store().Nodes()
@@ -120,30 +118,13 @@ func TestDiagramExport_SubscriberProjection(t *testing.T) {
 	}
 }
 
-type diagramTestEvent struct {
-	eventType    string
-	wID          WorkflowID
-	wName        WorkflowName
-	aID          ActivityID
-	aName        ActivityName
-	dependencies []ActivityID
-}
-
-func (e *diagramTestEvent) GetEventType() string          { return e.eventType }
-func (e *diagramTestEvent) GetWorkflowID() WorkflowID     { return e.wID }
-func (e *diagramTestEvent) GetWorkflowName() WorkflowName { return e.wName }
-func (e *diagramTestEvent) GetActivityID() ActivityID     { return e.aID }
-func (e *diagramTestEvent) GetActivityName() ActivityName { return e.aName }
-func (e *diagramTestEvent) GetDependencies() []ActivityID { return e.dependencies }
-
-// diagramFireWorkflow fires a workflow.started event using diagramTestEvent.
+// diagramFireWorkflow fires a workflow.started event.
 func diagramFireWorkflow(t *testing.T, ns *NOMStyleSubscriber, ctx context.Context, id, name string) {
 	t.Helper()
 
-	_ = ns.OnEvent(ctx, &diagramTestEvent{
-		eventType: EventWorkflowStarted,
-		wID:       WorkflowID(id),
-		wName:     WorkflowName(name),
+	_ = ns.OnEvent(ctx, WorkflowStarted{
+		ID:   WorkflowID(id),
+		Name: WorkflowName(name),
 	})
 }
 
@@ -156,10 +137,9 @@ func diagramFireActivity(t *testing.T, ns *NOMStyleSubscriber, ctx context.Conte
 		dependencies[i] = ActivityID(dep)
 	}
 
-	_ = ns.OnEvent(ctx, &diagramTestEvent{
-		eventType:    EventActivityStarted,
-		aID:          ActivityID(id),
-		aName:        ActivityName(name),
-		dependencies: dependencies,
+	_ = ns.OnEvent(ctx, ActivityStarted{
+		ID:   ActivityID(id),
+		Name: ActivityName(name),
+		Deps: dependencies,
 	})
 }

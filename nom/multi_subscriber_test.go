@@ -15,7 +15,7 @@ func TestMultiSubscriber_Fanout(t *testing.T) {
 
 	multi := NewMultiSubscriber(sink1, sink2, sink3)
 
-	err := multi.OnEvent(context.Background(), &multiTestEvent{eventType: EventActivityStarted})
+	err := multi.OnEvent(context.Background(), ActivityStarted{})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -33,7 +33,7 @@ func TestMultiSubscriber_OneErrorsOthersStillCalled(t *testing.T) {
 
 	multi := NewMultiSubscriber(errSub, normalSub)
 
-	err := multi.OnEvent(context.Background(), &multiTestEvent{eventType: EventActivityStarted})
+	err := multi.OnEvent(context.Background(), ActivityStarted{})
 	if err == nil {
 		t.Fatal("expected error from first subscriber")
 	}
@@ -49,7 +49,7 @@ func TestMultiSubscriber_NilSkipped(t *testing.T) {
 	sink := &countingSubscriber{}
 	multi := NewMultiSubscriber(nil, sink, nil)
 
-	err := multi.OnEvent(context.Background(), &multiTestEvent{eventType: EventActivityStarted})
+	err := multi.OnEvent(context.Background(), ActivityStarted{})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -68,7 +68,7 @@ func TestMultiSubscriber_Add(t *testing.T) {
 	sink2 := &countingSubscriber{}
 	multi.Add(sink2)
 
-	_ = multi.OnEvent(context.Background(), &multiTestEvent{eventType: EventActivityStarted})
+	_ = multi.OnEvent(context.Background(), ActivityStarted{})
 
 	if sink1.count != 1 || sink2.count != 1 {
 		t.Errorf("both should receive event after Add")
@@ -84,12 +84,6 @@ func (c *countingSubscriber) OnEvent(_ context.Context, _ Event) error {
 	c.count++
 	return c.err
 }
-
-type multiTestEvent struct {
-	eventType string
-}
-
-func (e *multiTestEvent) GetEventType() string { return e.eventType }
 
 func TestMultiSubscriber_Subscribers(t *testing.T) {
 	t.Parallel()

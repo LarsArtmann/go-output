@@ -5,109 +5,43 @@ import (
 	"time"
 )
 
-// OnEvent implements EventSubscriber interface
-// Handles workflow and activity events to update NOM-style visualization.
-// Uses string-based event type routing instead of concrete type switching,
-// enabling extraction into an independent module without circular dependencies.
-func (ns *NOMStyleSubscriber) OnEvent(ctx context.Context, event Event) error {
-	switch event.GetEventType() {
-	case EventWorkflowStarted:
-		return ns.handleWorkflowStarted(ctx, event)
-	case EventWorkflowCompleted:
-		return ns.handleWorkflowCompleted(ctx, event)
-	case EventWorkflowFailed:
-		return ns.handleWorkflowFailed(ctx, event)
-	case EventActivityStarted:
-		return ns.handleActivityStarted(ctx, event)
-	case EventActivityRegistered:
-		return ns.handleActivityRegistered(ctx, event)
-	case EventActivityCompleted:
-		return ns.handleActivityCompleted(ctx, event)
-	case EventActivityFailed:
-		return ns.handleActivityFailed(ctx, event)
+// OnEvent dispatches a typed lifecycle event to the matching handler via an
+// exhaustive Go type switch. Because Event is sealed (unexported isEvent
+// marker), unhandled event types are a compile error, not a silent runtime
+// no-op. This replaces the old string-based GetEventType() dispatch.
+func (ns *NOMStyleSubscriber) OnEvent(_ context.Context, event Event) error {
+	switch e := event.(type) {
+	case WorkflowStarted:
+		return ns.handleWorkflowStarted(e)
+	case WorkflowCompleted:
+		return ns.handleWorkflowFinished()
+	case WorkflowFailed:
+		return ns.handleWorkflowFinished()
+	case ActivityStarted:
+		return ns.handleActivityStarted(e)
+	case ActivityRegistered:
+		return ns.handleActivityRegistered(e)
+	case ActivityCompleted:
+		return ns.handleActivityCompleted(e)
+	case ActivityFailed:
+		return ns.handleActivityFailed(e)
 	default:
 		return nil
 	}
 }
 
-// WorkflowEventAccessor extracts workflow-level fields from any event.
-type WorkflowEventAccessor interface {
-	GetWorkflowID() WorkflowID
-}
-
-// WorkflowNameAccessor extracts the workflow name from start.
-type WorkflowNameAccessor interface {
-	GetWorkflowName() WorkflowName
-}
-
-// ActivityEventAccessor extracts activity-level fields from any activity event.
-type ActivityEventAccessor interface {
-	GetActivityID() ActivityID
-	GetActivityName() ActivityName
-}
-
-// DurationAccessor extracts duration from completed/failed.
-type DurationAccessor interface {
-	GetDuration() time.Duration
-}
-
-// ErrorAccessor extracts error from failed.
-type ErrorAccessor interface {
-	GetError() error
-}
-
-// DependenciesAccessor extracts parent activity IDs for tree structure.
-// When implemented on an "activity.started" event, the subscriber uses these
-// IDs as the activity's parents in the dependency tree. The first ID becomes
-// the primary parent (tree edge); all IDs get the activity added as a child.
-type DependenciesAccessor interface {
-	GetDependencies() []ActivityID
-}
-
-// KindAccessor optionally classifies the activity as a Task (default) or a
-// Phase grouping node. Events that don't implement this create a Task.
-type KindAccessor interface {
-	GetKind() ActivityKind
-}
-
-// HostAccessor optionally names where an activity runs (e.g. a build machine).
-// Rendered as a dim tag when non-empty. Backward-compatible: events that don't
-// implement it simply leave Host unset.
-type HostAccessor interface {
-	GetHost() string
-}
-
-// DownloadAccessor optionally reports byte-progress for an activity (e.g. a
-// dependency download). Rendered as a progress bar when active. Backward-
-// compatible: events that don't implement it leave Download at zero.
-type DownloadAccessor interface {
-	GetDownload() DownloadProgress
-}
-
-// handleWorkflowStarted handles workflow started event.
-func (ns *NOMStyleSubscriber) handleWorkflowStarted(
-	_ context.Context,
-	event Event,
-) error {
+// handleWorkflowStarted records the workflow identity and loads the timing
+// cache. Pre-registered activities/tree are preserved on a fresh start so
+// callers can register phases/steps before workflow.started.
+func (ns *NOMStyleSubscriber) handleWorkflowStarted(e WorkflowStarted) error {
 	ns.mu.Lock()
 	defer ns.mu.Unlock()
 
-	wa, ok := event.(WorkflowEventAccessor)
-	if !ok {
-		return nil
-	}
-
-	ns.workflowID = wa.GetWorkflowID()
+	ns.workflowID = e.ID
 	ns.startTime = time.Now()
 	ns.isRunning = true
+	ns.workflowName = e.Name
 
-	if na, ok := event.(WorkflowNameAccessor); ok {
-		ns.workflowName = na.GetWorkflowName()
-	}
-
-	// Preserve pre-registered activities and tree structure (e.g. from
-	// ProgressBridge.Start()). Only initialize empty maps on a fresh start
-	// so callers can register phases/steps before workflow.started.
 	if ns.activities == nil {
 		ns.activities = make(map[ActivityID]*Activity)
 	}
@@ -119,31 +53,15 @@ func (ns *NOMStyleSubscriber) handleWorkflowStarted(
 	return ns.timingCache.EnsureLoaded()
 }
 
-// handleWorkflowFinished handles common logic for workflow completed/failed events.
-// Stops the workflow and persists timing data.
-func (ns *NOMStyleSubscriber) handleWorkflowFinished(_ Event) error {
+// handleWorkflowFinished marks the workflow as not running and persists the
+// timing cache. Shared by completed and failed.
+func (ns *NOMStyleSubscriber) handleWorkflowFinished() error {
 	ns.mu.Lock()
 	defer ns.mu.Unlock()
 
 	ns.isRunning = false
 
 	return ns.timingCache.Save()
-}
-
-// handleWorkflowCompleted handles workflow completed event.
-func (ns *NOMStyleSubscriber) handleWorkflowCompleted(
-	_ context.Context,
-	event Event,
-) error {
-	return ns.handleWorkflowFinished(event)
-}
-
-// handleWorkflowFailed handles workflow failed event.
-func (ns *NOMStyleSubscriber) handleWorkflowFailed(
-	_ context.Context,
-	event Event,
-) error {
-	return ns.handleWorkflowFinished(event)
 }
 
 // getOrCreateActivity retrieves an existing activity or creates a new one.
@@ -169,148 +87,65 @@ func (ns *NOMStyleSubscriber) getOrCreateActivity(
 	return activity
 }
 
-// extractDependencies returns the activity's dependencies if the event implements
-// DependenciesAccessor; otherwise it returns nil. Both handleActivityStarted and
-// handleActivityRegistered need this for AddActivity.
-func extractDependencies(event Event) []ActivityID {
-	var deps []ActivityID
-	if da, ok := event.(DependenciesAccessor); ok {
-		deps = da.GetDependencies()
-	}
-
-	return deps
-}
-
-// extractKind returns the activity's kind if the event implements KindAccessor;
-// otherwise it defaults to Task. Kind is fixed at first creation.
-func extractKind(event Event) ActivityKind {
-	if ka, ok := event.(KindAccessor); ok {
-		return ka.GetKind()
-	}
-
-	return ActivityKindTask
-}
-
-// handleActivityStarted handles activity started event.
-func (ns *NOMStyleSubscriber) handleActivityStarted(
-	_ context.Context,
-	event Event,
-) error {
-	aa, ok := event.(ActivityEventAccessor)
-	if !ok {
-		return nil
-	}
-
+// handleActivityStarted transitions the activity to running, applies optional
+// host/download annotations, and records the dependency edges in the tree.
+func (ns *NOMStyleSubscriber) handleActivityStarted(e ActivityStarted) error {
 	ns.mu.Lock()
 	defer ns.mu.Unlock()
 
-	activity := ns.getOrCreateActivity(aa.GetActivityID(), aa.GetActivityName(), extractKind(event))
+	activity := ns.getOrCreateActivity(e.ID, e.Name, e.Kind)
 	activity.SetRunning()
+	activity.Host = e.Host
+	activity.Download = e.Download
 
-	// Optional host/download annotations — dormant unless the event carries them.
-	if ha, ok := event.(HostAccessor); ok {
-		activity.Host = ha.GetHost()
-	}
-
-	if da, ok := event.(DownloadAccessor); ok {
-		activity.Download = da.GetDownload()
-	}
-
-	medianDuration := ns.timingCache.GetMedian(aa.GetActivityName().String())
+	medianDuration := ns.timingCache.GetMedian(e.Name.String())
 	if medianDuration > 0 {
 		activity.SetEstimatedTime(medianDuration)
 	}
 
-	// The tree stores only the activity ID; the subscriber's activities map
-	// (populated by getOrCreateActivity above) is the source of truth for
-	// mutable fields, accessed via SnapshotActivities at render time.
-	return ns.dependencyTree.AddActivity(
-		aa.GetActivityID(),
-		extractDependencies(event),
-	)
+	return ns.dependencyTree.AddActivity(e.ID, e.Deps)
 }
 
-// handleActivityRegistered registers an activity in the dependency tree as pending.
-// Unlike handleActivityStarted, this does NOT set the activity to running —
-// it only creates the tree node with pending status for pre-registration.
-func (ns *NOMStyleSubscriber) handleActivityRegistered(
-	_ context.Context,
-	event Event,
-) error {
-	aa, ok := event.(ActivityEventAccessor)
-	if !ok {
-		return nil
-	}
-
+// handleActivityRegistered pre-creates the activity in the tree as pending,
+// without transitioning it to running. Used for declaring structure before
+// work starts.
+func (ns *NOMStyleSubscriber) handleActivityRegistered(e ActivityRegistered) error {
 	ns.mu.Lock()
 	defer ns.mu.Unlock()
 
-	ns.getOrCreateActivity(aa.GetActivityID(), aa.GetActivityName(), extractKind(event))
+	ns.getOrCreateActivity(e.ID, e.Name, e.Kind)
 
-	return ns.dependencyTree.AddActivity(
-		aa.GetActivityID(),
-		extractDependencies(event),
-	)
+	return ns.dependencyTree.AddActivity(e.ID, e.Deps)
 }
 
-// handleActivityCompleted handles activity completed event.
-func (ns *NOMStyleSubscriber) handleActivityCompleted(
-	_ context.Context,
-	event Event,
-) error {
-	aa, ok := event.(ActivityEventAccessor)
-	if !ok {
-		return nil
-	}
-
+// handleActivityCompleted transitions the activity to completed and records
+// the observed duration in the timing cache.
+func (ns *NOMStyleSubscriber) handleActivityCompleted(e ActivityCompleted) error {
 	ns.mu.Lock()
 	defer ns.mu.Unlock()
 
-	activity := ns.getOrCreateActivity(aa.GetActivityID(), aa.GetActivityName(), extractKind(event))
+	activity := ns.getOrCreateActivity(e.ID, e.Name, ActivityKindTask)
 	activity.SetCompleted()
 
-	return ns.recordTimingAndPersist(event, aa)
+	return ns.recordDuration(e.Name, e.Duration)
 }
 
-// handleActivityFailed handles activity failed event.
-func (ns *NOMStyleSubscriber) handleActivityFailed(
-	_ context.Context,
-	event Event,
-) error {
-	aa, ok := event.(ActivityEventAccessor)
-	if !ok {
-		return nil
-	}
-
+// handleActivityFailed transitions the activity to failed and records the
+// observed duration in the timing cache.
+func (ns *NOMStyleSubscriber) handleActivityFailed(e ActivityFailed) error {
 	ns.mu.Lock()
 	defer ns.mu.Unlock()
 
-	activity := ns.getOrCreateActivity(aa.GetActivityID(), aa.GetActivityName(), extractKind(event))
+	activity := ns.getOrCreateActivity(e.ID, e.Name, ActivityKindTask)
+	activity.SetFailed(e.Err)
 
-	var eventErr error
-	if ea, ok := event.(ErrorAccessor); ok {
-		eventErr = ea.GetError()
-	}
-
-	activity.SetFailed(eventErr)
-
-	return ns.recordTimingAndPersist(event, aa)
+	return ns.recordDuration(e.Name, e.Duration)
 }
 
-// recordTimingAndPersist extracts duration from the event and records it
-// to the timing cache. The activity's state was already updated by the caller
-// via the shared Activity pointer, so no tree sync is needed.
-func (ns *NOMStyleSubscriber) recordTimingAndPersist(
-	event Event,
-	aa ActivityEventAccessor,
-) error {
-	if da, ok := event.(DurationAccessor); ok {
-		duration := da.GetDuration()
-		if duration > 0 {
-			if err := ns.timingCache.Record(aa.GetActivityName().String(), duration); err != nil {
-				return err
-			}
-		}
+// recordDuration stores the observed duration in the timing cache if positive.
+func (ns *NOMStyleSubscriber) recordDuration(name ActivityName, duration time.Duration) error {
+	if duration > 0 {
+		return ns.timingCache.Record(name.String(), duration)
 	}
 
 	return nil

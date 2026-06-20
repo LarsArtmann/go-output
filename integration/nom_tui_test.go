@@ -20,10 +20,9 @@ func TestNOMSubscriber_Integration(t *testing.T) {
 		subscriber := nom.NewNOMStyleSubscriber(nom.WithCachePath(filepath.Join(t.TempDir(), "nom-timing.csv")))
 		ctx := context.Background()
 
-		if err := subscriber.OnEvent(ctx, &nomTestEvent{
-			eventType: nom.EventWorkflowStarted,
-			wID:       nom.NewWorkflowID("ci-1"),
-			wName:     nom.NewWorkflowName("CI Pipeline"),
+		if err := subscriber.OnEvent(ctx, nom.WorkflowStarted{
+			ID:   nom.NewWorkflowID("ci-1"),
+			Name: nom.NewWorkflowName("CI Pipeline"),
 		}); err != nil {
 			t.Fatalf("workflow.started: %v", err)
 		}
@@ -36,10 +35,9 @@ func TestNOMSubscriber_Integration(t *testing.T) {
 			t.Errorf("workflow name = %q, want %q", subscriber.GetWorkflowName(), "CI Pipeline")
 		}
 
-		if err := subscriber.OnEvent(ctx, &nomTestEvent{
-			eventType: nom.EventActivityStarted,
-			aID:       nom.NewActivityID("build"),
-			aName:     nom.NewActivityName("Build Project"),
+		if err := subscriber.OnEvent(ctx, nom.ActivityStarted{
+			ID:   nom.NewActivityID("build"),
+			Name: nom.NewActivityName("Build Project"),
 		}); err != nil {
 			t.Fatalf("activity.started: %v", err)
 		}
@@ -60,11 +58,10 @@ func TestNOMSubscriber_Integration(t *testing.T) {
 
 		subscriber.UpdateRunningActivityElapsed()
 
-		if err := subscriber.OnEvent(ctx, &nomTestEvent{
-			eventType: nom.EventActivityCompleted,
-			aID:       nom.NewActivityID("build"),
-			aName:     nom.NewActivityName("Build Project"),
-			duration:  5 * time.Second,
+		if err := subscriber.OnEvent(ctx, nom.ActivityCompleted{
+			ID:       nom.NewActivityID("build"),
+			Name:     nom.NewActivityName("Build Project"),
+			Duration: 5 * time.Second,
 		}); err != nil {
 			t.Fatalf("activity.completed: %v", err)
 		}
@@ -275,52 +272,31 @@ func TestNOMTimingCache_Integration(t *testing.T) {
 	})
 }
 
-type nomTestEvent struct {
-	eventType string
-	wID       nom.WorkflowID
-	wName     nom.WorkflowName
-	aID       nom.ActivityID
-	aName     nom.ActivityName
-	duration  time.Duration
-	err       error
-}
-
-func (e *nomTestEvent) GetEventType() string              { return e.eventType }
-func (e *nomTestEvent) GetWorkflowID() nom.WorkflowID     { return e.wID }
-func (e *nomTestEvent) GetWorkflowName() nom.WorkflowName { return e.wName }
-func (e *nomTestEvent) GetActivityID() nom.ActivityID     { return e.aID }
-func (e *nomTestEvent) GetActivityName() nom.ActivityName { return e.aName }
-func (e *nomTestEvent) GetDuration() time.Duration        { return e.duration }
-func (e *nomTestEvent) GetError() error                   { return e.err }
-
 // mustUpdateActivityStatus is removed — ActivityNode no longer stores Activity fields.
 // Use SnapshotActivities + RenderWithSnapshots, or send events through the subscriber.
 
 // startActivity sends an activity.started event and discards any error.
 func startActivity(sub *nom.NOMStyleSubscriber, ctx context.Context, id, name string) {
-	_ = sub.OnEvent(ctx, &nomTestEvent{
-		eventType: nom.EventActivityStarted,
-		aID:       nom.NewActivityID(id),
-		aName:     nom.NewActivityName(name),
+	_ = sub.OnEvent(ctx, nom.ActivityStarted{
+		ID:   nom.NewActivityID(id),
+		Name: nom.NewActivityName(name),
 	})
 }
 
 // fireWorkflowStarted sends a workflow.started event and discards any error.
 // Use for tests that only care about downstream behavior, not event errors.
 func fireWorkflowStarted(sub *nom.NOMStyleSubscriber, ctx context.Context, id, name string) {
-	_ = sub.OnEvent(ctx, &nomTestEvent{
-		eventType: nom.EventWorkflowStarted,
-		wID:       nom.NewWorkflowID(id),
-		wName:     nom.NewWorkflowName(name),
+	_ = sub.OnEvent(ctx, nom.WorkflowStarted{
+		ID:   nom.NewWorkflowID(id),
+		Name: nom.NewWorkflowName(name),
 	})
 }
 
 // completeActivity sends an activity.completed event and discards any error.
 func completeActivity(sub *nom.NOMStyleSubscriber, ctx context.Context, id, name string, duration time.Duration) {
-	_ = sub.OnEvent(ctx, &nomTestEvent{
-		eventType: nom.EventActivityCompleted,
-		aID:       nom.NewActivityID(id),
-		aName:     nom.NewActivityName(name),
-		duration:  duration,
+	_ = sub.OnEvent(ctx, nom.ActivityCompleted{
+		ID:       nom.NewActivityID(id),
+		Name:     nom.NewActivityName(name),
+		Duration: duration,
 	})
 }

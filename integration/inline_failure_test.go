@@ -32,11 +32,10 @@ func TestInlineRenderer_WorkflowFailureErrorDisplayed(t *testing.T) {
 
 	// The test step fails with a concrete error.
 	stepErr := errors.New("test suite failed: 3 assertions failed")
-	_ = subscriber.OnEvent(ctx, &nomTestEvent{
-		eventType: nom.EventActivityFailed,
-		aID:       nom.NewActivityID("test"),
-		aName:     nom.NewActivityName("Run Tests"),
-		err:       stepErr,
+	_ = subscriber.OnEvent(ctx, nom.ActivityFailed{
+		ID:   nom.NewActivityID("test"),
+		Name: nom.NewActivityName("Run Tests"),
+		Err:  stepErr,
 	})
 
 	var buf bytes.Buffer

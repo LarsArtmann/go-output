@@ -99,22 +99,8 @@ func TestDownloadProgress_Fraction(t *testing.T) {
 	}
 }
 
-// hostDownloadEvent is a test event implementing HostAccessor + DownloadAccessor.
-type hostDownloadEvent struct {
-	eventType string
-	aid       ActivityID
-	aname     ActivityName
-	host      string
-	download  DownloadProgress
-}
-
-func (e *hostDownloadEvent) GetEventType() string          { return e.eventType }
-func (e *hostDownloadEvent) GetWorkflowID() WorkflowID     { return WorkflowID("wf") }
-func (e *hostDownloadEvent) GetWorkflowName() WorkflowName { return WorkflowName("wf") }
-func (e *hostDownloadEvent) GetActivityID() ActivityID     { return e.aid }
-func (e *hostDownloadEvent) GetActivityName() ActivityName { return e.aname }
-func (e *hostDownloadEvent) GetHost() string               { return e.host }
-func (e *hostDownloadEvent) GetDownload() DownloadProgress { return e.download }
+// hostDownloadEvent removed: ActivityStarted now carries Host and Download
+// fields directly, so test events construct ActivityStarted{Host: ..., Download: ...}.
 
 func TestSubscriber_PropagatesHostAndDownload(t *testing.T) {
 	t.Parallel()
@@ -122,12 +108,11 @@ func TestSubscriber_PropagatesHostAndDownload(t *testing.T) {
 	sub := NewNOMStyleSubscriber()
 	ctx := context.Background()
 
-	if err := sub.OnEvent(ctx, &hostDownloadEvent{
-		eventType: EventActivityStarted,
-		aid:       ActivityID("dl"),
-		aname:     ActivityName("Download Deps"),
-		host:      "eu-west-1",
-		download:  DownloadProgress{Downloaded: 700, Total: 1000},
+	if err := sub.OnEvent(ctx, ActivityStarted{
+		ID:       ActivityID("dl"),
+		Name:     ActivityName("Download Deps"),
+		Host:     "eu-west-1",
+		Download: DownloadProgress{Downloaded: 700, Total: 1000},
 	}); err != nil {
 		t.Fatalf("OnEvent: %v", err)
 	}

@@ -12,38 +12,13 @@ import (
 // errLintFailed is a static error used by the example to demonstrate a failed activity.
 var errLintFailed = errors.New("lint check failed")
 
-type workflowEvent struct {
-	eventType string
-	wID       nom.WorkflowID
-	wName     nom.WorkflowName
-	aID       nom.ActivityID
-	aName     nom.ActivityName
-	duration  time.Duration
-	err       error
-}
-
-func (e *workflowEvent) GetEventType() string { return e.eventType }
-
-func (e *workflowEvent) GetWorkflowID() nom.WorkflowID { return e.wID }
-
-func (e *workflowEvent) GetWorkflowName() nom.WorkflowName { return e.wName }
-
-func (e *workflowEvent) GetActivityID() nom.ActivityID { return e.aID }
-
-func (e *workflowEvent) GetActivityName() nom.ActivityName { return e.aName }
-
-func (e *workflowEvent) GetDuration() time.Duration { return e.duration }
-
-func (e *workflowEvent) GetError() error { return e.err }
-
 func main() {
 	subscriber := nom.NewNOMStyleSubscriber()
 	ctx := context.Background()
 
-	_ = subscriber.OnEvent(ctx, &workflowEvent{
-		eventType: nom.EventWorkflowStarted,
-		wID:       nom.NewWorkflowID("build-42"),
-		wName:     nom.NewWorkflowName("CI Pipeline"),
+	_ = subscriber.OnEvent(ctx, nom.WorkflowStarted{
+		ID:   nom.NewWorkflowID("build-42"),
+		Name: nom.NewWorkflowName("CI Pipeline"),
 	})
 
 	activities := []struct {
@@ -60,28 +35,25 @@ func main() {
 	}
 
 	for _, a := range activities {
-		_ = subscriber.OnEvent(ctx, &workflowEvent{
-			eventType: nom.EventActivityStarted,
-			aID:       nom.NewActivityID(a.id),
-			aName:     nom.NewActivityName(a.name),
+		_ = subscriber.OnEvent(ctx, nom.ActivityStarted{
+			ID:   nom.NewActivityID(a.id),
+			Name: nom.NewActivityName(a.name),
 		})
 
 		time.Sleep(a.delay)
 
 		switch a.status {
 		case nom.ActivityStatusCompleted:
-			_ = subscriber.OnEvent(ctx, &workflowEvent{
-				eventType: nom.EventActivityCompleted,
-				aID:       nom.NewActivityID(a.id),
-				aName:     nom.NewActivityName(a.name),
-				duration:  a.delay,
+			_ = subscriber.OnEvent(ctx, nom.ActivityCompleted{
+				ID:       nom.NewActivityID(a.id),
+				Name:     nom.NewActivityName(a.name),
+				Duration: a.delay,
 			})
 		case nom.ActivityStatusFailed:
-			_ = subscriber.OnEvent(ctx, &workflowEvent{
-				eventType: nom.EventActivityFailed,
-				aID:       nom.NewActivityID(a.id),
-				aName:     nom.NewActivityName(a.name),
-				err:       errLintFailed,
+			_ = subscriber.OnEvent(ctx, nom.ActivityFailed{
+				ID:   nom.NewActivityID(a.id),
+				Name: nom.NewActivityName(a.name),
+				Err:  errLintFailed,
 			})
 		case nom.ActivityStatusPending, nom.ActivityStatusRunning:
 			// left as-is for the demo
@@ -105,9 +77,8 @@ func main() {
 
 	fmt.Printf("Summary: %s\n", counts.Summary())
 
-	_ = subscriber.OnEvent(ctx, &workflowEvent{
-		eventType: nom.EventWorkflowCompleted,
-		wID:       nom.NewWorkflowID("build-42"),
+	_ = subscriber.OnEvent(ctx, nom.WorkflowCompleted{
+		ID: nom.NewWorkflowID("build-42"),
 	})
 
 	fmt.Println("\nWorkflow completed!")

@@ -11,47 +11,18 @@ import (
 	"github.com/larsartmann/go-output/nom"
 )
 
-// testEvent implements nom.Event and accessor interfaces for testing.
-type testEvent struct {
-	eventType    string
-	wID          nom.WorkflowID
-	wName        nom.WorkflowName
-	aID          nom.ActivityID
-	aName        nom.ActivityName
-	duration     time.Duration
-	err          error
-	dependencies []nom.ActivityID
-}
-
-func (e *testEvent) GetEventType() string              { return e.eventType }
-func (e *testEvent) GetWorkflowID() nom.WorkflowID     { return e.wID }
-func (e *testEvent) GetWorkflowName() nom.WorkflowName { return e.wName }
-func (e *testEvent) GetActivityID() nom.ActivityID     { return e.aID }
-func (e *testEvent) GetActivityName() nom.ActivityName { return e.aName }
-func (e *testEvent) GetDuration() time.Duration        { return e.duration }
-func (e *testEvent) GetError() error                   { return e.err }
-func (e *testEvent) GetDependencies() []nom.ActivityID { return e.dependencies }
-
 // startActivity fires an activity.started event on the model's NOM subscriber.
-// Common test setup boilerplate; collapses a 5-line OnEvent block to one call.
 func startActivity(t *testing.T, model *ProgressModel, ctx context.Context, id nom.ActivityID, name nom.ActivityName) {
 	t.Helper()
 
-	_ = model.nomSubscriber.OnEvent(ctx, &testEvent{
-		eventType: nom.EventActivityStarted,
-		aID:       id,
-		aName:     name,
-	})
+	_ = model.nomSubscriber.OnEvent(ctx, nom.ActivityStarted{ID: id, Name: name})
 }
 
 // startWorkflow fires a workflow.started event on the model's NOM subscriber.
 func startWorkflow(t *testing.T, model *ProgressModel, ctx context.Context, id nom.WorkflowID) {
 	t.Helper()
 
-	_ = model.nomSubscriber.OnEvent(ctx, &testEvent{
-		eventType: nom.EventWorkflowStarted,
-		wID:       id,
-	})
+	_ = model.nomSubscriber.OnEvent(ctx, nom.WorkflowStarted{ID: id})
 }
 
 // TestProgressModel_EventSequence_WorkflowStartToTick verifies that when
@@ -65,10 +36,9 @@ func TestProgressModel_EventSequence_WorkflowStartToTick(t *testing.T) {
 
 	// Start workflow in subscriber
 	ctx := context.Background()
-	model.nomSubscriber.OnEvent(ctx, &testEvent{
-		eventType: nom.EventWorkflowStarted,
-		wID:       nom.WorkflowID("wf-1"),
-		wName:     nom.WorkflowName("Test"),
+	model.nomSubscriber.OnEvent(ctx, nom.WorkflowStarted{
+		ID:   nom.WorkflowID("wf-1"),
+		Name: nom.WorkflowName("Test"),
 	})
 
 	// Pre-register an activity
@@ -195,18 +165,14 @@ func TestProgressModel_EventSequence_StepFailed(t *testing.T) {
 	model.displayMode = DisplayModeNOM
 
 	ctx := context.Background()
-	model.nomSubscriber.OnEvent(ctx, &testEvent{
-		eventType: nom.EventWorkflowStarted,
-		wID:       nom.WorkflowID("wf-1"),
-	})
+	model.nomSubscriber.OnEvent(ctx, nom.WorkflowStarted{ID: nom.WorkflowID("wf-1")})
 
 	// Set up subscriber with a failed activity
 	startActivity(t, model, ctx, "test", "Run Tests")
-	model.nomSubscriber.OnEvent(ctx, &testEvent{
-		eventType: nom.EventActivityFailed,
-		aID:       nom.ActivityID("test"),
-		aName:     nom.ActivityName("Run Tests"),
-		err:       errors.New("test failure"),
+	model.nomSubscriber.OnEvent(ctx, nom.ActivityFailed{
+		ID:   nom.ActivityID("test"),
+		Name: nom.ActivityName("Run Tests"),
+		Err:  errors.New("test failure"),
 	})
 
 	// Sync via tick

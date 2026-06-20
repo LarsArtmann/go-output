@@ -9,23 +9,6 @@ import (
 	"time"
 )
 
-// benchEvent is a minimal event for populating/mutating a subscriber in benchmarks.
-type benchEvent struct {
-	eventType string
-	wid       WorkflowID
-	aid       ActivityID
-	aname     ActivityName
-}
-
-func (e *benchEvent) GetEventType() string          { return e.eventType }
-func (e *benchEvent) GetWorkflowID() WorkflowID     { return e.wid }
-func (e *benchEvent) GetWorkflowName() WorkflowName { return WorkflowName("bench") }
-func (e *benchEvent) GetActivityID() ActivityID     { return e.aid }
-func (e *benchEvent) GetActivityName() ActivityName { return e.aname }
-func (e *benchEvent) GetDependencies() []ActivityID { return nil }
-func (e *benchEvent) GetDuration() time.Duration    { return 0 }
-func (e *benchEvent) GetError() error               { return nil }
-
 // buildBenchSubscriber creates a NOMStyleSubscriber with count activities spread
 // across completed/running/pending states, mirroring a realistic mid-build tree.
 func buildBenchSubscriber(b *testing.B, count int) *NOMStyleSubscriber {
@@ -35,32 +18,17 @@ func buildBenchSubscriber(b *testing.B, count int) *NOMStyleSubscriber {
 	ctx := context.Background()
 	wid := NewWorkflowID("bench-wf")
 
-	_ = sub.OnEvent(ctx, &benchEvent{eventType: EventWorkflowStarted, wid: wid})
+	_ = sub.OnEvent(ctx, WorkflowStarted{ID: wid, Name: WorkflowName("bench")})
 
 	for i := range count {
 		id := NewActivityID(fmt.Sprintf("step-%04d", i))
 		name := NewActivityName(fmt.Sprintf("Step %d", i))
 
-		_ = sub.OnEvent(ctx, &benchEvent{
-			eventType: EventActivityRegistered, wid: wid, aid: id, aname: name,
-		})
-		_ = sub.OnEvent(ctx, &benchEvent{
-			eventType: EventActivityStarted, wid: wid, aid: id, aname: name,
-		})
+		_ = sub.OnEvent(ctx, ActivityRegistered{ID: id, Name: name})
+		_ = sub.OnEvent(ctx, ActivityStarted{ID: id, Name: name})
 
-		var final string
-
-		switch {
-		case i < count/3:
-			final = EventActivityCompleted
-		case i < count*2/3:
-			final = "" // leave running
-		default:
-			final = "" // leave running/pending
-		}
-
-		if final != "" {
-			_ = sub.OnEvent(ctx, &benchEvent{eventType: final, wid: wid, aid: id, aname: name})
+		if i < count/3 {
+			_ = sub.OnEvent(ctx, ActivityCompleted{ID: id, Name: name})
 		}
 	}
 
@@ -164,9 +132,7 @@ func BenchmarkInlineRenderer_DrawWithChurn(b *testing.B) {
 					return
 				default:
 					id := NewActivityID(fmt.Sprintf("step-%04d", i%size))
-					_ = sub.OnEvent(ctx, &benchEvent{
-						eventType: EventActivityStarted, aid: id, aname: ActivityName("churn"),
-					})
+					_ = sub.OnEvent(ctx, ActivityStarted{ID: id, Name: ActivityName("churn")})
 					i++
 				}
 			}

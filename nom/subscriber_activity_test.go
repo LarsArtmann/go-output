@@ -1,7 +1,6 @@
 package nom
 
 import (
-	"context"
 	"errors"
 	"testing"
 	"time"
@@ -12,12 +11,7 @@ func TestNOMStyleSubscriber_ActivityStarted(t *testing.T) {
 
 	ns, ctx := setupWithWorkflow(t)
 
-	err := ns.OnEvent(ctx, &testEvent{
-		eventType: EventActivityStarted,
-		activity:  true,
-		aID:       ActivityID("a1"),
-		aName:     ActivityName("Build"),
-	})
+	err := ns.OnEvent(ctx, ActivityStarted{ID: ActivityID("a1"), Name: ActivityName("Build")})
 	if err != nil {
 		t.Fatalf("OnEvent() error: %v", err)
 	}
@@ -42,12 +36,10 @@ func TestNOMStyleSubscriber_ActivityCompleted(t *testing.T) {
 	ns, ctx := setupWithWorkflow(t)
 	sendActivityStarted(t, ns, ctx, ActivityID("a1"), ActivityName("Build"))
 
-	err := ns.OnEvent(ctx, &testEvent{
-		eventType: EventActivityCompleted,
-		activity:  true,
-		aID:       ActivityID("a1"),
-		aName:     ActivityName("Build"),
-		duration:  5 * time.Second,
+	err := ns.OnEvent(ctx, ActivityCompleted{
+		ID:       ActivityID("a1"),
+		Name:     ActivityName("Build"),
+		Duration: 5 * time.Second,
 	})
 	if err != nil {
 		t.Fatalf("OnEvent() error: %v", err)
@@ -71,13 +63,11 @@ func TestNOMStyleSubscriber_ActivityFailed(t *testing.T) {
 
 	testErr := errors.New("build failed")
 
-	err := ns.OnEvent(ctx, &testEvent{
-		eventType: EventActivityFailed,
-		activity:  true,
-		aID:       ActivityID("a1"),
-		aName:     ActivityName("Build"),
-		err:       testErr,
-		duration:  3 * time.Second,
+	err := ns.OnEvent(ctx, ActivityFailed{
+		ID:       ActivityID("a1"),
+		Name:     ActivityName("Build"),
+		Err:      testErr,
+		Duration: 3 * time.Second,
 	})
 	if err != nil {
 		t.Fatalf("OnEvent() error: %v", err)
@@ -97,35 +87,11 @@ func TestNOMStyleSubscriber_ActivityFailed(t *testing.T) {
 	}
 }
 
-func TestNOMStyleSubscriber_UnknownEventType(t *testing.T) {
-	t.Parallel()
-
-	ns := newTestSubscriber(t)
-	ctx := context.Background()
-
-	err := ns.OnEvent(ctx, &testEvent{eventType: "unknown.event"})
-	if err != nil {
-		t.Errorf("unknown event type should not return error: %v", err)
-	}
-}
-
-type minimalEvent struct {
-	eventType string
-}
-
-func (e *minimalEvent) GetEventType() string { return e.eventType }
-
-func TestNOMStyleSubscriber_EventWithoutAccessor(t *testing.T) {
-	t.Parallel()
-
-	ns := newTestSubscriber(t)
-	ctx := context.Background()
-
-	err := ns.OnEvent(ctx, &minimalEvent{eventType: EventWorkflowStarted})
-	if err != nil {
-		t.Errorf("event without accessor should not return error: %v", err)
-	}
-}
+// TestNOMStyleSubscriber_UnknownEventType and TestNOMStyleSubscriber_EventWithoutAccessor
+// were removed: sealed events make "unknown event type" and "event without accessor"
+// unrepresentable — the compiler rejects them. The failure modes those tests
+// guarded (silent no-op on unknown string dispatch, nil-accessor crash) cannot
+// occur with the exhaustive type switch in OnEvent.
 
 func TestNOMStyleSubscriber_GetActivities(t *testing.T) {
 	t.Parallel()
@@ -147,12 +113,7 @@ func TestNOMStyleSubscriber_GetActivityCounts(t *testing.T) {
 	sendActivityStarted(t, ns, ctx, ActivityID("a1"), ActivityName("Build"))
 	sendActivityStarted(t, ns, ctx, ActivityID("a2"), ActivityName("Test"))
 
-	ns.OnEvent(ctx, &testEvent{
-		eventType: EventActivityCompleted,
-		activity:  true,
-		aID:       ActivityID("a1"),
-		aName:     ActivityName("Build"),
-	})
+	ns.OnEvent(ctx, ActivityCompleted{ID: ActivityID("a1"), Name: ActivityName("Build")})
 
 	counts := ns.GetActivityCounts()
 	if counts.Running != 1 {

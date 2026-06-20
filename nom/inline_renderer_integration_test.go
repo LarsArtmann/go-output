@@ -62,12 +62,10 @@ func TestInlineRenderer_FullWorkflowLifecycle(t *testing.T) {
 	}
 
 	// 4. Finalize: fail deploy, finish the renderer with an error.
-	if err := sub.OnEvent(ctx, &testEvent{
-		eventType: EventActivityFailed,
-		activity:  true,
-		aID:       ActivityID("deploy"),
-		aName:     ActivityName("Deploy"),
-		err:       errDeployFailed,
+	if err := sub.OnEvent(ctx, ActivityFailed{
+		ID:   ActivityID("deploy"),
+		Name: ActivityName("Deploy"),
+		Err:  errDeployFailed,
 	}); err != nil {
 		t.Fatalf("activity.failed: %v", err)
 	}
