@@ -27,6 +27,7 @@ func (ns *NOMStyleSubscriber) Reset() {
 
 	ns.activities = make(map[ActivityID]*Activity)
 	ns.dependencyTree.Clear()
+	ns.counts = ActivityCounts{}
 	ns.workflowID = ""
 	ns.workflowName = WorkflowName("")
 	ns.startTime = time.Time{}

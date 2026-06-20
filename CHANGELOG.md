@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Changed — Performance
+
+- **`GetActivityCounts()` is now O(1)** instead of O(n) per render frame. The subscriber maintains an incrementally-updated `ActivityCounts` cache (`applyCountsDelta` on every state transition). Previously, the summary bar scanned all activities every tick (~10×/sec); now it reads a pre-computed value. At 10,000 activities this is ~1000× faster (flat ~10ns regardless of count, verified by benchmark). This ports the core algorithmic advantage of upstream nix-output-monitor's `DependencySummary` monoid.
+
 ## [0.16.0] - 2026-06-20
 
 Feature release: NOM-style rendering capabilities ported from the original

@@ -21,11 +21,17 @@ type NOMStyleSubscriber struct {
 	activities     map[ActivityID]*Activity
 	dependencyTree *DependencyTree
 	timingCache    *TimingCache
-	workflowID     WorkflowID
-	workflowName   WorkflowName
-	startTime      time.Time
-	isRunning      bool
-	enabled        bool
+	// counts is an incrementally-maintained cache of activity status counts.
+	// Updated via applyDelta on every state transition and on creation/removal,
+	// so GetActivityCounts is O(1) instead of O(n) per render frame. This is
+	// the subscriber-level aggregate (the root of a per-subtree monoid);
+	// per-node subtree counts are not maintained because no consumer needs them.
+	counts       ActivityCounts
+	workflowID   WorkflowID
+	workflowName WorkflowName
+	startTime    time.Time
+	isRunning    bool
+	enabled      bool
 }
 
 // SubscriberOption configures a NOMStyleSubscriber at construction time.

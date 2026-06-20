@@ -14,6 +14,35 @@ type ActivityCounts struct {
 	Pending   int
 }
 
+// applyCountsDelta adjusts the counts by decrementing the old status and
+// incrementing the new status. Called on every activity state transition
+// under the subscriber's write lock, so GetActivityCounts can read a
+// pre-computed total in O(1) instead of scanning all activities in O(n).
+// A no-op when from == to.
+func applyCountsDelta(c *ActivityCounts, from, to ActivityStatus) {
+	if from == to {
+		return
+	}
+
+	countsForStatus(c, from, -1)
+	countsForStatus(c, to, +1)
+}
+
+// countsForStatus applies a delta (+1 or -1) to the count bucket for the
+// given status.
+func countsForStatus(c *ActivityCounts, status ActivityStatus, delta int) {
+	switch status {
+	case ActivityStatusRunning:
+		c.Running += delta
+	case ActivityStatusCompleted:
+		c.Completed += delta
+	case ActivityStatusFailed:
+		c.Failed += delta
+	case ActivityStatusPending:
+		c.Pending += delta
+	}
+}
+
 // Total returns the sum of all activity counts.
 func (c ActivityCounts) Total() int {
 	return c.Running + c.Completed + c.Failed + c.Pending
@@ -57,26 +86,14 @@ func (c ActivityCounts) Summary() string {
 }
 
 // GetActivityCounts returns counts of activities by status.
+// O(1) — reads a pre-computed cache maintained incrementally on every state
+// transition (applyDelta in the event handlers). Previously this scanned all
+// activities every frame; now it returns the cached aggregate directly.
 func (ns *NOMStyleSubscriber) GetActivityCounts() ActivityCounts {
 	ns.mu.RLock()
 	defer ns.mu.RUnlock()
 
-	var c ActivityCounts
-
-	for _, activity := range ns.activities {
-		switch activity.Status {
-		case ActivityStatusRunning:
-			c.Running++
-		case ActivityStatusCompleted:
-			c.Completed++
-		case ActivityStatusFailed:
-			c.Failed++
-		case ActivityStatusPending:
-			c.Pending++
-		}
-	}
-
-	return c
+	return ns.counts
 }
 
 // UpdateRunningActivityElapsed updates elapsed time for all currently running activities.
@@ -95,9 +112,16 @@ func (ns *NOMStyleSubscriber) UpdateRunningActivityElapsed() {
 }
 
 // SetActivityState sets an activity's state (for testing purposes).
+// Maintains the count cache: if replacing an existing activity, the old
+// status is decremented before the new one is counted.
 func (ns *NOMStyleSubscriber) SetActivityState(id ActivityID, activity *Activity) {
 	ns.mu.Lock()
 	defer ns.mu.Unlock()
 
+	if old, exists := ns.activities[id]; exists {
+		countsForStatus(&ns.counts, old.Status, -1)
+	}
+
+	countsForStatus(&ns.counts, activity.Status, +1)
 	ns.activities[id] = activity
 }

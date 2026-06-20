@@ -82,6 +82,8 @@ func (ns *NOMStyleSubscriber) getOrCreateActivity(
 		}
 
 		ns.activities[activityID] = activity
+		// New activities start Pending; maintain the count cache.
+		ns.counts.Pending++
 	}
 
 	return activity
@@ -94,6 +96,7 @@ func (ns *NOMStyleSubscriber) handleActivityStarted(e ActivityStarted) error {
 	defer ns.mu.Unlock()
 
 	activity := ns.getOrCreateActivity(e.ID, e.Name, e.Kind)
+	applyCountsDelta(&ns.counts, activity.Status, ActivityStatusRunning)
 	activity.SetRunning()
 	activity.Host = e.Host
 	activity.Download = e.Download
@@ -125,6 +128,7 @@ func (ns *NOMStyleSubscriber) handleActivityCompleted(e ActivityCompleted) error
 	defer ns.mu.Unlock()
 
 	activity := ns.getOrCreateActivity(e.ID, e.Name, ActivityKindTask)
+	applyCountsDelta(&ns.counts, activity.Status, ActivityStatusCompleted)
 	activity.SetCompleted()
 
 	return ns.recordDuration(e.Name, e.Duration)
@@ -137,6 +141,7 @@ func (ns *NOMStyleSubscriber) handleActivityFailed(e ActivityFailed) error {
 	defer ns.mu.Unlock()
 
 	activity := ns.getOrCreateActivity(e.ID, e.Name, ActivityKindTask)
+	applyCountsDelta(&ns.counts, activity.Status, ActivityStatusFailed)
 	activity.SetFailed(e.Err)
 
 	return ns.recordDuration(e.Name, e.Duration)
