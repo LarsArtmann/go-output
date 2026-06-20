@@ -160,7 +160,7 @@ func TestBubbleTeaProgressReporter_Stop_NoProgramIsSafe(t *testing.T) {
 	pr.Stop()
 
 	// Verify the reporter is still usable
-	if pr.subscriber() == nil {
+	if pr.Subscriber() == nil {
 		t.Error("subscriber() should still return a valid subscriber after Stop()")
 	}
 }

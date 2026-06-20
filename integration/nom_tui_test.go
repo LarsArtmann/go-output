@@ -112,25 +112,19 @@ func TestNOMDependencyTree_Integration(t *testing.T) {
 
 		tree := nom.NewDependencyTree()
 
-		tree.AddActivity(nom.NewActivityID("root"), nom.NewActivity("root", "Root Task"), nil)
-		tree.AddActivity(nom.NewActivityID("child1"), nom.NewActivity("child1", "Child 1"), []nom.ActivityID{"root"})
-		tree.AddActivity(nom.NewActivityID("child2"), nom.NewActivity("child2", "Child 2"), []nom.ActivityID{"root"})
-		tree.AddActivity(
-			nom.NewActivityID("grandchild"),
-			nom.NewActivity("grandchild", "Grandchild"),
-			[]nom.ActivityID{"child1"},
-		)
+		tree.AddActivity(nom.NewActivityID("root"), nil, nil)
+		tree.AddActivity(nom.NewActivityID("child1"), nil, []nom.ActivityID{"root"})
+		tree.AddActivity(nom.NewActivityID("child2"), nil, []nom.ActivityID{"root"})
+		tree.AddActivity(nom.NewActivityID("grandchild"), nil, []nom.ActivityID{"child1"})
 
-		mustUpdateActivityStatus(t, tree, nom.NewActivityID("root"),
-			nom.ActivityStatusCompleted, time.Now())
-		mustUpdateActivityStatus(t, tree, nom.NewActivityID("child1"),
-			nom.ActivityStatusRunning, time.Now())
-		mustUpdateActivityStatus(t, tree, nom.NewActivityID("child2"),
-			nom.ActivityStatusPending, time.Time{})
-		mustUpdateActivityStatus(t, tree, nom.NewActivityID("grandchild"),
-			nom.ActivityStatusFailed, time.Now())
+		snaps := map[nom.ActivityID]nom.ActivitySnapshot{
+			nom.NewActivityID("root"):       {Label: "Root Task", Status: nom.ActivityStatusCompleted, Symbol: nom.ActivityStatusCompleted.GetSymbol(), Color: nom.ActivityStatusCompleted.GetColor()},
+			nom.NewActivityID("child1"):     {Label: "Child 1", Status: nom.ActivityStatusRunning, Symbol: nom.ActivityStatusRunning.GetSymbol(), Color: nom.ActivityStatusRunning.GetColor()},
+			nom.NewActivityID("child2"):     {Label: "Child 2", Status: nom.ActivityStatusPending, Symbol: nom.ActivityStatusPending.GetSymbol(), Color: nom.ActivityStatusPending.GetColor()},
+			nom.NewActivityID("grandchild"): {Label: "Grandchild", Status: nom.ActivityStatusFailed, Symbol: nom.ActivityStatusFailed.GetSymbol(), Color: nom.ActivityStatusFailed.GetColor()},
+		}
 
-		rendered := tree.RenderString(10)
+		rendered := tree.RenderWithSnapshots(snaps, 10, 0)
 		if rendered == "" {
 			t.Error("tree render should not be empty")
 		}
@@ -194,15 +188,17 @@ func TestNOMSubscriber_RenderNodeVisibleNodes_Integration(t *testing.T) {
 		t.Fatal("dependency tree should exist")
 	}
 
-	visible := tree.VisibleNodes(10)
+	snaps := subscriber.SnapshotActivities()
+
+	visible := tree.VisibleNodesWithSnapshots(snaps, 10)
 	if len(visible) == 0 {
 		t.Fatal("VisibleNodes should return nodes")
 	}
 
 	for _, node := range visible {
-		rendered := tree.RenderNode(node, visible)
+		rendered := tree.RenderNode(node, visible, snaps)
 		if rendered == "" {
-			t.Errorf("RenderNode(%s) returned empty string", nom.ActivityID(node.ID.Get()))
+			t.Errorf("RenderNode(%s) returned empty string", node.ID)
 		}
 	}
 
@@ -216,17 +212,14 @@ func TestNOMSubscriber_RenderNodeVisibleNodes_Integration(t *testing.T) {
 		t.Fatal("build node should exist in tree")
 	}
 
-	if buildNode.Status != nom.ActivityStatusCompleted {
-		t.Errorf("build status = %v, want Completed", buildNode.Status)
+	buildSnap := snaps[nom.NewActivityID("build")]
+	if buildSnap.Status != nom.ActivityStatusCompleted {
+		t.Errorf("build status = %v, want Completed", buildSnap.Status)
 	}
 
-	testNode := tree.GetNode(nom.NewActivityID("test"))
-	if testNode == nil {
-		t.Fatal("test node should exist in tree")
-	}
-
-	if testNode.Status != nom.ActivityStatusRunning {
-		t.Errorf("test status = %v, want Running", testNode.Status)
+	testSnap := snaps[nom.NewActivityID("test")]
+	if testSnap.Status != nom.ActivityStatusRunning {
+		t.Errorf("test status = %v, want Running", testSnap.Status)
 	}
 }
 
@@ -280,29 +273,8 @@ func (e *nomTestEvent) GetActivityName() nom.ActivityName { return e.aName }
 func (e *nomTestEvent) GetDuration() time.Duration        { return e.duration }
 func (e *nomTestEvent) GetError() error                   { return e.err }
 
-// mustUpdateActivityStatus directly mutates the shared *Activity pointer
-// on the tree node (symbol/color/shape are derived from status).
-func mustUpdateActivityStatus(
-	t *testing.T,
-	tree *nom.DependencyTree,
-	id nom.ActivityID,
-	status nom.ActivityStatus,
-	startTime time.Time,
-) {
-	t.Helper()
-
-	node := tree.GetNode(id)
-	if node == nil {
-		t.Fatalf("node %s not found in tree", id)
-	}
-
-	node.Status = status
-	node.Symbol = status.GetSymbol()
-	node.Color = status.GetColor()
-	node.Shape = status.NodeShape()
-	node.Style = status.GraphStyle()
-	node.StartTime = startTime
-}
+// mustUpdateActivityStatus is removed — ActivityNode no longer stores Activity fields.
+// Use SnapshotActivities + RenderWithSnapshots, or send events through the subscriber.
 
 // startActivity sends an activity.started event and discards any error.
 func startActivity(sub *nom.NOMStyleSubscriber, ctx context.Context, id, name string) {

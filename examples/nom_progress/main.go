@@ -90,14 +90,14 @@ func main() {
 
 	subscriber.UpdateRunningActivityElapsed()
 
-	tree := subscriber.GetDependencyTree()
+	snaps := subscriber.SnapshotActivities()
 
 	fmt.Println("=== NOM Dependency Tree (priority-ordered) ===")
 	fmt.Println("Failed/Running activities appear first when height is limited.")
 
-	fmt.Println(tree.RenderString(3))
+	fmt.Println(subscriber.GetDependencyTree().RenderWithSnapshots(snaps, 3, 0))
 	fmt.Println()
-	fmt.Println(tree.RenderString(20))
+	fmt.Println(subscriber.GetDependencyTree().RenderWithSnapshots(snaps, 20, 0))
 
 	counts := subscriber.GetActivityCounts()
 	fmt.Printf("\nRunning: %d, Completed: %d, Failed: %d, Pending: %d\n",
