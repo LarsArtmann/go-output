@@ -6,15 +6,32 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.15.0] - 2026-06-20
+
+Design-smell cleanup following the v0.14.0 type-model refactor. Two breaking
+API changes remove footguns that the snapshot refactor exposed: a `*Activity`
+parameter that was silently discarded, and convenience renderers that produced
+blank output when invoked without snapshots.
+
+### Changed — Breaking
+
+- **Deleted nil-snapshot footgun wrappers**: `RenderString`, `RenderWithWidth`, `VisibleNodes` — they silently passed nil snapshots, producing blank labels. Callers now use `RenderWithSnapshots(snapshots, maxHeight, maxWidth)` / `VisibleNodesWithSnapshots(snapshots, maxHeight)`. The "render with no data" mistake is now unrepresentable.
+- **`AddActivity` signature simplified**: removed the dead `*Activity` parameter (it was silently discarded after the snapshot refactor — a "lying" signature). New: `AddActivity(id ActivityID, deps []ActivityID)`.
+
+### Added
+
+- **`scripts/pre-tag-check.sh`** — pre-release verification that builds and tests every module (with `-race` for the concurrency-sensitive `nom`/`tui`/`integration` modules) before a tag is cut. Accepts an optional `vX.Y.Z` argument to also verify the tree is clean and the tag does not already exist.
+
 ### Fixed
 
-- **`tui.Subscriber()` re-exported** — the v0.14.0 hardening unexported it, but BuildFlow (the primary external consumer) needs it to dispatch lifecycle events. Re-exported as public API.
 - **Compile-broken integration test, TUI test, and example** after v0.14.0 refactor — rewritten to use `SnapshotActivities` + `RenderWithSnapshots`.
+- Removed an accidentally committed binary (`examples/nom_progress/nom_progress`) from the repository.
 
-### Changed
+## [0.14.1] - 2026-06-20 _(tui module only)_
 
-- **Deleted nil-snapshot footgun wrappers**: `RenderString`, `RenderWithWidth`, `VisibleNodes` — they silently passed nil snapshots, producing blank labels. Callers now use `RenderWithSnapshots(snapshots, maxHeight, maxWidth)` / `VisibleNodesWithSnapshots(snapshots, maxHeight)`.
-- **`AddActivity` signature simplified**: removed the dead `*Activity` parameter (it was silently discarded after the snapshot refactor). New: `AddActivity(id ActivityID, deps []ActivityID)`.
+### Fixed
+
+- **`tui.Subscriber()` re-exported** — the v0.14.0 hardening unexported it, but BuildFlow (the primary external consumer) needs it to dispatch lifecycle events. Re-exported as public API. No other module changed; only `tui/v0.14.1` was tagged.
 
 ## [0.14.0] - 2026-06-20
 
