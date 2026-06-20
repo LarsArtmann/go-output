@@ -6,7 +6,7 @@ require (
 	charm.land/lipgloss/v2 v2.0.4
 	github.com/charmbracelet/x/ansi v0.11.7
 	github.com/charmbracelet/x/exp/golden v0.0.0-20251106172358-54469c29c2bc
-	github.com/larsartmann/go-output v0.14.0
+	github.com/larsartmann/go-output v0.16.0
 	github.com/larsartmann/go-output/envdetect v0.13.0
 	github.com/larsartmann/go-output/testhelpers v0.13.0
 	golang.org/x/term v0.44.0

@@ -4,12 +4,12 @@ go 1.26.3
 
 require (
 	github.com/go-faster/yaml v0.4.6
-	github.com/larsartmann/go-output v0.14.0
+	github.com/larsartmann/go-output v0.16.0
 	github.com/larsartmann/go-output/d2 v0.13.0
 	github.com/larsartmann/go-output/delimited v0.13.0
 	github.com/larsartmann/go-output/graph v0.13.0
 	github.com/larsartmann/go-output/markup v0.13.0
-	github.com/larsartmann/go-output/nom v0.14.0
+	github.com/larsartmann/go-output/nom v0.16.0
 	github.com/larsartmann/go-output/plantuml v0.13.0
 	github.com/larsartmann/go-output/serialization v0.13.0
 	github.com/larsartmann/go-output/table v0.13.0

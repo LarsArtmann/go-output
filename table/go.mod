@@ -4,7 +4,7 @@ go 1.26.3
 
 require (
 	charm.land/lipgloss/v2 v2.0.4
-	github.com/larsartmann/go-output v0.14.0
+	github.com/larsartmann/go-output v0.16.0
 	github.com/larsartmann/go-output/testhelpers v0.13.0
 )
 

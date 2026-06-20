@@ -19,10 +19,10 @@ What started as a single targeted optimization uncovered a **second** O(n)-per-t
 
 ### Benchmark proof
 
-| Operation | Before | After | Scale |
-|---|---|---|---|
-| `GetActivityCounts()` @ 10k activities | O(n) linear scan | **~11ns, flat** | ~1000× faster at scale |
-| `UpdateRunningActivityElapsed()` @ 10k activities | O(n) write-lock scan per tick | **Deleted** | ∞ (zero work) |
+| Operation                                         | Before                        | After           | Scale                  |
+| ------------------------------------------------- | ----------------------------- | --------------- | ---------------------- |
+| `GetActivityCounts()` @ 10k activities            | O(n) linear scan              | **~11ns, flat** | ~1000× faster at scale |
+| `UpdateRunningActivityElapsed()` @ 10k activities | O(n) write-lock scan per tick | **Deleted**     | ∞ (zero work)          |
 
 ---
 
@@ -34,14 +34,14 @@ What started as a single targeted optimization uncovered a **second** O(n)-per-t
 
 **After:** `NOMStyleSubscriber.counts` is an `ActivityCounts` value maintained via `applyCountsDelta(&counts, oldStatus, newStatus)` on every state transition. `GetActivityCounts()` reads the cache directly — O(1).
 
-| Change | Detail |
-|---|---|
-| `nom/nom_subscriber.go` | Added `counts ActivityCounts` field to subscriber struct |
-| `nom/activity_management.go` | `GetActivityCounts()` rewritten to read cache; added `applyCountsDelta` + `adjustStatusCount` helpers; `SetActivityState` maintains cache |
-| `nom/subscriber_handlers.go` | All 3 transition handlers (`Started`/`Completed`/`Failed`) + `getOrCreateActivity` call `applyCountsDelta` before mutating |
-| `nom/configuration.go` | `Reset()` zeroes the cache |
-| `nom/activity_counts_cache_test.go` | **5 new tests** — brute-force recount vs cache after every transition, idempotent re-fires, Reset, skip-registration, SetActivityState |
-| `nom/activity_counts_bench_test.go` | Benchmark proving O(1): flat ~11ns from 10→10,000 activities |
+| Change                              | Detail                                                                                                                                    |
+| ----------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `nom/nom_subscriber.go`             | Added `counts ActivityCounts` field to subscriber struct                                                                                  |
+| `nom/activity_management.go`        | `GetActivityCounts()` rewritten to read cache; added `applyCountsDelta` + `adjustStatusCount` helpers; `SetActivityState` maintains cache |
+| `nom/subscriber_handlers.go`        | All 3 transition handlers (`Started`/`Completed`/`Failed`) + `getOrCreateActivity` call `applyCountsDelta` before mutating                |
+| `nom/configuration.go`              | `Reset()` zeroes the cache                                                                                                                |
+| `nom/activity_counts_cache_test.go` | **5 new tests** — brute-force recount vs cache after every transition, idempotent re-fires, Reset, skip-registration, SetActivityState    |
+| `nom/activity_counts_bench_test.go` | Benchmark proving O(1): flat ~11ns from 10→10,000 activities                                                                              |
 
 **Design decision:** Implemented a subscriber-level aggregate (single cached `ActivityCounts`), not a per-node subtree monoid. Zero consumers need per-node counts — `GetActivityCounts()` returns global totals. This delivers the full O(n)→O(1) win with minimal complexity.
 
@@ -51,27 +51,27 @@ What started as a single targeted optimization uncovered a **second** O(n)-per-t
 
 **After:** `CurrentElapsed` is derived at snapshot time from `StartTime`/`EndTime`/`Status` via `activity.elapsedAt(now)` inside `SnapshotActivities()`. The `Activity.CurrentElapsed` field is removed entirely — it was only ever read into the snapshot.
 
-| Change | Detail |
-|---|---|
-| `nom/activity.go` | Removed `CurrentElapsed` field; added `elapsedAt(now)` method; removed `CurrentElapsed` writes from `SetCompleted`/`SetFailed` |
-| `nom/activity_snapshot.go` | `SnapshotActivities()` now calls `activity.elapsedAt(now)` instead of reading deleted field |
-| `nom/activity_management.go` | Deleted `UpdateRunningActivityElapsed()` method + its `time` import |
-| `nom/inline_renderer.go` | `Draw()` no longer calls `UpdateRunningActivityElapsed()` |
-| `tui/model.go` | `syncNOMSubscriber()` no longer calls `UpdateRunningActivityElapsed()` |
-| `examples/nom_progress/main.go` + `smoke_test.go` | Removed call sites |
-| `integration/nom_tui_test.go` | Removed 2 call sites |
-| `nom/subscriber_activity_test.go` | Replaced old test with `TestSnapshotActivities_DerivesRunningElapsed` |
+| Change                                            | Detail                                                                                                                         |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `nom/activity.go`                                 | Removed `CurrentElapsed` field; added `elapsedAt(now)` method; removed `CurrentElapsed` writes from `SetCompleted`/`SetFailed` |
+| `nom/activity_snapshot.go`                        | `SnapshotActivities()` now calls `activity.elapsedAt(now)` instead of reading deleted field                                    |
+| `nom/activity_management.go`                      | Deleted `UpdateRunningActivityElapsed()` method + its `time` import                                                            |
+| `nom/inline_renderer.go`                          | `Draw()` no longer calls `UpdateRunningActivityElapsed()`                                                                      |
+| `tui/model.go`                                    | `syncNOMSubscriber()` no longer calls `UpdateRunningActivityElapsed()`                                                         |
+| `examples/nom_progress/main.go` + `smoke_test.go` | Removed call sites                                                                                                             |
+| `integration/nom_tui_test.go`                     | Removed 2 call sites                                                                                                           |
+| `nom/subscriber_activity_test.go`                 | Replaced old test with `TestSnapshotActivities_DerivesRunningElapsed`                                                          |
 
 ### 3. Verification gates passed
 
-| Gate | Result |
-|---|---|
-| `nix run .#build` (all 20 modules) | ✅ |
-| `nix run .#test` (all 20 modules) | ✅ |
-| `nix run .#test-race` (nom + tui) | ✅ clean |
-| `golangci-lint` on nom | ✅ 0 issues |
-| Benchmark: `GetActivityCounts` O(1) | ✅ flat ~11ns at 10k activities |
-| Benchmark: `Draw` path parity | ✅ no regression (34.7μs @ 50 nodes) |
+| Gate                                | Result                               |
+| ----------------------------------- | ------------------------------------ |
+| `nix run .#build` (all 20 modules)  | ✅                                   |
+| `nix run .#test` (all 20 modules)   | ✅                                   |
+| `nix run .#test-race` (nom + tui)   | ✅ clean                             |
+| `golangci-lint` on nom              | ✅ 0 issues                          |
+| Benchmark: `GetActivityCounts` O(1) | ✅ flat ~11ns at 10k activities      |
+| Benchmark: `Draw` path parity       | ✅ no regression (34.7μs @ 50 nodes) |
 
 ---
 
@@ -131,6 +131,7 @@ Each is a multi-hour from-scratch review. The nom/ module received 3 rounds; gra
 ### 1. The render hot path is now O(changed), not O(n)
 
 Both per-tick scans are gone. The render loop now does:
+
 - **Counts:** O(1) cache read
 - **Elapsed:** derived at snapshot time (no write path)
 - **Snapshot:** still O(n) copy — but this is inherent to the snapshot architecture and lock-free
@@ -161,48 +162,48 @@ Sorted by **impact / effort ratio** (highest first).
 
 ### Tier 1 — Owner-blocked (cannot execute autonomously)
 
-| # | Task | Impact | Effort |
-|---|---|---|---|
-| 1 | **Cut `v1.0.0` tag** — API frozen, CHANGELOG ready, all gates green | Critical | 10m |
-| 2 | **Submit to r/golang + Awesome Go** | High | 30m |
-| 3 | **Decide: `core/` module extraction or keep types in root** | High | Design |
-| 4 | **Tag `envdetect/v0.12.0`** — eliminates replace directive fragility | Medium | 5m |
+| #   | Task                                                                 | Impact   | Effort |
+| --- | -------------------------------------------------------------------- | -------- | ------ |
+| 1   | **Cut `v1.0.0` tag** — API frozen, CHANGELOG ready, all gates green  | Critical | 10m    |
+| 2   | **Submit to r/golang + Awesome Go**                                  | High     | 30m    |
+| 3   | **Decide: `core/` module extraction or keep types in root**          | High     | Design |
+| 4   | **Tag `envdetect/v0.12.0`** — eliminates replace directive fragility | Medium   | 5m     |
 
 ### Tier 2 — High-impact code work
 
-| # | Task | Impact | Effort |
-|---|---|---|---|
-| 5 | **Fix examples/ exhaustive lint issue** — the only lint issue in the project | Medium | 2m |
-| 6 | **Write ADR 009: incremental counts architecture** — anchors the subscriber-level aggregate decision | Medium | 30m |
-| 7 | **Extract `graphcore/`** — move `GraphRendererState` + graph state out of root (359 lines) | Medium | 3h |
-| 8 | **Deep review: graph/ module** — same depth as nom/ review (3 rounds) | High | 3h |
-| 9 | **Deep review: d2/ module** | High | 2h |
-| 10 | **Deep review: tui/ module** | High | 2h |
-| 11 | **Add benchstat CI step** with stored baseline artifact | Medium | 30m |
-| 12 | **BDD tests for critical nom/ paths** (via bdd-testing skill) | Medium | 2h |
+| #   | Task                                                                                                 | Impact | Effort |
+| --- | ---------------------------------------------------------------------------------------------------- | ------ | ------ |
+| 5   | **Fix examples/ exhaustive lint issue** — the only lint issue in the project                         | Medium | 2m     |
+| 6   | **Write ADR 009: incremental counts architecture** — anchors the subscriber-level aggregate decision | Medium | 30m    |
+| 7   | **Extract `graphcore/`** — move `GraphRendererState` + graph state out of root (359 lines)           | Medium | 3h     |
+| 8   | **Deep review: graph/ module** — same depth as nom/ review (3 rounds)                                | High   | 3h     |
+| 9   | **Deep review: d2/ module**                                                                          | High   | 2h     |
+| 10  | **Deep review: tui/ module**                                                                         | High   | 2h     |
+| 11  | **Add benchstat CI step** with stored baseline artifact                                              | Medium | 30m    |
+| 12  | **BDD tests for critical nom/ paths** (via bdd-testing skill)                                        | Medium | 2h     |
 
 ### Tier 3 — Type-model opportunities
 
-| # | Task | Impact | Effort |
-|---|---|---|---|
-| 13 | **`ActivityStatus.Interest()` → named `SortOrder` enum** — removes magic numbers from sort path | Low | 30m |
-| 14 | **Branded type for `TimingCache` key** (currently bare `string`) | Low | 30m |
-| 15 | **Typed `Color` for `GraphStyle`** Fill/Stroke/FontColor — branded type prevents invalid values | Low | 1h |
-| 16 | **`nom/` internal sub-package split** (`event`, `render`, `tree`, `cache`) — improves navigability of 60-file module | Medium | 2h |
-| 17 | **Narrow `tui/`→`nom/` coupling** (`WithSubscriberRLock` → interface) | Low | 1h |
+| #   | Task                                                                                                                 | Impact | Effort |
+| --- | -------------------------------------------------------------------------------------------------------------------- | ------ | ------ |
+| 13  | **`ActivityStatus.Interest()` → named `SortOrder` enum** — removes magic numbers from sort path                      | Low    | 30m    |
+| 14  | **Branded type for `TimingCache` key** (currently bare `string`)                                                     | Low    | 30m    |
+| 15  | **Typed `Color` for `GraphStyle`** Fill/Stroke/FontColor — branded type prevents invalid values                      | Low    | 1h     |
+| 16  | **`nom/` internal sub-package split** (`event`, `render`, `tree`, `cache`) — improves navigability of 60-file module | Medium | 2h     |
+| 17  | **Narrow `tui/`→`nom/` coupling** (`WithSubscriberRLock` → interface)                                                | Low    | 1h     |
 
 ### Tier 4 — Polish & DX
 
-| # | Task | Impact | Effort |
-|---|---|---|---|
-| 18 | **CLI demo binary** (`cmd/go-output-demo`) showcasing all 16 formats + NOM | Low | 2h |
-| 19 | **Add CI badge to README** | Low | 5m |
-| 20 | **Update FEATURES.md** with incremental counts + derived elapsed | Low | 15m |
-| 21 | **Document module dependency DAG** in FORMAT_ARCHITECTURE.md | Low | 30m |
-| 22 | **`go work sync` to setup-workspace app** | Low | 15m |
-| 23 | **Integration test: full workflow → DOT diagram export** with new types | Low | 45m |
-| 24 | **Audit `examples/` for stale patterns** post-refactor | Low | 30m |
-| 25 | **Consider `otter/v2` for TimingCache** — only if cap is raised beyond 10 samples | Low | 1h |
+| #   | Task                                                                              | Impact | Effort |
+| --- | --------------------------------------------------------------------------------- | ------ | ------ |
+| 18  | **CLI demo binary** (`cmd/go-output-demo`) showcasing all 16 formats + NOM        | Low    | 2h     |
+| 19  | **Add CI badge to README**                                                        | Low    | 5m     |
+| 20  | **Update FEATURES.md** with incremental counts + derived elapsed                  | Low    | 15m    |
+| 21  | **Document module dependency DAG** in FORMAT_ARCHITECTURE.md                      | Low    | 30m    |
+| 22  | **`go work sync` to setup-workspace app**                                         | Low    | 15m    |
+| 23  | **Integration test: full workflow → DOT diagram export** with new types           | Low    | 45m    |
+| 24  | **Audit `examples/` for stale patterns** post-refactor                            | Low    | 30m    |
+| 25  | **Consider `otter/v2` for TimingCache** — only if cap is raised beyond 10 samples | Low    | 1h     |
 
 ---
 
@@ -224,17 +225,17 @@ This is the single architectural decision that determines the project's long-ter
 
 ## Metrics Summary
 
-| Metric | Value |
-|---|---|
-| Modules | 20 (root + 19 sub-modules) |
-| Go files | 272 |
-| Lines of Go (prod) | 11,716 |
-| Lines of Go (tests) | 22,104 |
-| Test functions (nom/) | 145 |
-| Test coverage (nom) | 90.3% |
-| Test coverage (tui) | 90.0% |
-| Test coverage (root) | 96.4% |
-| Lint issues | 1 (pre-existing, examples/) |
-| TODO/FIXME in prod | 0 |
-| Deprecated markers | 0 |
-| Git status | clean, pushed |
+| Metric                | Value                       |
+| --------------------- | --------------------------- |
+| Modules               | 20 (root + 19 sub-modules)  |
+| Go files              | 272                         |
+| Lines of Go (prod)    | 11,716                      |
+| Lines of Go (tests)   | 22,104                      |
+| Test functions (nom/) | 145                         |
+| Test coverage (nom)   | 90.3%                       |
+| Test coverage (tui)   | 90.0%                       |
+| Test coverage (root)  | 96.4%                       |
+| Lint issues           | 1 (pre-existing, examples/) |
+| TODO/FIXME in prod    | 0                           |
+| Deprecated markers    | 0                           |
+| Git status            | clean, pushed               |
