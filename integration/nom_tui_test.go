@@ -118,10 +118,30 @@ func TestNOMDependencyTree_Integration(t *testing.T) {
 		tree.AddActivity(nom.NewActivityID("grandchild"), []nom.ActivityID{"child1"})
 
 		snaps := map[nom.ActivityID]nom.ActivitySnapshot{
-			nom.NewActivityID("root"):       {Label: "Root Task", Status: nom.ActivityStatusCompleted, Symbol: nom.ActivityStatusCompleted.GetSymbol(), Color: nom.ActivityStatusCompleted.GetColor()},
-			nom.NewActivityID("child1"):     {Label: "Child 1", Status: nom.ActivityStatusRunning, Symbol: nom.ActivityStatusRunning.GetSymbol(), Color: nom.ActivityStatusRunning.GetColor()},
-			nom.NewActivityID("child2"):     {Label: "Child 2", Status: nom.ActivityStatusPending, Symbol: nom.ActivityStatusPending.GetSymbol(), Color: nom.ActivityStatusPending.GetColor()},
-			nom.NewActivityID("grandchild"): {Label: "Grandchild", Status: nom.ActivityStatusFailed, Symbol: nom.ActivityStatusFailed.GetSymbol(), Color: nom.ActivityStatusFailed.GetColor()},
+			nom.NewActivityID("root"): {
+				Label:  "Root Task",
+				Status: nom.ActivityStatusCompleted,
+				Symbol: nom.ActivityStatusCompleted.GetSymbol(),
+				Color:  nom.ActivityStatusCompleted.GetColor(),
+			},
+			nom.NewActivityID("child1"): {
+				Label:  "Child 1",
+				Status: nom.ActivityStatusRunning,
+				Symbol: nom.ActivityStatusRunning.GetSymbol(),
+				Color:  nom.ActivityStatusRunning.GetColor(),
+			},
+			nom.NewActivityID("child2"): {
+				Label:  "Child 2",
+				Status: nom.ActivityStatusPending,
+				Symbol: nom.ActivityStatusPending.GetSymbol(),
+				Color:  nom.ActivityStatusPending.GetColor(),
+			},
+			nom.NewActivityID("grandchild"): {
+				Label:  "Grandchild",
+				Status: nom.ActivityStatusFailed,
+				Symbol: nom.ActivityStatusFailed.GetSymbol(),
+				Color:  nom.ActivityStatusFailed.GetColor(),
+			},
 		}
 
 		rendered := tree.RenderWithSnapshots(snaps, 10, 0)

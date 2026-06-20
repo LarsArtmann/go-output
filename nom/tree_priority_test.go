@@ -41,29 +41,29 @@ func TestElideCompletedUnderPressure(t *testing.T) {
 		wantIDs      []string
 	}{
 		{
-			name: "non-pressure maxHeight keeps all children",
-			children: []*ActivityNode{completedNode, runningNode},
+			name:      "non-pressure maxHeight keeps all children",
+			children:  []*ActivityNode{completedNode, runningNode},
 			maxHeight: 100, visibleCount: 1, wantLen: 2,
 			wantIDs: []string{"c1", "r1"},
 		},
 		{
-			name: "height pressure elides completed",
-			children: []*ActivityNode{completedNode, runningNode},
+			name:      "height pressure elides completed",
+			children:  []*ActivityNode{completedNode, runningNode},
 			maxHeight: 2, visibleCount: 1, wantLen: 1,
 			wantIDs: []string{"r1"},
 		},
 		{
-			name: "only completed children under pressure returns empty",
-			children: []*ActivityNode{completedNode},
+			name:      "only completed children under pressure returns empty",
+			children:  []*ActivityNode{completedNode},
 			maxHeight: 1, visibleCount: 1, wantLen: 0,
 		},
 		{
-			name: "no children returns empty",
+			name:     "no children returns empty",
 			children: nil, maxHeight: 10, visibleCount: 0, wantLen: 0,
 		},
 		{
-			name: "all active children kept even under pressure",
-			children: []*ActivityNode{runningNode},
+			name:      "all active children kept even under pressure",
+			children:  []*ActivityNode{runningNode},
 			maxHeight: 1, visibleCount: 1, wantLen: 1,
 			wantIDs: []string{"r1"},
 		},
