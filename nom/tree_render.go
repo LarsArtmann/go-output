@@ -315,19 +315,24 @@ func isPhaseID(id ActivityID) bool {
 // a dependency that hasn't received its activity.started event).
 func lookupSnapshot(snapshots map[ActivityID]ActivitySnapshot, id ActivityID) ActivitySnapshot {
 	if snapshots == nil {
-		return blankSnapshot
+		return blankActivitySnapshot()
 	}
 
 	if snap, ok := snapshots[id]; ok {
 		return snap
 	}
 
-	return blankSnapshot
+	return blankActivitySnapshot()
 }
 
-var blankSnapshot = ActivitySnapshot{
-	Label:  "",
-	Status: ActivityStatusPending,
-	Symbol: SymbolPending,
-	Color:  Colors.Pending,
+// blankActivitySnapshot returns the default snapshot for unregistered activities:
+// pending status, empty label, pending symbol/color. Kept as a function (not a
+// global var) so the snapshot is never accidentally mutated by callers.
+func blankActivitySnapshot() ActivitySnapshot {
+	return ActivitySnapshot{
+		Label:  "",
+		Status: ActivityStatusPending,
+		Symbol: SymbolPending,
+		Color:  Colors.Pending,
+	}
 }
