@@ -72,9 +72,10 @@ func TestElideCompletedUnderPressure(t *testing.T) {
 	t.Run("unlimited maxHeight keeps all children", func(t *testing.T) {
 		t.Parallel()
 
-		got := dt.elideCompletedUnderPressure(
+		got, collapsed := dt.elideCompletedUnderPressure(
 			[]*ActivityNode{completedNode, runningNode}, snaps, 0, 1,
 		)
+		_ = collapsed
 
 		if len(got) != 2 {
 			t.Errorf("unlimited maxHeight should return all children, got %d", len(got))
@@ -85,7 +86,8 @@ func TestElideCompletedUnderPressure(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			got := dt.elideCompletedUnderPressure(tt.children, snaps, tt.maxHeight, tt.visibleCount)
+			got, collapsed := dt.elideCompletedUnderPressure(tt.children, snaps, tt.maxHeight, tt.visibleCount)
+			_ = collapsed
 
 			if len(got) != tt.wantLen {
 				t.Fatalf("got %d children, want %d", len(got), tt.wantLen)

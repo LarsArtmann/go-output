@@ -57,10 +57,12 @@ func (dt *DependencyTree) RenderWithSnapshots(
 }
 
 type visibleEntry struct {
-	node      *ActivityNode
-	prefix    string
-	connector string
-	isRoot    bool
+	node           *ActivityNode
+	prefix         string
+	connector      string
+	isRoot         bool
+	collapsedDone  int    // >0 renders a "⋯ N completed" marker instead of a node
+	collapseIndent string // indent/connector for the collapse marker line
 }
 
 func (dt *DependencyTree) collectVisibleNodes(
@@ -84,32 +86,31 @@ func (dt *DependencyTree) elideCompletedUnderPressure(
 	children []*ActivityNode,
 	snapshots map[ActivityID]ActivitySnapshot,
 	maxHeight, visibleCount int,
-) []*ActivityNode {
+) (active []*ActivityNode, collapsedCompleted int) {
 	if maxHeight <= 0 {
-		return children
+		return children, 0
 	}
 
 	remaining := maxHeight - visibleCount
 	if remaining >= len(children) {
-		return children
+		return children, 0
 	}
-
-	var active []*ActivityNode
 
 	for _, child := range children {
 		snap := lookupSnapshot(snapshots, child.ID)
 		if snap.Status == ActivityStatusCompleted {
+			collapsedCompleted++
 			continue
 		}
 
 		active = append(active, child)
 	}
 
-	if len(active) < len(children) {
-		return active
+	if collapsedCompleted == 0 {
+		return children, 0
 	}
 
-	return children
+	return active, collapsedCompleted
 }
 
 func (dt *DependencyTree) walkSubtree(
@@ -147,7 +148,7 @@ func (dt *DependencyTree) walkSubtree(
 		return
 	}
 
-	children = dt.elideCompletedUnderPressure(children, snapshots, maxHeight, len(*visible))
+	children, collapsedDone := dt.elideCompletedUnderPressure(children, snapshots, maxHeight, len(*visible))
 
 	var childIndent string
 
@@ -167,12 +168,27 @@ func (dt *DependencyTree) walkSubtree(
 		dt.walkSubtree(
 			child,
 			childIndent,
-			i == len(children)-1,
+			i == len(children)-1 && collapsedDone == 0,
 			false,
 			visible,
 			snapshots,
 			maxHeight,
 		)
+	}
+
+	// If completed children were elided under height pressure, surface a faint
+	// "⋯ N completed" marker so the collapsed work is visible, not silently gone.
+	if collapsedDone > 0 && len(*visible) < maxHeight {
+		connector := "├── "
+		if len(children) == 0 {
+			connector = "└── "
+		}
+
+		*visible = append(*visible, visibleEntry{
+			collapsedDone:  collapsedDone,
+			collapseIndent: childIndent,
+			connector:      connector,
+		})
 	}
 }
 
@@ -208,6 +224,19 @@ func (dt *DependencyTree) renderLine(
 	snapshots map[ActivityID]ActivitySnapshot,
 	maxWidth int,
 ) string {
+	// Synthetic collapse marker: rendered when completed children were elided
+	// under height pressure. Shown faint so it reads as "hidden, not gone".
+	if entry.collapsedDone > 0 {
+		marker := fmt.Sprintf("%s%s ⋯ %d completed", entry.collapseIndent, entry.connector, entry.collapsedDone)
+		rendered := lipgloss.NewStyle().Faint(true).Render(marker)
+
+		if maxWidth > 0 && VisibleWidth(rendered) > maxWidth {
+			rendered = TruncateVisible(rendered, maxWidth)
+		}
+
+		return rendered
+	}
+
 	node := entry.node
 	snap := lookupSnapshot(snapshots, node.ID)
 

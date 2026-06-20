@@ -1,6 +1,7 @@
 package nom
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 	"time"
@@ -237,5 +238,43 @@ func TestDependencyTree_RenderWithWidth_DeepNestingFitsMaxWidth(t *testing.T) {
 					maxW, w, StripANSI(line))
 			}
 		}
+	}
+}
+
+func TestRenderWithSnapshots_CollapseMarkerUnderHeightPressure(t *testing.T) {
+	t.Parallel()
+
+	tree := NewDependencyTree()
+	tree.AddActivity(ActivityID("root"), nil)
+
+	snaps := newSnapshotBuilder()
+
+	snaps.set(ActivityID("root"), "Root", ActivityStatusRunning, 0)
+
+	for i := range 6 {
+		id := ActivityID(fmt.Sprintf("c%d", i))
+		tree.AddActivity(id, []ActivityID{"root"})
+
+		status := ActivityStatusCompleted
+		if i >= 4 { // last two stay running
+			status = ActivityStatusRunning
+		}
+
+		snaps.set(id, fmt.Sprintf("Child %d", i), status, 0)
+	}
+
+	if err := tree.Build(); err != nil {
+		t.Fatalf("build: %v", err)
+	}
+
+	// maxHeight=4: root + 2 running + 1 collapse-marker line for the 4 completed.
+	rendered := tree.RenderWithSnapshots(snaps.snaps, 4, 0)
+
+	if !strings.Contains(rendered, "completed") {
+		t.Errorf("expected a collapse marker mentioning elided completed children\ngot:\n%s", rendered)
+	}
+
+	if !strings.Contains(rendered, "⋯") {
+		t.Errorf("expected ellipsis marker for collapsed children\ngot:\n%s", rendered)
 	}
 }
