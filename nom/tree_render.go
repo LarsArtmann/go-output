@@ -179,17 +179,23 @@ func (dt *DependencyTree) walkSubtree(
 	// If completed children were elided under height pressure, surface a faint
 	// "⋯ N completed" marker so the collapsed work is visible, not silently gone.
 	if collapsedDone > 0 && len(*visible) < maxHeight {
-		connector := "├── "
-		if len(children) == 0 {
-			connector = "└── "
-		}
-
-		*visible = append(*visible, visibleEntry{
-			collapsedDone:  collapsedDone,
-			collapseIndent: childIndent,
-			connector:      connector,
-		})
+		appendCollapseMarker(visible, childIndent, collapsedDone, len(children) == 0)
 	}
+}
+
+// appendCollapseMarker adds a synthetic "⋯ N completed" entry to the visible
+// list when completed children were elided under height pressure.
+func appendCollapseMarker(visible *[]visibleEntry, indent string, collapsedDone int, noRemainingChildren bool) {
+	connector := "├── "
+	if noRemainingChildren {
+		connector = "└── "
+	}
+
+	*visible = append(*visible, visibleEntry{
+		collapsedDone:  collapsedDone,
+		collapseIndent: indent,
+		connector:      connector,
+	})
 }
 
 // formatActivityLabel builds the core display string for a single activity

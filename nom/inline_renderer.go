@@ -63,6 +63,7 @@ type InlineRenderer struct {
 type rendererConfig struct {
 	hideCursor bool
 	noColor    bool
+	plainText  bool
 	appName    string
 	startTime  time.Time
 	maxHeight  int
@@ -78,6 +79,7 @@ func (r *InlineRenderer) snapshotConfig() rendererConfig {
 	return rendererConfig{
 		hideCursor: r.hideCursor,
 		noColor:    r.noColor,
+		plainText:  r.plainText,
 		appName:    r.appName,
 		startTime:  r.startTime,
 		maxHeight:  r.maxHeight,
@@ -204,7 +206,7 @@ func (r *InlineRenderer) Draw() {
 	// Plain-text mode (CI / non-terminal): append the frame without cursor or
 	// sync escape codes, which would corrupt captured logs. prevLines stays 0
 	// so Finish never tries to scroll back over overwritten lines.
-	if r.plainText {
+	if cfg.plainText {
 		r.write(frame + "\n")
 
 		return
@@ -216,57 +218,62 @@ func (r *InlineRenderer) Draw() {
 		return
 	}
 
-	var output string
-
-	prevLines := r.prevLines
-
-	if prevLines == 0 {
-		if cfg.hideCursor {
-			output = ansiHideCursor
-		}
-
-		output += frame + "\n"
-	} else {
-		// Move back to the top of the previous frame and repaint every line.
-		var b strings.Builder
-
-		fmt.Fprintf(&b, ansiCursorUpN, prevLines)
-		b.WriteString("\r")
-
-		frameLines := strings.Split(frame, "\n")
-
-		for i, line := range frameLines {
-			b.WriteString(ansiClearLine)
-			b.WriteString(line)
-
-			if i < len(frameLines)-1 {
-				b.WriteString("\n")
-			}
-		}
-
-		// When the frame shrank, the previous (taller) frame's tail is still on
-		// screen below the new content. Wipe those leftover lines and park the
-		// cursor just beneath the new frame so the next redraw lines up. Without
-		// this, shrinking trees (e.g. completed children pruned under height
-		// pressure) leave ghost lines behind.
-		if extra := prevLines - physicalLines; extra > 0 {
-			for range extra {
-				b.WriteString("\n")
-				b.WriteString(ansiClearLine)
-			}
-
-			fmt.Fprintf(&b, ansiCursorUpN, extra)
-			b.WriteString("\r")
-		}
-
-		b.WriteString("\n")
-
-		output = b.String()
-	}
+	output := buildRedrawOutput(frame, r.prevLines, physicalLines, cfg.hideCursor)
 
 	r.write(ansiSyncBegin + output + ansiSyncEnd)
 
 	r.prevLines = physicalLines
+}
+
+// buildRedrawOutput assembles the ANSI payload for one in-place redraw. On the
+// first frame (prevLines == 0) it just emits the frame (plus an optional cursor
+// hide); on subsequent frames it scrolls up, repaints each line, and wipes any
+// leftover lines when the frame shrank (so pruned subtrees leave no ghosts).
+func buildRedrawOutput(frame string, prevLines, physicalLines int, hideCursor bool) string {
+	if prevLines == 0 {
+		output := ""
+		if hideCursor {
+			output = ansiHideCursor
+		}
+
+		return output + frame + "\n"
+	}
+
+	// Move back to the top of the previous frame and repaint every line.
+	var b strings.Builder
+
+	fmt.Fprintf(&b, ansiCursorUpN, prevLines)
+	b.WriteString("\r")
+
+	frameLines := strings.Split(frame, "\n")
+
+	for i, line := range frameLines {
+		b.WriteString(ansiClearLine)
+		b.WriteString(line)
+
+		if i < len(frameLines)-1 {
+			b.WriteString("\n")
+		}
+	}
+
+	// When the frame shrank, the previous (taller) frame's tail is still on
+	// screen below the new content. Wipe those leftover lines and park the
+	// cursor just beneath the new frame so the next redraw lines up. Without
+	// this, shrinking trees (e.g. completed children pruned under height
+	// pressure) leave ghost lines behind.
+	if extra := prevLines - physicalLines; extra > 0 {
+		for range extra {
+			b.WriteString("\n")
+			b.WriteString(ansiClearLine)
+		}
+
+		fmt.Fprintf(&b, ansiCursorUpN, extra)
+		b.WriteString("\r")
+	}
+
+	b.WriteString("\n")
+
+	return b.String()
 }
 
 // write writes a string to the renderer's writer, ignoring errors.
