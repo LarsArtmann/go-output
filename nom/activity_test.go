@@ -7,21 +7,23 @@ import (
 	"github.com/larsartmann/go-output"
 )
 
-// assertActivityShape checks that a.Shape equals want, failing with label.
+// assertActivityShape checks that the Status-derived NodeShape equals want.
+// Activity no longer caches Shape (decoupled from output.GraphNode); the shape
+// is projected from Status at diagram-export time via Status.NodeShape().
 func assertActivityShape(t *testing.T, a *Activity, want output.NodeShape, label string) {
 	t.Helper()
 
-	if a.Shape != want {
-		t.Errorf("Shape = %v, want %s", a.Shape, label)
+	if got := a.Status.NodeShape(); got != want {
+		t.Errorf("Status.NodeShape() = %v, want %s", got, label)
 	}
 }
 
-// assertActivityFill checks that a.Style.Fill equals want.
+// assertActivityFill checks that the Status-derived GraphStyle.Fill equals want.
 func assertActivityFill(t *testing.T, a *Activity, want string) {
 	t.Helper()
 
-	if a.Style.Fill != want {
-		t.Errorf("Fill = %q, want %q", a.Style.Fill, want)
+	if got := a.Status.GraphStyle().Fill; got != want {
+		t.Errorf("Status.GraphStyle().Fill = %q, want %q", got, want)
 	}
 }
 
@@ -42,8 +44,8 @@ func TestNewActivity(t *testing.T) {
 		t.Errorf("Status = %v, want %v", a.Status, ActivityStatusPending)
 	}
 
-	if a.Shape != output.NodeShapeEllipse {
-		t.Errorf("Shape = %v, want %v (pending=ellipse)", a.Shape, output.NodeShapeEllipse)
+	if a.Status.NodeShape() != output.NodeShapeEllipse {
+		t.Errorf("Shape = %v, want %v (pending=ellipse)", a.Status.NodeShape(), output.NodeShapeEllipse)
 	}
 }
 
@@ -85,8 +87,8 @@ func TestActivity_SetCompleted(t *testing.T) {
 		t.Error("StartTime should be before EndTime")
 	}
 
-	if a.Shape != output.NodeShapeRect {
-		t.Errorf("Shape = %v, want Rect (completed)", a.Shape)
+	if a.Status.NodeShape() != output.NodeShapeRect {
+		t.Errorf("Shape = %v, want Rect (completed)", a.Status.NodeShape())
 	}
 }
 
@@ -160,22 +162,15 @@ type testError struct{ msg string }
 
 func (e *testError) Error() string { return e.msg }
 
-func TestActivity_Copy_NilMetadata(t *testing.T) {
+func TestActivity_Copy_IsolatesMutations(t *testing.T) {
 	t.Parallel()
 
 	orig := NewActivity("a1", "Build")
-	// NewActivity leaves Metadata nil — this exercises Copy's nil branch.
-	if orig.Metadata != nil {
-		t.Fatalf("precondition: NewActivity Metadata should be nil, got %v", orig.Metadata)
-	}
+	orig.SetRunning()
 
 	cpy := orig.Copy()
 	if cpy == orig {
 		t.Fatal("Copy returned the same pointer, not a copy")
-	}
-
-	if cpy.Metadata != nil {
-		t.Errorf("Copy Metadata = %v, want nil (nil branch should preserve nil)", cpy.Metadata)
 	}
 
 	// Mutating the copy must not affect the original.

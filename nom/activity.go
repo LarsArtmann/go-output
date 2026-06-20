@@ -2,18 +2,22 @@ package nom
 
 import (
 	"image/color"
-	"maps"
 	"time"
 
 	"github.com/larsartmann/go-output"
 )
 
 // Activity is the unified source of truth for a workflow activity's identity,
-// visual representation, and temporal state. It embeds output.GraphNode so
-// the same instance can be consumed by any output.GraphRenderer (DOT, Mermaid,
-// D2, PlantUML) for diagram export.
+// lifecycle, and NOM-display state. It is a pure domain type — it no longer
+// embeds output.GraphNode, so it carries no diagram-export concerns (Shape,
+// Style, Metadata). Those are projected from Status at export time by
+// subscriberView.Nodes(), keeping the domain model decoupled from the graph
+// rendering framework.
 type Activity struct {
-	output.GraphNode
+	// ID and Label are the activity's identity, expressed via the root
+	// package's branded types so they flow directly into GraphNode projection.
+	ID    output.GraphNodeID
+	Label output.GraphNodeLabel
 
 	// Kind is the topological classification (Task or Phase). Set at
 	// construction, never changes. Distinct from Status, which is the
@@ -36,14 +40,14 @@ type Activity struct {
 	// CurrentElapsed is updated periodically for running activities.
 	CurrentElapsed time.Duration
 	// Host optionally names where the activity runs (e.g. a build machine).
-	// Populated from HostAccessor events; rendered when non-empty.
+	// Populated from ActivityStarted.Host; rendered when non-empty.
 	Host string
 	// Download optionally tracks byte-progress for the activity. Populated from
-	// DownloadAccessor events; rendered as a progress bar when active.
+	// ActivityStarted.Download; rendered as a progress bar when active.
 	Download DownloadProgress
 }
 
-// NewActivity creates a Task Activity with a branded GraphNode ID and default
+// NewActivity creates a Task Activity with branded ID/Label and default
 // visual style derived from the pending status. Use NewPhase for grouping nodes.
 func NewActivity(id, name string) *Activity {
 	return newActivity(id, name, ActivityKindTask)
@@ -65,7 +69,7 @@ func newActivity(id, name string, kind ActivityKind) *Activity {
 	}
 	a.ID = output.NewBrandedID[output.GraphNodeIDBrand](id)
 	a.Label = output.NewBrandedID[output.GraphNodeLabelBrand](name)
-	a.applyVisualStyle()
+	a.applyDisplayStyle()
 
 	return a
 }
@@ -76,7 +80,7 @@ func (a *Activity) SetRunning() {
 	a.StartTime = time.Now()
 	a.EndTime = time.Time{}
 	a.Err = nil
-	a.applyVisualStyle()
+	a.applyDisplayStyle()
 }
 
 // SetCompleted transitions the activity to completed, stamps EndedAt, and
@@ -89,7 +93,7 @@ func (a *Activity) SetCompleted() {
 		a.CurrentElapsed = a.EndTime.Sub(a.StartTime)
 	}
 
-	a.applyVisualStyle()
+	a.applyDisplayStyle()
 }
 
 // SetFailed transitions the activity to failed, records the error, stamps
@@ -103,7 +107,7 @@ func (a *Activity) SetFailed(err error) {
 		a.CurrentElapsed = a.EndTime.Sub(a.StartTime)
 	}
 
-	a.applyVisualStyle()
+	a.applyDisplayStyle()
 }
 
 // SetEstimatedTime sets the predicted duration from the timing cache.
@@ -124,23 +128,18 @@ func (a *Activity) IsFailed() bool { return a.Status == ActivityStatusFailed }
 // ActivityKindPhase), as opposed to a concrete Task.
 func (a *Activity) IsPhase() bool { return a.Kind.IsPhase() }
 
-// Copy creates a deep copy of the Activity.
+// Copy creates a shallow copy of the Activity. All fields are value types
+// or immutable, so a shallow copy is sufficient.
 func (a *Activity) Copy() *Activity {
-	cpy := *a // shallow copy is fine for value types
-
-	if a.Metadata != nil {
-		cpy.Metadata = make(map[string]string, len(a.Metadata))
-		maps.Copy(cpy.Metadata, a.Metadata)
-	}
-
+	cpy := *a
 	return &cpy
 }
 
-// applyVisualStyle sets the GraphNode Shape and Style from the current Status,
-// so diagram export (DOT/Mermaid/D2) automatically reflects the activity state.
-func (a *Activity) applyVisualStyle() {
-	a.Shape = a.Status.NodeShape()
-	a.Style = a.Status.GraphStyle()
+// applyDisplayStyle caches the NOM terminal Symbol and Color from the current
+// Status. Diagram-export Shape/Style are NOT cached here — they are projected
+// from Status at export time by subscriberView.Nodes(), keeping Activity
+// decoupled from the graph rendering framework.
+func (a *Activity) applyDisplayStyle() {
 	a.Symbol = a.Status.GetSymbol()
 	a.Color = a.Status.GetColor()
 }

@@ -79,15 +79,20 @@ type subscriberView struct {
 }
 
 // Nodes projects all activities as output.GraphNode values for diagram export.
-// Since Activity embeds output.GraphNode, the projection is a direct copy —
-// Shape/Style are always in sync with Status via applyVisualStyle().
+// Shape and Style are derived from Status at projection time (not cached on
+// Activity), keeping the domain model decoupled from the graph framework.
 func (v *subscriberView) Nodes() []output.GraphNode {
 	v.ns.mu.RLock()
 	defer v.ns.mu.RUnlock()
 
 	out := make([]output.GraphNode, 0, len(v.ns.activities))
 	for _, a := range v.ns.activities {
-		out = append(out, a.GraphNode)
+		out = append(out, output.GraphNode{
+			ID:    a.ID,
+			Label: a.Label,
+			Shape: a.Status.NodeShape(),
+			Style: a.Status.GraphStyle(),
+		})
 	}
 
 	return out
