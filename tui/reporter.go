@@ -64,7 +64,9 @@ func NewBubbleTeaProgressReporter() *BubbleTeaProgressReporter {
 
 // Subscriber returns the internal NOM subscriber used by the TUI model.
 // Send events to this subscriber to populate the NOM-style dependency tree.
-func (pr *BubbleTeaProgressReporter) subscriber() *nom.NOMStyleSubscriber {
+// This is the public API for consumers (e.g. BuildFlow's ProgressBridge) that
+// dispatch lifecycle events to the visual renderer.
+func (pr *BubbleTeaProgressReporter) Subscriber() *nom.NOMStyleSubscriber {
 	return pr.model.nomSubscriber
 }
 
