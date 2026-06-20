@@ -12,7 +12,7 @@ func buildBenchmarkTree(nodeCount int) (*DependencyTree, map[ActivityID]Activity
 	now := time.Now()
 	_ = now
 
-	dt.AddActivity(ActivityID("root"), nil, nil)
+	dt.AddActivity(ActivityID("root"), nil)
 	snaps[ActivityID("root")] = ActivitySnapshot{
 		Label: "Root", Status: ActivityStatusRunning,
 		Symbol: ActivityStatusRunning.GetSymbol(), Color: ActivityStatusRunning.GetColor(),
@@ -29,7 +29,7 @@ func buildBenchmarkTree(nodeCount int) (*DependencyTree, map[ActivityID]Activity
 			deps = []ActivityID{ActivityID(fmt.Sprintf("step-%04d", i-1))}
 		}
 
-		dt.AddActivity(id, nil, deps)
+		dt.AddActivity(id, deps)
 
 		status := ActivityStatusPending
 		if i < nodeCount/3 {

@@ -19,8 +19,8 @@ func TestProgressModel_MouseClick_SelectsNode(t *testing.T) {
 	model.displayMode = DisplayModeNOM
 
 	tree := setupTestTree(model)
-	_ = tree.AddActivity(nom.ActivityID("step-a"), nom.NewActivity("step-a", "Step A"), nil)
-	_ = tree.AddActivity(nom.ActivityID("step-b"), nom.NewActivity("step-b", "Step B"), []nom.ActivityID{"step-a"})
+	_ = tree.AddActivity(nom.ActivityID("step-a"), nil)
+	_ = tree.AddActivity(nom.ActivityID("step-b"), []nom.ActivityID{"step-a"})
 	_ = tree.GetRootNodes()
 	model.visibleNodes = tree.VisibleNodes(20)
 
@@ -42,7 +42,7 @@ func TestProgressModel_MouseClick_ToggleOffNode(t *testing.T) {
 	model.displayMode = DisplayModeNOM
 
 	tree := setupTestTree(model)
-	_ = tree.AddActivity(nom.ActivityID("step-a"), nom.NewActivity("step-a", "Step A"), nil)
+	_ = tree.AddActivity(nom.ActivityID("step-a"), nil)
 	_ = tree.GetRootNodes()
 	model.visibleNodes = tree.VisibleNodes(20)
 	model.selectedNode = nom.ActivityID("step-a")
@@ -64,7 +64,7 @@ func TestProgressModel_MouseClick_IgnoresRightClick(t *testing.T) {
 	model.displayMode = DisplayModeNOM
 
 	tree := nom.NewDependencyTree()
-	_ = tree.AddActivity(nom.ActivityID("step-a"), nom.NewActivity("step-a", "Step A"), nil)
+	_ = tree.AddActivity(nom.ActivityID("step-a"), nil)
 	_ = tree.GetRootNodes()
 
 	model.dependencyTree = tree

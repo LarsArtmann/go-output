@@ -15,7 +15,7 @@ func addRunningActivity(model *ProgressModel, id, name string) {
 	activity := nom.NewActivity(id, name)
 	activity.SetRunning()
 
-	model.dependencyTree.AddActivity(nom.ActivityID(id), activity, nil)
+	model.dependencyTree.AddActivity(nom.ActivityID(id), nil)
 }
 
 func TestProgressModel_View_ZeroWidth(t *testing.T) {

@@ -10,8 +10,8 @@ func TestDependencyTree_TreePrefix_RootNode(t *testing.T) {
 	t.Parallel()
 
 	dt := NewDependencyTree()
-	dt.AddActivity(ActivityID("root"), nil, nil)
-	dt.AddActivity(ActivityID("child"), nil, []ActivityID{"root"})
+	dt.AddActivity(ActivityID("root"), nil)
+	dt.AddActivity(ActivityID("child"), []ActivityID{"root"})
 
 	snaps := newSnapshotBuilder()
 	snaps.set(ActivityID("root"), "Root", ActivityStatusRunning, 0)
@@ -27,7 +27,7 @@ func TestDependencyTree_Render_PendingStatus(t *testing.T) {
 	t.Parallel()
 
 	dt := NewDependencyTree()
-	dt.AddActivity(ActivityID("a"), nil, nil)
+	dt.AddActivity(ActivityID("a"), nil)
 
 	snaps := newSnapshotBuilder()
 	snaps.set(ActivityID("a"), "A", ActivityStatusPending, 0)
@@ -42,9 +42,9 @@ func TestDependencyTree_Render_FailedPriority(t *testing.T) {
 	t.Parallel()
 
 	dt := NewDependencyTree()
-	dt.AddActivity(ActivityID("a"), nil, nil)
-	dt.AddActivity(ActivityID("b"), nil, nil)
-	dt.AddActivity(ActivityID("c"), nil, nil)
+	dt.AddActivity(ActivityID("a"), nil)
+	dt.AddActivity(ActivityID("b"), nil)
+	dt.AddActivity(ActivityID("c"), nil)
 
 	snaps := newSnapshotBuilder()
 	snaps.set(ActivityID("a"), "A", ActivityStatusCompleted, 0)
@@ -62,7 +62,7 @@ func TestDependencyTree_AddActivity_WithNonExistentDependency(t *testing.T) {
 
 	dt := NewDependencyTree()
 
-	err := dt.AddActivity(ActivityID("child"), nil, []ActivityID{"nonexistent"})
+	err := dt.AddActivity(ActivityID("child"), []ActivityID{"nonexistent"})
 	if err != nil {
 		t.Fatalf("AddActivity() error: %v", err)
 	}
@@ -80,8 +80,8 @@ func TestDependencyTree_AddActivity_UpdateExisting(t *testing.T) {
 	t.Parallel()
 
 	dt := NewDependencyTree()
-	dt.AddActivity(ActivityID("a"), nil, nil)
-	dt.AddActivity(ActivityID("a"), nil, nil)
+	dt.AddActivity(ActivityID("a"), nil)
+	dt.AddActivity(ActivityID("a"), nil)
 
 	node := dt.GetNode(ActivityID("a"))
 	if node == nil {
@@ -96,9 +96,9 @@ func TestDependencyTree_Render_SecondaryDependencies(t *testing.T) {
 	t.Parallel()
 
 	dt := NewDependencyTree()
-	dt.AddActivity(ActivityID("phase"), nil, nil)
-	dt.AddActivity(ActivityID("step1"), nil, []ActivityID{"phase"})
-	dt.AddActivity(ActivityID("step2"), nil, []ActivityID{"phase", "step1"})
+	dt.AddActivity(ActivityID("phase"), nil)
+	dt.AddActivity(ActivityID("step1"), []ActivityID{"phase"})
+	dt.AddActivity(ActivityID("step2"), []ActivityID{"phase", "step1"})
 
 	snaps := newSnapshotBuilder()
 	snaps.set(ActivityID("phase"), "Phase", ActivityStatusPending, 0)
@@ -124,8 +124,8 @@ func TestDependencyTree_Render_PhaseStyling(t *testing.T) {
 	t.Parallel()
 
 	dt := NewDependencyTree()
-	dt.AddActivity(ActivityID("phase:build"), nil, nil)
-	dt.AddActivity(ActivityID("compile"), nil, []ActivityID{"phase:build"})
+	dt.AddActivity(ActivityID("phase:build"), nil)
+	dt.AddActivity(ActivityID("compile"), []ActivityID{"phase:build"})
 
 	snaps := newSnapshotBuilder()
 	snaps.set(ActivityID("phase:build"), "Build", ActivityStatusRunning, 0)
@@ -145,11 +145,11 @@ func TestDependencyTree_Render_PriorityOrdering(t *testing.T) {
 	t.Parallel()
 
 	dt := NewDependencyTree()
-	dt.AddActivity(ActivityID("phase:build"), nil, nil)
-	dt.AddActivity(ActivityID("compile"), nil, []ActivityID{"phase:build"})
-	dt.AddActivity(ActivityID("test"), nil, []ActivityID{"phase:build"})
-	dt.AddActivity(ActivityID("lint"), nil, []ActivityID{"phase:build"})
-	dt.AddActivity(ActivityID("deploy"), nil, []ActivityID{"phase:build"})
+	dt.AddActivity(ActivityID("phase:build"), nil)
+	dt.AddActivity(ActivityID("compile"), []ActivityID{"phase:build"})
+	dt.AddActivity(ActivityID("test"), []ActivityID{"phase:build"})
+	dt.AddActivity(ActivityID("lint"), []ActivityID{"phase:build"})
+	dt.AddActivity(ActivityID("deploy"), []ActivityID{"phase:build"})
 
 	snaps := newSnapshotBuilder()
 	snaps.set(ActivityID("phase:build"), "Build Phase", ActivityStatusRunning, 5*time.Second)
@@ -192,7 +192,7 @@ func TestDependencyTree_RenderWithWidth_TruncatesLongNames(t *testing.T) {
 	t.Parallel()
 
 	dt := NewDependencyTree()
-	dt.AddActivity(ActivityID("a"), nil, nil)
+	dt.AddActivity(ActivityID("a"), nil)
 
 	snaps := newSnapshotBuilder()
 	snaps.set(ActivityID("a"), "This is a very long activity name that will not fit", ActivityStatusRunning, 0)
@@ -212,11 +212,11 @@ func TestDependencyTree_RenderWithWidth_DeepNestingFitsMaxWidth(t *testing.T) {
 	t.Parallel()
 
 	dt := NewDependencyTree()
-	dt.AddActivity(ActivityID("root"), nil, nil)
-	dt.AddActivity(ActivityID("c1"), nil, []ActivityID{"root"})
-	dt.AddActivity(ActivityID("c2"), nil, []ActivityID{"c1"})
-	dt.AddActivity(ActivityID("c3"), nil, []ActivityID{"c2"})
-	dt.AddActivity(ActivityID("c4"), nil, []ActivityID{"c3"})
+	dt.AddActivity(ActivityID("root"), nil)
+	dt.AddActivity(ActivityID("c1"), []ActivityID{"root"})
+	dt.AddActivity(ActivityID("c2"), []ActivityID{"c1"})
+	dt.AddActivity(ActivityID("c3"), []ActivityID{"c2"})
+	dt.AddActivity(ActivityID("c4"), []ActivityID{"c3"})
 
 	snaps := newSnapshotBuilder()
 	snaps.set(ActivityID("root"), "Root", ActivityStatusPending, 0)

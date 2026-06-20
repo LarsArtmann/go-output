@@ -174,11 +174,11 @@ func (ns *NOMStyleSubscriber) handleActivityStarted(
 		activity.SetEstimatedTime(medianDuration)
 	}
 
-	// The tree shares the Activity pointer — mutations above are instantly
-	// visible to the tree node without any sync call.
+	// The tree stores only the activity ID; the subscriber's activities map
+	// (populated by getOrCreateActivity above) is the source of truth for
+	// mutable fields, accessed via SnapshotActivities at render time.
 	return ns.dependencyTree.AddActivity(
 		aa.GetActivityID(),
-		activity,
 		extractDependencies(event),
 	)
 }
@@ -198,11 +198,10 @@ func (ns *NOMStyleSubscriber) handleActivityRegistered(
 	ns.mu.Lock()
 	defer ns.mu.Unlock()
 
-	activity := ns.getOrCreateActivity(aa.GetActivityID(), aa.GetActivityName())
+	ns.getOrCreateActivity(aa.GetActivityID(), aa.GetActivityName())
 
 	return ns.dependencyTree.AddActivity(
 		aa.GetActivityID(),
-		activity,
 		extractDependencies(event),
 	)
 }

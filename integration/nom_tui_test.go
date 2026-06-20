@@ -112,10 +112,10 @@ func TestNOMDependencyTree_Integration(t *testing.T) {
 
 		tree := nom.NewDependencyTree()
 
-		tree.AddActivity(nom.NewActivityID("root"), nil, nil)
-		tree.AddActivity(nom.NewActivityID("child1"), nil, []nom.ActivityID{"root"})
-		tree.AddActivity(nom.NewActivityID("child2"), nil, []nom.ActivityID{"root"})
-		tree.AddActivity(nom.NewActivityID("grandchild"), nil, []nom.ActivityID{"child1"})
+		tree.AddActivity(nom.NewActivityID("root"), nil)
+		tree.AddActivity(nom.NewActivityID("child1"), []nom.ActivityID{"root"})
+		tree.AddActivity(nom.NewActivityID("child2"), []nom.ActivityID{"root"})
+		tree.AddActivity(nom.NewActivityID("grandchild"), []nom.ActivityID{"child1"})
 
 		snaps := map[nom.ActivityID]nom.ActivitySnapshot{
 			nom.NewActivityID("root"):       {Label: "Root Task", Status: nom.ActivityStatusCompleted, Symbol: nom.ActivityStatusCompleted.GetSymbol(), Color: nom.ActivityStatusCompleted.GetColor()},

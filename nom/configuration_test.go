@@ -54,7 +54,7 @@ func TestReset_ClearsAllState(t *testing.T) {
 	ns.workflowName = NewWorkflowName("Workflow 1")
 	ns.startTime = time.Now()
 	ns.isRunning = true
-	ns.dependencyTree.AddActivity(NewActivityID("a1"), NewActivity("a1", "Activity 1"), nil)
+	ns.dependencyTree.AddActivity(NewActivityID("a1"), nil)
 
 	ns.Reset()
 

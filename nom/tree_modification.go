@@ -1,14 +1,9 @@
 package nom
 
-// AddActivity adds an activity to the tree with its dependencies. The tree
-// node stores ONLY the activity ID (for snapshot lookup) and tree structure.
-// The shared *Activity pointer is NOT stored on the node — rendering reads
-// from ActivitySnapshot values taken under the subscriber's lock.
-func (dt *DependencyTree) AddActivity(
-	activityID ActivityID,
-	_ *Activity,
-	dependencies []ActivityID,
-) error {
+// AddActivity registers an activity ID and its dependency edges in the tree.
+// The tree stores ONLY the ID and structure (Parent/Children) — all mutable
+// Activity fields are accessed via ActivitySnapshot at render time.
+func (dt *DependencyTree) AddActivity(activityID ActivityID, dependencies []ActivityID) error {
 	dt.mu.Lock()
 	defer dt.mu.Unlock()
 

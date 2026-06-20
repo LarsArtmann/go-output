@@ -13,11 +13,11 @@ func TestDependencyTreeRenderGolden_PhaseSteps(t *testing.T) {
 	t.Parallel()
 
 	dt := NewDependencyTree()
-	dt.AddActivity(ActivityID("phase:build"), nil, nil)
-	dt.AddActivity(ActivityID("compile"), nil, []ActivityID{"phase:build"})
-	dt.AddActivity(ActivityID("test"), nil, []ActivityID{"phase:build"})
-	dt.AddActivity(ActivityID("lint"), nil, []ActivityID{"phase:build"})
-	dt.AddActivity(ActivityID("deploy"), nil, []ActivityID{"phase:build"})
+	dt.AddActivity(ActivityID("phase:build"), nil)
+	dt.AddActivity(ActivityID("compile"), []ActivityID{"phase:build"})
+	dt.AddActivity(ActivityID("test"), []ActivityID{"phase:build"})
+	dt.AddActivity(ActivityID("lint"), []ActivityID{"phase:build"})
+	dt.AddActivity(ActivityID("deploy"), []ActivityID{"phase:build"})
 
 	snaps := newSnapshotBuilder()
 	snaps.set(ActivityID("phase:build"), "Build Phase", ActivityStatusRunning, 5*time.Second)
@@ -34,9 +34,9 @@ func TestDependencyTreeRenderGolden_SecondaryDeps(t *testing.T) {
 	t.Parallel()
 
 	dt := NewDependencyTree()
-	dt.AddActivity(ActivityID("phase:main"), nil, nil)
-	dt.AddActivity(ActivityID("step1"), nil, []ActivityID{"phase:main"})
-	dt.AddActivity(ActivityID("step2"), nil, []ActivityID{"phase:main", "step1"})
+	dt.AddActivity(ActivityID("phase:main"), nil)
+	dt.AddActivity(ActivityID("step1"), []ActivityID{"phase:main"})
+	dt.AddActivity(ActivityID("step2"), []ActivityID{"phase:main", "step1"})
 
 	snaps := newSnapshotBuilder()
 	snaps.set(ActivityID("phase:main"), "Phase", ActivityStatusRunning, 0)
@@ -51,11 +51,11 @@ func TestDependencyTreeRenderGolden_MixedStates(t *testing.T) {
 	t.Parallel()
 
 	dt := NewDependencyTree()
-	dt.AddActivity(ActivityID("root"), nil, nil)
-	dt.AddActivity(ActivityID("running"), nil, []ActivityID{"root"})
-	dt.AddActivity(ActivityID("completed"), nil, []ActivityID{"root"})
-	dt.AddActivity(ActivityID("failed"), nil, []ActivityID{"root"})
-	dt.AddActivity(ActivityID("pending"), nil, []ActivityID{"root"})
+	dt.AddActivity(ActivityID("root"), nil)
+	dt.AddActivity(ActivityID("running"), []ActivityID{"root"})
+	dt.AddActivity(ActivityID("completed"), []ActivityID{"root"})
+	dt.AddActivity(ActivityID("failed"), []ActivityID{"root"})
+	dt.AddActivity(ActivityID("pending"), []ActivityID{"root"})
 
 	snaps := newSnapshotBuilder()
 	snaps.set(ActivityID("root"), "Workflow", ActivityStatusRunning, 10*time.Second)
