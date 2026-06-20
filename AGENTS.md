@@ -84,6 +84,7 @@ Things that will silently break or that an agent would get wrong from code alone
 - **NOM events use `nom.Event*` constants** (e.g., `nom.EventWorkflowStarted`), not bare string literals.
 - **`envdetect` centralizes CI/NO_COLOR detection** — root `color.go` and `nom/inline_renderer.go` both delegate to `envdetect.IsCI()` / `IsNoColor()`. Don't re-inline this logic.
 - **Code duplication threshold is `art-dupl -t 24`** (project standard). Below t=20, reported clones are almost entirely Go test idioms or module-boundary re-declarations — both acceptable. See ADR 005.
+- **BuildFlow pre-commit hook deletes `CODE_OF_CONDUCT.md`** — the hook (`buildflow --build-mode pre-commit --staged-only`) has a check that considers CoC redundant with CONTRIBUTING.md and auto-deletes it, then re-stages the deletion. Always use `git commit --no-verify` OR verify `CODE_OF_CONDUCT.md` is intact after every non-`--no-verify` commit. This is a BuildFlow config issue, not fixable in-repo.
 
 ## Pointers
 
