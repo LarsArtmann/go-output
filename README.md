@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/larsartmann/go-output/actions/workflows/ci.yml/badge.svg)](https://github.com/larsartmann/go-output/actions/workflows/ci.yml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/larsartmann/go-output)](https://goreportcard.com/report/github.com/larsartmann/go-output)
-[![GoDoc](https://godoc.org/github.com/larsartmann/go-output?status.svg)](https://godoc.org/github.com/larsartmann/go-output)
+[![Go Reference](https://pkg.go.dev/badge/github.com/larsartmann/go-output.svg)](https://pkg.go.dev/github.com/larsartmann/go-output)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 > **Write your data once. Render it anywhere.**
@@ -16,6 +16,8 @@ import "github.com/larsartmann/go-output"
 ```
 
 The root module has **zero heavy dependencies** — only `golang.org/x/term`. YAML, lipgloss, bubbletea, and diagram renderers live in isolated sub-modules you import only when you need them.
+
+**Requires Go 1.26+.**
 
 ---
 
@@ -523,8 +525,11 @@ output.RenderTableData(data, output.FormatTable,
 For large datasets, stream output incrementally:
 
 ```go
+data := output.NewTableData([]string{"Name", "Value"})
+data.AddRow([]string{"Item", "123"})
+
 renderer := markup.NewStreamingHTMLRenderer()
-renderer.SetData(tableData)
+renderer.SetData(data)
 _ = renderer.Stream(os.Stdout)
 ```
 
@@ -549,6 +554,7 @@ safeID := escape.D2("my-node.with.dots")
 | `escape.DOT`         | DOT graph identifiers            |
 | `escape.MermaidID`   | Mermaid node IDs                 |
 | `escape.MermaidText` | Mermaid labels                   |
+| `escape.MermaidSlug` | Mermaid slug fallback            |
 | `escape.PlantUML`    | PlantUML labels                  |
 | `escape.SlugifyID`   | Cross-format diagram identifiers |
 
@@ -635,7 +641,13 @@ Non-breaking changes until v1: adding new formats, shapes, methods, sub-modules,
 - Sub-modules self-register into root's registries via their own `init()`.
 - Import a sub-module to activate its renderers automatically.
 
-Read [`docs/FORMAT_ARCHITECTURE.md`](docs/FORMAT_ARCHITECTURE.md) and [`docs/DOMAIN_LANGUAGE.md`](docs/DOMAIN_LANGUAGE.md) for the full design.
+Read [`docs/FORMAT_ARCHITECTURE.md`](docs/FORMAT_ARCHITECTURE.md), [`docs/DOMAIN_LANGUAGE.md`](docs/DOMAIN_LANGUAGE.md), and [`docs/adr/`](docs/adr/) for the full design.
+
+---
+
+## Contributing
+
+See [`CONTRIBUTING.md`](CONTRIBUTING.md). The full version history is in [`CHANGELOG.md`](CHANGELOG.md), long-term direction in [`ROADMAP.md`](ROADMAP.md).
 
 ---
 
