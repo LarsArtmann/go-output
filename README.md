@@ -508,13 +508,18 @@ Full-screen interactive TUI built on Bubble Tea v2, with two display modes:
 
 ```go
 import (
+    "context"
+
     "github.com/larsartmann/go-output/nom"
     "github.com/larsartmann/go-output/tui"
 )
 
 reporter := tui.NewBubbleTeaProgressReporter()
 reporter.SetDisplayMode(tui.DisplayModeNOM) // or DisplayModeUniversal
-reporter.SetCancelFunc(cancelFunc)
+
+// Optional: wire ctrl+c to cancel a context
+ctx, cancel := context.WithCancel(context.Background())
+reporter.SetCancelFunc(cancel)
 
 // Report progress
 reporter.ReportStep(1, 5, "Building...")
