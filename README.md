@@ -335,25 +335,23 @@ plantuml := plantuml.PlantUMLFromTree(root)
 
 Track and visualize long-running workflows with dependency trees, inspired by [`nix-output-monitor`](https://github.com/maralorn/nix-output-monitor).
 
+### Static rendering (one-shot)
+
+Build state, take a snapshot, render once — useful for logs, CI output, or testing:
+
 ```go
 import (
     "context"
-    "os"
+    "fmt"
     "time"
 
     "github.com/larsartmann/go-output/nom"
 )
 
-// Create subscriber and renderer
-sub := nom.NewNOMStyleSubscriber()
-renderer := nom.NewInlineRenderer(sub, os.Stdout, 20) // maxHeight 20 lines
-
-// Start the render loop
 ctx := context.Background()
-renderer.Start(ctx, 100*time.Millisecond)
-defer renderer.Finish(nil)
+sub := nom.NewNOMStyleSubscriber()
 
-// Fire workflow events
+// Fire lifecycle events
 sub.OnEvent(ctx, nom.WorkflowStarted{
     ID:   nom.NewWorkflowID("build"),
     Name: nom.NewWorkflowName("Build Project"),
@@ -361,26 +359,53 @@ sub.OnEvent(ctx, nom.WorkflowStarted{
 sub.OnEvent(ctx, nom.ActivityStarted{
     ID:   nom.NewActivityID("compile"),
     Name: nom.NewActivityName("Compile"),
-    Deps: []nom.ActivityID{},
 })
 sub.OnEvent(ctx, nom.ActivityStarted{
     ID:   nom.NewActivityID("test"),
     Name: nom.NewActivityName("Run Tests"),
     Deps: []nom.ActivityID{nom.NewActivityID("compile")},
 })
-
-// Mark activities complete (Name keys the timing cache for future ETAs)
 sub.OnEvent(ctx, nom.ActivityCompleted{
     ID:       nom.NewActivityID("compile"),
     Name:     nom.NewActivityName("Compile"),
     Duration: 5 * time.Second,
 })
-sub.OnEvent(ctx, nom.ActivityCompleted{
-    ID:       nom.NewActivityID("test"),
-    Name:     nom.NewActivityName("Run Tests"),
-    Duration: 12 * time.Second,
-})
+
+// Render a snapshot of the current state
+snaps := sub.SnapshotActivities()
+fmt.Println(sub.GetDependencyTree().RenderWithSnapshots(snaps, 20, 0))
+
+// O(1) summary counts
+counts := sub.GetActivityCounts()
+fmt.Printf("Running: %d, Completed: %d, Failed: %d, Pending: %d\n",
+    counts.Running, counts.Completed, counts.Failed, counts.Pending)
+
 sub.OnEvent(ctx, nom.WorkflowCompleted{ID: nom.NewWorkflowID("build")})
+```
+
+### Live inline rendering (terminal)
+
+For real-time updates, the `InlineRenderer` redraws the tree in-place using ANSI escape codes. Events typically arrive from concurrent workers:
+
+```go
+sub := nom.NewNOMStyleSubscriber()
+renderer := nom.NewInlineRenderer(sub, os.Stdout, 20) // maxHeight 20 lines
+
+ctx := context.Background()
+renderer.Start(ctx, 100*time.Millisecond) // redraw every 100ms
+defer renderer.Finish(nil)
+
+// In your workers (goroutines):
+sub.OnEvent(ctx, nom.ActivityStarted{
+    ID:   nom.NewActivityID("compile"),
+    Name: nom.NewActivityName("Compile"),
+})
+// ... do work ...
+sub.OnEvent(ctx, nom.ActivityCompleted{
+    ID:       nom.NewActivityID("compile"),
+    Name:     nom.NewActivityName("Compile"),
+    Duration: 5 * time.Second,
+})
 ```
 
 ### NOM Features
