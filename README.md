@@ -89,6 +89,70 @@ output.RenderTableData(data, output.FormatHTML, output.RenderOptions{
 
 ---
 
+## Format Gallery
+
+Same data, rendered six ways — all from one `TableData`:
+
+**Markdown table:**
+```text
+| Name  | Health | Complexity |
+|-------|--------|------------|
+| Alpha | 90%    | 7/10       |
+| Beta  | 75%    | 5/10       |
+| Gamma | 85%    | 8/10       |
+```
+
+**CSV:**
+```text
+Name,Health,Complexity
+Alpha,90%,7/10
+Beta,75%,5/10
+Gamma,85%,8/10
+TOTAL,3,-
+```
+
+**Tree:**
+```text
+└── Projects
+    ├── Alpha (health: 90%, complexity: 7)
+    ├── Beta (health: 75%, complexity: 5)
+    └── Gamma (health: 85%, complexity: 8)
+```
+
+**D2 diagram:**
+```text
+projects: {
+  shape: sql_table
+  id: serial {constraint: primary_key}
+  name: varchar(255)
+  health: int
+}
+Alpha: { shape: circle }
+projects -> Alpha { target-arrowhead.shape: cf-many }
+```
+
+**Mermaid flowchart:**
+```text
+flowchart TD
+    Alpha[Alpha]
+    Beta[Beta]
+    Alpha --> Beta
+```
+
+**DOT / Graphviz:**
+```text
+digraph G {
+  rankdir=LR;
+  "Alpha" [label="Alpha"];
+  "Beta"  [label="Beta"];
+  "Alpha" -> "Beta";
+}
+```
+
+Run `go run ./examples/basic <format>` to see them all.
+
+---
+
 ## Installation
 
 ```bash
