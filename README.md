@@ -367,9 +367,17 @@ sub.OnEvent(ctx, nom.ActivityStarted{
     Deps: []nom.ActivityID{nom.NewActivityID("compile")},
 })
 
-// Mark activities complete
-sub.OnEvent(ctx, nom.ActivityCompleted{ID: nom.NewActivityID("compile")})
-sub.OnEvent(ctx, nom.ActivityCompleted{ID: nom.NewActivityID("test")})
+// Mark activities complete (Name keys the timing cache for future ETAs)
+sub.OnEvent(ctx, nom.ActivityCompleted{
+    ID:       nom.NewActivityID("compile"),
+    Name:     nom.NewActivityName("Compile"),
+    Duration: 5 * time.Second,
+})
+sub.OnEvent(ctx, nom.ActivityCompleted{
+    ID:       nom.NewActivityID("test"),
+    Name:     nom.NewActivityName("Run Tests"),
+    Duration: 12 * time.Second,
+})
 sub.OnEvent(ctx, nom.WorkflowCompleted{ID: nom.NewWorkflowID("build")})
 ```
 
