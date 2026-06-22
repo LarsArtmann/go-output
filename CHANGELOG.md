@@ -6,6 +6,73 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.17.1] - 2026-06-22
+
+Patch release. Two motivations: (1) ship a real user-facing fix for the NOM
+inline-renderer repetition bug, and (2) close out v0.17.0 with the lockstep
+dependency realignment that should have shipped inside v0.17.0 itself. The
+latter makes the v0.17.x dependency graph self-consistent — consumers pulling
+`nom@v0.17.0` previously got a build graph where sibling modules pinned older
+roots. No public API changes; drop-in upgrade from v0.17.0.
+
+### Fixed — NOM inline renderer
+
+- **Eliminate the inline-renderer repetition bug.** The renderer repainted the
+  full tree every 200ms tick even when nothing changed; over terminals that
+  lack synchronized-output support (mode 2026), cursor-up/clear-line codes
+  fail to overwrite, causing each tick to append a full copy of the frame.
+  Five coordinated fixes:
+  - **Frame diffing** — `Draw()` compares the new frame against `lastFrame`
+    and emits zero bytes when identical (mirrors bubbletea v2's
+    `cursedRenderer.viewEquals()` early-exit).
+  - **Writer-aware TTY detection** — `detectNoColor()` / `detectPlainText()`
+    now probe the writer's own FD via `x/term.IsTerminal`, not the hardcoded
+    `os.Stdout`. Fixes the stdout/stderr mismatch where BuildFlow renders to
+    stderr but TTY was detected on stdout.
+  - **Sync-output gating** — `\033[?2026h` / `\033[?2026l` codes are emitted
+    only when `writerIsTTY` is confirmed; non-TTY writers (pipes, buffers)
+    get cursor-up/clear-line but no sync wrapping.
+  - **Panic recovery** — `refreshLoop` carries a deferred `recover` that
+    restores the cursor on crash.
+  - **SIGWINCH handling** — a `listenForResize` goroutine invalidates the
+    frame cache on terminal resize, forcing a full redraw.
+  All hand-rolled `\033[...]` magic strings replaced with canonical constants
+  from `github.com/charmbracelet/x/ansi`. Six new behavioral tests added
+  (frame diffing, sync-code gating, SIGWINCH invalidation, panic recovery,
+  concurrent safety); golden files regenerated.
+- **`writerIsTTY` is now authoritative.** `SetPlainText(false)` on a non-TTY
+  writer previously created an impossible state: cursor-up/clear-line codes
+  emitted to a pipe. `snapshotConfig()` now computes
+  `effectivePlainText = plainText || !writerIsTTY`. A non-TTY writer always
+  degrades to plain text; the only valid direction is TTY→plain, never
+  pipe→inline. Test helpers set `writerIsTTY=true` directly to simulate a
+  terminal for tests that exercise the inline cursor-code path.
+- **Lint cleanup.** Replaced deprecated `ansi.SetSynchronizedOutputMode` /
+  `ansi.ResetSynchronizedOutputMode` / `ansi.CursorUp1` with current
+  equivalents (`SetModeSynchronizedOutput` / `ResetModeSynchronizedOutput` /
+  `CUU1`); reworded a comment to avoid a godox trigger; added `os/signal`
+  and `syscall` to the depguard allow list for the SIGWINCH handler.
+
+### Changed
+
+- **Lockstep dependency realignment (v0.17.0 follow-up).** All 19 sub-module
+  `go.mod` files now reference root `v0.17.0` (and `tui` references
+  `nom/v0.17.0`), instead of a mix of stale v0.13.0 / v0.16.0 pins. This is
+  the alignment that should have shipped inside v0.17.0; cutting v0.17.1
+  makes the v0.17.x graph self-consistent for consumers who pull tagged
+  versions rather than source.
+
+### Docs
+
+- Comprehensive README rewrite end-to-end: new headline + tagline; fix broken
+  legacy imports throughout (`output.NewMarkdownTable()` →
+  `markdown.NewMarkdownTable()`, etc.); promote NOM/TUI to a top-level
+  section with event-driven subscription pattern and `DisplayMode` flags; add
+  format gallery with real rendered output; reorganize format table by
+  module; add `pkg.go.dev` badge, Go 1.26+ requirement, contributing/architecture
+  pointers; fix the `cancelFunc` / `tableData` / `ActivityCompleted.Name`
+  examples that would not compile or would silently corrupt the timing cache.
+
 ## [0.17.0] - 2026-06-20
 
 Breaking type-model release. Three refactors harden the NOM event and activity
