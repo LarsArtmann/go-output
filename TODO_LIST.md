@@ -87,3 +87,13 @@
 - **2026-06-08 Architecture & Naming Sprint:** SlugifyID, escape optimization.
 - **2026-05-28 Round 6:** Footer row feature, API stability audit (ADR 006).
 - **2026-05-25 Modularization:** 16 formats, Shape matrix, zero transitive deps.
+
+## Resolved This Session (2026-06-22) — Pattern B Migration — Do Not Redo
+
+| Task                                                   | Resolution                                                                                                                                                                                                |
+| ------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Version-pin rot (stale sibling deps masked by replace) | **Fixed** — migrated to Pattern B (v0.0.0-00010101000000-000000000000 + replace). All 18 modules use zero sentinel for siblings. Only root + testhelpers retain real versions. See ADR 009.                |
+| enum/ + envdetect/ sub-modules                         | **Merged into root** — `ParseEnum`, `ContainsEnum`, `IsCI`, `IsNoColor`, `CIEnvVars` now in `package output`. Directories deleted.                                                                         |
+| CI workflows referencing deleted modules               | **Fixed** — removed enum/envdetect from ci.yml and release.yml module loops.                                                                                                                               |
+| Dead test code after Pattern B migration               | **Removed** — `testing_errorwriter_test.go` deleted, `ExpectedOutput`/`assertContains` removed from `output_test_helpers_test.go`.                                                                        |
+| Dead .golangci.yml entries for enum/envdetect           | **Removed** — depguard allow-list, replace-allow-list, path exclusions all cleaned.                                                                                                                       |

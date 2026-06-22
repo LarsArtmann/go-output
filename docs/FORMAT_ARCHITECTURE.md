@@ -283,7 +283,7 @@ The **rendered output** is a tree, yes. But "just a fancy tree" undersells what 
 | Time-awareness      | None                                | Persistent cross-run CSV at `~/.cache/nom-timing.csv`; **median** of last ≤10 runs predicts pending durations                                                                                                |
 | State model         | Single (`TreeNode`)                 | `ActivityNode` embeds `Activity` (which embeds `output.GraphNode`); subscriber still holds a parallel `ActivityDisplayState` map bridged by `SyncActivityTimingToTree` (full unification tracked in ADR 007) |
 | Lifecycle           | One-shot `Render() (string, error)` | `InlineRenderer` with Start/Stop/Refresh, ANSI cursor-up redraw, 1s max-frame timer                                                                                                                          |
-| Package dep on root | —                                   | **Yes** — nom/ imports `output` for `GraphNode`/`GraphEdge`/`GraphStyle` types (ADR 007), enabling live diagram export via `Store()`. Adds only stdlib-like deps (branded-id, enum).                         |
+| Package dep on root | —                                   | **Yes** — nom/ imports `output` for `GraphNode`/`GraphEdge`/`GraphStyle` types (ADR 007), enabling live diagram export via `Store()`. Adds only stdlib-like deps (branded-id).                         |
 
 Strip the timing cache and the priority resorting and yes, you'd be left with a fancy real-time tree. Those two features — **time prediction** and **adaptive ordering** — are what make it NOM.
 
