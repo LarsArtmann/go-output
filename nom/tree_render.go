@@ -56,20 +56,11 @@ func (dt *DependencyTree) RenderWithSnapshots(
 	return strings.Join(lines, "\n")
 }
 
-type visibleEntry struct {
-	node           *ActivityNode
-	prefix         string
-	connector      string
-	isRoot         bool
-	collapsedDone  int    // >0 renders a "⋯ N completed" marker instead of a node
-	collapseIndent string // indent/connector for the collapse marker line
-}
-
 func (dt *DependencyTree) collectVisibleNodes(
 	snapshots map[ActivityID]ActivitySnapshot,
 	maxHeight int,
-) []visibleEntry {
-	var visible []visibleEntry
+) []VisibleEntry {
+	var visible []VisibleEntry
 
 	for _, root := range dt.roots {
 		dt.walkSubtree(root, "", true, true, &visible, snapshots, maxHeight)
@@ -118,7 +109,7 @@ func (dt *DependencyTree) walkSubtree(
 	prefix string,
 	isLastSibling bool,
 	isRoot bool,
-	visible *[]visibleEntry,
+	visible *[]VisibleEntry,
 	snapshots map[ActivityID]ActivitySnapshot,
 	maxHeight int,
 ) {
@@ -126,18 +117,18 @@ func (dt *DependencyTree) walkSubtree(
 		return
 	}
 
-	entry := visibleEntry{
-		node:      node,
-		prefix:    prefix,
-		connector: "",
-		isRoot:    isRoot,
+	entry := VisibleEntry{
+		Node:      node,
+		Prefix:    prefix,
+		Connector: "",
+		IsRoot:    isRoot,
 	}
 
 	if !isRoot {
 		if isLastSibling {
-			entry.connector = "└── "
+			entry.Connector = "└── "
 		} else {
-			entry.connector = "├── "
+			entry.Connector = "├── "
 		}
 	}
 
@@ -185,16 +176,16 @@ func (dt *DependencyTree) walkSubtree(
 
 // appendCollapseMarker adds a synthetic "⋯ N completed" entry to the visible
 // list when completed children were elided under height pressure.
-func appendCollapseMarker(visible *[]visibleEntry, indent string, collapsedDone int, noRemainingChildren bool) {
+func appendCollapseMarker(visible *[]VisibleEntry, indent string, collapsedDone int, noRemainingChildren bool) {
 	connector := "├── "
 	if noRemainingChildren {
 		connector = "└── "
 	}
 
-	*visible = append(*visible, visibleEntry{
-		collapsedDone:  collapsedDone,
-		collapseIndent: indent,
-		connector:      connector,
+	*visible = append(*visible, VisibleEntry{
+		CollapsedCompleted: collapsedDone,
+		CollapseIndent:     indent,
+		Connector:          connector,
 	})
 }
 
@@ -272,14 +263,14 @@ func formatBytes(b int64) string {
 }
 
 func (dt *DependencyTree) renderLine(
-	entry visibleEntry,
+	entry VisibleEntry,
 	snapshots map[ActivityID]ActivitySnapshot,
 	maxWidth int,
 ) string {
 	// Synthetic collapse marker: rendered when completed children were elided
 	// under height pressure. Shown faint so it reads as "hidden, not gone".
-	if entry.collapsedDone > 0 {
-		marker := fmt.Sprintf("%s%s ⋯ %d completed", entry.collapseIndent, entry.connector, entry.collapsedDone)
+	if entry.CollapsedCompleted > 0 {
+		marker := fmt.Sprintf("%s%s ⋯ %d completed", entry.CollapseIndent, entry.Connector, entry.CollapsedCompleted)
 		rendered := lipgloss.NewStyle().Faint(true).Render(marker)
 
 		if maxWidth > 0 && VisibleWidth(rendered) > maxWidth {
@@ -289,7 +280,7 @@ func (dt *DependencyTree) renderLine(
 		return rendered
 	}
 
-	node := entry.node
+	node := entry.Node
 	snap := lookupSnapshot(snapshots, node.ID)
 
 	activityDisplay, color := formatActivityLabel(snap)
@@ -311,7 +302,7 @@ func (dt *DependencyTree) renderLine(
 			Render(" ⬅ depends on " + strings.Join(depNames, ", "))
 	}
 
-	fullPrefix := entry.prefix + entry.connector
+	fullPrefix := entry.Prefix + entry.Connector
 
 	if maxWidth > 0 {
 		available := maxWidth - ansi.StringWidth(fullPrefix)
@@ -334,13 +325,62 @@ func (dt *DependencyTree) renderLine(
 	return rendered
 }
 
-// VisibleNodesWithSnapshots returns the ordered list of tree nodes that would
-// be displayed for the given maxHeight, in priority order. Uses snapshots for
-// status-based sorting.
+// VisibleNodesWithSnapshots returns the ordered list of real tree nodes that
+// would be displayed for the given maxHeight, in priority order. Uses snapshots
+// for status-based sorting.
+//
+// Only REAL activity nodes are returned — synthetic collapse-marker lines
+// (produced under height pressure when completed children are elided) are
+// skipped, so this slice NEVER contains a nil entry. Callers that need the
+// markers too (e.g. to render them) must use VisibleEntriesWithSnapshots.
 func (dt *DependencyTree) VisibleNodesWithSnapshots(
 	snapshots map[ActivityID]ActivitySnapshot,
 	maxHeight int,
 ) []*ActivityNode {
+	entries := dt.VisibleEntriesWithSnapshots(snapshots, maxHeight)
+
+	nodes := make([]*ActivityNode, 0, len(entries))
+
+	for _, entry := range entries {
+		if entry.Node != nil {
+			nodes = append(nodes, entry.Node)
+		}
+	}
+
+	return nodes
+}
+
+// VisibleEntry is a single renderable line of the dependency tree. Exactly one
+// variant is meaningful:
+//
+//   - A real activity line: Node != nil and CollapsedCompleted == 0.
+//   - A synthetic collapse marker, rendered when completed children are elided
+//     under height pressure: Node == nil and CollapsedCompleted > 0.
+//
+// Exposing the marker explicitly (instead of smuggling a nil into a
+// []*ActivityNode) makes the "node or marker" choice representable without nil
+// dereferences at the call site.
+type VisibleEntry struct {
+	Node *ActivityNode
+
+	Prefix    string
+	Connector string
+	IsRoot    bool
+
+	// CollapsedCompleted > 0 marks a synthetic "⋯ N completed" line; Node is
+	// nil in that case.
+	CollapsedCompleted int
+	CollapseIndent     string
+}
+
+// VisibleEntriesWithSnapshots returns the renderable tree lines (real nodes AND
+// collapse markers) in display order, capped at maxHeight. This is the
+// marker-aware variant of VisibleNodesWithSnapshots and is what renderers that
+// show the "⋯ N completed" line (e.g. the bubbletea TUI) must use.
+func (dt *DependencyTree) VisibleEntriesWithSnapshots(
+	snapshots map[ActivityID]ActivitySnapshot,
+	maxHeight int,
+) []VisibleEntry {
 	dt.mu.RLock()
 	needsBuild := !dt.loaded
 	dt.mu.RUnlock()
@@ -358,23 +398,35 @@ func (dt *DependencyTree) VisibleNodesWithSnapshots(
 		maxHeight = len(dt.nodes)
 	}
 
-	visible := dt.collectVisibleNodes(snapshots, maxHeight)
-	nodes := make([]*ActivityNode, len(visible))
+	return dt.collectVisibleNodes(snapshots, maxHeight)
+}
 
-	for i, entry := range visible {
-		nodes[i] = entry.node
-	}
-
-	return nodes
+// RenderVisibleEntry renders a single visible entry — either a real activity
+// node or a synthetic collapse marker — using immutable snapshot data. This is
+// the marker-aware primitive renderers should call per line (it mirrors the
+// inline renderer's renderLine, which always handled markers correctly).
+func (dt *DependencyTree) RenderVisibleEntry(
+	entry VisibleEntry,
+	snapshots map[ActivityID]ActivitySnapshot,
+	maxWidth int,
+) string {
+	return dt.renderLine(entry, snapshots, maxWidth)
 }
 
 // RenderNode renders a single node for external consumers (e.g., TUI mouse
 // click highlight). Uses the snapshot for label/color/symbol.
+//
+// Returns "" for a nil node so a stray collapse-marker can never panic callers
+// that still use the node-only API. Prefer RenderVisibleEntry for code that
+// needs to render markers.
 func (dt *DependencyTree) RenderNode(
 	node *ActivityNode,
-	_ []*ActivityNode,
 	snapshots map[ActivityID]ActivitySnapshot,
 ) string {
+	if node == nil {
+		return ""
+	}
+
 	snap := lookupSnapshot(snapshots, node.ID)
 	display, color := formatActivityLabel(snap)
 

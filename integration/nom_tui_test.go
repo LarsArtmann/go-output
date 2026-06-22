@@ -209,7 +209,7 @@ func TestNOMSubscriber_RenderNodeVisibleNodes_Integration(t *testing.T) {
 	}
 
 	for _, node := range visible {
-		rendered := tree.RenderNode(node, visible, snaps)
+		rendered := tree.RenderNode(node, snaps)
 		if rendered == "" {
 			t.Errorf("RenderNode(%s) returned empty string", node.ID)
 		}

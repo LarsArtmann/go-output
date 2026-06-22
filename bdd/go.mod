@@ -3,7 +3,7 @@ module github.com/larsartmann/go-output/bdd
 go 1.26.3
 
 require (
-	github.com/larsartmann/go-output v0.17.0
+	github.com/larsartmann/go-output v0.17.1
 	github.com/larsartmann/go-output/delimited v0.13.0
 	github.com/larsartmann/go-output/serialization v0.13.0
 	github.com/onsi/ginkgo/v2 v2.23.4
@@ -19,8 +19,8 @@ require (
 	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/google/pprof v0.0.0-20250403155104-27863c87afa6 // indirect
 	github.com/larsartmann/go-branded-id v0.3.1 // indirect
-	github.com/larsartmann/go-output/enum v0.17.0 // indirect
-	github.com/larsartmann/go-output/envdetect v0.17.0 // indirect
+	github.com/larsartmann/go-output/enum v0.17.1 // indirect
+	github.com/larsartmann/go-output/envdetect v0.17.1 // indirect
 	github.com/larsartmann/go-output/markdown v0.13.0
 	github.com/larsartmann/go-output/tree v0.13.0
 	github.com/pelletier/go-toml/v2 v2.4.0 // indirect

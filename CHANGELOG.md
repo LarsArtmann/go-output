@@ -6,6 +6,36 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.17.2] - 2026-06-22
+
+Patch release. Fixes a nil-pointer panic in the bubbletea TUI render path
+triggered under terminal height pressure, and eliminates a type-duplication
+split-brain introduced during the initial fix.
+
+### Fixed — TUI nil-pointer panic
+
+- **Eliminate TUI panic under height pressure.** When completed children were
+  elided under terminal height pressure (`elideCompletedUnderPressure`), the
+  tree appended a synthetic collapse-marker entry with `Node == nil`.
+  The inline renderer (`renderLine`) checked `CollapsedCompleted > 0` first and
+  never touched `Node` — but the bubbletea TUI path called
+  `VisibleNodesWithSnapshots`, which copied the nil into a `[]*ActivityNode`,
+  then `RenderNode` dereferenced `node.ID` → panic. Fix: new marker-aware
+  `VisibleEntry` / `VisibleEntriesWithSnapshots` / `RenderVisibleEntry` API;
+  the TUI render and mouse-click paths now use it, so collapse markers are
+  rendered explicitly (`⋯ N completed`) and never dereferenced as nodes.
+
+### Changed — type model cleanup
+
+- **Eliminate `visibleEntry`/`VisibleEntry` split-brain.** The initial fix
+  created an exported `VisibleEntry` that duplicated the unexported
+  `visibleEntry` field-by-field with mapping boilerplate in both directions.
+  Promoted `visibleEntry` to the single exported `VisibleEntry` — deleted the
+  unexported type, updated all internal references, and simplified
+  `VisibleEntriesWithSnapshots` + `RenderVisibleEntry` to one-liner delegates.
+- **Remove dead `RenderNode` parameter.** The second parameter `_ []*ActivityNode`
+  was vestigial (never read). Removed from the signature; updated all call sites.
+
 ### Docs
 
 - **Documentation accuracy sweep.** Corrected stale references across all
@@ -47,10 +77,10 @@ roots. No public API changes; drop-in upgrade from v0.17.0.
     restores the cursor on crash.
   - **SIGWINCH handling** — a `listenForResize` goroutine invalidates the
     frame cache on terminal resize, forcing a full redraw.
-  All hand-rolled `\033[...]` magic strings replaced with canonical constants
-  from `github.com/charmbracelet/x/ansi`. Six new behavioral tests added
-  (frame diffing, sync-code gating, SIGWINCH invalidation, panic recovery,
-  concurrent safety); golden files regenerated.
+    All hand-rolled `\033[...]` magic strings replaced with canonical constants
+    from `github.com/charmbracelet/x/ansi`. Six new behavioral tests added
+    (frame diffing, sync-code gating, SIGWINCH invalidation, panic recovery,
+    concurrent safety); golden files regenerated.
 - **`writerIsTTY` is now authoritative.** `SetPlainText(false)` on a non-TTY
   writer previously created an impossible state: cursor-up/clear-line codes
   emitted to a pipe. `snapshotConfig()` now computes

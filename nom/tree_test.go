@@ -238,7 +238,7 @@ func TestDependencyTree_RenderNode(t *testing.T) {
 		t.Fatal("expected at least one display node")
 	}
 
-	out := dt.RenderNode(nodes[0], nil, snaps.snaps)
+	out := dt.RenderNode(nodes[0], snaps.snaps)
 	if out == "" {
 		t.Error("RenderNode should produce non-empty output")
 	}

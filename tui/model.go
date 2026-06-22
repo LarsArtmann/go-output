@@ -130,23 +130,31 @@ func (m *ProgressModel) handleMouseClick(msg tea.MouseClickMsg) (tea.Model, tea.
 		return m, nil
 	}
 
-	if m.dependencyTree == nil || len(m.visibleNodes) == 0 {
+	if m.dependencyTree == nil || len(m.visibleEntries) == 0 {
 		return m, nil
 	}
 
-	// Map the physical Y coordinate to a visibleNodes index. This assumes
-	// one terminal line per node, which holds because the tree is rendered
-	// via RenderWithWidth(maxHeight, maxWidth) which truncates long lines
-	// to prevent wrapping.
+	// Map the physical Y coordinate to a visibleEntries index. This assumes
+	// one terminal line per entry (real node or collapse marker), which holds
+	// because the tree is rendered via RenderVisibleEntry which truncates long
+	// lines to prevent wrapping.
 	treeLine := mouse.Y - m.treeStartLine - chromeLinesAboveTree + m.scrollOffset
-	if treeLine < 0 || treeLine >= len(m.visibleNodes) {
+	if treeLine < 0 || treeLine >= len(m.visibleEntries) {
 		m.selectedNode = ""
 		return m, nil
 	}
 
-	node := m.visibleNodes[treeLine]
+	entry := m.visibleEntries[treeLine]
 
-	nodeID := node.ID
+	// Collapse-marker lines (entry.Node == nil) are not selectable: clicking
+	// one clears any current selection instead of dereferencing a nil node.
+	if entry.Node == nil {
+		m.selectedNode = ""
+
+		return m, nil
+	}
+
+	nodeID := entry.Node.ID
 	if m.selectedNode == nodeID {
 		m.selectedNode = ""
 	} else {

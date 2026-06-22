@@ -127,6 +127,6 @@ type ProgressModel struct {
 	showHelp       bool
 	cancelFunc     context.CancelFunc
 	selectedNode   nom.ActivityID
-	visibleNodes   []*nom.ActivityNode
+	visibleEntries []nom.VisibleEntry
 	treeStartLine  int
 }

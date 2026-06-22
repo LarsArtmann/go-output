@@ -56,17 +56,20 @@ func (m *ProgressModel) renderDependencyTree() string {
 		treeHeight = defaultTreeHeight
 	}
 
-	m.visibleNodes = tree.VisibleNodesWithSnapshots(snapshots, treeHeight)
+	m.visibleEntries = tree.VisibleEntriesWithSnapshots(snapshots, treeHeight)
 
-	if len(m.visibleNodes) == 0 {
+	if len(m.visibleEntries) == 0 {
 		return msgNoActivitiesToDisplay
 	}
 
-	lines := make([]string, 0, len(m.visibleNodes))
+	lines := make([]string, 0, len(m.visibleEntries))
 
-	for _, node := range m.visibleNodes {
-		line := tree.RenderNode(node, m.visibleNodes, snapshots)
-		if m.selectedNode != "" && node.ID == m.selectedNode {
+	for _, entry := range m.visibleEntries {
+		line := tree.RenderVisibleEntry(entry, snapshots, m.width)
+
+		// Only real activity nodes are selectable; collapse-marker lines
+		// (entry.Node == nil) never get the selection highlight.
+		if m.selectedNode != "" && entry.Node != nil && entry.Node.ID == m.selectedNode {
 			line = lipgloss.NewStyle().
 				Background(colors.selectBG).
 				Foreground(colors.selectFG).
