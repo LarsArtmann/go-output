@@ -165,32 +165,30 @@ Run `go run ./examples/basic <format>` to see them all.
 go get github.com/larsartmann/go-output
 ```
 
-Sub-modules for specific formats (import only what you need):
+Sub-modules (diagram renderers, progress visualization, etc.) are build-boundary optimizations within this repo — they are NOT independently `go get`-able. To use them, clone the repo and set up the workspace:
 
 ```bash
-# Data renderers
-go get github.com/larsartmann/go-output/delimited       # CSV + TSV writers
-go get github.com/larsartmann/go-output/serialization   # JSON + YAML + TOML + JSONL marshaling
-go get github.com/larsartmann/go-output/markup          # XML + HTML + AsciiDoc + Streaming HTML
-go get github.com/larsartmann/go-output/table           # Terminal tables with lipgloss
-go get github.com/larsartmann/go-output/markdown        # Markdown table renderer
-go get github.com/larsartmann/go-output/tree            # ASCII tree renderer
-
-# Diagram renderers
-go get github.com/larsartmann/go-output/d2              # D2 diagrams (SQL tables, shapes, grids)
-go get github.com/larsartmann/go-output/graph           # DOT + Mermaid flowcharts
-go get github.com/larsartmann/go-output/plantuml        # PlantUML component diagrams
-
-# Progress visualization
-go get github.com/larsartmann/go-output/nom             # NOM-style real-time progress
-go get github.com/larsartmann/go-output/tui             # Bubble Tea interactive TUI (depends on nom)
-
-# Utilities (zero-dep, used internally)
-go get github.com/larsartmann/go-output/enum            # Generic enum utilities
-go get github.com/larsartmann/go-output/escape          # Format-specific escaping
-go get github.com/larsartmann/go-output/envdetect       # CI / NO_COLOR env detection
-go get github.com/larsartmann/go-output/testhelpers     # Shared test assertions
+git clone https://github.com/larsartmann/go-output.git
+cd go-output
+nix run .#setup-workspace   # generates go.work from go.work.example
 ```
+
+Then import what you need. The `replace` directives in each module's `go.mod` resolve siblings locally. See [ADR 009](docs/adr/009-pattern-b-versioning.md) for the rationale.
+
+| What you want                            | Import path                                    |
+| ---------------------------------------- | ---------------------------------------------- |
+| Core types, enums, registries            | `github.com/larsartmann/go-output`             |
+| CSV + TSV writers                        | `github.com/larsartmann/go-output/delimited`   |
+| JSON + YAML + TOML + JSONL               | `github.com/larsartmann/go-output/serialization` |
+| XML + HTML + AsciiDoc                    | `github.com/larsartmann/go-output/markup`       |
+| Terminal tables (lipgloss)               | `github.com/larsartmann/go-output/table`        |
+| Markdown tables                          | `github.com/larsartmann/go-output/markdown`     |
+| ASCII trees                              | `github.com/larsartmann/go-output/tree`         |
+| D2 diagrams                              | `github.com/larsartmann/go-output/d2`           |
+| DOT + Mermaid                            | `github.com/larsartmann/go-output/graph`        |
+| PlantUML                                 | `github.com/larsartmann/go-output/plantuml`     |
+| NOM-style progress                       | `github.com/larsartmann/go-output/nom`          |
+| Bubble Tea TUI                           | `github.com/larsartmann/go-output/tui`          |
 
 ---
 

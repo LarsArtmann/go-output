@@ -1,8 +1,6 @@
 package graph
 
-import (
-	"github.com/larsartmann/go-output/enum"
-)
+import output "github.com/larsartmann/go-output"
 
 // RankDir controls the layout direction of a DOT graph.
 type RankDir string
@@ -35,7 +33,7 @@ func (e *InvalidRankDirError) Error() string {
 
 // ParseRankDir converts a string to RankDir, returning an error if invalid.
 func ParseRankDir(s string) (RankDir, error) {
-	v, err := enum.Parse(rankDirValues, s, func(r RankDir) string { return string(r) })
+	v, err := output.ParseEnum(rankDirValues, s, func(r RankDir) string { return string(r) })
 	if err != nil {
 		return "", &InvalidRankDirError{Value: s}
 	}
@@ -50,12 +48,12 @@ func (r RankDir) String() string {
 
 // AllowedValues returns all valid rank direction values.
 func (RankDir) AllowedValues() []string {
-	return enum.AllowedValues(rankDirValues)
+	return output.EnumAllowedValues(rankDirValues)
 }
 
 // IsValid checks if the rank direction is valid.
 func (r RankDir) IsValid() bool {
-	return enum.Contains(rankDirValues, r)
+	return output.ContainsEnum(rankDirValues, r)
 }
 
 // SplineStyle controls the edge routing style of a DOT graph.
@@ -93,7 +91,7 @@ func (e *InvalidSplineStyleError) Error() string {
 
 // ParseSplineStyle converts a string to SplineStyle, returning an error if invalid.
 func ParseSplineStyle(s string) (SplineStyle, error) {
-	v, err := enum.Parse(splineStyleValues, s, func(s SplineStyle) string { return string(s) })
+	v, err := output.ParseEnum(splineStyleValues, s, func(s SplineStyle) string { return string(s) })
 	if err != nil {
 		return "", &InvalidSplineStyleError{Value: s}
 	}
@@ -108,10 +106,10 @@ func (s SplineStyle) String() string {
 
 // AllowedValues returns all valid spline style values.
 func (SplineStyle) AllowedValues() []string {
-	return enum.AllowedValues(splineStyleValues)
+	return output.EnumAllowedValues(splineStyleValues)
 }
 
 // IsValid checks if the spline style is valid.
 func (s SplineStyle) IsValid() bool {
-	return enum.Contains(splineStyleValues, s)
+	return output.ContainsEnum(splineStyleValues, s)
 }

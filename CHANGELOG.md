@@ -6,6 +6,36 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.18.0] - 2026-06-22
+
+Major architecture change: migrated from stale-real-pins + replace (the version-rot
+trap) to Pattern B (committed `v0.0.0-00010101000000-000000000000` + replace). See
+[ADR 009](docs/adr/009-pattern-b-versioning.md).
+
+### Changed — Pattern B versioning
+
+- **All inter-module sibling deps now use `v0.0.0-00010101000000-000000000000` + replace.**
+  This eliminates ALL sibling version-pin maintenance. Only root and `testhelpers/`
+  retain real published versions. Sub-modules are build-boundary optimizations, not
+  independently `go get`-able packages.
+- **`enum/` and `envdetect/` merged into root.** Their functions (`ParseEnum`,
+  `ContainsEnum`, `EnumAllowedValues`, `IsCI`, `IsNoColor`, `CIEnvVars`) are now in
+  `package output` (files: `enum.go`, `envdetect.go`). The sub-module directories
+  were deleted.
+- **`userjourney_test.go` and `render_tabledata_test.go` moved to `integration/`.**
+  These cross-module tests previously activated sub-module format registrations
+  via blank imports in root's test binary. Under Pattern B, root's `go.mod` must
+  stay clean — cross-module tests belong in `integration/`.
+- **Module count reduced from 20 to 18** (enum + envdetect merged into root).
+- **`flake.nix`, `go.work.example`, `RELEASE.md`** updated for 18-module workspace.
+
+### Removed
+
+- `github.com/larsartmann/go-output/enum` — merged into root `package output`
+- `github.com/larsartmann/go-output/envdetect` — merged into root `package output`
+- Mono-version lockstep tagging policy (all modules at same vX.Y.Z) — replaced by
+  Pattern B (only root + testhelpers tagged)
+
 ## [0.17.2] - 2026-06-22
 
 Patch release. Fixes a nil-pointer panic in the bubbletea TUI render path

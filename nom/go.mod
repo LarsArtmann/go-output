@@ -6,8 +6,7 @@ require (
 	charm.land/lipgloss/v2 v2.0.4
 	github.com/charmbracelet/x/ansi v0.11.7
 	github.com/charmbracelet/x/exp/golden v0.0.0-20260615092313-b57e5e6d29bb
-	github.com/larsartmann/go-output v0.17.1
-	github.com/larsartmann/go-output/envdetect v0.17.1
+	github.com/larsartmann/go-output v0.17.2
 	github.com/larsartmann/go-output/testhelpers v0.13.0
 	golang.org/x/term v0.44.0
 )
@@ -22,7 +21,6 @@ require (
 	github.com/clipperhouse/displaywidth v0.11.0 // indirect
 	github.com/clipperhouse/uax29/v2 v2.7.0 // indirect
 	github.com/larsartmann/go-branded-id v0.3.1 // indirect
-	github.com/larsartmann/go-output/enum v0.17.1 // indirect
 	github.com/lucasb-eyer/go-colorful v1.4.0 // indirect
 	github.com/mattn/go-runewidth v0.0.24 // indirect
 	github.com/muesli/cancelreader v0.2.2 // indirect
@@ -35,11 +33,7 @@ require (
 
 replace github.com/larsartmann/go-output => ../
 
-replace (
-	github.com/larsartmann/go-output/enum => ../enum
-	github.com/larsartmann/go-output/envdetect => ../envdetect
-	github.com/larsartmann/go-output/escape => ../escape
-)
+replace github.com/larsartmann/go-output/escape => ../escape
 
 replace github.com/larsartmann/go-output/markdown => ../markdown
 

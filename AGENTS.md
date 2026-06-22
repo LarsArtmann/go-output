@@ -1,6 +1,16 @@
 # go-output
 
-A reusable Go library for CLI output formatting (16 formats across table/tree/graph shapes) plus NOM-style real-time progress visualization. Multi-module Go workspace; root is intentionally dependency-light.
+A reusable Go library for CLI output formatting (16 formats across table/tree/graph shapes) plus NOM-style real-time progress visualization. Multi-module Go workspace using committed `replace` directives (Pattern B); root is intentionally dependency-light and the only independently `go get`-able module.
+
+## Versioning Model — Pattern B (Committed Replace)
+
+**Sub-modules are build-boundary optimizations, NOT independently versioned packages.** All inter-module sibling deps use `v0.0.0-00010101000000-000000000000` + `replace => ../path`. This eliminates ALL sibling version-pin maintenance.
+
+- `go get github.com/larsartmann/go-output` works (root has only external deps + `testhelpers`).
+- `go get github.com/larsartmann/go-output/table` does NOT work (the `replace` directive is ignored by consumers).
+- **Only `testhelpers/`** retains real published versions — it's zero-dep, used by every module's tests, and genuinely independently useful.
+- Sub-modules are consumed via clone + `go.work` (run `nix run .#setup-workspace`).
+- **Never** change a sibling `require` from `v0.0.0-00010101000000-000000000000` to a real version — it re-introduces the version-rot problem this model was designed to eliminate.
 
 ## The Core Invariant
 
@@ -9,33 +19,32 @@ A reusable Go library for CLI output formatting (16 formats across table/tree/gr
 - `go get github.com/larsartmann/go-output` pulls NO lipgloss, NO bubbletea, NO yaml/toml, NO d2/graph/table/nom/tui deps.
 - Sub-modules self-register into root's registries via their own `init()` (see Patterns). Root never imports them back.
 - **Never** add an `import ".../table"`, `".../d2"`, `".../nom"`, etc. to a file in the root package. It breaks the entire dependency-isolation guarantee.
+- `enum` and `envdetect` packages were merged INTO root in v0.18.0 — their functions (`ParseEnum`, `ContainsEnum`, `IsCI`, `IsNoColor`, etc.) are now in `package output`. The old `enum/` and `envdetect/` sub-modules no longer exist.
 
 ## Module Map
 
-20 modules (root + 19 sub-modules). Each has its own `go.mod`; **deps live in `go.mod`, not here** — read the file for ground truth.
+18 modules (root + 17 sub-modules). Each has its own `go.mod` with `replace` directives pointing to local sibling dirs.
 
-| Module                   | Purpose                                                                       |
-| ------------------------ | ----------------------------------------------------------------------------- |
-| **root** (`output`)      | Core types, Format/Shape enums, registries, TreeNode, Graph state, TableData  |
-| `delimited/`             | CSV + TSV writers                                                             |
-| `serialization/`         | JSON + YAML + TOML + JSONL                                                    |
-| `markup/`                | XML + HTML + AsciiDoc + Streaming HTML                                        |
-| `table/`                 | Lipgloss terminal tables                                                      |
-| `markdown/`              | Markdown table renderer (extracted from root)                                 |
-| `tree/`                  | ASCII tree renderer (extracted from root; TreeNode stays in root)             |
-| `d2/`                    | D2 diagrams (rich domain model: shapes, arrows, SQL tables)                   |
-| `graph/`                 | DOT + Mermaid renderers (share root's `GraphRendererState`)                   |
-| `plantuml/`              | PlantUML diagrams                                                             |
-| `nom/`                   | NOM-style real-time progress (dependency tree, timing cache, inline renderer) |
-| `tui/`                   | Bubble Tea interactive TUI (depends on nom)                                   |
-| `enum/`                  | Generic enum utilities (zero deps)                                            |
-| `escape/`                | Format-specific escaping (zero deps)                                          |
-| `envdetect/`             | Shared CI / NO_COLOR env detection (zero deps; used by root + nom)            |
-| `testhelpers/`           | Shared test assertions (zero deps)                                            |
-| `testhelpers/graphtest/` | Shared graph test fixtures                                                    |
-| `bdd/`                   | BDD test suite (Ginkgo/Gomega, test-only)                                     |
-| `integration/`           | Cross-module integration tests                                                |
-| `examples/`              | Usage examples                                                                |
+| Module                   | Purpose                                                                                                |
+| ------------------------ | ------------------------------------------------------------------------------------------------------ |
+| **root** (`output`)      | Core types, Format/Shape enums, registries, TreeNode, Graph state, TableData, enum+envdetect utilities |
+| `delimited/`             | CSV + TSV writers                                                                                      |
+| `serialization/`         | JSON + YAML + TOML + JSONL                                                                             |
+| `markup/`                | XML + HTML + AsciiDoc + Streaming HTML                                                                 |
+| `table/`                 | Lipgloss terminal tables                                                                               |
+| `markdown/`              | Markdown table renderer (extracted from root)                                                          |
+| `tree/`                  | ASCII tree renderer (extracted from root; TreeNode stays in root)                                      |
+| `d2/`                    | D2 diagrams (rich domain model: shapes, arrows, SQL tables)                                            |
+| `graph/`                 | DOT + Mermaid renderers (share root's `GraphRendererState`)                                            |
+| `plantuml/`              | PlantUML diagrams                                                                                      |
+| `nom/`                   | NOM-style real-time progress (dependency tree, timing cache, inline renderer)                          |
+| `tui/`                   | Bubble Tea interactive TUI (depends on nom)                                                            |
+| `escape/`                | Format-specific escaping (zero deps)                                                                   |
+| `testhelpers/`           | Shared test assertions (zero deps; only module with real published versions)                           |
+| `testhelpers/graphtest/` | Shared graph test fixtures                                                                             |
+| `bdd/`                   | BDD test suite (Ginkgo/Gomega, test-only)                                                              |
+| `integration/`           | Cross-module integration tests (including render dispatch + user journey)                              |
+| `examples/`              | Usage examples                                                                                         |
 
 ## Commands
 
@@ -43,8 +52,8 @@ A reusable Go library for CLI output formatting (16 formats across table/tree/gr
 
 ```bash
 nix develop                # Dev shell (Go 1.26, golangci-lint, gopls)
-nix run .#build            # Build all 20 modules
-nix run .#test             # Test all 20 modules
+nix run .#build            # Build all 18 modules
+nix run .#test             # Test all 18 modules
 nix run .#test-race        # Race-test nom + tui (concurrency-sensitive)
 nix run .#lint             # golangci-lint across all modules
 nix run .#tidy             # go mod tidy all modules
@@ -60,7 +69,10 @@ Go checks are NOT in `nix flake check` (sandbox blocks `go mod download`); CI ha
 
 These are non-obvious from reading code alone — the "how does this even work" knowledge.
 
+- **Pattern B versioning (committed replace + v0.0.0)**: All sibling deps use `v0.0.0-00010101000000-000000000000` with `replace => ../path`. This is Go's canonical zero sentinel for locally-replaced deps. `replace` directives do NOT propagate to consumers, so external `go get` of a sub-module fails — by design. Only root is independently consumable. See ADR 009.
 - **Registry dispatch via `init()`**: Root's `RenderTableData()` / `RenderAnyData()` dispatch to registered marshalers, yet root imports no sub-module. Each sub-module calls `RegisterFormatShapes(...)` / registers its marshaler in its own `init()`. The generic `formatRegistry[T]` backs shape capabilities, tableData, and anyData registries. Importing a sub-module is what activates it.
+- **Enum utilities are in root**: `ParseEnum[T]`, `ContainsEnum[T]`, `EnumAllowedValues[T]`, `EnumAllowedStrings[T]` live in `package output` (file: `enum.go`). Sub-modules call them via `output.ParseEnum[T](...)`. The `StringEnum` interface and `ParseError` type are also in root.
+- **CI/NO_COLOR detection is in root**: `IsCI()` and `IsNoColor()` live in `package output` (file: `envdetect.go`). `CIEnvVars` is the exported list of CI env var names. Sub-modules call `output.IsCI()` / `output.IsNoColor()`.
 - **Shape capability matrix**: Each format declares which data shapes (table/tree/graph) it supports via `RegisterFormatShapes()` in `init()`. Query with `f.Supports(shape)` or `FormatsForShape(shape)`. See `docs/FORMAT_ARCHITECTURE.md`.
 - **ColorMode wiring — three mechanisms, use the right one**: `table.New(table.WithColorMode(...))` (functional option), `ASCIITreeRenderer.SetColorMode(...)` / `MarkdownTable.SetColorMode(...)` (setter), `RenderTableData(data, fmt, RenderOptions{ColorMode: ...})` (dispatch field). `ColorModeAuto` detects terminal via `x/term`, respects `NO_COLOR`/`CI`/`FORCE_COLOR`.
 - **Semantic color delegation**: `tui/colors.go` delegates its 4 activity-state colors (`success`/`warning`/`err`/`dim`) to `nom.Colors` (`Completed`/`Running`/`Failed`/`Pending`) — nom is the single source of truth for the palette. TUI-only colors (title, selection, help) stay local. Do not re-duplicate ANSI codes between nom and tui.
@@ -73,7 +85,7 @@ These are non-obvious from reading code alone — the "how does this even work" 
 - **nom activity counts are incrementally cached (O(1), not O(n))**: `NOMStyleSubscriber.counts` is an `ActivityCounts` value maintained via `applyCountsDelta(&counts, oldStatus, newStatus)` on every state transition in the event handlers, and zeroed in `Reset()`. `GetActivityCounts()` reads this cache directly — it must NEVER scan `ns.activities`. This replaces the old per-frame O(n) scan of all activities. If you add a new mutation path to `ns.activities` (create, transition, delete), you MUST update `ns.counts` in the same handler under the same write lock. The invariant is verified by `TestActivityCountsCache_LifecycleConsistency` (brute-force recount vs cache after every event).
 - **nom elapsed time is derived at snapshot time (no per-tick write)**: `Activity.CurrentElapsed` field was deleted entirely — it was only ever read into `ActivitySnapshot`. `SnapshotActivities()` now calls `activity.elapsedAt(now)` which computes `now-StartTime` for running activities and `EndTime-StartTime` for terminal states. The old `UpdateRunningActivityElapsed()` method (O(n) write scan every 100ms tick) is gone. `ActivitySnapshot.CurrentElapsed` remains — renderers read it unchanged. Never re-introduce a per-tick mutation to stamp elapsed; the snapshot is always current by derivation.
 - **InlineRenderer locking model (two mutexes, on purpose)**: `tickMu sync.RWMutex` guards config + lifecycle fields; `renderMu sync.Mutex` serializes terminal writes + `prevLines` + `lastFrame`. They MUST stay separate — merging them reintroduces the `Stop()` deadlock (the refresh loop's `Draw()` takes `tickMu.RLock`, so holding the write lock across `<-tickerDone` would deadlock). All config reads go through one `snapshotConfig()` call returning an immutable `rendererConfig` (one `RLock`, not scattered field reads). Setters (`SetStartTime`/`SetAppName`/`SetNoColor`/`SetHideCursor`/`SetMaxHeight`/`SetPlainText`) take `tickMu.Lock` and are safe to call during the render loop. `lastFrame` is guarded exclusively by `renderMu` — the "force redraw on mode change" signal flows through the config snapshot (`lastFramePlain` tracks the mode alongside the frame string), never crossing the mutex boundary.
-- **InlineRenderer CI/plain-text degradation**: `detectPlainText()` (called once at construction) returns true under `envdetect.IsCI()`. In plain mode `Draw()` appends each frame on its own line, skipping cursor-up/clear-line/sync-region escape codes that corrupt captured CI logs. Colors are separately suppressed via `detectNoColor()` (same env signals). Both delegate to `envdetect` — don't re-inline.
+- **InlineRenderer CI/plain-text degradation**: `detectPlainText()` (called once at construction) returns true under `output.IsCI()`. In plain mode `Draw()` appends each frame on its own line, skipping cursor-up/clear-line/sync-region escape codes that corrupt captured CI logs. Colors are separately suppressed via `detectNoColor()` (same env signals). Both delegate to root's `IsCI()`/`IsNoColor()` — don't re-inline.
 - **InlineRenderer height-pressure collapse**: when the tree exceeds `maxHeight`, `elideCompletedUnderPressure` drops completed children and the renderer emits a faint `⋯ N completed` marker so the collapsed work is visible (the summary bar still carries aggregate counts). `SetMaxHeight` updates the cap at runtime, race-free.
 - **InlineRenderer frame diffing (skip identical redraws)**: `Draw()` compares the new frame against `lastFrame` and emits zero bytes when identical (mirrors bubbletea v2's `cursedRenderer.viewEquals()` early-exit). A `listenForResize` goroutine handles SIGWINCH — on terminal resize it invalidates `lastFrame` to force a full redraw. `refreshLoop` carries a deferred `recover` that restores the cursor on crash.
 - **InlineRenderer writer-aware TTY detection**: `detectNoColor()` / `detectPlainText()` probe the writer's own FD via `x/term.IsTerminal`, not the hardcoded `os.Stdout`. `writerIsTTY` is authoritative — `snapshotConfig()` computes `effectivePlainText = plainText || !writerIsTTY`. A non-TTY writer always degrades to plain text; the only valid direction is TTY→plain, never pipe→inline. Sync-output codes (`\033[?2026h`/`\033[?2026l`) are emitted only when `writerIsTTY` is confirmed.
@@ -84,13 +96,15 @@ These are non-obvious from reading code alone — the "how does this even work" 
 Things that will silently break or that an agent would get wrong from code alone.
 
 - **Never import a sub-module into root** — see Core Invariant above.
+- **Pattern B: sibling deps are v0.0.0-00010101000000-000000000000** — never change a sibling `require` to a real version. The `replace` directive makes it work locally; a real version would re-introduce version rot. Only `testhelpers` keeps real versions.
+- **`testhelpers/` is the ONLY independently versioned sub-module** — it has real published tags. All other sub-modules use v0.0.0 + replace.
 - **`testhelpers/` is zero-dep by design** — it cannot import `output`. Cross-module test helpers must stay local to each module or use table-driven patterns.
 - **`internal/` is root-only (if added)** — Go forbids sub-modules from importing `internal/` packages, so any `internal/` package in root cannot be shared with sub-modules. Currently root has no `internal/` dir; sub-modules inline their own test helpers (shared zero-dep helpers live in the `testhelpers/` module).
 - **Depguard restricts imports** — `.golangci.yml` has explicit allow-lists. When a module gains a new sibling dep, add it to BOTH the `default` and `main` allow-lists or lint fails. Each module has its own `.golangci.yml` section.
 - **Every module's `go.mod` needs `replace` directives** for sibling deps, plus add the module to `flake.nix`'s `modules` list and `go.work.example`'s `use (...)` block.
-- **Mono-version tagging** — all 20 modules release in lockstep under the same `vX.Y.Z` (root tag + `submod/vX.Y.Z` tags). Never version a module independently.
+- **Root test files must NOT import sub-modules** — root's `go.mod` must stay clean (only external deps + `testhelpers`). Cross-module tests belong in `integration/`. This is enforced by the Pattern B model: sub-module deps at v0.0.0 would break external consumers.
 - **NOM events are typed structs** (e.g., `nom.WorkflowStarted{ID: ...}`, `nom.ActivityCompleted{ID: ...}`), constructed directly. The `Event` interface is sealed (unexported `isEvent()` marker). The `Event*` string constants (`EventWorkflowStarted`, etc.) are kept only as stable logging/metrics identifiers — never re-introduce string-based event dispatch or `GetEventType()`.
-- **`envdetect` centralizes CI/NO_COLOR detection** — root `color.go` and `nom/inline_renderer.go` both delegate to `envdetect.IsCI()` / `IsNoColor()`. Don't re-inline this logic.
+- **CI/NO_COLOR detection is in root** — `output.IsCI()` and `output.IsNoColor()` (file: `envdetect.go`). Sub-modules call `output.IsCI()`. Don't re-inline or re-create a separate envdetect module.
 - **Code duplication threshold is `art-dupl -t 24`** (project standard). Below t=20, reported clones are almost entirely Go test idioms or module-boundary re-declarations — both acceptable. See ADR 005.
 - **BuildFlow pre-commit hook deletes `CODE_OF_CONDUCT.md`** — the hook (`buildflow --build-mode pre-commit --staged-only`) has a check that considers CoC redundant with CONTRIBUTING.md and auto-deletes it, then re-stages the deletion. Always use `git commit --no-verify` OR verify `CODE_OF_CONDUCT.md` is intact after every non-`--no-verify` commit. This is a BuildFlow config issue, not fixable in-repo.
 
@@ -100,5 +114,5 @@ Deeper knowledge lives in dedicated docs — read these before non-trivial work:
 
 - `docs/DOMAIN_LANGUAGE.md` — ubiquitous language (Format, Shape, Renderer, TableData, TreeNode, GraphNode, ...)
 - `docs/FORMAT_ARCHITECTURE.md` — the 16 formats × 3 shapes matrix and registry internals
-- `docs/adr/` — 8 ADRs: multi-module workspace (001), shape matrix (002), d2/graph extraction (003), footer row (004), duplication thresholds (005), API stability (006), nom composition (007), dedup workflow (008)
+- `docs/adr/` — 9 ADRs: multi-module workspace (001), shape matrix (002), d2/graph extraction (003), footer row (004), duplication thresholds (005), API stability (006), nom composition (007), dedup workflow (008), Pattern B versioning (009)
 - `FEATURES.md`, `TODO_LIST.md`, `CHANGELOG.md`, `README.md`

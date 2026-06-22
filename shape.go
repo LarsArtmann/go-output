@@ -2,8 +2,6 @@ package output
 
 import (
 	"slices"
-
-	"github.com/larsartmann/go-output/enum"
 )
 
 // Shape represents a data shape that a format can render.
@@ -32,12 +30,12 @@ func (s Shape) String() string {
 
 // IsValid returns true if the shape is a valid Shape value.
 func (s Shape) IsValid() bool {
-	return enum.Contains(AllShapes, s)
+	return ContainsEnum(AllShapes, s)
 }
 
 // AllowedValues returns all valid data shape values for CLI help text.
 func (s Shape) AllowedValues() []string {
-	return enum.AllowedValues(AllShapes)
+	return EnumAllowedValues(AllShapes)
 }
 
 // InvalidShapeError is returned when an invalid data shape is provided.
@@ -52,7 +50,7 @@ func (e *InvalidShapeError) Error() string {
 
 // ParseShape converts a string to Shape, returning an error if invalid.
 func ParseShape(s string) (Shape, error) {
-	v, err := enum.Parse(AllShapes, s, func(sh Shape) string { return string(sh) })
+	v, err := ParseEnum(AllShapes, s, func(sh Shape) string { return string(sh) })
 	if err != nil {
 		return "", &InvalidShapeError{Value: s}
 	}

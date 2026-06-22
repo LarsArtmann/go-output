@@ -14,7 +14,7 @@ import (
 	"github.com/charmbracelet/x/ansi"
 	"golang.org/x/term"
 
-	"github.com/larsartmann/go-output/envdetect"
+	output "github.com/larsartmann/go-output"
 )
 
 // ANSI escape sequences from github.com/charmbracelet/x/ansi — the proper
@@ -163,14 +163,14 @@ func writerIsTerminal(writer io.Writer) bool {
 
 // detectPlainTextForWriter reports whether the renderer should emit plain,
 // append-only output (no cursor/sync escape codes). Returns true when:
-//   - Running under CI (envdetect.IsCI), OR
+//   - Running under CI (output.IsCI), OR
 //   - The writer is not a terminal (pipe, buffer, redirect)
 //
 // This replaces the old detectPlainText() which only checked CI, missing
 // the common case of piped/redirected output where ANSI redraw codes
 // produce the repetition bug.
 func detectPlainTextForWriter(writer io.Writer) bool {
-	if envdetect.IsCI() {
+	if output.IsCI() {
 		return true
 	}
 
@@ -183,7 +183,7 @@ func detectPlainTextForWriter(writer io.Writer) bool {
 // the mismatch where the old detectNoColor() checked os.Stdout but the
 // renderer writes to an arbitrary writer (e.g. os.Stderr in BuildFlow).
 func detectNoColorForWriter(writer io.Writer) bool {
-	if envdetect.IsNoColor() || envdetect.IsCI() {
+	if output.IsNoColor() || output.IsCI() {
 		return true
 	}
 

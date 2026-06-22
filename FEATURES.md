@@ -87,7 +87,7 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 | **D2ArrowType enum**  | FULLY_FUNCTIONAL | 11 arrow types (arrow, triangle, diamond, circle, filled, box, cross, CF variants)                             |
 | **D2Constraint enum** | FULLY_FUNCTIONAL | 3 SQL constraints (primary_key, foreign_key, unique)                                                           |
 | **Alignment enum**    | FULLY_FUNCTIONAL | Markdown column alignment: left, right, center                                                                 |
-| **enum package**      | FULLY_FUNCTIONAL | Generic `Parse[T]()`, `Contains[T]()`, `AllowedValues[T]()`, `AllowedStrings[T]()`. Zero-dependency sub-module |
+| **enum utilities**  | FULLY_FUNCTIONAL | `ParseEnum[T]()`, `ContainsEnum[T]()`, `EnumAllowedValues[T]()`, `EnumAllowedStrings[T]()`. Now in root (merged from former `enum/` sub-module) |
 | **FormatCategory**    | REMOVED          | Replaced by `Shape`. `IsTableFormat()`, `IsTreeFormat()`, `IsGraphFormat()`, `Category()` removed              |
 | **OutputFormat**      | REMOVED          | Type alias for `Format`. All `OutputFormat*` constants removed                                                 |
 
@@ -260,10 +260,9 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 
 | Feature                            | Status           | Notes                                                                         |
 | ---------------------------------- | ---------------- | ----------------------------------------------------------------------------- |
-| **Root module** (`package output`) | FULLY_FUNCTIONAL | Core types + formatters. Zero lipgloss dependency                             |
-| **enum/**                          | FULLY_FUNCTIONAL | Generic enum utilities. Zero dependencies                                     |
+| **Root module** (`package output`) | FULLY_FUNCTIONAL | Core types, formatters, enum + envdetect utilities. Zero lipgloss dependency    |
 | **escape/**                        | FULLY_FUNCTIONAL | Format-specific escaping. Zero dependencies                                   |
-| **envdetect/**                     | FULLY_FUNCTIONAL | Shared CI/NO_COLOR env detection. Zero dependencies                           |
+| **envdetect** (in root)            | FULLY_FUNCTIONAL | CI/NO_COLOR env detection (`IsCI()`, `IsNoColor()`). Merged into root         |
 | **testhelpers/**                   | FULLY_FUNCTIONAL | Shared test assertions. Zero dependencies, publicly importable                |
 | **testhelpers/graphtest/**         | FULLY_FUNCTIONAL | Shared graph test fixtures. Zero dependencies                                 |
 | **table/**                         | FULLY_FUNCTIONAL | Lipgloss terminal tables. Isolated from root module                           |

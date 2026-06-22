@@ -7,7 +7,7 @@ import (
 
 	"golang.org/x/term"
 
-	"github.com/larsartmann/go-output/envdetect"
+	output "github.com/larsartmann/go-output"
 )
 
 func TestVisibleWidth(t *testing.T) {
@@ -213,7 +213,7 @@ func TestPhysicalLineCount(t *testing.T) {
 
 // colorDetectionVars are every environment variable detectNoColor consults.
 // Backed by envdetect.CIEnvVars so root and nom cannot drift apart.
-var colorDetectionVars = append([]string{"NO_COLOR", "TERM"}, envdetect.CIEnvVars...)
+var colorDetectionVars = append([]string{"NO_COLOR", "TERM"}, output.CIEnvVars...)
 
 // clearColorDetectionEnv clears every env var detectNoColor consults so a test
 // starts from a known clean state. Each is restored automatically by t.Setenv.

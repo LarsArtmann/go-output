@@ -2,8 +2,6 @@ package output
 
 import (
 	"slices"
-
-	"github.com/larsartmann/go-output/enum"
 )
 
 // GraphRenderer defines the interface for graph format renderers.
@@ -102,7 +100,7 @@ func (e *InvalidNodeShapeError) Error() string {
 
 // ParseNodeShape converts a string to NodeShape, returning an error if invalid.
 func ParseNodeShape(s string) (NodeShape, error) {
-	v, err := enum.Parse(nodeShapeValues, s, func(g NodeShape) string { return string(g) })
+	v, err := ParseEnum(nodeShapeValues, s, func(g NodeShape) string { return string(g) })
 	if err != nil {
 		return "", &InvalidNodeShapeError{Value: s}
 	}
@@ -117,12 +115,12 @@ func (s NodeShape) String() string {
 
 // AllowedValues returns all valid graph shape values.
 func (s NodeShape) AllowedValues() []string {
-	return enum.AllowedValues(nodeShapeValues)
+	return EnumAllowedValues(nodeShapeValues)
 }
 
 // IsValid checks if the graph shape is valid.
 func (s NodeShape) IsValid() bool {
-	return enum.Contains(nodeShapeValues, s)
+	return ContainsEnum(nodeShapeValues, s)
 }
 
 // GraphStyle represents styling attributes for a graph node.

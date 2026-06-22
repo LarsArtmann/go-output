@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/larsartmann/go-output/enum"
+	output "github.com/larsartmann/go-output"
 )
 
 // D2Direction constants for diagram layout direction.
@@ -33,7 +33,7 @@ var ErrInvalidD2Direction = errors.New("invalid D2 direction")
 
 // ParseD2Direction converts a string to D2Direction, returning an error if invalid.
 func ParseD2Direction(s string) (D2Direction, error) {
-	v, err := enum.Parse(d2DirectionValues, s, func(d D2Direction) string { return string(d) })
+	v, err := output.ParseEnum(d2DirectionValues, s, func(d D2Direction) string { return string(d) })
 	if err != nil {
 		return "", fmt.Errorf("%w: %q", ErrInvalidD2Direction, s)
 	}
@@ -43,12 +43,12 @@ func ParseD2Direction(s string) (D2Direction, error) {
 
 // IsValid returns true if the direction is a valid D2Direction value.
 func (d D2Direction) IsValid() bool {
-	return enum.Contains(d2DirectionValues, d)
+	return output.ContainsEnum(d2DirectionValues, d)
 }
 
 // AllowedValues returns all valid D2 direction values for CLI help text.
 func (d D2Direction) AllowedValues() []string {
-	return enum.AllowedValues(d2DirectionValues)
+	return output.EnumAllowedValues(d2DirectionValues)
 }
 
 // String returns the string representation of the direction.
@@ -112,7 +112,7 @@ var ErrInvalidD2NodeShape = errors.New("invalid D2 node shape")
 
 // ParseD2NodeShape converts a string to D2NodeShape, returning an error if invalid.
 func ParseD2NodeShape(s string) (D2NodeShape, error) {
-	v, err := enum.Parse(d2NodeShapeValues, s, func(ns D2NodeShape) string { return string(ns) })
+	v, err := output.ParseEnum(d2NodeShapeValues, s, func(ns D2NodeShape) string { return string(ns) })
 	if err != nil {
 		return "", fmt.Errorf("%w: %q", ErrInvalidD2NodeShape, s)
 	}
@@ -122,12 +122,12 @@ func ParseD2NodeShape(s string) (D2NodeShape, error) {
 
 // IsValid returns true if the shape is a valid D2NodeShape value.
 func (s D2NodeShape) IsValid() bool {
-	return enum.Contains(d2NodeShapeValues, s)
+	return output.ContainsEnum(d2NodeShapeValues, s)
 }
 
 // AllowedValues returns all valid D2 node shape values for CLI help text.
 func (s D2NodeShape) AllowedValues() []string {
-	return enum.AllowedValues(d2NodeShapeValues)
+	return output.EnumAllowedValues(d2NodeShapeValues)
 }
 
 // String returns the string representation of the node shape.
@@ -175,7 +175,7 @@ var ErrInvalidD2ArrowType = errors.New("invalid D2 arrow type")
 
 // ParseD2ArrowType converts a string to D2ArrowType, returning an error if invalid.
 func ParseD2ArrowType(s string) (D2ArrowType, error) {
-	v, err := enum.Parse(d2ArrowTypeValues, s, func(a D2ArrowType) string { return string(a) })
+	v, err := output.ParseEnum(d2ArrowTypeValues, s, func(a D2ArrowType) string { return string(a) })
 	if err != nil {
 		return "", fmt.Errorf("%w: %q", ErrInvalidD2ArrowType, s)
 	}
@@ -185,12 +185,12 @@ func ParseD2ArrowType(s string) (D2ArrowType, error) {
 
 // IsValid returns true if the arrow type is a valid D2ArrowType value.
 func (a D2ArrowType) IsValid() bool {
-	return a == D2ArrowNone || enum.Contains(d2ArrowTypeValues, a)
+	return a == D2ArrowNone || output.ContainsEnum(d2ArrowTypeValues, a)
 }
 
 // AllowedValues returns all valid D2 arrow type values for CLI help text.
 func (a D2ArrowType) AllowedValues() []string {
-	return enum.AllowedValues(d2ArrowTypeValues)
+	return output.EnumAllowedValues(d2ArrowTypeValues)
 }
 
 // String returns the string representation of the arrow type.
@@ -225,7 +225,7 @@ func AllD2Constraints() []D2Constraint {
 
 // ParseD2Constraint converts a string to D2Constraint, returning an error if invalid.
 func ParseD2Constraint(s string) (D2Constraint, error) {
-	v, err := enum.Parse(allD2Constraints, s, func(d D2Constraint) string { return string(d) })
+	v, err := output.ParseEnum(allD2Constraints, s, func(d D2Constraint) string { return string(d) })
 	if err != nil {
 		return "", fmt.Errorf("%w: %q", ErrInvalidD2Constraint, s)
 	}
@@ -238,10 +238,10 @@ func (c D2Constraint) String() string { return string(c) }
 
 // AllowedValues returns all valid D2Constraint values for CLI help text.
 func (c D2Constraint) AllowedValues() []string {
-	return enum.AllowedValues(allD2Constraints)
+	return output.EnumAllowedValues(allD2Constraints)
 }
 
 // IsValid returns true if the constraint is a valid D2Constraint value.
 func (c D2Constraint) IsValid() bool {
-	return enum.Contains(allD2Constraints, c)
+	return output.ContainsEnum(allD2Constraints, c)
 }

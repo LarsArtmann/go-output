@@ -4,9 +4,6 @@ import (
 	"os"
 
 	"golang.org/x/term"
-
-	"github.com/larsartmann/go-output/enum"
-	"github.com/larsartmann/go-output/envdetect"
 )
 
 // ANSI escape codes for terminal coloring.
@@ -49,7 +46,7 @@ func (e *InvalidColorModeError) Error() string {
 
 // ParseColorMode converts a string to ColorMode, returning an error if invalid.
 func ParseColorMode(s string) (ColorMode, error) {
-	v, err := enum.Parse(colorModeValues, s, func(c ColorMode) string { return string(c) })
+	v, err := ParseEnum(colorModeValues, s, func(c ColorMode) string { return string(c) })
 	if err != nil {
 		return "", &InvalidColorModeError{Value: s}
 	}
@@ -64,12 +61,12 @@ func (c ColorMode) String() string {
 
 // AllowedValues returns all valid color mode values.
 func (c ColorMode) AllowedValues() []string {
-	return enum.AllowedValues(colorModeValues)
+	return EnumAllowedValues(colorModeValues)
 }
 
 // IsValid checks if the color mode is valid.
 func (c ColorMode) IsValid() bool {
-	return enum.Contains(colorModeValues, c)
+	return ContainsEnum(colorModeValues, c)
 }
 
 // ShouldColor returns true if colors should be enabled.
@@ -101,9 +98,9 @@ var (
 		return term.IsTerminal(int(os.Stdout.Fd()))
 	}
 
-	noColorEnv = envdetect.IsNoColor
+	noColorEnv = IsNoColor
 
-	ciEnv = envdetect.IsCI
+	ciEnv = IsCI
 )
 
 func isTerminalByEnv(envVars ...string) bool {

@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"errors"
 	"io"
-	"slices"
 	"strconv"
 	"strings"
 	"sync"
@@ -44,14 +43,17 @@ func TestRegisteredTableDataFormats(t *testing.T) {
 
 	formats := RegisteredTableDataFormats()
 
-	// Root init() registers the Tree TableData renderer. Other formats
-	// (Markdown, CSV, JSON, ...) self-register from their sub-modules when
-	// imported — e.g. the markdown import in userjourney_test activates
-	// FormatMarkdown in this test binary.
-	for _, exp := range []Format{FormatMarkdown, FormatTree} {
-		if !slices.Contains(formats, exp) {
-			t.Errorf("expected format %q to be registered, but it was not. Registered: %v", exp, formats)
+	// Root in isolation does not register any TableData renderers via init().
+	// Sub-modules (markdown, tree, delimited, ...) self-register when imported.
+	// Cross-module registration is tested in integration/.
+	// Just verify the call is safe and returns no duplicates.
+	seen := make(map[Format]bool, len(formats))
+	for _, f := range formats {
+		if seen[f] {
+			t.Errorf("duplicate format in RegisteredTableDataFormats: %q", f)
 		}
+
+		seen[f] = true
 	}
 }
 
