@@ -9,8 +9,8 @@ require (
 
 require (
 	github.com/larsartmann/go-branded-id v0.3.1 // indirect
-	github.com/larsartmann/go-output/enum v0.13.0 // indirect
-	github.com/larsartmann/go-output/envdetect v0.13.0 // indirect
+	github.com/larsartmann/go-output/enum v0.17.0 // indirect
+	github.com/larsartmann/go-output/envdetect v0.17.0 // indirect
 	golang.org/x/sys v0.46.0 // indirect
 	golang.org/x/term v0.44.0 // indirect
 )

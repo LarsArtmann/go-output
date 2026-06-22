@@ -94,6 +94,7 @@ output.RenderTableData(data, output.FormatHTML, output.RenderOptions{
 Same data, rendered six ways — all from one `TableData`:
 
 **Markdown table:**
+
 ```text
 | Name  | Health | Complexity |
 |-------|--------|------------|
@@ -103,6 +104,7 @@ Same data, rendered six ways — all from one `TableData`:
 ```
 
 **CSV:**
+
 ```text
 Name,Health,Complexity
 Alpha,90%,7/10
@@ -112,6 +114,7 @@ TOTAL,3,-
 ```
 
 **Tree:**
+
 ```text
 └── Projects
     ├── Alpha (health: 90%, complexity: 7)
@@ -120,6 +123,7 @@ TOTAL,3,-
 ```
 
 **D2 diagram:**
+
 ```text
 projects: {
   shape: sql_table
@@ -132,6 +136,7 @@ projects -> Alpha { target-arrowhead.shape: cf-many }
 ```
 
 **Mermaid flowchart:**
+
 ```text
 flowchart TD
     Alpha[Alpha]
@@ -140,6 +145,7 @@ flowchart TD
 ```
 
 **DOT / Graphviz:**
+
 ```text
 digraph G {
   rankdir=LR;
