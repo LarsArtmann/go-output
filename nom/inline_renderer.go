@@ -68,7 +68,18 @@ type InlineRenderer struct {
 	// lastFrame is the last frame string written to the terminal. Draw()
 	// compares the new frame against this; if identical, it skips the write
 	// entirely (zero bytes). This is the core fix for the repetition bug.
-	lastFrame string
+	//
+	// lastFramePlain tracks the plainText mode that was in effect when
+	// lastFrame was stored. Draw() compares both frame content AND mode —
+	// if the mode changed (e.g. SetPlainText called), the diff invalidates
+	// even though the frame string is identical, because the OUTPUT differs
+	// (plain text appends; inline mode wraps in cursor codes).
+	//
+	// Both fields are guarded exclusively by renderMu. SetPlainText signals
+	// a mode change via snapshotConfig (under tickMu), never by writing
+	// lastFrame directly — that would cross the two-mutex boundary and race.
+	lastFrame      string
+	lastFramePlain bool
 
 	tickMu       sync.RWMutex
 	renderMu     sync.Mutex // serializes Draw/Finish terminal writes + prevLines
@@ -241,8 +252,6 @@ func (r *InlineRenderer) SetPlainText(plain bool) {
 	defer r.tickMu.Unlock()
 
 	r.plainText = plain
-	// Reset lastFrame so the next Draw() always emits (mode changed).
-	r.lastFrame = ""
 }
 
 // Draw renders one frame to the configured io.Writer.
@@ -281,10 +290,12 @@ func (r *InlineRenderer) Draw() {
 	}
 
 	// Frame diffing: skip the write entirely if nothing changed since the
-	// last frame. This is the single most important fix — it means the
-	// 200ms refresh ticker produces zero output when the tree is stable,
-	// instead of re-emitting the full frame every tick.
-	if frame == r.lastFrame {
+	// last frame. Two conditions must both hold: the frame content is
+	// identical AND the plainText mode is unchanged. A mode change (via
+	// SetPlainText) alters the output format even though the frame string
+	// is the same, so it must invalidate the diff. Both fields are under
+	// renderMu, so this comparison is race-free.
+	if frame == r.lastFrame && cfg.plainText == r.lastFramePlain {
 		return
 	}
 
@@ -294,6 +305,7 @@ func (r *InlineRenderer) Draw() {
 	if cfg.plainText {
 		r.write(frame + "\n")
 		r.lastFrame = frame
+		r.lastFramePlain = cfg.plainText
 
 		return
 	}
@@ -318,6 +330,7 @@ func (r *InlineRenderer) Draw() {
 
 	r.prevLines = physicalLines
 	r.lastFrame = frame
+	r.lastFramePlain = cfg.plainText
 }
 
 // buildRedrawOutput assembles the ANSI payload for one in-place redraw. On the
