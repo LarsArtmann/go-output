@@ -7,8 +7,6 @@ import (
 	"sync"
 	"testing"
 	"time"
-
-	"github.com/charmbracelet/x/ansi"
 )
 
 // TestInlineRenderer_FrameDiffing_SkipsIdenticalFrames verifies the core fix
@@ -100,9 +98,11 @@ func TestInlineRenderer_WriterNotTTY_NoSyncCodes(t *testing.T) {
 
 	var buf bytes.Buffer
 
-	// newInlineTestRenderer forces SetPlainText(false), but writerIsTTY is
-	// still false (buffer is not *os.File). Sync codes should be absent.
-	renderer := newInlineTestRenderer(sub, &buf, 10)
+	// Use NewInlineRenderer directly (not newInlineTestRenderer which forces
+	// writerIsTTY=true). A bytes.Buffer is not a TTY, so sync codes must be
+	// absent and plainText must be true.
+	renderer := NewInlineRenderer(sub, &buf, 10)
+	renderer.SetNoColor(true)
 
 	if renderer.writerIsTTY {
 		t.Fatal("buffer writer should not be detected as TTY")
@@ -116,11 +116,11 @@ func TestInlineRenderer_WriterNotTTY_NoSyncCodes(t *testing.T) {
 
 	output := buf.String()
 
-	if strings.Contains(output, ansi.SetSynchronizedOutputMode) {
+	if strings.Contains(output, "\x1b[?2026h") {
 		t.Errorf("non-TTY writer must not emit sync-output begin code")
 	}
 
-	if strings.Contains(output, ansi.ResetSynchronizedOutputMode) {
+	if strings.Contains(output, "\x1b[?2026l") {
 		t.Errorf("non-TTY writer must not emit sync-output end code")
 	}
 }
@@ -243,7 +243,6 @@ func TestInlineRenderer_ConcurrentSetPlainTextAndDraw(t *testing.T) {
 	var wg sync.WaitGroup
 
 	for range 50 {
-
 		wg.Go(func() {
 			r.Draw()
 		})

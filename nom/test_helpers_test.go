@@ -16,15 +16,23 @@ func newTestSubscriber(t *testing.T) *NOMStyleSubscriber {
 }
 
 // newInlineTestRenderer creates an InlineRenderer configured for unit testing
-// against a bytes.Buffer. Production detection (detectPlainTextForWriter,
-// detectNoColorForWriter) treats non-TTY buffers as plain-text/no-color, which
-// skips the inline cursor-code path entirely. Tests that need to exercise the
-// inline rendering path (cursor-up, clear-line, sync-output codes) must
-// explicitly disable plain-text mode and enable deterministic no-color output.
+// against a bytes.Buffer. Production detection treats non-TTY buffers as
+// plain-text (no cursor codes). Tests that need to exercise the inline
+// rendering path (cursor-up, clear-line, sync-output codes) must bypass the
+// authoritative plainText gate by setting writerIsTTY=true directly — this
+// simulates what a real terminal would provide, without requiring an actual TTY.
 func newInlineTestRenderer(sub *NOMStyleSubscriber, buf *bytes.Buffer, maxHeight int) *InlineRenderer {
 	r := NewInlineRenderer(sub, buf, maxHeight)
-	r.SetPlainText(false) // force inline rendering path (cursor codes)
-	r.SetNoColor(true)    // deterministic output (no terminal color codes)
+	r.SetNoColor(true) // deterministic output (no terminal color codes)
+
+	// Force the inline rendering path for testing: pretend the buffer is a TTY.
+	// snapshotConfig() computes effectivePlainText = plainText || !writerIsTTY,
+	// so writerIsTTY=true + plainText=false (default from NewInlineRenderer with
+	// non-CI env) gives us the inline path.
+	r.tickMu.Lock()
+	r.writerIsTTY = true
+	r.plainText = false
+	r.tickMu.Unlock()
 
 	return r
 }

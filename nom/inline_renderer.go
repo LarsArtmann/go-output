@@ -97,14 +97,24 @@ type rendererConfig struct {
 // snapshotConfig returns an immutable copy of all renderer configuration under
 // a single tickMu.RLock. Callers then read freely without holding the lock,
 // so the potentially slow terminal write (under renderMu) never blocks setters.
+//
+// Type safety: plainText is computed authoritatively here — if the writer is
+// not a TTY, plainText is ALWAYS true regardless of what SetPlainText(false)
+// was called with. This makes the impossible state (plain=false on a non-TTY
+// writer, which would emit cursor codes to a pipe) unrepresentable.
 func (r *InlineRenderer) snapshotConfig() rendererConfig {
 	r.tickMu.RLock()
 	defer r.tickMu.RUnlock()
 
+	// Authoritative plainText: a non-TTY writer can NEVER use inline cursor
+	// codes. SetPlainText(false) on a non-TTY is a no-op — the only valid
+	// direction is degradation (TTY → plain), never upgrade (pipe → inline).
+	effectivePlainText := r.plainText || !r.writerIsTTY
+
 	return rendererConfig{
 		hideCursor:  r.hideCursor,
 		noColor:     r.noColor,
-		plainText:   r.plainText,
+		plainText:   effectivePlainText,
 		appName:     r.appName,
 		startTime:   r.startTime,
 		maxHeight:   r.maxHeight,
@@ -218,9 +228,13 @@ func (r *InlineRenderer) SetMaxHeight(maxHeight int) {
 
 // SetPlainText forces plain, append-only output (no cursor/sync escape codes).
 // By default, plainText is auto-detected at construction via detectPlainTextForWriter()
-// (true under CI or when the writer is not a terminal). Use this to override at
-// runtime — e.g. when a downstream wrapper discovers the writer is not a terminal
-// after startup.
+// (true under CI or when the writer is not a terminal).
+//
+// Type safety: if the writer is not a TTY, calling SetPlainText(false) is a
+// no-op — a non-TTY writer can NEVER use inline cursor codes. This makes the
+// impossible state (plain=false on a pipe) unrepresentable. SetPlainText only
+// works in the degradation direction: TTY → plain.
+//
 // Thread-safe: may be called before or during the render loop.
 func (r *InlineRenderer) SetPlainText(plain bool) {
 	r.tickMu.Lock()
