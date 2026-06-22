@@ -52,6 +52,13 @@ roots. No public API changes; drop-in upgrade from v0.17.0.
   equivalents (`SetModeSynchronizedOutput` / `ResetModeSynchronizedOutput` /
   `CUU1`); reworded a comment to avoid a godox trigger; added `os/signal`
   and `syscall` to the depguard allow list for the SIGWINCH handler.
+- **Data race on `lastFrame` resolved.** `SetPlainText()` wrote `r.lastFrame`
+  under `tickMu` while `Draw()` read/wrote the same field under `renderMu` —
+  two different mutexes with no mutual exclusion, detected by the race
+  detector. `lastFrame` is now guarded exclusively by `renderMu`; the
+  "force redraw on mode change" signal flows through the config snapshot
+  (`lastFramePlain` tracks the mode alongside the frame string). This
+  respects the documented two-mutex design by never crossing the boundary.
 
 ### Changed
 
