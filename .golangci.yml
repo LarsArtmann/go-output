@@ -197,6 +197,8 @@ linters:
             - github.com/onsi/gomega
             - github.com/charmbracelet/x/exp/golden
             - github.com/mattn/go-runewidth
+            - os/signal
+            - syscall
         examples:
           allow:
             - $STDERR
@@ -278,6 +280,8 @@ linters:
             - time
             - log
             - github.com/charmbracelet/x/ansi
+            - os/signal
+            - syscall
     exhaustruct:
       exclude:
         - os/exec.Cmd

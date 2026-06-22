@@ -250,7 +250,7 @@ func (r *InlineRenderer) SetPlainText(plain bool) {
 // Frame diffing: if the frame content is identical to the last frame written
 // (same tree state, same elapsed-time rounding), Draw emits ZERO bytes — no
 // cursor-up, no clear, no sync-output wrapping. This eliminates the repetition
-// bug where every 200ms tick appended a full copy of the tree on terminals
+// issue where every 200ms tick appended a full copy of the tree on terminals
 // that don't support synchronized output. This mirrors bubbletea v2's
 // cursedRenderer viewEquals() early-exit pattern.
 //
@@ -311,7 +311,7 @@ func (r *InlineRenderer) Draw() {
 	// meaningless and can corrupt captured output. This matches how
 	// charmbracelet/bubbletea gates sync-output on actual terminal support.
 	if cfg.writerIsTTY {
-		r.write(ansi.SetSynchronizedOutputMode + output + ansi.ResetSynchronizedOutputMode)
+		r.write(ansi.SetModeSynchronizedOutput + output + ansi.ResetModeSynchronizedOutput)
 	} else {
 		r.write(output)
 	}

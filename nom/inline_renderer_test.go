@@ -372,12 +372,12 @@ func TestInlineRenderer_CIMode_PlainTextNoCursorCodes(t *testing.T) {
 
 	output := buf.String()
 
-	if strings.Contains(output, ansi.CursorUp1) {
+	if strings.Contains(output, ansi.CUU1) {
 		t.Errorf("CI plain mode must not emit cursor-up codes, got:\n%q", output)
 	}
 
-	if strings.Contains(output, ansi.SetSynchronizedOutputMode) ||
-		strings.Contains(output, ansi.ResetSynchronizedOutputMode) {
+	if strings.Contains(output, ansi.SetModeSynchronizedOutput) ||
+		strings.Contains(output, ansi.ResetModeSynchronizedOutput) {
 		t.Errorf("CI plain mode must not emit sync-region codes, got:\n%q", output)
 	}
 
