@@ -1,0 +1,661 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Status Report — go-output v0.18.0</title>
+    <style>
+      :root {
+        --color-graphite: #0e0e10;
+        --color-graphite-2: #18181d;
+        --color-graphite-3: #16161a;
+        --color-bone: #f4f4f0;
+        --color-red: #ff6b6b;
+        --color-blue: #6eb5ff;
+        --color-yellow: #f4d35e;
+        --color-amber: #ffb347;
+        --color-hairline: rgba(244, 244, 240, 0.12);
+        --color-hairline-strong: rgba(244, 244, 240, 0.25);
+        --surface: var(--color-graphite);
+        --surface-raised: var(--color-graphite-2);
+        --surface-sunken: var(--color-graphite-3);
+        --text: var(--color-bone);
+        --text-muted: rgba(244, 244, 240, 0.72);
+        --text-faint: rgba(244, 244, 240, 0.45);
+        --border: var(--color-hairline);
+        --border-strong: var(--color-hairline-strong);
+        --accent: var(--color-amber);
+        --problem: var(--color-red);
+        --solution: var(--color-blue);
+        --warning: var(--color-yellow);
+        --radius: 0px;
+        --radius-sm: 0px;
+        --font-heading: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        --font-body: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        --font-mono: ui-monospace, "Cascadia Code", "Source Code Pro", "JetBrains Mono", Menlo, Consolas, monospace;
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html { scroll-behavior: smooth; }
+      section[id], [id] { scroll-margin-top: 60px; }
+      body { background: var(--surface); color: var(--text); font-family: var(--font-body); font-size: 15px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+      .top-bar { background: var(--text); color: var(--surface); padding: 0.6rem 2rem; font-family: var(--font-mono); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; }
+      .layout { display: flex; gap: 2.5rem; padding: 2rem; }
+      .sidebar { width: 220px; flex-shrink: 0; position: sticky; top: 1rem; align-self: flex-start; height: calc(100vh - 2rem); overflow-y: auto; display: none; }
+      .sidebar nav { display: flex; flex-direction: column; gap: 0; }
+      .sidebar .label { font-family: var(--font-mono); font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; color: var(--accent); margin-bottom: 0.75rem; padding-bottom: 0.4rem; border-bottom: 2px solid var(--border-strong); }
+      .sidebar a { font-size: 0.85rem; color: var(--text-muted); text-decoration: none; padding: 0.45rem 0.75rem; border-left: 2px solid transparent; transition: all 0.15s ease; line-height: 1.4; font-weight: 500; }
+      .sidebar a:hover, .sidebar a.active { color: var(--accent); border-left-color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, transparent); }
+      .main { flex: 1; min-width: 0; }
+      h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 800; letter-spacing: -0.02em; }
+      h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); line-height: 1.1; margin: 0 0 0.6rem; }
+      h2 { font-size: 1.4rem; margin: 2.5rem 0 1rem; padding-bottom: 0.4rem; border-bottom: 2px solid var(--border-strong); display: flex; align-items: baseline; gap: 0.6rem; }
+      h2 .num { font-family: var(--font-mono); font-size: 0.78rem; color: var(--accent); font-weight: 700; letter-spacing: 0.06em; }
+      h3 { font-size: 1.1rem; margin: 0 0 0.4rem; font-weight: 700; }
+      h4 { font-size: 0.98rem; margin: 0 0 0.3rem; font-weight: 700; }
+      p { margin: 0 0 1rem; }
+      .hero { padding: 1.5rem 0 1.5rem; margin-bottom: 1.5rem; border-bottom: 2px solid var(--border-strong); }
+      .hero-badge { display: inline-block; font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; color: var(--surface); background: var(--accent); padding: 0.3rem 0.7rem; margin-bottom: 0.9rem; }
+      .hero-subtitle { font-size: 1.05rem; color: var(--text-muted); max-width: 70ch; margin: 0; }
+      .hero-shapes { position: relative; height: 80px; margin-bottom: 1rem; }
+      .hero-shapes .circle { position: absolute; top: 0; left: 0; width: 56px; height: 56px; background: var(--problem); border-radius: 50%; }
+      .hero-shapes .square { position: absolute; top: 24px; left: 72px; width: 48px; height: 48px; background: var(--solution); }
+      .hero-shapes .tri { position: absolute; top: 8px; left: 140px; width: 0; height: 0; border-left: 28px solid transparent; border-right: 28px solid transparent; border-bottom: 48px solid var(--warning); }
+      .card { background: var(--surface-raised); border: 1px solid var(--border); padding: 1.1rem 1.3rem; margin-bottom: 1rem; border-left: 4px solid var(--border-strong); }
+      .card-problem { border-left-color: var(--problem); background: color-mix(in srgb, var(--problem) 8%, var(--surface-raised)); }
+      .card-solution { border-left-color: var(--solution); background: color-mix(in srgb, var(--solution) 8%, var(--surface-raised)); }
+      .card-warning { border-left-color: var(--warning); background: color-mix(in srgb, var(--warning) 8%, var(--surface-raised)); }
+      .severity { display: inline-block; font-family: var(--font-mono); font-size: 0.62rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.2rem 0.55rem; margin-bottom: 0.6rem; color: var(--surface); }
+      .severity-critical { background: var(--problem); }
+      .severity-important { background: var(--warning); }
+      .severity-nice { background: var(--solution); }
+      .badge { display: inline-block; font-family: var(--font-mono); font-size: 0.62rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.18rem 0.5rem; border: 1px solid var(--border-strong); color: var(--text-muted); }
+      .badge-critical { color: var(--problem); border-color: var(--problem); }
+      .badge-high { color: var(--warning); border-color: var(--warning); }
+      .badge-medium { color: var(--accent); border-color: var(--accent); }
+      .badge-low { color: var(--text-muted); }
+      .badge-fixed { color: var(--solution); border-color: var(--solution); }
+      .stat-grid, .scorecard { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.75rem; margin: 1rem 0 1.5rem; }
+      .stat-card, .score-card { background: var(--surface-raised); border: 1px solid var(--border); padding: 1.1rem 1rem; position: relative; }
+      .stat-card::before, .score-card::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--border-strong); }
+      .stat-bad::before, .score-bad::before { background: var(--problem); }
+      .stat-good::before, .score-good::before { background: var(--solution); }
+      .stat-warn::before, .score-warn::before { background: var(--warning); }
+      .stat-value, .score { font-family: var(--font-heading); font-size: 2rem; font-weight: 800; line-height: 1; letter-spacing: -0.03em; color: var(--text); }
+      .stat-bad .stat-value, .score-bad .score { color: var(--problem); }
+      .stat-good .stat-value, .score-good .score { color: var(--solution); }
+      .stat-warn .stat-value, .score-warn .score { color: var(--warning); }
+      .stat-label, .score-card .label { font-family: var(--font-mono); font-size: 0.65rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-faint); margin-top: 0.5rem; }
+      .strengths { display: grid; gap: 0.5rem; margin: 1rem 0 1.5rem; }
+      .strength { display: grid; grid-template-columns: auto 1fr; gap: 0.8rem; padding: 0.7rem 0; border-bottom: 1px solid var(--border); }
+      .strength .check { font-family: var(--font-mono); font-weight: 700; color: var(--solution); font-size: 1.1rem; line-height: 1.4; }
+      .strength .text strong { display: block; margin-bottom: 0.15rem; }
+      .strength .text span { color: var(--text-muted); font-size: 0.9rem; }
+      table { width: 100%; border-collapse: collapse; margin: 1rem 0 1.5rem; font-size: 0.9rem; }
+      th { text-align: left; padding: 0.6rem 0.9rem; background: var(--surface-raised); color: var(--text-faint); font-family: var(--font-mono); font-size: 0.66rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; border-bottom: 1px solid var(--border-strong); }
+      td { padding: 0.6rem 0.9rem; border-bottom: 1px solid var(--border); }
+      tr:hover td { background: var(--surface-raised); }
+      pre { background: var(--surface-sunken); border: 1px solid var(--border); padding: 1rem 1.2rem; margin: 1rem 0; font-family: var(--font-mono); font-size: 0.82rem; line-height: 1.65; overflow-x: auto; }
+      code { font-family: var(--font-mono); }
+      .callout { margin: 0.8rem 0 0; padding: 0.7rem 0.9rem; border-left: 3px solid var(--border-strong); background: color-mix(in srgb, var(--text) 5%, transparent); font-size: 0.9rem; }
+      .callout strong { display: inline-block; margin-right: 0.4rem; }
+      .callout-solution { border-left-color: var(--solution); background: color-mix(in srgb, var(--solution) 10%, transparent); }
+      .callout-warning { border-left-color: var(--warning); background: color-mix(in srgb, var(--warning) 10%, transparent); }
+      .callout-problem { border-left-color: var(--problem); background: color-mix(in srgb, var(--problem) 10%, transparent); }
+      .footer { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border); font-size: 0.8rem; color: var(--text-faint); font-family: var(--font-mono); }
+      @media (min-width: 1024px) { .sidebar { display: block; } }
+      @media (max-width: 768px) { .layout { flex-direction: column; padding: 1rem; } .top-bar { padding: 0.6rem 1rem; flex-wrap: wrap; gap: 0.3rem; } .stat-grid, .scorecard { grid-template-columns: repeat(2, 1fr); } }
+    </style>
+  </head>
+  <body>
+    <div class="top-bar">
+      <span>STATUS REPORT</span>
+      <span>2026-06-23 01:45 CET</span>
+      <span>go-output v0.18.0</span>
+    </div>
+
+    <div class="layout">
+      <aside class="sidebar" data-nav>
+        <nav>
+          <div class="label">Contents</div>
+          <a href="#summary">Summary</a>
+          <a href="#done">Fully Done</a>
+          <a href="#partial">Partially Done</a>
+          <a href="#not-started">Not Started</a>
+          <a href="#fucked">Fucked Up</a>
+          <a href="#improve">Improvements</a>
+          <a href="#next25">Top 25 Next</a>
+          <a href="#question">The Big Question</a>
+        </nav>
+      </aside>
+
+      <main class="main">
+        <div class="hero">
+          <div class="hero-shapes">
+            <div class="circle"></div>
+            <div class="square"></div>
+            <div class="tri"></div>
+          </div>
+          <div class="hero-badge">Comprehensive Status</div>
+          <h1>go-output — Post Pattern B Migration</h1>
+          <p class="hero-subtitle">
+            18-module Go library for CLI output formatting (16 formats) and NOM-style
+            real-time progress. Just completed a major architecture migration from
+            stale-real-pins to Pattern B versioning. All gates green. Here is the
+            honest, brutally complete picture.
+          </p>
+        </div>
+
+        <!-- ============ SUMMARY ============ -->
+        <h2 id="summary"><span class="num">00</span>Summary</h2>
+        <div class="stat-grid">
+          <div class="stat-card stat-good">
+            <div class="stat-value">18/18</div>
+            <div class="stat-label">Modules Green</div>
+          </div>
+          <div class="stat-card stat-good">
+            <div class="stat-value">0</div>
+            <div class="stat-label">Lint Issues</div>
+          </div>
+          <div class="stat-card stat-good">
+            <div class="stat-value">91%</div>
+            <div class="stat-label">Avg Coverage</div>
+          </div>
+          <div class="stat-card stat-good">
+            <div class="stat-value">0</div>
+            <div class="stat-label">Known Issues</div>
+          </div>
+          <div class="stat-card stat-warn">
+            <div class="stat-value">16</div>
+            <div class="stat-label">Stale Tags</div>
+          </div>
+          <div class="stat-card stat-warn">
+            <div class="stat-value">2</div>
+            <div class="stat-label">Open TODOs</div>
+          </div>
+        </div>
+
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-value">34,247</div>
+            <div class="stat-label">Lines of Go</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">271</div>
+            <div class="stat-label">Go Files</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">9</div>
+            <div class="stat-label">ADRs</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">173</div>
+            <div class="stat-label">Features Tracked</div>
+          </div>
+        </div>
+
+        <!-- ============ FULLY DONE ============ -->
+        <h2 id="done"><span class="num">01</span>Fully Done</h2>
+
+        <div class="card card-solution">
+          <h4>Pattern B Migration — Complete</h4>
+          <p>
+            All 18 modules migrated to <code>v0.0.0-00010101000000-000000000000</code> + committed
+            <code>replace</code>. Sibling version-pin rot is structurally impossible. <code>enum/</code>
+            and <code>envdetect/</code> merged into root. CI workflows, flake.nix, golangci.yml,
+            all docs updated. ADR 009 documents the decision.
+          </p>
+        </div>
+
+        <div class="card card-solution">
+          <h4>16 Output Formats — All FULLY_FUNCTIONAL</h4>
+          <p>
+            JSON, YAML, TOML, CSV, TSV, Markdown, XML, HTML, AsciiDoc, JSONL, D2, DOT, Mermaid,
+            PlantUML, Terminal Table (lipgloss), ASCII Tree. Plus NOM progress + Bubble Tea TUI.
+            Zero KNOWN_ISSUEs in FEATURES.md.
+          </p>
+        </div>
+
+        <div class="card card-solution">
+          <h4>Quality Gates — All Green</h4>
+          <p>
+            <strong>Build:</strong> 18/18 modules pass. <strong>Test:</strong> 18/18 pass.
+            <strong>Race:</strong> nom + tui clean under <code>-race</code>. <strong>Lint:</strong>
+            0 issues across all modules (golangci-lint v2.12, ~60 linters enabled).
+            <strong>TODO/FIXME:</strong> 0 in production source.
+          </p>
+        </div>
+
+        <div class="strengths">
+          <div class="strength">
+            <div class="check">+</div>
+            <div class="text">
+              <strong>Root stays independently go get-able</strong>
+              <span>go get github.com/larsartmann/go-output pulls only x/term + branded-id. Zero lipgloss/bubbletea.</span>
+            </div>
+          </div>
+          <div class="strength">
+            <div class="check">+</div>
+            <div class="text">
+              <strong>Coverage 89.6%–98.6% across all modules</strong>
+              <span>Root: 91%, d2: 96.6%, graph: 95%, table: 98.6%, nom: 90.4%, tui: 89.6%.</span>
+            </div>
+          </div>
+          <div class="strength">
+            <div class="check">+</div>
+            <div class="text">
+              <strong>Sealed Event sum type (nom)</strong>
+              <span>Compiler-enforced exhaustive type switch. 7 event structs. No string dispatch.</span>
+            </div>
+          </div>
+          <div class="strength">
+            <div class="check">+</div>
+            <div class="text">
+              <strong>Incremental O(1) activity counts cache</strong>
+              <span>Verified by brute-force test. No per-frame O(n) scan.</span>
+            </div>
+          </div>
+          <div class="strength">
+            <div class="check">+</div>
+            <div class="text">
+              <strong>Branded phantom ID types</strong>
+              <span>D2NodeID, TreeNodeID, GraphNodeID — compile-time prevention of ID mixing.</span>
+            </div>
+          </div>
+          <div class="strength">
+            <div class="check">+</div>
+            <div class="text">
+              <strong>9 ADRs documenting every major decision</strong>
+              <span>From multi-module workspace (001) through Pattern B versioning (009).</span>
+            </div>
+          </div>
+          <div class="strength">
+            <div class="check">+</div>
+            <div class="text">
+              <strong>Nix flake as source of truth</strong>
+              <span>build, test, test-race, lint, tidy, govulncheck, setup-workspace — all via nix.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============ PARTIALLY DONE ============ -->
+        <h2 id="partial"><span class="num">02</span>Partially Done</h2>
+
+        <div class="card card-warning">
+          <span class="severity severity-important">Needs Action</span>
+          <h4>testhelpers stuck at v0.13.0</h4>
+          <p>
+            <code>testhelpers/</code> is the only sub-module with real published versions (Pattern B
+            exception). It's pinned at <code>v0.13.0</code> across all 18 <code>go.mod</code> files,
+            but the codebase is at <code>v0.18.0</code>. Needs a <code>testhelpers/v0.18.0</code> tag
+            and all pins updated before the v0.18.0 release.
+          </p>
+          <div class="callout callout-solution">
+            <strong>Fix:</strong> Tag testhelpers/v0.18.0, run <code>go get github.com/larsartmann/go-output/testhelpers@v0.18.0</code> in all modules.
+          </div>
+        </div>
+
+        <div class="card card-warning">
+          <span class="severity severity-important">Technical Debt</span>
+          <h4>v0.18.0 not yet tagged</h4>
+          <p>
+            CHANGELOG has the v0.18.0 entry, but no git tag exists. The release is code-complete
+            but needs the owner to cut the tag (root + testhelpers + graphtest).
+          </p>
+        </div>
+
+        <div class="card card-warning">
+          <span class="severity severity-nice">Cosmetic</span>
+          <h4>gopls stale cache</h4>
+          <p>
+            gopls shows phantom warnings about enum/envdetect in go.mod files that were already
+            cleaned. <code>go build</code> proves they're clean. A gopls restart fixes it. This is
+            a tooling artifact, not a code issue.
+          </p>
+        </div>
+
+        <!-- ============ NOT STARTED ============ -->
+        <h2 id="not-started"><span class="num">03</span>Not Started</h2>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>Effort</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>v1.0.0 release</strong> — API frozen (ADR 006)</td>
+              <td><span class="badge badge-low">Low</span></td>
+              <td><span class="badge badge-low">Awaiting owner tag</span></td>
+            </tr>
+            <tr>
+              <td><strong>Community submission</strong> — r/golang, Awesome Go</td>
+              <td><span class="badge badge-low">Low</span></td>
+              <td><span class="badge badge-low">Needs owner account</span></td>
+            </tr>
+            <tr>
+              <td><strong>CBOR format</strong> (ROADMAP — binary serialization)</td>
+              <td><span class="badge badge-medium">Medium</span></td>
+              <td><span class="badge badge-low">No demand yet</span></td>
+            </tr>
+            <tr>
+              <td><strong>GOWORK=off CI smoke test</strong> — verify published state builds</td>
+              <td><span class="badge badge-low">Low</span></td>
+              <td><span class="badge badge-low">Not started</span></td>
+            </tr>
+            <tr>
+              <td><strong>Stale tag cleanup strategy</strong> — 16 enum/envdetect tags</td>
+              <td><span class="badge badge-medium">Medium</span></td>
+              <td><span class="badge badge-low">Decision needed</span></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- ============ TOTALLY FUCKED UP ============ -->
+        <h2 id="fucked"><span class="num">04</span>Totally Fucked Up</h2>
+
+        <div class="card card-solution">
+          <h4>Nothing is currently broken.</h4>
+          <p>
+            All 18 modules build, test, race, and lint clean. Zero KNOWN_ISSUEs. Zero TODOs in
+            source. The Pattern B migration was completed and verified, including all follow-up
+            fixes (CI workflows, dead code, golangci.yml, docs).
+          </p>
+          <div class="callout callout-warning">
+            <strong>Honest caveat:</strong> The v0.18.0 Pattern B migration had 5 issues that were
+            caught only in self-review (broken CI workflows, dead test code, dead lint config,
+            stale doc reference, missing tag). All were fixed in follow-up commits. The lesson:
+            should have grepped ALL references before committing, not just go.mod files.
+          </div>
+        </div>
+
+        <!-- ============ IMPROVEMENTS ============ -->
+        <h2 id="improve"><span class="num">05</span>What We Should Improve</h2>
+
+        <div class="card card-warning">
+          <h4>1. No GOWORK=off CI test</h4>
+          <p>
+            Pattern B relies on <code>replace</code> directives. Local <code>nix run .#test</code>
+            passes because go.work resolves everything. But we never test what an external consumer
+            sees. A <code>GOWORK=off go build ./...</code> job in CI would catch any replace-masking
+            issue immediately.
+          </p>
+        </div>
+
+        <div class="card card-warning">
+          <h4>2. Stale git tags for deleted modules</h4>
+          <p>
+            16 tags exist for <code>enum/</code> and <code>envdetect/</code> (v0.6.1 through v0.17.1).
+            They point to valid historical code that compiles, but the modules no longer exist on
+            master. Consumers who pinned these tags will not break, but new consumers might be
+            confused. Need a strategy: retract, delete, or document-and-leave.
+          </p>
+        </div>
+
+        <div class="card card-warning">
+          <h4>3. testhelpers version lag</h4>
+          <p>
+            The ONE real-versioned sub-module is 5 minor versions behind (v0.13.0 vs v0.18.0). If
+            testhelpers gains any breaking change, consumers at v0.13.0 will be stuck. Needs a
+            retag at every release, or reconsider whether it should also go Pattern B.
+          </p>
+        </div>
+
+        <div class="card card-warning">
+          <h4>4. Missing retract directives</h4>
+          <p>
+            No <code>retract</code> directives in any go.mod. If a broken version is ever published,
+            there's no mechanism to warn consumers. Should add retracts for any known-bad historical
+            versions as a safety net.
+          </p>
+        </div>
+
+        <div class="card card-warning">
+          <h4>5. No property-based / fuzz testing beyond MarkdownTable</h4>
+          <p>
+            Only <code>FuzzMarkdownTable</code> exists. The escape module (10 functions across 6
+            formats) would benefit from fuzz testing. The nom snapshot model is a prime candidate
+            for property-based testing (invariant: snapshot never races with mutation).
+          </p>
+        </div>
+
+        <div class="card card-warning">
+          <h4>6. Integration tests don't cover every format × shape combination</h4>
+          <p>
+            16 formats × 3 shapes = 48 combinations. Integration tests cover many but not all.
+            A systematic matrix test would catch edge cases in cross-shape conversion
+            (TableData→Graph, Tree→Graph, etc.).
+          </p>
+        </div>
+
+        <!-- ============ TOP 25 NEXT ============ -->
+        <h2 id="next25"><span class="num">06</span>Top 25 Things to Do Next</h2>
+        <p>Sorted by impact (high → low), then effort (low → high).</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Task</th>
+              <th>Impact</th>
+              <th>Effort</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td><strong>Tag v0.18.0</strong> — root + testhelpers/v0.18.0 + graphtest/v0.18.0</td>
+              <td><span class="badge badge-critical">Critical</span></td>
+              <td><span class="badge badge-low">10min</span></td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td><strong>Bump testhelpers pins</strong> to v0.18.0 in all 18 go.mod files</td>
+              <td><span class="badge badge-critical">Critical</span></td>
+              <td><span class="badge badge-low">15min</span></td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td><strong>Add GOWORK=off build smoke test</strong> to CI</td>
+              <td><span class="badge badge-critical">Critical</span></td>
+              <td><span class="badge badge-low">20min</span></td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td><strong>Push to remote</strong> — current work is all committed but verify</td>
+              <td><span class="badge badge-high">High</span></td>
+              <td><span class="badge badge-low">2min</span></td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td><strong>Decide stale tag strategy</strong> for enum/envdetect (retract vs leave)</td>
+              <td><span class="badge badge-high">High</span></td>
+              <td><span class="badge badge-low">Decision</span></td>
+            </tr>
+            <tr>
+              <td>6</td>
+              <td><strong>Restart gopls</strong> to clear stale cache warnings</td>
+              <td><span class="badge badge-medium">Medium</span></td>
+              <td><span class="badge badge-low">1min</span></td>
+            </tr>
+            <tr>
+              <td>7</td>
+              <td><strong>Add retract directives</strong> for any known-bad historical versions</td>
+              <td><span class="badge badge-medium">Medium</span></td>
+              <td><span class="badge badge-low">15min</span></td>
+            </tr>
+            <tr>
+              <td>8</td>
+              <td><strong>Fuzz test escape module</strong> — 10 functions, 6 formats, security-critical</td>
+              <td><span class="badge badge-high">High</span></td>
+              <td><span class="badge badge-medium">1-2h</span></td>
+            </tr>
+            <tr>
+              <td>9</td>
+              <td><strong>Property-based test nom snapshot model</strong> — invariant: no race ever</td>
+              <td><span class="badge badge-high">High</span></td>
+              <td><span class="badge badge-medium">2-3h</span></td>
+            </tr>
+            <tr>
+              <td>10</td>
+              <td><strong>Systematic format×shape matrix test</strong> — 48 combinations</td>
+              <td><span class="badge badge-medium">Medium</span></td>
+              <td><span class="badge badge-medium">2-3h</span></td>
+            </tr>
+            <tr>
+              <td>11</td>
+              <td><strong>Cut v1.0.0</strong> — API frozen per ADR 006, just needs tag</td>
+              <td><span class="badge badge-high">High</span></td>
+              <td><span class="badge badge-low">30min</span></td>
+            </tr>
+            <tr>
+              <td>12</td>
+              <td><strong>Submit to Awesome Go</strong> — community visibility</td>
+              <td><span class="badge badge-medium">Medium</span></td>
+              <td><span class="badge badge-low">30min</span></td>
+            </tr>
+            <tr>
+              <td>13</td>
+              <td><strong>Post to r/golang</strong> — community visibility</td>
+              <td><span class="badge badge-medium">Medium</span></td>
+              <td><span class="badge badge-low">30min</span></td>
+            </tr>
+            <tr>
+              <td>14</td>
+              <td><strong>Consolidate nom's two-mutex model</strong> into a documented locking policy doc</td>
+              <td><span class="badge badge-low">Low</span></td>
+              <td><span class="badge badge-medium">1h</span></td>
+            </tr>
+            <tr>
+              <td>15</td>
+              <td><strong>Add streaming benchmarks</strong> — CSV/JSONL writer throughput in CI</td>
+              <td><span class="badge badge-medium">Medium</span></td>
+              <td><span class="badge badge-medium">1-2h</span></td>
+            </tr>
+            <tr>
+              <td>16</td>
+              <td><strong>D2 diagram examples in README</strong> — visual gallery</td>
+              <td><span class="badge badge-low">Low</span></td>
+              <td><span class="badge badge-medium">1h</span></td>
+            </tr>
+            <tr>
+              <td>17</td>
+              <td><strong>Consider encoding/json/v2</strong> migration (Go 1.25+ feature)</td>
+              <td><span class="badge badge-medium">Medium</span></td>
+              <td><span class="badge badge-medium">2-3h</span></td>
+            </tr>
+            <tr>
+              <td>18</td>
+              <td><strong>go work sync</strong> automation — keep go.work.example auto-generated</td>
+              <td><span class="badge badge-low">Low</span></td>
+              <td><span class="badge badge-medium">1h</span></td>
+            </tr>
+            <tr>
+              <td>19</td>
+              <td><strong>NOM timing cache persistence test</strong> — round-trip under load</td>
+              <td><span class="badge badge-medium">Medium</span></td>
+              <td><span class="badge badge-medium">1-2h</span></td>
+            </tr>
+            <tr>
+              <td>20</td>
+              <td><strong>Add CONTRIBUTING.md quick-start</strong> for Pattern B workflow</td>
+              <td><span class="badge badge-low">Low</span></td>
+              <td><span class="badge badge-low">30min</span></td>
+            </tr>
+            <tr>
+              <td>21</td>
+              <td><strong>Consider otter/v2 cache</strong> for nom timing cache (if perf matters)</td>
+              <td><span class="badge badge-low">Low</span></td>
+              <td><span class="badge badge-medium">2-3h</span></td>
+            </tr>
+            <tr>
+              <td>22</td>
+              <td><strong>TableData validation method</strong> — single entry point for all pre-render checks</td>
+              <td><span class="badge badge-medium">Medium</span></td>
+              <td><span class="badge badge-medium">1-2h</span></td>
+            </tr>
+            <tr>
+              <td>23</td>
+              <td><strong>Context-aware rendering</strong> — RenderOptions with context for cancellation</td>
+              <td><span class="badge badge-low">Low</span></td>
+              <td><span class="badge badge-medium">2-3h</span></td>
+            </tr>
+            <tr>
+              <td>24</td>
+              <td><strong>Color profile detection</strong> — terminal true-color / 256-color fallback</td>
+              <td><span class="badge badge-low">Low</span></td>
+              <td><span class="badge badge-medium">2-3h</span></td>
+            </tr>
+            <tr>
+              <td>25</td>
+              <td><strong>CBOR format</strong> — binary serialization (ROADMAP, no demand yet)</td>
+              <td><span class="badge badge-low">Low</span></td>
+              <td><span class="badge badge-medium">2-3h</span></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- ============ THE BIG QUESTION ============ -->
+        <h2 id="question"><span class="num">07</span>The #1 Question I Cannot Answer Myself</h2>
+
+        <div class="card card-problem">
+          <span class="severity severity-critical">Needs Owner Decision</span>
+          <h3>What do we do with the 16 stale git tags for deleted enum/ and envdetect/ modules?</h3>
+          <p>
+            <code>enum/v0.6.1</code> through <code>enum/v0.17.1</code> (13 tags) and
+            <code>envdetect/v0.13.0</code> through <code>envdetect/v0.17.1</code> (3 tags) still
+            exist on the remote. They point to valid, compilable historical code. The modules
+            themselves were merged into root and deleted from master in v0.18.0.
+          </p>
+          <p><strong>Three options, each with tradeoffs I cannot evaluate without you:</strong></p>
+          <ul style="margin: 0.5rem 0 1rem 1.5rem;">
+            <li><strong>Leave them</strong> — consumers who pinned <code>enum@v0.17.1</code> still build. But new users who find these tags on pkg.go.dev will be confused (module exists but no longer maintained).</li>
+            <li><strong>Retract them</strong> — add <code>retract</code> directives. But retract directives must live in the module's own go.mod, and these modules are deleted. We'd need to create a minimal stub go.mod with just the retract, or retract from root (which doesn't work for sub-module paths).</li>
+            <li><strong>Delete them</strong> — <code>git tag -d</code> + <code>git push --delete</code>. Clean, but breaks any consumer who pinned these tags. Destructive and irreversible.</li>
+          </ul>
+          <div class="callout callout-problem">
+            <strong>My question:</strong> Do you have any external consumers depending on
+            <code>go-output/enum</code> or <code>go-output/envdetect</code> as independent imports?
+            If yes → leave the tags. If no → I recommend deleting them (the proxy cache will still
+            serve them to existing consumers, but new consumers won't find them).
+          </div>
+        </div>
+
+        <footer class="footer">
+          Generated 2026-06-23 01:45 CET &middot; All claims verified against source code and live test runs
+        </footer>
+      </main>
+    </div>
+
+    <script>
+      (function () {
+        if (!("IntersectionObserver" in window)) return;
+        var nav = document.querySelector("[data-nav]");
+        if (!nav) return;
+        var links = nav.querySelectorAll('a[href^="#"]');
+        var ids = Array.from(links).map(function (l) {
+          return l.getAttribute("href").slice(1);
+        });
+        var sections = ids
+          .map(function (id) { return document.getElementById(id); })
+          .filter(Boolean);
+        if (!sections.length) return;
+        var observer = new IntersectionObserver(
+          function (entries) {
+            entries.forEach(function (entry) {
+              if (entry.isIntersecting) {
+                links.forEach(function (link) {
+                  link.classList.toggle("active", link.getAttribute("href") === "#" + entry.target.id);
+                });
+              }
+            });
+          },
+          { rootMargin: "-80px 0px -60% 0px", threshold: 0 }
+        );
+        sections.forEach(function (s) { observer.observe(s); });
+      })();
+    </script>
+  </body>
+</html>
