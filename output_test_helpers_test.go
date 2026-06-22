@@ -2,15 +2,7 @@ package output
 
 import (
 	"testing"
-
-	"github.com/larsartmann/go-output/testhelpers"
 )
-
-// Re-export generic helpers for use by package output tests.
-type ExpectedOutput = testhelpers.ExpectedOutput
-
-//nolint:gochecknoglobals // Re-exported test helpers for package-local use
-var assertContains = testhelpers.AssertContains
 
 // testNodesAB returns a slice of GraphNode with nodes A and B for testing.
 func testNodesAB() []GraphNode {
