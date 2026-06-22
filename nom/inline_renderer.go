@@ -5,24 +5,28 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"os/signal"
 	"strings"
 	"sync"
+	"syscall"
 	"time"
 
+	"github.com/charmbracelet/x/ansi"
 	"golang.org/x/term"
 
 	"github.com/larsartmann/go-output/envdetect"
 )
 
+// ANSI escape sequences from github.com/charmbracelet/x/ansi — the proper
+// charm library for terminal control codes. These replace the previous
+// hand-rolled octal string constants (\033[...]) with the canonical,
+// well-named, well-tested constants from the charm ecosystem.
+//
+// Reference: https://github.com/charmbracelet/x/ansi
 const (
-	ansiCursorUp    = "\033[A"
-	ansiCursorUpN   = "\033[%dA"
-	ansiClearLine   = "\r\033[K"
-	ansiClearScreen = "\033[2J\033[H"
-	ansiHideCursor  = "\033[?25l"
-	ansiShowCursor  = "\033[?25h"
-	ansiSyncBegin   = "\033[?2026h"
-	ansiSyncEnd     = "\033[?2026l"
+	// ansiClearLine clears the current line and returns cursor to column 0.
+	// Combines \r (carriage return) with ansi.EraseLineRight (\x1b[K).
+	ansiClearLine = "\r" + ansi.EraseLineRight
 )
 
 // InlineRenderer renders the NOM dependency tree to a writer using ANSI
@@ -32,6 +36,13 @@ const (
 // moves the cursor up past the previously drawn lines, clears them, and
 // redraws the current tree state. The terminal scrolls naturally, so
 // output from previous steps remains visible above.
+//
+// Frame diffing: Draw() compares the new frame against the last frame
+// written. If nothing changed, zero bytes are emitted — no cursor-up,
+// no clear, no repaint. This eliminates the repetition bug where every
+// 200ms tick appended a full copy of the tree on terminals that don't
+// support synchronized output (mode 2026). This mirrors bubbletea v2's
+// cursedRenderer viewEquals() early-exit pattern.
 type InlineRenderer struct {
 	subscriber *NOMStyleSubscriber
 	writer     io.Writer
@@ -47,12 +58,25 @@ type InlineRenderer struct {
 	// appending each frame on its own line instead.
 	plainText bool
 
+	// writerIsTTY is detected once at construction by checking whether the
+	// writer is a real terminal (via term.IsTerminal on the writer's FD).
+	// This gates synchronized-output (mode 2026) wrapping: sync codes are
+	// only emitted when the writer is confirmed to be a TTY, preventing
+	// corruption on pipes, buffers, and non-TTY writers.
+	writerIsTTY bool
+
+	// lastFrame is the last frame string written to the terminal. Draw()
+	// compares the new frame against this; if identical, it skips the write
+	// entirely (zero bytes). This is the core fix for the repetition bug.
+	lastFrame string
+
 	tickMu       sync.RWMutex
 	renderMu     sync.Mutex // serializes Draw/Finish terminal writes + prevLines
 	cancelFn     context.CancelFunc
 	tickerDone   chan struct{}
 	refreshChan  chan struct{}
 	renderNotify chan struct{} // test hook: signaled after each render if non-nil
+	sigwinchStop chan struct{}
 }
 
 // rendererConfig is an immutable snapshot of every configurable InlineRenderer
@@ -61,12 +85,13 @@ type InlineRenderer struct {
 // (which were both racy for lock-free fields like maxHeight and redundant —
 // renderSummary re-acquired the lock Draw already held).
 type rendererConfig struct {
-	hideCursor bool
-	noColor    bool
-	plainText  bool
-	appName    string
-	startTime  time.Time
-	maxHeight  int
+	hideCursor  bool
+	noColor     bool
+	plainText   bool
+	appName     string
+	startTime   time.Time
+	maxHeight   int
+	writerIsTTY bool
 }
 
 // snapshotConfig returns an immutable copy of all renderer configuration under
@@ -77,12 +102,13 @@ func (r *InlineRenderer) snapshotConfig() rendererConfig {
 	defer r.tickMu.RUnlock()
 
 	return rendererConfig{
-		hideCursor: r.hideCursor,
-		noColor:    r.noColor,
-		plainText:  r.plainText,
-		appName:    r.appName,
-		startTime:  r.startTime,
-		maxHeight:  r.maxHeight,
+		hideCursor:  r.hideCursor,
+		noColor:     r.noColor,
+		plainText:   r.plainText,
+		appName:     r.appName,
+		startTime:   r.startTime,
+		maxHeight:   r.maxHeight,
+		writerIsTTY: r.writerIsTTY,
 	}
 }
 
@@ -90,22 +116,57 @@ func (r *InlineRenderer) snapshotConfig() rendererConfig {
 // maxHeight caps the tree height; 0 means unlimited.
 func NewInlineRenderer(subscriber *NOMStyleSubscriber, writer io.Writer, maxHeight int) *InlineRenderer {
 	return &InlineRenderer{
-		subscriber: subscriber,
-		writer:     writer,
-		maxHeight:  maxHeight,
-		hideCursor: true,
-		appName:    "Workflow",
-		noColor:    detectNoColor(),
-		plainText:  detectPlainText(),
+		subscriber:  subscriber,
+		writer:      writer,
+		maxHeight:   maxHeight,
+		hideCursor:  true,
+		appName:     "Workflow",
+		noColor:     detectNoColorForWriter(writer),
+		plainText:   detectPlainTextForWriter(writer),
+		writerIsTTY: writerIsTerminal(writer),
 	}
 }
 
-// detectPlainText reports whether the renderer should emit plain, append-only
-// output. Triggered under CI (where in-place cursor-manipulation and
-// sync-region escape codes corrupt captured logs), Draw then appends frames
-// line-by-line instead of overwriting in place.
-func detectPlainText() bool {
-	return envdetect.IsCI()
+// writerIsTerminal reports whether the given writer is a real terminal (TTY).
+// Uses term.IsTerminal (ioctl TCGETS) — the same detection method as
+// charmbracelet/termenv and bubbletea. Only *os.File writers can be TTYs;
+// buffers, pipes, and other writers return false.
+func writerIsTerminal(writer io.Writer) bool {
+	if f, ok := writer.(*os.File); ok {
+		//nolint:gosec // File descriptors are always small positive integers.
+		return term.IsTerminal(int(f.Fd()))
+	}
+
+	return false
+}
+
+// detectPlainTextForWriter reports whether the renderer should emit plain,
+// append-only output (no cursor/sync escape codes). Returns true when:
+//   - Running under CI (envdetect.IsCI), OR
+//   - The writer is not a terminal (pipe, buffer, redirect)
+//
+// This replaces the old detectPlainText() which only checked CI, missing
+// the common case of piped/redirected output where ANSI redraw codes
+// produce the repetition bug.
+func detectPlainTextForWriter(writer io.Writer) bool {
+	if envdetect.IsCI() {
+		return true
+	}
+
+	return !writerIsTerminal(writer)
+}
+
+// detectNoColorForWriter reports whether color output should be suppressed.
+// Checks NO_COLOR/TERM=dumb env vars via envdetect, then falls back to
+// checking whether the WRITER (not os.Stdout) is a terminal. This fixes
+// the mismatch where the old detectNoColor() checked os.Stdout but the
+// renderer writes to an arbitrary writer (e.g. os.Stderr in BuildFlow).
+func detectNoColorForWriter(writer io.Writer) bool {
+	if envdetect.IsNoColor() || envdetect.IsCI() {
+		return true
+	}
+
+	return !writerIsTerminal(writer)
 }
 
 // SetHideCursor controls whether the cursor is hidden during rendering (default: true).
@@ -136,20 +197,6 @@ func (r *InlineRenderer) SetAppName(name string) {
 	r.appName = name
 }
 
-// detectNoColor reports whether color output should be suppressed in the
-// NOM inline renderer. The CI and NO_COLOR portions delegate to
-// envdetect so root and nom stay aligned. The terminal fallback uses
-// term.IsTerminal directly because stdoutIsTerminal closures from root
-// are not available here.
-func detectNoColor() bool {
-	if envdetect.IsNoColor() || envdetect.IsCI() {
-		return true
-	}
-
-	//nolint:gosec // File descriptors are always small positive integers.
-	return !term.IsTerminal(int(os.Stdout.Fd()))
-}
-
 // SetStartTime sets the workflow start time for elapsed display.
 // Thread-safe: may be called before or during the render loop.
 func (r *InlineRenderer) SetStartTime(t time.Time) {
@@ -170,24 +217,30 @@ func (r *InlineRenderer) SetMaxHeight(maxHeight int) {
 }
 
 // SetPlainText forces plain, append-only output (no cursor/sync escape codes).
-// By default, plainText is auto-detected at construction via detectPlainText()
-// (true under CI). Use this to override at runtime — e.g. when a downstream
-// wrapper discovers the writer is not a terminal after startup.
+// By default, plainText is auto-detected at construction via detectPlainTextForWriter()
+// (true under CI or when the writer is not a terminal). Use this to override at
+// runtime — e.g. when a downstream wrapper discovers the writer is not a terminal
+// after startup.
 // Thread-safe: may be called before or during the render loop.
 func (r *InlineRenderer) SetPlainText(plain bool) {
 	r.tickMu.Lock()
 	defer r.tickMu.Unlock()
 
 	r.plainText = plain
+	// Reset lastFrame so the next Draw() always emits (mode changed).
+	r.lastFrame = ""
 }
 
-// Render redraws the dependency tree in-place. On the first call it just prints.
-// On subsequent calls it moves the cursor up to overwrite the previous frame.
+// Draw renders one frame to the configured io.Writer.
 //
-// Draw renders one frame to the configured io.Writer. Unlike output.Renderer.Render()
-// (which returns (string, error)), Draw writes directly to the writer and returns nothing —
-// it is an incremental terminal redraw, not a one-shot format render.
-// Split-brain M4 resolved: Render() is now reserved for the output.Renderer contract.
+// Frame diffing: if the frame content is identical to the last frame written
+// (same tree state, same elapsed-time rounding), Draw emits ZERO bytes — no
+// cursor-up, no clear, no sync-output wrapping. This eliminates the repetition
+// bug where every 200ms tick appended a full copy of the tree on terminals
+// that don't support synchronized output. This mirrors bubbletea v2's
+// cursedRenderer viewEquals() early-exit pattern.
+//
+// Split-brain M4 resolved: Render() is reserved for the output.Renderer contract.
 func (r *InlineRenderer) Draw() {
 	if r.subscriber == nil {
 		return
@@ -213,11 +266,20 @@ func (r *InlineRenderer) Draw() {
 		frame += "\n" + summary
 	}
 
+	// Frame diffing: skip the write entirely if nothing changed since the
+	// last frame. This is the single most important fix — it means the
+	// 200ms refresh ticker produces zero output when the tree is stable,
+	// instead of re-emitting the full frame every tick.
+	if frame == r.lastFrame {
+		return
+	}
+
 	// Plain-text mode (CI / non-terminal): append the frame without cursor or
 	// sync escape codes, which would corrupt captured logs. prevLines stays 0
 	// so Finish never tries to scroll back over overwritten lines.
 	if cfg.plainText {
 		r.write(frame + "\n")
+		r.lastFrame = frame
 
 		return
 	}
@@ -230,20 +292,34 @@ func (r *InlineRenderer) Draw() {
 
 	output := buildRedrawOutput(frame, r.prevLines, physicalLines, cfg.hideCursor)
 
-	r.write(ansiSyncBegin + output + ansiSyncEnd)
+	// Only wrap in synchronized-output (mode 2026) codes when the writer is a
+	// confirmed TTY. On non-TTY writers (pipes, buffers), the sync codes are
+	// meaningless and can corrupt captured output. This matches how
+	// charmbracelet/bubbletea gates sync-output on actual terminal support.
+	if cfg.writerIsTTY {
+		r.write(ansi.SetSynchronizedOutputMode + output + ansi.ResetSynchronizedOutputMode)
+	} else {
+		r.write(output)
+	}
 
 	r.prevLines = physicalLines
+	r.lastFrame = frame
 }
 
 // buildRedrawOutput assembles the ANSI payload for one in-place redraw. On the
 // first frame (prevLines == 0) it just emits the frame (plus an optional cursor
 // hide); on subsequent frames it scrolls up, repaints each line, and wipes any
 // leftover lines when the frame shrank (so pruned subtrees leave no ghosts).
+//
+// All escape sequences use github.com/charmbracelet/x/ansi constants:
+//   - ansi.CursorUp(n): move cursor up n lines
+//   - ansi.EraseLineRight: clear from cursor to end of line (\x1b[K)
+//   - ansi.HideCursor / ansi.ShowCursor: cursor visibility
 func buildRedrawOutput(frame string, prevLines, physicalLines int, hideCursor bool) string {
 	if prevLines == 0 {
 		output := ""
 		if hideCursor {
-			output = ansiHideCursor
+			output = ansi.HideCursor
 		}
 
 		return output + frame + "\n"
@@ -252,7 +328,7 @@ func buildRedrawOutput(frame string, prevLines, physicalLines int, hideCursor bo
 	// Move back to the top of the previous frame and repaint every line.
 	var b strings.Builder
 
-	fmt.Fprintf(&b, ansiCursorUpN, prevLines)
+	b.WriteString(ansi.CursorUp(prevLines))
 	b.WriteString("\r")
 
 	frameLines := strings.Split(frame, "\n")
@@ -277,7 +353,7 @@ func buildRedrawOutput(frame string, prevLines, physicalLines int, hideCursor bo
 			b.WriteString(ansiClearLine)
 		}
 
-		fmt.Fprintf(&b, ansiCursorUpN, extra)
+		b.WriteString(ansi.CursorUp(extra))
 		b.WriteString("\r")
 	}
 
@@ -295,6 +371,9 @@ func (r *InlineRenderer) write(s string) {
 // Start begins periodic background rendering at the given interval.
 // Call Stop to terminate the background goroutine.
 // The context can be used to cancel independently of Stop.
+//
+// Also starts a SIGWINCH listener for terminal resize handling: on resize,
+// the lastFrame cache is invalidated so the next tick forces a full redraw.
 func (r *InlineRenderer) Start(ctx context.Context, interval time.Duration) {
 	r.tickMu.Lock()
 	defer r.tickMu.Unlock()
@@ -309,6 +388,41 @@ func (r *InlineRenderer) Start(ctx context.Context, interval time.Duration) {
 	r.refreshChan = make(chan struct{}, 1)
 
 	go r.refreshLoop(ctx, interval)
+
+	// SIGWINCH listener: on terminal resize, invalidate the frame cache so
+	// the next Draw() emits a full redraw (width/height may have changed).
+	// This mirrors bubbletea's listenForResize → resize() → Erase() pattern.
+	r.sigwinchStop = make(chan struct{})
+	go r.listenForResize(ctx)
+}
+
+// listenForResize listens for SIGWINCH (terminal resize) signals and
+// invalidates the frame cache so the next Draw() forces a full redraw.
+func (r *InlineRenderer) listenForResize(ctx context.Context) {
+	// Capture locally so Stop() can safely nil r.sigwinchStop after we exit.
+	done := r.sigwinchStop
+	defer close(done)
+
+	sigChan := make(chan os.Signal, 1)
+
+	signal.Notify(sigChan, syscall.SIGWINCH)
+	defer signal.Stop(sigChan)
+
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case <-sigChan:
+			// Invalidate the frame cache: the terminal dimensions changed,
+			// so even if the tree state is the same, the rendered frame
+			// (wrapping, truncation) may differ. Force a full redraw.
+			r.renderMu.Lock()
+			r.lastFrame = ""
+			r.renderMu.Unlock()
+
+			r.Refresh()
+		}
+	}
 }
 
 // Refresh signals the background loop to redraw as soon as possible.
@@ -329,8 +443,30 @@ func (r *InlineRenderer) Refresh() {
 
 // refreshLoop drives the periodic redraw. It renders on every tick, on explicit
 // refresh signals, and at least once per second so elapsed timers stay current.
+//
+// Panic recovery: if Draw() panics, the deferred recover ensures the cursor is
+// restored (shown) before the goroutine exits. This prevents the terminal from
+// being left in a broken state (hidden cursor) after a crash — mirroring
+// bubbletea's recoverFromPanic → restoreTerminalState() pattern.
 func (r *InlineRenderer) refreshLoop(ctx context.Context, interval time.Duration) {
-	defer close(r.tickerDone)
+	// Capture the done channel locally so Stop() can safely nil r.tickerDone
+	// after we exit — the deferred close reads this local, not the field.
+	done := r.tickerDone
+	defer close(done)
+	// Panic recovery: restore terminal state on crash. The cursor may have
+	// been hidden by Draw(); show it so the terminal isn't left broken.
+	defer func() {
+		if rec := recover(); rec != nil {
+			r.renderMu.Lock()
+			if r.prevLines > 0 {
+				r.write(ansi.ShowCursor)
+				r.prevLines = 0
+			}
+
+			r.lastFrame = ""
+			r.renderMu.Unlock()
+		}
+	}()
 
 	if interval <= 0 {
 		interval = 100 * time.Millisecond
@@ -381,6 +517,7 @@ func (r *InlineRenderer) Stop() {
 	r.tickMu.Lock()
 	cancelFn := r.cancelFn
 	done := r.tickerDone
+	sigStop := r.sigwinchStop
 	r.tickMu.Unlock()
 
 	if cancelFn == nil {
@@ -390,9 +527,14 @@ func (r *InlineRenderer) Stop() {
 	cancelFn()
 	<-done
 
+	if sigStop != nil {
+		<-sigStop
+	}
+
 	r.tickMu.Lock()
 	r.cancelFn = nil
 	r.tickerDone = nil
+	r.sigwinchStop = nil
 	r.refreshChan = nil
 	r.tickMu.Unlock()
 }

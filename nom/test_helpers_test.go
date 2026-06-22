@@ -1,6 +1,7 @@
 package nom
 
 import (
+	"bytes"
 	"path/filepath"
 	"testing"
 	"time"
@@ -12,6 +13,20 @@ func newTestSubscriber(t *testing.T) *NOMStyleSubscriber {
 	t.Cleanup(ns.timingCache.waitPendingSaves)
 
 	return ns
+}
+
+// newInlineTestRenderer creates an InlineRenderer configured for unit testing
+// against a bytes.Buffer. Production detection (detectPlainTextForWriter,
+// detectNoColorForWriter) treats non-TTY buffers as plain-text/no-color, which
+// skips the inline cursor-code path entirely. Tests that need to exercise the
+// inline rendering path (cursor-up, clear-line, sync-output codes) must
+// explicitly disable plain-text mode and enable deterministic no-color output.
+func newInlineTestRenderer(sub *NOMStyleSubscriber, buf *bytes.Buffer, maxHeight int) *InlineRenderer {
+	r := NewInlineRenderer(sub, buf, maxHeight)
+	r.SetPlainText(false) // force inline rendering path (cursor codes)
+	r.SetNoColor(true)    // deterministic output (no terminal color codes)
+
+	return r
 }
 
 // snapshotBuilder accumulates ActivitySnapshot values for test rendering

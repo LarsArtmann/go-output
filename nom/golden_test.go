@@ -75,8 +75,7 @@ func TestInlineRendererGolden_FirstFrame(t *testing.T) {
 
 	var buf bytes.Buffer
 
-	renderer := NewInlineRenderer(sub, &buf, 20)
-	renderer.SetNoColor(true)
+	renderer := newInlineTestRenderer(sub, &buf, 20)
 
 	ctx := context.Background()
 	_ = sendWorkflowStarted(sub, ctx, WorkflowID("wf-1"), "")
@@ -97,8 +96,7 @@ func TestInlineRendererGolden_SecondFrame(t *testing.T) {
 
 	var buf bytes.Buffer
 
-	renderer := NewInlineRenderer(sub, &buf, 20)
-	renderer.SetNoColor(true)
+	renderer := newInlineTestRenderer(sub, &buf, 20)
 
 	ctx := context.Background()
 	_ = sendWorkflowStarted(sub, ctx, WorkflowID("wf-1"), "")

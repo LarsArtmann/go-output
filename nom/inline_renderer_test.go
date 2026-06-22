@@ -8,6 +8,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/charmbracelet/x/ansi"
 )
 
 func TestInlineRenderer_FirstRender_NoAnsiEscapes(t *testing.T) {
@@ -42,7 +44,7 @@ func TestInlineRenderer_SubsequentRender_MovesCursor(t *testing.T) {
 
 	var buf bytes.Buffer
 
-	renderer := NewInlineRenderer(sub, &buf, 10)
+	renderer := newInlineTestRenderer(sub, &buf, 10)
 
 	ctx := context.Background()
 	_ = sendWorkflowStarted(sub, ctx, WorkflowID("wf-1"), "")
@@ -50,6 +52,9 @@ func TestInlineRenderer_SubsequentRender_MovesCursor(t *testing.T) {
 
 	renderer.Draw()
 	buf.Reset()
+
+	// Change tree state so the frame differs — frame diffing skips identical frames.
+	sendActivityCompleted(t, sub, ctx, ActivityID("step1"), ActivityName("Step 1"), time.Second)
 
 	renderer.Draw()
 
@@ -175,7 +180,7 @@ func TestInlineRenderer_StartStop_PeriodicRender(t *testing.T) {
 
 	var buf bytes.Buffer
 
-	renderer := NewInlineRenderer(sub, &buf, 10)
+	renderer := newInlineTestRenderer(sub, &buf, 10)
 
 	ctx := context.Background()
 	_ = sendWorkflowStarted(sub, ctx, WorkflowID("wf-1"), "")
@@ -187,9 +192,13 @@ func TestInlineRenderer_StartStop_PeriodicRender(t *testing.T) {
 
 	output := buf.String()
 
+	// Frame diffing: the tree state is stable across ticks (no status changes,
+	// no SetStartTime so no elapsed-time changes), so only the FIRST tick emits.
+	// Subsequent ticks see an identical frame and correctly skip — this is the
+	// core fix for the repetition bug. We verify at least 1 render happened.
 	renders := strings.Count(output, "Step 1")
-	if renders < 2 {
-		t.Errorf("expected at least 2 periodic renders, got %d renders", renders)
+	if renders < 1 {
+		t.Errorf("expected at least 1 periodic render, got %d renders", renders)
 	}
 }
 
@@ -268,7 +277,7 @@ func TestInlineRenderer_EndToEnd_Lifecycle(t *testing.T) {
 
 	var buf bytes.Buffer
 
-	renderer := NewInlineRenderer(sub, &buf, 10)
+	renderer := newInlineTestRenderer(sub, &buf, 10)
 	renderer.renderNotify = make(chan struct{}, 1)
 
 	ctx := context.Background()
@@ -292,6 +301,9 @@ func TestInlineRenderer_EndToEnd_Lifecycle(t *testing.T) {
 	waitForRender(t, renderer, "initial render")
 
 	buf.Reset()
+
+	// Change tree state so frame diffing emits a new frame.
+	sendActivityCompleted(t, sub, ctx, ActivityID("test"), ActivityName("Run Tests"), time.Second)
 
 	// Trigger a refresh
 	renderer.Refresh()
@@ -338,7 +350,7 @@ func waitForRender(t *testing.T, renderer *InlineRenderer, label string) {
 }
 
 func TestInlineRenderer_CIMode_PlainTextNoCursorCodes(t *testing.T) {
-	// detectPlainText() is evaluated at construction, so CI must be set first.
+	// detectPlainTextForWriter is evaluated at construction, so CI must be set first.
 	// Not parallel: the env var affects renderer construction.
 	t.Setenv("CI", "true")
 
@@ -357,16 +369,15 @@ func TestInlineRenderer_CIMode_PlainTextNoCursorCodes(t *testing.T) {
 	sendActivityStarted(t, sub, ctx, ActivityID("step1"), ActivityName("CI Step"))
 
 	renderer.Draw()
-	buf.Reset()
-	renderer.Draw() // second draw — in plain mode, no cursor-up/sync codes
 
 	output := buf.String()
 
-	if strings.Contains(output, ansiCursorUp) {
+	if strings.Contains(output, ansi.CursorUp1) {
 		t.Errorf("CI plain mode must not emit cursor-up codes, got:\n%q", output)
 	}
 
-	if strings.Contains(output, ansiSyncBegin) || strings.Contains(output, ansiSyncEnd) {
+	if strings.Contains(output, ansi.SetSynchronizedOutputMode) ||
+		strings.Contains(output, ansi.ResetSynchronizedOutputMode) {
 		t.Errorf("CI plain mode must not emit sync-region codes, got:\n%q", output)
 	}
 

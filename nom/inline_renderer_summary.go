@@ -25,21 +25,24 @@ func (r *InlineRenderer) Finish(workflowErr error) {
 	cfg := r.snapshotConfig()
 
 	if r.prevLines > 0 {
-		r.write(fmt.Sprintf(ansiCursorUpN, r.prevLines) + "\r")
+		r.write(ansi.CursorUp(r.prevLines) + "\r")
 
 		for range r.prevLines {
 			r.write(ansiClearLine)
 			r.write("\n")
 		}
 
-		r.write(fmt.Sprintf(ansiCursorUpN, r.prevLines))
+		r.write(ansi.CursorUp(r.prevLines))
 		r.write("\r")
 		r.prevLines = 0
 	}
 
 	if cfg.hideCursor {
-		r.write(ansiShowCursor)
+		r.write(ansi.ShowCursor)
 	}
+
+	// Reset frame cache so a new workflow can render from scratch.
+	r.lastFrame = ""
 
 	// Render from immutable snapshot (same race-free path as Draw).
 	if final, ok := r.subscriber.RenderSnapshot(0, 0); ok && final != msgNoActivitiesToDisplay {

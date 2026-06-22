@@ -90,8 +90,7 @@ func TestInlineRenderer_FrameShrink_ClearsStaleLines(t *testing.T) {
 	var buf bytes.Buffer
 
 	// Height cap prunes completed children once they all finish.
-	renderer := NewInlineRenderer(sub, &buf, 4)
-	renderer.SetNoColor(true)
+	renderer := newInlineTestRenderer(sub, &buf, 4)
 
 	ctx := context.Background()
 	_ = sendWorkflowStarted(sub, ctx, WorkflowID("wf-shrink"), "")

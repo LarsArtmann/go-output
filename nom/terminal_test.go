@@ -226,7 +226,7 @@ func clearColorDetectionEnv(t *testing.T) {
 }
 
 // TestDetectNoColor covers the environment-driven suppression logic of
-// detectNoColor. It has zero coverage otherwise, yet it is the function that
+// detectNoColorForWriter. It has zero coverage otherwise, yet it is the function that
 // must stay aligned with root output.isNoColor()+isCI() (M2 split-brain fix).
 func TestDetectNoColor(t *testing.T) {
 	suppressors := []struct {
@@ -248,8 +248,8 @@ func TestDetectNoColor(t *testing.T) {
 			clearColorDetectionEnv(t)
 			t.Setenv(tc.env, tc.val)
 
-			if !detectNoColor() {
-				t.Errorf("detectNoColor() with %s=%q = false, want true (color suppressed)", tc.env, tc.val)
+			if !detectNoColorForWriter(os.Stdout) {
+				t.Errorf("detectNoColorForWriter() with %s=%q = false, want true (color suppressed)", tc.env, tc.val)
 			}
 		})
 	}
@@ -258,9 +258,15 @@ func TestDetectNoColor(t *testing.T) {
 		clearColorDetectionEnv(t)
 
 		//nolint:gosec // File descriptors are always small positive integers.
-		want := !term.IsTerminal(int(os.Stdout.Fd()))
-		if got := detectNoColor(); got != want {
-			t.Errorf("detectNoColor() with no suppressors = %v, want %v (=!term.IsTerminal(stdout))", got, want)
+		stdoutIsTTY := term.IsTerminal(int(os.Stdout.Fd()))
+
+		want := !stdoutIsTTY // non-TTY → no color
+		if got := detectNoColorForWriter(os.Stdout); got != want {
+			t.Errorf(
+				"detectNoColorForWriter(stdout) with no suppressors = %v, want %v (=!term.IsTerminal(stdout))",
+				got,
+				want,
+			)
 		}
 	})
 }
