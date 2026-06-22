@@ -1,6 +1,6 @@
 # TODO_LIST.md — go-output
 
-**Last updated:** 2026-06-20
+**Last updated:** 2026-06-22
 **Open items:** 2
 **Blocked:** 0
 

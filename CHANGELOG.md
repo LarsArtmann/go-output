@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Docs
+
+- **Documentation accuracy sweep.** Corrected stale references across all
+  project docs to match the v0.17.x codebase state: AGENTS.md phase-detection
+  pattern updated (ID-prefix → `ActivityKind`); added sealed-Event, frame-diffing,
+  and writer-aware-TTY patterns; fixed ADR count (7 → 8). FEATURES.md removed
+  phantom `internal/gentest` row, marked deleted event accessor interfaces as
+  REMOVED, added `ActivityKind` + sealed-Event rows, updated InlineRenderer
+  capabilities, fixed ActivityStatus shape-mapping claim. README.md removed
+  misleading `internal/` stability claim. TODO_LIST.md date bumped.
+
 ## [0.17.1] - 2026-06-22
 
 Patch release. Two motivations: (1) ship a real user-facing fix for the NOM

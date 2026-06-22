@@ -717,7 +717,6 @@ This library is pre-v1. The following guarantees apply:
 - **Root module** (`github.com/larsartmann/go-output`): Public API is stable. Breaking changes documented in CHANGELOG.md.
 - **Sub-modules** (`d2`, `graph`, `table`, `nom`, `tui`, etc.): May evolve independently. Import them explicitly to opt in.
 - **`Renderer` interface**: Stable — all formats implement `Render() (string, error)`.
-- **`internal/` packages**: No stability guarantee. Do not import these.
 
 ### Frozen Interfaces (v1 locked)
 
