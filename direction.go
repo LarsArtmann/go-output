@@ -14,7 +14,7 @@ const (
 	DirectionRight Direction = "right"
 )
 
-// AllDirections lists all valid Direction values.
+//nolint:gochecknoglobals // Global variable used for value iteration.
 var AllDirections = []Direction{DirectionDown, DirectionUp, DirectionLeft, DirectionRight}
 
 // IsValid reports whether d is a recognized Direction.

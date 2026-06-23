@@ -24,9 +24,9 @@ func ContainsEnum[T comparable](values []T, v T) bool {
 
 // EnumAllowedStrings returns the string representations of all enum values.
 func EnumAllowedStrings[T any](values []T, toString func(T) string) []string {
-	result := make([]string, len(values))
-	for i, v := range values {
-		result[i] = toString(v)
+	result := make([]string, 0, len(values))
+	for _, v := range values {
+		result = append(result, toString(v))
 	}
 
 	return result
@@ -40,9 +40,9 @@ type StringEnum interface {
 // EnumAllowedValues returns the string representations of all enum values
 // for types that implement the StringEnum interface.
 func EnumAllowedValues[T StringEnum](values []T) []string {
-	result := make([]string, len(values))
-	for i, v := range values {
-		result[i] = v.String()
+	result := make([]string, 0, len(values))
+	for _, v := range values {
+		result = append(result, v.String())
 	}
 
 	return result

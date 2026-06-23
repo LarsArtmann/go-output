@@ -61,9 +61,9 @@ func ParseShape(s string) (Shape, error) {
 }
 
 func shapesToString(shapes []Shape) string {
-	parts := make([]string, len(shapes))
-	for i, s := range shapes {
-		parts[i] = string(s)
+	parts := make([]string, 0, len(shapes))
+	for _, s := range shapes {
+		parts = append(parts, string(s))
 	}
 
 	return strings.Join(parts, ", ")

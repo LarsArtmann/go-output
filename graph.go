@@ -113,9 +113,9 @@ func (e *InvalidLineStyleError) Error() string {
 }
 
 func lineStylesToString(styles []LineStyle) string {
-	parts := make([]string, len(styles))
-	for i, s := range styles {
-		parts[i] = string(s)
+	parts := make([]string, 0, len(styles))
+	for _, s := range styles {
+		parts = append(parts, string(s))
 	}
 
 	return strings.Join(parts, ", ")
