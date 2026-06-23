@@ -42,16 +42,9 @@ func buildUniversalSummary(
 	return summary
 }
 
-// buildActivityCountsSummary builds a summary string with activity counts using
-// NOM symbols. Delegates to nom.ActivityCounts.Summary() so formatting stays
-// consistent with the inline renderer.
-func buildActivityCountsSummary(counts nom.ActivityCounts) string {
-	return counts.Summary()
-}
-
 // buildNOMSummary builds a NOM-style summary string.
 func buildNOMSummary(counts nom.ActivityCounts, elapsed time.Duration) string {
-	summary := buildActivityCountsSummary(counts)
+	summary := counts.Summary()
 	if summary != "" {
 		summary += " | "
 	}

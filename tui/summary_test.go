@@ -25,7 +25,7 @@ func TestBuildUniversalSummary(t *testing.T) {
 	}
 }
 
-func TestBuildActivityCountsSummary(t *testing.T) {
+func TestActivityCountsSummary(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
@@ -42,7 +42,7 @@ func TestBuildActivityCountsSummary(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			got := buildActivityCountsSummary(tt.counts)
+			got := tt.counts.Summary()
 			if tt.wantEmpty && got != "" {
 				t.Errorf("expected empty, got %q", got)
 			}
