@@ -81,10 +81,12 @@ func (pr *BubbleTeaProgressReporter) SetCancelFunc(fn context.CancelFunc) {
 
 // SetDisplayMode switches the rendering mode between NOM and Universal.
 // Must be called before Start(). DisplayModeNOM renders the dependency tree;
-// DisplayModeUniversal renders step-based progress.
+// DisplayModeUniversal renders step-based progress. Resets scrollOffset to
+// prevent a stale position from one mode carrying into the other.
 func (pr *BubbleTeaProgressReporter) SetDisplayMode(mode DisplayMode) {
 	pr.mu.Lock()
 	pr.model.displayMode = mode
+	pr.model.scrollOffset = 0
 	pr.mu.Unlock()
 }
 
