@@ -286,15 +286,17 @@ func (dt *DependencyTree) renderLine(
 	activityDisplay, color := formatActivityLabel(snap)
 
 	if len(node.SecondaryParents) > 0 {
-		depNames := make([]string, len(node.SecondaryParents))
+		depNames := make([]string, 0, len(node.SecondaryParents))
 
-		for i, depID := range node.SecondaryParents {
+		for _, depID := range node.SecondaryParents {
 			depSnap := lookupSnapshot(snapshots, depID)
 
-			depNames[i] = depSnap.Label
-			if depNames[i] == "" {
-				depNames[i] = depID.String()
+			name := depSnap.Label
+			if name == "" {
+				name = depID.String()
 			}
+
+			depNames = append(depNames, name)
 		}
 
 		activityDisplay += lipgloss.NewStyle().

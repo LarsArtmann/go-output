@@ -98,9 +98,9 @@ func TestInlineRenderer_FrameShrink_ClearsStaleLines(t *testing.T) {
 	const groupID = ActivityID("group")
 	registerActivity(sub, ctx, groupID, ActivityName("Group"))
 
-	children := make([]string, 6)
-	for i := range children {
-		children[i] = fmt.Sprintf("child%d", i)
+	children := make([]string, 0, 6)
+	for i := range 6 {
+		children = append(children, fmt.Sprintf("child%d", i))
 		registerActivity(sub, ctx,
 			ActivityID(children[i]),
 			ActivityName(fmt.Sprintf("Child %d", i)),
@@ -212,9 +212,9 @@ func TestInlineRenderer_RenderRacingActivityMutation(t *testing.T) {
 	const groupID = ActivityID("g")
 	registerActivity(sub, ctx, groupID, ActivityName("Group"))
 
-	ids := make([]ActivityID, 12)
-	for i := range ids {
-		ids[i] = ActivityID(fmt.Sprintf("act%d", i))
+	ids := make([]ActivityID, 0, 12)
+	for i := range 12 {
+		ids = append(ids, ActivityID(fmt.Sprintf("act%d", i)))
 		registerActivity(sub, ctx, ids[i], ActivityName(fmt.Sprintf("Act %d", i)), groupID)
 	}
 

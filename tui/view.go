@@ -19,9 +19,8 @@ func (m *ProgressModel) View() tea.View {
 		content = m.renderNOMStyle()
 	} else {
 		content = m.renderUniversalWorkflowProgress()
+		content = m.applyScrollViewport(content)
 	}
-
-	content = m.applyScrollViewport(content)
 
 	if m.showHelp {
 		content = m.renderHelpOverlay()

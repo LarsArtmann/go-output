@@ -1,6 +1,7 @@
 package graph
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/larsartmann/go-output"
@@ -246,5 +247,53 @@ func TestDOTRendererSetDirection(t *testing.T) {
 		}
 
 		assertContains(t, out, tc.want, "SetDirection should produce expected rankdir")
+	}
+}
+
+// TestDOTNodeStyleEscapesInjection verifies that malicious style values
+// (double quotes, backslashes, newlines) are escaped through the DOT render
+// pipeline. If escape.DOT were removed from writeNodeAttr, a double quote in
+// a style value would break out of the quoted attribute, allowing attribute
+// injection.
+func TestDOTNodeStyleEscapesInjection(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name  string
+		value string
+	}{
+		{"double quote in Fill", `red"; injected=true`},
+		{"newline in Fill", "red\ninjected_attr"},
+		{"backslash in Fill", `red\malicious`},
+		{"double quote in Stroke", `#000"breakout`},
+		{"backslash in Stroke", `#000\evil`},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			renderer := NewDOTRenderer()
+			renderer.SetNodes([]output.GraphNode{ //nolint:exhaustruct // Test uses minimal fields
+				{
+					ID:    output.NewBrandedID[output.GraphNodeIDBrand]("A"),
+					Label: output.NewBrandedID[output.GraphNodeLabelBrand]("Test"),
+					Shape: output.NodeShapeBox,
+					Style: output.GraphStyle{
+						Fill:   tt.value,
+						Stroke: tt.value,
+					},
+				},
+			})
+
+			out, err := renderer.Render()
+			if err != nil {
+				t.Fatalf("Render() error = %v", err)
+			}
+
+			if strings.Contains(out, tt.value) {
+				t.Errorf("raw malicious value %q leaked unescaped into DOT output", tt.value)
+			}
+		})
 	}
 }

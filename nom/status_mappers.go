@@ -9,7 +9,7 @@ func (s ActivityStatus) NodeShape() output.NodeShape {
 	case ActivityStatusFailed:
 		return output.NodeShapeDiamond // diamonds signal attention
 	case ActivityStatusCompleted:
-		return output.NodeShapeRect // rect = done, stable
+		return output.NodeShapeRect //nolint:staticcheck // rect (rounded) visually distinguishes from box (running)
 	case ActivityStatusRunning:
 		return output.NodeShapeBox // box = active work
 	case ActivityStatusPending:

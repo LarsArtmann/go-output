@@ -24,9 +24,9 @@ func BenchmarkMarshalXMLFromTableData(b *testing.B) {
 func BenchmarkXMLWriter(b *testing.B) {
 	headers := []string{"Name", "Age", "Email"}
 
-	rows := make([][]string, 100)
-	for i := range rows {
-		rows[i] = []string{"Alice", "30", "alice@example.com"}
+	rows := make([][]string, 0, 100)
+	for range 100 {
+		rows = append(rows, []string{"Alice", "30", "alice@example.com"})
 	}
 
 	b.ResetTimer()

@@ -29,17 +29,17 @@ func renderD2TableData(w io.Writer, data *output.TableData, _ output.RenderOptio
 
 // SetNodes sets graph nodes from the generic GraphNode type, satisfying GraphRenderer.
 func (d *D2Diagram) SetNodes(nodes []output.GraphNode) {
-	d.nodes = make([]D2Node, len(nodes))
-	for i, n := range nodes {
-		d.nodes[i] = graphNodeToD2(n)
+	d.nodes = make([]D2Node, 0, len(nodes))
+	for _, n := range nodes {
+		d.nodes = append(d.nodes, graphNodeToD2(n))
 	}
 }
 
 // SetEdges sets graph edges from the generic GraphEdge type, satisfying GraphRenderer.
 func (d *D2Diagram) SetEdges(edges []output.GraphEdge) {
-	d.edges = make([]D2Edge, len(edges))
-	for i, e := range edges {
-		d.edges[i] = graphEdgeToD2(e)
+	d.edges = make([]D2Edge, 0, len(edges))
+	for _, e := range edges {
+		d.edges = append(d.edges, graphEdgeToD2(e))
 	}
 }
 
@@ -67,7 +67,8 @@ func graphEdgeToD2(e output.GraphEdge) D2Edge {
 
 func nodeShapeToD2(s output.NodeShape) D2NodeShape {
 	switch s {
-	case output.NodeShapeBox, output.NodeShapeRect:
+	case output.NodeShapeBox,
+		output.NodeShapeRect: //nolint:staticcheck // backward compat
 		return D2ShapeRectangle
 	case output.NodeShapeEllipse:
 		return D2ShapeOval

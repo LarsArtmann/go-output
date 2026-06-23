@@ -186,9 +186,9 @@ func TestSortingBehavior(t *testing.T) {
 	}
 
 	makeProjects := func(names ...string) []Project {
-		projects := make([]Project, len(names))
-		for i, name := range names {
-			projects[i] = Project{Name: name}
+		projects := make([]Project, 0, len(names))
+		for _, name := range names {
+			projects = append(projects, Project{Name: name})
 		}
 
 		return projects

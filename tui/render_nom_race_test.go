@@ -39,10 +39,10 @@ func TestProgressModel_RenderRacingActivityMutation(t *testing.T) {
 
 	const groupID = nom.ActivityID("group")
 
-	ids := make([]nom.ActivityID, 10)
+	ids := make([]nom.ActivityID, 0, 10)
 
-	for i := range ids {
-		ids[i] = nom.ActivityID(fmt.Sprintf("act%d", i))
+	for i := range 10 {
+		ids = append(ids, nom.ActivityID(fmt.Sprintf("act%d", i)))
 		_ = model.nomSubscriber.OnEvent(ctx, nom.ActivityRegistered{
 			ID:   ids[i],
 			Name: nom.ActivityName(fmt.Sprintf("Act %d", i)),

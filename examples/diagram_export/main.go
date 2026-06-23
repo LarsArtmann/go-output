@@ -17,9 +17,9 @@ func main() {
 
 	// Build a CI pipeline: fetch → compile → {test, lint} → deploy
 	fire := func(id, name string, deps ...string) {
-		depIDs := make([]nom.ActivityID, len(deps))
-		for i, d := range deps {
-			depIDs[i] = nom.ActivityID(d)
+		depIDs := make([]nom.ActivityID, 0, len(deps))
+		for _, d := range deps {
+			depIDs = append(depIDs, nom.ActivityID(d))
 		}
 
 		_ = subscriber.OnEvent(ctx, nom.ActivityStarted{

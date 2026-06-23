@@ -88,9 +88,9 @@ func (m *MarkdownTable) SetColorMode(mode output.ColorMode) *MarkdownTable {
 func (m *MarkdownTable) SetHeaders(headers []string) *MarkdownTable {
 	m.headers = headers
 
-	m.align = make([]Alignment, len(headers))
-	for i := range m.align {
-		m.align[i] = alignmentLeft
+	m.align = make([]Alignment, 0, len(headers))
+	for range headers {
+		m.align = append(m.align, alignmentLeft)
 	}
 
 	return m
@@ -142,9 +142,9 @@ func (m *MarkdownTable) Render() (string, error) {
 }
 
 func (m *MarkdownTable) calculateColumnWidths() []int {
-	colWidths := make([]int, len(m.headers))
-	for i, h := range m.headers {
-		colWidths[i] = len(h)
+	colWidths := make([]int, 0, len(m.headers))
+	for _, h := range m.headers {
+		colWidths = append(colWidths, len(h))
 	}
 
 	for _, row := range m.rows {

@@ -8,40 +8,40 @@ import (
 )
 
 func generateBenchmarkD2Nodes(n int) []D2Node {
-	nodes := make([]D2Node, n)
-	for i := range nodes {
-		nodes[i] = D2Node{
+	nodes := make([]D2Node, 0, n)
+	for i := range n {
+		nodes = append(nodes, D2Node{
 			ID:    output.NewBrandedID[output.D2NodeIDBrand](fmt.Sprintf("node%d", i)),
 			Label: output.NewBrandedID[output.D2NodeLabelBrand](fmt.Sprintf("Node %d", i)),
-		}
+		})
 	}
 
 	return nodes
 }
 
 func generateBenchmarkD2Edges(n int) []D2Edge {
-	edges := make([]D2Edge, n)
-	for i := range edges {
-		edges[i] = D2Edge{
+	edges := make([]D2Edge, 0, n)
+	for i := range n {
+		edges = append(edges, D2Edge{
 			From: output.NewBrandedID[output.D2NodeIDBrand](fmt.Sprintf("node%d", i)),
 			To:   output.NewBrandedID[output.D2NodeIDBrand](fmt.Sprintf("node%d", i+1)),
-		}
+		})
 	}
 
 	return edges
 }
 
 func generateBenchmarkD2Tables(n int) []D2Table {
-	tables := make([]D2Table, n)
-	for i := range tables {
-		tables[i] = D2Table{
+	tables := make([]D2Table, 0, n)
+	for i := range n {
+		tables = append(tables, D2Table{
 			Name: fmt.Sprintf("table%d", i),
 			Columns: []D2Column{
 				{Name: "id", Type: "int"},
 				{Name: "name", Type: "string"},
 				{Name: "email", Type: "string"},
 			},
-		}
+		})
 	}
 
 	return tables

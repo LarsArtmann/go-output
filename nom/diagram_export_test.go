@@ -132,9 +132,9 @@ func diagramFireWorkflow(t *testing.T, ns *NOMStyleSubscriber, ctx context.Conte
 func diagramFireActivity(t *testing.T, ns *NOMStyleSubscriber, ctx context.Context, id, name string, deps ...string) {
 	t.Helper()
 
-	dependencies := make([]ActivityID, len(deps))
-	for i, dep := range deps {
-		dependencies[i] = ActivityID(dep)
+	dependencies := make([]ActivityID, 0, len(deps))
+	for _, dep := range deps {
+		dependencies = append(dependencies, ActivityID(dep))
 	}
 
 	_ = ns.OnEvent(ctx, ActivityStarted{

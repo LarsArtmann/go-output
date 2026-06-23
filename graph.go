@@ -47,7 +47,9 @@ const (
 	NodeShapeCylinder      NodeShape = "cylinder"
 	NodeShapeHexagon       NodeShape = "hexagon"
 	NodeShapeParallelogram NodeShape = "parallelogram"
-	NodeShapeRect          NodeShape = "rect"
+
+	// Deprecated: Use NodeShapeBox instead. NodeShapeRect will be removed in v2.
+	NodeShapeRect NodeShape = "rect"
 )
 
 //nolint:gochecknoglobals // Global variable used for value iteration.
@@ -59,7 +61,7 @@ var nodeShapeValues = []NodeShape{
 	NodeShapeCylinder,
 	NodeShapeHexagon,
 	NodeShapeParallelogram,
-	NodeShapeRect,
+	NodeShapeRect, //nolint:staticcheck // deprecated but must stay in allowed-values for backward compat
 }
 
 // LineStyle represents the visual style of a line (edge).

@@ -127,9 +127,9 @@ func renderXMLFormat(projects []TestProject) string {
 }
 
 func formatProjectsToRows(projects []TestProject) [][]string {
-	rows := make([][]string, len(projects))
-	for i, p := range projects {
-		rows[i] = []string{p.Name, formatHealth(p.Health), formatComplexity(p.Complexity)}
+	rows := make([][]string, 0, len(projects))
+	for _, p := range projects {
+		rows = append(rows, []string{p.Name, formatHealth(p.Health), formatComplexity(p.Complexity)})
 	}
 
 	return rows

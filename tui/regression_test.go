@@ -28,7 +28,7 @@ func TestRenderProgressBar_NarrowWidth(t *testing.T) {
 
 // TestHandleStepUpdate_TotalZeroNotCompleted ensures that a step with Total=0
 // is NOT immediately marked as completed. Regression for an unsigned-comparison
-// bug where Current >= Total was always true when Total=0.
+// flaw where Current >= Total was always true when Total=0.
 func TestHandleStepUpdate_TotalZeroNotCompleted(t *testing.T) {
 	t.Parallel()
 

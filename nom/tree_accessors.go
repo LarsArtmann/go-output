@@ -29,8 +29,8 @@ func (dt *DependencyTree) GetRootNodes() []*ActivityNode {
 
 func (dt *DependencyTree) snapshotRoots() []*ActivityNode {
 	roots := dt.GetRootNodes()
-	snapshot := make([]*ActivityNode, len(roots))
-	copy(snapshot, roots)
+	snapshot := make([]*ActivityNode, 0, len(roots))
+	snapshot = append(snapshot, roots...)
 
 	return snapshot
 }

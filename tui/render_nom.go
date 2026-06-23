@@ -39,6 +39,11 @@ func (m *ProgressModel) renderNOMStyle() string {
 // SetFailed) mutating activities on dispatcher goroutines cannot race the
 // render. The snapshot is taken under the subscriber's read lock (brief),
 // then the tree walk reads only immutable data (no lock held).
+//
+// When scrollOffset > 0 the visible window is selected at the entry level
+// (before rendering), avoiding the O(n) render+string-clip of the previous
+// approach that rendered the entire tree then split the string to extract
+// the visible lines.
 func (m *ProgressModel) renderDependencyTree() string {
 	if m.dependencyTree == nil || m.nomSubscriber == nil {
 		return ""
@@ -47,24 +52,49 @@ func (m *ProgressModel) renderDependencyTree() string {
 	snapshots := m.nomSubscriber.SnapshotActivities()
 	tree := m.dependencyTree
 
-	if m.scrollOffset > 0 {
-		return tree.RenderWithSnapshots(snapshots, 0, m.width)
-	}
-
 	treeHeight := m.height - chromeLines
 	if treeHeight <= 0 {
 		treeHeight = defaultTreeHeight
 	}
 
-	m.visibleEntries = tree.VisibleEntriesWithSnapshots(snapshots, treeHeight)
+	var entries []nom.VisibleEntry
 
-	if len(m.visibleEntries) == 0 {
+	if m.scrollOffset > 0 {
+		// Scroll path: collect all entries (no height-pressure collapsing),
+		// then select the visible window by offset.
+		allEntries := tree.VisibleEntriesWithSnapshots(snapshots, 0)
+
+		if len(allEntries) == 0 {
+			m.visibleEntries = nil
+			m.scrollOffset = 0
+
+			return msgNoActivitiesToDisplay
+		}
+
+		// Clamp scrollOffset to valid range. scrollToBottomSentinel maps to
+		// the last page.
+		maxOffset := max(0, len(allEntries)-treeHeight)
+		if m.scrollOffset > maxOffset {
+			m.scrollOffset = maxOffset
+		}
+
+		end := min(m.scrollOffset+treeHeight, len(allEntries))
+		entries = allEntries[m.scrollOffset:end]
+	} else {
+		entries = tree.VisibleEntriesWithSnapshots(snapshots, treeHeight)
+	}
+
+	if len(entries) == 0 {
+		m.visibleEntries = nil
+
 		return msgNoActivitiesToDisplay
 	}
 
-	lines := make([]string, 0, len(m.visibleEntries))
+	m.visibleEntries = entries
 
-	for _, entry := range m.visibleEntries {
+	lines := make([]string, 0, len(entries))
+
+	for _, entry := range entries {
 		line := tree.RenderVisibleEntry(entry, snapshots, m.width)
 
 		// Only real activity nodes are selectable; collapse-marker lines

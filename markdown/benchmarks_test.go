@@ -14,22 +14,20 @@ func BenchmarkMarkdownTableColored(b *testing.B) {
 		dataCell   = "Cell"
 	)
 
-	headers := make([]string, 10)
-	for i := range headers {
-		headers[i] = headerCell
+	headers := make([]string, 0, 10)
+	for range 10 {
+		headers = append(headers, headerCell)
 	}
 
 	md.SetHeaders(headers)
 	md.SetColorMode(output.ColorModeAlways)
 
-	rows := make([][]string, 100)
-	for i := range rows {
-		row := make([]string, 10)
-		for j := range row {
-			row[j] = dataCell
+	for range 100 {
+		row := make([]string, 0, 10)
+		for range 10 {
+			row = append(row, dataCell)
 		}
 
-		rows[i] = row
 		md.AddRow(row)
 	}
 

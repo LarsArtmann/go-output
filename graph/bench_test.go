@@ -8,18 +8,18 @@ import (
 )
 
 func generateBenchmarkNodes(n int) []output.GraphNode {
-	nodes := make([]output.GraphNode, n)
-	for i := range nodes {
-		nodes[i] = newTestNode("node", "Node")
+	nodes := make([]output.GraphNode, 0, n)
+	for range n {
+		nodes = append(nodes, newTestNode("node", "Node"))
 	}
 
 	return nodes
 }
 
 func generateBenchmarkEdges(n int) []output.GraphEdge {
-	edges := make([]output.GraphEdge, n)
-	for i := range edges {
-		edges[i] = graphtest.NewTestEdge("node", "node", "")
+	edges := make([]output.GraphEdge, 0, n)
+	for range n {
+		edges = append(edges, graphtest.NewTestEdge("node", "node", ""))
 	}
 
 	return edges

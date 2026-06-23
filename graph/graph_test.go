@@ -52,7 +52,7 @@ func TestParseNodeShape(t *testing.T) {
 		{Name: "cylinder", Input: "cylinder", Want: output.NodeShapeCylinder},
 		{Name: "hexagon", Input: "hexagon", Want: output.NodeShapeHexagon},
 		{Name: "parallelogram", Input: "parallelogram", Want: output.NodeShapeParallelogram},
-		{Name: "rect", Input: "rect", Want: output.NodeShapeRect},
+		{Name: "rect", Input: "rect", Want: output.NodeShapeRect}, //nolint:staticcheck // backward compat
 		{Name: "invalid", Input: "invalid", WantErr: true},
 		{Name: "empty", Input: "", WantErr: true},
 	}

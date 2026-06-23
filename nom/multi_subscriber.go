@@ -52,8 +52,8 @@ func (m *MultiSubscriber) Add(s EventSubscriber) {
 // Returns the first error encountered, or nil if all succeeded.
 func (m *MultiSubscriber) OnEvent(ctx context.Context, event Event) error {
 	m.mu.RLock()
-	subs := make([]EventSubscriber, len(m.subscribers))
-	copy(subs, m.subscribers)
+	subs := make([]EventSubscriber, 0, len(m.subscribers))
+	subs = append(subs, m.subscribers...)
 	m.mu.RUnlock()
 
 	var firstErr error
@@ -71,8 +71,8 @@ func (m *MultiSubscriber) Subscribers() []EventSubscriber {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 
-	out := make([]EventSubscriber, len(m.subscribers))
-	copy(out, m.subscribers)
+	out := make([]EventSubscriber, 0, len(m.subscribers))
+	out = append(out, m.subscribers...)
 
 	return out
 }

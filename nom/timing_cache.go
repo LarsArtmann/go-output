@@ -101,8 +101,8 @@ func medianDuration(durations []time.Duration) time.Duration {
 		return 0
 	}
 
-	sorted := make([]time.Duration, len(durations))
-	copy(sorted, durations)
+	sorted := make([]time.Duration, 0, len(durations))
+	sorted = append(sorted, durations...)
 	slices.Sort(sorted)
 
 	mid := len(sorted) / 2
@@ -152,8 +152,8 @@ func (tc *TimingCache) getHistory(activityName string) []time.Duration {
 		return make([]time.Duration, 0)
 	}
 	// Return a copy to prevent external modification
-	result := make([]time.Duration, len(history))
-	copy(result, history)
+	result := make([]time.Duration, 0, len(history))
+	result = append(result, history...)
 
 	return result
 }

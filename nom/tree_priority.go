@@ -33,8 +33,8 @@ func (dt *DependencyTree) childPriority(
 		return nil
 	}
 
-	sorted := make([]*ActivityNode, len(node.Children))
-	copy(sorted, node.Children)
+	sorted := make([]*ActivityNode, 0, len(node.Children))
+	sorted = append(sorted, node.Children...)
 
 	sort.SliceStable(sorted, func(i, j int) bool {
 		ki := sortKeyForNode(sorted[i], snapshots)

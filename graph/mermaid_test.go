@@ -138,7 +138,7 @@ func TestMermaidRendererAllShapes(t *testing.T) {
 		wantRight string
 	}{
 		{"Box", output.NodeShapeBox, "[", "]"},
-		{"Rect", output.NodeShapeRect, "[", "]"},
+		{"Rect", output.NodeShapeRect, "[", "]"}, //nolint:staticcheck // tests deprecated shape rendering
 		{"Diamond", output.NodeShapeDiamond, "{", "}"},
 		{"Ellipse", output.NodeShapeEllipse, "(", ")"},
 		{"Circle", output.NodeShapeCircle, "((", "))"},
@@ -310,4 +310,53 @@ func TestMermaidRendererEscapeLabel(t *testing.T) {
 	}
 
 	assertContains(t, out, "'quoted'", "Quotes should be replaced with single quotes")
+}
+
+// TestMermaidNodeStyleEscapesInjection verifies that malicious style values
+// (brackets, braces, quotes, newlines) are escaped through the Mermaid render
+// pipeline. If escape.MermaidText were removed from mermaidStyleParts, brackets
+// or newlines in a style value could break the flowchart syntax or inject
+// arbitrary Mermaid directives.
+func TestMermaidNodeStyleEscapesInjection(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name  string
+		value string
+	}{
+		{"brackets in Fill", `red[injected]`},
+		{"braces in Stroke", `#000{injected}`},
+		{"double quote in FontColor", `#fff"breakout`},
+		{"newline in Fill", "red\nstyle other"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			renderer := NewMermaidRenderer()
+			renderer.SetNodes([]output.GraphNode{ //nolint:exhaustruct // Test uses minimal fields
+				{
+					ID:    output.NewBrandedID[output.GraphNodeIDBrand]("A"),
+					Label: output.NewBrandedID[output.GraphNodeLabelBrand]("Test"),
+					Shape: output.NodeShapeBox,
+					Style: output.GraphStyle{
+						Fill:      tt.value,
+						Stroke:    tt.value,
+						FontColor: tt.value,
+					},
+				},
+			})
+			renderer.SetEdges([]output.GraphEdge{})
+
+			out, err := renderer.Render()
+			if err != nil {
+				t.Fatalf("Render() error = %v", err)
+			}
+
+			if strings.Contains(out, tt.value) {
+				t.Errorf("raw malicious value %q leaked unescaped into Mermaid output", tt.value)
+			}
+		})
+	}
 }

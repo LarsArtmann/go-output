@@ -229,7 +229,7 @@ func TestD2NodeShapeConversion(t *testing.T) {
 		want  string
 	}{
 		{"box implicit rectangle", output.NodeShapeBox, ""},
-		{"rect implicit rectangle", output.NodeShapeRect, ""},
+		{"rect implicit rectangle", output.NodeShapeRect, ""}, //nolint:staticcheck // tests deprecated shape mapping
 		{"ellipse to oval", output.NodeShapeEllipse, "oval"},
 		{"diamond to diamond", output.NodeShapeDiamond, "diamond"},
 		{"circle to circle", output.NodeShapeCircle, "circle"},

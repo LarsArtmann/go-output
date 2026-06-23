@@ -89,8 +89,8 @@ func (tc *TimingCache) snapshotData() (map[string][]time.Duration, string) {
 
 	snapshot := make(map[string][]time.Duration, len(tc.cache))
 	for name, history := range tc.cache {
-		historyCopy := make([]time.Duration, len(history))
-		copy(historyCopy, history)
+		historyCopy := make([]time.Duration, 0, len(history))
+		historyCopy = append(historyCopy, history...)
 		snapshot[name] = historyCopy
 	}
 

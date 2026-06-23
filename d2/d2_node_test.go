@@ -309,3 +309,53 @@ func TestEscapeD2(t *testing.T) {
 		})
 	}
 }
+
+// TestD2NodeStyleEscapesStyleInjection verifies that malicious style values
+// (newlines, quotes, backslashes) are escaped through the D2 render pipeline,
+// preventing attribute/statement injection. If escape.D2 were removed from
+// d2_write.go, these tests would fail.
+func TestD2NodeStyleEscapesStyleInjection(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name  string
+		value string
+	}{
+		{"newline in Fill injects statement", "red\nstyle.fill: green"},
+		{"double quote in Fill", `red"; injected: true`},
+		{"backslash in Fill", `red\malicious`},
+		{"newline in Stroke", "#000\nstyle.other: evil"},
+		{"newline in FontColor", "#fff\nstyle.fill: black"},
+		{"double quote in TextTransform", `upper"case`},
+		{"backslash in TextTransform", `upper\case`},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			d := NewD2Diagram()
+			d.AddNode(D2Node{ //nolint:exhaustruct // Test uses minimal required fields
+				ID:    output.NewBrandedID[output.D2NodeIDBrand]("node"),
+				Label: output.NewBrandedID[output.D2NodeLabelBrand]("Test"),
+				Style: D2NodeStyle{
+					Fill: tt.value,
+					D2StrokeStyle: D2StrokeStyle{
+						Stroke:    tt.value,
+						FontColor: tt.value,
+					},
+					TextTransform: tt.value,
+				},
+			})
+
+			got, err := d.Render()
+			if err != nil {
+				t.Fatalf("Render() error = %v", err)
+			}
+
+			if strings.Contains(got, tt.value) {
+				t.Errorf("raw malicious value %q leaked unescaped into D2 output", tt.value)
+			}
+		})
+	}
+}

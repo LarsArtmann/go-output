@@ -122,9 +122,9 @@ func (as ActivityStatus) IsValid() bool {
 
 // AllowedValues returns all valid status strings for CLI help text and config.
 func (ActivityStatus) AllowedValues() []string {
-	out := make([]string, len(AllActivityStatuses))
-	for i, s := range AllActivityStatuses {
-		out[i] = s.String()
+	out := make([]string, 0, len(AllActivityStatuses))
+	for _, s := range AllActivityStatuses {
+		out = append(out, s.String())
 	}
 
 	return out

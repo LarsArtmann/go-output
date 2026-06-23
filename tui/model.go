@@ -138,7 +138,7 @@ func (m *ProgressModel) handleMouseClick(msg tea.MouseClickMsg) (tea.Model, tea.
 	// one terminal line per entry (real node or collapse marker), which holds
 	// because the tree is rendered via RenderVisibleEntry which truncates long
 	// lines to prevent wrapping.
-	treeLine := mouse.Y - m.treeStartLine - chromeLinesAboveTree + m.scrollOffset
+	treeLine := mouse.Y - m.treeStartLine - chromeLinesAboveTree
 	if treeLine < 0 || treeLine >= len(m.visibleEntries) {
 		m.selectedNode = ""
 		return m, nil
