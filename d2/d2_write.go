@@ -39,7 +39,7 @@ func (*D2Diagram) writeStyleColors(b *strings.Builder, s D2StrokeStyle, indent s
 }
 
 func (*D2Diagram) writeStyleEffects(b *strings.Builder, s D2NodeStyle, indent string) {
-	if s.Opacity != 0 {
+	if s.Opacity > 0 {
 		opacity := s.Opacity
 		if opacity > 1 {
 			opacity = 1
