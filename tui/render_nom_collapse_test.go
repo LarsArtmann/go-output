@@ -79,6 +79,7 @@ func TestProgressModel_ScrollRendering_ShowsCorrectWindow(t *testing.T) {
 
 	// No scroll: first 10 entries visible
 	model.scrollOffset = 0
+
 	got := model.renderDependencyTree()
 	if got == "" {
 		t.Fatal("scrollOffset=0 should produce output")
