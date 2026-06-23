@@ -225,3 +225,48 @@ func TestPlantUMLDiagramNoStyleNoColorSpec(t *testing.T) {
 
 	testhelpers.AssertContains(t, out, "[Plain]", "Node label should still render")
 }
+
+// TestPlantUMLNodeStyleEscapesInjection verifies that malicious style values
+// (semicolons, newlines, brackets) are escaped through the PlantUML render
+// pipeline. A semicolon in a style value could inject additional PlantUML
+// attributes; a newline could inject arbitrary PlantUML syntax.
+func TestPlantUMLNodeStyleEscapesInjection(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name  string
+		value string
+	}{
+		{"semicolon in Fill injects attribute", "red;line:evil"},
+		{"newline in Fill", "red\n@startuml"},
+		{"double quote in Fill", `red"; injected`},
+		{"semicolon in Stroke", "#000;line:evil"},
+		{"newline in FontColor", "#fff\n@enduml"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			d := NewPlantUMLDiagram()
+			d.AddNode(output.GraphNode{ //nolint:exhaustruct // Test uses minimal fields
+				ID:    output.NewBrandedID[output.GraphNodeIDBrand]("n"),
+				Label: output.NewBrandedID[output.GraphNodeLabelBrand]("Test"),
+				Style: output.GraphStyle{
+					Fill:      tt.value,
+					Stroke:    tt.value,
+					FontColor: tt.value,
+				},
+			})
+
+			out, err := d.Render()
+			if err != nil {
+				t.Fatalf("Render() error = %v", err)
+			}
+
+			if strings.Contains(out, tt.value) {
+				t.Errorf("raw malicious value %q leaked unescaped into PlantUML output", tt.value)
+			}
+		})
+	}
+}

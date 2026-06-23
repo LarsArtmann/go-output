@@ -99,15 +99,15 @@ func plantumlColorSpec(s output.GraphStyle) string {
 	var parts []string
 
 	if s.Fill != "" {
-		parts = append(parts, s.Fill)
+		parts = append(parts, plantumlColorValue(s.Fill))
 	}
 
 	if s.Stroke != "" {
-		parts = append(parts, "line:"+s.Stroke)
+		parts = append(parts, "line:"+plantumlColorValue(s.Stroke))
 	}
 
 	if s.FontColor != "" {
-		parts = append(parts, "text:"+s.FontColor)
+		parts = append(parts, "text:"+plantumlColorValue(s.FontColor))
 	}
 
 	result := strings.Join(parts, ";")
@@ -117,4 +117,12 @@ func plantumlColorSpec(s output.GraphStyle) string {
 	}
 
 	return result
+}
+
+// plantumlColorValue escapes a color value for use in a PlantUML color spec.
+// Uses escape.PlantUML for general escaping (newline, backslash, quote, ])
+// and additionally replaces ';' — the PlantUML attribute separator — to
+// prevent attribute injection.
+func plantumlColorValue(s string) string {
+	return strings.ReplaceAll(escape.PlantUML(s), ";", "_")
 }
