@@ -59,6 +59,8 @@ for _, row := range data.GetRows() { _ = csv.WriteRow(row) }
 csv.Flush()
 ```
 
+> **Sub-module imports** (e.g., `delimited`, `markdown`, `serialization`) require cloning the repo and setting up the workspace — see [Installation](#installation). Root-only usage works with just `go get`.
+
 Use the `Format` enum for runtime format selection — perfect for CLI flags:
 
 ```go
@@ -85,7 +87,7 @@ output.RenderTableData(data, output.FormatHTML, output.RenderOptions{
 - **NOM real-time progress** — Dependency trees, activity counts, timing estimates, and inline terminal rendering. O(1) summary bars even at 10,000 activities.
 - **Streaming for large data** — `StreamingHTMLRenderer` writes incrementally with minimal memory.
 - **Zero-config color** — `ColorModeAuto` detects TTY, respects `NO_COLOR`, `CI`, `FORCE_COLOR`.
-- **Pre-v1 API frozen** — ADR 006 locks core interfaces. Breaking changes are documented.
+- **API stable** — ADR 006 locks core interfaces. Breaking changes are documented and versioned.
 
 ---
 
@@ -175,20 +177,20 @@ nix run .#setup-workspace   # generates go.work from go.work.example
 
 Then import what you need. The `replace` directives in each module's `go.mod` resolve siblings locally. See [ADR 009](docs/adr/009-pattern-b-versioning.md) for the rationale.
 
-| What you want                            | Import path                                    |
-| ---------------------------------------- | ---------------------------------------------- |
-| Core types, enums, registries            | `github.com/larsartmann/go-output`             |
-| CSV + TSV writers                        | `github.com/larsartmann/go-output/delimited`   |
-| JSON + YAML + TOML + JSONL               | `github.com/larsartmann/go-output/serialization` |
-| XML + HTML + AsciiDoc                    | `github.com/larsartmann/go-output/markup`       |
-| Terminal tables (lipgloss)               | `github.com/larsartmann/go-output/table`        |
-| Markdown tables                          | `github.com/larsartmann/go-output/markdown`     |
-| ASCII trees                              | `github.com/larsartmann/go-output/tree`         |
-| D2 diagrams                              | `github.com/larsartmann/go-output/d2`           |
-| DOT + Mermaid                            | `github.com/larsartmann/go-output/graph`        |
-| PlantUML                                 | `github.com/larsartmann/go-output/plantuml`     |
-| NOM-style progress                       | `github.com/larsartmann/go-output/nom`          |
-| Bubble Tea TUI                           | `github.com/larsartmann/go-output/tui`          |
+| What you want                 | Import path                                      |
+| ----------------------------- | ------------------------------------------------ |
+| Core types, enums, registries | `github.com/larsartmann/go-output`               |
+| CSV + TSV writers             | `github.com/larsartmann/go-output/delimited`     |
+| JSON + YAML + TOML + JSONL    | `github.com/larsartmann/go-output/serialization` |
+| XML + HTML + AsciiDoc         | `github.com/larsartmann/go-output/markup`        |
+| Terminal tables (lipgloss)    | `github.com/larsartmann/go-output/table`         |
+| Markdown tables               | `github.com/larsartmann/go-output/markdown`      |
+| ASCII trees                   | `github.com/larsartmann/go-output/tree`          |
+| D2 diagrams                   | `github.com/larsartmann/go-output/d2`            |
+| DOT + Mermaid                 | `github.com/larsartmann/go-output/graph`         |
+| PlantUML                      | `github.com/larsartmann/go-output/plantuml`      |
+| NOM-style progress            | `github.com/larsartmann/go-output/nom`           |
+| Bubble Tea TUI                | `github.com/larsartmann/go-output/tui`           |
 
 ---
 

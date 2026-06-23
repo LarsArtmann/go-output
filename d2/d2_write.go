@@ -9,7 +9,7 @@ import (
 
 func (d *D2Diagram) writeStyleAttrs(b *strings.Builder, s D2NodeStyle, indent string) {
 	if s.Fill != "" {
-		fmt.Fprintf(b, "%sstyle.fill: %s\n", indent, s.Fill)
+		fmt.Fprintf(b, "%sstyle.fill: %s\n", indent, escape.D2(s.Fill))
 	}
 
 	d.writeStyleColors(b, s.D2StrokeStyle, indent)
@@ -18,7 +18,7 @@ func (d *D2Diagram) writeStyleAttrs(b *strings.Builder, s D2NodeStyle, indent st
 
 func (*D2Diagram) writeStyleColors(b *strings.Builder, s D2StrokeStyle, indent string) {
 	if s.Stroke != "" {
-		fmt.Fprintf(b, "%sstyle.stroke: %s\n", indent, s.Stroke)
+		fmt.Fprintf(b, "%sstyle.stroke: %s\n", indent, escape.D2(s.Stroke))
 	}
 
 	if s.StrokeWidth > 0 {
@@ -34,15 +34,17 @@ func (*D2Diagram) writeStyleColors(b *strings.Builder, s D2StrokeStyle, indent s
 	}
 
 	if s.FontColor != "" {
-		fmt.Fprintf(b, "%sstyle.font-color: %s\n", indent, s.FontColor)
+		fmt.Fprintf(b, "%sstyle.font-color: %s\n", indent, escape.D2(s.FontColor))
 	}
 }
 
 func (*D2Diagram) writeStyleEffects(b *strings.Builder, s D2NodeStyle, indent string) {
-	if s.Opacity > 0 {
+	if s.Opacity != 0 {
 		opacity := s.Opacity
 		if opacity > 1 {
-			opacity = 1 // clamp to valid D2 range [0.0, 1.0]
+			opacity = 1
+		} else if opacity < 0 {
+			opacity = 0
 		}
 
 		fmt.Fprintf(b, "%sstyle.opacity: %g\n", indent, opacity)
@@ -57,7 +59,7 @@ func (*D2Diagram) writeStyleEffects(b *strings.Builder, s D2NodeStyle, indent st
 	}
 
 	if s.TextTransform != "" {
-		fmt.Fprintf(b, "%sstyle.text-transform: %s\n", indent, s.TextTransform)
+		fmt.Fprintf(b, "%sstyle.text-transform: %s\n", indent, escape.D2(s.TextTransform))
 	}
 }
 

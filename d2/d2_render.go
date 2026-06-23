@@ -156,7 +156,7 @@ func (d *D2Diagram) writeConfig(b *strings.Builder) {
 	}
 
 	if d.layout != "" {
-		fmt.Fprintf(b, "layout: %s\n", d.layout)
+		fmt.Fprintf(b, "layout: %s\n", escape.D2(d.layout))
 	}
 
 	b.WriteString("\n")

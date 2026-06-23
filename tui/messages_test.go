@@ -14,10 +14,6 @@ func TestUpdateType(t *testing.T) {
 	if messageUpdate != 1 {
 		t.Errorf("messageUpdate = %d, want 1", messageUpdate)
 	}
-
-	if stepUpdate != 2 {
-		t.Errorf("stepUpdate = %d, want 2", stepUpdate)
-	}
 }
 
 func TestProgressUpdateMsg(t *testing.T) {

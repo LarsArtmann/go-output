@@ -1,0 +1,116 @@
+direction: down
+
+root: Root (output) {
+  shape: package
+  style.fill: "#1d3557"
+  style.font-color: "#ffffff"
+}
+
+escape: escape {
+  shape: package
+  style.fill: "#e8e8e2"
+}
+
+testhelpers: testhelpers {
+  shape: package
+  style.fill: "#e8e8e2"
+}
+
+graphtest: testhelpers/graphtest {
+  shape: package
+  style.fill: "#e8e8e2"
+}
+
+delimited: delimited {
+  shape: package
+}
+
+serialization: serialization {
+  shape: package
+}
+
+markup: markup {
+  shape: package
+}
+
+table: table {
+  shape: package
+}
+
+markdown: markdown {
+  shape: package
+}
+
+tree: tree {
+  shape: package
+}
+
+d2mod: d2 {
+  shape: package
+}
+
+graph: graph {
+  shape: package
+}
+
+plantuml: plantuml {
+  shape: package
+}
+
+nom: nom {
+  shape: package
+}
+
+tui: tui {
+  shape: package
+}
+
+integration: integration {
+  shape: package
+  style.fill: "#f4d35e"
+}
+
+bdd: bdd {
+  shape: package
+  style.fill: "#f4d35e"
+}
+
+examples: examples {
+  shape: package
+  style.fill: "#f4d35e"
+}
+
+root -> testhelpers: test deps
+root -> escape: (via replace)
+
+delimited -> root: core types
+serialization -> root: core types
+markup -> root: core types
+table -> root: core types
+markdown -> root: core types
+tree -> root: core types
+d2mod -> root: core types
+graph -> root: core types
+plantuml -> root: core types
+nom -> root: core types
+tui -> root: core types
+
+d2mod -> escape: escaping
+graph -> escape: escaping
+markup -> escape: escaping
+plantuml -> escape: escaping
+
+graphtest -> testhelpers: shared fixtures
+
+tui -> nom: progress events
+
+integration -> root: cross-module tests
+integration -> d2mod: cross-module tests
+integration -> graph: cross-module tests
+integration -> table: cross-module tests
+integration -> nom: cross-module tests
+
+examples -> root: examples
+examples -> table: examples
+examples -> nom: examples
+examples -> tui: examples

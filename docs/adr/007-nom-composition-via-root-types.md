@@ -1,7 +1,7 @@
 # ADR 007: nom/ Composition via Root Graph Types
 
 **Date:** 2026-06-18
-**Status:** ACCEPTED (partially implemented)
+**Status:** ACCEPTED & IMPLEMENTED
 
 ## Context
 
@@ -48,23 +48,23 @@ diagram, _ := dot.Render()
 
 ## Implementation Status
 
-| Component                                      | Status                              |
-| ---------------------------------------------- | ----------------------------------- |
-| `Activity` type (embeds GraphNode)             | ✅ Done                             |
-| `ActivityStatus.NodeShape()` / `.GraphStyle()` | ✅ Done                             |
-| `ActivityStore` with `Nodes()`/`Edges()`       | ✅ Done                             |
-| `ActivityNode` embeds `Activity`               | ✅ Done                             |
-| `MultiSubscriber` fanout                       | ✅ Done                             |
-| `ActivityStore` wired into subscriber          | ✅ Done → removed (ghost system)    |
-| Diagram export tests                           | ✅ Done (3 tests, race-clean)       |
-| `ActivityDisplayState` → `Activity` migration  | ✅ Done — single source of truth    |
-| `SyncActivityTimingToTree` elimination         | ✅ Done — shared pointer            |
-| `InlineRenderer.Render()` contract fix (M4)    | ✅ Done — `Draw()` / `RenderString` |
-| `tui/` migration to new types                  | ✅ Done — tests use new types       |
+| Component                                         | Status                                                |
+| ------------------------------------------------- | ----------------------------------------------------- |
+| `Activity` type (embeds GraphNode)                | ✅ Done                                               |
+| `ActivityStatus.NodeShape()` / `.GraphStyle()`    | ✅ Done                                               |
+| `ActivityStore` with `Nodes()`/`Edges()`          | ✅ Done                                               |
+| `ActivityNode` holds `ActivityID` (no shared ptr) | ✅ Done — snapshot model (v0.17.0)                    |
+| `MultiSubscriber` fanout                          | ✅ Done                                               |
+| `ActivityStore` wired into subscriber             | ✅ Done → removed (ghost system)                      |
+| Diagram export tests                              | ✅ Done (3 tests, race-clean)                         |
+| `ActivityDisplayState` → `Activity` migration     | ✅ Done — single source of truth                      |
+| `SyncActivityTimingToTree` elimination            | ✅ Done — then superseded by snapshot model (v0.17.0) |
+| `InlineRenderer.Render()` contract fix (M4)       | ✅ Done — `Draw()` / `RenderWithSnapshots`            |
+| `tui/` migration to new types                     | ✅ Done — tests use new types                         |
 
 ## Consequences
 
 - nom/ now depends on `github.com/larsartmann/go-output` (root)
 - Diagram export of progress state is possible with 3 lines of code
 - Multiple subscribers can receive one event stream via `MultiSubscriber`
-- The `DisplayState` struct and `SyncActivityTimingToTree` have been eliminated (shared \*Activity pointer model)
+- The `DisplayState` struct and `SyncActivityTimingToTree` have been eliminated. The shared-`*Activity`-pointer model was itself replaced in v0.17.0 by the snapshot model: `ActivityNode` holds only an `ActivityID`, and all mutable fields are consumed via immutable `ActivitySnapshot` copies taken under the subscriber's read lock.

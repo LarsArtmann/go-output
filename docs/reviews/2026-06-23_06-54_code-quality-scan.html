@@ -1,0 +1,844 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Code Quality Scan — go-output</title>
+    <style>
+      :root {
+        --color-graphite: #0e0e10;
+        --color-graphite-2: #18181d;
+        --color-graphite-3: #16161a;
+        --color-bone: #f4f4f0;
+        --color-red: #ff6b6b;
+        --color-blue: #6eb5ff;
+        --color-yellow: #f4d35e;
+        --color-amber: #ffb347;
+        --color-hairline: rgba(244, 244, 240, 0.12);
+        --color-hairline-strong: rgba(244, 244, 240, 0.25);
+        --surface: var(--color-graphite);
+        --surface-raised: var(--color-graphite-2);
+        --surface-sunken: var(--color-graphite-3);
+        --text: var(--color-bone);
+        --text-muted: rgba(244, 244, 240, 0.72);
+        --text-faint: rgba(244, 244, 240, 0.45);
+        --border: var(--color-hairline);
+        --border-strong: var(--color-hairline-strong);
+        --accent: var(--color-amber);
+        --problem: var(--color-red);
+        --solution: var(--color-blue);
+        --warning: var(--color-yellow);
+        --radius: 0px;
+        --radius-sm: 0px;
+        --font-heading:
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+        --font-body:
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+        --font-mono:
+          ui-monospace, "Cascadia Code", "Source Code Pro", "JetBrains Mono", Menlo, Consolas,
+          monospace;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      [id] {
+        scroll-margin-top: 60px;
+      }
+      body {
+        background: var(--surface);
+        color: var(--text);
+        font-family: var(--font-body);
+        font-size: 15px;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+      }
+      .top-bar {
+        background: var(--text);
+        color: var(--surface);
+        padding: 0.6rem 2rem;
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .layout {
+        display: flex;
+        gap: 2.5rem;
+        padding: 2rem;
+      }
+      .sidebar {
+        width: 220px;
+        flex-shrink: 0;
+        position: sticky;
+        top: 1rem;
+        align-self: flex-start;
+        height: calc(100vh - 2rem);
+        overflow-y: auto;
+        display: none;
+      }
+      .sidebar nav {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+      }
+      .sidebar .label {
+        font-family: var(--font-mono);
+        font-size: 0.68rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--accent);
+        margin-bottom: 0.75rem;
+        padding-bottom: 0.4rem;
+        border-bottom: 2px solid var(--border-strong);
+      }
+      .sidebar a {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        text-decoration: none;
+        padding: 0.45rem 0.75rem;
+        border-left: 2px solid transparent;
+        transition: all 0.15s ease;
+        line-height: 1.4;
+        font-weight: 500;
+      }
+      .sidebar a:hover,
+      .sidebar a.active {
+        color: var(--accent);
+        border-left-color: var(--accent);
+        background: color-mix(in srgb, var(--accent) 8%, transparent);
+      }
+      .main {
+        flex: 1;
+        min-width: 0;
+      }
+      h1,
+      h2,
+      h3,
+      h4 {
+        font-family: var(--font-heading);
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+      h1 {
+        font-size: clamp(1.8rem, 4vw, 2.6rem);
+        line-height: 1.1;
+        margin: 0 0 0.6rem;
+      }
+      h2 {
+        font-size: 1.4rem;
+        margin: 2.5rem 0 1rem;
+        padding-bottom: 0.4rem;
+        border-bottom: 2px solid var(--border-strong);
+        display: flex;
+        align-items: baseline;
+        gap: 0.6rem;
+      }
+      h2 .num {
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+        color: var(--accent);
+        font-weight: 700;
+        letter-spacing: 0.06em;
+      }
+      h3 {
+        font-size: 1.1rem;
+        margin: 0 0 0.4rem;
+        font-weight: 700;
+      }
+      h4 {
+        font-size: 0.98rem;
+        margin: 0 0 0.3rem;
+        font-weight: 700;
+      }
+      p {
+        margin: 0 0 1rem;
+      }
+      .hero {
+        padding: 1.5rem 0 1.5rem;
+        margin-bottom: 1.5rem;
+        border-bottom: 2px solid var(--border-strong);
+      }
+      .hero-badge {
+        display: inline-block;
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--surface);
+        background: var(--accent);
+        padding: 0.3rem 0.7rem;
+        margin-bottom: 0.9rem;
+      }
+      .hero-subtitle {
+        font-size: 1.05rem;
+        color: var(--text-muted);
+        max-width: 70ch;
+        margin: 0;
+      }
+      .card {
+        background: var(--surface-raised);
+        border: 1px solid var(--border);
+        padding: 1.1rem 1.3rem;
+        margin-bottom: 1rem;
+        border-left: 4px solid var(--border-strong);
+      }
+      .card-problem {
+        border-left-color: var(--problem);
+        background: color-mix(in srgb, var(--problem) 8%, var(--surface-raised));
+      }
+      .card-solution {
+        border-left-color: var(--solution);
+        background: color-mix(in srgb, var(--solution) 8%, var(--surface-raised));
+      }
+      .card-warning {
+        border-left-color: var(--warning);
+        background: color-mix(in srgb, var(--warning) 8%, var(--surface-raised));
+      }
+      .stat-grid,
+      .scorecard {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 0.75rem;
+        margin: 1rem 0 1.5rem;
+      }
+      .stat-card,
+      .score-card {
+        background: var(--surface-raised);
+        border: 1px solid var(--border);
+        padding: 1.1rem 1rem;
+        position: relative;
+      }
+      .stat-card::before,
+      .score-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: var(--border-strong);
+      }
+      .stat-bad::before,
+      .score-bad::before {
+        background: var(--problem);
+      }
+      .stat-good::before,
+      .score-good::before {
+        background: var(--solution);
+      }
+      .stat-warn::before,
+      .score-warn::before {
+        background: var(--warning);
+      }
+      .stat-value,
+      .score {
+        font-family: var(--font-heading);
+        font-size: 2rem;
+        font-weight: 800;
+        line-height: 1;
+        letter-spacing: -0.03em;
+        color: var(--text);
+      }
+      .stat-good .stat-value,
+      .score-good .score {
+        color: var(--solution);
+      }
+      .stat-warn .stat-value,
+      .score-warn .score {
+        color: var(--warning);
+      }
+      .stat-bad .stat-value,
+      .score-bad .score {
+        color: var(--problem);
+      }
+      .stat-label,
+      .score-card .label {
+        font-family: var(--font-mono);
+        font-size: 0.65rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--text-faint);
+        margin-top: 0.5rem;
+      }
+      .strengths {
+        display: grid;
+        gap: 0.5rem;
+        margin: 1rem 0 1.5rem;
+      }
+      .strength {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 0.8rem;
+        padding: 0.7rem 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .strength .check {
+        font-family: var(--font-mono);
+        font-weight: 700;
+        color: var(--solution);
+        font-size: 1.1rem;
+        line-height: 1.4;
+      }
+      .strength .text strong {
+        display: block;
+        margin-bottom: 0.15rem;
+      }
+      .strength .text span {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1rem 0 1.5rem;
+        font-size: 0.9rem;
+      }
+      th {
+        text-align: left;
+        padding: 0.6rem 0.9rem;
+        background: var(--surface-raised);
+        color: var(--text-faint);
+        font-family: var(--font-mono);
+        font-size: 0.66rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        border-bottom: 1px solid var(--border-strong);
+      }
+      td {
+        padding: 0.6rem 0.9rem;
+        border-bottom: 1px solid var(--border);
+      }
+      tr:hover td {
+        background: var(--surface-raised);
+      }
+      .badge {
+        display: inline-block;
+        font-family: var(--font-mono);
+        font-size: 0.62rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        padding: 0.18rem 0.5rem;
+        border: 1px solid var(--border-strong);
+        color: var(--text-muted);
+      }
+      .badge-critical {
+        color: var(--problem);
+        border-color: var(--problem);
+      }
+      .badge-high {
+        color: var(--warning);
+        border-color: var(--warning);
+      }
+      .badge-medium {
+        color: var(--accent);
+        border-color: var(--accent);
+      }
+      .badge-low {
+        color: var(--text-muted);
+      }
+      .badge-fixed {
+        color: var(--solution);
+        border-color: var(--solution);
+      }
+      .footer {
+        margin-top: 2rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border);
+        font-size: 0.8rem;
+        color: var(--text-faint);
+        font-family: var(--font-mono);
+      }
+      @media (min-width: 1024px) {
+        .sidebar {
+          display: block;
+        }
+      }
+      @media (max-width: 768px) {
+        .layout {
+          flex-direction: column;
+          padding: 1rem;
+        }
+        .stat-grid,
+        .scorecard {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="top-bar">
+      <span>Code Quality Scan</span>
+      <span>2026-06-23</span>
+      <span>go-output v0.18+</span>
+    </div>
+
+    <div class="layout">
+      <aside class="sidebar" data-nav>
+        <nav>
+          <div class="label">Contents</div>
+          <a href="#summary">Summary</a>
+          <a href="#build">Build</a>
+          <a href="#lint">Lint</a>
+          <a href="#tests">Tests</a>
+          <a href="#duplication">Duplication</a>
+          <a href="#security">Security</a>
+          <a href="#strengths">Strengths</a>
+          <a href="#modules">Module Breakdown</a>
+        </nav>
+      </aside>
+
+      <main class="main">
+        <div class="hero">
+          <div class="hero-badge">Code Quality Scan</div>
+          <h1>go-output — Clean Bill of Health</h1>
+          <p class="hero-subtitle">
+            Build, lint, test, duplication, and security scan across all 18 modules. Zero issues
+            found across the board.
+          </p>
+        </div>
+
+        <h2 id="summary"><span class="num">00</span>Summary</h2>
+        <div class="stat-grid">
+          <div class="stat-card stat-good">
+            <div class="stat-value">0</div>
+            <div class="stat-label">Build Errors</div>
+          </div>
+          <div class="stat-card stat-good">
+            <div class="stat-value">0</div>
+            <div class="stat-label">Lint Issues</div>
+          </div>
+          <div class="stat-card stat-good">
+            <div class="stat-value">0</div>
+            <div class="stat-label">Test Failures</div>
+          </div>
+          <div class="stat-card stat-good">
+            <div class="stat-value">0</div>
+            <div class="stat-label">Clone Groups (t=24)</div>
+          </div>
+          <div class="stat-card stat-good">
+            <div class="stat-value">0</div>
+            <div class="stat-label">Vulnerabilities</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">18</div>
+            <div class="stat-label">Modules</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">271</div>
+            <div class="stat-label">Go Files</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">34.2K</div>
+            <div class="stat-label">Lines of Code</div>
+          </div>
+        </div>
+
+        <h2 id="build"><span class="num">01</span>Build</h2>
+        <div class="card card-solution">
+          <h4>All 18 modules build successfully</h4>
+          <p>
+            <code>nix run .#build</code> iterates every module and runs
+            <code>go build ./...</code> in each. All 18 modules compiled without errors. Root module
+            has zero imports of any sub-module (Pattern B invariant verified).
+          </p>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Module</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>. (root)</td>
+              <td><span class="badge badge-fixed">PASS</span></td>
+            </tr>
+            <tr>
+              <td>bdd</td>
+              <td><span class="badge badge-fixed">PASS</span></td>
+            </tr>
+            <tr>
+              <td>delimited</td>
+              <td><span class="badge badge-fixed">PASS</span></td>
+            </tr>
+            <tr>
+              <td>d2</td>
+              <td><span class="badge badge-fixed">PASS</span></td>
+            </tr>
+            <tr>
+              <td>escape</td>
+              <td><span class="badge badge-fixed">PASS</span></td>
+            </tr>
+            <tr>
+              <td>examples</td>
+              <td><span class="badge badge-fixed">PASS</span></td>
+            </tr>
+            <tr>
+              <td>graph</td>
+              <td><span class="badge badge-fixed">PASS</span></td>
+            </tr>
+            <tr>
+              <td>integration</td>
+              <td><span class="badge badge-fixed">PASS</span></td>
+            </tr>
+            <tr>
+              <td>markdown</td>
+              <td><span class="badge badge-fixed">PASS</span></td>
+            </tr>
+            <tr>
+              <td>markup</td>
+              <td><span class="badge badge-fixed">PASS</span></td>
+            </tr>
+            <tr>
+              <td>nom</td>
+              <td><span class="badge badge-fixed">PASS</span></td>
+            </tr>
+            <tr>
+              <td>plantuml</td>
+              <td><span class="badge badge-fixed">PASS</span></td>
+            </tr>
+            <tr>
+              <td>serialization</td>
+              <td><span class="badge badge-fixed">PASS</span></td>
+            </tr>
+            <tr>
+              <td>table</td>
+              <td><span class="badge badge-fixed">PASS</span></td>
+            </tr>
+            <tr>
+              <td>testhelpers</td>
+              <td><span class="badge badge-fixed">PASS</span></td>
+            </tr>
+            <tr>
+              <td>testhelpers/graphtest</td>
+              <td><span class="badge badge-fixed">PASS</span></td>
+            </tr>
+            <tr>
+              <td>tree</td>
+              <td><span class="badge badge-fixed">PASS</span></td>
+            </tr>
+            <tr>
+              <td>tui</td>
+              <td><span class="badge badge-fixed">PASS</span></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h2 id="lint"><span class="num">02</span>Lint</h2>
+        <div class="card card-solution">
+          <h4>golangci-lint: 0 issues across all 18 modules</h4>
+          <p>
+            <code>nix run .#lint</code> runs <code>golangci-lint run ./...</code> in each module
+            with per-module <code>.golangci.yml</code> configurations that include depguard import
+            restrictions. Every module reported <strong>0 issues</strong>.
+          </p>
+        </div>
+
+        <h2 id="tests"><span class="num">03</span>Tests</h2>
+        <div class="card card-solution">
+          <h4>All tests pass across all 18 modules</h4>
+          <p>
+            <code>nix run .#test</code> runs <code>go test ./...</code> in each module. All 18
+            modules pass. The <code>nom</code> module (most complex, concurrency-sensitive) passes
+            in 0.27s. The <code>tui</code> module passes in 0.008s.
+          </p>
+        </div>
+
+        <h2 id="duplication"><span class="num">04</span>Duplication Analysis</h2>
+        <div class="card card-solution">
+          <h4>art-dupl: 0 clone groups at t=24 (project standard)</h4>
+          <p>
+            Ran <code>art-dupl --semantic --sort total-tokens -t 24</code> excluding
+            <code>.git</code>, <code>vendor</code>, <code>docs</code>, and
+            <code>testdata</code> directories. <strong>Zero clone groups found</strong>. Verified at
+            lower thresholds: 0 at t=15 and 0 at t=10 — the codebase is exceptionally clean with no
+            harmful duplication.
+          </p>
+        </div>
+
+        <h2 id="security"><span class="num">05</span>Security</h2>
+        <div class="card card-solution">
+          <h4>govulncheck: 0 vulnerabilities affecting called code</h4>
+          <p>
+            <code>nix run .#govulncheck</code> reports 0 vulnerabilities in code that is actually
+            called. 3 vulnerabilities exist in required modules but are not in code paths that the
+            project calls — these are dependency-level advisories that do not affect the project.
+          </p>
+        </div>
+
+        <h2 id="strengths">Strengths</h2>
+        <div class="strengths">
+          <div class="strength">
+            <div class="check">+</div>
+            <div class="text">
+              <strong>Exceptionally clean codebase</strong>
+              <span
+                >Zero lint issues, zero build errors, zero test failures, zero harmful duplication —
+                across 271 files and 34K lines in 18 modules. This is rare.</span
+              >
+            </div>
+          </div>
+          <div class="strength">
+            <div class="check">+</div>
+            <div class="text">
+              <strong>Pattern B dependency isolation works</strong>
+              <span
+                >Root has zero imports of any sub-module. The load-bearing architectural invariant
+                is intact and verified by the clean build.</span
+              >
+            </div>
+          </div>
+          <div class="strength">
+            <div class="check">+</div>
+            <div class="text">
+              <strong>Comprehensive test coverage</strong>
+              <span
+                >158 test files for 113 production files (1.4:1 test-to-code ratio). Every module
+                has tests. Race tests exist for concurrency-sensitive modules (nom, tui).</span
+              >
+            </div>
+          </div>
+          <div class="strength">
+            <div class="check">+</div>
+            <div class="text">
+              <strong>Nix-based build system</strong>
+              <span
+                >All commands available via flake.nix apps. Build, test, lint, race-test,
+                govulncheck, tidy — all iterate every module automatically.</span
+              >
+            </div>
+          </div>
+          <div class="strength">
+            <div class="check">+</div>
+            <div class="text">
+              <strong>Per-module depguard enforcement</strong>
+              <span
+                >Each module has its own .golangci.yml with explicit import allow-lists. This
+                prevents accidental dependency leakage at lint time.</span
+              >
+            </div>
+          </div>
+        </div>
+
+        <h2 id="modules"><span class="num">06</span>Module Breakdown</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Module</th>
+              <th>Go Files</th>
+              <th>Test Files</th>
+              <th>Build</th>
+              <th>Lint</th>
+              <th>Tests</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>root</td>
+              <td>~30</td>
+              <td>~20</td>
+              <td><span class="badge badge-fixed">PASS</span></td>
+              <td><span class="badge badge-fixed">0</span></td>
+              <td><span class="badge badge-fixed">PASS</span></td>
+            </tr>
+            <tr>
+              <td>nom</td>
+              <td>~35</td>
+              <td>~25</td>
+              <td><span class="badge badge-fixed">PASS</span></td>
+              <td><span class="badge badge-fixed">0</span></td>
+              <td><span class="badge badge-fixed">PASS</span></td>
+            </tr>
+            <tr>
+              <td>tui</td>
+              <td>~15</td>
+              <td>~15</td>
+              <td><span class="badge badge-fixed">PASS</span></td>
+              <td><span class="badge badge-fixed">0</span></td>
+              <td><span class="badge badge-fixed">PASS</span></td>
+            </tr>
+            <tr>
+              <td>d2</td>
+              <td>~10</td>
+              <td>~10</td>
+              <td><span class="badge badge-fixed">PASS</span></td>
+              <td><span class="badge badge-fixed">0</span></td>
+              <td><span class="badge badge-fixed">PASS</span></td>
+            </tr>
+            <tr>
+              <td>serialization</td>
+              <td>~15</td>
+              <td>~10</td>
+              <td><span class="badge badge-fixed">PASS</span></td>
+              <td><span class="badge badge-fixed">0</span></td>
+              <td><span class="badge badge-fixed">PASS</span></td>
+            </tr>
+            <tr>
+              <td>markup</td>
+              <td>~10</td>
+              <td>~10</td>
+              <td><span class="badge badge-fixed">PASS</span></td>
+              <td><span class="badge badge-fixed">0</span></td>
+              <td><span class="badge badge-fixed">PASS</span></td>
+            </tr>
+            <tr>
+              <td>graph</td>
+              <td>~5</td>
+              <td>~8</td>
+              <td><span class="badge badge-fixed">PASS</span></td>
+              <td><span class="badge badge-fixed">0</span></td>
+              <td><span class="badge badge-fixed">PASS</span></td>
+            </tr>
+            <tr>
+              <td>table</td>
+              <td>~2</td>
+              <td>~4</td>
+              <td><span class="badge badge-fixed">PASS</span></td>
+              <td><span class="badge badge-fixed">0</span></td>
+              <td><span class="badge badge-fixed">PASS</span></td>
+            </tr>
+            <tr>
+              <td>tree</td>
+              <td>~2</td>
+              <td>~4</td>
+              <td><span class="badge badge-fixed">PASS</span></td>
+              <td><span class="badge badge-fixed">0</span></td>
+              <td><span class="badge badge-fixed">PASS</span></td>
+            </tr>
+            <tr>
+              <td>markdown</td>
+              <td>~2</td>
+              <td>~4</td>
+              <td><span class="badge badge-fixed">PASS</span></td>
+              <td><span class="badge badge-fixed">0</span></td>
+              <td><span class="badge badge-fixed">PASS</span></td>
+            </tr>
+            <tr>
+              <td>delimited</td>
+              <td>~4</td>
+              <td>~5</td>
+              <td><span class="badge badge-fixed">PASS</span></td>
+              <td><span class="badge badge-fixed">0</span></td>
+              <td><span class="badge badge-fixed">PASS</span></td>
+            </tr>
+            <tr>
+              <td>plantuml</td>
+              <td>~3</td>
+              <td>~3</td>
+              <td><span class="badge badge-fixed">PASS</span></td>
+              <td><span class="badge badge-fixed">0</span></td>
+              <td><span class="badge badge-fixed">PASS</span></td>
+            </tr>
+            <tr>
+              <td>escape</td>
+              <td>~1</td>
+              <td>~1</td>
+              <td><span class="badge badge-fixed">PASS</span></td>
+              <td><span class="badge badge-fixed">0</span></td>
+              <td><span class="badge badge-fixed">PASS</span></td>
+            </tr>
+            <tr>
+              <td>testhelpers</td>
+              <td>~4</td>
+              <td>~4</td>
+              <td><span class="badge badge-fixed">PASS</span></td>
+              <td><span class="badge badge-fixed">0</span></td>
+              <td><span class="badge badge-fixed">PASS</span></td>
+            </tr>
+            <tr>
+              <td>testhelpers/graphtest</td>
+              <td>~2</td>
+              <td>0</td>
+              <td><span class="badge badge-fixed">PASS</span></td>
+              <td><span class="badge badge-fixed">0</span></td>
+              <td><span class="badge badge-fixed">N/A</span></td>
+            </tr>
+            <tr>
+              <td>integration</td>
+              <td>~3</td>
+              <td>~12</td>
+              <td><span class="badge badge-fixed">PASS</span></td>
+              <td><span class="badge badge-fixed">0</span></td>
+              <td><span class="badge badge-fixed">PASS</span></td>
+            </tr>
+            <tr>
+              <td>bdd</td>
+              <td>0</td>
+              <td>~4</td>
+              <td><span class="badge badge-fixed">PASS</span></td>
+              <td><span class="badge badge-fixed">0</span></td>
+              <td><span class="badge badge-fixed">PASS</span></td>
+            </tr>
+            <tr>
+              <td>examples</td>
+              <td>~6</td>
+              <td>~1</td>
+              <td><span class="badge badge-fixed">PASS</span></td>
+              <td><span class="badge badge-fixed">0</span></td>
+              <td><span class="badge badge-fixed">PASS</span></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <footer class="footer">
+          Generated 2026-06-23 &middot; All checks verified via <code>nix run .#build</code>,
+          <code>nix run .#lint</code>, <code>nix run .#test</code>,
+          <code>nix run .#govulncheck</code>, <code>art-dupl -t 24</code>
+        </footer>
+      </main>
+    </div>
+
+    <script>
+      (function () {
+        if (!("IntersectionObserver" in window)) return;
+        var nav = document.querySelector("[data-nav]");
+        if (!nav) return;
+        var links = nav.querySelectorAll('a[href^="#"]');
+        var ids = Array.from(links).map(function (l) {
+          return l.getAttribute("href").slice(1);
+        });
+        var sections = ids
+          .map(function (id) {
+            return document.getElementById(id);
+          })
+          .filter(Boolean);
+        if (!sections.length) return;
+        var observer = new IntersectionObserver(
+          function (entries) {
+            entries.forEach(function (entry) {
+              if (entry.isIntersecting) {
+                links.forEach(function (link) {
+                  link.classList.toggle(
+                    "active",
+                    link.getAttribute("href") === "#" + entry.target.id,
+                  );
+                });
+              }
+            });
+          },
+          { rootMargin: "-80px 0px -60% 0px", threshold: 0 },
+        );
+        sections.forEach(function (s) {
+          observer.observe(s);
+        });
+      })();
+    </script>
+  </body>
+</html>

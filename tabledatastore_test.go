@@ -93,7 +93,11 @@ func TestErrorTypes(t *testing.T) {
 		want string
 	}{
 		{"InvalidColorModeError", &InvalidColorModeError{Value: "bad"}, "invalid color mode: bad"},
-		{"InvalidShapeError", &InvalidShapeError{Value: "bad"}, "invalid shape: bad"},
+		{
+			"InvalidShapeError",
+			&InvalidShapeError{Value: "bad", Allowed: AllShapes},
+			"invalid shape: bad (allowed: table, tree, graph)",
+		},
 		{"InvalidNodeShapeError", &InvalidNodeShapeError{Value: "bad"}, "invalid graph shape: bad"},
 	}
 

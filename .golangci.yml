@@ -224,9 +224,6 @@ linters:
           files:
             - examples/**/*.go
         main:
-          files:
-            - "**/*.go"
-            - "!**/*_test.go"
           allow:
             - $STDERR
             - $GITHUB_ACTION
@@ -278,9 +275,15 @@ linters:
             - github.com/charmbracelet/x/ansi
             - os/signal
             - syscall
+          files:
+            - "**/*.go"
+            - "!**/*_test.go"
     exhaustruct:
       exclude:
         - os/exec.Cmd
+    ginkgolinter:
+      forbid-focus-container: true
+      forbid-spec-pollution: true
     gocritic:
       disabled-checks:
         - ifElseChain
@@ -290,10 +293,16 @@ linters:
         - github.com/larsartmann/go-output/delimited
         - github.com/larsartmann/go-output/delimited
       replace-local: true
+    makezero:
+      always: true
     revive:
       rules:
         - disabled: true
           name: var-naming
+    testifylint:
+      disable:
+        - go-require
+      enable-all: true
     varnamelen:
       ignore-map-index-ok: true
       ignore-names:
@@ -475,4 +484,6 @@ formatters:
     paths:
       - _enum\.go$
       - _templ\.go$
-issues: {}
+issues:
+  max-issues-per-linter: 50
+  max-same-issues: 10

@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Naming Review — go-output</title>
+    <style>
+      :root {
+        --c-p: #f4f4f0;
+        --c-p2: #fff;
+        --c-p3: #e8e8e2;
+        --c-i: #111;
+        --c-r: #e63946;
+        --c-b: #1d3557;
+        --c-y: #f4d35e;
+        --surface: var(--c-p);
+        --surface-r: var(--c-p2);
+        --surface-s: var(--c-p3);
+        --text: var(--c-i);
+        --text-m: #555;
+        --text-f: #888;
+        --border: #ddd;
+        --accent: var(--c-r);
+        --solution: var(--c-b);
+        --warning: var(--c-y);
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      [id] {
+        scroll-margin-top: 60px;
+      }
+      body {
+        background: var(--surface);
+        color: var(--text);
+        font-family: ui-sans-serif, system-ui, sans-serif;
+        font-size: 15px;
+        line-height: 1.6;
+      }
+      .layout {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      h1 {
+        font-weight: 900;
+        font-size: 2rem;
+        margin: 0 0 0.5rem;
+      }
+      h2 {
+        font-weight: 800;
+        font-size: 1.3rem;
+        margin: 2rem 0 0.8rem;
+        border-bottom: 2px solid var(--border);
+        padding-bottom: 0.3rem;
+      }
+      h3 {
+        font-weight: 700;
+        font-size: 1.05rem;
+        margin: 0 0 0.3rem;
+      }
+      p {
+        margin: 0 0 0.8rem;
+      }
+      .eyebrow {
+        font-family: ui-monospace, Menlo, monospace;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--accent);
+        margin-bottom: 0.9rem;
+      }
+      .subtitle {
+        font-size: 1rem;
+        color: var(--text-m);
+      }
+      .hero {
+        padding: 1rem 0;
+        margin-bottom: 1rem;
+        border-bottom: 2px solid var(--border);
+      }
+      .sc {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 0.7rem;
+        margin: 1rem 0 1.5rem;
+      }
+      .s {
+        background: var(--surface-r);
+        border: 1px solid var(--border);
+        padding: 1rem;
+        position: relative;
+      }
+      .s::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: var(--solution);
+      }
+      .v {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: var(--solution);
+      }
+      .l {
+        font-family: ui-monospace, Menlo, monospace;
+        font-size: 0.62rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--text-f);
+        margin-top: 0.3rem;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1rem 0 1.5rem;
+        font-size: 0.9rem;
+      }
+      th {
+        text-align: left;
+        padding: 0.5rem 0.8rem;
+        background: var(--surface-s);
+        font-family: ui-monospace, Menlo, monospace;
+        font-size: 0.65rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        border-bottom: 1px solid var(--border);
+      }
+      td {
+        padding: 0.5rem 0.8rem;
+        border-bottom: 1px solid var(--border);
+      }
+      .card {
+        background: var(--surface-r);
+        border: 1px solid var(--border);
+        padding: 1rem 1.2rem;
+        margin-bottom: 0.8rem;
+        border-left: 4px solid var(--solution);
+      }
+      .footer {
+        margin-top: 2rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border);
+        font-size: 0.8rem;
+        color: var(--text-f);
+        font-family: ui-monospace, Menlo, monospace;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="layout">
+      <header class="hero">
+        <div class="eyebrow">NAMING REVIEW &middot; 2026-06-23</div>
+        <h1>go-output — Identifier Quality Audit</h1>
+        <p class="subtitle">
+          Automated detection + manual review of all exported identifiers across 18 modules. Result:
+          exceptionally clean naming with zero anti-patterns.
+        </p>
+      </header>
+      <div class="sc">
+        <div class="s">
+          <div class="v">0</div>
+          <div class="l">Manager/Handler/Helper</div>
+        </div>
+        <div class="s">
+          <div class="v">0</div>
+          <div class="l">Impl Suffixes</div>
+        </div>
+        <div class="s">
+          <div class="v">0</div>
+          <div class="l">I-Prefix Interfaces</div>
+        </div>
+        <div class="s">
+          <div class="v">1</div>
+          <div class="l">Vague Names (internal)</div>
+        </div>
+        <div class="s">
+          <div class="v">A+</div>
+          <div class="l">Overall Grade</div>
+        </div>
+      </div>
+      <h2>Automated Detection Results</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Check</th>
+            <th>Matches</th>
+            <th>Verdict</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Manager/Handler/Processor/Helper/Util/Utility</td>
+            <td>0</td>
+            <td>Clean</td>
+          </tr>
+          <tr>
+            <td>Impl/Concrete/Default suffix</td>
+            <td>0</td>
+            <td>Clean</td>
+          </tr>
+          <tr>
+            <td>Data/Info/Record/Item/Object/Thing (exported)</td>
+            <td>1 (<code>fullHTMLData</code> — internal)</td>
+            <td>Clean</td>
+          </tr>
+          <tr>
+            <td>I-prefix interfaces</td>
+            <td>0</td>
+            <td>Clean</td>
+          </tr>
+          <tr>
+            <td>Abbreviations (usr, cnt, mgr, calc)</td>
+            <td>0 (only standard Go: <code>max</code>, <code>min</code>, <code>err</code>)</td>
+            <td>Clean</td>
+          </tr>
+          <tr>
+            <td>Boolean naming (Is/Has/Can prefix)</td>
+            <td>All correct</td>
+            <td>Clean</td>
+          </tr>
+        </tbody>
+      </table>
+      <h2>Strengths</h2>
+      <div class="card">
+        <h3>Domain-aligned type names</h3>
+        <p>
+          <code>TableData</code>, <code>TreeNode</code>, <code>GraphNode</code>,
+          <code>DependencyTree</code>, <code>ActivitySnapshot</code>, <code>TimingCache</code>,
+          <code>InlineRenderer</code> — every name speaks the domain language. No technical jargon
+          leaking into domain concepts.
+        </p>
+      </div>
+      <div class="card">
+        <h3>Consistent verb vocabulary</h3>
+        <p>
+          Create/Add/Set for mutation, Render/Marshal/Write for output, Parse/Contains/IsValid for
+          validation. No synonym drift (no fetch/retrieve/query mixing with get).
+        </p>
+      </div>
+      <div class="card">
+        <h3>Honest function names</h3>
+        <p>
+          <code>RenderTableData()</code> renders table data. <code>NewCSVWriter()</code> creates a
+          CSV writer. <code>ParseFormat()</code> parses a format. No lying names, no hidden side
+          effects.
+        </p>
+      </div>
+      <div class="card">
+        <h3>Get prefix is intentional, not accidental</h3>
+        <p>
+          <code>TableData.GetHeaders()</code> etc. exist to satisfy the
+          <code>TableDataProvider</code> interface and test doubles. Documented in TODO_LIST.md #15
+          as resolved — "load-bearing, not duplication."
+        </p>
+      </div>
+      <div class="card">
+        <h3>Sealed type naming is self-documenting</h3>
+        <p>
+          <code>Event</code> with <code>isEvent()</code> marker. <code>ActivitySnapshot</code> vs
+          <code>Activity</code>. <code>ActivityKind</code> for task/phase distinction. Names encode
+          the design pattern.
+        </p>
+      </div>
+      <footer class="footer">
+        Generated 2026-06-23 &middot; grep + ripgrep automated detection across 113 production Go
+        files
+      </footer>
+    </div>
+  </body>
+</html>

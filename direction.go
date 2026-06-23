@@ -1,5 +1,7 @@
 package output
 
+import "slices"
+
 // Direction represents a canonical layout direction for diagrams.
 // It bridges D2 vocabulary ("down"/"right") and DOT vocabulary ("TB"/"LR")
 // through a single canonical type.
@@ -11,6 +13,14 @@ const (
 	DirectionLeft  Direction = "left"
 	DirectionRight Direction = "right"
 )
+
+// AllDirections lists all valid Direction values.
+var AllDirections = []Direction{DirectionDown, DirectionUp, DirectionLeft, DirectionRight}
+
+// IsValid reports whether d is a recognized Direction.
+func (d Direction) IsValid() bool {
+	return slices.Contains(AllDirections, d)
+}
 
 // ToD2Direction converts Direction to D2's direction string.
 // D2 uses "" for default (down), "right", "left", "up".

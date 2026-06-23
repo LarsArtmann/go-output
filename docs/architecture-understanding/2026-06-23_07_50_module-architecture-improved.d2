@@ -1,0 +1,54 @@
+direction: down
+
+# Ideal architecture: Pattern B fully realized
+# All sibling deps at v0.0.0 + replace
+
+consumer: External Consumer {
+  shape: person
+  style.fill: "#e63946"
+  style.font-color: "#ffffff"
+}
+
+root: Root (output) {
+  shape: package
+  style.fill: "#1d3557"
+  style.font-color: "#ffffff"
+}
+
+consumer -> root: go get (ONLY this works)
+
+optional: Optional Sub-Modules {
+  shape: rectangle
+  style.fill: transparent
+  style.stroke-dash: 4
+
+  table: table (lipgloss)
+  serialization: serialization (json/yaml/toml)
+  d2: d2 (diagrams)
+  nom: nom (progress)
+  tui: tui (bubbletea)
+  delimited: delimited (csv/tsv)
+  markup: markup (html/xml)
+  graph: graph (dot/mermaid)
+  markdown: markdown
+  tree: tree
+  plantuml: plantuml
+  escape: escape
+}
+
+consumer -> optional: clone + go.work (Pattern B)
+
+optional -> root: v0.0.0 + replace (zero version-rot)
+optional -> escape: v0.0.0 + replace
+
+tui -> nom: v0.0.0 + replace
+
+testhelpers: testhelpers (zero-dep, independently versioned) {
+  shape: package
+  style.fill: "#f4d35e"
+}
+
+root -> testhelpers: real version (v0.13+)
+optional -> testhelpers: real version (v0.13+)
+
+# Key invariant: root NEVER imports back into sub-modules

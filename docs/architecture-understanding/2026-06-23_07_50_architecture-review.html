@@ -1,0 +1,535 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Architecture Review — go-output</title>
+    <style>
+      :root {
+        --c-g: #0e0e10;
+        --c-g2: #18181d;
+        --c-g3: #16161a;
+        --c-b: #f4f4f0;
+        --c-r: #ff6b6b;
+        --c-bl: #6eb5ff;
+        --c-y: #f4d35e;
+        --c-a: #ffb347;
+        --surface: var(--c-g);
+        --surface-r: var(--c-g2);
+        --surface-s: var(--c-g3);
+        --text: var(--c-b);
+        --text-m: rgba(244, 244, 240, 0.72);
+        --text-f: rgba(244, 244, 240, 0.45);
+        --border: rgba(244, 244, 240, 0.12);
+        --border-s: rgba(244, 244, 240, 0.25);
+        --accent: var(--c-a);
+        --problem: var(--c-r);
+        --solution: var(--c-bl);
+        --warning: var(--c-y);
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      [id] {
+        scroll-margin-top: 60px;
+      }
+      body {
+        background: var(--surface);
+        color: var(--text);
+        font-family: ui-sans-serif, system-ui, sans-serif;
+        font-size: 15px;
+        line-height: 1.6;
+      }
+      .layout {
+        display: flex;
+        gap: 2.5rem;
+        padding: 2rem;
+      }
+      .sidebar {
+        width: 220px;
+        flex-shrink: 0;
+        position: sticky;
+        top: 1rem;
+        height: calc(100vh - 2rem);
+        overflow-y: auto;
+        display: none;
+      }
+      .sidebar .label {
+        font-family: ui-monospace, Menlo, monospace;
+        font-size: 0.68rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--accent);
+        margin-bottom: 0.75rem;
+        padding-bottom: 0.4rem;
+        border-bottom: 2px solid var(--border-s);
+      }
+      .sidebar a {
+        font-size: 0.85rem;
+        color: var(--text-m);
+        text-decoration: none;
+        padding: 0.45rem 0.75rem;
+        border-left: 2px solid transparent;
+        display: block;
+      }
+      .sidebar a:hover {
+        color: var(--accent);
+        border-left-color: var(--accent);
+      }
+      .main {
+        flex: 1;
+        min-width: 0;
+      }
+      h1 {
+        font-weight: 800;
+        font-size: 2rem;
+        margin: 0 0 0.5rem;
+        letter-spacing: -0.02em;
+      }
+      h2 {
+        font-weight: 800;
+        font-size: 1.3rem;
+        margin: 2rem 0 0.8rem;
+        padding-bottom: 0.3rem;
+        border-bottom: 2px solid var(--border-s);
+      }
+      h2 .num {
+        font-family: ui-monospace, Menlo, monospace;
+        font-size: 0.78rem;
+        color: var(--accent);
+        margin-right: 0.6rem;
+      }
+      h3 {
+        font-weight: 700;
+        font-size: 1.05rem;
+        margin: 0 0 0.3rem;
+      }
+      p {
+        margin: 0 0 0.8rem;
+      }
+      .hero {
+        padding: 1.5rem 0;
+        margin-bottom: 1.5rem;
+        border-bottom: 2px solid var(--border-s);
+      }
+      .hb {
+        display: inline-block;
+        font-family: ui-monospace, Menlo, monospace;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--surface);
+        background: var(--accent);
+        padding: 0.3rem 0.7rem;
+        margin-bottom: 0.9rem;
+      }
+      .hs {
+        font-size: 1.05rem;
+        color: var(--text-m);
+        max-width: 70ch;
+      }
+      .card {
+        background: var(--surface-r);
+        border: 1px solid var(--border);
+        padding: 1.1rem 1.3rem;
+        margin-bottom: 1rem;
+        border-left: 4px solid var(--border-s);
+      }
+      .card-p {
+        border-left-color: var(--problem);
+        background: color-mix(in srgb, var(--problem) 8%, var(--surface-r));
+      }
+      .card-s {
+        border-left-color: var(--solution);
+        background: color-mix(in srgb, var(--solution) 8%, var(--surface-r));
+      }
+      .card-w {
+        border-left-color: var(--warning);
+        background: color-mix(in srgb, var(--warning) 8%, var(--surface-r));
+      }
+      .sc {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 0.75rem;
+        margin: 1rem 0 1.5rem;
+      }
+      .s {
+        background: var(--surface-r);
+        border: 1px solid var(--border);
+        padding: 1.1rem 1rem;
+        position: relative;
+      }
+      .s::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: var(--border-s);
+      }
+      .sg::before {
+        background: var(--solution);
+      }
+      .sw::before {
+        background: var(--warning);
+      }
+      .sp::before {
+        background: var(--problem);
+      }
+      .sv {
+        font-weight: 800;
+        font-size: 1.8rem;
+        line-height: 1;
+      }
+      .sg .sv {
+        color: var(--solution);
+      }
+      .sw .sv {
+        color: var(--warning);
+      }
+      .sp .sv {
+        color: var(--problem);
+      }
+      .sl {
+        font-family: ui-monospace, Menlo, monospace;
+        font-size: 0.62rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--text-f);
+        margin-top: 0.3rem;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1rem 0 1.5rem;
+        font-size: 0.9rem;
+      }
+      th {
+        text-align: left;
+        padding: 0.6rem 0.9rem;
+        background: var(--surface-r);
+        color: var(--text-f);
+        font-family: ui-monospace, Menlo, monospace;
+        font-size: 0.66rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        border-bottom: 1px solid var(--border-s);
+      }
+      td {
+        padding: 0.6rem 0.9rem;
+        border-bottom: 1px solid var(--border);
+      }
+      .footer {
+        margin-top: 2rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border);
+        font-size: 0.8rem;
+        color: var(--text-f);
+        font-family: ui-monospace, Menlo, monospace;
+      }
+      @media (min-width: 1024px) {
+        .sidebar {
+          display: block;
+        }
+      }
+      @media (max-width: 768px) {
+        .layout {
+          flex-direction: column;
+          padding: 1rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="layout">
+      <aside class="sidebar">
+        <nav>
+          <div class="label">Contents</div>
+          <a href="#summary">Summary</a>
+          <a href="#modules">Module Analysis</a>
+          <a href="#coupling">Coupling</a>
+          <a href="#modularize">Modularization</a>
+          <a href="#actions">Action Items</a>
+        </nav>
+      </aside>
+      <main class="main">
+        <div class="hero">
+          <div class="hb">Architecture Review + Module Boundary Analysis</div>
+          <h1>go-output — Scalability & Composability</h1>
+          <p class="hs">
+            18-module Go workspace using Pattern B (committed replace directives). Root-zero-import
+            invariant holds. Module boundaries are clean and well-defined. One actionable gap:
+            Pattern B migration incomplete.
+          </p>
+        </div>
+
+        <h2 id="summary"><span class="num">00</span>Architecture Scorecard</h2>
+        <div class="sc">
+          <div class="s sg">
+            <div class="sv">18</div>
+            <div class="sl">Modules</div>
+          </div>
+          <div class="s sg">
+            <div class="sv">0</div>
+            <div class="sl">Root Sub-Module Imports</div>
+          </div>
+          <div class="s sg">
+            <div class="sv">0</div>
+            <div class="sl">Circular Dependencies</div>
+          </div>
+          <div class="s sg">
+            <div class="sv">0</div>
+            <div class="sl">God-Packages</div>
+          </div>
+          <div class="s sw">
+            <div class="sv">12/177</div>
+            <div class="sl">Pattern B Sentinel Coverage</div>
+          </div>
+          <div class="s sg">
+            <div class="sv">A</div>
+            <div class="sl">Composability Grade</div>
+          </div>
+        </div>
+
+        <h2 id="modules"><span class="num">01</span>Module Boundary Analysis</h2>
+        <p>
+          The module structure follows Unix philosophy: each module does one thing well, composes
+          via root's interfaces, and is opaque to its consumers. The dependency graph is a strict
+          DAG with root at the top and no upward dependencies.
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>Module</th>
+              <th>Purpose</th>
+              <th>Deps (prod)</th>
+              <th>Cohesion</th>
+              <th>Coupling</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>root</strong></td>
+              <td>Core types, enums, registries</td>
+              <td>testhelpers only</td>
+              <td>High</td>
+              <td>Minimal</td>
+            </tr>
+            <tr>
+              <td>nom</td>
+              <td>NOM-style progress</td>
+              <td>root</td>
+              <td>High</td>
+              <td>Low</td>
+            </tr>
+            <tr>
+              <td>tui</td>
+              <td>Bubble Tea TUI</td>
+              <td>root, nom</td>
+              <td>High</td>
+              <td>Low</td>
+            </tr>
+            <tr>
+              <td>d2</td>
+              <td>D2 diagrams</td>
+              <td>root, escape</td>
+              <td>High</td>
+              <td>Low</td>
+            </tr>
+            <tr>
+              <td>graph</td>
+              <td>DOT + Mermaid</td>
+              <td>root, escape</td>
+              <td>High</td>
+              <td>Low</td>
+            </tr>
+            <tr>
+              <td>serialization</td>
+              <td>JSON/YAML/TOML/JSONL</td>
+              <td>root</td>
+              <td>High</td>
+              <td>Low</td>
+            </tr>
+            <tr>
+              <td>table</td>
+              <td>Lipgloss tables</td>
+              <td>root</td>
+              <td>High</td>
+              <td>Low</td>
+            </tr>
+            <tr>
+              <td>markup</td>
+              <td>HTML/XML/AsciiDoc</td>
+              <td>root, escape</td>
+              <td>High</td>
+              <td>Low</td>
+            </tr>
+            <tr>
+              <td>escape</td>
+              <td>Format escaping</td>
+              <td>none</td>
+              <td>High</td>
+              <td>None</td>
+            </tr>
+            <tr>
+              <td>testhelpers</td>
+              <td>Shared test utils</td>
+              <td>none</td>
+              <td>High</td>
+              <td>None</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h2 id="coupling"><span class="num">02</span>Coupling Analysis</h2>
+        <div class="card card-s">
+          <h3>Root-Zero-Import Invariant: VERIFIED</h3>
+          <p>
+            Root (<code>package output</code>) imports ZERO sub-modules in production code. Only
+            <code>testhelpers</code> (zero-dep, independently versioned) appears in root's go.mod.
+            This is the load-bearing architectural guarantee —
+            <code>go get github.com/larsartmann/go-output</code> pulls NO lipgloss, NO bubbletea, NO
+            yaml/toml deps.
+          </p>
+        </div>
+        <div class="card card-s">
+          <h3>Registry Dispatch via init() Pattern: EXCELLENT</h3>
+          <p>
+            Root's <code>RenderTableData()</code> / <code>RenderAnyData()</code> dispatch to
+            registered marshalers, yet root imports no sub-module. Each sub-module calls
+            <code>RegisterFormatShapes()</code> in its own <code>init()</code>. Importing a
+            sub-module activates it. This is textbook dependency inversion.
+          </p>
+        </div>
+        <div class="card card-s">
+          <h3>Composition via GraphRendererState: EXCELLENT</h3>
+          <p>
+            DOT/Mermaid/PlantUML renderers embed root's <code>GraphRendererState</code> for shared
+            state via <code>AddNode</code>/<code>AddEdge</code>. <code>AddTreeNodes</code> accepts
+            the <code>NodeEdgeAppender</code> interface, not a raw slice pointer. Composition over
+            inheritance done right.
+          </p>
+        </div>
+
+        <h2 id="modularize">
+          <span class="num">03</span>Re-Modularization Assessment (go-modularize)
+        </h2>
+        <p>
+          Since the project is already modularized, the question is: are the boundaries correct?
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>Criterion</th>
+              <th>Score</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Cohesion (do packages belong together?)</td>
+              <td>5/5</td>
+              <td>Every module has a single clear purpose</td>
+            </tr>
+            <tr>
+              <td>Coupling (does it depend on things it shouldn't?)</td>
+              <td>5/5</td>
+              <td>No unexpected dependencies; root-zero invariant holds</td>
+            </tr>
+            <tr>
+              <td>Independence (can it build/test alone?)</td>
+              <td>5/5</td>
+              <td>Each module has its own go.mod + go.work handles local resolution</td>
+            </tr>
+            <tr>
+              <td>Granularity (too coarse or too fine?)</td>
+              <td>4/5</td>
+              <td>
+                18 modules is appropriate. escape/ and graphtest/ are small but genuinely zero-dep
+              </td>
+            </tr>
+            <tr>
+              <td>Internal/ hygiene</td>
+              <td>5/5</td>
+              <td>No internal/ packages; sub-modules inline test helpers</td>
+            </tr>
+            <tr>
+              <td>Error type placement</td>
+              <td>5/5</td>
+              <td>All error types in root, accessible from every module</td>
+            </tr>
+            <tr>
+              <td>Pattern B versioning</td>
+              <td>2/5</td>
+              <td><strong>Only 12 of 177 sibling requires use v0.0.0 sentinel</strong></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="card card-w">
+          <h3>Pattern B Migration: INCOMPLETE</h3>
+          <p>
+            The AGENTS.md states "ALL inter-module sibling deps use
+            v0.0.0-00010101000000-000000000000" but the reality is that 165 of 177 sibling requires
+            use real published versions (v0.17.x). Only <code>bdd/</code> and
+            <code>integration/</code> partially use the sentinel. <code>examples/go.mod</code> uses
+            zero sentinels — all 11 deps at v0.17.2.
+          </p>
+          <p>
+            <strong>Impact:</strong> <code>go mod tidy</code> may update sibling versions when new
+            tags are published, re-introducing the version-rot problem Pattern B was designed to
+            eliminate.
+          </p>
+          <p>
+            <strong>Fix:</strong> Run
+            <code
+              >go mod edit
+              -require=github.com/larsartmann/go-output@v0.0.0-00010101000000-000000000000</code
+            >
+            in each module, then <code>go mod tidy</code>. See TODO_LIST.md #17.
+          </p>
+        </div>
+
+        <h2 id="actions"><span class="num">04</span>Action Items</h2>
+        <div class="card card-p">
+          <h3>1. Complete Pattern B Migration (Medium effort)</h3>
+          <p>
+            Convert remaining 165 sibling requires from real versions to v0.0.0 sentinel across all
+            go.mod files. This is the only architectural action item. The module boundaries
+            themselves need no changes.
+          </p>
+        </div>
+        <div class="card card-s">
+          <h3>2. No Module Boundary Changes Needed</h3>
+          <p>
+            The 18-module structure with Pattern B versioning is correct. No modules need merging,
+            splitting, or reorganizing. The Unix philosophy test passes: each module does one thing
+            well and composes via root's interfaces.
+          </p>
+        </div>
+
+        <h3>Architecture Diagrams</h3>
+        <p style="color: var(--text-m)">
+          Current architecture:
+          <code>docs/architecture-understanding/2026-06-23_07_50_module-architecture.svg</code
+          ><br />
+          Ideal (Pattern B complete):
+          <code
+            >docs/architecture-understanding/2026-06-23_07_50_module-architecture-improved.svg</code
+          >
+        </p>
+
+        <footer class="footer">
+          Generated 2026-06-23 &middot; Architecture review + go-modularize re-assessment across 18
+          modules
+        </footer>
+      </main>
+    </div>
+  </body>
+</html>

@@ -1,17 +1,18 @@
 # TODO_LIST.md — go-output
 
-**Last updated:** 2026-06-22
-**Open items:** 2
+**Last updated:** 2026-06-23
+**Open items:** 3
 **Blocked:** 0
 
 ---
 
 ## Open Items
 
-| #   | Task                                                                         | Effort | Status                        |
-| --- | ---------------------------------------------------------------------------- | ------ | ----------------------------- |
-| 14  | **Community: Post to r/golang, submit to Awesome Go**                        | Low    | Open (needs owner account)    |
-| 16  | **Cut `v1.0.0` tag** — API frozen (ADR 006); CHANGELOG + full checklist done | Low    | Prepared — awaiting owner tag |
+| #   | Task                                                                                                                                               | Effort | Status                        |
+| --- | -------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | ----------------------------- |
+| 14  | **Community: Post to r/golang, submit to Awesome Go**                                                                                              | Low    | Open (needs owner account)    |
+| 16  | **Cut `v1.0.0` tag** — API frozen (ADR 006); CHANGELOG + full checklist done                                                                       | Low    | Prepared — awaiting owner tag |
+| 17  | **Complete Pattern B migration** — convert remaining ~165 sibling requires from real versions (v0.17.x) to v0.0.0 sentinel across all go.mod files | Medium | Open                          |
 
 ---
 
@@ -90,10 +91,10 @@
 
 ## Resolved This Session (2026-06-22) — Pattern B Migration — Do Not Redo
 
-| Task                                                   | Resolution                                                                                                                                                                                                |
-| ------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Version-pin rot (stale sibling deps masked by replace) | **Fixed** — migrated to Pattern B (v0.0.0-00010101000000-000000000000 + replace). All 18 modules use zero sentinel for siblings. Only root + testhelpers retain real versions. See ADR 009.                |
-| enum/ + envdetect/ sub-modules                         | **Merged into root** — `ParseEnum`, `ContainsEnum`, `IsCI`, `IsNoColor`, `CIEnvVars` now in `package output`. Directories deleted.                                                                         |
-| CI workflows referencing deleted modules               | **Fixed** — removed enum/envdetect from ci.yml and release.yml module loops.                                                                                                                               |
-| Dead test code after Pattern B migration               | **Removed** — `testing_errorwriter_test.go` deleted, `ExpectedOutput`/`assertContains` removed from `output_test_helpers_test.go`.                                                                        |
-| Dead .golangci.yml entries for enum/envdetect           | **Removed** — depguard allow-list, replace-allow-list, path exclusions all cleaned.                                                                                                                       |
+| Task                                                   | Resolution                                                                                                                                                                                  |
+| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Version-pin rot (stale sibling deps masked by replace) | **Fixed** — migrated to Pattern B (v0.0.0-00010101000000-000000000000 + replace). All 18 modules use zero sentinel for siblings. Only root + testhelpers retain real versions. See ADR 009. |
+| enum/ + envdetect/ sub-modules                         | **Merged into root** — `ParseEnum`, `ContainsEnum`, `IsCI`, `IsNoColor`, `CIEnvVars` now in `package output`. Directories deleted.                                                          |
+| CI workflows referencing deleted modules               | **Fixed** — removed enum/envdetect from ci.yml and release.yml module loops.                                                                                                                |
+| Dead test code after Pattern B migration               | **Removed** — `testing_errorwriter_test.go` deleted, `ExpectedOutput`/`assertContains` removed from `output_test_helpers_test.go`.                                                          |
+| Dead .golangci.yml entries for enum/envdetect          | **Removed** — depguard allow-list, replace-allow-list, path exclusions all cleaned.                                                                                                         |

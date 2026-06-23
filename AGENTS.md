@@ -96,7 +96,7 @@ These are non-obvious from reading code alone — the "how does this even work" 
 Things that will silently break or that an agent would get wrong from code alone.
 
 - **Never import a sub-module into root** — see Core Invariant above.
-- **Pattern B: sibling deps are v0.0.0-00010101000000-000000000000** — never change a sibling `require` to a real version. The `replace` directive makes it work locally; a real version would re-introduce version rot. Only `testhelpers` keeps real versions.
+- **Pattern B: sibling deps SHOULD be v0.0.0-00010101000000-000000000000** — never change a sibling `require` to a real version. The `replace` directive makes it work locally; a real version would re-introduce version rot. Only `testhelpers` keeps real versions. **NOTE: As of 2026-06-23, the Pattern B migration is INCOMPLETE** — only 12 of 177 sibling requires use the sentinel. Most modules still have real versions (v0.17.x) from before the migration. See TODO_LIST.md #17.
 - **`testhelpers/` is the ONLY independently versioned sub-module** — it has real published tags. All other sub-modules use v0.0.0 + replace.
 - **`testhelpers/` is zero-dep by design** — it cannot import `output`. Cross-module test helpers must stay local to each module or use table-driven patterns.
 - **`internal/` is root-only (if added)** — Go forbids sub-modules from importing `internal/` packages, so any `internal/` package in root cannot be shared with sub-modules. Currently root has no `internal/` dir; sub-modules inline their own test helpers (shared zero-dep helpers live in the `testhelpers/` module).
@@ -107,6 +107,7 @@ Things that will silently break or that an agent would get wrong from code alone
 - **CI/NO_COLOR detection is in root** — `output.IsCI()` and `output.IsNoColor()` (file: `envdetect.go`). Sub-modules call `output.IsCI()`. Don't re-inline or re-create a separate envdetect module.
 - **Code duplication threshold is `art-dupl -t 24`** (project standard). Below t=20, reported clones are almost entirely Go test idioms or module-boundary re-declarations — both acceptable. See ADR 005.
 - **BuildFlow pre-commit hook deletes `CODE_OF_CONDUCT.md`** — the hook (`buildflow --build-mode pre-commit --staged-only`) has a check that considers CoC redundant with CONTRIBUTING.md and auto-deletes it, then re-stages the deletion. Always use `git commit --no-verify` OR verify `CODE_OF_CONDUCT.md` is intact after every non-`--no-verify` commit. This is a BuildFlow config issue, not fixable in-repo.
+- **Diagram escaping is render-time, not input-time** — All diagram formats (D2, DOT, Mermaid, PlantUML) escape user input at render time via the `escape/` module. Never pre-escape data before passing it to a renderer. Style values (Fill, Stroke, FontColor) are also escaped — this was a vulnerability that was fixed in v0.18+. If adding new style attributes to any diagram renderer, always apply the corresponding `escape.*()` function.
 
 ## Pointers
 

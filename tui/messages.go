@@ -13,7 +13,6 @@ type updateType int
 const (
 	progressUpdate updateType = iota
 	messageUpdate
-	stepUpdate
 )
 
 // progressUpdateMsg represents updates to the progress display.
@@ -21,8 +20,6 @@ type progressUpdateMsg struct {
 	Type     updateType
 	Progress float64
 	Message  string
-	Current  uint
-	Total    uint
 }
 
 // stepUpdateMsg carries step-based progress data (current/total counters + message).

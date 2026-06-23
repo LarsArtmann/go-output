@@ -207,9 +207,9 @@ func (r *DOTRenderer) writeNodeAttr(
 	if condition {
 		b.WriteString("    ")
 		b.WriteString(attrName)
-		b.WriteString("=")
-		b.WriteString(attrValue)
-		b.WriteString("\n")
+		b.WriteString("=\"")
+		b.WriteString(escape.DOT(attrValue))
+		b.WriteString("\"\n")
 	}
 }
 

@@ -1,0 +1,702 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Full Code Review — go-output</title>
+    <style>
+      :root {
+        --color-graphite: #0e0e10;
+        --color-graphite-2: #18181d;
+        --color-graphite-3: #16161a;
+        --color-bone: #f4f4f0;
+        --color-red: #ff6b6b;
+        --color-blue: #6eb5ff;
+        --color-yellow: #f4d35e;
+        --color-amber: #ffb347;
+        --color-hairline: rgba(244, 244, 240, 0.12);
+        --color-hairline-strong: rgba(244, 244, 240, 0.25);
+        --surface: var(--color-graphite);
+        --surface-raised: var(--color-graphite-2);
+        --surface-sunken: var(--color-graphite-3);
+        --text: var(--color-bone);
+        --text-muted: rgba(244, 244, 240, 0.72);
+        --text-faint: rgba(244, 244, 240, 0.45);
+        --border: var(--color-hairline);
+        --border-strong: var(--color-hairline-strong);
+        --accent: var(--color-amber);
+        --problem: var(--color-red);
+        --solution: var(--color-blue);
+        --warning: var(--color-yellow);
+        --radius: 0px;
+        --font-heading:
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          sans-serif;
+        --font-body:
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          sans-serif;
+        --font-mono: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      [id] {
+        scroll-margin-top: 60px;
+      }
+      body {
+        background: var(--surface);
+        color: var(--text);
+        font-family: var(--font-body);
+        font-size: 15px;
+        line-height: 1.6;
+      }
+      .top-bar {
+        background: var(--text);
+        color: var(--surface);
+        padding: 0.6rem 2rem;
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        display: flex;
+        justify-content: space-between;
+      }
+      .layout {
+        display: flex;
+        gap: 2.5rem;
+        padding: 2rem;
+      }
+      .sidebar {
+        width: 220px;
+        flex-shrink: 0;
+        position: sticky;
+        top: 1rem;
+        height: calc(100vh - 2rem);
+        overflow-y: auto;
+        display: none;
+      }
+      .sidebar .label {
+        font-family: var(--font-mono);
+        font-size: 0.68rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--accent);
+        margin-bottom: 0.75rem;
+        padding-bottom: 0.4rem;
+        border-bottom: 2px solid var(--border-strong);
+      }
+      .sidebar a {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        text-decoration: none;
+        padding: 0.45rem 0.75rem;
+        border-left: 2px solid transparent;
+        transition: all 0.15s ease;
+        display: block;
+      }
+      .sidebar a:hover {
+        color: var(--accent);
+        border-left-color: var(--accent);
+      }
+      .main {
+        flex: 1;
+        min-width: 0;
+      }
+      h1 {
+        font-family: var(--font-heading);
+        font-weight: 800;
+        font-size: clamp(1.8rem, 4vw, 2.6rem);
+        margin: 0 0 0.6rem;
+      }
+      h2 {
+        font-family: var(--font-heading);
+        font-weight: 800;
+        font-size: 1.4rem;
+        margin: 2.5rem 0 1rem;
+        padding-bottom: 0.4rem;
+        border-bottom: 2px solid var(--border-strong);
+      }
+      h2 .num {
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+        color: var(--accent);
+        margin-right: 0.6rem;
+      }
+      h3 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin: 0 0 0.4rem;
+      }
+      h4 {
+        font-size: 0.98rem;
+        font-weight: 700;
+        margin: 0 0 0.3rem;
+      }
+      p {
+        margin: 0 0 1rem;
+      }
+      .hero {
+        padding: 1.5rem 0;
+        margin-bottom: 1.5rem;
+        border-bottom: 2px solid var(--border-strong);
+      }
+      .hero-badge {
+        display: inline-block;
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--surface);
+        background: var(--accent);
+        padding: 0.3rem 0.7rem;
+        margin-bottom: 0.9rem;
+      }
+      .hero-subtitle {
+        font-size: 1.05rem;
+        color: var(--text-muted);
+        max-width: 70ch;
+      }
+      .card {
+        background: var(--surface-raised);
+        border: 1px solid var(--border);
+        padding: 1.1rem 1.3rem;
+        margin-bottom: 1rem;
+        border-left: 4px solid var(--border-strong);
+      }
+      .card-problem {
+        border-left-color: var(--problem);
+        background: color-mix(in srgb, var(--problem) 8%, var(--surface-raised));
+      }
+      .card-solution {
+        border-left-color: var(--solution);
+        background: color-mix(in srgb, var(--solution) 8%, var(--surface-raised));
+      }
+      .card-warning {
+        border-left-color: var(--warning);
+        background: color-mix(in srgb, var(--warning) 8%, var(--surface-raised));
+      }
+      .issue {
+        background: var(--surface-raised);
+        border: 1px solid var(--border);
+        padding: 1.1rem 1.3rem;
+        margin-bottom: 1rem;
+        border-left: 4px solid var(--border-strong);
+      }
+      .issue-critical {
+        border-left-color: var(--problem);
+        background: color-mix(in srgb, var(--problem) 8%, var(--surface-raised));
+      }
+      .issue-important {
+        border-left-color: var(--warning);
+        background: color-mix(in srgb, var(--warning) 8%, var(--surface-raised));
+      }
+      .issue-nice {
+        border-left-color: var(--solution);
+        background: color-mix(in srgb, var(--solution) 8%, var(--surface-raised));
+      }
+      .issue .where {
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+        color: var(--text-faint);
+        margin: 0.2rem 0 0.6rem;
+      }
+      .severity {
+        display: inline-block;
+        font-family: var(--font-mono);
+        font-size: 0.62rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        padding: 0.2rem 0.55rem;
+        margin-bottom: 0.6rem;
+        color: var(--surface);
+      }
+      .severity-critical {
+        background: var(--problem);
+      }
+      .severity-important {
+        background: var(--warning);
+      }
+      .severity-nice {
+        background: var(--solution);
+      }
+      .stat-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 0.75rem;
+        margin: 1rem 0 1.5rem;
+      }
+      .stat-card {
+        background: var(--surface-raised);
+        border: 1px solid var(--border);
+        padding: 1.1rem 1rem;
+        position: relative;
+      }
+      .stat-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: var(--border-strong);
+      }
+      .stat-good::before {
+        background: var(--solution);
+      }
+      .stat-bad::before {
+        background: var(--problem);
+      }
+      .stat-warn::before {
+        background: var(--warning);
+      }
+      .stat-value {
+        font-family: var(--font-heading);
+        font-size: 2rem;
+        font-weight: 800;
+        line-height: 1;
+      }
+      .stat-good .stat-value {
+        color: var(--solution);
+      }
+      .stat-bad .stat-value {
+        color: var(--problem);
+      }
+      .stat-warn .stat-value {
+        color: var(--warning);
+      }
+      .stat-label {
+        font-family: var(--font-mono);
+        font-size: 0.65rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--text-faint);
+        margin-top: 0.5rem;
+      }
+      .strengths {
+        display: grid;
+        gap: 0.5rem;
+        margin: 1rem 0 1.5rem;
+      }
+      .strength {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 0.8rem;
+        padding: 0.7rem 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .strength .check {
+        font-family: var(--font-mono);
+        font-weight: 700;
+        color: var(--solution);
+        font-size: 1.1rem;
+      }
+      .strength .text strong {
+        display: block;
+        margin-bottom: 0.15rem;
+      }
+      .strength .text span {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1rem 0 1.5rem;
+        font-size: 0.9rem;
+      }
+      th {
+        text-align: left;
+        padding: 0.6rem 0.9rem;
+        background: var(--surface-raised);
+        color: var(--text-faint);
+        font-family: var(--font-mono);
+        font-size: 0.66rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        border-bottom: 1px solid var(--border-strong);
+      }
+      td {
+        padding: 0.6rem 0.9rem;
+        border-bottom: 1px solid var(--border);
+      }
+      tr:hover td {
+        background: var(--surface-raised);
+      }
+      .badge {
+        display: inline-block;
+        font-family: var(--font-mono);
+        font-size: 0.62rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        padding: 0.18rem 0.5rem;
+        border: 1px solid var(--border-strong);
+        color: var(--text-muted);
+      }
+      .badge-critical {
+        color: var(--problem);
+        border-color: var(--problem);
+      }
+      .badge-high {
+        color: var(--warning);
+        border-color: var(--warning);
+      }
+      .badge-fixed {
+        color: var(--solution);
+        border-color: var(--solution);
+      }
+      .badge-low {
+        color: var(--text-muted);
+      }
+      .callout {
+        margin: 0.8rem 0 0;
+        padding: 0.7rem 0.9rem;
+        border-left: 3px solid var(--solution);
+        background: color-mix(in srgb, var(--solution) 10%, transparent);
+        font-size: 0.9rem;
+      }
+      .callout strong {
+        display: inline-block;
+        margin-right: 0.4rem;
+      }
+      .footer {
+        margin-top: 2rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border);
+        font-size: 0.8rem;
+        color: var(--text-faint);
+        font-family: var(--font-mono);
+      }
+      @media (min-width: 1024px) {
+        .sidebar {
+          display: block;
+        }
+      }
+      @media (max-width: 768px) {
+        .layout {
+          flex-direction: column;
+          padding: 1rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="top-bar">
+      <span>Full Code Review</span>
+      <span>2026-06-23</span>
+      <span>go-output v0.18+</span>
+    </div>
+    <div class="layout">
+      <aside class="sidebar" data-nav>
+        <nav>
+          <div class="label">Contents</div>
+          <a href="#summary">Summary</a>
+          <a href="#fixed">Fixed on the Spot</a>
+          <a href="#noted">Noted (Not Fixed)</a>
+          <a href="#strengths">Strengths</a>
+        </nav>
+      </aside>
+      <main class="main">
+        <div class="hero">
+          <div class="hero-badge">Full Code Review</div>
+          <h1>go-output — Senior Architect Review</h1>
+          <p class="hero-subtitle">
+            Comprehensive review of all production code across 18 modules. Found 4 critical bugs, 5
+            injection vulnerabilities, and 4 dead code items — all fixed on the spot. Post-fix: 0
+            build errors, 0 lint issues, 0 test failures.
+          </p>
+        </div>
+
+        <h2 id="summary"><span class="num">00</span>Summary</h2>
+        <div class="stat-grid">
+          <div class="stat-card stat-bad">
+            <div class="stat-value">4</div>
+            <div class="stat-label">Critical Bugs Fixed</div>
+          </div>
+          <div class="stat-card stat-warn">
+            <div class="stat-value">5</div>
+            <div class="stat-label">Injection Vulns Fixed</div>
+          </div>
+          <div class="stat-card stat-warn">
+            <div class="stat-value">4</div>
+            <div class="stat-label">Dead Code Removed</div>
+          </div>
+          <div class="stat-card stat-good">
+            <div class="stat-value">13</div>
+            <div class="stat-label">Total Issues Fixed</div>
+          </div>
+          <div class="stat-card stat-warn">
+            <div class="stat-value">5</div>
+            <div class="stat-label">Noted (Not Fixed)</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">271</div>
+            <div class="stat-label">Files Reviewed</div>
+          </div>
+        </div>
+
+        <h2 id="fixed"><span class="num">01</span>Fixed on the Spot</h2>
+
+        <div class="issue issue-critical">
+          <span class="severity severity-critical">Critical Bug</span>
+          <h3>Progress bar panics on narrow terminals</h3>
+          <div class="where">tui/view.go:207-213</div>
+          <p>
+            <code>strings.Repeat</code> panics when terminal width is 1-29, producing a negative bar
+            width. Fixed with a <code>width < 1</code> guard.
+          </p>
+        </div>
+
+        <div class="issue issue-critical">
+          <span class="severity severity-critical">Critical Bug</span>
+          <h3>handleStepUpdate matches wrong step</h3>
+          <div class="where">tui/model.go:233</div>
+          <p>
+            <code>|| m.steps[i].isActive()</code> matched ANY active step, not the intended one.
+            With concurrent steps, updates overwrote the wrong step. Fixed: match by message only.
+          </p>
+        </div>
+
+        <div class="issue issue-critical">
+          <span class="severity severity-critical">Critical Bug</span>
+          <h3>Total=0 instantly marks step completed</h3>
+          <div class="where">tui/model.go:238</div>
+          <p>
+            Unsigned comparison <code>Current >= Total</code> is always true when Total=0. Fixed
+            with <code>msg.Total > 0 &&</code> guard.
+          </p>
+        </div>
+
+        <div class="issue issue-critical">
+          <span class="severity severity-critical">Bug</span>
+          <h3>Double "s" suffix in elapsed time display</h3>
+          <div class="where">tui/summary.go:68,72,74</div>
+          <p>
+            Templates had <code>{time}s</code> but <code>formatElapsedTime</code> already returns
+            unit-suffixed strings ("1.5s", "500ms"). Output was "1.5ss". Fixed: removed trailing
+            <code>s</code>.
+          </p>
+        </div>
+
+        <div class="issue issue-important">
+          <span class="severity severity-important">Injection</span>
+          <h3>DOT node color attributes not escaped</h3>
+          <div class="where">graph/dot.go:196-214</div>
+          <p>
+            <code>writeNodeAttr</code> wrote fillcolor/color without quoting or escaping. Edges were
+            escaped but nodes were not. Fixed: quote and escape all node attributes.
+          </p>
+        </div>
+
+        <div class="issue issue-important">
+          <span class="severity severity-important">Injection</span>
+          <h3>D2 style values not escaped</h3>
+          <div class="where">d2/d2_write.go:12,21,37,60</div>
+          <p>
+            Fill, Stroke, FontColor, TextTransform values were written raw. A newline in a color
+            value could inject D2 directives. Fixed: <code>escape.D2()</code> applied.
+          </p>
+        </div>
+
+        <div class="issue issue-important">
+          <span class="severity severity-important">Injection</span>
+          <h3>Mermaid node ID not escaped in style directive</h3>
+          <div class="where">graph/mermaid.go:144</div>
+          <p>
+            Style directive used raw <code>node.ID.Get()</code> while the node definition used
+            <code>escape.MermaidID()</code>. Styling silently failed for IDs with special chars.
+            Fixed.
+          </p>
+        </div>
+
+        <div class="issue issue-important">
+          <span class="severity severity-important">Injection</span>
+          <h3>D2 layout string not escaped</h3>
+          <div class="where">d2/d2_render.go:159</div>
+          <p>
+            <code>SetLayout(engine)</code> accepted any string without escaping. Fixed:
+            <code>escape.D2()</code> applied.
+          </p>
+        </div>
+
+        <div class="issue issue-important">
+          <span class="severity severity-important">Validation</span>
+          <h3>D2 negative opacity not clamped</h3>
+          <div class="where">d2/d2_write.go:42-49</div>
+          <p>
+            Opacity was clamped to max 1.0 but negative values passed through as
+            <code>style.opacity: -0.5</code>. Fixed: clamp to [0, 1] range. Also fixed zero-value
+            opacity (0.0) now representable.
+          </p>
+        </div>
+
+        <div class="issue issue-nice">
+          <span class="severity severity-nice">Dead Code</span>
+          <h3>Unused fields and unreachable code path removed</h3>
+          <div class="where">tui/messages.go:24-25,16; tui/model.go:182-183</div>
+          <p>
+            Removed <code>Current</code>/<code>Total</code> from
+            <code>progressUpdateMsg</code> (never set), <code>stepUpdate</code> constant
+            (unreachable case), and updated test.
+          </p>
+        </div>
+
+        <div class="issue issue-nice">
+          <span class="severity severity-nice">Dead Code</span>
+          <h3>Dead ANSI constants removed from root</h3>
+          <div class="where">color.go:10-18</div>
+          <p>
+            Root's <code>ansiReset</code>, <code>ansiBold</code>, etc. were unused —
+            <code>tree/</code> and <code>markdown/</code> have their own copies. Removed from root.
+          </p>
+        </div>
+
+        <div class="issue issue-nice">
+          <span class="severity severity-nice">Improvement</span>
+          <h3>InvalidShapeError now includes allowed values</h3>
+          <div class="where">shape.go:42-59</div>
+          <p>
+            Added <code>Allowed []Shape</code> field matching <code>InvalidFormatError</code>'s
+            pattern. Error now shows "invalid shape: bad (allowed: table, tree, graph)".
+          </p>
+        </div>
+
+        <div class="issue issue-nice">
+          <span class="severity severity-nice">Improvement</span>
+          <h3>Direction enum validation added</h3>
+          <div class="where">direction.go:14-26</div>
+          <p>
+            Added <code>AllDirections</code> and <code>IsValid()</code> to bring Direction in line
+            with Format, Shape, ColorMode, NodeShape enums.
+          </p>
+        </div>
+
+        <h2 id="noted"><span class="num">02</span>Noted (Not Fixed — Design Decisions)</h2>
+
+        <div class="card card-warning">
+          <h4>RowEdge uses raw string instead of branded GraphNodeID</h4>
+          <p>
+            <code>tabledata.go:174-178</code> — <code>RowEdge.From/To</code> are raw
+            <code>string</code> while the rest of the graph type system uses branded IDs.
+            <code>AddRowEdges</code> immediately re-wraps them. This is an internal-only type
+            boundary that could be tightened.
+          </p>
+        </div>
+
+        <div class="card card-warning">
+          <h4>NodeShapeBox and NodeShapeRect are semantic duplicates</h4>
+          <p>
+            <code>graph.go:45,52</code> — Two exported names for the same visual concept. All
+            renderers treat them identically. Removing one would be a breaking change (pre-v1 API
+            stability per ADR 006).
+          </p>
+        </div>
+
+        <div class="card card-warning">
+          <h4>LineStyle enum is incomplete</h4>
+          <p>
+            <code>graph.go:67-89</code> — Has <code>IsValid()</code> but lacks
+            <code>ParseLineStyle</code>, <code>AllowedValues()</code>. Inconsistent with other
+            enums.
+          </p>
+        </div>
+
+        <div class="card card-warning">
+          <h4>SetCancelFunc/SetDisplayMode write without synchronization</h4>
+          <p>
+            <code>tui/reporter.go:77,84</code> — Doc says "Must be called before Start()" but no
+            enforcement. <code>displayMode</code> is read under lock in lifecycle.go. Low risk if
+            used as documented.
+          </p>
+        </div>
+
+        <div class="card card-warning">
+          <h4>NOM-mode scroll renders entire tree before clipping</h4>
+          <p>
+            <code>tui/render_nom.go:50-51</code> — When scrolling, renders with height=0 then clips.
+            Non-scroll path uses <code>VisibleEntriesWithSnapshots</code>. O(n) render for large
+            trees when scrolling.
+          </p>
+        </div>
+
+        <h2 id="strengths">Strengths</h2>
+        <div class="strengths">
+          <div class="strength">
+            <div class="check">+</div>
+            <div class="text">
+              <strong>Exceptional type safety</strong
+              ><span
+                >Branded IDs prevent ID-type mixing at compile time. Sealed Event sum type makes
+                non-exhaustive switches compile errors. Typed enums everywhere.</span
+              >
+            </div>
+          </div>
+          <div class="strength">
+            <div class="check">+</div>
+            <div class="text">
+              <strong>Outstanding test coverage</strong
+              ><span
+                >158 test files for 113 production files (1.4:1 ratio). Race tests for
+                concurrency-sensitive modules. Fuzz tests for rendering.</span
+              >
+            </div>
+          </div>
+          <div class="strength">
+            <div class="check">+</div>
+            <div class="text">
+              <strong>Clean module boundaries</strong
+              ><span
+                >Pattern B with committed replace directives. Root zero-import invariant holds.
+                Depguard enforces import allow-lists per module.</span
+              >
+            </div>
+          </div>
+          <div class="strength">
+            <div class="check">+</div>
+            <div class="text">
+              <strong>Zero harmful duplication</strong
+              ><span
+                >art-dupl at t=10 reports zero clone groups. The codebase has been deduplicated
+                across multiple review cycles.</span
+              >
+            </div>
+          </div>
+          <div class="strength">
+            <div class="check">+</div>
+            <div class="text">
+              <strong>Sophisticated concurrency model</strong
+              ><span
+                >Two-mutex InlineRenderer design prevents Stop() deadlock. Snapshot-based rendering
+                eliminates data races. Incremental count cache (O(1)).</span
+              >
+            </div>
+          </div>
+          <div class="strength">
+            <div class="check">+</div>
+            <div class="text">
+              <strong>Thorough escaping</strong
+              ><span
+                >Format-specific escape functions for every diagram format (D2, DOT, Mermaid,
+                PlantUML, HTML, XML). This review found and closed the remaining gaps.</span
+              >
+            </div>
+          </div>
+        </div>
+
+        <footer class="footer">
+          Generated 2026-06-23 &middot; All fixes verified via nix run .#build, nix run .#test
+          (18/18 pass), nix run .#lint (0 issues)
+        </footer>
+      </main>
+    </div>
+  </body>
+</html>

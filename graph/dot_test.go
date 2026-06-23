@@ -65,8 +65,8 @@ func TestDOTRendererWithStyles(t *testing.T) {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	assertContains(t, out, "shape=ellipse", "Output should contain shape attribute")
-	assertContains(t, out, "fillcolor=#ff0000", "Output should contain fillcolor")
+	assertContains(t, out, "shape=\"ellipse\"", "Output should contain shape attribute")
+	assertContains(t, out, "fillcolor=\"#ff0000\"", "Output should contain fillcolor")
 }
 
 func TestDOTRendererWithEdgeLabel(t *testing.T) {

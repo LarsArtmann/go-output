@@ -75,21 +75,21 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 
 ## Type-Safe Enums
 
-| Feature               | Status           | Notes                                                                                                          |
-| --------------------- | ---------------- | -------------------------------------------------------------------------------------------------------------- |
-| **Format enum**       | FULLY_FUNCTIONAL | 16 format constants. `ParseFormat()`, `String()`, `IsValid()`, `AllowedValues()`                               |
-| **Shape enum**        | FULLY_FUNCTIONAL | 3 shape constants. `ParseShape()`, `String()`, `IsValid()`, `AllowedValues()`                                  |
-| **ColorMode enum**    | FULLY_FUNCTIONAL | `auto`, `always`, `never`. `ParseColorMode()`, `ShouldColor()`. Wired into table, tree, markdown renderers     |
-| **SortBy enum**       | REMOVED          | Deleted — zero external callers. Use `slices.SortStableFunc` + `cmp.Compare` (stdlib)                          |
-| **NodeShape enum**    | FULLY_FUNCTIONAL | 8 node shapes (box, ellipse, diamond, circle, cylinder, hexagon, parallelogram, rect)                          |
-| **D2Direction enum**  | FULLY_FUNCTIONAL | 4 directions (down, right, left, up). Default is down                                                          |
-| **D2NodeShape enum**  | FULLY_FUNCTIONAL | 20 shapes (rectangle, circle, diamond, hexagon, cloud, person, queue, sql_table, class, code, etc.)            |
-| **D2ArrowType enum**  | FULLY_FUNCTIONAL | 11 arrow types (arrow, triangle, diamond, circle, filled, box, cross, CF variants)                             |
-| **D2Constraint enum** | FULLY_FUNCTIONAL | 3 SQL constraints (primary_key, foreign_key, unique)                                                           |
-| **Alignment enum**    | FULLY_FUNCTIONAL | Markdown column alignment: left, right, center                                                                 |
-| **enum utilities**  | FULLY_FUNCTIONAL | `ParseEnum[T]()`, `ContainsEnum[T]()`, `EnumAllowedValues[T]()`, `EnumAllowedStrings[T]()`. Now in root (merged from former `enum/` sub-module) |
-| **FormatCategory**    | REMOVED          | Replaced by `Shape`. `IsTableFormat()`, `IsTreeFormat()`, `IsGraphFormat()`, `Category()` removed              |
-| **OutputFormat**      | REMOVED          | Type alias for `Format`. All `OutputFormat*` constants removed                                                 |
+| Feature               | Status           | Notes                                                                                                                                           |
+| --------------------- | ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Format enum**       | FULLY_FUNCTIONAL | 16 format constants. `ParseFormat()`, `String()`, `IsValid()`, `AllowedValues()`                                                                |
+| **Shape enum**        | FULLY_FUNCTIONAL | 3 shape constants. `ParseShape()`, `String()`, `IsValid()`, `AllowedValues()`                                                                   |
+| **ColorMode enum**    | FULLY_FUNCTIONAL | `auto`, `always`, `never`. `ParseColorMode()`, `ShouldColor()`. Wired into table, tree, markdown renderers                                      |
+| **SortBy enum**       | REMOVED          | Deleted — zero external callers. Use `slices.SortStableFunc` + `cmp.Compare` (stdlib)                                                           |
+| **NodeShape enum**    | FULLY_FUNCTIONAL | 8 node shapes (box, ellipse, diamond, circle, cylinder, hexagon, parallelogram, rect)                                                           |
+| **D2Direction enum**  | FULLY_FUNCTIONAL | 4 directions (down, right, left, up). Default is down                                                                                           |
+| **D2NodeShape enum**  | FULLY_FUNCTIONAL | 20 shapes (rectangle, circle, diamond, hexagon, cloud, person, queue, sql_table, class, code, etc.)                                             |
+| **D2ArrowType enum**  | FULLY_FUNCTIONAL | 11 arrow types (arrow, triangle, diamond, circle, filled, box, cross, CF variants)                                                              |
+| **D2Constraint enum** | FULLY_FUNCTIONAL | 3 SQL constraints (primary_key, foreign_key, unique)                                                                                            |
+| **Alignment enum**    | FULLY_FUNCTIONAL | Markdown column alignment: left, right, center                                                                                                  |
+| **enum utilities**    | FULLY_FUNCTIONAL | `ParseEnum[T]()`, `ContainsEnum[T]()`, `EnumAllowedValues[T]()`, `EnumAllowedStrings[T]()`. Now in root (merged from former `enum/` sub-module) |
+| **FormatCategory**    | REMOVED          | Replaced by `Shape`. `IsTableFormat()`, `IsTreeFormat()`, `IsGraphFormat()`, `Category()` removed                                               |
+| **OutputFormat**      | REMOVED          | Type alias for `Format`. All `OutputFormat*` constants removed                                                                                  |
 
 ---
 
@@ -260,7 +260,7 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 
 | Feature                            | Status           | Notes                                                                         |
 | ---------------------------------- | ---------------- | ----------------------------------------------------------------------------- |
-| **Root module** (`package output`) | FULLY_FUNCTIONAL | Core types, formatters, enum + envdetect utilities. Zero lipgloss dependency    |
+| **Root module** (`package output`) | FULLY_FUNCTIONAL | Core types, formatters, enum + envdetect utilities. Zero lipgloss dependency  |
 | **escape/**                        | FULLY_FUNCTIONAL | Format-specific escaping. Zero dependencies                                   |
 | **envdetect** (in root)            | FULLY_FUNCTIONAL | CI/NO_COLOR env detection (`IsCI()`, `IsNoColor()`). Merged into root         |
 | **testhelpers/**                   | FULLY_FUNCTIONAL | Shared test assertions. Zero dependencies, publicly importable                |
@@ -291,7 +291,7 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 | **Lint**              | FULLY_FUNCTIONAL | `golangci-lint` v2.12 across all modules                                                             |
 | **govulncheck**       | FULLY_FUNCTIONAL | Vulnerability scanning across all modules                                                            |
 | **go mod tidy check** | FULLY_FUNCTIONAL | Verifies all module `go.mod` files are tidy                                                          |
-| **Nix flake**         | FULLY_FUNCTIONAL | Dev shell with Go 1.26.2, golangci-lint, gopls. Uses `flake-parts` + `treefmt-nix` + `git-hooks.nix` |
+| **Nix flake**         | FULLY_FUNCTIONAL | Dev shell with Go 1.26.3, golangci-lint, gopls. Uses `flake-parts` + `treefmt-nix` + `git-hooks.nix` |
 | **Pre-commit hooks**  | FULLY_FUNCTIONAL | Auto-installed via `nix develop`. Also `.pre-commit-config.yaml` for non-Nix users                   |
 
 ---
@@ -311,7 +311,7 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 | **ADR 006**                | FULLY_FUNCTIONAL | Pre-v1 API stability guarantees                            |
 | **ADR 007**                | FULLY_FUNCTIONAL | nom composition via root types                             |
 | **ADR 008**                | FULLY_FUNCTIONAL | Dedup workflow decision (art-dupl threshold + checklist)   |
-| **RELEASE.md**             | FULLY_FUNCTIONAL | Release process for 20-module mono-version workspace       |
+| **RELEASE.md**             | FULLY_FUNCTIONAL | Release process for 18-module mono-version workspace       |
 | **ROADMAP.md**             | FULLY_FUNCTIONAL | Long-term direction and raw ideas                          |
 | **DOMAIN_LANGUAGE.md**     | FULLY_FUNCTIONAL | Domain vocabulary                                          |
 | **FORMAT_ARCHITECTURE.md** | FULLY_FUNCTIONAL | Format architecture documentation                          |
@@ -329,7 +329,7 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 
 ---
 
-**Last audited:** 2026-06-22
+**Last audited:** 2026-06-23
 **Total features:** 173
 **Fully functional:** 161
 **Partially functional:** 0

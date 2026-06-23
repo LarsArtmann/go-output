@@ -179,8 +179,6 @@ func (m *ProgressModel) handleProgressUpdate(msg progressUpdateMsg) (tea.Model, 
 		}
 	case messageUpdate:
 		m.currentMessage = msg.Message
-	case stepUpdate:
-		// Step updates are handled in ReportStep method
 	}
 
 	return m, nil
@@ -221,7 +219,7 @@ func (m *ProgressModel) updateWorkflowCompletionState() {
 }
 
 // handleStepUpdate processes a step-based progress update on the TUI goroutine.
-// It creates a new step or updates an existing matching/active step.
+// It creates a new step or updates an existing step with a matching message.
 func (m *ProgressModel) handleStepUpdate(msg stepUpdateMsg) (tea.Model, tea.Cmd) {
 	if !m.workflowState.canAcceptUpdates() {
 		return m, nil
@@ -230,12 +228,12 @@ func (m *ProgressModel) handleStepUpdate(msg stepUpdateMsg) (tea.Model, tea.Cmd)
 	m.lastUpdate = time.Now()
 
 	for i := range m.steps {
-		if m.steps[i].Message == msg.Message || m.steps[i].isActive() {
+		if m.steps[i].Message == msg.Message {
 			m.steps[i].Current = msg.Current
 			m.steps[i].Total = msg.Total
 			m.steps[i].Message = msg.Message
 
-			if msg.Current >= msg.Total && m.steps[i].CompletedAt == nil {
+			if msg.Total > 0 && msg.Current >= msg.Total && m.steps[i].CompletedAt == nil {
 				now := time.Now()
 				m.steps[i].CompletedAt = &now
 			}

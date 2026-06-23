@@ -141,7 +141,7 @@ func (r *MermaidRenderer) writeNodeStyles(b *strings.Builder) {
 			wroteAny = true
 		}
 
-		_, _ = fmt.Fprintf(b, "    style %s %s\n", node.ID.Get(), strings.Join(parts, ","))
+		_, _ = fmt.Fprintf(b, "    style %s %s\n", escape.MermaidID(node.ID.Get()), strings.Join(parts, ","))
 	}
 }
 
@@ -150,15 +150,15 @@ func mermaidStyleParts(s output.GraphStyle) []string {
 	var parts []string
 
 	if s.Fill != "" {
-		parts = append(parts, "fill:"+s.Fill)
+		parts = append(parts, "fill:"+escape.MermaidText(s.Fill))
 	}
 
 	if s.Stroke != "" {
-		parts = append(parts, "stroke:"+s.Stroke)
+		parts = append(parts, "stroke:"+escape.MermaidText(s.Stroke))
 	}
 
 	if s.FontColor != "" {
-		parts = append(parts, "color:"+s.FontColor)
+		parts = append(parts, "color:"+escape.MermaidText(s.FontColor))
 	}
 
 	if s.FontSize > 0 {

@@ -2,6 +2,7 @@ package output
 
 import (
 	"slices"
+	"strings"
 )
 
 // Shape represents a data shape that a format can render.
@@ -40,22 +41,32 @@ func (s Shape) AllowedValues() []string {
 
 // InvalidShapeError is returned when an invalid data shape is provided.
 type InvalidShapeError struct {
-	Value string
+	Value   string
+	Allowed []Shape
 }
 
 // Error returns a descriptive error message for the invalid shape.
 func (e *InvalidShapeError) Error() string {
-	return "invalid shape: " + e.Value
+	return "invalid shape: " + e.Value + " (allowed: " + shapesToString(e.Allowed) + ")"
 }
 
 // ParseShape converts a string to Shape, returning an error if invalid.
 func ParseShape(s string) (Shape, error) {
 	v, err := ParseEnum(AllShapes, s, func(sh Shape) string { return string(sh) })
 	if err != nil {
-		return "", &InvalidShapeError{Value: s}
+		return "", &InvalidShapeError{Value: s, Allowed: AllShapes}
 	}
 
 	return v, nil
+}
+
+func shapesToString(shapes []Shape) string {
+	parts := make([]string, len(shapes))
+	for i, s := range shapes {
+		parts[i] = string(s)
+	}
+
+	return strings.Join(parts, ", ")
 }
 
 //nolint:gochecknoglobals // Registry for format capabilities, populated by sub-module init().
