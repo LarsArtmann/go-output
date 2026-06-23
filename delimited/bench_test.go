@@ -10,9 +10,9 @@ import (
 var benchHeaders = []string{"Name", "Age", "Email", "City"}
 
 var benchRows = func() [][]string {
-	rows := make([][]string, 100)
-	for i := range rows {
-		rows[i] = []string{"Alice", "30", "alice@example.com", "Berlin"}
+	rows := make([][]string, 0, 100)
+	for range 100 {
+		rows = append(rows, []string{"Alice", "30", "alice@example.com", "Berlin"})
 	}
 
 	return rows

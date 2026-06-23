@@ -1,7 +1,7 @@
 # TODO_LIST.md — go-output
 
 **Last updated:** 2026-06-23
-**Open items:** 3
+**Open items:** 2
 **Blocked:** 0
 
 ---
@@ -12,7 +12,7 @@
 | --- | -------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | ----------------------------- |
 | 14  | **Community: Post to r/golang, submit to Awesome Go**                                                                                              | Low    | Open (needs owner account)    |
 | 16  | **Cut `v1.0.0` tag** — API frozen (ADR 006); CHANGELOG + full checklist done                                                                       | Low    | Prepared — awaiting owner tag |
-| 17  | **Complete Pattern B migration** — convert remaining ~165 sibling requires from real versions (v0.17.x) to v0.0.0 sentinel across all go.mod files | Medium | Open                          |
+| 17  | **Complete Pattern B migration** — DONE. All 47 sibling requires converted to v0.0.0 sentinel across 18 modules | Medium | **Resolved 2026-06-23**       |
 
 ---
 

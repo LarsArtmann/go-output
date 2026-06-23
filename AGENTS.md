@@ -96,7 +96,7 @@ These are non-obvious from reading code alone — the "how does this even work" 
 Things that will silently break or that an agent would get wrong from code alone.
 
 - **Never import a sub-module into root** — see Core Invariant above.
-- **Pattern B: sibling deps SHOULD be v0.0.0-00010101000000-000000000000** — never change a sibling `require` to a real version. The `replace` directive makes it work locally; a real version would re-introduce version rot. Only `testhelpers` keeps real versions. **NOTE: As of 2026-06-23, the Pattern B migration is INCOMPLETE** — only 12 of 177 sibling requires use the sentinel. Most modules still have real versions (v0.17.x) from before the migration. See TODO_LIST.md #17.
+- **Pattern B: sibling deps SHOULD be v0.0.0-00010101000000-000000000000** — never change a sibling `require` to a real version. The `replace` directive makes it work locally; a real version would re-introduce version rot. Only `testhelpers` keeps real versions. All 47 sibling requires across 18 modules now use the sentinel (migrated 2026-06-23).
 - **`testhelpers/` is the ONLY independently versioned sub-module** — it has real published tags. All other sub-modules use v0.0.0 + replace.
 - **`testhelpers/` is zero-dep by design** — it cannot import `output`. Cross-module test helpers must stay local to each module or use table-driven patterns.
 - **`internal/` is root-only (if added)** — Go forbids sub-modules from importing `internal/` packages, so any `internal/` package in root cannot be shared with sub-modules. Currently root has no `internal/` dir; sub-modules inline their own test helpers (shared zero-dep helpers live in the `testhelpers/` module).
