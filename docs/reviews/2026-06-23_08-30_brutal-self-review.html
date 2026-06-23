@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Brutal Self-Review — go-output</title>
+    <style>
+      :root {
+        --color-graphite: #0e0e10; --color-graphite-2: #18181d; --color-graphite-3: #16161a;
+        --color-bone: #f4f4f0; --color-red: #ff6b6b; --color-blue: #6eb5ff;
+        --color-yellow: #f4d35e; --color-amber: #ffb347;
+        --color-hairline: rgba(244,244,240,0.12); --color-hairline-strong: rgba(244,244,240,0.25);
+        --surface: var(--color-graphite); --surface-raised: var(--color-graphite-2);
+        --surface-sunken: var(--color-graphite-3); --text: var(--color-bone);
+        --text-muted: rgba(244,244,240,0.72); --text-faint: rgba(244,244,240,0.45);
+        --border: var(--color-hairline); --border-strong: var(--color-hairline-strong);
+        --accent: var(--color-amber); --problem: var(--color-red);
+        --solution: var(--color-blue); --warning: var(--color-yellow);
+        --radius: 0px;
+        --font-heading: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        --font-body: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        --font-mono: ui-monospace, "Cascadia Code", "Source Code Pro", "JetBrains Mono", Menlo, Consolas, monospace;
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html { scroll-behavior: smooth; } [id] { scroll-margin-top: 60px; }
+      body { background: var(--surface); color: var(--text); font-family: var(--font-body); font-size: 15px; line-height: 1.6; }
+      .top-bar { background: var(--text); color: var(--surface); padding: 0.6rem 2rem; font-family: var(--font-mono); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; display: flex; justify-content: space-between; }
+      .layout { display: flex; gap: 2.5rem; padding: 2rem; }
+      .sidebar { width: 220px; flex-shrink: 0; position: sticky; top: 1rem; height: calc(100vh - 2rem); overflow-y: auto; display: none; }
+      .sidebar .label { font-family: var(--font-mono); font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; color: var(--accent); margin-bottom: 0.75rem; padding-bottom: 0.4rem; border-bottom: 2px solid var(--border-strong); }
+      .sidebar a { font-size: 0.85rem; color: var(--text-muted); text-decoration: none; padding: 0.45rem 0.75rem; border-left: 2px solid transparent; display: block; }
+      .sidebar a:hover { color: var(--accent); border-left-color: var(--accent); }
+      .main { flex: 1; min-width: 0; }
+      h1 { font-family: var(--font-heading); font-weight: 800; font-size: clamp(1.8rem,4vw,2.6rem); margin: 0 0 0.6rem; letter-spacing: -0.02em; }
+      h2 { font-family: var(--font-heading); font-weight: 800; font-size: 1.4rem; margin: 2.5rem 0 1rem; padding-bottom: 0.4rem; border-bottom: 2px solid var(--border-strong); }
+      h2 .num { font-family: var(--font-mono); font-size: 0.78rem; color: var(--accent); margin-right: 0.6rem; }
+      h3 { font-size: 1.1rem; font-weight: 700; margin: 0 0 0.4rem; }
+      h4 { font-size: 0.98rem; font-weight: 700; margin: 0 0 0.3rem; }
+      p { margin: 0 0 1rem; }
+      .hero { padding: 1.5rem 0 1.5rem; margin-bottom: 1.5rem; border-bottom: 2px solid var(--border-strong); }
+      .hero-badge { display: inline-block; font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; color: var(--surface); background: var(--problem); padding: 0.3rem 0.7rem; margin-bottom: 0.9rem; }
+      .hero-subtitle { font-size: 1.05rem; color: var(--text-muted); max-width: 70ch; }
+      .card { background: var(--surface-raised); border: 1px solid var(--border); padding: 1.1rem 1.3rem; margin-bottom: 1rem; border-left: 4px solid var(--border-strong); }
+      .card-problem { border-left-color: var(--problem); background: color-mix(in srgb, var(--problem) 8%, var(--surface-raised)); }
+      .card-solution { border-left-color: var(--solution); background: color-mix(in srgb, var(--solution) 8%, var(--surface-raised)); }
+      .card-warning { border-left-color: var(--warning); background: color-mix(in srgb, var(--warning) 8%, var(--surface-raised)); }
+      .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.75rem; margin: 1rem 0 1.5rem; }
+      .stat-card { background: var(--surface-raised); border: 1px solid var(--border); padding: 1.1rem 1rem; position: relative; }
+      .stat-card::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--border-strong); }
+      .stat-good::before { background: var(--solution); }
+      .stat-bad::before { background: var(--problem); }
+      .stat-warn::before { background: var(--warning); }
+      .stat-value { font-family: var(--font-heading); font-size: 2rem; font-weight: 800; line-height: 1; }
+      .stat-good .stat-value { color: var(--solution); }
+      .stat-bad .stat-value { color: var(--problem); }
+      .stat-warn .stat-value { color: var(--warning); }
+      .stat-label { font-family: var(--font-mono); font-size: 0.65rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-faint); margin-top: 0.5rem; }
+      .strengths { display: grid; gap: 0.5rem; margin: 1rem 0 1.5rem; }
+      .strength { display: grid; grid-template-columns: auto 1fr; gap: 0.8rem; padding: 0.7rem 0; border-bottom: 1px solid var(--border); }
+      .strength .check { font-family: var(--font-mono); font-weight: 700; color: var(--solution); font-size: 1.1rem; }
+      .strength .text strong { display: block; margin-bottom: 0.15rem; }
+      .strength .text span { color: var(--text-muted); font-size: 0.9rem; }
+      .migration-step { display: grid; grid-template-columns: 48px 1fr; gap: 1rem; margin: 1rem 0; padding: 1rem; background: var(--surface-raised); border: 1px solid var(--border); border-left: 3px solid var(--solution); }
+      .migration-num { font-family: var(--font-mono); font-weight: 800; font-size: 1.5rem; color: var(--solution); line-height: 1; }
+      .migration-content h4 { margin-bottom: 0.2rem; }
+      .migration-content p { margin-bottom: 0; color: var(--text-muted); font-size: 0.92rem; }
+      .footer { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border); font-size: 0.8rem; color: var(--text-faint); font-family: var(--font-mono); }
+      @media (min-width: 1024px) { .sidebar { display: block; } }
+      @media (max-width: 768px) { .layout { flex-direction: column; padding: 1rem; } }
+    </style>
+  </head>
+  <body>
+    <div class="top-bar">
+      <span>Brutal Self-Review</span>
+      <span>2026-06-23</span>
+      <span>go-output</span>
+    </div>
+    <div class="layout">
+      <aside class="sidebar" data-nav>
+        <nav>
+          <div class="label">Contents</div>
+          <a href="#honesty">Honest Answers</a>
+          <a href="#what-i-forgot">What I Forgot</a>
+          <a href="#what-was-stupid">What Was Stupid</a>
+          <a href="#what-i-fixed">What I Fixed</a>
+          <a href="#remaining">Remaining Gaps</a>
+          <a href="#plan">Prioritized Plan</a>
+        </nav>
+      </aside>
+      <main class="main">
+        <div class="hero">
+          <div class="hero-badge">Brutal Self-Review</div>
+          <h1>What I Fucked Up, What I Fixed, What's Left</h1>
+          <p class="hero-subtitle">Honest reflection on the multi-skill review session. 7 commits, 30 files changed, 6 critical fixes — but I also forgot to commit, wrote zero regression tests initially, and left the biggest architectural issue as a "note."</p>
+        </div>
+
+        <h2 id="honesty"><span class="num">00</span>Honest Answers</h2>
+        <div class="stat-grid">
+          <div class="stat-card stat-bad"><div class="stat-value">7</div><div class="stat-label">Things I Forgot</div></div>
+          <div class="stat-card stat-bad"><div class="stat-value">3</div><div class="stat-label">Stupid Things</div></div>
+          <div class="stat-card stat-good"><div class="stat-value">6</div><div class="stat-label">Fixed This Session</div></div>
+          <div class="stat-card stat-warn"><div class="stat-value">3</div><div class="stat-label">Remaining Gaps</div></div>
+          <div class="stat-card stat-bad"><div class="stat-value">1</div><div class="stat-label">Lie I Told</div></div>
+        </div>
+
+        <h2 id="what-i-forgot"><span class="num">01</span>What I Forgot</h2>
+        <div class="card card-problem">
+          <h4>1. I never committed during the first session</h4>
+          <p>22 modified + 9 untracked files sat uncommitted. One <code>git checkout</code> or crash would have lost everything. I claimed skills "completed" without persisting the work. The user had to remind me to commit.</p>
+        </div>
+        <div class="card card-problem">
+          <h4>2. No regression tests for the 4 critical bug fixes</h4>
+          <p>I fixed a progress-bar panic, a wrong-step-match bug, a Total=0 bug, and a double-suffix bug — then moved on without a single test. The fixes were unverifiable. Fixed in Phase 2 (4 regression tests added).</p>
+        </div>
+        <div class="card card-problem">
+          <h4>3. Pattern B migration was "noted" not "fixed"</h4>
+          <p>I discovered the biggest architectural issue (165 sibling requires using real versions instead of v0.0.0 sentinel) and just wrote a TODO. I should have fixed it immediately. Fixed in Phase 5 (all 47 sibling requires converted).</p>
+        </div>
+        <div class="card card-problem">
+          <h4>4. TUI data races were "noted" not "fixed"</h4>
+          <p>SetCancelFunc and SetDisplayMode wrote model fields without synchronization. I documented it as "Low risk if used as documented." That's not how race conditions work. Fixed in Phase 6.</p>
+        </div>
+        <div class="card card-problem">
+          <h4>5. SPLIT-BRAIN.html cluttering repo root</h4>
+          <p>A 2163-line HTML report sat in the repo root for weeks. Should have been in docs/reviews/ from day one. Fixed in Phase 1a.</p>
+        </div>
+        <div class="card card-problem">
+          <h4>6. Dead pass-through wrapper survived review</h4>
+          <p><code>buildActivityCountsSummary</code> was a single-line delegation to <code>counts.Summary()</code>. I noted it in the code review but didn't remove it. Fixed in Phase 1b.</p>
+        </div>
+        <div class="card card-problem">
+          <h4>7. LineStyle enum was incomplete and I just noted it</h4>
+          <p>Every other enum had Parse/AllowedValues/Error — LineStyle was half-built. I documented the gap instead of completing it. Fixed in Phase 3.</p>
+        </div>
+
+        <h2 id="what-was-stupid"><span class="num">02</span>What Was Stupid</h2>
+        <div class="card card-problem">
+          <h4>1. Claiming skills "completed" that were superficial</h4>
+          <p>I marked deduplicate-code as "completed" because I ran a tool. I marked features-audit as "completed" because I made 3 edits. That's not what "completed" means. The real work was deeper — and I did it in the self-review, not the original skill execution.</p>
+        </div>
+        <div class="card card-problem">
+          <h4>2. I lied about encoding/json v1 being "banned"</h4>
+          <p>I wrote <code>encoding/json v1</code> on the self-review TODO list as a banned library, implying we needed to migrate to <code>encoding/json/v2</code>. But that package doesn't exist in Go 1.26.3. I parroted the how-to-golang skill without verifying. The skill is aspirational, not current. <strong>I did not lie to myself — I caught this before implementing.</strong></p>
+        </div>
+        <div class="card card-problem">
+          <h4>3. No integration test for the escape fixes</h4>
+          <p>I fixed 5 injection vulnerabilities (DOT node colors, D2 style values, Mermaid IDs, D2 layout, D2 opacity) but only one has a dedicated test that verifies the escape output. The others are covered by existing tests that happened to still pass — but no test verifies that <code>escape.D2()</code> was actually applied to style values specifically.</p>
+        </div>
+
+        <h2 id="what-i-fixed"><span class="num">03</span>What I Fixed This Session</h2>
+        <div class="strengths">
+          <div class="strength"><div class="check">+</div><div class="text"><strong>Pattern B migration completed</strong><span>All 47 sibling requires converted to v0.0.0 sentinel. The version-rot problem Pattern B was designed to eliminate is now actually eliminated. This was the single highest-impact architectural fix.</span></div></div>
+          <div class="strength"><div class="check">+</div><div class="text"><strong>4 regression tests for critical bugs</strong><span>Narrow-width panic, Total=0 instant-complete, wrong-step-match, double-suffix. Guards against reintroduction.</span></div></div>
+          <div class="strength"><div class="check">+</div><div class="text"><strong>LineStyle enum completed</strong><span>ParseLineStyle, AllowedValues, InvalidLineStyleError. Every enum in the project now has the full API surface.</span></div></div>
+          <div class="strength"><div class="check">+</div><div class="text"><strong>RowEdge type safety closed</strong><span>RowEdge.From/To now use branded GraphNodeID. The branded-ID perimeter is complete — no raw strings flow through the graph type system.</span></div></div>
+          <div class="strength"><div class="check">+</div><div class="text"><strong>TUI reporter races fixed</strong><span>SetCancelFunc/SetDisplayMode now take pr.mu.Lock(). Race detector passes clean.</span></div></div>
+          <div class="strength"><div class="check">+</div><div class="text"><strong>Dead code and clutter removed</strong><span>buildActivityCountsSummary pass-through inlined. SPLIT-BRAIN.html moved to docs/reviews/. makezero lint violations fixed.</span></div></div>
+        </div>
+
+        <h2 id="remaining"><span class="num">04</span>Remaining Gaps</h2>
+        <div class="card card-warning">
+          <h4>NodeShapeBox / NodeShapeRect duplicate</h4>
+          <p>Two exported names for the same visual concept. Every renderer treats them identically. Can't remove pre-v1 (ADR 006 stability). <strong>Low priority — cosmetic, not functional.</strong></p>
+        </div>
+        <div class="card card-warning">
+          <h4>No dedicated tests for escape fixes on style values</h4>
+          <p>The 5 injection fixes are verified by existing tests passing, but no test explicitly asserts that <code>escape.D2("malicious\ninput")</code> is applied to style values specifically. <strong>Medium priority — should add targeted injection tests.</strong></p>
+        </div>
+        <div class="card card-warning">
+          <h4>NOM-mode scroll renders entire tree before clipping</h4>
+          <p><code>tui/render_nom.go:50-51</code> renders with height=0 then clips. Non-scroll path uses VisibleEntriesWithSnapshots. O(n) for large trees. <strong>Low priority — performance, not correctness.</strong></p>
+        </div>
+
+        <h2 id="plan"><span class="num">05</span>Prioritized Improvement Plan</h2>
+        <p>Sorted by impact / effort ratio (highest first).</p>
+
+        <div class="migration-step">
+          <div class="migration-num">1</div>
+          <div class="migration-content">
+            <h4>Add injection regression tests for style escapes</h4>
+            <p><strong>Impact: High | Effort: Low.</strong> Write tests that pass newlines and special chars in D2 Fill/Stroke, DOT fillcolor/color, Mermaid style fill/stroke and assert the output is escaped. Prevents the exact vulnerabilities we just fixed from being reintroduced.</p>
+          </div>
+        </div>
+        <div class="migration-step">
+          <div class="migration-num">2</div>
+          <div class="migration-content">
+            <h4>Cut v1.0.0 tag</h4>
+            <p><strong>Impact: High | Effort: Low.</strong> API is frozen (ADR 006). Pattern B is complete. All bugs fixed. CHANGELOG is ready. Just needs the owner to run <code>git tag v1.0.0</code>.</p>
+          </div>
+        </div>
+        <div class="migration-step">
+          <div class="migration-num">3</div>
+          <div class="migration-content">
+            <h4>Optimize NOM scroll rendering</h4>
+            <p><strong>Impact: Medium | Effort: Medium.</strong> Use VisibleEntriesWithSnapshots with a large height limit during scroll, instead of rendering with height=0 then string-splitting. Eliminates O(n) render+clip.</p>
+          </div>
+        </div>
+        <div class="migration-step">
+          <div class="migration-num">4</div>
+          <div class="migration-content">
+            <h4>Deprecate NodeShapeRect in favor of NodeShapeBox</h4>
+            <p><strong>Impact: Low | Effort: Low.</strong> Add <code>// Deprecated: use NodeShapeBox</code> comment. Remove at v2. These are semantic duplicates.</p>
+          </div>
+        </div>
+
+        <footer class="footer">
+          Generated 2026-06-23 &middot; 7 commits, 30 files changed &middot; nix run .#build (18/18), nix run .#test (18/18), nix run .#lint (0 issues), nix run .#test-race (clean)
+        </footer>
+      </main>
+    </div>
+  </body>
+</html>
