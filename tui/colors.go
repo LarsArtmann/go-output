@@ -50,6 +50,11 @@ const (
 	progressBarWidth  = 40
 	minWidthThreshold = 80
 	widthSubtraction  = 30
+	// chromeLines is the number of non-tree terminal lines consumed by the
+	// NOM layout chrome: title header (1) + blank gap (1) + current message
+	// (1) + blank gap (1) + tree section + blank gap (1) + summary bar (1)
+	// + blank gap (1) + treeStartLine offset (1) = 8. Used to subtract from
+	// m.height to compute the tree's visible row budget.
 	chromeLines       = 8
 	defaultTreeHeight = 20
 	defaultHelpWidth  = 80
