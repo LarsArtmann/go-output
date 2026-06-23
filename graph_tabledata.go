@@ -52,8 +52,8 @@ func (m *GraphRendererState) AddRowEdges(data *TableData) {
 	for _, edge := range data.CreateRowEdges() {
 		//nolint:exhaustruct // Uses defaults for optional fields
 		m.edges = append(m.edges, GraphEdge{
-			From: NewBrandedID[GraphNodeIDBrand](edge.From),
-			To:   NewBrandedID[GraphNodeIDBrand](edge.To),
+			From: edge.From,
+			To:   edge.To,
 		})
 	}
 }

@@ -173,8 +173,8 @@ func (d *TableData) ToMapSlice() []map[string]string {
 
 // RowEdge represents a directed edge between two row identifiers.
 type RowEdge struct {
-	From string
-	To   string
+	From GraphNodeID
+	To   GraphNodeID
 }
 
 // CreateRowEdges generates edge data connecting consecutive rows.
@@ -187,8 +187,8 @@ func (d *TableData) CreateRowEdges() []RowEdge {
 	edges := make([]RowEdge, 0, len(d.Rows)-1)
 	for i := range len(d.Rows) - 1 {
 		edges = append(edges, RowEdge{
-			From: fmt.Sprintf("row%d", i),
-			To:   fmt.Sprintf("row%d", i+1),
+			From: NewBrandedID[GraphNodeIDBrand](fmt.Sprintf("row%d", i)),
+			To:   NewBrandedID[GraphNodeIDBrand](fmt.Sprintf("row%d", i+1)),
 		})
 	}
 

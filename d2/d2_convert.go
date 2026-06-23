@@ -111,7 +111,7 @@ func D2FromTableData(data *output.TableData) *D2Diagram {
 	}
 
 	for _, edge := range data.CreateRowEdges() {
-		diagram.AddEdgeSimple(edge.From, edge.To)
+		diagram.AddEdgeSimple(edge.From.Get(), edge.To.Get())
 	}
 
 	return diagram
