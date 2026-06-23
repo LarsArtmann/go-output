@@ -116,3 +116,66 @@ func FuzzMermaidRendererRender(f *testing.F) {
 		}
 	})
 }
+
+// FuzzDOTNodeStyleNewlines verifies that newlines in DOT style values (Fill,
+// Stroke) never create additional lines in the output. Unescaped newlines
+// would allow attribute injection in DOT syntax.
+func FuzzDOTNodeStyleNewlines(f *testing.F) {
+	f.Add("red")
+	f.Add("red\ninjected_attr")
+	f.Add("#000\nline:evil")
+	f.Add("")
+
+	f.Fuzz(func(t *testing.T, styleVal string) {
+		renderer := NewDOTRenderer()
+		renderer.SetNodes([]output.GraphNode{ //nolint:exhaustruct // Fuzz test
+			{
+				ID:    output.NewBrandedID[output.GraphNodeIDBrand]("n"),
+				Label: output.NewBrandedID[output.GraphNodeLabelBrand]("Test"),
+				Shape: output.NodeShapeBox,
+				Style: output.GraphStyle{
+					Fill:   styleVal,
+					Stroke: styleVal,
+				},
+			},
+		})
+
+		got, err := renderer.Render()
+		if err != nil {
+			t.Fatalf("Render() error: %v", err)
+		}
+
+		// If the style value has newlines, verify they don't create extra
+		// output lines. Compare against the same renderer with a safe value.
+		rawNewlines := strings.Count(styleVal, "\n")
+		if rawNewlines > 0 {
+			safeRenderer := NewDOTRenderer()
+			safeRenderer.SetNodes([]output.GraphNode{ //nolint:exhaustruct // Fuzz test
+				{
+					ID:    output.NewBrandedID[output.GraphNodeIDBrand]("n"),
+					Label: output.NewBrandedID[output.GraphNodeLabelBrand]("Test"),
+					Shape: output.NodeShapeBox,
+					Style: output.GraphStyle{
+						Fill:   "safe",
+						Stroke: "safe",
+					},
+				},
+			})
+
+			safeOut, err := safeRenderer.Render()
+			if err != nil {
+				t.Fatalf("safe Render() error: %v", err)
+			}
+
+			maliciousLines := strings.Count(got, "\n")
+			safeLines := strings.Count(safeOut, "\n")
+
+			if maliciousLines != safeLines {
+				t.Errorf(
+					"style value with %d newlines produced %d output lines, expected %d (newlines not escaped)",
+					rawNewlines, maliciousLines, safeLines,
+				)
+			}
+		}
+	})
+}
