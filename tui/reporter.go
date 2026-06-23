@@ -74,14 +74,18 @@ func (pr *BubbleTeaProgressReporter) Subscriber() *nom.NOMStyleSubscriber {
 // This allows the TUI to cancel the running workflow when the user presses ctrl+c.
 // Must be called before Start().
 func (pr *BubbleTeaProgressReporter) SetCancelFunc(fn context.CancelFunc) {
+	pr.mu.Lock()
 	pr.model.cancelFunc = fn
+	pr.mu.Unlock()
 }
 
 // SetDisplayMode switches the rendering mode between NOM and Universal.
 // Must be called before Start(). DisplayModeNOM renders the dependency tree;
 // DisplayModeUniversal renders step-based progress.
 func (pr *BubbleTeaProgressReporter) SetDisplayMode(mode DisplayMode) {
+	pr.mu.Lock()
 	pr.model.displayMode = mode
+	pr.mu.Unlock()
 }
 
 // transitionWorkflowState transitions the reporter's authoritative workflow
