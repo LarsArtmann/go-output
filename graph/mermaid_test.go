@@ -360,3 +360,30 @@ func TestMermaidNodeStyleEscapesInjection(t *testing.T) {
 		})
 	}
 }
+
+// TestMermaidNodeStyleEscapeOutput verifies the exact escaped sequences appear
+// in Mermaid output, complementing the "raw value doesn't leak" check above.
+func TestMermaidNodeStyleEscapeOutput(t *testing.T) {
+	t.Parallel()
+
+	renderer := NewMermaidRenderer()
+	renderer.SetNodes([]output.GraphNode{ //nolint:exhaustruct // Test uses minimal fields
+		{
+			ID:    output.NewBrandedID[output.GraphNodeIDBrand]("A"),
+			Label: output.NewBrandedID[output.GraphNodeLabelBrand]("Test"),
+			Shape: output.NodeShapeBox,
+			Style: output.GraphStyle{
+				Fill: `a"b[c]` + "\n" + `d`,
+			},
+		},
+	})
+	renderer.SetEdges([]output.GraphEdge{})
+
+	out, err := renderer.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
+	assertContains(t, out, "fill:a'b(c)<br>d",
+		"quotes→apostrophes, brackets→parens, newline→<br> in style values")
+}

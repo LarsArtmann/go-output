@@ -359,3 +359,26 @@ func TestD2NodeStyleEscapesStyleInjection(t *testing.T) {
 		})
 	}
 }
+
+// TestD2NodeStyleEscapeOutput verifies the exact escaped sequences appear in
+// D2 output, complementing the "raw value doesn't leak" check above.
+func TestD2NodeStyleEscapeOutput(t *testing.T) {
+	t.Parallel()
+
+	d := NewD2Diagram()
+	d.AddNode(D2Node{ //nolint:exhaustruct // Test uses minimal required fields
+		ID:    output.NewBrandedID[output.D2NodeIDBrand]("node"),
+		Label: output.NewBrandedID[output.D2NodeLabelBrand]("Test"),
+		Style: D2NodeStyle{
+			Fill: `a"b\c` + "\n" + `d`,
+		},
+	})
+
+	got, err := d.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
+	testhelpers.AssertContains(t, got, `a\"b\\c`, "double quote and backslash should be escaped")
+	testhelpers.AssertContains(t, got, `\nd`, "newline should become literal \\n")
+}

@@ -297,3 +297,29 @@ func TestDOTNodeStyleEscapesInjection(t *testing.T) {
 		})
 	}
 }
+
+// TestDOTNodeStyleEscapeOutput verifies the exact escaped sequences appear in
+// DOT output, complementing the "raw value doesn't leak" check above.
+func TestDOTNodeStyleEscapeOutput(t *testing.T) {
+	t.Parallel()
+
+	renderer := NewDOTRenderer()
+	renderer.SetNodes([]output.GraphNode{ //nolint:exhaustruct // Test uses minimal fields
+		{
+			ID:    output.NewBrandedID[output.GraphNodeIDBrand]("A"),
+			Label: output.NewBrandedID[output.GraphNodeLabelBrand]("Test"),
+			Shape: output.NodeShapeBox,
+			Style: output.GraphStyle{
+				Fill: `a"b\c` + "\n" + `d`,
+			},
+		},
+	})
+
+	out, err := renderer.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
+	assertContains(t, out, `a\"b\\c`, "double quote and backslash should be escaped in fillcolor")
+	assertContains(t, out, `\nd`, "newline should become literal \\n in fillcolor")
+}
