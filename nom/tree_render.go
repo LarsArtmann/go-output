@@ -225,26 +225,11 @@ func formatActivityLabel(snap ActivitySnapshot) (display string, c color.Color) 
 	if timingInfo != "" {
 		// Slow-step escalation: dim yellow for >10s, dim red for >30s.
 		// This surfaces performance bottlenecks without the user scanning every line.
-		timingStyle := lipgloss.NewStyle()
+		timingStyle := slowStepStyle(snap)
 
-		switch {
-		case snap.CurrentElapsed >= slowThresholdRed:
-			timingStyle = timingStyle.Foreground(Colors.Failed).Faint(true)
-		case snap.CurrentElapsed >= slowThresholdYellow:
-			timingStyle = timingStyle.Foreground(Colors.Running).Faint(true)
-		}
-
-		if snap.Status == ActivityStatusPending && snap.EstimatedTime >= slowThresholdRed {
-			timingStyle = timingStyle.Foreground(Colors.Failed).Faint(true)
-		} else if snap.Status == ActivityStatusPending && snap.EstimatedTime >= slowThresholdYellow {
-			timingStyle = timingStyle.Foreground(Colors.Running).Faint(true)
-		}
-
-		if timingStyle.GetFaint() || timingStyle.GetForeground() != lipgloss.Color("") {
-			display += " " + timingStyle.Render(timingInfo)
-		} else {
-			display += " " + timingInfo
-		}
+		// An unmodified lipgloss style renders as plain text (no ANSI codes),
+		// so we can always use Render without a separate "is styled?" check.
+		display += " " + timingStyle.Render(timingInfo)
 	}
 
 	// Optional host tag (dormant unless the event carried one).
@@ -288,6 +273,26 @@ func formatDownloadBar(d DownloadProgress, width int) string {
 	pct := int(d.Fraction() * 100)
 
 	return fmt.Sprintf("▕%s▏ %d%%", bar, pct)
+}
+
+// slowStepStyle returns the lipgloss style for the slow-step escalation.
+// Returns an empty style (plain text) for fast steps, faint yellow for
+// >10s, and faint red for >30s. Considers both elapsed time (for running/
+// completed steps) and estimated time (for pending steps).
+func slowStepStyle(snap ActivitySnapshot) lipgloss.Style {
+	d := snap.CurrentElapsed
+	if snap.Status == ActivityStatusPending {
+		d = snap.EstimatedTime
+	}
+
+	switch {
+	case d >= slowThresholdRed:
+		return lipgloss.NewStyle().Foreground(Colors.Failed).Faint(true)
+	case d >= slowThresholdYellow:
+		return lipgloss.NewStyle().Foreground(Colors.Running).Faint(true)
+	default:
+		return lipgloss.NewStyle()
+	}
 }
 
 // formatBytes renders a byte count in a human-readable binary form (KiB, MiB…).
