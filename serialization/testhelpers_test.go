@@ -63,6 +63,24 @@ func testGraphRendererNodeWithShape(t *testing.T, r output.GraphRenderer, wantSh
 	assertOutputContains(t, got, wantShape)
 }
 
+// renderWithABNodes loads the canonical A/B node+edge fixtures into the
+// renderer and returns its output. Centralises the "SetNodes(testNodesAB()) +
+// SetEdges(testEdgesAB()) + Render() + t.Fatalf" sequence shared by every
+// "render a graph with two nodes" test in this package.
+func renderWithABNodes(t *testing.T, r output.GraphRenderer) string {
+	t.Helper()
+
+	r.SetNodes(testNodesAB())
+	r.SetEdges(testEdgesAB())
+
+	out, err := r.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
+	return out
+}
+
 type unmarshalTestCase struct {
 	name    string
 	data    string

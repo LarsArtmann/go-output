@@ -124,12 +124,9 @@ func (ns *NOMStyleSubscriber) handleActivityRegistered(e ActivityRegistered) err
 // handleActivityCompleted transitions the activity to completed and records
 // the observed duration in the timing cache.
 func (ns *NOMStyleSubscriber) handleActivityCompleted(e ActivityCompleted) error {
-	ns.mu.Lock()
-	defer ns.mu.Unlock()
-
-	activity := ns.getOrCreateActivity(e.ID, e.Name, ActivityKindTask)
-	applyCountsDelta(&ns.counts, activity.Status, ActivityStatusCompleted)
-	activity.SetCompleted()
+	ns.transitionTask(e.ID, e.Name, ActivityStatusCompleted, func(a *Activity) {
+		a.SetCompleted()
+	})
 
 	return ns.recordDuration(e.Name, e.Duration)
 }
@@ -137,14 +134,28 @@ func (ns *NOMStyleSubscriber) handleActivityCompleted(e ActivityCompleted) error
 // handleActivityFailed transitions the activity to failed and records the
 // observed duration in the timing cache.
 func (ns *NOMStyleSubscriber) handleActivityFailed(e ActivityFailed) error {
+	ns.transitionTask(e.ID, e.Name, ActivityStatusFailed, func(a *Activity) {
+		a.SetFailed(e.Err)
+	})
+
+	return ns.recordDuration(e.Name, e.Duration)
+}
+
+// transitionTask looks up (or creates) the named task activity, adjusts the
+// status counts, and invokes apply to apply status-specific fields (e.g.
+// error for failure). The entire sequence runs under ns.mu so callers don't
+// need to hold any lock — apply sees the activity after SetCompleted/SetFailed
+// would have been called, eliminating a race where the activity's Status
+// field was read by SnapshotActivities mid-transition.
+func (ns *NOMStyleSubscriber) transitionTask(
+	id ActivityID, name ActivityName, target ActivityStatus, apply func(*Activity),
+) {
 	ns.mu.Lock()
 	defer ns.mu.Unlock()
 
-	activity := ns.getOrCreateActivity(e.ID, e.Name, ActivityKindTask)
-	applyCountsDelta(&ns.counts, activity.Status, ActivityStatusFailed)
-	activity.SetFailed(e.Err)
-
-	return ns.recordDuration(e.Name, e.Duration)
+	activity := ns.getOrCreateActivity(id, name, ActivityKindTask)
+	applyCountsDelta(&ns.counts, activity.Status, target)
+	apply(activity)
 }
 
 // recordDuration stores the observed duration in the timing cache if positive.

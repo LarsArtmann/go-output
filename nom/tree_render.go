@@ -20,26 +20,8 @@ func (dt *DependencyTree) RenderWithSnapshots(
 	snapshots map[ActivityID]ActivitySnapshot,
 	maxHeight, maxWidth int,
 ) string {
-	dt.mu.RLock()
-	needsBuild := !dt.loaded
-	dt.mu.RUnlock()
-
-	if needsBuild {
-		err := dt.Build()
-		if err != nil {
-			return fmt.Sprintf("Error building tree: %v", err)
-		}
-	}
-
-	dt.mu.RLock()
-	defer dt.mu.RUnlock()
-
-	if maxHeight <= 0 {
-		maxHeight = len(dt.nodes)
-	}
-
-	if len(dt.roots) == 0 {
-		return msgNoActivitiesToDisplay
+	if err := dt.ensureBuilt(); err != nil {
+		return fmt.Sprintf("Error building tree: %v", err)
 	}
 
 	visible := dt.collectVisibleNodes(snapshots, maxHeight)
@@ -61,6 +43,17 @@ func (dt *DependencyTree) collectVisibleNodes(
 	snapshots map[ActivityID]ActivitySnapshot,
 	maxHeight int,
 ) []VisibleEntry {
+	dt.mu.RLock()
+	defer dt.mu.RUnlock()
+
+	if len(dt.roots) == 0 {
+		return nil
+	}
+
+	if maxHeight <= 0 {
+		maxHeight = len(dt.nodes)
+	}
+
 	var visible []VisibleEntry
 
 	for _, root := range dt.roots {
@@ -504,24 +497,26 @@ func (dt *DependencyTree) VisibleEntriesWithSnapshots(
 	snapshots map[ActivityID]ActivitySnapshot,
 	maxHeight int,
 ) []VisibleEntry {
+	if err := dt.ensureBuilt(); err != nil {
+		return nil
+	}
+
+	return dt.collectVisibleNodes(snapshots, maxHeight)
+}
+
+// ensureBuilt triggers a Build() if the tree has not yet been built.
+// Splitting this off lets renderers share the "build if needed, then render
+// under the read lock" preamble without duplicating the lock dance.
+func (dt *DependencyTree) ensureBuilt() error {
 	dt.mu.RLock()
 	needsBuild := !dt.loaded
 	dt.mu.RUnlock()
 
-	if needsBuild {
-		if err := dt.Build(); err != nil {
-			return nil
-		}
+	if !needsBuild {
+		return nil
 	}
 
-	dt.mu.RLock()
-	defer dt.mu.RUnlock()
-
-	if maxHeight <= 0 {
-		maxHeight = len(dt.nodes)
-	}
-
-	return dt.collectVisibleNodes(snapshots, maxHeight)
+	return dt.Build()
 }
 
 // RenderVisibleEntry renders a single visible entry — either a real activity

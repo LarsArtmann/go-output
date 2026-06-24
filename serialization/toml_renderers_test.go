@@ -24,13 +24,8 @@ func TestTOMLGraphRenderer_WithNodesAndEdges(t *testing.T) {
 	t.Parallel()
 
 	r := NewTOMLGraphRenderer()
-	r.SetNodes(testNodesAB())
-	r.SetEdges(testEdgesAB())
 
-	out, err := r.Render()
-	if err != nil {
-		t.Fatalf("Render() error = %v", err)
-	}
+	out := renderWithABNodes(t, r)
 
 	testhelpers.AssertAllContained(t, out, "Node A", "Node B")
 }

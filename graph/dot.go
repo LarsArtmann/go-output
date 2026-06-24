@@ -264,14 +264,7 @@ func DOTFromTableData(data *output.TableData) *DOTRenderer {
 
 // DOTFromTree converts a TreeNode to DOT format.
 func DOTFromTree(root *output.TreeNode) *DOTRenderer {
-	renderer := NewDOTRenderer()
-	if root == nil {
-		return renderer
-	}
-
-	renderer.addTreeNodes(root, output.NewBrandedID[output.TreeNodeIDBrand](""))
-
-	return renderer
+	return output.TreeToRenderer(NewDOTRenderer, (*DOTRenderer).addTreeNodes, root)
 }
 
 func dotTreeNodeID(node *output.TreeNode) string {

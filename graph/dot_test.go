@@ -12,13 +12,8 @@ func TestDOTRenderer(t *testing.T) {
 	t.Parallel()
 
 	renderer := NewDOTRenderer()
-	renderer.SetNodes(testNodesAB())
-	renderer.SetEdges(testEdgesAB())
 
-	out, err := renderer.Render()
-	if err != nil {
-		t.Fatalf("Render() error = %v", err)
-	}
+	out := renderWithABNodes(t, renderer)
 
 	assertContains(t, out, "digraph G {", "Output should contain digraph declaration")
 	assertContains(t, out, "\"A\"", "Output should contain node A in quotes")
@@ -32,13 +27,8 @@ func TestDOTUndirectedRenderer(t *testing.T) {
 	t.Parallel()
 
 	renderer := NewUndirectedDOTRenderer()
-	renderer.SetNodes(testNodesAB())
-	renderer.SetEdges(testEdgesAB())
 
-	out, err := renderer.Render()
-	if err != nil {
-		t.Fatalf("Render() error = %v", err)
-	}
+	out := renderWithABNodes(t, renderer)
 
 	assertContains(t, out, "graph G {", "Undirected graph should use 'graph' keyword")
 	assertContains(t, out, "\"A\" -- \"B\"", "Undirected edge should use --")
@@ -196,13 +186,8 @@ func TestDOTRendererConfigurableLayout(t *testing.T) {
 		SetSplines(SplineSpline).
 		SetNodeSep("0.8").
 		SetRankSep("1.0")
-	renderer.SetNodes(testNodesAB())
-	renderer.SetEdges(testEdgesAB())
 
-	out, err := renderer.Render()
-	if err != nil {
-		t.Fatalf("Render() error = %v", err)
-	}
+	out := renderWithABNodes(t, renderer)
 
 	assertContains(t, out, "rankdir=LR", "Output should use custom rankdir")
 	assertContains(t, out, "splines=spline", "Output should use custom splines")

@@ -129,13 +129,8 @@ func TestYAMLGraphRenderer_WithNodesAndEdges(t *testing.T) {
 	t.Parallel()
 
 	r := NewYAMLGraphRenderer()
-	r.SetNodes(testNodesAB())
-	r.SetEdges(testEdgesAB())
 
-	got, err := r.Render()
-	if err != nil {
-		t.Fatalf("Render() error = %v", err)
-	}
+	got := renderWithABNodes(t, r)
 
 	assertOutputContains(t, got, "id: A")
 	assertOutputContains(t, got, "from: A")

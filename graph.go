@@ -1,7 +1,5 @@
 package output
 
-import "strings"
-
 // GraphRenderer defines the interface for graph format renderers.
 type GraphRenderer interface {
 	Renderer
@@ -111,16 +109,7 @@ type InvalidLineStyleError struct {
 
 // Error returns a descriptive error message for the invalid line style.
 func (e *InvalidLineStyleError) Error() string {
-	return "invalid line style: " + e.Value + " (allowed: " + lineStylesToString(e.Allowed) + ")"
-}
-
-func lineStylesToString(styles []LineStyle) string {
-	parts := make([]string, 0, len(styles))
-	for _, s := range styles {
-		parts = append(parts, string(s))
-	}
-
-	return strings.Join(parts, ", ")
+	return "invalid line style: " + e.Value + " (allowed: " + joinStrings(EnumAllowedValues(e.Allowed)) + ")"
 }
 
 // InvalidNodeShapeError is returned when an invalid graph shape is provided.

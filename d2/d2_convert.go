@@ -120,14 +120,7 @@ func D2FromTableData(data *output.TableData) *D2Diagram {
 
 // D2FromTree converts a TreeNode hierarchy to a D2 diagram.
 func D2FromTree(root *output.TreeNode) *D2Diagram {
-	diagram := NewD2Diagram()
-	if root == nil {
-		return diagram
-	}
-
-	diagram.addTreeNodes(root, "")
-
-	return diagram
+	return output.TreeToRenderer(NewD2Diagram, (*D2Diagram).addTreeNodes, root)
 }
 
 func (d *D2Diagram) addTreeNodes(node *output.TreeNode, parentID string) {

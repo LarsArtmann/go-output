@@ -185,14 +185,7 @@ func MermaidFromTableData(data *output.TableData) *MermaidRenderer {
 
 // MermaidFromTree converts a TreeNode to Mermaid.
 func MermaidFromTree(root *output.TreeNode) *MermaidRenderer {
-	renderer := NewMermaidRenderer()
-	if root == nil {
-		return renderer
-	}
-
-	renderer.addTreeNodes(root, "")
-
-	return renderer
+	return output.TreeToRenderer(NewMermaidRenderer, (*MermaidRenderer).addTreeNodes, root)
 }
 
 func mermaidTreeNodeID(node *output.TreeNode) string {

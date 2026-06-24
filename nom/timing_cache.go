@@ -116,11 +116,8 @@ func medianDuration(durations []time.Duration) time.Duration {
 // GetMedian returns the median duration for an activity. Median is more robust
 // than mean when one run is an outlier (e.g. cold cache).
 func (tc *TimingCache) GetMedian(activityName string) time.Duration {
-	tc.mu.RLock()
-	defer tc.mu.RUnlock()
-
-	history, exists := tc.cache[activityName]
-	if !exists || len(history) == 0 {
+	history := tc.getHistory(activityName)
+	if len(history) == 0 {
 		return 0
 	}
 
@@ -189,6 +186,23 @@ func (tc *TimingCache) GetFilePath() string {
 	return tc.filePath
 }
 
+// publishCache installs newCache atomically if not already loaded.
+// Caller must have produced newCache outside this lock (e.g. via readCacheFile).
+// Returns true if installed, false if another goroutine already loaded.
+func (tc *TimingCache) publishCache(newCache map[string][]time.Duration) bool {
+	tc.mu.Lock()
+	defer tc.mu.Unlock()
+
+	if tc.loaded {
+		return false
+	}
+
+	tc.cache = newCache
+	tc.loaded = true
+
+	return true
+}
+
 // EnsureLoaded loads the cache if not already loaded. File I/O happens outside
 // the lock so concurrent GetMedian/GetAll calls are not blocked during disk reads.
 func (tc *TimingCache) EnsureLoaded() error {
@@ -209,17 +223,9 @@ func (tc *TimingCache) EnsureLoaded() error {
 	}
 
 	// Publish under the write lock. Another goroutine may have loaded
-	// concurrently — take its result if so (last-writer-wins on the file,
-	// but both read the same file so it doesn't matter).
-	tc.mu.Lock()
-	defer tc.mu.Unlock()
-
-	if tc.loaded {
-		return nil // another goroutine already loaded
-	}
-
-	tc.cache = newCache
-	tc.loaded = true
+	// concurrently — last-writer-wins on the file, but both read the same
+	// file so it doesn't matter.
+	tc.publishCache(newCache)
 
 	return nil
 }

@@ -215,13 +215,8 @@ func TestMermaidRendererNoCodeFence(t *testing.T) {
 
 	renderer := NewMermaidRenderer()
 	renderer.SetCodeFence(false)
-	renderer.SetNodes(testNodesAB())
-	renderer.SetEdges(testEdgesAB())
 
-	out, err := renderer.Render()
-	if err != nil {
-		t.Fatalf("Render() error = %v", err)
-	}
+	out := renderWithABNodes(t, renderer)
 
 	if strings.Contains(out, "```mermaid") {
 		t.Errorf("Raw output should not contain code fence, got: %s", out)
@@ -265,13 +260,8 @@ func TestMermaidRendererNoStyleNoStylingSection(t *testing.T) {
 	t.Parallel()
 
 	renderer := NewMermaidRenderer()
-	renderer.SetNodes(testNodesAB())
-	renderer.SetEdges(testEdgesAB())
 
-	out, err := renderer.Render()
-	if err != nil {
-		t.Fatalf("Render() error = %v", err)
-	}
+	out := renderWithABNodes(t, renderer)
 
 	if strings.Contains(out, "Styling") {
 		t.Errorf("Nodes without style should not emit styling section, got: %s", out)

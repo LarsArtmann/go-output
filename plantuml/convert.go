@@ -40,14 +40,7 @@ func PlantUMLFromTableData(data *output.TableData) *PlantUMLDiagram {
 
 // PlantUMLFromTree creates a PlantUML diagram from a tree hierarchy.
 func PlantUMLFromTree(root *output.TreeNode) *PlantUMLDiagram {
-	diagram := NewPlantUMLDiagram()
-	if root == nil {
-		return diagram
-	}
-
-	diagram.addTreeNodes(root, output.NewBrandedID[output.TreeNodeIDBrand](""))
-
-	return diagram
+	return output.TreeToRenderer(NewPlantUMLDiagram, (*PlantUMLDiagram).addTreeNodes, root)
 }
 
 func (d *PlantUMLDiagram) addTreeNodes(node *output.TreeNode, parentID output.TreeNodeID) {

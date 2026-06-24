@@ -36,12 +36,7 @@ func renderTable(projects []Project) {
 
 	tbl.SetFooter("TOTAL", strconv.Itoa(len(projects)), "-")
 
-	out, err := tbl.Render()
-	if err != nil {
-		shared.HandleError(err)
-	}
-
-	fmt.Println(out)
+	shared.RenderAndPrint(tbl)
 }
 
 func renderJSON(projects []Project) {
@@ -63,12 +58,7 @@ func renderMarkdown(projects []Project) {
 		)
 	}
 
-	out, err := md.Render()
-	if err != nil {
-		shared.HandleError(err)
-	}
-
-	fmt.Println(out)
+	shared.RenderAndPrint(md)
 }
 
 func renderCSV(projects []Project) {
@@ -151,12 +141,7 @@ func renderD2(projects []Project) {
 		})
 	}
 
-	out, err := d2Diagram.Render()
-	if err != nil {
-		shared.HandleError(err)
-	}
-
-	fmt.Println(out)
+	shared.RenderAndPrint(d2Diagram)
 }
 
 func renderHTML(projects []Project) {
@@ -184,12 +169,7 @@ func renderTree(projects []Project) {
 
 	tree.SetRoot(root)
 
-	out, err := tree.Render()
-	if err != nil {
-		shared.HandleError(err)
-	}
-
-	fmt.Println(out)
+	shared.RenderAndPrint(tree)
 }
 
 func renderMermaid(projects []Project) {
@@ -216,12 +196,7 @@ func renderMermaid(projects []Project) {
 	// Removes the duplicate Alpha -> Beta edge before rendering.
 	renderer.DedupEdges()
 
-	out, err := renderer.Render()
-	if err != nil {
-		shared.HandleError(err)
-	}
-
-	fmt.Println(out)
+	shared.RenderAndPrint(renderer)
 }
 
 func renderDOT(projects []Project) {
@@ -240,12 +215,7 @@ func renderDOT(projects []Project) {
 
 	renderer.AddEdge(alphaToBetaEdge)
 
-	out, err := renderer.Render()
-	if err != nil {
-		shared.HandleError(err)
-	}
-
-	fmt.Println(out)
+	shared.RenderAndPrint(renderer)
 }
 
 func renderJSONL(projects []Project) {
@@ -304,10 +274,5 @@ func renderPlantUML(projects []Project) {
 		})
 	}
 
-	out, err := diagram.Render()
-	if err != nil {
-		shared.HandleError(err)
-	}
-
-	fmt.Println(out)
+	shared.RenderAndPrint(diagram)
 }

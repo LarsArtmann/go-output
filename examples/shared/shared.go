@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/larsartmann/go-output"
 	"github.com/larsartmann/go-output/d2"
 )
 
@@ -26,4 +27,16 @@ func NewServiceD2Diagram(title string) *d2.D2Diagram {
 				FontSize: 16,
 			},
 		})
+}
+
+// RenderAndPrint runs r.Render() and prints the result, routing any error
+// through HandleError. Centralises the "Render() + check error + println"
+// sequence shared by every go-output example entrypoint.
+func RenderAndPrint(r output.Renderer) {
+	out, err := r.Render()
+	if err != nil {
+		HandleError(err)
+	}
+
+	fmt.Println(out)
 }

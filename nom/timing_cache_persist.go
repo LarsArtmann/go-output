@@ -13,20 +13,12 @@ import (
 
 // Load loads the cache from disk (acquires lock).
 func (tc *TimingCache) Load() error {
-	tc.mu.Lock()
-	defer tc.mu.Unlock()
-
-	if tc.loaded {
-		return nil
-	}
-
 	newCache, err := readCacheFile(tc.filePath)
 	if err != nil {
 		return err
 	}
 
-	tc.cache = newCache
-	tc.loaded = true
+	tc.publishCache(newCache)
 
 	return nil
 }

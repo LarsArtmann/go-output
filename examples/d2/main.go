@@ -2,8 +2,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/larsartmann/go-output"
 	"github.com/larsartmann/go-output/d2"
 	"github.com/larsartmann/go-output/examples/shared"
@@ -56,10 +54,5 @@ func main() {
 			Label:       output.NewBrandedID[output.D2NodeLabelBrand]("stores"),
 		})
 
-	out, err := diagram.Render()
-	if err != nil {
-		shared.HandleError(err)
-	}
-
-	fmt.Println(out)
+	shared.RenderAndPrint(diagram)
 }
