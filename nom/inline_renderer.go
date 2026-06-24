@@ -565,3 +565,66 @@ func (r *InlineRenderer) Stop() {
 	r.refreshChan = nil
 	r.tickMu.Unlock()
 }
+
+// CompletionResult is the final status passed to RenderCompletion.
+// It carries enough information for a one-line pass/fail summary.
+type CompletionResult struct {
+	// Success is true when the workflow completed without errors.
+	Success bool
+	// Elapsed is the total wall-clock duration of the workflow.
+	Elapsed time.Duration
+	// TotalSteps is the number of steps that were executed.
+	TotalSteps int
+	// FailedSteps is the number of steps that failed (0 when Success is true).
+	FailedSteps int
+}
+
+// RenderCompletion renders a final one-line completion summary to the writer.
+// It clears any remaining progress frame, shows the cursor, and prints the
+// result. Call this after Stop() to produce the final output line.
+//
+// The summary line format:
+//
+//	✓ Workflow completed (42 steps, 12.3s)
+//	✗ Workflow failed (3/42 steps failed, 45.6s)
+func (r *InlineRenderer) RenderCompletion(result CompletionResult) {
+	r.renderMu.Lock()
+	defer r.renderMu.Unlock()
+
+	// Restore cursor if it was hidden during rendering.
+	if r.prevLines > 0 {
+		r.write(ansi.ShowCursor)
+		r.prevLines = 0
+	}
+
+	r.lastFrame = ""
+
+	status := "✓"
+	if !result.Success {
+		status = "✗"
+	}
+
+	var detail string
+
+	if result.Success {
+		detail = fmt.Sprintf("%d steps, %s", result.TotalSteps, formatDuration(result.Elapsed))
+	} else {
+		detail = fmt.Sprintf("%d/%d steps failed, %s",
+			result.FailedSteps, result.TotalSteps, formatDuration(result.Elapsed))
+	}
+
+	r.write(fmt.Sprintf("%s %s completed (%s)\n", status, r.appName, detail))
+}
+
+// formatDuration renders a time.Duration in a compact human-readable form.
+func formatDuration(d time.Duration) string {
+	if d < time.Second {
+		return fmt.Sprintf("%dms", d.Milliseconds())
+	}
+
+	if d < time.Minute {
+		return fmt.Sprintf("%.1fs", d.Seconds())
+	}
+
+	return d.Round(time.Second).String()
+}

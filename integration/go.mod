@@ -4,18 +4,20 @@ go 1.26.3
 
 require (
 	github.com/go-faster/yaml v0.4.6
-	github.com/larsartmann/go-output v0.17.2
+	github.com/larsartmann/go-output v0.18.0
 	github.com/larsartmann/go-output/d2 v0.0.0-00010101000000-000000000000
 	github.com/larsartmann/go-output/delimited v0.0.0-00010101000000-000000000000
 	github.com/larsartmann/go-output/graph v0.0.0-00010101000000-000000000000
 	github.com/larsartmann/go-output/markup v0.0.0-00010101000000-000000000000
 	github.com/larsartmann/go-output/nom v0.17.2
 	github.com/larsartmann/go-output/plantuml v0.0.0-00010101000000-000000000000
-	github.com/larsartmann/go-output/serialization v0.17.2
+	github.com/larsartmann/go-output/serialization v0.18.0
 	github.com/larsartmann/go-output/table v0.0.0-00010101000000-000000000000
 	github.com/larsartmann/go-output/testhelpers v0.13.0
 	github.com/larsartmann/go-output/tui v0.0.0-00010101000000-000000000000
 )
+
+require github.com/onsi/gomega v1.42.1 // indirect
 
 require (
 	charm.land/bubbletea/v2 v2.0.7 // indirect
@@ -31,8 +33,8 @@ require (
 	github.com/go-faster/errors v0.7.1 // indirect
 	github.com/go-faster/jx v1.2.0 // indirect
 	github.com/larsartmann/go-branded-id v0.3.1 // indirect
-	github.com/larsartmann/go-output/escape v0.17.1 // indirect
-	github.com/larsartmann/go-output/markdown v0.17.2
+	github.com/larsartmann/go-output/escape v0.18.0 // indirect
+	github.com/larsartmann/go-output/markdown v0.18.0
 	github.com/larsartmann/go-output/tree v0.0.0-00010101000000-000000000000
 	github.com/lucasb-eyer/go-colorful v1.4.0 // indirect
 	github.com/mattn/go-runewidth v0.0.24 // indirect

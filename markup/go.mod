@@ -3,8 +3,8 @@ module github.com/larsartmann/go-output/markup
 go 1.26.3
 
 require (
-	github.com/larsartmann/go-output v0.17.2
-	github.com/larsartmann/go-output/escape v0.17.1
+	github.com/larsartmann/go-output v0.18.0
+	github.com/larsartmann/go-output/escape v0.18.0
 	github.com/larsartmann/go-output/testhelpers v0.13.0
 )
 
