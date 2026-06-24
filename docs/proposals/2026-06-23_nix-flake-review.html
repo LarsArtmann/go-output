@@ -1,46 +1,291 @@
 <!doctype html>
 <html lang="en">
-  <head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>Nix Flake Review — go-output</title>
-    <style>:root{--c-p:#f4f4f0;--c-p2:#fff;--c-p3:#e8e8e2;--c-i:#111;--c-r:#e63946;--c-b:#1d3557;--c-y:#f4d35e;--surface:var(--c-p);--surface-r:var(--c-p2);--surface-s:var(--c-p3);--text:var(--c-i);--text-m:#555;--text-f:#888;--border:#ddd;--accent:var(--c-r);--solution:var(--c-b);--warning:var(--c-y)}*{box-sizing:border-box;margin:0;padding:0}[id]{scroll-margin-top:60px}body{background:var(--surface);color:var(--text);font-family:ui-sans-serif,system-ui,sans-serif;font-size:15px;line-height:1.6}.layout{max-width:900px;margin:0 auto;padding:2rem}h1{font-weight:900;font-size:2rem;margin:0 0 .5rem;letter-spacing:-.02em}h2{font-weight:800;font-size:1.3rem;margin:2rem 0 .8rem;border-bottom:2px solid var(--border);padding-bottom:.3rem}h3{font-weight:700;font-size:1.05rem;margin:0 0 .3rem}p{margin:0 0 .8rem}.eyebrow{font-family:ui-monospace,Menlo,monospace;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:var(--accent);margin-bottom:.9rem}.subtitle{font-size:1rem;color:var(--text-m)}.hero{padding:1rem 0;margin-bottom:1rem;border-bottom:2px solid var(--border)}.sc{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.7rem;margin:1rem 0 1.5rem}.s{background:var(--surface-r);border:1px solid var(--border);padding:1rem;position:relative}.s::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:var(--solution)}.v{font-size:1.8rem;font-weight:800;color:var(--solution)}.l{font-family:ui-monospace,Menlo,monospace;font-size:.62rem;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--text-f);margin-top:.3rem}table{width:100%;border-collapse:collapse;margin:1rem 0 1.5rem;font-size:.9rem}th{text-align:left;padding:.5rem .8rem;background:var(--surface-s);font-family:ui-monospace,Menlo,monospace;font-size:.65rem;font-weight:700;text-transform:uppercase;border-bottom:1px solid var(--border)}td{padding:.5rem .8rem;border-bottom:1px solid var(--border)}.yes{color:var(--solution);font-weight:700}.no{color:var(--accent);font-weight:700}.card{background:var(--surface-r);border:1px solid var(--border);padding:1rem 1.2rem;margin-bottom:.8rem;border-left:4px solid var(--solution)}.card-w{border-left-color:var(--warning)}.footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--border);font-size:.8rem;color:var(--text-f);font-family:ui-monospace,Menlo,monospace}</style>
-  </head><body><div class="layout">
-    <header class="hero">
-      <div class="eyebrow">NIX FLAKE REVIEW &middot; 2026-06-23</div>
-      <h1>go-output — Flake Compliance Check</h1>
-      <p class="subtitle">The project is already fully migrated to the standard Nix flake stack. This review confirms compliance and identifies no actionable gaps.</p>
-    </header>
-    <div class="sc">
-      <div class="s"><div class="v">11/11</div><div class="l">Checks Passed</div></div>
-      <div class="s"><div class="v">0</div><div class="l">Action Items</div></div>
-      <div class="s"><div class="v">A+</div><div class="l">Flake Grade</div></div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nix Flake Review — go-output</title>
+    <style>
+      :root {
+        --c-p: #f4f4f0;
+        --c-p2: #fff;
+        --c-p3: #e8e8e2;
+        --c-i: #111;
+        --c-r: #e63946;
+        --c-b: #1d3557;
+        --c-y: #f4d35e;
+        --surface: var(--c-p);
+        --surface-r: var(--c-p2);
+        --surface-s: var(--c-p3);
+        --text: var(--c-i);
+        --text-m: #555;
+        --text-f: #888;
+        --border: #ddd;
+        --accent: var(--c-r);
+        --solution: var(--c-b);
+        --warning: var(--c-y);
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      [id] {
+        scroll-margin-top: 60px;
+      }
+      body {
+        background: var(--surface);
+        color: var(--text);
+        font-family: ui-sans-serif, system-ui, sans-serif;
+        font-size: 15px;
+        line-height: 1.6;
+      }
+      .layout {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      h1 {
+        font-weight: 900;
+        font-size: 2rem;
+        margin: 0 0 0.5rem;
+        letter-spacing: -0.02em;
+      }
+      h2 {
+        font-weight: 800;
+        font-size: 1.3rem;
+        margin: 2rem 0 0.8rem;
+        border-bottom: 2px solid var(--border);
+        padding-bottom: 0.3rem;
+      }
+      h3 {
+        font-weight: 700;
+        font-size: 1.05rem;
+        margin: 0 0 0.3rem;
+      }
+      p {
+        margin: 0 0 0.8rem;
+      }
+      .eyebrow {
+        font-family: ui-monospace, Menlo, monospace;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--accent);
+        margin-bottom: 0.9rem;
+      }
+      .subtitle {
+        font-size: 1rem;
+        color: var(--text-m);
+      }
+      .hero {
+        padding: 1rem 0;
+        margin-bottom: 1rem;
+        border-bottom: 2px solid var(--border);
+      }
+      .sc {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 0.7rem;
+        margin: 1rem 0 1.5rem;
+      }
+      .s {
+        background: var(--surface-r);
+        border: 1px solid var(--border);
+        padding: 1rem;
+        position: relative;
+      }
+      .s::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: var(--solution);
+      }
+      .v {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: var(--solution);
+      }
+      .l {
+        font-family: ui-monospace, Menlo, monospace;
+        font-size: 0.62rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--text-f);
+        margin-top: 0.3rem;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1rem 0 1.5rem;
+        font-size: 0.9rem;
+      }
+      th {
+        text-align: left;
+        padding: 0.5rem 0.8rem;
+        background: var(--surface-s);
+        font-family: ui-monospace, Menlo, monospace;
+        font-size: 0.65rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        border-bottom: 1px solid var(--border);
+      }
+      td {
+        padding: 0.5rem 0.8rem;
+        border-bottom: 1px solid var(--border);
+      }
+      .yes {
+        color: var(--solution);
+        font-weight: 700;
+      }
+      .no {
+        color: var(--accent);
+        font-weight: 700;
+      }
+      .card {
+        background: var(--surface-r);
+        border: 1px solid var(--border);
+        padding: 1rem 1.2rem;
+        margin-bottom: 0.8rem;
+        border-left: 4px solid var(--solution);
+      }
+      .card-w {
+        border-left-color: var(--warning);
+      }
+      .footer {
+        margin-top: 2rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border);
+        font-size: 0.8rem;
+        color: var(--text-f);
+        font-family: ui-monospace, Menlo, monospace;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="layout">
+      <header class="hero">
+        <div class="eyebrow">NIX FLAKE REVIEW &middot; 2026-06-23</div>
+        <h1>go-output — Flake Compliance Check</h1>
+        <p class="subtitle">
+          The project is already fully migrated to the standard Nix flake stack. This review
+          confirms compliance and identifies no actionable gaps.
+        </p>
+      </header>
+      <div class="sc">
+        <div class="s">
+          <div class="v">11/11</div>
+          <div class="l">Checks Passed</div>
+        </div>
+        <div class="s">
+          <div class="v">0</div>
+          <div class="l">Action Items</div>
+        </div>
+        <div class="s">
+          <div class="v">A+</div>
+          <div class="l">Flake Grade</div>
+        </div>
+      </div>
+      <h2>Standard Stack Compliance</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Requirement</th>
+            <th>Status</th>
+            <th>Details</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>flake-parts (not flake-utils)</td>
+            <td class="yes">YES</td>
+            <td><code>flake-parts.lib.mkFlake</code></td>
+          </tr>
+          <tr>
+            <td>treefmt-nix</td>
+            <td class="yes">YES</td>
+            <td>nixfmt + deadnix + statix</td>
+          </tr>
+          <tr>
+            <td>systems input</td>
+            <td class="yes">YES</td>
+            <td><code>github:nix-systems/default</code></td>
+          </tr>
+          <tr>
+            <td>git-hooks.nix</td>
+            <td class="yes">YES</td>
+            <td>treefmt pre-commit hook</td>
+          </tr>
+          <tr>
+            <td>nixos-unstable</td>
+            <td class="yes">YES</td>
+            <td><code>github:NixOS/nixpkgs/nixos-unstable</code></td>
+          </tr>
+          <tr>
+            <td>mkShellNoCC (CI)</td>
+            <td class="yes">YES</td>
+            <td>Both default and CI shells use <code>mkShellNoCC</code></td>
+          </tr>
+          <tr>
+            <td>go version pinned</td>
+            <td class="yes">YES</td>
+            <td><code>pkgs.go_1_26</code></td>
+          </tr>
+          <tr>
+            <td>nix flake check passes</td>
+            <td class="yes">YES</td>
+            <td><code>checks.format</code> defined and passing</td>
+          </tr>
+          <tr>
+            <td>nix fmt works</td>
+            <td class="yes">YES</td>
+            <td>treefmt with projectRootFile = "go.mod"</td>
+          </tr>
+          <tr>
+            <td>nix develop works</td>
+            <td class="yes">YES</td>
+            <td>devShell with Go, gopls, golangci-lint</td>
+          </tr>
+          <tr>
+            <td>inputs.nixpkgs.follows</td>
+            <td class="yes">YES</td>
+            <td>treefmt-nix and git-hooks follow nixpkgs</td>
+          </tr>
+        </tbody>
+      </table>
+      <h2>Multi-Module Architecture</h2>
+      <div class="card">
+        <h3>runForModules pattern — elegant multi-module support</h3>
+        <p>
+          The flake defines a <code>runForModules</code> helper that iterates all 18 modules,
+          <code>cd</code>s into each, and runs the specified Go command. This avoids the complexity
+          of <code>buildGoModule</code> per module and leverages the workspace's replace directives.
+          <code>GOWORK = "off"</code> in devShells ensures flake apps work consistently (go.work is
+          gitignored, generated on demand).
+        </p>
+      </div>
+      <div class="card card-w">
+        <h3>Intentional design: Go checks not in nix flake check</h3>
+        <p>
+          Sandbox blocks <code>go mod download</code>, so Go build/test/lint checks are NOT in
+          <code>nix flake check</code>. They run as Nix apps (<code>nix run .#build</code>,
+          <code>nix run .#test</code>, <code>nix run .#lint</code>) and in CI workflows. This is a
+          deliberate design decision documented in AGENTS.md.
+        </p>
+      </div>
+      <h2>Verdict</h2>
+      <p>
+        The flake.nix is exemplary. It follows the ecosystem standard stack perfectly, handles the
+        multi-module Go workspace elegantly, and correctly avoids putting Go checks in the sandbox.
+        No changes needed.
+      </p>
+      <footer class="footer">
+        Generated 2026-06-23 &middot; nix flake check --no-build: all checks passed
+      </footer>
     </div>
-    <h2>Standard Stack Compliance</h2>
-    <table>
-      <thead><tr><th>Requirement</th><th>Status</th><th>Details</th></tr></thead>
-      <tbody>
-        <tr><td>flake-parts (not flake-utils)</td><td class="yes">YES</td><td><code>flake-parts.lib.mkFlake</code></td></tr>
-        <tr><td>treefmt-nix</td><td class="yes">YES</td><td>nixfmt + deadnix + statix</td></tr>
-        <tr><td>systems input</td><td class="yes">YES</td><td><code>github:nix-systems/default</code></td></tr>
-        <tr><td>git-hooks.nix</td><td class="yes">YES</td><td>treefmt pre-commit hook</td></tr>
-        <tr><td>nixos-unstable</td><td class="yes">YES</td><td><code>github:NixOS/nixpkgs/nixos-unstable</code></td></tr>
-        <tr><td>mkShellNoCC (CI)</td><td class="yes">YES</td><td>Both default and CI shells use <code>mkShellNoCC</code></td></tr>
-        <tr><td>go version pinned</td><td class="yes">YES</td><td><code>pkgs.go_1_26</code></td></tr>
-        <tr><td>nix flake check passes</td><td class="yes">YES</td><td><code>checks.format</code> defined and passing</td></tr>
-        <tr><td>nix fmt works</td><td class="yes">YES</td><td>treefmt with projectRootFile = "go.mod"</td></tr>
-        <tr><td>nix develop works</td><td class="yes">YES</td><td>devShell with Go, gopls, golangci-lint</td></tr>
-        <tr><td>inputs.nixpkgs.follows</td><td class="yes">YES</td><td>treefmt-nix and git-hooks follow nixpkgs</td></tr>
-      </tbody>
-    </table>
-    <h2>Multi-Module Architecture</h2>
-    <div class="card">
-      <h3>runForModules pattern — elegant multi-module support</h3>
-      <p>The flake defines a <code>runForModules</code> helper that iterates all 18 modules, <code>cd</code>s into each, and runs the specified Go command. This avoids the complexity of <code>buildGoModule</code> per module and leverages the workspace's replace directives. <code>GOWORK = "off"</code> in devShells ensures flake apps work consistently (go.work is gitignored, generated on demand).</p>
-    </div>
-    <div class="card card-w">
-      <h3>Intentional design: Go checks not in nix flake check</h3>
-      <p>Sandbox blocks <code>go mod download</code>, so Go build/test/lint checks are NOT in <code>nix flake check</code>. They run as Nix apps (<code>nix run .#build</code>, <code>nix run .#test</code>, <code>nix run .#lint</code>) and in CI workflows. This is a deliberate design decision documented in AGENTS.md.</p>
-    </div>
-    <h2>Verdict</h2>
-    <p>The flake.nix is exemplary. It follows the ecosystem standard stack perfectly, handles the multi-module Go workspace elegantly, and correctly avoids putting Go checks in the sandbox. No changes needed.</p>
-    <footer class="footer">Generated 2026-06-23 &middot; nix flake check --no-build: all checks passed</footer>
-  </div></body>
+  </body>
 </html>

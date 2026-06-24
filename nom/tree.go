@@ -42,6 +42,13 @@ type DependencyTree struct {
 	nodes  map[ActivityID]*ActivityNode // All nodes by activity ID
 	roots  []*ActivityNode              // Root nodes (no dependencies)
 	loaded bool                         // Whether tree has been built
+
+	// collapseCompletedPhases enables phase-aware subtree collapsing: when a
+	// phase node has ALL direct children in terminal state (completed/failed),
+	// the children are hidden and the phase renders a summary line like
+	// "◈ Code Formatting  6/6 · 4.1s". Disabled by default; consumers with
+	// many categories (e.g. BuildFlow) enable it to avoid walls of green.
+	collapseCompletedPhases bool
 }
 
 // NewDependencyTree creates a new dependency tree.

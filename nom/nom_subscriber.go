@@ -46,6 +46,18 @@ func WithCachePath(path string) SubscriberOption {
 	}
 }
 
+// WithCollapseCompletedPhases enables phase-aware subtree collapsing in the
+// dependency tree renderer. When all direct children of a phase are in
+// terminal state (completed/failed), they are hidden and the phase renders
+// a summary like "◈ Code Formatting  6/6 · 4.1s" instead of expanding every
+// child. Consumers with many categories benefit from this to avoid walls of
+// identical green checkmarks.
+func WithCollapseCompletedPhases() SubscriberOption {
+	return func(ns *NOMStyleSubscriber) {
+		ns.dependencyTree.collapseCompletedPhases = true
+	}
+}
+
 // NewNOMStyleSubscriber creates a new NOM-style subscriber.
 func NewNOMStyleSubscriber(opts ...SubscriberOption) *NOMStyleSubscriber {
 	ns := &NOMStyleSubscriber{

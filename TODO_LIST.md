@@ -8,10 +8,10 @@
 
 ## Open Items
 
-| #   | Task                                                                                                                                               | Effort | Status                        |
-| --- | -------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | ----------------------------- |
-| 14  | **Community: Post to r/golang, submit to Awesome Go**                                                                                              | Low    | Open (needs owner account)    |
-| 16  | **Cut `v1.0.0` tag** — API frozen (ADR 006); CHANGELOG + full checklist done                                                                       | Low    | Prepared — awaiting owner tag |
+| #   | Task                                                                                                            | Effort | Status                        |
+| --- | --------------------------------------------------------------------------------------------------------------- | ------ | ----------------------------- |
+| 14  | **Community: Post to r/golang, submit to Awesome Go**                                                           | Low    | Open (needs owner account)    |
+| 16  | **Cut `v1.0.0` tag** — API frozen (ADR 006); CHANGELOG + full checklist done                                    | Low    | Prepared — awaiting owner tag |
 | 17  | **Complete Pattern B migration** — DONE. All 47 sibling requires converted to v0.0.0 sentinel across 18 modules | Medium | **Resolved 2026-06-23**       |
 
 ---

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"image/color"
 	"strings"
+	"time"
 
 	"charm.land/lipgloss/v2"
 	"github.com/charmbracelet/x/ansi"
@@ -134,6 +135,18 @@ func (dt *DependencyTree) walkSubtree(
 
 	*visible = append(*visible, entry)
 
+	// Phase-aware collapse: if this is a phase node and ALL direct children
+	// are in terminal state (completed/failed), collapse the subtree to a
+	// single summary line. This turns "Code Formatting" with 6 green
+	// checkmarks into "◈ Code Formatting  6/6 · 4.1s".
+	snap := lookupSnapshot(snapshots, node.ID)
+	if snap.IsPhase() && dt.collapseCompletedPhases && len(node.Children) > 0 {
+		if pc, ok := computePhaseCounts(snapshots, node.Children); ok {
+			(*visible)[len(*visible)-1].PhaseCounts = &pc
+			return
+		}
+	}
+
 	children := dt.childPriority(node, snapshots)
 	if len(children) == 0 {
 		return
@@ -210,7 +223,28 @@ func formatActivityLabel(snap ActivitySnapshot) (display string, c color.Color) 
 	)
 
 	if timingInfo != "" {
-		display += " " + timingInfo
+		// Slow-step escalation: dim yellow for >10s, dim red for >30s.
+		// This surfaces performance bottlenecks without the user scanning every line.
+		timingStyle := lipgloss.NewStyle()
+
+		switch {
+		case snap.CurrentElapsed >= slowThresholdRed:
+			timingStyle = timingStyle.Foreground(Colors.Failed).Faint(true)
+		case snap.CurrentElapsed >= slowThresholdYellow:
+			timingStyle = timingStyle.Foreground(Colors.Running).Faint(true)
+		}
+
+		if snap.Status == ActivityStatusPending && snap.EstimatedTime >= slowThresholdRed {
+			timingStyle = timingStyle.Foreground(Colors.Failed).Faint(true)
+		} else if snap.Status == ActivityStatusPending && snap.EstimatedTime >= slowThresholdYellow {
+			timingStyle = timingStyle.Foreground(Colors.Running).Faint(true)
+		}
+
+		if timingStyle.GetFaint() || timingStyle.GetForeground() != lipgloss.Color("") {
+			display += " " + timingStyle.Render(timingInfo)
+		} else {
+			display += " " + timingInfo
+		}
 	}
 
 	// Optional host tag (dormant unless the event carried one).
@@ -228,6 +262,14 @@ func formatActivityLabel(snap ActivitySnapshot) (display string, c color.Color) 
 }
 
 const downloadBarWidth = 10
+
+// Slow-step color escalation thresholds for timing display.
+// Steps exceeding these durations get dim yellow/red timing to surface
+// performance bottlenecks without requiring the user to scan every line.
+const (
+	slowThresholdYellow = 10 * time.Second
+	slowThresholdRed    = 30 * time.Second
+)
 
 // formatDownloadBar renders a compact NOM-style byte-progress bar like
 // "▕████░░░░▏ 45%". When the total is unknown it shows transferred bytes only.
@@ -262,6 +304,50 @@ func formatBytes(b int64) string {
 	}
 }
 
+// computePhaseCounts checks if all direct children of a phase are in terminal
+// state. Returns the aggregate counts and true if collapsible; returns false
+// if any child is pending or running.
+func computePhaseCounts(snapshots map[ActivityID]ActivitySnapshot, children []*ActivityNode) (PhaseCounts, bool) {
+	var pc PhaseCounts
+
+	for _, child := range children {
+		snap := lookupSnapshot(snapshots, child.ID)
+
+		switch snap.Status {
+		case ActivityStatusCompleted:
+			pc.Completed++
+			pc.TotalElapsed += snap.CurrentElapsed
+		case ActivityStatusFailed:
+			pc.Failed++
+			pc.TotalElapsed += snap.CurrentElapsed
+		default:
+			return PhaseCounts{}, false
+		}
+	}
+
+	return pc, true
+}
+
+// formatCollapsedPhaseLabel builds the display string for a collapsed phase:
+// "◈ Code Formatting  6/6 · 4.1s". Uses the phase symbol and phase color,
+// or the failed color if any children failed.
+func formatCollapsedPhaseLabel(snap ActivitySnapshot, pc PhaseCounts) (display string, c color.Color) {
+	symbol := SymbolPhase
+	c = Colors.Phase
+
+	if pc.Failed > 0 {
+		c = Colors.Failed
+	}
+
+	display = fmt.Sprintf("%s %s  %d/%d", symbol, snap.Label, pc.Completed, pc.Total())
+
+	if pc.TotalElapsed > 0 {
+		display += " · " + FormatDuration(pc.TotalElapsed)
+	}
+
+	return display, c
+}
+
 func (dt *DependencyTree) renderLine(
 	entry VisibleEntry,
 	snapshots map[ActivityID]ActivitySnapshot,
@@ -283,7 +369,15 @@ func (dt *DependencyTree) renderLine(
 	node := entry.Node
 	snap := lookupSnapshot(snapshots, node.ID)
 
-	activityDisplay, color := formatActivityLabel(snap)
+	var activityDisplay string
+
+	var color color.Color
+
+	if entry.PhaseCounts != nil {
+		activityDisplay, color = formatCollapsedPhaseLabel(snap, *entry.PhaseCounts)
+	} else {
+		activityDisplay, color = formatActivityLabel(snap)
+	}
 
 	if len(node.SecondaryParents) > 0 {
 		depNames := make([]string, 0, len(node.SecondaryParents))
@@ -373,7 +467,25 @@ type VisibleEntry struct {
 	// nil in that case.
 	CollapsedCompleted int
 	CollapseIndent     string
+
+	// PhaseCounts, when non-nil, indicates this entry is a collapsed phase
+	// (all direct children are in terminal state). The children are not
+	// expanded; instead the summary counts are rendered inline on the phase
+	// label. This is the phase-aware collapse: a completed category like
+	// "Code Formatting" shows as "◈ Code Formatting  6/6 · 4.1s" instead
+	// of expanding all 6 child steps.
+	PhaseCounts *PhaseCounts
 }
+
+// PhaseCounts holds aggregate status counts for a collapsed phase's children.
+type PhaseCounts struct {
+	Completed    int
+	Failed       int
+	TotalElapsed time.Duration
+}
+
+// Total returns the total number of children accounted for.
+func (pc PhaseCounts) Total() int { return pc.Completed + pc.Failed }
 
 // VisibleEntriesWithSnapshots returns the renderable tree lines (real nodes AND
 // collapse markers) in display order, capped at maxHeight. This is the
