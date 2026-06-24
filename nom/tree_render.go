@@ -316,12 +316,14 @@ func computePhaseCounts(snapshots map[ActivityID]ActivitySnapshot, children []*A
 		switch snap.Status {
 		case ActivityStatusCompleted:
 			pc.Completed++
-			pc.TotalElapsed += snap.CurrentElapsed
 		case ActivityStatusFailed:
 			pc.Failed++
-			pc.TotalElapsed += snap.CurrentElapsed
 		default:
 			return PhaseCounts{}, false
+		}
+
+		if snap.CurrentElapsed > pc.MaxElapsed {
+			pc.MaxElapsed = snap.CurrentElapsed
 		}
 	}
 
@@ -341,8 +343,8 @@ func formatCollapsedPhaseLabel(snap ActivitySnapshot, pc PhaseCounts) (display s
 
 	display = fmt.Sprintf("%s %s  %d/%d", symbol, snap.Label, pc.Completed, pc.Total())
 
-	if pc.TotalElapsed > 0 {
-		display += " · " + FormatDuration(pc.TotalElapsed)
+	if pc.MaxElapsed > 0 {
+		display += " · " + FormatDuration(pc.MaxElapsed)
 	}
 
 	return display, c
@@ -478,10 +480,12 @@ type VisibleEntry struct {
 }
 
 // PhaseCounts holds aggregate status counts for a collapsed phase's children.
+// MaxElapsed tracks the longest child duration (not the sum), since DAG steps
+// run in parallel — summing would over-report wall-clock time.
 type PhaseCounts struct {
-	Completed    int
-	Failed       int
-	TotalElapsed time.Duration
+	Completed  int
+	Failed     int
+	MaxElapsed time.Duration
 }
 
 // Total returns the total number of children accounted for.
