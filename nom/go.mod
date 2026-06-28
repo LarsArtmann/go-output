@@ -1,12 +1,12 @@
 module github.com/larsartmann/go-output/nom
 
-go 1.26.3
+go 1.26.4
 
 require (
 	charm.land/lipgloss/v2 v2.0.4
 	github.com/charmbracelet/x/ansi v0.11.7
 	github.com/charmbracelet/x/exp/golden v0.0.0-20260615092313-b57e5e6d29bb
-	github.com/larsartmann/go-output v0.18.0
+	github.com/larsartmann/go-output v0.19.0
 	github.com/larsartmann/go-output/testhelpers v0.13.0
 	github.com/onsi/gomega v1.42.1
 	golang.org/x/term v0.44.0

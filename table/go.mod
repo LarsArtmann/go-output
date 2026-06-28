@@ -1,10 +1,10 @@
 module github.com/larsartmann/go-output/table
 
-go 1.26.3
+go 1.26.4
 
 require (
 	charm.land/lipgloss/v2 v2.0.4
-	github.com/larsartmann/go-output v0.18.0
+	github.com/larsartmann/go-output v0.19.0
 	github.com/larsartmann/go-output/testhelpers v0.13.0
 )
 

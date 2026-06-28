@@ -1,9 +1,9 @@
 module github.com/larsartmann/go-output/examples
 
-go 1.26.3
+go 1.26.4
 
 require (
-	github.com/larsartmann/go-output v0.18.0
+	github.com/larsartmann/go-output v0.19.0
 	github.com/larsartmann/go-output/d2 v0.18.0
 	github.com/larsartmann/go-output/delimited v0.18.0
 	github.com/larsartmann/go-output/graph v0.18.0
@@ -14,8 +14,6 @@ require (
 	github.com/larsartmann/go-output/table v0.18.0
 	github.com/larsartmann/go-output/tui v0.18.0
 )
-
-require github.com/onsi/gomega v1.42.1 // indirect
 
 require (
 	charm.land/bubbletea/v2 v2.0.7 // indirect

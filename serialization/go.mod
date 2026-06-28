@@ -1,10 +1,10 @@
 module github.com/larsartmann/go-output/serialization
 
-go 1.26.3
+go 1.26.4
 
 require (
 	github.com/go-faster/yaml v0.4.6
-	github.com/larsartmann/go-output v0.18.0
+	github.com/larsartmann/go-output v0.19.0
 	github.com/larsartmann/go-output/testhelpers v0.13.0
 	github.com/larsartmann/go-output/testhelpers/graphtest v0.13.0
 	github.com/pelletier/go-toml/v2 v2.4.2

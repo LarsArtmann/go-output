@@ -1,8 +1,8 @@
 module github.com/larsartmann/go-output/testhelpers/graphtest
 
-go 1.26.3
+go 1.26.4
 
-require github.com/larsartmann/go-output v0.18.0
+require github.com/larsartmann/go-output v0.19.0
 
 replace github.com/larsartmann/go-output => ../..
 
