@@ -68,12 +68,3 @@ func (b *snapshotBuilder) setPhase(id ActivityID, label string, status ActivityS
 	s.Kind = ActivityKindPhase
 	b.snaps[id] = s
 }
-
-func (b *snapshotBuilder) snapshot(id ActivityID) ActivitySnapshot {
-	return b.snaps[id]
-}
-
-func (b *snapshotBuilder) has(id ActivityID) bool {
-	_, ok := b.snaps[id]
-	return ok
-}
