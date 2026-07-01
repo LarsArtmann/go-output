@@ -4,19 +4,25 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/larsartmann/go-output/nom"
 )
 
-// errLintFailed is a static error used by the example to demonstrate a failed activity.
 var errLintFailed = errors.New("lint check failed")
 
 func main() {
 	subscriber := nom.NewNOMStyleSubscriber()
 	ctx := context.Background()
 
-	_ = subscriber.OnEvent(ctx, nom.WorkflowStarted{
+	send := func(evt nom.Event) {
+		if err := subscriber.OnEvent(ctx, evt); err != nil {
+			log.Fatalf("event dispatch failed: %v", err)
+		}
+	}
+
+	send(nom.WorkflowStarted{
 		ID:   nom.NewWorkflowID("build-42"),
 		Name: nom.NewWorkflowName("CI Pipeline"),
 	})
@@ -35,7 +41,7 @@ func main() {
 	}
 
 	for _, a := range activities {
-		_ = subscriber.OnEvent(ctx, nom.ActivityStarted{
+		send(nom.ActivityStarted{
 			ID:   nom.NewActivityID(a.id),
 			Name: nom.NewActivityName(a.name),
 		})
@@ -44,13 +50,13 @@ func main() {
 
 		switch a.status {
 		case nom.ActivityStatusCompleted:
-			_ = subscriber.OnEvent(ctx, nom.ActivityCompleted{
+			send(nom.ActivityCompleted{
 				ID:       nom.NewActivityID(a.id),
 				Name:     nom.NewActivityName(a.name),
 				Duration: a.delay,
 			})
 		case nom.ActivityStatusFailed:
-			_ = subscriber.OnEvent(ctx, nom.ActivityFailed{
+			send(nom.ActivityFailed{
 				ID:   nom.NewActivityID(a.id),
 				Name: nom.NewActivityName(a.name),
 				Err:  errLintFailed,
@@ -63,7 +69,7 @@ func main() {
 	// --- Demonstrate the v0.21.0 BuildFlow integration events ---
 
 	// Sub-step progress: a running activity reports what it's doing inside.
-	_ = subscriber.OnEvent(ctx, nom.ActivityProgress{
+	send(nom.ActivityProgress{
 		ID:      nom.NewActivityID("test"),
 		Name:    nom.NewActivityName("Run Tests"),
 		Message: "Running package [2/26]: nom",
@@ -71,7 +77,7 @@ func main() {
 
 	// Retry visibility: the failed lint step is retried (transitions back to
 	// running, renders ⟳1 with the reason).
-	_ = subscriber.OnEvent(ctx, nom.ActivityRetrying{
+	send(nom.ActivityRetrying{
 		ID:      nom.NewActivityID("lint"),
 		Name:    nom.NewActivityName("Lint Code"),
 		Attempt: 1,
@@ -101,7 +107,7 @@ func main() {
 
 	fmt.Printf("Summary: %s\n", counts.Summary())
 
-	_ = subscriber.OnEvent(ctx, nom.WorkflowCompleted{
+	send(nom.WorkflowCompleted{
 		ID: nom.NewWorkflowID("build-42"),
 	})
 

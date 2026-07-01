@@ -6,6 +6,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/larsartmann/go-output/graph"
 	"github.com/larsartmann/go-output/nom"
@@ -22,11 +23,13 @@ func main() {
 			depIDs = append(depIDs, nom.ActivityID(d))
 		}
 
-		_ = subscriber.OnEvent(ctx, nom.ActivityStarted{
+		if err := subscriber.OnEvent(ctx, nom.ActivityStarted{
 			ID:   nom.ActivityID(id),
 			Name: nom.ActivityName(name),
 			Deps: depIDs,
-		})
+		}); err != nil {
+			log.Fatalf("ActivityStarted(%q) failed: %v", id, err)
+		}
 	}
 
 	fire("fetch", "Fetch Dependencies")
