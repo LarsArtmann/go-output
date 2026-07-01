@@ -36,6 +36,10 @@ const (
 	SymbolTotal Symbol = "∑"
 	// SymbolPhase represents a phase/group node in the tree.
 	SymbolPhase Symbol = "◈"
+	// SymbolRetrying represents a retry indicator.
+	SymbolRetrying Symbol = "⟳"
+	// SymbolProgress represents a sub-step progress indicator.
+	SymbolProgress Symbol = "→"
 )
 
 // ============================================================================

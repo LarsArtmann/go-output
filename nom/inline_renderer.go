@@ -81,6 +81,13 @@ type InlineRenderer struct {
 	lastFrame      string
 	lastFramePlain bool
 
+	// estimatedRemaining is an optional callback that returns the estimated
+	// total remaining time for the workflow (sum of pending-step estimates).
+	// When non-nil and returning > 0, the summary bar renders "~Xm left".
+	// This decouples the estimate source (BuildFlow's SQLite store) from the
+	// renderer — the callback is invoked each frame under renderMu.
+	estimatedRemaining func() time.Duration
+
 	tickMu       sync.RWMutex
 	renderMu     sync.Mutex // serializes Draw/Finish terminal writes + prevLines
 	cancelFn     context.CancelFunc
@@ -252,6 +259,21 @@ func (r *InlineRenderer) SetPlainText(plain bool) {
 	defer r.tickMu.Unlock()
 
 	r.plainText = plain
+}
+
+// SetEstimatedRemainingFunc sets an optional callback that returns the
+// estimated total remaining time for the workflow. When non-nil and returning
+// a positive duration, the summary bar renders "~Xm left" after the elapsed
+// time. This decouples the estimate source (e.g. BuildFlow's SQLite timing
+// store) from the renderer.
+//
+// Thread-safe: may be called before or during the render loop. The callback
+// itself is invoked under renderMu (not tickMu), so it must not acquire any
+// renderer lock.
+func (r *InlineRenderer) SetEstimatedRemainingFunc(fn func() time.Duration) {
+	r.renderMu.Lock()
+	r.estimatedRemaining = fn
+	r.renderMu.Unlock()
 }
 
 // Draw renders one frame to the configured io.Writer.

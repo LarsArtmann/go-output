@@ -43,6 +43,13 @@ type Activity struct {
 	// Download optionally tracks byte-progress for the activity. Populated from
 	// ActivityStarted.Download; rendered as a progress bar when active.
 	Download DownloadProgress
+	// Progress is a live sub-step message (e.g. "Tidying module [2/26]").
+	// Set via ActivityProgress events; cleared on state transitions. Rendered
+	// as a dim sub-line beneath the activity label when non-empty.
+	Progress string
+	// RetryCount is the number of times this activity has been retried (0 = no
+	// retries). Set via ActivityRetrying events. Rendered as a ⟳ suffix.
+	RetryCount int
 }
 
 // NewActivity creates a Task Activity with branded ID/Label and default
@@ -73,28 +80,33 @@ func newActivity(id, name string, kind ActivityKind) *Activity {
 }
 
 // SetRunning transitions the activity to running and stamps StartedAt.
+// Clears any prior progress message (a fresh run starts with no sub-step).
 func (a *Activity) SetRunning() {
 	a.Status = ActivityStatusRunning
 	a.StartTime = time.Now()
 	a.EndTime = time.Time{}
 	a.Err = nil
+	a.Progress = ""
 	a.applyDisplayStyle()
 }
 
 // SetCompleted transitions the activity to completed and stamps EndTime.
+// Clears the progress message — terminal state has no sub-step.
 func (a *Activity) SetCompleted() {
 	a.Status = ActivityStatusCompleted
 
 	a.EndTime = time.Now()
+	a.Progress = ""
 
 	a.applyDisplayStyle()
 }
 
 // SetFailed transitions the activity to failed, records the error, and
-// stamps EndTime.
+// stamps EndTime. Clears the progress message.
 func (a *Activity) SetFailed(err error) {
 	a.Status = ActivityStatusFailed
 	a.Err = err
+	a.Progress = ""
 
 	a.EndTime = time.Now()
 

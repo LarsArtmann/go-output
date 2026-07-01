@@ -26,6 +26,8 @@ const (
 	EventActivityCompleted  = "activity.completed"
 	EventActivityFailed     = "activity.failed"
 	EventActivityRegistered = "activity.registered"
+	EventActivityProgress   = "activity.progress"
+	EventActivityRetrying   = "activity.retrying"
 )
 
 // --- Workflow lifecycle events ---
@@ -99,6 +101,32 @@ type ActivityFailed struct {
 }
 
 func (ActivityFailed) isEvent() {}
+
+// ActivityProgress signals a live progress update for a running activity.
+// This enables sub-step visibility: a single activity like "go-mod-tidy" can
+// report "Tidying module [2/26]: modules/gitignore" as it iterates. The
+// Message is rendered as a dim sub-line beneath the activity label.
+//
+// Empty Message clears any prior progress message.
+type ActivityProgress struct {
+	ID      ActivityID
+	Name    ActivityName
+	Message string
+}
+
+func (ActivityProgress) isEvent() {}
+
+// ActivityRetrying signals that a failed activity is being retried. The
+// Attempt field is the retry attempt number (1 = first retry). The activity
+// transitions back to Running and a ⟳ suffix with the attempt count is
+// rendered.
+type ActivityRetrying struct {
+	ID      ActivityID
+	Name    ActivityName
+	Attempt int
+}
+
+func (ActivityRetrying) isEvent() {}
 
 // EventSubscriber receives lifecycle events. Implementations dispatch via Go
 // type switch on the concrete event types above.

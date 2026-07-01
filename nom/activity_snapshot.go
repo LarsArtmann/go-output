@@ -28,6 +28,12 @@ type ActivitySnapshot struct {
 	// progress bar when Total > 0; dormant otherwise. Mirrors NOM's per-
 	// activity download bars.
 	Download DownloadProgress
+	// Progress is a live sub-step message (e.g. "Tidying module [2/26]").
+	// Rendered as a dim sub-line beneath the activity label when non-empty.
+	Progress string
+	// RetryCount is the number of retries for this activity (0 = none).
+	// Rendered as a ⟳ suffix when > 0.
+	RetryCount int
 }
 
 // IsPhase reports whether the snapshotted activity is a Phase grouping node.
@@ -85,6 +91,8 @@ func (ns *NOMStyleSubscriber) SnapshotActivities() map[ActivityID]ActivitySnapsh
 			EstimatedTime:  activity.EstimatedTime,
 			Host:           activity.Host,
 			Download:       activity.Download,
+			Progress:       activity.Progress,
+			RetryCount:     activity.RetryCount,
 		}
 	}
 

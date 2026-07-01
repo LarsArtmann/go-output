@@ -25,6 +25,10 @@ func (ns *NOMStyleSubscriber) OnEvent(_ context.Context, event Event) error {
 		return ns.handleActivityCompleted(e)
 	case ActivityFailed:
 		return ns.handleActivityFailed(e)
+	case ActivityProgress:
+		return ns.handleActivityProgress(e)
+	case ActivityRetrying:
+		return ns.handleActivityRetrying(e)
 	default:
 		return nil
 	}
@@ -162,6 +166,41 @@ func (ns *NOMStyleSubscriber) transitionTask(
 func (ns *NOMStyleSubscriber) recordDuration(name ActivityName, duration time.Duration) error {
 	if duration > 0 {
 		return ns.timingCache.Record(name.String(), duration)
+	}
+
+	return nil
+}
+
+// handleActivityProgress sets a live progress message on a running activity.
+// This enables sub-step visibility: a single activity like "go-mod-tidy" can
+// report "Tidying module [2/26]: modules/gitignore" while iterating. An empty
+// Message clears any prior progress. The activity is created if it doesn't
+// exist yet (progress events may arrive before started in some orderings).
+func (ns *NOMStyleSubscriber) handleActivityProgress(e ActivityProgress) error {
+	ns.mu.Lock()
+	defer ns.mu.Unlock()
+
+	activity := ns.getOrCreateActivity(e.ID, e.Name, ActivityKindTask)
+	activity.Progress = e.Message
+
+	return nil
+}
+
+// handleActivityRetrying transitions a failed activity back to running and
+// increments the retry count. The attempt number is rendered as a ⟳ suffix.
+// The counts cache is updated: the activity moves from Failed back to Running.
+func (ns *NOMStyleSubscriber) handleActivityRetrying(e ActivityRetrying) error {
+	ns.mu.Lock()
+	defer ns.mu.Unlock()
+
+	activity := ns.getOrCreateActivity(e.ID, e.Name, ActivityKindTask)
+	applyCountsDelta(&ns.counts, activity.Status, ActivityStatusRunning)
+	activity.SetRunning()
+
+	if e.Attempt > activity.RetryCount {
+		activity.RetryCount = e.Attempt
+	} else {
+		activity.RetryCount++
 	}
 
 	return nil

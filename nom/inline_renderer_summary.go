@@ -94,6 +94,15 @@ func (r *InlineRenderer) renderSummary(startTime time.Time) string {
 		parts = append(parts, FormatDuration(elapsed))
 	}
 
+	// Estimated remaining time: when the callback returns > 0, show "~Xm left"
+	// so users know the projected finish. This is the summary-bar equivalent
+	// of nom's remaining-build-time estimate.
+	if r.estimatedRemaining != nil {
+		if remaining := r.estimatedRemaining(); remaining > 0 {
+			parts = append(parts, "~"+FormatDuration(remaining)+" left")
+		}
+	}
+
 	if len(parts) == 0 {
 		return ""
 	}

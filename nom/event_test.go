@@ -21,6 +21,8 @@ func TestEventConstantsUnique(t *testing.T) {
 		{"EventActivityCompleted", EventActivityCompleted},
 		{"EventActivityFailed", EventActivityFailed},
 		{"EventActivityRegistered", EventActivityRegistered},
+		{"EventActivityProgress", EventActivityProgress},
+		{"EventActivityRetrying", EventActivityRetrying},
 	}
 
 	seen := make(map[string]string, len(events))
@@ -46,7 +48,7 @@ func TestEventConstantsNonEmpty(t *testing.T) {
 	for _, e := range []string{
 		EventWorkflowStarted, EventWorkflowCompleted, EventWorkflowFailed,
 		EventActivityStarted, EventActivityCompleted, EventActivityFailed,
-		EventActivityRegistered,
+		EventActivityRegistered, EventActivityProgress, EventActivityRetrying,
 	} {
 		if e == "" {
 			t.Errorf("event constant is empty; empty string collides with zero-value GetEventType()")

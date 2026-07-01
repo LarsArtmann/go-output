@@ -230,10 +230,27 @@ func formatActivityLabel(snap ActivitySnapshot) (display string, c color.Color) 
 		display += " @" + snap.Host
 	}
 
+	// Retry suffix: show ⟳N when the activity has been retried. Placed after
+	// timing/host so the retry badge reads as a status annotation.
+	if snap.RetryCount > 0 {
+		display += lipgloss.NewStyle().
+			Foreground(Colors.Info).
+			Render(fmt.Sprintf(" %s%d", SymbolRetrying, snap.RetryCount))
+	}
+
 	// Optional download progress bar — only while the activity is actively
 	// running; a completed/failed download no longer needs a live bar.
 	if snap.Status == ActivityStatusRunning && snap.Download.HasDownload() {
 		display += " " + formatDownloadBar(snap.Download, downloadBarWidth)
+	}
+
+	// Sub-step progress message (e.g. "Tidying module [2/26]"). Rendered as a
+	// dim sub-line beneath the activity label — mirrors how nom shows per-
+	// derivation download/build progress inline.
+	if snap.Progress != "" && snap.Status == ActivityStatusRunning {
+		display += "\n" + lipgloss.NewStyle().
+			Faint(true).
+			Render(fmt.Sprintf("  %s %s", SymbolProgress, snap.Progress))
 	}
 
 	return display, c
