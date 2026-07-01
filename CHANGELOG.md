@@ -6,6 +6,31 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added — charmbracelet/x testing infrastructure integration
+
+- **VT emulator test harness** (`nom/`) — feeds InlineRenderer output to a real
+  virtual terminal (`charmbracelet/x/vt`) and asserts on the screen buffer,
+  testing what a terminal actually displays, not just which escape codes were
+  emitted. 10 tests covering first-frame draw, cursor hide/show, cursor-up
+  redraw, ghost-line cleanup, sync-output mode 2026, plain-text degradation,
+  frame diffing, and Finish cursor restore.
+- **teatest/v2 E2E tests** (`tui/`) — drives the REAL Bubble Tea program loop
+  (Init, Update, View, Cmd dispatch) using `charmbracelet/x/exp/teatest/v2`.
+  7 tests covering program startup, scroll key handling, help toggle, quit
+  propagation, ctrl+c, and WindowSizeMsg dispatch. First-ever E2E coverage.
+- **Golden-file snapshot expansion** — expanded from `nom/`-only to `table/`
+  (4 tests: basic, footer, single-column, empty) and `tree/` (4 tests: simple,
+  deep nesting, single node, mixed branching). All use `ColorModeNever` for
+  deterministic output.
+- **Depguard allow-lists** updated for `x/vt`, `x/exp/teatest/v2` in `.golangci.yml`.
+
+### Fixed — wide-character line counting
+
+- **`VisibleLineCount`** (`nom/terminal.go`) — replaced ceiling-division
+  approximation with grapheme-aware `ansi.Hardwrap`. The old formula
+  undercounted wide-character straddling at odd terminal widths (e.g., 4 CJK
+  chars at width 3 counted as 3 lines instead of the correct 4).
+
 ### Added — NOM BuildFlow integration (progress, retry, estimates)
 
 - **`ActivityProgress` sub-step visibility** — progress message rendered as a dim
