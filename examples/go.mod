@@ -3,16 +3,16 @@ module github.com/larsartmann/go-output/examples
 go 1.26.4
 
 require (
-	github.com/larsartmann/go-output v0.0.0-00010101000000-000000000000
-	github.com/larsartmann/go-output/d2 v0.0.0-00010101000000-000000000000
-	github.com/larsartmann/go-output/delimited v0.0.0-00010101000000-000000000000
-	github.com/larsartmann/go-output/graph v0.0.0-00010101000000-000000000000
-	github.com/larsartmann/go-output/markup v0.0.0-00010101000000-000000000000
-	github.com/larsartmann/go-output/nom v0.0.0-00010101000000-000000000000
-	github.com/larsartmann/go-output/plantuml v0.0.0-00010101000000-000000000000
-	github.com/larsartmann/go-output/serialization v0.0.0-00010101000000-000000000000
-	github.com/larsartmann/go-output/table v0.0.0-00010101000000-000000000000
-	github.com/larsartmann/go-output/tui v0.0.0-00010101000000-000000000000
+	github.com/larsartmann/go-output v0.21.0
+	github.com/larsartmann/go-output/d2 v0.21.0
+	github.com/larsartmann/go-output/delimited v0.21.0
+	github.com/larsartmann/go-output/graph v0.21.0
+	github.com/larsartmann/go-output/markup v0.21.0
+	github.com/larsartmann/go-output/nom v0.21.0
+	github.com/larsartmann/go-output/plantuml v0.21.0
+	github.com/larsartmann/go-output/serialization v0.21.0
+	github.com/larsartmann/go-output/table v0.21.0
+	github.com/larsartmann/go-output/tui v0.21.0
 )
 
 require (
@@ -30,9 +30,9 @@ require (
 	github.com/go-faster/jx v1.2.0 // indirect
 	github.com/go-faster/yaml v0.4.6 // indirect
 	github.com/larsartmann/go-branded-id v0.3.1 // indirect
-	github.com/larsartmann/go-output/escape v0.0.0-00010101000000-000000000000 // indirect
-	github.com/larsartmann/go-output/markdown v0.0.0-00010101000000-000000000000
-	github.com/larsartmann/go-output/tree v0.0.0-00010101000000-000000000000
+	github.com/larsartmann/go-output/escape v0.21.0 // indirect
+	github.com/larsartmann/go-output/markdown v0.21.0
+	github.com/larsartmann/go-output/tree v0.21.0
 	github.com/lucasb-eyer/go-colorful v1.4.0 // indirect
 	github.com/mattn/go-runewidth v0.0.24 // indirect
 	github.com/muesli/cancelreader v0.2.2 // indirect
