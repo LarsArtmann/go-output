@@ -31,18 +31,19 @@ func VisibleWidth(s string) int {
 }
 
 // VisibleLineCount returns how many physical terminal lines a logical line
-// occupies given a terminal width. Empty content counts as zero lines.
+// occupies given a terminal width. Uses ansi.Hardwrap for grapheme-aware
+// wrapping that correctly handles wide-character straddling (a 2-cell CJK
+// character at position width-1 wraps to the next line, leaving a gap —
+// the old ceiling-division formula undercounted this). Empty content counts
+// as zero lines.
 func VisibleLineCount(line string, termWidth int) int {
 	if line == "" || termWidth <= 0 {
 		return 0
 	}
 
-	w := VisibleWidth(line)
-	if w == 0 {
-		return 0
-	}
+	wrapped := ansi.Hardwrap(line, termWidth, true)
 
-	return (w + termWidth - 1) / termWidth
+	return strings.Count(wrapped, "\n") + 1
 }
 
 // TruncateVisible truncates s so its visible width is at most maxWidth. If

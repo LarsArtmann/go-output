@@ -93,8 +93,10 @@ func TestVisibleLineCount_WideRunes(t *testing.T) {
 		termWidth int
 		want      int
 	}{
-		{"中文", 2, 2}, // width-4 CJK over termWidth 2 -> 2 lines
-		{"中文", 4, 1}, // width-4 CJK fits exactly in termWidth 4 -> 1 line
+		{"中文", 2, 2},  // width-4 CJK over termWidth 2 -> 2 lines
+		{"中文", 4, 1},  // width-4 CJK fits exactly in termWidth 4 -> 1 line
+		{"中中中中", 3, 4}, // width-8 CJK over termWidth 3 -> straddle: each line holds 1 wide char (2 cells) + 1 gap = 4 lines
+		{"中中中中", 5, 2}, // width-8 CJK over termWidth 5 -> line1: 2 chars (4 cells), line2: 2 chars (4 cells) = 2 lines
 	}
 
 	for _, tc := range cases {
