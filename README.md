@@ -483,6 +483,9 @@ sub.OnEvent(ctx, nom.ActivityCompleted{
 - **Dependency trees** — Hierarchical parent/child relationships with UTF-8 box-drawing
 - **O(1) activity counts** — Summary bar updates in constant time, even with 10,000+ activities
 - **Timing cache** — Persists duration history to `~/.cache/nom-timing.csv` for ETA estimates
+- **Progress sub-steps** — `ActivityProgress` events render a dim `→ message` sub-line beneath each activity
+- **Retry visibility** — `ActivityRetrying` events transition failed activities back to running, rendering `⟳N (reason)`
+- **Estimated remaining time** — `EstimatedTotalRemaining()` powers a `~Xm left` summary segment from per-activity estimates
 - **Snapshot-based rendering** — Race-free: renderers read immutable value copies, not shared pointers
 - **CI-safe degradation** — Auto-detects CI environments; appends frames line-by-line instead of ANSI cursor codes
 - **Height-pressure collapse** — When the tree exceeds `maxHeight`, completed children collapse with a `⋯ N completed` marker
