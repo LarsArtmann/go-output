@@ -3,8 +3,8 @@ module github.com/larsartmann/go-output/plantuml
 go 1.26.4
 
 require (
-	github.com/larsartmann/go-output v0.19.0
-	github.com/larsartmann/go-output/escape v0.18.0
+	github.com/larsartmann/go-output v0.0.0-00010101000000-000000000000
+	github.com/larsartmann/go-output/escape v0.0.0-00010101000000-000000000000
 	github.com/larsartmann/go-output/testhelpers v0.13.0
 	github.com/larsartmann/go-output/testhelpers/graphtest v0.13.0
 )

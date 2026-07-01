@@ -84,6 +84,9 @@ ehthumbs.db
 ## Reports and coverage
 reports/
 
+## BuildFlow CI artifacts
+.buildflow-resume.json
+
 ## Nix
 result-*
 .envrc

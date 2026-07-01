@@ -54,7 +54,8 @@ func TestInlineRenderer_WorkflowFailureErrorDisplayed(t *testing.T) {
 
 	buf.Reset()
 
-	// Final render with the propagated workflow error.
+	// Final render — Finish() renders the static tree (no completion line;
+	// the calling application is responsible for the post-run summary).
 	workflowErr := errors.New("step test failed: test suite failed: 3 assertions failed")
 	renderer.Finish(workflowErr)
 
@@ -63,17 +64,14 @@ func TestInlineRenderer_WorkflowFailureErrorDisplayed(t *testing.T) {
 		t.Fatal("Finish should produce final output")
 	}
 
-	// The final status line must report failure and carry the error text.
-	if !strings.Contains(final, "failed") {
-		t.Errorf("final output should report failure\ngot:\n%q", final)
+	// The final tree must show the failed activity.
+	if !strings.Contains(final, "Run Tests") {
+		t.Errorf("final output should show the failed activity\ngot:\n%q", final)
 	}
 
-	if !strings.Contains(final, "3 assertions failed") {
-		t.Errorf("final output should include the error message\ngot:\n%q", final)
-	}
-
-	if !strings.Contains(final, "BuildFlow") {
-		t.Errorf("final output should include the app name\ngot:\n%q", final)
+	// The failed activity should carry the failure symbol.
+	if !strings.Contains(final, "⚠") {
+		t.Errorf("final output should show the failure symbol\ngot:\n%q", final)
 	}
 
 	// Counts should reflect one completed set + one failed.

@@ -6,6 +6,56 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.20.0] - 2026-07-01
+
+NOM inline renderer API refinement: `Finish()` no longer prints a completion
+line (the application owns that now), and a new `RenderCompletion()` method
+provides a structured one-line summary. Plus Pattern B restoration and Go 1.26.4.
+
+### Changed — NOM inline renderer
+
+- **`Finish()` no longer prints the completion line.** Previously it emitted
+  `"AppName completed successfully after 1m15s."` (or the error variant), which
+  collided with the calling application's own post-run summary and produced
+  mangled overlapping output. `Finish()` now only clears the in-place frame and
+  renders the final static tree. The completion message is left to the
+  application layer, which has richer context (auto-fixes, artifacts, retried
+  steps, etc.). **Breaking for consumers that relied on `Finish()` for the
+  summary line — use `RenderCompletion()` instead.**
+- **`RenderCompletion(result CompletionResult)`** — new method that renders a
+  final one-line pass/fail summary (`✓ AppName completed (42 steps, 12.3s)` or
+  `✗ AppName completed (3/42 steps failed, 45.6s)`). Call after `Stop()` /
+  `Finish()`. Takes a structured `CompletionResult{Success, Elapsed, TotalSteps,
+FailedSteps}` instead of a raw error string.
+
+### Fixed
+
+- **Drop broken ⏱️ emoji (`SymbolTiming`).** The multi-codepoint emoji rendered
+  inconsistently across terminals, corrupting column alignment. The constant
+  was removed; use `SymbolAverage` (∅) for timing-related annotations.
+- **Restore Pattern B across all modules.** Several `go.mod` files had drifted
+  to real sibling versions (v0.18.0, v0.20.0) after `go mod tidy` runs. All
+  `github.com/larsartmann/go-output` references — root AND sibling — are now
+  back at `v0.0.0-00010101000000-000000000000` with `replace` directives, as
+  mandated by ADR 009. Only `testhelpers/` retains real published versions.
+- **Fix broken `examples/tui_progress`** — referenced the removed `SymbolTiming`.
+- **Fix integration test for new `Finish()` behavior** — the failure-display
+  test was still asserting the old completion-line output.
+- **Fix pre-existing lint issues in `nom/tree_render.go`** — `cyclop` on
+  `walkSubtree` (DFS traversal, inherently branchy) and `exhaustive` on
+  `computePhaseCounts` switch (default handles non-terminal statuses).
+
+### Removed
+
+- `nom.SymbolTiming` — broken emoji constant, replaced by `SymbolAverage`
+
+### Changed — infrastructure
+
+- **Go 1.26.4** across all modules
+- **`.buildflow-resume.json` untracked and gitignored** — transient CI artifact
+  that was accidentally committed
+- nixpkgs and `charmbracelet/x/exp/golden` dependency updates
+
 ## [0.18.0] - 2026-06-22
 
 Major architecture change: migrated from stale-real-pins + replace (the version-rot

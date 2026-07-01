@@ -48,8 +48,8 @@ func main() {
 	fmt.Println("\n=== NOM Symbols ===")
 	fmt.Printf("Running: %s  Completed: %s  Failed: %s  Pending: %s\n",
 		nom.SymbolRunning, nom.SymbolCompleted, nom.SymbolFailed, nom.SymbolPending)
-	fmt.Printf("Download: %s  Upload: %s  Timing: %s\n",
-		nom.SymbolDownload, nom.SymbolUpload, nom.SymbolTiming)
+	fmt.Printf("Download: %s  Upload: %s  Average: %s\n",
+		nom.SymbolDownload, nom.SymbolUpload, nom.SymbolAverage)
 
 	fmt.Println("\n=== Format Duration Examples ===")
 	fmt.Printf("500ms: %s\n", nom.FormatDuration(500*time.Millisecond))

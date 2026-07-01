@@ -98,7 +98,7 @@ func (dt *DependencyTree) elideCompletedUnderPressure(
 	return active, collapsedCompleted
 }
 
-func (dt *DependencyTree) walkSubtree(
+func (dt *DependencyTree) walkSubtree( //nolint:cyclop // DFS traversal with phase collapse — inherently branchy
 	node *ActivityNode,
 	prefix string,
 	isLastSibling bool,
@@ -311,7 +311,7 @@ func computePhaseCounts(snapshots map[ActivityID]ActivitySnapshot, children []*A
 	for _, child := range children {
 		snap := lookupSnapshot(snapshots, child.ID)
 
-		switch snap.Status {
+		switch snap.Status { //nolint:exhaustive // default handles pending/running by returning false
 		case ActivityStatusCompleted:
 			pc.Completed++
 		case ActivityStatusFailed:
