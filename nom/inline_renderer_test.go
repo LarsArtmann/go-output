@@ -88,8 +88,8 @@ func TestInlineRenderer_Finish_ClearsFrame(t *testing.T) {
 		t.Error("Finish should clear the previous frame using ANSI escapes")
 	}
 
-	if !strings.Contains(output, "completed successfully") {
-		t.Errorf("Finish should print success message, got:\n%s", output)
+	if !strings.Contains(output, "Step 1") {
+		t.Errorf("Finish should render the final static tree, got:\n%s", output)
 	}
 }
 
@@ -104,6 +104,7 @@ func TestInlineRenderer_Finish_WithError(t *testing.T) {
 
 	ctx := context.Background()
 	_ = sendWorkflowStarted(sub, ctx, WorkflowID("wf-1"), "")
+	sendActivityStarted(t, sub, ctx, ActivityID("step1"), ActivityName("Step 1"))
 
 	renderer.Draw()
 	buf.Reset()
@@ -111,8 +112,8 @@ func TestInlineRenderer_Finish_WithError(t *testing.T) {
 	renderer.Finish(errors.New("test failure"))
 
 	output := buf.String()
-	if !strings.Contains(output, "failed") {
-		t.Errorf("Finish with error should print failure, got:\n%s", output)
+	if !strings.Contains(output, "Step 1") {
+		t.Errorf("Finish with error should still render the final tree, got:\n%s", output)
 	}
 }
 
@@ -333,8 +334,8 @@ func TestInlineRenderer_EndToEnd_Lifecycle(t *testing.T) {
 
 	finalOutput := buf.String()
 
-	if !strings.Contains(finalOutput, "completed successfully") {
-		t.Errorf("finish should print success message, got:\n%s", finalOutput[-min(len(finalOutput), 200):])
+	if !strings.Contains(finalOutput, "Build Project") {
+		t.Errorf("finish should render the final static tree, got:\n%s", finalOutput)
 	}
 }
 

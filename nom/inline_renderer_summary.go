@@ -6,7 +6,6 @@ import (
 	"strings"
 	"time"
 
-	"charm.land/lipgloss/v2"
 	"github.com/charmbracelet/x/ansi"
 	"golang.org/x/term"
 )
@@ -49,27 +48,10 @@ func (r *InlineRenderer) Finish(workflowErr error) {
 		r.write(final + "\n")
 	}
 
-	elapsed := time.Since(cfg.startTime)
-
-	elapsedStr := ""
-	if !cfg.startTime.IsZero() {
-		elapsedStr = " after " + FormatDuration(elapsed)
-	}
-
-	status := "completed successfully" + elapsedStr + "."
-	statusColor := Colors.Completed
-
-	if workflowErr != nil {
-		status = "failed: " + workflowErr.Error() + elapsedStr
-		statusColor = Colors.Failed
-	}
-
-	line := fmt.Sprintf("%s %s", cfg.appName, status)
-	if cfg.noColor {
-		r.write(line + "\n")
-	} else {
-		r.write(lipgloss.NewStyle().Foreground(statusColor).Render(line) + "\n")
-	}
+	// The completion line (e.g. "BuildFlow completed successfully after 1m15s.")
+	// is intentionally NOT printed here — the calling application provides its
+	// own post-run summary which is more detailed (auto-fixes, artifacts, etc.).
+	// Printing both would produce duplicate/mangled output on the terminal.
 }
 
 // effectiveMaxHeight returns the given maxHeight if set, otherwise detects
