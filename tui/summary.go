@@ -42,14 +42,20 @@ func buildUniversalSummary(
 	return summary
 }
 
-// buildNOMSummary builds a NOM-style summary string.
-func buildNOMSummary(counts nom.ActivityCounts, elapsed time.Duration) string {
+// buildNOMSummary builds a NOM-style summary string. When remaining is positive,
+// appends a "~Xm left" estimate (sourced from the subscriber's pending-activity
+// estimates) so the TUI shows projected finish time alongside counts and elapsed.
+func buildNOMSummary(counts nom.ActivityCounts, elapsed, remaining time.Duration) string {
 	summary := counts.Summary()
 	if summary != "" {
 		summary += " | "
 	}
 
 	summary += formatElapsedTime(elapsed)
+
+	if remaining > 0 {
+		summary += " | ~" + formatElapsedTime(remaining) + " left"
+	}
 
 	return summary
 }

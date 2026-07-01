@@ -1,6 +1,7 @@
 package tui
 
 import (
+	"strings"
 	"testing"
 	"time"
 
@@ -58,21 +59,27 @@ func TestBuildNOMSummary(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		name     string
-		counts   nom.ActivityCounts
-		duration time.Duration
+		name      string
+		counts    nom.ActivityCounts
+		duration  time.Duration
+		remaining time.Duration
 	}{
-		{"with activity counts", nom.ActivityCounts{Running: 1, Completed: 2, Failed: 0, Pending: 1}, 10 * time.Second},
-		{"with zero counts still shows timing", nom.ActivityCounts{}, 5 * time.Second},
+		{"with activity counts", nom.ActivityCounts{Running: 1, Completed: 2, Pending: 1}, 10 * time.Second, 0},
+		{"with zero counts still shows timing", nom.ActivityCounts{}, 5 * time.Second, 0},
+		{"with remaining estimate", nom.ActivityCounts{Running: 1, Pending: 2}, 5 * time.Second, 90 * time.Second},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			got := buildNOMSummary(tt.counts, tt.duration)
+			got := buildNOMSummary(tt.counts, tt.duration, tt.remaining)
 			if got == "" {
 				t.Error("expected non-empty summary")
+			}
+
+			if tt.remaining > 0 && !strings.Contains(got, "left") {
+				t.Errorf("summary should contain 'left' when remaining>0: %q", got)
 			}
 		})
 	}

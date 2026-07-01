@@ -6,6 +6,39 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added — NOM BuildFlow integration (progress, retry, estimates)
+
+- **`ActivityProgress` sub-step visibility** — progress message rendered as a dim
+  `→ message` sub-line beneath the activity label. Auto-cleared on
+  `SetRunning`/`SetCompleted`/`SetFailed` (a retry starts fresh). Includes a
+  direct `SetActivityProgress(id, msg)` accessor.
+- **`ActivityRetrying` retry visibility** — transitions a failed activity back to
+  running, increments `RetryCount` (rendered as `⟳N`), and carries an optional
+  `Reason` rendered as `⟳N (timeout)`. `RetryCount`/`RetryReason` persist across
+  state transitions (a completed-then-retried step keeps its `⟳N`).
+- **`SetEstimatedTime(id, duration)`** — inject external estimates (e.g. from a
+  SQLite timing store) per-activity, bypassing the internal CSV timing cache.
+- **`EstimatedTotalRemaining()`** — subscriber-owned projected remaining time
+  (sum of pending full estimates + running `max(0, estimate - elapsed)`). Now
+  the single source of truth for the `~Xm left` summary segment.
+- **`SetEstimatedRemainingFunc(callback)`** on `InlineRenderer` — render
+  `~Xm left` in the inline summary bar; the callback can delegate to
+  `EstimatedTotalRemaining()`.
+- **TUI `~Xm left`** — the TUI NOM summary bar now shows the remaining estimate
+  directly from the subscriber (no external wiring needed). The TUI also renders
+  progress/retry through its existing `RenderVisibleEntry` delegation.
+- **New symbols**: `SymbolProgress` (`→`), `SymbolRetrying` (`⟳`).
+- **13 new tests**: progress/retry event handling, auto-clear semantics, external
+  estimate injection, summary remaining, tree rendering, multi-subscriber
+  fan-out, `Reset()` clearing state, concurrent progress+retry (race-tested),
+  progress-cleared-on-retry, and running-elapsed estimate subtraction.
+
+### Changed
+
+- `buildNOMSummary` (tui) now takes a `remaining time.Duration` parameter.
+- `ActivityRetrying` gained a `Reason string` field (non-breaking, zero-value
+  backward-compatible — no reason renders as plain `⟳N`).
+
 ## [0.20.0] - 2026-07-01
 
 NOM inline renderer API refinement: `Finish()` no longer prints a completion

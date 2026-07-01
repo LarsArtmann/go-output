@@ -108,6 +108,11 @@ func (ActivityFailed) isEvent() {}
 // Message is rendered as a dim sub-line beneath the activity label.
 //
 // Empty Message clears any prior progress message.
+//
+// Throttling: the renderer redraws on every progress event, so callers that
+// iterate fast (e.g. per-file in a large tree) should rate-limit updates to
+// roughly 1/sec to avoid excessive redraws. The simplest pattern is a time-based
+// guard: only send when the message changed AND at least a second elapsed.
 type ActivityProgress struct {
 	ID      ActivityID
 	Name    ActivityName
@@ -119,11 +124,13 @@ func (ActivityProgress) isEvent() {}
 // ActivityRetrying signals that a failed activity is being retried. The
 // Attempt field is the retry attempt number (1 = first retry). The activity
 // transitions back to Running and a ⟳ suffix with the attempt count is
-// rendered.
+// rendered. Reason optionally explains the retry cause (e.g. "timeout",
+// "network") and renders as "⟳2 (timeout)" when non-empty.
 type ActivityRetrying struct {
 	ID      ActivityID
 	Name    ActivityName
 	Attempt int
+	Reason  string
 }
 
 func (ActivityRetrying) isEvent() {}

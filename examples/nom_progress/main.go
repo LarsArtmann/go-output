@@ -60,6 +60,32 @@ func main() {
 		}
 	}
 
+	// --- Demonstrate the v0.21.0 BuildFlow integration events ---
+
+	// Sub-step progress: a running activity reports what it's doing inside.
+	_ = subscriber.OnEvent(ctx, nom.ActivityProgress{
+		ID:      nom.NewActivityID("test"),
+		Name:    nom.NewActivityName("Run Tests"),
+		Message: "Running package [2/26]: nom",
+	})
+
+	// Retry visibility: the failed lint step is retried (transitions back to
+	// running, renders ⟳1 with the reason).
+	_ = subscriber.OnEvent(ctx, nom.ActivityRetrying{
+		ID:      nom.NewActivityID("lint"),
+		Name:    nom.NewActivityName("Lint Code"),
+		Attempt: 1,
+		Reason:  "timeout",
+	})
+
+	// External estimate injection: pending steps get predicted durations from an
+	// external store (e.g. BuildFlow's SQLite timing cache).
+	subscriber.SetEstimatedTime(nom.NewActivityID("package"), 8*time.Second)
+
+	// Subscriber-owned remaining-time computation (powers the "~Xm left" summary).
+	remaining := subscriber.EstimatedTotalRemaining()
+	fmt.Printf("Estimated time remaining: %s\n", nom.FormatDuration(remaining))
+
 	snaps := subscriber.SnapshotActivities()
 
 	fmt.Println("=== NOM Dependency Tree (priority-ordered) ===")

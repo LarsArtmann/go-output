@@ -69,3 +69,47 @@ func (ns *NOMStyleSubscriber) GetStartTime() time.Time {
 
 	return ns.startTime
 }
+
+// EstimatedTotalRemaining returns the projected remaining time for all
+// unfinished work, computed from per-activity estimates:
+//   - Pending activities contribute their full EstimatedTime.
+//   - Running activities contribute max(0, EstimatedTime - elapsed).
+//   - Completed/failed activities contribute nothing.
+//
+// This is the subscriber-owned estimate source. Both renderers can consume it:
+// the TUI uses it directly for its "~Xm left" summary, and the inline renderer's
+// SetEstimatedRemainingFunc callback can delegate to it when the caller has no
+// external estimator. Returns 0 when no unfinished activity has an estimate.
+func (ns *NOMStyleSubscriber) EstimatedTotalRemaining() time.Duration {
+	ns.mu.RLock()
+	defer ns.mu.RUnlock()
+
+	now := time.Now()
+
+	var total time.Duration
+
+	for _, a := range ns.activities {
+		if a.Status == ActivityStatusCompleted || a.Status == ActivityStatusFailed {
+			continue
+		}
+
+		if a.EstimatedTime <= 0 {
+			continue
+		}
+
+		remaining := a.EstimatedTime
+
+		if a.Status == ActivityStatusRunning {
+			elapsed := a.elapsedAt(now)
+			if elapsed >= remaining {
+				continue
+			}
+
+			remaining -= elapsed
+		}
+
+		total += remaining
+	}
+
+	return total
+}

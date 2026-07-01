@@ -231,11 +231,15 @@ func formatActivityLabel(snap ActivitySnapshot) (display string, c color.Color) 
 	}
 
 	// Retry suffix: show ⟳N when the activity has been retried. Placed after
-	// timing/host so the retry badge reads as a status annotation.
+	// timing/host so the retry badge reads as a status annotation. An optional
+	// reason (e.g. "timeout") renders as "⟳2 (timeout)".
 	if snap.RetryCount > 0 {
-		display += lipgloss.NewStyle().
-			Foreground(Colors.Info).
-			Render(fmt.Sprintf(" %s%d", SymbolRetrying, snap.RetryCount))
+		suffix := fmt.Sprintf(" %s%d", SymbolRetrying, snap.RetryCount)
+		if snap.RetryReason != "" {
+			suffix += fmt.Sprintf(" (%s)", snap.RetryReason)
+		}
+
+		display += lipgloss.NewStyle().Foreground(Colors.Info).Render(suffix)
 	}
 
 	// Optional download progress bar — only while the activity is actively

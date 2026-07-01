@@ -348,3 +348,110 @@ var errRetrying = &TransientError{}
 type TransientError struct{}
 
 func (*TransientError) Error() string { return "transient failure" }
+
+// TestRetryReasonEvent verifies that the Reason field on ActivityRetrying is
+// stored on the activity and rendered as "⟳N (reason)".
+func TestRetryReasonEvent(t *testing.T) {
+	t.Parallel()
+
+	ns := NewNOMStyleSubscriber()
+	ctx := context.Background()
+
+	_ = ns.OnEvent(ctx, WorkflowStarted{ID: "wf", Name: "test"})
+	_ = ns.OnEvent(ctx, ActivityStarted{ID: "step1", Name: "flaky-test"})
+	_ = ns.OnEvent(ctx, ActivityFailed{ID: "step1", Name: "flaky-test"})
+	_ = ns.OnEvent(ctx, ActivityRetrying{
+		ID:      "step1",
+		Name:    "flaky-test",
+		Attempt: 1,
+		Reason:  "timeout",
+	})
+
+	snapshots := ns.SnapshotActivities()
+	snap := snapshots["step1"]
+
+	if snap.RetryReason != "timeout" {
+		t.Errorf("RetryReason = %q, want %q", snap.RetryReason, "timeout")
+	}
+
+	frame, ok := ns.RenderSnapshot(0, 0)
+	if !ok {
+		t.Fatal("RenderSnapshot returned false")
+	}
+
+	if !strings.Contains(frame, "(timeout)") {
+		t.Errorf("tree output missing retry reason:\n%s", frame)
+	}
+}
+
+// TestRetryReasonEmpty verifies that no "(reason)" suffix renders when the
+// Reason field is empty (backward-compatible with the pre-reason behavior).
+func TestRetryReasonEmpty(t *testing.T) {
+	t.Parallel()
+
+	ns := NewNOMStyleSubscriber()
+	ctx := context.Background()
+
+	_ = ns.OnEvent(ctx, WorkflowStarted{ID: "wf", Name: "test"})
+	_ = ns.OnEvent(ctx, ActivityStarted{ID: "step1", Name: "flaky-test"})
+	_ = ns.OnEvent(ctx, ActivityFailed{ID: "step1", Name: "flaky-test"})
+	_ = ns.OnEvent(ctx, ActivityRetrying{ID: "step1", Name: "flaky-test", Attempt: 1})
+
+	frame, ok := ns.RenderSnapshot(0, 0)
+	if !ok {
+		t.Fatal("RenderSnapshot returned false")
+	}
+
+	if strings.Contains(frame, "()") {
+		t.Errorf("tree output should not contain empty reason parens:\n%s", frame)
+	}
+
+	if !strings.Contains(frame, "⟳1") {
+		t.Errorf("tree output should still contain retry count:\n%s", frame)
+	}
+}
+
+// TestEstimatedTotalRemaining verifies that the subscriber sums the remaining
+// estimates of pending activities (full estimate) and excludes completed work.
+func TestEstimatedTotalRemaining(t *testing.T) {
+	t.Parallel()
+
+	ns := NewNOMStyleSubscriber()
+	ctx := context.Background()
+
+	_ = ns.OnEvent(ctx, WorkflowStarted{ID: "wf", Name: "test"})
+	_ = ns.OnEvent(ctx, ActivityRegistered{ID: "a", Name: "a"})
+	_ = ns.OnEvent(ctx, ActivityRegistered{ID: "b", Name: "b"})
+
+	ns.SetEstimatedTime("a", 10*time.Second)
+	ns.SetEstimatedTime("b", 5*time.Second)
+
+	remaining := ns.EstimatedTotalRemaining()
+	if remaining != 15*time.Second {
+		t.Errorf("EstimatedTotalRemaining = %v, want 15s", remaining)
+	}
+
+	// Completing one removes its contribution.
+	_ = ns.OnEvent(ctx, ActivityCompleted{ID: "a", Name: "a", Duration: 3 * time.Second})
+
+	remaining = ns.EstimatedTotalRemaining()
+	if remaining != 5*time.Second {
+		t.Errorf("EstimatedTotalRemaining after complete = %v, want 5s", remaining)
+	}
+}
+
+// TestEstimatedTotalRemainingZero verifies that 0 is returned when no
+// unfinished activity has an estimate.
+func TestEstimatedTotalRemainingZero(t *testing.T) {
+	t.Parallel()
+
+	ns := NewNOMStyleSubscriber()
+	ctx := context.Background()
+
+	_ = ns.OnEvent(ctx, WorkflowStarted{ID: "wf", Name: "test"})
+	_ = ns.OnEvent(ctx, ActivityRegistered{ID: "a", Name: "a"})
+
+	if got := ns.EstimatedTotalRemaining(); got != 0 {
+		t.Errorf("EstimatedTotalRemaining with no estimates = %v, want 0", got)
+	}
+}

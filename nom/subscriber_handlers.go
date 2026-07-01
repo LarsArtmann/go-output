@@ -203,5 +203,7 @@ func (ns *NOMStyleSubscriber) handleActivityRetrying(e ActivityRetrying) error {
 		activity.RetryCount++
 	}
 
+	activity.RetryReason = e.Reason
+
 	return nil
 }

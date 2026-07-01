@@ -34,6 +34,9 @@ type ActivitySnapshot struct {
 	// RetryCount is the number of retries for this activity (0 = none).
 	// Rendered as a ⟳ suffix when > 0.
 	RetryCount int
+	// RetryReason optionally carries the cause of the most recent retry (e.g.
+	// "timeout"). Rendered as "⟳2 (timeout)" when non-empty.
+	RetryReason string
 }
 
 // IsPhase reports whether the snapshotted activity is a Phase grouping node.
@@ -93,6 +96,7 @@ func (ns *NOMStyleSubscriber) SnapshotActivities() map[ActivityID]ActivitySnapsh
 			Download:       activity.Download,
 			Progress:       activity.Progress,
 			RetryCount:     activity.RetryCount,
+			RetryReason:    activity.RetryReason,
 		}
 	}
 

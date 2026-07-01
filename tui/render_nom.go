@@ -116,7 +116,8 @@ func (m *ProgressModel) renderDependencyTree() string {
 func (m *ProgressModel) renderNOMSummaryBar() string {
 	counts := m.getActivityCounts()
 	elapsed := time.Since(m.startTime)
-	summary := buildNOMSummary(counts, elapsed)
+	remaining := m.estimatedRemaining()
+	summary := buildNOMSummary(counts, elapsed, remaining)
 	baseStyle := createSummaryStyle()
 
 	switch m.workflowState {
@@ -134,6 +135,18 @@ func (m *ProgressModel) renderNOMSummaryBar() string {
 // getActivityCounts delegates to the subscriber for counts.
 func (m *ProgressModel) getActivityCounts() nom.ActivityCounts {
 	return m.nomSubscriber.GetActivityCounts()
+}
+
+// estimatedRemaining delegates to the subscriber's projected remaining time
+// (sum of pending/running activity estimates). Returns 0 when there is no
+// subscriber or no unfinished estimated work, in which case "~Xm left" is
+// omitted from the summary bar.
+func (m *ProgressModel) estimatedRemaining() time.Duration {
+	if m.nomSubscriber == nil {
+		return 0
+	}
+
+	return m.nomSubscriber.EstimatedTotalRemaining()
 }
 
 func (m *ProgressModel) renderHelpOverlay() string {

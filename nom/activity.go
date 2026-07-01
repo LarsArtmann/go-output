@@ -50,6 +50,9 @@ type Activity struct {
 	// RetryCount is the number of times this activity has been retried (0 = no
 	// retries). Set via ActivityRetrying events. Rendered as a ⟳ suffix.
 	RetryCount int
+	// RetryReason optionally carries the cause of the most recent retry (e.g.
+	// "timeout", "network"). Rendered as "⟳2 (timeout)" when non-empty.
+	RetryReason string
 }
 
 // NewActivity creates a Task Activity with branded ID/Label and default
