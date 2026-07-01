@@ -1,0 +1,8 @@
+```mermaid
+flowchart TD
+    start((Start))
+    process[Process]
+    end((End))
+    start --> process
+    process --> end
+```

@@ -1,0 +1,29 @@
+digraph G {
+  // Graph attributes
+  rankdir=TB;
+  splines=ortho;
+  nodesep=0.5;
+  ranksep=0.5;
+
+  // Default node attributes
+  node [
+    shape=box
+    fontname="Helvetica"
+    fontsize=12
+  ];
+
+  // Nodes
+  "a" [
+    label="Alpha"
+  ];
+  "b" [
+    label="Beta"
+  ];
+  "c" [
+    label="Gamma"
+  ];
+
+  // Edges
+  "a" -> "b";
+  "b" -> "c";
+}

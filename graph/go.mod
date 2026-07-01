@@ -16,6 +16,8 @@ replace (
 )
 
 require (
+	github.com/aymanbagabas/go-udiff v0.4.1 // indirect
+	github.com/charmbracelet/x/exp/golden v0.0.0-20260629091435-9c70f75e26a4 // indirect
 	github.com/larsartmann/go-branded-id v0.3.1 // indirect
 	golang.org/x/sys v0.46.0 // indirect
 	golang.org/x/term v0.44.0 // indirect

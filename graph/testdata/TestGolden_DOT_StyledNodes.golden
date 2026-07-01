@@ -1,0 +1,32 @@
+digraph pipeline {
+  // Graph attributes
+  rankdir=TB;
+  splines=ortho;
+  nodesep=0.5;
+  ranksep=0.5;
+
+  // Default node attributes
+  node [
+    shape=box
+    fontname="Helvetica"
+    fontsize=12
+  ];
+
+  // Nodes
+  "build" [
+    label="Build"
+    shape="box"
+    fillcolor="#4CAF50"
+    color="#2E7D32"
+  ];
+  "test" [
+    label="Test"
+    shape="diamond"
+    fillcolor="#FF9800"
+  ];
+
+  // Edges
+  "build" -> "test" [
+    style=dashed
+  ];
+}
