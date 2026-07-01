@@ -196,6 +196,7 @@ linters:
             - github.com/charmbracelet/x/exp/golden
             - github.com/charmbracelet/x/vt
             - github.com/charmbracelet/x/exp/teatest/v2
+            - github.com/charmbracelet/colorprofile
             - github.com/mattn/go-runewidth
             - os/signal
             - syscall

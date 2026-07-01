@@ -6,6 +6,9 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"charm.land/lipgloss/v2"
+	"github.com/charmbracelet/colorprofile"
 )
 
 // newVTTestRenderer creates an InlineRenderer that writes to a VT harness
@@ -377,4 +380,70 @@ func (tw teeWriter) Write(p []byte) (int, error) {
 	}
 
 	return n1, nil
+}
+
+// --- F17: Color-on rendering produces SGR sequences ---
+
+func TestVT_ColorOn_EmitsSGR(t *testing.T) {
+	// NOT parallel: temporarily mutates global lipgloss.Writer.Profile.
+	sub := newTestSubscriber(t)
+	harness := newVTHarness(t, 100, 30)
+
+	var buf bytes.Buffer
+
+	tw := teeWriter{w1: harness, w2: &buf}
+
+	renderer := NewInlineRenderer(sub, tw, 10)
+	renderer.SetNoColor(false)
+
+	renderer.tickMu.Lock()
+	renderer.writerIsTTY = true
+	renderer.plainText = false
+	renderer.tickMu.Unlock()
+
+	// Force lipgloss to emit ANSI SGR codes regardless of terminal detection.
+	oldProfile := lipgloss.Writer.Profile
+	lipgloss.Writer.Profile = colorprofile.ANSI
+
+	t.Cleanup(func() { lipgloss.Writer.Profile = oldProfile })
+
+	ctx := context.Background()
+	_ = sendWorkflowStarted(sub, ctx, WorkflowID("wf-1"), "")
+	sendActivityStarted(t, sub, ctx, ActivityID("ok"), ActivityName("Green Step"))
+	sendActivityCompleted(t, sub, ctx, ActivityID("ok"), ActivityName("Green Step"), time.Second)
+
+	renderer.Draw()
+
+	raw := buf.String()
+
+	// With ANSI profile forced, lipgloss emits SGR codes. The completed
+	// activity renders with Colors.Completed (lipgloss.Color("10") = bright
+	// green, emitted as \x1b[92m or \x1b[1;92m when combined with bold).
+	if !strings.Contains(raw, "\x1b[") {
+		t.Errorf("expected ANSI escape sequences in raw output with colors on\n\nRaw:\n%q", raw)
+	}
+
+	// Verify SGR color codes are present (not just cursor sequences).
+	// SGR codes end with 'm'; cursor codes end with a letter.
+	if !strings.Contains(raw, "m✔") && !strings.Contains(raw, "m⏵") {
+		t.Errorf("expected SGR-colored status symbol in output\n\nRaw:\n%q", raw)
+	}
+
+	// VT emulator should have processed the SGR codes into cell colors.
+	foundColoredCell := false
+	for y := 0; y < 5 && !foundColoredCell; y++ {
+		for x := 0; x < harness.term.Width() && !foundColoredCell; x++ {
+			cell := harness.term.CellAt(x, y)
+			if cell != nil && cell.Style.Fg != nil {
+				foundColoredCell = true
+			}
+		}
+	}
+
+	if !foundColoredCell {
+		t.Error("expected at least one cell with non-nil foreground color after SGR rendering")
+	}
+
+	// Content should still be visible on the screen.
+	harness.assertScreenContains(t, "Green Step")
 }
