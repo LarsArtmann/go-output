@@ -194,6 +194,8 @@ linters:
             - github.com/onsi/ginkgo/v2
             - github.com/onsi/gomega
             - github.com/charmbracelet/x/exp/golden
+            - github.com/charmbracelet/x/vt
+            - github.com/charmbracelet/x/exp/teatest/v2
             - github.com/mattn/go-runewidth
             - os/signal
             - syscall

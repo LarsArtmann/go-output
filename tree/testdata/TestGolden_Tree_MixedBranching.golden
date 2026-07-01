@@ -1,0 +1,12 @@
+└── build-pipeline
+    ├── compile
+    │   ├── lint
+    │   ├── vet
+    │   └── test
+    │       ├── unit
+    │       ├── integration
+    │       └── e2e
+    ├── package
+    └── deploy
+        ├── staging
+        └── production

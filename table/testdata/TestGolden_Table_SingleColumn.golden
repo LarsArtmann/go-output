@@ -1,0 +1,8 @@
+╭───────────────────────╮
+│ Step                  │
+├───────────────────────┤
+│ Download dependencies │
+│ Compile sources       │
+│ Run tests             │
+│ Generate docs         │
+╰───────────────────────╯
