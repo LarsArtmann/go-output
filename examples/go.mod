@@ -8,11 +8,11 @@ require (
 	github.com/larsartmann/go-output/delimited v0.18.0
 	github.com/larsartmann/go-output/graph v0.18.0
 	github.com/larsartmann/go-output/markup v0.18.0
-	github.com/larsartmann/go-output/nom v0.18.0
+	github.com/larsartmann/go-output/nom v0.20.0
 	github.com/larsartmann/go-output/plantuml v0.18.0
 	github.com/larsartmann/go-output/serialization v0.18.0
 	github.com/larsartmann/go-output/table v0.18.0
-	github.com/larsartmann/go-output/tui v0.18.0
+	github.com/larsartmann/go-output/tui v0.20.0
 )
 
 require (
