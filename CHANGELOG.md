@@ -31,6 +31,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   undercounted wide-character straddling at odd terminal widths (e.g., 4 CJK
   chars at width 3 counted as 3 lines instead of the correct 4).
 
+## [0.22.0] - 2026-07-01
+
+Fix: replace all pseudo-versions with real v0.21.0 across sub-modules.
+
+### Fixed
+
+- All 47 sibling `require` directives across 18 modules now use
+  `v0.0.0-00010101000000-000000000000` + `replace => ../path` (Pattern B).
+  Several `go.mod` files had drifted to real sibling versions (v0.18.0, v0.20.0)
+  after `go mod tidy` runs. See ADR 009.
+
+## [0.21.0] - 2026-07-01
+
+NOM BuildFlow integration: progress sub-steps, retry visibility, and external
+estimate APIs for real-time progress visualization.
+
 ### Added — NOM BuildFlow integration (progress, retry, estimates)
 
 - **`ActivityProgress` sub-step visibility** — progress message rendered as a dim
