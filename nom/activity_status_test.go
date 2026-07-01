@@ -86,3 +86,92 @@ func TestStatusStringUnknown(t *testing.T) {
 		t.Errorf("StatusStringUnknown = %q, want %q", StatusStringUnknown, "unknown")
 	}
 }
+
+func TestParseActivityStatus(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		input   string
+		want    ActivityStatus
+		wantErr bool
+	}{
+		{"pending", ActivityStatusPending, false},
+		{"running", ActivityStatusRunning, false},
+		{"completed", ActivityStatusCompleted, false},
+		{"failed", ActivityStatusFailed, false},
+		{"", ActivityStatusPending, true},
+		{"unknown", ActivityStatusPending, true},
+		{"PENDING", ActivityStatusPending, true},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.input, func(t *testing.T) {
+			t.Parallel()
+
+			got, err := ParseActivityStatus(tt.input)
+			if tt.wantErr {
+				if err == nil {
+					t.Errorf("ParseActivityStatus(%q) expected error, got nil", tt.input)
+				}
+
+				return
+			}
+
+			if err != nil {
+				t.Errorf("ParseActivityStatus(%q) unexpected error: %v", tt.input, err)
+
+				return
+			}
+
+			if got != tt.want {
+				t.Errorf("ParseActivityStatus(%q) = %v, want %v", tt.input, got, tt.want)
+			}
+		})
+	}
+}
+
+func TestActivityStatus_IsValid(t *testing.T) {
+	t.Parallel()
+
+	valid := []ActivityStatus{
+		ActivityStatusPending,
+		ActivityStatusRunning,
+		ActivityStatusCompleted,
+		ActivityStatusFailed,
+	}
+	for _, s := range valid {
+		if !s.IsValid() {
+			t.Errorf("ActivityStatus(%d).IsValid() = false, want true", s)
+		}
+	}
+
+	if ActivityStatus(99).IsValid() {
+		t.Errorf("ActivityStatus(99).IsValid() = true, want false")
+	}
+}
+
+func TestActivityStatus_AllowedValues(t *testing.T) {
+	t.Parallel()
+
+	values := ActivityStatus(0).AllowedValues()
+
+	want := []string{"pending", "running", "completed", "failed"}
+	if len(values) != len(want) {
+		t.Fatalf("AllowedValues() returned %d values, want %d", len(values), len(want))
+	}
+
+	for i, v := range values {
+		if v != want[i] {
+			t.Errorf("AllowedValues()[%d] = %q, want %q", i, v, want[i])
+		}
+	}
+}
+
+func TestInvalidActivityStatusError(t *testing.T) {
+	t.Parallel()
+
+	err := &InvalidActivityStatusError{Value: "bogus"}
+	msg := err.Error()
+	testhelpers.AssertContains(t, msg, "invalid activity status", "Error should describe the problem")
+	testhelpers.AssertContains(t, msg, "bogus", "Error should contain the invalid value")
+}
