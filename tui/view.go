@@ -178,10 +178,10 @@ func (m *ProgressModel) renderStep(step progressStep, isLast bool) string {
 
 	if step.CompletedAt != nil {
 		duration := step.CompletedAt.Sub(step.StartTime)
-		timing = fmt.Sprintf(timingFormatWithIcon, duration.Seconds())
+		timing = fmt.Sprintf(timingFormat, duration.Seconds())
 	} else if step.isActive() {
 		elapsed := time.Since(step.StartTime)
-		timing = fmt.Sprintf(timingFormatWithIcon, elapsed.Seconds())
+		timing = fmt.Sprintf(timingFormat, elapsed.Seconds())
 	}
 	// Step progress info
 	stepInfo := ""

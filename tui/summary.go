@@ -37,7 +37,7 @@ func buildUniversalSummary(
 ) string {
 	summary := fmt.Sprintf("📊 Activities: %d▶%d✓", inProgress, completed)
 	summary += fmt.Sprintf(" | Progress: %.1f%%", progress)
-	summary += " | ⏱️ " + formatElapsedTime(elapsed)
+	summary += " | " + formatElapsedTime(elapsed)
 
 	return summary
 }
@@ -49,7 +49,7 @@ func buildNOMSummary(counts nom.ActivityCounts, elapsed time.Duration) string {
 		summary += " | "
 	}
 
-	summary += string(nom.SymbolTiming) + formatElapsedTime(elapsed)
+	summary += formatElapsedTime(elapsed)
 
 	return summary
 }
@@ -58,13 +58,13 @@ func buildNOMSummary(counts nom.ActivityCounts, elapsed time.Duration) string {
 func getStateStyle(state workflowState) (string, color.Color) {
 	switch state {
 	case workflowStateIdle:
-		return "⏳ Workflow Idle | ⏱️ {time} | Press 'q' or Ctrl+C to exit", colors.dim
+		return "⏳ Workflow Idle | {time} | Press 'q' or Ctrl+C to exit", colors.dim
 	case workflowStateRunning:
 		return "", nil
 	case workflowStateCompleted:
-		return "✅ Workflow Complete: {completed}✓ | ⏱️ {time} | Press 'q' or Ctrl+C to exit", colors.success
+		return "✅ Workflow Complete: {completed}✓ | {time} | Press 'q' or Ctrl+C to exit", colors.success
 	case workflowStateErrored:
-		return "❌ Workflow Error: {completed}✓ | ⏱️ {time} | Press 'q' or Ctrl+C to exit", colors.err
+		return "❌ Workflow Error: {completed}✓ | {time} | Press 'q' or Ctrl+C to exit", colors.err
 	default:
 		return "", colors.info
 	}

@@ -2,11 +2,11 @@ package tui
 
 // Display Format Constants - Standardized display format strings.
 const (
-	// timingFormatWithIcon is the TUI-specific timing format that bakes in the
-	// ⏱️ icon. This intentionally differs from nom.TimingFormat (which is just
-	// "%.1fs") because the TUI step-display integrates the icon into the format
-	// string, while nom composes icon + duration separately.
-	timingFormatWithIcon = "⏱️ %.1fs"
+	// timingFormat is the TUI-specific timing format for step durations. No
+	// icon is baked in — the variation-selector emoji (⏱️, U+23F1 U+FE0F)
+	// renders as a phantom column on many terminals (especially over SSH),
+	// making the timing look "half there". A plain duration matches NOM.
+	timingFormat = "%.1fs"
 )
 
 // Message Constants - Standardized UI message strings.

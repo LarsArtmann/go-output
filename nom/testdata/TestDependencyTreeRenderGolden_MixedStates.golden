@@ -1,5 +1,5 @@
-[1;93m⏵ Workflow [2;93m⏱️10.0s[m[m
-[91m├── ⚠ Failed Step ⏱️1.0s[m
-[93m├── ⏵ Running Step ⏱️5.0s[m
+[1;93m⏵ Workflow [2;93m10.0s[m[m
+[91m├── ⚠ Failed Step 1.0s[m
+[93m├── ⏵ Running Step 5.0s[m
 [90m├── ○ Pending Step[m
-[92m└── ✔ Completed Step ⏱️2.0s[m
+[92m└── ✔ Completed Step 2.0s[m

@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"regexp"
 	"strings"
 	"testing"
 	"time"
@@ -136,8 +137,8 @@ func TestInlineRenderer_SummaryBar(t *testing.T) {
 		t.Errorf("render should include summary box, got:\n%s", output)
 	}
 
-	if !strings.Contains(output, string(SymbolTiming)) {
-		t.Errorf("summary should include timing, got:\n%s", output)
+	if !regexp.MustCompile(`\d+\.\d+s`).MatchString(output) {
+		t.Errorf("summary should include elapsed duration, got:\n%s", output)
 	}
 
 	if !strings.Contains(output, "%") {

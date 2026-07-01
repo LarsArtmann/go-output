@@ -395,7 +395,7 @@ func (dt *DependencyTree) renderLine(
 
 		activityDisplay += lipgloss.NewStyle().
 			Foreground(Colors.Info).
-			Render(" ⬅ depends on " + strings.Join(depNames, ", "))
+			Render(" ← " + strings.Join(depNames, ", "))
 	}
 
 	fullPrefix := entry.Prefix + entry.Connector

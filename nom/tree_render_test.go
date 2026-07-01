@@ -112,7 +112,7 @@ func TestDependencyTree_Render_SecondaryDependencies(t *testing.T) {
 		t.Fatal("Render should produce output")
 	}
 
-	if !strings.Contains(got, "depends on") {
+	if !strings.Contains(got, "←") {
 		t.Errorf("render should contain dependency annotation for secondary deps, got:\n%s", got)
 	}
 

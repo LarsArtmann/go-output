@@ -14,7 +14,6 @@ func TestSymbolConstants(t *testing.T) {
 		"SymbolFailed":    SymbolFailed,
 		"SymbolDownload":  SymbolDownload,
 		"SymbolUpload":    SymbolUpload,
-		"SymbolTiming":    SymbolTiming,
 		"SymbolAverage":   SymbolAverage,
 		"SymbolTotal":     SymbolTotal,
 	}

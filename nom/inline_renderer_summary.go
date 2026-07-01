@@ -109,7 +109,7 @@ func (r *InlineRenderer) renderSummary(startTime time.Time) string {
 
 	if !startTime.IsZero() {
 		elapsed := time.Since(startTime)
-		parts = append(parts, fmt.Sprintf("%s%s", SymbolTiming, FormatDuration(elapsed)))
+		parts = append(parts, FormatDuration(elapsed))
 	}
 
 	if len(parts) == 0 {

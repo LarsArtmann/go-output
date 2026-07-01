@@ -30,8 +30,6 @@ const (
 	SymbolDownload Symbol = "↓"
 	// SymbolUpload represents an upload operation.
 	SymbolUpload Symbol = "↑"
-	// SymbolTiming represents timing information.
-	SymbolTiming Symbol = "⏱️"
 	// SymbolAverage represents average duration.
 	SymbolAverage Symbol = "∅"
 	// SymbolTotal represents total count/summary.

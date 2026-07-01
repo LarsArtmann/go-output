@@ -59,7 +59,7 @@ func FormatActivityNodeTiming(status ActivityStatus, elapsed, estimated time.Dur
 	switch status {
 	case ActivityStatusRunning, ActivityStatusCompleted, ActivityStatusFailed:
 		if elapsed > 0 && ShouldDisplayTiming(elapsed) {
-			return formatTimingWithSymbol(elapsed, SymbolTiming)
+			return FormatDuration(elapsed)
 		}
 	case ActivityStatusPending:
 		if estimated > 0 && ShouldDisplayTiming(estimated) {
