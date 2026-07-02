@@ -15,8 +15,10 @@ require (
 	github.com/charmbracelet/colorprofile v0.4.3 // indirect
 	github.com/charmbracelet/ultraviolet v0.0.0-20260622092850-f39628c8a989 // indirect
 	github.com/charmbracelet/x/exp/golden v0.0.0-20260615092313-b57e5e6d29bb // indirect
+	github.com/charmbracelet/x/exp/ordered v0.1.0 // indirect
 	github.com/charmbracelet/x/term v0.2.2 // indirect
 	github.com/charmbracelet/x/termios v0.1.1 // indirect
+	github.com/charmbracelet/x/vt v0.0.0-20260629091435-9c70f75e26a4 // indirect
 	github.com/charmbracelet/x/windows v0.2.2 // indirect
 	github.com/clipperhouse/displaywidth v0.11.0 // indirect
 	github.com/clipperhouse/uax29/v2 v2.7.0 // indirect
