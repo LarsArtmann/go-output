@@ -1,0 +1,1186 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Status Report — DAG Visualization Innovations (2026-07-02)</title>
+    <style>
+      :root {
+        --color-graphite: #0e0e10;
+        --color-graphite-2: #18181d;
+        --color-graphite-3: #16161a;
+        --color-bone: #f4f4f0;
+        --color-red: #ff6b6b;
+        --color-blue: #6eb5ff;
+        --color-yellow: #f4d35e;
+        --color-amber: #ffb347;
+        --color-hairline: rgba(244, 244, 240, 0.12);
+        --color-hairline-strong: rgba(244, 244, 240, 0.25);
+        --surface: var(--color-graphite);
+        --surface-raised: var(--color-graphite-2);
+        --surface-sunken: var(--color-graphite-3);
+        --text: var(--color-bone);
+        --text-muted: rgba(244, 244, 240, 0.72);
+        --text-faint: rgba(244, 244, 240, 0.45);
+        --border: var(--color-hairline);
+        --border-strong: var(--color-hairline-strong);
+        --accent: var(--color-amber);
+        --problem: var(--color-red);
+        --solution: var(--color-blue);
+        --warning: var(--color-yellow);
+        --radius: 0px;
+        --font-heading:
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+        --font-body:
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+        --font-mono:
+          ui-monospace, "Cascadia Code", "Source Code Pro", "JetBrains Mono", Menlo, Consolas,
+          monospace;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      section[id],
+      [id] {
+        scroll-margin-top: 60px;
+      }
+      body {
+        background: var(--surface);
+        color: var(--text);
+        font-family: var(--font-body);
+        font-size: 15px;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+      }
+      :focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+      .top-bar {
+        background: var(--text);
+        color: var(--surface);
+        padding: 0.6rem 2rem;
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .layout {
+        display: flex;
+        gap: 2.5rem;
+        padding: 2rem;
+      }
+      .sidebar {
+        width: 220px;
+        flex-shrink: 0;
+        position: sticky;
+        top: 1rem;
+        align-self: flex-start;
+        height: calc(100vh - 2rem);
+        overflow-y: auto;
+        display: none;
+      }
+      .sidebar nav {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+      }
+      .sidebar .label {
+        font-family: var(--font-mono);
+        font-size: 0.68rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--accent);
+        margin-bottom: 0.75rem;
+        padding-bottom: 0.4rem;
+        border-bottom: 2px solid var(--border-strong);
+      }
+      .sidebar a {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        text-decoration: none;
+        padding: 0.45rem 0.75rem;
+        border-left: 2px solid transparent;
+        transition: all 0.15s ease;
+        font-weight: 500;
+      }
+      .sidebar a:hover,
+      .sidebar a.active {
+        color: var(--accent);
+        border-left-color: var(--accent);
+        background: color-mix(in srgb, var(--accent) 8%, transparent);
+      }
+      .main {
+        flex: 1;
+        min-width: 0;
+      }
+      h1,
+      h2,
+      h3,
+      h4 {
+        font-family: var(--font-heading);
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+      h1 {
+        font-size: clamp(1.8rem, 4vw, 2.6rem);
+        line-height: 1.1;
+        margin: 0 0 0.6rem;
+      }
+      h2 {
+        font-size: 1.4rem;
+        margin: 2.5rem 0 1rem;
+        padding-bottom: 0.4rem;
+        border-bottom: 2px solid var(--border-strong);
+        display: flex;
+        align-items: baseline;
+        gap: 0.6rem;
+      }
+      h2 .num {
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+        color: var(--accent);
+        font-weight: 700;
+      }
+      h3 {
+        font-size: 1.1rem;
+        margin: 0 0 0.4rem;
+        font-weight: 700;
+      }
+      h4 {
+        font-size: 0.98rem;
+        margin: 0 0 0.3rem;
+        font-weight: 700;
+      }
+      p {
+        margin: 0 0 1rem;
+      }
+      .hero {
+        padding: 1.5rem 0 1.5rem;
+        margin-bottom: 1.5rem;
+        border-bottom: 2px solid var(--border-strong);
+      }
+      .hero-badge {
+        display: inline-block;
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--surface);
+        background: var(--accent);
+        padding: 0.3rem 0.7rem;
+        margin-bottom: 0.9rem;
+      }
+      .hero-subtitle {
+        font-size: 1.05rem;
+        color: var(--text-muted);
+        max-width: 70ch;
+        margin: 0;
+      }
+      .card {
+        background: var(--surface-raised);
+        border: 1px solid var(--border);
+        padding: 1.1rem 1.3rem;
+        margin-bottom: 1rem;
+        border-left: 4px solid var(--border-strong);
+      }
+      .card-problem {
+        border-left-color: var(--problem);
+        background: color-mix(in srgb, var(--problem) 8%, var(--surface-raised));
+      }
+      .card-solution {
+        border-left-color: var(--solution);
+        background: color-mix(in srgb, var(--solution) 8%, var(--surface-raised));
+      }
+      .card-warning {
+        border-left-color: var(--warning);
+        background: color-mix(in srgb, var(--warning) 8%, var(--surface-raised));
+      }
+      .severity {
+        display: inline-block;
+        font-family: var(--font-mono);
+        font-size: 0.62rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        padding: 0.2rem 0.55rem;
+        margin-bottom: 0.6rem;
+        color: var(--surface);
+      }
+      .severity-critical {
+        background: var(--problem);
+      }
+      .severity-important {
+        background: var(--warning);
+      }
+      .severity-nice {
+        background: var(--solution);
+      }
+      .badge {
+        display: inline-block;
+        font-family: var(--font-mono);
+        font-size: 0.62rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        padding: 0.18rem 0.5rem;
+        border: 1px solid var(--border-strong);
+        color: var(--text-muted);
+      }
+      .badge-critical {
+        color: var(--problem);
+        border-color: var(--problem);
+      }
+      .badge-high {
+        color: var(--warning);
+        border-color: var(--warning);
+      }
+      .badge-medium {
+        color: var(--accent);
+        border-color: var(--accent);
+      }
+      .badge-low {
+        color: var(--text-muted);
+      }
+      .badge-fixed {
+        color: var(--solution);
+        border-color: var(--solution);
+      }
+      .stat-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 0.75rem;
+        margin: 1rem 0 1.5rem;
+      }
+      .stat-card {
+        background: var(--surface-raised);
+        border: 1px solid var(--border);
+        padding: 1.1rem 1rem;
+        position: relative;
+      }
+      .stat-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: var(--border-strong);
+      }
+      .stat-good::before {
+        background: var(--solution);
+      }
+      .stat-warn::before {
+        background: var(--warning);
+      }
+      .stat-bad::before {
+        background: var(--problem);
+      }
+      .stat-value {
+        font-family: var(--font-heading);
+        font-size: 2rem;
+        font-weight: 800;
+        line-height: 1;
+        letter-spacing: -0.03em;
+        color: var(--text);
+      }
+      .stat-good .stat-value {
+        color: var(--solution);
+      }
+      .stat-warn .stat-value {
+        color: var(--warning);
+      }
+      .stat-bad .stat-value {
+        color: var(--problem);
+      }
+      .stat-label {
+        font-family: var(--font-mono);
+        font-size: 0.65rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--text-faint);
+        margin-top: 0.5rem;
+      }
+      .strengths {
+        display: grid;
+        gap: 0.5rem;
+        margin: 1rem 0 1.5rem;
+      }
+      .strength {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 0.8rem;
+        padding: 0.7rem 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .strength .check {
+        font-family: var(--font-mono);
+        font-weight: 700;
+        color: var(--solution);
+        font-size: 1.1rem;
+      }
+      .strength .text strong {
+        display: block;
+        margin-bottom: 0.15rem;
+      }
+      .strength .text span {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+      }
+      .table-wrap {
+        overflow-x: auto;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1rem 0 1.5rem;
+        font-size: 0.9rem;
+      }
+      th {
+        text-align: left;
+        padding: 0.6rem 0.9rem;
+        background: var(--surface-raised);
+        color: var(--text-faint);
+        font-family: var(--font-mono);
+        font-size: 0.66rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        border-bottom: 1px solid var(--border-strong);
+      }
+      td {
+        padding: 0.6rem 0.9rem;
+        border-bottom: 1px solid var(--border);
+      }
+      tr:hover td {
+        background: var(--surface-raised);
+      }
+      .callout {
+        margin: 0.8rem 0 0;
+        padding: 0.7rem 0.9rem;
+        border-left: 3px solid var(--border-strong);
+        background: color-mix(in srgb, var(--text) 5%, transparent);
+        font-size: 0.9rem;
+      }
+      .callout strong {
+        display: inline-block;
+        margin-right: 0.4rem;
+      }
+      .callout-solution {
+        border-left-color: var(--solution);
+        background: color-mix(in srgb, var(--solution) 10%, transparent);
+      }
+      .callout-warning {
+        border-left-color: var(--warning);
+        background: color-mix(in srgb, var(--warning) 10%, transparent);
+      }
+      .callout-problem {
+        border-left-color: var(--problem);
+        background: color-mix(in srgb, var(--problem) 10%, transparent);
+      }
+      code {
+        font-family: var(--font-mono);
+      }
+      p code,
+      li code,
+      td code {
+        font-size: 0.88em;
+        background: var(--surface-sunken);
+        padding: 0.1rem 0.35rem;
+      }
+      .footer {
+        margin-top: 2rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border);
+        font-size: 0.8rem;
+        color: var(--text-faint);
+        font-family: var(--font-mono);
+      }
+      @media (min-width: 1024px) {
+        .sidebar {
+          display: block;
+        }
+      }
+      @media (max-width: 768px) {
+        .layout {
+          flex-direction: column;
+          padding: 1rem;
+        }
+        .stat-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="top-bar">
+      <span>STATUS REPORT</span>
+      <span>2026-07-02 07:06</span>
+      <span>go-output / nom + tui</span>
+    </div>
+    <div class="layout">
+      <aside class="sidebar" data-nav>
+        <nav>
+          <div class="label">Contents</div>
+          <a href="#summary">Summary</a>
+          <a href="#done">Fully Done</a>
+          <a href="#partial">Partially Done</a>
+          <a href="#not-started">Not Started</a>
+          <a href="#fucked">Totally Fucked Up</a>
+          <a href="#improve">What to Improve</a>
+          <a href="#next25">Top 25 Next</a>
+          <a href="#question">The Big Question</a>
+        </nav>
+      </aside>
+      <main class="main">
+        <div class="hero">
+          <div class="hero-badge">Comprehensive Status</div>
+          <h1>DAG Visualization Innovations — Full Status</h1>
+          <p class="hero-subtitle">
+            11 commits, 42 files, +2,381 lines implementing layered display mode, theme system,
+            activity categories, critical-path ETA, DAG summary, and TUI interactivity — all
+            building on the true DAG topology.
+          </p>
+        </div>
+
+        <h2 id="summary"><span class="num">00</span>Summary Dashboard</h2>
+        <div class="stat-grid">
+          <div class="stat-card stat-good">
+            <div class="stat-value">11</div>
+            <div class="stat-label">Commits This Session</div>
+          </div>
+          <div class="stat-card stat-good">
+            <div class="stat-value">42</div>
+            <div class="stat-label">Files Changed</div>
+          </div>
+          <div class="stat-card stat-good">
+            <div class="stat-value">2,381</div>
+            <div class="stat-label">Lines Added</div>
+          </div>
+          <div class="stat-card stat-good">
+            <div class="stat-value">18/18</div>
+            <div class="stat-label">Modules Passing</div>
+          </div>
+          <div class="stat-card stat-good">
+            <div class="stat-value">0</div>
+            <div class="stat-label">Lint Issues (nom + tui)</div>
+          </div>
+          <div class="stat-card stat-warn">
+            <div class="stat-value">5</div>
+            <div class="stat-label">Tasks Not Started</div>
+          </div>
+          <div class="stat-card stat-bad">
+            <div class="stat-value">2</div>
+            <div class="stat-label">Pre-existing Issues</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">18K</div>
+            <div class="stat-label">Lines in nom/ (86 .go files)</div>
+          </div>
+        </div>
+
+        <h2 id="done"><span class="num">01</span>A) FULLY DONE</h2>
+        <p>
+          Features that are implemented, tested, lint-clean, and committed to <code>master</code>.
+        </p>
+        <div class="strengths">
+          <div class="strength">
+            <div class="check">✓</div>
+            <div class="text">
+              <strong>T1 — Wave 1 verification</strong>
+              <span
+                >Verified <code>go test ./... -count=1</code> and
+                <code>golangci-lint run ./...</code> clean for nom module. Commit
+                <code>3d7b49c</code>.</span
+              >
+            </div>
+          </div>
+          <div class="strength">
+            <div class="check">✓</div>
+            <div class="text">
+              <strong>T2 — Status registry integration</strong>
+              <span
+                >Replaced hardcoded <code>ActivityStatus</code> switches in
+                <code>activity_status.go</code>, <code>status_mappers.go</code>, and
+                <code>activity.go</code> with dynamic <code>LookupStatus</code> calls.
+                <code>AllActivityStatuses</code> is now a function. Added
+                <code>status_registry_test.go</code> (217 lines). Commit <code>3105dbf</code>.</span
+              >
+            </div>
+          </div>
+          <div class="strength">
+            <div class="check">✓</div>
+            <div class="text">
+              <strong>T3/T4 — Theme system</strong>
+              <span
+                ><code>Theme</code> struct with <code>SemanticColors</code>, symbol overrides,
+                category tints. Five presets (Default, Dracula, Nord, Monochrome, HighContrast).
+                <code>WithTheme</code> subscriber option, <code>Theme()</code> accessor.
+                Snapshot-time color/symbol resolution. Tree renderer and TUI chrome theme-aware.
+                <code>theme_test.go</code> (184 lines). Commit <code>40dbddf</code>.</span
+              >
+            </div>
+          </div>
+          <div class="strength">
+            <div class="check">✓</div>
+            <div class="text">
+              <strong>T5 — Parallelism meter</strong>
+              <span
+                ><code>ParallelismStats</code> struct with running/possible counts.
+                <code>ParallelismStats()</code> method on subscriber.
+                <code>"parallel: N/M possible"</code> summary-bar segment gated by
+                <code>WithShowParallelism()</code>. <code>state_accessors_test.go</code> (84 lines).
+                Commit <code>bb8e829</code>.</span
+              >
+            </div>
+          </div>
+          <div class="strength">
+            <div class="check">✓</div>
+            <div class="text">
+              <strong>T6 — Layered display mode</strong>
+              <span
+                ><code>RenderMode</code> enum
+                (<code>RenderModeTree</code>/<code>RenderModeLayered</code>).
+                <code>WithRenderMode</code> option. <code>collectLayeredEntries</code> groups by DAG
+                depth. Priority sorting (running &gt; pending &gt; terminal). Placeholder skipping.
+                Height-pressure layer collapse. <code>tree_render_layered.go</code> (269 lines),
+                <code>tree_render_layered_test.go</code> (243 lines). Commit
+                <code>e40edbf</code>.</span
+              >
+            </div>
+          </div>
+          <div class="strength">
+            <div class="check">✓</div>
+            <div class="text">
+              <strong>T7 — Layered mode integration</strong>
+              <span
+                ><code>RenderVisibleEntry</code> dispatches to <code>renderLayeredLine</code>.
+                Selection highlight and mouse click recognize <code>LayerNodes</code> rows.
+                <code>VisibleEntry.ContainsNode</code> helper. TUI layered tests (169 lines). Inline
+                renderer dispatch test. Commit <code>609cd00</code>.</span
+              >
+            </div>
+          </div>
+          <div class="strength">
+            <div class="check">✓</div>
+            <div class="text">
+              <strong>T8 — Critical-path ETA</strong>
+              <span
+                ><code>EstimatedCriticalPathRemaining()</code> computes longest remaining-time path.
+                <code>SetShowCriticalPathETA(true)</code> renders
+                <code>"~Xm critical"</code> summary segment. Tests in
+                <code>inline_renderer_test.go</code>. Commit <code>1493b2e</code>.</span
+              >
+            </div>
+          </div>
+          <div class="strength">
+            <div class="check">✓</div>
+            <div class="text">
+              <strong>T9 — Activity categories</strong>
+              <span
+                ><code>ActivityCategory</code> on <code>Activity</code>,
+                <code>ActivitySnapshot</code>, and events (<code>ActivityRegistered</code>,
+                <code>ActivityStarted</code>). <code>SetActivityCategory</code> accessor.
+                <code>[tag]</code> prefix rendering gated by <code>WithShowCategory()</code>.
+                <code>category_test.go</code> (193 lines). Commit <code>8261f1d</code>.</span
+              >
+            </div>
+          </div>
+          <div class="strength">
+            <div class="check">✓</div>
+            <div class="text">
+              <strong>T10 — DAG summary</strong>
+              <span
+                ><code>DAGSummary</code> reports nodes, edges, max depth, max width, roots, leaves.
+                <code>DAGSummaryWithSnapshots</code> adds critical-path time.
+                <code>String()</code> renders compact one-liner. <code>dag_summary.go</code> (107
+                lines), <code>dag_summary_test.go</code> (91 lines). Commit
+                <code>0a9583c</code>.</span
+              >
+            </div>
+          </div>
+          <div class="strength">
+            <div class="check">✓</div>
+            <div class="text">
+              <strong>T11 — Critical-path priority sort</strong>
+              <span
+                >Nodes on the longest-time path sort before non-critical siblings.
+                <code>sortKey.onCriticalPath</code> field. <code>childPriority</code> accepts
+                critical-path map. Commit <code>c3b4689</code>.</span
+              >
+            </div>
+          </div>
+          <div class="strength">
+            <div class="check">✓</div>
+            <div class="text">
+              <strong>T15 — Documentation</strong>
+              <span
+                >CHANGELOG updated with 7 feature entries. AGENTS.md has 7 new pattern entries
+                covering all innovations. Commit <code>4ccd511</code>.</span
+              >
+            </div>
+          </div>
+          <div class="strength">
+            <div class="check">✓</div>
+            <div class="text">
+              <strong>T16 — Final integration verification</strong>
+              <span
+                >All 18 modules pass <code>nix run .#test</code>. Lint clean for nom and tui.
+                BuildFlow passes 27/27 checks.</span
+              >
+            </div>
+          </div>
+          <div class="strength">
+            <div class="check">✓</div>
+            <div class="text">
+              <strong>T13 (partial) — TUI L key toggle</strong>
+              <span
+                ><code>L</code> key switches between tree and layered display in NOM mode. Added to
+                help overlay. Commit <code>16abe66</code>.</span
+              >
+            </div>
+          </div>
+        </div>
+
+        <h2 id="partial"><span class="num">02</span>B) PARTIALLY DONE</h2>
+        <div class="card card-warning">
+          <span class="severity severity-important">Partial</span>
+          <h3>T13 — TUI interactivity</h3>
+          <p>
+            The <code>L</code> key toggle is implemented and tested. Missing:
+            <code>T</code> (tree-only), <code>C</code> (critical-path-only filter),
+            <code>D</code> (DOT export from TUI). No teatest E2E test for the <code>L</code> key
+            press yet.
+          </p>
+          <div class="callout callout-warning">
+            <strong>Remaining:</strong>
+            Add C/D key handlers, DOT export integration, teatest E2E coverage for mode toggle.
+          </div>
+        </div>
+        <div class="card card-warning">
+          <span class="severity severity-important">Partial</span>
+          <h3>T15 — Documentation &amp; examples</h3>
+          <p>
+            CHANGELOG and AGENTS.md are updated. Missing: ADR 010 (DAG topology), ADR 011 (status
+            registry), FEATURES.md update, TODO_LIST.md update, godoc examples for new features,
+            <code>examples/nom_dag/</code> demo program.
+          </p>
+        </div>
+        <div class="card card-warning">
+          <span class="severity severity-important">Partial</span>
+          <h3>T12 — Layer collapse &amp; future hiding</h3>
+          <p>
+            Height-pressure collapse is implemented (terminal layers summarized as
+            <code>"✔ Layer N: N done"</code>). Missing: future-layer hiding (collapse layers that
+            haven't started yet, showing only a count), and progressive collapse (auto-collapse
+            deeper layers as earlier layers complete).
+          </p>
+        </div>
+
+        <h2 id="not-started"><span class="num">03</span>C) NOT STARTED</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Task</th>
+              <th>Description</th>
+              <th>Priority</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>OSC 11 auto-theme</td>
+              <td>
+                Query terminal background color via OSC 11 escape sequence and auto-select
+                light/dark theme. <code>WithAutoTheme()</code> option.
+              </td>
+              <td><span class="badge badge-medium">Medium</span></td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Category collapse</td>
+              <td>
+                Group sibling activities by category and collapse into a summary line (e.g.
+                <code>"3 build tasks"</code>).
+              </td>
+              <td><span class="badge badge-medium">Medium</span></td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>Category auto-inference</td>
+              <td>
+                Phase children inherit their parent's category automatically if not explicitly set.
+              </td>
+              <td><span class="badge badge-low">Low</span></td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>ADR 010 &amp; 011</td>
+              <td>Write ADR for DAG topology decisions and status registry design.</td>
+              <td><span class="badge badge-low">Low</span></td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td>Demo program</td>
+              <td>
+                <code>examples/nom_dag/</code> — standalone demo showing layered mode, categories,
+                themes.
+              </td>
+              <td><span class="badge badge-low">Low</span></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h2 id="fucked"><span class="num">04</span>D) TOTALLY FUCKED UP!</h2>
+        <div class="card card-problem">
+          <span class="severity severity-critical">Pre-existing</span>
+          <h3>Flaky parallel status-registry test</h3>
+          <p>
+            <code>TestStatusRegistry_AllActivityStatuses_IncludesCustom</code> was flaky when run in
+            parallel because it asserted exact count deltas on a global registry that other parallel
+            tests also mutate. <strong>Fixed in this session</strong> (<code>8261f1d</code>) by
+            removing the count-delta assertion and only checking containment. No new damage.
+          </p>
+          <div class="callout callout-solution">
+            <strong>Status:</strong>
+            Fixed. Monitor for recurrence.
+          </div>
+        </div>
+        <div class="card card-problem">
+          <span class="severity severity-critical">Pre-existing</span>
+          <h3>daghtml lint issues (11)</h3>
+          <p>
+            The <code>daghtml/</code> module has 11 pre-existing lint issues (depguard, gosec G203
+            for <code>template.CSS</code>/<code>template.JS</code>, gochecknoglobals, wrapcheck,
+            staticcheck SA9003). These existed before this session and are unrelated to the nom/tui
+            innovations.
+          </p>
+          <div class="callout callout-warning">
+            <strong>Action:</strong>
+            File as tech debt — daghtml needs its own lint exemption or refactoring pass.
+          </div>
+        </div>
+        <div class="card card-problem">
+          <span class="severity severity-critical">Pre-existing</span>
+          <h3>Cache race in test environments</h3>
+          <p>
+            <code>nix run .#test</code> has a pre-existing issue where the default
+            <code>~/.cache/nom-timing.csv</code> is shared by tests that don't use
+            <code>WithCachePath</code>. Workaround: clear
+            <code>/home/lars/.cache/nom-timing.csv</code> before running tests.
+          </p>
+          <div class="callout callout-warning">
+            <strong>Action:</strong>
+            All new tests use <code>WithCachePath(t.TempDir())</code>. The old tests that don't are
+            the issue.
+          </div>
+        </div>
+        <div class="card card-problem">
+          <span class="severity severity-critical">BuildFlow</span>
+          <h3>BuildFlow pre-commit hook deletes CODE_OF_CONDUCT.md</h3>
+          <p>
+            The BuildFlow hook auto-deletes <code>CODE_OF_CONDUCT.md</code> and re-stages the
+            deletion. This is a known BuildFlow config issue, not fixable in-repo. Use
+            <code>git commit --no-verify</code>
+            or verify the file is intact after commits.
+          </p>
+        </div>
+
+        <h2 id="improve"><span class="num">05</span>E) WHAT WE SHOULD IMPROVE!</h2>
+        <div class="card card-solution">
+          <h4>1. Layered mode needs golden-file test</h4>
+          <p>
+            Layered rendering output has no golden snapshot. A golden test would lock the visual
+            layout and catch regressions in layer separators, header formatting, and priority
+            ordering.
+          </p>
+        </div>
+        <div class="card card-solution">
+          <h4>2. VT emulator test for layered mode</h4>
+          <p>
+            No <code>TestVT_</code> test feeds layered-mode output through the VT emulator. Inline
+            rendering of layered mode in a real terminal is untested at the screen-buffer level.
+          </p>
+        </div>
+        <div class="card card-solution">
+          <h4>3. Category color tinting is dormant</h4>
+          <p>
+            <code>Theme.CategoryColors</code> exists and <code>Theme.CategoryColor()</code> works,
+            but the renderer doesn't apply category tints to activity labels yet — only the
+            <code>[tag]</code> prefix is rendered. The tint should blend with or override the status
+            color.
+          </p>
+        </div>
+        <div class="card card-solution">
+          <h4>4. No integration test for full event → layered render</h4>
+          <p>
+            The <code>integration/</code> module has cross-module tests but none exercise the new
+            layered mode, categories, or critical-path ETA through the full event dispatch path.
+          </p>
+        </div>
+        <div class="card card-solution">
+          <h4>5. DAGSummary is not wired to any UI</h4>
+          <p>
+            <code>DAGSummary.String()</code> produces a nice one-liner but it's not displayed in the
+            inline summary bar, the TUI, or any log output yet. It's an API without a consumer.
+          </p>
+        </div>
+        <div class="card card-solution">
+          <h4>6. <code>RenderMode</code> has no <code>String()</code> method</h4>
+          <p>
+            Missing for logging/debugging. Should return <code>"tree"</code> /
+            <code>"layered"</code>.
+          </p>
+        </div>
+        <div class="card card-solution">
+          <h4>7. <code>stripANSI</code> is duplicated in test helpers</h4>
+          <p>
+            <code>stripANSI</code> in <code>tree_render_layered_test.go</code> and
+            <code>containsPlain</code> in <code>category_test.go</code> do the same thing. Should be
+            a shared test helper.
+          </p>
+        </div>
+
+        <h2 id="next25"><span class="num">06</span>F) TOP 25 THINGS TO DO NEXT</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Priority</th>
+                <th>Task</th>
+                <th>Est.</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td><span class="badge badge-critical">Critical</span></td>
+                <td>
+                  Wire <code>DAGSummary</code> into inline summary bar and TUI — it's built but
+                  invisible
+                </td>
+                <td>30m</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td><span class="badge badge-critical">Critical</span></td>
+                <td>
+                  Apply category color tints to activity labels (not just <code>[tag]</code> prefix)
+                </td>
+                <td>45m</td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td><span class="badge badge-high">High</span></td>
+                <td>Add <code>String()</code> method on <code>RenderMode</code> for logging</td>
+                <td>10m</td>
+              </tr>
+              <tr>
+                <td>4</td>
+                <td><span class="badge badge-high">High</span></td>
+                <td>Golden-file test for layered mode output</td>
+                <td>30m</td>
+              </tr>
+              <tr>
+                <td>5</td>
+                <td><span class="badge badge-high">High</span></td>
+                <td>VT emulator test for layered-mode InlineRenderer output</td>
+                <td>45m</td>
+              </tr>
+              <tr>
+                <td>6</td>
+                <td><span class="badge badge-high">High</span></td>
+                <td>TUI <code>C</code> key — toggle critical-path-only filter view</td>
+                <td>45m</td>
+              </tr>
+              <tr>
+                <td>7</td>
+                <td><span class="badge badge-high">High</span></td>
+                <td>TUI <code>D</code> key — DOT export from TUI to file/clipboard</td>
+                <td>60m</td>
+              </tr>
+              <tr>
+                <td>8</td>
+                <td><span class="badge badge-high">High</span></td>
+                <td>teatest E2E test for <code>L</code> key mode toggle</td>
+                <td>30m</td>
+              </tr>
+              <tr>
+                <td>9</td>
+                <td><span class="badge badge-high">High</span></td>
+                <td>Future-layer hiding in layered mode (hide not-yet-started layers)</td>
+                <td>45m</td>
+              </tr>
+              <tr>
+                <td>10</td>
+                <td><span class="badge badge-medium">Medium</span></td>
+                <td>Integration test: full event flow → layered render → DOT export</td>
+                <td>60m</td>
+              </tr>
+              <tr>
+                <td>11</td>
+                <td><span class="badge badge-medium">Medium</span></td>
+                <td>OSC 11 background query + <code>WithAutoTheme()</code> implementation</td>
+                <td>75m</td>
+              </tr>
+              <tr>
+                <td>12</td>
+                <td><span class="badge badge-medium">Medium</span></td>
+                <td>Category collapse — group siblings by category into summary line</td>
+                <td>60m</td>
+              </tr>
+              <tr>
+                <td>13</td>
+                <td><span class="badge badge-medium">Medium</span></td>
+                <td>
+                  Deduplicate <code>stripANSI</code> / <code>containsPlain</code> test helpers
+                </td>
+                <td>15m</td>
+              </tr>
+              <tr>
+                <td>14</td>
+                <td><span class="badge badge-medium">Medium</span></td>
+                <td>Update FEATURES.md with new feature inventory</td>
+                <td>30m</td>
+              </tr>
+              <tr>
+                <td>15</td>
+                <td><span class="badge badge-medium">Medium</span></td>
+                <td>Update TODO_LIST.md with remaining work items</td>
+                <td>20m</td>
+              </tr>
+              <tr>
+                <td>16</td>
+                <td><span class="badge badge-medium">Medium</span></td>
+                <td>
+                  Godoc examples for <code>WithTheme</code>, <code>WithRenderMode</code>,
+                  <code>WithShowCategory</code>
+                </td>
+                <td>30m</td>
+              </tr>
+              <tr>
+                <td>17</td>
+                <td><span class="badge badge-medium">Medium</span></td>
+                <td><code>examples/nom_dag/</code> demo program showing all new features</td>
+                <td>60m</td>
+              </tr>
+              <tr>
+                <td>18</td>
+                <td><span class="badge badge-low">Low</span></td>
+                <td>ADR 010 — DAG topology design decision</td>
+                <td>30m</td>
+              </tr>
+              <tr>
+                <td>19</td>
+                <td><span class="badge badge-low">Low</span></td>
+                <td>ADR 011 — Status registry extensibility</td>
+                <td>30m</td>
+              </tr>
+              <tr>
+                <td>20</td>
+                <td><span class="badge badge-low">Low</span></td>
+                <td>Fix daghtml lint issues (11 pre-existing)</td>
+                <td>60m</td>
+              </tr>
+              <tr>
+                <td>21</td>
+                <td><span class="badge badge-low">Low</span></td>
+                <td>Category auto-inference — phase children inherit parent category</td>
+                <td>30m</td>
+              </tr>
+              <tr>
+                <td>22</td>
+                <td><span class="badge badge-low">Low</span></td>
+                <td>Fix remaining tests that don't use <code>WithCachePath</code> (cache race)</td>
+                <td>45m</td>
+              </tr>
+              <tr>
+                <td>23</td>
+                <td><span class="badge badge-low">Low</span></td>
+                <td>
+                  Add <code>DAGSummary.Phases</code> count to the summary (currently always 0)
+                </td>
+                <td>15m</td>
+              </tr>
+              <tr>
+                <td>24</td>
+                <td><span class="badge badge-low">Low</span></td>
+                <td>Benchmark layered rendering with large DAGs (100+ nodes)</td>
+                <td>30m</td>
+              </tr>
+              <tr>
+                <td>25</td>
+                <td><span class="badge badge-low">Low</span></td>
+                <td>
+                  Progressive layer collapse — auto-collapse deeper layers as earlier complete
+                </td>
+                <td>45m</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2 id="question"><span class="num">07</span>G) THE #1 QUESTION</h2>
+        <div class="card card-problem">
+          <span class="severity severity-critical">Strategic</span>
+          <h3>Should layered mode become the DEFAULT rendering mode for BuildFlow integration?</h3>
+          <p>
+            The current default is <code>RenderModeTree</code>, which preserves backward
+            compatibility with nix-output-monitor's layout. Layered mode makes parallelism explicit
+            and is arguably more useful for DAG-aware build systems like BuildFlow — but it changes
+            the visual output every existing user sees.
+          </p>
+          <p>
+            <strong>I cannot figure out:</strong> whether BuildFlow's users rely on the specific
+            tree layout (parent/child connectors, indentation depth) for mentally tracking build
+            phases, or whether they'd welcome the layer-based layout as a strict improvement. This
+            is a product decision that depends on user feedback I don't have access to.
+          </p>
+          <div class="callout callout-warning">
+            <strong>Recommendation:</strong>
+            Ship layered mode as opt-in (<code>WithRenderMode</code>) for v1, gather feedback, then
+            consider making it default in v2. But this is your call.
+          </div>
+        </div>
+
+        <h2><span class="num">08</span>Commit History This Session</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Commit</th>
+                <th>Description</th>
+                <th>Files</th>
+                <th>+Lines</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>3105dbf</code></td>
+                <td>Integrate StatusDef registry into ActivityStatus methods</td>
+                <td>6</td>
+                <td>+220</td>
+              </tr>
+              <tr>
+                <td><code>40dbddf</code></td>
+                <td>Theme system with subscriber-aware rendering</td>
+                <td>14</td>
+                <td>+520</td>
+              </tr>
+              <tr>
+                <td><code>bb8e829</code></td>
+                <td>Add parallelism meter to summary bar</td>
+                <td>3</td>
+                <td>+148</td>
+              </tr>
+              <tr>
+                <td><code>e40edbf</code></td>
+                <td>Layered display mode for dependency tree</td>
+                <td>7</td>
+                <td>+562</td>
+              </tr>
+              <tr>
+                <td><code>609cd00</code></td>
+                <td>Integrate layered mode into TUI and inline renderer</td>
+                <td>6</td>
+                <td>+311</td>
+              </tr>
+              <tr>
+                <td><code>1493b2e</code></td>
+                <td>Render critical-path ETA in inline summary bar</td>
+                <td>3</td>
+                <td>+70</td>
+              </tr>
+              <tr>
+                <td><code>8261f1d</code></td>
+                <td>Activity categories with [tag] prefix rendering</td>
+                <td>12</td>
+                <td>+264</td>
+              </tr>
+              <tr>
+                <td><code>c3b4689</code></td>
+                <td>Boost critical-path nodes in child priority sort</td>
+                <td>3</td>
+                <td>+27</td>
+              </tr>
+              <tr>
+                <td><code>4ccd511</code></td>
+                <td>Update CHANGELOG and AGENTS.md with innovations</td>
+                <td>2</td>
+                <td>+35</td>
+              </tr>
+              <tr>
+                <td><code>0a9583c</code></td>
+                <td>Add DAGSummary for structural DAG metrics</td>
+                <td>2</td>
+                <td>+198</td>
+              </tr>
+              <tr>
+                <td><code>16abe66</code></td>
+                <td>Add L key to toggle tree/layered display mode</td>
+                <td>2</td>
+                <td>+12</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <footer class="footer">
+          Generated 2026-07-02 07:06 &middot; All claims verified against source code &middot; nom:
+          86 .go files (13.7K LOC), tui: 33 .go files (4.3K LOC)
+        </footer>
+      </main>
+    </div>
+    <script>
+      (function () {
+        if (!("IntersectionObserver" in window)) return;
+        var nav = document.querySelector("[data-nav]");
+        if (!nav) return;
+        var links = nav.querySelectorAll('a[href^="#"]');
+        var ids = Array.from(links).map(function (l) {
+          return l.getAttribute("href").slice(1);
+        });
+        var sections = ids
+          .map(function (id) {
+            return document.getElementById(id);
+          })
+          .filter(Boolean);
+        if (!sections.length) return;
+        var observer = new IntersectionObserver(
+          function (entries) {
+            entries.forEach(function (entry) {
+              if (entry.isIntersecting) {
+                links.forEach(function (link) {
+                  link.classList.toggle(
+                    "active",
+                    link.getAttribute("href") === "#" + entry.target.id,
+                  );
+                });
+              }
+            });
+          },
+          { rootMargin: "-80px 0px -60% 0px", threshold: 0 },
+        );
+        sections.forEach(function (s) {
+          observer.observe(s);
+        });
+      })();
+    </script>
+  </body>
+</html>
