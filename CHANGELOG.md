@@ -6,6 +6,31 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added — testing, docs, and examples round
+
+- **Nom enum parse tests** — `ParseActivityStatus`, `ParseActivityKind`,
+  `IsValid()`, `AllowedValues()`, and both `Error()` types now have 100%
+  coverage (was 0%). nom coverage: 91% → 93%.
+- **Color-on VT test** (`nom/`) — forces lipgloss ANSI profile and asserts SGR
+  sequences are present in raw output and processed into cell foreground colors
+  by the VT emulator. All prior VT tests used `SetNoColor(true)`.
+- **Golden-file tests** expanded to `graph/` (4: DOT simple/styled, Mermaid
+  simple/no-fence), `d2/` (3: simple, shaped, empty), `serialization/` (3:
+  JSON, YAML, TOML), and `plantuml/` (2: simple, shaped).
+- **Fuzz test** for `formatActivityLabel` — 1.8M execs/sec, verifies no panics
+  and label containment across arbitrary unicode/emoji/newline strings.
+- **Format registration integration test** — verifies all 16 formats have shapes
+  registered via `init()`, proving the registry-dispatch-via-init pattern.
+- **teatest VT screen-level assertion** (`tui/`) — pipes teatest diff output
+  through x/vt and asserts activity labels appear on the reconstructed screen.
+- **Godoc examples** for `nom/` (3), `tree/` (2), and `markdown/` (3).
+- **Standalone NOM InlineRenderer demo** (`examples/nom_inline_renderer/`).
+
+### Fixed
+
+- **Example error handling** — `examples/nom_progress` and
+  `examples/diagram_export` no longer silently ignore `OnEvent` errors with `_ =`.
+
 ### Added — charmbracelet/x testing infrastructure integration
 
 - **VT emulator test harness** (`nom/`) — feeds InlineRenderer output to a real
