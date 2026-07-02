@@ -58,7 +58,7 @@ func (WorkflowFailed) isEvent() {}
 // --- Activity lifecycle events ---
 
 // ActivityStarted signals that an activity has begun running. Kind, Deps,
-// Host, and Download are optional (zero-valued = absent).
+// Host, Download, and Category are optional (zero-valued = absent).
 type ActivityStarted struct {
 	ID       ActivityID
 	Name     ActivityName
@@ -66,6 +66,7 @@ type ActivityStarted struct {
 	Deps     []ActivityID
 	Host     string
 	Download DownloadProgress
+	Category ActivityCategory
 }
 
 func (ActivityStarted) isEvent() {}
@@ -74,10 +75,11 @@ func (ActivityStarted) isEvent() {}
 // transitioning it to running. Used for pre-declaring structure (e.g. phases
 // and their children) before the work actually starts.
 type ActivityRegistered struct {
-	ID   ActivityID
-	Name ActivityName
-	Kind ActivityKind
-	Deps []ActivityID
+	ID       ActivityID
+	Name     ActivityName
+	Kind     ActivityKind
+	Deps     []ActivityID
+	Category ActivityCategory
 }
 
 func (ActivityRegistered) isEvent() {}

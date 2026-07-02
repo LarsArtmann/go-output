@@ -75,6 +75,10 @@ type DependencyTree struct {
 	// incomplete dependencies and their status, making blockers explicit.
 	showBlockage bool
 
+	// showCategory enables a dim [tag] prefix and category-tint coloring on
+	// activities that have a non-empty Category.
+	showCategory bool
+
 	// renderMode selects between tree-mode and layered-mode display.
 	renderMode RenderMode
 

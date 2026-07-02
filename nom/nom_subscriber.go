@@ -118,6 +118,15 @@ func WithShowParallelism() SubscriberOption {
 	}
 }
 
+// WithShowCategory enables a dim [tag] prefix and category-tint coloring on
+// activities that have a non-empty Category. Off by default to preserve
+// nom-compatible output.
+func WithShowCategory() SubscriberOption {
+	return func(ns *NOMStyleSubscriber) {
+		ns.dependencyTree.showCategory = true
+	}
+}
+
 // WithTheme sets the visual theme used for status symbols and colors.
 // If not supplied, ThemeDefault is used.
 func WithTheme(theme Theme) SubscriberOption {

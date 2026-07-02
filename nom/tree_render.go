@@ -225,6 +225,9 @@ type labelOptions struct {
 	// Convergence renders a ◇ prefix for nodes with multiple incoming
 	// dependencies (fan-in points).
 	Convergence bool
+	// ShowCategory renders a dim [tag] prefix when the snapshot has a
+	// non-empty Category.
+	ShowCategory bool
 }
 
 // formatActivityLabelWithOptions is the configurable version of
@@ -246,6 +249,12 @@ func formatActivityLabelWithOptions(
 	}
 
 	var markers []string
+
+	// Category tag: a dim [tag] prefix when enabled and the snapshot carries
+	// a non-empty Category.
+	if opts.ShowCategory && snap.Category != "" {
+		markers = append(markers, lipgloss.NewStyle().Faint(true).Render("["+string(snap.Category)+"]"))
+	}
 
 	if opts.Convergence {
 		markers = append(markers, string(SymbolConvergence))
@@ -452,6 +461,7 @@ func (dt *DependencyTree) renderLine( //nolint:cyclop // label + sub-line render
 		activityDisplay, color = formatActivityLabelWithOptions(snap, dt.theme, labelOptions{
 			OnCriticalPath: entry.OnCriticalPath,
 			Convergence:    entry.Convergence,
+			ShowCategory:   dt.showCategory,
 		})
 	}
 

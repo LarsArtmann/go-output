@@ -230,7 +230,9 @@ func (dt *DependencyTree) renderLayeredLine(
 
 	for _, node := range entry.LayerNodes {
 		snap := lookupSnapshot(snapshots, node.ID)
-		label, color := formatActivityLabelWithOptions(snap, dt.theme, labelOptions{})
+		label, color := formatActivityLabelWithOptions(snap, dt.theme, labelOptions{
+			ShowCategory: dt.showCategory,
+		})
 		styled := activityNodeStyle(color).Render(label)
 		parts = append(parts, styled)
 	}

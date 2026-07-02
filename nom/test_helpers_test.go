@@ -77,3 +77,10 @@ func (b *snapshotBuilder) setPhase(id ActivityID, label string, status ActivityS
 	s.Kind = ActivityKindPhase
 	b.snaps[id] = s
 }
+
+func (b *snapshotBuilder) setCategory(id ActivityID, label string, status ActivityStatus, category ActivityCategory) {
+	b.set(id, label, status, 0)
+	s := b.snaps[id]
+	s.Category = category
+	b.snaps[id] = s
+}

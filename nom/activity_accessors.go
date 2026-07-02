@@ -59,3 +59,16 @@ func (ns *NOMStyleSubscriber) SetEstimatedTime(activityID ActivityID, estimated 
 		activity.SetEstimatedTime(estimated)
 	}
 }
+
+// SetActivityCategory sets the semantic category for an activity (e.g. "build",
+// "test", "deploy"). The category drives optional [tag] prefix rendering and
+// color tinting via the theme's CategoryColors map. Pass an empty string to
+// clear the category.
+func (ns *NOMStyleSubscriber) SetActivityCategory(activityID ActivityID, category ActivityCategory) {
+	ns.mu.Lock()
+	defer ns.mu.Unlock()
+
+	if activity, exists := ns.activities[activityID]; exists {
+		activity.Category = category
+	}
+}

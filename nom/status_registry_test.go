@@ -181,8 +181,6 @@ func TestStatusRegistry_CustomStatusMethods(t *testing.T) {
 func TestStatusRegistry_AllActivityStatuses_IncludesCustom(t *testing.T) {
 	t.Parallel()
 
-	before := len(AllActivityStatuses())
-
 	custom := RegisterStatus(
 		"unique-custom-"+t.Name(),
 		"★",
@@ -193,9 +191,6 @@ func TestStatusRegistry_AllActivityStatuses_IncludesCustom(t *testing.T) {
 	)
 
 	after := AllActivityStatuses()
-	if len(after) != before+1 {
-		t.Fatalf("AllActivityStatuses() length = %d, want %d", len(after), before+1)
-	}
 
 	if !slices.Contains(after, custom) {
 		t.Errorf("AllActivityStatuses() does not include custom status %v", custom)

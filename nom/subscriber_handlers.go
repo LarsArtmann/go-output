@@ -105,6 +105,10 @@ func (ns *NOMStyleSubscriber) handleActivityStarted(e ActivityStarted) error {
 	activity.Host = e.Host
 	activity.Download = e.Download
 
+	if e.Category != "" {
+		activity.Category = e.Category
+	}
+
 	medianDuration := ns.timingCache.GetMedian(e.Name.String())
 	if medianDuration > 0 {
 		activity.SetEstimatedTime(medianDuration)
@@ -120,7 +124,11 @@ func (ns *NOMStyleSubscriber) handleActivityRegistered(e ActivityRegistered) err
 	ns.mu.Lock()
 	defer ns.mu.Unlock()
 
-	ns.getOrCreateActivity(e.ID, e.Name, e.Kind)
+	activity := ns.getOrCreateActivity(e.ID, e.Name, e.Kind)
+
+	if e.Category != "" {
+		activity.Category = e.Category
+	}
 
 	return ns.dependencyTree.AddActivity(e.ID, e.Deps)
 }

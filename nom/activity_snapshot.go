@@ -37,6 +37,10 @@ type ActivitySnapshot struct {
 	// RetryReason optionally carries the cause of the most recent retry (e.g.
 	// "timeout"). Rendered as "⟳2 (timeout)" when non-empty.
 	RetryReason string
+	// Category is a user-defined semantic group (e.g. "build", "test",
+	// "deploy"). Rendered as a dim [tag] prefix when non-empty and
+	// showCategory is enabled on the tree.
+	Category ActivityCategory
 }
 
 // IsPhase reports whether the snapshotted activity is a Phase grouping node.
@@ -100,6 +104,7 @@ func (ns *NOMStyleSubscriber) SnapshotActivities() map[ActivityID]ActivitySnapsh
 			Progress:       activity.Progress,
 			RetryCount:     activity.RetryCount,
 			RetryReason:    activity.RetryReason,
+			Category:       activity.Category,
 		}
 	}
 

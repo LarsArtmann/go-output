@@ -53,6 +53,10 @@ type Activity struct {
 	// RetryReason optionally carries the cause of the most recent retry (e.g.
 	// "timeout", "network"). Rendered as "⟳2 (timeout)" when non-empty.
 	RetryReason string
+	// Category is a user-defined semantic group (e.g. "build", "test",
+	// "deploy") used for tinting and collapsing related activities. Empty
+	// means no category. Set via events or SetActivityCategory.
+	Category ActivityCategory
 }
 
 // NewActivity creates a Task Activity with branded ID/Label and default
