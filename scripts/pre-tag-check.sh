@@ -47,7 +47,7 @@ pass "go.work present"
 # Module list (mirrors flake.nix `modules`)
 # ---------------------------------------------------------------------------
 MODULES=(
-  "." "bdd" "d2" "delimited" "enum" "envdetect" "escape" "examples"
+  "." "bdd" "d2" "daghtml" "delimited" "escape" "examples"
   "graph" "integration" "markdown" "markup" "nom" "plantuml"
   "serialization" "table" "testhelpers" "testhelpers/graphtest" "tree" "tui"
 )

@@ -6,6 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.23.1] - 2026-07-02
+
+### Fixed
+
+- **pre-tag-check.sh** — Removed stale `enum` and `envdetect` from the module
+  list (both were merged into root in v0.18.0) and added `daghtml` (new in
+  v0.23.0). The script would fail on build/test for non-existent module
+  directories.
+
+### Changed
+
+- **daghtml** — Extracted shared `prepareRender` helper from `Render` and
+  `GraphHTML` to eliminate duplicated initialization logic.
+- **tui** — Migrated layered-mode tests to use the `setupLayeredTestModel`
+  helper, reducing boilerplate from 11 lines to a single function call per test.
+
 ## [0.23.0] - 2026-07-02
 
 ### Added — daghtml SDK (cross-project DAG visualization extraction)
