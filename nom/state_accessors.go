@@ -1,8 +1,21 @@
 package nom
 
 import (
+	"fmt"
 	"time"
 )
+
+// ParallelismStats reports how many activities are currently running and how
+// many more could start immediately (all dependencies satisfied).
+type ParallelismStats struct {
+	Running  int
+	Possible int
+}
+
+// String returns a compact display form like "parallel: 3/4 possible".
+func (ps ParallelismStats) String() string {
+	return fmt.Sprintf("parallel: %d/%d possible", ps.Running, ps.Possible)
+}
 
 // GetDependencyTree returns the dependency tree for structural access (node
 // lookup, root listing). The tree nodes store ONLY IDs and tree structure —
@@ -112,4 +125,55 @@ func (ns *NOMStyleSubscriber) EstimatedTotalRemaining() time.Duration {
 	}
 
 	return total
+}
+
+// ParallelismStats returns the number of currently running activities and the
+// number of pending activities whose dependencies are all complete (i.e., ready
+// to start). The tree is consulted for dependency edges; the subscriber lock is
+// held first, then the tree lock, matching the lock-order used by Edges().
+func (ns *NOMStyleSubscriber) ParallelismStats() ParallelismStats {
+	ns.mu.RLock()
+	defer ns.mu.RUnlock()
+
+	var stats ParallelismStats
+
+	tree := ns.dependencyTree
+	if tree == nil {
+		return stats
+	}
+
+	tree.mu.RLock()
+	defer tree.mu.RUnlock()
+
+	for _, activity := range ns.activities {
+		switch activity.Status { //nolint:exhaustive // only running/pending affect parallelism
+		case ActivityStatusRunning:
+			stats.Running++
+		case ActivityStatusPending:
+			if ns.canStartImmediatelyLocked(ActivityID(activity.ID.String()), tree) {
+				stats.Possible++
+			}
+		}
+	}
+
+	return stats
+}
+
+func (ns *NOMStyleSubscriber) canStartImmediatelyLocked(
+	id ActivityID,
+	tree *DependencyTree,
+) bool {
+	node, ok := tree.nodes[id]
+	if !ok || len(node.Deps) == 0 {
+		return true
+	}
+
+	for _, depID := range node.Deps {
+		dep, ok := ns.activities[depID]
+		if !ok || dep.Status != ActivityStatusCompleted {
+			return false
+		}
+	}
+
+	return true
 }

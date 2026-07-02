@@ -30,9 +30,13 @@ type NOMStyleSubscriber struct {
 	workflowID   WorkflowID
 	workflowName WorkflowName
 	startTime    time.Time
-	isRunning    bool
-	enabled      bool
-	theme        Theme
+	// showParallelism enables the "parallel: N/M possible" segment in the
+	// inline renderer summary bar.
+	showParallelism bool
+
+	isRunning bool
+	enabled   bool
+	theme     Theme
 }
 
 // SubscriberOption configures a NOMStyleSubscriber at construction time.
@@ -94,6 +98,14 @@ func WithShowConvergence() SubscriberOption {
 func WithShowBlockage() SubscriberOption {
 	return func(ns *NOMStyleSubscriber) {
 		ns.dependencyTree.showBlockage = true
+	}
+}
+
+// WithShowParallelism enables a "parallel: N/M possible" segment in the inline
+// renderer summary bar. Off by default to keep the summary compact.
+func WithShowParallelism() SubscriberOption {
+	return func(ns *NOMStyleSubscriber) {
+		ns.showParallelism = true
 	}
 }
 

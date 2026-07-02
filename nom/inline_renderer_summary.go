@@ -103,6 +103,14 @@ func (r *InlineRenderer) renderSummary(startTime time.Time) string {
 		}
 	}
 
+	// Parallelism meter: running / immediately-startable pending activities.
+	if r.subscriber.showParallelism {
+		parallelism := r.subscriber.ParallelismStats()
+		if parallelism.Possible > 0 {
+			parts = append(parts, parallelism.String())
+		}
+	}
+
 	if len(parts) == 0 {
 		return ""
 	}
