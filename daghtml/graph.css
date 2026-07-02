@@ -16,6 +16,8 @@
   --warning-dim: rgba(212, 168, 67, 0.12);
   --error: #e07060;
   --error-dim: rgba(224, 112, 96, 0.12);
+  --transient: #d49060;
+  --transient-dim: rgba(212, 144, 96, 0.12);
   --info: #8ec5d4;
   --radius: 8px;
   --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -97,20 +99,19 @@ header h1 .logo-dot {
   color: var(--accent);
 }
 
-#graph-container {
+.dag-container {
   background: var(--bg-elevated);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  min-height: 500px;
   position: relative;
   overflow: hidden;
   cursor: grab;
 }
 
-#graph-container:active {
+.dag-container:active {
   cursor: grabbing;
 }
-#graph-container svg {
+.dag-container svg {
   width: 100%;
   height: 100%;
   display: block;

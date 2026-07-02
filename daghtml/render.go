@@ -36,7 +36,7 @@ const pageTemplate = `<!DOCTYPE html>
 <h1><span class="logo-dot"></span>{{.Title}}</h1>
 {{if .Subtitle}}<p class="subtitle">{{.Subtitle}}</p>{{end}}
 </header>
-<div id="{{.ContainerID}}" style="min-height:{{.Height}}px">
+<div id="{{.ContainerID}}" class="dag-container" style="min-height:{{.Height}}px">
   <div class="graph-controls">
     <button class="graph-zoom-in" title="Zoom in" aria-label="Zoom in">+</button>
     <button class="graph-zoom-out" title="Zoom out" aria-label="Zoom out">&#8722;</button>
@@ -51,7 +51,7 @@ const pageTemplate = `<!DOCTYPE html>
 </body>
 </html>`
 
-const graphSectionTemplate = `<div id="{{.ContainerID}}" style="min-height:{{.Height}}px">
+const graphSectionTemplate = `<div id="{{.ContainerID}}" class="dag-container" style="min-height:{{.Height}}px">
   <div class="graph-controls">
     <button class="graph-zoom-in" title="Zoom in" aria-label="Zoom in">+</button>
     <button class="graph-zoom-out" title="Zoom out" aria-label="Zoom out">&#8722;</button>
