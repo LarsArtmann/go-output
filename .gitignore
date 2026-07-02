@@ -81,11 +81,13 @@ examples/nom_progress/nom_progress
 .Trashes
 ehthumbs.db
 
+## Buildflow artifacts
+audit-log.*
+workflow-audit-log.*
+.buildflow-workflow-baseline.json
+
 ## Reports and coverage
 reports/
-
-## BuildFlow CI artifacts
-.buildflow-resume.json
 
 ## Nix
 result-*
