@@ -1,6 +1,6 @@
 // initDAGGraph renders an interactive Sugiyama-layered DAG visualization
 // into the element identified by containerId. The DAG data (nodes + edges)
-// is read from a <script type="application/json"> element identified by
+// is read from a JSON script element identified by
 // dataScriptId.
 //
 // The function is idempotent: calling it multiple times on the same container
