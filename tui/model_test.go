@@ -52,6 +52,34 @@ func setupTestTree(model *ProgressModel) *nom.DependencyTree {
 	return tree
 }
 
+// setupLayeredTestModel returns a model wired with a two-level (root + child)
+// dependency tree, both activities registered, and layered render mode active.
+// Tests that only need a root pass withChild=false.
+func setupLayeredTestModel(t *testing.T, withChild bool) (*ProgressModel, *nom.DependencyTree) {
+	t.Helper()
+
+	model := newTestModel()
+	model.width = 80
+	model.height = 24
+	model.displayMode = DisplayModeNOM
+
+	tree := setupTestTree(model)
+	_ = tree.AddActivity(nom.ActivityID("root"), nil)
+
+	addTestActivity(model, "root", "Root", nom.ActivityStatusRunning)
+
+	if withChild {
+		_ = tree.AddActivity(nom.ActivityID("child"), []nom.ActivityID{"root"})
+
+		addTestActivity(model, "child", "Child", nom.ActivityStatusCompleted)
+	}
+
+	_ = tree.GetRootNodes()
+	tree.SetRenderMode(nom.RenderModeLayered)
+
+	return model, tree
+}
+
 // clickAt simulates a mouse click at the given Y coordinate and returns the updated model.
 func clickAt(model *ProgressModel, clickY int) *ProgressModel {
 	updatedModel, _ := model.Update(tea.MouseClickMsg{

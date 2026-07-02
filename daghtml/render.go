@@ -70,10 +70,9 @@ var (
 	compiledGraphSection = template.Must(template.New("graph").Parse(graphSectionTemplate))
 )
 
-// Render produces a complete, self-contained HTML page with an interactive
-// Sugiyama-layered DAG visualization. The output includes all CSS and
-// JavaScript inline — no external dependencies, no network requests.
-func Render(dag DAG, opts ...Option) (string, error) {
+// prepareRender applies options to the default config and serializes the DAG
+// to JSON. Used by [Render] and [GraphHTML] to share their preamble.
+func prepareRender(opts []Option, dag DAG) (config, string, error) {
 	cfg := defaultConfig()
 	for _, opt := range opts {
 		opt(&cfg)
@@ -81,7 +80,19 @@ func Render(dag DAG, opts ...Option) (string, error) {
 
 	jsonData, err := dagToJSON(dag)
 	if err != nil {
-		return "", fmt.Errorf("serialize DAG: %w", err)
+		return config{}, "", fmt.Errorf("serialize DAG: %w", err)
+	}
+
+	return cfg, jsonData, nil
+}
+
+// Render produces a complete, self-contained HTML page with an interactive
+// Sugiyama-layered DAG visualization. The output includes all CSS and
+// JavaScript inline — no external dependencies, no network requests.
+func Render(dag DAG, opts ...Option) (string, error) {
+	cfg, jsonData, err := prepareRender(opts, dag)
+	if err != nil {
+		return "", err
 	}
 
 	data := pageData{
@@ -127,14 +138,9 @@ func Write(w io.Writer, dag DAG, opts ...Option) error {
 // (--bg, --surface, --accent, --success, --error, etc.) or include the
 // graph CSS via [StyleSheet].
 func GraphHTML(dag DAG, opts ...Option) (string, error) {
-	cfg := defaultConfig()
-	for _, opt := range opts {
-		opt(&cfg)
-	}
-
-	jsonData, err := dagToJSON(dag)
+	cfg, jsonData, err := prepareRender(opts, dag)
 	if err != nil {
-		return "", fmt.Errorf("serialize DAG: %w", err)
+		return "", err
 	}
 
 	data := pageData{
