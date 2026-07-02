@@ -101,6 +101,15 @@ func WithShowBlockage() SubscriberOption {
 	}
 }
 
+// WithRenderMode selects how the dependency tree is rendered: tree mode
+// (default) or layered mode. Layered mode groups activities by DAG depth and
+// renders each layer horizontally, making parallel work explicit.
+func WithRenderMode(mode RenderMode) SubscriberOption {
+	return func(ns *NOMStyleSubscriber) {
+		ns.dependencyTree.renderMode = mode
+	}
+}
+
 // WithShowParallelism enables a "parallel: N/M possible" segment in the inline
 // renderer summary bar. Off by default to keep the summary compact.
 func WithShowParallelism() SubscriberOption {
@@ -142,6 +151,15 @@ func (ns *NOMStyleSubscriber) Theme() Theme {
 	defer ns.mu.RUnlock()
 
 	return ns.theme
+}
+
+// DependencyTree returns the subscriber's dependency tree. Renderers and
+// integration tests use this to inspect or configure display state directly.
+func (ns *NOMStyleSubscriber) DependencyTree() *DependencyTree {
+	ns.mu.RLock()
+	defer ns.mu.RUnlock()
+
+	return ns.dependencyTree
 }
 
 // Store returns an ActivityReader for diagram export. The projection is

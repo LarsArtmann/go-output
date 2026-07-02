@@ -22,6 +22,18 @@ func (n WorkflowName) String() string { return string(n) }
 // "deploy") used for tinting and collapsing related activities.
 type ActivityCategory string
 
+// RenderMode selects how the dependency tree is displayed.
+type RenderMode int
+
+const (
+	// RenderModeTree draws the dependency tree with parent/child connectors,
+	// matching nix-output-monitor's layout.
+	RenderModeTree RenderMode = iota
+	// RenderModeLayered groups activities by their DAG depth and renders each
+	// layer horizontally, making parallel work explicit.
+	RenderModeLayered
+)
+
 func NewActivityID(s string) ActivityID     { return ActivityID(s) }
 func NewWorkflowID(s string) WorkflowID     { return WorkflowID(s) }
 func NewActivityName(s string) ActivityName { return ActivityName(s) }

@@ -24,6 +24,10 @@ func (dt *DependencyTree) RenderWithSnapshots(
 		return fmt.Sprintf("Error building tree: %v", err)
 	}
 
+	if dt.renderMode == RenderModeLayered {
+		return dt.renderLayered(snapshots, maxHeight, maxWidth)
+	}
+
 	visible := dt.collectVisibleNodes(snapshots, maxHeight)
 
 	if len(visible) == 0 {
@@ -531,6 +535,14 @@ func (dt *DependencyTree) VisibleNodesWithSnapshots(
 type VisibleEntry struct {
 	Node *ActivityNode
 
+	// LayerNodes holds a single wrapped row of activities in layered mode.
+	// When non-empty, Node is nil and this entry renders as one horizontal row.
+	LayerNodes []*ActivityNode
+
+	// LayerHeader is a synthetic layer header or separator line. When non-empty,
+	// Node and LayerNodes are nil.
+	LayerHeader string
+
 	Prefix    string
 	Connector string
 	IsRoot    bool
@@ -581,6 +593,10 @@ func (dt *DependencyTree) VisibleEntriesWithSnapshots(
 		return nil
 	}
 
+	if dt.renderMode == RenderModeLayered {
+		return dt.collectLayeredEntries(snapshots, maxHeight)
+	}
+
 	return dt.collectVisibleNodes(snapshots, maxHeight)
 }
 
@@ -623,6 +639,10 @@ func (dt *DependencyTree) RenderNode(
 ) string {
 	if node == nil {
 		return ""
+	}
+
+	if dt.renderMode == RenderModeLayered {
+		return dt.renderLayeredLine(VisibleEntry{LayerNodes: []*ActivityNode{node}}, snapshots, 0)
 	}
 
 	snap := lookupSnapshot(snapshots, node.ID)

@@ -1,5 +1,21 @@
 package nom
 
+// SetRenderMode selects tree or layered display for this dependency tree.
+func (dt *DependencyTree) SetRenderMode(mode RenderMode) {
+	dt.mu.Lock()
+	defer dt.mu.Unlock()
+
+	dt.renderMode = mode
+}
+
+// RenderMode returns the current display mode.
+func (dt *DependencyTree) RenderMode() RenderMode {
+	dt.mu.RLock()
+	defer dt.mu.RUnlock()
+
+	return dt.renderMode
+}
+
 // GetNode returns a node by activity ID.
 func (dt *DependencyTree) GetNode(activityID ActivityID) *ActivityNode {
 	dt.mu.RLock()

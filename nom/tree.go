@@ -75,6 +75,9 @@ type DependencyTree struct {
 	// incomplete dependencies and their status, making blockers explicit.
 	showBlockage bool
 
+	// renderMode selects between tree-mode and layered-mode display.
+	renderMode RenderMode
+
 	// theme is the active visual theme for status symbols and colors.
 	// Stored on the tree so renderers can resolve themed values without an
 	// explicit theme argument at every call site.
