@@ -20,9 +20,10 @@ This session continued the NOM BuildFlow integration work from the 12:33 status 
 
 ### 1. Retry Reason Display — `⟳2 (timeout)`
 
-**Problem:** `ActivityRetrying` had no way to communicate *why* the retry happened. BuildFlow's retry path knows the cause (timeout, network error, flaky test) but nom had no field for it.
+**Problem:** `ActivityRetrying` had no way to communicate _why_ the retry happened. BuildFlow's retry path knows the cause (timeout, network error, flaky test) but nom had no field for it.
 
 **What shipped:**
+
 - **`Reason string` field** on `ActivityRetrying` event (`event.go`) — non-breaking, zero-value backward-compatible (no reason = plain `⟳N`)
 - **`RetryReason string` field** on `Activity` (`activity.go`) and `ActivitySnapshot` (`activity_snapshot.go`) — threaded through the snapshot path for race-free rendering
 - **Handler update** in `subscriber_handlers.go` — `handleActivityRetrying` sets `activity.RetryReason = e.Reason`
@@ -37,6 +38,7 @@ This session continued the NOM BuildFlow integration work from the 12:33 status 
 **Problem:** The previous session shipped `SetEstimatedRemainingFunc` on the InlineRenderer (callback-based), but the subscriber had no way to compute the remaining time from its own activity estimates. BuildFlow had to compute the sum externally. The status report listed "Subscriber-level `EstimatedTotalRemaining()`" as P2 item #11.
 
 **What shipped:**
+
 - **`EstimatedTotalRemaining() time.Duration`** on `NOMStyleSubscriber` in `state_accessors.go` — sums remaining estimates:
   - Pending activities: contribute full `EstimatedTime`
   - Running activities: contribute `max(0, EstimatedTime - elapsed)`
@@ -53,6 +55,7 @@ This session continued the NOM BuildFlow integration work from the 12:33 status 
 **Problem:** The TUI's NOM summary bar (`tui/summary.go:buildNOMSummary`) showed only counts and elapsed time. The InlineRenderer had `~Xm left` support but the TUI didn't. Status report P2 item #12.
 
 **What shipped:**
+
 - **`buildNOMSummary`** gained a `remaining time.Duration` parameter — appends `| ~2m left` when positive
 - **`estimatedRemaining()` helper** on `ProgressModel` (`render_nom.go`) — delegates to `nomSubscriber.EstimatedTotalRemaining()`, returns 0 if no subscriber
 - **`renderNOMSummaryBar`** updated to pass the subscriber's remaining estimate
@@ -67,6 +70,7 @@ This session continued the NOM BuildFlow integration work from the 12:33 status 
 **Problem:** The 12:33 status report item #6 claimed the TUI needed view-layer updates to render Progress/RetryCount. This was **incorrect** — the TUI delegates line rendering to `nom.RenderVisibleEntry` → `formatActivityLabel`, which already renders both fields.
 
 **What shipped:**
+
 - **3 proof tests** in new file `tui/render_nom_progress_test.go`:
   - `TestTUIRendersProgress` — verifies `→ Tidying [2/26]` appears in TUI tree output
   - `TestTUIRendersRetry` — verifies `⟳` symbol and `(timeout)` reason appear in TUI tree output
@@ -81,17 +85,18 @@ This session continued the NOM BuildFlow integration work from the 12:33 status 
 
 **What shipped (new file `nom/progress_lifecycle_test.go`, 5 tests):**
 
-| Test | Verifies |
-| --- | --- |
-| `TestMultiSubscriber_ProgressAndRetryFanout` | Progress + retry events propagate to every subscriber behind MultiSubscriber |
-| `TestResetClearsProgressAndRetry` | `Reset()` wipes Progress, RetryCount, RetryReason, and zeroes counts |
-| `TestProgressClearedOnRetry` | Retry's `SetRunning()` clears stale progress (fresh start semantics) |
-| `TestConcurrentProgressAndRetry` | 8 goroutines × 100 ops each: progress/fail/retry + concurrent reads. Validates counts cache == brute-force recount after storm. Race-clean. |
-| `TestEstimatedTotalRemainingRunningElapsed` | Running activities contribute `estimate - elapsed`, not full estimate |
+| Test                                         | Verifies                                                                                                                                    |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `TestMultiSubscriber_ProgressAndRetryFanout` | Progress + retry events propagate to every subscriber behind MultiSubscriber                                                                |
+| `TestResetClearsProgressAndRetry`            | `Reset()` wipes Progress, RetryCount, RetryReason, and zeroes counts                                                                        |
+| `TestProgressClearedOnRetry`                 | Retry's `SetRunning()` clears stale progress (fresh start semantics)                                                                        |
+| `TestConcurrentProgressAndRetry`             | 8 goroutines × 100 ops each: progress/fail/retry + concurrent reads. Validates counts cache == brute-force recount after storm. Race-clean. |
+| `TestEstimatedTotalRemainingRunningElapsed`  | Running activities contribute `estimate - elapsed`, not full estimate                                                                       |
 
 ### 6. Documentation & Examples
 
 **AGENTS.md** — 4 pattern/gotcha entries updated or added:
+
 - Sealed Event count corrected: "7 concrete structs" → "9 concrete structs" (listed all 9 by name)
 - New pattern: **Progress/Retry events (v0.21.0)** — documents auto-clear semantics, persistence rules, direct accessors
 - New pattern: **EstimatedTotalRemaining is subscriber-owned (v0.21.0)** — single source of truth, renderer delegation
@@ -101,6 +106,7 @@ This session continued the NOM BuildFlow integration work from the 12:33 status 
 **CHANGELOG.md** — `[Unreleased]` section with full feature breakdown, changed APIs, and test count
 
 **`examples/nom_progress/main.go`** — demonstrates all three new capabilities:
+
 - `ActivityProgress` sub-step message
 - `ActivityRetrying` with reason
 - `SetEstimatedTime` + `EstimatedTotalRemaining()`
@@ -109,15 +115,15 @@ This session continued the NOM BuildFlow integration work from the 12:33 status 
 
 ### 7. Verification — All Green
 
-| Check | Result |
-| --- | --- |
-| `nix run .#build` (18 modules) | ✅ All build clean |
-| `nix run .#test` (18 modules) | ✅ All pass |
-| `nix run .#lint` (18 modules) | ✅ 0 issues everywhere |
-| `nix run .#test-race` (nom + tui) | ✅ Race clean, no regressions |
-| nom test count | 183 PASS (was 168 before session 1, 173 after session 1) |
-| tui test count | 80 PASS (was 77) |
-| Golden files | ✅ Not broken (no existing output format changes) |
+| Check                             | Result                                                   |
+| --------------------------------- | -------------------------------------------------------- |
+| `nix run .#build` (18 modules)    | ✅ All build clean                                       |
+| `nix run .#test` (18 modules)     | ✅ All pass                                              |
+| `nix run .#lint` (18 modules)     | ✅ 0 issues everywhere                                   |
+| `nix run .#test-race` (nom + tui) | ✅ Race clean, no regressions                            |
+| nom test count                    | 183 PASS (was 168 before session 1, 173 after session 1) |
+| tui test count                    | 80 PASS (was 77)                                         |
+| Golden files                      | ✅ Not broken (no existing output format changes)        |
 
 ---
 
@@ -154,7 +160,7 @@ All changes compile, all 18 modules pass, 0 lint issues, 0 regressions, race-cle
 
 ### Minor mistakes caught and fixed during the session:
 
-1. **Test event ordering bug** — Initial `TestMultiSubscriber_ProgressAndRetryFanout` sent progress *before* retry, but retry's `SetRunning()` clears progress. Fixed by reordering events (progress last).
+1. **Test event ordering bug** — Initial `TestMultiSubscriber_ProgressAndRetryFanout` sent progress _before_ retry, but retry's `SetRunning()` clears progress. Fixed by reordering events (progress last).
 2. **`TestResetClearsProgressAndRetry` same issue** — Same root cause. Fixed by sending progress after retry.
 3. **Lint formatting** — Two gci/golines issues in test struct alignment and a long line in the concurrent test assertion. Fixed by aligning struct fields and simplifying the assertion to use `ActivityCounts` value equality.
 4. **TUI `summary_test.go` struct misalignment** — Added `remaining` field without aligning the struct. Fixed by running through gci/golines alignment.
@@ -185,33 +191,33 @@ All changes compile, all 18 modules pass, 0 lint issues, 0 regressions, race-cle
 
 ## f) Top 25 Things to Do Next
 
-| # | Priority | Task |
-| --- | --- | --- |
-| 1 | **P0** | **Bump go-output to v0.21.0 in BuildFlow** — push tags, update flake input, remove local replace directives |
-| 2 | **P0** | **Wire `ActivityProgress` events from BuildFlow** — call `subscriber.OnEvent(ctx, nom.ActivityProgress{...})` from `ForEachGoModule` callback |
-| 3 | **P0** | **Wire `ActivityRetrying` events from BuildFlow** — call from retry path in `ProgressBridge.stepRetrying()` with `Reason` field |
-| 4 | **P0** | **Wire `SetEstimatedTime` from BuildFlow** — inject SQLite P50 estimates after loading from `dbstore` |
-| 5 | **P0** | **Wire `SetEstimatedRemainingFunc` or `EstimatedTotalRemaining()` from BuildFlow** — connect to the renderer or let TUI auto-consume |
-| 6 | **P1** | **Golden test snapshots** — add rendered examples of progress/retry/reason/remaining output to `nom/testdata/` |
-| 7 | **P1** | **Fuzz test for progress events** — rapid progress/retry/complete sequences via Go fuzzing |
-| 8 | **P1** | **Benchmark progress event path** — ensure no latency under high-frequency progress updates (1000/sec scenario) |
-| 9 | **P2** | **Structured progress type** — `ProgressDetail{Current, Total, Label}` for progress-bar rendering |
-| 10 | **P2** | **Progress bar rendering** — `▕████░░░░▏ 45%` style when structured progress is populated |
-| 11 | **P2** | **Progress throttling mechanism** — built-in debounce in `handleActivityProgress` (1/sec default) |
-| 12 | **P2** | **Clear RetryCount on fresh workflow** — verify `Reset()` behavior is tested (it clears activities entirely — done in this session) |
-| 13 | **P2** | **Retry reason persistence across completions** — should a completed-then-retried step keep its reason forever? Currently yes. |
-| 14 | **P2** | **EstimatedTotalRemaining parallel-accuracy** — compute max-of-critical-path instead of sum for parallel activities |
-| 15 | **P2** | **Render remaining estimate in universal (non-NOM) TUI mode** — currently only NOM mode shows `~Xm left` |
-| 16 | **P3** | **Progress during retry** — when retried, should progress from prior attempt persist? Currently cleared (tested in this session) |
-| 17 | **P3** | **Documentation: update `docs/DOMAIN_LANGUAGE.md`** — add `Progress`, `RetryCount`, `RetryReason`, `EstimatedTotalRemaining` to the glossary |
-| 18 | **P3** | **Documentation: update `FEATURES.md`** — add the new event types and APIs to the feature inventory |
-| 19 | **P3** | **Multi-subscriber with inline renderer test** — verify progress events flow through MultiSubscriber to an InlineRenderer-bound subscriber |
-| 20 | **P3** | **Examples: `tui_progress` update** — demonstrate progress/retry events in the TUI example (not just inline) |
-| 21 | **P3** | **Progress sub-line truncation with maxWidth** — verify long progress messages truncate correctly |
-| 22 | **P4** | **Explore `aymanbagabas/go-udiff` for frame diffing** (from BuildFlow backlog) |
-| 23 | **P4** | **Explore `charmbracelet/x/term` as replacement for `golang.org/x/term`** |
-| 24 | **P4** | **Adaptive tree pruning** — nom-style "fill 1/3 of terminal, prune low-priority" |
-| 25 | **P4** | **Progress as structured event log** — emit progress/retry events to an append-only log for post-run analysis |
+| #   | Priority | Task                                                                                                                                          |
+| --- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | **P0**   | **Bump go-output to v0.21.0 in BuildFlow** — push tags, update flake input, remove local replace directives                                   |
+| 2   | **P0**   | **Wire `ActivityProgress` events from BuildFlow** — call `subscriber.OnEvent(ctx, nom.ActivityProgress{...})` from `ForEachGoModule` callback |
+| 3   | **P0**   | **Wire `ActivityRetrying` events from BuildFlow** — call from retry path in `ProgressBridge.stepRetrying()` with `Reason` field               |
+| 4   | **P0**   | **Wire `SetEstimatedTime` from BuildFlow** — inject SQLite P50 estimates after loading from `dbstore`                                         |
+| 5   | **P0**   | **Wire `SetEstimatedRemainingFunc` or `EstimatedTotalRemaining()` from BuildFlow** — connect to the renderer or let TUI auto-consume          |
+| 6   | **P1**   | **Golden test snapshots** — add rendered examples of progress/retry/reason/remaining output to `nom/testdata/`                                |
+| 7   | **P1**   | **Fuzz test for progress events** — rapid progress/retry/complete sequences via Go fuzzing                                                    |
+| 8   | **P1**   | **Benchmark progress event path** — ensure no latency under high-frequency progress updates (1000/sec scenario)                               |
+| 9   | **P2**   | **Structured progress type** — `ProgressDetail{Current, Total, Label}` for progress-bar rendering                                             |
+| 10  | **P2**   | **Progress bar rendering** — `▕████░░░░▏ 45%` style when structured progress is populated                                                     |
+| 11  | **P2**   | **Progress throttling mechanism** — built-in debounce in `handleActivityProgress` (1/sec default)                                             |
+| 12  | **P2**   | **Clear RetryCount on fresh workflow** — verify `Reset()` behavior is tested (it clears activities entirely — done in this session)           |
+| 13  | **P2**   | **Retry reason persistence across completions** — should a completed-then-retried step keep its reason forever? Currently yes.                |
+| 14  | **P2**   | **EstimatedTotalRemaining parallel-accuracy** — compute max-of-critical-path instead of sum for parallel activities                           |
+| 15  | **P2**   | **Render remaining estimate in universal (non-NOM) TUI mode** — currently only NOM mode shows `~Xm left`                                      |
+| 16  | **P3**   | **Progress during retry** — when retried, should progress from prior attempt persist? Currently cleared (tested in this session)              |
+| 17  | **P3**   | **Documentation: update `docs/DOMAIN_LANGUAGE.md`** — add `Progress`, `RetryCount`, `RetryReason`, `EstimatedTotalRemaining` to the glossary  |
+| 18  | **P3**   | **Documentation: update `FEATURES.md`** — add the new event types and APIs to the feature inventory                                           |
+| 19  | **P3**   | **Multi-subscriber with inline renderer test** — verify progress events flow through MultiSubscriber to an InlineRenderer-bound subscriber    |
+| 20  | **P3**   | **Examples: `tui_progress` update** — demonstrate progress/retry events in the TUI example (not just inline)                                  |
+| 21  | **P3**   | **Progress sub-line truncation with maxWidth** — verify long progress messages truncate correctly                                             |
+| 22  | **P4**   | **Explore `aymanbagabas/go-udiff` for frame diffing** (from BuildFlow backlog)                                                                |
+| 23  | **P4**   | **Explore `charmbracelet/x/term` as replacement for `golang.org/x/term`**                                                                     |
+| 24  | **P4**   | **Adaptive tree pruning** — nom-style "fill 1/3 of terminal, prune low-priority"                                                              |
+| 25  | **P4**   | **Progress as structured event log** — emit progress/retry events to an append-only log for post-run analysis                                 |
 
 ---
 
@@ -222,17 +228,20 @@ All changes compile, all 18 modules pass, 0 lint issues, 0 regressions, race-cle
 The current implementation sums all unfinished activity estimates. This is correct for sequential execution but overestimates when activities run in parallel (which nom supports via dependency edges). For example, if two independent pending activities each estimate 60s, the sum is 120s — but if they run in parallel, the actual remaining time is ~60s.
 
 **Arguments FOR the simple sum (current approach):**
+
 - Trivially correct, O(n) scan, no graph traversal needed
-- Provides a useful *upper bound* — "at most 2m left"
+- Provides a useful _upper bound_ — "at most 2m left"
 - BuildFlow's steps are largely sequential (phase-by-phase), so the sum is close to accurate
 - The dependency graph may not reflect actual execution parallelism (a dependency edge means "must complete before," not "runs immediately after")
 
 **Arguments FOR critical-path computation:**
+
 - More accurate for parallel builds — matches what nom reference implementations (nix-output-monitor) show
 - The subscriber already has the dependency tree — the data is there
 - Would show `~1m left` instead of `~2m left` for two parallel 60s steps
 
 **I cannot determine the answer** because it depends on BuildFlow's execution model:
+
 - If BuildFlow runs phases sequentially (phase 1 completes, then phase 2 starts), the sum is correct
 - If BuildFlow runs independent steps in parallel within a phase, the sum overestimates
 - A hybrid (sum within each phase, max across phases) might be the right middle ground
@@ -243,22 +252,22 @@ The sum is shipped and working. A critical-path variant can be added as a non-br
 
 ## Session Statistics
 
-| Metric | Value |
-| --- | --- |
-| Production files changed | 10 (nom: 6, tui: 3, examples: 1) |
-| Documentation files changed | 2 (AGENTS.md, CHANGELOG.md) |
-| New test files | 2 (`nom/progress_lifecycle_test.go`, `tui/render_nom_progress_test.go`) |
-| New tests (nom) | 10 (5 lifecycle + 4 retry/remaining + 1 running-elapsed) |
-| New tests (tui) | 3 (progress render, retry render, summary remaining) |
-| Total new tests this session | 13 |
-| Insertions | 275 |
-| Deletions | 16 |
-| All modules passing | 18/18 |
-| Lint issues | 0 |
-| Race test status | ✅ Clean (nom + tui) |
-| nom total test count | 183 PASS |
-| tui total test count | 80 PASS |
-| New public APIs | 2 (`EstimatedTotalRemaining()`, `Reason` field on `ActivityRetrying`) |
-| New event fields | 2 (`RetryReason` on Activity/Snapshot, `Reason` on ActivityRetrying) |
-| Report items closed | 6 of 8 P1/P2 in-repo items (#6, #7, #8, #9, #11, #12) |
-| Report items corrected | 1 (#6 was already done — proved with tests) |
+| Metric                       | Value                                                                   |
+| ---------------------------- | ----------------------------------------------------------------------- |
+| Production files changed     | 10 (nom: 6, tui: 3, examples: 1)                                        |
+| Documentation files changed  | 2 (AGENTS.md, CHANGELOG.md)                                             |
+| New test files               | 2 (`nom/progress_lifecycle_test.go`, `tui/render_nom_progress_test.go`) |
+| New tests (nom)              | 10 (5 lifecycle + 4 retry/remaining + 1 running-elapsed)                |
+| New tests (tui)              | 3 (progress render, retry render, summary remaining)                    |
+| Total new tests this session | 13                                                                      |
+| Insertions                   | 275                                                                     |
+| Deletions                    | 16                                                                      |
+| All modules passing          | 18/18                                                                   |
+| Lint issues                  | 0                                                                       |
+| Race test status             | ✅ Clean (nom + tui)                                                    |
+| nom total test count         | 183 PASS                                                                |
+| tui total test count         | 80 PASS                                                                 |
+| New public APIs              | 2 (`EstimatedTotalRemaining()`, `Reason` field on `ActivityRetrying`)   |
+| New event fields             | 2 (`RetryReason` on Activity/Snapshot, `Reason` on ActivityRetrying)    |
+| Report items closed          | 6 of 8 P1/P2 in-repo items (#6, #7, #8, #9, #11, #12)                   |
+| Report items corrected       | 1 (#6 was already done — proved with tests)                             |

@@ -3,16 +3,16 @@ module github.com/larsartmann/go-output/serialization
 go 1.26.4
 
 require (
+	github.com/charmbracelet/x/exp/golden v0.0.0-20260629091435-9c70f75e26a4
 	github.com/go-faster/yaml v0.4.6
-	github.com/larsartmann/go-output v0.21.0
-	github.com/larsartmann/go-output/testhelpers v0.13.0
-	github.com/larsartmann/go-output/testhelpers/graphtest v0.13.0
+	github.com/larsartmann/go-output v0.0.0-00010101000000-000000000000
+	github.com/larsartmann/go-output/testhelpers v0.0.0-00010101000000-000000000000
+	github.com/larsartmann/go-output/testhelpers/graphtest v0.0.0-00010101000000-000000000000
 	github.com/pelletier/go-toml/v2 v2.4.2
 )
 
 require (
 	github.com/aymanbagabas/go-udiff v0.4.1 // indirect
-	github.com/charmbracelet/x/exp/golden v0.0.0-20260629091435-9c70f75e26a4 // indirect
 	github.com/go-faster/errors v0.7.1 // indirect
 	github.com/go-faster/jx v1.2.0 // indirect
 	github.com/larsartmann/go-branded-id v0.3.1 // indirect
