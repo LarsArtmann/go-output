@@ -88,6 +88,11 @@ type InlineRenderer struct {
 	// renderer — the callback is invoked each frame under renderMu.
 	estimatedRemaining func() time.Duration
 
+	// showCriticalPathETA enables a "~Xm critical" segment in the summary bar
+	// sourced from the DAG's longest remaining-time path. Off by default to
+	// preserve the standard "~Xm left" behavior.
+	showCriticalPathETA bool
+
 	tickMu       sync.RWMutex
 	renderMu     sync.Mutex // serializes Draw/Finish terminal writes + prevLines
 	cancelFn     context.CancelFunc
@@ -273,6 +278,17 @@ func (r *InlineRenderer) SetPlainText(plain bool) {
 func (r *InlineRenderer) SetEstimatedRemainingFunc(fn func() time.Duration) {
 	r.renderMu.Lock()
 	r.estimatedRemaining = fn
+	r.renderMu.Unlock()
+}
+
+// SetShowCriticalPathETA enables a "~Xm critical" segment in the summary bar
+// sourced from the DAG's longest remaining-time path. When disabled (default),
+// the summary bar only shows the remaining-time callback or the elapsed time.
+//
+// Thread-safe: may be called before or during the render loop.
+func (r *InlineRenderer) SetShowCriticalPathETA(show bool) {
+	r.renderMu.Lock()
+	r.showCriticalPathETA = show
 	r.renderMu.Unlock()
 }
 

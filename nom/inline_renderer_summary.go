@@ -103,6 +103,15 @@ func (r *InlineRenderer) renderSummary(startTime time.Time) string {
 		}
 	}
 
+	// Critical-path ETA: the longest remaining-time path through the DAG.
+	// Shown as "~Xm critical" to distinguish it from the total remaining
+	// estimate above.
+	if r.showCriticalPathETA {
+		if remaining := r.criticalPathRemaining(); remaining > 0 {
+			parts = append(parts, "~"+FormatDuration(remaining)+" critical")
+		}
+	}
+
 	// Parallelism meter: running / immediately-startable pending activities.
 	if r.subscriber.showParallelism {
 		parallelism := r.subscriber.ParallelismStats()
@@ -125,4 +134,17 @@ func (r *InlineRenderer) renderSummary(startTime time.Time) string {
 	border := strings.Repeat("─", max(visualWidth+2, 3))
 
 	return fmt.Sprintf("╭%s╮\n│ %s │\n╰%s╯", border, summary, border)
+}
+
+// criticalPathRemaining returns the longest remaining-time path through the DAG,
+// or 0 when there is no dependency tree. Invoked under renderMu.
+func (r *InlineRenderer) criticalPathRemaining() time.Duration {
+	tree := r.subscriber.GetDependencyTree()
+	if tree == nil {
+		return 0
+	}
+
+	snapshots := r.subscriber.SnapshotActivities()
+
+	return tree.EstimatedCriticalPathRemaining(snapshots)
 }

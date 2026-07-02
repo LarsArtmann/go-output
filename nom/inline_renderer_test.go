@@ -147,6 +147,38 @@ func TestInlineRenderer_SummaryBar(t *testing.T) {
 	}
 }
 
+func TestInlineRenderer_SummaryBar_CriticalPathETA(t *testing.T) {
+	t.Parallel()
+
+	sub := newTestSubscriber(t)
+
+	var buf bytes.Buffer
+
+	renderer := NewInlineRenderer(sub, &buf, 20)
+
+	ctx := context.Background()
+	_ = sendWorkflowStarted(sub, ctx, WorkflowID("wf-1"), "")
+	registerActivity(sub, ctx, ActivityID("build"), ActivityName("Build"))
+	registerActivity(sub, ctx, ActivityID("test"), ActivityName("Test"), ActivityID("build"))
+
+	sub.SetEstimatedTime(ActivityID("build"), 10*time.Second)
+	sub.SetEstimatedTime(ActivityID("test"), 5*time.Second)
+
+	sendActivityStarted(t, sub, ctx, ActivityID("build"), ActivityName("Build"))
+
+	renderer.SetShowCriticalPathETA(true)
+	renderer.Draw()
+
+	output := buf.String()
+	if !strings.Contains(output, "critical") {
+		t.Errorf("summary should include critical path segment, got:\n%s", output)
+	}
+
+	if !regexp.MustCompile(`~\d+\.?\d*s critical`).MatchString(output) {
+		t.Errorf("summary should format critical path ETA, got:\n%s", output)
+	}
+}
+
 func TestInlineRenderer_NilSubscriber(t *testing.T) {
 	t.Parallel()
 
