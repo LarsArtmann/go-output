@@ -3,6 +3,7 @@ go 1.26.4
 use (
 	.
 	./bdd
+	./daghtml
 	./delimited
 	./d2
 	./escape

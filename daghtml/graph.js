@@ -1,0 +1,506 @@
+// initDAGGraph renders an interactive Sugiyama-layered DAG visualization
+// into the element identified by containerId. The DAG data (nodes + edges)
+// is read from a <script type="application/json"> element identified by
+// dataScriptId.
+//
+// The function is idempotent: calling it multiple times on the same container
+// is a no-op (it checks for an existing <svg> child).
+function initDAGGraph(containerId, dataScriptId) {
+  var container = document.getElementById(containerId);
+  if (!container) return;
+  if (container.querySelector("svg")) return;
+
+  var dataEl = document.getElementById(dataScriptId);
+  if (!dataEl) return;
+
+  var data = JSON.parse(dataEl.textContent);
+  var nodes = data.nodes || [];
+  var edges = data.edges || [];
+
+  if (!nodes.length) {
+    container.innerHTML +=
+      '<div class="panel-empty"><div class="empty-icon">\u{1F5C2}</div>' +
+      '<div class="empty-text">No nodes to display</div>' +
+      '<div class="empty-hint">Add nodes to the DAG to see the graph</div></div>';
+    return;
+  }
+
+  // Build ID → index map and internal arrays
+  var idMap = {};
+  nodes.forEach(function (n, i) {
+    idMap[n.id] = i;
+  });
+
+  var nodeH = 32,
+    padX = 50,
+    padY = 50,
+    gapX = 24,
+    gapY = 56,
+    charW = 7.2;
+
+  var renderNodes = nodes.map(function (n) {
+    var label = n.label || n.id;
+    var w = Math.max(label.length * charW + 20, 80);
+    return {
+      id: n.id,
+      label: label,
+      color: n.color || "var(--accent)",
+      tooltip: n.tooltip || n.id,
+      error: !!n.error,
+      w: w,
+      h: nodeH,
+    };
+  });
+
+  var intEdges = [];
+  var edgeSet = {};
+  edges.forEach(function (e) {
+    var s = idMap[e.from],
+      t = idMap[e.to];
+    if (s === undefined || t === undefined) return;
+    var ek = s + "->" + t;
+    if (!edgeSet[ek]) {
+      edgeSet[ek] = true;
+      intEdges.push({ source: s, target: t });
+    }
+  });
+
+  // Phase 1: Rank assignment (longest path from roots via Kahn's algorithm)
+  var inDeg = new Array(renderNodes.length).fill(0);
+  var adj = new Array(renderNodes.length).fill(null).map(function () {
+    return [];
+  });
+  var radj = new Array(renderNodes.length).fill(null).map(function () {
+    return [];
+  });
+  intEdges.forEach(function (e) {
+    adj[e.source].push(e.target);
+    radj[e.target].push(e.source);
+    inDeg[e.target]++;
+  });
+
+  var rank = new Array(renderNodes.length).fill(0);
+  var queue = [];
+  var visited = {};
+  renderNodes.forEach(function (_, i) {
+    if (inDeg[i] === 0) {
+      queue.push(i);
+      visited[i] = true;
+    }
+  });
+  while (queue.length) {
+    var v = queue.shift();
+    for (var k = 0; k < adj[v].length; k++) {
+      var u = adj[v][k];
+      rank[u] = Math.max(rank[u], rank[v] + 1);
+      if (--inDeg[u] === 0) {
+        queue.push(u);
+        visited[u] = true;
+      }
+    }
+  }
+  renderNodes.forEach(function (_, i) {
+    if (!visited[i]) rank[i] = 0;
+  });
+
+  var maxRank = 0;
+  renderNodes.forEach(function (_, i) {
+    maxRank = Math.max(maxRank, rank[i]);
+  });
+
+  var layers = new Array(maxRank + 1).fill(null).map(function () {
+    return [];
+  });
+  renderNodes.forEach(function (_, i) {
+    layers[rank[i]].push(i);
+  });
+
+  // Phase 2: Barycenter ordering (4-pass forward+backward to reduce crossings)
+  for (var pass = 0; pass < 4; pass++) {
+    var forward = pass % 2 === 0;
+    for (
+      var r = forward ? 1 : layers.length - 2;
+      forward ? r < layers.length : r >= 0;
+      forward ? r++ : r--
+    ) {
+      var layer = layers[r];
+      var adjLayer = layers[forward ? r - 1 : r + 1];
+      if (!adjLayer) continue;
+      var posMap = {};
+      adjLayer.forEach(function (u, j) {
+        posMap[u] = j;
+      });
+      var bary = layer.map(function (v) {
+        var neighbors = forward ? radj[v] : adj[v];
+        if (!neighbors.length) return layer.indexOf(v);
+        var positions = neighbors.map(function (n) {
+          return posMap[n] !== undefined ? posMap[n] : 0;
+        });
+        return (
+          positions.reduce(function (a, b) {
+            return a + b;
+          }, 0) / positions.length
+        );
+      });
+      var idx = layer.map(function (_, i) {
+        return i;
+      });
+      idx.sort(function (a, b) {
+        return bary[a] - bary[b];
+      });
+      layers[r] = idx.map(function (i) {
+        return layer[i];
+      });
+    }
+  }
+
+  // Phase 3: Centered positions, then median-alignment to straighten edges
+  var pos = new Array(renderNodes.length).fill(0);
+  layers.forEach(function (layer) {
+    var totalW =
+      layer.reduce(function (s, v) {
+        return s + renderNodes[v].w;
+      }, 0) +
+      (layer.length - 1) * gapX;
+    var x = -totalW / 2;
+    layer.forEach(function (v) {
+      pos[v] = x + renderNodes[v].w / 2;
+      x += renderNodes[v].w + gapX;
+    });
+  });
+  for (var r = 1; r < layers.length; r++) {
+    layers[r].forEach(function (v) {
+      var preds = radj[v];
+      if (preds.length === 0) return;
+      var sorted = preds
+        .map(function (p) {
+          return pos[p];
+        })
+        .sort(function (a, b) {
+          return a - b;
+        });
+      var mid = sorted[Math.floor(sorted.length / 2)];
+      var ci = layers[r].indexOf(v);
+      var minL =
+        ci > 0 ? pos[layers[r][ci - 1]] + renderNodes[layers[r][ci - 1]].w / 2 + gapX : -Infinity;
+      var maxR =
+        ci < layers[r].length - 1
+          ? pos[layers[r][ci + 1]] - renderNodes[layers[r][ci + 1]].w / 2 - gapX
+          : Infinity;
+      pos[v] = Math.max(minL, Math.min(maxR, mid));
+    });
+  }
+
+  // Compute SVG bounds
+  var maxW = 0;
+  layers.forEach(function (layer) {
+    if (!layer.length) return;
+    var left = Math.min.apply(
+      null,
+      layer.map(function (v) {
+        return pos[v] - renderNodes[v].w / 2;
+      }),
+    );
+    var right = Math.max.apply(
+      null,
+      layer.map(function (v) {
+        return pos[v] + renderNodes[v].w / 2;
+      }),
+    );
+    if (right - left > maxW) maxW = right - left;
+  });
+  var totalH = (maxRank + 1) * (nodeH + gapY) - gapY;
+  var svgW = maxW + padX * 2;
+  var svgH = totalH + padY * 2;
+
+  // Build SVG
+  var ns = "http://www.w3.org/2000/svg";
+  var svg = document.createElementNS(ns, "svg");
+  svg.setAttribute("viewBox", -svgW / 2 + " " + -padY + " " + svgW + " " + svgH);
+  svg.style.height = "100%";
+
+  // Arrow markers
+  var defs = document.createElementNS(ns, "defs");
+  [
+    { id: "arrow", fill: "var(--border-active)" },
+    { id: "arrow-hl", fill: "var(--accent)" },
+  ].forEach(function (m) {
+    var marker = document.createElementNS(ns, "marker");
+    marker.setAttribute("id", m.id);
+    marker.setAttribute("viewBox", "0 0 10 10");
+    marker.setAttribute("refX", "10");
+    marker.setAttribute("refY", "5");
+    marker.setAttribute("markerWidth", "6");
+    marker.setAttribute("markerHeight", "6");
+    marker.setAttribute("orient", "auto");
+    var p = document.createElementNS(ns, "path");
+    p.setAttribute("d", "M 0 0 L 10 5 L 0 10 z");
+    p.setAttribute("fill", m.fill);
+    marker.appendChild(p);
+    defs.appendChild(marker);
+  });
+  svg.appendChild(defs);
+
+  // Layer depth labels
+  layers.forEach(function (layer, r) {
+    if (!layer.length) return;
+    var label = document.createElementNS(ns, "text");
+    label.classList.add("graph-layer-label");
+    label.setAttribute("x", -svgW / 2 + 6);
+    label.setAttribute("y", r * (nodeH + gapY) + nodeH / 2 + 4);
+    label.textContent = "L" + r;
+    svg.appendChild(label);
+  });
+
+  // Edges as cubic bezier curves
+  var edgeEls = [];
+  intEdges.forEach(function (e) {
+    var sx = pos[e.source],
+      sy = rank[e.source] * (nodeH + gapY) + nodeH;
+    var tx = pos[e.target],
+      ty = rank[e.target] * (nodeH + gapY);
+    var g = document.createElementNS(ns, "g");
+    g.classList.add("graph-edge");
+    g.dataset.source = e.source;
+    g.dataset.target = e.target;
+    var p = document.createElementNS(ns, "path");
+    p.setAttribute(
+      "d",
+      "M " +
+        sx +
+        " " +
+        sy +
+        " C " +
+        sx +
+        " " +
+        (sy + gapY * 0.4) +
+        ", " +
+        tx +
+        " " +
+        (ty - gapY * 0.4) +
+        ", " +
+        tx +
+        " " +
+        ty,
+    );
+    p.setAttribute("marker-end", "url(#arrow)");
+    g.appendChild(p);
+    svg.appendChild(g);
+    edgeEls.push(g);
+  });
+
+  // Nodes with left color accent bar
+  var nodeEls = {};
+  renderNodes.forEach(function (n, i) {
+    var cx = pos[i],
+      cy = rank[i] * (nodeH + gapY);
+    var g = document.createElementNS(ns, "g");
+    g.setAttribute("transform", "translate(" + (cx - n.w / 2) + "," + cy + ")");
+    g.classList.add("graph-node");
+    g.dataset.id = i;
+
+    var rect = document.createElementNS(ns, "rect");
+    rect.setAttribute("width", n.w);
+    rect.setAttribute("height", n.h);
+    rect.setAttribute("fill", "var(--surface)");
+    rect.setAttribute("stroke", n.color);
+    g.appendChild(rect);
+
+    var accent = document.createElementNS(ns, "rect");
+    accent.setAttribute("width", 4);
+    accent.setAttribute("height", n.h);
+    accent.setAttribute("fill", n.color);
+    g.appendChild(accent);
+
+    if (n.error) {
+      var dot = document.createElementNS(ns, "circle");
+      dot.setAttribute("cx", n.w - 8);
+      dot.setAttribute("cy", 8);
+      dot.setAttribute("r", 4);
+      dot.setAttribute("fill", "var(--error)");
+      dot.setAttribute("stroke", "var(--bg-elevated)");
+      dot.setAttribute("stroke-width", 1.5);
+      g.appendChild(dot);
+    }
+
+    var text = document.createElementNS(ns, "text");
+    text.setAttribute("x", n.w / 2 + 2);
+    text.setAttribute("y", n.h / 2);
+    text.setAttribute("text-anchor", "middle");
+    text.setAttribute("dominant-baseline", "central");
+    text.textContent = n.label;
+    g.appendChild(text);
+
+    var title = document.createElementNS(ns, "title");
+    title.textContent = n.tooltip;
+    g.appendChild(title);
+
+    svg.appendChild(g);
+    nodeEls[i] = g;
+  });
+
+  container.appendChild(svg);
+
+  // Pan & Zoom
+  var vb = { x: -svgW / 2, y: -padY, w: svgW, h: svgH };
+  function applyVB() {
+    svg.setAttribute("viewBox", vb.x + " " + vb.y + " " + vb.w + " " + vb.h);
+  }
+  function zoomAt(cx, cy, factor) {
+    var nw = Math.max(50, vb.w * factor),
+      nh = Math.max(30, vb.h * factor);
+    vb.x = cx - (cx - vb.x) * (nw / vb.w);
+    vb.y = cy - (cy - vb.y) * (nh / vb.h);
+    vb.w = nw;
+    vb.h = nh;
+    applyVB();
+  }
+  svg.addEventListener(
+    "wheel",
+    function (e) {
+      e.preventDefault();
+      var rect = svg.getBoundingClientRect();
+      var mx = vb.x + ((e.clientX - rect.left) / rect.width) * vb.w;
+      var my = vb.y + ((e.clientY - rect.top) / rect.height) * vb.h;
+      zoomAt(mx, my, e.deltaY > 0 ? 1.12 : 1 / 1.12);
+    },
+    { passive: false },
+  );
+
+  var drag = null;
+  svg.addEventListener("mousedown", function (e) {
+    if (e.target.closest(".graph-node")) return;
+    drag = { x: e.clientX, y: e.clientY, vx: vb.x, vy: vb.y };
+  });
+  window.addEventListener("mousemove", function (e) {
+    if (!drag) return;
+    var rect = svg.getBoundingClientRect();
+    vb.x = drag.vx - ((e.clientX - drag.x) / rect.width) * vb.w;
+    vb.y = drag.vy - ((e.clientY - drag.y) / rect.height) * vb.h;
+    applyVB();
+  });
+  window.addEventListener("mouseup", function () {
+    drag = null;
+  });
+
+  // Touch support: 1-finger pan, 2-finger pinch-zoom
+  var touchDrag = null;
+  svg.addEventListener(
+    "touchstart",
+    function (e) {
+      if (e.target.closest(".graph-node")) return;
+      e.preventDefault();
+      if (e.touches.length === 1) {
+        touchDrag = { x: e.touches[0].clientX, y: e.touches[0].clientY, vx: vb.x, vy: vb.y };
+      } else if (e.touches.length === 2) {
+        var dx = e.touches[0].clientX - e.touches[1].clientX;
+        var dy = e.touches[0].clientY - e.touches[1].clientY;
+        touchDrag = {
+          pinch: Math.hypot(dx, dy),
+          vw: vb.w,
+          vh: vb.h,
+          cx: vb.x + vb.w / 2,
+          cy: vb.y + vb.h / 2,
+        };
+      }
+    },
+    { passive: false },
+  );
+  svg.addEventListener(
+    "touchmove",
+    function (e) {
+      if (!touchDrag) return;
+      e.preventDefault();
+      var rect = svg.getBoundingClientRect();
+      if (e.touches.length === 1 && touchDrag.vx !== undefined) {
+        vb.x = touchDrag.vx - ((e.touches[0].clientX - touchDrag.x) / rect.width) * vb.w;
+        vb.y = touchDrag.vy - ((e.touches[0].clientY - touchDrag.y) / rect.height) * vb.h;
+        applyVB();
+      } else if (e.touches.length === 2 && touchDrag.pinch) {
+        var dx = e.touches[0].clientX - e.touches[1].clientX;
+        var dy = e.touches[0].clientY - e.touches[1].clientY;
+        var dist = Math.hypot(dx, dy);
+        var factor = touchDrag.pinch / dist;
+        vb.w = Math.max(50, touchDrag.vw * factor);
+        vb.h = Math.max(30, touchDrag.vh * factor);
+        vb.x = touchDrag.cx - vb.w / 2;
+        vb.y = touchDrag.cy - vb.h / 2;
+        applyVB();
+      }
+    },
+    { passive: false },
+  );
+  svg.addEventListener("touchend", function () {
+    touchDrag = null;
+  });
+
+  // Zoom control buttons
+  var zoomIn = container.querySelector(".graph-zoom-in");
+  var zoomOut = container.querySelector(".graph-zoom-out");
+  var graphFit = container.querySelector(".graph-fit");
+  if (zoomIn)
+    zoomIn.addEventListener("click", function () {
+      zoomAt(vb.x + vb.w / 2, vb.y + vb.h / 2, 1 / 1.4);
+    });
+  if (zoomOut)
+    zoomOut.addEventListener("click", function () {
+      zoomAt(vb.x + vb.w / 2, vb.y + vb.h / 2, 1.4);
+    });
+  if (graphFit)
+    graphFit.addEventListener("click", function () {
+      vb = { x: -svgW / 2, y: -padY, w: svgW, h: svgH };
+      applyVB();
+    });
+
+  // Click-to-highlight connected subgraph
+  var selected = null;
+  function clearHL() {
+    Object.keys(nodeEls).forEach(function (id) {
+      nodeEls[id].classList.remove("highlighted", "dimmed");
+    });
+    edgeEls.forEach(function (g) {
+      g.classList.remove("highlighted", "dimmed");
+      g.querySelector("path").setAttribute("marker-end", "url(#arrow)");
+    });
+    selected = null;
+  }
+  Object.keys(nodeEls).forEach(function (id) {
+    var g = nodeEls[id];
+    g.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var nid = parseInt(id);
+      if (selected === nid) {
+        clearHL();
+        return;
+      }
+      selected = nid;
+      var connected = {};
+      connected[nid] = true;
+      intEdges.forEach(function (e) {
+        if (e.source === nid || e.target === nid) {
+          connected[e.source] = true;
+          connected[e.target] = true;
+        }
+      });
+      Object.keys(nodeEls).forEach(function (oid) {
+        var og = nodeEls[oid];
+        og.classList.toggle("dimmed", !connected[parseInt(oid)]);
+        og.classList.toggle("highlighted", parseInt(oid) === nid);
+      });
+      edgeEls.forEach(function (eg) {
+        var s = parseInt(eg.dataset.source),
+          t = parseInt(eg.dataset.target);
+        var isHL = s === nid || t === nid;
+        eg.classList.toggle("dimmed", !isHL);
+        eg.classList.toggle("highlighted", isHL);
+        eg.querySelector("path").setAttribute(
+          "marker-end",
+          isHL ? "url(#arrow-hl)" : "url(#arrow)",
+        );
+      });
+    });
+  });
+  svg.addEventListener("click", function (e) {
+    if (!e.target.closest(".graph-node")) clearHL();
+  });
+}

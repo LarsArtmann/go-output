@@ -43,6 +43,7 @@
           modules = [
             "."
             "bdd"
+            "daghtml"
             "delimited"
             "d2"
             "escape"

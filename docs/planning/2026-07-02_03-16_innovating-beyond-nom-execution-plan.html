@@ -1,0 +1,1698 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Execution Plan — Innovating Beyond nom</title>
+    <style>
+      :root {
+        --color-graphite: #0e0e10;
+        --color-graphite-2: #18181d;
+        --color-graphite-3: #16161a;
+        --color-bone: #f4f4f0;
+        --color-red: #ff6b6b;
+        --color-blue: #6eb5ff;
+        --color-yellow: #f4d35e;
+        --color-amber: #ffb347;
+        --color-green: #4ec9b0;
+        --color-hairline: rgba(244, 244, 240, 0.12);
+        --color-hairline-strong: rgba(244, 244, 240, 0.25);
+        --surface: var(--color-graphite);
+        --surface-raised: var(--color-graphite-2);
+        --surface-sunken: var(--color-graphite-3);
+        --text: var(--color-bone);
+        --text-muted: rgba(244, 244, 240, 0.72);
+        --text-faint: rgba(244, 244, 240, 0.45);
+        --border: var(--color-hairline);
+        --border-strong: var(--color-hairline-strong);
+        --accent: var(--color-amber);
+        --problem: var(--color-red);
+        --solution: var(--color-blue);
+        --warning: var(--color-yellow);
+        --innovation: var(--color-green);
+        --radius: 0px;
+        --font-heading:
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+        --font-body:
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+        --font-mono:
+          ui-monospace, "Cascadia Code", "Source Code Pro", "JetBrains Mono", Menlo, Consolas,
+          monospace;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      [id] {
+        scroll-margin-top: 60px;
+      }
+      body {
+        background: var(--surface);
+        color: var(--text);
+        font-family: var(--font-body);
+        font-size: 15px;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+      }
+      .top-bar {
+        background: var(--text);
+        color: var(--surface);
+        padding: 0.6rem 2rem;
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        display: flex;
+        justify-content: space-between;
+      }
+      .layout {
+        display: flex;
+        gap: 2.5rem;
+        padding: 2rem;
+      }
+      .sidebar {
+        width: 220px;
+        flex-shrink: 0;
+        position: sticky;
+        top: 1rem;
+        align-self: flex-start;
+        height: calc(100vh - 2rem);
+        overflow-y: auto;
+        display: none;
+      }
+      .sidebar nav {
+        display: flex;
+        flex-direction: column;
+      }
+      .sidebar .label {
+        font-family: var(--font-mono);
+        font-size: 0.68rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--accent);
+        margin-bottom: 0.75rem;
+        padding-bottom: 0.4rem;
+        border-bottom: 2px solid var(--border-strong);
+      }
+      .sidebar a {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        text-decoration: none;
+        padding: 0.35rem 0.75rem;
+        border-left: 2px solid transparent;
+        transition: all 0.15s;
+      }
+      .sidebar a:hover,
+      .sidebar a.active {
+        color: var(--accent);
+        border-left-color: var(--accent);
+        background: color-mix(in srgb, var(--accent) 8%, transparent);
+      }
+      .main {
+        flex: 1;
+        min-width: 0;
+      }
+      h1,
+      h2,
+      h3,
+      h4 {
+        font-family: var(--font-heading);
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+      h1 {
+        font-size: clamp(1.8rem, 4vw, 2.6rem);
+        line-height: 1.1;
+        margin: 0 0 0.6rem;
+      }
+      h2 {
+        font-size: 1.4rem;
+        margin: 2.5rem 0 1rem;
+        padding-bottom: 0.4rem;
+        border-bottom: 2px solid var(--border-strong);
+      }
+      h2 .num {
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+        color: var(--accent);
+        font-weight: 700;
+      }
+      h3 {
+        font-size: 1.05rem;
+        margin: 0 0 0.4rem;
+        font-weight: 700;
+      }
+      h4 {
+        font-size: 0.95rem;
+        margin: 0 0 0.3rem;
+        font-weight: 700;
+      }
+      p {
+        margin: 0 0 1rem;
+      }
+      .hero {
+        padding: 1.5rem 0;
+        margin-bottom: 1.5rem;
+        border-bottom: 2px solid var(--border-strong);
+      }
+      .hero-badge {
+        display: inline-block;
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--surface);
+        background: var(--innovation);
+        padding: 0.3rem 0.7rem;
+        margin-bottom: 0.9rem;
+      }
+      .hero-subtitle {
+        font-size: 1.05rem;
+        color: var(--text-muted);
+        max-width: 70ch;
+      }
+      .stat-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 0.75rem;
+        margin: 1rem 0 1.5rem;
+      }
+      .stat-card {
+        background: var(--surface-raised);
+        border: 1px solid var(--border);
+        padding: 1.1rem 1rem;
+        position: relative;
+      }
+      .stat-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: var(--border-strong);
+      }
+      .stat-card.s1::before {
+        background: var(--innovation);
+      }
+      .stat-card.s4::before {
+        background: var(--solution);
+      }
+      .stat-card.s20::before {
+        background: var(--warning);
+      }
+      .stat-card.s80::before {
+        background: var(--text-faint);
+      }
+      .stat-value {
+        font-family: var(--font-heading);
+        font-size: 1.8rem;
+        font-weight: 800;
+        line-height: 1;
+      }
+      .stat-card.s1 .stat-value {
+        color: var(--innovation);
+      }
+      .stat-card.s4 .stat-value {
+        color: var(--solution);
+      }
+      .stat-card.s20 .stat-value {
+        color: var(--warning);
+      }
+      .stat-label {
+        font-family: var(--font-mono);
+        font-size: 0.62rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--text-faint);
+        margin-top: 0.4rem;
+      }
+      .card {
+        background: var(--surface-raised);
+        border: 1px solid var(--border);
+        padding: 1.1rem 1.3rem;
+        margin-bottom: 1rem;
+        border-left: 4px solid var(--border-strong);
+      }
+      .card-innovation {
+        border-left-color: var(--innovation);
+        background: color-mix(in srgb, var(--innovation) 6%, var(--surface-raised));
+      }
+      .card-solution {
+        border-left-color: var(--solution);
+        background: color-mix(in srgb, var(--solution) 6%, var(--surface-raised));
+      }
+      .card-warning {
+        border-left-color: var(--warning);
+        background: color-mix(in srgb, var(--warning) 6%, var(--surface-raised));
+      }
+      .badge {
+        display: inline-block;
+        font-family: var(--font-mono);
+        font-size: 0.58rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        padding: 0.15rem 0.45rem;
+        border: 1px solid var(--border-strong);
+        color: var(--text-muted);
+        white-space: nowrap;
+      }
+      .badge-p1 {
+        color: var(--innovation);
+        border-color: var(--innovation);
+      }
+      .badge-p4 {
+        color: var(--solution);
+        border-color: var(--solution);
+      }
+      .badge-p20 {
+        color: var(--warning);
+        border-color: var(--warning);
+      }
+      .badge-p80 {
+        color: var(--text-faint);
+      }
+      .badge-done {
+        color: var(--solution);
+        border-color: var(--solution);
+      }
+      .table-wrap {
+        overflow-x: auto;
+        margin-bottom: 2rem;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.82rem;
+      }
+      th {
+        text-align: left;
+        padding: 0.5rem 0.7rem;
+        background: var(--surface-raised);
+        color: var(--text-faint);
+        font-family: var(--font-mono);
+        font-size: 0.6rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        border-bottom: 1px solid var(--border-strong);
+        position: sticky;
+        top: 0;
+      }
+      td {
+        padding: 0.45rem 0.7rem;
+        border-bottom: 1px solid var(--border);
+        vertical-align: top;
+      }
+      tr:hover td {
+        background: var(--surface-raised);
+      }
+      .tier-header td {
+        background: color-mix(in srgb, var(--accent) 8%, transparent);
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--accent);
+        padding: 0.6rem 0.7rem;
+        border-bottom: 2px solid var(--border-strong);
+      }
+      code {
+        font-family: var(--font-mono);
+        font-size: 0.85em;
+        background: var(--surface-sunken);
+        padding: 0.1rem 0.3rem;
+      }
+      .footer {
+        margin-top: 2rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border);
+        font-size: 0.8rem;
+        color: var(--text-faint);
+        font-family: var(--font-mono);
+      }
+      @media (min-width: 1024px) {
+        .sidebar {
+          display: block;
+        }
+      }
+      @media (max-width: 768px) {
+        .layout {
+          flex-direction: column;
+          padding: 1rem;
+        }
+        .stat-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="top-bar">
+      <span>EXECUTION PLAN</span>
+      <span>2026-07-02 03:16</span>
+      <span>go-output / Innovating Beyond nom</span>
+    </div>
+    <div class="layout">
+      <aside class="sidebar" data-nav>
+        <nav>
+          <div class="label">Plan</div>
+          <a href="#pareto">Pareto Breakdown</a>
+          <a href="#tier1">Tier 1 (1%→51%)</a>
+          <a href="#tier2">Tier 2 (4%→64%)</a>
+          <a href="#tier3">Tier 3 (20%→80%)</a>
+          <a href="#tier4">Tier 4 (80%→100%)</a>
+          <a href="#docs">Documentation</a>
+          <a href="#quality">Quality</a>
+          <a href="#all">All Tasks</a>
+        </nav>
+      </aside>
+      <main class="main">
+        <div class="hero">
+          <div class="hero-badge">Pareto Execution Plan</div>
+          <h1>Innovating Beyond nom &mdash; Full Task Breakdown</h1>
+          <p class="hero-subtitle">
+            13 ideas broken into 96 tasks, each &le;12 minutes. Sorted by
+            impact/effort/customer-value within Pareto tiers.
+          </p>
+        </div>
+
+        <div class="stat-grid">
+          <div class="stat-card s1">
+            <div class="stat-value">12</div>
+            <div class="stat-label">Tier 1 (1%→51%)</div>
+          </div>
+          <div class="stat-card s4">
+            <div class="stat-value">24</div>
+            <div class="stat-label">Tier 2 (4%→64%)</div>
+          </div>
+          <div class="stat-card s20">
+            <div class="stat-value">32</div>
+            <div class="stat-label">Tier 3 (20%→80%)</div>
+          </div>
+          <div class="stat-card s80">
+            <div class="stat-value">16</div>
+            <div class="stat-label">Tier 4 (80%→100%)</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">12</div>
+            <div class="stat-label">Docs + Quality</div>
+          </div>
+          <div class="stat-card s1">
+            <div class="stat-value">96</div>
+            <div class="stat-label">Total Tasks</div>
+          </div>
+        </div>
+
+        <h2 id="pareto"><span class="num">00</span>Pareto Breakdown</h2>
+        <div class="card card-innovation">
+          <h4>The 1% that delivers 51%</h4>
+          <p>
+            Critical Path Highlighting, Blockage View, Convergence Markers. These use the DAG data
+            we already have — zero model changes, pure rendering. They answer the two questions
+            users ask most: "what matters?" and "why is this blocked?"
+          </p>
+        </div>
+        <div class="card card-solution">
+          <h4>The 4% that delivers 64%</h4>
+          <p>
+            Open Status Registry + Theme System. These unblock all non-Nix use cases (CI pipelines
+            with skipped/cached/warning states) and make the library themeable (table stakes for
+            adoption). They're foundational — Category Tints and Layered Mode depend on them.
+          </p>
+        </div>
+        <div class="card card-warning">
+          <h4>The 20% that delivers 80%</h4>
+          <p>
+            Layered Display Mode (the flagship), Critical Path ETA, Category Tints, Compact DAG
+            Summary. These are the features that make go-output visibly different from nom.
+          </p>
+        </div>
+        <div class="card">
+          <h4>The 80% that delivers the last 20%</h4>
+          <p>
+            Smart Layer Filtering, Critical-Path Priority Sort, Interactive DAG TUI View. These
+            improve UX at scale and add user agency. Worth doing, but not until the foundation is
+            solid.
+          </p>
+        </div>
+
+        <!-- ================================================================== -->
+        <!-- TIER 1 -->
+        <!-- ================================================================== -->
+
+        <h2 id="tier1"><span class="num">01</span>Tier 1 — The 1% → 51%</h2>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 40px">#</th>
+                <th>Task</th>
+                <th>Idea</th>
+                <th style="width: 60px">Min</th>
+                <th>Files</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="tier-header">
+                <td colspan="5">T1-A: Critical Path Highlighting (#2) — "what matters?"</td>
+              </tr>
+              <tr>
+                <td>1</td>
+                <td>
+                  Add <code>computeCriticalPath(snapshots) map[ActivityID]bool</code> on
+                  DependencyTree — walks DAG from roots, finds longest estimated-time path
+                </td>
+                <td>#2</td>
+                <td>12</td>
+                <td><code>tree_critical.go</code> (new)</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>Add <code>SymbolCritical = "◆"</code> constant to symbols.go</td>
+                <td>#2</td>
+                <td>3</td>
+                <td><code>symbols.go</code></td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td>
+                  Thread critical-path set through <code>collectVisibleNodes</code> →
+                  <code>VisibleEntry</code> (add <code>OnCriticalPath bool</code> field)
+                </td>
+                <td>#2</td>
+                <td>10</td>
+                <td><code>tree_render.go</code></td>
+              </tr>
+              <tr>
+                <td>4</td>
+                <td>
+                  Render <code>◆</code> marker in <code>formatActivityLabel</code> when on critical
+                  path
+                </td>
+                <td>#2</td>
+                <td>8</td>
+                <td><code>tree_render.go</code></td>
+              </tr>
+              <tr>
+                <td>5</td>
+                <td>
+                  Test: <code>computeCriticalPath</code> returns correct chain for diamond DAG (A→B,
+                  A→C, B→D, C→D)
+                </td>
+                <td>#2</td>
+                <td>10</td>
+                <td><code>tree_critical_test.go</code></td>
+              </tr>
+              <tr>
+                <td>6</td>
+                <td>Test: rendering shows <code>◆</code> on critical path nodes, not on others</td>
+                <td>#2</td>
+                <td>8</td>
+                <td><code>tree_render_test.go</code></td>
+              </tr>
+
+              <tr class="tier-header">
+                <td colspan="5">T1-B: Blockage View (#3) — "why is this blocked?"</td>
+              </tr>
+              <tr>
+                <td>7</td>
+                <td>
+                  Add <code>formatBlockage(node, snapshots) string</code> — for pending node,
+                  iterate <code>node.Deps</code>, list incomplete deps with status/progress
+                </td>
+                <td>#3</td>
+                <td>12</td>
+                <td><code>tree_render.go</code></td>
+              </tr>
+              <tr>
+                <td>8</td>
+                <td>
+                  Integrate blockage sub-line into <code>renderLine</code> for pending nodes (same
+                  pattern as Progress/ExtraDeps sub-lines)
+                </td>
+                <td>#3</td>
+                <td>8</td>
+                <td><code>tree_render.go</code></td>
+              </tr>
+              <tr>
+                <td>9</td>
+                <td>Test: blockage shows correct incomplete deps and their progress</td>
+                <td>#3</td>
+                <td>10</td>
+                <td><code>tree_render_test.go</code></td>
+              </tr>
+              <tr>
+                <td>10</td>
+                <td>Test: blockage hidden when all deps complete; hidden for non-pending nodes</td>
+                <td>#3</td>
+                <td>6</td>
+                <td><code>tree_render_test.go</code></td>
+              </tr>
+
+              <tr class="tier-header">
+                <td colspan="5">
+                  T1-C: Convergence Markers (#6) — "where does the pipeline narrow?"
+                </td>
+              </tr>
+              <tr>
+                <td>11</td>
+                <td>
+                  Add convergence marker in <code>formatActivityLabel</code> when
+                  <code>len(node.Deps) > 1</code> (reuse <code>SymbolCritical</code> or distinct
+                  glyph <code>◇</code>)
+                </td>
+                <td>#6</td>
+                <td>8</td>
+                <td><code>tree_render.go</code></td>
+              </tr>
+              <tr>
+                <td>12</td>
+                <td>Test: convergence marker appears on fan-in nodes, not on single-dep nodes</td>
+                <td>#6</td>
+                <td>6</td>
+                <td><code>tree_render_test.go</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- ================================================================== -->
+        <!-- TIER 2 -->
+        <!-- ================================================================== -->
+
+        <h2 id="tier2"><span class="num">02</span>Tier 2 — The 4% → 64%</h2>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 40px">#</th>
+                <th>Task</th>
+                <th>Idea</th>
+                <th style="width: 60px">Min</th>
+                <th>Files</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="tier-header">
+                <td colspan="5">T2-A: Open Status Registry (#11) — unblock CI use cases</td>
+              </tr>
+              <tr>
+                <td>13</td>
+                <td>
+                  Define <code>StatusDef</code> struct:
+                  <code
+                    >{Name string, Symbol Symbol, Color color.Color, Interest int, NodeShape
+                    output.NodeShape, GraphStyle output.GraphStyle}</code
+                  >
+                </td>
+                <td>#11</td>
+                <td>8</td>
+                <td><code>status_registry.go</code> (new)</td>
+              </tr>
+              <tr>
+                <td>14</td>
+                <td>
+                  Define <code>statusRegistry</code> struct with <code>sync.RWMutex</code> +
+                  <code>map[int]StatusDef</code> + <code>nextID int</code>
+                </td>
+                <td>#11</td>
+                <td>8</td>
+                <td><code>status_registry.go</code></td>
+              </tr>
+              <tr>
+                <td>15</td>
+                <td>
+                  Implement
+                  <code
+                    >RegisterStatus(name, symbol, color, interest, shape, graphStyle)
+                    ActivityStatus</code
+                  >
+                  — thread-safe, returns int ID
+                </td>
+                <td>#11</td>
+                <td>10</td>
+                <td><code>status_registry.go</code></td>
+              </tr>
+              <tr>
+                <td>16</td>
+                <td>
+                  Implement <code>LookupStatus(id) StatusDef</code> and
+                  <code>AllRegisteredStatuses() []StatusDef</code>
+                </td>
+                <td>#11</td>
+                <td>8</td>
+                <td><code>status_registry.go</code></td>
+              </tr>
+              <tr>
+                <td>17</td>
+                <td>
+                  Pre-register 4 core statuses at <code>init()</code> with IDs 0-3 (backward compat)
+                </td>
+                <td>#11</td>
+                <td>10</td>
+                <td><code>status_registry.go</code></td>
+              </tr>
+              <tr>
+                <td>18</td>
+                <td>
+                  Refactor <code>GetSymbol()</code> and <code>GetColor()</code> to use registry
+                  lookup instead of switch
+                </td>
+                <td>#11</td>
+                <td>10</td>
+                <td><code>activity_status.go</code></td>
+              </tr>
+              <tr>
+                <td>19</td>
+                <td>Refactor <code>Interest()</code> to use registry lookup</td>
+                <td>#11</td>
+                <td>6</td>
+                <td><code>activity_status.go</code></td>
+              </tr>
+              <tr>
+                <td>20</td>
+                <td>
+                  Refactor <code>NodeShape()</code> and <code>GraphStyle()</code> to use registry
+                </td>
+                <td>#11</td>
+                <td>8</td>
+                <td><code>status_mappers.go</code></td>
+              </tr>
+              <tr>
+                <td>21</td>
+                <td>
+                  Refactor <code>ParseActivityStatus</code> / <code>IsValid</code> /
+                  <code>AllowedValues</code> to use registry
+                </td>
+                <td>#11</td>
+                <td>10</td>
+                <td><code>activity_status.go</code></td>
+              </tr>
+              <tr>
+                <td>22</td>
+                <td>Refactor <code>AllActivityStatuses</code> to return dynamic registry slice</td>
+                <td>#11</td>
+                <td>5</td>
+                <td><code>activity_status.go</code></td>
+              </tr>
+              <tr>
+                <td>23</td>
+                <td>
+                  Update <code>applyDisplayStyle()</code> in activity.go to use registry lookup
+                </td>
+                <td>#11</td>
+                <td>8</td>
+                <td><code>activity.go</code></td>
+              </tr>
+              <tr>
+                <td>24</td>
+                <td>Test: backward compat — core IDs 0-3 unchanged, all existing tests pass</td>
+                <td>#11</td>
+                <td>8</td>
+                <td><code>status_registry_test.go</code></td>
+              </tr>
+              <tr>
+                <td>25</td>
+                <td>Test: register custom status, verify it renders with correct symbol/color</td>
+                <td>#11</td>
+                <td>10</td>
+                <td><code>status_registry_test.go</code></td>
+              </tr>
+              <tr>
+                <td>26</td>
+                <td>
+                  Test: <code>ParseActivityStatus</code> finds custom statuses;
+                  <code>IsValid</code> returns true
+                </td>
+                <td>#11</td>
+                <td>8</td>
+                <td><code>status_registry_test.go</code></td>
+              </tr>
+
+              <tr class="tier-header">
+                <td colspan="5">T2-B: Theme System (#12) — adoption table stakes</td>
+              </tr>
+              <tr>
+                <td>27</td>
+                <td>
+                  Define <code>Theme</code> struct:
+                  <code>{Colors SemanticColors, Symbols map[ActivityStatus]Symbol}</code>
+                </td>
+                <td>#12</td>
+                <td>8</td>
+                <td><code>theme.go</code> (new)</td>
+              </tr>
+              <tr>
+                <td>28</td>
+                <td>
+                  Define preset <code>ThemeDefault</code> (current colors),
+                  <code>ThemeDracula</code>, <code>ThemeNord</code>
+                </td>
+                <td>#12</td>
+                <td>10</td>
+                <td><code>theme.go</code></td>
+              </tr>
+              <tr>
+                <td>29</td>
+                <td>
+                  Define <code>ThemeMonochrome</code> + <code>ThemeHighContrast</code> presets
+                </td>
+                <td>#12</td>
+                <td>8</td>
+                <td><code>theme.go</code></td>
+              </tr>
+              <tr>
+                <td>30</td>
+                <td>
+                  Add <code>WithTheme(theme Theme) SubscriberOption</code> — stores theme on
+                  subscriber
+                </td>
+                <td>#12</td>
+                <td>8</td>
+                <td><code>nom_subscriber.go</code></td>
+              </tr>
+              <tr>
+                <td>31</td>
+                <td>Store theme in subscriber; add <code>Theme() Theme</code> accessor</td>
+                <td>#12</td>
+                <td>6</td>
+                <td><code>nom_subscriber.go</code></td>
+              </tr>
+              <tr>
+                <td>32</td>
+                <td>
+                  Refactor <code>GetColor()</code> to accept theme parameter (or move color
+                  resolution to render time)
+                </td>
+                <td>#12</td>
+                <td>12</td>
+                <td><code>activity_status.go</code>, <code>activity.go</code></td>
+              </tr>
+              <tr>
+                <td>33</td>
+                <td>
+                  Refactor nom renderers (<code>formatActivityLabel</code>,
+                  <code>formatCollapsedPhaseLabel</code>) to use subscriber theme
+                </td>
+                <td>#12</td>
+                <td>10</td>
+                <td><code>tree_render.go</code></td>
+              </tr>
+              <tr>
+                <td>34</td>
+                <td>
+                  Refactor <code>tui/colors.go</code> to read from subscriber theme instead of
+                  <code>nom.Colors</code> global
+                </td>
+                <td>#12</td>
+                <td>10</td>
+                <td><code>tui/colors.go</code></td>
+              </tr>
+              <tr>
+                <td>35</td>
+                <td>
+                  Test: custom theme renders correct colors; preset themes produce expected ANSI
+                  codes
+                </td>
+                <td>#12</td>
+                <td>10</td>
+                <td><code>theme_test.go</code></td>
+              </tr>
+              <tr>
+                <td>36</td>
+                <td>Test: no theme = default global (backward compat)</td>
+                <td>#12</td>
+                <td>5</td>
+                <td><code>theme_test.go</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- ================================================================== -->
+        <!-- TIER 3 -->
+        <!-- ================================================================== -->
+
+        <h2 id="tier3"><span class="num">03</span>Tier 3 — The 20% → 80%</h2>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 40px">#</th>
+                <th>Task</th>
+                <th>Idea</th>
+                <th style="width: 60px">Min</th>
+                <th>Files</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="tier-header">
+                <td colspan="5">T3-A: Parallelism Meter (#4) — quick win</td>
+              </tr>
+              <tr>
+                <td>37</td>
+                <td>
+                  Add <code>ParallelismStats() (running, possible int)</code> on subscriber — count
+                  running + count pending-with-all-deps-complete
+                </td>
+                <td>#4</td>
+                <td>12</td>
+                <td><code>state_accessors.go</code></td>
+              </tr>
+              <tr>
+                <td>38</td>
+                <td>Render parallelism in summary bar: <code>"parallel: 3/4 possible"</code></td>
+                <td>#4</td>
+                <td>8</td>
+                <td><code>inline_renderer_summary.go</code></td>
+              </tr>
+              <tr>
+                <td>39</td>
+                <td>Test: parallelism counts correct for various DAG states</td>
+                <td>#4</td>
+                <td>10</td>
+                <td><code>state_accessors_test.go</code></td>
+              </tr>
+
+              <tr class="tier-header">
+                <td colspan="5">T3-B: Layered Display Mode (#1) — the flagship</td>
+              </tr>
+              <tr>
+                <td>40</td>
+                <td>
+                  Define <code>RenderMode</code> type: <code>RenderModeTree</code>,
+                  <code>RenderModeLayered</code>
+                </td>
+                <td>#1</td>
+                <td>5</td>
+                <td><code>types.go</code> or <code>tree.go</code></td>
+              </tr>
+              <tr>
+                <td>41</td>
+                <td>Add <code>WithRenderMode(mode) SubscriberOption</code></td>
+                <td>#1</td>
+                <td>5</td>
+                <td><code>nom_subscriber.go</code></td>
+              </tr>
+              <tr>
+                <td>42</td>
+                <td>
+                  Implement <code>collectLayeredEntries(snapshots, maxHeight)</code> — group nodes
+                  by <code>node.Depth</code>, return <code>[]VisibleEntry</code> with layer
+                  separators
+                </td>
+                <td>#1</td>
+                <td>12</td>
+                <td><code>tree_render_layered.go</code> (new)</td>
+              </tr>
+              <tr>
+                <td>43</td>
+                <td>
+                  Implement layer separator rendering: <code>────│────</code> between layers + layer
+                  header
+                </td>
+                <td>#1</td>
+                <td>10</td>
+                <td><code>tree_render_layered.go</code></td>
+              </tr>
+              <tr>
+                <td>44</td>
+                <td>
+                  Handle wide layers — wrapping strategy when layer has more nodes than terminal
+                  width allows
+                </td>
+                <td>#1</td>
+                <td>12</td>
+                <td><code>tree_render_layered.go</code></td>
+              </tr>
+              <tr>
+                <td>45</td>
+                <td>
+                  Handle height pressure in layered mode — collapse completed layers to summary
+                </td>
+                <td>#1</td>
+                <td>10</td>
+                <td><code>tree_render_layered.go</code></td>
+              </tr>
+              <tr>
+                <td>46</td>
+                <td>
+                  Wire <code>RenderWithSnapshots</code> to dispatch by render mode (tree vs layered)
+                </td>
+                <td>#1</td>
+                <td>8</td>
+                <td><code>tree_render.go</code></td>
+              </tr>
+              <tr>
+                <td>47</td>
+                <td>
+                  Integrate layered mode with InlineRenderer (via <code>RenderSnapshot</code>)
+                </td>
+                <td>#1</td>
+                <td>6</td>
+                <td><code>state_accessors.go</code></td>
+              </tr>
+              <tr>
+                <td>48</td>
+                <td>
+                  Integrate layered mode with TUI scroll —
+                  <code>VisibleEntriesWithSnapshots</code> dispatches by mode
+                </td>
+                <td>#1</td>
+                <td>12</td>
+                <td><code>tui/render_nom.go</code></td>
+              </tr>
+              <tr>
+                <td>49</td>
+                <td>Test: layered rendering groups nodes by depth correctly</td>
+                <td>#1</td>
+                <td>10</td>
+                <td><code>tree_render_layered_test.go</code></td>
+              </tr>
+              <tr>
+                <td>50</td>
+                <td>Test: layer separators render between groups, not after last layer</td>
+                <td>#1</td>
+                <td>8</td>
+                <td><code>tree_render_layered_test.go</code></td>
+              </tr>
+              <tr>
+                <td>51</td>
+                <td>Golden test for layered mode</td>
+                <td>#1</td>
+                <td>8</td>
+                <td><code>golden_test.go</code></td>
+              </tr>
+
+              <tr class="tier-header">
+                <td colspan="5">T3-C: Critical Path ETA (#5) — accurate time estimate</td>
+              </tr>
+              <tr>
+                <td>52</td>
+                <td>
+                  Implement <code>EstimatedCriticalPathRemaining(snapshots) time.Duration</code> —
+                  DAG walk from roots, max at branch points
+                </td>
+                <td>#5</td>
+                <td>12</td>
+                <td><code>tree_critical.go</code></td>
+              </tr>
+              <tr>
+                <td>53</td>
+                <td>
+                  Integrate into summary bar: show <code>"~Xm left (critical path)"</code> alongside
+                  or instead of sum
+                </td>
+                <td>#5</td>
+                <td>8</td>
+                <td><code>inline_renderer_summary.go</code></td>
+              </tr>
+              <tr>
+                <td>54</td>
+                <td>Test: critical-path ETA correct for diamond DAG (max not sum)</td>
+                <td>#5</td>
+                <td>10</td>
+                <td><code>tree_critical_test.go</code></td>
+              </tr>
+              <tr>
+                <td>55</td>
+                <td>Test: running nodes contribute <code>max(0, est-elapsed)</code></td>
+                <td>#5</td>
+                <td>8</td>
+                <td><code>tree_critical_test.go</code></td>
+              </tr>
+
+              <tr class="tier-header">
+                <td colspan="5">T3-D: Category Tints (#13) — the visual differentiator</td>
+              </tr>
+              <tr>
+                <td>56</td>
+                <td>Define <code>ActivityCategory string</code> type</td>
+                <td>#13</td>
+                <td>3</td>
+                <td><code>types.go</code></td>
+              </tr>
+              <tr>
+                <td>57</td>
+                <td>
+                  Add <code>Category</code> field to <code>Activity</code> and
+                  <code>ActivitySnapshot</code>
+                </td>
+                <td>#13</td>
+                <td>8</td>
+                <td><code>activity.go</code>, <code>subscriber.go</code></td>
+              </tr>
+              <tr>
+                <td>58</td>
+                <td>Add <code>SetCategory(id, cat)</code> accessor on subscriber</td>
+                <td>#13</td>
+                <td>6</td>
+                <td><code>configuration.go</code> or <code>subscriber_handlers.go</code></td>
+              </tr>
+              <tr>
+                <td>59</td>
+                <td>
+                  Add <code>CategoryColors map[ActivityCategory]color.Color</code> to
+                  <code>Theme</code> struct
+                </td>
+                <td>#13</td>
+                <td>5</td>
+                <td><code>theme.go</code></td>
+              </tr>
+              <tr>
+                <td>60</td>
+                <td>
+                  Render <code>[tag]</code> prefix in <code>formatActivityLabel</code> when category
+                  is set and has a tint
+                </td>
+                <td>#13</td>
+                <td>10</td>
+                <td><code>tree_render.go</code></td>
+              </tr>
+              <tr>
+                <td>61</td>
+                <td>Test: category tag renders with correct color; empty category = no tag</td>
+                <td>#13</td>
+                <td>10</td>
+                <td><code>tree_render_test.go</code></td>
+              </tr>
+
+              <tr class="tier-header">
+                <td colspan="5">T3-E: Compact DAG Summary (#7) — topology at a glance</td>
+              </tr>
+              <tr>
+                <td>62</td>
+                <td>
+                  Add <code>DAGSummary() (nodes, edges, layers, widestLayer int)</code> on
+                  DependencyTree
+                </td>
+                <td>#7</td>
+                <td>10</td>
+                <td><code>tree_accessors.go</code></td>
+              </tr>
+              <tr>
+                <td>63</td>
+                <td>
+                  Render DAG summary line:
+                  <code>"DAG ▸ 4 layers ▸ 7 nodes ▸ widest: 3 parallel"</code>
+                </td>
+                <td>#7</td>
+                <td>8</td>
+                <td><code>inline_renderer_summary.go</code></td>
+              </tr>
+              <tr>
+                <td>64</td>
+                <td>Test: DAG summary counts correct for various topologies</td>
+                <td>#7</td>
+                <td>8</td>
+                <td><code>tree_accessors_test.go</code></td>
+              </tr>
+
+              <tr class="tier-header">
+                <td colspan="5">T3-F: Auto-Theme Detection (#12 extension)</td>
+              </tr>
+              <tr>
+                <td>65</td>
+                <td>Implement OSC 11 terminal background color query via <code>x/term</code></td>
+                <td>#12</td>
+                <td>12</td>
+                <td><code>theme.go</code></td>
+              </tr>
+              <tr>
+                <td>66</td>
+                <td>
+                  Add <code>WithAutoTheme() SubscriberOption</code> — probes OSC 11, selects
+                  light/dark preset
+                </td>
+                <td>#12</td>
+                <td>10</td>
+                <td><code>nom_subscriber.go</code></td>
+              </tr>
+              <tr>
+                <td>67</td>
+                <td>Test: auto-theme falls back gracefully when OSC 11 unsupported (non-TTY)</td>
+                <td>#12</td>
+                <td>8</td>
+                <td><code>theme_test.go</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- ================================================================== -->
+        <!-- TIER 4 -->
+        <!-- ================================================================== -->
+
+        <h2 id="tier4"><span class="num">04</span>Tier 4 — The 80% → 100%</h2>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 40px">#</th>
+                <th>Task</th>
+                <th>Idea</th>
+                <th style="width: 60px">Min</th>
+                <th>Files</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="tier-header">
+                <td colspan="5">T4-A: Critical-Path Priority Sort (#9)</td>
+              </tr>
+              <tr>
+                <td>68</td>
+                <td>
+                  Add <code>onCriticalPath bool</code> to <code>sortKey</code> struct in
+                  <code>tree_priority.go</code>
+                </td>
+                <td>#9</td>
+                <td>6</td>
+                <td><code>tree_priority.go</code></td>
+              </tr>
+              <tr>
+                <td>69</td>
+                <td>
+                  Update <code>sortKey.less()</code> to boost critical-path nodes above non-critical
+                  at same interest level
+                </td>
+                <td>#9</td>
+                <td>8</td>
+                <td><code>tree_priority.go</code></td>
+              </tr>
+              <tr>
+                <td>70</td>
+                <td>
+                  Test: under height pressure, critical-path nodes stay visible while non-critical
+                  are elided
+                </td>
+                <td>#9</td>
+                <td>10</td>
+                <td><code>tree_priority_test.go</code></td>
+              </tr>
+
+              <tr class="tier-header">
+                <td colspan="5">T4-B: Smart Layer Filtering (#8)</td>
+              </tr>
+              <tr>
+                <td>71</td>
+                <td>
+                  Implement layer-level collapse: completed layers → single summary line
+                  <code>"✔ Layer 0: Build (done)"</code>
+                </td>
+                <td>#8</td>
+                <td>12</td>
+                <td><code>tree_render_layered.go</code></td>
+              </tr>
+              <tr>
+                <td>72</td>
+                <td>
+                  Implement future-layer hiding: only show current active layer + next, collapse
+                  rest as <code>"⋯ N more layers"</code>
+                </td>
+                <td>#8</td>
+                <td>10</td>
+                <td><code>tree_render_layered.go</code></td>
+              </tr>
+              <tr>
+                <td>73</td>
+                <td>Test: completed layers collapse; future layers hidden under height pressure</td>
+                <td>#8</td>
+                <td>10</td>
+                <td><code>tree_render_layered_test.go</code></td>
+              </tr>
+
+              <tr class="tier-header">
+                <td colspan="5">T4-C: Interactive DAG View — TUI (#10)</td>
+              </tr>
+              <tr>
+                <td>74</td>
+                <td>
+                  Add <code>nomRenderMode</code> field to TUI model; key bindings
+                  <code>T</code> (tree), <code>L</code> (layered)
+                </td>
+                <td>#10</td>
+                <td>10</td>
+                <td><code>model.go</code>, <code>update.go</code></td>
+              </tr>
+              <tr>
+                <td>75</td>
+                <td>
+                  Add <code>C</code> key for critical-path-only view (filter to critical path nodes)
+                </td>
+                <td>#10</td>
+                <td>10</td>
+                <td><code>update.go</code>, <code>render_nom.go</code></td>
+              </tr>
+              <tr>
+                <td>76</td>
+                <td>
+                  Implement layered-mode scroll logic in TUI (entries are layer-grouped, not
+                  tree-path)
+                </td>
+                <td>#10</td>
+                <td>12</td>
+                <td><code>render_nom.go</code></td>
+              </tr>
+              <tr>
+                <td>77</td>
+                <td>Add <code>D</code> key: write DOT export to file from TUI</td>
+                <td>#10</td>
+                <td>10</td>
+                <td><code>update.go</code></td>
+              </tr>
+              <tr>
+                <td>78</td>
+                <td>Test: teatest key sequence toggles modes correctly</td>
+                <td>#10</td>
+                <td>12</td>
+                <td><code>teatest_test.go</code></td>
+              </tr>
+              <tr>
+                <td>79</td>
+                <td>Test: layered mode scroll works in TUI</td>
+                <td>#10</td>
+                <td>10</td>
+                <td><code>teatest_test.go</code></td>
+              </tr>
+
+              <tr class="tier-header">
+                <td colspan="5">T4-D: Category-Based Collapse (#13 extension)</td>
+              </tr>
+              <tr>
+                <td>80</td>
+                <td>
+                  Implement category-based collapse: "all 6 build tasks passed" → single summary
+                  line
+                </td>
+                <td>#13</td>
+                <td>12</td>
+                <td><code>tree_render.go</code></td>
+              </tr>
+              <tr>
+                <td>81</td>
+                <td>Test: category collapse groups by category regardless of tree structure</td>
+                <td>#13</td>
+                <td>10</td>
+                <td><code>tree_render_test.go</code></td>
+              </tr>
+
+              <tr class="tier-header">
+                <td colspan="5">T4-E: Phase Inference for Categories (#13 extension)</td>
+              </tr>
+              <tr>
+                <td>82</td>
+                <td>
+                  Implement category auto-inference: children of "Tests" phase get
+                  <code>"test"</code> category automatically
+                </td>
+                <td>#13</td>
+                <td>12</td>
+                <td><code>subscriber_handlers.go</code></td>
+              </tr>
+              <tr>
+                <td>83</td>
+                <td>
+                  Test: phase children inherit category without explicit
+                  <code>SetCategory</code> call
+                </td>
+                <td>#13</td>
+                <td>8</td>
+                <td><code>subscriber_handlers_test.go</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- ================================================================== -->
+        <!-- DOCUMENTATION -->
+        <!-- ================================================================== -->
+
+        <h2 id="docs"><span class="num">05</span>Documentation</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 40px">#</th>
+                <th>Task</th>
+                <th style="width: 60px">Min</th>
+                <th>Files</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>84</td>
+                <td>
+                  CHANGELOG: DAG topology overhaul entry (SecondaryParents → Deps, deepest-parent,
+                  Option A/B)
+                </td>
+                <td>10</td>
+                <td><code>CHANGELOG.md</code></td>
+              </tr>
+              <tr>
+                <td>85</td>
+                <td>
+                  CHANGELOG: innovation features entry (critical path, blockage, layered mode,
+                  registry, themes)
+                </td>
+                <td>10</td>
+                <td><code>CHANGELOG.md</code></td>
+              </tr>
+              <tr>
+                <td>86</td>
+                <td>ADR 010: DAG topology model (design decision, tradeoffs, nom alignment)</td>
+                <td>10</td>
+                <td><code>docs/adr/010-dag-topology.md</code></td>
+              </tr>
+              <tr>
+                <td>87</td>
+                <td>
+                  ADR 011: Open status registry (registration vs enum, thread safety, backward
+                  compat)
+                </td>
+                <td>10</td>
+                <td><code>docs/adr/011-status-registry.md</code></td>
+              </tr>
+              <tr>
+                <td>88</td>
+                <td>
+                  Update FEATURES.md with all new features (DAG mode, critical path, layered,
+                  registry, themes, categories)
+                </td>
+                <td>10</td>
+                <td><code>FEATURES.md</code></td>
+              </tr>
+              <tr>
+                <td>89</td>
+                <td>
+                  Update AGENTS.md with new patterns (status registry, theme routing, layered
+                  rendering)
+                </td>
+                <td>10</td>
+                <td><code>AGENTS.md</code></td>
+              </tr>
+              <tr>
+                <td>90</td>
+                <td>Update TODO_LIST.md — mark DAG done, add innovation items with status</td>
+                <td>8</td>
+                <td><code>TODO_LIST.md</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- ================================================================== -->
+        <!-- QUALITY -->
+        <!-- ================================================================== -->
+
+        <h2 id="quality"><span class="num">06</span>Quality &amp; Examples</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 40px">#</th>
+                <th>Task</th>
+                <th style="width: 60px">Min</th>
+                <th>Files</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>91</td>
+                <td>Godoc example: <code>WithShowExtraDeps</code> (Option B rendering)</td>
+                <td>8</td>
+                <td><code>example_test.go</code></td>
+              </tr>
+              <tr>
+                <td>92</td>
+                <td>Godoc example: <code>RegisterStatus</code> (custom CI states)</td>
+                <td>10</td>
+                <td><code>example_test.go</code></td>
+              </tr>
+              <tr>
+                <td>93</td>
+                <td>Godoc example: <code>WithTheme</code> (custom colors)</td>
+                <td>8</td>
+                <td><code>example_test.go</code></td>
+              </tr>
+              <tr>
+                <td>94</td>
+                <td>Example program: multi-dependency DAG with critical path + layered mode</td>
+                <td>12</td>
+                <td><code>examples/nom_dag/</code></td>
+              </tr>
+              <tr>
+                <td>95</td>
+                <td>VT emulator test for layered mode rendering</td>
+                <td>10</td>
+                <td><code>vt_layered_test.go</code></td>
+              </tr>
+              <tr>
+                <td>96</td>
+                <td>Integration test: full event flow → subscriber → DOT export with multi-deps</td>
+                <td>12</td>
+                <td><code>integration/</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- ================================================================== -->
+
+        <h2 id="all"><span class="num">★</span>Execution Summary</h2>
+        <div class="card card-innovation">
+          <h4>Dependency Chain (what blocks what)</h4>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Feature</th>
+                  <th>Depends On</th>
+                  <th>Blocked By</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Critical Path (#2)</td>
+                  <td>DAG topology (done)</td>
+                  <td>—</td>
+                </tr>
+                <tr>
+                  <td>Blockage View (#3)</td>
+                  <td>DAG topology (done)</td>
+                  <td>—</td>
+                </tr>
+                <tr>
+                  <td>Convergence (#6)</td>
+                  <td>DAG topology (done)</td>
+                  <td>—</td>
+                </tr>
+                <tr>
+                  <td>Status Registry (#11)</td>
+                  <td>—</td>
+                  <td>—</td>
+                </tr>
+                <tr>
+                  <td>Theme System (#12)</td>
+                  <td>—</td>
+                  <td>—</td>
+                </tr>
+                <tr>
+                  <td>Parallelism Meter (#4)</td>
+                  <td>DAG topology (done)</td>
+                  <td>—</td>
+                </tr>
+                <tr>
+                  <td>Layered Mode (#1)</td>
+                  <td>DAG topology (done)</td>
+                  <td>—</td>
+                </tr>
+                <tr>
+                  <td>Critical Path ETA (#5)</td>
+                  <td>#2 Critical Path</td>
+                  <td>Task 1-6</td>
+                </tr>
+                <tr>
+                  <td>Category Tints (#13)</td>
+                  <td>#12 Theme System</td>
+                  <td>Task 27-36</td>
+                </tr>
+                <tr>
+                  <td>DAG Summary (#7)</td>
+                  <td>#2 Critical Path (for "critical" line)</td>
+                  <td>Task 1-6</td>
+                </tr>
+                <tr>
+                  <td>Auto-Theme (#12 ext)</td>
+                  <td>#12 Theme System</td>
+                  <td>Task 27-36</td>
+                </tr>
+                <tr>
+                  <td>Smart Filtering (#8)</td>
+                  <td>#1 Layered Mode</td>
+                  <td>Task 40-51</td>
+                </tr>
+                <tr>
+                  <td>Critical-Path Priority (#9)</td>
+                  <td>#2 Critical Path</td>
+                  <td>Task 1-6</td>
+                </tr>
+                <tr>
+                  <td>Interactive TUI (#10)</td>
+                  <td>#1 Layered, #2 Critical Path</td>
+                  <td>Task 40-51, 1-6</td>
+                </tr>
+                <tr>
+                  <td>Category Collapse (#13 ext)</td>
+                  <td>#13 Category Tints</td>
+                  <td>Task 56-61</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card card-solution">
+          <h4>Recommended Build Order (parallelism-aware)</h4>
+          <ol>
+            <li>
+              <strong>Wave 1 (parallel):</strong> Critical Path (#2, tasks 1-6) ∥ Blockage View (#3,
+              tasks 7-10) ∥ Convergence (#6, tasks 11-12)
+            </li>
+            <li>
+              <strong>Wave 2 (parallel):</strong> Status Registry (#11, tasks 13-26) ∥ Theme System
+              (#12, tasks 27-36) ∥ Parallelism Meter (#4, tasks 37-39)
+            </li>
+            <li>
+              <strong>Wave 3 (parallel):</strong> Layered Mode (#1, tasks 40-51) ∥ Critical Path ETA
+              (#5, tasks 52-55, after Wave 1)
+            </li>
+            <li>
+              <strong>Wave 4 (parallel):</strong> Category Tints (#13, tasks 56-61, after Wave 2) ∥
+              DAG Summary (#7, tasks 62-64, after Wave 1) ∥ Auto-Theme (tasks 65-67, after Wave 2)
+            </li>
+            <li>
+              <strong>Wave 5 (parallel):</strong> Critical-Path Priority (#9, tasks 68-70) ∥ Smart
+              Layer Filtering (#8, tasks 71-73, after Wave 3)
+            </li>
+            <li>
+              <strong>Wave 6:</strong> Interactive TUI (#10, tasks 74-79, after Waves 3+5) ∥
+              Category Collapse (tasks 80-83, after Wave 4)
+            </li>
+            <li>
+              <strong>Wave 7 (parallel):</strong> All documentation (tasks 84-90) ∥ Examples +
+              quality (tasks 91-96)
+            </li>
+          </ol>
+        </div>
+
+        <div class="card card-warning">
+          <h4>Total Estimated Time</h4>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Tier</th>
+                  <th>Tasks</th>
+                  <th>Total Min</th>
+                  <th>Hours</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Tier 1 (1%→51%)</td>
+                  <td>12</td>
+                  <td>109</td>
+                  <td>1.8h</td>
+                </tr>
+                <tr>
+                  <td>Tier 2 (4%→64%)</td>
+                  <td>24</td>
+                  <td>221</td>
+                  <td>3.7h</td>
+                </tr>
+                <tr>
+                  <td>Tier 3 (20%→80%)</td>
+                  <td>32</td>
+                  <td>311</td>
+                  <td>5.2h</td>
+                </tr>
+                <tr>
+                  <td>Tier 4 (80%→100%)</td>
+                  <td>16</td>
+                  <td>175</td>
+                  <td>2.9h</td>
+                </tr>
+                <tr>
+                  <td>Docs + Quality</td>
+                  <td>12</td>
+                  <td>122</td>
+                  <td>2.0h</td>
+                </tr>
+                <tr>
+                  <td><strong>Total</strong></td>
+                  <td><strong>96</strong></td>
+                  <td><strong>938</strong></td>
+                  <td><strong>15.6h</strong></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <footer class="footer">
+          Generated 2026-07-02 03:16 &middot; 96 tasks across 13 ideas &middot; Pareto-sorted by
+          impact/effort/customer-value
+        </footer>
+      </main>
+    </div>
+    <script>
+      (function () {
+        if (!("IntersectionObserver" in window)) return;
+        var n = document.querySelector("[data-nav]");
+        if (!n) return;
+        var l = n.querySelectorAll('a[href^="#"]');
+        var i = Array.from(l).map(function (e) {
+          return e.getAttribute("href").slice(1);
+        });
+        var s = i
+          .map(function (e) {
+            return document.getElementById(e);
+          })
+          .filter(Boolean);
+        if (!s.length) return;
+        var o = new IntersectionObserver(
+          function (e) {
+            e.forEach(function (t) {
+              if (t.isIntersecting) {
+                l.forEach(function (n) {
+                  n.classList.toggle("active", n.getAttribute("href") === "#" + t.target.id);
+                });
+              }
+            });
+          },
+          { rootMargin: "-80px 0px -60% 0px", threshold: 0 },
+        );
+        s.forEach(function (e) {
+          o.observe(e);
+        });
+      })();
+    </script>
+  </body>
+</html>
