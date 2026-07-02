@@ -8,12 +8,12 @@
 
 ## Open Items
 
-| #   | Task                                                                                                            | Effort | Status                        |
-| --- | --------------------------------------------------------------------------------------------------------------- | ------ | ----------------------------- |
-| 14  | **Community: Post to r/golang, submit to Awesome Go**                                                           | Low    | Open (needs owner account)    |
-| 16  | **Cut `v1.0.0` tag** — API frozen (ADR 006); CHANGELOG + full checklist done                                    | Low    | Prepared — awaiting owner tag |
-| 18  | **Cut `v0.23.0` tag** — DAG innovations release (layered mode, themes, categories, critical-path, daghtml)     | Low    | Prepared — awaiting owner tag |
-| 19  | **daghtml lint cleanup** — 11 pre-existing lint issues (depguard, gosec G203, gochecknoglobals, wrapcheck)    | Medium | Tech debt                     |
+| #   | Task                                                                                                       | Effort | Status                        |
+| --- | ---------------------------------------------------------------------------------------------------------- | ------ | ----------------------------- |
+| 14  | **Community: Post to r/golang, submit to Awesome Go**                                                      | Low    | Open (needs owner account)    |
+| 16  | **Cut `v1.0.0` tag** — API frozen (ADR 006); CHANGELOG + full checklist done                               | Low    | Prepared — awaiting owner tag |
+| 18  | **Cut `v0.23.0` tag** — DAG innovations release (layered mode, themes, categories, critical-path, daghtml) | Low    | Prepared — awaiting owner tag |
+| 19  | **daghtml lint cleanup** — 11 pre-existing lint issues (depguard, gosec G203, gochecknoglobals, wrapcheck) | Medium | Tech debt                     |
 
 ---
 
