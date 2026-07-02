@@ -166,6 +166,7 @@ func (m *ProgressModel) renderHelpOverlay() string {
 		"  pgup        Scroll half page up",
 		"  g / Home    Scroll to top",
 		"  G / End     Scroll to bottom",
+		"  L           Toggle tree / layered mode",
 		"  ?           Toggle this help",
 		"  q / ctrl+c  Quit",
 	}

@@ -65,7 +65,9 @@ func (m *ProgressModel) handleWindowSize(msg tea.WindowSizeMsg) (tea.Model, tea.
 	return m, nil
 }
 
-func (m *ProgressModel) handleKeyPress(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
+func (m *ProgressModel) handleKeyPress( //nolint:cyclop // key dispatch switch
+	msg tea.KeyPressMsg,
+) (tea.Model, tea.Cmd) {
 	switch msg.String() {
 	case "ctrl+c":
 		if m.cancelFunc != nil {
@@ -89,6 +91,14 @@ func (m *ProgressModel) handleKeyPress(msg tea.KeyPressMsg) (tea.Model, tea.Cmd)
 		m.scrollToBottom()
 	case "?":
 		m.showHelp = !m.showHelp
+	case "L":
+		if m.dependencyTree != nil && m.displayMode == DisplayModeNOM {
+			if m.dependencyTree.RenderMode() == nom.RenderModeLayered {
+				m.dependencyTree.SetRenderMode(nom.RenderModeTree)
+			} else {
+				m.dependencyTree.SetRenderMode(nom.RenderModeLayered)
+			}
+		}
 	}
 
 	return m, nil
