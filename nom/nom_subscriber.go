@@ -58,6 +58,17 @@ func WithCollapseCompletedPhases() SubscriberOption {
 	}
 }
 
+// WithShowExtraDeps enables the Option B rendering mode: nodes with multiple
+// dependencies show a dim "↳ Compile, Lint" sub-line beneath the label,
+// making non-display-parent deps visible without cluttering the label.
+// When disabled (the default, matching nom), extra deps are absorbed
+// silently into the tree structure.
+func WithShowExtraDeps() SubscriberOption {
+	return func(ns *NOMStyleSubscriber) {
+		ns.dependencyTree.showExtraDeps = true
+	}
+}
+
 // NewNOMStyleSubscriber creates a new NOM-style subscriber.
 func NewNOMStyleSubscriber(opts ...SubscriberOption) *NOMStyleSubscriber {
 	ns := &NOMStyleSubscriber{
@@ -116,7 +127,11 @@ func (v *subscriberView) Nodes() []output.GraphNode {
 	return out
 }
 
-// Edges projects the dependency tree's edges for diagram export.
+// Edges projects the DAG's dependency edges for diagram export. Each edge
+// goes FROM a dependency TO the dependent node — matching the tree's
+// parent→child direction. Unlike the old implementation (which only walked
+// display-tree Children), this iterates node.Deps and captures ALL edges,
+// including non-display-parent dependencies.
 //
 // Lock ordering: acquires ns.mu.RLock first, then tree.mu.RLock.
 // This ordering (subscriber → tree) is consistent across all code paths
@@ -125,7 +140,6 @@ func (v *subscriberView) Edges() []output.GraphEdge {
 	v.ns.mu.RLock()
 	defer v.ns.mu.RUnlock()
 
-	// Derive edges from the dependency tree's parent-child relationships.
 	tree := v.ns.dependencyTree
 
 	tree.mu.RLock()
@@ -134,11 +148,11 @@ func (v *subscriberView) Edges() []output.GraphEdge {
 	var edges []output.GraphEdge
 
 	for _, node := range tree.nodes {
-		parentID := string(node.ID)
-		for _, child := range node.Children {
+		toID := string(node.ID)
+		for _, depID := range node.Deps {
 			edges = append(edges, output.GraphEdge{
-				From: output.NewBrandedID[output.GraphNodeIDBrand](parentID),
-				To:   output.NewBrandedID[output.GraphNodeIDBrand](string(child.ID)),
+				From: output.NewBrandedID[output.GraphNodeIDBrand](string(depID)),
+				To:   output.NewBrandedID[output.GraphNodeIDBrand](toID),
 			})
 		}
 	}

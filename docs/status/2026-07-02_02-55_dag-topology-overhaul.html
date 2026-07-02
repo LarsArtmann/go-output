@@ -1,0 +1,813 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DAG Topology Overhaul — Status Report</title>
+    <style>
+      :root {
+        --color-graphite: #0e0e10;
+        --color-graphite-2: #18181d;
+        --color-graphite-3: #16161a;
+        --color-bone: #f4f4f0;
+        --color-red: #ff6b6b;
+        --color-blue: #6eb5ff;
+        --color-yellow: #f4d35e;
+        --color-amber: #ffb347;
+        --color-hairline: rgba(244, 244, 240, 0.12);
+        --color-hairline-strong: rgba(244, 244, 240, 0.25);
+
+        --surface: var(--color-graphite);
+        --surface-raised: var(--color-graphite-2);
+        --surface-sunken: var(--color-graphite-3);
+        --text: var(--color-bone);
+        --text-muted: rgba(244, 244, 240, 0.72);
+        --text-faint: rgba(244, 244, 240, 0.45);
+        --border: var(--color-hairline);
+        --border-strong: var(--color-hairline-strong);
+        --accent: var(--color-amber);
+        --problem: var(--color-red);
+        --solution: var(--color-blue);
+        --warning: var(--color-yellow);
+
+        --bg: var(--surface);
+        --bg-elevated: var(--surface-raised);
+        --bg-sunken: var(--surface-sunken);
+        --bg-card: var(--surface-raised);
+        --bg-code: var(--surface-sunken);
+        --ink: var(--text);
+        --ink-secondary: var(--text-muted);
+        --ink-muted: var(--text-faint);
+        --rose: var(--problem);
+        --rose-glow: color-mix(in srgb, var(--problem) 15%, transparent);
+        --emerald: var(--solution);
+        --emerald-glow: color-mix(in srgb, var(--solution) 15%, transparent);
+        --amber-glow: color-mix(in srgb, var(--warning) 15%, transparent);
+        --coral: var(--problem);
+        --coral-light: color-mix(in srgb, var(--problem) 15%, transparent);
+        --teal: var(--solution);
+        --teal-light: color-mix(in srgb, var(--solution) 15%, transparent);
+        --amber-light: color-mix(in srgb, var(--warning) 20%, transparent);
+
+        --radius: 0px;
+        --radius-sm: 0px;
+
+        --font-heading: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        --font-body: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        --font-mono: ui-monospace, "Cascadia Code", "Source Code Pro", "JetBrains Mono", Menlo, Consolas, monospace;
+      }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html { scroll-behavior: smooth; }
+      section[id], [id] { scroll-margin-top: 60px; }
+
+      body {
+        background: var(--surface);
+        color: var(--text);
+        font-family: var(--font-body);
+        font-size: 15px;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+      a:focus-visible { outline-offset: -1px; }
+
+      .top-bar {
+        background: var(--text);
+        color: var(--surface);
+        padding: 0.6rem 2rem;
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .layout { display: flex; gap: 2.5rem; padding: 2rem; }
+      .sidebar {
+        width: 220px; flex-shrink: 0; position: sticky; top: 1rem;
+        align-self: flex-start; height: calc(100vh - 2rem); overflow-y: auto; display: none;
+      }
+      .sidebar nav { display: flex; flex-direction: column; gap: 0; }
+      .sidebar .label {
+        font-family: var(--font-mono); font-size: 0.68rem; font-weight: 700;
+        text-transform: uppercase; letter-spacing: 0.14em; color: var(--accent);
+        margin-bottom: 0.75rem; padding-bottom: 0.4rem; border-bottom: 2px solid var(--border-strong);
+      }
+      .sidebar a {
+        font-size: 0.85rem; color: var(--text-muted); text-decoration: none;
+        padding: 0.45rem 0.75rem; border-left: 2px solid transparent;
+        transition: all 0.15s ease; line-height: 1.4; font-weight: 500;
+      }
+      .sidebar a:hover, .sidebar a.active {
+        color: var(--accent); border-left-color: var(--accent);
+        background: color-mix(in srgb, var(--accent) 8%, transparent);
+      }
+      .main { flex: 1; min-width: 0; }
+
+      h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 800; letter-spacing: -0.02em; }
+      h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); line-height: 1.1; margin: 0 0 0.6rem; }
+      h2 {
+        font-size: 1.4rem; margin: 2.5rem 0 1rem; padding-bottom: 0.4rem;
+        border-bottom: 2px solid var(--border-strong); display: flex; align-items: baseline; gap: 0.6rem;
+      }
+      h2 .num { font-family: var(--font-mono); font-size: 0.78rem; color: var(--accent); font-weight: 700; letter-spacing: 0.06em; }
+      h3 { font-size: 1.1rem; margin: 0 0 0.4rem; font-weight: 700; }
+      h4 { font-size: 0.98rem; margin: 0 0 0.3rem; font-weight: 700; }
+      p { margin: 0 0 1rem; }
+
+      .hero { padding: 1.5rem 0 1.5rem; margin-bottom: 1.5rem; border-bottom: 2px solid var(--border-strong); }
+      .hero-badge {
+        display: inline-block; font-family: var(--font-mono); font-size: 0.7rem;
+        font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em;
+        color: var(--surface); background: var(--accent); padding: 0.3rem 0.7rem; margin-bottom: 0.9rem;
+      }
+      .hero-subtitle { font-size: 1.05rem; color: var(--text-muted); max-width: 70ch; margin: 0; }
+
+      .card {
+        background: var(--surface-raised); border: 1px solid var(--border);
+        padding: 1.1rem 1.3rem; margin-bottom: 1rem; border-left: 4px solid var(--border-strong);
+      }
+      .card-problem { border-left-color: var(--problem); background: color-mix(in srgb, var(--problem) 8%, var(--surface-raised)); }
+      .card-solution { border-left-color: var(--solution); background: color-mix(in srgb, var(--solution) 8%, var(--surface-raised)); }
+      .card-warning { border-left-color: var(--warning); background: color-mix(in srgb, var(--warning) 8%, var(--surface-raised)); }
+
+      .issue {
+        background: var(--surface-raised); border: 1px solid var(--border);
+        padding: 1.1rem 1.3rem; margin-bottom: 1rem; border-left: 4px solid var(--border-strong);
+      }
+      .issue-critical { border-left-color: var(--problem); background: color-mix(in srgb, var(--problem) 8%, var(--surface-raised)); }
+      .issue-important { border-left-color: var(--warning); background: color-mix(in srgb, var(--warning) 8%, var(--surface-raised)); }
+      .issue-nice { border-left-color: var(--solution); background: color-mix(in srgb, var(--solution) 8%, var(--surface-raised)); }
+      .issue h3 { margin-bottom: 0.3rem; }
+      .issue .where { font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-faint); margin: 0.2rem 0 0.6rem; }
+      .issue p:last-child { margin-bottom: 0; }
+
+      .severity {
+        display: inline-block; font-family: var(--font-mono); font-size: 0.62rem;
+        font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+        padding: 0.2rem 0.55rem; margin-bottom: 0.6rem; color: var(--surface);
+      }
+      .severity-critical { background: var(--problem); }
+      .severity-important { background: var(--warning); }
+      .severity-nice { background: var(--solution); }
+
+      .badge {
+        display: inline-block; font-family: var(--font-mono); font-size: 0.62rem;
+        font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+        padding: 0.18rem 0.5rem; border: 1px solid var(--border-strong); color: var(--text-muted);
+      }
+      .badge-critical { color: var(--problem); border-color: var(--problem); }
+      .badge-high { color: var(--warning); border-color: var(--warning); }
+      .badge-medium { color: var(--accent); border-color: var(--accent); }
+      .badge-low { color: var(--text-muted); }
+      .badge-fixed { color: var(--solution); border-color: var(--solution); }
+
+      .callout {
+        margin: 0.8rem 0 0; padding: 0.7rem 0.9rem; border-left: 3px solid var(--border-strong);
+        background: color-mix(in srgb, var(--text) 5%, transparent); font-size: 0.9rem;
+      }
+      .callout strong { display: inline-block; margin-right: 0.4rem; }
+      .callout-solution { border-left-color: var(--solution); background: color-mix(in srgb, var(--solution) 10%, transparent); }
+      .callout-warning { border-left-color: var(--warning); background: color-mix(in srgb, var(--warning) 10%, transparent); }
+
+      .stat-grid, .scorecard { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.75rem; margin: 1rem 0 1.5rem; }
+      .stat-card, .score-card { background: var(--surface-raised); border: 1px solid var(--border); padding: 1.1rem 1rem; position: relative; }
+      .stat-card::before, .score-card::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--border-strong); }
+      .stat-bad::before, .score-bad::before { background: var(--problem); }
+      .stat-good::before, .score-good::before { background: var(--solution); }
+      .stat-warn::before, .score-warn::before { background: var(--warning); }
+      .stat-value, .score { font-family: var(--font-heading); font-size: 2rem; font-weight: 800; line-height: 1; letter-spacing: -0.03em; color: var(--text); }
+      .stat-bad .stat-value, .score-bad .score { color: var(--problem); }
+      .stat-good .stat-value, .score-good .score { color: var(--solution); }
+      .stat-warn .stat-value, .score-warn .score { color: var(--warning); }
+      .stat-label, .score-card .label { font-family: var(--font-mono); font-size: 0.65rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-faint); margin-top: 0.5rem; }
+
+      .strengths { display: grid; gap: 0.5rem; margin: 1rem 0 1.5rem; }
+      .strength { display: grid; grid-template-columns: auto 1fr; gap: 0.8rem; padding: 0.7rem 0; border-bottom: 1px solid var(--border); }
+      .strength .check { font-family: var(--font-mono); font-weight: 700; color: var(--solution); font-size: 1.1rem; line-height: 1.4; }
+      .strength .text strong { display: block; margin-bottom: 0.15rem; }
+      .strength .text span { color: var(--text-muted); font-size: 0.9rem; }
+
+      .table-wrap { overflow-x: auto; }
+      table { width: 100%; border-collapse: collapse; margin: 1rem 0 1.5rem; font-size: 0.9rem; }
+      th { text-align: left; padding: 0.6rem 0.9rem; background: var(--surface-raised); color: var(--text-faint); font-family: var(--font-mono); font-size: 0.66rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; border-bottom: 1px solid var(--border-strong); }
+      td { padding: 0.6rem 0.9rem; border-bottom: 1px solid var(--border); }
+      tr:hover td { background: var(--surface-raised); }
+
+      .compare-header { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin: 1rem 0 0.5rem; }
+      .compare-before, .compare-after { font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; padding: 0.4rem 0.7rem; color: var(--surface); }
+      .compare-before { background: var(--problem); }
+      .compare-after { background: var(--solution); }
+      .compare-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem; }
+      .compare-row pre { margin: 0; }
+
+      pre { background: var(--surface-sunken); border: 1px solid var(--border); padding: 1rem 1.2rem; margin: 1rem 0; font-family: var(--font-mono); font-size: 0.82rem; line-height: 1.65; overflow-x: auto; }
+      code { font-family: var(--font-mono); }
+      p code, li code, td code { font-size: 0.88em; background: var(--surface-sunken); padding: 0.1rem 0.35rem; }
+      .tok-keyword { color: var(--accent); }
+      .tok-type { color: var(--warning); }
+      .tok-string { color: var(--solution); }
+      .tok-comment { color: var(--text-faint); font-style: italic; }
+      .tok-func { color: #74a9ff; }
+      .tok-number { color: var(--accent); }
+      .tok-builtin { color: #4dd9ff; }
+      .tok-punct { color: var(--text-muted); }
+
+      .dep-tree { background: var(--surface-sunken); border: 1px solid var(--border); padding: 1rem 1.2rem; margin: 1rem 0; font-family: var(--font-mono); font-size: 0.82rem; line-height: 1.7; white-space: pre; overflow-x: auto; }
+      .dep-tree .root { color: var(--accent); font-weight: 700; }
+      .dep-tree .ok { color: var(--solution); }
+
+      .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin: 1rem 0; }
+      .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1rem 0; }
+
+      .footer { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border); font-size: 0.8rem; color: var(--text-faint); font-family: var(--font-mono); }
+
+      @media (min-width: 1024px) { .sidebar { display: block; } }
+      @media (max-width: 768px) {
+        .layout { flex-direction: column; padding: 1rem; }
+        .top-bar { padding: 0.6rem 1rem; flex-wrap: wrap; gap: 0.3rem; }
+        .grid-2, .grid-3 { grid-template-columns: 1fr; }
+        .compare-header, .compare-row { grid-template-columns: 1fr; }
+        .stat-grid, .scorecard { grid-template-columns: repeat(2, 1fr); }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="top-bar">
+      <span>STATUS REPORT</span>
+      <span>2026-07-02 02:55</span>
+      <span>go-output / DAG Topology Overhaul</span>
+    </div>
+
+    <div class="layout">
+      <aside class="sidebar" data-nav>
+        <nav>
+          <div class="label">Contents</div>
+          <a href="#summary">Summary</a>
+          <a href="#done">Fully Done</a>
+          <a href="#partial">Partially Done</a>
+          <a href="#not-started">Not Started</a>
+          <a href="#fucked">Totally Fucked Up</a>
+          <a href="#improve">What to Improve</a>
+          <a href="#next25">Top 25 Next</a>
+          <a href="#question">The One Question</a>
+        </nav>
+      </aside>
+
+      <main class="main">
+        <div class="hero">
+          <div class="hero-badge">DAG Topology Overhaul</div>
+          <h1>nom/ DAG Migration &mdash; Session Report</h1>
+          <p class="hero-subtitle">
+            Replaced the fake single-parent tree (<code>SecondaryParents</code> + <code>&larr;</code> suffix)
+            with a true DAG topology matching <code>nix-output-monitor</code>'s approach. Deepest-parent placement,
+            two rendering modes (Option A: clean tree / Option B: <code>&nrarr;</code> sub-line), and a fixed
+            edge-export bug that was silently dropping multi-dependency edges from DOT/Mermaid diagrams.
+          </p>
+        </div>
+
+        <h2 id="summary"><span class="num">00</span>Summary</h2>
+        <div class="stat-grid">
+          <div class="stat-card stat-good">
+            <div class="stat-value">18/18</div>
+            <div class="stat-label">Modules Passing</div>
+          </div>
+          <div class="stat-card stat-good">
+            <div class="stat-value">0</div>
+            <div class="stat-label">Lint Issues</div>
+          </div>
+          <div class="stat-card stat-good">
+            <div class="stat-value">10</div>
+            <div class="stat-label">Files Changed</div>
+          </div>
+          <div class="stat-card stat-good">
+            <div class="stat-value">+294 / &minus;82</div>
+            <div class="stat-label">Lines Changed</div>
+          </div>
+        </div>
+
+        <div class="stat-grid">
+          <div class="stat-card stat-good">
+            <div class="stat-value">297</div>
+            <div class="stat-label">Go Files</div>
+          </div>
+          <div class="stat-card stat-good">
+            <div class="stat-value">182</div>
+            <div class="stat-label">Test Files</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">38,537</div>
+            <div class="stat-label">Lines of Go</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">25</div>
+            <div class="stat-label">Golden Files</div>
+          </div>
+        </div>
+
+        <!-- ====================================================================== -->
+
+        <h2 id="done"><span class="num">A</span>Fully Done</h2>
+
+        <div class="card card-solution">
+          <h4>DAG data model &mdash; <code>SecondaryParents</code> eliminated</h4>
+          <p>
+            <code>ActivityNode</code> now stores <code>Deps []ActivityID</code> &mdash; ALL real dependency edges.
+            <code>Parent</code>/<code>Children</code> are display-layout only, computed at <code>Build()</code> time.
+            The <code>SecondaryParents</code> field, <code>hasSecondaryParent()</code> method, and the <code>&larr;</code>
+            inline annotation are all deleted. Every reference across the entire codebase has been updated.
+            <strong>Files:</strong> <code>nom/tree.go</code>, <code>nom/tree_modification.go</code>
+          </p>
+        </div>
+
+        <div class="card card-solution">
+          <h4>Deepest-parent placement strategy (matching nom)</h4>
+          <p>
+            <code>Build()</code> now runs a fixpoint depth computation (longest path from root), then picks
+            each node's deepest dep as <code>DisplayParent</code>. This matches <code>nix-output-monitor</code>'s
+            "lowermost dependency" rule &mdash; shared deps sink toward the leaves where they logically belong,
+            instead of dangling off an arbitrary <code>dependencies[0]</code>.
+            <strong>Files:</strong> <code>nom/tree_building.go</code> (rewritten: <code>resetDisplayState()</code>,
+            <code>computeDepths()</code>, <code>assignDisplayParents()</code>)
+          </p>
+        </div>
+
+        <div class="card card-solution">
+          <h4>Option A &mdash; clean tree, no annotation (default)</h4>
+          <p>
+            The default rendering mode. Each node appears exactly once, under its deepest parent.
+            No <code>&larr;</code> suffix, no clutter. This is what <code>nom</code>, <code>cargo</code>,
+            <code>bazel</code>, and every major build tool does. The progress display's job is "what's
+            happening now," not "what depends on what."
+          </p>
+          <div class="dep-tree"><span class="root">&#9672; Phase</span>
+&#9492;&#9472;&#9472; &#10004; Step 1
+    &#9492;&#9472;&#9472; &#9675; Step 2</div>
+        </div>
+
+        <div class="card card-solution">
+          <h4>Option B &mdash; <code>&nrarr;</code> sub-line for extra deps (opt-in)</h4>
+          <p>
+            Enabled via <code>nom.WithShowExtraDeps()</code>. Nodes with multiple dependencies show a dim
+            <code>&nrarr; Compile, Lint</code> sub-line beneath the label &mdash; following the same pattern as
+            the existing Progress/Download sub-lines. The <code>&larr;</code> suffix is gone; the new glyph
+            <code>SymbolDeps = "&nrarr;"</code> replaces it.
+            <strong>Files:</strong> <code>nom/symbols.go</code>, <code>nom/tree_render.go</code> (<code>formatExtraDeps()</code>),
+            <code>nom/nom_subscriber.go</code> (<code>WithShowExtraDeps</code>)
+          </p>
+        </div>
+
+        <div class="card card-solution">
+          <h4>Edge export bug fixed &mdash; diagram export now captures ALL edges</h4>
+          <p>
+            <code>subscriberView.Edges()</code> (<code>nom/nom_subscriber.go</code>) was iterating
+            <code>node.Children</code> (display tree only), silently dropping all non-primary dependency edges
+            from DOT/Mermaid/D2 exports. Now iterates <code>node.Deps</code> &mdash; the true DAG &mdash;
+            so diagram exports reflect reality. This was a pre-existing bug, not introduced by this change;
+            the model split fixed it for free.
+          </p>
+        </div>
+
+        <div class="card card-solution">
+          <h4>AddActivity preserves deps on re-registration</h4>
+          <p>
+            <code>ActivityStarted</code> events call <code>AddActivity(id, deps)</code> after
+            <code>ActivityRegistered</code> already set the deps. The old code wiped deps on every call.
+            Now <code>AddActivity</code> with empty <code>dependencies</code> preserves existing deps.
+            <strong>File:</strong> <code>nom/tree_modification.go</code>
+          </p>
+        </div>
+
+        <div class="card card-solution">
+          <h4>Tests &mdash; 6 new/updated test cases</h4>
+          <p>
+            <code>TestDependencyTree_Render_MultiDeps_OptionA_NoAnnotation</code>,
+            <code>TestDependencyTree_Render_MultiDeps_OptionB_SubLine</code>,
+            <code>TestDependencyTree_Render_MultiDeps_DeepestParent</code>,
+            <code>TestDependencyTree_AddActivity_DedupDeps</code> (renamed from <code>DedupSecondaryParents</code>),
+            plus updated <code>assertChildParentID</code> tests with <code>Build()</code> calls.
+          </p>
+        </div>
+
+        <div class="card card-solution">
+          <h4>Golden files updated</h4>
+          <p>
+            <code>TestDependencyTreeRenderGolden_SecondaryDeps.golden</code> and
+            <code>TestInlineRendererGolden_SecondFrame.golden</code> regenerated to reflect deepest-parent
+            placement and removal of <code>&larr;</code> annotation.
+          </p>
+        </div>
+
+        <div class="card card-solution">
+          <h4>AGENTS.md updated with DAG pattern documentation</h4>
+          <p>
+            Two entries updated: the snapshot-model entry now mentions <code>Deps</code> and display layout separation.
+            A new entry documents the DAG topology model, deepest-parent strategy, Option A/B, and the edge-export fix.
+          </p>
+        </div>
+
+        <div class="card card-solution">
+          <h4>Full project health &mdash; pre-existing work</h4>
+          <p>
+            18/18 modules pass <code>nix run .#test</code>. 0 lint issues across all modules.
+            Pattern B versioning complete (47 sibling requires at v0.0.0 sentinel). govulncheck clean.
+            go mod tidy clean. Race tests clean on nom + tui.
+          </p>
+        </div>
+
+        <!-- ====================================================================== -->
+
+        <h2 id="partial"><span class="num">B</span>Partially Done</h2>
+
+        <div class="issue issue-important">
+          <span class="severity severity-important">Partial</span>
+          <h3>Layered/topological display mode (Option C from analysis)</h3>
+          <div class="where">nom/ &mdash; not started, but analyzed and designed</div>
+          <p>
+            During the DAG analysis, a third rendering approach was designed: topological-layer grouping
+            (Kahn's algorithm, nodes grouped by dependency depth). This was presented as the "novel angle"
+            for DAG visualization in a progress display but was NOT implemented. The infrastructure
+            (<code>computeDepths()</code> in <code>tree_building.go</code>) now provides the depth data
+            needed, but the rendering path doesn't exist yet.
+          </p>
+        </div>
+
+        <div class="issue issue-important">
+          <span class="severity severity-important">Partial</span>
+          <h3>CHANGELOG entry not yet written</h3>
+          <div class="where">CHANGELOG.md</div>
+          <p>
+            The DAG topology change is significant (model redesign, breaking API change for
+            <code>SecondaryParents</code> consumers &mdash; though none exist outside nom/). The CHANGELOG
+            <code>[Unreleased]</code> section needs a new entry documenting the DAG migration.
+          </p>
+        </div>
+
+        <div class="issue issue-important">
+          <span class="severity severity-important">Partial</span>
+          <h3>Examples not updated</h3>
+          <div class="where">examples/</div>
+          <p>
+            No example demonstrates the new <code>WithShowExtraDeps()</code> option or multi-dependency
+            DAG scenarios. The existing examples still use single-dependency trees.
+          </p>
+        </div>
+
+        <!-- ====================================================================== -->
+
+        <h2 id="not-started"><span class="num">C</span>Not Started</h2>
+
+        <div class="card card-warning">
+          <h4>v1.0.0 release tag</h4>
+          <p>
+            API is frozen (ADR 006), all pre-release checklist items green. The tag cut is awaiting owner action
+            (<code>TODO_LIST.md</code> item #16). The DAG change is post-v1.0.0 work.
+          </p>
+        </div>
+
+        <div class="card card-warning">
+          <h4>Community submission (r/golang, Awesome Go)</h4>
+          <p>
+            <code>TODO_LIST.md</code> item #14. Needs an owner account to post.
+          </p>
+        </div>
+
+        <div class="card card-warning">
+          <h4>Cycle detection on the DAG</h4>
+          <p>
+            <code>computeDepths()</code> has a cycle guard (max iterations = <code>len(nodes) + 1</code>), but
+            it silently stops iterating &mdash; no error or warning is surfaced. A proper cycle-detection API
+            (<code>dt.HasCycle() bool</code>) would let callers validate before building.
+          </p>
+        </div>
+
+        <div class="card card-warning">
+          <h4>Critical-path computation</h4>
+          <p>
+            The DAG topology enables critical-path analysis ("which dependency chain is the bottleneck?").
+            This was mentioned as a future benefit of the model split but no API exists yet.
+          </p>
+        </div>
+
+        <!-- ====================================================================== -->
+
+        <h2 id="fucked"><span class="num">D</span>Totally Fucked Up</h2>
+
+        <div class="issue issue-nice">
+          <span class="severity severity-nice">None</span>
+          <h3>Nothing is fucked up right now.</h3>
+          <p>
+            All 18 modules pass. Zero lint issues. Zero race conditions. All golden files updated.
+            The DAG migration was clean &mdash; no regressions, no broken APIs (the deleted
+            <code>SecondaryParents</code> had zero external consumers), and the edge-export bug fix was a
+            bonus discovery.
+          </p>
+          <div class="callout callout-solution">
+            <strong>Caveat:</strong>
+            The <code>vttest_test.go</code> has two gopls <code>unusedfunc</code> info diagnostics
+            (<code>assertScreenNotContains</code>, <code>assertRowEmpty</code>). These are pre-existing
+            and NOT related to this session's work.
+          </div>
+        </div>
+
+        <!-- ====================================================================== -->
+
+        <h2 id="improve"><span class="num">E</span>What We Should Improve</h2>
+
+        <div class="strengths">
+          <div class="strength">
+            <div class="check">!</div>
+            <div class="text">
+              <strong>Deepest-parent tie-breaking is arbitrary</strong>
+              <span>When two deps have the same depth, the first one in <code>Deps</code> order wins. This is deterministic but not semantically optimal &mdash; a "most recently completed" or "same phase" heuristic might produce better trees.</span>
+            </div>
+          </div>
+          <div class="strength">
+            <div class="check">!</div>
+            <div class="text">
+              <strong>Build() is called lazily but not cached invalidation-safe</strong>
+              <span><code>AddActivity</code> sets <code>loaded = false</code>, but <code>Build()</code> always recomputes from scratch (reset + fixpoint). For large DAGs with frequent AddActivity calls (e.g. streaming event handlers), this is O(n&times;iterations) per build. An incremental depth-update would help, but the current DAG sizes (&lt;100 nodes) don't justify it yet.</span>
+            </div>
+          </div>
+          <div class="strength">
+            <div class="check">!</div>
+            <div class="text">
+              <strong>No cycle detection API</strong>
+              <span>The fixpoint guard prevents infinite loops but doesn't tell the caller "your DAG has a cycle." A <code>HasCycle()</code> method using DFS coloring would be trivial to add now that the topology is a real DAG.</span>
+            </div>
+          </div>
+          <div class="strength">
+            <div class="check">!</div>
+            <div class="text">
+              <strong>Option B sub-line is not visible in TUI mode</strong>
+              <span>The TUI delegates rendering to <code>tree.RenderVisibleEntry()</code> which calls <code>renderLine()</code> &mdash; so Option B IS visible. But the TUI's scroll logic (<code>visibleEntries[treeLine]</code>) assumes one entry = one row. The <code>\n</code> in the sub-line creates a multi-row entry that could misalign click mapping. This needs verification.</span>
+            </div>
+          </div>
+          <div class="strength">
+            <div class="check">!</div>
+            <div class="text">
+              <strong>CHANGELOG not updated for this change</strong>
+              <span>The <code>[Unreleased]</code> section needs a new subsection for the DAG topology overhaul.</span>
+            </div>
+          </div>
+          <div class="strength">
+            <div class="check">!</div>
+            <div class="text">
+              <strong>Pre-existing gopls unused-func warnings</strong>
+              <span><code>vttest_test.go</code> has two unused test helper methods. Not related to this session but should be cleaned up.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ====================================================================== -->
+
+        <h2 id="next25"><span class="num">F</span>Top 25 Things to Get Done Next</h2>
+
+        <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Priority</th>
+              <th>Task</th>
+              <th>Effort</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td><span class="badge badge-critical">Critical</span></td>
+              <td><strong>Cut v1.0.0 tag</strong> &mdash; API frozen, all checks green, awaiting owner action</td>
+              <td>Low</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td><span class="badge badge-high">High</span></td>
+              <td><strong>Write CHANGELOG entry for DAG topology overhaul</strong> &mdash; model redesign, breaking internal API, new options</td>
+              <td>Low</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td><span class="badge badge-high">High</span></td>
+              <td><strong>Add cycle detection API</strong> &mdash; <code>dt.HasCycle() (cycle []ActivityID, ok bool)</code> using DFS coloring on <code>Deps</code></td>
+              <td>Low</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td><span class="badge badge-high">High</span></td>
+              <td><strong>Verify TUI scroll with Option B sub-lines</strong> &mdash; <code>\n</code> in activityDisplay may break <code>visibleEntries[treeLine]</code> click mapping</td>
+              <td>Low</td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td><span class="badge badge-high">High</span></td>
+              <td><strong>Add multi-dependency example</strong> &mdash; example with 3+ deps showing Option A and B</td>
+              <td>Low</td>
+            </tr>
+            <tr>
+              <td>6</td>
+              <td><span class="badge badge-medium">Medium</span></td>
+              <td><strong>Clean up vttest_test.go unused helpers</strong> &mdash; <code>assertScreenNotContains</code>, <code>assertRowEmpty</code></td>
+              <td>Low</td>
+            </tr>
+            <tr>
+              <td>7</td>
+              <td><span class="badge badge-medium">Medium</span></td>
+              <td><strong>Add godoc example for <code>WithShowExtraDeps</code></strong></td>
+              <td>Low</td>
+            </tr>
+            <tr>
+              <td>8</td>
+              <td><span class="badge badge-medium">Medium</span></td>
+              <td><strong>Post to r/golang, submit to Awesome Go</strong> &mdash; needs owner account</td>
+              <td>Low</td>
+            </tr>
+            <tr>
+              <td>9</td>
+              <td><span class="badge badge-medium">Medium</span></td>
+              <td><strong>Golden test for Option B rendering</strong> &mdash; <code>testdata/TestDeps_OptionB_SubLine.golden</code></td>
+              <td>Low</td>
+            </tr>
+            <tr>
+              <td>10</td>
+              <td><span class="badge badge-medium">Medium</span></td>
+              <td><strong>Golden test for deepest-parent placement</strong> &mdash; diamond dependency (A&rarr;B, A&rarr;C, B&rarr;D, C&rarr;D)</td>
+              <td>Low</td>
+            </tr>
+            <tr>
+              <td>11</td>
+              <td><span class="badge badge-medium">Medium</span></td>
+              <td><strong>Integration test: DOT export with multi-deps</strong> &mdash; verify <code>Edges()</code> captures all DAG edges</td>
+              <td>Low</td>
+            </tr>
+            <tr>
+              <td>12</td>
+              <td><span class="badge badge-medium">Medium</span></td>
+              <td><strong>Critical-path API</strong> &mdash; <code>dt.CriticalPath() []ActivityID</code> using longest-path through DAG</td>
+              <td>Medium</td>
+            </tr>
+            <tr>
+              <td>13</td>
+              <td><span class="badge badge-medium">Medium</span></td>
+              <td><strong>Topological-sort API</strong> &mdash; expose <code>dt.TopoSort() []ActivityID</code> for consumers that need execution order</td>
+              <td>Medium</td>
+            </tr>
+            <tr>
+              <td>14</td>
+              <td><span class="badge badge-low">Low</span></td>
+              <td><strong>Layered display mode (Option C)</strong> &mdash; topological-layer grouping, using <code>computeDepths()</code> data</td>
+              <td>High</td>
+            </tr>
+            <tr>
+              <td>15</td>
+              <td><span class="badge badge-low">Low</span></td>
+              <td><strong>Improve deepest-parent tie-breaking</strong> &mdash; "most recently completed" or "same phase" heuristic</td>
+              <td>Medium</td>
+            </tr>
+            <tr>
+              <td>16</td>
+              <td><span class="badge badge-low">Low</span></td>
+              <td><strong>Incremental depth updates</strong> &mdash; avoid full fixpoint recompute on every <code>AddActivity</code></td>
+              <td>High</td>
+            </tr>
+            <tr>
+              <td>17</td>
+              <td><span class="badge badge-low">Low</span></td>
+              <td><strong>Benchmark Build() on large DAGs</strong> &mdash; establish baseline for 100+ node graphs</td>
+              <td>Low</td>
+            </tr>
+            <tr>
+              <td>18</td>
+              <td><span class="badge badge-low">Low</span></td>
+              <td><strong>Fuzz test for Build()</strong> &mdash; random DAG generation, verify no infinite loops</td>
+              <td>Low</td>
+            </tr>
+            <tr>
+              <td>19</td>
+              <td><span class="badge badge-low">Low</span></td>
+              <td><strong>ADR 010: DAG topology model</strong> &mdash; document the design decision, tradeoffs, nom alignment</td>
+              <td>Low</td>
+            </tr>
+            <tr>
+              <td>20</td>
+              <td><span class="badge badge-low">Low</span></td>
+              <td><strong>Update FEATURES.md</strong> &mdash; add DAG topology, Option A/B, <code>WithShowExtraDeps</code></td>
+              <td>Low</td>
+            </tr>
+            <tr>
+              <td>21</td>
+              <td><span class="badge badge-low">Low</span></td>
+              <td><strong>Update TODO_LIST.md</strong> &mdash; mark DAG migration done, add new open items</td>
+              <td>Low</td>
+            </tr>
+            <tr>
+              <td>22</td>
+              <td><span class="badge badge-low">Low</span></td>
+              <td><strong>VT emulator test for Option B</strong> &mdash; verify <code>&nrarr;</code> sub-line renders correctly on screen buffer</td>
+              <td>Low</td>
+            </tr>
+            <tr>
+              <td>23</td>
+              <td><span class="badge badge-low">Low</span></td>
+              <td><strong>Diagram export integration test</strong> &mdash; full round-trip: events &rarr; subscriber &rarr; DOT render &rarr; verify all edges</td>
+              <td>Medium</td>
+            </tr>
+            <tr>
+              <td>24</td>
+              <td><span class="badge badge-low">Low</span></td>
+              <td><strong>Consider <code>RenderAsDOT()</code> convenience on DependencyTree</strong> &mdash; one-call DAG export for debugging</td>
+              <td>Low</td>
+            </tr>
+            <tr>
+              <td>25</td>
+              <td><span class="badge badge-low">Low</span></td>
+              <td><strong>Stress test: 50-node DAG with diamond patterns</strong> &mdash; verify depth computation and rendering under complex topologies</td>
+              <td>Medium</td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+
+        <!-- ====================================================================== -->
+
+        <h2 id="question"><span class="num">G</span>The One Question</h2>
+
+        <div class="card card-warning">
+          <h4>Should the layered/topological display mode (Option C) be built?</h4>
+          <p>
+            During the DAG analysis, I identified <strong>layered/topological grouping</strong> as the one
+            approach nobody in the terminal-progress space has seriously tried. It would group nodes by
+            dependency depth (Kahn's algorithm waves), showing parallel-safe layers explicitly:
+          </p>
+          <div class="dep-tree">Layer 0 | <span class="root">&#9672; Build</span>
+---------|---------------------------
+Layer 1 | &#9675; Compile    &#9675; Lint
+---------|---------------------------
+Layer 2 | &#9675; Test (needs: Compile + Lint)</div>
+          <p>
+            The infrastructure (<code>computeDepths()</code>) now provides the depth data for free.
+            The question is: <strong>is this a display mode users would actually want?</strong>
+          </p>
+          <p>
+            It's novel, it solves the multi-dependency visibility problem structurally (position encodes
+            dependency, not annotation), and it maps to how CI/CD pipelines are designed. But it's a
+            fundamentally different mental model from the tree, and it costs significant rendering work
+            (new view mode, TUI integration, scroll logic). It's also unclear whether the nom-inspired
+            aesthetic should diverge this far from the reference tool.
+          </p>
+          <p>
+            <strong>I cannot figure out myself:</strong> whether the user wants go-output to be a faithful
+            nom clone (tree + dedup, period) or a tool that innovates beyond nom's design (layered mode,
+            critical path, true DAG visualization). This is a product direction question, not a technical one.
+          </p>
+        </div>
+
+        <footer class="footer">
+          Generated 2026-07-02 02:55 &middot; Verified: 18/18 modules pass, 0 lint issues, 0 race conditions
+        </footer>
+      </main>
+    </div>
+
+    <script>
+      (function () {
+        if (!("IntersectionObserver" in window)) return;
+        var nav = document.querySelector("[data-nav]");
+        if (!nav) return;
+        var links = nav.querySelectorAll('a[href^="#"]');
+        var ids = Array.from(links).map(function (l) {
+          return l.getAttribute("href").slice(1);
+        });
+        var sections = ids
+          .map(function (id) {
+            return document.getElementById(id);
+          })
+          .filter(Boolean);
+        if (!sections.length) return;
+        var observer = new IntersectionObserver(
+          function (entries) {
+            entries.forEach(function (entry) {
+              if (entry.isIntersecting) {
+                links.forEach(function (link) {
+                  link.classList.toggle(
+                    "active",
+                    link.getAttribute("href") === "#" + entry.target.id,
+                  );
+                });
+              }
+            });
+          },
+          { rootMargin: "-80px 0px -60% 0px", threshold: 0 },
+        );
+        sections.forEach(function (s) {
+          observer.observe(s);
+        });
+      })();
+    </script>
+  </body>
+</html>

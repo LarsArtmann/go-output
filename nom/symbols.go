@@ -40,6 +40,9 @@ const (
 	SymbolRetrying Symbol = "⟳"
 	// SymbolProgress represents a sub-step progress indicator.
 	SymbolProgress Symbol = "→"
+	// SymbolDeps represents extra (non-display-parent) dependencies beneath
+	// a multi-dependency node. Only shown when showExtraDeps is enabled.
+	SymbolDeps Symbol = "↳"
 )
 
 // ============================================================================

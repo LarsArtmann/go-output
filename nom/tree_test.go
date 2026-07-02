@@ -53,6 +53,10 @@ func TestDependencyTree_AddActivity(t *testing.T) {
 			t.Fatalf("AddActivity() error: %v", err)
 		}
 
+		if err := dt.Build(); err != nil {
+			t.Fatalf("Build() error: %v", err)
+		}
+
 		child := dt.GetNode(ActivityID("child"))
 		if child == nil {
 			t.Fatal("child node should exist")
@@ -206,7 +210,7 @@ func TestDependencyTree_Render(t *testing.T) {
 	})
 }
 
-func TestDependencyTree_AddActivity_DedupSecondaryParents(t *testing.T) {
+func TestDependencyTree_AddActivity_DedupDeps(t *testing.T) {
 	t.Parallel()
 
 	dt := NewDependencyTree()
@@ -217,8 +221,8 @@ func TestDependencyTree_AddActivity_DedupSecondaryParents(t *testing.T) {
 	dt.AddActivity(ActivityID("step2"), []ActivityID{"phase", "step1"})
 
 	node := dt.GetNode(ActivityID("step2"))
-	if len(node.SecondaryParents) != 1 {
-		t.Errorf("SecondaryParents = %v, want 1 entry", node.SecondaryParents)
+	if len(node.Deps) != 2 {
+		t.Errorf("Deps = %v, want 2 entries (phase, step1)", node.Deps)
 	}
 }
 

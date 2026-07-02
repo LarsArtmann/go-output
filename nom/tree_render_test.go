@@ -68,6 +68,10 @@ func TestDependencyTree_AddActivity_WithNonExistentDependency(t *testing.T) {
 		t.Fatalf("AddActivity() error: %v", err)
 	}
 
+	if err := dt.Build(); err != nil {
+		t.Fatalf("Build() error: %v", err)
+	}
+
 	parent := dt.GetNode(ActivityID("nonexistent"))
 	if parent == nil {
 		t.Error("nonexistent dependency should be auto-created")
@@ -94,7 +98,7 @@ func TestDependencyTree_AddActivity_UpdateExisting(t *testing.T) {
 	}
 }
 
-func TestDependencyTree_Render_SecondaryDependencies(t *testing.T) {
+func TestDependencyTree_Render_MultiDeps_OptionA_NoAnnotation(t *testing.T) {
 	t.Parallel()
 
 	dt := NewDependencyTree()
@@ -112,13 +116,81 @@ func TestDependencyTree_Render_SecondaryDependencies(t *testing.T) {
 		t.Fatal("Render should produce output")
 	}
 
-	if !strings.Contains(got, "←") {
-		t.Errorf("render should contain dependency annotation for secondary deps, got:\n%s", got)
+	// Option A (default): no annotation for extra deps.
+	if strings.Contains(got, "←") {
+		t.Errorf("Option A should not contain ← annotation, got:\n%s", got)
 	}
 
+	if strings.Contains(got, "↳") {
+		t.Errorf("Option A should not contain ↳ sub-line, got:\n%s", got)
+	}
+}
+
+func TestDependencyTree_Render_MultiDeps_OptionB_SubLine(t *testing.T) {
+	t.Parallel()
+
+	dt := NewDependencyTree()
+	dt.showExtraDeps = true
+	dt.AddActivity(ActivityID("phase"), nil)
+	dt.AddActivity(ActivityID("step1"), []ActivityID{"phase"})
+	dt.AddActivity(ActivityID("step2"), []ActivityID{"phase", "step1"})
+
+	snaps := newSnapshotBuilder()
+	snaps.set(ActivityID("phase"), "Phase", ActivityStatusPending, 0)
+	snaps.set(ActivityID("step1"), "Step1", ActivityStatusPending, 0)
+	snaps.set(ActivityID("step2"), "Step2", ActivityStatusPending, 0)
+
+	got := dt.RenderWithSnapshots(snaps.snaps, 10, 0)
+	if got == "" {
+		t.Fatal("Render should produce output")
+	}
+
+	// Option B: dim ↳ sub-line for extra deps (non-display-parent deps).
+	if !strings.Contains(got, "↳") {
+		t.Errorf("Option B should contain ↳ sub-line for extra deps, got:\n%s", got)
+	}
+
+	if strings.Contains(got, "←") {
+		t.Errorf("Option B should not contain old ← suffix, got:\n%s", got)
+	}
+
+	// Verify ExtraDeps returns the non-display-parent dep.
+	// Display parent is step1 (deepest), so extra dep is phase.
 	step2Node := dt.GetNode(ActivityID("step2"))
-	if len(step2Node.SecondaryParents) != 1 || step2Node.SecondaryParents[0] != ActivityID("step1") {
-		t.Errorf("SecondaryParents = %v, want [step1]", step2Node.SecondaryParents)
+
+	extra := step2Node.ExtraDeps()
+	if len(extra) != 1 || extra[0] != ActivityID("phase") {
+		t.Errorf("ExtraDeps = %v, want [phase]", extra)
+	}
+}
+
+func TestDependencyTree_Render_MultiDeps_DeepestParent(t *testing.T) {
+	t.Parallel()
+
+	// step2 depends on [phase, step1]. step1 is deeper (depth 1) than phase
+	// (depth 0). So step1 should be the display parent, and phase should be
+	// the extra dep.
+	dt := NewDependencyTree()
+	dt.AddActivity(ActivityID("phase"), nil)
+	dt.AddActivity(ActivityID("step1"), []ActivityID{"phase"})
+	dt.AddActivity(ActivityID("step2"), []ActivityID{"phase", "step1"})
+
+	if err := dt.Build(); err != nil {
+		t.Fatalf("Build: %v", err)
+	}
+
+	step2 := dt.GetNode(ActivityID("step2"))
+	if step2.Parent == nil {
+		t.Fatal("step2 should have a display parent")
+	}
+
+	if step2.Parent.ID != ActivityID("step1") {
+		t.Errorf("display parent = %s, want step1 (deepest dep)", step2.Parent.ID)
+	}
+
+	extra := step2.ExtraDeps()
+	if len(extra) != 1 || extra[0] != ActivityID("phase") {
+		t.Errorf("ExtraDeps = %v, want [phase]", extra)
 	}
 }
 

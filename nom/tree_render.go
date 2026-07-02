@@ -400,23 +400,14 @@ func (dt *DependencyTree) renderLine(
 		activityDisplay, color = formatActivityLabel(snap)
 	}
 
-	if len(node.SecondaryParents) > 0 {
-		depNames := make([]string, 0, len(node.SecondaryParents))
-
-		for _, depID := range node.SecondaryParents {
-			depSnap := lookupSnapshot(snapshots, depID)
-
-			name := depSnap.Label
-			if name == "" {
-				name = depID.String()
-			}
-
-			depNames = append(depNames, name)
+	// Option B: extra dependencies sub-line. When showExtraDeps is enabled,
+	// nodes with multiple deps show a dim "↳ Compile, Lint" sub-line beneath
+	// the label — replacing the old inline "←" suffix. When disabled (the
+	// default, matching nom), extra deps are silently absorbed into the tree.
+	if dt.showExtraDeps {
+		if subLine := dt.formatExtraDeps(node, snapshots); subLine != "" {
+			activityDisplay += "\n" + subLine
 		}
-
-		activityDisplay += lipgloss.NewStyle().
-			Foreground(Colors.Info).
-			Render(" ← " + strings.Join(depNames, ", "))
 	}
 
 	fullPrefix := entry.Prefix + entry.Connector
@@ -604,4 +595,34 @@ func blankActivitySnapshot() ActivitySnapshot {
 		Symbol: SymbolPending,
 		Color:  Colors.Pending,
 	}
+}
+
+// formatExtraDeps renders the Option B sub-line for a node's non-display-parent
+// dependencies. Returns "" if the node has no extra deps. The output is a dim
+// "↳ Compile, Lint" line meant to be appended after a "\n" separator.
+func (dt *DependencyTree) formatExtraDeps(
+	node *ActivityNode,
+	snapshots map[ActivityID]ActivitySnapshot,
+) string {
+	extraDeps := node.ExtraDeps()
+	if len(extraDeps) == 0 {
+		return ""
+	}
+
+	depNames := make([]string, 0, len(extraDeps))
+
+	for _, depID := range extraDeps {
+		depSnap := lookupSnapshot(snapshots, depID)
+
+		name := depSnap.Label
+		if name == "" {
+			name = depID.String()
+		}
+
+		depNames = append(depNames, name)
+	}
+
+	return lipgloss.NewStyle().
+		Faint(true).
+		Render(fmt.Sprintf("  %s %s", SymbolDeps, strings.Join(depNames, ", ")))
 }

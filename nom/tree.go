@@ -17,8 +17,8 @@ const (
 	msgNoActivitiesToDisplay = "No activities to display"
 )
 
-// ActivityNode represents a node in the dependency tree.
-// Holds ONLY tree structure + an ID for snapshot lookup. The mutable Activity
+// ActivityNode represents a node in the dependency DAG.
+// Holds ONLY structural data + an ID for snapshot lookup. The mutable Activity
 // fields (Status/Symbol/Color/timing) are never read from the node —
 // rendering uses ActivitySnapshot values taken under the subscriber's lock.
 // This makes the render-vs-event-handler data race unrepresentable.
@@ -26,12 +26,18 @@ type ActivityNode struct {
 	// ID identifies the activity for snapshot lookup at render time.
 	ID ActivityID
 
-	// Tree structure
-	Parent           *ActivityNode
-	Children         []*ActivityNode
-	SecondaryParents []ActivityID // Non-primary dependencies (for display only)
-	Depth            int
-	// Display state
+	// Deps holds ALL dependency IDs — the true DAG edges (source of truth).
+	// Each entry means "this node depends on depID" (depID must complete
+	// before this node can start). Unlike the old SecondaryParents, these
+	// are not display-only: they drive edge export, cycle detection, and
+	// depth computation.
+	Deps []ActivityID
+
+	// Display layout — computed at Build() time, NOT at AddActivity time.
+	// The tree walk follows Parent/Children, not Deps.
+	Parent      *ActivityNode
+	Children    []*ActivityNode
+	Depth       int
 	IsRoot      bool
 	IsDisplayed bool
 }
@@ -49,6 +55,13 @@ type DependencyTree struct {
 	// "◈ Code Formatting  6/6 · 4.1s". Disabled by default; consumers with
 	// many categories (e.g. BuildFlow) enable it to avoid walls of green.
 	collapseCompletedPhases bool
+
+	// showExtraDeps enables a dim sub-line beneath nodes with multiple
+	// dependencies, showing the non-display-parent deps as "↳ Compile, Lint".
+	// When false (default, matching nom's behavior), extra deps are silently
+	// absorbed into the tree — each node appears once, under its deepest
+	// parent, with no annotation.
+	showExtraDeps bool
 }
 
 // NewDependencyTree creates a new dependency tree.
@@ -95,10 +108,24 @@ func (n *ActivityNode) removeChild(id ActivityID) {
 	n.Children = slices.DeleteFunc(n.Children, nodeHasID(id))
 }
 
-// hasSecondaryParent returns true if this node already has the given activity ID
-// as a secondary parent.
-func (n *ActivityNode) hasSecondaryParent(id ActivityID) bool {
-	return slices.Contains(n.SecondaryParents, id)
+// hasDep returns true if this node already records the given dependency ID.
+func (n *ActivityNode) hasDep(id ActivityID) bool {
+	return slices.Contains(n.Deps, id)
+}
+
+// ExtraDeps returns dependency IDs that are NOT the display parent — i.e.,
+// the "extra" edges beyond the primary tree edge. Used by the Option B
+// renderer to show "↳ Compile, Lint" beneath a multi-dependency node.
+func (n *ActivityNode) ExtraDeps() []ActivityID {
+	var extra []ActivityID
+
+	for _, depID := range n.Deps {
+		if n.Parent == nil || depID != n.Parent.ID {
+			extra = append(extra, depID)
+		}
+	}
+
+	return extra
 }
 
 // NodeClass classifies a tree node by its structural position, mirroring NOM's
