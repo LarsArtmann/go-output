@@ -97,9 +97,10 @@ func (m *ProgressModel) renderDependencyTree() string {
 	for _, entry := range entries {
 		line := tree.RenderVisibleEntry(entry, snapshots, m.width)
 
-		// Only real activity nodes are selectable; collapse-marker lines
-		// (entry.Node == nil) never get the selection highlight.
-		if m.selectedNode != "" && entry.Node != nil && entry.Node.ID == m.selectedNode {
+		// Only real activity nodes and layered-mode rows are selectable; collapse-
+		// marker lines (entry.Node == nil and no LayerNodes) never get the
+		// selection highlight.
+		if m.selectedNode != "" && entry.ContainsNode(m.selectedNode) {
 			line = lipgloss.NewStyle().
 				Background(colors.selectBG).
 				Foreground(colors.selectFG).

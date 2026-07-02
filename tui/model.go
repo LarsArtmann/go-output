@@ -6,6 +6,8 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 	"github.com/charmbracelet/x/ansi"
+
+	"github.com/larsartmann/go-output/nom"
 )
 
 const chromeLinesAboveTree = 5
@@ -146,15 +148,22 @@ func (m *ProgressModel) handleMouseClick(msg tea.MouseClickMsg) (tea.Model, tea.
 
 	entry := m.visibleEntries[treeLine]
 
-	// Collapse-marker lines (entry.Node == nil) are not selectable: clicking
-	// one clears any current selection instead of dereferencing a nil node.
-	if entry.Node == nil {
+	var nodeID nom.ActivityID
+
+	switch {
+	case entry.Node != nil:
+		nodeID = entry.Node.ID
+	case len(entry.LayerNodes) > 0:
+		// Layered-mode rows: select the first activity in the wrapped row.
+		nodeID = entry.LayerNodes[0].ID
+	default:
+		// Collapse-marker and header lines are not selectable: clicking one
+		// clears any current selection instead of dereferencing a nil node.
 		m.selectedNode = ""
 
 		return m, nil
 	}
 
-	nodeID := entry.Node.ID
 	if m.selectedNode == nodeID {
 		m.selectedNode = ""
 	} else {

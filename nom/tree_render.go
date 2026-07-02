@@ -581,6 +581,22 @@ type PhaseCounts struct {
 // Total returns the total number of children accounted for.
 func (pc PhaseCounts) Total() int { return pc.Completed + pc.Failed }
 
+// ContainsNode reports whether this visible entry represents the given activity
+// ID. It checks real nodes, collapsed phase entries, and layered-mode rows.
+func (entry VisibleEntry) ContainsNode(id ActivityID) bool {
+	if entry.Node != nil && entry.Node.ID == id {
+		return true
+	}
+
+	for _, node := range entry.LayerNodes {
+		if node.ID == id {
+			return true
+		}
+	}
+
+	return false
+}
+
 // VisibleEntriesWithSnapshots returns the renderable tree lines (real nodes AND
 // collapse markers) in display order, capped at maxHeight. This is the
 // marker-aware variant of VisibleNodesWithSnapshots and is what renderers that
@@ -615,15 +631,19 @@ func (dt *DependencyTree) ensureBuilt() error {
 	return dt.Build()
 }
 
-// RenderVisibleEntry renders a single visible entry — either a real activity
-// node or a synthetic collapse marker — using immutable snapshot data. This is
-// the marker-aware primitive renderers should call per line (it mirrors the
-// inline renderer's renderLine, which always handled markers correctly).
+// RenderVisibleEntry renders a single visible entry — a real activity
+// node, a synthetic collapse marker, or a layered-mode header/row — using
+// immutable snapshot data. This is the marker-aware primitive renderers
+// should call per line.
 func (dt *DependencyTree) RenderVisibleEntry(
 	entry VisibleEntry,
 	snapshots map[ActivityID]ActivitySnapshot,
 	maxWidth int,
 ) string {
+	if dt.renderMode == RenderModeLayered || len(entry.LayerNodes) > 0 || entry.LayerHeader != "" {
+		return dt.renderLayeredLine(entry, snapshots, maxWidth)
+	}
+
 	return dt.renderLine(entry, snapshots, maxWidth)
 }
 

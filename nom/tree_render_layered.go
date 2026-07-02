@@ -31,11 +31,14 @@ func (dt *DependencyTree) collectLayeredEntries(
 	byDepth := make(map[int][]*ActivityNode)
 	maxDepth := -1
 
+	depSet := dt.dependencyIDsLocked()
+
 	for _, node := range dt.nodes {
 		// Skip structural placeholders that were never registered as real
-		// activities. They have no snapshot label and would render as a blank
-		// pending line, which is confusing in layered mode.
-		if dt.isPlaceholderNode(node, snapshots) {
+		// activities. They were created only to satisfy another node's
+		// dependency edge and have no snapshot label, so they would render as
+		// a blank pending line.
+		if dt.isPlaceholderNode(node, snapshots, depSet) {
 			continue
 		}
 
@@ -104,16 +107,30 @@ func (dt *DependencyTree) collectLayeredEntries(
 }
 
 // isPlaceholderNode reports whether a node is a structural placeholder that
-// was never registered as a real activity. Placeholders have no snapshot label
-// and are created only to satisfy a dependency edge before the activity event
-// arrives. In layered mode they are skipped because they would render as a
-// blank line.
+// was never registered as a real activity. Placeholders are created only to
+// satisfy another node's dependency edge, have no snapshot label, and are
+// skipped in layered mode so they do not render as blank lines.
 func (dt *DependencyTree) isPlaceholderNode(
 	node *ActivityNode,
 	snapshots map[ActivityID]ActivitySnapshot,
+	depSet map[ActivityID]bool,
 ) bool {
 	snap := lookupSnapshot(snapshots, node.ID)
-	return snap.Label == "" && len(node.Deps) == 0
+	return snap.Label == "" && depSet[node.ID]
+}
+
+// dependencyIDsLocked returns the set of IDs that appear as dependencies of
+// other nodes in the tree. Caller must hold dt.mu.RLock.
+func (dt *DependencyTree) dependencyIDsLocked() map[ActivityID]bool {
+	deps := make(map[ActivityID]bool)
+
+	for _, node := range dt.nodes {
+		for _, dep := range node.Deps {
+			deps[dep] = true
+		}
+	}
+
+	return deps
 }
 
 // sortNodesByPriority orders nodes by activity status priority (running >
