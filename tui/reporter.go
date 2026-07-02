@@ -46,6 +46,7 @@ func NewProgressModel() *ProgressModel {
 		displayMode:    DisplayModeUniversal,
 		dependencyTree: nom.NewDependencyTree(),
 		nomSubscriber:  nom.NewNOMStyleSubscriber(),
+		theme:          nom.ThemeDefault,
 	}
 }
 

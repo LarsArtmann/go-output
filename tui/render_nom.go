@@ -118,15 +118,15 @@ func (m *ProgressModel) renderNOMSummaryBar() string {
 	elapsed := time.Since(m.startTime)
 	remaining := m.estimatedRemaining()
 	summary := buildNOMSummary(counts, elapsed, remaining)
-	baseStyle := createSummaryStyle()
+	baseStyle := createSummaryStyle(m.theme.Colors.Info)
 
 	switch m.workflowState {
 	case workflowStateIdle, workflowStateRunning:
 		return baseStyle.Render(summary)
 	case workflowStateCompleted:
-		return baseStyle.Foreground(colors.success).Render("✅ " + summary)
+		return baseStyle.Foreground(m.theme.Colors.Completed).Render("✅ " + summary)
 	case workflowStateErrored:
-		return baseStyle.Foreground(colors.err).Render("❌ " + summary)
+		return baseStyle.Foreground(m.theme.Colors.Failed).Render("❌ " + summary)
 	default:
 		return baseStyle.Render(summary)
 	}

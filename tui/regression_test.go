@@ -3,6 +3,8 @@ package tui
 import (
 	"strings"
 	"testing"
+
+	"github.com/larsartmann/go-output/nom"
 )
 
 // TestRenderProgressBar_NarrowWidth does not panic when terminal width is very small.
@@ -91,7 +93,7 @@ func TestStateSummary_NoDoubleSuffix(t *testing.T) {
 		t.Run(state.String(), func(t *testing.T) {
 			t.Parallel()
 
-			stateSummary, _ := getStateStyle(state)
+			stateSummary, _ := getStateStyle(state, nom.ThemeDefault)
 
 			// The template must NOT have "{time}s" — formatElapsedTime already
 			// returns unit-suffixed strings like "1.5s", "500ms", "2m30s".

@@ -74,6 +74,11 @@ type DependencyTree struct {
 	// showBlockage enables a dim sub-line beneath pending nodes that lists
 	// incomplete dependencies and their status, making blockers explicit.
 	showBlockage bool
+
+	// theme is the active visual theme for status symbols and colors.
+	// Stored on the tree so renderers can resolve themed values without an
+	// explicit theme argument at every call site.
+	theme Theme
 }
 
 // NewDependencyTree creates a new dependency tree.
@@ -82,6 +87,7 @@ func NewDependencyTree() *DependencyTree {
 		nodes:  make(map[ActivityID]*ActivityNode),
 		roots:  make([]*ActivityNode, 0),
 		loaded: false,
+		theme:  ThemeDefault,
 	}
 }
 

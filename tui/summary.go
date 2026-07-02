@@ -22,11 +22,11 @@ func formatElapsedTime(elapsed time.Duration) string {
 }
 
 // createSummaryStyle creates the base style for summary bars.
-func createSummaryStyle() lipgloss.Style {
+func createSummaryStyle(info color.Color) lipgloss.Style {
 	return lipgloss.NewStyle().
 		Border(lipgloss.RoundedBorder()).
 		Padding(0, 1).
-		Foreground(colors.info)
+		Foreground(info)
 }
 
 // buildUniversalSummary builds a universal-style summary string.
@@ -61,18 +61,18 @@ func buildNOMSummary(counts nom.ActivityCounts, elapsed, remaining time.Duration
 }
 
 // getStateStyle returns the appropriate style for a workflow state.
-func getStateStyle(state workflowState) (string, color.Color) {
+func getStateStyle(state workflowState, theme nom.Theme) (string, color.Color) {
 	switch state {
 	case workflowStateIdle:
-		return "⏳ Workflow Idle | {time} | Press 'q' or Ctrl+C to exit", colors.dim
+		return "⏳ Workflow Idle | {time} | Press 'q' or Ctrl+C to exit", theme.Colors.Pending
 	case workflowStateRunning:
 		return "", nil
 	case workflowStateCompleted:
-		return "✅ Workflow Complete: {completed}✓ | {time} | Press 'q' or Ctrl+C to exit", colors.success
+		return "✅ Workflow Complete: {completed}✓ | {time} | Press 'q' or Ctrl+C to exit", theme.Colors.Completed
 	case workflowStateErrored:
-		return "❌ Workflow Error: {completed}✓ | {time} | Press 'q' or Ctrl+C to exit", colors.err
+		return "❌ Workflow Error: {completed}✓ | {time} | Press 'q' or Ctrl+C to exit", theme.Colors.Failed
 	default:
-		return "", colors.info
+		return "", theme.Colors.Info
 	}
 }
 
@@ -82,10 +82,11 @@ func applyStateSummary(
 	state workflowState,
 	completed int,
 	elapsed time.Duration,
+	theme nom.Theme,
 ) (string, lipgloss.Style) {
-	baseStyle := createSummaryStyle()
+	baseStyle := createSummaryStyle(theme.Colors.Info)
 
-	stateSummary, color := getStateStyle(state)
+	stateSummary, color := getStateStyle(state, theme)
 	if stateSummary != "" {
 		// Replace placeholders
 		stateSummary = strings.ReplaceAll(stateSummary, "{time}", formatElapsedTime(elapsed))

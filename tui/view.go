@@ -93,7 +93,7 @@ func (m *ProgressModel) renderCurrentMessage() string {
 
 	messageStyle := lipgloss.NewStyle().
 		Italic(true).
-		Foreground(colors.info)
+		Foreground(m.theme.Colors.Info)
 
 	return messageStyle.Render(m.currentMessage)
 }
@@ -152,16 +152,16 @@ func (m *ProgressModel) renderSteps() string {
 }
 
 // stepIconAndStyle returns the icon and lipgloss style for a step based on its state.
-func stepIconAndStyle(step progressStep) (string, lipgloss.Style) {
+func (m *ProgressModel) stepIconAndStyle(step progressStep) (string, lipgloss.Style) {
 	if step.CompletedAt != nil {
-		return "✅", lipgloss.NewStyle().Foreground(colors.success)
+		return "✅", lipgloss.NewStyle().Foreground(m.theme.Colors.Completed)
 	}
 
 	if step.isActive() {
-		return "🔄", lipgloss.NewStyle().Foreground(colors.warning)
+		return "🔄", lipgloss.NewStyle().Foreground(m.theme.Colors.Running)
 	}
 
-	return "⏸️", lipgloss.NewStyle().Foreground(colors.dim)
+	return "⏸️", lipgloss.NewStyle().Foreground(m.theme.Colors.Pending)
 }
 
 // renderStep renders a single step with nh-style formatting.
@@ -172,7 +172,7 @@ func (m *ProgressModel) renderStep(step progressStep, isLast bool) string {
 		prefix = "└── "
 	}
 	// Status icon and color
-	icon, style := stepIconAndStyle(step)
+	icon, style := m.stepIconAndStyle(step)
 	// Timing information like nh darwin switch
 	var timing string
 
@@ -215,7 +215,7 @@ func (m *ProgressModel) renderProgressBar() string {
 	filled := int((m.currentProgress / percentScale) * float64(width))
 	bar := strings.Repeat("█", filled) + strings.Repeat("░", width-filled)
 	progressStyle := lipgloss.NewStyle().
-		Foreground(colors.info)
+		Foreground(m.theme.Colors.Info)
 
 	return progressStyle.Render(fmt.Sprintf("Progress: [%s] %.1f%%", bar, m.currentProgress))
 }
@@ -237,7 +237,7 @@ func (m *ProgressModel) renderSummaryBar() string {
 	// Build summary using helper
 	summary := buildUniversalSummary(inProgressSteps, completedSteps, elapsed, m.currentProgress)
 	// Apply state-specific formatting
-	finalSummary, style := applyStateSummary(summary, m.workflowState, completedSteps, elapsed)
+	finalSummary, style := applyStateSummary(summary, m.workflowState, completedSteps, elapsed, m.theme)
 
 	return style.Render(finalSummary)
 }

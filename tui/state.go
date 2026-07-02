@@ -129,4 +129,5 @@ type ProgressModel struct {
 	selectedNode   nom.ActivityID
 	visibleEntries []nom.VisibleEntry
 	treeStartLine  int
+	theme          nom.Theme
 }

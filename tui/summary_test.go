@@ -102,7 +102,7 @@ func TestGetStateStyle(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			msg, color := getStateStyle(tt.state)
+			msg, color := getStateStyle(tt.state, nom.ThemeDefault)
 			_ = msg
 			_ = color
 		})
@@ -115,7 +115,7 @@ func TestApplyStateSummary(t *testing.T) {
 	t.Run("with state summary", func(t *testing.T) {
 		t.Parallel()
 
-		summary, style := applyStateSummary("test", workflowStateCompleted, 5, 10*time.Second)
+		summary, style := applyStateSummary("test", workflowStateCompleted, 5, 10*time.Second, nom.ThemeDefault)
 		if summary == "" {
 			t.Error("expected non-empty summary")
 		}
@@ -126,7 +126,7 @@ func TestApplyStateSummary(t *testing.T) {
 	t.Run("running state returns original summary", func(t *testing.T) {
 		t.Parallel()
 
-		summary, _ := applyStateSummary("original", workflowStateRunning, 0, 0)
+		summary, _ := applyStateSummary("original", workflowStateRunning, 0, 0, nom.ThemeDefault)
 		if summary != "original" {
 			t.Errorf("summary = %q, want %q", summary, "original")
 		}
@@ -136,6 +136,6 @@ func TestApplyStateSummary(t *testing.T) {
 func TestCreateSummaryStyle(t *testing.T) {
 	t.Parallel()
 
-	style := createSummaryStyle()
+	style := createSummaryStyle(nom.ThemeDefault.Colors.Info)
 	_ = style
 }

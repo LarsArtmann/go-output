@@ -18,6 +18,10 @@ type WorkflowName string
 
 func (n WorkflowName) String() string { return string(n) }
 
+// ActivityCategory is a user-defined semantic group (e.g. "build", "test",
+// "deploy") used for tinting and collapsing related activities.
+type ActivityCategory string
+
 func NewActivityID(s string) ActivityID     { return ActivityID(s) }
 func NewWorkflowID(s string) WorkflowID     { return WorkflowID(s) }
 func NewActivityName(s string) ActivityName { return ActivityName(s) }

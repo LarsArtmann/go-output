@@ -32,6 +32,7 @@ type NOMStyleSubscriber struct {
 	startTime    time.Time
 	isRunning    bool
 	enabled      bool
+	theme        Theme
 }
 
 // SubscriberOption configures a NOMStyleSubscriber at construction time.
@@ -96,6 +97,15 @@ func WithShowBlockage() SubscriberOption {
 	}
 }
 
+// WithTheme sets the visual theme used for status symbols and colors.
+// If not supplied, ThemeDefault is used.
+func WithTheme(theme Theme) SubscriberOption {
+	return func(ns *NOMStyleSubscriber) {
+		ns.theme = theme
+		ns.dependencyTree.theme = theme
+	}
+}
+
 // NewNOMStyleSubscriber creates a new NOM-style subscriber.
 func NewNOMStyleSubscriber(opts ...SubscriberOption) *NOMStyleSubscriber {
 	ns := &NOMStyleSubscriber{
@@ -104,6 +114,7 @@ func NewNOMStyleSubscriber(opts ...SubscriberOption) *NOMStyleSubscriber {
 		timingCache:    NewTimingCache(),
 		isRunning:      false,
 		enabled:        true,
+		theme:          ThemeDefault,
 	}
 
 	for _, opt := range opts {
@@ -111,6 +122,14 @@ func NewNOMStyleSubscriber(opts ...SubscriberOption) *NOMStyleSubscriber {
 	}
 
 	return ns
+}
+
+// Theme returns the subscriber's active visual theme.
+func (ns *NOMStyleSubscriber) Theme() Theme {
+	ns.mu.RLock()
+	defer ns.mu.RUnlock()
+
+	return ns.theme
 }
 
 // Store returns an ActivityReader for diagram export. The projection is

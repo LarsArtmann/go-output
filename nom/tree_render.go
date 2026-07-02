@@ -208,7 +208,7 @@ func appendCollapseMarker(visible *[]VisibleEntry, indent string, collapsedDone 
 // snapshot: phase-aware symbol + label + timing info. Returns the unstyled
 // display and the status-derived color for the caller to apply.
 func formatActivityLabel(snap ActivitySnapshot) (display string, c color.Color) {
-	return formatActivityLabelWithOptions(snap, labelOptions{})
+	return formatActivityLabelWithOptions(snap, ThemeDefault, labelOptions{})
 }
 
 // labelOptions carries optional rendering modifiers for an activity label.
@@ -230,6 +230,7 @@ type labelOptions struct {
 //nolint:cyclop // mirrors original formatActivityLabel logic plus two optional markers
 func formatActivityLabelWithOptions(
 	snap ActivitySnapshot,
+	theme Theme,
 	opts labelOptions,
 ) (display string, c color.Color) { //nolint:cyclop // mirrors original formatActivityLabel logic plus two optional markers
 	symbol := snap.Symbol
@@ -237,7 +238,7 @@ func formatActivityLabelWithOptions(
 
 	if snap.IsPhase() {
 		symbol = SymbolPhase
-		c = Colors.Phase
+		c = theme.Colors.Phase
 	}
 
 	var markers []string
@@ -265,7 +266,7 @@ func formatActivityLabelWithOptions(
 	if timingInfo != "" {
 		// Slow-step escalation: dim yellow for >10s, dim red for >30s.
 		// This surfaces performance bottlenecks without the user scanning every line.
-		timingStyle := slowStepStyle(snap)
+		timingStyle := slowStepStyle(snap, theme)
 
 		// An unmodified lipgloss style renders as plain text (no ANSI codes),
 		// so we can always use Render without a separate "is styled?" check.
@@ -286,7 +287,7 @@ func formatActivityLabelWithOptions(
 			suffix += fmt.Sprintf(" (%s)", snap.RetryReason)
 		}
 
-		display += lipgloss.NewStyle().Foreground(Colors.Info).Render(suffix)
+		display += lipgloss.NewStyle().Foreground(theme.Colors.Info).Render(suffix)
 	}
 
 	// Optional download progress bar — only while the activity is actively
@@ -340,7 +341,7 @@ func formatDownloadBar(d DownloadProgress, width int) string {
 // Returns an empty style (plain text) for fast steps, faint yellow for
 // >10s, and faint red for >30s. Considers both elapsed time (for running/
 // completed steps) and estimated time (for pending steps).
-func slowStepStyle(snap ActivitySnapshot) lipgloss.Style {
+func slowStepStyle(snap ActivitySnapshot, theme Theme) lipgloss.Style {
 	d := snap.CurrentElapsed
 	if snap.Status == ActivityStatusPending {
 		d = snap.EstimatedTime
@@ -348,9 +349,9 @@ func slowStepStyle(snap ActivitySnapshot) lipgloss.Style {
 
 	switch {
 	case d >= slowThresholdRed:
-		return lipgloss.NewStyle().Foreground(Colors.Failed).Faint(true)
+		return lipgloss.NewStyle().Foreground(theme.Colors.Failed).Faint(true)
 	case d >= slowThresholdYellow:
-		return lipgloss.NewStyle().Foreground(Colors.Running).Faint(true)
+		return lipgloss.NewStyle().Foreground(theme.Colors.Running).Faint(true)
 	default:
 		return lipgloss.NewStyle()
 	}
@@ -399,12 +400,12 @@ func computePhaseCounts(snapshots map[ActivityID]ActivitySnapshot, children []*A
 // formatCollapsedPhaseLabel builds the display string for a collapsed phase:
 // "◈ Code Formatting  6/6 · 4.1s". Uses the phase symbol and phase color,
 // or the failed color if any children failed.
-func formatCollapsedPhaseLabel(snap ActivitySnapshot, pc PhaseCounts) (display string, c color.Color) {
+func formatCollapsedPhaseLabel(snap ActivitySnapshot, pc PhaseCounts, theme Theme) (display string, c color.Color) {
 	symbol := SymbolPhase
-	c = Colors.Phase
+	c = theme.Colors.Phase
 
 	if pc.Failed > 0 {
-		c = Colors.Failed
+		c = theme.Colors.Failed
 	}
 
 	display = fmt.Sprintf("%s %s  %d/%d", symbol, snap.Label, pc.Completed, pc.Total())
@@ -442,9 +443,9 @@ func (dt *DependencyTree) renderLine( //nolint:cyclop // label + sub-line render
 	var color color.Color
 
 	if entry.PhaseCounts != nil {
-		activityDisplay, color = formatCollapsedPhaseLabel(snap, *entry.PhaseCounts)
+		activityDisplay, color = formatCollapsedPhaseLabel(snap, *entry.PhaseCounts, dt.theme)
 	} else {
-		activityDisplay, color = formatActivityLabelWithOptions(snap, labelOptions{
+		activityDisplay, color = formatActivityLabelWithOptions(snap, dt.theme, labelOptions{
 			OnCriticalPath: entry.OnCriticalPath,
 			Convergence:    entry.Convergence,
 		})
@@ -625,7 +626,7 @@ func (dt *DependencyTree) RenderNode(
 	}
 
 	snap := lookupSnapshot(snapshots, node.ID)
-	display, color := formatActivityLabel(snap)
+	display, color := formatActivityLabelWithOptions(snap, dt.theme, labelOptions{})
 
 	return activityNodeStyle(color).Render(display)
 }
@@ -660,7 +661,7 @@ func blankActivitySnapshot() ActivitySnapshot {
 		Label:  "",
 		Status: ActivityStatusPending,
 		Symbol: SymbolPending,
-		Color:  Colors.Pending,
+		Color:  ThemeDefault.Colors.Pending,
 	}
 }
 

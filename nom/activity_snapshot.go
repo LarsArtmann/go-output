@@ -84,12 +84,15 @@ func (ns *NOMStyleSubscriber) SnapshotActivities() map[ActivityID]ActivitySnapsh
 	snapshots := make(map[ActivityID]ActivitySnapshot, len(ns.activities))
 
 	for id, activity := range ns.activities {
+		symbol := ns.theme.SymbolFor(activity.Status, activity.Symbol)
+		c := ns.theme.ColorFor(activity.Kind, activity.Status)
+
 		snapshots[id] = ActivitySnapshot{
 			Kind:           activity.Kind,
 			Label:          activity.Label.Get(),
 			Status:         activity.Status,
-			Symbol:         activity.Symbol,
-			Color:          activity.Color,
+			Symbol:         symbol,
+			Color:          c,
 			CurrentElapsed: activity.elapsedAt(now),
 			EstimatedTime:  activity.EstimatedTime,
 			Host:           activity.Host,
