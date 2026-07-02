@@ -6,6 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added — daghtml SDK (cross-project DAG visualization extraction)
+
+- **`daghtml/` module** — Zero-dependency Go SDK for interactive SVG DAG
+  visualization in HTML pages. Renders a self-contained Sugiyama-layered graph
+  with pan/zoom/touch/click-highlight. API: `Render()`, `Write()`,
+  `GraphHTML()`, `StyleSheet()`, `Script()`. Uses `html/template` with
+  `template.CSS`/`template.JS` typed injection for XSS safety. Embeds CSS and
+  JS via `go:embed`. Independently publishable (zero-dep, like `testhelpers/`).
+- **Consumer refactors** — Both `go-workflow-auditlog` (500-line inline JS)
+  and `samber-do-auditlog` (306-line inline JS) replaced their duplicated
+  Sugiyama DAG algorithms with adapter calls to `daghtml`. Each consumer
+  writes a `buildDAGHTML()` adapter mapping domain types to `daghtml.Node`/
+  `daghtml.Edge`.
+
 ### Added — DAG visualization innovations (layered mode, themes, categories)
 
 - **Layered display mode** (`nom/`) — `RenderModeLayered` groups activities by

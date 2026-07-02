@@ -23,7 +23,7 @@ A reusable Go library for CLI output formatting (16 formats across table/tree/gr
 
 ## Module Map
 
-18 modules (root + 17 sub-modules). Each has its own `go.mod` with `replace` directives pointing to local sibling dirs.
+19 modules (root + 18 sub-modules). Each has its own `go.mod` with `replace` directives pointing to local sibling dirs.
 
 | Module                   | Purpose                                                                                                |
 | ------------------------ | ------------------------------------------------------------------------------------------------------ |
@@ -37,6 +37,7 @@ A reusable Go library for CLI output formatting (16 formats across table/tree/gr
 | `d2/`                    | D2 diagrams (rich domain model: shapes, arrows, SQL tables)                                            |
 | `graph/`                 | DOT + Mermaid renderers (share root's `GraphRendererState`)                                            |
 | `plantuml/`              | PlantUML diagrams                                                                                      |
+| `daghtml/`               | Interactive SVG DAG visualization for HTML (zero-dep; Sugiyama layout, pan/zoom, click-highlight)      |
 | `nom/`                   | NOM-style real-time progress (dependency tree, timing cache, inline renderer)                          |
 | `tui/`                   | Bubble Tea interactive TUI (depends on nom)                                                            |
 | `escape/`                | Format-specific escaping (zero deps)                                                                   |
@@ -52,8 +53,8 @@ A reusable Go library for CLI output formatting (16 formats across table/tree/gr
 
 ```bash
 nix develop                # Dev shell (Go 1.26, golangci-lint, gopls)
-nix run .#build            # Build all 18 modules
-nix run .#test             # Test all 18 modules
+nix run .#build            # Build all 19 modules
+nix run .#test             # Test all 19 modules
 nix run .#test-race        # Race-test nom + tui (concurrency-sensitive)
 nix run .#lint             # golangci-lint across all modules
 nix run .#tidy             # go mod tidy all modules
@@ -96,6 +97,7 @@ These are non-obvious from reading code alone — the "how does this even work" 
 - **EstimatedTotalRemaining is subscriber-owned (v0.21.0)**: `NOMStyleSubscriber.EstimatedTotalRemaining()` sums per-activity remaining estimates (full `EstimatedTime` for pending, `max(0, EstimatedTime - elapsed)` for running; terminal activities contribute nothing). It is the single source of truth for the `~Xm left` summary segment. The TUI consumes it directly via `renderNOMSummaryBar`; the inline renderer has its own `SetEstimatedRemainingFunc` callback override (for callers like BuildFlow with an external `TimeEstimator`) but can delegate to this method. Do not re-implement the sum in a second place.
 - **TUI NOM rendering delegates to nom**: the TUI's `renderDependencyTree()` calls `tree.RenderVisibleEntry(entry, snapshots, width)`, which routes through `formatActivityLabel`. So any new activity-snapshot field rendered by `formatActivityLabel` (Progress, RetryCount/Reason, Download bar, Host) is automatically visible in BOTH the inline renderer and the TUI — no separate TUI view-layer update is needed. The TUI only needs its own code for TUI-exclusive chrome (summary bar coloring, scroll, help overlay).
 - **Deprecated enum values**: `NodeShapeRect` is deprecated in favor of `NodeShapeBox`. The constant is kept functional with `// Deprecated:` comment + `//nolint:staticcheck` at all backward-compat reference sites (switch cases, allowed-values lists, parser tests). Production code that needs the distinct `"rect"` value (nom `status_mappers.go`) uses `//nolint:staticcheck` intentionally. Never remove deprecated constants before v2 — they are part of the public API.
+- **daghtml embedded DAG visualization**: `daghtml/` is a zero-dependency module (like `escape/` and `testhelpers/`) that renders interactive SVG DAGs in HTML pages. It uses `html/template` (NOT `templ` — templ v0.3.x doesn't evaluate expressions inside `<script>`/`<style>` text nodes) with `template.CSS`/`template.JS`/`template.JS` typed injection for XSS safety. The `DAG{Nodes, Edges}` data model is deliberately minimal and JSON-serialized; each consumer project writes its own adapter (`buildDAGHTML(report) → daghtml.DAG`). JS uses class selectors (`.graph-zoom-in`, `.dag-container`) not IDs, to support multiple graphs per page. Consumers inject the JS via `daghtml.Script()` and the data via `dagToJSON()`. External consumers (go-workflow-auditlog, samber-do-auditlog) use `v0.0.0-…` + `replace` for local dev; daghtml is independently publishable since it's zero-dep.
 - **VT emulator test harness (nom/)**: `nom/vttest_test.go` provides `vtHarness` — wraps `charmbracelet/x/vt.Emulator` as an `io.Writer` with screen-content assertion helpers. Tests prefixed `TestVT_*` in `nom/vt_renderer_test.go` feed InlineRenderer output to a real VT emulator and assert on the screen buffer (what a terminal would actually display), not on raw escape sequences. This replaces the old fragile `strings.Contains(buf, "\x1b[A")` assertions. The harness tracks `cursorHidden` and `syncWasActive` via VT callbacks. When adding new escape-sequence behavior to the InlineRenderer, add a `TestVT_*` test to verify the screen-level output.
 - **teatest/v2 E2E tests (tui/)**: `tui/teatest_helpers_test.go` provides `newTeatestModel()` — wraps `ProgressModel` in `charmbracelet/x/exp/teatest/v2` (NOT v1 — incompatible with `charm.land/bubbletea/v2`). Tests prefixed `TestTeatest_*` drive the REAL Bubble Tea program loop (Init, Update, View, Cmd dispatch). The bubbletea v2 diff renderer writes cursor-positioning escape sequences, not full text frames — so tests assert on ANSI-stripped output via `waitForVisible()` (which uses `ansi.Strip`) or on `FinalModel` state. Key E2E coverage: program startup, scroll key handling, help toggle, quit propagation, ctrl+c, WindowSizeMsg dispatch.
 - **Golden-file testing in table/, tree/, graph/, d2/, serialization/, plantuml/**: All six renderer modules now have `golden_test.go` using `charmbracelet/x/exp/golden`. All golden tests use `ColorModeNever` for deterministic output. Generate/update golden files with `go test -run TestGolden_ -update`. Golden files live in `testdata/*.golden`.
@@ -115,7 +117,7 @@ These are non-obvious from reading code alone — the "how does this even work" 
 Things that will silently break or that an agent would get wrong from code alone.
 
 - **Never import a sub-module into root** — see Core Invariant above.
-- **Pattern B: sibling deps SHOULD be v0.0.0-00010101000000-000000000000** — never change a sibling `require` to a real version. The `replace` directive makes it work locally; a real version would re-introduce version rot. Only `testhelpers` keeps real versions. All 47 sibling requires across 18 modules now use the sentinel (migrated 2026-06-23).
+- **Pattern B: sibling deps SHOULD be v0.0.0-00010101000000-000000000000** — never change a sibling `require` to a real version. The `replace` directive makes it work locally; a real version would re-introduce version rot. Only `testhelpers` keeps real versions. All sibling requires across 19 modules now use the sentinel (migrated 2026-06-23). `daghtml` is zero-dep (like `testhelpers`) and independently publishable.
 - **`testhelpers/` is the ONLY independently versioned sub-module** — it has real published tags. All other sub-modules use v0.0.0 + replace.
 - **`testhelpers/` is zero-dep by design** — it cannot import `output`. Cross-module test helpers must stay local to each module or use table-driven patterns.
 - **`internal/` is root-only (if added)** — Go forbids sub-modules from importing `internal/` packages, so any `internal/` package in root cannot be shared with sub-modules. Currently root has no `internal/` dir; sub-modules inline their own test helpers (shared zero-dep helpers live in the `testhelpers/` module).
