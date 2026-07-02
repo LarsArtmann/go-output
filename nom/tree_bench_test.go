@@ -112,6 +112,6 @@ func BenchmarkDependencyTree_ChildPriority(b *testing.B) {
 	b.ResetTimer()
 
 	for b.Loop() {
-		_ = dt.childPriority(root, snaps)
+		_ = dt.childPriority(root, snaps, nil)
 	}
 }

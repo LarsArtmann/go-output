@@ -152,7 +152,7 @@ func (dt *DependencyTree) walkSubtree( //nolint:cyclop // DFS traversal with pha
 		}
 	}
 
-	children := dt.childPriority(node, snapshots)
+	children := dt.childPriority(node, snapshots, criticalPath)
 	if len(children) == 0 {
 		return
 	}
