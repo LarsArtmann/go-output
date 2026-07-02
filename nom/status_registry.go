@@ -141,16 +141,46 @@ func LookupStatus(id ActivityStatus) (StatusDef, bool) {
 	return def, ok
 }
 
+// AllActivityStatuses returns the registered ActivityStatus IDs in ascending
+// order. It is the dynamic equivalent of the former hardcoded slice and is
+// updated whenever a new status is registered.
+func AllActivityStatuses() []ActivityStatus {
+	globalRegistry.mu.RLock()
+	defer globalRegistry.mu.RUnlock()
+
+	return globalRegistry.allStatusesLocked()
+}
+
 // AllRegisteredStatuses returns every status currently in the registry, in
 // ascending ID order.
 func AllRegisteredStatuses() []StatusDef {
 	globalRegistry.mu.RLock()
 	defer globalRegistry.mu.RUnlock()
 
-	out := make([]StatusDef, 0, len(globalRegistry.byID))
+	return globalRegistry.allRegisteredStatusesLocked()
+}
 
-	for id := range globalRegistry.nextID {
-		if def, ok := globalRegistry.byID[id]; ok {
+// allStatusesLocked returns the registered ActivityStatus IDs in ascending
+// order. The caller must hold the registry lock.
+func (r *statusRegistry) allStatusesLocked() []ActivityStatus {
+	out := make([]ActivityStatus, 0, len(r.byID))
+
+	for id := range r.nextID {
+		if _, ok := r.byID[id]; ok {
+			out = append(out, ActivityStatus(id))
+		}
+	}
+
+	return out
+}
+
+// allRegisteredStatusesLocked returns the registered StatusDef values in
+// ascending ID order. The caller must hold the registry lock.
+func (r *statusRegistry) allRegisteredStatusesLocked() []StatusDef {
+	out := make([]StatusDef, 0, len(r.byID))
+
+	for id := range r.nextID {
+		if def, ok := r.byID[id]; ok {
 			out = append(out, def)
 		}
 	}

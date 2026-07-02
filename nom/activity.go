@@ -146,8 +146,15 @@ func (a *Activity) Copy() *Activity {
 // from Status at export time by subscriberView.Nodes(), keeping Activity
 // decoupled from the graph rendering framework.
 func (a *Activity) applyDisplayStyle() {
-	a.Symbol = a.Status.GetSymbol()
-	a.Color = a.Status.GetColor()
+	if def, ok := LookupStatus(a.Status); ok {
+		a.Symbol = def.Symbol
+		a.Color = def.Color
+
+		return
+	}
+
+	a.Symbol = "?"
+	a.Color = Colors.Info
 }
 
 // elapsedAt returns the elapsed time for this activity as of the given moment.

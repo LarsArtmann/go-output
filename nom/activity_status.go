@@ -26,18 +26,11 @@ const (
 
 // String returns the string representation of activity status.
 func (as ActivityStatus) String() string {
-	switch as {
-	case ActivityStatusPending:
-		return "pending"
-	case ActivityStatusRunning:
-		return "running"
-	case ActivityStatusCompleted:
-		return "completed"
-	case ActivityStatusFailed:
-		return "failed"
-	default:
-		return StatusStringUnknown
+	if def, ok := LookupStatus(as); ok {
+		return def.Name
 	}
+
+	return StatusStringUnknown
 }
 
 // StatusStringUnknown is the fallback for unrecognized activity statuses.
@@ -46,67 +39,40 @@ const StatusStringUnknown = "unknown"
 
 // GetSymbol returns the NOM-style symbol for the status.
 func (as ActivityStatus) GetSymbol() Symbol {
-	switch as {
-	case ActivityStatusPending:
-		return SymbolPending
-	case ActivityStatusRunning:
-		return SymbolRunning
-	case ActivityStatusCompleted:
-		return SymbolCompleted
-	case ActivityStatusFailed:
-		return SymbolFailed
-	default:
-		return "?"
+	if def, ok := LookupStatus(as); ok {
+		return def.Symbol
 	}
+
+	return "?"
 }
 
 // GetColor returns the lipgloss color for the status.
 func (as ActivityStatus) GetColor() color.Color {
-	switch as {
-	case ActivityStatusPending:
-		return Colors.Pending
-	case ActivityStatusRunning:
-		return Colors.Running
-	case ActivityStatusCompleted:
-		return Colors.Completed
-	case ActivityStatusFailed:
-		return Colors.Failed
-	default:
-		return Colors.Info
+	if def, ok := LookupStatus(as); ok {
+		return def.Color
 	}
+
+	return Colors.Info
 }
 
 // Interest returns the display priority for sorting: lower = more interesting.
 // Order: failed > running > pending > completed.
 func (as ActivityStatus) Interest() int {
-	switch as {
-	case ActivityStatusFailed:
-		return 0
-	case ActivityStatusRunning:
-		return 1
-	case ActivityStatusPending:
-		return 2
-	case ActivityStatusCompleted:
-		return 3
-	default:
-		return 4
+	if def, ok := LookupStatus(as); ok {
+		return def.Interest
 	}
+
+	return 4
 }
 
-// AllActivityStatuses is the complete list of valid ActivityStatus values.
-//
-//nolint:gochecknoglobals // Global variable used for value iteration.
-var AllActivityStatuses = []ActivityStatus{
-	ActivityStatusPending,
-	ActivityStatusRunning,
-	ActivityStatusCompleted,
-	ActivityStatusFailed,
-}
+// AllActivityStatuses returns the complete list of valid ActivityStatus values
+// in ascending ID order. The list is dynamic: custom statuses registered via
+// RegisterStatus are included automatically.
 
 // ParseActivityStatus parses a string into an ActivityStatus.
 // Returns an error for unrecognized values.
 func ParseActivityStatus(s string) (ActivityStatus, error) {
-	for _, status := range AllActivityStatuses {
+	for _, status := range AllActivityStatuses() {
 		if status.String() == s {
 			return status, nil
 		}
@@ -117,13 +83,15 @@ func ParseActivityStatus(s string) (ActivityStatus, error) {
 
 // IsValid returns true if the status is a recognized ActivityStatus value.
 func (as ActivityStatus) IsValid() bool {
-	return slices.Contains(AllActivityStatuses, as)
+	return slices.Contains(AllActivityStatuses(), as)
 }
 
 // AllowedValues returns all valid status strings for CLI help text and config.
 func (ActivityStatus) AllowedValues() []string {
-	out := make([]string, 0, len(AllActivityStatuses))
-	for _, s := range AllActivityStatuses {
+	statuses := AllActivityStatuses()
+
+	out := make([]string, 0, len(statuses))
+	for _, s := range statuses {
 		out = append(out, s.String())
 	}
 
