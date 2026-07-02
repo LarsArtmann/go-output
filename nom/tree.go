@@ -88,6 +88,12 @@ type DependencyTree struct {
 	// Layered mode only.
 	hideFutureLayers bool
 
+	// collapseCategories groups sibling activities by category and collapses
+	// them into a summary line (e.g. "3 build tasks"). When enabled, activities
+	// sharing the same category under the same parent are rendered as a single
+	// count line rather than individual rows.
+	collapseCategories bool
+
 	// theme is the active visual theme for status symbols and colors.
 	// Stored on the tree so renderers can resolve themed values without an
 	// explicit theme argument at every call site.

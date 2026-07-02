@@ -107,6 +107,9 @@ func (ns *NOMStyleSubscriber) handleActivityStarted(e ActivityStarted) error {
 
 	if e.Category != "" {
 		activity.Category = e.Category
+	} else if activity.Category == "" {
+		// Auto-inference: inherit category from the first dep if it's a phase.
+		activity.Category = ns.inheritCategoryLocked(e.ID, e.Deps)
 	}
 
 	medianDuration := ns.timingCache.GetMedian(e.Name.String())
@@ -128,6 +131,8 @@ func (ns *NOMStyleSubscriber) handleActivityRegistered(e ActivityRegistered) err
 
 	if e.Category != "" {
 		activity.Category = e.Category
+	} else if activity.Category == "" {
+		activity.Category = ns.inheritCategoryLocked(e.ID, e.Deps)
 	}
 
 	return ns.dependencyTree.AddActivity(e.ID, e.Deps)
@@ -214,4 +219,26 @@ func (ns *NOMStyleSubscriber) handleActivityRetrying(e ActivityRetrying) error {
 	activity.RetryReason = e.Reason
 
 	return nil
+}
+
+// inheritCategoryLocked returns the category from the first dependency that is
+// a phase with a non-empty category. This implements auto-inference: children
+// inherit their parent phase's category when no explicit category is set.
+// Must be called while holding ns.mu lock.
+func (ns *NOMStyleSubscriber) inheritCategoryLocked(
+	_ ActivityID,
+	deps []ActivityID,
+) ActivityCategory {
+	for _, depID := range deps {
+		depActivity, exists := ns.activities[depID]
+		if !exists {
+			continue
+		}
+
+		if depActivity.Kind.IsPhase() && depActivity.Category != "" {
+			return depActivity.Category
+		}
+	}
+
+	return ""
 }

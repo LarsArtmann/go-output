@@ -227,3 +227,96 @@ func TestCategory_ColorTint_NoCategoryColor(t *testing.T) {
 		t.Error("expected default status color when theme has no category color")
 	}
 }
+
+func TestCategory_AutoInferFromPhase(t *testing.T) {
+	t.Parallel()
+
+	sub := newTestSubscriber(t)
+	ctx := t.Context()
+
+	// Register a phase with a category.
+	_ = sub.OnEvent(ctx, ActivityRegistered{
+		ID:       ActivityID("build-phase"),
+		Name:     ActivityName("Build Phase"),
+		Kind:     ActivityKindPhase,
+		Category: ActivityCategory("build"),
+	})
+
+	// Start a child task with the phase as its dep, but NO explicit category.
+	_ = sub.OnEvent(ctx, ActivityStarted{
+		ID:   ActivityID("compile"),
+		Name: ActivityName("Compile"),
+		Deps: []ActivityID{ActivityID("build-phase")},
+	})
+
+	child := sub.GetActivity(ActivityID("compile"))
+	if child == nil {
+		t.Fatal("child activity not found")
+	}
+
+	if child.Category != ActivityCategory("build") {
+		t.Errorf("auto-inferred category = %q, want %q", child.Category, "build")
+	}
+}
+
+func TestCategory_AutoInferNoPhaseParent(t *testing.T) {
+	t.Parallel()
+
+	sub := newTestSubscriber(t)
+	ctx := t.Context()
+
+	// Register a task (not phase) with a category.
+	_ = sub.OnEvent(ctx, ActivityStarted{
+		ID:       ActivityID("setup"),
+		Name:     ActivityName("Setup"),
+		Category: ActivityCategory("infra"),
+	})
+
+	// Start a child depending on the task — should NOT inherit since parent
+	// is not a phase.
+	_ = sub.OnEvent(ctx, ActivityStarted{
+		ID:   ActivityID("compile"),
+		Name: ActivityName("Compile"),
+		Deps: []ActivityID{ActivityID("setup")},
+	})
+
+	child := sub.GetActivity(ActivityID("compile"))
+	if child == nil {
+		t.Fatal("child activity not found")
+	}
+
+	if child.Category != "" {
+		t.Errorf("category = %q, want empty (should not inherit from non-phase)", child.Category)
+	}
+}
+
+func TestCategory_AutoInferExplicitOverrides(t *testing.T) {
+	t.Parallel()
+
+	sub := newTestSubscriber(t)
+	ctx := t.Context()
+
+	_ = sub.OnEvent(ctx, ActivityRegistered{
+		ID:       ActivityID("build-phase"),
+		Name:     ActivityName("Build Phase"),
+		Kind:     ActivityKindPhase,
+		Category: ActivityCategory("build"),
+	})
+
+	// Start a child with an explicit category — should NOT be overridden.
+	_ = sub.OnEvent(ctx, ActivityStarted{
+		ID:       ActivityID("compile"),
+		Name:     ActivityName("Compile"),
+		Deps:     []ActivityID{ActivityID("build-phase")},
+		Category: ActivityCategory("custom"),
+	})
+
+	child := sub.GetActivity(ActivityID("compile"))
+	if child == nil {
+		t.Fatal("child activity not found")
+	}
+
+	if child.Category != ActivityCategory("custom") {
+		t.Errorf("category = %q, want %q (explicit should override inheritance)", child.Category, "custom")
+	}
+}

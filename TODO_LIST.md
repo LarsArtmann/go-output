@@ -1,7 +1,7 @@
 # TODO_LIST.md — go-output
 
-**Last updated:** 2026-06-23
-**Open items:** 2
+**Last updated:** 2026-07-02
+**Open items:** 4
 **Blocked:** 0
 
 ---
@@ -12,7 +12,8 @@
 | --- | --------------------------------------------------------------------------------------------------------------- | ------ | ----------------------------- |
 | 14  | **Community: Post to r/golang, submit to Awesome Go**                                                           | Low    | Open (needs owner account)    |
 | 16  | **Cut `v1.0.0` tag** — API frozen (ADR 006); CHANGELOG + full checklist done                                    | Low    | Prepared — awaiting owner tag |
-| 17  | **Complete Pattern B migration** — DONE. All 47 sibling requires converted to v0.0.0 sentinel across 18 modules | Medium | **Resolved 2026-06-23**       |
+| 18  | **Cut `v0.23.0` tag** — DAG innovations release (layered mode, themes, categories, critical-path, daghtml)     | Low    | Prepared — awaiting owner tag |
+| 19  | **daghtml lint cleanup** — 11 pre-existing lint issues (depguard, gosec G203, gochecknoglobals, wrapcheck)    | Medium | Tech debt                     |
 
 ---
 

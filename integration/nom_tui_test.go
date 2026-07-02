@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 
@@ -295,4 +296,90 @@ func completeActivity(sub *nom.NOMStyleSubscriber, ctx context.Context, id, name
 		Name:     nom.NewActivityName(name),
 		Duration: duration,
 	})
+}
+
+func TestNOM_LayeredMode_Integration(t *testing.T) {
+	t.Parallel()
+
+	sub := nom.NewNOMStyleSubscriber(nom.WithCachePath(filepath.Join(t.TempDir(), "nom-timing.csv")))
+	ctx := context.Background()
+
+	fireWorkflowStarted(sub, ctx, "wf1", "CI Pipeline")
+
+	// Build a multi-layer DAG via events with explicit deps.
+	_ = sub.OnEvent(ctx, nom.ActivityRegistered{
+		ID:   nom.NewActivityID("setup"),
+		Name: nom.NewActivityName("Setup"),
+	})
+	_ = sub.OnEvent(ctx, nom.ActivityRegistered{
+		ID:   nom.NewActivityID("compile"),
+		Name: nom.NewActivityName("Compile"),
+		Deps: []nom.ActivityID{nom.NewActivityID("setup")},
+	})
+	_ = sub.OnEvent(ctx, nom.ActivityRegistered{
+		ID:   nom.NewActivityID("lint"),
+		Name: nom.NewActivityName("Lint"),
+		Deps: []nom.ActivityID{nom.NewActivityID("setup")},
+	})
+	_ = sub.OnEvent(ctx, nom.ActivityRegistered{
+		ID:   nom.NewActivityID("test"),
+		Name: nom.NewActivityName("Test"),
+		Deps: []nom.ActivityID{nom.NewActivityID("compile")},
+	})
+
+	startActivity(sub, ctx, "setup", "Setup")
+	startActivity(sub, ctx, "compile", "Compile")
+	startActivity(sub, ctx, "lint", "Lint")
+	startActivity(sub, ctx, "test", "Test")
+
+	tree := sub.GetDependencyTree()
+	tree.SetRenderMode(nom.RenderModeLayered)
+
+	completeActivity(sub, ctx, "setup", "Setup", 2*time.Second)
+
+	snaps := sub.SnapshotActivities()
+	rendered := tree.RenderWithSnapshots(snaps, 20, 100)
+
+	if rendered == "" {
+		t.Fatal("layered render should not be empty")
+	}
+
+	if !strings.Contains(rendered, "Setup") {
+		t.Errorf("expected Setup in layered output:\n%s", rendered)
+	}
+
+	if !strings.Contains(rendered, "Compile") {
+		t.Errorf("expected Compile in layered output:\n%s", rendered)
+	}
+
+	// DOT export via AllNodes.
+	allNodes := tree.AllNodes()
+	if len(allNodes) == 0 {
+		t.Fatal("AllNodes should return nodes")
+	}
+
+	hasDeps := false
+
+	for _, n := range allNodes {
+		if len(n.Deps) > 0 {
+			hasDeps = true
+
+			break
+		}
+	}
+
+	if !hasDeps {
+		t.Error("expected at least one node with deps in the DAG")
+	}
+
+	// DAGSummary should produce a non-empty structural summary.
+	summary := tree.DAGSummaryWithSnapshots(snaps)
+	if summary.Nodes == 0 {
+		t.Error("DAGSummary should report non-zero nodes")
+	}
+
+	summaryStr := summary.String()
+	if !strings.Contains(summaryStr, "nodes") {
+		t.Errorf("DAGSummary.String() should contain 'nodes': %q", summaryStr)
+	}
 }

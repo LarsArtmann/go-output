@@ -283,3 +283,42 @@ func TestLayeredRender_FutureLayersDisabled(t *testing.T) {
 		t.Errorf("Test should be visible when hideFutureLayers is off:\n%s", stripped)
 	}
 }
+
+func TestLayeredRender_CategoryCollapse(t *testing.T) {
+	dt := NewDependencyTree()
+
+	_ = dt.AddActivity(ActivityID("root"), nil)
+	_ = dt.AddActivity(ActivityID("compile-a"), []ActivityID{"root"})
+	_ = dt.AddActivity(ActivityID("compile-b"), []ActivityID{"root"})
+	_ = dt.AddActivity(ActivityID("compile-c"), []ActivityID{"root"})
+	_ = dt.AddActivity(ActivityID("deploy"), []ActivityID{"root"})
+
+	dt.SetRenderMode(RenderModeLayered)
+	dt.showCategory = true
+	dt.collapseCategories = true
+
+	snaps := newSnapshotBuilder()
+	snaps.set(ActivityID("root"), "Root", ActivityStatusCompleted, 1*time.Second)
+	snaps.setCategory(ActivityID("compile-a"), "Compile A", ActivityStatusRunning, ActivityCategory("build"))
+	snaps.setCategory(ActivityID("compile-b"), "Compile B", ActivityStatusRunning, ActivityCategory("build"))
+	snaps.setCategory(ActivityID("compile-c"), "Compile C", ActivityStatusPending, ActivityCategory("build"))
+	snaps.setCategory(ActivityID("deploy"), "Deploy", ActivityStatusPending, ActivityCategory("deploy"))
+
+	got := dt.RenderWithSnapshots(snaps.snaps, 0, 0)
+	stripped := stripANSI(got)
+
+	// The 3 build tasks should be collapsed into a summary line.
+	if !strings.Contains(stripped, "3 build tasks") {
+		t.Errorf("expected collapsed category summary '3 build tasks':\n%s", stripped)
+	}
+
+	// Deploy (single node in its category) should still be shown individually.
+	if !strings.Contains(stripped, "Deploy") {
+		t.Errorf("expected Deploy as individual node:\n%s", stripped)
+	}
+
+	// Individual compile labels should NOT appear (collapsed).
+	if strings.Contains(stripped, "Compile A") {
+		t.Errorf("Compile A should be collapsed:\n%s", stripped)
+	}
+}

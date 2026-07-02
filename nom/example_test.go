@@ -49,3 +49,33 @@ func ExampleActivityStatus_String() {
 	fmt.Println(nom.ActivityStatusCompleted)
 	fmt.Println(nom.ActivityStatusFailed)
 }
+
+//nolint:testableexamples // Demonstration example, output is dynamic
+func ExampleWithTheme() {
+	sub := nom.NewNOMStyleSubscriber(nom.WithTheme(nom.ThemeDracula))
+
+	fmt.Println(sub.Theme().Colors.Completed)
+}
+
+//nolint:testableexamples // Demonstration example, output is dynamic
+func ExampleWithRenderMode() {
+	sub := nom.NewNOMStyleSubscriber(nom.WithRenderMode(nom.RenderModeLayered))
+
+	tree := sub.GetDependencyTree()
+	fmt.Println(tree.RenderMode())
+}
+
+//nolint:testableexamples // Demonstration example, output is dynamic
+func ExampleWithShowCategory() {
+	ctx := context.Background()
+	sub := nom.NewNOMStyleSubscriber(nom.WithShowCategory())
+
+	_ = sub.OnEvent(ctx, nom.ActivityStarted{
+		ID:       nom.NewActivityID("build"),
+		Name:     nom.NewActivityName("Compile"),
+		Category: nom.ActivityCategory("build"),
+	})
+
+	snaps := sub.SnapshotActivities()
+	fmt.Println(snaps[nom.NewActivityID("build")].Category)
+}

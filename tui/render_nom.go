@@ -86,32 +86,7 @@ func (m *ProgressModel) renderDependencyTree() string {
 		treeHeight = defaultTreeHeight
 	}
 
-	var entries []nom.VisibleEntry
-
-	if m.scrollOffset > 0 {
-		// Scroll path: collect all entries (no height-pressure collapsing),
-		// then select the visible window by offset.
-		allEntries := tree.VisibleEntriesWithSnapshots(snapshots, 0)
-
-		if len(allEntries) == 0 {
-			m.visibleEntries = nil
-			m.scrollOffset = 0
-
-			return msgNoActivitiesToDisplay
-		}
-
-		// Clamp scrollOffset to valid range. scrollToBottomSentinel maps to
-		// the last page.
-		maxOffset := max(0, len(allEntries)-treeHeight)
-		if m.scrollOffset > maxOffset {
-			m.scrollOffset = maxOffset
-		}
-
-		end := min(m.scrollOffset+treeHeight, len(allEntries))
-		entries = allEntries[m.scrollOffset:end]
-	} else {
-		entries = tree.VisibleEntriesWithSnapshots(snapshots, treeHeight)
-	}
+	entries := m.collectVisibleEntries(tree, snapshots, treeHeight)
 
 	if len(entries) == 0 {
 		m.visibleEntries = nil
@@ -121,8 +96,8 @@ func (m *ProgressModel) renderDependencyTree() string {
 
 	// Critical-path filter: when enabled, show only entries whose nodes are on
 	// the longest estimated-time path through the DAG.
-	if m.criticalPathFilter && m.nomSubscriber != nil {
-		criticalIDs := m.dependencyTree.CriticalPathIDs(snapshots)
+	if m.criticalPathFilter {
+		criticalIDs := tree.CriticalPathIDs(snapshots)
 		if len(criticalIDs) > 0 {
 			entries = filterCriticalPath(entries, criticalIDs)
 		}
@@ -149,6 +124,34 @@ func (m *ProgressModel) renderDependencyTree() string {
 	}
 
 	return strings.Join(lines, "\n")
+}
+
+// collectVisibleEntries returns the visible entry window, handling scroll offset.
+func (m *ProgressModel) collectVisibleEntries(
+	tree *nom.DependencyTree,
+	snapshots map[nom.ActivityID]nom.ActivitySnapshot,
+	treeHeight int,
+) []nom.VisibleEntry {
+	if m.scrollOffset > 0 {
+		allEntries := tree.VisibleEntriesWithSnapshots(snapshots, 0)
+
+		if len(allEntries) == 0 {
+			m.scrollOffset = 0
+
+			return nil
+		}
+
+		maxOffset := max(0, len(allEntries)-treeHeight)
+		if m.scrollOffset > maxOffset {
+			m.scrollOffset = maxOffset
+		}
+
+		end := min(m.scrollOffset+treeHeight, len(allEntries))
+
+		return allEntries[m.scrollOffset:end]
+	}
+
+	return tree.VisibleEntriesWithSnapshots(snapshots, treeHeight)
 }
 
 // renderNOMSummaryBar creates the NOM-style summary bar, colored by workflow state.

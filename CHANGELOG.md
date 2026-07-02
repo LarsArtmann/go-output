@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.23.0] - 2026-07-02
+
 ### Added — daghtml SDK (cross-project DAG visualization extraction)
 
 - **`daghtml/` module** — Zero-dependency Go SDK for interactive SVG DAG
@@ -97,6 +99,41 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   approximation with grapheme-aware `ansi.Hardwrap`. The old formula
   undercounted wide-character straddling at odd terminal widths (e.g., 4 CJK
   chars at width 3 counted as 3 lines instead of the correct 4).
+
+### Added — DAG innovations round 2 (this session)
+
+- **DAGSummary wiring** — `SetShowDAGSummary(true)` on InlineRenderer renders
+  a `"N nodes · M edges · K layers"` structural segment in the summary bar.
+  `DAGSummaryWithSnapshots` now counts phases.
+- **Category color tints** — when `ShowCategory` is enabled and the theme
+  defines a `CategoryColor`, the tint overrides the status color on the
+  activity label (not just the `[tag]` prefix).
+- **`RenderMode.String()`** — returns `"tree"` or `"layered"` for logging.
+- **Future-layer hiding** (`WithHideFutureLayers()`) — collapses layers where
+  all nodes are still pending into a single `"N pending"` summary line.
+- **Category collapse** (`WithCollapseCategories()`) — groups sibling
+  activities sharing a category into a summary line (e.g. `"3 build tasks"`).
+- **Auto-theme** (`WithAutoTheme()`) — detects terminal background via
+  COLORFGBG and selects ThemeDefault (dark) or ThemeHighContrast (light).
+- **Category auto-inference** — children inherit their parent phase's category
+  when no explicit category is set on the child event.
+- **TUI `C` key** — toggles critical-path-only filter view.
+- **TUI `D` key** — exports dependency DAG to a DOT file in the temp dir.
+- **TUI `L` key teatest E2E** — mode toggle verified through the real
+  Bubble Tea program loop.
+- **Golden-file tests** for layered mode (2: normal + height-pressure collapse).
+- **VT emulator tests** for layered mode (3: first frame, second frame,
+  height-pressure collapse).
+- **Benchmark** — layered rendering at 100/500 nodes (~35μs/~86μs).
+- **Integration test** — full event flow → layered render → DAG summary →
+  DOT export.
+- **ADR 010** (DAG topology) and **ADR 011** (status registry).
+- **`examples/nom_dag/`** — standalone demo showing layered mode, categories,
+  themes, and DAG summary.
+- **Godoc examples** for `WithTheme`, `WithRenderMode`, `WithShowCategory`.
+- **Test cache race fix** — `TestMain` redirects the timing cache to a
+  per-process temp directory, eliminating the shared `~/.cache/nom-timing.csv`
+  race that affected tests not using `WithCachePath`.
 
 ## [0.22.0] - 2026-07-01
 

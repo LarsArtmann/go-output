@@ -115,3 +115,56 @@ func BenchmarkDependencyTree_ChildPriority(b *testing.B) {
 		_ = dt.childPriority(root, snaps, nil)
 	}
 }
+
+func BenchmarkDependencyTree_LayeredRender(b *testing.B) {
+	for _, size := range []int{100, 500} {
+		b.Run(fmt.Sprintf("%dNodes", size), func(b *testing.B) {
+			dt, snaps := buildBenchmarkTree(size)
+			dt.SetRenderMode(RenderModeLayered)
+
+			b.ResetTimer()
+
+			for b.Loop() {
+				if dt.RenderWithSnapshots(snaps, 20, 0) == "" {
+					b.Fatal("Layered render should produce output")
+				}
+			}
+		})
+	}
+}
+
+func BenchmarkDependencyTree_LayeredRender_HeightPressure(b *testing.B) {
+	dt, snaps := buildBenchmarkTree(500)
+	dt.SetRenderMode(RenderModeLayered)
+
+	b.ResetTimer()
+
+	for b.Loop() {
+		if dt.RenderWithSnapshots(snaps, 10, 0) == "" {
+			b.Fatal("Layered render with height pressure should produce output")
+		}
+	}
+}
+
+func BenchmarkDependencyTree_LayeredRender_CategoryCollapse(b *testing.B) {
+	dt, snaps := buildBenchmarkTree(500)
+	dt.SetRenderMode(RenderModeLayered)
+	dt.showCategory = true
+	dt.collapseCategories = true
+
+	// Add categories to the snapshots.
+	for id, snap := range snaps {
+		if string(id) != "root" {
+			snap.Category = ActivityCategory("build")
+			snaps[id] = snap
+		}
+	}
+
+	b.ResetTimer()
+
+	for b.Loop() {
+		if dt.RenderWithSnapshots(snaps, 20, 0) == "" {
+			b.Fatal("Layered render with category collapse should produce output")
+		}
+	}
+}

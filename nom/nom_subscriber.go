@@ -1,6 +1,9 @@
 package nom
 
 import (
+	"os"
+	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -134,6 +137,57 @@ func WithHideFutureLayers() SubscriberOption {
 	return func(ns *NOMStyleSubscriber) {
 		ns.dependencyTree.hideFutureLayers = true
 	}
+}
+
+// WithCollapseCategories groups sibling activities by category and collapses
+// them into a summary line (e.g. "3 build tasks"). Requires WithShowCategory
+// to be useful, since categories must be set on activities.
+func WithCollapseCategories() SubscriberOption {
+	return func(ns *NOMStyleSubscriber) {
+		ns.dependencyTree.collapseCategories = true
+	}
+}
+
+// WithAutoTheme detects the terminal's background brightness via the
+// COLORFGBG environment variable and selects an appropriate theme:
+// dark backgrounds get ThemeDefault, light backgrounds get ThemeHighContrast.
+// If COLORFGBG is unset (most modern terminals), ThemeDefault is used.
+//
+// COLORFGBG format is "fg;bg" where values 0-7 are dark and 8-15 are light.
+// This is the same convention used by vim, tmux, and other terminal tools.
+func WithAutoTheme() SubscriberOption {
+	return func(ns *NOMStyleSubscriber) {
+		theme := detectAutoTheme()
+		ns.theme = theme
+		ns.dependencyTree.theme = theme
+	}
+}
+
+// detectAutoTheme inspects COLORFGBG and returns the best-matching theme.
+func detectAutoTheme() Theme {
+	// COLORFGBG is "fg;bg" — e.g. "15;0" means light-on-dark.
+	fgBg := os.Getenv("COLORFGBG")
+	if fgBg == "" {
+		return ThemeDefault
+	}
+
+	parts := strings.Split(fgBg, ";")
+	if len(parts) < 2 {
+		return ThemeDefault
+	}
+
+	bg, err := strconv.Atoi(parts[1])
+	if err != nil {
+		return ThemeDefault
+	}
+
+	// 0-7 = dark background → use default (dark-optimized) theme.
+	// 8-15 = light background → use high contrast theme.
+	if bg >= 0 && bg <= 7 {
+		return ThemeDefault
+	}
+
+	return ThemeHighContrast
 }
 
 // WithTheme sets the visual theme used for status symbols and colors.

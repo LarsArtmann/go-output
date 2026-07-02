@@ -100,13 +100,7 @@ func (dt *DependencyTree) collectLayeredEntries(
 			break
 		}
 
-		for _, node := range nodes {
-			if len(entries) >= maxHeight {
-				break
-			}
-
-			entries = append(entries, VisibleEntry{LayerNodes: []*ActivityNode{node}})
-		}
+		entries = append(entries, dt.collectLayeredNodeEntries(nodes, snapshots, maxHeight-len(entries))...)
 
 		// Separator between layers, but not after the last one.
 		if depth < maxDepth && len(entries) < maxHeight {
@@ -208,6 +202,109 @@ func (dt *DependencyTree) allNodesPending(
 	}
 
 	return true
+}
+
+// categoryGroup tracks a collapsed category's name and node count.
+type categoryGroup struct {
+	name  string
+	count int
+}
+
+// collectLayeredNodeEntries produces VisibleEntry rows for the nodes in a
+// single layer, applying category collapse when enabled. maxHeight is the
+// remaining entry budget before the caller must stop.
+func (dt *DependencyTree) collectLayeredNodeEntries(
+	nodes []*ActivityNode,
+	snapshots map[ActivityID]ActivitySnapshot,
+	maxEntries int,
+) []VisibleEntry {
+	if dt.collapseCategories && dt.showCategory {
+		return dt.collectCategoryCollapsedEntries(nodes, snapshots, maxEntries)
+	}
+
+	var entries []VisibleEntry
+
+	for _, node := range nodes {
+		if len(entries) >= maxEntries {
+			break
+		}
+
+		entries = append(entries, VisibleEntry{LayerNodes: []*ActivityNode{node}})
+	}
+
+	return entries
+}
+
+// collectCategoryCollapsedEntries groups nodes by category, emitting summary
+// lines for categories with 2+ nodes and individual entries for the rest.
+func (dt *DependencyTree) collectCategoryCollapsedEntries(
+	nodes []*ActivityNode,
+	snapshots map[ActivityID]ActivitySnapshot,
+	maxEntries int,
+) []VisibleEntry {
+	collapsed, individuals := groupByCategory(nodes, snapshots)
+
+	var entries []VisibleEntry
+
+	for _, cat := range collapsed {
+		if len(entries) >= maxEntries {
+			break
+		}
+
+		entries = append(entries, VisibleEntry{
+			LayerHeader: fmt.Sprintf("%s %d %s tasks", SymbolPhase, cat.count, cat.name),
+		})
+	}
+
+	for _, node := range individuals {
+		if len(entries) >= maxEntries {
+			break
+		}
+
+		entries = append(entries, VisibleEntry{LayerNodes: []*ActivityNode{node}})
+	}
+
+	return entries
+}
+
+// groupByCategory partitions nodes into collapsed groups (2+ nodes sharing a
+// category) and individual nodes (no category or unique category). Returns
+// (collapsed groups, individual nodes).
+func groupByCategory(
+	nodes []*ActivityNode,
+	snapshots map[ActivityID]ActivitySnapshot,
+) ([]categoryGroup, []*ActivityNode) {
+	counts := make(map[string]int)
+
+	for _, node := range nodes {
+		snap := lookupSnapshot(snapshots, node.ID)
+		if snap.Category != "" {
+			counts[string(snap.Category)]++
+		}
+	}
+
+	var collapsed []categoryGroup
+
+	var individuals []*ActivityNode
+
+	for _, node := range nodes {
+		snap := lookupSnapshot(snapshots, node.ID)
+		cat := string(snap.Category)
+
+		if cat != "" && counts[cat] >= 2 {
+			continue // will be collapsed
+		}
+
+		individuals = append(individuals, node)
+	}
+
+	for cat, count := range counts {
+		if count >= 2 {
+			collapsed = append(collapsed, categoryGroup{name: cat, count: count})
+		}
+	}
+
+	return collapsed, individuals
 }
 
 func layeredSeparator(maxDepth int) string {

@@ -200,3 +200,72 @@ func TestTeatest_WindowSize_Propagates(t *testing.T) {
 		t.Errorf("height = %d, want 40", m.height)
 	}
 }
+
+// --- F31: L key toggles tree/layered mode through the real program loop ---
+
+func TestTeatest_LKey_TogglesMode(t *testing.T) {
+	tm := newTeatestModel(t, 100, 30)
+
+	waitForVisible(t, tm, "s")
+
+	// Send 'L' to toggle to layered mode.
+	tm.Send(tea.KeyPressMsg{Code: 'L'})
+
+	// Program should still be responsive after the toggle.
+	waitForVisible(t, tm, "s")
+
+	// Send 'L' again to toggle back to tree mode.
+	tm.Send(tea.KeyPressMsg{Code: 'L'})
+
+	waitForVisible(t, tm, "s")
+
+	// Verify the final model state reflects the expected mode.
+	tm.Send(tea.KeyPressMsg{Code: 'q'})
+	tm.WaitFinished(t, teatest.WithFinalTimeout(3*time.Second))
+
+	m, ok := tm.FinalModel(t, teatest.WithFinalTimeout(3*time.Second)).(*ProgressModel)
+	if !ok {
+		t.Fatal("final model should be *ProgressModel")
+	}
+
+	if m.dependencyTree == nil {
+		t.Fatal("dependency tree should not be nil")
+	}
+
+	// After toggling twice, mode should be back to tree.
+	if m.dependencyTree.RenderMode() != nom.RenderModeTree {
+		t.Errorf("RenderMode = %v, want RenderModeTree (toggled twice)", m.dependencyTree.RenderMode())
+	}
+}
+
+// --- F32: C key toggles critical-path filter without crashing ---
+
+func TestTeatest_CKey_TogglesCriticalFilter(t *testing.T) {
+	tm := newTeatestModel(t, 100, 30)
+
+	waitForVisible(t, tm, "s")
+
+	// Send 'C' to enable critical-path filter.
+	tm.Send(tea.KeyPressMsg{Code: 'C'})
+
+	waitForVisible(t, tm, "s")
+
+	// Send 'C' again to disable.
+	tm.Send(tea.KeyPressMsg{Code: 'C'})
+
+	waitForVisible(t, tm, "s")
+
+	// Quit and verify model state.
+	tm.Send(tea.KeyPressMsg{Code: 'q'})
+	tm.WaitFinished(t, teatest.WithFinalTimeout(3*time.Second))
+
+	m, ok := tm.FinalModel(t, teatest.WithFinalTimeout(3*time.Second)).(*ProgressModel)
+	if !ok {
+		t.Fatal("final model should be *ProgressModel")
+	}
+
+	// Filter should be off after toggling twice.
+	if m.criticalPathFilter {
+		t.Error("criticalPathFilter should be false after toggling twice")
+	}
+}

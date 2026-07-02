@@ -39,20 +39,31 @@ func withFilePath(path string) TimingCacheOption {
 	return func(tc *TimingCache) { tc.filePath = path }
 }
 
+// cachePathOverride allows test binaries to redirect the default cache to a
+// per-process temp directory, avoiding races when tests run in parallel.
+// Production code never sets this — it defaults to empty, falling through to
+// the standard ~/.cache/nom-timing.csv path.
+//
+//nolint:gochecknoglobals // intentional test-injection point
+var cachePathOverride string
+
 // NewTimingCache creates a new timing cache backed by ~/.cache/nom-timing.csv
 // by default. Pass options to override (e.g. tests inject a temp path).
 func NewTimingCache(opts ...TimingCacheOption) *TimingCache {
-	homeDir, err := os.UserHomeDir()
-	if err != nil || homeDir == "" {
-		homeDir = os.TempDir()
-	}
+	cachePath := cachePathOverride
+	if cachePath == "" {
+		homeDir, err := os.UserHomeDir()
+		if err != nil || homeDir == "" {
+			homeDir = os.TempDir()
+		}
 
-	cachePath := filepath.Join(homeDir, cacheDir, cacheFilename)
+		cachePath = filepath.Join(homeDir, cacheDir, cacheFilename)
 
-	// Validate the parent directory is writable, not /dev/null or similar
-	dir := filepath.Dir(filepath.Dir(cachePath))
-	if fi, err := os.Stat(dir); err != nil || !fi.IsDir() {
-		cachePath = filepath.Join(os.TempDir(), cacheDir, cacheFilename)
+		// Validate the parent directory is writable, not /dev/null or similar
+		dir := filepath.Dir(filepath.Dir(cachePath))
+		if fi, err := os.Stat(dir); err != nil || !fi.IsDir() {
+			cachePath = filepath.Join(os.TempDir(), cacheDir, cacheFilename)
+		}
 	}
 
 	tc := &TimingCache{

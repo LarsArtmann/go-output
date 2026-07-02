@@ -21,7 +21,7 @@ func exportDOTToTemp(tree *nom.DependencyTree) string {
 
 	content := treeToDOT(tree)
 
-	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+	if err := os.WriteFile(path, []byte(content), 0o600); err != nil {
 		return ""
 	}
 

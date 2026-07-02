@@ -34,8 +34,8 @@ func (dt *DependencyTree) AllNodes() []DAGNode {
 	nodes := make([]DAGNode, 0, len(dt.nodes))
 
 	for _, node := range dt.nodes {
-		deps := make([]ActivityID, len(node.Deps))
-		copy(deps, node.Deps)
+		deps := make([]ActivityID, 0, len(node.Deps))
+		deps = append(deps, node.Deps...)
 
 		nodes = append(nodes, DAGNode{
 			ID:     node.ID,
