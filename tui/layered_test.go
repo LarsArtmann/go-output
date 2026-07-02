@@ -12,20 +12,7 @@ import (
 func TestProgressModel_LayeredMode_RendersLayers(t *testing.T) {
 	t.Parallel()
 
-	model := newTestModel()
-	model.width = 80
-	model.height = 24
-	model.displayMode = DisplayModeNOM
-
-	tree := setupTestTree(model)
-	_ = tree.AddActivity(nom.ActivityID("root"), nil)
-	_ = tree.AddActivity(nom.ActivityID("child"), []nom.ActivityID{"root"})
-	_ = tree.GetRootNodes()
-
-	addTestActivity(model, "root", "Root", nom.ActivityStatusRunning)
-	addTestActivity(model, "child", "Child", nom.ActivityStatusCompleted)
-
-	tree.SetRenderMode(nom.RenderModeLayered)
+	model, _ := setupLayeredTestModel(t, true)
 
 	got := model.renderDependencyTree()
 
@@ -49,20 +36,7 @@ func TestProgressModel_LayeredMode_RendersLayers(t *testing.T) {
 func TestProgressModel_LayeredMode_MouseClickSelectsNode(t *testing.T) {
 	t.Parallel()
 
-	model := newTestModel()
-	model.width = 80
-	model.height = 24
-	model.displayMode = DisplayModeNOM
-
-	tree := setupTestTree(model)
-	_ = tree.AddActivity(nom.ActivityID("root"), nil)
-	_ = tree.AddActivity(nom.ActivityID("child"), []nom.ActivityID{"root"})
-	_ = tree.GetRootNodes()
-
-	addTestActivity(model, "root", "Root", nom.ActivityStatusRunning)
-	addTestActivity(model, "child", "Child", nom.ActivityStatusCompleted)
-
-	tree.SetRenderMode(nom.RenderModeLayered)
+	model, tree := setupLayeredTestModel(t, true)
 
 	// Force visibleEntries population before mouse click.
 	model.visibleEntries = tree.VisibleEntriesWithSnapshots(model.nomSubscriber.SnapshotActivities(), 20)
@@ -80,18 +54,7 @@ func TestProgressModel_LayeredMode_MouseClickSelectsNode(t *testing.T) {
 func TestProgressModel_LayeredMode_ClickHeaderClearsSelection(t *testing.T) {
 	t.Parallel()
 
-	model := newTestModel()
-	model.width = 80
-	model.height = 24
-	model.displayMode = DisplayModeNOM
-
-	tree := setupTestTree(model)
-	_ = tree.AddActivity(nom.ActivityID("root"), nil)
-	_ = tree.GetRootNodes()
-
-	addTestActivity(model, "root", "Root", nom.ActivityStatusRunning)
-
-	tree.SetRenderMode(nom.RenderModeLayered)
+	model, tree := setupLayeredTestModel(t, false)
 
 	model.visibleEntries = tree.VisibleEntriesWithSnapshots(model.nomSubscriber.SnapshotActivities(), 20)
 	model.selectedNode = nom.ActivityID("root")
@@ -112,20 +75,7 @@ func TestProgressModel_LayeredMode_ClickHeaderClearsSelection(t *testing.T) {
 func TestProgressModel_LayeredMode_SelectionHighlight(t *testing.T) {
 	t.Parallel()
 
-	model := newTestModel()
-	model.width = 80
-	model.height = 24
-	model.displayMode = DisplayModeNOM
-
-	tree := setupTestTree(model)
-	_ = tree.AddActivity(nom.ActivityID("root"), nil)
-	_ = tree.AddActivity(nom.ActivityID("child"), []nom.ActivityID{"root"})
-	_ = tree.GetRootNodes()
-
-	addTestActivity(model, "root", "Root", nom.ActivityStatusRunning)
-	addTestActivity(model, "child", "Child", nom.ActivityStatusCompleted)
-
-	tree.SetRenderMode(nom.RenderModeLayered)
+	model, _ := setupLayeredTestModel(t, true)
 
 	model.selectedNode = nom.ActivityID("root")
 
@@ -136,9 +86,9 @@ func TestProgressModel_LayeredMode_SelectionHighlight(t *testing.T) {
 	}
 }
 
-// TestProgressModel_LayeredMode_InlineRenderer uses the real render path that
-// the inline renderer would take, proving RenderWithSnapshots already dispatches
-// to layered mode without changes to the renderer itself.
+// TestProgressModel_LayeredMode_InlineRendererDispatch uses the real render
+// path that the inline renderer would take, proving RenderWithSnapshots already
+// dispatches to layered mode without changes to the renderer itself.
 func TestProgressModel_LayeredMode_InlineRendererDispatch(t *testing.T) {
 	t.Parallel()
 
