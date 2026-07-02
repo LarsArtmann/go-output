@@ -1,0 +1,10 @@
+@startuml
+skinparam componentStyle uml2
+skinparam defaultFontSize 12
+
+[Alpha] as a
+[Beta] as b
+
+a --> b
+
+@enduml

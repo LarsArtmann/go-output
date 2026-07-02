@@ -1,0 +1,6 @@
+-   Health: healthy
+    Port: "8080"
+    Service: api
+-   Health: degraded
+    Port: "9090"
+    Service: worker

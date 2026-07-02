@@ -11,6 +11,8 @@ require (
 )
 
 require (
+	github.com/aymanbagabas/go-udiff v0.4.1 // indirect
+	github.com/charmbracelet/x/exp/golden v0.0.0-20260629091435-9c70f75e26a4 // indirect
 	github.com/go-faster/errors v0.7.1 // indirect
 	github.com/go-faster/jx v1.2.0 // indirect
 	github.com/larsartmann/go-branded-id v0.3.1 // indirect

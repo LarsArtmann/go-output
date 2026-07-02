@@ -1,0 +1,7 @@
+[[row]]
+Key = 'name'
+Value = 'go-output'
+
+[[row]]
+Key = 'version'
+Value = '1.0.0'

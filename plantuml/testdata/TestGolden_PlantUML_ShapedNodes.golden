@@ -1,0 +1,10 @@
+@startuml
+skinparam componentStyle uml2
+skinparam defaultFontSize 12
+
+[Start] as start
+[End] as end
+
+start --> : flows to end
+
+@enduml

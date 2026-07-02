@@ -1,0 +1,5 @@
+a: Alpha
+b: Beta
+c: Gamma
+a -> b
+b -> c
