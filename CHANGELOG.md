@@ -6,6 +6,34 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added — DAG visualization innovations (layered mode, themes, categories)
+
+- **Layered display mode** (`nom/`) — `RenderModeLayered` groups activities by
+  DAG depth and renders each layer as a separate horizontal section, making
+  parallelism explicit. Includes priority sorting (running > pending > terminal),
+  placeholder skipping, and height-pressure layer collapse. Enabled via
+  `WithRenderMode(RenderModeLayered)`.
+- **Theme system** (`nom/`) — `Theme` struct with `SemanticColors`, symbol
+  overrides, and category tints. Five presets: `ThemeDefault`, `ThemeDracula`,
+  `ThemeNord`, `ThemeMonochrome`, `ThemeHighContrast`. Enabled via
+  `WithTheme(theme)`. Snapshot-time resolution means renderers don't need the
+  theme passed explicitly.
+- **Parallelism meter** (`nom/`) — `ParallelismStats` reports running vs
+  immediately-startable activities. Rendered as a `"parallel: N/M possible"`
+  summary-bar segment. Enabled via `WithShowParallelism()`.
+- **Critical-path ETA** (`nom/`) — `EstimatedCriticalPathRemaining()` computes
+  the longest remaining-time path through the DAG. Rendered as `"~Xm critical"`
+  in the summary bar. Enabled via `InlineRenderer.SetShowCriticalPathETA(true)`.
+- **Critical-path priority sort** (`nom/`) — nodes on the longest-time path
+  sort before non-critical siblings at the same interest level.
+- **Activity categories** (`nom/`) — `ActivityCategory` field on `Activity`,
+  `ActivitySnapshot`, and lifecycle events (`ActivityRegistered`,
+  `ActivityStarted`). Renders a dim `[tag]` prefix when enabled. Set via events
+  or `SetActivityCategory()`. Enabled via `WithShowCategory()`.
+- **Status registry** (`nom/`) — `StatusDef` registry replaces hardcoded
+  `ActivityStatus` switches. `RegisterStatus()` allows custom statuses.
+  `AllActivityStatuses()` returns registry entries in ascending ID order.
+
 ### Added — testing, docs, and examples round
 
 - **Nom enum parse tests** — `ParseActivityStatus`, `ParseActivityKind`,
