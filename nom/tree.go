@@ -62,6 +62,18 @@ type DependencyTree struct {
 	// absorbed into the tree — each node appears once, under its deepest
 	// parent, with no annotation.
 	showExtraDeps bool
+
+	// showCriticalPath enables a ◆ prefix on nodes that lie on the longest
+	// estimated-time path through the DAG.
+	showCriticalPath bool
+
+	// showConvergence enables a ◇ prefix on nodes with multiple incoming
+	// dependencies (fan-in points in the DAG).
+	showConvergence bool
+
+	// showBlockage enables a dim sub-line beneath pending nodes that lists
+	// incomplete dependencies and their status, making blockers explicit.
+	showBlockage bool
 }
 
 // NewDependencyTree creates a new dependency tree.

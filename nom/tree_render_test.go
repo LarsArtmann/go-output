@@ -164,6 +164,161 @@ func TestDependencyTree_Render_MultiDeps_OptionB_SubLine(t *testing.T) {
 	}
 }
 
+func TestDependencyTree_Render_CriticalPathMarker(t *testing.T) {
+	t.Parallel()
+
+	dt := NewDependencyTree()
+	dt.showCriticalPath = true
+	dt.AddActivity(ActivityID("a"), nil)
+	dt.AddActivity(ActivityID("b"), []ActivityID{"a"})
+	dt.AddActivity(ActivityID("c"), []ActivityID{"a"})
+	dt.AddActivity(ActivityID("d"), []ActivityID{"b"})
+
+	snaps := newSnapshotBuilder()
+	snaps.setWithEstimate(ActivityID("a"), "A", ActivityStatusCompleted, time.Second, time.Second)
+	snaps.setWithEstimate(ActivityID("b"), "B", ActivityStatusCompleted, 2*time.Second, 2*time.Second)
+	snaps.setWithEstimate(ActivityID("c"), "C", ActivityStatusCompleted, time.Second, time.Second)
+	snaps.setWithEstimate(ActivityID("d"), "D", ActivityStatusPending, 0, time.Second)
+
+	got := dt.RenderWithSnapshots(snaps.snaps, 10, 0)
+
+	if !strings.Contains(got, "◆") {
+		t.Errorf("expected ◆ marker on critical path nodes, got:\n%s", got)
+	}
+
+	if !strings.Contains(got, "◆ A") && !strings.Contains(got, "◆ ✔ A") {
+		t.Errorf("expected ◆ marker near critical path root A, got:\n%s", got)
+	}
+
+	if !strings.Contains(got, "◆ B") && !strings.Contains(got, "◆ ✔ B") {
+		t.Errorf("expected ◆ marker near critical path node B, got:\n%s", got)
+	}
+
+	if !strings.Contains(got, "◆ D") && !strings.Contains(got, "◆ ○ D") {
+		t.Errorf("expected ◆ marker near critical path sink D, got:\n%s", got)
+	}
+
+	if strings.Contains(got, "◆ C") || strings.Contains(got, "◆ ✔ C") {
+		t.Errorf("C should NOT have a critical path marker, got:\n%s", got)
+	}
+}
+
+func TestDependencyTree_Render_ConvergenceMarker(t *testing.T) {
+	t.Parallel()
+
+	dt := NewDependencyTree()
+	dt.showConvergence = true
+	dt.AddActivity(ActivityID("a"), nil)
+	dt.AddActivity(ActivityID("b"), []ActivityID{"a"})
+	dt.AddActivity(ActivityID("c"), []ActivityID{"a"})
+	dt.AddActivity(ActivityID("d"), []ActivityID{"b", "c"})
+
+	snaps := newSnapshotBuilder()
+	snaps.set(ActivityID("a"), "A", ActivityStatusCompleted, 0)
+	snaps.set(ActivityID("b"), "B", ActivityStatusCompleted, 0)
+	snaps.set(ActivityID("c"), "C", ActivityStatusCompleted, 0)
+	snaps.set(ActivityID("d"), "D", ActivityStatusPending, 0)
+
+	got := dt.RenderWithSnapshots(snaps.snaps, 10, 0)
+
+	if !strings.Contains(got, "◇") {
+		t.Errorf("expected ◇ convergence marker on fan-in node D, got:\n%s", got)
+	}
+
+	if !strings.Contains(got, "◇ D") && !strings.Contains(got, "◇ ○ D") {
+		t.Errorf("expected ◇ marker near fan-in node D, got:\n%s", got)
+	}
+
+	// Only D should have a convergence marker; A/B/C are single-dep nodes.
+	for _, id := range []string{"◇ A", "◇ B", "◇ C"} {
+		if strings.Contains(got, id) {
+			t.Errorf("single-dep node should not have convergence marker, got:\n%s", got)
+		}
+	}
+}
+
+func TestDependencyTree_Render_BlockageSubLine(t *testing.T) {
+	t.Parallel()
+
+	dt := NewDependencyTree()
+	dt.showBlockage = true
+	dt.AddActivity(ActivityID("a"), nil)
+	dt.AddActivity(ActivityID("b"), []ActivityID{"a"})
+	dt.AddActivity(ActivityID("c"), []ActivityID{"a"})
+	dt.AddActivity(ActivityID("d"), []ActivityID{"b", "c"})
+
+	snaps := newSnapshotBuilder()
+	snaps.set(ActivityID("a"), "A", ActivityStatusRunning, 5*time.Second)
+	snaps.set(ActivityID("b"), "B", ActivityStatusCompleted, 0)
+	snaps.set(ActivityID("c"), "C", ActivityStatusRunning, 2*time.Second)
+	snaps.set(ActivityID("d"), "D", ActivityStatusPending, 0)
+
+	got := dt.RenderWithSnapshots(snaps.snaps, 10, 0)
+
+	if !strings.Contains(got, "⊘ blocked by") {
+		t.Errorf("expected blockage sub-line, got:\n%s", got)
+	}
+
+	// Extract the blockage line so we only inspect that, not the completed B line.
+	var blockageLine string
+
+	for line := range strings.SplitSeq(got, "\n") {
+		if strings.Contains(line, "⊘ blocked by") {
+			blockageLine = line
+
+			break
+		}
+	}
+
+	if strings.Contains(blockageLine, "B") {
+		t.Errorf("completed dep B should not appear in blockage line, got:\n%s", blockageLine)
+	}
+
+	if !strings.Contains(blockageLine, "C") {
+		t.Errorf("running dep C should appear in blockage line, got:\n%s", blockageLine)
+	}
+}
+
+func TestDependencyTree_Render_BlockageHiddenWhenAllDepsComplete(t *testing.T) {
+	t.Parallel()
+
+	dt := NewDependencyTree()
+	dt.showBlockage = true
+	dt.AddActivity(ActivityID("a"), nil)
+	dt.AddActivity(ActivityID("b"), []ActivityID{"a"})
+	dt.AddActivity(ActivityID("c"), []ActivityID{"b"})
+
+	snaps := newSnapshotBuilder()
+	snaps.set(ActivityID("a"), "A", ActivityStatusCompleted, 0)
+	snaps.set(ActivityID("b"), "B", ActivityStatusCompleted, 0)
+	snaps.set(ActivityID("c"), "C", ActivityStatusPending, 0)
+
+	got := dt.RenderWithSnapshots(snaps.snaps, 10, 0)
+
+	if strings.Contains(got, "⊘ blocked by") {
+		t.Errorf("blockage should be hidden when all deps are complete, got:\n%s", got)
+	}
+}
+
+func TestDependencyTree_Render_BlockageHiddenForNonPending(t *testing.T) {
+	t.Parallel()
+
+	dt := NewDependencyTree()
+	dt.showBlockage = true
+	dt.AddActivity(ActivityID("a"), nil)
+	dt.AddActivity(ActivityID("b"), []ActivityID{"a"})
+
+	snaps := newSnapshotBuilder()
+	snaps.set(ActivityID("a"), "A", ActivityStatusPending, 0)
+	snaps.set(ActivityID("b"), "B", ActivityStatusRunning, 0)
+
+	got := dt.RenderWithSnapshots(snaps.snaps, 10, 0)
+
+	if strings.Contains(got, "⊘ blocked by") {
+		t.Errorf("blockage should not appear for running node B, got:\n%s", got)
+	}
+}
+
 func TestDependencyTree_Render_MultiDeps_DeepestParent(t *testing.T) {
 	t.Parallel()
 

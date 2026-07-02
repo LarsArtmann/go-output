@@ -54,10 +54,15 @@ func (dt *DependencyTree) collectVisibleNodes(
 		maxHeight = len(dt.nodes)
 	}
 
+	var criticalPath map[ActivityID]bool
+	if dt.showCriticalPath {
+		criticalPath = dt.computeCriticalPath(snapshots)
+	}
+
 	var visible []VisibleEntry
 
 	for _, root := range dt.roots {
-		dt.walkSubtree(root, "", true, true, &visible, snapshots, maxHeight)
+		dt.walkSubtree(root, "", true, true, &visible, snapshots, maxHeight, criticalPath)
 
 		if len(visible) >= maxHeight {
 			break
@@ -106,16 +111,19 @@ func (dt *DependencyTree) walkSubtree( //nolint:cyclop // DFS traversal with pha
 	visible *[]VisibleEntry,
 	snapshots map[ActivityID]ActivitySnapshot,
 	maxHeight int,
+	criticalPath map[ActivityID]bool,
 ) {
 	if len(*visible) >= maxHeight {
 		return
 	}
 
 	entry := VisibleEntry{
-		Node:      node,
-		Prefix:    prefix,
-		Connector: "",
-		IsRoot:    isRoot,
+		Node:           node,
+		Prefix:         prefix,
+		Connector:      "",
+		IsRoot:         isRoot,
+		OnCriticalPath: dt.showCriticalPath && criticalPath[node.ID],
+		Convergence:    dt.showConvergence && len(node.Deps) > 1,
 	}
 
 	if !isRoot {
@@ -170,6 +178,7 @@ func (dt *DependencyTree) walkSubtree( //nolint:cyclop // DFS traversal with pha
 			visible,
 			snapshots,
 			maxHeight,
+			criticalPath,
 		)
 	}
 
@@ -199,6 +208,30 @@ func appendCollapseMarker(visible *[]VisibleEntry, indent string, collapsedDone 
 // snapshot: phase-aware symbol + label + timing info. Returns the unstyled
 // display and the status-derived color for the caller to apply.
 func formatActivityLabel(snap ActivitySnapshot) (display string, c color.Color) {
+	return formatActivityLabelWithOptions(snap, labelOptions{})
+}
+
+// labelOptions carries optional rendering modifiers for an activity label.
+// Zero value means "no extra markers" and is used by the backward-compatible
+// formatActivityLabel helper and by RenderNode.
+type labelOptions struct {
+	// OnCriticalPath renders a ◆ prefix to highlight the longest estimated-time
+	// path through the DAG.
+	OnCriticalPath bool
+	// Convergence renders a ◇ prefix for nodes with multiple incoming
+	// dependencies (fan-in points).
+	Convergence bool
+}
+
+// formatActivityLabelWithOptions is the configurable version of
+// formatActivityLabel. It supports critical-path and convergence markers while
+// preserving the original symbol/label/timing layout.
+//
+//nolint:cyclop // mirrors original formatActivityLabel logic plus two optional markers
+func formatActivityLabelWithOptions(
+	snap ActivitySnapshot,
+	opts labelOptions,
+) (display string, c color.Color) { //nolint:cyclop // mirrors original formatActivityLabel logic plus two optional markers
 	symbol := snap.Symbol
 	c = snap.Color
 
@@ -207,7 +240,21 @@ func formatActivityLabel(snap ActivitySnapshot) (display string, c color.Color) 
 		c = Colors.Phase
 	}
 
-	display = fmt.Sprintf("%s %s", symbol, snap.Label)
+	var markers []string
+
+	if opts.Convergence {
+		markers = append(markers, string(SymbolConvergence))
+	}
+
+	if opts.OnCriticalPath {
+		markers = append(markers, string(SymbolCritical))
+	}
+
+	if len(markers) > 0 {
+		display = strings.Join(markers, " ") + " "
+	}
+
+	display += fmt.Sprintf("%s %s", symbol, snap.Label)
 
 	timingInfo := FormatActivityNodeTiming(
 		snap.Status,
@@ -369,7 +416,7 @@ func formatCollapsedPhaseLabel(snap ActivitySnapshot, pc PhaseCounts) (display s
 	return display, c
 }
 
-func (dt *DependencyTree) renderLine(
+func (dt *DependencyTree) renderLine( //nolint:cyclop // label + sub-line rendering with multiple optional overlays
 	entry VisibleEntry,
 	snapshots map[ActivityID]ActivitySnapshot,
 	maxWidth int,
@@ -397,7 +444,10 @@ func (dt *DependencyTree) renderLine(
 	if entry.PhaseCounts != nil {
 		activityDisplay, color = formatCollapsedPhaseLabel(snap, *entry.PhaseCounts)
 	} else {
-		activityDisplay, color = formatActivityLabel(snap)
+		activityDisplay, color = formatActivityLabelWithOptions(snap, labelOptions{
+			OnCriticalPath: entry.OnCriticalPath,
+			Convergence:    entry.Convergence,
+		})
 	}
 
 	// Option B: extra dependencies sub-line. When showExtraDeps is enabled,
@@ -406,6 +456,15 @@ func (dt *DependencyTree) renderLine(
 	// default, matching nom), extra deps are silently absorbed into the tree.
 	if dt.showExtraDeps {
 		if subLine := dt.formatExtraDeps(node, snapshots); subLine != "" {
+			activityDisplay += "\n" + subLine
+		}
+	}
+
+	// Blockage view: pending nodes show which incomplete dependencies are
+	// preventing them from starting. This is the first DAG-only feature — it
+	// uses the full Deps set, not just the display parent.
+	if dt.showBlockage && snap.Status == ActivityStatusPending {
+		if subLine := dt.formatBlockage(node, snapshots); subLine != "" {
 			activityDisplay += "\n" + subLine
 		}
 	}
@@ -487,6 +546,14 @@ type VisibleEntry struct {
 	// "Code Formatting" shows as "◈ Code Formatting  6/6 · 4.1s" instead
 	// of expanding all 6 child steps.
 	PhaseCounts *PhaseCounts
+
+	// OnCriticalPath is true when the node lies on the longest estimated-time
+	// path through the DAG. Rendered with a ◆ prefix in tree mode.
+	OnCriticalPath bool
+
+	// Convergence is true when the node has more than one incoming dependency
+	// (fan-in point). Rendered with a ◇ prefix in tree mode.
+	Convergence bool
 }
 
 // PhaseCounts holds aggregate status counts for a collapsed phase's children.
@@ -625,4 +692,48 @@ func (dt *DependencyTree) formatExtraDeps(
 	return lipgloss.NewStyle().
 		Faint(true).
 		Render(fmt.Sprintf("  %s %s", SymbolDeps, strings.Join(depNames, ", ")))
+}
+
+// formatBlockage renders a dim sub-line listing incomplete dependencies for a
+// pending node. Returns "" when the node has no incomplete deps or is not
+// pending. Each incomplete dep is shown with its status symbol and, if
+// running, its elapsed time, so the user sees why the node is stuck.
+//
+// Example output: "  ⊘ blocked by Compile (running · 5s), Lint (pending)".
+func (dt *DependencyTree) formatBlockage(
+	node *ActivityNode,
+	snapshots map[ActivityID]ActivitySnapshot,
+) string {
+	if len(node.Deps) == 0 {
+		return ""
+	}
+
+	var blockedBy []string
+
+	for _, depID := range node.Deps {
+		depSnap := lookupSnapshot(snapshots, depID)
+		if depSnap.Status == ActivityStatusCompleted {
+			continue
+		}
+
+		name := depSnap.Label
+		if name == "" {
+			name = depID.String()
+		}
+
+		statusLabel := depSnap.Status.String()
+		if depSnap.Status == ActivityStatusRunning {
+			statusLabel = fmt.Sprintf("%s · %s", depSnap.Status.String(), FormatDuration(depSnap.CurrentElapsed))
+		}
+
+		blockedBy = append(blockedBy, fmt.Sprintf("%s (%s)", name, statusLabel))
+	}
+
+	if len(blockedBy) == 0 {
+		return ""
+	}
+
+	return lipgloss.NewStyle().
+		Faint(true).
+		Render(fmt.Sprintf("  %s blocked by %s", SymbolBlocked, strings.Join(blockedBy, ", ")))
 }

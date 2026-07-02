@@ -43,6 +43,15 @@ const (
 	// SymbolDeps represents extra (non-display-parent) dependencies beneath
 	// a multi-dependency node. Only shown when showExtraDeps is enabled.
 	SymbolDeps Symbol = "↳"
+	// SymbolCritical marks nodes on the longest estimated-time path through
+	// the DAG (the critical path). Rendered as a prefix to the activity label.
+	SymbolCritical Symbol = "◆"
+	// SymbolConvergence marks nodes with multiple incoming dependencies
+	// (fan-in points), making DAG join points visible in tree mode.
+	SymbolConvergence Symbol = "◇"
+	// SymbolBlocked introduces the blockage sub-line for pending nodes that
+	// have incomplete dependencies.
+	SymbolBlocked Symbol = "⊘"
 )
 
 // ============================================================================

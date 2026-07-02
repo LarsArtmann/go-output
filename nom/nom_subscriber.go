@@ -69,6 +69,33 @@ func WithShowExtraDeps() SubscriberOption {
 	}
 }
 
+// WithShowCriticalPath enables a ◆ prefix on nodes that lie on the longest
+// estimated-time path through the dependency DAG. Off by default to preserve
+// nom-compatible output.
+func WithShowCriticalPath() SubscriberOption {
+	return func(ns *NOMStyleSubscriber) {
+		ns.dependencyTree.showCriticalPath = true
+	}
+}
+
+// WithShowConvergence enables a ◇ prefix on nodes with multiple incoming
+// dependencies (DAG fan-in points). Off by default to preserve nom-compatible
+// output.
+func WithShowConvergence() SubscriberOption {
+	return func(ns *NOMStyleSubscriber) {
+		ns.dependencyTree.showConvergence = true
+	}
+}
+
+// WithShowBlockage enables a dim sub-line beneath pending nodes that lists
+// their incomplete dependencies and current status. Off by default to avoid
+// cluttering the tree when the parent is already visible.
+func WithShowBlockage() SubscriberOption {
+	return func(ns *NOMStyleSubscriber) {
+		ns.dependencyTree.showBlockage = true
+	}
+}
+
 // NewNOMStyleSubscriber creates a new NOM-style subscriber.
 func NewNOMStyleSubscriber(opts ...SubscriberOption) *NOMStyleSubscriber {
 	ns := &NOMStyleSubscriber{
