@@ -81,10 +81,6 @@ func TestRender_ContainsGraphJS(t *testing.T) {
 		t.Error("expected HTML to contain the graph JS function")
 	}
 
-	if !strings.Contains(html, "Sugiyama") || !strings.Contains(html, "Kahn") {
-		// JS has algorithm comments
-	}
-
 	if !strings.Contains(html, "bary") {
 		t.Error("expected HTML to contain barycenter ordering algorithm code")
 	}

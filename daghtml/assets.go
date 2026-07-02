@@ -3,6 +3,7 @@ package daghtml
 import (
 	_ "embed"
 	"encoding/json"
+	"fmt"
 	"strings"
 )
 
@@ -33,7 +34,7 @@ func dagToJSON(dag DAG) (string, error) {
 	enc.SetEscapeHTML(true)
 
 	if err := enc.Encode(dag); err != nil {
-		return "", err
+		return "", fmt.Errorf("encode DAG JSON: %w", err)
 	}
 
 	return strings.TrimSpace(buf.String()), nil

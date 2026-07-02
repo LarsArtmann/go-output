@@ -128,12 +128,14 @@ linters:
             - $GITHUB_ACTION
             - bytes
             - cmp
+            - embed
             - encoding/csv
             - encoding/json
             - encoding/xml
             - errors
             - fmt
             - html
+            - html/template
             - io
             - maps
             - os
@@ -170,8 +172,10 @@ linters:
             - github.com/go-faster/yaml
             - github.com/pelletier/go-toml/v2
             - bufio
+            - bytes
             - cmp
             - context
+            - embed
             - encoding/csv
             - encoding/json
             - encoding/xml
@@ -179,6 +183,7 @@ linters:
             - fmt
             - golang.org/x/term
             - html
+            - html/template
             - image/color
             - io
             - os
@@ -255,8 +260,10 @@ linters:
             - github.com/go-faster/yaml
             - github.com/pelletier/go-toml/v2
             - bufio
+            - bytes
             - cmp
             - context
+            - embed
             - encoding/csv
             - encoding/json
             - encoding/xml
@@ -264,6 +271,7 @@ linters:
             - fmt
             - golang.org/x/term
             - html
+            - html/template
             - image/color
             - io
             - maps

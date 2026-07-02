@@ -64,7 +64,9 @@ const graphSectionTemplate = `<div id="{{.ContainerID}}" class="dag-container" s
 <script>initDAGGraph("{{.ContainerID}}", "{{.DataID}}");</script>`
 
 var (
-	compiledPage         = template.Must(template.New("page").Parse(pageTemplate))
+	//nolint:gochecknoglobals // Package-level compiled template (parsed once at init).
+	compiledPage = template.Must(template.New("page").Parse(pageTemplate))
+	//nolint:gochecknoglobals // Package-level compiled template (parsed once at init).
 	compiledGraphSection = template.Must(template.New("graph").Parse(graphSectionTemplate))
 )
 
@@ -85,9 +87,9 @@ func Render(dag DAG, opts ...Option) (string, error) {
 	data := pageData{
 		Title:       cfg.title,
 		Subtitle:    cfg.subtitle,
-		CSS:         template.CSS(graphCSS),
-		JS:          template.JS(graphJS),
-		JSON:        template.JS(jsonData),
+		CSS:         template.CSS(graphCSS), //nolint:gosec // G203: trusted embedded CSS, not user input
+		JS:          template.JS(graphJS),   //nolint:gosec // G203: trusted embedded JS, not user input
+		JSON:        template.JS(jsonData),  //nolint:gosec // G203: HTML-escaped JSON via SetEscapeHTML(true)
 		ContainerID: cfg.containerID,
 		DataID:      cfg.dataID,
 		Height:      cfg.height,
@@ -136,8 +138,8 @@ func GraphHTML(dag DAG, opts ...Option) (string, error) {
 	}
 
 	data := pageData{
-		JS:          template.JS(graphJS),
-		JSON:        template.JS(jsonData),
+		JS:          template.JS(graphJS),  //nolint:gosec // G203: trusted embedded JS
+		JSON:        template.JS(jsonData), //nolint:gosec // G203: HTML-escaped JSON
 		ContainerID: cfg.containerID,
 		DataID:      cfg.dataID,
 		Height:      cfg.height,
