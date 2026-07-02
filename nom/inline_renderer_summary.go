@@ -94,31 +94,7 @@ func (r *InlineRenderer) renderSummary(startTime time.Time) string {
 		parts = append(parts, FormatDuration(elapsed))
 	}
 
-	// Estimated remaining time: when the callback returns > 0, show "~Xm left"
-	// so users know the projected finish. This is the summary-bar equivalent
-	// of nom's remaining-build-time estimate.
-	if r.estimatedRemaining != nil {
-		if remaining := r.estimatedRemaining(); remaining > 0 {
-			parts = append(parts, "~"+FormatDuration(remaining)+" left")
-		}
-	}
-
-	// Critical-path ETA: the longest remaining-time path through the DAG.
-	// Shown as "~Xm critical" to distinguish it from the total remaining
-	// estimate above.
-	if r.showCriticalPathETA {
-		if remaining := r.criticalPathRemaining(); remaining > 0 {
-			parts = append(parts, "~"+FormatDuration(remaining)+" critical")
-		}
-	}
-
-	// Parallelism meter: running / immediately-startable pending activities.
-	if r.subscriber.showParallelism {
-		parallelism := r.subscriber.ParallelismStats()
-		if parallelism.Possible > 0 {
-			parts = append(parts, parallelism.String())
-		}
-	}
+	parts = append(parts, r.optionalSummarySegments(startTime)...)
 
 	if len(parts) == 0 {
 		return ""
@@ -136,6 +112,41 @@ func (r *InlineRenderer) renderSummary(startTime time.Time) string {
 	return fmt.Sprintf("╭%s╮\n│ %s │\n╰%s╯", border, summary, border)
 }
 
+// optionalSummarySegments returns the optional summary bar segments: estimated
+// remaining time, critical-path ETA, parallelism meter, and DAG structural
+// summary. Each segment is only included when its toggle is on and the value
+// is non-zero/non-empty. Invoked under renderMu.
+func (r *InlineRenderer) optionalSummarySegments(_ time.Time) []string {
+	var segments []string
+
+	if r.estimatedRemaining != nil {
+		if remaining := r.estimatedRemaining(); remaining > 0 {
+			segments = append(segments, "~"+FormatDuration(remaining)+" left")
+		}
+	}
+
+	if r.showCriticalPathETA {
+		if remaining := r.criticalPathRemaining(); remaining > 0 {
+			segments = append(segments, "~"+FormatDuration(remaining)+" critical")
+		}
+	}
+
+	if r.subscriber.showParallelism {
+		parallelism := r.subscriber.ParallelismStats()
+		if parallelism.Possible > 0 {
+			segments = append(segments, parallelism.String())
+		}
+	}
+
+	if r.showDAGSummary {
+		if dagStr := r.dagSummarySegment(); dagStr != "" {
+			segments = append(segments, dagStr)
+		}
+	}
+
+	return segments
+}
+
 // criticalPathRemaining returns the longest remaining-time path through the DAG,
 // or 0 when there is no dependency tree. Invoked under renderMu.
 func (r *InlineRenderer) criticalPathRemaining() time.Duration {
@@ -147,4 +158,18 @@ func (r *InlineRenderer) criticalPathRemaining() time.Duration {
 	snapshots := r.subscriber.SnapshotActivities()
 
 	return tree.EstimatedCriticalPathRemaining(snapshots)
+}
+
+// dagSummarySegment returns the structural DAG summary string for the summary
+// bar (e.g. "4 nodes · 4 edges · 3 layers"). Returns empty when there is no
+// dependency tree. Invoked under renderMu.
+func (r *InlineRenderer) dagSummarySegment() string {
+	tree := r.subscriber.GetDependencyTree()
+	if tree == nil {
+		return ""
+	}
+
+	snapshots := r.subscriber.SnapshotActivities()
+
+	return tree.DAGSummaryWithSnapshots(snapshots).String()
 }

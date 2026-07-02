@@ -447,3 +447,111 @@ func TestVT_ColorOn_EmitsSGR(t *testing.T) {
 	// Content should still be visible on the screen.
 	harness.assertScreenContains(t, "Green Step")
 }
+
+// --- F18: Layered mode renders activities grouped by depth ---
+
+func TestVT_LayeredMode_ShowsActivities(t *testing.T) {
+	t.Parallel()
+
+	sub := newTestSubscriber(t)
+	harness := newVTHarness(t, 100, 30)
+	renderer := newVTTestRenderer(t, sub, harness, 20)
+
+	// Switch to layered mode.
+	sub.DependencyTree().SetRenderMode(RenderModeLayered)
+
+	ctx := context.Background()
+	_ = sendWorkflowStarted(sub, ctx, WorkflowID("wf-1"), "")
+
+	// Layer 0: setup (root).
+	sendActivityStarted(t, sub, ctx, ActivityID("setup"), ActivityName("Setup"))
+
+	// Layer 1: compile + lint (depend on setup).
+	_ = sub.OnEvent(ctx, ActivityRegistered{
+		ID:   ActivityID("compile"),
+		Name: ActivityName("Compile"),
+		Deps: []ActivityID{ActivityID("setup")},
+	})
+	_ = sub.OnEvent(ctx, ActivityRegistered{
+		ID:   ActivityID("lint"),
+		Name: ActivityName("Lint"),
+		Deps: []ActivityID{ActivityID("setup")},
+	})
+
+	// Layer 2: test (depends on compile).
+	_ = sub.OnEvent(ctx, ActivityRegistered{
+		ID:   ActivityID("test"),
+		Name: ActivityName("Test"),
+		Deps: []ActivityID{ActivityID("compile")},
+	})
+
+	renderer.Draw()
+
+	// All three activity labels should be visible on the VT screen.
+	harness.assertScreenContains(t, "Setup")
+	harness.assertScreenContains(t, "Compile")
+	harness.assertScreenContains(t, "Lint")
+	harness.assertScreenContains(t, "Test")
+}
+
+// --- F19: Layered mode updates on second frame ---
+
+func TestVT_LayeredMode_SecondFrame(t *testing.T) {
+	t.Parallel()
+
+	sub := newTestSubscriber(t)
+	harness := newVTHarness(t, 100, 30)
+	renderer := newVTTestRenderer(t, sub, harness, 20)
+
+	sub.DependencyTree().SetRenderMode(RenderModeLayered)
+
+	ctx := context.Background()
+	_ = sendWorkflowStarted(sub, ctx, WorkflowID("wf-1"), "")
+
+	sendActivityStarted(t, sub, ctx, ActivityID("a"), ActivityName("Alpha"))
+	sendActivityStarted(t, sub, ctx, ActivityID("b"), ActivityName("Beta"))
+
+	renderer.Draw()
+
+	harness.assertScreenContains(t, "Alpha")
+	harness.assertScreenContains(t, "Beta")
+
+	// Complete Alpha — second frame should still show content correctly.
+	sendActivityCompleted(t, sub, ctx, ActivityID("a"), ActivityName("Alpha"), time.Second)
+
+	renderer.Draw()
+
+	harness.assertScreenContains(t, "Alpha")
+	harness.assertScreenContains(t, "Beta")
+}
+
+// --- F20: Layered mode with height pressure collapses completed layers ---
+
+func TestVT_LayeredMode_HeightPressureCollapse(t *testing.T) {
+	t.Parallel()
+
+	sub := newTestSubscriber(t)
+	harness := newVTHarness(t, 100, 30)
+	renderer := newVTTestRenderer(t, sub, harness, 4)
+
+	sub.DependencyTree().SetRenderMode(RenderModeLayered)
+
+	ctx := context.Background()
+	_ = sendWorkflowStarted(sub, ctx, WorkflowID("wf-1"), "")
+
+	sendActivityStarted(t, sub, ctx, ActivityID("a"), ActivityName("Alpha"))
+	sendActivityStarted(t, sub, ctx, ActivityID("b"), ActivityName("Beta"))
+
+	renderer.Draw()
+
+	// Complete both — under height pressure the renderer should collapse
+	// terminal layers without producing ghost lines or corruption.
+	sendActivityCompleted(t, sub, ctx, ActivityID("a"), ActivityName("Alpha"), time.Second)
+	sendActivityCompleted(t, sub, ctx, ActivityID("b"), ActivityName("Beta"), time.Second)
+
+	renderer.Draw()
+
+	// Content should still be visible on the screen.
+	harness.assertScreenContains(t, "Alpha")
+	harness.assertScreenContains(t, "Beta")
+}

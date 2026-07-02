@@ -34,6 +34,18 @@ const (
 	RenderModeLayered
 )
 
+// String returns the human-readable name of the render mode: "tree" or "layered".
+func (m RenderMode) String() string {
+	switch m {
+	case RenderModeTree:
+		return "tree"
+	case RenderModeLayered:
+		return "layered"
+	default:
+		return "unknown"
+	}
+}
+
 func NewActivityID(s string) ActivityID     { return ActivityID(s) }
 func NewWorkflowID(s string) WorkflowID     { return WorkflowID(s) }
 func NewActivityName(s string) ActivityName { return ActivityName(s) }

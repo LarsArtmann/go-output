@@ -93,6 +93,10 @@ type InlineRenderer struct {
 	// preserve the standard "~Xm left" behavior.
 	showCriticalPathETA bool
 
+	// showDAGSummary enables a structural summary segment ("N nodes · M edges ·
+	// K layers") in the summary bar. Off by default.
+	showDAGSummary bool
+
 	tickMu       sync.RWMutex
 	renderMu     sync.Mutex // serializes Draw/Finish terminal writes + prevLines
 	cancelFn     context.CancelFunc
@@ -289,6 +293,16 @@ func (r *InlineRenderer) SetEstimatedRemainingFunc(fn func() time.Duration) {
 func (r *InlineRenderer) SetShowCriticalPathETA(show bool) {
 	r.renderMu.Lock()
 	r.showCriticalPathETA = show
+	r.renderMu.Unlock()
+}
+
+// SetShowDAGSummary enables a structural DAG summary segment ("N nodes · M
+// edges · K layers") in the summary bar. Off by default.
+//
+// Thread-safe: may be called before or during the render loop.
+func (r *InlineRenderer) SetShowDAGSummary(show bool) {
+	r.renderMu.Lock()
+	r.showDAGSummary = show
 	r.renderMu.Unlock()
 }
 

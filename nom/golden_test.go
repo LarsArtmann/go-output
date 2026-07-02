@@ -113,3 +113,50 @@ func TestInlineRendererGolden_SecondFrame(t *testing.T) {
 
 	golden.RequireEqual(t, buf.String())
 }
+
+func TestDependencyTreeRenderGolden_LayeredMode(t *testing.T) {
+	t.Parallel()
+
+	dt := NewDependencyTree()
+	dt.SetRenderMode(RenderModeLayered)
+
+	_ = dt.AddActivity(ActivityID("setup"), nil)
+	_ = dt.AddActivity(ActivityID("compile"), []ActivityID{"setup"})
+	_ = dt.AddActivity(ActivityID("lint"), []ActivityID{"setup"})
+	_ = dt.AddActivity(ActivityID("test"), []ActivityID{"compile"})
+	_ = dt.AddActivity(ActivityID("deploy"), []ActivityID{"test", "lint"})
+
+	snaps := newSnapshotBuilder()
+	snaps.set(ActivityID("setup"), "Setup", ActivityStatusCompleted, 2*time.Second)
+	snaps.set(ActivityID("compile"), "Compile", ActivityStatusCompleted, 5*time.Second)
+	snaps.set(ActivityID("lint"), "Lint", ActivityStatusRunning, 3*time.Second)
+	snaps.set(ActivityID("test"), "Test", ActivityStatusRunning, 1*time.Second)
+	snaps.set(ActivityID("deploy"), "Deploy", ActivityStatusPending, 0)
+
+	got := dt.RenderWithSnapshots(snaps.snaps, 20, 0)
+	golden.RequireEqual(t, got)
+}
+
+func TestDependencyTreeRenderGolden_LayeredHeightPressure(t *testing.T) {
+	t.Parallel()
+
+	dt := NewDependencyTree()
+	dt.SetRenderMode(RenderModeLayered)
+
+	_ = dt.AddActivity(ActivityID("root"), nil)
+	_ = dt.AddActivity(ActivityID("a"), []ActivityID{"root"})
+	_ = dt.AddActivity(ActivityID("b"), []ActivityID{"root"})
+	_ = dt.AddActivity(ActivityID("c"), []ActivityID{"a"})
+	_ = dt.AddActivity(ActivityID("d"), []ActivityID{"b"})
+
+	snaps := newSnapshotBuilder()
+	snaps.set(ActivityID("root"), "Root", ActivityStatusCompleted, 1*time.Second)
+	snaps.set(ActivityID("a"), "A", ActivityStatusCompleted, 1*time.Second)
+	snaps.set(ActivityID("b"), "B", ActivityStatusCompleted, 1*time.Second)
+	snaps.set(ActivityID("c"), "C", ActivityStatusRunning, 0)
+	snaps.set(ActivityID("d"), "D", ActivityStatusRunning, 0)
+
+	// maxHeight=2 forces height-pressure collapse of completed layers.
+	got := dt.RenderWithSnapshots(snaps.snaps, 2, 0)
+	golden.RequireEqual(t, got)
+}

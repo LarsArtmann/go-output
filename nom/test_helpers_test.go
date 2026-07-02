@@ -3,6 +3,7 @@ package nom
 import (
 	"bytes"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 )
@@ -83,4 +84,29 @@ func (b *snapshotBuilder) setCategory(id ActivityID, label string, status Activi
 	s := b.snaps[id]
 	s.Category = category
 	b.snaps[id] = s
+}
+
+// stripANSI removes ANSI escape sequences from a string, returning the plain
+// text content. Shared across all nom test files.
+func stripANSI(s string) string {
+	var b strings.Builder
+
+	for i := 0; i < len(s); {
+		if s[i] != '\x1b' {
+			b.WriteByte(s[i])
+			i++
+
+			continue
+		}
+
+		for i < len(s) && s[i] != 'm' {
+			i++
+		}
+
+		if i < len(s) {
+			i++
+		}
+	}
+
+	return b.String()
 }

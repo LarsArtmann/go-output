@@ -127,6 +127,15 @@ func WithShowCategory() SubscriberOption {
 	}
 }
 
+// WithHideFutureLayers collapses layers where all nodes are still pending
+// into a single "N pending" summary line, reducing visual noise from deep
+// DAGs where only the first few layers are active. Layered mode only.
+func WithHideFutureLayers() SubscriberOption {
+	return func(ns *NOMStyleSubscriber) {
+		ns.dependencyTree.hideFutureLayers = true
+	}
+}
+
 // WithTheme sets the visual theme used for status symbols and colors.
 // If not supplied, ThemeDefault is used.
 func WithTheme(theme Theme) SubscriberOption {

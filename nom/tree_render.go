@@ -254,6 +254,13 @@ func formatActivityLabelWithOptions(
 	// a non-empty Category.
 	if opts.ShowCategory && snap.Category != "" {
 		markers = append(markers, lipgloss.NewStyle().Faint(true).Render("["+string(snap.Category)+"]"))
+
+		// Apply category tint: override the status color with the theme's
+		// category color when one is defined. This makes all activities in
+		// the same category visually group by color, not just by [tag] prefix.
+		if tinted := theme.CategoryColor(snap.Category); tinted != nil {
+			c = tinted
+		}
 	}
 
 	if opts.Convergence {

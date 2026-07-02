@@ -70,6 +70,17 @@ func (dt *DependencyTree) collectLayeredEntries(
 
 		dt.sortNodesByPriority(nodes, snapshots)
 
+		// Future-layer hiding: when enabled, collapse layers where ALL nodes
+		// are still pending (not yet started) into a single summary line.
+		if dt.hideFutureLayers && dt.allNodesPending(nodes, snapshots) {
+			entries = append(entries, VisibleEntry{
+				LayerHeader: fmt.Sprintf("%s Layer %d: %d pending", SymbolPending, depth, len(nodes)),
+			})
+			remainingLayers--
+
+			continue
+		}
+
 		// Height-pressure collapse: if all nodes in this layer are terminal and
 		// we still have more layers to fit than rows left, summarize the layer.
 		allTerminal := dt.allNodesTerminal(nodes, snapshots)
@@ -176,6 +187,22 @@ func (dt *DependencyTree) allNodesTerminal(
 	for _, node := range nodes {
 		snap := lookupSnapshot(snapshots, node.ID)
 		if snap.Status != ActivityStatusCompleted && snap.Status != ActivityStatusFailed {
+			return false
+		}
+	}
+
+	return true
+}
+
+// allNodesPending reports whether every node in the layer is still pending
+// (not yet started). Used for future-layer hiding.
+func (dt *DependencyTree) allNodesPending(
+	nodes []*ActivityNode,
+	snapshots map[ActivityID]ActivitySnapshot,
+) bool {
+	for _, node := range nodes {
+		snap := lookupSnapshot(snapshots, node.ID)
+		if snap.Status != ActivityStatusPending {
 			return false
 		}
 	}

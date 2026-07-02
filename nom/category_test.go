@@ -1,6 +1,7 @@
 package nom
 
 import (
+	"image/color"
 	"strings"
 	"testing"
 
@@ -164,30 +165,65 @@ func TestCategory_TagRendering_NoAnsiLeak(t *testing.T) {
 	_ = stripped
 
 	// Verify plain text after ANSI strip contains the tag.
-	if !containsPlain(got, "[x]") {
+	if !strings.Contains(stripANSI(got), "[x]") {
 		t.Errorf("expected [x] tag in stripped output:\n%s", got)
 	}
 }
 
-func containsPlain(s, substr string) bool {
-	var b strings.Builder
+func TestCategory_ColorTint(t *testing.T) {
+	t.Parallel()
 
-	for i := 0; i < len(s); {
-		if s[i] == '\x1b' {
-			for i < len(s) && s[i] != 'm' {
-				i++
-			}
+	catColor := lipgloss.Color("#ff0000")
 
-			if i < len(s) {
-				i++
-			}
-
-			continue
-		}
-
-		b.WriteByte(s[i])
-		i++
+	theme := ThemeDefault
+	theme.CategoryColors = map[ActivityCategory]color.Color{
+		ActivityCategory("build"): catColor,
 	}
 
-	return strings.Contains(b.String(), substr)
+	snap := ActivitySnapshot{
+		Label:    "Compile",
+		Status:   ActivityStatusRunning,
+		Symbol:   SymbolRunning,
+		Color:    Colors.Running,
+		Category: ActivityCategory("build"),
+		Kind:     ActivityKindTask,
+	}
+
+	_, c := formatActivityLabelWithOptions(snap, theme, labelOptions{ShowCategory: true})
+	if c == nil {
+		t.Fatal("expected non-nil color for category tint")
+	}
+
+	// Without ShowCategory, color should be the default status color.
+	_, c2 := formatActivityLabelWithOptions(snap, theme, labelOptions{ShowCategory: false})
+	if c2 == nil {
+		t.Fatal("expected non-nil default color")
+	}
+
+	// The tinted color should differ from the default.
+	if c == c2 {
+		t.Error("category tint should override default status color")
+	}
+}
+
+func TestCategory_ColorTint_NoCategoryColor(t *testing.T) {
+	t.Parallel()
+
+	theme := ThemeDefault
+	// No CategoryColors defined at all.
+
+	snap := ActivitySnapshot{
+		Label:    "Compile",
+		Status:   ActivityStatusRunning,
+		Symbol:   SymbolRunning,
+		Color:    Colors.Running,
+		Category: ActivityCategory("build"),
+		Kind:     ActivityKindTask,
+	}
+
+	_, c := formatActivityLabelWithOptions(snap, theme, labelOptions{ShowCategory: true})
+	// Should fall back to the snapshot's default color.
+	if c != snap.Color {
+		t.Error("expected default status color when theme has no category color")
+	}
 }

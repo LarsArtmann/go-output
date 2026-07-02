@@ -82,6 +82,12 @@ type DependencyTree struct {
 	// renderMode selects between tree-mode and layered-mode display.
 	renderMode RenderMode
 
+	// hideFutureLayers collapses layers where all nodes are still pending
+	// (not yet started) into a single "N pending" summary line. This reduces
+	// visual noise from deep DAGs where only the first few layers are active.
+	// Layered mode only.
+	hideFutureLayers bool
+
 	// theme is the active visual theme for status symbols and colors.
 	// Stored on the tree so renderers can resolve themed values without an
 	// explicit theme argument at every call site.

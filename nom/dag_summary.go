@@ -33,6 +33,10 @@ func (s DAGSummary) String() string {
 		parts = append(parts, fmt.Sprintf("%d wide", s.MaxWidth))
 	}
 
+	if s.Phases > 0 {
+		parts = append(parts, fmt.Sprintf("%d phases", s.Phases))
+	}
+
 	return joinParts(parts)
 }
 
@@ -88,12 +92,18 @@ func (dt *DependencyTree) DAGSummary() DAGSummary {
 }
 
 // DAGSummaryWithSnapshots computes the structural summary plus the critical-path
-// remaining time using the given activity snapshots. Thread-safe.
+// remaining time and phase count using the given activity snapshots. Thread-safe.
 func (dt *DependencyTree) DAGSummaryWithSnapshots(
 	snapshots map[ActivityID]ActivitySnapshot,
 ) DAGSummary {
 	summary := dt.DAGSummary()
 	summary.Critical = dt.EstimatedCriticalPathRemaining(snapshots)
+
+	for _, snap := range snapshots {
+		if snap.IsPhase() {
+			summary.Phases++
+		}
+	}
 
 	return summary
 }

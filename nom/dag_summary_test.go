@@ -89,3 +89,51 @@ func TestDAGSummary_WithSnapshots(t *testing.T) {
 		t.Errorf("Critical = %v, want > 0", summary.Critical)
 	}
 }
+
+func TestDAGSummary_PhasesCount(t *testing.T) {
+	t.Parallel()
+
+	dt := NewDependencyTree()
+
+	_ = dt.AddActivity(ActivityID("root"), nil)
+	_ = dt.AddActivity(ActivityID("a"), []ActivityID{"root"})
+	_ = dt.AddActivity(ActivityID("b"), []ActivityID{"root"})
+
+	_ = dt.GetRootNodes()
+
+	snaps := newSnapshotBuilder()
+	snaps.setPhase(ActivityID("root"), "Root Phase", ActivityStatusRunning, 0)
+	snaps.set(ActivityID("a"), "A", ActivityStatusPending, 0)
+	snaps.set(ActivityID("b"), "B", ActivityStatusPending, 0)
+
+	summary := dt.DAGSummaryWithSnapshots(snaps.snaps)
+
+	if summary.Phases != 1 {
+		t.Errorf("Phases = %d, want 1", summary.Phases)
+	}
+
+	s := summary.String()
+	if !strings.Contains(s, "1 phases") {
+		t.Errorf("String() missing phase count: %q", s)
+	}
+}
+
+func TestRenderMode_String(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		mode RenderMode
+		want string
+	}{
+		{RenderModeTree, "tree"},
+		{RenderModeLayered, "layered"},
+		{RenderMode(999), "unknown"},
+	}
+
+	for _, tc := range tests {
+		got := tc.mode.String()
+		if got != tc.want {
+			t.Errorf("%d.String() = %q, want %q", tc.mode, got, tc.want)
+		}
+	}
+}

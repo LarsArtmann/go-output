@@ -218,26 +218,3 @@ func TestLayeredRender_ThemeApplied(t *testing.T) {
 		t.Errorf("expected symbol+label layout, got:\n%s", stripped)
 	}
 }
-
-func stripANSI(s string) string {
-	var b strings.Builder
-
-	for i := 0; i < len(s); {
-		if s[i] != '\x1b' {
-			b.WriteByte(s[i])
-			i++
-
-			continue
-		}
-
-		for i < len(s) && s[i] != 'm' {
-			i++
-		}
-
-		if i < len(s) {
-			i++
-		}
-	}
-
-	return b.String()
-}
