@@ -130,4 +130,8 @@ type ProgressModel struct {
 	visibleEntries []nom.VisibleEntry
 	treeStartLine  int
 	theme          nom.Theme
+	// criticalPathFilter narrows the NOM view to critical-path nodes only.
+	criticalPathFilter bool
+	// dotExportPath holds the last DOT export path (for user feedback).
+	dotExportPath string
 }

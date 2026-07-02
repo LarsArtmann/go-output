@@ -218,3 +218,68 @@ func TestLayeredRender_ThemeApplied(t *testing.T) {
 		t.Errorf("expected symbol+label layout, got:\n%s", stripped)
 	}
 }
+
+func TestLayeredRender_HideFutureLayers(t *testing.T) {
+	dt := NewDependencyTree()
+
+	_ = dt.AddActivity(ActivityID("setup"), nil)
+	_ = dt.AddActivity(ActivityID("compile"), []ActivityID{"setup"})
+	_ = dt.AddActivity(ActivityID("test"), []ActivityID{"compile"})
+	_ = dt.AddActivity(ActivityID("deploy"), []ActivityID{"test"})
+
+	dt.SetRenderMode(RenderModeLayered)
+	dt.hideFutureLayers = true
+
+	snaps := newSnapshotBuilder()
+	snaps.set(ActivityID("setup"), "Setup", ActivityStatusCompleted, 1*time.Second)
+	snaps.set(ActivityID("compile"), "Compile", ActivityStatusRunning, 0)
+	snaps.set(ActivityID("test"), "Test", ActivityStatusPending, 0)
+	snaps.set(ActivityID("deploy"), "Deploy", ActivityStatusPending, 0)
+
+	got := dt.RenderWithSnapshots(snaps.snaps, 0, 0)
+	stripped := stripANSI(got)
+
+	// Active layers (0 and 1) should show full labels.
+	if !strings.Contains(stripped, "Setup") {
+		t.Errorf("expected Setup in active layer:\n%s", stripped)
+	}
+
+	if !strings.Contains(stripped, "Compile") {
+		t.Errorf("expected Compile in active layer:\n%s", stripped)
+	}
+
+	// Future layers (all pending) should be collapsed.
+	if strings.Contains(stripped, "Test") {
+		t.Errorf("Test should be hidden in future layer:\n%s", stripped)
+	}
+
+	if strings.Contains(stripped, "Deploy") {
+		t.Errorf("Deploy should be hidden in future layer:\n%s", stripped)
+	}
+
+	// Should show pending summary lines.
+	if !strings.Contains(stripped, "pending") {
+		t.Errorf("expected pending summary in collapsed layers:\n%s", stripped)
+	}
+}
+
+func TestLayeredRender_FutureLayersDisabled(t *testing.T) {
+	dt := NewDependencyTree()
+
+	_ = dt.AddActivity(ActivityID("setup"), nil)
+	_ = dt.AddActivity(ActivityID("test"), []ActivityID{"setup"})
+
+	dt.SetRenderMode(RenderModeLayered)
+
+	snaps := newSnapshotBuilder()
+	snaps.set(ActivityID("setup"), "Setup", ActivityStatusRunning, 0)
+	snaps.set(ActivityID("test"), "Test", ActivityStatusPending, 0)
+
+	got := dt.RenderWithSnapshots(snaps.snaps, 0, 0)
+	stripped := stripANSI(got)
+
+	// Without hideFutureLayers, pending nodes should be visible.
+	if !strings.Contains(stripped, "Test") {
+		t.Errorf("Test should be visible when hideFutureLayers is off:\n%s", stripped)
+	}
+}

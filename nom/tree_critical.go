@@ -180,6 +180,23 @@ func (dt *DependencyTree) EstimatedCriticalPathRemaining(
 	return maxRemaining
 }
 
+// CriticalPathIDs returns the set of activity IDs that lie on the longest
+// estimated-time path through the DAG. Returns nil if the DAG is empty or
+// all activities have zero estimated time. Useful for filtering views to
+// show only bottleneck activities.
+func (dt *DependencyTree) CriticalPathIDs(
+	snapshots map[ActivityID]ActivitySnapshot,
+) map[ActivityID]bool {
+	dt.mu.RLock()
+	defer dt.mu.RUnlock()
+
+	if len(dt.nodes) == 0 {
+		return nil
+	}
+
+	return dt.computeCriticalPath(snapshots)
+}
+
 func nodeRemaining(id ActivityID, snapshots map[ActivityID]ActivitySnapshot) time.Duration {
 	snap := lookupSnapshot(snapshots, id)
 

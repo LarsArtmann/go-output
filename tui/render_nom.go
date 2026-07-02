@@ -9,6 +9,35 @@ import (
 	"github.com/larsartmann/go-output/nom"
 )
 
+// filterCriticalPath returns only entries whose nodes are on the critical path.
+func filterCriticalPath(
+	entries []nom.VisibleEntry,
+	criticalIDs map[nom.ActivityID]bool,
+) []nom.VisibleEntry {
+	var filtered []nom.VisibleEntry
+
+	for _, entry := range entries {
+		// Keep layer headers and separators for context.
+		if entry.LayerHeader != "" {
+			filtered = append(filtered, entry)
+			continue
+		}
+
+		for _, node := range entry.LayerNodes {
+			if criticalIDs[node.ID] {
+				filtered = append(filtered, entry)
+				break
+			}
+		}
+
+		if entry.Node != nil && criticalIDs[entry.Node.ID] {
+			filtered = append(filtered, entry)
+		}
+	}
+
+	return filtered
+}
+
 // renderNOMStyle creates a NOM-style display with dependency tree.
 func (m *ProgressModel) renderNOMStyle() string {
 	m.treeStartLine = 0
@@ -90,6 +119,15 @@ func (m *ProgressModel) renderDependencyTree() string {
 		return msgNoActivitiesToDisplay
 	}
 
+	// Critical-path filter: when enabled, show only entries whose nodes are on
+	// the longest estimated-time path through the DAG.
+	if m.criticalPathFilter && m.nomSubscriber != nil {
+		criticalIDs := m.dependencyTree.CriticalPathIDs(snapshots)
+		if len(criticalIDs) > 0 {
+			entries = filterCriticalPath(entries, criticalIDs)
+		}
+	}
+
 	m.visibleEntries = entries
 
 	lines := make([]string, 0, len(entries))
@@ -167,6 +205,8 @@ func (m *ProgressModel) renderHelpOverlay() string {
 		"  g / Home    Scroll to top",
 		"  G / End     Scroll to bottom",
 		"  L           Toggle tree / layered mode",
+		"  C           Toggle critical-path-only filter",
+		"  D           Export DAG to DOT file",
 		"  ?           Toggle this help",
 		"  q / ctrl+c  Quit",
 	}

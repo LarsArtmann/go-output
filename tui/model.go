@@ -99,6 +99,15 @@ func (m *ProgressModel) handleKeyPress( //nolint:cyclop // key dispatch switch
 				m.dependencyTree.SetRenderMode(nom.RenderModeLayered)
 			}
 		}
+	case "C":
+		if m.displayMode == DisplayModeNOM {
+			m.criticalPathFilter = !m.criticalPathFilter
+			m.scrollOffset = 0
+		}
+	case "D":
+		if m.displayMode == DisplayModeNOM && m.dependencyTree != nil {
+			m.dotExportPath = exportDOTToTemp(m.dependencyTree)
+		}
 	}
 
 	return m, nil
