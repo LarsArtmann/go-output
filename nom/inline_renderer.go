@@ -97,6 +97,16 @@ type InlineRenderer struct {
 	// K layers") in the summary bar. Off by default.
 	showDAGSummary bool
 
+	// pendingLines holds external output (e.g. application log lines) that
+	// should appear ABOVE the tree on the next Draw. This mirrors how
+	// nix-output-manager (nom) interleaves nix build logs above the progress
+	// tree: each frame clears the old tree, prints accumulated log lines,
+	// then draws the tree below them.
+	//
+	// Guarded by renderMu (same lock as Draw/Finish) so EnqueueLines and Draw
+	// never race on the slice.
+	pendingLines []string
+
 	tickMu       sync.RWMutex
 	renderMu     sync.Mutex // serializes Draw/Finish terminal writes + prevLines
 	cancelFn     context.CancelFunc
@@ -306,6 +316,34 @@ func (r *InlineRenderer) SetShowDAGSummary(show bool) {
 	r.renderMu.Unlock()
 }
 
+// EnqueueLines queues external output lines (e.g. application log messages)
+// to be printed ABOVE the tree on the next Draw call. This mirrors how
+// nix-output-manager (nom) interleaves nix build logs above the progress tree:
+// each frame clears the old tree region, prints accumulated log lines, then
+// draws the fresh tree below them.
+//
+// Thread-safe: acquires renderMu so it never races with Draw. Safe to call
+// before or during the render loop. Lines are drained atomically on the next
+// Draw — no partial interleaving.
+func (r *InlineRenderer) EnqueueLines(lines []string) {
+	if len(lines) == 0 {
+		return
+	}
+
+	r.renderMu.Lock()
+	r.pendingLines = append(r.pendingLines, lines...)
+	r.renderMu.Unlock()
+}
+
+// HasPendingLines reports whether there are queued external lines waiting
+// for the next Draw. Thread-safe.
+func (r *InlineRenderer) HasPendingLines() bool {
+	r.renderMu.Lock()
+	defer r.renderMu.Unlock()
+
+	return len(r.pendingLines) > 0
+}
+
 // Draw renders one frame to the configured io.Writer.
 //
 // Frame diffing: if the frame content is identical to the last frame written
@@ -332,7 +370,20 @@ func (r *InlineRenderer) Draw() {
 	// Render from an immutable snapshot — no lock held during the tree walk,
 	// so event handlers can proceed concurrently without racing the render.
 	frame, hasTree := r.subscriber.RenderSnapshot(maxH, maxW)
+
+	pending := r.pendingLines
+	hasPending := len(pending) > 0
+
+	// If there is nothing to render at all, bail out.
+	if (!hasTree || frame == msgNoActivitiesToDisplay) && !hasPending {
+		return
+	}
+
+	// If there is no tree but we have pending log lines, drain them and
+	// return. This handles the rare case where logs arrive before any step
+	// is registered.
 	if !hasTree || frame == msgNoActivitiesToDisplay {
+		r.drainPendingPlain(pending, cfg)
 		return
 	}
 
@@ -342,20 +393,36 @@ func (r *InlineRenderer) Draw() {
 	}
 
 	// Frame diffing: skip the write entirely if nothing changed since the
-	// last frame. Two conditions must both hold: the frame content is
-	// identical AND the plainText mode is unchanged. A mode change (via
-	// SetPlainText) alters the output format even though the frame string
-	// is the same, so it must invalidate the diff. Both fields are under
-	// renderMu, so this comparison is race-free.
-	if frame == r.lastFrame && cfg.plainText == r.lastFramePlain {
+	// last frame AND there are no pending log lines. Pending lines always
+	// force a redraw because the terminal content changed externally.
+	if !hasPending && frame == r.lastFrame && cfg.plainText == r.lastFramePlain {
 		return
 	}
 
-	// Plain-text mode (CI / non-terminal): append the frame without cursor or
-	// sync escape codes, which would corrupt captured logs. prevLines stays 0
-	// so Finish never tries to scroll back over overwritten lines.
+	// Plain-text mode (CI / non-terminal): append pending log lines (if any)
+	// and the tree frame ONLY if it changed. This prevents massive tree
+	// repetition when logs arrive frequently (every 200ms via logDrainLoop)
+	// but the tree state hasn't changed.
 	if cfg.plainText {
-		r.write(frame + "\n")
+		treeChanged := frame != r.lastFrame
+
+		if hasPending || treeChanged {
+			var b strings.Builder
+
+			for _, line := range pending {
+				b.WriteString(line)
+				b.WriteByte('\n')
+			}
+
+			if treeChanged {
+				b.WriteString(frame)
+				b.WriteByte('\n')
+			}
+
+			r.write(b.String())
+		}
+
+		r.pendingLines = nil
 		r.lastFrame = frame
 		r.lastFramePlain = cfg.plainText
 
@@ -364,11 +431,23 @@ func (r *InlineRenderer) Draw() {
 
 	// Count physical lines including wrapping so the next redraw lands correctly.
 	physicalLines := PhysicalLineCount(frame, maxW)
-	if physicalLines == 0 {
+	if physicalLines == 0 && !hasPending {
 		return
 	}
 
-	output := buildRedrawOutput(frame, r.prevLines, physicalLines, cfg.hideCursor)
+	var output string
+
+	if hasPending {
+		// nom-style interleaving: clear the old tree frame, write log lines
+		// above, then draw the tree as a fresh frame below them. Everything
+		// is wrapped in one synchronized-output region so the terminal
+		// applies the update atomically (no partial-frame flicker).
+		output = buildLogAndTreeOutput(frame, pending, r.prevLines, physicalLines, cfg.hideCursor)
+		r.prevLines = physicalLines
+	} else {
+		output = buildRedrawOutput(frame, r.prevLines, physicalLines, cfg.hideCursor)
+		r.prevLines = physicalLines
+	}
 
 	// Only wrap in synchronized-output (mode 2026) codes when the writer is a
 	// confirmed TTY. On non-TTY writers (pipes, buffers), the sync codes are
@@ -380,9 +459,78 @@ func (r *InlineRenderer) Draw() {
 		r.write(output)
 	}
 
-	r.prevLines = physicalLines
+	r.pendingLines = nil
 	r.lastFrame = frame
 	r.lastFramePlain = cfg.plainText
+}
+
+// drainPendingPlain writes pending log lines directly to the writer without
+// any cursor manipulation. Used when there is no tree frame to coordinate
+// with (e.g. logs arriving before any step is registered).
+func (r *InlineRenderer) drainPendingPlain(pending []string, cfg rendererConfig) {
+	if len(pending) == 0 {
+		return
+	}
+
+	var b strings.Builder
+	for _, line := range pending {
+		b.WriteString(line)
+		b.WriteByte('\n')
+	}
+
+	if cfg.writerIsTTY {
+		r.write(ansi.SetModeSynchronizedOutput + b.String() + ansi.ResetModeSynchronizedOutput)
+	} else {
+		r.write(b.String())
+	}
+
+	r.pendingLines = nil
+	r.prevLines = 0
+}
+
+// buildLogAndTreeOutput assembles the ANSI payload for a frame that includes
+// external log lines above the tree. It:
+//  1. Clears the previous tree frame (cursor up + clear each line)
+//  2. Returns the cursor to the top of the cleared region
+//  3. Writes the pending log lines (they scroll naturally if the terminal
+//     is at the bottom — old content scrolls into scrollback)
+//  4. Writes the tree as a fresh frame (no cursor-up, just append)
+//
+// The net visual effect is: [logs above] [tree below], exactly like nom.
+func buildLogAndTreeOutput(frame string, pending []string, prevLines, physicalLines int, hideCursor bool) string {
+	var b strings.Builder
+
+	// 1. Clear old tree frame if one exists.
+	if prevLines > 0 {
+		b.WriteString(ansi.CursorUp(prevLines))
+		b.WriteString("\r")
+
+		for range prevLines {
+			b.WriteString(ansiClearLine)
+			b.WriteString("\n")
+		}
+
+		// Return to the top of the cleared region so pending lines fill
+		// the blank space rather than appending below it.
+		b.WriteString(ansi.CursorUp(prevLines))
+		b.WriteString("\r")
+	} else if hideCursor {
+		// First frame ever + pending logs: hide cursor (normally done in
+		// buildRedrawOutput's first-frame branch).
+		b.WriteString(ansi.HideCursor)
+	}
+
+	// 2. Write pending log lines.
+	for _, line := range pending {
+		b.WriteString(line)
+		b.WriteString("\n")
+	}
+
+	// 3. Write tree as a fresh frame below the logs.
+	b.WriteString(frame)
+	b.WriteString("\n")
+
+	return b.String()
 }
 
 // buildRedrawOutput assembles the ANSI payload for one in-place redraw. On the

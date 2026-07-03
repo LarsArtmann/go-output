@@ -36,6 +36,17 @@ func (r *InlineRenderer) Finish(workflowErr error) {
 		r.prevLines = 0
 	}
 
+	// Drain any pending external log lines so they appear above the final
+	// tree, not lost when the frame is cleared.
+	if len(r.pendingLines) > 0 {
+		for _, line := range r.pendingLines {
+			r.write(line)
+			r.write("\n")
+		}
+
+		r.pendingLines = nil
+	}
+
 	if cfg.hideCursor {
 		r.write(ansi.ShowCursor)
 	}
