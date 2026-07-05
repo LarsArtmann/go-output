@@ -39,7 +39,6 @@ func (ns *NOMStyleSubscriber) OnEvent(_ context.Context, event Event) error {
 // callers can register phases/steps before workflow.started.
 func (ns *NOMStyleSubscriber) handleWorkflowStarted(e WorkflowStarted) error {
 	ns.mu.Lock()
-	defer ns.mu.Unlock()
 
 	ns.workflowID = e.ID
 	ns.startTime = time.Now()
@@ -54,18 +53,24 @@ func (ns *NOMStyleSubscriber) handleWorkflowStarted(e WorkflowStarted) error {
 		ns.dependencyTree = NewDependencyTree()
 	}
 
-	return ns.timingCache.EnsureLoaded()
+	cache := ns.timingCache
+	ns.mu.Unlock()
+
+	// Disk I/O outside ns.mu — TimingCache has its own internal locking.
+	return cache.EnsureLoaded()
 }
 
 // handleWorkflowFinished marks the workflow as not running and persists the
 // timing cache. Shared by completed and failed.
 func (ns *NOMStyleSubscriber) handleWorkflowFinished() error {
 	ns.mu.Lock()
-	defer ns.mu.Unlock()
-
 	ns.isRunning = false
+	cache := ns.timingCache
+	ns.mu.Unlock()
 
-	return ns.timingCache.Save()
+	// Flush persists the cache and captures any prior async save error.
+	// Disk I/O outside ns.mu — TimingCache has its own internal locking.
+	return cache.Flush()
 }
 
 // getOrCreateActivity retrieves an existing activity or creates a new one.

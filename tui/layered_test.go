@@ -92,7 +92,7 @@ func TestProgressModel_LayeredMode_SelectionHighlight(t *testing.T) {
 func TestProgressModel_LayeredMode_InlineRendererDispatch(t *testing.T) {
 	t.Parallel()
 
-	sub := nom.NewNOMStyleSubscriber(nom.WithCachePath(t.TempDir() + "/cache.csv"))
+	sub := nom.NewNOMSubscriber(nom.WithCachePath(t.TempDir() + "/cache.csv"))
 	sub.DependencyTree().SetRenderMode(nom.RenderModeLayered)
 
 	ctx := t.Context()

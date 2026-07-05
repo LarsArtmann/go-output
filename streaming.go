@@ -9,7 +9,7 @@ import (
 // This is useful for rendering large datasets without loading everything into memory.
 //
 // Important: Not all implementations provide true streaming. The adapter returned by
-// StreamingRendererFromRenderer collects output before writing. Only
+// RendererAsWriter collects output before writing. Only
 // StreamingHTMLRenderer (in the markup sub-module) provides genuine streaming behavior.
 type StreamingRenderer interface {
 	Renderer
@@ -17,12 +17,22 @@ type StreamingRenderer interface {
 	Stream(w io.Writer) error
 }
 
-// StreamingRendererFromRenderer wraps a standard Renderer to implement StreamingRenderer.
-// Important: This adapter does not provide true streaming behavior - it collects all output
-// via Render() and then writes it at once. It exists to satisfy the StreamingRenderer
-// interface for renderers that don't have native streaming support.
-func StreamingRendererFromRenderer(r Renderer) StreamingRenderer {
+// RendererAsWriter wraps a standard Renderer to implement StreamingRenderer.
+// The name is honest: it renders the full output via Render() then writes it
+// to the writer in one shot — NOT true streaming. For genuine streaming, use
+// StreamingHTMLRenderer (markup sub-module).
+func RendererAsWriter(r Renderer) StreamingRenderer {
 	return &adapterRenderer{r: r}
+}
+
+// StreamingRendererFromRenderer wraps a standard Renderer to implement StreamingRenderer.
+//
+// Deprecated: Use RendererAsWriter — same behavior, honest name. This function
+// will be removed in v2.
+//
+//nolint:staticcheck // kept for backward compatibility, remove in v2
+func StreamingRendererFromRenderer(r Renderer) StreamingRenderer {
+	return RendererAsWriter(r)
 }
 
 type adapterRenderer struct {

@@ -29,8 +29,8 @@ func TestThemeDefault_MatchesGlobalColors(t *testing.T) {
 		t.Errorf("ThemeDefault.Colors.Failed = %v, want %v", ThemeDefault.Colors.Failed, Colors.Failed)
 	}
 
-	if ThemeDefault.Colors.Info != Colors.Info {
-		t.Errorf("ThemeDefault.Colors.Info = %v, want %v", ThemeDefault.Colors.Info, Colors.Info)
+	if ThemeDefault.Colors.Fallback != Colors.Fallback {
+		t.Errorf("ThemeDefault.Colors.Fallback = %v, want %v", ThemeDefault.Colors.Fallback, Colors.Fallback)
 	}
 
 	if ThemeDefault.Colors.Phase != Colors.Phase {
@@ -49,7 +49,7 @@ func TestTheme_StatusColor(t *testing.T) {
 		{ActivityStatusRunning, ThemeDefault.Colors.Running},
 		{ActivityStatusCompleted, ThemeDefault.Colors.Completed},
 		{ActivityStatusFailed, ThemeDefault.Colors.Failed},
-		{ActivityStatus(99), ThemeDefault.Colors.Info},
+		{ActivityStatus(99), ThemeDefault.Colors.Fallback},
 	}
 
 	for _, tt := range tests {
@@ -122,7 +122,7 @@ func TestSnapshotActivities_UsesThemeColor(t *testing.T) {
 			Completed: lipgloss.Color("#abcdef"),
 			Pending:   lipgloss.Color("#111111"),
 			Failed:    lipgloss.Color("#222222"),
-			Info:      lipgloss.Color("#333333"),
+			Fallback:  lipgloss.Color("#333333"),
 			Phase:     lipgloss.Color("#444444"),
 		},
 		Symbols: map[ActivityStatus]Symbol{
@@ -160,7 +160,7 @@ func TestSnapshotActivities_UsesThemePhaseColor(t *testing.T) {
 			Completed: lipgloss.Color("#abcdef"),
 			Pending:   lipgloss.Color("#111111"),
 			Failed:    lipgloss.Color("#222222"),
-			Info:      lipgloss.Color("#333333"),
+			Fallback:  lipgloss.Color("#333333"),
 			Phase:     lipgloss.Color("#444444"),
 		},
 		Symbols: map[ActivityStatus]Symbol{},
@@ -180,5 +180,50 @@ func TestSnapshotActivities_UsesThemePhaseColor(t *testing.T) {
 	snap := ns.SnapshotActivities()[ActivityID("phase")]
 	if snap.Color != custom.Colors.Phase {
 		t.Errorf("phase snapshot color = %v, want %v", snap.Color, custom.Colors.Phase)
+	}
+}
+
+// TestThemePresets_NordAndMonochrome_NonNil verifies that the Nord and
+// Monochrome theme presets have non-nil color values for all semantic slots.
+// These themes had zero callers and zero tests before this.
+func TestThemePresets_NordAndMonochrome_NonNil(t *testing.T) {
+	t.Parallel()
+
+	themes := []struct {
+		name  string
+		theme Theme
+	}{
+		{"ThemeNord", ThemeNord},
+		{"ThemeMonochrome", ThemeMonochrome},
+	}
+
+	for _, tc := range themes {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			colors := []struct {
+				label string
+				c     color.Color
+			}{
+				{"Running", tc.theme.Colors.Running},
+				{"Completed", tc.theme.Colors.Completed},
+				{"Pending", tc.theme.Colors.Pending},
+				{"Failed", tc.theme.Colors.Failed},
+				{"Info", tc.theme.Colors.Fallback},
+				{"Phase", tc.theme.Colors.Phase},
+			}
+
+			for _, c := range colors {
+				if c.c == nil {
+					t.Errorf("%s.Colors.%s is nil", tc.name, c.label)
+				}
+			}
+
+			// Verify the theme can resolve a status color without panicking.
+			got := tc.theme.StatusColor(ActivityStatusRunning)
+			if got == nil {
+				t.Errorf("%s.StatusColor(Running) returned nil", tc.name)
+			}
+		})
 	}
 }

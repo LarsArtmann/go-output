@@ -33,7 +33,7 @@ func TestTUIRendersProgress(t *testing.T) {
 		Message: "Tidying [2/26]",
 	})
 
-	model.dependencyTree = sub.GetDependencyTree()
+	model.dependencyTree = sub.DependencyTree()
 
 	got := model.renderDependencyTree()
 	if !strings.Contains(got, "Tidying [2/26]") {
@@ -62,7 +62,7 @@ func TestTUIRendersRetry(t *testing.T) {
 		ID: "lint", Name: "golangci-lint", Attempt: 1, Reason: "timeout",
 	})
 
-	model.dependencyTree = sub.GetDependencyTree()
+	model.dependencyTree = sub.DependencyTree()
 
 	got := model.renderDependencyTree()
 	if !strings.Contains(got, string(nom.SymbolRetrying)) {

@@ -1,16 +1,28 @@
 package nom
 
+import "errors"
+
+// ErrCycleDetected is returned by Build when the dependency graph contains a
+// cycle, making a well-formed display tree impossible.
+var ErrCycleDetected = errors.New("dependency cycle detected")
+
 // Build constructs the display tree from the DAG topology and identifies root
 // nodes. For each node, the deepest dependency becomes the display parent
 // (matching nom's "lowermost dependency" rule: shared deps appear under the
 // parent that is furthest from the root). This produces a tree where shared
 // dependencies sink toward the leaves — their natural position.
+//
+// Returns ErrCycleDetected if the dependency graph contains a cycle.
 func (dt *DependencyTree) Build() error {
 	dt.mu.Lock()
 	defer dt.mu.Unlock()
 
 	dt.resetDisplayState()
-	dt.computeDepths()
+
+	if cyclic := dt.computeDepths(); cyclic {
+		return ErrCycleDetected
+	}
+
 	dt.assignDisplayParents()
 
 	dt.loaded = true
@@ -31,12 +43,12 @@ func (dt *DependencyTree) resetDisplayState() {
 
 // computeDepths assigns each node its longest-path depth from a root via
 // fixpoint iteration. Nodes with no deps get depth 0; all others get
-// max(dep depths) + 1. Max iterations = len(nodes) + 1; exceeding that
-// implies a cycle (guards against infinite loops from malformed input).
-func (dt *DependencyTree) computeDepths() {
+// max(dep depths) + 1. Returns true if a cycle is detected (the fixpoint
+// did not converge within len(nodes)+1 iterations).
+func (dt *DependencyTree) computeDepths() bool {
 	maxIter := len(dt.nodes) + 1
 
-	for range maxIter {
+	for i := range maxIter {
 		changed := false
 
 		for _, node := range dt.nodes {
@@ -62,9 +74,16 @@ func (dt *DependencyTree) computeDepths() {
 		}
 
 		if !changed {
-			break
+			return false // converged — no cycle
+		}
+
+		// On the last iteration, if we still have changes, it's a cycle.
+		if i == maxIter-1 {
+			return true
 		}
 	}
+
+	return false
 }
 
 // assignDisplayParents picks the deepest dep as each node's display parent

@@ -12,7 +12,7 @@ import (
 func main() {
 	ctx := context.Background()
 
-	subscriber := nom.NewNOMStyleSubscriber(
+	subscriber := nom.NewNOMSubscriber(
 		nom.WithRenderMode(nom.RenderModeLayered),
 		nom.WithShowCategory(),
 		nom.WithTheme(nom.ThemeDracula),
@@ -64,15 +64,15 @@ func main() {
 
 	// Render the final tree.
 	snaps := subscriber.SnapshotActivities()
-	rendered := subscriber.GetDependencyTree().RenderWithSnapshots(snaps, 20, 80)
+	rendered := subscriber.DependencyTree().RenderWithSnapshots(snaps, 20, 80)
 	fmt.Println(rendered)
 
 	// Print DAG structural summary.
-	summary := subscriber.GetDependencyTree().DAGSummaryWithSnapshots(snaps)
+	summary := subscriber.DependencyTree().DAGSummaryWithSnapshots(snaps)
 	fmt.Printf("\nDAG: %s\n", summary.String())
 }
 
-func startAndProgress(sub *nom.NOMStyleSubscriber, ctx context.Context) {
+func startAndProgress(sub *nom.NOMSubscriber, ctx context.Context) {
 	// Setup phase.
 	send := func(evt nom.Event) {
 		if err := sub.OnEvent(ctx, evt); err != nil {

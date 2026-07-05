@@ -136,6 +136,12 @@ func (a *Activity) IsFailed() bool { return a.Status == ActivityStatusFailed }
 
 // IsPhase reports whether this activity is a Phase grouping node (Kind ==
 // ActivityKindPhase), as opposed to a concrete Task.
+//
+// Deprecated: Use ActivitySnapshot.IsPhase() instead — snapshots are the
+// concurrency-safe way to read activity state. This method will be removed
+// in v2.
+//
+//nolint:staticcheck // kept for backward compatibility, remove in v2
 func (a *Activity) IsPhase() bool { return a.Kind.IsPhase() }
 
 // Copy creates a shallow copy of the Activity. All fields are value types
@@ -158,7 +164,7 @@ func (a *Activity) applyDisplayStyle() {
 	}
 
 	a.Symbol = "?"
-	a.Color = Colors.Info
+	a.Color = Colors.Fallback
 }
 
 // elapsedAt returns the elapsed time for this activity as of the given moment.

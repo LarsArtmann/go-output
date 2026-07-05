@@ -14,7 +14,7 @@ import (
 // footgun wrappers (RenderString etc.) silently rendered blanks on nil
 // snapshots — this test fails loudly if the snapshot path ever regresses.
 func TestNomProgressExampleSmokeTest(t *testing.T) {
-	subscriber := nom.NewNOMStyleSubscriber()
+	subscriber := nom.NewNOMSubscriber()
 	ctx := context.Background()
 
 	activities := []struct {
@@ -64,7 +64,7 @@ func TestNomProgressExampleSmokeTest(t *testing.T) {
 		t.Fatal("SnapshotActivities() returned empty map — activities were not registered")
 	}
 
-	tree := subscriber.GetDependencyTree()
+	tree := subscriber.DependencyTree()
 
 	// Full-height render: must contain every activity label.
 	full := tree.RenderWithSnapshots(snaps, 20, 0)

@@ -24,6 +24,11 @@ func (d Direction) IsValid() bool {
 
 // ToD2Direction converts Direction to D2's direction string.
 // D2 uses "" for default (down), "right", "left", "up".
+//
+// Returns a string (not d2.D2Direction) because root cannot import the d2/
+// sub-module (Core Invariant). The d2/ module's own D2Direction type is a
+// separate type for D2-specific APIs; use output.Direction for cross-format
+// portability and convert at the d2/ call site.
 func (d Direction) ToD2Direction() string {
 	if d == DirectionDown {
 		return "" // D2 default is down (empty string)

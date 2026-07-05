@@ -6,6 +6,67 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Fixed — Concurrency (P0)
+
+- **nom** — Fixed `r.appName` data race in `RenderCompletion` (read `appName`
+  without lock; now uses `snapshotConfig()`).
+- **nom** — Fixed `renderNotify` data race in `renderAndNotify` (read channel
+  without lock; now guarded by `tickMu.RLock`).
+- **nom** — Fixed `showParallelism` unlocked read in summary bar (documented
+  as immutable-after-construction).
+- **nom** — Removed disk I/O from under `ns.mu` write lock in
+  `handleWorkflowStarted` and `handleWorkflowFinished` (TimingCache has its
+  own internal locking).
+- **nom** — Fixed latent ghost-line bug in `buildLogAndTreeOutput`: when the
+  tree shrank AND there were pending log lines, leftover lines from the
+  taller previous frame were not wiped. Now mirrors `buildRedrawOutput`'s
+  cleanup logic using `physicalLines`.
+- **nom** — Replaced unbounded per-call goroutine spawning in
+  `TimingCache.Record()` with a single background saver goroutine + buffered
+  channel (coalesces rapid Records). Eliminates goroutine leak (C4).
+- **nom** — Replaced `log.Printf` error swallowing in async cache save with
+  stored `saveErr` returned by new `Flush()` method.
+- **nom** — Added `Flush()` to `TimingCache` and `NOMStyleSubscriber` for
+  clean shutdown that drains pending saves.
+
+### Changed — Architecture (P0/P5)
+
+- **nom** — Decomposed `Draw()` (cyclop 20 → under 10) into three focused
+  methods: `Draw()`, `drawPlainText()`, `drawInline()`. Resolves the only
+  lint failure.
+- **nom** — `Build()` now returns `ErrCycleDetected` when the dependency
+  graph contains a cycle (previously always returned nil).
+- **nom** — `write()` now tracks consecutive I/O errors and silently no-ops
+  after `maxConsecutiveWriteErrors` (10) to avoid spinning on broken pipes.
+- **d2** — `D2NodeStyle.TextTransform` changed from `string` to typed
+  `D2TextTransform` enum with `ParseD2TextTransform`/`IsValid`/
+  `AllowedValues` (type-safe, prevents invalid values at compile time).
+
+### Deprecated (v2 removal)
+
+- **nom** — `NOMStyleSubscriber` → use `NOMSubscriber` (type alias).
+- **nom** — `NewNOMStyleSubscriber` → use `NewNOMSubscriber`.
+- **nom** — `SemanticColors.Info` → renamed to `SemanticColors.Fallback`.
+- **nom** — `GetDependencyTree()` → use `DependencyTree()` (identical behavior).
+- **nom** — `ErrActivityNotFound` → use `GetNode(id) == nil` check instead.
+- **nom** — `TimingFormat` constant → use `FormatDuration()` function.
+- **nom** — `Activity.IsPhase()` → use `ActivitySnapshot.IsPhase()`.
+- **graph** — `EdgeStyle.ArrowHead`/`ArrowTail` → never read by any renderer;
+  use D2's `D2Edge.SourceArrow`/`TargetArrow` for D2 diagrams.
+- **output** — `StreamingRendererFromRenderer` → use `RendererAsWriter`
+  (honest name for non-streaming adapter).
+
+### Added
+
+- **nom** — `MsgNoActivities` exported constant (single source of truth for
+  the empty-tree message; tui now imports it instead of duplicating).
+- **nom** — `NOMSubscriber` type alias and `NewNOMSubscriber` constructor.
+- **nom** — Race test for `RenderCompletion` vs concurrent config setters.
+- **nom** — End-to-end test proving `RegisterStatus()` custom statuses
+  render correctly through the snapshot pipeline.
+- **nom** — Smoke tests for `ThemeNord` and `ThemeMonochrome` presets.
+- **d2** — `D2TextTransform` enum type with parse/validate/allowed-values.
+
 ## [0.23.1] - 2026-07-02
 
 ### Fixed

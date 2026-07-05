@@ -93,7 +93,7 @@ func (m *ProgressModel) renderCurrentMessage() string {
 
 	messageStyle := lipgloss.NewStyle().
 		Italic(true).
-		Foreground(m.theme.Colors.Info)
+		Foreground(m.theme.Colors.Fallback)
 
 	return messageStyle.Render(m.currentMessage)
 }
@@ -215,7 +215,7 @@ func (m *ProgressModel) renderProgressBar() string {
 	filled := int((m.currentProgress / percentScale) * float64(width))
 	bar := strings.Repeat("█", filled) + strings.Repeat("░", width-filled)
 	progressStyle := lipgloss.NewStyle().
-		Foreground(m.theme.Colors.Info)
+		Foreground(m.theme.Colors.Fallback)
 
 	return progressStyle.Render(fmt.Sprintf("Progress: [%s] %.1f%%", bar, m.currentProgress))
 }

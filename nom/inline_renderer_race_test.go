@@ -360,3 +360,58 @@ func cursorUpLines(output string) int {
 
 	return n
 }
+
+// TestInlineRenderer_RenderCompletion_RacingSetters drives RenderCompletion
+// (which reads appName via snapshotConfig) while another goroutine flips
+// SetAppName/SetMaxHeight/SetPlainText. Before the C1 fix, RenderCompletion
+// read r.appName directly without any lock. Run with -race.
+func TestInlineRenderer_RenderCompletion_RacingSetters(t *testing.T) {
+	t.Parallel()
+
+	for range 20 {
+		sub := newTestSubscriber(t)
+
+		var buf safeBuffer
+
+		renderer := NewInlineRenderer(sub, &buf, 10)
+
+		ctx := context.Background()
+		_ = sendWorkflowStarted(sub, ctx, WorkflowID("wf-rc"), "")
+		sendActivityStarted(t, sub, ctx, ActivityID("s"), ActivityName("S"))
+		renderer.SetStartTime(time.Now())
+		renderer.Draw() // establish a frame so RenderCompletion has prevLines to clear
+
+		stop := make(chan struct{})
+
+		go func() {
+			for {
+				select {
+				case <-stop:
+					return
+				default:
+					renderer.SetAppName("App-A")
+					renderer.SetAppName("App-B")
+					renderer.SetMaxHeight(5)
+					renderer.SetPlainText(true)
+					renderer.SetPlainText(false)
+				}
+			}
+		}()
+
+		for range 50 {
+			renderer.RenderCompletion(CompletionResult{
+				Success:    true,
+				TotalSteps: 1,
+				Elapsed:    5 * time.Second,
+			})
+			renderer.RenderCompletion(CompletionResult{
+				Success:     false,
+				FailedSteps: 1,
+				TotalSteps:  1,
+				Elapsed:     5 * time.Second,
+			})
+		}
+
+		close(stop)
+	}
+}

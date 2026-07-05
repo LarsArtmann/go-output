@@ -307,7 +307,7 @@ func formatActivityLabelWithOptions(
 			suffix += fmt.Sprintf(" (%s)", snap.RetryReason)
 		}
 
-		display += lipgloss.NewStyle().Foreground(theme.Colors.Info).Render(suffix)
+		display += lipgloss.NewStyle().Foreground(theme.Colors.Fallback).Render(suffix)
 	}
 
 	// Optional download progress bar — only while the activity is actively

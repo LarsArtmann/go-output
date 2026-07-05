@@ -82,7 +82,7 @@ func TestD2NodeWithStyle(t *testing.T) {
 			Opacity:       0.8,
 			Shadow:        true,
 			BorderRadius:  8,
-			TextTransform: "uppercase",
+			TextTransform: D2TextTransformUpper,
 		},
 	})
 
@@ -344,7 +344,7 @@ func TestD2NodeStyleEscapesStyleInjection(t *testing.T) {
 						Stroke:    tt.value,
 						FontColor: tt.value,
 					},
-					TextTransform: tt.value,
+					TextTransform: D2TextTransform(tt.value),
 				},
 			})
 

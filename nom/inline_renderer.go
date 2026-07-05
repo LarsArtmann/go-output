@@ -114,7 +114,15 @@ type InlineRenderer struct {
 	refreshChan  chan struct{}
 	renderNotify chan struct{} // test hook: signaled after each render if non-nil
 	sigwinchStop chan struct{}
+
+	// Dead-writer detection: when consecutive write errors exceed this
+	// threshold, the renderer stops writing (no-op write) to avoid spinning
+	// on a broken pipe. Guarded by renderMu.
+	consecutiveWriteErrors int
+	writerDead             bool
 }
+
+const maxConsecutiveWriteErrors = 10
 
 // rendererConfig is an immutable snapshot of every configurable InlineRenderer
 // field, captured under tickMu.RLock in one read. Draw/Finish/renderSummary all
@@ -393,43 +401,50 @@ func (r *InlineRenderer) Draw() {
 	}
 
 	// Frame diffing: skip the write entirely if nothing changed since the
-	// last frame AND there are no pending log lines. Pending lines always
-	// force a redraw because the terminal content changed externally.
+	// last frame AND there are no pending log lines.
 	if !hasPending && frame == r.lastFrame && cfg.plainText == r.lastFramePlain {
 		return
 	}
 
-	// Plain-text mode (CI / non-terminal): append pending log lines (if any)
-	// and the tree frame ONLY if it changed. This prevents massive tree
-	// repetition when logs arrive frequently (every 200ms via logDrainLoop)
-	// but the tree state hasn't changed.
 	if cfg.plainText {
-		treeChanged := frame != r.lastFrame
-
-		if hasPending || treeChanged {
-			var b strings.Builder
-
-			for _, line := range pending {
-				b.WriteString(line)
-				b.WriteByte('\n')
-			}
-
-			if treeChanged {
-				b.WriteString(frame)
-				b.WriteByte('\n')
-			}
-
-			r.write(b.String())
-		}
-
-		r.pendingLines = nil
-		r.lastFrame = frame
-		r.lastFramePlain = cfg.plainText
-
+		r.drawPlainText(frame, pending, hasPending, cfg)
 		return
 	}
 
-	// Count physical lines including wrapping so the next redraw lands correctly.
+	r.drawInline(frame, pending, hasPending, maxW, cfg)
+}
+
+// drawPlainText handles CI/non-terminal output: appends pending log lines
+// and the tree frame (only if changed) without any cursor manipulation.
+// This prevents massive tree repetition when logs arrive frequently but the
+// tree state hasn't changed.
+func (r *InlineRenderer) drawPlainText(frame string, pending []string, hasPending bool, cfg rendererConfig) {
+	treeChanged := frame != r.lastFrame
+
+	if hasPending || treeChanged {
+		var b strings.Builder
+
+		for _, line := range pending {
+			b.WriteString(line)
+			b.WriteByte('\n')
+		}
+
+		if treeChanged {
+			b.WriteString(frame)
+			b.WriteByte('\n')
+		}
+
+		r.write(b.String())
+	}
+
+	r.pendingLines = nil
+	r.lastFrame = frame
+	r.lastFramePlain = cfg.plainText
+}
+
+// drawInline handles terminal inline rendering: cursor-up/clear-line redraw
+// with synchronized output (mode 2026) and nom-style log interleaving.
+func (r *InlineRenderer) drawInline(frame string, pending []string, hasPending bool, maxW int, cfg rendererConfig) {
 	physicalLines := PhysicalLineCount(frame, maxW)
 	if physicalLines == 0 && !hasPending {
 		return
@@ -439,20 +454,14 @@ func (r *InlineRenderer) Draw() {
 
 	if hasPending {
 		// nom-style interleaving: clear the old tree frame, write log lines
-		// above, then draw the tree as a fresh frame below them. Everything
-		// is wrapped in one synchronized-output region so the terminal
-		// applies the update atomically (no partial-frame flicker).
+		// above, then draw the tree as a fresh frame below them.
 		output = buildLogAndTreeOutput(frame, pending, r.prevLines, physicalLines, cfg.hideCursor)
-		r.prevLines = physicalLines
 	} else {
 		output = buildRedrawOutput(frame, r.prevLines, physicalLines, cfg.hideCursor)
-		r.prevLines = physicalLines
 	}
 
-	// Only wrap in synchronized-output (mode 2026) codes when the writer is a
-	// confirmed TTY. On non-TTY writers (pipes, buffers), the sync codes are
-	// meaningless and can corrupt captured output. This matches how
-	// charmbracelet/bubbletea gates sync-output on actual terminal support.
+	r.prevLines = physicalLines
+
 	if cfg.writerIsTTY {
 		r.write(ansi.SetModeSynchronizedOutput + output + ansi.ResetModeSynchronizedOutput)
 	} else {
@@ -530,6 +539,18 @@ func buildLogAndTreeOutput(frame string, pending []string, prevLines, physicalLi
 	b.WriteString(frame)
 	b.WriteString("\n")
 
+	// 4. When the tree shrank, wipe leftover lines from the taller previous
+	// frame so pruned subtrees leave no ghosts — same logic as buildRedrawOutput.
+	if extra := prevLines - physicalLines; extra > 0 {
+		for range extra {
+			b.WriteString("\n")
+			b.WriteString(ansiClearLine)
+		}
+
+		b.WriteString(ansi.CursorUp(extra))
+		b.WriteString("\r")
+	}
+
 	return b.String()
 }
 
@@ -589,10 +610,24 @@ func buildRedrawOutput(frame string, prevLines, physicalLines int, hideCursor bo
 	return b.String()
 }
 
-// write writes a string to the renderer's writer, ignoring errors.
-// Terminal output is best-effort: a broken pipe should not crash the render loop.
+// write writes a string to the renderer's writer. When consecutive I/O errors
+// exceed maxConsecutiveWriteErrors, the writer is marked dead and subsequent
+// writes become silent no-ops — this prevents spinning on a broken pipe.
 func (r *InlineRenderer) write(s string) {
-	_, _ = fmt.Fprint(r.writer, s)
+	if r.writerDead {
+		return
+	}
+
+	if _, err := fmt.Fprint(r.writer, s); err != nil {
+		r.consecutiveWriteErrors++
+		if r.consecutiveWriteErrors >= maxConsecutiveWriteErrors {
+			r.writerDead = true
+		}
+
+		return
+	}
+
+	r.consecutiveWriteErrors = 0
 }
 
 // Start begins periodic background rendering at the given interval.
@@ -725,9 +760,13 @@ func (r *InlineRenderer) refreshLoop(ctx context.Context, interval time.Duration
 func (r *InlineRenderer) renderAndNotify() {
 	r.Draw()
 
-	if r.renderNotify != nil {
+	r.tickMu.RLock()
+	notify := r.renderNotify
+	r.tickMu.RUnlock()
+
+	if notify != nil {
 		select {
-		case r.renderNotify <- struct{}{}:
+		case notify <- struct{}{}:
 		default:
 		}
 	}
@@ -813,7 +852,9 @@ func (r *InlineRenderer) RenderCompletion(result CompletionResult) {
 			result.FailedSteps, result.TotalSteps, formatDuration(result.Elapsed))
 	}
 
-	r.write(fmt.Sprintf("%s %s completed (%s)\n", status, r.appName, detail))
+	cfg := r.snapshotConfig()
+
+	r.write(fmt.Sprintf("%s %s completed (%s)\n", status, cfg.appName, detail))
 }
 
 // formatDuration renders a time.Duration in a compact human-readable form.

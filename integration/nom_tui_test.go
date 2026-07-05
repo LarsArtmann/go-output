@@ -18,7 +18,7 @@ func TestNOMSubscriber_Integration(t *testing.T) {
 	t.Run("full workflow lifecycle through events", func(t *testing.T) {
 		t.Parallel()
 
-		subscriber := nom.NewNOMStyleSubscriber(nom.WithCachePath(filepath.Join(t.TempDir(), "nom-timing.csv")))
+		subscriber := nom.NewNOMSubscriber(nom.WithCachePath(filepath.Join(t.TempDir(), "nom-timing.csv")))
 		ctx := context.Background()
 
 		if err := subscriber.OnEvent(ctx, nom.WorkflowStarted{
@@ -52,7 +52,7 @@ func TestNOMSubscriber_Integration(t *testing.T) {
 			t.Error("build activity should be running")
 		}
 
-		tree := subscriber.GetDependencyTree()
+		tree := subscriber.DependencyTree()
 		if tree == nil {
 			t.Fatal("dependency tree should exist")
 		}
@@ -188,7 +188,7 @@ func TestTUIProgressReporter_Integration(t *testing.T) {
 func TestNOMSubscriber_RenderNodeVisibleNodes_Integration(t *testing.T) {
 	t.Parallel()
 
-	subscriber := nom.NewNOMStyleSubscriber(nom.WithCachePath(filepath.Join(t.TempDir(), "nom-timing.csv")))
+	subscriber := nom.NewNOMSubscriber(nom.WithCachePath(filepath.Join(t.TempDir(), "nom-timing.csv")))
 	ctx := context.Background()
 
 	fireWorkflowStarted(subscriber, ctx, "w1", "Pipeline")
@@ -197,7 +197,7 @@ func TestNOMSubscriber_RenderNodeVisibleNodes_Integration(t *testing.T) {
 	startActivity(subscriber, ctx, "test", "Test")
 	completeActivity(subscriber, ctx, "build", "Build", 3*time.Second)
 
-	tree := subscriber.GetDependencyTree()
+	tree := subscriber.DependencyTree()
 	if tree == nil {
 		t.Fatal("dependency tree should exist")
 	}
@@ -273,7 +273,7 @@ func TestNOMTimingCache_Integration(t *testing.T) {
 // Use SnapshotActivities + RenderWithSnapshots, or send events through the subscriber.
 
 // startActivity sends an activity.started event and discards any error.
-func startActivity(sub *nom.NOMStyleSubscriber, ctx context.Context, id, name string) {
+func startActivity(sub *nom.NOMSubscriber, ctx context.Context, id, name string) {
 	_ = sub.OnEvent(ctx, nom.ActivityStarted{
 		ID:   nom.NewActivityID(id),
 		Name: nom.NewActivityName(name),
@@ -282,7 +282,7 @@ func startActivity(sub *nom.NOMStyleSubscriber, ctx context.Context, id, name st
 
 // fireWorkflowStarted sends a workflow.started event and discards any error.
 // Use for tests that only care about downstream behavior, not event errors.
-func fireWorkflowStarted(sub *nom.NOMStyleSubscriber, ctx context.Context, id, name string) {
+func fireWorkflowStarted(sub *nom.NOMSubscriber, ctx context.Context, id, name string) {
 	_ = sub.OnEvent(ctx, nom.WorkflowStarted{
 		ID:   nom.NewWorkflowID(id),
 		Name: nom.NewWorkflowName(name),
@@ -290,7 +290,7 @@ func fireWorkflowStarted(sub *nom.NOMStyleSubscriber, ctx context.Context, id, n
 }
 
 // completeActivity sends an activity.completed event and discards any error.
-func completeActivity(sub *nom.NOMStyleSubscriber, ctx context.Context, id, name string, duration time.Duration) {
+func completeActivity(sub *nom.NOMSubscriber, ctx context.Context, id, name string, duration time.Duration) {
 	_ = sub.OnEvent(ctx, nom.ActivityCompleted{
 		ID:       nom.NewActivityID(id),
 		Name:     nom.NewActivityName(name),
@@ -301,7 +301,7 @@ func completeActivity(sub *nom.NOMStyleSubscriber, ctx context.Context, id, name
 func TestNOM_LayeredMode_Integration(t *testing.T) {
 	t.Parallel()
 
-	sub := nom.NewNOMStyleSubscriber(nom.WithCachePath(filepath.Join(t.TempDir(), "nom-timing.csv")))
+	sub := nom.NewNOMSubscriber(nom.WithCachePath(filepath.Join(t.TempDir(), "nom-timing.csv")))
 	ctx := context.Background()
 
 	fireWorkflowStarted(sub, ctx, "wf1", "CI Pipeline")
@@ -332,7 +332,7 @@ func TestNOM_LayeredMode_Integration(t *testing.T) {
 	startActivity(sub, ctx, "lint", "Lint")
 	startActivity(sub, ctx, "test", "Test")
 
-	tree := sub.GetDependencyTree()
+	tree := sub.DependencyTree()
 	tree.SetRenderMode(nom.RenderModeLayered)
 
 	completeActivity(sub, ctx, "setup", "Setup", 2*time.Second)

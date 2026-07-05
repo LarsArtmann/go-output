@@ -42,7 +42,7 @@ func (t Theme) StatusColor(status ActivityStatus) color.Color {
 		}
 	}
 
-	return t.Colors.Info
+	return t.Colors.Fallback
 }
 
 // ColorFor returns the theme color for an activity, choosing the phase color
@@ -99,7 +99,7 @@ var ThemeDracula = Theme{
 		Completed: lipgloss.Color("#6272a4"),
 		Pending:   lipgloss.Color("#6272a4"),
 		Failed:    lipgloss.Color("#ff5555"),
-		Info:      lipgloss.Color("#8be9fd"),
+		Fallback:  lipgloss.Color("#8be9fd"),
 		Phase:     lipgloss.Color("#bd93f9"),
 	},
 	Symbols: map[ActivityStatus]Symbol{
@@ -120,7 +120,7 @@ var ThemeNord = Theme{
 		Completed: lipgloss.Color("#4c566a"),
 		Pending:   lipgloss.Color("#4c566a"),
 		Failed:    lipgloss.Color("#bf616a"),
-		Info:      lipgloss.Color("#88c0d0"),
+		Fallback:  lipgloss.Color("#88c0d0"),
 		Phase:     lipgloss.Color("#b48ead"),
 	},
 	Symbols: map[ActivityStatus]Symbol{
@@ -142,7 +142,7 @@ var ThemeMonochrome = Theme{
 		Completed: lipgloss.Color("#a0a0a0"),
 		Pending:   lipgloss.Color("#808080"),
 		Failed:    lipgloss.Color("#ffffff"),
-		Info:      lipgloss.Color("#c0c0c0"),
+		Fallback:  lipgloss.Color("#c0c0c0"),
 		Phase:     lipgloss.Color("#d0d0d0"),
 	},
 	Symbols: map[ActivityStatus]Symbol{
@@ -164,7 +164,7 @@ var ThemeHighContrast = Theme{
 		Completed: lipgloss.Color("#808080"),
 		Pending:   lipgloss.Color("#ffff00"),
 		Failed:    lipgloss.Color("#ff0000"),
-		Info:      lipgloss.Color("#00ffff"),
+		Fallback:  lipgloss.Color("#00ffff"),
 		Phase:     lipgloss.Color("#ff00ff"),
 	},
 	Symbols: map[ActivityStatus]Symbol{

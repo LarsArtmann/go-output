@@ -77,10 +77,10 @@ func TestProgressModel_EventSequence_PreRegisterThenStart(t *testing.T) {
 	model.nomSubscriber.SetActivityState(nom.ActivityID("step1"), nom.NewActivity("step1", "Compile"))
 
 	// Manually add to dependency tree
-	model.nomSubscriber.GetDependencyTree().AddActivity(
+	model.nomSubscriber.DependencyTree().AddActivity(
 		nom.ActivityID("phase1"), nil,
 	)
-	model.nomSubscriber.GetDependencyTree().AddActivity(
+	model.nomSubscriber.DependencyTree().AddActivity(
 		nom.ActivityID("step1"), []nom.ActivityID{"phase1"},
 	)
 

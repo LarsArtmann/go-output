@@ -23,7 +23,7 @@ type step struct {
 const stepCompile = "compile"
 
 func main() {
-	subscriber := nom.NewNOMStyleSubscriber()
+	subscriber := nom.NewNOMSubscriber()
 	renderer := nom.NewInlineRenderer(subscriber, os.Stdout, 15)
 	renderer.SetAppName("Demo Build")
 

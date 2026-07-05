@@ -7,14 +7,26 @@ import (
 	"sync"
 )
 
-// ErrActivityNotFound is returned when an activity cannot be found in the tree.
+// ErrActivityNotFound was intended for node-not-found scenarios but is never
+// returned by any function. GetNode returns nil for missing nodes instead.
+//
+// Deprecated: Use GetNode(id) == nil to check for missing nodes. This error
+// will be removed in v2.
+//
+//nolint:staticcheck // kept for backward compatibility, remove in v2
 var ErrActivityNotFound = errors.New("activity not found")
 
 const (
-	// msgNoActivitiesToDisplay is shown when dependency tree is empty.
-	// Mirrors tui.MsgNoActivitiesToDisplay — identical string, kept separate
-	// because nom and tui are distinct modules. See split-brain M3.
-	msgNoActivitiesToDisplay = "No activities to display"
+	// MsgNoActivities is shown when the dependency tree is empty.
+	// Single source of truth — tui imports this constant.
+	MsgNoActivities = "No activities to display"
+
+	// msgNoActivitiesToDisplay is an alias kept for backward compatibility.
+	//
+	// Deprecated: Use MsgNoActivities. Will be removed in v2.
+	//
+	//nolint:staticcheck // kept for backward compatibility, remove in v2
+	msgNoActivitiesToDisplay = MsgNoActivities
 )
 
 // ActivityNode represents a node in the dependency DAG.
@@ -143,11 +155,6 @@ func (n *ActivityNode) hasChild(id ActivityID) bool {
 // removeChild removes the child with the given activity ID, if present.
 func (n *ActivityNode) removeChild(id ActivityID) {
 	n.Children = slices.DeleteFunc(n.Children, nodeHasID(id))
-}
-
-// hasDep returns true if this node already records the given dependency ID.
-func (n *ActivityNode) hasDep(id ActivityID) bool {
-	return slices.Contains(n.Deps, id)
 }
 
 // ExtraDeps returns dependency IDs that are NOT the display parent — i.e.,

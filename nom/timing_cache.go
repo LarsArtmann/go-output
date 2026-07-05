@@ -22,12 +22,20 @@ const (
 
 // TimingCache manages activity duration history and averages.
 type TimingCache struct {
-	mu           sync.RWMutex
-	saveMu       sync.Mutex                 // serializes file writes to prevent concurrent truncation
-	cache        map[string][]time.Duration // activity name -> duration history
-	filePath     string                     // Path to cache file
-	loaded       bool                       // Whether cache has been loaded
-	pendingSaves sync.WaitGroup             // tracks in-flight saveAsync goroutines
+	mu       sync.RWMutex
+	saveMu   sync.Mutex                 // serializes file writes to prevent concurrent truncation
+	cache    map[string][]time.Duration // activity name -> duration history
+	filePath string                     // Path to cache file
+	loaded   bool                       // Whether cache has been loaded
+
+	// Background saver — a single goroutine replaces per-call go saveAsync()
+	// to prevent unbounded goroutine spawning (C4 fix). saveCh is buffered(1):
+	// non-blocking sends coalesce rapid Record() calls into one disk write.
+	// saverMu guards the lifecycle (start/stop); saveMu serializes disk writes.
+	saveCh   chan struct{}
+	saveDone chan struct{}
+	saverMu  sync.Mutex
+	saveErr  error // last async save error (guarded by saveMu)
 }
 
 // TimingCacheOption configures a TimingCache at construction time.
@@ -93,16 +101,94 @@ func capHistory(history []time.Duration) []time.Duration {
 // Record records a duration for an activity.
 func (tc *TimingCache) Record(activityName string, duration time.Duration) error {
 	tc.mu.Lock()
-	defer tc.mu.Unlock()
-	// Add duration to history
-	history := capHistory(append(tc.cache[activityName], duration))
+	tc.cache[activityName] = capHistory(append(tc.cache[activityName], duration))
+	tc.mu.Unlock()
 
-	tc.cache[activityName] = history
-	// Save to disk asynchronously (non-blocking)
-	tc.pendingSaves.Add(1)
-	go tc.saveAsync()
+	// Trigger a background save via the single saver goroutine (non-blocking,
+	// coalesced — no goroutine per call).
+	tc.triggerSave()
 
 	return nil
+}
+
+// triggerSave starts the background saver if needed and sends a non-blocking
+// save signal. If a save is already pending, the signal is coalesced.
+// Caller-safe; uses saverMu to guard the channel lifecycle.
+func (tc *TimingCache) triggerSave() {
+	tc.saverMu.Lock()
+	defer tc.saverMu.Unlock()
+
+	if tc.saveCh == nil {
+		tc.saveCh = make(chan struct{}, 1)
+		tc.saveDone = make(chan struct{})
+		ch := tc.saveCh
+		done := tc.saveDone
+
+		go func() {
+			defer close(done)
+
+			for range ch {
+				tc.performAsyncSave()
+			}
+		}()
+	}
+
+	select {
+	case tc.saveCh <- struct{}{}:
+	default: // a save is already pending; coalesce
+	}
+}
+
+// saveSnapshot serializes a disk write with any concurrent async saver via
+// saveMu, records any write error in saveErr, and returns the (possibly
+// overwritten) saved error. Both performAsyncSave and Flush funnel through
+// here so the serialize-write-and-record-error sequence lives in one place.
+func (tc *TimingCache) saveSnapshot() error {
+	tc.saveMu.Lock()
+	defer tc.saveMu.Unlock()
+
+	dataCopy, filePath := tc.snapshotData()
+
+	if err := writeCacheToFile(filePath, dataCopy); err != nil {
+		tc.saveErr = err
+	}
+
+	return tc.saveErr
+}
+
+// performAsyncSave snapshots the in-memory cache and writes it to disk.
+// Any error is stored in saveErr for later retrieval via Flush().
+func (tc *TimingCache) performAsyncSave() {
+	_ = tc.saveSnapshot()
+}
+
+// stopSaver closes the background saver goroutine and waits for it to exit.
+// After stopSaver, the next Record() call starts a fresh saver.
+func (tc *TimingCache) stopSaver() {
+	tc.saverMu.Lock()
+	ch := tc.saveCh
+	done := tc.saveDone
+	tc.saveCh = nil
+	tc.saveDone = nil
+	tc.saverMu.Unlock()
+
+	if ch != nil {
+		close(ch)
+		<-done
+	}
+}
+
+// Flush ensures all pending data is persisted to disk and returns the last
+// async save error (if any). Safe to call concurrently with Record().
+// The synchronous write serializes with any in-flight async save via saveMu.
+func (tc *TimingCache) Flush() error {
+	err := tc.saveSnapshot()
+
+	tc.saveMu.Lock()
+	tc.saveErr = nil
+	tc.saveMu.Unlock()
+
+	return err
 }
 
 // medianDuration returns the median of a slice of durations. The input is not
@@ -241,6 +327,9 @@ func (tc *TimingCache) EnsureLoaded() error {
 	return nil
 }
 
+// waitPendingSaves flushes pending data and stops the background saver goroutine.
+// Test-only helper; production code should use Flush().
 func (tc *TimingCache) waitPendingSaves() {
-	tc.pendingSaves.Wait()
+	_ = tc.Flush()
+	tc.stopSaver()
 }

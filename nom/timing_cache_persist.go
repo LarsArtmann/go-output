@@ -3,7 +3,6 @@ package nom
 import (
 	"encoding/csv"
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 	"slices"
@@ -145,19 +144,4 @@ func writeCacheToFile(filePath string, data map[string][]time.Duration) error {
 	}
 
 	return nil
-}
-
-// saveAsync saves the cache asynchronously (non-blocking).
-// Must be called from a goroutine — snapshots data under RLock, then writes without holding any lock.
-func (tc *TimingCache) saveAsync() {
-	defer tc.pendingSaves.Done()
-
-	dataCopy, filePath := tc.snapshotData()
-
-	tc.saveMu.Lock()
-	defer tc.saveMu.Unlock()
-
-	if err := writeCacheToFile(filePath, dataCopy); err != nil {
-		log.Printf("nom: async cache save failed: %v", err)
-	}
 }

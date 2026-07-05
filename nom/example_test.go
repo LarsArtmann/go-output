@@ -28,7 +28,7 @@ func ExampleNewNOMStyleSubscriber() {
 	})
 
 	snaps := sub.SnapshotActivities()
-	fmt.Println(sub.GetDependencyTree().RenderWithSnapshots(snaps, 20, 0))
+	fmt.Println(sub.DependencyTree().RenderWithSnapshots(snaps, 20, 0))
 
 	counts := sub.GetActivityCounts()
 	fmt.Printf("Completed: %d\n", counts.Completed)
@@ -61,7 +61,7 @@ func ExampleWithTheme() {
 func ExampleWithRenderMode() {
 	sub := nom.NewNOMStyleSubscriber(nom.WithRenderMode(nom.RenderModeLayered))
 
-	tree := sub.GetDependencyTree()
+	tree := sub.DependencyTree()
 	fmt.Println(tree.RenderMode())
 }
 

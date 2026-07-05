@@ -95,24 +95,6 @@ func (h *vtHarness) nonEmptyLines() []string {
 	return result
 }
 
-// lineAt returns the cell-by-cell text content at a specific screen row.
-func (h *vtHarness) lineAt(y int) string {
-	var sb strings.Builder
-
-	for x := 0; x < h.term.Width(); x++ {
-		cell := h.term.CellAt(x, y)
-		if cell != nil {
-			sb.WriteString(cell.String())
-
-			if cell.Width > 1 {
-				x += cell.Width - 1
-			}
-		}
-	}
-
-	return strings.TrimRight(sb.String(), " \x00")
-}
-
 // assertScreenContains asserts the rendered screen contains substr.
 func (h *vtHarness) assertScreenContains(t *testing.T, substr string) {
 	t.Helper()
@@ -120,26 +102,5 @@ func (h *vtHarness) assertScreenContains(t *testing.T, substr string) {
 	screen := h.screenString()
 	if !strings.Contains(screen, substr) {
 		t.Errorf("screen should contain %q\n\nFull screen:\n%s", substr, screen)
-	}
-}
-
-// assertScreenNotContains asserts the rendered screen does NOT contain substr.
-func (h *vtHarness) assertScreenNotContains(t *testing.T, substr string) {
-	t.Helper()
-
-	screen := h.screenString()
-	if strings.Contains(screen, substr) {
-		t.Errorf("screen should NOT contain %q\n\nFull screen:\n%s", substr, screen)
-	}
-}
-
-// assertRowEmpty asserts that a specific screen row is blank (no content).
-// Used to verify ghost-line cleanup after frame shrink.
-func (h *vtHarness) assertRowEmpty(t *testing.T, row int) {
-	t.Helper()
-
-	line := strings.TrimSpace(h.lineAt(row))
-	if line != "" {
-		t.Errorf("row %d should be empty but contains %q", row, line)
 	}
 }

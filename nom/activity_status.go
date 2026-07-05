@@ -52,7 +52,7 @@ func (as ActivityStatus) GetColor() color.Color {
 		return def.Color
 	}
 
-	return Colors.Info
+	return Colors.Fallback
 }
 
 // Interest returns the display priority for sorting: lower = more interesting.

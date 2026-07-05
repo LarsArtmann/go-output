@@ -117,7 +117,7 @@ func FuzzD2NodeStyleRendering(f *testing.F) {
 					Stroke:    styleVal,
 					FontColor: styleVal,
 				},
-				TextTransform: styleVal,
+				TextTransform: D2TextTransform(styleVal),
 			},
 		})
 

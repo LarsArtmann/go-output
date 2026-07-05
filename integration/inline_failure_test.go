@@ -17,7 +17,7 @@ import (
 func TestInlineRenderer_WorkflowFailureErrorDisplayed(t *testing.T) {
 	t.Parallel()
 
-	subscriber := nom.NewNOMStyleSubscriber()
+	subscriber := nom.NewNOMSubscriber()
 	ctx := context.Background()
 
 	fireWorkflowStarted(subscriber, ctx, "wf-fail", "Failing Pipeline")

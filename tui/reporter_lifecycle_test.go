@@ -114,4 +114,4 @@ func TestNewProgressModel_HasNOMSubscriber(t *testing.T) {
 }
 
 // Sanity check: nom is used to verify reporter integrates with nom subscriber.
-var _ = nom.NewNOMStyleSubscriber
+var _ = nom.NewNOMSubscriber

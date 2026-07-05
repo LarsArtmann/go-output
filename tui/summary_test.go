@@ -136,6 +136,6 @@ func TestApplyStateSummary(t *testing.T) {
 func TestCreateSummaryStyle(t *testing.T) {
 	t.Parallel()
 
-	style := createSummaryStyle(nom.ThemeDefault.Colors.Info)
+	style := createSummaryStyle(nom.ThemeDefault.Colors.Fallback)
 	_ = style
 }

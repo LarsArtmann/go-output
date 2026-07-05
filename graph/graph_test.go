@@ -144,8 +144,8 @@ func TestEdgeStyle(t *testing.T) {
 		t,
 		testhelpers.StringField("Color", style.Color, "black"),
 		testhelpers.StringField("Line", style.Line.String(), "dashed"),
-		testhelpers.StringField("ArrowHead", style.ArrowHead, "arrow"),
-		testhelpers.StringField("ArrowTail", style.ArrowTail, "arrow"),
+		testhelpers.StringField("ArrowHead", style.ArrowHead, "arrow"), //nolint:staticcheck // testing deprecated field
+		testhelpers.StringField("ArrowTail", style.ArrowTail, "arrow"), //nolint:staticcheck // testing deprecated field
 	)
 }
 

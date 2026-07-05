@@ -41,7 +41,7 @@ func main() {
 
 	fmt.Println("\n=== NOM Activity Display ===")
 
-	subscriber := nom.NewNOMStyleSubscriber()
+	subscriber := nom.NewNOMSubscriber()
 	fmt.Printf("Subscriber enabled: %v\n", subscriber.IsEnabled())
 	fmt.Printf("Timing cache path: %s\n", subscriber.GetTimingCache().GetFilePath())
 

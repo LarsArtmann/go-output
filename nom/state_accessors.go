@@ -21,6 +21,11 @@ func (ps ParallelismStats) String() string {
 // lookup, root listing). The tree nodes store ONLY IDs and tree structure —
 // all mutable Activity fields are accessed via SnapshotActivities + the
 // snapshot-aware render methods (RenderWithSnapshots).
+//
+// Deprecated: Use DependencyTree() instead — identical behavior, shorter name.
+// This method will be removed in v2.
+//
+//nolint:staticcheck // kept for backward compatibility, remove in v2
 func (ns *NOMStyleSubscriber) GetDependencyTree() *DependencyTree {
 	ns.mu.RLock()
 	defer ns.mu.RUnlock()
@@ -33,7 +38,7 @@ func (ns *NOMStyleSubscriber) GetDependencyTree() *DependencyTree {
 // walk, so event handlers can proceed concurrently. Returns ("", false) when
 // no tree exists yet.
 func (ns *NOMStyleSubscriber) RenderSnapshot(maxHeight, maxWidth int) (string, bool) {
-	tree := ns.GetDependencyTree()
+	tree := ns.DependencyTree()
 	if tree == nil {
 		return "", false
 	}
@@ -49,6 +54,17 @@ func (ns *NOMStyleSubscriber) GetTimingCache() *TimingCache {
 	defer ns.mu.RUnlock()
 
 	return ns.timingCache
+}
+
+// Flush persists all pending timing-cache writes to disk and returns the last
+// save error (if any). Call this at subscriber shutdown to ensure no timing
+// data is lost.
+func (ns *NOMStyleSubscriber) Flush() error {
+	ns.mu.RLock()
+	cache := ns.timingCache
+	ns.mu.RUnlock()
+
+	return cache.Flush()
 }
 
 // IsWorkflowRunning returns true if a workflow is currently running.

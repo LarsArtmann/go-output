@@ -42,7 +42,7 @@ func newTeatestModel(t *testing.T, width, height int) *teatest.TestModel {
 	_ = sub.OnEvent(ctx, nom.ActivityStarted{ID: "test", Name: "Run Tests"})
 
 	// Sync the dependency tree so the first render (before any tick) shows data.
-	model.dependencyTree = sub.GetDependencyTree()
+	model.dependencyTree = sub.DependencyTree()
 
 	tm := teatest.NewTestModel(t, model, teatest.WithInitialTermSize(width, height))
 

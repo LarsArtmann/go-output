@@ -161,7 +161,7 @@ func (r *InlineRenderer) optionalSummarySegments(_ time.Time) []string {
 // criticalPathRemaining returns the longest remaining-time path through the DAG,
 // or 0 when there is no dependency tree. Invoked under renderMu.
 func (r *InlineRenderer) criticalPathRemaining() time.Duration {
-	tree := r.subscriber.GetDependencyTree()
+	tree := r.subscriber.DependencyTree()
 	if tree == nil {
 		return 0
 	}
@@ -175,7 +175,7 @@ func (r *InlineRenderer) criticalPathRemaining() time.Duration {
 // bar (e.g. "4 nodes · 4 edges · 3 layers"). Returns empty when there is no
 // dependency tree. Invoked under renderMu.
 func (r *InlineRenderer) dagSummarySegment() string {
-	tree := r.subscriber.GetDependencyTree()
+	tree := r.subscriber.DependencyTree()
 	if tree == nil {
 		return ""
 	}

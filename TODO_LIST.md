@@ -1,7 +1,7 @@
 # TODO_LIST.md — go-output
 
-**Last updated:** 2026-07-02
-**Open items:** 4
+**Last updated:** 2026-07-05
+**Open items:** 3
 **Blocked:** 0
 
 ---
@@ -11,22 +11,20 @@
 | #   | Task                                                                                                       | Effort | Status                        |
 | --- | ---------------------------------------------------------------------------------------------------------- | ------ | ----------------------------- |
 | 14  | **Community: Post to r/golang, submit to Awesome Go**                                                      | Low    | Open (needs owner account)    |
-| 16  | **Cut `v1.0.0` tag** — API frozen (ADR 006); CHANGELOG + full checklist done                               | Low    | Prepared — awaiting owner tag |
-| 18  | **Cut `v0.23.0` tag** — DAG innovations release (layered mode, themes, categories, critical-path, daghtml) | Low    | Prepared — awaiting owner tag |
-| 19  | **daghtml lint cleanup** — 11 pre-existing lint issues (depguard, gosec G203, gochecknoglobals, wrapcheck) | Medium | Tech debt                     |
+| 16  | **Cut `v1.0.0` tag** — API frozen (ADR 006); CHANGELOG + full checklist done; P0 concurrency fixes applied | Low    | Prepared — awaiting owner tag |
 
 ---
 
 ## Resolved This Session (2026-06-20) — Do Not Redo
 
-| Task                                                   | Resolution                                                                                                                                                                                                |
-| ------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| #15 `TableData` fields vs getters for v1               | **Resolved — keep both.** Getters (`GetHeaders`/`GetRows`/`GetFooter`) satisfy the `TableDataProvider` interface in `table/` + test doubles. Load-bearing, not duplication.                               |
-| `ActivityStatusPaused` / `SetPaused` (dead event path) | **Removed.** No `EventActivityPaused`, zero callers, unreachable. `SymbolPaused`→`SymbolPending` (glyph ⏸→○); Pending given its own honest identity.                                                      |
-| Deprecated APIs (7 markers)                            | **Removed.** `EnsureBuild`, `ParseActivityID`/`ParseWorkflowID`, `NewGraphNodeID`/`NewGraphNodeLabel`, `MarshalTSV(any)`, 6 color aliases — all had zero prod callers. Zero `Deprecated:` markers remain. |
-| `OperationSymbol` + `OperationType*` (speculative)     | **Removed.** Zero production callers; stringly-typed mapping to nowhere. `SymbolDownload`/`Upload` kept as palette.                                                                                       |
-| Over-exposed tui public API (~15 symbols)              | **Unexported.** Msg types, `WorkflowState`, `ProgressStep`, `UpdateType`, `TickCmd`, etc. Public surface is now `NewBubbleTeaProgressReporter` + `Report*` + `DisplayMode` + `ProgressModel`.             |
-| Pre-release checklist (build/test/race/lint/vuln/tidy) | **All green.** 20/20 modules pass, 0 lint issues, `-race` clean, govulncheck 0 vulnerabilities, go mod tidy clean.                                                                                        |
+| Task                                                   | Resolution                                                                                                                                                                                                                                                         |
+| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| #15 `TableData` fields vs getters for v1               | **Resolved — keep both.** Getters (`GetHeaders`/`GetRows`/`GetFooter`) satisfy the `TableDataProvider` interface in `table/` + test doubles. Load-bearing, not duplication.                                                                                        |
+| `ActivityStatusPaused` / `SetPaused` (dead event path) | **Removed.** No `EventActivityPaused`, zero callers, unreachable. `SymbolPaused`→`SymbolPending` (glyph ⏸→○); Pending given its own honest identity.                                                                                                               |
+| Deprecated APIs (7 markers)                            | **Removed.** `EnsureBuild`, `ParseActivityID`/`ParseWorkflowID`, `NewGraphNodeID`/`NewGraphNodeLabel`, `MarshalTSV(any)`, 6 color aliases — all had zero prod callers. One `Deprecated:` marker remains: `NodeShapeRect` (kept for backward compat, remove in v2). |
+| `OperationSymbol` + `OperationType*` (speculative)     | **Removed.** Zero production callers; stringly-typed mapping to nowhere. `SymbolDownload`/`Upload` kept as palette.                                                                                                                                                |
+| Over-exposed tui public API (~15 symbols)              | **Unexported.** Msg types, `WorkflowState`, `ProgressStep`, `UpdateType`, `TickCmd`, etc. Public surface is now `NewBubbleTeaProgressReporter` + `Report*` + `DisplayMode` + `ProgressModel`.                                                                      |
+| Pre-release checklist (build/test/race/lint/vuln/tidy) | **All green.** 20/20 modules pass, 0 lint issues, `-race` clean, govulncheck 0 vulnerabilities, go mod tidy clean.                                                                                                                                                 |
 
 ---
 

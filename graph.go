@@ -187,8 +187,16 @@ type EdgeStyle struct {
 	// Line is the line style (solid, dashed, dotted).
 	Line LineStyle
 	// ArrowHead is the arrowhead style at the target end.
+	//
+	// Deprecated: Not read by any renderer. For D2, use D2Edge.TargetArrow.
+	// For DOT/Mermaid, use renderer-specific style fields. This field will be
+	// removed in v2.
 	ArrowHead string
 	// ArrowTail is the arrowhead style at the source end.
+	//
+	// Deprecated: Not read by any renderer. For D2, use D2Edge.SourceArrow.
+	// For DOT/Mermaid, use renderer-specific style fields. This field will be
+	// removed in v2.
 	ArrowTail string
 }
 

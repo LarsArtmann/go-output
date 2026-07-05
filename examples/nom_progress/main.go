@@ -13,7 +13,7 @@ import (
 var errLintFailed = errors.New("lint check failed")
 
 func main() {
-	subscriber := nom.NewNOMStyleSubscriber()
+	subscriber := nom.NewNOMSubscriber()
 	ctx := context.Background()
 
 	send := func(evt nom.Event) {
@@ -97,9 +97,9 @@ func main() {
 	fmt.Println("=== NOM Dependency Tree (priority-ordered) ===")
 	fmt.Println("Failed/Running activities appear first when height is limited.")
 
-	fmt.Println(subscriber.GetDependencyTree().RenderWithSnapshots(snaps, 3, 0))
+	fmt.Println(subscriber.DependencyTree().RenderWithSnapshots(snaps, 3, 0))
 	fmt.Println()
-	fmt.Println(subscriber.GetDependencyTree().RenderWithSnapshots(snaps, 20, 0))
+	fmt.Println(subscriber.DependencyTree().RenderWithSnapshots(snaps, 20, 0))
 
 	counts := subscriber.GetActivityCounts()
 	fmt.Printf("\nRunning: %d, Completed: %d, Failed: %d, Pending: %d\n",

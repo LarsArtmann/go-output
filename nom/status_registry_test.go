@@ -1,8 +1,10 @@
 package nom
 
 import (
+	"context"
 	"image/color"
 	"slices"
+	"strings"
 	"testing"
 
 	"github.com/larsartmann/go-output"
@@ -116,7 +118,7 @@ func TestStatusRegistry_RegisterStatus_DeduplicatesByName(t *testing.T) {
 	id1 := RegisterStatus(
 		"skipped-test",
 		"⊘",
-		Colors.Info,
+		Colors.Fallback,
 		2,
 		output.NodeShapeEllipse,
 		output.GraphStyle{},
@@ -184,7 +186,7 @@ func TestStatusRegistry_AllActivityStatuses_IncludesCustom(t *testing.T) {
 	custom := RegisterStatus(
 		"unique-custom-"+t.Name(),
 		"★",
-		Colors.Info,
+		Colors.Fallback,
 		2,
 		output.NodeShapeBox,
 		output.GraphStyle{},
@@ -213,5 +215,50 @@ func TestStatusRegistry_AllowedValues_IncludesCustom(t *testing.T) {
 
 	if !slices.Contains(values, "allowed-custom-"+t.Name()) {
 		t.Errorf("AllowedValues() does not include custom status")
+	}
+}
+
+// TestRegisterStatus_RendersInTree proves the RegisterStatus() ghost system
+// works end-to-end: register a custom "skipped" status, create a subscriber,
+// set an activity to that status, take a snapshot, and verify the custom
+// symbol appears in the rendered tree.
+func TestRegisterStatus_RendersInTree(t *testing.T) {
+	t.Parallel()
+
+	skipped := RegisterStatus(
+		"skipped-e2e-"+t.Name(),
+		"⊘",
+		Colors.Pending,
+		0,
+		output.NodeShapeBox,
+		output.GraphStyle{},
+	)
+
+	sub := newTestSubscriber(t)
+	ctx := context.Background()
+	_ = sendWorkflowStarted(sub, ctx, WorkflowID("wf-skip"), "")
+	registerActivity(sub, ctx, ActivityID("lint"), ActivityName("Lint"))
+
+	// Manually set the activity to the custom status via SetActivityState
+	// (GetActivity returns a copy, so we must replace the stored pointer).
+	act := sub.GetActivity(ActivityID("lint"))
+	if act == nil {
+		t.Fatal("GetActivity returned nil")
+	}
+
+	act.Status = skipped
+	act.Symbol = skipped.GetSymbol()
+	act.Color = skipped.GetColor()
+	sub.SetActivityState(ActivityID("lint"), act)
+
+	snaps := sub.SnapshotActivities()
+	rendered := sub.DependencyTree().RenderWithSnapshots(snaps, 20, 80)
+
+	if !strings.Contains(rendered, "Lint") {
+		t.Errorf("rendered tree should contain 'Lint', got:\n%s", rendered)
+	}
+
+	if !strings.Contains(rendered, "⊘") {
+		t.Errorf("rendered tree should contain custom symbol '⊘', got:\n%s", rendered)
 	}
 }

@@ -19,6 +19,11 @@ type ActivityReader interface {
 }
 
 // NOMStyleSubscriber implements EventSubscriber to provide NOM-style visualization.
+//
+// Deprecated: Use NOMSubscriber — identical type, shorter name.
+// NOMStyleSubscriber will be removed in v2.
+//
+//nolint:staticcheck // kept for backward compatibility, remove in v2
 type NOMStyleSubscriber struct {
 	mu             sync.RWMutex
 	activities     map[ActivityID]*Activity
@@ -34,7 +39,8 @@ type NOMStyleSubscriber struct {
 	workflowName WorkflowName
 	startTime    time.Time
 	// showParallelism enables the "parallel: N/M possible" segment in the
-	// inline renderer summary bar.
+	// inline renderer summary bar. Immutable after construction (set only
+	// by WithShowParallelism); safe to read without ns.mu.
 	showParallelism bool
 
 	isRunning bool
@@ -200,6 +206,11 @@ func WithTheme(theme Theme) SubscriberOption {
 }
 
 // NewNOMStyleSubscriber creates a new NOM-style subscriber.
+//
+// Deprecated: Use NewNOMSubscriber — identical behavior, shorter name.
+// NewNOMStyleSubscriber will be removed in v2.
+//
+//nolint:staticcheck // kept for backward compatibility, remove in v2
 func NewNOMStyleSubscriber(opts ...SubscriberOption) *NOMStyleSubscriber {
 	ns := &NOMStyleSubscriber{
 		activities:     make(map[ActivityID]*Activity),
@@ -306,4 +317,12 @@ func (v *subscriberView) Edges() []output.GraphEdge {
 	}
 
 	return edges
+}
+
+// NOMSubscriber is the preferred short name for NOMStyleSubscriber.
+type NOMSubscriber = NOMStyleSubscriber
+
+// NewNOMSubscriber creates a new NOM subscriber — preferred over NewNOMStyleSubscriber.
+func NewNOMSubscriber(opts ...SubscriberOption) *NOMSubscriber {
+	return NewNOMStyleSubscriber(opts...)
 }

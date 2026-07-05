@@ -44,7 +44,7 @@ func BenchmarkRenderUnderStepChurn(b *testing.B) {
 	for _, size := range []int{100, 300} {
 		b.Run(fmt.Sprintf("%dNodes", size), func(b *testing.B) {
 			sub := buildBenchSubscriber(b, size)
-			tree := sub.GetDependencyTree()
+			tree := sub.DependencyTree()
 			maxH := size / 4
 
 			b.ResetTimer()

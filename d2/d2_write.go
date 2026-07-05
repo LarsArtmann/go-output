@@ -58,8 +58,8 @@ func (*D2Diagram) writeStyleEffects(b *strings.Builder, s D2NodeStyle, indent st
 		fmt.Fprintf(b, "%sborder-radius: %d\n", indent, s.BorderRadius)
 	}
 
-	if s.TextTransform != "" {
-		fmt.Fprintf(b, "%sstyle.text-transform: %s\n", indent, escape.D2(s.TextTransform))
+	if s.TextTransform != D2TextTransformNone {
+		fmt.Fprintf(b, "%sstyle.text-transform: %s\n", indent, escape.D2(string(s.TextTransform)))
 	}
 }
 

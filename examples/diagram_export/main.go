@@ -13,7 +13,7 @@ import (
 )
 
 func main() {
-	subscriber := nom.NewNOMStyleSubscriber()
+	subscriber := nom.NewNOMSubscriber()
 	ctx := context.Background()
 
 	// Build a CI pipeline: fetch → compile → {test, lint} → deploy

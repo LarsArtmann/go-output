@@ -45,7 +45,7 @@ func NewProgressModel() *ProgressModel {
 		workflowState:  workflowStateIdle,
 		displayMode:    DisplayModeUniversal,
 		dependencyTree: nom.NewDependencyTree(),
-		nomSubscriber:  nom.NewNOMStyleSubscriber(),
+		nomSubscriber:  nom.NewNOMSubscriber(),
 		theme:          nom.ThemeDefault,
 	}
 }
@@ -67,7 +67,7 @@ func NewBubbleTeaProgressReporter() *BubbleTeaProgressReporter {
 // Send events to this subscriber to populate the NOM-style dependency tree.
 // This is the public API for consumers (e.g. BuildFlow's ProgressBridge) that
 // dispatch lifecycle events to the visual renderer.
-func (pr *BubbleTeaProgressReporter) Subscriber() *nom.NOMStyleSubscriber {
+func (pr *BubbleTeaProgressReporter) Subscriber() *nom.NOMSubscriber {
 	return pr.model.nomSubscriber
 }
 

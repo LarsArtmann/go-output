@@ -66,20 +66,26 @@ type SemanticColors struct {
 	Completed color.Color
 	Pending   color.Color
 	Failed    color.Color
-	Info      color.Color
-	Phase     color.Color
+	// Fallback is used for unknown/custom statuses that don't match a
+	// specific semantic slot. (Was named Info in previous versions.)
+	Fallback color.Color
+	Phase    color.Color
 }
 
-// Colors is the default color theme for activity states. Mirrors the 4 semantic
-// colors used by tui/colors.go (success≈Completed, warning≈Running,
-// err≈Failed, dim≈Pending). See split-brain M1 in SPLIT-BRAIN.html.
+// Colors is the DEFAULT color palette for activity states. Used as the
+// fallback when no theme is explicitly set (ThemeDefault embeds these values).
 //
-//nolint:gochecknoglobals // immutable theme configuration
+// At render time, SnapshotActivities() resolves colors via the subscriber's
+// theme, so a custom theme always overrides these defaults. This global is
+// NOT a parallel source of truth for rendering — it is the initial value that
+// themes build on. See theme.go for the Theme system.
+//
+//nolint:gochecknoglobals // immutable default theme configuration
 var Colors = SemanticColors{
 	Running:   lipgloss.Color("11"),
 	Completed: lipgloss.Color("10"),
 	Pending:   lipgloss.Color("8"),
 	Failed:    lipgloss.Color("9"),
-	Info:      lipgloss.Color("14"),
+	Fallback:  lipgloss.Color("14"),
 	Phase:     lipgloss.Color("13"),
 }

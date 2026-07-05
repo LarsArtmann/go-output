@@ -46,7 +46,7 @@ func TestProgressModel_RenderDependencyTree_CollapseMarkerNoPanic(t *testing.T) 
 		}
 	}
 
-	model.dependencyTree = sub.GetDependencyTree()
+	model.dependencyTree = sub.DependencyTree()
 
 	// Must not panic and must surface the collapse marker.
 	got := model.renderDependencyTree()

@@ -72,7 +72,7 @@ func getStateStyle(state workflowState, theme nom.Theme) (string, color.Color) {
 	case workflowStateErrored:
 		return "❌ Workflow Error: {completed}✓ | {time} | Press 'q' or Ctrl+C to exit", theme.Colors.Failed
 	default:
-		return "", theme.Colors.Info
+		return "", theme.Colors.Fallback
 	}
 }
 
@@ -84,7 +84,7 @@ func applyStateSummary(
 	elapsed time.Duration,
 	theme nom.Theme,
 ) (string, lipgloss.Style) {
-	baseStyle := createSummaryStyle(theme.Colors.Info)
+	baseStyle := createSummaryStyle(theme.Colors.Fallback)
 
 	stateSummary, color := getStateStyle(state, theme)
 	if stateSummary != "" {

@@ -245,3 +245,53 @@ func (c D2Constraint) AllowedValues() []string {
 func (c D2Constraint) IsValid() bool {
 	return output.ContainsEnum(allD2Constraints, c)
 }
+
+// D2TextTransform represents the text-casing transform for a D2 node's label.
+type D2TextTransform string
+
+// D2TextTransform constants.
+const (
+	D2TextTransformNone       D2TextTransform = ""
+	D2TextTransformUpper      D2TextTransform = "uppercase"
+	D2TextTransformLower      D2TextTransform = "lowercase"
+	D2TextTransformCapitalize D2TextTransform = "capitalize"
+)
+
+//nolint:gochecknoglobals // Global variable used for value iteration.
+var d2TextTransformValues = []D2TextTransform{
+	D2TextTransformUpper,
+	D2TextTransformLower,
+	D2TextTransformCapitalize,
+}
+
+// ErrInvalidD2TextTransform is returned when an invalid text transform is provided.
+var ErrInvalidD2TextTransform = errors.New("invalid D2 text transform")
+
+// ParseD2TextTransform converts a string to D2TextTransform, returning an error if invalid.
+func ParseD2TextTransform(s string) (D2TextTransform, error) {
+	if s == "" {
+		return D2TextTransformNone, nil
+	}
+
+	v, err := output.ParseEnum(d2TextTransformValues, s, func(t D2TextTransform) string { return string(t) })
+	if err != nil {
+		return "", fmt.Errorf("%w: %q", ErrInvalidD2TextTransform, s)
+	}
+
+	return v, nil
+}
+
+// IsValid returns true if the text transform is a valid D2TextTransform value.
+func (t D2TextTransform) IsValid() bool {
+	return t == D2TextTransformNone || output.ContainsEnum(d2TextTransformValues, t)
+}
+
+// AllowedValues returns all valid D2 text transform values for CLI help text.
+func (t D2TextTransform) AllowedValues() []string {
+	return output.EnumAllowedValues(d2TextTransformValues)
+}
+
+// String returns the string representation of the text transform.
+func (t D2TextTransform) String() string {
+	return string(t)
+}

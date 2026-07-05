@@ -222,9 +222,9 @@ func TestNOMStyleSubscriber_GetDependencyTree(t *testing.T) {
 
 	ns := newTestSubscriber(t)
 
-	tree := ns.GetDependencyTree()
+	tree := ns.DependencyTree()
 	if tree == nil {
-		t.Error("GetDependencyTree() should not return nil")
+		t.Error("DependencyTree() should not return nil")
 	}
 }
 

@@ -123,7 +123,7 @@ type ProgressModel struct {
 	// Refreshed each tick via syncNOMSubscriber(). Safe to read between ticks.
 	// Activity counts are fetched on-demand via GetActivityCounts() — no cache needed.
 	dependencyTree *nom.DependencyTree
-	nomSubscriber  *nom.NOMStyleSubscriber
+	nomSubscriber  *nom.NOMSubscriber
 	showHelp       bool
 	cancelFunc     context.CancelFunc
 	selectedNode   nom.ActivityID

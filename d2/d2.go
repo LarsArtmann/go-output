@@ -44,8 +44,8 @@ type D2NodeStyle struct {
 	Shadow bool
 	// BorderRadius is the corner radius in pixels.
 	BorderRadius int
-	// TextTransform controls text casing ("uppercase", "lowercase", "capitalize").
-	TextTransform string
+	// TextTransform controls text casing (uppercase, lowercase, capitalize).
+	TextTransform D2TextTransform
 }
 
 func (s D2NodeStyle) isSet() bool {
