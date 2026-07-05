@@ -5,6 +5,7 @@ import (
 
 	"github.com/larsartmann/go-output"
 	"github.com/larsartmann/go-output/table"
+	"github.com/larsartmann/go-output/testhelpers"
 )
 
 //nolint:testableexamples // Demonstration example, output is dynamic
@@ -14,14 +15,7 @@ func ExampleNew() {
 	tbl.AddRow("Alice", "30", "NYC")
 	tbl.AddRow("Bob", "25", "LA")
 
-	result, err := tbl.Render()
-	if err != nil {
-		fmt.Printf("error: %v\n", err)
-
-		return
-	}
-
-	fmt.Println(result)
+	fmt.Println(testhelpers.MustRender(tbl))
 }
 
 //nolint:testableexamples // Demonstration example, output is dynamic
@@ -32,14 +26,7 @@ func ExampleFromTableData() {
 
 	tbl := table.FromTableData(data, table.WithColorMode(output.ColorModeNever))
 
-	result, err := tbl.Render()
-	if err != nil {
-		fmt.Printf("error: %v\n", err)
-
-		return
-	}
-
-	fmt.Println(result)
+	fmt.Println(testhelpers.MustRender(tbl))
 }
 
 //nolint:testableexamples // Demonstration example, output is dynamic
@@ -50,12 +37,5 @@ func ExampleTable_SetFooter() {
 	tbl.AddRow("Bob", "87")
 	tbl.SetFooter("Total", "182")
 
-	result, err := tbl.Render()
-	if err != nil {
-		fmt.Printf("error: %v\n", err)
-
-		return
-	}
-
-	fmt.Println(result)
+	fmt.Println(testhelpers.MustRender(tbl))
 }

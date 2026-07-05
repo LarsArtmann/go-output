@@ -5,6 +5,7 @@ import (
 
 	"github.com/larsartmann/go-output"
 	"github.com/larsartmann/go-output/plantuml"
+	"github.com/larsartmann/go-output/testhelpers"
 	"github.com/larsartmann/go-output/testhelpers/graphtest"
 )
 
@@ -15,14 +16,7 @@ func ExampleNewPlantUMLDiagram() {
 	diagram.AddNode(graphtest.NewTestNode("server", "Server"))
 	diagram.AddEdge(graphtest.NewTestEdge("client", "server", "requests"))
 
-	result, err := diagram.Render()
-	if err != nil {
-		fmt.Printf("error: %v\n", err)
-
-		return
-	}
-
-	fmt.Println(result)
+	fmt.Println(testhelpers.MustRender(diagram))
 }
 
 //nolint:testableexamples // Demonstration example, output is dynamic
@@ -31,12 +25,5 @@ func ExamplePlantUMLFromTableData() {
 	data.AddRow([]string{"Alpha"})
 	data.AddRow([]string{"Beta"})
 
-	result, err := plantuml.PlantUMLFromTableData(data).Render()
-	if err != nil {
-		fmt.Printf("error: %v\n", err)
-
-		return
-	}
-
-	fmt.Println(result)
+	fmt.Println(testhelpers.MustRender(plantuml.PlantUMLFromTableData(data)))
 }

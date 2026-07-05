@@ -5,6 +5,7 @@ import (
 
 	"github.com/larsartmann/go-output"
 	"github.com/larsartmann/go-output/serialization"
+	"github.com/larsartmann/go-output/testhelpers"
 	"github.com/larsartmann/go-output/testhelpers/graphtest"
 )
 
@@ -111,12 +112,5 @@ func ExampleNewJSONGraphRenderer() {
 		graphtest.NewTestEdge("a", "b", ""),
 	})
 
-	result, err := renderer.Render()
-	if err != nil {
-		fmt.Printf("error: %v\n", err)
-
-		return
-	}
-
-	fmt.Println(result)
+	fmt.Println(testhelpers.MustRender(renderer))
 }

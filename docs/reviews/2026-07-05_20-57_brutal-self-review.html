@@ -30,11 +30,21 @@
         --solution: var(--color-blue);
         --warning: var(--color-yellow);
 
-        --font-heading: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        --font-body: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        --font-mono: ui-monospace, "Cascadia Code", "Source Code Pro", "JetBrains Mono", Menlo, Consolas, monospace;
+        --font-heading:
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+        --font-body:
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+        --font-mono:
+          ui-monospace, "Cascadia Code", "Source Code Pro", "JetBrains Mono", Menlo, Consolas,
+          monospace;
       }
-      * { box-sizing: border-box; margin: 0; padding: 0; }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
       body {
         background: var(--surface);
         color: var(--text);
@@ -84,10 +94,22 @@
         letter-spacing: 0.06em;
         margin-right: 0.5rem;
       }
-      h3 { font-size: 1.1rem; margin: 0 0 0.4rem; font-weight: 700; }
-      h4 { font-size: 0.98rem; margin: 0 0 0.3rem; font-weight: 700; }
-      p { margin: 0 0 0.7rem; }
-      p:last-child { margin-bottom: 0; }
+      h3 {
+        font-size: 1.1rem;
+        margin: 0 0 0.4rem;
+        font-weight: 700;
+      }
+      h4 {
+        font-size: 0.98rem;
+        margin: 0 0 0.3rem;
+        font-weight: 700;
+      }
+      p {
+        margin: 0 0 0.7rem;
+      }
+      p:last-child {
+        margin-bottom: 0;
+      }
       code {
         font-family: var(--font-mono);
         font-size: 0.85em;
@@ -105,8 +127,17 @@
         font-size: 0.83rem;
         line-height: 1.5;
       }
-      pre code { background: none; padding: 0; color: var(--text); }
-      .hero-subtitle { color: var(--text-muted); font-size: 1.02rem; margin-top: 0.5rem; max-width: 60ch; }
+      pre code {
+        background: none;
+        padding: 0;
+        color: var(--text);
+      }
+      .hero-subtitle {
+        color: var(--text-muted);
+        font-size: 1.02rem;
+        margin-top: 0.5rem;
+        max-width: 60ch;
+      }
       .hero-badge {
         display: inline-block;
         font-family: var(--font-mono);
@@ -130,11 +161,28 @@
         border-top: 3px solid var(--border-strong);
         padding: 1rem;
       }
-      .stat-card.stat-bad { border-top-color: var(--problem); }
-      .stat-card.stat-warn { border-top-color: var(--warning); }
-      .stat-card.stat-good { border-top-color: var(--solution); }
-      .stat-value { font-family: var(--font-mono); font-size: 2rem; font-weight: 800; line-height: 1; }
-      .stat-label { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.3rem; text-transform: uppercase; letter-spacing: 0.06em; }
+      .stat-card.stat-bad {
+        border-top-color: var(--problem);
+      }
+      .stat-card.stat-warn {
+        border-top-color: var(--warning);
+      }
+      .stat-card.stat-good {
+        border-top-color: var(--solution);
+      }
+      .stat-value {
+        font-family: var(--font-mono);
+        font-size: 2rem;
+        font-weight: 800;
+        line-height: 1;
+      }
+      .stat-label {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        margin-top: 0.3rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
 
       .card {
         background: var(--surface-raised);
@@ -143,10 +191,18 @@
         padding: 1rem 1.1rem;
         margin: 0.7rem 0;
       }
-      .card-problem { border-left-color: var(--problem); }
-      .card-warning { border-left-color: var(--warning); }
-      .card-solution { border-left-color: var(--solution); }
-      .card h4 { margin-bottom: 0.4rem; }
+      .card-problem {
+        border-left-color: var(--problem);
+      }
+      .card-warning {
+        border-left-color: var(--warning);
+      }
+      .card-solution {
+        border-left-color: var(--solution);
+      }
+      .card h4 {
+        margin-bottom: 0.4rem;
+      }
       .card .where {
         font-family: var(--font-mono);
         font-size: 0.76rem;
@@ -163,12 +219,28 @@
         border-radius: 2px;
         vertical-align: middle;
       }
-      .badge-critical { background: color-mix(in srgb, var(--problem) 22%, transparent); color: var(--problem); }
-      .badge-high { background: color-mix(in srgb, var(--warning) 22%, transparent); color: var(--warning); }
-      .badge-medium { background: color-mix(in srgb, var(--accent) 22%, transparent); color: var(--accent); }
-      .badge-fixed { background: color-mix(in srgb, var(--solution) 22%, transparent); color: var(--solution); }
+      .badge-critical {
+        background: color-mix(in srgb, var(--problem) 22%, transparent);
+        color: var(--problem);
+      }
+      .badge-high {
+        background: color-mix(in srgb, var(--warning) 22%, transparent);
+        color: var(--warning);
+      }
+      .badge-medium {
+        background: color-mix(in srgb, var(--accent) 22%, transparent);
+        color: var(--accent);
+      }
+      .badge-fixed {
+        background: color-mix(in srgb, var(--solution) 22%, transparent);
+        color: var(--solution);
+      }
 
-      .strengths { display: grid; gap: 0.6rem; margin: 1rem 0; }
+      .strengths {
+        display: grid;
+        gap: 0.6rem;
+        margin: 1rem 0;
+      }
       .strength {
         display: grid;
         grid-template-columns: auto 1fr;
@@ -185,8 +257,13 @@
         font-size: 1.2rem;
         line-height: 1.3;
       }
-      .strength strong { display: block; }
-      .strength span { color: var(--text-muted); font-size: 0.9rem; }
+      .strength strong {
+        display: block;
+      }
+      .strength span {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+      }
 
       .migration-step {
         display: grid;
@@ -198,18 +275,59 @@
         border: 1px solid var(--border);
         border-left: 3px solid var(--accent);
       }
-      .migration-num { font-family: var(--font-mono); font-weight: 800; font-size: 1.5rem; color: var(--accent); line-height: 1; }
-      .migration-content p { margin: 0; font-size: 0.92rem; }
-      .migration-content .tagline { color: var(--text-faint); font-family: var(--font-mono); font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.08em; }
+      .migration-num {
+        font-family: var(--font-mono);
+        font-weight: 800;
+        font-size: 1.5rem;
+        color: var(--accent);
+        line-height: 1;
+      }
+      .migration-content p {
+        margin: 0;
+        font-size: 0.92rem;
+      }
+      .migration-content .tagline {
+        color: var(--text-faint);
+        font-family: var(--font-mono);
+        font-size: 0.74rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
 
-      .qna { margin: 0.6rem 0; }
-      .qna .q { font-weight: 700; color: var(--accent); margin-top: 1rem; }
-      .qna .a { color: var(--text-muted); }
+      .qna {
+        margin: 0.6rem 0;
+      }
+      .qna .q {
+        font-weight: 700;
+        color: var(--accent);
+        margin-top: 1rem;
+      }
+      .qna .a {
+        color: var(--text-muted);
+      }
 
-      table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.88rem; }
-      th, td { text-align: left; padding: 0.5rem 0.7rem; border-bottom: 1px solid var(--border); }
-      th { font-family: var(--font-mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-faint); }
-      td code { font-size: 0.82em; }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1rem 0;
+        font-size: 0.88rem;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 0.5rem 0.7rem;
+        border-bottom: 1px solid var(--border);
+      }
+      th {
+        font-family: var(--font-mono);
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--text-faint);
+      }
+      td code {
+        font-size: 0.82em;
+      }
 
       .callout {
         padding: 0.8rem 1rem;
@@ -217,7 +335,9 @@
         border-left: 3px solid var(--accent);
         background: color-mix(in srgb, var(--accent) 8%, var(--surface-raised));
       }
-      .callout strong { color: var(--accent); }
+      .callout strong {
+        color: var(--accent);
+      }
 
       .footer {
         margin-top: 2.5rem;
@@ -234,15 +354,37 @@
         margin: 1.4rem 0;
         font-size: 0.86rem;
       }
-      .toc a { color: var(--text-muted); text-decoration: none; display: block; padding: 0.15rem 0; }
-      .toc a:hover { color: var(--accent); }
-      .toc .label { font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-faint); margin-bottom: 0.4rem; }
+      .toc a {
+        color: var(--text-muted);
+        text-decoration: none;
+        display: block;
+        padding: 0.15rem 0;
+      }
+      .toc a:hover {
+        color: var(--accent);
+      }
+      .toc .label {
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--text-faint);
+        margin-bottom: 0.4rem;
+      }
 
       @media (max-width: 768px) {
-        .layout { padding: 1rem; }
-        .stat-grid { grid-template-columns: repeat(2, 1fr); }
-        .migration-step { grid-template-columns: 1fr; }
-        h1 { font-size: 1.7rem; }
+        .layout {
+          padding: 1rem;
+        }
+        .stat-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .migration-step {
+          grid-template-columns: 1fr;
+        }
+        h1 {
+          font-size: 1.7rem;
+        }
       }
     </style>
   </head>
@@ -260,9 +402,9 @@
         A deep review of go-output at v0.23.3. Every finding below was verified against the live
         codebase — build, lint, tests, gopls, and grep. No speculation. The project is in genuinely
         good shape (zero lint-noise, all tests green, sound architecture), but it carries
-        <strong>6 latent concurrency bugs in nom/</strong>, a pile of <strong>dead exported API</strong>,
-        several <strong>split brains</strong>, and <strong>documentation that lies about the code</strong>.
-        Here's all of it.
+        <strong>6 latent concurrency bugs in nom/</strong>, a pile of
+        <strong>dead exported API</strong>, several <strong>split brains</strong>, and
+        <strong>documentation that lies about the code</strong>. Here's all of it.
       </p>
 
       <div class="toc">
@@ -300,15 +442,43 @@
       <h2 id="state"><span class="num">00</span>Current State — Verified</h2>
       <table>
         <thead>
-          <tr><th>Check</th><th>Result</th><th>Notes</th></tr>
+          <tr>
+            <th>Check</th>
+            <th>Result</th>
+            <th>Notes</th>
+          </tr>
         </thead>
         <tbody>
-          <tr><td>Build (19 modules)</td><td><span class="badge badge-fixed">PASS</span></td><td><code>nix run .#build</code> clean</td></tr>
-          <tr><td>Tests (19 modules)</td><td><span class="badge badge-fixed">PASS</span></td><td>nom 0.277s, tui 0.390s — all green</td></tr>
-          <tr><td>Lint (golangci-lint)</td><td><span class="badge badge-critical">1 FAIL</span></td><td><code>nom/inline_renderer.go:357 Draw() cyclop 20 &gt; 12</code></td></tr>
-          <tr><td>Deprecated markers</td><td><span class="badge badge-high">1 exists</span></td><td><code>NodeShapeRect</code> in graph.go — by design, but TODO claims zero</td></tr>
-          <tr><td>Banned deps</td><td><span class="badge badge-fixed">NONE</span></td><td>No testify, no yaml.v2/v3, charm.land v2 vanity imports used correctly</td></tr>
-          <tr><td>Status reports in docs/status/</td><td><span class="badge badge-high">63 files</span></td><td>Accumulated one-time snapshots — bloat</td></tr>
+          <tr>
+            <td>Build (19 modules)</td>
+            <td><span class="badge badge-fixed">PASS</span></td>
+            <td><code>nix run .#build</code> clean</td>
+          </tr>
+          <tr>
+            <td>Tests (19 modules)</td>
+            <td><span class="badge badge-fixed">PASS</span></td>
+            <td>nom 0.277s, tui 0.390s — all green</td>
+          </tr>
+          <tr>
+            <td>Lint (golangci-lint)</td>
+            <td><span class="badge badge-critical">1 FAIL</span></td>
+            <td><code>nom/inline_renderer.go:357 Draw() cyclop 20 &gt; 12</code></td>
+          </tr>
+          <tr>
+            <td>Deprecated markers</td>
+            <td><span class="badge badge-high">1 exists</span></td>
+            <td><code>NodeShapeRect</code> in graph.go — by design, but TODO claims zero</td>
+          </tr>
+          <tr>
+            <td>Banned deps</td>
+            <td><span class="badge badge-fixed">NONE</span></td>
+            <td>No testify, no yaml.v2/v3, charm.land v2 vanity imports used correctly</td>
+          </tr>
+          <tr>
+            <td>Status reports in docs/status/</td>
+            <td><span class="badge badge-high">63 files</span></td>
+            <td>Accumulated one-time snapshots — bloat</td>
+          </tr>
         </tbody>
       </table>
 
@@ -324,9 +494,10 @@
       <h2 id="concurrency"><span class="num">01</span>P1 — Concurrency Bugs in nom/</h2>
       <p>
         nom/ is the most complex package and the one with real concurrency. It mostly gets the hard
-        parts right (the documented two-mutex model is sound, the snapshot model killed a real
-        data race, goroutine shutdown in the render loop is correct). But <strong>config reads
-        outside the snapshot path</strong> and <strong>disk I/O under the subscriber lock</strong>
+        parts right (the documented two-mutex model is sound, the snapshot model killed a real data
+        race, goroutine shutdown in the render loop is correct). But
+        <strong>config reads outside the snapshot path</strong> and
+        <strong>disk I/O under the subscriber lock</strong>
         are genuine bugs. These are the highest-impact items in the whole review.
       </p>
 
@@ -336,13 +507,16 @@
         <p>
           <code>RenderCompletion</code> reads <code>r.appName</code> directly while holding only
           <code>renderMu</code>. But <code>SetAppName</code> writes it under <code>tickMu</code>.
-          These are two different mutexes by design — the AGENTS.md explicitly warns they "MUST
-          stay separate." Every <em>other</em> config read in Draw/Finish goes through
+          These are two different mutexes by design — the AGENTS.md explicitly warns they "MUST stay
+          separate." Every <em>other</em> config read in Draw/Finish goes through
           <code>snapshotConfig()</code> (one <code>tickMu.RLock</code>), but RenderCompletion was
           missed. A concurrent <code>SetAppName</code> + <code>RenderCompletion</code> is a race the
           <code>-race</code> detector will flag.
         </p>
-        <p><strong>Fix:</strong> read via <code>cfg := r.snapshotConfig()</code> and use <code>cfg.appName</code>.</p>
+        <p>
+          <strong>Fix:</strong> read via <code>cfg := r.snapshotConfig()</code> and use
+          <code>cfg.appName</code>.
+        </p>
       </div>
 
       <div class="card card-problem">
@@ -350,11 +524,12 @@
         <div class="where">nom/subscriber_handlers.go:57 &amp; :68</div>
         <p>
           <code>handleWorkflowStarted</code> holds <code>ns.mu.Lock()</code> across
-          <code>ns.timingCache.EnsureLoaded()</code> (a file read). <code>handleWorkflowFinished</code>
-          holds it across <code>ns.timingCache.Save()</code> (a file write). This blocks
-          <strong>all</strong> subscriber operations — <code>OnEvent</code>,
-          <code>SnapshotActivities</code>, <code>GetActivityCounts</code> — for the duration of disk
-          I/O. On a slow filesystem or NFS mount this stalls the entire render loop.
+          <code>ns.timingCache.EnsureLoaded()</code> (a file read).
+          <code>handleWorkflowFinished</code> holds it across <code>ns.timingCache.Save()</code> (a
+          file write). This blocks <strong>all</strong> subscriber operations —
+          <code>OnEvent</code>, <code>SnapshotActivities</code>, <code>GetActivityCounts</code> —
+          for the duration of disk I/O. On a slow filesystem or NFS mount this stalls the entire
+          render loop.
         </p>
         <p>
           <strong>Fix:</strong> drop <code>ns.mu</code> before the I/O call (load into a local, call
@@ -388,9 +563,9 @@
           cache file).
         </p>
         <p>
-          <strong>Fix:</strong> a single background saver goroutine fed by a buffered channel, with a
-          <code>Flush()</code>/<code>Close()</code> on the subscriber that waits for drain. This also
-          batches writes (one save per flush window instead of N).
+          <strong>Fix:</strong> a single background saver goroutine fed by a buffered channel, with
+          a <code>Flush()</code>/<code>Close()</code> on the subscriber that waits for drain. This
+          also batches writes (one save per flush window instead of N).
         </p>
       </div>
 
@@ -400,8 +575,8 @@
         <p>
           A failed cache write is logged and dropped. <code>Record()</code> already returns
           <code>error</code> but ignores the async save entirely. Silent cache corruption with no
-          caller recourse. Library code logging instead of returning is explicitly an anti-pattern in
-          the project's own conventions. Surface this as a returned error or a documented
+          caller recourse. Library code logging instead of returning is explicitly an anti-pattern
+          in the project's own conventions. Surface this as a returned error or a documented
           best-effort-save contract.
         </p>
       </div>
@@ -429,16 +604,19 @@
       </p>
 
       <div class="card card-warning">
-        <h4>D1. <code>RegisterStatus()</code> — flagship extensible-status API with zero callers <span class="badge badge-critical">Ghost System</span></h4>
+        <h4>
+          D1. <code>RegisterStatus()</code> — flagship extensible-status API with zero callers
+          <span class="badge badge-critical">Ghost System</span>
+        </h4>
         <div class="where">nom/status_registry.go:102</div>
         <p>
           The entire status-registry extensibility story (ADR 011) is shipped, documented, and
           <em>never used</em>. <code>RegisterStatus()</code> is called only in
           <code>status_registry_test.go</code>. No example, no integration test, no real consumer
           demonstrates a custom status ("skipped", "cached") flowing through the full render
-          pipeline. This is the textbook ghost system: a feature built on speculation with no
-          proven value. Either write a real consumer (example binary) or move it behind an
-          experimental flag until someone needs it.
+          pipeline. This is the textbook ghost system: a feature built on speculation with no proven
+          value. Either write a real consumer (example binary) or move it behind an experimental
+          flag until someone needs it.
         </p>
       </div>
 
@@ -470,9 +648,9 @@
         <h4>D4. <code>TimingFormat</code> constant — unused</h4>
         <div class="where">nom/format.go:12</div>
         <p>
-          <code>const TimingFormat = "%.1fs"</code> — its own comment says "used by FormatDuration()"
-          but <code>FormatDuration()</code> (line 15) uses integer math and never references it. The
-          comment is a lie. Delete the constant.
+          <code>const TimingFormat = "%.1fs"</code> — its own comment says "used by
+          FormatDuration()" but <code>FormatDuration()</code> (line 15) uses integer math and never
+          references it. The comment is a lie. Delete the constant.
         </p>
       </div>
 
@@ -481,9 +659,9 @@
         <div class="where">nom/activity.go:139</div>
         <p>
           The <code>*Activity</code> method is dead. Every call site uses
-          <code>snap.IsPhase()</code> (the snapshot value copy) or <code>kind.IsPhase()</code>
-          directly. The snapshot model means <code>*Activity</code> methods are rarely the right
-          call anyway. Delete it.
+          <code>snap.IsPhase()</code> (the snapshot value copy) or
+          <code>kind.IsPhase()</code> directly. The snapshot model means
+          <code>*Activity</code> methods are rarely the right call anyway. Delete it.
         </p>
       </div>
 
@@ -497,7 +675,9 @@
       </div>
 
       <div class="card card-warning">
-        <h4>D7. <code>EdgeStyle.ArrowHead</code> / <code>ArrowTail</code> — never read by any renderer</h4>
+        <h4>
+          D7. <code>EdgeStyle.ArrowHead</code> / <code>ArrowTail</code> — never read by any renderer
+        </h4>
         <div class="where">graph.go:189-192</div>
         <p>
           Two public string fields on a core type that DOT, D2, Mermaid, and PlantUML all ignore.
@@ -512,34 +692,44 @@
         <div class="where">nom/symbols.go:32</div>
         <p>
           Referenced only in an example binary and the symbol-uniqueness test. No rendering path
-          emits it. If uploads aren't a real concept yet, this is speculative palette. Keep only if a
-          consumer is imminent.
+          emits it. If uploads aren't a real concept yet, this is speculative palette. Keep only if
+          a consumer is imminent.
         </p>
       </div>
 
       <div class="card card-warning">
-        <h4>D9. Unused parameter <code>physicalLines</code> in <code>buildLogAndTreeOutput</code></h4>
+        <h4>
+          D9. Unused parameter <code>physicalLines</code> in <code>buildLogAndTreeOutput</code>
+        </h4>
         <div class="where">nom/inline_renderer.go:500 · gopls [unusedparams]</div>
         <p>
           The sibling <code>buildRedrawOutput</code> uses <code>physicalLines</code> for ghost-line
-          cleanup; this function silently ignores it. <strong>This is a latent bug, not just dead
-          code:</strong> a shrinking tree with pending enqueued logs will leave ghost lines because
-          the cleanup count is dropped. Wire it in or document why it's safe to ignore here.
+          cleanup; this function silently ignores it.
+          <strong>This is a latent bug, not just dead code:</strong> a shrinking tree with pending
+          enqueued logs will leave ghost lines because the cleanup count is dropped. Wire it in or
+          document why it's safe to ignore here.
         </p>
       </div>
 
       <div class="card card-warning">
-        <h4>D10. Dead test helpers <code>assertScreenNotContains</code> / <code>assertRowEmpty</code></h4>
+        <h4>
+          D10. Dead test helpers <code>assertScreenNotContains</code> / <code>assertRowEmpty</code>
+        </h4>
         <div class="where">nom/vttest_test.go:127 &amp; :138 · gopls [unusedfunc]</div>
         <p>Test-only dead code, but it rots the harness. Delete or re-wire.</p>
       </div>
 
       <!-- ============================================================ -->
       <h2 id="split"><span class="num">03</span>Split Brains</h2>
-      <p>Two sources of truth for the same concept. The project has worked hard to eliminate these — here are the ones that survived.</p>
+      <p>
+        Two sources of truth for the same concept. The project has worked hard to eliminate these —
+        here are the ones that survived.
+      </p>
 
       <div class="card card-problem">
-        <h4>S1. Identical constant <code>msgNoActivitiesToDisplay</code> defined in two packages</h4>
+        <h4>
+          S1. Identical constant <code>msgNoActivitiesToDisplay</code> defined in two packages
+        </h4>
         <div class="where">nom/tree.go:17 &amp; tui/constants.go:16</div>
         <p>
           Both packages define an unexported constant with the same name and value
@@ -556,17 +746,20 @@
         <p>
           The package-level <code>var Colors = SemanticColors{...}</code> is still read directly in
           production (<code>status_registry.go:44,57,70,83</code>, <code>activity.go:161</code>,
-          <code>activity_status.go:55</code>). But the Theme system
-          (<code>ThemeDefault.Colors = Colors</code>) is supposed to be the single source — the whole
-          point of v0.23.0 themes was that themed values resolve at snapshot time. The global is a
-          second path that <strong>ignores theme overrides</strong>. A user who sets
+          <code>activity_status.go:55</code>). But the Theme system (<code
+            >ThemeDefault.Colors = Colors</code
+          >) is supposed to be the single source — the whole point of v0.23.0 themes was that themed
+          values resolve at snapshot time. The global is a second path that
+          <strong>ignores theme overrides</strong>. A user who sets
           <code>WithTheme(ThemeDracula)</code> will still get default-blue status colors in the
           registry paths. Route all color reads through the theme.
         </p>
       </div>
 
       <div class="card card-problem">
-        <h4>S3. Duplicate accessor: <code>DependencyTree()</code> vs <code>GetDependencyTree()</code></h4>
+        <h4>
+          S3. Duplicate accessor: <code>DependencyTree()</code> vs <code>GetDependencyTree()</code>
+        </h4>
         <div class="where">nom/nom_subscriber.go:230 &amp; nom/state_accessors.go:24</div>
         <p>
           Two exported methods return the exact same field, both used across tests, examples, and
@@ -577,19 +770,24 @@
       </div>
 
       <div class="card card-warning">
-        <h4>S4. <code>D2Direction</code> and <code>output.Direction</code> — two enums for one concept</h4>
+        <h4>
+          S4. <code>D2Direction</code> and <code>output.Direction</code> — two enums for one concept
+        </h4>
         <div class="where">d2/d2_enum.go:13 vs direction.go:8</div>
         <p>
           ADR notes claim this was "fixed — added output.Direction," but both enums still exist with
-          full Parse/IsValid/AllowedValues APIs, and <code>Direction.ToD2Direction()</code> returns a
-          bare <code>string</code>, not a <code>D2Direction</code> — so they don't interoperate
+          full Parse/IsValid/AllowedValues APIs, and <code>Direction.ToD2Direction()</code> returns
+          a bare <code>string</code>, not a <code>D2Direction</code> — so they don't interoperate
           type-safely. The bridge exists but is stringly-typed. Collapse to one enum; have d2/
           reference <code>output.Direction</code> directly.
         </p>
       </div>
 
       <div class="card card-warning">
-        <h4>S5. AGENTS.md documents <code>SymbolOverrides</code>; the real field is <code>Symbols</code></h4>
+        <h4>
+          S5. AGENTS.md documents <code>SymbolOverrides</code>; the real field is
+          <code>Symbols</code>
+        </h4>
         <div class="where">AGENTS.md (Theme section) vs nom/theme.go:23</div>
         <p>
           The primary onboarding doc tells every new session the theme struct field is
@@ -632,9 +830,9 @@
         <p>
           The signature forces every caller to handle an error that can never happen. Worse, the
           fixpoint loop in <code>computeDepths</code> has a max-iteration guard against cycles but
-          <strong>never reports one</strong> — so the cycle is silently swallowed instead of surfaced
-          as the error the signature already promises. Either drop the error return, or make cycle
-          detection actually return it (preferred — silent cycles are nasty to debug).
+          <strong>never reports one</strong> — so the cycle is silently swallowed instead of
+          surfaced as the error the signature already promises. Either drop the error return, or
+          make cycle detection actually return it (preferred — silent cycles are nasty to debug).
         </p>
       </div>
 
@@ -642,10 +840,10 @@
         <h4>P4. <code>InlineRenderer.write()</code> silently drops ALL I/O errors</h4>
         <div class="where">nom/inline_renderer.go:594</div>
         <p>
-          <code>_, _ = fmt.Fprint(r.writer, s)</code>. Intentional for broken-pipe resilience —
-          fine — but there's no way for a caller to ever detect a permanently-dead writer (closed
-          pipe). The renderer will spin its refresh loop forever writing to nowhere. At minimum,
-          count consecutive failures and self-Stop after a threshold.
+          <code>_, _ = fmt.Fprint(r.writer, s)</code>. Intentional for broken-pipe resilience — fine
+          — but there's no way for a caller to ever detect a permanently-dead writer (closed pipe).
+          The renderer will spin its refresh loop forever writing to nowhere. At minimum, count
+          consecutive failures and self-Stop after a threshold.
         </p>
       </div>
 
@@ -653,10 +851,10 @@
         <h4>P5. <code>Draw()</code> cyclomatic complexity 20 — the only lint failure</h4>
         <div class="where">nom/inline_renderer.go:357</div>
         <p>
-          golangci-lint <code>cyclop</code> fails the build on this one function (max 12). It handles
-          8 orthogonal concerns in sequence: nil guard, empty-tree bail, pending-only drain, summary
-          append, frame-diff skip, plain-text mode, zero-lines bail, inline redraw + TTY sync gate.
-          The plain-text path (406-430) and inline path (432-464) share no logic. Extract
+          golangci-lint <code>cyclop</code> fails the build on this one function (max 12). It
+          handles 8 orthogonal concerns in sequence: nil guard, empty-tree bail, pending-only drain,
+          summary append, frame-diff skip, plain-text mode, zero-lines bail, inline redraw + TTY
+          sync gate. The plain-text path (406-430) and inline path (432-464) share no logic. Extract
           <code>shouldSkipDraw() bool</code>, <code>drawPlainText(...)</code>,
           <code>drawInline(...)</code>. This is the single thing standing between the project and a
           clean lint — and it's a 30-minute refactor.
@@ -664,7 +862,9 @@
       </div>
 
       <div class="card card-warning">
-        <h4>P6. Naming smells: <code>NOMStyleSubscriber</code> &amp; <code>SemanticColors.Info</code></h4>
+        <h4>
+          P6. Naming smells: <code>NOMStyleSubscriber</code> &amp; <code>SemanticColors.Info</code>
+        </h4>
         <div class="where">nom/nom_subscriber.go:22 &amp; nom/symbols.go:69</div>
         <p>
           <code>NOMStyleSubscriber</code> — the <code>Style</code> infix adds no information;
@@ -684,19 +884,24 @@
       </p>
 
       <div class="card card-problem">
-        <h4>L1. TODO_LIST claims "Zero <code>Deprecated:</code> markers remain" — verifiably false</h4>
+        <h4>
+          L1. TODO_LIST claims "Zero <code>Deprecated:</code> markers remain" — verifiably false
+        </h4>
         <div class="where">TODO_LIST.md:26 vs graph.go:49</div>
         <p>
           <code>graph.go</code> has <code>// Deprecated: Use NodeShapeBox instead.</code> on
           <code>NodeShapeRect</code> — intentionally, by design (AGENTS.md documents it). The
-          TODO_LIST "Resolved This Session" table says all deprecated markers were removed. The claim
-          is wrong. Either update the claim to "only the intentional NodeShapeRect marker remains" or
-          remove the row.
+          TODO_LIST "Resolved This Session" table says all deprecated markers were removed. The
+          claim is wrong. Either update the claim to "only the intentional NodeShapeRect marker
+          remains" or remove the row.
         </p>
       </div>
 
       <div class="card card-problem">
-        <h4>L2. TODO_LIST #18: "Cut v0.23.0 tag — Prepared, awaiting owner" — already tagged 4 times over</h4>
+        <h4>
+          L2. TODO_LIST #18: "Cut v0.23.0 tag — Prepared, awaiting owner" — already tagged 4 times
+          over
+        </h4>
         <div class="where">TODO_LIST.md:15 vs git tags v0.23.0–v0.23.3</div>
         <p>
           The TODO lists v0.23.0 as not-yet-tagged, but <code>v0.23.0</code>, <code>v0.23.1</code>,
@@ -711,24 +916,27 @@
         <p>
           daghtml now lints clean (0 issues). Either the 11 issues were suppressed with
           <code>//nolint</code> (then the TODO should say so) or they were fixed (then close the
-          item). Stale "tech debt" tickets that are already resolved train people to ignore the
-          TODO list.
+          item). Stale "tech debt" tickets that are already resolved train people to ignore the TODO
+          list.
         </p>
       </div>
 
       <div class="card card-problem">
-        <h4>L4. AGENTS.md Theme field name wrong (<code>SymbolOverrides</code> → <code>Symbols</code>)</h4>
+        <h4>
+          L4. AGENTS.md Theme field name wrong (<code>SymbolOverrides</code> → <code>Symbols</code>)
+        </h4>
         <div class="where">AGENTS.md Theme section vs nom/theme.go:23</div>
         <p>See S5. The onboarding doc names a field that doesn't exist.</p>
       </div>
 
       <div class="callout">
-        <strong>Bonus — doc bloat:</strong> <code>docs/status/</code> holds <strong>63 one-time
-        snapshot reports</strong> (May 23 → Jul 2). These are write-once artifacts that reference
-        long-deleted code (deleted modules, renamed types, reverted refactors). They're not consulted
-        again and they make <code>docs/</code> noisy. Keep the last 2–3 release milestones; archive
-        the rest to a <code>docs/archive/status/</code> folder or delete them. The same applies to
-        older <code>docs/reviews/</code> and <code>docs/planning/</code> snapshots.
+        <strong>Bonus — doc bloat:</strong> <code>docs/status/</code> holds
+        <strong>63 one-time snapshot reports</strong> (May 23 → Jul 2). These are write-once
+        artifacts that reference long-deleted code (deleted modules, renamed types, reverted
+        refactors). They're not consulted again and they make <code>docs/</code> noisy. Keep the
+        last 2–3 release milestones; archive the rest to a <code>docs/archive/status/</code> folder
+        or delete them. The same applies to older <code>docs/reviews/</code> and
+        <code>docs/planning/</code> snapshots.
       </div>
 
       <!-- ============================================================ -->
@@ -742,49 +950,76 @@
           <div class="check">+</div>
           <div class="text">
             <strong>The Core Invariant holds and is documented</strong>
-            <span>Root has zero sub-module imports — verified by build. <code>go get</code> of root pulls no lipgloss/bubbletea/yaml. Pattern B versioning is consistent across all 19 modules. This is the load-bearing rule and it's intact.</span>
+            <span
+              >Root has zero sub-module imports — verified by build. <code>go get</code> of root
+              pulls no lipgloss/bubbletea/yaml. Pattern B versioning is consistent across all 19
+              modules. This is the load-bearing rule and it's intact.</span
+            >
           </div>
         </div>
         <div class="strength">
           <div class="check">+</div>
           <div class="text">
             <strong>No banned dependencies</strong>
-            <span>No testify, no yaml.v2/v3, no gorm/viper, no charm v1. Uses <code>charm.land/*/v2</code> vanity imports correctly, <code>go-faster/yaml</code>, <code>onsi/ginkgo</code>+<code>gomega</code>. Aligns fully with the Go stack policy.</span>
+            <span
+              >No testify, no yaml.v2/v3, no gorm/viper, no charm v1. Uses
+              <code>charm.land/*/v2</code> vanity imports correctly, <code>go-faster/yaml</code>,
+              <code>onsi/ginkgo</code>+<code>gomega</code>. Aligns fully with the Go stack
+              policy.</span
+            >
           </div>
         </div>
         <div class="strength">
           <div class="check">+</div>
           <div class="text">
             <strong>Snapshot-based concurrency model is the right call</strong>
-            <span>ActivitySnapshot (immutable value copy under read-lock) killed a real data race and is a clean model. The incremental counts cache (O(1) not O(n)) with a brute-force verification test is excellent engineering.</span>
+            <span
+              >ActivitySnapshot (immutable value copy under read-lock) killed a real data race and
+              is a clean model. The incremental counts cache (O(1) not O(n)) with a brute-force
+              verification test is excellent engineering.</span
+            >
           </div>
         </div>
         <div class="strength">
           <div class="check">+</div>
           <div class="text">
             <strong>Sealed Event sum type</strong>
-            <span>Unexported <code>isEvent()</code> marker makes non-exhaustive switches a compile error. This is the correct way to do sum types in Go and most projects don't bother.</span>
+            <span
+              >Unexported <code>isEvent()</code> marker makes non-exhaustive switches a compile
+              error. This is the correct way to do sum types in Go and most projects don't
+              bother.</span
+            >
           </div>
         </div>
         <div class="strength">
           <div class="check">+</div>
           <div class="text">
             <strong>Testing depth is genuinely high</strong>
-            <span>VT-emulator harness (asserts on real screen buffers, not escape strings), teatest/v2 E2E, fuzz targets, golden files across 6 renderer modules, race tests on the concurrency-sensitive modules. This is above and beyond.</span>
+            <span
+              >VT-emulator harness (asserts on real screen buffers, not escape strings), teatest/v2
+              E2E, fuzz targets, golden files across 6 renderer modules, race tests on the
+              concurrency-sensitive modules. This is above and beyond.</span
+            >
           </div>
         </div>
         <div class="strength">
           <div class="check">+</div>
           <div class="text">
             <strong>Escaping is render-time, not input-time</strong>
-            <span>The diagram-escaping vulnerability (style values weren't escaped) was found and fixed at v0.18. Single source of truth via the <code>escape/</code> module. Good.</span>
+            <span
+              >The diagram-escaping vulnerability (style values weren't escaped) was found and fixed
+              at v0.18. Single source of truth via the <code>escape/</code> module. Good.</span
+            >
           </div>
         </div>
         <div class="strength">
           <div class="check">+</div>
           <div class="text">
             <strong>Nix is the source of truth</strong>
-            <span>All build/test/lint/tidy/vulncheck behind <code>nix run .#*</code> apps that iterate every module. No "it works on my machine from root" trap.</span>
+            <span
+              >All build/test/lint/tidy/vulncheck behind <code>nix run .#*</code> apps that iterate
+              every module. No "it works on my machine from root" trap.</span
+            >
           </div>
         </div>
       </div>
@@ -801,7 +1036,11 @@
         <div class="migration-content">
           <div class="tagline">~1h · kills the only lint failure</div>
           <h4>Decompose <code>Draw()</code> in nom/inline_renderer.go:357</h4>
-          <p>Extract <code>shouldSkipDraw()</code>, <code>drawPlainText()</code>, <code>drawInline()</code>. Gets the project back to zero lint issues. While here, fix D9 (wire <code>physicalLines</code> into <code>buildLogAndTreeOutput</code>).</p>
+          <p>
+            Extract <code>shouldSkipDraw()</code>, <code>drawPlainText()</code>,
+            <code>drawInline()</code>. Gets the project back to zero lint issues. While here, fix D9
+            (wire <code>physicalLines</code> into <code>buildLogAndTreeOutput</code>).
+          </p>
         </div>
       </div>
 
@@ -810,7 +1049,12 @@
         <div class="migration-content">
           <div class="tagline">~2h · real correctness, race-detector-clean</div>
           <h4>Fix the 6 nom/ concurrency bugs (C1–C6)</h4>
-          <p>C1 (appName race) + C3 (renderNotify) are one-line snapshotConfig fixes. C2 (drop lock around disk I/O) is the highest-value fix. C4+C5 (timing cache goroutine + error swallowing) get one background-saver-with-Flush refactor. C6 is a doc/snapshot choice. Run <code>nix run .#test-race</code> after.</p>
+          <p>
+            C1 (appName race) + C3 (renderNotify) are one-line snapshotConfig fixes. C2 (drop lock
+            around disk I/O) is the highest-value fix. C4+C5 (timing cache goroutine + error
+            swallowing) get one background-saver-with-Flush refactor. C6 is a doc/snapshot choice.
+            Run <code>nix run .#test-race</code> after.
+          </p>
         </div>
       </div>
 
@@ -819,7 +1063,10 @@
         <div class="migration-content">
           <div class="tagline">~1h · trust repair</div>
           <h4>Fix the 4 doc lies (L1–L4) + AGENTS.md field name</h4>
-          <p>Update TODO_LIST (v0.23.x tagged, daghtml lint clean, deprecated-marker claim), fix AGENTS.md <code>Symbols</code> field name. Pure docs, zero risk.</p>
+          <p>
+            Update TODO_LIST (v0.23.x tagged, daghtml lint clean, deprecated-marker claim), fix
+            AGENTS.md <code>Symbols</code> field name. Pure docs, zero risk.
+          </p>
         </div>
       </div>
 
@@ -828,7 +1075,11 @@
         <div class="migration-content">
           <div class="tagline">~1h · prune the ghost systems</div>
           <h4>Delete the verified-dead exported API (D3–D6, D8, D10)</h4>
-          <p>Remove <code>ErrActivityNotFound</code>, <code>TimingFormat</code>, <code>Activity.IsPhase()</code>, <code>hasDep</code>, <code>SymbolUpload</code>, dead test helpers. Each is grep-confirmed zero-caller. Ship as one "dead code sweep" commit.</p>
+          <p>
+            Remove <code>ErrActivityNotFound</code>, <code>TimingFormat</code>,
+            <code>Activity.IsPhase()</code>, <code>hasDep</code>, <code>SymbolUpload</code>, dead
+            test helpers. Each is grep-confirmed zero-caller. Ship as one "dead code sweep" commit.
+          </p>
         </div>
       </div>
 
@@ -836,8 +1087,15 @@
         <div class="migration-num">5</div>
         <div class="migration-content">
           <div class="tagline">~1h · kill the false API</div>
-          <h4>Resolve <code>EdgeStyle.ArrowHead/ArrowTail</code> (D7) + <code>StreamingRendererFromRenderer</code> (P1)</h4>
-          <p>Either wire the arrow fields into renderers or delete them (false API). Rename or genuinely stream the adapter. Decision items — pick "delete/rename" unless a consumer is imminent.</p>
+          <h4>
+            Resolve <code>EdgeStyle.ArrowHead/ArrowTail</code> (D7) +
+            <code>StreamingRendererFromRenderer</code> (P1)
+          </h4>
+          <p>
+            Either wire the arrow fields into renderers or delete them (false API). Rename or
+            genuinely stream the adapter. Decision items — pick "delete/rename" unless a consumer is
+            imminent.
+          </p>
         </div>
       </div>
 
@@ -846,7 +1104,12 @@
         <div class="migration-content">
           <div class="tagline">~2h · single source of truth</div>
           <h4>Close the split brains (S1, S2, S3)</h4>
-          <p>S1: export one <code>MsgNoActivities</code> in nom, import in tui. S2: route all color reads through Theme (remove direct <code>Colors</code> reads in status_registry/activity). S3: deprecate <code>GetDependencyTree()</code>, keep <code>DependencyTree()</code>.</p>
+          <p>
+            S1: export one <code>MsgNoActivities</code> in nom, import in tui. S2: route all color
+            reads through Theme (remove direct <code>Colors</code> reads in
+            status_registry/activity). S3: deprecate <code>GetDependencyTree()</code>, keep
+            <code>DependencyTree()</code>.
+          </p>
         </div>
       </div>
 
@@ -855,7 +1118,10 @@
         <div class="migration-content">
           <div class="tagline">~30min · reduce noise</div>
           <h4>Archive/delete the 63 status snapshots</h4>
-          <p>Move pre-v0.20 snapshots to <code>docs/archive/status/</code> or delete. Keep release-milestone summaries only.</p>
+          <p>
+            Move pre-v0.20 snapshots to <code>docs/archive/status/</code> or delete. Keep
+            release-milestone summaries only.
+          </p>
         </div>
       </div>
 
@@ -864,7 +1130,11 @@
         <div class="migration-content">
           <div class="tagline">~2h · prove or remove</div>
           <h4>Decide the fate of <code>RegisterStatus()</code> (D1) and the extra themes (D2)</h4>
-          <p>Either write a real example binary that registers a custom "skipped" status and renders it end-to-end (proving the feature), or move both behind an experimental flag. Add smoke tests for ThemeNord/ThemeMonochrome if kept.</p>
+          <p>
+            Either write a real example binary that registers a custom "skipped" status and renders
+            it end-to-end (proving the feature), or move both behind an experimental flag. Add smoke
+            tests for ThemeNord/ThemeMonochrome if kept.
+          </p>
         </div>
       </div>
 
@@ -873,55 +1143,121 @@
         <div class="migration-content">
           <div class="tagline">~30min · polish</div>
           <h4>Small type/naming fixes (P2, P3, P4, P6, S4)</h4>
-          <p>TextTransform enum; make Build() actually return cycle errors or drop the return; consecutive-failure Stop in write(); rename NOMStyleSubscriber → NOMSubscriber; SemanticColors.Info → Fallback; collapse D2Direction into output.Direction.</p>
+          <p>
+            TextTransform enum; make Build() actually return cycle errors or drop the return;
+            consecutive-failure Stop in write(); rename NOMStyleSubscriber → NOMSubscriber;
+            SemanticColors.Info → Fallback; collapse D2Direction into output.Direction.
+          </p>
         </div>
       </div>
 
       <div class="callout">
         <strong>The 80/20:</strong> Steps 1–4 are roughly half a day's work and they eliminate
-        <em>all</em> the real risk (the concurrency bugs), restore a clean lint, repair the
-        doc/code trust, and prune the dead API. Everything after that is quality-of-life. Do 1–4
-        before cutting v1.0.0.
+        <em>all</em> the real risk (the concurrency bugs), restore a clean lint, repair the doc/code
+        trust, and prune the dead API. Everything after that is quality-of-life. Do 1–4 before
+        cutting v1.0.0.
       </div>
 
       <!-- ============================================================ -->
       <h2 id="qna"><span class="num">08</span>The Self-Review Questions</h2>
       <div class="qna">
         <div class="q">1. What did we forget?</div>
-        <div class="a">To treat the nom/ concurrency code with the same discipline as the rest of the package. The snapshot model is right, but config reads outside it (C1, C3, C6) and disk I/O under the subscriber lock (C2) were missed because they're not on the hot render path the snapshot model was designed for. Also: docs drifted (L1–L4) because releases shipped without a doc-sync step.</div>
+        <div class="a">
+          To treat the nom/ concurrency code with the same discipline as the rest of the package.
+          The snapshot model is right, but config reads outside it (C1, C3, C6) and disk I/O under
+          the subscriber lock (C2) were missed because they're not on the hot render path the
+          snapshot model was designed for. Also: docs drifted (L1–L4) because releases shipped
+          without a doc-sync step.
+        </div>
 
         <div class="q">2. What's something stupid we do anyway?</div>
-        <div class="a">Ship speculative features with zero consumers (RegisterStatus, ThemeNord/Monochrome, SymbolUpload, EdgeStyle arrow fields). It violates the project's own YAGNI rule and every one of them is a maintenance liability with no proven value. "Built but unused" is the most expensive kind of code.</div>
+        <div class="a">
+          Ship speculative features with zero consumers (RegisterStatus, ThemeNord/Monochrome,
+          SymbolUpload, EdgeStyle arrow fields). It violates the project's own YAGNI rule and every
+          one of them is a maintenance liability with no proven value. "Built but unused" is the
+          most expensive kind of code.
+        </div>
 
         <div class="q">3. What could we have done better?</div>
-        <div class="a">Treat the timing cache as a real subsystem: a single background saver with Flush(), error surfacing, and shutdown ordering — instead of unbounded goroutines + swallowed log.Printf. And decompose Draw() the moment cyclop flagged it, instead of leaving the only lint failure in the project sitting for weeks.</div>
+        <div class="a">
+          Treat the timing cache as a real subsystem: a single background saver with Flush(), error
+          surfacing, and shutdown ordering — instead of unbounded goroutines + swallowed log.Printf.
+          And decompose Draw() the moment cyclop flagged it, instead of leaving the only lint
+          failure in the project sitting for weeks.
+        </div>
 
         <div class="q">4. What could we still improve?</div>
-        <div class="a">Everything in the execution plan. Concretely: zero lint failures, zero dead exported API, zero split-brain constants, zero doc lies, and a pruned docs/status/. The target state is reachable in ~1 day.</div>
+        <div class="a">
+          Everything in the execution plan. Concretely: zero lint failures, zero dead exported API,
+          zero split-brain constants, zero doc lies, and a pruned docs/status/. The target state is
+          reachable in ~1 day.
+        </div>
 
         <div class="q">5. Did I lie to you?</div>
-        <div class="a">The docs did — TODO_LIST claims things that aren't true (L1–L3). I did not: every finding in this report was verified against the live code with build/lint/test/gopls/grep. The "all green" claim in recent status reports is <em>almost</em> true — tests and build are green, but lint has one failure and there are 6 latent race conditions.</div>
+        <div class="a">
+          The docs did — TODO_LIST claims things that aren't true (L1–L3). I did not: every finding
+          in this report was verified against the live code with build/lint/test/gopls/grep. The
+          "all green" claim in recent status reports is <em>almost</em> true — tests and build are
+          green, but lint has one failure and there are 6 latent race conditions.
+        </div>
 
         <div class="q">6. How can we be less stupid?</div>
-        <div class="a">Two process changes: (a) a "consumer or delete" gate before merging any new public API — if there's no caller in the repo or an example, it doesn't ship; (b) a doc-sync checklist item on every release that re-greps TODO_LIST/FEATURES/AGENTS against reality. Both are cheap and kill the two recurring failure modes in this review.</div>
+        <div class="a">
+          Two process changes: (a) a "consumer or delete" gate before merging any new public API —
+          if there's no caller in the repo or an example, it doesn't ship; (b) a doc-sync checklist
+          item on every release that re-greps TODO_LIST/FEATURES/AGENTS against reality. Both are
+          cheap and kill the two recurring failure modes in this review.
+        </div>
 
         <div class="q">7. Ghost systems — are we building any?</div>
-        <div class="a">Yes. <code>RegisterStatus()</code> + the whole status-registry extensibility (ADR 011) is a ghost system: implemented, tested in isolation, documented, and used by nobody. It has theoretical value (custom statuses) but zero proven value. Recommendation: build one real consumer (example binary + integration test rendering a "skipped" status end-to-end) <em>before</em> v1.0.0, otherwise it's speculative surface area on a "frozen API."</div>
+        <div class="a">
+          Yes. <code>RegisterStatus()</code> + the whole status-registry extensibility (ADR 011) is
+          a ghost system: implemented, tested in isolation, documented, and used by nobody. It has
+          theoretical value (custom statuses) but zero proven value. Recommendation: build one real
+          consumer (example binary + integration test rendering a "skipped" status end-to-end)
+          <em>before</em> v1.0.0, otherwise it's speculative surface area on a "frozen API."
+        </div>
 
         <div class="q">8. Are we in the scope-creep trap?</div>
-        <div class="a">Slightly. v0.23.0 added layered mode, themes, categories, critical-path, parallelism meter, DAG summary, and daghtml in one release — a lot of surface area at once, some of it unused (the two themes). The core (16 formats × 3 shapes) is stable and complete; the nom/tui layer is where creep is happening. Recommend a consolidation sprint (this plan) before new nom features.</div>
+        <div class="a">
+          Slightly. v0.23.0 added layered mode, themes, categories, critical-path, parallelism
+          meter, DAG summary, and daghtml in one release — a lot of surface area at once, some of it
+          unused (the two themes). The core (16 formats × 3 shapes) is stable and complete; the
+          nom/tui layer is where creep is happening. Recommend a consolidation sprint (this plan)
+          before new nom features.
+        </div>
 
         <div class="q">9. Did we remove something that was actually useful?</div>
-        <div class="a">No clear regressions found. The removals documented in TODO_LIST (SortBy, FormatCategory, OutputFormat alias, ActivityStore) were all genuinely dead and the replacements are sound. Nothing to restore.</div>
+        <div class="a">
+          No clear regressions found. The removals documented in TODO_LIST (SortBy, FormatCategory,
+          OutputFormat alias, ActivityStore) were all genuinely dead and the replacements are sound.
+          Nothing to restore.
+        </div>
 
         <div class="q">10. Did we create any split brains — even small ones?</div>
-        <div class="a">Yes, five (S1–S5). The most consequential is S2: the global <code>Colors</code> bypassing the Theme system means themed status colors don't fully apply — that's a user-visible inconsistency hiding behind a "single source of truth" claim. The rest are constant/accessor/doc duplications.</div>
+        <div class="a">
+          Yes, five (S1–S5). The most consequential is S2: the global <code>Colors</code> bypassing
+          the Theme system means themed status colors don't fully apply — that's a user-visible
+          inconsistency hiding behind a "single source of truth" claim. The rest are
+          constant/accessor/doc duplications.
+        </div>
 
         <div class="q">11. How are we doing on tests? What can we do better?</div>
-        <div class="a">Strong overall: VT-emulator harness, teatest/v2 E2E, fuzz, golden files, race tests — above industry average. Gaps: (a) <code>RegisterStatus()</code> has no integration test proving custom statuses render; (b) ThemeNord/ThemeMonochrome have zero coverage; (c) the concurrency bugs (C1–C6) aren't caught because the race tests don't exercise SetAppName/RenderCompletion or disk-I/O-during-event concurrently. Add a race test that calls every config setter concurrently with Draw/Finish/RenderCompletion — that would have caught C1/C3/C6 immediately.</div>
+        <div class="a">
+          Strong overall: VT-emulator harness, teatest/v2 E2E, fuzz, golden files, race tests —
+          above industry average. Gaps: (a) <code>RegisterStatus()</code> has no integration test
+          proving custom statuses render; (b) ThemeNord/ThemeMonochrome have zero coverage; (c) the
+          concurrency bugs (C1–C6) aren't caught because the race tests don't exercise
+          SetAppName/RenderCompletion or disk-I/O-during-event concurrently. Add a race test that
+          calls every config setter concurrently with Draw/Finish/RenderCompletion — that would have
+          caught C1/C3/C6 immediately.
+        </div>
       </div>
 
-      <div class="footer">Generated 2026-07-05 20:57 &middot; Reviewed against v0.23.3 (master @ 9b08222) &middot; Build/lint/test/gopls verified</div>
+      <div class="footer">
+        Generated 2026-07-05 20:57 &middot; Reviewed against v0.23.3 (master @ 9b08222) &middot;
+        Build/lint/test/gopls verified
+      </div>
     </div>
   </body>
 </html>

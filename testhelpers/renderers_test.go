@@ -34,3 +34,27 @@ func TestFixedRenderer(t *testing.T) {
 		t.Errorf("FixedRenderer.Render() = %q, want %q", got, "hello")
 	}
 }
+
+func TestMustRender(t *testing.T) {
+	t.Parallel()
+
+	t.Run("returns string on success", func(t *testing.T) {
+		t.Parallel()
+
+		if got := MustRender(&FixedRenderer{Output: "ok"}); got != "ok" {
+			t.Errorf("MustRender() = %q, want %q", got, "ok")
+		}
+	})
+
+	t.Run("panics on error", func(t *testing.T) {
+		t.Parallel()
+
+		defer func() {
+			if r := recover(); r == nil {
+				t.Errorf("MustRender with ErrorRenderer should panic")
+			}
+		}()
+
+		MustRender(&ErrorRenderer{})
+	})
+}

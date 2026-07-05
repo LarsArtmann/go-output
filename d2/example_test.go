@@ -5,6 +5,7 @@ import (
 
 	"github.com/larsartmann/go-output"
 	"github.com/larsartmann/go-output/d2"
+	"github.com/larsartmann/go-output/testhelpers"
 )
 
 //nolint:testableexamples // Demonstration example, output is dynamic
@@ -19,14 +20,7 @@ func ExampleNewD2Diagram() {
 	diagram.AddEdgeSimple("frontend", "api")
 	diagram.AddEdgeSimple("api", "db")
 
-	result, err := diagram.Render()
-	if err != nil {
-		fmt.Printf("error: %v\n", err)
-
-		return
-	}
-
-	fmt.Println(result)
+	fmt.Println(testhelpers.MustRender(diagram))
 }
 
 //nolint:testableexamples // Demonstration example, output is dynamic
@@ -47,14 +41,7 @@ func ExampleNewD2Diagram_tables() {
 
 	diagram.AddLabeledEdge("accounts", "profiles", "has many")
 
-	result, err := diagram.Render()
-	if err != nil {
-		fmt.Printf("error: %v\n", err)
-
-		return
-	}
-
-	fmt.Println(result)
+	fmt.Println(testhelpers.MustRender(diagram))
 }
 
 //nolint:testableexamples // Demonstration example, output is dynamic
@@ -73,12 +60,5 @@ func ExampleNewD2Diagram_styledNodes() {
 		},
 	})
 
-	result, err := diagram.Render()
-	if err != nil {
-		fmt.Printf("error: %v\n", err)
-
-		return
-	}
-
-	fmt.Println(result)
+	fmt.Println(testhelpers.MustRender(diagram))
 }

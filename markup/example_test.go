@@ -5,6 +5,7 @@ import (
 
 	"github.com/larsartmann/go-output"
 	"github.com/larsartmann/go-output/markup"
+	"github.com/larsartmann/go-output/testhelpers"
 )
 
 //nolint:testableexamples // Demonstration example, output is dynamic
@@ -14,14 +15,7 @@ func ExampleNewHTMLRenderer() {
 	html.AddRow([]string{"Alice", "30"})
 	html.AddRow([]string{"Bob", "25"})
 
-	result, err := html.Render()
-	if err != nil {
-		fmt.Printf("error: %v\n", err)
-
-		return
-	}
-
-	fmt.Println(result)
+	fmt.Println(testhelpers.MustRender(html))
 }
 
 //nolint:testableexamples // Demonstration example, output is dynamic
@@ -41,14 +35,7 @@ func ExampleNewAsciiDocTableRenderer() {
 	renderer := markup.NewAsciiDocTableRenderer()
 	renderer.SetData(data)
 
-	result, err := renderer.Render()
-	if err != nil {
-		fmt.Printf("error: %v\n", err)
-
-		return
-	}
-
-	fmt.Println(result)
+	fmt.Println(testhelpers.MustRender(renderer))
 }
 
 //nolint:testableexamples // Demonstration example, output is dynamic

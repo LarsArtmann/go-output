@@ -5,6 +5,7 @@ import (
 
 	"github.com/larsartmann/go-output"
 	"github.com/larsartmann/go-output/markdown"
+	"github.com/larsartmann/go-output/testhelpers"
 )
 
 //nolint:testableexamples // Demonstration example, output is dynamic
@@ -15,14 +16,7 @@ func ExampleNewMarkdownTable() {
 	md.AddRow([]string{"Test", "✓", "0.5s"})
 	md.AddRow([]string{"Deploy", "…", "-"})
 
-	result, err := md.Render()
-	if err != nil {
-		fmt.Printf("error: %v\n", err)
-
-		return
-	}
-
-	fmt.Println(result)
+	fmt.Println(testhelpers.MustRender(md))
 }
 
 //nolint:testableexamples // Demonstration example, output is dynamic
@@ -34,14 +28,7 @@ func ExampleNewMarkdownTableFromData() {
 	md := markdown.NewMarkdownTableFromData(data)
 	md.SetColorMode(output.ColorModeNever)
 
-	result, err := md.Render()
-	if err != nil {
-		fmt.Printf("error: %v\n", err)
-
-		return
-	}
-
-	fmt.Println(result)
+	fmt.Println(testhelpers.MustRender(md))
 }
 
 //nolint:testableexamples // Demonstration example, output is dynamic
@@ -52,12 +39,5 @@ func ExampleMarkdownTable_SetFooter() {
 	md.AddRow([]string{"v1.1.0", "5678"})
 	md.SetFooter([]string{"Total", "6912"})
 
-	result, err := md.Render()
-	if err != nil {
-		fmt.Printf("error: %v\n", err)
-
-		return
-	}
-
-	fmt.Println(result)
+	fmt.Println(testhelpers.MustRender(md))
 }

@@ -3,6 +3,8 @@ package nom
 import (
 	"image/color"
 	"slices"
+
+	"github.com/larsartmann/go-output"
 )
 
 // ============================================================================
@@ -88,14 +90,7 @@ func (as ActivityStatus) IsValid() bool {
 
 // AllowedValues returns all valid status strings for CLI help text and config.
 func (ActivityStatus) AllowedValues() []string {
-	statuses := AllActivityStatuses()
-
-	out := make([]string, 0, len(statuses))
-	for _, s := range statuses {
-		out = append(out, s.String())
-	}
-
-	return out
+	return output.EnumAllowedValues(AllActivityStatuses())
 }
 
 // InvalidActivityStatusError represents an invalid activity status.
