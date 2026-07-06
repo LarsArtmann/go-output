@@ -73,7 +73,7 @@ func TestAsTableRenderer(t *testing.T) {
 	testhelpers.AssertContains(t, got, "A", "should contain header A")
 	testhelpers.AssertContains(t, got, "1", "should contain cell 1")
 
-	var _ output.TableRenderer = tr //nolint:staticcheck // Interface assertion
+	_ = tr
 }
 
 func TestBuildStyleFunc_AllBranches(t *testing.T) {

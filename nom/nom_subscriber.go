@@ -308,4 +308,3 @@ func (v *subscriberView) Edges() []output.GraphEdge {
 
 	return edges
 }
-

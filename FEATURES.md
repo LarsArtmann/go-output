@@ -26,13 +26,13 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 
 ### Tree Data Formats
 
-| Feature                       | Status           | Notes                                                                                                              |
-| ----------------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------ |
-| **ASCII Tree** (`FormatTree`) | FULLY_FUNCTIONAL | Box-drawing characters (`├──`, `└──`, `│`). Metadata summary on nodes. `TreeRendererFromTableData()` auto-converts |
-| **JSON Tree**                 | FULLY_FUNCTIONAL | Nested JSON with `id`, `label`, `children`, `metadata` via `JSONTreeRenderer`                                      |
-| **TOML Tree**                 | FULLY_FUNCTIONAL | Nested TOML structure via `TOMLTreeRenderer`. Uses shared treeNodeDTO with json+yaml+toml tags                     |
-| **YAML Tree**                 | FULLY_FUNCTIONAL | Nested YAML structure via `YAMLTreeRenderer`                                                                       |
-| **HTML Tree**                 | FULLY_FUNCTIONAL | Nested `<ul>/<li>` list with CSS styling via `HTMLTreeRenderer`. Full-page mode available                          |
+| Feature                       | Status           | Notes                                                                                                          |
+| ----------------------------- | ---------------- | -------------------------------------------------------------------------------------------------------------- |
+| **ASCII Tree** (`FormatTree`) | FULLY_FUNCTIONAL | Box-drawing characters (`├──`, `└──`, `│`). Metadata summary on nodes. `TreeRendererFromTable()` auto-converts |
+| **JSON Tree**                 | FULLY_FUNCTIONAL | Nested JSON with `id`, `label`, `children`, `metadata` via `JSONTreeRenderer`                                  |
+| **TOML Tree**                 | FULLY_FUNCTIONAL | Nested TOML structure via `TOMLTreeRenderer`. Uses shared treeNodeDTO with json+yaml+toml tags                 |
+| **YAML Tree**                 | FULLY_FUNCTIONAL | Nested YAML structure via `YAMLTreeRenderer`                                                                   |
+| **HTML Tree**                 | FULLY_FUNCTIONAL | Nested `<ul>/<li>` list with CSS styling via `HTMLTreeRenderer`. Full-page mode available                      |
 
 ### Graph/Diagram Formats
 
@@ -44,7 +44,7 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 | **JSON Graph**                  | FULLY_FUNCTIONAL | `{nodes: [...], edges: [...]}` structure via `JSONGraphRenderer`                                                                                                |
 | **YAML Graph**                  | FULLY_FUNCTIONAL | Same structure as JSON Graph, YAML-serialized via `YAMLGraphRenderer`                                                                                           |
 | **TOML Graph**                  | FULLY_FUNCTIONAL | Same structure as JSON Graph, TOML-serialized via `TOMLGraphRenderer`                                                                                           |
-| **PlantUML** (`FormatPlantUML`) | FULLY_FUNCTIONAL | Component diagrams via `PlantUMLDiagram`. Uses `GraphRendererState`. Supports TableData→graph and Tree→graph conversion                                         |
+| **PlantUML** (`FormatPlantUML`) | FULLY_FUNCTIONAL | Component diagrams via `PlantUMLDiagram`. Uses `GraphBuilder`. Supports Table→graph and Tree→graph conversion                                                   |
 
 ---
 
@@ -52,13 +52,13 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 
 | Feature                   | Status           | Notes                                                                                                                                                                    |
 | ------------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **TableData**             | FULLY_FUNCTIONAL | `Headers []string` + `Rows [][]string` + `Footer []string`. Central data type shared across all table renderers. Footer renders as totals/summary row in tabular formats |
-| **TableDataStore**        | FULLY_FUNCTIONAL | Exported embedded struct providing `SetHeaders()`, `AddRow()`, `SetData()`, `Data()`, `SetFooter()`. Shared by JSON, YAML, TOML, HTML, AsciiDoc, Streaming renderers     |
-| **ToMapSlice()**          | FULLY_FUNCTIONAL | Converts `TableData` to `[]map[string]string` (header→cell). Used by JSON/YAML table renderers                                                                           |
-| **CreateRowEdges()**      | FULLY_FUNCTIONAL | Generates directed edges between consecutive rows. Used by graph renderers for `TableData`→graph conversion                                                              |
+| **Table**                 | FULLY_FUNCTIONAL | `Headers []string` + `Rows [][]string` + `Footer []string`. Central data type shared across all table renderers. Footer renders as totals/summary row in tabular formats |
+| **TableStore**            | FULLY_FUNCTIONAL | Exported embedded struct providing `SetHeaders()`, `AddRow()`, `SetData()`, `Data()`, `SetFooter()`. Shared by JSON, YAML, TOML, HTML, AsciiDoc, Streaming renderers     |
+| **ToMapSlice()**          | FULLY_FUNCTIONAL | Converts `Table` to `[]map[string]string` (header→cell). Used by JSON/YAML table renderers                                                                               |
+| **CreateRowEdges()**      | FULLY_FUNCTIONAL | Generates directed edges between consecutive rows. Used by graph renderers for `Table`→graph conversion                                                                  |
 | **TreeNode**              | FULLY_FUNCTIONAL | Hierarchical node with `ID`, `Label`, `Children`, `Metadata`, `Parent()`, `Depth()`                                                                                      |
 | **GraphNode / GraphEdge** | FULLY_FUNCTIONAL | Generic graph model with `ID`, `Label`, `Shape`, `Style`, `Metadata`. Shared by DOT/Mermaid/JSON/YAML                                                                    |
-| **GraphRendererState**    | FULLY_FUNCTIONAL | Shared composition for all graph renderers (DOT, Mermaid, JSON, YAML, TOML, PlantUML). Provides `SetNodes()`, `SetEdges()`, `SetNodesFromTableData()`, `AddRowEdges()`   |
+| **GraphBuilder**          | FULLY_FUNCTIONAL | Shared composition for all graph renderers (DOT, Mermaid, JSON, YAML, TOML, PlantUML). Provides `SetNodes()`, `SetEdges()`, `SetNodesFromTable()`, `AddRowEdges()`       |
 
 ---
 
@@ -106,30 +106,30 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 
 ## Cross-Shape Conversion
 
-| Feature                | Status           | Notes                                                                                                                     |
-| ---------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| **TableData → Graph**  | FULLY_FUNCTIONAL | `D2FromTableData()`, `DOTFromTableData()`, `MermaidFromTableData()`, `PlantUMLFromTableData()`, `NodesFromTableData()`    |
-| **TableData → Tree**   | FULLY_FUNCTIONAL | `TreeRendererFromTableData()` creates hierarchical tree from tabular data                                                 |
-| **Tree → Graph**       | FULLY_FUNCTIONAL | `D2FromTree()`, `DOTFromTree()`, `MermaidFromTree()`, `PlantUMLFromTree()`. Generic `AddTreeNodes()` for custom renderers |
-| **GraphNode → D2Node** | FULLY_FUNCTIONAL | `graphNodeToD2()`, `graphEdgeToD2()`, `graphShapeToD2()` — automatic type mapping for `SetNodes()`/`SetEdges()`           |
+| Feature                | Status           | Notes                                                                                                                                 |
+| ---------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| **Table → Graph**      | FULLY_FUNCTIONAL | `D2FromTable()`, `DOTFromTable()`, `MermaidFromTable()`, `PlantUMLFromTable()`, `NodesFromTable()`                                    |
+| **Table → Tree**       | FULLY_FUNCTIONAL | `TreeRendererFromTable()` creates hierarchical tree from tabular data                                                                 |
+| **Tree → Graph**       | FULLY_FUNCTIONAL | `NewD2FromTree()`, `NewDOTFromTree()`, `NewMermaidFromTree()`, `NewPlantUMLFromTree()`. Generic `AddTreeNodes()` for custom renderers |
+| **GraphNode → D2Node** | FULLY_FUNCTIONAL | `graphNodeToD2()`, `graphEdgeToD2()`, `graphShapeToD2()` — automatic type mapping for `SetNodes()`/`SetEdges()`                       |
 
 ---
 
 ## Rendering Infrastructure
 
-| Feature                             | Status           | Notes                                                                                                                                                                                                                                                                  |
-| ----------------------------------- | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Renderer interface**              | FULLY_FUNCTIONAL | `Render() (string, error)`. Universal contract for all formats                                                                                                                                                                                                         |
-| **TableRenderer interface**         | FULLY_FUNCTIONAL | Extends `Renderer` with `SetHeaders([]string)` and `AddRow([]string)`                                                                                                                                                                                                  |
-| **TreeOutputRenderer interface**    | FULLY_FUNCTIONAL | Extends `Renderer` with `SetRoot(*TreeNode)`                                                                                                                                                                                                                           |
-| **GraphRenderer interface**         | FULLY_FUNCTIONAL | Extends `Renderer` with `SetNodes([]GraphNode)` and `SetEdges([]GraphEdge)`                                                                                                                                                                                            |
-| **StreamingRenderer interface**     | FULLY_FUNCTIONAL | `Stream(io.Writer) error`. Incremental output for large datasets                                                                                                                                                                                                       |
-| **StreamingHTMLRenderer**           | FULLY_FUNCTIONAL | True streaming HTML table output. Writes chunks incrementally                                                                                                                                                                                                          |
-| **StreamingRendererFromRenderer()** | FULLY_FUNCTIONAL | Adapter wrapping standard `Renderer` as `StreamingRenderer` (collects then writes)                                                                                                                                                                                     |
-| **MustRender()**                    | FULLY_FUNCTIONAL | `MustRender(r Renderer) string` — panics on error. For tests/examples                                                                                                                                                                                                  |
-| **RenderTableData()**               | FULLY_FUNCTIONAL | Unified dispatcher: renders `TableData` in any format to `io.Writer` (defaults to stdout). Accepts `RenderOptions` (Title, GraphID, Writer)                                                                                                                            |
-| **Footer row**                      | FULLY_FUNCTIONAL | `TableData.Footer []string` — optional totals/summary row. CSV/TSV append as last row. HTML uses `<tfoot>` with `footer-cell` class. XML uses `<footer>`. Markdown adds separator + bold row. Table uses bold styling. Data formats (JSON/YAML/TOML/JSONL) skip footer |
-| **TableData.Validate()**            | FULLY_FUNCTIONAL | Validates footer column count matches headers. Returns `errColumnMismatch` when counts differ                                                                                                                                                                          |
+| Feature                         | Status           | Notes                                                                                                                                                                                                                                                              |
+| ------------------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Renderer interface**          | FULLY_FUNCTIONAL | `Render() (string, error)`. Universal contract for all formats                                                                                                                                                                                                     |
+| **TableRenderer interface**     | FULLY_FUNCTIONAL | Extends `Renderer` with `SetHeaders([]string)` and `AddRow([]string)`                                                                                                                                                                                              |
+| **TreeRenderer interface**      | FULLY_FUNCTIONAL | Extends `Renderer` with `SetRoot(*TreeNode)`                                                                                                                                                                                                                       |
+| **GraphRenderer interface**     | FULLY_FUNCTIONAL | Extends `Renderer` with `SetNodes([]GraphNode)` and `SetEdges([]GraphEdge)`                                                                                                                                                                                        |
+| **StreamingRenderer interface** | FULLY_FUNCTIONAL | `Stream(io.Writer) error`. Incremental output for large datasets                                                                                                                                                                                                   |
+| **StreamingHTMLRenderer**       | FULLY_FUNCTIONAL | True streaming HTML table output. Writes chunks incrementally                                                                                                                                                                                                      |
+| **RendererAsWriter()**          | FULLY_FUNCTIONAL | Adapter wrapping standard `Renderer` as `StreamingRenderer` (collects then writes)                                                                                                                                                                                 |
+| **MustRender()**                | FULLY_FUNCTIONAL | `MustRender(r Renderer) string` — panics on error. For tests/examples                                                                                                                                                                                              |
+| **RenderTable()**               | FULLY_FUNCTIONAL | Unified dispatcher: renders `Table` in any format to `io.Writer` (defaults to stdout). Accepts `RenderOptions` (Title, GraphID, Writer)                                                                                                                            |
+| **Footer row**                  | FULLY_FUNCTIONAL | `Table.Footer []string` — optional totals/summary row. CSV/TSV append as last row. HTML uses `<tfoot>` with `footer-cell` class. XML uses `<footer>`. Markdown adds separator + bold row. Table uses bold styling. Data formats (JSON/YAML/TOML/JSONL) skip footer |
+| **Table.Validate()**            | FULLY_FUNCTIONAL | Validates footer column count matches headers. Returns `errColumnMismatch` when counts differ                                                                                                                                                                      |
 
 ---
 
@@ -148,31 +148,31 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 
 ## Serialization Helpers
 
-| Feature                           | Status           | Notes                                                             |
-| --------------------------------- | ---------------- | ----------------------------------------------------------------- |
-| **MarshalJSON / UnmarshalJSON**   | FULLY_FUNCTIONAL | Wrapper over `encoding/json` with type-context errors             |
-| **MarshalJSONIndent**             | FULLY_FUNCTIONAL | Indented JSON with configurable prefix/indent                     |
-| **MarshalYAML / UnmarshalYAML**   | FULLY_FUNCTIONAL | Wrapper over `go-faster/yaml` with type-context errors            |
-| **MarshalXML / MarshalXMLIndent** | FULLY_FUNCTIONAL | Wrapper over `encoding/xml` with type-context errors              |
-| **MarshalCSVFromTableData**       | FULLY_FUNCTIONAL | One-shot CSV from `TableData`                                     |
-| **MarshalTSVFromTableData**       | FULLY_FUNCTIONAL | One-shot TSV from `TableData`; `TSVWriter` for streaming raw rows |
-| **MarshalXMLFromTableData**       | FULLY_FUNCTIONAL | One-shot XML from `TableData`                                     |
-| **MarshalTOML / UnmarshalTOML**   | FULLY_FUNCTIONAL | Wrapper over `go-toml/v2` with type-context errors                |
-| **MarshalJSONLFromTableData**     | FULLY_FUNCTIONAL | One-shot JSON Lines from `TableData`                              |
-| **MarshalAsciiDocFromTableData**  | FULLY_FUNCTIONAL | One-shot AsciiDoc table from `TableData`                          |
-| **MarshalTOMLFromTableData**      | FULLY_FUNCTIONAL | One-shot TOML from `TableData`                                    |
+| Feature                           | Status           | Notes                                                         |
+| --------------------------------- | ---------------- | ------------------------------------------------------------- |
+| **MarshalJSON / UnmarshalJSON**   | FULLY_FUNCTIONAL | Wrapper over `encoding/json` with type-context errors         |
+| **MarshalJSONIndent**             | FULLY_FUNCTIONAL | Indented JSON with configurable prefix/indent                 |
+| **MarshalYAML / UnmarshalYAML**   | FULLY_FUNCTIONAL | Wrapper over `go-faster/yaml` with type-context errors        |
+| **MarshalXML / MarshalXMLIndent** | FULLY_FUNCTIONAL | Wrapper over `encoding/xml` with type-context errors          |
+| **MarshalCSVFromTable**           | FULLY_FUNCTIONAL | One-shot CSV from `Table`                                     |
+| **MarshalTSVFromTable**           | FULLY_FUNCTIONAL | One-shot TSV from `Table`; `TSVWriter` for streaming raw rows |
+| **MarshalXMLFromTable**           | FULLY_FUNCTIONAL | One-shot XML from `Table`                                     |
+| **MarshalTOML / UnmarshalTOML**   | FULLY_FUNCTIONAL | Wrapper over `go-toml/v2` with type-context errors            |
+| **MarshalJSONLFromTable**         | FULLY_FUNCTIONAL | One-shot JSON Lines from `Table`                              |
+| **MarshalAsciiDocFromTable**      | FULLY_FUNCTIONAL | One-shot AsciiDoc table from `Table`                          |
+| **MarshalTOMLFromTable**          | FULLY_FUNCTIONAL | One-shot TOML from `Table`                                    |
 
 ---
 
 ## Registry System
 
-| Feature                 | Status  | Notes                                                                               |
-| ----------------------- | ------- | ----------------------------------------------------------------------------------- |
-| **Register()**          | REMOVED | Deprecated renderer registry deleted. Use direct constructors (`d2.NewD2Diagram()`) |
-| **Create()**            | REMOVED | Removed with registry. Use format-specific constructors                             |
-| **Unregister()**        | REMOVED | Removed with registry                                                               |
-| **RegisteredFormats()** | REMOVED | Removed with registry                                                               |
-| **IsRegistered()**      | REMOVED | Removed with registry                                                               |
+| Feature                 | Status  | Notes                                                                                |
+| ----------------------- | ------- | ------------------------------------------------------------------------------------ |
+| **Register()**          | REMOVED | Deprecated renderer registry deleted. Use direct constructors (`d2.Newd2.Diagram()`) |
+| **Create()**            | REMOVED | Removed with registry. Use format-specific constructors                              |
+| **Unregister()**        | REMOVED | Removed with registry                                                                |
+| **RegisteredFormats()** | REMOVED | Removed with registry                                                                |
+| **IsRegistered()**      | REMOVED | Removed with registry                                                                |
 
 ---
 
@@ -219,7 +219,7 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 
 | Feature                              | Status           | Notes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | ------------------------------------ | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **NOMStyleSubscriber**               | FULLY_FUNCTIONAL | Event-driven subscriber implementing `EventSubscriber`. Routes sealed typed events via exhaustive Go type switch (no string dispatch)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| **NOMSubscriber**                    | FULLY_FUNCTIONAL | Event-driven subscriber implementing `EventSubscriber`. Routes sealed typed events via exhaustive Go type switch (no string dispatch)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | **DependencyTree**                   | FULLY_FUNCTIONAL | Hierarchical activity visualization. Priority filtering (Running > Failed > Pending > Completed), depth-aware prefixes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | **InlineRenderer**                   | FULLY_FUNCTIONAL | Real-time inline terminal renderer. Frame diffing (skips identical redraws); writer-aware TTY detection (probes writer FD, not hardcoded stdout); sync-output gating (BSU/ESU only on confirmed TTY); SIGWINCH resize handling; panic recovery in refresh loop; snapshot-based rendering (race-free); Start/Stop/Finish lifecycle; `RenderCompletion(CompletionResult)` for structured one-line final summary; config setters (`SetStartTime`/`SetAppName`/`SetNoColor`/`SetHideCursor`/`SetMaxHeight`/`SetPlainText`) safe during the render loop; CI plain-text degradation; height-pressure collapse marker (`⋯ N completed`); ANSI redraw |
 | **TimingCache**                      | FULLY_FUNCTIONAL | Persists activity durations as CSV at `~/.cache/nom-timing.csv`. Serialized saves (saveMu), caps 10 entries/activity, applies cap on load                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
@@ -258,16 +258,16 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 
 ## Testing Infrastructure
 
-| Feature                 | Status                | Notes                                                                                                                                                                                                                                                                                                                                                                |
-| ----------------------- | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **testhelpers package** | FULLY_FUNCTIONAL      | Zero-dep, publicly importable. `AssertStringSliceEqual()`, `AssertContains()`, `AssertEqual[T]()`, `TestEnumIsValid[T]()`, `TestStructFields()`, `StringField()`, `IntField()`                                                                                                                                                                                       |
-| **Fuzz tests**          | FULLY_FUNCTIONAL      | `FuzzMarkdownTable` — seed corpus + coverage-guided fuzzing                                                                                                                                                                                                                                                                                                          |
-| **Benchmarks**          | FULLY_FUNCTIONAL      | `BenchmarkASCIITreeRenderer`, `BenchmarkHTMLRenderer`, `BenchmarkMermaidRenderer`, `BenchmarkDOTRenderer`, `BenchmarkCSVWriter`, `BenchmarkMarkdownTableColored`, `BenchmarkMarkdownTableWithFooter`, `BenchmarkTableDataCreateRowEdges`, `RenderUnderStepChurn`, `SnapshotActivities_Parallel`, `InlineRenderer_Draw`, `DrawWithChurn` (NOM render-lock contention) |
-| **Integration tests**   | FULLY_FUNCTIONAL      | Cross-module tests in `integration/` package. Tests all 16 formats, streaming, tree depth, edge creation, large datasets                                                                                                                                                                                                                                             |
-| **User journey tests**  | FULLY_FUNCTIONAL      | End-to-end tests simulating CLI developer workflows in `userjourney_test.go`                                                                                                                                                                                                                                                                                         |
-|                         | **VT emulator tests** | FULLY_FUNCTIONAL                                                                                                                                                                                                                                                                                                                                                     | `nom/vttest_test.go` — feeds InlineRenderer output to a real VT emulator (`x/vt`), asserts on screen buffer (10 tests: cursor hide/show, redraw, ghost-line cleanup, sync-output 2026, frame diffing) |
-|                         | **teatest E2E**       | FULLY_FUNCTIONAL                                                                                                                                                                                                                                                                                                                                                     | `tui/teatest_helpers_test.go` — drives the real Bubble Tea program loop via `teatest/v2` (7 tests: startup, scroll, help toggle, quit, ctrl+c, WindowSizeMsg)                                         |
-|                         | **Golden-file tests** | FULLY_FUNCTIONAL                                                                                                                                                                                                                                                                                                                                                     | Snapshot testing in `nom/` (5 tests), `table/` (4 tests: basic, footer, single-col, empty), `tree/` (4 tests: simple, deep, single, mixed). Update with `go test -update`                             |
+| Feature                 | Status                | Notes                                                                                                                                                                                                                                                                                                                                                            |
+| ----------------------- | --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **testhelpers package** | FULLY_FUNCTIONAL      | Zero-dep, publicly importable. `AssertStringSliceEqual()`, `AssertContains()`, `AssertEqual[T]()`, `TestEnumIsValid[T]()`, `TestStructFields()`, `StringField()`, `IntField()`                                                                                                                                                                                   |
+| **Fuzz tests**          | FULLY_FUNCTIONAL      | `FuzzMarkdownTable` — seed corpus + coverage-guided fuzzing                                                                                                                                                                                                                                                                                                      |
+| **Benchmarks**          | FULLY_FUNCTIONAL      | `BenchmarkASCIITreeRenderer`, `BenchmarkHTMLRenderer`, `BenchmarkMermaidRenderer`, `BenchmarkDOTRenderer`, `BenchmarkCSVWriter`, `BenchmarkMarkdownTableColored`, `BenchmarkMarkdownTableWithFooter`, `BenchmarkTableCreateRowEdges`, `RenderUnderStepChurn`, `SnapshotActivities_Parallel`, `InlineRenderer_Draw`, `DrawWithChurn` (NOM render-lock contention) |
+| **Integration tests**   | FULLY_FUNCTIONAL      | Cross-module tests in `integration/` package. Tests all 16 formats, streaming, tree depth, edge creation, large datasets                                                                                                                                                                                                                                         |
+| **User journey tests**  | FULLY_FUNCTIONAL      | End-to-end tests simulating CLI developer workflows in `userjourney_test.go`                                                                                                                                                                                                                                                                                     |
+|                         | **VT emulator tests** | FULLY_FUNCTIONAL                                                                                                                                                                                                                                                                                                                                                 | `nom/vttest_test.go` — feeds InlineRenderer output to a real VT emulator (`x/vt`), asserts on screen buffer (10 tests: cursor hide/show, redraw, ghost-line cleanup, sync-output 2026, frame diffing) |
+|                         | **teatest E2E**       | FULLY_FUNCTIONAL                                                                                                                                                                                                                                                                                                                                                 | `tui/teatest_helpers_test.go` — drives the real Bubble Tea program loop via `teatest/v2` (7 tests: startup, scroll, help toggle, quit, ctrl+c, WindowSizeMsg)                                         |
+|                         | **Golden-file tests** | FULLY_FUNCTIONAL                                                                                                                                                                                                                                                                                                                                                 | Snapshot testing in `nom/` (5 tests), `table/` (4 tests: basic, footer, single-col, empty), `tree/` (4 tests: simple, deep, single, mixed). Update with `go test -update`                             |
 
 ---
 
@@ -339,7 +339,7 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 | -------------------------- | ---------------- | ---------------------------------------------------------------------------------------------------------- |
 | **FilledStrings()**        | REMOVED          | Replaced by `slices.Repeat` (stdlib). Zero external callers.                                               |
 | **InvalidFormatError**     | FULLY_FUNCTIONAL | Descriptive error with allowed values list                                                                 |
-| **UnsupportedFormatError** | FULLY_FUNCTIONAL | Returned by `RenderTableData()` for table/json formats                                                     |
+| **UnsupportedFormatError** | FULLY_FUNCTIONAL | Returned by `RenderTable()` for table/json formats                                                         |
 | **D2 utility methods**     | FULLY_FUNCTIONAL | `AddNodeSimple()`, `AddNodeWithShape()`, `AddEdgeSimple()`, `AddLabeledEdge()` — builder pattern shortcuts |
 
 ---

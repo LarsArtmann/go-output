@@ -12,11 +12,11 @@ import (
 // activity status. Custom CI states (e.g. "skipped", "cached", "warning") are
 // registered as StatusDef values and receive an ActivityStatus ID.
 type StatusDef struct {
-	Name       string
-	Symbol     Symbol
-	Color      color.Color
-	Interest   int
-	NodeShape  output.NodeShape
+	Name      string
+	Symbol    Symbol
+	Color     color.Color
+	Interest  int
+	NodeShape output.NodeShape
 	NodeStyle output.NodeStyle
 }
 
@@ -118,11 +118,11 @@ func RegisterStatus(
 	globalRegistry.nextID++
 
 	globalRegistry.byID[id] = StatusDef{
-		Name:       name,
-		Symbol:     symbol,
-		Color:      c,
-		Interest:   interest,
-		NodeShape:  shape,
+		Name:      name,
+		Symbol:    symbol,
+		Color:     c,
+		Interest:  interest,
+		NodeShape: shape,
 		NodeStyle: style,
 	}
 	globalRegistry.byName[normalizeStatusName(name)] = id
@@ -207,11 +207,11 @@ func (r *statusRegistry) registerLocked(
 	r.nextID++
 
 	r.byID[id] = StatusDef{
-		Name:       name,
-		Symbol:     symbol,
-		Color:      c,
-		Interest:   interest,
-		NodeShape:  shape,
+		Name:      name,
+		Symbol:    symbol,
+		Color:     c,
+		Interest:  interest,
+		NodeShape: shape,
 		NodeStyle: style,
 	}
 	r.byName[normalizeStatusName(name)] = id

@@ -49,7 +49,7 @@ type MermaidRenderer struct {
 func NewMermaidRenderer() *MermaidRenderer {
 	return &MermaidRenderer{
 		GraphBuilder: output.NewGraphBuilder(),
-		codeFence:          true,
+		codeFence:    true,
 	}
 }
 

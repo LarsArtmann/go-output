@@ -29,7 +29,7 @@ type PlantUMLDiagram struct {
 func NewPlantUMLDiagram() *PlantUMLDiagram {
 	return &PlantUMLDiagram{
 		GraphBuilder: output.NewGraphBuilder(),
-		diagramType:        "component",
+		diagramType:  "component",
 	}
 }
 

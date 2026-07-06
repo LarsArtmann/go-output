@@ -9,10 +9,10 @@ import (
 )
 
 var (
-	_ output.Renderer           = (*TOMLTreeRenderer)(nil)
-	_ output.TreeRenderer = (*TOMLTreeRenderer)(nil)
-	_ output.Renderer           = (*TOMLGraphRenderer)(nil)
-	_ output.GraphRenderer      = (*TOMLGraphRenderer)(nil)
+	_ output.Renderer      = (*TOMLTreeRenderer)(nil)
+	_ output.TreeRenderer  = (*TOMLTreeRenderer)(nil)
+	_ output.Renderer      = (*TOMLGraphRenderer)(nil)
+	_ output.GraphRenderer = (*TOMLGraphRenderer)(nil)
 )
 
 // TOMLGraphRenderer renders graph nodes and edges as TOML.

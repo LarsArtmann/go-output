@@ -51,12 +51,12 @@ type DOTRenderer struct {
 func newDOTRenderer(directed bool) *DOTRenderer {
 	return &DOTRenderer{
 		GraphBuilder: output.NewGraphBuilder(),
-		directed:           directed,
-		graphID:            "G",
-		rankdir:            RankDirTB,
-		splines:            SplineOrtho,
-		nodesep:            "0.5",
-		ranksep:            "0.5",
+		directed:     directed,
+		graphID:      "G",
+		rankdir:      RankDirTB,
+		splines:      SplineOrtho,
+		nodesep:      "0.5",
+		ranksep:      "0.5",
 	}
 }
 

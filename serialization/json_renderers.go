@@ -8,10 +8,10 @@ import (
 )
 
 var (
-	_ output.Renderer           = (*JSONTreeRenderer)(nil)
-	_ output.TreeRenderer = (*JSONTreeRenderer)(nil)
-	_ output.Renderer           = (*JSONGraphRenderer)(nil)
-	_ output.GraphRenderer      = (*JSONGraphRenderer)(nil)
+	_ output.Renderer      = (*JSONTreeRenderer)(nil)
+	_ output.TreeRenderer  = (*JSONTreeRenderer)(nil)
+	_ output.Renderer      = (*JSONGraphRenderer)(nil)
+	_ output.GraphRenderer = (*JSONGraphRenderer)(nil)
 )
 
 // JSONTreeRenderer renders a TreeNode hierarchy as JSON.

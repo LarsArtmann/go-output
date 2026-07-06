@@ -4,7 +4,43 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
+## [Unreleased] — v0.30.0 (Breaking Changes)
+
+### Breaking — Deletions (B1-B10)
+
+- **nom** — Deleted `NOMStyleSubscriber` type alias (use `NOMSubscriber`).
+- **nom** — Deleted `NewNOMStyleSubscriber()` (use `NewNOMSubscriber()`).
+- **nom** — Deleted `GetDependencyTree()` (use `DependencyTree()`).
+- **nom** — Deleted `ErrActivityNotFound` (use `GetNode(id) == nil` check).
+- **nom** — Deleted `TimingFormat` constant (use `FormatDuration()`).
+- **nom** — Deleted `Activity.IsPhase()` (use `ActivitySnapshot.IsPhase()`).
+- **output** — Deleted `EdgeStyle.ArrowHead` + `.ArrowTail` (never read by renderers).
+- **output** — Deleted `NodeShapeRect` (use `NodeShapeBox`). `ParseNodeShape("rect")` now returns error.
+- **output** — Deleted `StreamingRendererFromRenderer()` (use `RendererAsWriter()`).
+- **nom** — Deleted `msgNoActivitiesToDisplay` unexported alias (use `MsgNoActivities`).
+- **nom** — Completed status shape changed from `NodeShapeBox` (was `NodeShapeRect`) to `NodeShapeHexagon` for visual distinctness.
+
+### Breaking — Renames
+
+- **output** — `TableData` → `Table` (~647 references across all 19 modules).
+- **output** — `TableDataStore` → `TableStore`.
+- **output** — `TableDataRenderer` (function type) → `TableMarshaler`.
+- **output** — `RenderTableData()` → `RenderTable()`.
+- **output** — `RegisterTableDataRenderer()` → `RegisterTableMarshaler()`.
+- **output** — `AnyDataRenderer` → `UnknownRenderer`.
+- **output** — `RenderAnyData()` → `RenderUnknown()`.
+- **output** — `GraphStyle` → `NodeStyle` (styles individual nodes, not the graph).
+- **output** — `GraphRendererState` → `GraphBuilder` (write-side builder, not "state").
+- **output** — `TreeOutputRenderer` → `TreeRenderer`.
+- **nom** — `ActivityStatus.GraphStyle()` → `ActivityStatus.NodeStyle()`.
+- **graph/d2/plantuml/markdown/tree** — All `XxxFromTableData()` → `NewXxxFromTable()`.
+- **graph/d2/plantuml** — All `XxxFromTree()` → `NewXxxFromTree()`.
+- **markdown** — `NewMarkdownTableFromData()` → `NewMarkdownTableFromTable()`.
+- **d2** — Dropped `D2` prefix from ALL exported types: `D2NodeStyle` → `NodeStyle`, `D2Diagram` → `Diagram`, `D2Node` → `Node`, `D2Edge` → `Edge`, `D2Direction` → `Direction`, etc. (~120 references).
+- **d2** — Renamed constructors: `NewD2Diagram()` → `NewDiagram()`, etc.
+- **d2** — Renamed methods: `SetD2Direction()` → `SetDirection()`, `ParseD2*()` → `Parse*()`.
+- **d2** — Renamed errors: `ErrInvalidD2*` → `ErrInvalid*`.
+- **d2** — Renamed constants: `D2ShapeRectangle` → `ShapeRectangle`, `D2DirRight` → `DirRight`, etc.
 
 ### Fixed — Concurrency (P0)
 
@@ -26,7 +62,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   channel (coalesces rapid Records). Eliminates goroutine leak (C4).
 - **nom** — Replaced `log.Printf` error swallowing in async cache save with
   stored `saveErr` returned by new `Flush()` method.
-- **nom** — Added `Flush()` to `TimingCache` and `NOMStyleSubscriber` for
+- **nom** — Added `Flush()` to `TimingCache` and `NOMSubscriber` for
   clean shutdown that drains pending saves.
 
 ### Changed — Architecture (P0/P5)
@@ -44,16 +80,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Deprecated (v2 removal)
 
-- **nom** — `NOMStyleSubscriber` → use `NOMSubscriber` (type alias).
-- **nom** — `NewNOMStyleSubscriber` → use `NewNOMSubscriber`.
+- **nom** — `NOMSubscriber` → use `NOMSubscriber` (type alias).
+- **nom** — `NewNOMSubscriber` → use `NewNOMSubscriber`.
 - **nom** — `SemanticColors.Info` → renamed to `SemanticColors.Fallback`.
-- **nom** — `GetDependencyTree()` → use `DependencyTree()` (identical behavior).
+- **nom** — `DependencyTree()` → use `DependencyTree()` (identical behavior).
 - **nom** — `ErrActivityNotFound` → use `GetNode(id) == nil` check instead.
 - **nom** — `TimingFormat` constant → use `FormatDuration()` function.
 - **nom** — `Activity.IsPhase()` → use `ActivitySnapshot.IsPhase()`.
 - **graph** — `EdgeStyle.ArrowHead`/`ArrowTail` → never read by any renderer;
   use D2's `D2Edge.SourceArrow`/`TargetArrow` for D2 diagrams.
-- **output** — `StreamingRendererFromRenderer` → use `RendererAsWriter`
+- **output** — `RendererAsWriter` → use `RendererAsWriter`
   (honest name for non-streaming adapter).
 
 ### Added
@@ -600,7 +636,7 @@ Pre-v1 cleanup, rendering bug fixes, data-race elimination, and dead-code remova
 - **`nom.ActivityStatus.NodeShape()` / `.GraphStyle()`** — mappers from domain status to root's visual types. Same status now drives both terminal lipgloss styling AND diagram export (DOT/Mermaid/D2/PlantUML).
 - **`nom.ActivityStore`** — map-backed store with `Nodes() []output.GraphNode` / `Edges() []output.GraphEdge` projections. Any `output.GraphRenderer` can consume live progress state for diagram export.
 - **`nom.MultiSubscriber`** — `io.MultiWriter`-style fanout for `EventSubscriber`. Dispatches events to N subscribers; nil subscribers skipped; errors from one don't block others.
-- **`nom.NOMStyleSubscriber.Store()`** — exposes the `ActivityStore` for diagram export.
+- **`nom.NOMSubscriber.Store()`** — exposes the `ActivityStore` for diagram export.
 - **`nom.Symbol` typed constants** — `SymbolRunning`, `SymbolCompleted`, `SymbolFailed`, `SymbolPaused`, `SymbolDownload`, `SymbolUpload`, `SymbolTiming`, `SymbolAverage`, `SymbolTotal`, `SymbolPhase`. Replaces bare `string` symbols with a typed `Symbol` type, preventing accidental mixing with arbitrary strings.
 - **`nom.AllActivityStatuses`** — complete iterable list of valid `ActivityStatus` values, backing `ParseActivityStatus()`, `IsValid()`, and `AllowedValues()`.
 
@@ -669,7 +705,7 @@ Pre-v1 cleanup, rendering bug fixes, data-race elimination, and dead-code remova
 
 - **`MermaidRenderer.SetCodeFence(bool)`** — raw flowchart syntax for `.mmd` files, Mermaid CLI, and embedded diagrams.
 - **Per-node `GraphStyle` in Mermaid and PlantUML** — `fill`, `stroke`, `font-color`, and `font-size` are now honored. Replaces the hardcoded pink Mermaid classDef and rigid PlantUML skinparam defaults.
-- **`GraphRendererState.DedupEdges()`** — removes duplicate edges by `(from, to)` in-place.
+- **`GraphBuilder.DedupEdges()`** — removes duplicate edges by `(from, to)` in-place.
 - **DOT typed layout enums** — `RankDir` and `SplineStyle` make invalid layout values unrepresentable, with `Parse`/`String`/`IsValid`/`AllowedValues`.
 - **`DOTRenderer.SetRankDir(RankDir)`**, **`SetSplines(SplineStyle)`**, **`SetNodeSep`**, **`SetRankSep`** — configurable DOT layout attributes (defaults preserved).
 
@@ -763,7 +799,7 @@ Pre-v1 cleanup, rendering bug fixes, data-race elimination, and dead-code remova
 
 - All `panic()` calls eliminated from production code — replaced with error returns.
 - NOM `AddActivity` made idempotent — prevents duplicate children.
-- NOM dependency tree locking fixed — `GetDependencyTree` now properly synchronized.
+- NOM dependency tree locking fixed — `DependencyTree` now properly synchronized.
 
 ### Fixed
 
@@ -776,7 +812,7 @@ Pre-v1 cleanup, rendering bug fixes, data-race elimination, and dead-code remova
 
 ### Added
 
-- **`nom/` module** — NOM-style real-time progress visualization with dependency trees, timing cache (CSV-persisted), and event-driven activity tracking. Zero imports from root module. `NOMStyleSubscriber` implements `EventSubscriber` with string-based event routing and type-assertion accessor interfaces.
+- **`nom/` module** — NOM-style real-time progress visualization with dependency trees, timing cache (CSV-persisted), and event-driven activity tracking. Zero imports from root module. `NOMSubscriber` implements `EventSubscriber` with string-based event routing and type-assertion accessor interfaces.
 - **`tui/` module** — Bubble Tea interactive TUI for workflow progress display. `BubbleTeaProgressReporter` with state machine (`WorkflowState`: Idle→Running→Completed/Errored), step-based progress, and NOM integration. Depends on `nom/`.
 - `TableData.Validate()` now rejects nil rows — catches `nil` in `Rows [][]string` before rendering.
 - Race test for `RegisterFormatShapes` confirms thread-safety of the shape capability matrix.
@@ -914,7 +950,7 @@ Pre-v1 cleanup, rendering bug fixes, data-race elimination, and dead-code remova
 - Root production code has zero `go-faster/yaml`, zero `go-toml/v2`, and zero `escape` imports (isolated in `serialization/` and `markup/`).
 - `FilledStrings` — uses `slices.Repeat` (Go 1.26 stdlib) instead of manual make+for loop
 - `NewBrandedID` — simplified from `id.NewID[Brand, string](value)` to `id.NewID[Brand](value)` (inferred type arg)
-- Added `Nodes()`, `Edges()`, `NodesPtr()`, `EdgesPtr()` accessor methods to `GraphRendererState` for cross-package use
+- Added `Nodes()`, `Edges()`, `NodesPtr()`, `EdgesPtr()` accessor methods to `GraphBuilder` for cross-package use
 - `enum/enum_test.go` no longer imports `internal/gentest` (inlined helper)
 - `.gitignore` — added `result` and `.direnv/` for Nix artifacts
 - Deduplication sprints reduced code clones from 44 → 26 (41% total reduction)
@@ -952,7 +988,7 @@ Pre-v1 cleanup, rendering bug fixes, data-race elimination, and dead-code remova
 - `FormatCategory`, `IsTableFormat()`, `IsTreeFormat()`, `IsGraphFormat()`, `Category()` deprecated — use `Supports(Shape)` instead
 - `TreeNode` and `TreeOutputRenderer` extracted from `format.go` to `tree.go`
 - `TableData`, `RowEdge`, and `tableDataBase` extracted from `format.go`/`html.go` to `tabledata.go`
-- `GraphRendererState` moved from `dot.go` to `graph.go`
+- `GraphBuilder` moved from `dot.go` to `graph.go`
 - `format.go` reduced from 373 to 291 lines (under 350-line limit)
 - `dot.go` reduced from 253 to 199 lines
 
@@ -1011,7 +1047,7 @@ Pre-v1 cleanup, rendering bug fixes, data-race elimination, and dead-code remova
 - `SortBy` enum for sort field selection
 - Opt-in renderer registry (`Register`/`Create`)
 - D2 diagram renderer with shapes, arrows, SQL tables, classes, user journeys
-- DOT/Graphviz renderer with `GraphRendererState`
+- DOT/Graphviz renderer with `GraphBuilder`
 - Mermaid flowchart renderer
 - HTML table renderer with escaping
 - Streaming HTML renderer for large datasets

@@ -50,7 +50,7 @@ func (r *ASCIITreeRenderer) SetColorMode(mode output.ColorMode) {
 
 // Compile-time interface checks.
 var (
-	_ output.Renderer           = (*ASCIITreeRenderer)(nil)
+	_ output.Renderer     = (*ASCIITreeRenderer)(nil)
 	_ output.TreeRenderer = (*ASCIITreeRenderer)(nil)
 )
 

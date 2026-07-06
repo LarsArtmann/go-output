@@ -9,10 +9,10 @@ import (
 )
 
 var (
-	_ output.Renderer           = (*YAMLTreeRenderer)(nil)
-	_ output.TreeRenderer = (*YAMLTreeRenderer)(nil)
-	_ output.Renderer           = (*YAMLGraphRenderer)(nil)
-	_ output.GraphRenderer      = (*YAMLGraphRenderer)(nil)
+	_ output.Renderer      = (*YAMLTreeRenderer)(nil)
+	_ output.TreeRenderer  = (*YAMLTreeRenderer)(nil)
+	_ output.Renderer      = (*YAMLGraphRenderer)(nil)
+	_ output.GraphRenderer = (*YAMLGraphRenderer)(nil)
 )
 
 // YAMLTreeRenderer renders a TreeNode hierarchy as YAML.
