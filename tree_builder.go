@@ -1,0 +1,54 @@
+package output
+
+// TreeBuilder is the CQRS write-side builder for tree data.
+// It provides a fluent construction API for assembling a tree,
+// then freezes the result into a *TreeNode (root) via Build().
+//
+// Usage:
+//
+//	root := NewTreeBuilder().
+//	    SetRoot("build", "Build").
+//	    AddChild("build", "compile", "Compile").
+//	    AddChild("build", "lint", "Lint").
+//	    AddChild("compile", "test", "Test").
+//	    Build()
+type TreeBuilder struct {
+	root  *TreeNode
+	nodes map[string]*TreeNode
+}
+
+// NewTreeBuilder creates a new TreeBuilder.
+func NewTreeBuilder() *TreeBuilder {
+	return &TreeBuilder{
+		nodes: make(map[string]*TreeNode),
+	}
+}
+
+// SetRoot creates and sets the root node.
+func (b *TreeBuilder) SetRoot(id, label string) *TreeBuilder {
+	b.root = NewTreeNode(id, label)
+	b.nodes[id] = b.root
+
+	return b
+}
+
+// AddChild adds a child node under the specified parent ID.
+// If the parent ID is not found, the child is silently skipped.
+func (b *TreeBuilder) AddChild(parentID, id, label string) *TreeBuilder {
+	parent, ok := b.nodes[parentID]
+	if !ok {
+		return b
+	}
+
+	child := NewTreeNode(id, label)
+	parent.AddChild(child)
+	b.nodes[id] = child
+
+	return b
+}
+
+// Build returns the root node of the assembled tree.
+// Returns nil if SetRoot was never called.
+func (b *TreeBuilder) Build() *TreeNode {
+	return b.root
+}

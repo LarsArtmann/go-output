@@ -103,6 +103,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **nom** — Smoke tests for `ThemeNord` and `ThemeMonochrome` presets.
 - **d2** — `D2TextTransform` enum type with parse/validate/allowed-values.
 
+### Added — CQRS Architecture
+
+- **output** — `TableBuilder`: fluent write-side builder with `SetHeaders()`/`AddRow()`/`SetFooter()`/`Build()→*Table`.
+- **output** — `TreeBuilder`: fluent write-side builder with `SetRoot()`/`AddChild()`/`Build()→*TreeNode`.
+- **output** — `GraphBuilder.Build()→Graph`: immutable graph snapshot (frozen nodes + edges).
+- **output** — `Graph`: immutable value type with `Nodes()`/`Edges()` read accessors.
+- **output** — Cross-shape projections: `TableToGraph(t)→Graph`, `GraphToTree(g)→*TreeNode`, `GraphToTable(g)→*Table`.
+- **graph** — CQRS pure functions: `RenderDOT(g)`/`WriteDOT(w,g)`, `RenderMermaid(g)`/`WriteMermaid(w,g)` with functional options.
+- **d2** — CQRS pure functions: `Render(diagram)`/`Write(w,diagram)`, `RenderGraph(g)`/`WriteGraph(w,g)`.
+- **plantuml** — CQRS pure functions: `Render(g)`/`Write(w,g)`.
+- **tree** — CQRS pure functions: `RenderASCII(root)`/`WriteASCII(w,root)`.
+- **markdown** — CQRS pure functions: `Render(t)`/`Write(w,t)`.
+- **delimited** — CQRS pure functions: `WriteCSV(w,t)`/`RenderCSV(t)`, `WriteTSV(w,t)`/`RenderTSV(t)`.
+- **serialization** — CQRS pure functions: `WriteJSON`/`RenderJSON`, `WriteYAML`/`RenderYAML`, `WriteTOML`/`RenderTOML`, `WriteJSONL`/`RenderJSONL`.
+- **markup** — CQRS pure functions: `WriteXML`/`RenderXML`, `WriteHTML`/`RenderHTML`, `WriteAsciiDoc`/`RenderAsciiDoc`.
+- **All modules** — Godoc `Example()` functions for every CQRS function.
+- **graph/table** — Benchmark baselines (100 nodes/150 edges, 100 rows/5 cols).
+
 ## [0.23.1] - 2026-07-02
 
 ### Fixed
