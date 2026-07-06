@@ -95,5 +95,5 @@ func (r *JSONTableRenderer) Render() (string, error) {
 }
 
 func renderJSONTable(w io.Writer, data *output.Table, _ output.RenderOptions) error {
-	return renderViaRenderer(w, data, NewJSONTableRenderer(), "json")
+	return WriteJSON(w, data)
 }

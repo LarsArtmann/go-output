@@ -11,7 +11,7 @@ func init() {
 	output.RegisterFormatShapes(output.FormatTSV, output.ShapeTable)
 	output.RegisterTableMarshaler(output.FormatTSV,
 		func(w io.Writer, data *output.Table, _ output.RenderOptions) error {
-			return renderDelimitedTable(w, data, MarshalTSVFromTable, "tsv")
+			return WriteTSV(w, data)
 		})
 }
 

@@ -802,24 +802,24 @@ Read [`docs/FORMAT_ARCHITECTURE.md`](docs/FORMAT_ARCHITECTURE.md), [`docs/DOMAIN
 
 ### Type renames
 
-| Old                         | New                      |
-| --------------------------- | ------------------------ |
-| `output.TableData`          | `output.Table`           |
-| `output.TableDataStore`     | `output.TableStore`      |
-| `output.GraphStyle`         | `output.NodeStyle`       |
-| `output.GraphRendererState` | `output.GraphBuilder`    |
-| `output.TreeOutputRenderer` | `output.TreeRenderer`    |
-| `nom.NOMStyleSubscriber`    | `nom.NOMSubscriber`      |
-| `d2.D2Diagram`              | `d2.Diagram`             |
+| Old                         | New                       |
+| --------------------------- | ------------------------- |
+| `output.TableData`          | `output.Table`            |
+| `output.TableDataStore`     | `output.TableStore`       |
+| `output.GraphStyle`         | `output.NodeStyle`        |
+| `output.GraphRendererState` | `output.GraphBuilder`     |
+| `output.TreeOutputRenderer` | `output.TreeRenderer`     |
+| `nom.NOMStyleSubscriber`    | `nom.NOMSubscriber`       |
+| `d2.D2Diagram`              | `d2.Diagram`              |
 | All `d2.D2Xxx` types        | `d2.Xxx` (prefix dropped) |
 
 ### Function renames
 
-| Old                          | New                       |
-| ---------------------------- | ------------------------- |
-| `output.RenderTableData()`   | `output.RenderTable()`    |
-| `nom.NewNOMStyleSubscriber`  | `nom.NewNOMSubscriber`    |
-| All `XxxFromTableData()`     | `NewXxxFromTable()`       |
+| Old                         | New                    |
+| --------------------------- | ---------------------- |
+| `output.RenderTableData()`  | `output.RenderTable()` |
+| `nom.NewNOMStyleSubscriber` | `nom.NewNOMSubscriber` |
+| All `XxxFromTableData()`    | `NewXxxFromTable()`    |
 
 ### New CQRS API (recommended for new code)
 

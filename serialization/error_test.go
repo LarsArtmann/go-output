@@ -255,22 +255,6 @@ func TestMarshalTOML_Error(t *testing.T) {
 	}
 }
 
-func TestRenderViaRenderer_WriteError(t *testing.T) {
-	t.Parallel()
-
-	data := output.NewTable([]string{"A"})
-	data.AddRow([]string{"1"})
-
-	r := NewJSONTableRenderer()
-
-	err := renderViaRenderer(&errorWriter{}, data, r, "test")
-	if err == nil {
-		t.Fatal("expected error from errorWriter")
-	}
-
-	assertContains(t, err.Error(), "write test output", "error should mention write")
-}
-
 func TestRenderJSONUnknown_WriteError(t *testing.T) {
 	t.Parallel()
 
@@ -315,5 +299,5 @@ func TestRenderJSONLTable_WriteRowError(t *testing.T) {
 		t.Fatal("expected error from errorWriter")
 	}
 
-	assertContains(t, err.Error(), "write jsonl", "error should mention jsonl")
+	assertContains(t, err.Error(), "jsonl", "error should mention jsonl")
 }

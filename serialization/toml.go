@@ -92,7 +92,7 @@ func (r *TOMLTableRenderer) Render() (string, error) {
 }
 
 func renderTOMLTable(w io.Writer, data *output.Table, _ output.RenderOptions) error {
-	return renderViaRenderer(w, data, NewTOMLTableRenderer(), "toml")
+	return WriteTOML(w, data)
 }
 
 // MarshalTOMLFromTable marshals Table as TOML.

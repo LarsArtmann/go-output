@@ -148,22 +148,36 @@ func (r *DOTRenderer) SetRankSep(sep string) *DOTRenderer {
 
 // Render returns the DOT graph as a string.
 func (r *DOTRenderer) Render() (string, error) {
+	return renderDOTString(r.Nodes(), r.Edges(), dotConfig{
+		directed: r.directed,
+		graphID:  r.graphID,
+		rankdir:  r.rankdir,
+		splines:  r.splines,
+		nodesep:  r.nodesep,
+		ranksep:  r.ranksep,
+	}), nil
+}
+
+// renderDOTString builds the complete DOT document from nodes, edges, and config.
+// This is the single source of truth for DOT formatting — shared by both
+// WriteDOT (CQRS path) and DOTRenderer.Render() (legacy path).
+func renderDOTString(nodes []output.GraphNode, edges []output.GraphEdge, cfg dotConfig) string {
 	var b strings.Builder
 
-	if r.directed {
+	if cfg.directed {
 		b.WriteString("digraph ")
 	} else {
 		b.WriteString("graph ")
 	}
 
-	b.WriteString(r.graphID)
+	b.WriteString(cfg.graphID)
 	b.WriteString(" {\n")
 
 	b.WriteString("  // Graph attributes\n")
-	fmt.Fprintf(&b, "  rankdir=%s;\n", r.rankdir.String())
-	fmt.Fprintf(&b, "  splines=%s;\n", r.splines.String())
-	fmt.Fprintf(&b, "  nodesep=%s;\n", r.nodesep)
-	fmt.Fprintf(&b, "  ranksep=%s;\n\n", r.ranksep)
+	fmt.Fprintf(&b, "  rankdir=%s;\n", cfg.rankdir.String())
+	fmt.Fprintf(&b, "  splines=%s;\n", cfg.splines.String())
+	fmt.Fprintf(&b, "  nodesep=%s;\n", cfg.nodesep)
+	fmt.Fprintf(&b, "  ranksep=%s;\n\n", cfg.ranksep)
 
 	b.WriteString("  // Default node attributes\n")
 	b.WriteString("  node [\n")
@@ -174,22 +188,22 @@ func (r *DOTRenderer) Render() (string, error) {
 
 	b.WriteString("  // Nodes\n")
 
-	for _, node := range r.Nodes() {
-		r.writeNode(&b, node)
+	for _, node := range nodes {
+		writeDOTNodeStmt(&b, node)
 	}
 
 	b.WriteString("\n  // Edges\n")
 
-	for _, edge := range r.Edges() {
-		r.writeEdge(&b, edge)
+	for _, edge := range edges {
+		writeDOTEdgeStmt(&b, edge, cfg.directed)
 	}
 
 	b.WriteString("}\n")
 
-	return b.String(), nil
+	return b.String()
 }
 
-func (r *DOTRenderer) writeNode(b *strings.Builder, node output.GraphNode) {
+func writeDOTNodeStmt(b *strings.Builder, node output.GraphNode) {
 	b.WriteString("  \"")
 	b.WriteString(escape.DOT(node.ID.Get()))
 	b.WriteString("\" [\n")
@@ -198,18 +212,14 @@ func (r *DOTRenderer) writeNode(b *strings.Builder, node output.GraphNode) {
 	b.WriteString(escape.DOT(node.Label.Get()))
 	b.WriteString("\"\n")
 
-	r.writeNodeAttr(b, "shape", string(node.Shape), node.Shape != "")
-	r.writeNodeAttr(b, "fillcolor", node.Style.Fill, node.Style.Fill != "")
-	r.writeNodeAttr(b, "color", node.Style.Stroke, node.Style.Stroke != "")
+	writeDOTAttrStmt(b, "shape", string(node.Shape), node.Shape != "")
+	writeDOTAttrStmt(b, "fillcolor", node.Style.Fill, node.Style.Fill != "")
+	writeDOTAttrStmt(b, "color", node.Style.Stroke, node.Style.Stroke != "")
 
 	b.WriteString("  ];\n")
 }
 
-func (r *DOTRenderer) writeNodeAttr(
-	b *strings.Builder,
-	attrName, attrValue string,
-	condition bool,
-) {
+func writeDOTAttrStmt(b *strings.Builder, attrName, attrValue string, condition bool) {
 	if condition {
 		b.WriteString("    ")
 		b.WriteString(attrName)
@@ -219,9 +229,9 @@ func (r *DOTRenderer) writeNodeAttr(
 	}
 }
 
-func (r *DOTRenderer) writeEdge(b *strings.Builder, edge output.GraphEdge) {
+func writeDOTEdgeStmt(b *strings.Builder, edge output.GraphEdge, directed bool) {
 	op := "->"
-	if !r.directed {
+	if !directed {
 		op = "--"
 	}
 

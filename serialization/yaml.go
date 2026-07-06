@@ -74,5 +74,5 @@ func (r *YAMLTableRenderer) Render() (string, error) {
 }
 
 func renderYAMLTable(w io.Writer, data *output.Table, _ output.RenderOptions) error {
-	return renderViaRenderer(w, data, NewYAMLTableRenderer(), "yaml")
+	return WriteYAML(w, data)
 }

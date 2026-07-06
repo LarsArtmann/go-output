@@ -8,31 +8,12 @@ import (
 	"github.com/larsartmann/go-output"
 )
 
-func renderDelimitedTable(
-	w io.Writer,
-	data *output.Table,
-	marshalFunc func(*output.Table) ([]byte, error),
-	formatName string,
-) error {
-	b, err := marshalFunc(data)
-	if err != nil {
-		return fmt.Errorf("render %s: %w", formatName, err)
-	}
-
-	_, err = w.Write(b)
-	if err != nil {
-		return fmt.Errorf("write %s bytes: %w", formatName, err)
-	}
-
-	return nil
-}
-
 //nolint:gochecknoinits // Registers CSV Table marshaler and format capabilities.
 func init() {
 	output.RegisterFormatShapes(output.FormatCSV, output.ShapeTable)
 	output.RegisterTableMarshaler(output.FormatCSV,
 		func(w io.Writer, data *output.Table, _ output.RenderOptions) error {
-			return renderDelimitedTable(w, data, MarshalCSVFromTable, "csv")
+			return WriteCSV(w, data)
 		})
 }
 

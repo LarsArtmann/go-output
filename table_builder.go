@@ -1,5 +1,7 @@
 package output
 
+import "slices"
+
 // TableBuilder is the CQRS write-side builder for tabular data.
 // It provides a fluent construction API, then copies the result
 // into a *Table via Build(). The returned Table is a defensive copy —
@@ -57,16 +59,16 @@ func (b *TableBuilder) SetFooter(footer ...string) *TableBuilder {
 // not affect previously built Tables. Callers SHOULD treat the result
 // as read-only, though Go does not enforce immutability on *Table.
 func (b *TableBuilder) Build() *Table {
-	headers := append([]string(nil), b.headers...)
+	headers := slices.Clone(b.headers)
 
 	rows := make([][]string, 0, len(b.rows))
 	for _, row := range b.rows {
-		rows = append(rows, append([]string(nil), row...))
+		rows = append(rows, slices.Clone(row))
 	}
 
 	var footer []string
 	if len(b.footer) > 0 {
-		footer = append([]string(nil), b.footer...)
+		footer = slices.Clone(b.footer)
 	}
 
 	return &Table{

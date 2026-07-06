@@ -71,27 +71,16 @@ func defaultDOTConfig() dotConfig {
 }
 
 // WriteDOT writes a Graph as DOT format to the provided writer.
+// Writes directly from the Graph's nodes and edges — no DOTRenderer intermediary.
 func WriteDOT(w io.Writer, g output.Graph, opts ...DOTOption) error {
 	cfg := defaultDOTConfig()
 	for _, opt := range opts {
 		opt(&cfg)
 	}
 
-	r := newDOTRenderer(cfg.directed)
-	r.graphID = cfg.graphID
-	r.rankdir = cfg.rankdir
-	r.splines = cfg.splines
-	r.nodesep = cfg.nodesep
-	r.ranksep = cfg.ranksep
-	r.SetNodes(g.Nodes())
-	r.SetEdges(g.Edges())
+	out := renderDOTString(g.Nodes(), g.Edges(), cfg)
 
-	out, err := r.Render()
-	if err != nil {
-		return err
-	}
-
-	_, err = io.WriteString(w, out)
+	_, err := io.WriteString(w, out)
 	if err != nil {
 		return fmt.Errorf("write dot output: %w", err)
 	}

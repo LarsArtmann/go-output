@@ -99,33 +99,7 @@ func MarshalJSONLFromTable(data *output.Table) ([]byte, error) {
 }
 
 func renderJSONLTable(w io.Writer, data *output.Table, _ output.RenderOptions) error {
-	if data == nil {
-		return nil
-	}
-
-	rows := data.ToMapSlice()
-	if len(rows) == 0 {
-		return nil
-	}
-
-	for _, row := range rows {
-		b, err := json.Marshal(row)
-		if err != nil {
-			return fmt.Errorf("marshal jsonl row (%d fields): %w", len(row), err)
-		}
-
-		_, err = w.Write(b)
-		if err != nil {
-			return fmt.Errorf("write jsonl row: %w", err)
-		}
-
-		_, err = w.Write([]byte{'\n'})
-		if err != nil {
-			return fmt.Errorf("write jsonl newline: %w", err)
-		}
-	}
-
-	return nil
+	return WriteJSONL(w, data)
 }
 
 func marshalJSONLRows(rows []map[string]string) (string, error) {

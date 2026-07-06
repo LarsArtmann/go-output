@@ -106,6 +106,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **markup** — CQRS pure functions: `WriteXML`/`RenderXML`, `WriteHTML`/`RenderHTML`, `WriteAsciiDoc`/`RenderAsciiDoc`.
 - **All modules** — Godoc `Example()` functions for every CQRS function.
 - **graph/table** — Benchmark baselines (100 nodes/150 edges, 100 rows/5 cols).
+- **serialization/delimited/markup** — CQRS `WriteXxx` functions stream directly via standard encoders (`json.NewEncoder`, `yaml.NewEncoder`, `toml.NewEncoder`, `csv.NewWriter`, etc.) — no intermediate `[]byte`/`string` allocation.
+- **output** — `TableToGraph` accepts functional options (`WithGraphNodeLabelFunc(fn)`), replacing the variadic labelFunc anti-pattern.
+
+### Changed — Registry Dispatch Streams via CQRS
+
+- **output.RenderTable** — Registry dispatch for JSON, YAML, TOML, JSONL, CSV, and TSV now calls the CQRS streaming functions directly instead of going through the old renderer structs. This means `output.RenderTable(data, output.FormatJSON, opts)` and `serialization.WriteJSON(w, data)` produce **byte-for-byte identical output** (proven by `TestCQRS_StreamVsRegistry_JSON/CSV`). The registry path was previously the slower, more memory-hungry code path; it is now the same streaming path as the CQRS API.
+- **Trailing newline behavior change** — JSON, YAML, and TOML output via `RenderTable` now includes a trailing `\n` (from the standard encoders). The old path (`MarshalIndent` → `Fprint`) did not add one. This is the canonical Go encoder behavior and is acceptable in a breaking-change release. If exact-output comparison matters, use the CQRS golden files (`testdata/TestGolden_CQRS_*.golden`) as the reference.
+- **graph** — `WriteDOT` writes directly from `Graph` nodes/edges via the shared `renderDOTString` function, eliminating the `DOTRenderer` intermediary. `DOTRenderer.Render()` delegates to the same function — zero formatting duplication.
 
 ## [0.23.1] - 2026-07-02
 

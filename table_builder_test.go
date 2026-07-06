@@ -72,3 +72,36 @@ func TestTableBuilder_Empty(t *testing.T) {
 		t.Errorf("expected nil footer, got %v", tbl.Footer)
 	}
 }
+
+func TestTableBuilder_AddRows(t *testing.T) {
+	rows := [][]string{
+		{"1", "2"},
+		{"3", "4"},
+		{"5", "6"},
+	}
+
+	tbl := NewTableBuilder().
+		SetHeaders("A", "B").
+		AddRows(rows...).
+		Build()
+
+	if len(tbl.Rows) != 3 {
+		t.Fatalf("expected 3 rows from AddRows, got %d", len(tbl.Rows))
+	}
+
+	if tbl.Rows[0][0] != "1" || tbl.Rows[2][1] != "6" {
+		t.Errorf("unexpected rows: %v", tbl.Rows)
+	}
+}
+
+func TestTableBuilder_AddRowsThenSingle(t *testing.T) {
+	tbl := NewTableBuilder().
+		SetHeaders("A").
+		AddRows([]string{"1"}, []string{"2"}).
+		AddRow("3").
+		Build()
+
+	if len(tbl.Rows) != 3 {
+		t.Fatalf("expected 3 rows (2 bulk + 1 single), got %d", len(tbl.Rows))
+	}
+}

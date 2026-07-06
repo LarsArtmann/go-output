@@ -1,6 +1,7 @@
 package output
 
 import (
+	"strings"
 	"testing"
 )
 
@@ -119,6 +120,66 @@ func TestGraphToTree_CycleGuard(t *testing.T) {
 
 	if len(root.Children) != 1 {
 		t.Fatalf("expected 1 child (cycle guard), got %d", len(root.Children))
+	}
+}
+
+func TestGraphToTree_DisconnectedForest(t *testing.T) {
+	b := NewGraphBuilder()
+	b.AddNode(*NewGraphNode("a", "A"))
+	b.AddNode(*NewGraphNode("b", "B"))
+	b.AddNode(*NewGraphNode("c", "C"))
+	b.AddNode(*NewGraphNode("d", "D"))
+	b.AddEdge(*NewGraphEdge("a", "b"))
+	b.AddEdge(*NewGraphEdge("c", "d"))
+
+	g := b.Build()
+	root := GraphToTree(g)
+
+	if root == nil {
+		t.Fatal("expected non-nil root")
+	}
+
+	// Only the first root found (a) should be in the tree — c/d are disconnected.
+	if root.ID.Get() != "a" {
+		t.Errorf("expected root 'a', got %q", root.ID.Get())
+	}
+
+	if len(root.Children) != 1 {
+		t.Fatalf("expected 1 child, got %d", len(root.Children))
+	}
+
+	if root.Children[0].ID.Get() != "b" {
+		t.Errorf("expected child 'b', got %q", root.Children[0].ID.Get())
+	}
+}
+
+func TestTableToGraph_CustomLabelFunc(t *testing.T) {
+	tbl := NewTableBuilder().
+		SetHeaders("Name", "Status").
+		AddRow("Compile", "done").
+		AddRow("Test", "done").
+		Build()
+
+	// Use a custom label function that returns only the cell value (not "header: cell").
+	customLabel := func(header, cell string) string { return cell }
+
+	g := TableToGraph(tbl, WithGraphNodeLabelFunc(customLabel))
+
+	nodes := g.Nodes()
+	if len(nodes) != 2 {
+		t.Fatalf("expected 2 nodes, got %d", len(nodes))
+	}
+
+	// Custom label: "Compile, done" → each part is just the cell value.
+	// NodesFromTable joins all cell labels with ", ".
+	label := nodes[0].Label.Get()
+	if !strings.Contains(label, "Compile") {
+		t.Errorf("expected label to contain 'Compile', got %q", label)
+	}
+
+	// Verify the default "header:" prefix is NOT present (custom func was used).
+	if strings.Contains(label, "Name:") {
+		t.Errorf("custom label func should not produce 'Name:' prefix, got %q", label)
 	}
 }
 

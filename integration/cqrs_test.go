@@ -2,7 +2,6 @@ package integration
 
 import (
 	"bytes"
-	"strings"
 	"testing"
 
 	"github.com/larsartmann/go-output"
@@ -108,14 +107,11 @@ func TestCQRS_StreamVsRegistry_JSON(t *testing.T) {
 		t.Fatalf("Registry dispatch failed: %v", err)
 	}
 
-	cqrsContent := strings.TrimSpace(cqrsBuf.String())
-	registryContent := strings.TrimSpace(registryBuf.String())
-
-	testhelpers.AssertContains(t, cqrsContent, "Compile", "CQRS JSON should contain Compile")
-	testhelpers.AssertContains(t, registryContent, "Compile", "Registry JSON should contain Compile")
-
-	testhelpers.AssertContains(t, cqrsContent, "done", "CQRS JSON should contain done")
-	testhelpers.AssertContains(t, registryContent, "done", "Registry JSON should contain done")
+	// After the v0.30.0 registry rewire, both paths call WriteJSON — so the
+	// output must be byte-for-byte identical, not just substring-equal.
+	if cqrsBuf.String() != registryBuf.String() {
+		t.Errorf("CQRS and registry output differ:\nCQRS:    %q\nRegistry: %q", cqrsBuf.String(), registryBuf.String())
+	}
 }
 
 func TestCQRS_StreamVsRegistry_CSV(t *testing.T) {
@@ -137,10 +133,8 @@ func TestCQRS_StreamVsRegistry_CSV(t *testing.T) {
 		t.Fatalf("Registry dispatch failed: %v", err)
 	}
 
-	cqrsLines := strings.Split(strings.TrimSpace(cqrsBuf.String()), "\n")
-	registryLines := strings.Split(strings.TrimSpace(registryBuf.String()), "\n")
-
-	if len(cqrsLines) != len(registryLines) {
-		t.Errorf("line count mismatch: CQRS=%d, registry=%d", len(cqrsLines), len(registryLines))
+	// After the v0.30.0 registry rewire, both paths call WriteCSV.
+	if cqrsBuf.String() != registryBuf.String() {
+		t.Errorf("CQRS and registry CSV differ:\nCQRS:    %q\nRegistry: %q", cqrsBuf.String(), registryBuf.String())
 	}
 }

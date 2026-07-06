@@ -2,7 +2,6 @@ package serialization
 
 import (
 	"fmt"
-	"io"
 
 	"github.com/larsartmann/go-output"
 )
@@ -25,25 +24,4 @@ func renderTable(
 	}
 
 	return string(b), nil
-}
-
-func renderViaRenderer(w io.Writer, data *output.Table, renderer dataSetter, formatName string) error {
-	renderer.SetData(data)
-
-	out, err := renderer.Render()
-	if err != nil {
-		return fmt.Errorf("render %s: %w", formatName, err)
-	}
-
-	_, err = fmt.Fprint(w, out)
-	if err != nil {
-		return fmt.Errorf("write %s output: %w", formatName, err)
-	}
-
-	return nil
-}
-
-type dataSetter interface {
-	SetData(*output.Table)
-	Render() (string, error)
 }

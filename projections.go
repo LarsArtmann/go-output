@@ -1,21 +1,38 @@
 package output
 
+// TableToGraphOption configures a TableToGraph projection.
+type TableToGraphOption func(*tableToGraphConfig)
+
+type tableToGraphConfig struct {
+	labelFn GraphNodeLabelFunc
+}
+
+// WithGraphNodeLabelFunc overrides the default label function used by
+// TableToGraph to derive each node's label from its row.
+func WithGraphNodeLabelFunc(fn GraphNodeLabelFunc) TableToGraphOption {
+	return func(c *tableToGraphConfig) {
+		if fn != nil {
+			c.labelFn = fn
+		}
+	}
+}
+
 // TableToGraph converts a Table into a Graph by creating one node per row
 // and connecting consecutive rows with directed edges. Each node is labeled
 // with all cell values from its row. This is a pure projection — the input
 // Table is not modified.
-func TableToGraph(data *Table, labelFn ...GraphNodeLabelFunc) Graph {
+func TableToGraph(data *Table, opts ...TableToGraphOption) Graph {
 	if data == nil || len(data.Rows) == 0 {
 		return Graph{}
 	}
 
-	fn := DefaultGraphNodeLabel
-	if len(labelFn) > 0 && labelFn[0] != nil {
-		fn = labelFn[0]
+	cfg := tableToGraphConfig{labelFn: DefaultGraphNodeLabel}
+	for _, opt := range opts {
+		opt(&cfg)
 	}
 
 	b := NewGraphBuilder()
-	b.SetNodes(NodesFromTable(data, fn))
+	b.SetNodes(NodesFromTable(data, cfg.labelFn))
 	b.AddRowEdges(data)
 
 	return b.Build()

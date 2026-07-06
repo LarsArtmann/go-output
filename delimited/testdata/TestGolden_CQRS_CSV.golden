@@ -1,0 +1,4 @@
+Name,Status,Duration
+Build,completed,1.2s
+Test,running,0.5s
+Total,,1.7s

@@ -1,0 +1,9 @@
+[[row]]
+Duration = '1.2s'
+Name = 'Build'
+Status = 'completed'
+
+[[row]]
+Duration = '0.5s'
+Name = 'Test'
+Status = 'running'

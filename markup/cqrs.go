@@ -43,6 +43,8 @@ func RenderXML(data *output.Table) (string, error) {
 }
 
 // WriteAsciiDoc writes a Table as AsciiDoc to the provided writer.
+// Note: AsciiDoc buffers in memory (no row-level streaming writer exists
+// for this format). The output is identical to MarshalAsciiDocFromTable.
 func WriteAsciiDoc(w io.Writer, data *output.Table) error {
 	b, err := MarshalAsciiDocFromTable(data)
 	if err != nil {
@@ -67,6 +69,9 @@ func RenderAsciiDoc(data *output.Table) (string, error) {
 }
 
 // WriteHTML writes a Table as HTML to the provided writer.
+// Note: HTML buffers in memory via renderHTMLTable (no row-level streaming
+// writer exists for this format). For large tables, prefer CSV/JSON/JSONL
+// which stream row-by-row via standard encoders.
 func WriteHTML(w io.Writer, data *output.Table) error {
 	return renderHTMLTable(w, data, output.RenderOptions{})
 }
