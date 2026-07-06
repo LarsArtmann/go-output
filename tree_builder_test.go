@@ -60,3 +60,22 @@ func TestTreeBuilder_UnknownParent(t *testing.T) {
 		t.Errorf("expected 0 children when parent not found, got %d", len(root.Children))
 	}
 }
+
+func TestTreeBuilder_AddChildren(t *testing.T) {
+	root := NewTreeBuilder().
+		SetRoot("build", "Build").
+		AddChildren("build", [2]string{"compile", "Compile"}, [2]string{"lint", "Lint"}, [2]string{"test", "Test"}).
+		Build()
+
+	if root == nil {
+		t.Fatal("expected non-nil root")
+	}
+
+	if len(root.Children) != 3 {
+		t.Fatalf("expected 3 children, got %d", len(root.Children))
+	}
+
+	if root.Children[0].Label.Get() != "Compile" {
+		t.Errorf("expected first child 'Compile', got %q", root.Children[0].Label.Get())
+	}
+}

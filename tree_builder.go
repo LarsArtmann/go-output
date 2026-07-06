@@ -50,6 +50,24 @@ func (b *TreeBuilder) AddChild(parentID, id, label string) *TreeBuilder {
 	return b
 }
 
+// AddChildren adds multiple child nodes under the specified parent ID.
+// Each child is specified as an (id, label) pair. If the parent ID is not
+// found, all children are silently skipped.
+func (b *TreeBuilder) AddChildren(parentID string, children ...[2]string) *TreeBuilder {
+	parent, ok := b.nodes[parentID]
+	if !ok {
+		return b
+	}
+
+	for _, c := range children {
+		child := NewTreeNode(c[0], c[1])
+		parent.AddChild(child)
+		b.nodes[c[0]] = child
+	}
+
+	return b
+}
+
 // Build returns the root node of the assembled tree.
 // Returns nil if SetRoot was never called.
 func (b *TreeBuilder) Build() *TreeNode {
