@@ -9,9 +9,9 @@ import (
 )
 
 //nolint:testableexamples // Demonstration example, output is dynamic
-func ExampleNewNOMStyleSubscriber() {
+func ExampleNewNOMSubscriber() {
 	ctx := context.Background()
-	sub := nom.NewNOMStyleSubscriber()
+	sub := nom.NewNOMSubscriber()
 
 	_ = sub.OnEvent(ctx, nom.WorkflowStarted{
 		ID:   nom.NewWorkflowID("build"),
@@ -52,14 +52,14 @@ func ExampleActivityStatus_String() {
 
 //nolint:testableexamples // Demonstration example, output is dynamic
 func ExampleWithTheme() {
-	sub := nom.NewNOMStyleSubscriber(nom.WithTheme(nom.ThemeDracula))
+	sub := nom.NewNOMSubscriber(nom.WithTheme(nom.ThemeDracula))
 
 	fmt.Println(sub.Theme().Colors.Completed)
 }
 
 //nolint:testableexamples // Demonstration example, output is dynamic
 func ExampleWithRenderMode() {
-	sub := nom.NewNOMStyleSubscriber(nom.WithRenderMode(nom.RenderModeLayered))
+	sub := nom.NewNOMSubscriber(nom.WithRenderMode(nom.RenderModeLayered))
 
 	tree := sub.DependencyTree()
 	fmt.Println(tree.RenderMode())
@@ -68,7 +68,7 @@ func ExampleWithRenderMode() {
 //nolint:testableexamples // Demonstration example, output is dynamic
 func ExampleWithShowCategory() {
 	ctx := context.Background()
-	sub := nom.NewNOMStyleSubscriber(nom.WithShowCategory())
+	sub := nom.NewNOMSubscriber(nom.WithShowCategory())
 
 	_ = sub.OnEvent(ctx, nom.ActivityStarted{
 		ID:       nom.NewActivityID("build"),

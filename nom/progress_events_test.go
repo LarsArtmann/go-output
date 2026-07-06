@@ -12,7 +12,7 @@ import (
 func TestActivityProgressEvent(t *testing.T) {
 	t.Parallel()
 
-	ns := NewNOMStyleSubscriber()
+	ns := NewNOMSubscriber()
 	ctx := context.Background()
 
 	_ = ns.OnEvent(ctx, WorkflowStarted{ID: "wf", Name: "test"})
@@ -46,7 +46,7 @@ func TestActivityProgressEvent(t *testing.T) {
 func TestActivityProgressClearOnComplete(t *testing.T) {
 	t.Parallel()
 
-	ns := NewNOMStyleSubscriber()
+	ns := NewNOMSubscriber()
 	ctx := context.Background()
 
 	_ = ns.OnEvent(ctx, WorkflowStarted{ID: "wf", Name: "test"})
@@ -75,7 +75,7 @@ func TestActivityProgressClearOnComplete(t *testing.T) {
 func TestActivityProgressEmptyMessage(t *testing.T) {
 	t.Parallel()
 
-	ns := NewNOMStyleSubscriber()
+	ns := NewNOMSubscriber()
 	ctx := context.Background()
 
 	_ = ns.OnEvent(ctx, WorkflowStarted{ID: "wf", Name: "test"})
@@ -104,7 +104,7 @@ func TestActivityProgressEmptyMessage(t *testing.T) {
 func TestActivityProgressSetDirect(t *testing.T) {
 	t.Parallel()
 
-	ns := NewNOMStyleSubscriber()
+	ns := NewNOMSubscriber()
 	ctx := context.Background()
 
 	_ = ns.OnEvent(ctx, WorkflowStarted{ID: "wf", Name: "test"})
@@ -125,7 +125,7 @@ func TestActivityProgressSetDirect(t *testing.T) {
 func TestActivityRetryingEvent(t *testing.T) {
 	t.Parallel()
 
-	ns := NewNOMStyleSubscriber()
+	ns := NewNOMSubscriber()
 	ctx := context.Background()
 
 	_ = ns.OnEvent(ctx, WorkflowStarted{ID: "wf", Name: "test"})
@@ -176,7 +176,7 @@ func TestActivityRetryingEvent(t *testing.T) {
 func TestActivityRetryingMultipleAttempts(t *testing.T) {
 	t.Parallel()
 
-	ns := NewNOMStyleSubscriber()
+	ns := NewNOMSubscriber()
 	ctx := context.Background()
 
 	_ = ns.OnEvent(ctx, WorkflowStarted{ID: "wf", Name: "test"})
@@ -207,7 +207,7 @@ func TestActivityRetryingMultipleAttempts(t *testing.T) {
 func TestSetEstimatedTimeDirect(t *testing.T) {
 	t.Parallel()
 
-	ns := NewNOMStyleSubscriber()
+	ns := NewNOMSubscriber()
 	ctx := context.Background()
 
 	_ = ns.OnEvent(ctx, WorkflowStarted{ID: "wf", Name: "test"})
@@ -229,7 +229,7 @@ func TestSetEstimatedTimeDirect(t *testing.T) {
 func TestEstimatedRemainingInSummary(t *testing.T) {
 	t.Parallel()
 
-	ns := NewNOMStyleSubscriber()
+	ns := NewNOMSubscriber()
 	ctx := context.Background()
 
 	_ = ns.OnEvent(ctx, WorkflowStarted{ID: "wf", Name: "test"})
@@ -253,7 +253,7 @@ func TestEstimatedRemainingInSummary(t *testing.T) {
 func TestEstimatedRemainingZero(t *testing.T) {
 	t.Parallel()
 
-	ns := NewNOMStyleSubscriber()
+	ns := NewNOMSubscriber()
 	ctx := context.Background()
 
 	_ = ns.OnEvent(ctx, WorkflowStarted{ID: "wf", Name: "test"})
@@ -277,7 +277,7 @@ func TestEstimatedRemainingZero(t *testing.T) {
 func TestEstimatedRemainingNil(t *testing.T) {
 	t.Parallel()
 
-	ns := NewNOMStyleSubscriber()
+	ns := NewNOMSubscriber()
 	ctx := context.Background()
 
 	_ = ns.OnEvent(ctx, WorkflowStarted{ID: "wf", Name: "test"})
@@ -298,7 +298,7 @@ func TestEstimatedRemainingNil(t *testing.T) {
 func TestProgressRendersInTree(t *testing.T) {
 	t.Parallel()
 
-	ns := NewNOMStyleSubscriber()
+	ns := NewNOMSubscriber()
 	ctx := context.Background()
 
 	_ = ns.OnEvent(ctx, WorkflowStarted{ID: "wf", Name: "test"})
@@ -324,7 +324,7 @@ func TestProgressRendersInTree(t *testing.T) {
 func TestRetryRendersInTree(t *testing.T) {
 	t.Parallel()
 
-	ns := NewNOMStyleSubscriber()
+	ns := NewNOMSubscriber()
 	ctx := context.Background()
 
 	_ = ns.OnEvent(ctx, WorkflowStarted{ID: "wf", Name: "test"})
@@ -354,7 +354,7 @@ func (*TransientError) Error() string { return "transient failure" }
 func TestRetryReasonEvent(t *testing.T) {
 	t.Parallel()
 
-	ns := NewNOMStyleSubscriber()
+	ns := NewNOMSubscriber()
 	ctx := context.Background()
 
 	_ = ns.OnEvent(ctx, WorkflowStarted{ID: "wf", Name: "test"})
@@ -389,7 +389,7 @@ func TestRetryReasonEvent(t *testing.T) {
 func TestRetryReasonEmpty(t *testing.T) {
 	t.Parallel()
 
-	ns := NewNOMStyleSubscriber()
+	ns := NewNOMSubscriber()
 	ctx := context.Background()
 
 	_ = ns.OnEvent(ctx, WorkflowStarted{ID: "wf", Name: "test"})
@@ -416,7 +416,7 @@ func TestRetryReasonEmpty(t *testing.T) {
 func TestEstimatedTotalRemaining(t *testing.T) {
 	t.Parallel()
 
-	ns := NewNOMStyleSubscriber()
+	ns := NewNOMSubscriber()
 	ctx := context.Background()
 
 	_ = ns.OnEvent(ctx, WorkflowStarted{ID: "wf", Name: "test"})
@@ -445,7 +445,7 @@ func TestEstimatedTotalRemaining(t *testing.T) {
 func TestEstimatedTotalRemainingZero(t *testing.T) {
 	t.Parallel()
 
-	ns := NewNOMStyleSubscriber()
+	ns := NewNOMSubscriber()
 	ctx := context.Background()
 
 	_ = ns.OnEvent(ctx, WorkflowStarted{ID: "wf", Name: "test"})

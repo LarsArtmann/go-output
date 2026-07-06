@@ -10,7 +10,7 @@ import (
 func TestRenderCompletion_Success(t *testing.T) {
 	var buf bytes.Buffer
 
-	sub := NewNOMStyleSubscriber()
+	sub := NewNOMSubscriber()
 	r := NewInlineRenderer(sub, &buf, 10)
 	r.SetAppName("BuildFlow")
 
@@ -38,7 +38,7 @@ func TestRenderCompletion_Success(t *testing.T) {
 func TestRenderCompletion_Failure(t *testing.T) {
 	var buf bytes.Buffer
 
-	sub := NewNOMStyleSubscriber()
+	sub := NewNOMSubscriber()
 	r := NewInlineRenderer(sub, &buf, 10)
 	r.SetAppName("Workflow")
 
@@ -62,7 +62,7 @@ func TestRenderCompletion_Failure(t *testing.T) {
 func TestRenderCompletion_RestoresCursor(t *testing.T) {
 	var buf bytes.Buffer
 
-	sub := NewNOMStyleSubscriber()
+	sub := NewNOMSubscriber()
 	r := NewInlineRenderer(sub, &buf, 10)
 
 	// Simulate that cursor was hidden during rendering.

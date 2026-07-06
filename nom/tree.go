@@ -2,31 +2,14 @@ package nom
 
 import (
 	"cmp"
-	"errors"
 	"slices"
 	"sync"
 )
-
-// ErrActivityNotFound was intended for node-not-found scenarios but is never
-// returned by any function. GetNode returns nil for missing nodes instead.
-//
-// Deprecated: Use GetNode(id) == nil to check for missing nodes. This error
-// will be removed in v2.
-//
-//nolint:staticcheck // kept for backward compatibility, remove in v2
-var ErrActivityNotFound = errors.New("activity not found")
 
 const (
 	// MsgNoActivities is shown when the dependency tree is empty.
 	// Single source of truth — tui imports this constant.
 	MsgNoActivities = "No activities to display"
-
-	// msgNoActivitiesToDisplay is an alias kept for backward compatibility.
-	//
-	// Deprecated: Use MsgNoActivities. Will be removed in v2.
-	//
-	//nolint:staticcheck // kept for backward compatibility, remove in v2
-	msgNoActivitiesToDisplay = MsgNoActivities
 )
 
 // ActivityNode represents a node in the dependency DAG.

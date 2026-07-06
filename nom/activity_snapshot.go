@@ -80,7 +80,7 @@ func (d DownloadProgress) Fraction() float64 {
 // read from a per-tick-mutated field. This eliminates UpdateRunningActivityElapsed
 // and its O(n) write-per-tick scan: running activities compute now-StartTime
 // at snapshot time; terminal activities use EndTime-StartTime.
-func (ns *NOMStyleSubscriber) SnapshotActivities() map[ActivityID]ActivitySnapshot {
+func (ns *NOMSubscriber) SnapshotActivities() map[ActivityID]ActivitySnapshot {
 	ns.mu.RLock()
 	defer ns.mu.RUnlock()
 

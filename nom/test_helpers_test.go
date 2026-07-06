@@ -8,9 +8,9 @@ import (
 	"time"
 )
 
-func newTestSubscriber(t *testing.T) *NOMStyleSubscriber {
+func newTestSubscriber(t *testing.T) *NOMSubscriber {
 	t.Helper()
-	ns := NewNOMStyleSubscriber(WithCachePath(filepath.Join(t.TempDir(), cacheFilename)))
+	ns := NewNOMSubscriber(WithCachePath(filepath.Join(t.TempDir(), cacheFilename)))
 	t.Cleanup(ns.timingCache.waitPendingSaves)
 
 	return ns
@@ -22,7 +22,7 @@ func newTestSubscriber(t *testing.T) *NOMStyleSubscriber {
 // rendering path (cursor-up, clear-line, sync-output codes) must bypass the
 // authoritative plainText gate by setting writerIsTTY=true directly — this
 // simulates what a real terminal would provide, without requiring an actual TTY.
-func newInlineTestRenderer(sub *NOMStyleSubscriber, buf *bytes.Buffer, maxHeight int) *InlineRenderer {
+func newInlineTestRenderer(sub *NOMSubscriber, buf *bytes.Buffer, maxHeight int) *InlineRenderer {
 	r := NewInlineRenderer(sub, buf, maxHeight)
 	r.SetNoColor(true) // deterministic output (no terminal color codes)
 

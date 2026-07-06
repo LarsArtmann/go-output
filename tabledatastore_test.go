@@ -159,10 +159,10 @@ func assertLabel(t *testing.T, name, got, want string) {
 
 func (f *fixedRenderer) Render() (string, error) { return f.output, nil }
 
-func TestStreamingRendererFromRenderer(t *testing.T) {
+func TestRendererAsWriter(t *testing.T) {
 	t.Parallel()
 
-	sr := StreamingRendererFromRenderer(&fixedRenderer{output: "hello"})
+	sr := RendererAsWriter(&fixedRenderer{output: "hello"})
 
 	got, err := sr.Render()
 	if err != nil {

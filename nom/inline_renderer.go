@@ -44,7 +44,7 @@ const (
 // support synchronized output (mode 2026). This mirrors bubbletea v2's
 // cursedRenderer viewEquals() early-exit pattern.
 type InlineRenderer struct {
-	subscriber *NOMStyleSubscriber
+	subscriber *NOMSubscriber
 	writer     io.Writer
 	prevLines  int
 	maxHeight  int
@@ -169,7 +169,7 @@ func (r *InlineRenderer) snapshotConfig() rendererConfig {
 
 // NewInlineRenderer creates an inline renderer bound to the given subscriber and writer.
 // maxHeight caps the tree height; 0 means unlimited.
-func NewInlineRenderer(subscriber *NOMStyleSubscriber, writer io.Writer, maxHeight int) *InlineRenderer {
+func NewInlineRenderer(subscriber *NOMSubscriber, writer io.Writer, maxHeight int) *InlineRenderer {
 	return &InlineRenderer{
 		subscriber:  subscriber,
 		writer:      writer,
@@ -383,14 +383,14 @@ func (r *InlineRenderer) Draw() {
 	hasPending := len(pending) > 0
 
 	// If there is nothing to render at all, bail out.
-	if (!hasTree || frame == msgNoActivitiesToDisplay) && !hasPending {
+	if (!hasTree || frame == MsgNoActivities) && !hasPending {
 		return
 	}
 
 	// If there is no tree but we have pending log lines, drain them and
 	// return. This handles the rare case where logs arrive before any step
 	// is registered.
-	if !hasTree || frame == msgNoActivitiesToDisplay {
+	if !hasTree || frame == MsgNoActivities {
 		r.drainPendingPlain(pending, cfg)
 		return
 	}

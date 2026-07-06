@@ -325,7 +325,7 @@ func (dt *DependencyTree) renderLayered(
 ) string {
 	entries := dt.collectLayeredEntries(snapshots, maxHeight)
 	if len(entries) == 0 {
-		return msgNoActivitiesToDisplay
+		return MsgNoActivities
 	}
 
 	var lines []string

@@ -18,10 +18,10 @@ func TestParallelismStats_String(t *testing.T) {
 	}
 }
 
-func TestNOMStyleSubscriber_ParallelismStats_Serial(t *testing.T) {
+func TestNOMSubscriber_ParallelismStats_Serial(t *testing.T) {
 	t.Parallel()
 
-	ns := NewNOMStyleSubscriber()
+	ns := NewNOMSubscriber()
 	ctx := context.Background()
 
 	ns.OnEvent(ctx, ActivityRegistered{ID: "a", Name: "a"})
@@ -34,10 +34,10 @@ func TestNOMStyleSubscriber_ParallelismStats_Serial(t *testing.T) {
 	testhelpers.AssertEqual(t, "Possible", stats, stats.Possible, 1)
 }
 
-func TestNOMStyleSubscriber_ParallelismStats_Diamond(t *testing.T) {
+func TestNOMSubscriber_ParallelismStats_Diamond(t *testing.T) {
 	t.Parallel()
 
-	ns := NewNOMStyleSubscriber()
+	ns := NewNOMSubscriber()
 	ctx := context.Background()
 
 	// Diamond: a -> b, a -> c, b -> d, c -> d
@@ -68,10 +68,10 @@ func TestNOMStyleSubscriber_ParallelismStats_Diamond(t *testing.T) {
 	testhelpers.AssertEqual(t, "Possible", stats, stats.Possible, 1)
 }
 
-func TestNOMStyleSubscriber_ParallelismStats_AllDone(t *testing.T) {
+func TestNOMSubscriber_ParallelismStats_AllDone(t *testing.T) {
 	t.Parallel()
 
-	ns := NewNOMStyleSubscriber()
+	ns := NewNOMSubscriber()
 	ctx := context.Background()
 
 	ns.OnEvent(ctx, ActivityRegistered{ID: "a", Name: "a"})

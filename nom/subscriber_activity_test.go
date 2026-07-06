@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-func TestNOMStyleSubscriber_ActivityStarted(t *testing.T) {
+func TestNOMSubscriber_ActivityStarted(t *testing.T) {
 	t.Parallel()
 
 	ns, ctx := setupWithWorkflow(t)
@@ -30,7 +30,7 @@ func TestNOMStyleSubscriber_ActivityStarted(t *testing.T) {
 	}
 }
 
-func TestNOMStyleSubscriber_ActivityCompleted(t *testing.T) {
+func TestNOMSubscriber_ActivityCompleted(t *testing.T) {
 	t.Parallel()
 
 	ns, ctx := setupWithWorkflow(t)
@@ -55,7 +55,7 @@ func TestNOMStyleSubscriber_ActivityCompleted(t *testing.T) {
 	}
 }
 
-func TestNOMStyleSubscriber_ActivityFailed(t *testing.T) {
+func TestNOMSubscriber_ActivityFailed(t *testing.T) {
 	t.Parallel()
 
 	ns, ctx := setupWithWorkflow(t)
@@ -87,13 +87,13 @@ func TestNOMStyleSubscriber_ActivityFailed(t *testing.T) {
 	}
 }
 
-// TestNOMStyleSubscriber_UnknownEventType and TestNOMStyleSubscriber_EventWithoutAccessor
+// TestNOMSubscriber_UnknownEventType and TestNOMSubscriber_EventWithoutAccessor
 // were removed: sealed events make "unknown event type" and "event without accessor"
 // unrepresentable — the compiler rejects them. The failure modes those tests
 // guarded (silent no-op on unknown string dispatch, nil-accessor crash) cannot
 // occur with the exhaustive type switch in OnEvent.
 
-func TestNOMStyleSubscriber_GetActivities(t *testing.T) {
+func TestNOMSubscriber_GetActivities(t *testing.T) {
 	t.Parallel()
 
 	ns, ctx := setupWithWorkflow(t)
@@ -106,7 +106,7 @@ func TestNOMStyleSubscriber_GetActivities(t *testing.T) {
 	}
 }
 
-func TestNOMStyleSubscriber_GetActivityCounts(t *testing.T) {
+func TestNOMSubscriber_GetActivityCounts(t *testing.T) {
 	t.Parallel()
 
 	ns, ctx := setupWithWorkflow(t)
@@ -133,7 +133,7 @@ func TestNOMStyleSubscriber_GetActivityCounts(t *testing.T) {
 	}
 }
 
-func TestNOMStyleSubscriber_GetActivityCounts_PendingAndFailed(t *testing.T) {
+func TestNOMSubscriber_GetActivityCounts_PendingAndFailed(t *testing.T) {
 	t.Parallel()
 
 	ns := newTestSubscriber(t)
@@ -164,7 +164,7 @@ func TestNOMStyleSubscriber_GetActivityCounts_PendingAndFailed(t *testing.T) {
 	}
 }
 
-func TestNOMStyleSubscriber_GetActivity_NotFound(t *testing.T) {
+func TestNOMSubscriber_GetActivity_NotFound(t *testing.T) {
 	t.Parallel()
 
 	ns := newTestSubscriber(t)
@@ -198,7 +198,7 @@ func TestSnapshotActivities_DerivesRunningElapsed(t *testing.T) {
 	}
 }
 
-func TestNOMStyleSubscriber_SetActivityState(t *testing.T) {
+func TestNOMSubscriber_SetActivityState(t *testing.T) {
 	t.Parallel()
 
 	ns := newTestSubscriber(t)
@@ -217,7 +217,7 @@ func TestNOMStyleSubscriber_SetActivityState(t *testing.T) {
 	}
 }
 
-func TestNOMStyleSubscriber_GetDependencyTree(t *testing.T) {
+func TestNOMSubscriber_DependencyTree(t *testing.T) {
 	t.Parallel()
 
 	ns := newTestSubscriber(t)
@@ -228,7 +228,7 @@ func TestNOMStyleSubscriber_GetDependencyTree(t *testing.T) {
 	}
 }
 
-func TestNOMStyleSubscriber_GetTimingCache(t *testing.T) {
+func TestNOMSubscriber_GetTimingCache(t *testing.T) {
 	t.Parallel()
 
 	ns := newTestSubscriber(t)
@@ -239,7 +239,7 @@ func TestNOMStyleSubscriber_GetTimingCache(t *testing.T) {
 	}
 }
 
-func TestNOMStyleSubscriber_ActivitiesDeepCopy(t *testing.T) {
+func TestNOMSubscriber_ActivitiesDeepCopy(t *testing.T) {
 	t.Parallel()
 
 	ns, ctx := setupWithWorkflow(t)

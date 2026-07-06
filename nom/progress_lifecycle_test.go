@@ -8,14 +8,14 @@ import (
 )
 
 // TestMultiSubscriber_ProgressAndRetryFanout verifies that ActivityProgress and
-// ActivityRetrying events propagate to every NOMStyleSubscriber behind a
+// ActivityRetrying events propagate to every NOMSubscriber behind a
 // MultiSubscriber. Each subscriber independently tracks the progress message and
 // retry count.
 func TestMultiSubscriber_ProgressAndRetryFanout(t *testing.T) {
 	t.Parallel()
 
-	sub1 := NewNOMStyleSubscriber()
-	sub2 := NewNOMStyleSubscriber()
+	sub1 := NewNOMSubscriber()
+	sub2 := NewNOMSubscriber()
 	multi := NewMultiSubscriber(sub1, sub2)
 
 	ctx := context.Background()
@@ -35,7 +35,7 @@ func TestMultiSubscriber_ProgressAndRetryFanout(t *testing.T) {
 		}
 	}
 
-	for _, sub := range []*NOMStyleSubscriber{sub1, sub2} {
+	for _, sub := range []*NOMSubscriber{sub1, sub2} {
 		snap := sub.SnapshotActivities()["step"]
 		if snap.Progress != "Working [1/3]" {
 			t.Errorf("subscriber progress = %q, want %q", snap.Progress, "Working [1/3]")
@@ -56,7 +56,7 @@ func TestMultiSubscriber_ProgressAndRetryFanout(t *testing.T) {
 func TestResetClearsProgressAndRetry(t *testing.T) {
 	t.Parallel()
 
-	ns := NewNOMStyleSubscriber()
+	ns := NewNOMSubscriber()
 	ctx := context.Background()
 
 	// Retry clears progress, so send progress after the retry to populate both.
@@ -90,7 +90,7 @@ func TestResetClearsProgressAndRetry(t *testing.T) {
 func TestProgressClearedOnRetry(t *testing.T) {
 	t.Parallel()
 
-	ns := NewNOMStyleSubscriber()
+	ns := NewNOMSubscriber()
 	ctx := context.Background()
 
 	_ = ns.OnEvent(ctx, WorkflowStarted{ID: "wf", Name: "test"})
@@ -124,7 +124,7 @@ func TestProgressClearedOnRetry(t *testing.T) {
 func TestConcurrentProgressAndRetry(t *testing.T) {
 	t.Parallel()
 
-	ns := NewNOMStyleSubscriber()
+	ns := NewNOMSubscriber()
 	ctx := context.Background()
 
 	_ = ns.OnEvent(ctx, WorkflowStarted{ID: "wf", Name: "test"})
@@ -191,7 +191,7 @@ func TestConcurrentProgressAndRetry(t *testing.T) {
 func TestEstimatedTotalRemainingRunningElapsed(t *testing.T) {
 	t.Parallel()
 
-	ns := NewNOMStyleSubscriber()
+	ns := NewNOMSubscriber()
 	ctx := context.Background()
 
 	_ = ns.OnEvent(ctx, WorkflowStarted{ID: "wf", Name: "test"})

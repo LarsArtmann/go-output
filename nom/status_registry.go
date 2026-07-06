@@ -69,7 +69,7 @@ func newStatusRegistry() *statusRegistry {
 		SymbolCompleted,
 		Colors.Completed,
 		3,
-		output.NodeShapeRect, //nolint:staticcheck
+		output.NodeShapeHexagon,
 		output.GraphStyle{
 			Fill:      "#6b7280",
 			Stroke:    "#4b5563",

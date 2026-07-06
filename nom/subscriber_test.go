@@ -8,7 +8,7 @@ import (
 )
 
 // setupWithWorkflow creates a subscriber and fires workflow.started.
-func setupWithWorkflow(t *testing.T) (*NOMStyleSubscriber, context.Context) {
+func setupWithWorkflow(t *testing.T) (*NOMSubscriber, context.Context) {
 	t.Helper()
 
 	ns := newTestSubscriber(t)
@@ -20,7 +20,7 @@ func setupWithWorkflow(t *testing.T) (*NOMStyleSubscriber, context.Context) {
 }
 
 // sendActivityStarted fires an activity.started event with the given ID and name.
-func sendActivityStarted(t *testing.T, ns *NOMStyleSubscriber, ctx context.Context, id ActivityID, name ActivityName) {
+func sendActivityStarted(t *testing.T, ns *NOMSubscriber, ctx context.Context, id ActivityID, name ActivityName) {
 	t.Helper()
 
 	if err := ns.OnEvent(ctx, ActivityStarted{ID: id, Name: name}); err != nil {
@@ -31,7 +31,7 @@ func sendActivityStarted(t *testing.T, ns *NOMStyleSubscriber, ctx context.Conte
 // sendActivityCompleted fires an activity.completed event with the given ID, name, and duration.
 func sendActivityCompleted(
 	t *testing.T,
-	ns *NOMStyleSubscriber,
+	ns *NOMSubscriber,
 	ctx context.Context,
 	id ActivityID,
 	name ActivityName,
@@ -46,14 +46,14 @@ func sendActivityCompleted(
 
 // sendWorkflowStarted fires a workflow.started event with the given ID and name.
 // Returns the error so callers can choose to assert or ignore it.
-func sendWorkflowStarted(ns *NOMStyleSubscriber, ctx context.Context, id WorkflowID, name WorkflowName) error {
+func sendWorkflowStarted(ns *NOMSubscriber, ctx context.Context, id WorkflowID, name WorkflowName) error {
 	return ns.OnEvent(ctx, WorkflowStarted{ID: id, Name: name})
 }
 
 // registerActivity fires an activity.registered event with optional dependencies.
 // Use for golden test setup where the same workflow is repeated across frames.
 func registerActivity(
-	ns *NOMStyleSubscriber,
+	ns *NOMSubscriber,
 	ctx context.Context,
 	id ActivityID,
 	name ActivityName,
@@ -65,7 +65,7 @@ func registerActivity(
 // registerPhase fires an activity.registered event with Kind=Phase, so the
 // node renders as a phase grouping (SymbolPhase/Colors.Phase).
 func registerPhase(
-	ns *NOMStyleSubscriber,
+	ns *NOMSubscriber,
 	ctx context.Context,
 	id ActivityID,
 	name ActivityName,
@@ -74,12 +74,12 @@ func registerPhase(
 	_ = ns.OnEvent(ctx, ActivityRegistered{ID: id, Name: name, Kind: ActivityKindPhase, Deps: deps})
 }
 
-func TestNewNOMStyleSubscriber(t *testing.T) {
+func TestNewNOMSubscriber(t *testing.T) {
 	t.Parallel()
 
 	ns := newTestSubscriber(t)
 	if ns == nil {
-		t.Fatal("NewNOMStyleSubscriber() returned nil")
+		t.Fatal("NewNOMSubscriber() returned nil")
 	}
 
 	if !ns.IsEnabled() {
@@ -91,7 +91,7 @@ func TestNewNOMStyleSubscriber(t *testing.T) {
 	}
 }
 
-func TestNOMStyleSubscriber_Configuration(t *testing.T) {
+func TestNOMSubscriber_Configuration(t *testing.T) {
 	t.Parallel()
 
 	ns := newTestSubscriber(t)
@@ -109,7 +109,7 @@ func TestNOMStyleSubscriber_Configuration(t *testing.T) {
 	}
 }
 
-func TestNOMStyleSubscriber_Reset(t *testing.T) {
+func TestNOMSubscriber_Reset(t *testing.T) {
 	t.Parallel()
 
 	// Reset test uses a custom workflow name to verify it gets cleared.
@@ -139,7 +139,7 @@ func TestNOMStyleSubscriber_Reset(t *testing.T) {
 	}
 }
 
-func TestNOMStyleSubscriber_WorkflowStarted(t *testing.T) {
+func TestNOMSubscriber_WorkflowStarted(t *testing.T) {
 	t.Parallel()
 
 	ns := newTestSubscriber(t)
@@ -167,7 +167,7 @@ func TestNOMStyleSubscriber_WorkflowStarted(t *testing.T) {
 	}
 }
 
-func TestNOMStyleSubscriber_WorkflowCompleted(t *testing.T) {
+func TestNOMSubscriber_WorkflowCompleted(t *testing.T) {
 	t.Parallel()
 
 	ns, ctx := setupWithWorkflow(t)
@@ -182,7 +182,7 @@ func TestNOMStyleSubscriber_WorkflowCompleted(t *testing.T) {
 	}
 }
 
-func TestNOMStyleSubscriber_WorkflowFailed(t *testing.T) {
+func TestNOMSubscriber_WorkflowFailed(t *testing.T) {
 	t.Parallel()
 
 	ns, ctx := setupWithWorkflow(t)

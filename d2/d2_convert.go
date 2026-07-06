@@ -67,8 +67,7 @@ func graphEdgeToD2(e output.GraphEdge) D2Edge {
 
 func nodeShapeToD2(s output.NodeShape) D2NodeShape {
 	switch s {
-	case output.NodeShapeBox,
-		output.NodeShapeRect: //nolint:staticcheck // backward compat
+	case output.NodeShapeBox:
 		return D2ShapeRectangle
 	case output.NodeShapeEllipse:
 		return D2ShapeOval

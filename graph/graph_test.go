@@ -52,7 +52,6 @@ func TestParseNodeShape(t *testing.T) {
 		{Name: "cylinder", Input: "cylinder", Want: output.NodeShapeCylinder},
 		{Name: "hexagon", Input: "hexagon", Want: output.NodeShapeHexagon},
 		{Name: "parallelogram", Input: "parallelogram", Want: output.NodeShapeParallelogram},
-		{Name: "rect", Input: "rect", Want: output.NodeShapeRect}, //nolint:staticcheck // backward compat
 		{Name: "invalid", Input: "invalid", WantErr: true},
 		{Name: "empty", Input: "", WantErr: true},
 	}
@@ -91,7 +90,6 @@ func TestNodeShapeAllowedValues(t *testing.T) {
 		"cylinder",
 		"hexagon",
 		"parallelogram",
-		"rect",
 	}
 
 	testhelpers.TestAllowedValues(t, "AllowedValues", got, want)
@@ -134,18 +132,14 @@ func TestEdgeStyle(t *testing.T) {
 	t.Parallel()
 
 	style := output.EdgeStyle{
-		Color:     "black",
-		Line:      output.LineStyleDashed,
-		ArrowHead: "arrow",
-		ArrowTail: "arrow",
+		Color: "black",
+		Line:  output.LineStyleDashed,
 	}
 
 	testhelpers.TestStructFields(
 		t,
 		testhelpers.StringField("Color", style.Color, "black"),
 		testhelpers.StringField("Line", style.Line.String(), "dashed"),
-		testhelpers.StringField("ArrowHead", style.ArrowHead, "arrow"), //nolint:staticcheck // testing deprecated field
-		testhelpers.StringField("ArrowTail", style.ArrowTail, "arrow"), //nolint:staticcheck // testing deprecated field
 	)
 }
 

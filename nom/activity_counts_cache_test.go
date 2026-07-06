@@ -9,7 +9,7 @@ import (
 // recount brute-force recomputes ActivityCounts by scanning the subscriber's
 // internal activities map. Used as the ground truth to verify the incremental
 // count cache stays in sync across every state transition.
-func recount(ns *NOMStyleSubscriber) ActivityCounts {
+func recount(ns *NOMSubscriber) ActivityCounts {
 	ns.mu.RLock()
 	defer ns.mu.RUnlock()
 
@@ -31,7 +31,7 @@ func recount(ns *NOMStyleSubscriber) ActivityCounts {
 	return c
 }
 
-func assertCountsMatch(t *testing.T, ns *NOMStyleSubscriber, msg string) {
+func assertCountsMatch(t *testing.T, ns *NOMSubscriber, msg string) {
 	t.Helper()
 
 	got := ns.GetActivityCounts()

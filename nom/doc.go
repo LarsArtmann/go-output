@@ -3,7 +3,7 @@
 //
 // The package is built around three main components:
 //
-//   - [NOMStyleSubscriber] receives workflow/activity events via OnEvent and
+//   - [NOMSubscriber] receives workflow/activity events via OnEvent and
 //     maintains the live activity state (status, timing, dependency tree).
 //   - [DependencyTree] holds the parent/child relationships between activities
 //     and renders them as a UTF-8 box-drawing tree, sorted by priority
@@ -15,7 +15,7 @@
 //
 // # Quick start
 //
-//	sub := nom.NewNOMStyleSubscriber()
+//	sub := nom.NewNOMSubscriber()
 //	renderer := nom.NewInlineRenderer(sub, os.Stdout, 20)
 //	renderer.Start(ctx, 100*time.Millisecond)
 //	defer renderer.Finish(nil)

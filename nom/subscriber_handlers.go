@@ -9,7 +9,7 @@ import (
 // exhaustive Go type switch. Because Event is sealed (unexported isEvent
 // marker), unhandled event types are a compile error, not a silent runtime
 // no-op. This replaces the old string-based GetEventType() dispatch.
-func (ns *NOMStyleSubscriber) OnEvent(_ context.Context, event Event) error {
+func (ns *NOMSubscriber) OnEvent(_ context.Context, event Event) error {
 	switch e := event.(type) {
 	case WorkflowStarted:
 		return ns.handleWorkflowStarted(e)
@@ -37,7 +37,7 @@ func (ns *NOMStyleSubscriber) OnEvent(_ context.Context, event Event) error {
 // handleWorkflowStarted records the workflow identity and loads the timing
 // cache. Pre-registered activities/tree are preserved on a fresh start so
 // callers can register phases/steps before workflow.started.
-func (ns *NOMStyleSubscriber) handleWorkflowStarted(e WorkflowStarted) error {
+func (ns *NOMSubscriber) handleWorkflowStarted(e WorkflowStarted) error {
 	ns.mu.Lock()
 
 	ns.workflowID = e.ID
@@ -62,7 +62,7 @@ func (ns *NOMStyleSubscriber) handleWorkflowStarted(e WorkflowStarted) error {
 
 // handleWorkflowFinished marks the workflow as not running and persists the
 // timing cache. Shared by completed and failed.
-func (ns *NOMStyleSubscriber) handleWorkflowFinished() error {
+func (ns *NOMSubscriber) handleWorkflowFinished() error {
 	ns.mu.Lock()
 	ns.isRunning = false
 	cache := ns.timingCache
@@ -77,7 +77,7 @@ func (ns *NOMStyleSubscriber) handleWorkflowFinished() error {
 // The kind only applies on first creation; an existing activity keeps its
 // original kind (set at construction, never changes).
 // Must be called while holding ns.mu lock.
-func (ns *NOMStyleSubscriber) getOrCreateActivity(
+func (ns *NOMSubscriber) getOrCreateActivity(
 	activityID ActivityID,
 	activityName ActivityName,
 	kind ActivityKind,
@@ -100,7 +100,7 @@ func (ns *NOMStyleSubscriber) getOrCreateActivity(
 
 // handleActivityStarted transitions the activity to running, applies optional
 // host/download annotations, and records the dependency edges in the tree.
-func (ns *NOMStyleSubscriber) handleActivityStarted(e ActivityStarted) error {
+func (ns *NOMSubscriber) handleActivityStarted(e ActivityStarted) error {
 	ns.mu.Lock()
 	defer ns.mu.Unlock()
 
@@ -128,7 +128,7 @@ func (ns *NOMStyleSubscriber) handleActivityStarted(e ActivityStarted) error {
 // handleActivityRegistered pre-creates the activity in the tree as pending,
 // without transitioning it to running. Used for declaring structure before
 // work starts.
-func (ns *NOMStyleSubscriber) handleActivityRegistered(e ActivityRegistered) error {
+func (ns *NOMSubscriber) handleActivityRegistered(e ActivityRegistered) error {
 	ns.mu.Lock()
 	defer ns.mu.Unlock()
 
@@ -145,7 +145,7 @@ func (ns *NOMStyleSubscriber) handleActivityRegistered(e ActivityRegistered) err
 
 // handleActivityCompleted transitions the activity to completed and records
 // the observed duration in the timing cache.
-func (ns *NOMStyleSubscriber) handleActivityCompleted(e ActivityCompleted) error {
+func (ns *NOMSubscriber) handleActivityCompleted(e ActivityCompleted) error {
 	ns.transitionTask(e.ID, e.Name, ActivityStatusCompleted, func(a *Activity) {
 		a.SetCompleted()
 	})
@@ -155,7 +155,7 @@ func (ns *NOMStyleSubscriber) handleActivityCompleted(e ActivityCompleted) error
 
 // handleActivityFailed transitions the activity to failed and records the
 // observed duration in the timing cache.
-func (ns *NOMStyleSubscriber) handleActivityFailed(e ActivityFailed) error {
+func (ns *NOMSubscriber) handleActivityFailed(e ActivityFailed) error {
 	ns.transitionTask(e.ID, e.Name, ActivityStatusFailed, func(a *Activity) {
 		a.SetFailed(e.Err)
 	})
@@ -169,7 +169,7 @@ func (ns *NOMStyleSubscriber) handleActivityFailed(e ActivityFailed) error {
 // need to hold any lock — apply sees the activity after SetCompleted/SetFailed
 // would have been called, eliminating a race where the activity's Status
 // field was read by SnapshotActivities mid-transition.
-func (ns *NOMStyleSubscriber) transitionTask(
+func (ns *NOMSubscriber) transitionTask(
 	id ActivityID, name ActivityName, target ActivityStatus, apply func(*Activity),
 ) {
 	ns.mu.Lock()
@@ -181,7 +181,7 @@ func (ns *NOMStyleSubscriber) transitionTask(
 }
 
 // recordDuration stores the observed duration in the timing cache if positive.
-func (ns *NOMStyleSubscriber) recordDuration(name ActivityName, duration time.Duration) error {
+func (ns *NOMSubscriber) recordDuration(name ActivityName, duration time.Duration) error {
 	if duration > 0 {
 		return ns.timingCache.Record(name.String(), duration)
 	}
@@ -194,7 +194,7 @@ func (ns *NOMStyleSubscriber) recordDuration(name ActivityName, duration time.Du
 // report "Tidying module [2/26]: modules/gitignore" while iterating. An empty
 // Message clears any prior progress. The activity is created if it doesn't
 // exist yet (progress events may arrive before started in some orderings).
-func (ns *NOMStyleSubscriber) handleActivityProgress(e ActivityProgress) error {
+func (ns *NOMSubscriber) handleActivityProgress(e ActivityProgress) error {
 	ns.mu.Lock()
 	defer ns.mu.Unlock()
 
@@ -207,7 +207,7 @@ func (ns *NOMStyleSubscriber) handleActivityProgress(e ActivityProgress) error {
 // handleActivityRetrying transitions a failed activity back to running and
 // increments the retry count. The attempt number is rendered as a ⟳ suffix.
 // The counts cache is updated: the activity moves from Failed back to Running.
-func (ns *NOMStyleSubscriber) handleActivityRetrying(e ActivityRetrying) error {
+func (ns *NOMSubscriber) handleActivityRetrying(e ActivityRetrying) error {
 	ns.mu.Lock()
 	defer ns.mu.Unlock()
 
@@ -230,7 +230,7 @@ func (ns *NOMStyleSubscriber) handleActivityRetrying(e ActivityRetrying) error {
 // a phase with a non-empty category. This implements auto-inference: children
 // inherit their parent phase's category when no explicit category is set.
 // Must be called while holding ns.mu lock.
-func (ns *NOMStyleSubscriber) inheritCategoryLocked(
+func (ns *NOMSubscriber) inheritCategoryLocked(
 	_ ActivityID,
 	deps []ActivityID,
 ) ActivityCategory {

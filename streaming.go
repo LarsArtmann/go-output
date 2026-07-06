@@ -25,16 +25,6 @@ func RendererAsWriter(r Renderer) StreamingRenderer {
 	return &adapterRenderer{r: r}
 }
 
-// StreamingRendererFromRenderer wraps a standard Renderer to implement StreamingRenderer.
-//
-// Deprecated: Use RendererAsWriter — same behavior, honest name. This function
-// will be removed in v2.
-//
-//nolint:staticcheck // kept for backward compatibility, remove in v2
-func StreamingRendererFromRenderer(r Renderer) StreamingRenderer {
-	return RendererAsWriter(r)
-}
-
 type adapterRenderer struct {
 	r Renderer
 }

@@ -11,7 +11,7 @@ const (
 	timingFormat = "%.1fs"
 )
 
-// msgNoActivitiesToDisplay is the single source of truth from the nom package.
+// MsgNoActivities is the single source of truth from the nom package.
 // Re-exported here for TUI-internal convenience, but nom.MsgNoActivities is
 // the canonical definition.
-const msgNoActivitiesToDisplay = nom.MsgNoActivities
+const MsgNoActivities = nom.MsgNoActivities

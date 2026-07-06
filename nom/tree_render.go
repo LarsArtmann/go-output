@@ -31,7 +31,7 @@ func (dt *DependencyTree) RenderWithSnapshots(
 	visible := dt.collectVisibleNodes(snapshots, maxHeight)
 
 	if len(visible) == 0 {
-		return msgNoActivitiesToDisplay
+		return MsgNoActivities
 	}
 
 	var lines []string

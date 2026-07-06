@@ -119,7 +119,7 @@ func TestDiagramExport_SubscriberProjection(t *testing.T) {
 }
 
 // diagramFireWorkflow fires a workflow.started event.
-func diagramFireWorkflow(t *testing.T, ns *NOMStyleSubscriber, ctx context.Context, id, name string) {
+func diagramFireWorkflow(t *testing.T, ns *NOMSubscriber, ctx context.Context, id, name string) {
 	t.Helper()
 
 	_ = ns.OnEvent(ctx, WorkflowStarted{
@@ -129,7 +129,7 @@ func diagramFireWorkflow(t *testing.T, ns *NOMStyleSubscriber, ctx context.Conte
 }
 
 // diagramFireActivity fires an activity.started event with optional dependencies.
-func diagramFireActivity(t *testing.T, ns *NOMStyleSubscriber, ctx context.Context, id, name string, deps ...string) {
+func diagramFireActivity(t *testing.T, ns *NOMSubscriber, ctx context.Context, id, name string, deps ...string) {
 	t.Helper()
 
 	dependencies := make([]ActivityID, 0, len(deps))

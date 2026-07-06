@@ -5,7 +5,7 @@ import (
 )
 
 // SetEnabled enables or disables the subscriber.
-func (ns *NOMStyleSubscriber) SetEnabled(enabled bool) {
+func (ns *NOMSubscriber) SetEnabled(enabled bool) {
 	ns.mu.Lock()
 	defer ns.mu.Unlock()
 
@@ -13,7 +13,7 @@ func (ns *NOMStyleSubscriber) SetEnabled(enabled bool) {
 }
 
 // IsEnabled returns true if the subscriber is enabled.
-func (ns *NOMStyleSubscriber) IsEnabled() bool {
+func (ns *NOMSubscriber) IsEnabled() bool {
 	ns.mu.RLock()
 	defer ns.mu.RUnlock()
 
@@ -21,7 +21,7 @@ func (ns *NOMStyleSubscriber) IsEnabled() bool {
 }
 
 // Reset clears all state for a new.
-func (ns *NOMStyleSubscriber) Reset() {
+func (ns *NOMSubscriber) Reset() {
 	ns.mu.Lock()
 	defer ns.mu.Unlock()
 

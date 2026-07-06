@@ -11,7 +11,7 @@ func TestConstants(t *testing.T) {
 		t.Error("timingFormat should not be empty")
 	}
 
-	if msgNoActivitiesToDisplay == "" {
-		t.Error("msgNoActivitiesToDisplay should not be empty")
+	if MsgNoActivities == "" {
+		t.Error("MsgNoActivities should not be empty")
 	}
 }

@@ -5,7 +5,7 @@ import (
 )
 
 // GetActivities returns a copy of all activities.
-func (ns *NOMStyleSubscriber) GetActivities() map[ActivityID]*Activity {
+func (ns *NOMSubscriber) GetActivities() map[ActivityID]*Activity {
 	ns.mu.RLock()
 	defer ns.mu.RUnlock()
 
@@ -18,7 +18,7 @@ func (ns *NOMStyleSubscriber) GetActivities() map[ActivityID]*Activity {
 }
 
 // GetActivity returns a specific activity.
-func (ns *NOMStyleSubscriber) GetActivity(
+func (ns *NOMSubscriber) GetActivity(
 	activityID ActivityID,
 ) *Activity {
 	ns.mu.RLock()
@@ -37,7 +37,7 @@ func (ns *NOMStyleSubscriber) GetActivity(
 // of sending an ActivityProgress event — useful for callers that don't use the
 // event dispatch path but still want progress rendered in the tree. Pass an
 // empty message to clear.
-func (ns *NOMStyleSubscriber) SetActivityProgress(activityID ActivityID, message string) {
+func (ns *NOMSubscriber) SetActivityProgress(activityID ActivityID, message string) {
 	ns.mu.Lock()
 	defer ns.mu.Unlock()
 
@@ -51,7 +51,7 @@ func (ns *NOMStyleSubscriber) SetActivityProgress(activityID ActivityID, message
 // external estimate injection without going through the nom timing cache: the
 // caller loads estimates from their own store and injects them per-activity.
 // The estimate is rendered as ∅Xs on pending activities in the tree.
-func (ns *NOMStyleSubscriber) SetEstimatedTime(activityID ActivityID, estimated time.Duration) {
+func (ns *NOMSubscriber) SetEstimatedTime(activityID ActivityID, estimated time.Duration) {
 	ns.mu.Lock()
 	defer ns.mu.Unlock()
 
@@ -64,7 +64,7 @@ func (ns *NOMStyleSubscriber) SetEstimatedTime(activityID ActivityID, estimated 
 // "test", "deploy"). The category drives optional [tag] prefix rendering and
 // color tinting via the theme's CategoryColors map. Pass an empty string to
 // clear the category.
-func (ns *NOMStyleSubscriber) SetActivityCategory(activityID ActivityID, category ActivityCategory) {
+func (ns *NOMSubscriber) SetActivityCategory(activityID ActivityID, category ActivityCategory) {
 	ns.mu.Lock()
 	defer ns.mu.Unlock()
 

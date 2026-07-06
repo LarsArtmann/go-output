@@ -107,7 +107,7 @@ func TestWithTheme_SetsSubscriberTheme(t *testing.T) {
 		},
 	}
 
-	ns := NewNOMStyleSubscriber(WithTheme(custom))
+	ns := NewNOMSubscriber(WithTheme(custom))
 
 	testhelpers.AssertEqual(t, "theme colors.Running", custom, ns.Theme().Colors.Running, custom.Colors.Running)
 	testhelpers.AssertEqual(t, "theme symbol", custom, ns.Theme().Symbols[ActivityStatusRunning], Symbol("R"))
@@ -130,7 +130,7 @@ func TestSnapshotActivities_UsesThemeColor(t *testing.T) {
 		},
 	}
 
-	ns := NewNOMStyleSubscriber(WithTheme(custom))
+	ns := NewNOMSubscriber(WithTheme(custom))
 	ctx := context.Background()
 
 	if err := ns.OnEvent(ctx, ActivityRegistered{ID: "build", Name: "Build"}); err != nil {
@@ -166,7 +166,7 @@ func TestSnapshotActivities_UsesThemePhaseColor(t *testing.T) {
 		Symbols: map[ActivityStatus]Symbol{},
 	}
 
-	ns := NewNOMStyleSubscriber(WithTheme(custom))
+	ns := NewNOMSubscriber(WithTheme(custom))
 	ctx := context.Background()
 
 	if err := ns.OnEvent(ctx, ActivityRegistered{ID: "phase", Name: "Phase", Kind: ActivityKindPhase}); err != nil {

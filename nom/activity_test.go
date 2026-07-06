@@ -87,8 +87,8 @@ func TestActivity_SetCompleted(t *testing.T) {
 		t.Error("StartTime should be before EndTime")
 	}
 
-	if a.Status.NodeShape() != output.NodeShapeRect { //nolint:staticcheck // tests completed shape
-		t.Errorf("Shape = %v, want Rect (completed)", a.Status.NodeShape())
+	if a.Status.NodeShape() != output.NodeShapeHexagon {
+		t.Errorf("Shape = %v, want Hexagon (completed)", a.Status.NodeShape())
 	}
 }
 
@@ -120,7 +120,7 @@ func TestActivityStatus_NodeShape(t *testing.T) {
 	}{
 		{ActivityStatusPending, output.NodeShapeEllipse},
 		{ActivityStatusRunning, output.NodeShapeBox},
-		{ActivityStatusCompleted, output.NodeShapeRect}, //nolint:staticcheck // tests completed shape
+		{ActivityStatusCompleted, output.NodeShapeHexagon},
 		{ActivityStatusFailed, output.NodeShapeDiamond},
 	}
 

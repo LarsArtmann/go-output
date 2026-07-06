@@ -53,7 +53,7 @@ func TestDetectAutoTheme_PartialMalformed(t *testing.T) {
 func TestWithAutoTheme_Applied(t *testing.T) {
 	t.Setenv("COLORFGBG", "0;15")
 
-	sub := NewNOMStyleSubscriber(WithAutoTheme())
+	sub := NewNOMSubscriber(WithAutoTheme())
 
 	if sub.theme.Colors != ThemeHighContrast.Colors {
 		t.Error("expected ThemeHighContrast applied to subscriber")
@@ -63,7 +63,7 @@ func TestWithAutoTheme_Applied(t *testing.T) {
 func TestWithAutoTheme_UnsetDefaultsToDefault(t *testing.T) {
 	os.Unsetenv("COLORFGBG")
 
-	sub := NewNOMStyleSubscriber(WithAutoTheme())
+	sub := NewNOMSubscriber(WithAutoTheme())
 
 	if sub.theme.Colors != ThemeDefault.Colors {
 		t.Error("expected ThemeDefault when COLORFGBG unset")

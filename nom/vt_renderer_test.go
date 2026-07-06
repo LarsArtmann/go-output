@@ -20,7 +20,7 @@ import (
 // raw byte inspection if needed).
 func newVTTestRenderer(
 	t *testing.T,
-	sub *NOMStyleSubscriber,
+	sub *NOMSubscriber,
 	harness *vtHarness,
 	maxHeight int,
 ) *InlineRenderer {

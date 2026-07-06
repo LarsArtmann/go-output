@@ -7,13 +7,13 @@ import (
 func TestParseNodeShape(t *testing.T) {
 	t.Parallel()
 
-	got, err := ParseNodeShape("rect")
+	got, err := ParseNodeShape("box")
 	if err != nil {
 		t.Fatalf("ParseNodeShape error: %v", err)
 	}
 
-	if string(got) != "rect" {
-		t.Errorf("ParseNodeShape = %q, want %q", got, "rect")
+	if string(got) != "box" {
+		t.Errorf("ParseNodeShape = %q, want %q", got, "box")
 	}
 }
 
@@ -29,7 +29,7 @@ func TestParseNodeShape_Invalid(t *testing.T) {
 func TestNodeShape_AllowedValues(t *testing.T) {
 	t.Parallel()
 
-	values := NodeShapeRect.AllowedValues()
+	values := NodeShapeBox.AllowedValues()
 
 	if len(values) == 0 {
 		t.Error("AllowedValues should return non-empty slice")
@@ -39,8 +39,8 @@ func TestNodeShape_AllowedValues(t *testing.T) {
 func TestNodeShape_IsValid(t *testing.T) {
 	t.Parallel()
 
-	if !NodeShapeRect.IsValid() {
-		t.Error("NodeShapeRect should be valid")
+	if !NodeShapeBox.IsValid() {
+		t.Error("NodeShapeBox should be valid")
 	}
 
 	invalid := NodeShape("invalid")
@@ -85,7 +85,7 @@ func TestAddTreeNodes(t *testing.T) {
 	AddTreeNodes(
 		&m, root, "",
 		func(n *TreeNode) string { return n.ID.Get() },
-		NodeShapeRect,
+		NodeShapeBox,
 	)
 
 	if len(m.Nodes()) != 2 {

@@ -8,14 +8,6 @@ import (
 // ============================================================================
 // TIMING FORMATTING HELPERS
 // ============================================================================
-// TimingFormat is a legacy constant. FormatDuration now handles all formatting
-// internally and does not use this constant.
-//
-// Deprecated: Use FormatDuration() for duration display. This constant will be
-// removed in v2.
-//
-//nolint:staticcheck // kept for backward compatibility, remove in v2
-const TimingFormat = "%.1fs"
 
 // FormatDuration formats a duration in NOM style (e.g., "1.5s", "2m30s").
 func FormatDuration(duration time.Duration) string {

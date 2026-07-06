@@ -137,8 +137,8 @@ func TestLayeredRender_EmptyTree(t *testing.T) {
 
 	got := dt.RenderWithSnapshots(nil, 0, 0)
 
-	if got != msgNoActivitiesToDisplay {
-		t.Errorf("expected %q, got %q", msgNoActivitiesToDisplay, got)
+	if got != MsgNoActivities {
+		t.Errorf("expected %q, got %q", MsgNoActivities, got)
 	}
 }
 
@@ -174,7 +174,7 @@ func TestLayeredRender_VisibleEntries(t *testing.T) {
 }
 
 func TestLayeredRender_WithRenderModeOption(t *testing.T) {
-	ns := NewNOMStyleSubscriber(
+	ns := NewNOMSubscriber(
 		WithCachePath(filepath.Join(t.TempDir(), cacheFilename)),
 		WithRenderMode(RenderModeLayered),
 	)
@@ -187,7 +187,7 @@ func TestLayeredRender_WithRenderModeOption(t *testing.T) {
 }
 
 func TestLayeredRender_ModeDefault(t *testing.T) {
-	ns := NewNOMStyleSubscriber(WithCachePath(filepath.Join(t.TempDir(), cacheFilename)))
+	ns := NewNOMSubscriber(WithCachePath(filepath.Join(t.TempDir(), cacheFilename)))
 
 	dt := ns.DependencyTree()
 

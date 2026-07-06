@@ -91,7 +91,7 @@ func (m *ProgressModel) renderDependencyTree() string {
 	if len(entries) == 0 {
 		m.visibleEntries = nil
 
-		return msgNoActivitiesToDisplay
+		return MsgNoActivities
 	}
 
 	// Critical-path filter: when enabled, show only entries whose nodes are on

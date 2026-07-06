@@ -173,8 +173,8 @@ func TestDependencyTree_Render(t *testing.T) {
 		dt := NewDependencyTree()
 
 		got := dt.RenderWithSnapshots(nil, 10, 0)
-		if got != msgNoActivitiesToDisplay {
-			t.Errorf("Render() on empty tree = %q, want %q", got, msgNoActivitiesToDisplay)
+		if got != MsgNoActivities {
+			t.Errorf("Render() on empty tree = %q, want %q", got, MsgNoActivities)
 		}
 	})
 

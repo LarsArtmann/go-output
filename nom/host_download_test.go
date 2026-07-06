@@ -105,7 +105,7 @@ func TestDownloadProgress_Fraction(t *testing.T) {
 func TestSubscriber_PropagatesHostAndDownload(t *testing.T) {
 	t.Parallel()
 
-	sub := NewNOMStyleSubscriber()
+	sub := NewNOMSubscriber()
 	ctx := context.Background()
 
 	if err := sub.OnEvent(ctx, ActivityStarted{

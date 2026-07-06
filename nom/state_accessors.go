@@ -17,27 +17,11 @@ func (ps ParallelismStats) String() string {
 	return fmt.Sprintf("parallel: %d/%d possible", ps.Running, ps.Possible)
 }
 
-// GetDependencyTree returns the dependency tree for structural access (node
-// lookup, root listing). The tree nodes store ONLY IDs and tree structure —
-// all mutable Activity fields are accessed via SnapshotActivities + the
-// snapshot-aware render methods (RenderWithSnapshots).
-//
-// Deprecated: Use DependencyTree() instead — identical behavior, shorter name.
-// This method will be removed in v2.
-//
-//nolint:staticcheck // kept for backward compatibility, remove in v2
-func (ns *NOMStyleSubscriber) GetDependencyTree() *DependencyTree {
-	ns.mu.RLock()
-	defer ns.mu.RUnlock()
-
-	return ns.dependencyTree
-}
-
 // RenderSnapshot takes a snapshot of all activity fields (thread-safe), then
 // renders the tree from that immutable data. No lock is held during the tree
 // walk, so event handlers can proceed concurrently. Returns ("", false) when
 // no tree exists yet.
-func (ns *NOMStyleSubscriber) RenderSnapshot(maxHeight, maxWidth int) (string, bool) {
+func (ns *NOMSubscriber) RenderSnapshot(maxHeight, maxWidth int) (string, bool) {
 	tree := ns.DependencyTree()
 	if tree == nil {
 		return "", false
@@ -49,7 +33,7 @@ func (ns *NOMStyleSubscriber) RenderSnapshot(maxHeight, maxWidth int) (string, b
 }
 
 // GetTimingCache returns timing cache.
-func (ns *NOMStyleSubscriber) GetTimingCache() *TimingCache {
+func (ns *NOMSubscriber) GetTimingCache() *TimingCache {
 	ns.mu.RLock()
 	defer ns.mu.RUnlock()
 
@@ -59,7 +43,7 @@ func (ns *NOMStyleSubscriber) GetTimingCache() *TimingCache {
 // Flush persists all pending timing-cache writes to disk and returns the last
 // save error (if any). Call this at subscriber shutdown to ensure no timing
 // data is lost.
-func (ns *NOMStyleSubscriber) Flush() error {
+func (ns *NOMSubscriber) Flush() error {
 	ns.mu.RLock()
 	cache := ns.timingCache
 	ns.mu.RUnlock()
@@ -68,7 +52,7 @@ func (ns *NOMStyleSubscriber) Flush() error {
 }
 
 // IsWorkflowRunning returns true if a workflow is currently running.
-func (ns *NOMStyleSubscriber) IsWorkflowRunning() bool {
+func (ns *NOMSubscriber) IsWorkflowRunning() bool {
 	ns.mu.RLock()
 	defer ns.mu.RUnlock()
 
@@ -76,7 +60,7 @@ func (ns *NOMStyleSubscriber) IsWorkflowRunning() bool {
 }
 
 // GetWorkflowID returns current workflow ID.
-func (ns *NOMStyleSubscriber) GetWorkflowID() WorkflowID {
+func (ns *NOMSubscriber) GetWorkflowID() WorkflowID {
 	ns.mu.RLock()
 	defer ns.mu.RUnlock()
 
@@ -84,7 +68,7 @@ func (ns *NOMStyleSubscriber) GetWorkflowID() WorkflowID {
 }
 
 // GetWorkflowName returns current workflow name.
-func (ns *NOMStyleSubscriber) GetWorkflowName() string {
+func (ns *NOMSubscriber) GetWorkflowName() string {
 	ns.mu.RLock()
 	defer ns.mu.RUnlock()
 
@@ -92,7 +76,7 @@ func (ns *NOMStyleSubscriber) GetWorkflowName() string {
 }
 
 // GetStartTime returns workflow start time.
-func (ns *NOMStyleSubscriber) GetStartTime() time.Time {
+func (ns *NOMSubscriber) GetStartTime() time.Time {
 	ns.mu.RLock()
 	defer ns.mu.RUnlock()
 
@@ -109,7 +93,7 @@ func (ns *NOMStyleSubscriber) GetStartTime() time.Time {
 // the TUI uses it directly for its "~Xm left" summary, and the inline renderer's
 // SetEstimatedRemainingFunc callback can delegate to it when the caller has no
 // external estimator. Returns 0 when no unfinished activity has an estimate.
-func (ns *NOMStyleSubscriber) EstimatedTotalRemaining() time.Duration {
+func (ns *NOMSubscriber) EstimatedTotalRemaining() time.Duration {
 	ns.mu.RLock()
 	defer ns.mu.RUnlock()
 
@@ -147,7 +131,7 @@ func (ns *NOMStyleSubscriber) EstimatedTotalRemaining() time.Duration {
 // number of pending activities whose dependencies are all complete (i.e., ready
 // to start). The tree is consulted for dependency edges; the subscriber lock is
 // held first, then the tree lock, matching the lock-order used by Edges().
-func (ns *NOMStyleSubscriber) ParallelismStats() ParallelismStats {
+func (ns *NOMSubscriber) ParallelismStats() ParallelismStats {
 	ns.mu.RLock()
 	defer ns.mu.RUnlock()
 
@@ -175,7 +159,7 @@ func (ns *NOMStyleSubscriber) ParallelismStats() ParallelismStats {
 	return stats
 }
 
-func (ns *NOMStyleSubscriber) canStartImmediatelyLocked(
+func (ns *NOMSubscriber) canStartImmediatelyLocked(
 	id ActivityID,
 	tree *DependencyTree,
 ) bool {

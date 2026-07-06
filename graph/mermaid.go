@@ -116,8 +116,7 @@ func (r *MermaidRenderer) getMermaidShape(shape output.NodeShape) (string, strin
 		return "[(", ")]"
 	case output.NodeShapeParallelogram:
 		return "[/", "/]"
-	case output.NodeShapeBox,
-		output.NodeShapeRect: //nolint:staticcheck // backward compat
+	case output.NodeShapeBox:
 		return "[", "]"
 	default:
 		return "[", "]"

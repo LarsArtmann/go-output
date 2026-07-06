@@ -88,7 +88,7 @@ func (c ActivityCounts) Summary() string {
 // O(1) — reads a pre-computed cache maintained incrementally on every state
 // transition (applyDelta in the event handlers). Previously this scanned all
 // activities every frame; now it returns the cached aggregate directly.
-func (ns *NOMStyleSubscriber) GetActivityCounts() ActivityCounts {
+func (ns *NOMSubscriber) GetActivityCounts() ActivityCounts {
 	ns.mu.RLock()
 	defer ns.mu.RUnlock()
 
@@ -98,7 +98,7 @@ func (ns *NOMStyleSubscriber) GetActivityCounts() ActivityCounts {
 // SetActivityState sets an activity's state (for testing purposes).
 // Maintains the count cache: if replacing an existing activity, the old
 // status is decremented before the new one is counted.
-func (ns *NOMStyleSubscriber) SetActivityState(id ActivityID, activity *Activity) {
+func (ns *NOMSubscriber) SetActivityState(id ActivityID, activity *Activity) {
 	ns.mu.Lock()
 	defer ns.mu.Unlock()
 

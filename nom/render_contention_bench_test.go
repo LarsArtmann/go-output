@@ -9,12 +9,12 @@ import (
 	"time"
 )
 
-// buildBenchSubscriber creates a NOMStyleSubscriber with count activities spread
+// buildBenchSubscriber creates a NOMSubscriber with count activities spread
 // across completed/running/pending states, mirroring a realistic mid-build tree.
-func buildBenchSubscriber(b *testing.B, count int) *NOMStyleSubscriber {
+func buildBenchSubscriber(b *testing.B, count int) *NOMSubscriber {
 	b.Helper()
 
-	sub := NewNOMStyleSubscriber()
+	sub := NewNOMSubscriber()
 	ctx := context.Background()
 	wid := NewWorkflowID("bench-wf")
 

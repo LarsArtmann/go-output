@@ -11,7 +11,7 @@ import (
 // ============================================================================
 // Theme bundles all visual decisions (semantic colors, status symbols, and
 // category tints) into a single swappable configuration. A theme is immutable
-// after construction and is stored on the NOMStyleSubscriber so that snapshot
+// after construction and is stored on the NOMSubscriber so that snapshot
 // time is the single point where status/state is resolved into concrete ANSI
 // colors and symbols. Renderers consume ActivitySnapshot and do not need to
 // know the theme directly.

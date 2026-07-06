@@ -17,7 +17,7 @@ import (
 // dispatchers mutate those same fields via OnEvent (SetRunning/SetCompleted/
 // SetFailed) on step goroutines — exactly how BuildFlow's ProgressBridge drives
 // the subscriber. Before routing renderDependencyTree through
-// NOMStyleSubscriber.WithTreeRLock, this trip -race and produced garbled frames.
+// NOMSubscriber.WithTreeRLock, this trip -race and produced garbled frames.
 //
 // The model fields (width/height/displayMode) are set before spawning, and only
 // the renderer goroutine calls View(), so the only concurrent access under test

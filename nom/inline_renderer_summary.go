@@ -55,7 +55,7 @@ func (r *InlineRenderer) Finish(workflowErr error) {
 	r.lastFrame = ""
 
 	// Render from immutable snapshot (same race-free path as Draw).
-	if final, ok := r.subscriber.RenderSnapshot(0, 0); ok && final != msgNoActivitiesToDisplay {
+	if final, ok := r.subscriber.RenderSnapshot(0, 0); ok && final != MsgNoActivities {
 		r.write(final + "\n")
 	}
 

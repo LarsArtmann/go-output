@@ -12,7 +12,7 @@ import (
 // Example:
 //
 //	multi := nom.NewMultiSubscriber(
-//	    nom.NewNOMStyleSubscriber(),  // drives the TUI
+//	    nom.NewNOMSubscriber(),  // drives the TUI
 //	    logSubscriber,                // logs to disk
 //	    metricsSubscriber,            // emits metrics
 //	)

@@ -138,7 +138,7 @@ func TestMermaidRendererAllShapes(t *testing.T) {
 		wantRight string
 	}{
 		{"Box", output.NodeShapeBox, "[", "]"},
-		{"Rect", output.NodeShapeRect, "[", "]"}, //nolint:staticcheck // tests deprecated shape rendering
+		{"Rect", output.NodeShapeBox, "[", "]"}, //nolint:staticcheck // tests deprecated shape rendering
 		{"Diamond", output.NodeShapeDiamond, "{", "}"},
 		{"Ellipse", output.NodeShapeEllipse, "(", ")"},
 		{"Circle", output.NodeShapeCircle, "((", "))"},

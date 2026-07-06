@@ -45,9 +45,6 @@ const (
 	NodeShapeCylinder      NodeShape = "cylinder"
 	NodeShapeHexagon       NodeShape = "hexagon"
 	NodeShapeParallelogram NodeShape = "parallelogram"
-
-	// Deprecated: Use NodeShapeBox instead. NodeShapeRect will be removed in v2.
-	NodeShapeRect NodeShape = "rect"
 )
 
 //nolint:gochecknoglobals // Global variable used for value iteration.
@@ -59,7 +56,6 @@ var nodeShapeValues = []NodeShape{
 	NodeShapeCylinder,
 	NodeShapeHexagon,
 	NodeShapeParallelogram,
-	NodeShapeRect, //nolint:staticcheck // deprecated but must stay in allowed-values for backward compat
 }
 
 // LineStyle represents the visual style of a line (edge).
@@ -186,18 +182,6 @@ type EdgeStyle struct {
 	Color string
 	// Line is the line style (solid, dashed, dotted).
 	Line LineStyle
-	// ArrowHead is the arrowhead style at the target end.
-	//
-	// Deprecated: Not read by any renderer. For D2, use D2Edge.TargetArrow.
-	// For DOT/Mermaid, use renderer-specific style fields. This field will be
-	// removed in v2.
-	ArrowHead string
-	// ArrowTail is the arrowhead style at the source end.
-	//
-	// Deprecated: Not read by any renderer. For D2, use D2Edge.SourceArrow.
-	// For DOT/Mermaid, use renderer-specific style fields. This field will be
-	// removed in v2.
-	ArrowTail string
 }
 
 // AddNode appends a node to the graph.

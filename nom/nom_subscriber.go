@@ -11,20 +11,15 @@ import (
 )
 
 // ActivityReader is the read-only contract for diagram export.
-// NOMStyleSubscriber satisfies it via Store(), so any output.GraphRenderer
+// NOMSubscriber satisfies it via Store(), so any output.GraphRenderer
 // (DOT, Mermaid, D2, PlantUML) can consume live progress state.
 type ActivityReader interface {
 	Nodes() []output.GraphNode
 	Edges() []output.GraphEdge
 }
 
-// NOMStyleSubscriber implements EventSubscriber to provide NOM-style visualization.
-//
-// Deprecated: Use NOMSubscriber — identical type, shorter name.
-// NOMStyleSubscriber will be removed in v2.
-//
-//nolint:staticcheck // kept for backward compatibility, remove in v2
-type NOMStyleSubscriber struct {
+// NOMSubscriber implements EventSubscriber to provide NOM-style visualization.
+type NOMSubscriber struct {
 	mu             sync.RWMutex
 	activities     map[ActivityID]*Activity
 	dependencyTree *DependencyTree
@@ -48,14 +43,14 @@ type NOMStyleSubscriber struct {
 	theme     Theme
 }
 
-// SubscriberOption configures a NOMStyleSubscriber at construction time.
-type SubscriberOption func(*NOMStyleSubscriber)
+// SubscriberOption configures a NOMSubscriber at construction time.
+type SubscriberOption func(*NOMSubscriber)
 
 // WithCachePath overrides the default timing-cache file path
 // (~/.cache/nom-timing.csv). Tests inject a temp directory so the suite never
 // reads or writes the real home directory, keeping it hermetic.
 func WithCachePath(path string) SubscriberOption {
-	return func(ns *NOMStyleSubscriber) {
+	return func(ns *NOMSubscriber) {
 		ns.timingCache = NewTimingCache(withFilePath(path))
 	}
 }
@@ -67,7 +62,7 @@ func WithCachePath(path string) SubscriberOption {
 // child. Consumers with many categories benefit from this to avoid walls of
 // identical green checkmarks.
 func WithCollapseCompletedPhases() SubscriberOption {
-	return func(ns *NOMStyleSubscriber) {
+	return func(ns *NOMSubscriber) {
 		ns.dependencyTree.collapseCompletedPhases = true
 	}
 }
@@ -78,7 +73,7 @@ func WithCollapseCompletedPhases() SubscriberOption {
 // When disabled (the default, matching nom), extra deps are absorbed
 // silently into the tree structure.
 func WithShowExtraDeps() SubscriberOption {
-	return func(ns *NOMStyleSubscriber) {
+	return func(ns *NOMSubscriber) {
 		ns.dependencyTree.showExtraDeps = true
 	}
 }
@@ -87,7 +82,7 @@ func WithShowExtraDeps() SubscriberOption {
 // estimated-time path through the dependency DAG. Off by default to preserve
 // nom-compatible output.
 func WithShowCriticalPath() SubscriberOption {
-	return func(ns *NOMStyleSubscriber) {
+	return func(ns *NOMSubscriber) {
 		ns.dependencyTree.showCriticalPath = true
 	}
 }
@@ -96,7 +91,7 @@ func WithShowCriticalPath() SubscriberOption {
 // dependencies (DAG fan-in points). Off by default to preserve nom-compatible
 // output.
 func WithShowConvergence() SubscriberOption {
-	return func(ns *NOMStyleSubscriber) {
+	return func(ns *NOMSubscriber) {
 		ns.dependencyTree.showConvergence = true
 	}
 }
@@ -105,7 +100,7 @@ func WithShowConvergence() SubscriberOption {
 // their incomplete dependencies and current status. Off by default to avoid
 // cluttering the tree when the parent is already visible.
 func WithShowBlockage() SubscriberOption {
-	return func(ns *NOMStyleSubscriber) {
+	return func(ns *NOMSubscriber) {
 		ns.dependencyTree.showBlockage = true
 	}
 }
@@ -114,7 +109,7 @@ func WithShowBlockage() SubscriberOption {
 // (default) or layered mode. Layered mode groups activities by DAG depth and
 // renders each layer horizontally, making parallel work explicit.
 func WithRenderMode(mode RenderMode) SubscriberOption {
-	return func(ns *NOMStyleSubscriber) {
+	return func(ns *NOMSubscriber) {
 		ns.dependencyTree.renderMode = mode
 	}
 }
@@ -122,7 +117,7 @@ func WithRenderMode(mode RenderMode) SubscriberOption {
 // WithShowParallelism enables a "parallel: N/M possible" segment in the inline
 // renderer summary bar. Off by default to keep the summary compact.
 func WithShowParallelism() SubscriberOption {
-	return func(ns *NOMStyleSubscriber) {
+	return func(ns *NOMSubscriber) {
 		ns.showParallelism = true
 	}
 }
@@ -131,7 +126,7 @@ func WithShowParallelism() SubscriberOption {
 // activities that have a non-empty Category. Off by default to preserve
 // nom-compatible output.
 func WithShowCategory() SubscriberOption {
-	return func(ns *NOMStyleSubscriber) {
+	return func(ns *NOMSubscriber) {
 		ns.dependencyTree.showCategory = true
 	}
 }
@@ -140,7 +135,7 @@ func WithShowCategory() SubscriberOption {
 // into a single "N pending" summary line, reducing visual noise from deep
 // DAGs where only the first few layers are active. Layered mode only.
 func WithHideFutureLayers() SubscriberOption {
-	return func(ns *NOMStyleSubscriber) {
+	return func(ns *NOMSubscriber) {
 		ns.dependencyTree.hideFutureLayers = true
 	}
 }
@@ -149,7 +144,7 @@ func WithHideFutureLayers() SubscriberOption {
 // them into a summary line (e.g. "3 build tasks"). Requires WithShowCategory
 // to be useful, since categories must be set on activities.
 func WithCollapseCategories() SubscriberOption {
-	return func(ns *NOMStyleSubscriber) {
+	return func(ns *NOMSubscriber) {
 		ns.dependencyTree.collapseCategories = true
 	}
 }
@@ -162,7 +157,7 @@ func WithCollapseCategories() SubscriberOption {
 // COLORFGBG format is "fg;bg" where values 0-7 are dark and 8-15 are light.
 // This is the same convention used by vim, tmux, and other terminal tools.
 func WithAutoTheme() SubscriberOption {
-	return func(ns *NOMStyleSubscriber) {
+	return func(ns *NOMSubscriber) {
 		theme := detectAutoTheme()
 		ns.theme = theme
 		ns.dependencyTree.theme = theme
@@ -199,20 +194,15 @@ func detectAutoTheme() Theme {
 // WithTheme sets the visual theme used for status symbols and colors.
 // If not supplied, ThemeDefault is used.
 func WithTheme(theme Theme) SubscriberOption {
-	return func(ns *NOMStyleSubscriber) {
+	return func(ns *NOMSubscriber) {
 		ns.theme = theme
 		ns.dependencyTree.theme = theme
 	}
 }
 
-// NewNOMStyleSubscriber creates a new NOM-style subscriber.
-//
-// Deprecated: Use NewNOMSubscriber — identical behavior, shorter name.
-// NewNOMStyleSubscriber will be removed in v2.
-//
-//nolint:staticcheck // kept for backward compatibility, remove in v2
-func NewNOMStyleSubscriber(opts ...SubscriberOption) *NOMStyleSubscriber {
-	ns := &NOMStyleSubscriber{
+// NewNOMSubscriber creates a new NOM subscriber.
+func NewNOMSubscriber(opts ...SubscriberOption) *NOMSubscriber {
+	ns := &NOMSubscriber{
 		activities:     make(map[ActivityID]*Activity),
 		dependencyTree: NewDependencyTree(),
 		timingCache:    NewTimingCache(),
@@ -229,7 +219,7 @@ func NewNOMStyleSubscriber(opts ...SubscriberOption) *NOMStyleSubscriber {
 }
 
 // Theme returns the subscriber's active visual theme.
-func (ns *NOMStyleSubscriber) Theme() Theme {
+func (ns *NOMSubscriber) Theme() Theme {
 	ns.mu.RLock()
 	defer ns.mu.RUnlock()
 
@@ -238,7 +228,7 @@ func (ns *NOMStyleSubscriber) Theme() Theme {
 
 // DependencyTree returns the subscriber's dependency tree. Renderers and
 // integration tests use this to inspect or configure display state directly.
-func (ns *NOMStyleSubscriber) DependencyTree() *DependencyTree {
+func (ns *NOMSubscriber) DependencyTree() *DependencyTree {
 	ns.mu.RLock()
 	defer ns.mu.RUnlock()
 
@@ -255,15 +245,15 @@ func (ns *NOMStyleSubscriber) DependencyTree() *DependencyTree {
 //	dot.SetNodes(subscriber.Store().Nodes())
 //	dot.SetEdges(subscriber.Store().Edges())
 //	diagram, _ := dot.Render()
-func (ns *NOMStyleSubscriber) Store() ActivityReader {
+func (ns *NOMSubscriber) Store() ActivityReader {
 	return &subscriberView{ns: ns}
 }
 
-// subscriberView adapts NOMStyleSubscriber to the ActivityReader interface.
+// subscriberView adapts NOMSubscriber to the ActivityReader interface.
 // It projects the subscriber's Activity map to GraphNode/Edge slices on-demand
 // under the subscriber's read lock.
 type subscriberView struct {
-	ns *NOMStyleSubscriber
+	ns *NOMSubscriber
 }
 
 // Nodes projects all activities as output.GraphNode values for diagram export.
@@ -319,10 +309,3 @@ func (v *subscriberView) Edges() []output.GraphEdge {
 	return edges
 }
 
-// NOMSubscriber is the preferred short name for NOMStyleSubscriber.
-type NOMSubscriber = NOMStyleSubscriber
-
-// NewNOMSubscriber creates a new NOM subscriber — preferred over NewNOMStyleSubscriber.
-func NewNOMSubscriber(opts ...SubscriberOption) *NOMSubscriber {
-	return NewNOMStyleSubscriber(opts...)
-}

@@ -134,16 +134,6 @@ func (a *Activity) IsCompleted() bool { return a.Status == ActivityStatusComplet
 // IsFailed returns true if the activity has failed.
 func (a *Activity) IsFailed() bool { return a.Status == ActivityStatusFailed }
 
-// IsPhase reports whether this activity is a Phase grouping node (Kind ==
-// ActivityKindPhase), as opposed to a concrete Task.
-//
-// Deprecated: Use ActivitySnapshot.IsPhase() instead — snapshots are the
-// concurrency-safe way to read activity state. This method will be removed
-// in v2.
-//
-//nolint:staticcheck // kept for backward compatibility, remove in v2
-func (a *Activity) IsPhase() bool { return a.Kind.IsPhase() }
-
 // Copy creates a shallow copy of the Activity. All fields are value types
 // or immutable, so a shallow copy is sufficient.
 func (a *Activity) Copy() *Activity {
