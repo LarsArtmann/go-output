@@ -36,7 +36,7 @@ import (
 )
 
 // Define your data once
-data := output.NewTableData([]string{"Name", "Health", "Complexity"})
+data := output.NewTable([]string{"Name", "Health", "Complexity"})
 data.AddRow([]string{"Alpha", "90%", "7/10"})
 data.AddRow([]string{"Beta", "75%", "5/10"})
 data.SetFooter([]string{"Total", "2", "-"})
@@ -72,7 +72,7 @@ fmt.Println(format.Shapes())                     // [table tree graph]
 Or dispatch through the unified renderer:
 
 ```go
-output.RenderTableData(data, output.FormatHTML, output.RenderOptions{
+output.RenderTable(data, output.FormatHTML, output.RenderOptions{
     ColorMode: output.ColorModeAuto,
 })
 ```
@@ -81,7 +81,7 @@ output.RenderTableData(data, output.FormatHTML, output.RenderOptions{
 
 ## Why go-output?
 
-- **16 formats, one API** — Same `TableData`, `TreeNode`, or `GraphNode`. No format-specific code paths.
+- **16 formats, one API** — Same `Table`, `TreeNode`, or `GraphNode`. No format-specific code paths.
 - **Type-safe everything** — `Format`, `ColorMode`, `ActivityStatus` — all validated at parse time. Branded IDs prevent mixing `D2NodeID` with `TreeNodeID` at compile time.
 - **Zero heavy deps in root** — `go get go-output` pulls only `x/term`. YAML, lipgloss, bubbletea, and diagram renderers are opt-in sub-modules.
 - **NOM real-time progress** — Dependency trees, activity counts, timing estimates, and inline terminal rendering. O(1) summary bars even at 10,000 activities.
@@ -93,7 +93,7 @@ output.RenderTableData(data, output.FormatHTML, output.RenderOptions{
 
 ## Format Gallery
 
-Same data, rendered six ways — all from one `TableData`:
+Same data, rendered six ways — all from one `Table`:
 
 **Markdown table:**
 
@@ -213,7 +213,7 @@ Then import what you need. The `replace` directives in each module's `go.mod` re
 | `d2`       |  ✅   |      |  ✅   | d2            | SQL tables, 20 node shapes, grid layouts, style classes |
 | `mermaid`  |  ✅   |      |  ✅   | graph         | Flowcharts with 8 node shapes                           |
 | `dot`      |  ✅   |      |  ✅   | graph         | Graphviz directed graphs                                |
-| `plantuml` |  ✅   |      |  ✅   | plantuml      | Component diagrams with TableData→graph conversion      |
+| `plantuml` |  ✅   |      |  ✅   | plantuml      | Component diagrams with Table→graph conversion      |
 
 ### Data Shape Capabilities
 
@@ -270,10 +270,10 @@ out, _ = ht.Render()
 
 ### Footer Row Support
 
-Set `TableData.Footer` for an optional totals/summary row:
+Set `Table.Footer` for an optional totals/summary row:
 
 ```go
-data := output.NewTableData([]string{"Name", "Score"})
+data := output.NewTable([]string{"Name", "Score"})
 data.AddRow([]string{"Alice", "95"})
 data.AddRow([]string{"Bob", "87"})
 data.SetFooter([]string{"Total", "182"})
@@ -351,7 +351,7 @@ mmd.SetEdges(edges)
 out, _ = mmd.Render()
 
 // D2 diagrams with SQL tables (requires go-output/d2)
-diagram := d2.NewD2Diagram().
+diagram := d2.NewDiagram().
     AddNodeWithShape("api", "API Gateway", d2.D2ShapeHexagon).
     AddEdgeSimple("api", "backend")
 out, _ = diagram.Render()
@@ -370,7 +370,7 @@ table := d2.D2Table{
     },
 }
 
-node := d2.D2Node{
+node := d2.Node{
     ID:          output.NewBrandedID[output.D2NodeIDBrand]("dashboard"),
     Label:       output.NewBrandedID[output.D2NodeLabelBrand]("Dashboard"),
     GridRows:    3,
@@ -383,20 +383,20 @@ node := d2.D2Node{
 Convert between data shapes without rewriting your data:
 
 ```go
-// TableData → Graph (auto-generates edges between consecutive rows)
-dot := graph.DOTFromTableData(data)
-mmd := graph.MermaidFromTableData(data)
-plantuml := plantuml.PlantUMLFromTableData(data)
-d2Diagram := d2.D2FromTableData(data)
+// Table → Graph (auto-generates edges between consecutive rows)
+dot := graph.NewDOTFromTable(data)
+mmd := graph.NewMermaidFromTable(data)
+plantuml := plantuml.NewPlantUMLFromTable(data)
+d2Diagram := d2.NewD2FromTable(data)
 
-// TableData → Tree (hierarchical from tabular data; requires go-output/tree)
-tree := tree.TreeRendererFromTableData(data)
+// Table → Tree (hierarchical from tabular data; requires go-output/tree)
+tree := tree.NewTreeRendererFromTable(data)
 
 // Tree → Graph
-d2Diagram := d2.D2FromTree(root)
-dot := graph.DOTFromTree(root)
-mmd := graph.MermaidFromTree(root)
-plantuml := plantuml.PlantUMLFromTree(root)
+d2Diagram := d2.NewD2FromTree(root)
+dot := graph.NewDOTFromTree(root)
+mmd := graph.NewMermaidFromTree(root)
+plantuml := plantuml.NewPlantUMLFromTree(root)
 ```
 
 ---
@@ -419,7 +419,7 @@ import (
 )
 
 ctx := context.Background()
-sub := nom.NewNOMStyleSubscriber()
+sub := nom.NewNOMSubscriber()
 
 // Fire lifecycle events
 sub.OnEvent(ctx, nom.WorkflowStarted{
@@ -443,7 +443,7 @@ sub.OnEvent(ctx, nom.ActivityCompleted{
 
 // Render a snapshot of the current state
 snaps := sub.SnapshotActivities()
-fmt.Println(sub.GetDependencyTree().RenderWithSnapshots(snaps, 20, 0))
+fmt.Println(sub.DependencyTree().RenderWithSnapshots(snaps, 20, 0))
 
 // O(1) summary counts
 counts := sub.GetActivityCounts()
@@ -458,7 +458,7 @@ sub.OnEvent(ctx, nom.WorkflowCompleted{ID: nom.NewWorkflowID("build")})
 For real-time updates, the `InlineRenderer` redraws the tree in-place using ANSI escape codes. Events typically arrive from concurrent workers:
 
 ```go
-sub := nom.NewNOMStyleSubscriber()
+sub := nom.NewNOMSubscriber()
 renderer := nom.NewInlineRenderer(sub, os.Stdout, 20) // maxHeight 20 lines
 
 ctx := context.Background()
@@ -615,7 +615,7 @@ tree.SetColorMode(output.ColorModeAlways)
 md := markdown.NewMarkdownTable().SetColorMode(output.ColorModeAlways)
 
 // Unified dispatch: RenderOptions
-output.RenderTableData(data, output.FormatTable,
+output.RenderTable(data, output.FormatTable,
     output.RenderOptions{ColorMode: output.ColorModeAuto})
 ```
 
@@ -628,7 +628,7 @@ output.RenderTableData(data, output.FormatTable,
 For large datasets, stream output incrementally:
 
 ```go
-data := output.NewTableData([]string{"Name", "Value"})
+data := output.NewTable([]string{"Name", "Value"})
 data.AddRow([]string{"Item", "123"})
 
 renderer := markup.NewStreamingHTMLRenderer()
@@ -727,7 +727,7 @@ This library is pre-v1. The following guarantees apply:
 | -------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------------ |
 | `Renderer`           | `Render() (string, error)`                                   | All 16 formats                                                           |
 | `TableRenderer`      | `SetHeaders([]string)`, `AddRow([]string)`, `Render()`       | JSON, YAML, TOML, JSONL, HTML, Streaming HTML, AsciiDoc, Markdown, Table |
-| `TreeOutputRenderer` | `SetRoot(*TreeNode)`, `Render()`                             | ASCII Tree, JSON Tree, YAML Tree, TOML Tree, HTML Tree                   |
+| `TreeRenderer` | `SetRoot(*TreeNode)`, `Render()`                             | ASCII Tree, JSON Tree, YAML Tree, TOML Tree, HTML Tree                   |
 | `GraphRenderer`      | `SetNodes([]GraphNode)`, `SetEdges([]GraphEdge)`, `Render()` | D2, DOT, Mermaid, PlantUML, JSON Graph, YAML Graph, TOML Graph           |
 | `StreamingRenderer`  | `Stream(io.Writer) error`, `Render()`                        | Streaming HTML                                                           |
 
