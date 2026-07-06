@@ -8,7 +8,7 @@ require (
 	github.com/charmbracelet/x/ansi v0.11.7
 	github.com/charmbracelet/x/exp/teatest/v2 v2.0.0-20260629091435-9c70f75e26a4
 	github.com/charmbracelet/x/vt v0.0.0-20260629091435-9c70f75e26a4
-	github.com/larsartmann/go-output/nom v0.0.0-00010101000000-000000000000
+	github.com/larsartmann/go-output/nom v0.30.0
 )
 
 require (
@@ -23,7 +23,7 @@ require (
 	github.com/clipperhouse/displaywidth v0.11.0 // indirect
 	github.com/clipperhouse/uax29/v2 v2.7.0 // indirect
 	github.com/larsartmann/go-branded-id v0.3.1 // indirect
-	github.com/larsartmann/go-output v0.0.0-00010101000000-000000000000 // indirect
+	github.com/larsartmann/go-output v0.30.0 // indirect
 	github.com/lucasb-eyer/go-colorful v1.4.0 // indirect
 	github.com/mattn/go-runewidth v0.0.24 // indirect
 	github.com/muesli/cancelreader v0.2.2 // indirect
