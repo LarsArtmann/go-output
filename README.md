@@ -213,7 +213,7 @@ Then import what you need. The `replace` directives in each module's `go.mod` re
 | `d2`       |  ✅   |      |  ✅   | d2            | SQL tables, 20 node shapes, grid layouts, style classes |
 | `mermaid`  |  ✅   |      |  ✅   | graph         | Flowcharts with 8 node shapes                           |
 | `dot`      |  ✅   |      |  ✅   | graph         | Graphviz directed graphs                                |
-| `plantuml` |  ✅   |      |  ✅   | plantuml      | Component diagrams with Table→graph conversion      |
+| `plantuml` |  ✅   |      |  ✅   | plantuml      | Component diagrams with Table→graph conversion          |
 
 ### Data Shape Capabilities
 
@@ -723,13 +723,13 @@ This library is pre-v1. The following guarantees apply:
 
 ### Frozen Interfaces (v1 locked)
 
-| Interface            | Methods                                                      | Implementations                                                          |
-| -------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------------ |
-| `Renderer`           | `Render() (string, error)`                                   | All 16 formats                                                           |
-| `TableRenderer`      | `SetHeaders([]string)`, `AddRow([]string)`, `Render()`       | JSON, YAML, TOML, JSONL, HTML, Streaming HTML, AsciiDoc, Markdown, Table |
-| `TreeRenderer` | `SetRoot(*TreeNode)`, `Render()`                             | ASCII Tree, JSON Tree, YAML Tree, TOML Tree, HTML Tree                   |
-| `GraphRenderer`      | `SetNodes([]GraphNode)`, `SetEdges([]GraphEdge)`, `Render()` | D2, DOT, Mermaid, PlantUML, JSON Graph, YAML Graph, TOML Graph           |
-| `StreamingRenderer`  | `Stream(io.Writer) error`, `Render()`                        | Streaming HTML                                                           |
+| Interface           | Methods                                                      | Implementations                                                          |
+| ------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------------ |
+| `Renderer`          | `Render() (string, error)`                                   | All 16 formats                                                           |
+| `TableRenderer`     | `SetHeaders([]string)`, `AddRow([]string)`, `Render()`       | JSON, YAML, TOML, JSONL, HTML, Streaming HTML, AsciiDoc, Markdown, Table |
+| `TreeRenderer`      | `SetRoot(*TreeNode)`, `Render()`                             | ASCII Tree, JSON Tree, YAML Tree, TOML Tree, HTML Tree                   |
+| `GraphRenderer`     | `SetNodes([]GraphNode)`, `SetEdges([]GraphEdge)`, `Render()` | D2, DOT, Mermaid, PlantUML, JSON Graph, YAML Graph, TOML Graph           |
+| `StreamingRenderer` | `Stream(io.Writer) error`, `Render()`                        | Streaming HTML                                                           |
 
 Non-breaking changes until v1: adding new formats, shapes, methods, sub-modules, and renderers.
 

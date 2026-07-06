@@ -38,6 +38,7 @@ func WriteASCII(w io.Writer, root *output.TreeNode, opts ...Option) error {
 	}
 
 	_, err = io.WriteString(w, out)
+
 	return fmt.Errorf("write output: %w", err)
 }
 

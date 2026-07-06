@@ -39,6 +39,7 @@ func Write(w io.Writer, g output.Graph, opts ...Option) error {
 	}
 
 	_, err = io.WriteString(w, out)
+
 	return fmt.Errorf("write output: %w", err)
 }
 

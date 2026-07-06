@@ -2,18 +2,20 @@ package table
 
 import (
 	"fmt"
+	"strconv"
 	"testing"
 )
 
 func BenchmarkTableRender_100Rows5Cols(b *testing.B) {
 	tbl := New()
 	tbl.SetHeaders("Name", "Status", "Duration", "Count", "Size")
-	for i := 0; i < 100; i++ {
+
+	for i := range 100 {
 		tbl.AddRow(
 			fmt.Sprintf("Row %d", i),
 			"✓",
 			fmt.Sprintf("%.1fs", float64(i)*0.1),
-			fmt.Sprintf("%d", i*10),
+			strconv.Itoa(i*10),
 			fmt.Sprintf("%dKB", i*5),
 		)
 	}
@@ -21,7 +23,7 @@ func BenchmarkTableRender_100Rows5Cols(b *testing.B) {
 	b.ResetTimer()
 	b.ReportAllocs()
 
-	for i := 0; i < b.N; i++ {
+	for range b.N {
 		_, _ = tbl.Render()
 	}
 }
