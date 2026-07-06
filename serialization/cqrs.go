@@ -1,16 +1,38 @@
 package serialization
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"strings"
 
+	"github.com/go-faster/yaml"
+	"github.com/pelletier/go-toml/v2"
+
 	"github.com/larsartmann/go-output"
 )
 
-// WriteJSON writes a Table as JSON to the provided writer.
+// WriteJSON writes a Table as JSON directly to the provided writer using
+// json.NewEncoder — no intermediate string allocation.
 func WriteJSON(w io.Writer, data *output.Table) error {
-	return renderJSONTable(w, data, output.RenderOptions{})
+	if data == nil || len(data.Headers) == 0 {
+		if _, err := io.WriteString(w, "[]\n"); err != nil {
+			return fmt.Errorf("write empty json: %w", err)
+		}
+
+		return nil
+	}
+
+	encoder := json.NewEncoder(w)
+	encoder.SetIndent("", "  ")
+
+	rows := data.ToMapSlice()
+
+	if err := encoder.Encode(rows); err != nil {
+		return fmt.Errorf("encode json table (%d rows): %w", len(rows), err)
+	}
+
+	return nil
 }
 
 // RenderJSON renders a Table as a JSON string.
@@ -23,9 +45,26 @@ func RenderJSON(data *output.Table) (string, error) {
 	return buf.String(), nil
 }
 
-// WriteYAML writes a Table as YAML to the provided writer.
+// WriteYAML writes a Table as YAML directly to the provided writer using
+// yaml.NewEncoder — no intermediate string allocation.
 func WriteYAML(w io.Writer, data *output.Table) error {
-	return renderYAMLTable(w, data, output.RenderOptions{})
+	if data == nil || len(data.Headers) == 0 {
+		if _, err := io.WriteString(w, "[]\n"); err != nil {
+			return fmt.Errorf("write empty yaml: %w", err)
+		}
+
+		return nil
+	}
+
+	encoder := yaml.NewEncoder(w)
+
+	rows := data.ToMapSlice()
+
+	if err := encoder.Encode(rows); err != nil {
+		return fmt.Errorf("encode yaml table (%d rows): %w", len(rows), err)
+	}
+
+	return nil
 }
 
 // RenderYAML renders a Table as a YAML string.
@@ -38,15 +77,20 @@ func RenderYAML(data *output.Table) (string, error) {
 	return buf.String(), nil
 }
 
-// WriteTOML writes a Table as TOML to the provided writer.
+// WriteTOML writes a Table as TOML directly to the provided writer using
+// toml.NewEncoder — no intermediate string allocation.
+// Rows are nested under the key "row" because TOML cannot encode a bare
+// top-level array.
 func WriteTOML(w io.Writer, data *output.Table) error {
-	b, err := MarshalTOMLFromTable(data)
-	if err != nil {
-		return fmt.Errorf("marshal toml: %w", err)
+	if data == nil || len(data.Headers) == 0 {
+		return nil
 	}
 
-	if _, err := w.Write(b); err != nil {
-		return fmt.Errorf("write toml output: %w", err)
+	rows := data.ToMapSlice()
+	wrapped := map[string]any{tomlTableKey: rows}
+
+	if err := toml.NewEncoder(w).Encode(wrapped); err != nil {
+		return fmt.Errorf("encode toml table (%d rows): %w", len(rows), err)
 	}
 
 	return nil
@@ -62,18 +106,23 @@ func RenderTOML(data *output.Table) (string, error) {
 	return buf.String(), nil
 }
 
-// WriteJSONL writes a Table as JSONL to the provided writer.
+// WriteJSONL writes a Table as JSON Lines directly to the provided writer.
+// Each row is encoded as a separate JSON object on its own line via
+// NewJSONLWriter — true row-level streaming.
 func WriteJSONL(w io.Writer, data *output.Table) error {
-	b, err := MarshalJSONLFromTable(data)
-	if err != nil {
-		return fmt.Errorf("marshal jsonl: %w", err)
+	if data == nil || len(data.Headers) == 0 {
+		return nil
 	}
 
-	if _, err := w.Write(b); err != nil {
-		return fmt.Errorf("write jsonl output: %w", err)
+	jw := NewJSONLWriter(w)
+
+	for _, row := range data.ToMapSlice() {
+		if err := jw.Encode(row); err != nil {
+			return fmt.Errorf("encode jsonl row: %w", err)
+		}
 	}
 
-	return nil
+	return jw.Flush()
 }
 
 // RenderJSONL renders a Table as a JSONL string.

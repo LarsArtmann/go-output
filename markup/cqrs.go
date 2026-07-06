@@ -8,15 +8,25 @@ import (
 	"github.com/larsartmann/go-output"
 )
 
-// WriteXML writes a Table as XML to the provided writer.
+// WriteXML writes a Table as XML directly to the provided writer using
+// NewXMLWriter — true element-level streaming.
 func WriteXML(w io.Writer, data *output.Table) error {
-	b, err := MarshalXMLFromTable(data)
-	if err != nil {
-		return fmt.Errorf("marshal xml: %w", err)
+	if data == nil {
+		return nil
 	}
 
-	if _, err := w.Write(b); err != nil {
-		return fmt.Errorf("write xml output: %w", err)
+	xw := NewXMLWriter(w)
+
+	if err := xw.WriteHeader(data.Headers); err != nil {
+		return fmt.Errorf("write xml header: %w", err)
+	}
+
+	if err := xw.WriteRows(data.Rows); err != nil {
+		return fmt.Errorf("write xml rows: %w", err)
+	}
+
+	if err := xw.WriteFooter(); err != nil {
+		return fmt.Errorf("write xml footer: %w", err)
 	}
 
 	return nil
