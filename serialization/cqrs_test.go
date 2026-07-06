@@ -79,3 +79,51 @@ func TestCQRS_RenderJSONL(t *testing.T) {
 		t.Fatalf("expected 2 JSONL lines, got %d", len(lines))
 	}
 }
+
+func TestCQRS_WriteJSON_ErrorWriter(t *testing.T) {
+	t.Parallel()
+
+	tbl := output.NewTable([]string{"Name"})
+	tbl.AddRow([]string{"Alice"})
+
+	err := WriteJSON(&errorWriter{}, tbl)
+	if err == nil {
+		t.Fatal("expected error from errorWriter")
+	}
+}
+
+func TestCQRS_WriteYAML_ErrorWriter(t *testing.T) {
+	t.Parallel()
+
+	tbl := output.NewTable([]string{"Name"})
+	tbl.AddRow([]string{"Alice"})
+
+	err := WriteYAML(&errorWriter{}, tbl)
+	if err == nil {
+		t.Fatal("expected error from errorWriter")
+	}
+}
+
+func TestCQRS_WriteTOML_ErrorWriter(t *testing.T) {
+	t.Parallel()
+
+	tbl := output.NewTable([]string{"Name"})
+	tbl.AddRow([]string{"Alice"})
+
+	err := WriteTOML(&errorWriter{}, tbl)
+	if err == nil {
+		t.Fatal("expected error from errorWriter")
+	}
+}
+
+func TestCQRS_WriteJSONL_ErrorWriter(t *testing.T) {
+	t.Parallel()
+
+	tbl := output.NewTable([]string{"Name"})
+	tbl.AddRow([]string{"Alice"})
+
+	err := WriteJSONL(&errorWriter{}, tbl)
+	if err == nil {
+		t.Fatal("expected error from errorWriter")
+	}
+}

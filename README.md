@@ -839,6 +839,12 @@ out, _ := graph.RenderDOT(g)
 
 `NodeShapeRect`, `EdgeStyle.ArrowHead/.ArrowTail`, `nom.ErrActivityNotFound`, `nom.TimingFormat`, `nom.Activity.IsPhase()`, `StreamingRendererFromRenderer()` — see [CHANGELOG.md](CHANGELOG.md) for the full list.
 
+### Registry dispatch now streams (trailing-newline change)
+
+`output.RenderTable(data, output.FormatJSON, opts)` now uses the same streaming encoders as the CQRS API (`json.NewEncoder`, `yaml.NewEncoder`, etc.). The standard encoders append a trailing `\n` that the old `MarshalIndent` + `Fprint` path did not.
+
+**If you do exact-byte output comparison** (e.g., golden-file tests in your project), add `strings.TrimSpace(result)` or update your golden files to include the trailing newline. This affects JSON, YAML, TOML, JSONL, CSV, TSV, and XML.
+
 ---
 
 ## Contributing

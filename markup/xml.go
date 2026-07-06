@@ -162,5 +162,5 @@ func MarshalXMLFromTable(data *output.Table) ([]byte, error) {
 }
 
 func renderXMLTable(w io.Writer, data *output.Table, _ output.RenderOptions) error {
-	return renderMarshalAndWrite(w, data, "xml", MarshalXMLFromTable)
+	return WriteXML(w, data)
 }

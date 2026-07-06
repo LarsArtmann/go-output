@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<table>
+  <headers>
+    <column>Name</column>
+    <column>Status</column>
+  </headers>
+  <rows>
+    <row>
+        <cell>Build</cell>
+        <cell>completed</cell>
+    </row>
+    <row>
+        <cell>Test</cell>
+        <cell>running</cell>
+    </row>
+  </rows>
+</table>
