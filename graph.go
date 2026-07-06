@@ -294,3 +294,28 @@ func (m *GraphBuilder) Nodes() []GraphNode {
 func (m *GraphBuilder) Edges() []GraphEdge {
 	return m.edges
 }
+
+// Graph is an immutable snapshot of graph data — the frozen result of
+// GraphBuilder.Build(). It is safe for concurrent access and can be
+// passed to multiple renderers (DOT, Mermaid, D2, PlantUML) without
+// copying or locking.
+type Graph struct {
+	nodes []GraphNode
+	edges []GraphEdge
+}
+
+// Nodes returns the graph nodes (read-only).
+func (g Graph) Nodes() []GraphNode { return g.nodes }
+
+// Edges returns the graph edges (read-only).
+func (g Graph) Edges() []GraphEdge { return g.edges }
+
+// Build freezes the builder's state into an immutable Graph.
+// After Build, the Graph is a snapshot — further mutations to the
+// builder do not affect it.
+func (m *GraphBuilder) Build() Graph {
+	return Graph{
+		nodes: append([]GraphNode(nil), m.nodes...),
+		edges: append([]GraphEdge(nil), m.edges...),
+	}
+}

@@ -36,6 +36,12 @@ func renderDOTTable(w io.Writer, data *output.Table, _ output.RenderOptions) err
 }
 
 // DOTRenderer implements the GraphRenderer interface for DOT/Graphviz output.
+// defaultNodeSep is the default minimum space between adjacent nodes in the same rank.
+const defaultNodeSep = "0.5"
+
+// defaultRankSep is the default minimum space between two consecutive ranks.
+const defaultRankSep = "0.5"
+
 type DOTRenderer struct {
 	output.GraphBuilder
 
@@ -55,8 +61,8 @@ func newDOTRenderer(directed bool) *DOTRenderer {
 		graphID:      "G",
 		rankdir:      RankDirTB,
 		splines:      SplineOrtho,
-		nodesep:      "0.5",
-		ranksep:      "0.5",
+		nodesep:      defaultNodeSep,
+		ranksep:      defaultRankSep,
 	}
 }
 
