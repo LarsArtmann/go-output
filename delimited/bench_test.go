@@ -18,8 +18,8 @@ var benchRows = func() [][]string {
 	return rows
 }()
 
-func benchTableData() *output.TableData {
-	data := output.NewTableData(benchHeaders)
+func benchTable() *output.Table {
+	data := output.NewTable(benchHeaders)
 	for range 100 {
 		data.AddRow([]string{"Alice", "30", "alice@example.com", "Berlin"})
 	}
@@ -45,24 +45,24 @@ func BenchmarkCSVWriter(b *testing.B) {
 	}
 }
 
-func BenchmarkMarshalCSVFromTableData(b *testing.B) {
-	data := benchTableData()
+func BenchmarkMarshalCSVFromTable(b *testing.B) {
+	data := benchTable()
 
 	b.ResetTimer()
 
 	for b.Loop() {
-		_, _ = MarshalCSVFromTableData(data)
+		_, _ = MarshalCSVFromTable(data)
 	}
 }
 
-func BenchmarkMarshalCSVFromTableDataWithFooter(b *testing.B) {
-	data := benchTableData()
+func BenchmarkMarshalCSVFromTableWithFooter(b *testing.B) {
+	data := benchTable()
 	data.SetFooter([]string{"Total", "100", "", ""})
 
 	b.ResetTimer()
 
 	for b.Loop() {
-		_, _ = MarshalCSVFromTableData(data)
+		_, _ = MarshalCSVFromTable(data)
 	}
 }
 
@@ -84,12 +84,12 @@ func BenchmarkTSVWriter(b *testing.B) {
 	}
 }
 
-func BenchmarkMarshalTSVFromTableData(b *testing.B) {
-	data := benchTableData()
+func BenchmarkMarshalTSVFromTable(b *testing.B) {
+	data := benchTable()
 
 	b.ResetTimer()
 
 	for b.Loop() {
-		_, _ = MarshalTSVFromTableData(data)
+		_, _ = MarshalTSVFromTable(data)
 	}
 }

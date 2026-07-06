@@ -8,16 +8,16 @@ import (
 	"github.com/larsartmann/go-output/testhelpers"
 )
 
-func TestAssertTableData(t *testing.T) {
+func TestAssertTable(t *testing.T) {
 	t.Parallel()
 
 	t.Run("valid data", func(t *testing.T) {
 		t.Parallel()
 
-		data := output.NewTableData([]string{"A", "B"})
+		data := output.NewTable([]string{"A", "B"})
 		data.AddRow([]string{"1", "2"})
 
-		assertTableData(t, data, 2, 1)
+		assertTable(t, data, 2, 1)
 	})
 
 	mismatchTests := []struct {
@@ -35,10 +35,10 @@ func TestAssertTableData(t *testing.T) {
 
 			mock := &testing.T{}
 
-			data := output.NewTableData([]string{"A"})
+			data := output.NewTable([]string{"A"})
 			data.AddRow([]string{"1"})
 
-			assertTableData(mock, data, tt.headers, tt.rows)
+			assertTable(mock, data, tt.headers, tt.rows)
 
 			if !mock.Failed() {
 				t.Errorf("expected failure for %s", tt.name)

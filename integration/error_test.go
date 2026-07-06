@@ -9,25 +9,25 @@ import (
 	"github.com/larsartmann/go-output/testhelpers"
 )
 
-func TestRenderTableData_NilData(t *testing.T) {
+func TestRenderTable_NilData(t *testing.T) {
 	t.Parallel()
 
-	err := output.RenderTableData(nil, output.FormatMarkdown, output.RenderOptions{})
+	err := output.RenderTable(nil, output.FormatMarkdown, output.RenderOptions{})
 	if err != nil {
-		t.Errorf("RenderTableData with nil data should return nil, got: %v", err)
+		t.Errorf("RenderTable with nil data should return nil, got: %v", err)
 	}
 }
 
-func TestRenderTableData_InvalidFooter(t *testing.T) {
+func TestRenderTable_InvalidFooter(t *testing.T) {
 	t.Parallel()
 
-	data := output.NewTableData([]string{"A", "B"})
+	data := output.NewTable([]string{"A", "B"})
 	data.AddRow([]string{"1", "2"})
 	data.SetFooter([]string{"total"})
 
 	var buf bytes.Buffer
 
-	err := output.RenderTableData(data, output.FormatMarkdown, output.RenderOptions{Writer: &buf})
+	err := output.RenderTable(data, output.FormatMarkdown, output.RenderOptions{Writer: &buf})
 	if err == nil {
 		t.Fatal("Expected error for footer with wrong column count")
 	}
@@ -37,10 +37,10 @@ func TestRenderTableData_InvalidFooter(t *testing.T) {
 	}
 }
 
-func TestRenderTableData_PreviouslyUnsupportedFormats(t *testing.T) {
+func TestRenderTable_PreviouslyUnsupportedFormats(t *testing.T) {
 	t.Parallel()
 
-	data := output.NewTableData([]string{"A"})
+	data := output.NewTable([]string{"A"})
 	data.AddRow([]string{"1"})
 
 	formats := []output.Format{
@@ -56,7 +56,7 @@ func TestRenderTableData_PreviouslyUnsupportedFormats(t *testing.T) {
 
 			var buf bytes.Buffer
 
-			err := output.RenderTableData(data, format, output.RenderOptions{Writer: &buf})
+			err := output.RenderTable(data, format, output.RenderOptions{Writer: &buf})
 			if err != nil {
 				t.Fatalf("Expected %s to be supported, got: %v", format, err)
 			}
@@ -74,7 +74,7 @@ func TestCreateRowEdges_EdgeCases(t *testing.T) {
 	t.Run("nil data", func(t *testing.T) {
 		t.Parallel()
 
-		var data *output.TableData
+		var data *output.Table
 
 		edges := data.CreateRowEdges()
 		if edges != nil {
@@ -85,7 +85,7 @@ func TestCreateRowEdges_EdgeCases(t *testing.T) {
 	t.Run("zero rows", func(t *testing.T) {
 		t.Parallel()
 
-		data := output.NewTableData([]string{"A"})
+		data := output.NewTable([]string{"A"})
 
 		edges := data.CreateRowEdges()
 		if edges != nil {
@@ -96,7 +96,7 @@ func TestCreateRowEdges_EdgeCases(t *testing.T) {
 	t.Run("single row", func(t *testing.T) {
 		t.Parallel()
 
-		data := output.NewTableData([]string{"A"})
+		data := output.NewTable([]string{"A"})
 		data.AddRow([]string{"1"})
 
 		edges := data.CreateRowEdges()
@@ -106,25 +106,25 @@ func TestCreateRowEdges_EdgeCases(t *testing.T) {
 	})
 }
 
-func TestRenderTableData_WithWriter(t *testing.T) {
+func TestRenderTable_WithWriter(t *testing.T) {
 	t.Parallel()
 
-	data := output.NewTableData([]string{"Name"})
+	data := output.NewTable([]string{"Name"})
 	data.AddRow([]string{"Alpha"})
 
 	t.Run("nil writer defaults to stdout", func(t *testing.T) {
 		t.Parallel()
 
-		err := output.RenderTableData(data, output.FormatMarkdown, output.RenderOptions{})
+		err := output.RenderTable(data, output.FormatMarkdown, output.RenderOptions{})
 		if err != nil {
-			t.Fatalf("RenderTableData with nil writer: %v", err)
+			t.Fatalf("RenderTable with nil writer: %v", err)
 		}
 	})
 
 	t.Run("writer error", func(t *testing.T) {
 		t.Parallel()
 
-		err := output.RenderTableData(data, output.FormatMarkdown, output.RenderOptions{
+		err := output.RenderTable(data, output.FormatMarkdown, output.RenderOptions{
 			Writer: &testhelpers.ErrorWriter{},
 		})
 		if err == nil {

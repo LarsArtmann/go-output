@@ -19,12 +19,12 @@ func ExampleNew() {
 }
 
 //nolint:testableexamples // Demonstration example, output is dynamic
-func ExampleFromTableData() {
-	data := output.NewTableData([]string{"Name", "Score"})
+func ExampleFromTable() {
+	data := output.NewTable([]string{"Name", "Score"})
 	data.AddRow([]string{"Alice", "95"})
 	data.AddRow([]string{"Bob", "87"})
 
-	tbl := table.FromTableData(data, table.WithColorMode(output.ColorModeNever))
+	tbl := table.FromTable(data, table.WithColorMode(output.ColorModeNever))
 
 	fmt.Println(testhelpers.MustRender(tbl))
 }

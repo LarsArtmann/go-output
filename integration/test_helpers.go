@@ -15,20 +15,20 @@ const (
 	sampleAlpha  = "Alpha"
 )
 
-// assertTableData verifies that the table has the expected number of columns and rows.
-func assertTableData(t *testing.T, data *output.TableData, expectedCols, expectedRows int) {
+// assertTable verifies that the table has the expected number of columns and rows.
+func assertTable(t *testing.T, data *output.Table, expectedCols, expectedRows int) {
 	t.Helper()
 
 	if data == nil {
-		t.Fatal("TableData is nil")
+		t.Fatal("Table is nil")
 	}
 
 	if got := data.ColCount(); got != expectedCols {
-		t.Errorf("TableData has %d columns, want %d", got, expectedCols)
+		t.Errorf("Table has %d columns, want %d", got, expectedCols)
 	}
 
 	if got := data.RowCount(); got != expectedRows {
-		t.Errorf("TableData has %d rows, want %d", got, expectedRows)
+		t.Errorf("Table has %d rows, want %d", got, expectedRows)
 	}
 }
 
@@ -62,7 +62,7 @@ func runEmptyDataRendersJSONWithoutPanic(t *testing.T) {
 	t.Run("empty data renders without panic", func(t *testing.T) {
 		t.Parallel()
 
-		data := output.NewTableData([]string{})
+		data := output.NewTable([]string{})
 
 		_, _ = serialization.MarshalJSON(data)
 	})

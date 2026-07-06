@@ -59,7 +59,7 @@ func TestStreamingHTMLRendererSetData(t *testing.T) {
 	t.Parallel()
 
 	r := NewStreamingHTMLRenderer()
-	data := output.NewTableData([]string{"Col1", "Col2"})
+	data := output.NewTable([]string{"Col1", "Col2"})
 	data.AddRow([]string{"a", "b"})
 
 	r.SetData(data)

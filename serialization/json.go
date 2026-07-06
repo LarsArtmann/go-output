@@ -13,10 +13,10 @@ var (
 	_ output.TableRenderer = (*JSONTableRenderer)(nil)
 )
 
-//nolint:gochecknoinits // Registers JSON TableData and Unknown marshalers plus format capabilities.
+//nolint:gochecknoinits // Registers JSON Table and Unknown marshalers plus format capabilities.
 func init() {
 	output.RegisterFormatShapes(output.FormatJSON, output.ShapeTable, output.ShapeTree, output.ShapeGraph)
-	output.RegisterTableDataRenderer(output.FormatJSON, renderJSONTableData)
+	output.RegisterTableMarshaler(output.FormatJSON, renderJSONTable)
 	output.RegisterUnknownRenderer(output.FormatJSON, renderJSONUnknown)
 }
 
@@ -77,9 +77,9 @@ func (j *JSONWriter) Encode(v any) error {
 	return nil
 }
 
-// JSONTableRenderer renders TableData as a JSON array of objects.
+// JSONTableRenderer renders Table as a JSON array of objects.
 type JSONTableRenderer struct {
-	output.TableDataStore
+	output.TableStore
 }
 
 // NewJSONTableRenderer creates a new JSONTableRenderer.
@@ -94,6 +94,6 @@ func (r *JSONTableRenderer) Render() (string, error) {
 	})
 }
 
-func renderJSONTableData(w io.Writer, data *output.TableData, _ output.RenderOptions) error {
+func renderJSONTable(w io.Writer, data *output.Table, _ output.RenderOptions) error {
 	return renderViaRenderer(w, data, NewJSONTableRenderer(), "json")
 }

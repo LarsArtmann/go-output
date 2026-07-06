@@ -19,7 +19,7 @@ var (
 // StreamingHTMLRenderer is a streaming implementation of HTMLRenderer.
 // It writes output incrementally to minimize memory usage.
 type StreamingHTMLRenderer struct {
-	output.TableDataStore
+	output.TableStore
 }
 
 // NewStreamingHTMLRenderer creates a new StreamingHTMLRenderer.
@@ -44,8 +44,8 @@ func (r *StreamingHTMLRenderer) Stream(w io.Writer) error {
 	return streamHTMLTable(w, r.Data())
 }
 
-// htmlTableData holds the data for HTML table template rendering.
-type htmlTableData struct {
+// htmlTable holds the data for HTML table template rendering.
+type htmlTable struct {
 	Headers []string
 	Rows    [][]string
 	Footer  []string
@@ -74,7 +74,7 @@ var htmlTableTemplate = template.Must(template.New("htmlTable").Parse(
 ))
 
 // streamHTMLTable writes a complete HTML table to w using html/template for auto-escaping.
-func streamHTMLTable(w io.Writer, data *output.TableData) error {
+func streamHTMLTable(w io.Writer, data *output.Table) error {
 	if data == nil {
 		if _, err := w.Write([]byte(`<table class="data-table"></table>`)); err != nil {
 			return fmt.Errorf("write empty table: %w", err)
@@ -83,7 +83,7 @@ func streamHTMLTable(w io.Writer, data *output.TableData) error {
 		return nil
 	}
 
-	err := htmlTableTemplate.Execute(w, htmlTableData{
+	err := htmlTableTemplate.Execute(w, htmlTable{
 		Headers: data.Headers,
 		Rows:    data.Rows,
 		Footer:  data.Footer,

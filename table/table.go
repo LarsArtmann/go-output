@@ -17,13 +17,13 @@ var (
 	_ output.TableRenderer = (*tableRendererAdapter)(nil)
 )
 
-//nolint:gochecknoinits // Registers Table TableDataRenderer for registry-based dispatch.
+//nolint:gochecknoinits // Registers Table TableRenderer for registry-based dispatch.
 func init() {
-	output.RegisterTableDataRenderer(output.FormatTable, renderStyledTableData)
+	output.RegisterTableMarshaler(output.FormatTable, renderStyledTable)
 }
 
-func renderStyledTableData(w io.Writer, data *output.TableData, opts output.RenderOptions) error {
-	t := FromTableData(data, WithColorMode(opts.ColorMode))
+func renderStyledTable(w io.Writer, data *output.Table, opts output.RenderOptions) error {
+	t := FromTable(data, WithColorMode(opts.ColorMode))
 
 	out, err := t.Render()
 	if err != nil {
@@ -38,15 +38,15 @@ func renderStyledTableData(w io.Writer, data *output.TableData, opts output.Rend
 	return nil
 }
 
-// TableDataProvider defines the interface for types that provide tabular data.
-// The root package's TableData satisfies this interface implicitly.
-type TableDataProvider interface {
+// TableProvider defines the interface for types that provide tabular data.
+// The root package's Table satisfies this interface implicitly.
+type TableProvider interface {
 	GetHeaders() []string
 	GetRows() [][]string
 }
 
-// FooterProvider is an optional interface that TableDataProvider can implement
-// to provide a footer row (e.g., totals). Checked via type assertion in FromTableData.
+// FooterProvider is an optional interface that TableProvider can implement
+// to provide a footer row (e.g., totals). Checked via type assertion in FromTable.
 type FooterProvider interface {
 	GetFooter() []string
 }
@@ -137,10 +137,10 @@ func (t *Table) Render() (string, error) {
 	return t.t.String(), nil
 }
 
-// FromTableData creates a new Table populated from a TableDataProvider.
+// FromTable creates a new Table populated from a TableProvider.
 // If data is nil, returns an empty table.
 // If data also implements FooterProvider, the footer row is added and bold-styled.
-func FromTableData(data TableDataProvider, opts ...Option) *Table {
+func FromTable(data TableProvider, opts ...Option) *Table {
 	if data == nil {
 		return New(opts...)
 	}

@@ -29,7 +29,7 @@ func ExampleNewHTMLRenderer_fullPage() {
 
 //nolint:testableexamples // Demonstration example, output is dynamic
 func ExampleNewAsciiDocTableRenderer() {
-	data := output.NewTableData([]string{"Name", "Age"})
+	data := output.NewTable([]string{"Name", "Age"})
 	data.AddRow([]string{"Alice", "30"})
 
 	renderer := markup.NewAsciiDocTableRenderer()
@@ -39,11 +39,11 @@ func ExampleNewAsciiDocTableRenderer() {
 }
 
 //nolint:testableexamples // Demonstration example, output is dynamic
-func ExampleMarshalXMLFromTableData() {
-	data := output.NewTableData([]string{"Name", "Age"})
+func ExampleMarshalXMLFromTable() {
+	data := output.NewTable([]string{"Name", "Age"})
 	data.AddRow([]string{"Alice", "30"})
 
-	result, err := markup.MarshalXMLFromTableData(data)
+	result, err := markup.MarshalXMLFromTable(data)
 	if err != nil {
 		fmt.Printf("error: %v\n", err)
 

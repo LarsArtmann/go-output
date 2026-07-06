@@ -6,13 +6,13 @@ import (
 	"github.com/larsartmann/go-output"
 )
 
-func FuzzMarshalJSONFromTableData(f *testing.F) {
+func FuzzMarshalJSONFromTable(f *testing.F) {
 	f.Add("Name", "Age", "Alice", "30")
 	f.Add("", "", "", "")
 	f.Add("a,b", "c,d", "e,f", "g,h")
 
 	f.Fuzz(func(_ *testing.T, h1, h2, v1, v2 string) {
-		data := output.NewTableData([]string{h1, h2})
+		data := output.NewTable([]string{h1, h2})
 		data.AddRow([]string{v1, v2})
 
 		renderer := NewJSONTableRenderer()
@@ -21,12 +21,12 @@ func FuzzMarshalJSONFromTableData(f *testing.F) {
 	})
 }
 
-func FuzzMarshalYAMLFromTableData(f *testing.F) {
+func FuzzMarshalYAMLFromTable(f *testing.F) {
 	f.Add("Name", "Age", "Alice", "30")
 	f.Add("", "", "", "")
 
 	f.Fuzz(func(_ *testing.T, h1, h2, v1, v2 string) {
-		data := output.NewTableData([]string{h1, h2})
+		data := output.NewTable([]string{h1, h2})
 		data.AddRow([]string{v1, v2})
 
 		renderer := NewYAMLTableRenderer()
@@ -35,26 +35,26 @@ func FuzzMarshalYAMLFromTableData(f *testing.F) {
 	})
 }
 
-func FuzzMarshalTOMLFromTableData(f *testing.F) {
+func FuzzMarshalTOMLFromTable(f *testing.F) {
 	f.Add("Name", "Age", "Alice", "30")
 	f.Add("", "", "", "")
 
 	f.Fuzz(func(_ *testing.T, h1, h2, v1, v2 string) {
-		data := output.NewTableData([]string{h1, h2})
+		data := output.NewTable([]string{h1, h2})
 		data.AddRow([]string{v1, v2})
 
-		_, _ = MarshalTOMLFromTableData(data)
+		_, _ = MarshalTOMLFromTable(data)
 	})
 }
 
-func FuzzMarshalJSONLFromTableData(f *testing.F) {
+func FuzzMarshalJSONLFromTable(f *testing.F) {
 	f.Add("Name", "Age", "Alice", "30")
 	f.Add("", "", "", "")
 
 	f.Fuzz(func(_ *testing.T, h1, h2, v1, v2 string) {
-		data := output.NewTableData([]string{h1, h2})
+		data := output.NewTable([]string{h1, h2})
 		data.AddRow([]string{v1, v2})
 
-		_, _ = MarshalJSONLFromTableData(data)
+		_, _ = MarshalJSONLFromTable(data)
 	})
 }

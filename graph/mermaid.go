@@ -15,14 +15,14 @@ var (
 	_ output.GraphRenderer = (*MermaidRenderer)(nil)
 )
 
-//nolint:gochecknoinits // Registers Mermaid format capabilities and TableDataRenderer.
+//nolint:gochecknoinits // Registers Mermaid format capabilities and TableRenderer.
 func init() {
 	output.RegisterFormatShapes(output.FormatMermaid, output.ShapeTable, output.ShapeTree, output.ShapeGraph)
-	output.RegisterTableDataRenderer(output.FormatMermaid, renderMermaidTableData)
+	output.RegisterTableMarshaler(output.FormatMermaid, renderMermaidTable)
 }
 
-func renderMermaidTableData(w io.Writer, data *output.TableData, _ output.RenderOptions) error {
-	out, err := MermaidFromTableData(data).Render()
+func renderMermaidTable(w io.Writer, data *output.Table, _ output.RenderOptions) error {
+	out, err := NewMermaidFromTable(data).Render()
 	if err != nil {
 		return fmt.Errorf("render Mermaid: %w", err)
 	}
@@ -168,22 +168,22 @@ func mermaidStyleParts(s output.NodeStyle) []string {
 	return parts
 }
 
-// MermaidFromTableData creates a Mermaid flowchart from table data.
-func MermaidFromTableData(data *output.TableData) *MermaidRenderer {
+// NewMermaidFromTable creates a Mermaid flowchart from table data.
+func NewMermaidFromTable(data *output.Table) *MermaidRenderer {
 	renderer := NewMermaidRenderer()
 	if data == nil {
 		return renderer
 	}
 
-	renderer.SetNodesFromTableData(data, func(_ int, n *output.GraphNode) {
+	renderer.SetNodesFromTable(data, func(_ int, n *output.GraphNode) {
 		n.Shape = output.NodeShapeBox
 	})
 
 	return renderer
 }
 
-// MermaidFromTree converts a TreeNode to Mermaid.
-func MermaidFromTree(root *output.TreeNode) *MermaidRenderer {
+// NewMermaidFromTree converts a TreeNode to Mermaid.
+func NewMermaidFromTree(root *output.TreeNode) *MermaidRenderer {
 	return output.TreeToRenderer(NewMermaidRenderer, (*MermaidRenderer).addTreeNodes, root)
 }
 

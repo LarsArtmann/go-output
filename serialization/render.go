@@ -8,7 +8,7 @@ import (
 )
 
 func renderTable(
-	data *output.TableData,
+	data *output.Table,
 	empty string,
 	formatName string,
 	marshalFunc func(any) ([]byte, error),
@@ -27,7 +27,7 @@ func renderTable(
 	return string(b), nil
 }
 
-func renderViaRenderer(w io.Writer, data *output.TableData, renderer dataSetter, formatName string) error {
+func renderViaRenderer(w io.Writer, data *output.Table, renderer dataSetter, formatName string) error {
 	renderer.SetData(data)
 
 	out, err := renderer.Render()
@@ -44,6 +44,6 @@ func renderViaRenderer(w io.Writer, data *output.TableData, renderer dataSetter,
 }
 
 type dataSetter interface {
-	SetData(*output.TableData)
+	SetData(*output.Table)
 	Render() (string, error)
 }

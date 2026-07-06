@@ -16,8 +16,8 @@ func DefaultGraphNodeLabel(header, cell string) string {
 // TreeNodeIDFunc resolves a TreeNode's ID for a specific graph format.
 type TreeNodeIDFunc func(*TreeNode) string
 
-// NodesFromTableData creates GraphNodes from TableData using the provided label function.
-func NodesFromTableData(data *TableData, labelFn GraphNodeLabelFunc) []GraphNode {
+// NodesFromTable creates GraphNodes from Table using the provided label function.
+func NodesFromTable(data *Table, labelFn GraphNodeLabelFunc) []GraphNode {
 	if data == nil {
 		return nil
 	}
@@ -48,7 +48,7 @@ func NodesFromTableData(data *TableData, labelFn GraphNodeLabelFunc) []GraphNode
 }
 
 // AddRowEdges adds edges from data.CreateRowEdges() to the graph.
-func (m *GraphRendererState) AddRowEdges(data *TableData) {
+func (m *GraphRendererState) AddRowEdges(data *Table) {
 	for _, edge := range data.CreateRowEdges() {
 		//nolint:exhaustruct // Uses defaults for optional fields
 		m.edges = append(m.edges, GraphEdge{
@@ -58,13 +58,13 @@ func (m *GraphRendererState) AddRowEdges(data *TableData) {
 	}
 }
 
-// SetNodesFromTableData creates nodes from TableData, applies per-node modifications,
+// SetNodesFromTable creates nodes from Table, applies per-node modifications,
 // adds them to the graph, and adds row edges.
-func (m *GraphRendererState) SetNodesFromTableData(
-	data *TableData,
+func (m *GraphRendererState) SetNodesFromTable(
+	data *Table,
 	modifyNode func(i int, n *GraphNode),
 ) {
-	nodes := NodesFromTableData(data, DefaultGraphNodeLabel)
+	nodes := NodesFromTable(data, DefaultGraphNodeLabel)
 
 	for i := range nodes {
 		if modifyNode != nil {

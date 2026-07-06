@@ -1,7 +1,7 @@
-// Package tree renders TableData as an ASCII tree.
+// Package tree renders Table as an ASCII tree.
 //
 // It is an optional format renderer: import it to activate Tree output
-// through output.RenderTableData, or use NewASCIITreeRenderer directly.
+// through output.RenderTable, or use NewASCIITreeRenderer directly.
 //
 //	import "github.com/larsartmann/go-output/tree"
 //
@@ -151,8 +151,8 @@ func (r *ASCIITreeRenderer) renderNode(
 	}
 }
 
-// TreeRendererFromTableData converts TableData to a tree using the first column as hierarchy.
-func TreeRendererFromTableData(data *output.TableData) *ASCIITreeRenderer {
+// TreeRendererFromTable converts Table to a tree using the first column as hierarchy.
+func TreeRendererFromTable(data *output.Table) *ASCIITreeRenderer {
 	renderer := NewASCIITreeRenderer()
 	if data == nil || len(data.Rows) == 0 {
 		return renderer

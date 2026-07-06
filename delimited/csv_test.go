@@ -136,19 +136,19 @@ func TestCSVWriterErrorPaths(t *testing.T) {
 	})
 }
 
-func TestMarshalCSVFromTableData(t *testing.T) {
+func TestMarshalCSVFromTable(t *testing.T) {
 	t.Parallel()
 
 	t.Run("with headers and rows", func(t *testing.T) {
 		t.Parallel()
 
-		data := output.NewTableData([]string{"Name", "Age"})
+		data := output.NewTable([]string{"Name", "Age"})
 		data.AddRow([]string{"Alice", "30"})
 		data.AddRow([]string{"Bob", "25"})
 
-		b, err := MarshalCSVFromTableData(data)
+		b, err := MarshalCSVFromTable(data)
 		if err != nil {
-			t.Fatalf("MarshalCSVFromTableData() error = %v", err)
+			t.Fatalf("MarshalCSVFromTable() error = %v", err)
 		}
 
 		result := string(b)
@@ -164,39 +164,39 @@ func TestMarshalCSVFromTableData(t *testing.T) {
 	t.Run("nil data returns nil", func(t *testing.T) {
 		t.Parallel()
 
-		b, err := MarshalCSVFromTableData(nil)
+		b, err := MarshalCSVFromTable(nil)
 		if err != nil {
-			t.Fatalf("MarshalCSVFromTableData(nil) error = %v", err)
+			t.Fatalf("MarshalCSVFromTable(nil) error = %v", err)
 		}
 
 		if b != nil {
-			t.Errorf("MarshalCSVFromTableData(nil) = %q, want nil", b)
+			t.Errorf("MarshalCSVFromTable(nil) = %q, want nil", b)
 		}
 	})
 
 	t.Run("empty data", func(t *testing.T) {
 		t.Parallel()
 
-		data := output.NewTableData(nil)
+		data := output.NewTable(nil)
 
-		b, err := MarshalCSVFromTableData(data)
+		b, err := MarshalCSVFromTable(data)
 		if err != nil {
-			t.Fatalf("MarshalCSVFromTableData() error = %v", err)
+			t.Fatalf("MarshalCSVFromTable() error = %v", err)
 		}
 
 		if len(b) != 0 {
-			t.Errorf("MarshalCSVFromTableData(empty) = %q, want empty", b)
+			t.Errorf("MarshalCSVFromTable(empty) = %q, want empty", b)
 		}
 	})
 
 	t.Run("headers only no rows", func(t *testing.T) {
 		t.Parallel()
 
-		data := output.NewTableData([]string{"Name", "Age"})
+		data := output.NewTable([]string{"Name", "Age"})
 
-		b, err := MarshalCSVFromTableData(data)
+		b, err := MarshalCSVFromTable(data)
 		if err != nil {
-			t.Fatalf("MarshalCSVFromTableData() error = %v", err)
+			t.Fatalf("MarshalCSVFromTable() error = %v", err)
 		}
 
 		result := string(b)
@@ -208,14 +208,14 @@ func TestMarshalCSVFromTableData(t *testing.T) {
 	t.Run("with footer row", func(t *testing.T) {
 		t.Parallel()
 
-		data := output.NewTableData([]string{"Name", "Count"})
+		data := output.NewTable([]string{"Name", "Count"})
 		data.AddRow([]string{"Alice", "10"})
 		data.AddRow([]string{"Bob", "20"})
 		data.Footer = []string{"Total", "30"}
 
-		b, err := MarshalCSVFromTableData(data)
+		b, err := MarshalCSVFromTable(data)
 		if err != nil {
-			t.Fatalf("MarshalCSVFromTableData() error = %v", err)
+			t.Fatalf("MarshalCSVFromTable() error = %v", err)
 		}
 
 		result := string(b)
@@ -228,10 +228,10 @@ func TestMarshalCSVFromTableData(t *testing.T) {
 	})
 }
 
-func TestCSVRenderTableData(t *testing.T) {
+func TestCSVRenderTable(t *testing.T) {
 	t.Parallel()
 
-	testRenderTableData(t, output.FormatCSV, "CSV")
+	testRenderTable(t, output.FormatCSV, "CSV")
 }
 
 func TestCSVWriter_WriteFooter(t *testing.T) {
@@ -251,13 +251,13 @@ func TestCSVWriter_WriteFooter(t *testing.T) {
 	assertLastLineContains(t, "WriteFooter", result, "Total")
 }
 
-func TestMarshalFromTableData_FlushError(t *testing.T) {
+func TestMarshalFromTable_FlushError(t *testing.T) {
 	t.Parallel()
 
-	data := output.NewTableData([]string{"Name"})
+	data := output.NewTable([]string{"Name"})
 	data.AddRow([]string{"Alice"})
 
-	_, err := marshalFromTableData(data, "csv", func(w io.Writer) tableDataWriter {
+	_, err := marshalFromTable(data, "csv", func(w io.Writer) tableDataWriter {
 		return NewCSVWriter(&errorWriter{})
 	})
 	if err == nil {

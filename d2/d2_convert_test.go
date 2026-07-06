@@ -65,15 +65,15 @@ func TestD2ConstraintConstants(t *testing.T) {
 	}
 }
 
-func TestD2FromTableData(t *testing.T) {
+func TestNewD2FromTable(t *testing.T) {
 	t.Parallel()
 
 	t.Run("nil data", func(t *testing.T) {
 		t.Parallel()
 
-		d := D2FromTableData(nil)
+		d := NewD2FromTable(nil)
 		if d == nil {
-			t.Fatal("D2FromTableData(nil) should return non-nil diagram")
+			t.Fatal("NewD2FromTable(nil) should return non-nil diagram")
 		}
 
 		got, err := d.Render()
@@ -89,11 +89,11 @@ func TestD2FromTableData(t *testing.T) {
 	t.Run("with rows", func(t *testing.T) {
 		t.Parallel()
 
-		data := output.NewTableData([]string{"Name", "Value"})
+		data := output.NewTable([]string{"Name", "Value"})
 		data.AddRow([]string{"Alpha", "100"})
 		data.AddRow([]string{"Beta", "200"})
 
-		d := D2FromTableData(data)
+		d := NewD2FromTable(data)
 
 		got, err := d.Render()
 		if err != nil {
@@ -107,15 +107,15 @@ func TestD2FromTableData(t *testing.T) {
 	})
 }
 
-func TestD2FromTree(t *testing.T) {
+func TestNewD2FromTree(t *testing.T) {
 	t.Parallel()
 
 	t.Run("nil root", func(t *testing.T) {
 		t.Parallel()
 
-		d := D2FromTree(nil)
+		d := NewD2FromTree(nil)
 		if d == nil {
-			t.Fatal("D2FromTree(nil) should return non-nil diagram")
+			t.Fatal("NewD2FromTree(nil) should return non-nil diagram")
 		}
 
 		got, err := d.Render()
@@ -136,7 +136,7 @@ func TestD2FromTree(t *testing.T) {
 		root.AddChild(output.NewTreeNode("child1", "Child 1"))
 		root.AddChild(output.NewTreeNode("child2", "Child 2"))
 
-		d := D2FromTree(root)
+		d := NewD2FromTree(root)
 
 		got, err := d.Render()
 		if err != nil {
@@ -158,7 +158,7 @@ func TestD2FromTree(t *testing.T) {
 		root.AddChild(output.NewTreeNode("child", "Child"))
 		root.Children[0].AddChild(output.NewTreeNode("grandchild", "Grandchild"))
 
-		d := D2FromTree(root)
+		d := NewD2FromTree(root)
 
 		got, err := d.Render()
 		if err != nil {
@@ -184,7 +184,7 @@ func TestD2FromTree(t *testing.T) {
 			},
 		}
 
-		d := D2FromTree(root)
+		d := NewD2FromTree(root)
 
 		got, err := d.Render()
 		if err != nil {

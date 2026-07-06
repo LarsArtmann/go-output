@@ -14,10 +14,10 @@ var (
 	_ output.TableRenderer = (*YAMLTableRenderer)(nil)
 )
 
-//nolint:gochecknoinits // Registers YAML TableData and Unknown marshalers plus format capabilities.
+//nolint:gochecknoinits // Registers YAML Table and Unknown marshalers plus format capabilities.
 func init() {
 	output.RegisterFormatShapes(output.FormatYAML, output.ShapeTable, output.ShapeTree, output.ShapeGraph)
-	output.RegisterTableDataRenderer(output.FormatYAML, renderYAMLTableData)
+	output.RegisterTableMarshaler(output.FormatYAML, renderYAMLTable)
 	output.RegisterUnknownRenderer(output.FormatYAML, renderYAMLUnknown)
 }
 
@@ -55,9 +55,9 @@ func UnmarshalYAML(data []byte, v any) error {
 	return nil
 }
 
-// YAMLTableRenderer renders TableData as a YAML sequence of mappings.
+// YAMLTableRenderer renders Table as a YAML sequence of mappings.
 type YAMLTableRenderer struct {
-	output.TableDataStore
+	output.TableStore
 }
 
 // NewYAMLTableRenderer creates a new YAMLTableRenderer.
@@ -73,6 +73,6 @@ func (r *YAMLTableRenderer) Render() (string, error) {
 	return renderTable(r.Data(), emptyYAML, "yaml", yaml.Marshal)
 }
 
-func renderYAMLTableData(w io.Writer, data *output.TableData, _ output.RenderOptions) error {
+func renderYAMLTable(w io.Writer, data *output.Table, _ output.RenderOptions) error {
 	return renderViaRenderer(w, data, NewYAMLTableRenderer(), "yaml")
 }

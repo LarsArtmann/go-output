@@ -113,15 +113,15 @@ func renderTSVFormat(projects []TestProject) string {
 	return buf.String()
 }
 
-func newProjectTableData(projects []TestProject) *output.TableData {
-	return &output.TableData{
+func newProjectTable(projects []TestProject) *output.Table {
+	return &output.Table{
 		Headers: []string{"Name", "Health", "Complexity"},
 		Rows:    formatProjectsToRows(projects),
 	}
 }
 
 func renderXMLFormat(projects []TestProject) string {
-	data, _ := markup.MarshalXMLFromTableData(newProjectTableData(projects))
+	data, _ := markup.MarshalXMLFromTable(newProjectTable(projects))
 
 	return string(data)
 }
@@ -196,10 +196,10 @@ func renderD2Format(projects []TestProject) string {
 	return out
 }
 
-func renderD2FromTableData(projects []TestProject) string {
-	data := newGraphTableData(projects)
+func renderNewD2FromTable(projects []TestProject) string {
+	data := newGraphTable(projects)
 
-	out, err := d2.D2FromTableData(data).Render()
+	out, err := d2.NewD2FromTable(data).Render()
 	if err != nil {
 		return ""
 	}
@@ -207,8 +207,8 @@ func renderD2FromTableData(projects []TestProject) string {
 	return out
 }
 
-func renderD2FromTree(projects []TestProject) string {
-	out, err := d2.D2FromTree(buildProjectTree(projects)).Render()
+func renderNewD2FromTree(projects []TestProject) string {
+	out, err := d2.NewD2FromTree(buildProjectTree(projects)).Render()
 	if err != nil {
 		return ""
 	}
@@ -216,8 +216,8 @@ func renderD2FromTree(projects []TestProject) string {
 	return out
 }
 
-func newGraphTableData(projects []TestProject) *output.TableData {
-	data := output.NewTableData([]string{"Name"})
+func newGraphTable(projects []TestProject) *output.Table {
+	data := output.NewTable([]string{"Name"})
 	for _, p := range projects {
 		data.AddRow([]string{p.Name})
 	}
@@ -226,7 +226,7 @@ func newGraphTableData(projects []TestProject) *output.TableData {
 }
 
 func renderDOTFormat(projects []TestProject) string {
-	out, err := graph.DOTFromTableData(newGraphTableData(projects)).Render()
+	out, err := graph.NewDOTFromTable(newGraphTable(projects)).Render()
 	if err != nil {
 		return ""
 	}
@@ -235,7 +235,7 @@ func renderDOTFormat(projects []TestProject) string {
 }
 
 func renderMermaidFormat(projects []TestProject) string {
-	out, err := graph.MermaidFromTableData(newGraphTableData(projects)).Render()
+	out, err := graph.NewMermaidFromTable(newGraphTable(projects)).Render()
 	if err != nil {
 		return ""
 	}
@@ -244,26 +244,26 @@ func renderMermaidFormat(projects []TestProject) string {
 }
 
 func renderJSONLFormat(projects []TestProject) string {
-	data := newGraphTableData(projects)
-	b, _ := serialization.MarshalJSONLFromTableData(data)
+	data := newGraphTable(projects)
+	b, _ := serialization.MarshalJSONLFromTable(data)
 
 	return string(b)
 }
 
 func renderAsciiDocFormat(projects []TestProject) string {
-	b, _ := markup.MarshalAsciiDocFromTableData(newProjectTableData(projects))
+	b, _ := markup.MarshalAsciiDocFromTable(newProjectTable(projects))
 
 	return string(b)
 }
 
 func renderTOMLFormat(projects []TestProject) string {
-	b, _ := serialization.MarshalTOMLFromTableData(newProjectTableData(projects))
+	b, _ := serialization.MarshalTOMLFromTable(newProjectTable(projects))
 
 	return string(b)
 }
 
 func renderPlantUMLFormat(projects []TestProject) string {
-	out, err := plantuml.PlantUMLFromTableData(newGraphTableData(projects)).Render()
+	out, err := plantuml.NewPlantUMLFromTable(newGraphTable(projects)).Render()
 	if err != nil {
 		return ""
 	}

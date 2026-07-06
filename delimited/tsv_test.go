@@ -141,19 +141,19 @@ func TestTSVWriterError(t *testing.T) {
 	}
 }
 
-func TestMarshalTSVFromTableData(t *testing.T) {
+func TestMarshalTSVFromTable(t *testing.T) {
 	t.Parallel()
 
 	t.Run("with headers and rows", func(t *testing.T) {
 		t.Parallel()
 
-		data := output.NewTableData([]string{"Name", "Value"})
+		data := output.NewTable([]string{"Name", "Value"})
 		data.AddRow([]string{"Alpha", "100"})
 		data.AddRow([]string{"Beta", "200"})
 
-		b, err := MarshalTSVFromTableData(data)
+		b, err := MarshalTSVFromTable(data)
 		if err != nil {
-			t.Fatalf("MarshalTSVFromTableData() error = %v", err)
+			t.Fatalf("MarshalTSVFromTable() error = %v", err)
 		}
 
 		result := string(b)
@@ -165,39 +165,39 @@ func TestMarshalTSVFromTableData(t *testing.T) {
 	t.Run("nil data returns nil", func(t *testing.T) {
 		t.Parallel()
 
-		b, err := MarshalTSVFromTableData(nil)
+		b, err := MarshalTSVFromTable(nil)
 		if err != nil {
-			t.Fatalf("MarshalTSVFromTableData(nil) error = %v", err)
+			t.Fatalf("MarshalTSVFromTable(nil) error = %v", err)
 		}
 
 		if b != nil {
-			t.Errorf("MarshalTSVFromTableData(nil) = %q, want nil", b)
+			t.Errorf("MarshalTSVFromTable(nil) = %q, want nil", b)
 		}
 	})
 
 	t.Run("empty data", func(t *testing.T) {
 		t.Parallel()
 
-		data := output.NewTableData(nil)
+		data := output.NewTable(nil)
 
-		b, err := MarshalTSVFromTableData(data)
+		b, err := MarshalTSVFromTable(data)
 		if err != nil {
-			t.Fatalf("MarshalTSVFromTableData() error = %v", err)
+			t.Fatalf("MarshalTSVFromTable() error = %v", err)
 		}
 
 		if len(b) != 0 {
-			t.Errorf("MarshalTSVFromTableData(empty) = %q, want empty", b)
+			t.Errorf("MarshalTSVFromTable(empty) = %q, want empty", b)
 		}
 	})
 
 	t.Run("headers only no rows", func(t *testing.T) {
 		t.Parallel()
 
-		data := output.NewTableData([]string{"Name"})
+		data := output.NewTable([]string{"Name"})
 
-		b, err := MarshalTSVFromTableData(data)
+		b, err := MarshalTSVFromTable(data)
 		if err != nil {
-			t.Fatalf("MarshalTSVFromTableData() error = %v", err)
+			t.Fatalf("MarshalTSVFromTable() error = %v", err)
 		}
 
 		result := string(b)
@@ -207,13 +207,13 @@ func TestMarshalTSVFromTableData(t *testing.T) {
 	t.Run("with footer row", func(t *testing.T) {
 		t.Parallel()
 
-		data := output.NewTableData([]string{"Name", "Count"})
+		data := output.NewTable([]string{"Name", "Count"})
 		data.AddRow([]string{"Alice", "10"})
 		data.Footer = []string{"Total", "10"}
 
-		b, err := MarshalTSVFromTableData(data)
+		b, err := MarshalTSVFromTable(data)
 		if err != nil {
-			t.Fatalf("MarshalTSVFromTableData() error = %v", err)
+			t.Fatalf("MarshalTSVFromTable() error = %v", err)
 		}
 
 		result := string(b)
@@ -226,10 +226,10 @@ func TestMarshalTSVFromTableData(t *testing.T) {
 	})
 }
 
-func TestTSVRenderTableData(t *testing.T) {
+func TestTSVRenderTable(t *testing.T) {
 	t.Parallel()
 
-	testRenderTableData(t, output.FormatTSV, "TSV")
+	testRenderTable(t, output.FormatTSV, "TSV")
 }
 
 func TestTSVWriter_WriteFooter(t *testing.T) {

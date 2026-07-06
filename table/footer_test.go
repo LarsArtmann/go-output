@@ -10,10 +10,10 @@ import (
 	"github.com/larsartmann/go-output/testhelpers"
 )
 
-func TestFromTableDataWithFooter(t *testing.T) {
+func TestFromTableWithFooter(t *testing.T) {
 	t.Parallel()
 
-	data := &testTableDataWithFooter{
+	data := &testTableWithFooter{
 		headers: []string{"Name", "Count"},
 		rows: [][]string{
 			{"Alice", "10"},
@@ -22,7 +22,7 @@ func TestFromTableDataWithFooter(t *testing.T) {
 		footer: []string{"Total", "30"},
 	}
 
-	tbl := FromTableData(data)
+	tbl := FromTable(data)
 
 	output, err := tbl.Render()
 	if err != nil {
@@ -35,16 +35,16 @@ func TestFromTableDataWithFooter(t *testing.T) {
 	testhelpers.AssertContains(t, output, "30", "should contain footer value")
 }
 
-func TestFromTableDataWithEmptyFooter(t *testing.T) {
+func TestFromTableWithEmptyFooter(t *testing.T) {
 	t.Parallel()
 
-	data := &testTableDataWithFooter{
+	data := &testTableWithFooter{
 		headers: []string{"Name"},
 		rows:    [][]string{{"Alice"}},
 		footer:  nil,
 	}
 
-	tbl := FromTableData(data)
+	tbl := FromTable(data)
 
 	output, err := tbl.Render()
 	if err != nil {
@@ -54,14 +54,14 @@ func TestFromTableDataWithEmptyFooter(t *testing.T) {
 	testhelpers.AssertContains(t, output, "Alice", "should contain row")
 }
 
-func TestFromTableDataWithRealTableData(t *testing.T) {
+func TestFromTableWithRealTable(t *testing.T) {
 	t.Parallel()
 
-	data := output.NewTableData([]string{"Item", "Qty"})
+	data := output.NewTable([]string{"Item", "Qty"})
 	data.AddRow([]string{"Apple", "5"})
 	data.Footer = []string{"Sum", "5"}
 
-	tbl := FromTableData(data)
+	tbl := FromTable(data)
 
 	output, err := tbl.Render()
 	if err != nil {
@@ -69,7 +69,7 @@ func TestFromTableDataWithRealTableData(t *testing.T) {
 	}
 
 	testhelpers.AssertContains(t, output, "Apple", "should contain data row")
-	testhelpers.AssertContains(t, output, "Sum", "should contain footer from output.TableData")
+	testhelpers.AssertContains(t, output, "Sum", "should contain footer from output.Table")
 }
 
 func TestTableSetFooter(t *testing.T) {

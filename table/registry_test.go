@@ -8,20 +8,20 @@ import (
 	"github.com/larsartmann/go-output/testhelpers"
 )
 
-func TestRenderStyledTableData(t *testing.T) {
+func TestRenderStyledTable(t *testing.T) {
 	t.Parallel()
 
 	t.Run("writes table output to writer", func(t *testing.T) {
 		t.Parallel()
 
-		data := output.NewTableData([]string{"Name"})
+		data := output.NewTable([]string{"Name"})
 		data.AddRow([]string{"Alpha"})
 
 		var buf bytes.Buffer
 
-		err := output.RenderTableData(data, output.FormatTable, output.RenderOptions{Writer: &buf})
+		err := output.RenderTable(data, output.FormatTable, output.RenderOptions{Writer: &buf})
 		if err != nil {
-			t.Fatalf("RenderTableData table: %v", err)
+			t.Fatalf("RenderTable table: %v", err)
 		}
 
 		if buf.Len() == 0 {
@@ -32,10 +32,10 @@ func TestRenderStyledTableData(t *testing.T) {
 	t.Run("propagates writer error", func(t *testing.T) {
 		t.Parallel()
 
-		data := output.NewTableData([]string{"Name"})
+		data := output.NewTable([]string{"Name"})
 		data.AddRow([]string{"Alpha"})
 
-		err := output.RenderTableData(
+		err := output.RenderTable(
 			data,
 			output.FormatTable,
 			output.RenderOptions{Writer: &testhelpers.ErrorWriter{}},

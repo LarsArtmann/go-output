@@ -6,12 +6,12 @@ import (
 	"github.com/larsartmann/go-output"
 )
 
-//nolint:gochecknoinits // Registers TSV TableData marshaler and format capabilities.
+//nolint:gochecknoinits // Registers TSV Table marshaler and format capabilities.
 func init() {
 	output.RegisterFormatShapes(output.FormatTSV, output.ShapeTable)
-	output.RegisterTableDataRenderer(output.FormatTSV,
-		func(w io.Writer, data *output.TableData, _ output.RenderOptions) error {
-			return renderDelimitedTableData(w, data, MarshalTSVFromTableData, "tsv")
+	output.RegisterTableMarshaler(output.FormatTSV,
+		func(w io.Writer, data *output.Table, _ output.RenderOptions) error {
+			return renderDelimitedTable(w, data, MarshalTSVFromTable, "tsv")
 		})
 }
 
@@ -57,9 +57,9 @@ func (t *TSVWriter) Error() error {
 	return t.writer.Error()
 }
 
-// MarshalTSVFromTableData marshals TableData as TSV with a header row.
-func MarshalTSVFromTableData(data *output.TableData) ([]byte, error) {
-	return marshalFromTableData(data, "tsv", func(w io.Writer) tableDataWriter {
+// MarshalTSVFromTable marshals Table as TSV with a header row.
+func MarshalTSVFromTable(data *output.Table) ([]byte, error) {
+	return marshalFromTable(data, "tsv", func(w io.Writer) tableDataWriter {
 		return NewTSVWriter(w)
 	})
 }

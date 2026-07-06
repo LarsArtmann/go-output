@@ -8,8 +8,8 @@ import (
 )
 
 //nolint:testableexamples // Demonstration example, output is dynamic
-func ExampleDOTFromTableData() {
-	data := &output.TableData{
+func ExampleNewDOTFromTable() {
+	data := &output.Table{
 		Headers: []string{"Name", "Role"},
 		Rows: [][]string{
 			{"Alice", "Engineer"},
@@ -17,7 +17,7 @@ func ExampleDOTFromTableData() {
 		},
 	}
 
-	renderer := graph.DOTFromTableData(data)
+	renderer := graph.NewDOTFromTable(data)
 
 	result, err := renderer.Render()
 	if err != nil {
@@ -30,8 +30,8 @@ func ExampleDOTFromTableData() {
 }
 
 //nolint:testableexamples // Demonstration example, output is dynamic
-func ExampleMermaidFromTableData() {
-	data := &output.TableData{
+func ExampleNewMermaidFromTable() {
+	data := &output.Table{
 		Headers: []string{"Step", "Action"},
 		Rows: [][]string{
 			{"1", "Start"},
@@ -40,7 +40,7 @@ func ExampleMermaidFromTableData() {
 		},
 	}
 
-	renderer := graph.MermaidFromTableData(data)
+	renderer := graph.NewMermaidFromTable(data)
 
 	result, err := renderer.Render()
 	if err != nil {
@@ -53,7 +53,7 @@ func ExampleMermaidFromTableData() {
 }
 
 //nolint:testableexamples // Demonstration example, output is dynamic
-func ExampleDOTFromTree() {
+func ExampleNewDOTFromTree() {
 	root := &output.TreeNode{
 		Label: output.NewBrandedID[output.TreeNodeLabelBrand]("Root"),
 		Children: []*output.TreeNode{
@@ -66,7 +66,7 @@ func ExampleDOTFromTree() {
 		},
 	}
 
-	renderer := graph.DOTFromTree(root)
+	renderer := graph.NewDOTFromTree(root)
 
 	result, err := renderer.Render()
 	if err != nil {

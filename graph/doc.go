@@ -2,7 +2,7 @@
 // graph-structured data.
 //
 // Both DOTRenderer and MermaidRenderer implement the output.GraphRenderer
-// interface and can be populated from output.TableData (via SetNodesFromTableData)
+// interface and can be populated from output.Table (via SetNodesFromTable)
 // or output.TreeNode (via AddTreeNodes helper).
 //
 // # Branded IDs

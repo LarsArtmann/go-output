@@ -133,13 +133,13 @@ func TestTOMLTableRenderer(t *testing.T) {
 	})
 }
 
-func TestMarshalTOMLFromTableData(t *testing.T) {
+func TestMarshalTOMLFromTable(t *testing.T) {
 	t.Parallel()
 
 	t.Run("nil data", func(t *testing.T) {
 		t.Parallel()
 
-		b, err := MarshalTOMLFromTableData(nil)
+		b, err := MarshalTOMLFromTable(nil)
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -152,11 +152,11 @@ func TestMarshalTOMLFromTableData(t *testing.T) {
 	t.Run("with rows", func(t *testing.T) {
 		t.Parallel()
 
-		data := output.NewTableData([]string{"Name", "Score"})
+		data := output.NewTable([]string{"Name", "Score"})
 		data.AddRow([]string{"Alpha", "90"})
 		data.AddRow([]string{"Beta", "75"})
 
-		b, err := MarshalTOMLFromTableData(data)
+		b, err := MarshalTOMLFromTable(data)
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}

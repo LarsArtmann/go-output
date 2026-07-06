@@ -190,28 +190,28 @@ func TestHeadersOnlyNoRows(t *testing.T) {
 	)
 }
 
-type testTableData struct {
+type testTable struct {
 	headers []string
 	rows    [][]string
 }
 
-func (d *testTableData) GetHeaders() []string { return d.headers }
-func (d *testTableData) GetRows() [][]string  { return d.rows }
+func (d *testTable) GetHeaders() []string { return d.headers }
+func (d *testTable) GetRows() [][]string  { return d.rows }
 
-type testTableDataWithFooter struct {
+type testTableWithFooter struct {
 	headers []string
 	rows    [][]string
 	footer  []string
 }
 
-func (d *testTableDataWithFooter) GetHeaders() []string { return d.headers }
-func (d *testTableDataWithFooter) GetRows() [][]string  { return d.rows }
-func (d *testTableDataWithFooter) GetFooter() []string  { return d.footer }
+func (d *testTableWithFooter) GetHeaders() []string { return d.headers }
+func (d *testTableWithFooter) GetRows() [][]string  { return d.rows }
+func (d *testTableWithFooter) GetFooter() []string  { return d.footer }
 
-func TestFromTableData(t *testing.T) {
+func TestFromTable(t *testing.T) {
 	t.Parallel()
 
-	data := &testTableData{
+	data := &testTable{
 		headers: []string{"Name", "Status"},
 		rows: [][]string{
 			{"Project A", "Active"},
@@ -219,9 +219,9 @@ func TestFromTableData(t *testing.T) {
 		},
 	}
 
-	tbl := FromTableData(data)
+	tbl := FromTable(data)
 	if tbl == nil {
-		t.Fatal("FromTableData() returned nil")
+		t.Fatal("FromTable() returned nil")
 	}
 
 	output, err := tbl.Render()
@@ -235,12 +235,12 @@ func TestFromTableData(t *testing.T) {
 	testhelpers.AssertContains(t, output, "Active", "should contain row 'Active'")
 }
 
-func TestFromTableDataNil(t *testing.T) {
+func TestFromTableNil(t *testing.T) {
 	t.Parallel()
 
-	tbl := FromTableData(nil)
+	tbl := FromTable(nil)
 	if tbl == nil {
-		t.Fatal("FromTableData(nil) should not return nil")
+		t.Fatal("FromTable(nil) should not return nil")
 	}
 
 	output, err := tbl.Render()
@@ -249,19 +249,19 @@ func TestFromTableDataNil(t *testing.T) {
 	}
 
 	if output != "" {
-		t.Errorf("FromTableData(nil) should render empty, got %q", output)
+		t.Errorf("FromTable(nil) should render empty, got %q", output)
 	}
 }
 
-func TestFromTableDataEmpty(t *testing.T) {
+func TestFromTableEmpty(t *testing.T) {
 	t.Parallel()
 
-	data := &testTableData{
+	data := &testTable{
 		headers: []string{},
 		rows:    nil,
 	}
 
-	tbl := FromTableData(data)
+	tbl := FromTable(data)
 
 	output, err := tbl.Render()
 	if err != nil {
@@ -269,6 +269,6 @@ func TestFromTableDataEmpty(t *testing.T) {
 	}
 
 	if output != "" {
-		t.Errorf("FromTableData with empty data should render empty, got %q", output)
+		t.Errorf("FromTable with empty data should render empty, got %q", output)
 	}
 }

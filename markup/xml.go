@@ -10,10 +10,10 @@ import (
 	"github.com/larsartmann/go-output/escape"
 )
 
-//nolint:gochecknoinits // Registers XML TableData marshaler and format capabilities.
+//nolint:gochecknoinits // Registers XML Table marshaler and format capabilities.
 func init() {
 	output.RegisterFormatShapes(output.FormatXML, output.ShapeTable)
-	output.RegisterTableDataRenderer(output.FormatXML, renderXMLTableData)
+	output.RegisterTableMarshaler(output.FormatXML, renderXMLTable)
 }
 
 // MarshalXML encodes v to XML.
@@ -116,8 +116,8 @@ func (x *XMLWriter) WriteFooter() error {
 	return nil
 }
 
-// MarshalXMLFromTableData marshals TableData to XML.
-func MarshalXMLFromTableData(data *output.TableData) ([]byte, error) {
+// MarshalXMLFromTable marshals Table to XML.
+func MarshalXMLFromTable(data *output.Table) ([]byte, error) {
 	if data == nil {
 		return []byte("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<table/>\n"), nil
 	}
@@ -161,6 +161,6 @@ func MarshalXMLFromTableData(data *output.TableData) ([]byte, error) {
 	return []byte(b.String()), nil
 }
 
-func renderXMLTableData(w io.Writer, data *output.TableData, _ output.RenderOptions) error {
-	return renderMarshalAndWrite(w, data, "xml", MarshalXMLFromTableData)
+func renderXMLTable(w io.Writer, data *output.Table, _ output.RenderOptions) error {
+	return renderMarshalAndWrite(w, data, "xml", MarshalXMLFromTable)
 }

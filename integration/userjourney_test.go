@@ -83,7 +83,7 @@ func TestRenderDataAsJSON(t *testing.T) {
 	t.Parallel()
 
 	// Given: User has project data
-	data := output.NewTableData([]string{"Name", "Health"})
+	data := output.NewTable([]string{"Name", "Health"})
 	data.AddRow([]string{"Alpha", "90%"})
 
 	// When: I render it as JSON
@@ -140,7 +140,7 @@ func TestHandleEdgeCases(t *testing.T) {
 	t.Run("empty data renders JSON without panic", func(t *testing.T) {
 		t.Parallel()
 
-		data := output.NewTableData([]string{})
+		data := output.NewTable([]string{})
 		if _, err := output.MarshalJSONIndent(data, "", ""); err != nil {
 			t.Errorf("MarshalJSONIndent on empty data should not error: %v", err)
 		}

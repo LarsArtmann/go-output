@@ -64,14 +64,14 @@ func TestASCIITreeRendererWithMetadata(t *testing.T) {
 	assertContains(t, out, "key: value", "Output should contain metadata")
 }
 
-func TestTreeRendererFromTableData(t *testing.T) {
+func TestTreeRendererFromTable(t *testing.T) {
 	t.Parallel()
 
-	data := output.NewTableData([]string{"Name", "Age", "City"})
+	data := output.NewTable([]string{"Name", "Age", "City"})
 	data.AddRow([]string{"Alice", "30", "NYC"})
 	data.AddRow([]string{"Bob", "25", "LA"})
 
-	renderer := TreeRendererFromTableData(data)
+	renderer := TreeRendererFromTable(data)
 
 	out, err := renderer.Render()
 	if err != nil {

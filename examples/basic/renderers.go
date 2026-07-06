@@ -99,9 +99,9 @@ func renderDelimited(w delimited.Writer, projects []Project) {
 }
 
 func renderXML(projects []Project) {
-	data := projectsToTableData(projects)
+	data := projectsToTable(projects)
 
-	xmlData, err := markup.MarshalXMLFromTableData(data)
+	xmlData, err := markup.MarshalXMLFromTable(data)
 	if err != nil {
 		shared.HandleError(err)
 	}
@@ -219,9 +219,9 @@ func renderDOT(projects []Project) {
 }
 
 func renderJSONL(projects []Project) {
-	data := projectsToTableData(projects)
+	data := projectsToTable(projects)
 
-	b, err := serialization.MarshalJSONLFromTableData(data)
+	b, err := serialization.MarshalJSONLFromTable(data)
 	if err != nil {
 		shared.HandleError(err)
 	}
@@ -230,9 +230,9 @@ func renderJSONL(projects []Project) {
 }
 
 func renderAsciiDoc(projects []Project) {
-	data := projectsToTableData(projects)
+	data := projectsToTable(projects)
 
-	b, err := markup.MarshalAsciiDocFromTableData(data)
+	b, err := markup.MarshalAsciiDocFromTable(data)
 	if err != nil {
 		shared.HandleError(err)
 	}
@@ -241,9 +241,9 @@ func renderAsciiDoc(projects []Project) {
 }
 
 func renderTOML(projects []Project) {
-	data := projectsToTableData(projects)
+	data := projectsToTable(projects)
 
-	b, err := serialization.MarshalTOMLFromTableData(data)
+	b, err := serialization.MarshalTOMLFromTable(data)
 	if err != nil {
 		shared.HandleError(err)
 	}

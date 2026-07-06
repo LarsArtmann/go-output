@@ -166,12 +166,12 @@ func TestD2FormatContent(t *testing.T) {
 // testRendererNotEmpty tests that a renderer produces non-empty output.
 func testRendererNotEmpty[R output.Renderer](
 	t *testing.T,
-	createRenderer func(*output.TableData) R,
+	createRenderer func(*output.Table) R,
 	name string,
 ) {
 	t.Helper()
 
-	data := output.NewTableData([]string{"Name", "Health"})
+	data := output.NewTable([]string{"Name", "Health"})
 	data.AddRow([]string{"Alpha", "90%"})
 
 	r := createRenderer(data)
@@ -189,11 +189,11 @@ func testRendererNotEmpty[R output.Renderer](
 func TestMermaidFormatContent(t *testing.T) {
 	t.Parallel()
 
-	testRendererNotEmpty(t, graph.MermaidFromTableData, "Mermaid")
+	testRendererNotEmpty(t, graph.NewMermaidFromTable, "Mermaid")
 }
 
 func TestDOTFormatContent(t *testing.T) {
 	t.Parallel()
 
-	testRendererNotEmpty(t, graph.DOTFromTableData, "DOT")
+	testRendererNotEmpty(t, graph.NewDOTFromTable, "DOT")
 }

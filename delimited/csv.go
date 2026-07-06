@@ -8,10 +8,10 @@ import (
 	"github.com/larsartmann/go-output"
 )
 
-func renderDelimitedTableData(
+func renderDelimitedTable(
 	w io.Writer,
-	data *output.TableData,
-	marshalFunc func(*output.TableData) ([]byte, error),
+	data *output.Table,
+	marshalFunc func(*output.Table) ([]byte, error),
 	formatName string,
 ) error {
 	b, err := marshalFunc(data)
@@ -27,12 +27,12 @@ func renderDelimitedTableData(
 	return nil
 }
 
-//nolint:gochecknoinits // Registers CSV TableData marshaler and format capabilities.
+//nolint:gochecknoinits // Registers CSV Table marshaler and format capabilities.
 func init() {
 	output.RegisterFormatShapes(output.FormatCSV, output.ShapeTable)
-	output.RegisterTableDataRenderer(output.FormatCSV,
-		func(w io.Writer, data *output.TableData, _ output.RenderOptions) error {
-			return renderDelimitedTableData(w, data, MarshalCSVFromTableData, "csv")
+	output.RegisterTableMarshaler(output.FormatCSV,
+		func(w io.Writer, data *output.Table, _ output.RenderOptions) error {
+			return renderDelimitedTable(w, data, MarshalCSVFromTable, "csv")
 		})
 }
 
@@ -90,13 +90,13 @@ type Writer interface {
 }
 
 // tableDataWriter is the unexported alias used internally so the
-// marshalFromTableData generic helper doesn't depend on the public Writer
+// marshalFromTable generic helper doesn't depend on the public Writer
 // type. tableDataWriter == delimited.Writer structurally; keep them in sync.
 type tableDataWriter = Writer
 
-// marshalFromTableData marshals TableData using any delimited writer (CSV or TSV).
-func marshalFromTableData(
-	data *output.TableData,
+// marshalFromTable marshals Table using any delimited writer (CSV or TSV).
+func marshalFromTable(
+	data *output.Table,
 	name string,
 	newWriter func(io.Writer) tableDataWriter,
 ) ([]byte, error) {
@@ -135,9 +135,9 @@ func marshalFromTableData(
 	return []byte(builder.String()), nil
 }
 
-// MarshalCSVFromTableData marshals TableData as CSV with a header row.
-func MarshalCSVFromTableData(data *output.TableData) ([]byte, error) {
-	return marshalFromTableData(data, "csv", func(w io.Writer) tableDataWriter {
+// MarshalCSVFromTable marshals Table as CSV with a header row.
+func MarshalCSVFromTable(data *output.Table) ([]byte, error) {
+	return marshalFromTable(data, "csv", func(w io.Writer) tableDataWriter {
 		return NewCSVWriter(w)
 	})
 }

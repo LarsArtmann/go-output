@@ -12,17 +12,17 @@ import (
 
 var errMarshalFailed = errors.New("marshal failed")
 
-func TestRenderDelimitedTableData(t *testing.T) {
+func TestRenderDelimitedTable(t *testing.T) {
 	t.Parallel()
 
-	data := output.NewTableData([]string{"Name", "Age"})
+	data := output.NewTable([]string{"Name", "Age"})
 	data.AddRow([]string{"Alice", "30"})
 
 	var buf bytes.Buffer
 
-	err := renderDelimitedTableData(&buf, data, MarshalCSVFromTableData, "csv")
+	err := renderDelimitedTable(&buf, data, MarshalCSVFromTable, "csv")
 	if err != nil {
-		t.Fatalf("renderDelimitedTableData csv: %v", err)
+		t.Fatalf("renderDelimitedTable csv: %v", err)
 	}
 
 	if !strings.Contains(buf.String(), "Alice") {
@@ -30,14 +30,14 @@ func TestRenderDelimitedTableData(t *testing.T) {
 	}
 }
 
-func TestRenderDelimitedTableData_NilData(t *testing.T) {
+func TestRenderDelimitedTable_NilData(t *testing.T) {
 	t.Parallel()
 
 	var buf bytes.Buffer
 
-	err := renderDelimitedTableData(&buf, nil, MarshalCSVFromTableData, "csv")
+	err := renderDelimitedTable(&buf, nil, MarshalCSVFromTable, "csv")
 	if err != nil {
-		t.Fatalf("renderDelimitedTableData nil: %v", err)
+		t.Fatalf("renderDelimitedTable nil: %v", err)
 	}
 
 	if buf.String() != "" {
@@ -45,49 +45,49 @@ func TestRenderDelimitedTableData_NilData(t *testing.T) {
 	}
 }
 
-func TestRenderDelimitedTableData_WriterError(t *testing.T) {
+func TestRenderDelimitedTable_WriterError(t *testing.T) {
 	t.Parallel()
 
-	data := output.NewTableData([]string{"Name"})
+	data := output.NewTable([]string{"Name"})
 	data.AddRow([]string{"Alice"})
 
-	err := renderDelimitedTableData(&testhelpers.ErrorWriter{}, data, MarshalCSVFromTableData, "csv")
+	err := renderDelimitedTable(&testhelpers.ErrorWriter{}, data, MarshalCSVFromTable, "csv")
 	if err == nil {
 		t.Fatal("expected error from failWriter")
 	}
 }
 
-func TestRenderDelimitedTableData_MarshalError(t *testing.T) {
+func TestRenderDelimitedTable_MarshalError(t *testing.T) {
 	t.Parallel()
 
-	failMarshal := func(_ *output.TableData) ([]byte, error) {
+	failMarshal := func(_ *output.Table) ([]byte, error) {
 		return nil, errMarshalFailed
 	}
 
-	data := output.NewTableData([]string{"Name"})
+	data := output.NewTable([]string{"Name"})
 
-	err := renderDelimitedTableData(&bytes.Buffer{}, data, failMarshal, "csv")
+	err := renderDelimitedTable(&bytes.Buffer{}, data, failMarshal, "csv")
 	if err == nil {
 		t.Fatal("expected error from failMarshal")
 	}
 }
 
-func TestMarshalDelimitedFromTableData_NoHeaders(t *testing.T) {
+func TestMarshalDelimitedFromTable_NoHeaders(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
 		name        string
-		marshalFunc func(*output.TableData) ([]byte, error)
+		marshalFunc func(*output.Table) ([]byte, error)
 	}{
-		{"CSV", MarshalCSVFromTableData},
-		{"TSV", MarshalTSVFromTableData},
+		{"CSV", MarshalCSVFromTable},
+		{"TSV", MarshalTSVFromTable},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			data := output.NewTableData(nil)
+			data := output.NewTable(nil)
 			data.AddRow([]string{"Alice", "30"})
 
 			b, err := tt.marshalFunc(data)

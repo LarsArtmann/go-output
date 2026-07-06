@@ -5,10 +5,10 @@ import (
 	"testing"
 )
 
-func TestTableDataStore_SetHeaders(t *testing.T) {
+func TestTableStore_SetHeaders(t *testing.T) {
 	t.Parallel()
 
-	var base TableDataStore
+	var base TableStore
 	base.SetHeaders([]string{"A", "B"})
 
 	data := base.Data()
@@ -21,10 +21,10 @@ func TestTableDataStore_SetHeaders(t *testing.T) {
 	}
 }
 
-func TestTableDataStore_AddRow(t *testing.T) {
+func TestTableStore_AddRow(t *testing.T) {
 	t.Parallel()
 
-	var base TableDataStore
+	var base TableStore
 	base.AddRow([]string{"1", "2"})
 
 	data := base.Data()
@@ -37,12 +37,12 @@ func TestTableDataStore_AddRow(t *testing.T) {
 	}
 }
 
-func TestTableDataStore_SetData(t *testing.T) {
+func TestTableStore_SetData(t *testing.T) {
 	t.Parallel()
 
-	var base TableDataStore
+	var base TableStore
 
-	d := &TableData{Headers: []string{"X"}}
+	d := &Table{Headers: []string{"X"}}
 	base.SetData(d)
 
 	if base.Data() != d {
@@ -50,10 +50,10 @@ func TestTableDataStore_SetData(t *testing.T) {
 	}
 }
 
-func TestTableDataStore_SetFooter(t *testing.T) {
+func TestTableStore_SetFooter(t *testing.T) {
 	t.Parallel()
 
-	var base TableDataStore
+	var base TableStore
 	base.SetFooter([]string{"Total", "10"})
 
 	if !base.HasFooter() {
@@ -66,19 +66,19 @@ func TestTableDataStore_SetFooter(t *testing.T) {
 	}
 }
 
-func TestTableDataStore_HasFooterNil(t *testing.T) {
+func TestTableStore_HasFooterNil(t *testing.T) {
 	t.Parallel()
 
-	var base TableDataStore
+	var base TableStore
 	if base.HasFooter() {
 		t.Error("HasFooter() should return false when data is nil")
 	}
 }
 
-func TestTableDataStore_DataNil(t *testing.T) {
+func TestTableStore_DataNil(t *testing.T) {
 	t.Parallel()
 
-	var base TableDataStore
+	var base TableStore
 	if base.Data() != nil {
 		t.Error("Data() should return nil when not initialized")
 	}

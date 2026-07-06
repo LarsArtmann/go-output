@@ -16,15 +16,15 @@ import (
 	"github.com/larsartmann/go-output/testhelpers"
 )
 
-// TestRoundTripXML verifies TableData → XML → parse → verify.
+// TestRoundTripXML verifies Table → XML → parse → verify.
 func TestRoundTripXML(t *testing.T) {
 	t.Parallel()
 
 	data := roundTripData()
 
-	xmlBytes, err := markup.MarshalXMLFromTableData(data)
+	xmlBytes, err := markup.MarshalXMLFromTable(data)
 	if err != nil {
-		t.Fatalf("MarshalXMLFromTableData: %v", err)
+		t.Fatalf("MarshalXMLFromTable: %v", err)
 	}
 
 	type xmlColumn struct {
@@ -70,7 +70,7 @@ func TestRoundTripXML(t *testing.T) {
 	}
 }
 
-// TestRoundTripHTML verifies TableData → HTML → verify structure.
+// TestRoundTripHTML verifies Table → HTML → verify structure.
 func TestRoundTripHTML(t *testing.T) {
 	t.Parallel()
 
@@ -91,13 +91,13 @@ func TestRoundTripHTML(t *testing.T) {
 	testhelpers.AssertContains(t, out, "</table>", "HTML should close table tag")
 }
 
-// TestRoundTripMarkdown verifies TableData → Markdown → verify structure.
+// TestRoundTripMarkdown verifies Table → Markdown → verify structure.
 func TestRoundTripMarkdown(t *testing.T) {
 	t.Parallel()
 
 	data := roundTripData()
 
-	md := markdown.NewMarkdownTableFromData(data)
+	md := markdown.NewMarkdownTableFromTable(data)
 
 	out, err := md.Render()
 	if err != nil {
@@ -110,13 +110,13 @@ func TestRoundTripMarkdown(t *testing.T) {
 	testhelpers.AssertContains(t, out, "Bob", "Markdown should contain Bob row")
 }
 
-// TestRoundTripTable verifies TableData → lipgloss Table → verify content.
+// TestRoundTripTable verifies Table → lipgloss Table → verify content.
 func TestRoundTripTable(t *testing.T) {
 	t.Parallel()
 
 	data := roundTripData()
 
-	tbl := table.FromTableData(data, table.WithColorMode(output.ColorModeNever))
+	tbl := table.FromTable(data, table.WithColorMode(output.ColorModeNever))
 
 	out, err := tbl.Render()
 	if err != nil {
@@ -128,7 +128,7 @@ func TestRoundTripTable(t *testing.T) {
 	testhelpers.AssertContains(t, out, "Bob", "Table should contain Bob")
 }
 
-// TestRoundTripTree verifies TableData → Tree → verify non-empty output.
+// TestRoundTripTree verifies Table → Tree → verify non-empty output.
 func TestRoundTripTree(t *testing.T) {
 	t.Parallel()
 
@@ -136,9 +136,9 @@ func TestRoundTripTree(t *testing.T) {
 
 	var buf bytes.Buffer
 
-	err := output.RenderTableData(data, output.FormatTree, output.RenderOptions{Writer: &buf})
+	err := output.RenderTable(data, output.FormatTree, output.RenderOptions{Writer: &buf})
 	if err != nil {
-		t.Fatalf("RenderTableData Tree: %v", err)
+		t.Fatalf("RenderTable Tree: %v", err)
 	}
 
 	if buf.String() == "" {
@@ -146,15 +146,15 @@ func TestRoundTripTree(t *testing.T) {
 	}
 }
 
-// TestRoundTripAsciiDoc verifies TableData → AsciiDoc → verify structure.
+// TestRoundTripAsciiDoc verifies Table → AsciiDoc → verify structure.
 func TestRoundTripAsciiDoc(t *testing.T) {
 	t.Parallel()
 
 	data := roundTripData()
 
-	b, err := markup.MarshalAsciiDocFromTableData(data)
+	b, err := markup.MarshalAsciiDocFromTable(data)
 	if err != nil {
-		t.Fatalf("MarshalAsciiDocFromTableData: %v", err)
+		t.Fatalf("MarshalAsciiDocFromTable: %v", err)
 	}
 
 	result := string(b)
@@ -163,13 +163,13 @@ func TestRoundTripAsciiDoc(t *testing.T) {
 	testhelpers.AssertContains(t, result, "Alice", "AsciiDoc should contain Alice")
 }
 
-// TestRoundTripD2 verifies TableData → D2 → verify structure.
+// TestRoundTripD2 verifies Table → D2 → verify structure.
 func TestRoundTripD2(t *testing.T) {
 	t.Parallel()
 
 	data := roundTripData()
 
-	renderer := d2.D2FromTableData(data)
+	renderer := d2.NewD2FromTable(data)
 
 	out, err := renderer.Render()
 	if err != nil {
@@ -180,13 +180,13 @@ func TestRoundTripD2(t *testing.T) {
 	testhelpers.AssertContains(t, out, "Bob", "D2 should contain Bob node")
 }
 
-// TestRoundTripMermaid verifies TableData → Mermaid → verify structure.
+// TestRoundTripMermaid verifies Table → Mermaid → verify structure.
 func TestRoundTripMermaid(t *testing.T) {
 	t.Parallel()
 
 	data := roundTripData()
 
-	renderer := graph.MermaidFromTableData(data)
+	renderer := graph.NewMermaidFromTable(data)
 
 	out, err := renderer.Render()
 	if err != nil {
@@ -197,13 +197,13 @@ func TestRoundTripMermaid(t *testing.T) {
 	testhelpers.AssertContains(t, out, "Alice", "Mermaid should contain Alice node")
 }
 
-// TestRoundTripDOT verifies TableData → DOT → verify structure.
+// TestRoundTripDOT verifies Table → DOT → verify structure.
 func TestRoundTripDOT(t *testing.T) {
 	t.Parallel()
 
 	data := roundTripData()
 
-	renderer := graph.DOTFromTableData(data)
+	renderer := graph.NewDOTFromTable(data)
 
 	out, err := renderer.Render()
 	if err != nil {
@@ -214,13 +214,13 @@ func TestRoundTripDOT(t *testing.T) {
 	testhelpers.AssertContains(t, out, "Alice", "DOT should contain Alice node")
 }
 
-// TestRoundTripPlantUML verifies TableData → PlantUML → verify structure.
+// TestRoundTripPlantUML verifies Table → PlantUML → verify structure.
 func TestRoundTripPlantUML(t *testing.T) {
 	t.Parallel()
 
 	data := roundTripData()
 
-	renderer := plantuml.PlantUMLFromTableData(data)
+	renderer := plantuml.NewPlantUMLFromTable(data)
 
 	out, err := renderer.Render()
 	if err != nil {
@@ -236,7 +236,7 @@ func TestRoundTripPlantUML(t *testing.T) {
 func TestRoundTripFooter(t *testing.T) {
 	t.Parallel()
 
-	data := output.NewTableData([]string{"Item", "Qty"})
+	data := output.NewTable([]string{"Item", "Qty"})
 	data.AddRow([]string{"Apple", "5"})
 	data.AddRow([]string{"Banana", "3"})
 	data.Footer = []string{"Total", "8"}
@@ -246,9 +246,9 @@ func TestRoundTripFooter(t *testing.T) {
 
 		var buf bytes.Buffer
 
-		err := output.RenderTableData(data, output.FormatCSV, output.RenderOptions{Writer: &buf})
+		err := output.RenderTable(data, output.FormatCSV, output.RenderOptions{Writer: &buf})
 		if err != nil {
-			t.Fatalf("RenderTableData CSV: %v", err)
+			t.Fatalf("RenderTable CSV: %v", err)
 		}
 
 		reader := csv.NewReader(&buf)
@@ -272,9 +272,9 @@ func TestRoundTripFooter(t *testing.T) {
 
 		var buf bytes.Buffer
 
-		err := output.RenderTableData(data, output.FormatTSV, output.RenderOptions{Writer: &buf})
+		err := output.RenderTable(data, output.FormatTSV, output.RenderOptions{Writer: &buf})
 		if err != nil {
-			t.Fatalf("RenderTableData TSV: %v", err)
+			t.Fatalf("RenderTable TSV: %v", err)
 		}
 
 		reader := csv.NewReader(&buf)

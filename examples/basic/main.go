@@ -106,9 +106,9 @@ func projectToRow(p Project) []string {
 	}
 }
 
-// projectsToTableData creates TableData from projects.
-func projectsToTableData(projects []Project) *output.TableData {
-	data := output.NewTableData(projectHeaders)
+// projectsToTable creates Table from projects.
+func projectsToTable(projects []Project) *output.Table {
+	data := output.NewTable(projectHeaders)
 	for _, p := range projects {
 		data.AddRow(projectToRow(p))
 	}

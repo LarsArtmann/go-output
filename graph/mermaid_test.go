@@ -47,15 +47,15 @@ func TestMermaidRendererWithDiamond(t *testing.T) {
 	assertContains(t, out, "decision{Decision}", "Diamond shape should use {} syntax")
 }
 
-func TestMermaidRendererFromTableData(t *testing.T) {
+func TestMermaidRendererFromTable(t *testing.T) {
 	t.Parallel()
 
-	data := output.NewTableData([]string{"Step", "Description"})
+	data := output.NewTable([]string{"Step", "Description"})
 	data.AddRow([]string{"Start", "Begin process"})
 	data.AddRow([]string{"Step 1", "Do something"})
 	data.AddRow([]string{"End", "Finish"})
 
-	renderer := MermaidFromTableData(data)
+	renderer := NewMermaidFromTable(data)
 
 	out, err := renderer.Render()
 	if err != nil {
@@ -67,14 +67,14 @@ func TestMermaidRendererFromTableData(t *testing.T) {
 	assertContains(t, out, "End", "Output should contain 'End'")
 }
 
-func TestMermaidFromTree(t *testing.T) {
+func TestNewMermaidFromTree(t *testing.T) {
 	t.Parallel()
 
 	root := output.NewTreeNode("root", "Root")
 	root.AddChild(output.NewTreeNode("child1", "Child 1"))
 	root.AddChild(output.NewTreeNode("child2", "Child 2"))
 
-	renderer := MermaidFromTree(root)
+	renderer := NewMermaidFromTree(root)
 
 	out, err := renderer.Render()
 	if err != nil {
@@ -191,7 +191,7 @@ func TestMermaidRendererWithEdgeLabel(t *testing.T) {
 func TestMermaidFromTreeNilRoot(t *testing.T) {
 	t.Parallel()
 
-	renderer := MermaidFromTree(nil)
+	renderer := NewMermaidFromTree(nil)
 
 	out, err := renderer.Render()
 	if err != nil {
@@ -201,12 +201,12 @@ func TestMermaidFromTreeNilRoot(t *testing.T) {
 	assertContains(t, out, "flowchart TD", "Nil root should still produce valid flowchart")
 }
 
-func TestMermaidFromTableDataNil(t *testing.T) {
+func TestNewMermaidFromTableNil(t *testing.T) {
 	t.Parallel()
 
-	renderer := MermaidFromTableData(nil)
+	renderer := NewMermaidFromTable(nil)
 	if renderer == nil {
-		t.Fatal("MermaidFromTableData(nil) should return non-nil renderer")
+		t.Fatal("NewMermaidFromTable(nil) should return non-nil renderer")
 	}
 }
 
@@ -272,7 +272,7 @@ func TestMermaidFromTreeWithEmptyID(t *testing.T) {
 	t.Parallel()
 
 	root := output.NewTreeNode("", "RootLabel")
-	renderer := MermaidFromTree(root)
+	renderer := NewMermaidFromTree(root)
 
 	out, err := renderer.Render()
 	if err != nil {

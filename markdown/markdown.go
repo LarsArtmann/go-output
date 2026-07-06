@@ -1,7 +1,7 @@
-// Package markdown renders TableData as Markdown tables.
+// Package markdown renders Table as Markdown tables.
 //
 // It is an optional format renderer: import it to activate Markdown output
-// through output.RenderTableData, or use NewMarkdownTable directly.
+// through output.RenderTable, or use NewMarkdownTable directly.
 //
 //	import "github.com/larsartmann/go-output/markdown"
 //
@@ -62,8 +62,8 @@ func NewMarkdownTable() *MarkdownTable {
 	}
 }
 
-// NewMarkdownTableFromData creates a MarkdownTable populated from TableData.
-func NewMarkdownTableFromData(data *output.TableData) *MarkdownTable {
+// NewMarkdownTableFromTable creates a MarkdownTable populated from Table.
+func NewMarkdownTableFromTable(data *output.Table) *MarkdownTable {
 	m := NewMarkdownTable()
 	m.SetHeaders(data.Headers)
 

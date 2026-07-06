@@ -42,7 +42,7 @@ func sharedTestData() (headers []string, rows [][]string) {
 func TestFooterRendersWithFormats(t *testing.T) {
 	t.Parallel()
 
-	data := output.NewTableData([]string{"Item", "Qty"})
+	data := output.NewTable([]string{"Item", "Qty"})
 	data.AddRow([]string{"Apple", "5"})
 	data.AddRow([]string{"Banana", "3"})
 	data.Footer = []string{"Total", "8"}
@@ -52,9 +52,9 @@ func TestFooterRendersWithFormats(t *testing.T) {
 
 		var buf bytes.Buffer
 
-		err := output.RenderTableData(data, output.FormatMarkdown, output.RenderOptions{Writer: &buf})
+		err := output.RenderTable(data, output.FormatMarkdown, output.RenderOptions{Writer: &buf})
 		if err != nil {
-			t.Fatalf("RenderTableData markdown: %v", err)
+			t.Fatalf("RenderTable markdown: %v", err)
 		}
 
 		result := buf.String()
@@ -66,9 +66,9 @@ func TestFooterRendersWithFormats(t *testing.T) {
 
 		var buf bytes.Buffer
 
-		err := output.RenderTableData(data, output.FormatCSV, output.RenderOptions{Writer: &buf})
+		err := output.RenderTable(data, output.FormatCSV, output.RenderOptions{Writer: &buf})
 		if err != nil {
-			t.Fatalf("RenderTableData csv: %v", err)
+			t.Fatalf("RenderTable csv: %v", err)
 		}
 
 		result := buf.String()
@@ -99,7 +99,7 @@ func TestFooterRendersWithFormats(t *testing.T) {
 	t.Run("xml includes footer element", func(t *testing.T) {
 		t.Parallel()
 
-		result, err := markup.MarshalXMLFromTableData(data)
+		result, err := markup.MarshalXMLFromTable(data)
 		if err != nil {
 			t.Fatalf("XML marshal: %v", err)
 		}
@@ -133,9 +133,9 @@ func TestFooterRendersWithFormats(t *testing.T) {
 
 		var buf bytes.Buffer
 
-		err := output.RenderTableData(data, output.FormatTSV, output.RenderOptions{Writer: &buf})
+		err := output.RenderTable(data, output.FormatTSV, output.RenderOptions{Writer: &buf})
 		if err != nil {
-			t.Fatalf("RenderTableData tsv: %v", err)
+			t.Fatalf("RenderTable tsv: %v", err)
 		}
 
 		result := buf.String()
@@ -150,7 +150,7 @@ func TestFooterRendersWithFormats(t *testing.T) {
 	t.Run("asciidoc includes footer row", func(t *testing.T) {
 		t.Parallel()
 
-		result, err := markup.MarshalAsciiDocFromTableData(data)
+		result, err := markup.MarshalAsciiDocFromTable(data)
 		if err != nil {
 			t.Fatalf("AsciiDoc marshal: %v", err)
 		}
@@ -213,10 +213,10 @@ func TestStreamingRenderer(t *testing.T) {
 	testhelpers.AssertContains(t, result, "<table", "Streaming HTML should contain table tag")
 }
 
-func TestTableDataRowEdges(t *testing.T) {
+func TestTableRowEdges(t *testing.T) {
 	t.Parallel()
 
-	data := output.NewTableData([]string{"Name"})
+	data := output.NewTable([]string{"Name"})
 	data.AddRow([]string{"Row0"})
 	data.AddRow([]string{"Row1"})
 	data.AddRow([]string{"Row2"})
@@ -250,10 +250,10 @@ func TestTreeNodeDepth(t *testing.T) {
 	}
 }
 
-func TestColorModeRenderTableData(t *testing.T) {
+func TestColorModeRenderTable(t *testing.T) {
 	t.Parallel()
 
-	data := output.NewTableData([]string{"Name", "Value"})
+	data := output.NewTable([]string{"Name", "Value"})
 	data.AddRow([]string{"Alpha", "100"})
 
 	assertColorMode(t, data, output.FormatMarkdown, "Markdown", output.ColorModeAlways, true, "Alpha")
@@ -264,7 +264,7 @@ func TestColorModeRenderTableData(t *testing.T) {
 
 func assertColorMode(
 	t *testing.T,
-	data *output.TableData,
+	data *output.Table,
 	format output.Format,
 	name string,
 	mode output.ColorMode,
@@ -278,12 +278,12 @@ func assertColorMode(
 
 		var buf bytes.Buffer
 
-		err := output.RenderTableData(data, format, output.RenderOptions{
+		err := output.RenderTable(data, format, output.RenderOptions{
 			Writer:    &buf,
 			ColorMode: mode,
 		})
 		if err != nil {
-			t.Fatalf("RenderTableData %s: %v", name, err)
+			t.Fatalf("RenderTable %s: %v", name, err)
 		}
 
 		if wantContains != "" {
@@ -301,17 +301,17 @@ func assertColorMode(
 	})
 }
 
-func TestRenderTableData_JSON(t *testing.T) {
+func TestRenderTable_JSON(t *testing.T) {
 	t.Parallel()
 
-	data := output.NewTableData([]string{"Name", "Value"})
+	data := output.NewTable([]string{"Name", "Value"})
 	data.AddRow([]string{"Alpha", "100"})
 
 	var buf bytes.Buffer
 
-	err := output.RenderTableData(data, output.FormatJSON, output.RenderOptions{Writer: &buf})
+	err := output.RenderTable(data, output.FormatJSON, output.RenderOptions{Writer: &buf})
 	if err != nil {
-		t.Fatalf("RenderTableData JSON: %v", err)
+		t.Fatalf("RenderTable JSON: %v", err)
 	}
 
 	out := buf.String()

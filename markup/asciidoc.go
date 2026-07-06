@@ -13,15 +13,15 @@ var (
 	_ output.TableRenderer = (*AsciiDocTableRenderer)(nil)
 )
 
-//nolint:gochecknoinits // Registers AsciiDoc TableData marshaler and format capabilities.
+//nolint:gochecknoinits // Registers AsciiDoc Table marshaler and format capabilities.
 func init() {
 	output.RegisterFormatShapes(output.FormatAsciiDoc, output.ShapeTable)
-	output.RegisterTableDataRenderer(output.FormatAsciiDoc, renderAsciiDocTableData)
+	output.RegisterTableMarshaler(output.FormatAsciiDoc, renderAsciiDocTable)
 }
 
-// AsciiDocTableRenderer renders TableData as an AsciiDoc table.
+// AsciiDocTableRenderer renders Table as an AsciiDoc table.
 type AsciiDocTableRenderer struct {
-	output.TableDataStore
+	output.TableStore
 }
 
 // NewAsciiDocTableRenderer creates a new AsciiDocTableRenderer.
@@ -63,8 +63,8 @@ func (r *AsciiDocTableRenderer) Render() (string, error) {
 	return b.String(), nil
 }
 
-// MarshalAsciiDocFromTableData marshals TableData as an AsciiDoc table.
-func MarshalAsciiDocFromTableData(data *output.TableData) ([]byte, error) {
+// MarshalAsciiDocFromTable marshals Table as an AsciiDoc table.
+func MarshalAsciiDocFromTable(data *output.Table) ([]byte, error) {
 	if data == nil {
 		return nil, nil
 	}
@@ -80,8 +80,8 @@ func MarshalAsciiDocFromTableData(data *output.TableData) ([]byte, error) {
 	return []byte(out), nil
 }
 
-func renderAsciiDocTableData(w io.Writer, data *output.TableData, _ output.RenderOptions) error {
-	return renderMarshalAndWrite(w, data, "asciidoc", MarshalAsciiDocFromTableData)
+func renderAsciiDocTable(w io.Writer, data *output.Table, _ output.RenderOptions) error {
+	return renderMarshalAndWrite(w, data, "asciidoc", MarshalAsciiDocFromTable)
 }
 
 // asciidocReplacer escapes AsciiDoc special characters: cell delimiter and inline formatting.

@@ -165,14 +165,14 @@ func TestNewMarkdownTable(t *testing.T) {
 	_ = m.align
 }
 
-func TestNewMarkdownTableFromData(t *testing.T) {
+func TestNewMarkdownTableFromTable(t *testing.T) {
 	t.Parallel()
 
-	data := output.NewTableData([]string{"Name", "Status"})
+	data := output.NewTable([]string{"Name", "Status"})
 	data.AddRow([]string{"Project A", "Active"})
 	data.AddRow([]string{"Project B", "Inactive"})
 
-	m := NewMarkdownTableFromData(data)
+	m := NewMarkdownTableFromTable(data)
 
 	got, err := m.Render()
 	if err != nil {
@@ -185,11 +185,11 @@ func TestNewMarkdownTableFromData(t *testing.T) {
 	assertContains(t, got, "Active", "should contain row 'Active'")
 }
 
-func TestNewMarkdownTableFromDataEmpty(t *testing.T) {
+func TestNewMarkdownTableEmpty(t *testing.T) {
 	t.Parallel()
 
-	data := output.NewTableData(nil)
-	m := NewMarkdownTableFromData(data)
+	data := output.NewTable(nil)
+	m := NewMarkdownTableFromTable(data)
 
 	got, err := m.Render()
 	if err != nil {

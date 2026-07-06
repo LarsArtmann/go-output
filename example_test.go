@@ -46,8 +46,8 @@ func ExampleShape() {
 }
 
 //nolint:testableexamples
-func ExampleTableData_Validate() {
-	data := output.NewTableData([]string{"Name", "Count"})
+func ExampleTable_Validate() {
+	data := output.NewTable([]string{"Name", "Count"})
 	data.AddRow([]string{"Alice", "10"})
 	data.SetFooter([]string{"Total", "10"})
 

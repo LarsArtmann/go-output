@@ -25,8 +25,8 @@ func BenchmarkPlantUMLRender(b *testing.B) {
 	}
 }
 
-func BenchmarkPlantUMLFromTableData(b *testing.B) {
-	data := output.NewTableData([]string{"Name", "Value"})
+func BenchmarkNewPlantUMLFromTable(b *testing.B) {
+	data := output.NewTable([]string{"Name", "Value"})
 	for range 100 {
 		data.AddRow([]string{"item", "value"})
 	}
@@ -34,6 +34,6 @@ func BenchmarkPlantUMLFromTableData(b *testing.B) {
 	b.ResetTimer()
 
 	for b.Loop() {
-		_, _ = PlantUMLFromTableData(data).Render()
+		_, _ = NewPlantUMLFromTable(data).Render()
 	}
 }

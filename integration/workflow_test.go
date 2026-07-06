@@ -14,31 +14,31 @@ import (
 	"github.com/larsartmann/go-output/testhelpers"
 )
 
-// TestCSVToTableData tests converting CSV data to TableData.
-func TestCSVToTableData(t *testing.T) {
+// TestCSVToTable tests converting CSV data to Table.
+func TestCSVToTable(t *testing.T) {
 	t.Parallel()
 
 	// Given: Raw CSV-like data
 	headers, rows := sharedTestData()
 
-	// When: I convert CSV data to TableData
-	data := output.NewTableData(headers)
+	// When: I convert CSV data to Table
+	data := output.NewTable(headers)
 	for _, row := range rows {
 		data.AddRow(row)
 	}
 
 	// Then: Data should be properly structured
-	assertTableData(t, data, 2, 3)
+	assertTable(t, data, 2, 3)
 }
 
-// TestTableDataToJSON tests rendering TableData as JSON.
-func TestTableDataToJSON(t *testing.T) {
+// TestTableToJSON tests rendering Table as JSON.
+func TestTableToJSON(t *testing.T) {
 	t.Parallel()
 
-	// Given: TableData
+	// Given: Table
 	headers, rows := sharedTestData()
 
-	data := output.NewTableData(headers)
+	data := output.NewTable(headers)
 	for _, row := range rows {
 		data.AddRow(row)
 	}
@@ -55,14 +55,14 @@ func TestTableDataToJSON(t *testing.T) {
 	testhelpers.AssertContains(t, jsonStr, "100", "JSON should contain 100")
 }
 
-// TestTableDataToYAML tests rendering TableData as YAML.
-func TestTableDataToYAML(t *testing.T) {
+// TestTableToYAML tests rendering Table as YAML.
+func TestTableToYAML(t *testing.T) {
 	t.Parallel()
 
-	// Given: TableData
+	// Given: Table
 	headers, rows := sharedTestData()
 
-	data := output.NewTableData(headers)
+	data := output.NewTable(headers)
 	for _, row := range rows {
 		data.AddRow(row)
 	}
@@ -126,7 +126,7 @@ func TestLargeDatasetWorkflow(t *testing.T) {
 		t.Parallel()
 
 		// Given: Large dataset
-		data := output.NewTableData([]string{"ID", "Value"})
+		data := output.NewTable([]string{"ID", "Value"})
 		for i := range 1000 {
 			data.AddRow([]string{string(rune('A'+i%26)) + string(rune('0'+i%10)), "value"})
 		}

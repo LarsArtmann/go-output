@@ -8,13 +8,13 @@ import (
 	"github.com/larsartmann/go-output/testhelpers"
 )
 
-func TestMarshalAsciiDocFromTableData(t *testing.T) {
+func TestMarshalAsciiDocFromTable(t *testing.T) {
 	t.Parallel()
 
 	t.Run("nil data", func(t *testing.T) {
 		t.Parallel()
 
-		b, err := MarshalAsciiDocFromTableData(nil)
+		b, err := MarshalAsciiDocFromTable(nil)
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -27,10 +27,10 @@ func TestMarshalAsciiDocFromTableData(t *testing.T) {
 	t.Run("single row", func(t *testing.T) {
 		t.Parallel()
 
-		data := output.NewTableData([]string{"Name", "Age"})
+		data := output.NewTable([]string{"Name", "Age"})
 		data.AddRow([]string{"Alice", "30"})
 
-		b, err := MarshalAsciiDocFromTableData(data)
+		b, err := MarshalAsciiDocFromTable(data)
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -48,10 +48,10 @@ func TestMarshalAsciiDocFromTableData(t *testing.T) {
 	t.Run("escapes pipe characters", func(t *testing.T) {
 		t.Parallel()
 
-		data := output.NewTableData([]string{"Name"})
+		data := output.NewTable([]string{"Name"})
 		data.AddRow([]string{"a|b"})
 
-		b, err := MarshalAsciiDocFromTableData(data)
+		b, err := MarshalAsciiDocFromTable(data)
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -65,11 +65,11 @@ func TestMarshalAsciiDocFromTableData(t *testing.T) {
 	t.Run("with footer row", func(t *testing.T) {
 		t.Parallel()
 
-		data := output.NewTableData([]string{"Name", "Count"})
+		data := output.NewTable([]string{"Name", "Count"})
 		data.AddRow([]string{"Alice", "10"})
 		data.Footer = []string{"Total", "10"}
 
-		b, err := MarshalAsciiDocFromTableData(data)
+		b, err := MarshalAsciiDocFromTable(data)
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}

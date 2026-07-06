@@ -99,7 +99,7 @@ func TestHTMLRendererSetData(t *testing.T) {
 	t.Parallel()
 
 	renderer := NewHTMLRenderer()
-	renderer.SetData(&output.TableData{
+	renderer.SetData(&output.Table{
 		Headers: []string{"A", "B"},
 		Rows:    [][]string{{"1", "2"}},
 	})

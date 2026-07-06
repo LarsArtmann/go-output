@@ -8,8 +8,8 @@ import (
 	"github.com/larsartmann/go-output"
 )
 
-func BenchmarkMarshalXMLFromTableData(b *testing.B) {
-	data := output.NewTableData([]string{"Name", "Age", "Email"})
+func BenchmarkMarshalXMLFromTable(b *testing.B) {
+	data := output.NewTable([]string{"Name", "Age", "Email"})
 	for range 100 {
 		data.AddRow([]string{"Alice", "30", "alice@example.com"})
 	}
@@ -17,7 +17,7 @@ func BenchmarkMarshalXMLFromTableData(b *testing.B) {
 	b.ResetTimer()
 
 	for b.Loop() {
-		_, _ = MarshalXMLFromTableData(data)
+		_, _ = MarshalXMLFromTable(data)
 	}
 }
 
@@ -43,7 +43,7 @@ func BenchmarkXMLWriter(b *testing.B) {
 }
 
 func BenchmarkHTMLRenderer(b *testing.B) {
-	r := output.NewTableData([]string{"Name", "Age", "Email"})
+	r := output.NewTable([]string{"Name", "Age", "Email"})
 	for range 100 {
 		r.AddRow([]string{"Alice", "30", "alice@example.com"})
 	}
@@ -64,7 +64,7 @@ func BenchmarkHTMLRenderer(b *testing.B) {
 }
 
 func BenchmarkAsciiDocTableRenderer(b *testing.B) {
-	data := output.NewTableData([]string{"Name", "Age", "Email"})
+	data := output.NewTable([]string{"Name", "Age", "Email"})
 	for range 100 {
 		data.AddRow([]string{"Alice", "30", "alice@example.com"})
 	}
@@ -79,7 +79,7 @@ func BenchmarkAsciiDocTableRenderer(b *testing.B) {
 }
 
 func BenchmarkStreamingHTMLRenderer(b *testing.B) {
-	data := output.NewTableData([]string{"Name", "Age", "Email"})
+	data := output.NewTable([]string{"Name", "Age", "Email"})
 	for range 100 {
 		data.AddRow([]string{"Alice", "30", "alice@example.com"})
 	}
@@ -95,7 +95,7 @@ func BenchmarkStreamingHTMLRenderer(b *testing.B) {
 }
 
 func BenchmarkStreamingHTMLRenderer_Stream(b *testing.B) {
-	data := output.NewTableData([]string{"Name", "Age"})
+	data := output.NewTable([]string{"Name", "Age"})
 	for range 100 {
 		data.AddRow([]string{"Alice", "30"})
 	}

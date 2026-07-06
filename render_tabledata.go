@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-// RenderOptions configures optional behavior for RenderTableData.
+// RenderOptions configures optional behavior for RenderTable.
 type RenderOptions struct {
 	// Title is used as the document title for HTML output and as a header for Markdown.
 	Title string
@@ -18,19 +18,19 @@ type RenderOptions struct {
 	ColorMode ColorMode
 }
 
-// TableDataRenderer renders TableData in a specific format to a writer.
-type TableDataRenderer func(w io.Writer, data *TableData, opts RenderOptions) error
+// TableMarshaler renders Table in a specific format to a writer.
+type TableMarshaler func(w io.Writer, data *Table, opts RenderOptions) error
 
-//nolint:gochecknoglobals // Registry for TableData renderers, populated by sub-module init().
-var tableDataRegistry = newFormatRegistry[TableDataRenderer]()
+//nolint:gochecknoglobals // Registry for Table renderers, populated by sub-module init().
+var tableDataRegistry = newFormatRegistry[TableMarshaler]()
 
-// RegisterTableDataRenderer registers a renderer for a format.
-// Sub-modules call this from their init() to enable RenderTableData dispatch.
-func RegisterTableDataRenderer(format Format, renderer TableDataRenderer) {
+// RegisterTableMarshaler registers a renderer for a format.
+// Sub-modules call this from their init() to enable RenderTable dispatch.
+func RegisterTableMarshaler(format Format, renderer TableMarshaler) {
 	tableDataRegistry.register(format, renderer)
 }
 
-func getTableDataRenderer(format Format) (TableDataRenderer, bool) {
+func getTableMarshaler(format Format) (TableMarshaler, bool) {
 	return tableDataRegistry.get(format)
 }
 
@@ -38,11 +38,11 @@ func getTableDataRenderer(format Format) (TableDataRenderer, bool) {
 // their respective sub-modules via init(). Root provides the registry but
 // registers no format itself.
 
-// RenderTableData renders TableData in the given format and writes to w (or os.Stdout).
+// RenderTable renders Table in the given format and writes to w (or os.Stdout).
 // It supports all registered formats when respective sub-modules are imported.
 // With all sub-modules imported, all 16 formats are available:
 // table, json, csv, tsv, markdown, xml, d2, yaml, html, tree, mermaid, dot, jsonl, asciidoc, toml, plantuml.
-func RenderTableData(data *TableData, format Format, opts RenderOptions) error {
+func RenderTable(data *Table, format Format, opts RenderOptions) error {
 	if data == nil {
 		return nil
 	}
@@ -56,14 +56,14 @@ func RenderTableData(data *TableData, format Format, opts RenderOptions) error {
 		w = os.Stdout
 	}
 
-	if m, ok := getTableDataRenderer(format); ok {
+	if m, ok := getTableMarshaler(format); ok {
 		return m(w, data, opts)
 	}
 
 	return &UnsupportedFormatError{Format: format}
 }
 
-// UnsupportedFormatError is returned when RenderTableData cannot handle a format.
+// UnsupportedFormatError is returned when RenderTable cannot handle a format.
 type UnsupportedFormatError struct {
 	Format Format
 }
@@ -78,7 +78,7 @@ type UnknownRenderer func(w io.Writer, data any, opts RenderOptions) error
 //nolint:gochecknoglobals // Registry for any-data renderers, populated by sub-module init().
 var unknownRegistry = newFormatRegistry[UnknownRenderer]()
 
-// RegisterUnknownRenderer registers a renderer for arbitrary (non-TableData) data.
+// RegisterUnknownRenderer registers a renderer for arbitrary (non-Table) data.
 // Sub-modules call this from their init() to enable RenderUnknown dispatch.
 func RegisterUnknownRenderer(format Format, renderer UnknownRenderer) {
 	unknownRegistry.register(format, renderer)
@@ -104,8 +104,8 @@ func RenderUnknown(data any, format Format, opts RenderOptions) error {
 	return &UnsupportedFormatError{Format: format}
 }
 
-// RegisteredTableDataFormats returns all formats with registered TableDataRenderers.
-func RegisteredTableDataFormats() []Format {
+// RegisteredTableMarshalFormats returns all formats with registered TableMarshalers.
+func RegisteredTableMarshalFormats() []Format {
 	return tableDataRegistry.formats()
 }
 

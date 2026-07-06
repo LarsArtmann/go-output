@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-func TestRegisterTableDataRenderer_ConcurrentAccess(t *testing.T) {
+func TestRegisterTableMarshaler_ConcurrentAccess(t *testing.T) {
 	t.Parallel()
 
 	const goroutines = 100
@@ -22,35 +22,35 @@ func TestRegisterTableDataRenderer_ConcurrentAccess(t *testing.T) {
 		go func() {
 			defer wg.Done()
 
-			RegisterTableDataRenderer(
+			RegisterTableMarshaler(
 				Format("race-test-"+strconv.Itoa(i)),
-				func(w io.Writer, data *TableData, opts RenderOptions) error { return nil },
+				func(w io.Writer, data *Table, opts RenderOptions) error { return nil },
 			)
 		}()
 
 		go func() {
 			defer wg.Done()
 
-			_, _ = getTableDataRenderer(Format("race-test-" + strconv.Itoa(i)))
+			_, _ = getTableMarshaler(Format("race-test-" + strconv.Itoa(i)))
 		}()
 	}
 
 	wg.Wait()
 }
 
-func TestRegisteredTableDataFormats(t *testing.T) {
+func TestRegisteredTableMarshalFormats(t *testing.T) {
 	t.Parallel()
 
-	formats := RegisteredTableDataFormats()
+	formats := RegisteredTableMarshalFormats()
 
-	// Root in isolation does not register any TableData renderers via init().
+	// Root in isolation does not register any Table renderers via init().
 	// Sub-modules (markdown, tree, delimited, ...) self-register when imported.
 	// Cross-module registration is tested in integration/.
 	// Just verify the call is safe and returns no duplicates.
 	seen := make(map[Format]bool, len(formats))
 	for _, f := range formats {
 		if seen[f] {
-			t.Errorf("duplicate format in RegisteredTableDataFormats: %q", f)
+			t.Errorf("duplicate format in RegisteredTableMarshalFormats: %q", f)
 		}
 
 		seen[f] = true

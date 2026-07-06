@@ -9,8 +9,8 @@ import (
 	"github.com/larsartmann/go-output/testhelpers"
 )
 
-func renderTableDataFixture() *output.TableData {
-	data := output.NewTableData([]string{"Name", "Age", "City"})
+func renderTableFixture() *output.Table {
+	data := output.NewTable([]string{"Name", "Age", "City"})
 	data.AddRow([]string{"Alice", "30", "NYC"})
 	data.AddRow([]string{"Bob", "25", "LA"})
 
@@ -25,16 +25,16 @@ func assertRenderContainsBoth(t *testing.T, out, a, b, format string) {
 	}
 }
 
-func TestRenderTableData_CSV(t *testing.T) {
+func TestRenderTable_CSV(t *testing.T) {
 	t.Parallel()
 
 	var buf bytes.Buffer
 
-	data := renderTableDataFixture()
+	data := renderTableFixture()
 
-	err := output.RenderTableData(data, output.FormatCSV, output.RenderOptions{Writer: &buf})
+	err := output.RenderTable(data, output.FormatCSV, output.RenderOptions{Writer: &buf})
 	if err != nil {
-		t.Fatalf("RenderTableData csv: %v", err)
+		t.Fatalf("RenderTable csv: %v", err)
 	}
 
 	out := buf.String()
@@ -46,16 +46,16 @@ func TestRenderTableData_CSV(t *testing.T) {
 	}
 }
 
-func TestRenderTableData_TSV(t *testing.T) {
+func TestRenderTable_TSV(t *testing.T) {
 	t.Parallel()
 
 	var buf bytes.Buffer
 
-	data := renderTableDataFixture()
+	data := renderTableFixture()
 
-	err := output.RenderTableData(data, output.FormatTSV, output.RenderOptions{Writer: &buf})
+	err := output.RenderTable(data, output.FormatTSV, output.RenderOptions{Writer: &buf})
 	if err != nil {
-		t.Fatalf("RenderTableData tsv: %v", err)
+		t.Fatalf("RenderTable tsv: %v", err)
 	}
 
 	out := buf.String()
@@ -66,16 +66,16 @@ func TestRenderTableData_TSV(t *testing.T) {
 	}
 }
 
-func TestRenderTableData_Markdown(t *testing.T) {
+func TestRenderTable_Markdown(t *testing.T) {
 	t.Parallel()
 
 	var buf bytes.Buffer
 
-	data := renderTableDataFixture()
+	data := renderTableFixture()
 
-	err := output.RenderTableData(data, output.FormatMarkdown, output.RenderOptions{Writer: &buf, Title: "Test"})
+	err := output.RenderTable(data, output.FormatMarkdown, output.RenderOptions{Writer: &buf, Title: "Test"})
 	if err != nil {
-		t.Fatalf("RenderTableData markdown: %v", err)
+		t.Fatalf("RenderTable markdown: %v", err)
 	}
 
 	out := buf.String()
@@ -84,55 +84,55 @@ func TestRenderTableData_Markdown(t *testing.T) {
 	testhelpers.AssertOutputContains(t, out, "| Name")
 }
 
-func TestRenderTableData_Tree(t *testing.T) {
+func TestRenderTable_Tree(t *testing.T) {
 	t.Parallel()
 
 	var buf bytes.Buffer
 
-	data := renderTableDataFixture()
+	data := renderTableFixture()
 
-	err := output.RenderTableData(data, output.FormatTree, output.RenderOptions{Writer: &buf})
+	err := output.RenderTable(data, output.FormatTree, output.RenderOptions{Writer: &buf})
 	if err != nil {
-		t.Fatalf("RenderTableData tree: %v", err)
+		t.Fatalf("RenderTable tree: %v", err)
 	}
 
 	out := buf.String()
 	testhelpers.AssertOutputContains(t, out, "Alice")
 }
 
-func TestRenderTableData_EmptyRows(t *testing.T) {
+func TestRenderTable_EmptyRows(t *testing.T) {
 	t.Parallel()
 
 	var buf bytes.Buffer
 
-	data := output.NewTableData([]string{"A", "B"})
+	data := output.NewTable([]string{"A", "B"})
 
-	err := output.RenderTableData(data, output.FormatCSV, output.RenderOptions{Writer: &buf})
+	err := output.RenderTable(data, output.FormatCSV, output.RenderOptions{Writer: &buf})
 	if err != nil {
-		t.Fatalf("RenderTableData empty rows csv: %v", err)
+		t.Fatalf("RenderTable empty rows csv: %v", err)
 	}
 
 	out := buf.String()
 	testhelpers.AssertOutputContains(t, out, "A")
 }
 
-func TestRenderTableData_MarkdownWriterError(t *testing.T) {
+func TestRenderTable_MarkdownWriterError(t *testing.T) {
 	t.Parallel()
 
-	testRenderTableDataWriterError(t, output.FormatMarkdown, output.RenderOptions{
+	testRenderTableWriterError(t, output.FormatMarkdown, output.RenderOptions{
 		Writer: &testhelpers.ErrorWriter{},
 		Title:  "Test",
 	}, "expected error from errorWriter")
 }
 
-func TestRenderTableData_TreeWriterError(t *testing.T) {
+func TestRenderTable_TreeWriterError(t *testing.T) {
 	t.Parallel()
 
-	testRenderTableDataWriterError(t, output.FormatTree, output.RenderOptions{Writer: &testhelpers.ErrorWriter{}},
+	testRenderTableWriterError(t, output.FormatTree, output.RenderOptions{Writer: &testhelpers.ErrorWriter{}},
 		"expected error from errorWriter")
 }
 
-func TestRenderTableData_MarkdownPartialWriteErrors(t *testing.T) {
+func TestRenderTable_MarkdownPartialWriteErrors(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
@@ -153,9 +153,9 @@ func TestRenderTableData_MarkdownPartialWriteErrors(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			data := renderTableDataFixture()
+			data := renderTableFixture()
 
-			err := output.RenderTableData(data, output.FormatMarkdown, tt.opts)
+			err := output.RenderTable(data, output.FormatMarkdown, tt.opts)
 			if err == nil {
 				t.Fatal("expected write error")
 			}
@@ -163,45 +163,45 @@ func TestRenderTableData_MarkdownPartialWriteErrors(t *testing.T) {
 	}
 }
 
-func testRenderTableDataWriterError(t *testing.T, format output.Format, opts output.RenderOptions, msg string) {
+func testRenderTableWriterError(t *testing.T, format output.Format, opts output.RenderOptions, msg string) {
 	t.Helper()
 
-	data := renderTableDataFixture()
+	data := renderTableFixture()
 
-	err := output.RenderTableData(data, format, opts)
+	err := output.RenderTable(data, format, opts)
 	if err == nil {
 		t.Fatal(msg)
 	}
 }
 
-func TestRenderTableData_MarkdownWithFooter(t *testing.T) {
+func TestRenderTable_MarkdownWithFooter(t *testing.T) {
 	t.Parallel()
 
 	var buf bytes.Buffer
 
-	data := renderTableDataFixture()
+	data := renderTableFixture()
 	data.Footer = []string{"Total", "55", "NYC+LA"}
 
-	err := output.RenderTableData(data, output.FormatMarkdown, output.RenderOptions{Writer: &buf})
+	err := output.RenderTable(data, output.FormatMarkdown, output.RenderOptions{Writer: &buf})
 	if err != nil {
-		t.Fatalf("RenderTableData markdown with footer: %v", err)
+		t.Fatalf("RenderTable markdown with footer: %v", err)
 	}
 
 	out := buf.String()
 	assertRenderContainsBoth(t, out, "Alice", "Total", "markdown with footer")
 }
 
-func TestRenderTableData_CSVWithFooter(t *testing.T) {
+func TestRenderTable_CSVWithFooter(t *testing.T) {
 	t.Parallel()
 
 	var buf bytes.Buffer
 
-	data := renderTableDataFixture()
+	data := renderTableFixture()
 	data.Footer = []string{"Total", "55", "NYC+LA"}
 
-	err := output.RenderTableData(data, output.FormatCSV, output.RenderOptions{Writer: &buf})
+	err := output.RenderTable(data, output.FormatCSV, output.RenderOptions{Writer: &buf})
 	if err != nil {
-		t.Fatalf("RenderTableData csv with footer: %v", err)
+		t.Fatalf("RenderTable csv with footer: %v", err)
 	}
 
 	out := buf.String()

@@ -100,27 +100,27 @@ func TestXMLWriterEscape(t *testing.T) {
 	assertContains(t, result, "&lt;script&gt;", "XML should contain escaped &lt;script&gt;")
 }
 
-func TestMarshalXMLFromTableDataNil(t *testing.T) {
+func TestMarshalXMLFromTableNil(t *testing.T) {
 	t.Parallel()
 
-	data, err := MarshalXMLFromTableData(nil)
+	data, err := MarshalXMLFromTable(nil)
 	if err != nil {
-		t.Fatalf("MarshalXMLFromTableData() error = %v", err)
+		t.Fatalf("MarshalXMLFromTable() error = %v", err)
 	}
 
 	result := string(data)
 	assertContains(t, result, "<?xml", "XML should contain XML declaration")
 }
 
-func TestMarshalXMLFromTableDataWithData(t *testing.T) {
+func TestMarshalXMLFromTableWithData(t *testing.T) {
 	t.Parallel()
 
-	data := output.NewTableData([]string{"Name", "Value"})
+	data := output.NewTable([]string{"Name", "Value"})
 	data.AddRow([]string{"test", "123"})
 
-	result, err := MarshalXMLFromTableData(data)
+	result, err := MarshalXMLFromTable(data)
 	if err != nil {
-		t.Fatalf("MarshalXMLFromTableData() error = %v", err)
+		t.Fatalf("MarshalXMLFromTable() error = %v", err)
 	}
 
 	outputStr := string(result)
@@ -129,14 +129,14 @@ func TestMarshalXMLFromTableDataWithData(t *testing.T) {
 	assertContains(t, outputStr, "<row>", "XML should contain <row>")
 }
 
-func TestMarshalXMLFromTableDataEmpty(t *testing.T) {
+func TestMarshalXMLFromTableEmpty(t *testing.T) {
 	t.Parallel()
 
-	data := output.NewTableData([]string{})
+	data := output.NewTable([]string{})
 
-	result, err := MarshalXMLFromTableData(data)
+	result, err := MarshalXMLFromTable(data)
 	if err != nil {
-		t.Fatalf("MarshalXMLFromTableData() error = %v", err)
+		t.Fatalf("MarshalXMLFromTable() error = %v", err)
 	}
 
 	outputStr := string(result)
@@ -183,15 +183,15 @@ func TestMarshalXMLIndent(t *testing.T) {
 	assertContains(t, result, "  <name>", "Indented XML should contain indentation")
 }
 
-func TestMarshalXMLFromTableDataNoHeaders(t *testing.T) {
+func TestMarshalXMLFromTableNoHeaders(t *testing.T) {
 	t.Parallel()
 
-	data := output.NewTableData(nil)
+	data := output.NewTable(nil)
 	data.AddRow([]string{"a", "b"})
 
-	result, err := MarshalXMLFromTableData(data)
+	result, err := MarshalXMLFromTable(data)
 	if err != nil {
-		t.Fatalf("MarshalXMLFromTableData() error = %v", err)
+		t.Fatalf("MarshalXMLFromTable() error = %v", err)
 	}
 
 	outputStr := string(result)
@@ -209,16 +209,16 @@ func TestMarshalXMLIndentError(t *testing.T) {
 	}
 }
 
-func TestMarshalXMLFromTableDataWithFooter(t *testing.T) {
+func TestMarshalXMLFromTableWithFooter(t *testing.T) {
 	t.Parallel()
 
-	data := output.NewTableData([]string{"Name", "Count"})
+	data := output.NewTable([]string{"Name", "Count"})
 	data.AddRow([]string{"Alice", "10"})
 	data.Footer = []string{"Total", "10"}
 
-	result, err := MarshalXMLFromTableData(data)
+	result, err := MarshalXMLFromTable(data)
 	if err != nil {
-		t.Fatalf("MarshalXMLFromTableData() error = %v", err)
+		t.Fatalf("MarshalXMLFromTable() error = %v", err)
 	}
 
 	outputStr := string(result)
@@ -227,15 +227,15 @@ func TestMarshalXMLFromTableDataWithFooter(t *testing.T) {
 	assertContains(t, outputStr, "</footer>", "XML should contain </footer>")
 }
 
-func TestMarshalXMLFromTableDataNoFooter(t *testing.T) {
+func TestMarshalXMLFromTableNoFooter(t *testing.T) {
 	t.Parallel()
 
-	data := output.NewTableData([]string{"Name"})
+	data := output.NewTable([]string{"Name"})
 	data.AddRow([]string{"Alice"})
 
-	result, err := MarshalXMLFromTableData(data)
+	result, err := MarshalXMLFromTable(data)
 	if err != nil {
-		t.Fatalf("MarshalXMLFromTableData() error = %v", err)
+		t.Fatalf("MarshalXMLFromTable() error = %v", err)
 	}
 
 	if strings.Contains(string(result), "<footer>") {

@@ -9,9 +9,9 @@ import (
 
 func renderMarshalAndWrite(
 	w io.Writer,
-	data *output.TableData,
+	data *output.Table,
 	formatName string,
-	marshalFunc func(*output.TableData) ([]byte, error),
+	marshalFunc func(*output.Table) ([]byte, error),
 ) error {
 	b, err := marshalFunc(data)
 	if err != nil {

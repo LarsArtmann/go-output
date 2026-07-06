@@ -24,13 +24,13 @@ func assertValidJSONLines(t *testing.T, input string, wantLines int) {
 	}
 }
 
-func TestMarshalJSONLFromTableData(t *testing.T) {
+func TestMarshalJSONLFromTable(t *testing.T) {
 	t.Parallel()
 
 	t.Run("nil data", func(t *testing.T) {
 		t.Parallel()
 
-		b, err := MarshalJSONLFromTableData(nil)
+		b, err := MarshalJSONLFromTable(nil)
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -43,10 +43,10 @@ func TestMarshalJSONLFromTableData(t *testing.T) {
 	t.Run("single row", func(t *testing.T) {
 		t.Parallel()
 
-		data := output.NewTableData([]string{"Name", "Age"})
+		data := output.NewTable([]string{"Name", "Age"})
 		data.AddRow([]string{"Alice", "30"})
 
-		b, err := MarshalJSONLFromTableData(data)
+		b, err := MarshalJSONLFromTable(data)
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
@@ -57,11 +57,11 @@ func TestMarshalJSONLFromTableData(t *testing.T) {
 	t.Run("multiple rows", func(t *testing.T) {
 		t.Parallel()
 
-		data := output.NewTableData([]string{"Name", "Score"})
+		data := output.NewTable([]string{"Name", "Score"})
 		data.AddRow([]string{"Alpha", "90"})
 		data.AddRow([]string{"Beta", "75"})
 
-		b, err := MarshalJSONLFromTableData(data)
+		b, err := MarshalJSONLFromTable(data)
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}

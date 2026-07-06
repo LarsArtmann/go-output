@@ -8,7 +8,7 @@ import (
 	"github.com/larsartmann/go-output/testhelpers"
 )
 
-func TestRenderGraphTableData(t *testing.T) {
+func TestRenderGraphTable(t *testing.T) {
 	t.Parallel()
 
 	cases := []struct {
@@ -26,14 +26,14 @@ func TestRenderGraphTableData(t *testing.T) {
 			t.Run("writes output to writer", func(t *testing.T) {
 				t.Parallel()
 
-				data := output.NewTableData([]string{"Name"})
+				data := output.NewTable([]string{"Name"})
 				data.AddRow([]string{"Alpha"})
 
 				var buf bytes.Buffer
 
-				err := output.RenderTableData(data, tc.format, output.RenderOptions{Writer: &buf})
+				err := output.RenderTable(data, tc.format, output.RenderOptions{Writer: &buf})
 				if err != nil {
-					t.Fatalf("RenderTableData %s: %v", tc.name, err)
+					t.Fatalf("RenderTable %s: %v", tc.name, err)
 				}
 
 				if buf.Len() == 0 {
@@ -44,10 +44,10 @@ func TestRenderGraphTableData(t *testing.T) {
 			t.Run("propagates writer error", func(t *testing.T) {
 				t.Parallel()
 
-				data := output.NewTableData([]string{"Name"})
+				data := output.NewTable([]string{"Name"})
 				data.AddRow([]string{"Alpha"})
 
-				err := output.RenderTableData(data, tc.format, output.RenderOptions{Writer: &testhelpers.ErrorWriter{}})
+				err := output.RenderTable(data, tc.format, output.RenderOptions{Writer: &testhelpers.ErrorWriter{}})
 				if err == nil {
 					t.Fatal("expected error from errWriter")
 				}

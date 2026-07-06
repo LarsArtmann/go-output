@@ -8,10 +8,10 @@ import (
 	"github.com/larsartmann/go-output"
 )
 
-func TestGolden_JSON_TableData(t *testing.T) {
+func TestGolden_JSON_Table(t *testing.T) {
 	t.Parallel()
 
-	data := output.NewTableData([]string{"Name", "Status", "Duration"})
+	data := output.NewTable([]string{"Name", "Status", "Duration"})
 	data.AddRow([]string{"Build", "completed", "1.2s"})
 	data.AddRow([]string{"Test", "running", "0.5s"})
 
@@ -26,10 +26,10 @@ func TestGolden_JSON_TableData(t *testing.T) {
 	golden.RequireEqual(t, []byte(got))
 }
 
-func TestGolden_YAML_TableData(t *testing.T) {
+func TestGolden_YAML_Table(t *testing.T) {
 	t.Parallel()
 
-	data := output.NewTableData([]string{"Service", "Port", "Health"})
+	data := output.NewTable([]string{"Service", "Port", "Health"})
 	data.AddRow([]string{"api", "8080", "healthy"})
 	data.AddRow([]string{"worker", "9090", "degraded"})
 
@@ -44,10 +44,10 @@ func TestGolden_YAML_TableData(t *testing.T) {
 	golden.RequireEqual(t, []byte(got))
 }
 
-func TestGolden_TOML_TableData(t *testing.T) {
+func TestGolden_TOML_Table(t *testing.T) {
 	t.Parallel()
 
-	data := output.NewTableData([]string{"Key", "Value"})
+	data := output.NewTable([]string{"Key", "Value"})
 	data.AddRow([]string{"name", "go-output"})
 	data.AddRow([]string{"version", "1.0.0"})
 

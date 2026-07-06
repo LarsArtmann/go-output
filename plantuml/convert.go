@@ -7,13 +7,13 @@ import (
 	"github.com/larsartmann/go-output"
 )
 
-//nolint:gochecknoinits // Registers PlantUML TableDataRenderer for registry-based dispatch.
+//nolint:gochecknoinits // Registers PlantUML TableRenderer for registry-based dispatch.
 func init() {
-	output.RegisterTableDataRenderer(output.FormatPlantUML, renderPlantUMLTableData)
+	output.RegisterTableMarshaler(output.FormatPlantUML, renderPlantUMLTable)
 }
 
-func renderPlantUMLTableData(w io.Writer, data *output.TableData, _ output.RenderOptions) error {
-	out, err := PlantUMLFromTableData(data).Render()
+func renderPlantUMLTable(w io.Writer, data *output.Table, _ output.RenderOptions) error {
+	out, err := NewPlantUMLFromTable(data).Render()
 	if err != nil {
 		return fmt.Errorf("render PlantUML: %w", err)
 	}
@@ -26,20 +26,20 @@ func renderPlantUMLTableData(w io.Writer, data *output.TableData, _ output.Rende
 	return nil
 }
 
-// PlantUMLFromTableData creates a PlantUML diagram from table data.
-func PlantUMLFromTableData(data *output.TableData) *PlantUMLDiagram {
+// NewPlantUMLFromTable creates a PlantUML diagram from table data.
+func NewPlantUMLFromTable(data *output.Table) *PlantUMLDiagram {
 	diagram := NewPlantUMLDiagram()
 	if data == nil {
 		return diagram
 	}
 
-	diagram.SetNodesFromTableData(data, func(_ int, _ *output.GraphNode) {})
+	diagram.SetNodesFromTable(data, func(_ int, _ *output.GraphNode) {})
 
 	return diagram
 }
 
-// PlantUMLFromTree creates a PlantUML diagram from a tree hierarchy.
-func PlantUMLFromTree(root *output.TreeNode) *PlantUMLDiagram {
+// NewPlantUMLFromTree creates a PlantUML diagram from a tree hierarchy.
+func NewPlantUMLFromTree(root *output.TreeNode) *PlantUMLDiagram {
 	return output.TreeToRenderer(NewPlantUMLDiagram, (*PlantUMLDiagram).addTreeNodes, root)
 }
 

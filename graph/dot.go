@@ -15,14 +15,14 @@ var (
 	_ output.GraphRenderer = (*DOTRenderer)(nil)
 )
 
-//nolint:gochecknoinits // Registers DOT format capabilities and TableDataRenderer.
+//nolint:gochecknoinits // Registers DOT format capabilities and TableRenderer.
 func init() {
 	output.RegisterFormatShapes(output.FormatDOT, output.ShapeTable, output.ShapeTree, output.ShapeGraph)
-	output.RegisterTableDataRenderer(output.FormatDOT, renderDOTTableData)
+	output.RegisterTableMarshaler(output.FormatDOT, renderDOTTable)
 }
 
-func renderDOTTableData(w io.Writer, data *output.TableData, _ output.RenderOptions) error {
-	out, err := DOTFromTableData(data).Render()
+func renderDOTTable(w io.Writer, data *output.Table, _ output.RenderOptions) error {
+	out, err := NewDOTFromTable(data).Render()
 	if err != nil {
 		return fmt.Errorf("render DOT: %w", err)
 	}
@@ -250,20 +250,20 @@ func (r *DOTRenderer) writeEdge(b *strings.Builder, edge output.GraphEdge) {
 	b.WriteString(";\n")
 }
 
-// DOTFromTableData converts TableData to a DOT graph.
-func DOTFromTableData(data *output.TableData) *DOTRenderer {
+// NewDOTFromTable converts Table to a DOT graph.
+func NewDOTFromTable(data *output.Table) *DOTRenderer {
 	renderer := NewDOTRenderer()
 	if data == nil {
 		return renderer
 	}
 
-	renderer.SetNodesFromTableData(data, nil)
+	renderer.SetNodesFromTable(data, nil)
 
 	return renderer
 }
 
-// DOTFromTree converts a TreeNode to DOT format.
-func DOTFromTree(root *output.TreeNode) *DOTRenderer {
+// NewDOTFromTree converts a TreeNode to DOT format.
+func NewDOTFromTree(root *output.TreeNode) *DOTRenderer {
 	return output.TreeToRenderer(NewDOTRenderer, (*DOTRenderer).addTreeNodes, root)
 }
 

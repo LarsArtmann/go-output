@@ -69,15 +69,15 @@ func TestSanitizePlantUMLID(t *testing.T) {
 	}
 }
 
-func TestPlantUMLFromTableData(t *testing.T) {
+func TestNewPlantUMLFromTable(t *testing.T) {
 	t.Parallel()
 
 	t.Run("nil data", func(t *testing.T) {
 		t.Parallel()
 
-		d := PlantUMLFromTableData(nil)
+		d := NewPlantUMLFromTable(nil)
 		if d == nil {
-			t.Fatal("PlantUMLFromTableData(nil) should return non-nil renderer")
+			t.Fatal("NewPlantUMLFromTable(nil) should return non-nil renderer")
 		}
 
 		out, err := d.Render()
@@ -91,11 +91,11 @@ func TestPlantUMLFromTableData(t *testing.T) {
 	t.Run("with data", func(t *testing.T) {
 		t.Parallel()
 
-		data := output.NewTableData([]string{"Name"})
+		data := output.NewTable([]string{"Name"})
 		data.AddRow([]string{"Alpha"})
 		data.AddRow([]string{"Beta"})
 
-		d := PlantUMLFromTableData(data)
+		d := NewPlantUMLFromTable(data)
 
 		out, err := d.Render()
 		if err != nil {
@@ -106,20 +106,20 @@ func TestPlantUMLFromTableData(t *testing.T) {
 	})
 }
 
-func TestRenderPlantUMLTableData(t *testing.T) {
+func TestRenderPlantUMLTable(t *testing.T) {
 	t.Parallel()
 
 	t.Run("writes PlantUML output to writer", func(t *testing.T) {
 		t.Parallel()
 
-		data := output.NewTableData([]string{"Name"})
+		data := output.NewTable([]string{"Name"})
 		data.AddRow([]string{"Alpha"})
 
 		var buf bytes.Buffer
 
-		err := output.RenderTableData(data, output.FormatPlantUML, output.RenderOptions{Writer: &buf})
+		err := output.RenderTable(data, output.FormatPlantUML, output.RenderOptions{Writer: &buf})
 		if err != nil {
-			t.Fatalf("RenderTableData plantuml: %v", err)
+			t.Fatalf("RenderTable plantuml: %v", err)
 		}
 
 		testhelpers.AssertAllContained(t, buf.String(), "@startuml", "Alpha")
@@ -128,10 +128,10 @@ func TestRenderPlantUMLTableData(t *testing.T) {
 	t.Run("propagates writer error", func(t *testing.T) {
 		t.Parallel()
 
-		data := output.NewTableData([]string{"Name"})
+		data := output.NewTable([]string{"Name"})
 		data.AddRow([]string{"Alpha"})
 
-		err := output.RenderTableData(
+		err := output.RenderTable(
 			data,
 			output.FormatPlantUML,
 			output.RenderOptions{Writer: &testhelpers.ErrorWriter{}},
@@ -152,7 +152,7 @@ func TestPlantUMLFromTree_Branches(t *testing.T) {
 	child.AddChild(grandchild)
 	parent.AddChild(child)
 
-	d := PlantUMLFromTree(parent)
+	d := NewPlantUMLFromTree(parent)
 
 	out, err := d.Render()
 	if err != nil {

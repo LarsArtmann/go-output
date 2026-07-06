@@ -74,14 +74,14 @@ func TestDOTRendererWithEdgeLabel(t *testing.T) {
 	assertContains(t, out, "label=\"uses\"", "Output should contain edge label")
 }
 
-func TestDOTFromTableData(t *testing.T) {
+func TestNewDOTFromTable(t *testing.T) {
 	t.Parallel()
 
-	data := output.NewTableData([]string{"ID", "Name"})
+	data := output.NewTable([]string{"ID", "Name"})
 	data.AddRow([]string{"1", "Alice"})
 	data.AddRow([]string{"2", "Bob"})
 
-	renderer := DOTFromTableData(data)
+	renderer := NewDOTFromTable(data)
 
 	out, err := renderer.Render()
 	if err != nil {
@@ -98,13 +98,13 @@ func TestDOTFromTableData(t *testing.T) {
 	)
 }
 
-func TestDOTFromTree(t *testing.T) {
+func TestNewDOTFromTree(t *testing.T) {
 	t.Parallel()
 
 	root := output.NewTreeNode("root", "Root")
 	root.AddChild(output.NewTreeNode("child", "Child"))
 
-	renderer := DOTFromTree(root)
+	renderer := NewDOTFromTree(root)
 
 	out, err := renderer.Render()
 	if err != nil {
@@ -149,7 +149,7 @@ func TestDOTFromTreeWithEmptyID(t *testing.T) {
 		Label: output.NewBrandedID[output.TreeNodeLabelBrand]("Leaf"),
 	})
 
-	renderer := DOTFromTree(root)
+	renderer := NewDOTFromTree(root)
 
 	out, err := renderer.Render()
 	if err != nil {
@@ -160,21 +160,21 @@ func TestDOTFromTreeWithEmptyID(t *testing.T) {
 	assertContains(t, out, "Leaf", "empty ID should use label slug")
 }
 
-func TestDOTFromTableDataNil(t *testing.T) {
+func TestNewDOTFromTableNil(t *testing.T) {
 	t.Parallel()
 
-	renderer := DOTFromTableData(nil)
+	renderer := NewDOTFromTable(nil)
 	if renderer == nil {
-		t.Fatal("DOTFromTableData(nil) should return non-nil renderer")
+		t.Fatal("NewDOTFromTable(nil) should return non-nil renderer")
 	}
 }
 
 func TestDOTFromTreeNil(t *testing.T) {
 	t.Parallel()
 
-	renderer := DOTFromTree(nil)
+	renderer := NewDOTFromTree(nil)
 	if renderer == nil {
-		t.Fatal("DOTFromTree(nil) should return non-nil renderer")
+		t.Fatal("NewDOTFromTree(nil) should return non-nil renderer")
 	}
 }
 

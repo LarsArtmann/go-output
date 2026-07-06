@@ -16,15 +16,15 @@ var (
 	_ output.TableRenderer = (*HTMLRenderer)(nil)
 )
 
-//nolint:gochecknoinits // Registers HTML TableData marshaler and format capabilities.
+//nolint:gochecknoinits // Registers HTML Table marshaler and format capabilities.
 func init() {
 	output.RegisterFormatShapes(output.FormatHTML, output.ShapeTable, output.ShapeTree)
-	output.RegisterTableDataRenderer(output.FormatHTML, renderHTMLTableData)
+	output.RegisterTableMarshaler(output.FormatHTML, renderHTMLTable)
 }
 
 // HTMLRenderer implements the Renderer interface for HTML table output.
 type HTMLRenderer struct {
-	output.TableDataStore
+	output.TableStore
 }
 
 // NewHTMLRenderer creates a new HTMLRenderer.
@@ -212,7 +212,7 @@ const treeNodeRecTemplate = `{{define "treeNodeRec"}}<li>{{.Label}}
 </li>
 {{end}}`
 
-func renderHTMLTableData(w io.Writer, data *output.TableData, opts output.RenderOptions) error {
+func renderHTMLTable(w io.Writer, data *output.Table, opts output.RenderOptions) error {
 	renderer := NewHTMLRenderer()
 	renderer.SetData(data)
 

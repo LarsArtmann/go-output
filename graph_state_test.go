@@ -101,14 +101,14 @@ func TestAddTreeNodes(t *testing.T) {
 	}
 }
 
-func TestNodesFromTableData(t *testing.T) {
+func TestNodesFromTable(t *testing.T) {
 	t.Parallel()
 
-	data := NewTableData([]string{"Name", "Value"})
+	data := NewTable([]string{"Name", "Value"})
 	data.AddRow([]string{"Alpha", "100"})
 	data.AddRow([]string{"Beta", "200"})
 
-	nodes := NodesFromTableData(data, DefaultGraphNodeLabel)
+	nodes := NodesFromTable(data, DefaultGraphNodeLabel)
 
 	if len(nodes) != 2 {
 		t.Fatalf("nodes count = %d, want 2", len(nodes))
@@ -121,10 +121,10 @@ func TestNodesFromTableData(t *testing.T) {
 	}
 }
 
-func TestNodesFromTableData_Nil(t *testing.T) {
+func TestNodesFromTable_Nil(t *testing.T) {
 	t.Parallel()
 
-	nodes := NodesFromTableData(nil, DefaultGraphNodeLabel)
+	nodes := NodesFromTable(nil, DefaultGraphNodeLabel)
 
 	if nodes != nil {
 		t.Error("expected nil for nil data")
@@ -220,7 +220,7 @@ func TestGraphRendererState_AddRowEdges(t *testing.T) {
 	m := NewGraphRendererState()
 	m.SetNodes(testNodesABC())
 
-	data := NewTableData([]string{"A"})
+	data := NewTable([]string{"A"})
 	data.AddRow([]string{"1"})
 	data.AddRow([]string{"2"})
 
@@ -229,15 +229,15 @@ func TestGraphRendererState_AddRowEdges(t *testing.T) {
 	assertSliceLen(t, "Edges", m.Edges(), 1)
 }
 
-func TestGraphRendererState_SetNodesFromTableData(t *testing.T) {
+func TestGraphRendererState_SetNodesFromTable(t *testing.T) {
 	t.Parallel()
 
 	m := NewGraphRendererState()
-	data := NewTableData([]string{"Name"})
+	data := NewTable([]string{"Name"})
 	data.AddRow([]string{"Alpha"})
 	data.AddRow([]string{"Beta"})
 
-	m.SetNodesFromTableData(data, func(i int, n *GraphNode) {})
+	m.SetNodesFromTable(data, func(i int, n *GraphNode) {})
 
 	assertSliceLen(t, "Nodes", m.Nodes(), 2)
 	assertSliceLen(t, "Edges", m.Edges(), 1)
@@ -269,10 +269,10 @@ func TestUnsupportedFormatError_Error(t *testing.T) {
 	}
 }
 
-func TestTableData_GetHeaders_GetRows(t *testing.T) {
+func TestTable_GetHeaders_GetRows(t *testing.T) {
 	t.Parallel()
 
-	data := NewTableData([]string{"A", "B"})
+	data := NewTable([]string{"A", "B"})
 	data.AddRow([]string{"1", "2"})
 
 	headers := data.GetHeaders()

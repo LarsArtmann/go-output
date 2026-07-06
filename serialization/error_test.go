@@ -28,17 +28,17 @@ func TestJSONLWriter_FlushError(t *testing.T) {
 	}
 }
 
-func TestRenderJSONLTableData_RowMarshalError(t *testing.T) {
+func TestRenderJSONLTable_RowMarshalError(t *testing.T) {
 	t.Parallel()
 
-	data := output.NewTableData([]string{"Name"})
+	data := output.NewTable([]string{"Name"})
 	data.AddRow([]string{"Alice"})
 
 	var buf bytes.Buffer
 
-	err := renderJSONLTableData(&buf, data, output.RenderOptions{})
+	err := renderJSONLTable(&buf, data, output.RenderOptions{})
 	if err != nil {
-		t.Fatalf("renderJSONLTableData with normal data: %v", err)
+		t.Fatalf("renderJSONLTable with normal data: %v", err)
 	}
 
 	if !strings.Contains(buf.String(), "Alice") {
@@ -46,16 +46,16 @@ func TestRenderJSONLTableData_RowMarshalError(t *testing.T) {
 	}
 }
 
-func TestRenderJSONLTableData_NilRows(t *testing.T) {
+func TestRenderJSONLTable_NilRows(t *testing.T) {
 	t.Parallel()
 
-	data := output.NewTableData([]string{})
+	data := output.NewTable([]string{})
 
 	var buf bytes.Buffer
 
-	err := renderJSONLTableData(&buf, data, output.RenderOptions{})
+	err := renderJSONLTable(&buf, data, output.RenderOptions{})
 	if err != nil {
-		t.Fatalf("renderJSONLTableData with empty headers: %v", err)
+		t.Fatalf("renderJSONLTable with empty headers: %v", err)
 	}
 
 	if buf.String() != "" {
@@ -63,10 +63,10 @@ func TestRenderJSONLTableData_NilRows(t *testing.T) {
 	}
 }
 
-func TestMarshalJSONLFromTableData_NilData(t *testing.T) {
+func TestMarshalJSONLFromTable_NilData(t *testing.T) {
 	t.Parallel()
 
-	b, err := MarshalJSONLFromTableData(nil)
+	b, err := MarshalJSONLFromTable(nil)
 	if err != nil {
 		t.Fatalf("Expected nil error for nil data, got: %v", err)
 	}
@@ -76,12 +76,12 @@ func TestMarshalJSONLFromTableData_NilData(t *testing.T) {
 	}
 }
 
-func TestMarshalJSONLFromTableData_EmptyRows(t *testing.T) {
+func TestMarshalJSONLFromTable_EmptyRows(t *testing.T) {
 	t.Parallel()
 
-	data := output.NewTableData([]string{"A"})
+	data := output.NewTable([]string{"A"})
 
-	b, err := MarshalJSONLFromTableData(data)
+	b, err := MarshalJSONLFromTable(data)
 	if err != nil {
 		t.Fatalf("Expected nil error for empty rows, got: %v", err)
 	}
@@ -94,7 +94,7 @@ func TestMarshalJSONLFromTableData_EmptyRows(t *testing.T) {
 func TestRenderTable_MarshalError(t *testing.T) {
 	t.Parallel()
 
-	data := output.NewTableData([]string{"A"})
+	data := output.NewTable([]string{"A"})
 	data.AddRow([]string{"1"})
 
 	_, err := renderTable(data, "[]", "failing", func(v any) ([]byte, error) {
@@ -125,7 +125,7 @@ func TestRenderTable_NilData(t *testing.T) {
 func TestRenderTable_EmptyHeaders(t *testing.T) {
 	t.Parallel()
 
-	data := output.NewTableData([]string{})
+	data := output.NewTable([]string{})
 
 	got, err := renderTable(data, "empty", "test", json.Marshal)
 	if err != nil {
@@ -221,22 +221,22 @@ func TestYAMLGraphRenderer_MarshalError(t *testing.T) {
 	}
 }
 
-func TestMarshalTOMLFromTableData_RenderError(t *testing.T) {
+func TestMarshalTOMLFromTable_RenderError(t *testing.T) {
 	t.Parallel()
 
-	data := output.NewTableData([]string{"A"})
+	data := output.NewTable([]string{"A"})
 	data.AddRow([]string{"1"})
 
-	_, err := MarshalTOMLFromTableData(data)
+	_, err := MarshalTOMLFromTable(data)
 	if err != nil {
-		t.Fatalf("MarshalTOMLFromTableData should succeed with normal data: %v", err)
+		t.Fatalf("MarshalTOMLFromTable should succeed with normal data: %v", err)
 	}
 }
 
-func TestMarshalTOMLFromTableData_Nil(t *testing.T) {
+func TestMarshalTOMLFromTable_Nil(t *testing.T) {
 	t.Parallel()
 
-	b, err := MarshalTOMLFromTableData(nil)
+	b, err := MarshalTOMLFromTable(nil)
 	if err != nil {
 		t.Fatalf("Expected nil error for nil data, got: %v", err)
 	}
@@ -258,7 +258,7 @@ func TestMarshalTOML_Error(t *testing.T) {
 func TestRenderViaRenderer_WriteError(t *testing.T) {
 	t.Parallel()
 
-	data := output.NewTableData([]string{"A"})
+	data := output.NewTable([]string{"A"})
 	data.AddRow([]string{"1"})
 
 	r := NewJSONTableRenderer()
@@ -304,13 +304,13 @@ func TestRenderTOMLUnknown_WriteError(t *testing.T) {
 	assertContains(t, err.Error(), "write TOML", "error should mention TOML")
 }
 
-func TestRenderJSONLTableData_WriteRowError(t *testing.T) {
+func TestRenderJSONLTable_WriteRowError(t *testing.T) {
 	t.Parallel()
 
-	data := output.NewTableData([]string{"Name"})
+	data := output.NewTable([]string{"Name"})
 	data.AddRow([]string{"Alice"})
 
-	err := renderJSONLTableData(&errorWriter{}, data, output.RenderOptions{})
+	err := renderJSONLTable(&errorWriter{}, data, output.RenderOptions{})
 	if err == nil {
 		t.Fatal("expected error from errorWriter")
 	}

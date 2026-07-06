@@ -5,15 +5,15 @@
 //
 // # Quick Start
 //
-// Use TableData as the single source of truth for tabular data:
+// Use Table as the single source of truth for tabular data:
 //
-//	data := output.NewTableData([]string{"Name", "Status"})
+//	data := output.NewTable([]string{"Name", "Status"})
 //	data.AddRow([]string{"Project A", "Active"})
 //	data.Footer = []string{"Total", "1"}
 //
 //	Render to any supported format:
 //	var buf bytes.Buffer
-//	_ = output.RenderTableData(data, output.FormatMarkdown, output.RenderOptions{Writer: &buf})
+//	_ = output.RenderTable(data, output.FormatMarkdown, output.RenderOptions{Writer: &buf})
 //
 // # Architecture
 //

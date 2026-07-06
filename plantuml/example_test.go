@@ -20,10 +20,10 @@ func ExampleNewPlantUMLDiagram() {
 }
 
 //nolint:testableexamples // Demonstration example, output is dynamic
-func ExamplePlantUMLFromTableData() {
-	data := output.NewTableData([]string{"Name"})
+func ExampleNewPlantUMLFromTable() {
+	data := output.NewTable([]string{"Name"})
 	data.AddRow([]string{"Alpha"})
 	data.AddRow([]string{"Beta"})
 
-	fmt.Println(testhelpers.MustRender(plantuml.PlantUMLFromTableData(data)))
+	fmt.Println(testhelpers.MustRender(plantuml.NewPlantUMLFromTable(data)))
 }

@@ -14,24 +14,24 @@ import (
 	"github.com/larsartmann/go-output/testhelpers"
 )
 
-// roundTripData returns a consistent TableData for round-trip testing.
-func roundTripData() *output.TableData {
-	data := output.NewTableData([]string{"Name", "Score", "Active"})
+// roundTripData returns a consistent Table for round-trip testing.
+func roundTripData() *output.Table {
+	data := output.NewTable([]string{"Name", "Score", "Active"})
 	data.AddRow([]string{"Alice", "95", "true"})
 	data.AddRow([]string{"Bob", "87", "false"})
 
 	return data
 }
 
-// renderTableData is a small helper that renders TableData to the given format
+// renderTable is a small helper that renders Table to the given format
 // and returns the output string. It fails the test on error.
-func renderTableData(t *testing.T, data *output.TableData, format output.Format) string {
+func renderTable(t *testing.T, data *output.Table, format output.Format) string {
 	t.Helper()
 
 	var buf bytes.Buffer
 
-	if err := output.RenderTableData(data, format, output.RenderOptions{Writer: &buf}); err != nil {
-		t.Fatalf("RenderTableData(%s): %v", format, err)
+	if err := output.RenderTable(data, format, output.RenderOptions{Writer: &buf}); err != nil {
+		t.Fatalf("RenderTable(%s): %v", format, err)
 	}
 
 	return buf.String()
@@ -87,7 +87,7 @@ func assertCell(t *testing.T, name string, records [][]string, row, col int, wan
 	}
 }
 
-// TestRoundTripJSON verifies TableData → JSON renderer → parse → verify.
+// TestRoundTripJSON verifies Table → JSON renderer → parse → verify.
 func TestRoundTripJSON(t *testing.T) {
 	t.Parallel()
 
@@ -114,13 +114,13 @@ func TestRoundTripJSON(t *testing.T) {
 	assertMapRow(t, parsed, 1, "Name", "Bob", "Active", "false")
 }
 
-// TestRoundTripCSV verifies TableData → CSV → parse → verify.
+// TestRoundTripCSV verifies Table → CSV → parse → verify.
 func TestRoundTripCSV(t *testing.T) {
 	t.Parallel()
 
 	data := roundTripData()
 
-	result := renderTableData(t, data, output.FormatCSV)
+	result := renderTable(t, data, output.FormatCSV)
 	records := parseDelimited(t, result, ',')
 
 	if len(records) != 3 {
@@ -136,13 +136,13 @@ func TestRoundTripCSV(t *testing.T) {
 	assertCell(t, "CSV row[2][2]", records, 2, 2, "false")
 }
 
-// TestRoundTripTSV verifies TableData → TSV → parse → verify.
+// TestRoundTripTSV verifies Table → TSV → parse → verify.
 func TestRoundTripTSV(t *testing.T) {
 	t.Parallel()
 
 	data := roundTripData()
 
-	result := renderTableData(t, data, output.FormatTSV)
+	result := renderTable(t, data, output.FormatTSV)
 	records := parseDelimited(t, result, '\t')
 
 	if len(records) != 3 {
@@ -153,7 +153,7 @@ func TestRoundTripTSV(t *testing.T) {
 	assertCell(t, "TSV row[1][0]", records, 1, 0, "Alice")
 }
 
-// TestRoundTripYAML verifies TableData → YAML → parse → verify.
+// TestRoundTripYAML verifies Table → YAML → parse → verify.
 func TestRoundTripYAML(t *testing.T) {
 	t.Parallel()
 
@@ -161,9 +161,9 @@ func TestRoundTripYAML(t *testing.T) {
 
 	var buf bytes.Buffer
 
-	err := output.RenderTableData(data, output.FormatYAML, output.RenderOptions{Writer: &buf})
+	err := output.RenderTable(data, output.FormatYAML, output.RenderOptions{Writer: &buf})
 	if err != nil {
-		t.Fatalf("RenderTableData YAML: %v", err)
+		t.Fatalf("RenderTable YAML: %v", err)
 	}
 
 	var parsed []map[string]string
@@ -180,7 +180,7 @@ func TestRoundTripYAML(t *testing.T) {
 	}
 }
 
-// TestRoundTripTOML verifies TableData → TOML → verify content.
+// TestRoundTripTOML verifies Table → TOML → verify content.
 // TOML does not support top-level arrays, so rows are wrapped under a [[row]]
 // key using array-of-tables syntax.
 func TestRoundTripTOML(t *testing.T) {
@@ -188,9 +188,9 @@ func TestRoundTripTOML(t *testing.T) {
 
 	data := roundTripData()
 
-	b, err := serialization.MarshalTOMLFromTableData(data)
+	b, err := serialization.MarshalTOMLFromTable(data)
 	if err != nil {
-		t.Fatalf("MarshalTOMLFromTableData: %v", err)
+		t.Fatalf("MarshalTOMLFromTable: %v", err)
 	}
 
 	result := string(b)
@@ -205,7 +205,7 @@ func TestRoundTripTOML(t *testing.T) {
 	testhelpers.AssertContains(t, result, "Name = 'Bob'", "TOML should contain Bob row")
 }
 
-// TestRoundTripJSONL verifies TableData → JSONL → parse → verify.
+// TestRoundTripJSONL verifies Table → JSONL → parse → verify.
 func TestRoundTripJSONL(t *testing.T) {
 	t.Parallel()
 
@@ -213,9 +213,9 @@ func TestRoundTripJSONL(t *testing.T) {
 
 	var buf bytes.Buffer
 
-	err := output.RenderTableData(data, output.FormatJSONL, output.RenderOptions{Writer: &buf})
+	err := output.RenderTable(data, output.FormatJSONL, output.RenderOptions{Writer: &buf})
 	if err != nil {
-		t.Fatalf("RenderTableData JSONL: %v", err)
+		t.Fatalf("RenderTable JSONL: %v", err)
 	}
 
 	lines := strings.Split(strings.TrimSpace(buf.String()), "\n")

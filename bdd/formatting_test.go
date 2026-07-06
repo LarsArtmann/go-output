@@ -12,10 +12,10 @@ import (
 // BDD specs describing the end-user experience of a CLI developer using
 // go-output to render tabular data across multiple formats.
 var _ = ginkgo.Describe("a CLI developer formatting tabular data", func() {
-	var data *output.TableData
+	var data *output.Table
 
 	ginkgo.BeforeEach(func() {
-		data = output.NewTableData([]string{"Name", "Role"})
+		data = output.NewTable([]string{"Name", "Role"})
 		data.AddRow([]string{"Ada", "Engineer"})
 		data.AddRow([]string{"Grace", "Architect"})
 	})
@@ -92,10 +92,10 @@ var _ = ginkgo.Describe("a CLI developer formatting tabular data", func() {
 })
 
 // mustRender renders data in the given format to a string, failing the spec on error.
-func mustRender(data *output.TableData, format output.Format) string {
+func mustRender(data *output.Table, format output.Format) string {
 	var buf strings.Builder
 
-	err := output.RenderTableData(data, format, output.RenderOptions{Writer: &buf})
+	err := output.RenderTable(data, format, output.RenderOptions{Writer: &buf})
 	gomega.ExpectWithOffset(1, err).NotTo(gomega.HaveOccurred())
 
 	return buf.String()

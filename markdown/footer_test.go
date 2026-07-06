@@ -57,21 +57,21 @@ func testMarkdownFooter(t *testing.T) {
 		}
 	})
 
-	t.Run("footer from TableData", func(t *testing.T) {
+	t.Run("footer from Table", func(t *testing.T) {
 		t.Parallel()
 
-		data := output.NewTableData([]string{"Item", "Qty"})
+		data := output.NewTable([]string{"Item", "Qty"})
 		data.AddRow([]string{"Apple", "5"})
 		data.Footer = []string{"Sum", "5"}
 
-		m := NewMarkdownTableFromData(data)
+		m := NewMarkdownTableFromTable(data)
 
 		got, err := m.Render()
 		if err != nil {
 			t.Fatalf("Render() error = %v", err)
 		}
 
-		assertContains(t, got, "Sum", "should contain footer from TableData")
+		assertContains(t, got, "Sum", "should contain footer from Table")
 	})
 
 	t.Run("footer inherits column alignment", func(t *testing.T) {

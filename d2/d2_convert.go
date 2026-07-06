@@ -8,13 +8,13 @@ import (
 	"github.com/larsartmann/go-output/escape"
 )
 
-//nolint:gochecknoinits // Registers D2 TableDataRenderer for registry-based dispatch.
+//nolint:gochecknoinits // Registers D2 TableRenderer for registry-based dispatch.
 func init() {
-	output.RegisterTableDataRenderer(output.FormatD2, renderD2TableData)
+	output.RegisterTableMarshaler(output.FormatD2, renderD2Table)
 }
 
-func renderD2TableData(w io.Writer, data *output.TableData, _ output.RenderOptions) error {
-	out, err := D2FromTableData(data).Render()
+func renderD2Table(w io.Writer, data *output.Table, _ output.RenderOptions) error {
+	out, err := NewD2FromTable(data).Render()
 	if err != nil {
 		return fmt.Errorf("render D2: %w", err)
 	}
@@ -97,14 +97,14 @@ func graphStyleToD2(s output.NodeStyle) D2NodeStyle {
 	}
 }
 
-// D2FromTableData converts TableData to a D2 diagram with per-row nodes connected by edges.
-func D2FromTableData(data *output.TableData) *D2Diagram {
+// NewD2FromTable converts Table to a D2 diagram with per-row nodes connected by edges.
+func NewD2FromTable(data *output.Table) *D2Diagram {
 	diagram := NewD2Diagram()
 	if data == nil {
 		return diagram
 	}
 
-	nodes := output.NodesFromTableData(data, output.DefaultGraphNodeLabel)
+	nodes := output.NodesFromTable(data, output.DefaultGraphNodeLabel)
 
 	for _, n := range nodes {
 		diagram.AddNode(graphNodeToD2(n))
@@ -117,8 +117,8 @@ func D2FromTableData(data *output.TableData) *D2Diagram {
 	return diagram
 }
 
-// D2FromTree converts a TreeNode hierarchy to a D2 diagram.
-func D2FromTree(root *output.TreeNode) *D2Diagram {
+// NewD2FromTree converts a TreeNode hierarchy to a D2 diagram.
+func NewD2FromTree(root *output.TreeNode) *D2Diagram {
 	return output.TreeToRenderer(NewD2Diagram, (*D2Diagram).addTreeNodes, root)
 }
 

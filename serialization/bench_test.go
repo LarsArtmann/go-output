@@ -6,8 +6,8 @@ import (
 	"github.com/larsartmann/go-output"
 )
 
-func BenchmarkMarshalJSONFromTableData(b *testing.B) {
-	data := output.NewTableData([]string{"Name", "Age", "Email"})
+func BenchmarkMarshalJSONFromTable(b *testing.B) {
+	data := output.NewTable([]string{"Name", "Age", "Email"})
 	for range 100 {
 		data.AddRow([]string{"Alice", "30", "alice@example.com"})
 	}
@@ -21,8 +21,8 @@ func BenchmarkMarshalJSONFromTableData(b *testing.B) {
 	}
 }
 
-func BenchmarkMarshalYAMLFromTableData(b *testing.B) {
-	data := output.NewTableData([]string{"Name", "Age", "Email"})
+func BenchmarkMarshalYAMLFromTable(b *testing.B) {
+	data := output.NewTable([]string{"Name", "Age", "Email"})
 	for range 100 {
 		data.AddRow([]string{"Alice", "30", "alice@example.com"})
 	}
@@ -36,8 +36,8 @@ func BenchmarkMarshalYAMLFromTableData(b *testing.B) {
 	}
 }
 
-func BenchmarkMarshalTOMLFromTableData(b *testing.B) {
-	data := output.NewTableData([]string{"Name", "Age", "Email"})
+func BenchmarkMarshalTOMLFromTable(b *testing.B) {
+	data := output.NewTable([]string{"Name", "Age", "Email"})
 	for range 100 {
 		data.AddRow([]string{"Alice", "30", "alice@example.com"})
 	}
@@ -45,12 +45,12 @@ func BenchmarkMarshalTOMLFromTableData(b *testing.B) {
 	b.ResetTimer()
 
 	for b.Loop() {
-		_, _ = MarshalTOMLFromTableData(data)
+		_, _ = MarshalTOMLFromTable(data)
 	}
 }
 
-func BenchmarkMarshalJSONLFromTableData(b *testing.B) {
-	data := output.NewTableData([]string{"Name", "Age", "Email"})
+func BenchmarkMarshalJSONLFromTable(b *testing.B) {
+	data := output.NewTable([]string{"Name", "Age", "Email"})
 	for range 100 {
 		data.AddRow([]string{"Alice", "30", "alice@example.com"})
 	}
@@ -58,7 +58,7 @@ func BenchmarkMarshalJSONLFromTableData(b *testing.B) {
 	b.ResetTimer()
 
 	for b.Loop() {
-		_, _ = MarshalJSONLFromTableData(data)
+		_, _ = MarshalJSONLFromTable(data)
 	}
 }
 

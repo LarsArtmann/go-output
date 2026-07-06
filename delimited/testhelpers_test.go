@@ -16,22 +16,22 @@ var (
 	assertLastLineContains = testhelpers.AssertLastLineContains
 )
 
-func testRenderTableData(t *testing.T, format output.Format, name string) {
+func testRenderTable(t *testing.T, format output.Format, name string) {
 	t.Helper()
 
 	t.Run("renders via registry dispatch", func(t *testing.T) {
 		t.Parallel()
 
-		data := output.NewTableData([]string{"Name", "Value"})
+		data := output.NewTable([]string{"Name", "Value"})
 		data.AddRow([]string{"Alpha", "100"})
 
 		var buf bytes.Buffer
 
 		opts := output.RenderOptions{Writer: &buf}
 
-		err := output.RenderTableData(data, format, opts)
+		err := output.RenderTable(data, format, opts)
 		if err != nil {
-			t.Fatalf("RenderTableData(%s) error = %v", name, err)
+			t.Fatalf("RenderTable(%s) error = %v", name, err)
 		}
 
 		result := buf.String()
@@ -42,9 +42,9 @@ func testRenderTableData(t *testing.T, format output.Format, name string) {
 	t.Run("nil data returns nil", func(t *testing.T) {
 		t.Parallel()
 
-		err := output.RenderTableData(nil, format, output.RenderOptions{})
+		err := output.RenderTable(nil, format, output.RenderOptions{})
 		if err != nil {
-			t.Fatalf("RenderTableData(nil) error = %v", err)
+			t.Fatalf("RenderTable(nil) error = %v", err)
 		}
 	})
 }

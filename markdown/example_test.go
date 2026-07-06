@@ -20,12 +20,12 @@ func ExampleNewMarkdownTable() {
 }
 
 //nolint:testableexamples // Demonstration example, output is dynamic
-func ExampleNewMarkdownTableFromData() {
-	data := output.NewTableData([]string{"Module", "Coverage"})
+func ExampleNewMarkdownTableFromTable() {
+	data := output.NewTable([]string{"Module", "Coverage"})
 	data.AddRow([]string{"core", "92%"})
 	data.AddRow([]string{"cli", "78%"})
 
-	md := markdown.NewMarkdownTableFromData(data)
+	md := markdown.NewMarkdownTableFromTable(data)
 	md.SetColorMode(output.ColorModeNever)
 
 	fmt.Println(testhelpers.MustRender(md))

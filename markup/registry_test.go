@@ -8,7 +8,7 @@ import (
 	"github.com/larsartmann/go-output/testhelpers"
 )
 
-func TestRenderTableData_NilAndError(t *testing.T) {
+func TestRenderTable_NilAndError(t *testing.T) {
 	t.Parallel()
 
 	formats := []struct {
@@ -39,10 +39,10 @@ func TestRenderTableData_NilAndError(t *testing.T) {
 			t.Run(f.name, func(t *testing.T) {
 				t.Parallel()
 
-				data := output.NewTableData([]string{"Name"})
+				data := output.NewTable([]string{"Name"})
 				data.AddRow([]string{"Alice"})
 
-				err := output.RenderTableData(data, f.format, output.RenderOptions{Writer: &testhelpers.ErrorWriter{}})
+				err := output.RenderTable(data, f.format, output.RenderOptions{Writer: &testhelpers.ErrorWriter{}})
 				if err == nil {
 					t.Fatal("expected error from ErrorWriter")
 				}
@@ -56,9 +56,9 @@ func assertNilDataEmptyOutput(t *testing.T, format output.Format, name string) {
 
 	var buf bytes.Buffer
 
-	err := output.RenderTableData(nil, format, output.RenderOptions{Writer: &buf})
+	err := output.RenderTable(nil, format, output.RenderOptions{Writer: &buf})
 	if err != nil {
-		t.Fatalf("RenderTableData %s nil: %v", name, err)
+		t.Fatalf("RenderTable %s nil: %v", name, err)
 	}
 
 	if buf.String() != "" {
@@ -66,17 +66,17 @@ func assertNilDataEmptyOutput(t *testing.T, format output.Format, name string) {
 	}
 }
 
-func TestRenderXMLTableData(t *testing.T) {
+func TestRenderXMLTable(t *testing.T) {
 	t.Parallel()
 
-	data := output.NewTableData([]string{"Name", "Age"})
+	data := output.NewTable([]string{"Name", "Age"})
 	data.AddRow([]string{"Alice", "30"})
 
 	var buf bytes.Buffer
 
-	err := output.RenderTableData(data, output.FormatXML, output.RenderOptions{Writer: &buf})
+	err := output.RenderTable(data, output.FormatXML, output.RenderOptions{Writer: &buf})
 	if err != nil {
-		t.Fatalf("RenderTableData xml: %v", err)
+		t.Fatalf("RenderTable xml: %v", err)
 	}
 
 	out := buf.String()
@@ -84,17 +84,17 @@ func TestRenderXMLTableData(t *testing.T) {
 	testhelpers.AssertContains(t, out, "Alice", "xml output")
 }
 
-func TestRenderHTMLTableData(t *testing.T) {
+func TestRenderHTMLTable(t *testing.T) {
 	t.Parallel()
 
-	data := output.NewTableData([]string{"Name", "Age"})
+	data := output.NewTable([]string{"Name", "Age"})
 	data.AddRow([]string{"Alice", "30"})
 
 	var buf bytes.Buffer
 
-	err := output.RenderTableData(data, output.FormatHTML, output.RenderOptions{Writer: &buf})
+	err := output.RenderTable(data, output.FormatHTML, output.RenderOptions{Writer: &buf})
 	if err != nil {
-		t.Fatalf("RenderTableData html: %v", err)
+		t.Fatalf("RenderTable html: %v", err)
 	}
 
 	out := buf.String()
@@ -102,20 +102,20 @@ func TestRenderHTMLTableData(t *testing.T) {
 	testhelpers.AssertContains(t, out, "Alice", "html output")
 }
 
-func TestRenderHTMLTableData_WithTitle(t *testing.T) {
+func TestRenderHTMLTable_WithTitle(t *testing.T) {
 	t.Parallel()
 
-	data := output.NewTableData([]string{"Name"})
+	data := output.NewTable([]string{"Name"})
 	data.AddRow([]string{"Alice"})
 
 	var buf bytes.Buffer
 
-	err := output.RenderTableData(data, output.FormatHTML, output.RenderOptions{
+	err := output.RenderTable(data, output.FormatHTML, output.RenderOptions{
 		Writer: &buf,
 		Title:  "Test Report",
 	})
 	if err != nil {
-		t.Fatalf("RenderTableData html with title: %v", err)
+		t.Fatalf("RenderTable html with title: %v", err)
 	}
 
 	out := buf.String()
@@ -123,17 +123,17 @@ func TestRenderHTMLTableData_WithTitle(t *testing.T) {
 	testhelpers.AssertContains(t, out, "<table", "html output")
 }
 
-func TestRenderAsciiDocTableData(t *testing.T) {
+func TestRenderAsciiDocTable(t *testing.T) {
 	t.Parallel()
 
-	data := output.NewTableData([]string{"Name", "Age"})
+	data := output.NewTable([]string{"Name", "Age"})
 	data.AddRow([]string{"Alice", "30"})
 
 	var buf bytes.Buffer
 
-	err := output.RenderTableData(data, output.FormatAsciiDoc, output.RenderOptions{Writer: &buf})
+	err := output.RenderTable(data, output.FormatAsciiDoc, output.RenderOptions{Writer: &buf})
 	if err != nil {
-		t.Fatalf("RenderTableData asciidoc: %v", err)
+		t.Fatalf("RenderTable asciidoc: %v", err)
 	}
 
 	out := buf.String()

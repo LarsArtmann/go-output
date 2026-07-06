@@ -11,7 +11,7 @@ import (
 
 //nolint:testableexamples // Demonstration example, output is dynamic
 func ExampleNewJSONTableRenderer() {
-	data := output.NewTableData([]string{"Name", "Age"})
+	data := output.NewTable([]string{"Name", "Age"})
 	data.AddRow([]string{"Alice", "30"})
 	data.AddRow([]string{"Bob", "25"})
 
@@ -29,12 +29,12 @@ func ExampleNewJSONTableRenderer() {
 }
 
 //nolint:testableexamples // Demonstration example, output is dynamic
-func ExampleMarshalJSONLFromTableData() {
-	data := output.NewTableData([]string{"Name", "Age"})
+func ExampleMarshalJSONLFromTable() {
+	data := output.NewTable([]string{"Name", "Age"})
 	data.AddRow([]string{"Alice", "30"})
 	data.AddRow([]string{"Bob", "25"})
 
-	result, err := serialization.MarshalJSONLFromTableData(data)
+	result, err := serialization.MarshalJSONLFromTable(data)
 	if err != nil {
 		fmt.Printf("error: %v\n", err)
 
@@ -46,7 +46,7 @@ func ExampleMarshalJSONLFromTableData() {
 
 //nolint:testableexamples // Demonstration example, output is dynamic
 func ExampleNewYAMLTableRenderer() {
-	data := output.NewTableData([]string{"Name", "Age"})
+	data := output.NewTable([]string{"Name", "Age"})
 	data.AddRow([]string{"Alice", "30"})
 
 	renderer := serialization.NewYAMLTableRenderer()
@@ -64,7 +64,7 @@ func ExampleNewYAMLTableRenderer() {
 
 //nolint:testableexamples // Demonstration example, output is dynamic
 func ExampleNewTOMLTableRenderer() {
-	data := output.NewTableData([]string{"Name", "Age"})
+	data := output.NewTable([]string{"Name", "Age"})
 	data.AddRow([]string{"Alice", "30"})
 
 	renderer := serialization.NewTOMLTableRenderer()

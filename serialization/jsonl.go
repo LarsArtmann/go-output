@@ -15,10 +15,10 @@ var (
 	_ output.TableRenderer = (*JSONLTableRenderer)(nil)
 )
 
-//nolint:gochecknoinits // Registers JSONL TableData marshaler and format capabilities.
+//nolint:gochecknoinits // Registers JSONL Table marshaler and format capabilities.
 func init() {
 	output.RegisterFormatShapes(output.FormatJSONL, output.ShapeTable)
-	output.RegisterTableDataRenderer(output.FormatJSONL, renderJSONLTableData)
+	output.RegisterTableMarshaler(output.FormatJSONL, renderJSONLTable)
 }
 
 // JSONLWriter writes JSON Lines output — one JSON object per line.
@@ -56,9 +56,9 @@ func (j *JSONLWriter) Flush() error {
 	return nil
 }
 
-// JSONLTableRenderer renders TableData as JSON Lines.
+// JSONLTableRenderer renders Table as JSON Lines.
 type JSONLTableRenderer struct {
-	output.TableDataStore
+	output.TableStore
 }
 
 // NewJSONLTableRenderer creates a new JSONLTableRenderer.
@@ -79,8 +79,8 @@ func (r *JSONLTableRenderer) Render() (string, error) {
 	return marshalJSONLRows(data.ToMapSlice())
 }
 
-// MarshalJSONLFromTableData marshals TableData as JSON Lines.
-func MarshalJSONLFromTableData(data *output.TableData) ([]byte, error) {
+// MarshalJSONLFromTable marshals Table as JSON Lines.
+func MarshalJSONLFromTable(data *output.Table) ([]byte, error) {
 	if data == nil {
 		return nil, nil
 	}
@@ -98,7 +98,7 @@ func MarshalJSONLFromTableData(data *output.TableData) ([]byte, error) {
 	return []byte(out), nil
 }
 
-func renderJSONLTableData(w io.Writer, data *output.TableData, _ output.RenderOptions) error {
+func renderJSONLTable(w io.Writer, data *output.Table, _ output.RenderOptions) error {
 	if data == nil {
 		return nil
 	}
