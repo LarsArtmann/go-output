@@ -2,7 +2,10 @@ package output
 
 // TreeBuilder is the CQRS write-side builder for tree data.
 // It provides a fluent construction API for assembling a tree,
-// then freezes the result into a *TreeNode (root) via Build().
+// then returns the assembled *TreeNode (root) via Build().
+// Note: *TreeNode has exported fields and an AddChild method; callers
+// SHOULD treat the result as read-only after Build(), but Go does not
+// enforce this at the type level.
 //
 // Usage:
 //

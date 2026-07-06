@@ -78,20 +78,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   `D2TextTransform` enum with `ParseD2TextTransform`/`IsValid`/
   `AllowedValues` (type-safe, prevents invalid values at compile time).
 
-### Deprecated (v2 removal)
-
-- **nom** — `NOMSubscriber` → use `NOMSubscriber` (type alias).
-- **nom** — `NewNOMSubscriber` → use `NewNOMSubscriber`.
-- **nom** — `SemanticColors.Info` → renamed to `SemanticColors.Fallback`.
-- **nom** — `DependencyTree()` → use `DependencyTree()` (identical behavior).
-- **nom** — `ErrActivityNotFound` → use `GetNode(id) == nil` check instead.
-- **nom** — `TimingFormat` constant → use `FormatDuration()` function.
-- **nom** — `Activity.IsPhase()` → use `ActivitySnapshot.IsPhase()`.
-- **graph** — `EdgeStyle.ArrowHead`/`ArrowTail` → never read by any renderer;
-  use D2's `D2Edge.SourceArrow`/`TargetArrow` for D2 diagrams.
-- **output** — `RendererAsWriter` → use `RendererAsWriter`
-  (honest name for non-streaming adapter).
-
 ### Added
 
 - **nom** — `MsgNoActivities` exported constant (single source of truth for

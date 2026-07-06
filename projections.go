@@ -4,13 +4,18 @@ package output
 // and connecting consecutive rows with directed edges. Each node is labeled
 // with all cell values from its row. This is a pure projection — the input
 // Table is not modified.
-func TableToGraph(data *Table) Graph {
+func TableToGraph(data *Table, labelFn ...GraphNodeLabelFunc) Graph {
 	if data == nil || len(data.Rows) == 0 {
 		return Graph{}
 	}
 
+	fn := DefaultGraphNodeLabel
+	if len(labelFn) > 0 && labelFn[0] != nil {
+		fn = labelFn[0]
+	}
+
 	b := NewGraphBuilder()
-	b.SetNodes(NodesFromTable(data, DefaultGraphNodeLabel))
+	b.SetNodes(NodesFromTable(data, fn))
 	b.AddRowEdges(data)
 
 	return b.Build()
