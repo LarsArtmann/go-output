@@ -117,16 +117,16 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 
 ## CQRS Architecture (v0.30.0)
 
-| Feature | Status | Notes |
-| ------- | ------ | ----- |
-| **TableBuilder** | FULLY_FUNCTIONAL | Fluent write-side builder: `SetHeaders()`/`AddRow()`/`AddRows()`/`SetFooter()`/`Build()→*Table` |
-| **TreeBuilder** | FULLY_FUNCTIONAL | Fluent write-side builder: `SetRoot()`/`AddChild()`/`AddChildren()`/`Build()→*TreeNode` |
-| **GraphBuilder.Build()→Graph** | FULLY_FUNCTIONAL | Immutable graph snapshot (unexported fields, `Nodes()`/`Edges()` accessors only) |
-| **TableToGraph()** | FULLY_FUNCTIONAL | Pure projection: Table→Graph. Accepts `WithGraphNodeLabelFunc(fn)` option |
-| **GraphToTree()** | FULLY_FUNCTIONAL | Pure projection: Graph→Tree. Cycle-guarded, first root's subtree for forests |
-| **GraphToTable()** | FULLY_FUNCTIONAL | Pure projection: Graph→Table (ID+Label columns) |
-| **CQRS Write/Render per format** | FULLY_FUNCTIONAL | Every format has `WriteXxx(w, data)` (streaming) + `RenderXxx(data)` (string convenience) |
-| **Registry dispatch → CQRS** | FULLY_FUNCTIONAL | `RenderTable()` dispatches to CQRS streaming functions (byte-for-byte identical output) |
+| Feature                          | Status           | Notes                                                                                           |
+| -------------------------------- | ---------------- | ----------------------------------------------------------------------------------------------- |
+| **TableBuilder**                 | FULLY_FUNCTIONAL | Fluent write-side builder: `SetHeaders()`/`AddRow()`/`AddRows()`/`SetFooter()`/`Build()→*Table` |
+| **TreeBuilder**                  | FULLY_FUNCTIONAL | Fluent write-side builder: `SetRoot()`/`AddChild()`/`AddChildren()`/`Build()→*TreeNode`         |
+| **GraphBuilder.Build()→Graph**   | FULLY_FUNCTIONAL | Immutable graph snapshot (unexported fields, `Nodes()`/`Edges()` accessors only)                |
+| **TableToGraph()**               | FULLY_FUNCTIONAL | Pure projection: Table→Graph. Accepts `WithGraphNodeLabelFunc(fn)` option                       |
+| **GraphToTree()**                | FULLY_FUNCTIONAL | Pure projection: Graph→Tree. Cycle-guarded, first root's subtree for forests                    |
+| **GraphToTable()**               | FULLY_FUNCTIONAL | Pure projection: Graph→Table (ID+Label columns)                                                 |
+| **CQRS Write/Render per format** | FULLY_FUNCTIONAL | Every format has `WriteXxx(w, data)` (streaming) + `RenderXxx(data)` (string convenience)       |
+| **Registry dispatch → CQRS**     | FULLY_FUNCTIONAL | `RenderTable()` dispatches to CQRS streaming functions (byte-for-byte identical output)         |
 
 ---
 
