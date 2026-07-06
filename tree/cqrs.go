@@ -34,12 +34,11 @@ func WriteASCII(w io.Writer, root *output.TreeNode, opts ...Option) error {
 
 	out, err := r.Render()
 	if err != nil {
-		return fmt.Errorf("write output: %w", err)
+		return fmt.Errorf("render ascii tree: %w", err)
 	}
 
-	_, err = io.WriteString(w, out)
-	if err != nil {
-		return fmt.Errorf("write output: %w", err)
+	if _, err := io.WriteString(w, out); err != nil {
+		return fmt.Errorf("write ascii tree output: %w", err)
 	}
 
 	return nil
@@ -67,7 +66,7 @@ func WriteMarkdown(w io.Writer, root *output.TreeNode) error {
 func writeMarkdownNode(w io.Writer, node *output.TreeNode, depth int) error {
 	indent := strings.Repeat("  ", depth)
 
-	label := rootLabel(node)
+	label := nodeLabel(node)
 
 	if _, err := fmt.Fprintf(w, "%s- %s\n", indent, label); err != nil {
 		return fmt.Errorf("write markdown node: %w", err)
@@ -82,7 +81,7 @@ func writeMarkdownNode(w io.Writer, node *output.TreeNode, depth int) error {
 	return nil
 }
 
-func rootLabel(node *output.TreeNode) string {
+func nodeLabel(node *output.TreeNode) string {
 	if !node.Label.IsZero() {
 		return node.Label.Get()
 	}
