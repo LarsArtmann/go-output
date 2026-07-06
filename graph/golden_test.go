@@ -53,13 +53,13 @@ func TestGolden_DOT_StyledNodes(t *testing.T) {
 		ID:    output.NewBrandedID[output.GraphNodeIDBrand]("build"),
 		Label: output.NewBrandedID[output.GraphNodeLabelBrand]("Build"),
 		Shape: output.NodeShapeBox,
-		Style: output.GraphStyle{Fill: "#4CAF50", Stroke: "#2E7D32"},
+		Style: output.NodeStyle{Fill: "#4CAF50", Stroke: "#2E7D32"},
 	})
 	r.AddNode(output.GraphNode{
 		ID:    output.NewBrandedID[output.GraphNodeIDBrand]("test"),
 		Label: output.NewBrandedID[output.GraphNodeLabelBrand]("Test"),
 		Shape: output.NodeShapeDiamond,
-		Style: output.GraphStyle{Fill: "#FF9800"},
+		Style: output.NodeStyle{Fill: "#FF9800"},
 	})
 	r.AddEdge(output.GraphEdge{
 		From:  output.NewBrandedID[output.GraphNodeIDBrand]("build"),

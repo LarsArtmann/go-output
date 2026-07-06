@@ -10,7 +10,7 @@ import (
 
 var (
 	_ output.Renderer           = (*TOMLTreeRenderer)(nil)
-	_ output.TreeOutputRenderer = (*TOMLTreeRenderer)(nil)
+	_ output.TreeRenderer = (*TOMLTreeRenderer)(nil)
 	_ output.Renderer           = (*TOMLGraphRenderer)(nil)
 	_ output.GraphRenderer      = (*TOMLGraphRenderer)(nil)
 )

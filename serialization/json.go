@@ -13,14 +13,14 @@ var (
 	_ output.TableRenderer = (*JSONTableRenderer)(nil)
 )
 
-//nolint:gochecknoinits // Registers JSON TableData and AnyData marshalers plus format capabilities.
+//nolint:gochecknoinits // Registers JSON TableData and Unknown marshalers plus format capabilities.
 func init() {
 	output.RegisterFormatShapes(output.FormatJSON, output.ShapeTable, output.ShapeTree, output.ShapeGraph)
 	output.RegisterTableDataRenderer(output.FormatJSON, renderJSONTableData)
-	output.RegisterAnyDataRenderer(output.FormatJSON, renderJSONAnyData)
+	output.RegisterUnknownRenderer(output.FormatJSON, renderJSONUnknown)
 }
 
-func renderJSONAnyData(w io.Writer, data any, _ output.RenderOptions) error {
+func renderJSONUnknown(w io.Writer, data any, _ output.RenderOptions) error {
 	b, err := json.MarshalIndent(data, "", "  ")
 	if err != nil {
 		return fmt.Errorf("marshal JSON: %w", err)

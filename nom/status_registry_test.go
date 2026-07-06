@@ -91,7 +91,7 @@ func TestStatusRegistry_RegisterStatus(t *testing.T) {
 		color.RGBA{R: 0x38, G: 0xbd, B: 0xf2, A: 0xff},
 		2,
 		output.NodeShapeCylinder,
-		output.GraphStyle{
+		output.NodeStyle{
 			Fill:      "#38bdf2",
 			Stroke:    "#0ea5e9",
 			FontColor: "#0f172a",
@@ -121,7 +121,7 @@ func TestStatusRegistry_RegisterStatus_DeduplicatesByName(t *testing.T) {
 		Colors.Fallback,
 		2,
 		output.NodeShapeEllipse,
-		output.GraphStyle{},
+		output.NodeStyle{},
 	)
 
 	id2 := RegisterStatus(
@@ -130,7 +130,7 @@ func TestStatusRegistry_RegisterStatus_DeduplicatesByName(t *testing.T) {
 		Colors.Failed,
 		0,
 		output.NodeShapeDiamond,
-		output.GraphStyle{Fill: "#000"},
+		output.NodeStyle{Fill: "#000"},
 	)
 
 	if id1 != id2 {
@@ -155,7 +155,7 @@ func TestStatusRegistry_CustomStatusMethods(t *testing.T) {
 		Colors.Failed,
 		1,
 		output.NodeShapeDiamond,
-		output.GraphStyle{Fill: "#f59e0b"},
+		output.NodeStyle{Fill: "#f59e0b"},
 	)
 
 	testhelpers.AssertEqual(t, "String", custom, custom.String(), "warn")
@@ -189,7 +189,7 @@ func TestStatusRegistry_AllActivityStatuses_IncludesCustom(t *testing.T) {
 		Colors.Fallback,
 		2,
 		output.NodeShapeBox,
-		output.GraphStyle{},
+		output.NodeStyle{},
 	)
 
 	after := AllActivityStatuses()
@@ -208,7 +208,7 @@ func TestStatusRegistry_AllowedValues_IncludesCustom(t *testing.T) {
 		Colors.Completed,
 		3,
 		output.NodeShapeBox,
-		output.GraphStyle{},
+		output.NodeStyle{},
 	)
 
 	values := ActivityStatus(0).AllowedValues()
@@ -231,7 +231,7 @@ func TestRegisterStatus_RendersInTree(t *testing.T) {
 		Colors.Pending,
 		0,
 		output.NodeShapeBox,
-		output.GraphStyle{},
+		output.NodeStyle{},
 	)
 
 	sub := newTestSubscriber(t)

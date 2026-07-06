@@ -236,7 +236,7 @@ func TestMermaidRendererWithNodeStyle(t *testing.T) {
 			ID:    output.NewBrandedID[output.GraphNodeIDBrand]("A"),
 			Label: output.NewBrandedID[output.GraphNodeLabelBrand]("Styled"),
 			Shape: output.NodeShapeBox,
-			Style: output.GraphStyle{
+			Style: output.NodeStyle{
 				Fill:      "#e8a838",
 				Stroke:    "#4a4030",
 				FontColor: "#14110d",
@@ -330,7 +330,7 @@ func TestMermaidNodeStyleEscapesInjection(t *testing.T) {
 					ID:    output.NewBrandedID[output.GraphNodeIDBrand]("A"),
 					Label: output.NewBrandedID[output.GraphNodeLabelBrand]("Test"),
 					Shape: output.NodeShapeBox,
-					Style: output.GraphStyle{
+					Style: output.NodeStyle{
 						Fill:      tt.value,
 						Stroke:    tt.value,
 						FontColor: tt.value,
@@ -362,7 +362,7 @@ func TestMermaidNodeStyleEscapeOutput(t *testing.T) {
 			ID:    output.NewBrandedID[output.GraphNodeIDBrand]("A"),
 			Label: output.NewBrandedID[output.GraphNodeLabelBrand]("Test"),
 			Shape: output.NodeShapeBox,
-			Style: output.GraphStyle{
+			Style: output.NodeStyle{
 				Fill: `a"b[c]` + "\n" + `d`,
 			},
 		},

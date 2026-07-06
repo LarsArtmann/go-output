@@ -10,7 +10,7 @@ import (
 
 var (
 	_ output.Renderer           = (*YAMLTreeRenderer)(nil)
-	_ output.TreeOutputRenderer = (*YAMLTreeRenderer)(nil)
+	_ output.TreeRenderer = (*YAMLTreeRenderer)(nil)
 	_ output.Renderer           = (*YAMLGraphRenderer)(nil)
 	_ output.GraphRenderer      = (*YAMLGraphRenderer)(nil)
 )

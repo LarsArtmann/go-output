@@ -44,7 +44,7 @@ func TestDOTRendererWithStyles(t *testing.T) {
 			ID:    output.NewBrandedID[output.GraphNodeIDBrand]("A"),
 			Label: output.NewBrandedID[output.GraphNodeLabelBrand]("Styled Node"),
 			Shape: output.NodeShapeEllipse,
-			Style: output.GraphStyle{
+			Style: output.NodeStyle{
 				Fill:   "#ff0000",
 				Stroke: "#000000",
 			},
@@ -264,7 +264,7 @@ func TestDOTNodeStyleEscapesInjection(t *testing.T) {
 					ID:    output.NewBrandedID[output.GraphNodeIDBrand]("A"),
 					Label: output.NewBrandedID[output.GraphNodeLabelBrand]("Test"),
 					Shape: output.NodeShapeBox,
-					Style: output.GraphStyle{
+					Style: output.NodeStyle{
 						Fill:   tt.value,
 						Stroke: tt.value,
 					},
@@ -294,7 +294,7 @@ func TestDOTNodeStyleEscapeOutput(t *testing.T) {
 			ID:    output.NewBrandedID[output.GraphNodeIDBrand]("A"),
 			Label: output.NewBrandedID[output.GraphNodeLabelBrand]("Test"),
 			Shape: output.NodeShapeBox,
-			Style: output.GraphStyle{
+			Style: output.NodeStyle{
 				Fill: `a"b\c` + "\n" + `d`,
 			},
 		},

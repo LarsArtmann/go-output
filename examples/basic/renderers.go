@@ -180,7 +180,7 @@ func renderMermaid(projects []Project) {
 		renderer.AddNode(output.GraphNode{
 			ID:    output.NewBrandedID[output.GraphNodeIDBrand](p.Name),
 			Label: output.NewBrandedID[output.GraphNodeLabelBrand](p.Name),
-			Style: output.GraphStyle{
+			Style: output.NodeStyle{
 				Fill:      "#e8a838",
 				Stroke:    "#4a4030",
 				FontColor: "#14110d",
@@ -262,7 +262,7 @@ func renderPlantUML(projects []Project) {
 		diagram.AddNode(output.GraphNode{
 			ID:    output.NewBrandedID[output.GraphNodeIDBrand](p.Name),
 			Label: output.NewBrandedID[output.GraphNodeLabelBrand](p.Name),
-			Style: output.GraphStyle{
+			Style: output.NodeStyle{
 				Fill:   "#e8a838",
 				Stroke: "#4a4030",
 			},

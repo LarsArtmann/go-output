@@ -271,10 +271,10 @@ func TestRenderViaRenderer_WriteError(t *testing.T) {
 	assertContains(t, err.Error(), "write test output", "error should mention write")
 }
 
-func TestRenderJSONAnyData_WriteError(t *testing.T) {
+func TestRenderJSONUnknown_WriteError(t *testing.T) {
 	t.Parallel()
 
-	err := renderJSONAnyData(&errorWriter{}, map[string]string{"a": "b"}, output.RenderOptions{})
+	err := renderJSONUnknown(&errorWriter{}, map[string]string{"a": "b"}, output.RenderOptions{})
 	if err == nil {
 		t.Fatal("expected error from errorWriter")
 	}
@@ -282,10 +282,10 @@ func TestRenderJSONAnyData_WriteError(t *testing.T) {
 	assertContains(t, err.Error(), "write JSON", "error should mention JSON")
 }
 
-func TestRenderYAMLAnyData_WriteError(t *testing.T) {
+func TestRenderYAMLUnknown_WriteError(t *testing.T) {
 	t.Parallel()
 
-	err := renderYAMLAnyData(&errorWriter{}, map[string]string{"a": "b"}, output.RenderOptions{})
+	err := renderYAMLUnknown(&errorWriter{}, map[string]string{"a": "b"}, output.RenderOptions{})
 	if err == nil {
 		t.Fatal("expected error from errorWriter")
 	}
@@ -293,10 +293,10 @@ func TestRenderYAMLAnyData_WriteError(t *testing.T) {
 	assertContains(t, err.Error(), "write YAML", "error should mention YAML")
 }
 
-func TestRenderTOMLAnyData_WriteError(t *testing.T) {
+func TestRenderTOMLUnknown_WriteError(t *testing.T) {
 	t.Parallel()
 
-	err := renderTOMLAnyData(&errorWriter{}, map[string]string{"a": "b"}, output.RenderOptions{})
+	err := renderTOMLUnknown(&errorWriter{}, map[string]string{"a": "b"}, output.RenderOptions{})
 	if err == nil {
 		t.Fatal("expected error from errorWriter")
 	}

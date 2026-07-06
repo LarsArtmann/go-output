@@ -269,7 +269,7 @@ func (v *subscriberView) Nodes() []output.GraphNode {
 			ID:    a.ID,
 			Label: a.Label,
 			Shape: a.Status.NodeShape(),
-			Style: a.Status.GraphStyle(),
+			Style: a.Status.NodeStyle(),
 		})
 	}
 

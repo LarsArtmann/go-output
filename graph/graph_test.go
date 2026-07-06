@@ -113,8 +113,8 @@ func TestNodeShapeIsValid(t *testing.T) {
 	})
 }
 
-func newTestGraphStyle(fontSize int) output.GraphStyle {
-	return output.GraphStyle{
+func newTestNodeStyle(fontSize int) output.NodeStyle {
+	return output.NodeStyle{
 		Fill:      "red",
 		Stroke:    "blue",
 		FontColor: "green",
@@ -122,10 +122,10 @@ func newTestGraphStyle(fontSize int) output.GraphStyle {
 	}
 }
 
-func TestGraphStyle(t *testing.T) {
+func TestNodeStyle(t *testing.T) {
 	t.Parallel()
 
-	testGraphStyleFields(t, newTestGraphStyle(12), 12)
+	testNodeStyleFields(t, newTestNodeStyle(12), 12)
 }
 
 func TestEdgeStyle(t *testing.T) {
@@ -146,13 +146,13 @@ func TestEdgeStyle(t *testing.T) {
 func TestGraphNodeStyle(t *testing.T) {
 	t.Parallel()
 
-	node := &output.GraphNode{Style: newTestGraphStyle(14)}
+	node := &output.GraphNode{Style: newTestNodeStyle(14)}
 
-	testGraphStyleFields(t, node.Style, 14)
+	testNodeStyleFields(t, node.Style, 14)
 }
 
-// testGraphStyleFields tests the common output.GraphStyle fields.
-func testGraphStyleFields(t *testing.T, style output.GraphStyle, wantFontSize int) {
+// testNodeStyleFields tests the common output.NodeStyle fields.
+func testNodeStyleFields(t *testing.T, style output.NodeStyle, wantFontSize int) {
 	testhelpers.TestStructFields(
 		t,
 		testhelpers.StringField("Fill", style.Fill, "red"),

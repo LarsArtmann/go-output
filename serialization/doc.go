@@ -2,7 +2,7 @@
 // for tabular, tree, and graph data.
 //
 // Table renderers implement output.TableRenderer via embedding output.TableDataStore.
-// Tree and graph renderers implement output.TreeOutputRenderer and output.GraphRenderer
+// Tree and graph renderers implement output.TreeRenderer and output.GraphRenderer
 // respectively, marshaling data structures using the appropriate encoding library.
 //
 // Use MarshalJSON, MarshalYAML, or MarshalTOML for one-shot marshaling of any

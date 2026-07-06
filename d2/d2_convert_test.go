@@ -267,7 +267,7 @@ func TestD2NodeShapeConversion(t *testing.T) {
 	}
 }
 
-func TestD2GraphStyleConversion(t *testing.T) {
+func TestD2NodeStyleConversion(t *testing.T) {
 	t.Parallel()
 
 	d := NewD2Diagram()
@@ -275,7 +275,7 @@ func TestD2GraphStyleConversion(t *testing.T) {
 		{
 			ID:    output.NewBrandedID[output.GraphNodeIDBrand]("styled"),
 			Label: output.NewBrandedID[output.GraphNodeLabelBrand]("Styled"),
-			Style: output.GraphStyle{
+			Style: output.NodeStyle{
 				Fill:     "blue",
 				Stroke:   "black",
 				FontSize: 14,

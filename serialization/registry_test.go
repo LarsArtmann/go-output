@@ -120,78 +120,78 @@ func TestRenderTOMLTableData(t *testing.T) {
 	assertContains(t, out, "Alice", "toml output")
 }
 
-func TestRenderAnyData_JSON(t *testing.T) {
+func TestRenderUnknown_JSON(t *testing.T) {
 	t.Parallel()
 
 	var buf bytes.Buffer
 
-	err := output.RenderAnyData(map[string]int{"a": 1}, output.FormatJSON, output.RenderOptions{Writer: &buf})
+	err := output.RenderUnknown(map[string]int{"a": 1}, output.FormatJSON, output.RenderOptions{Writer: &buf})
 	if err != nil {
-		t.Fatalf("RenderAnyData json: %v", err)
+		t.Fatalf("RenderUnknown json: %v", err)
 	}
 
 	out := buf.String()
 	assertContains(t, out, `"a": 1`, "json output")
 }
 
-func TestRenderAnyData_YAML(t *testing.T) {
+func TestRenderUnknown_YAML(t *testing.T) {
 	t.Parallel()
 
 	var buf bytes.Buffer
 
-	err := output.RenderAnyData(
+	err := output.RenderUnknown(
 		map[string]string{"name": "Alice"},
 		output.FormatYAML,
 		output.RenderOptions{Writer: &buf},
 	)
 	if err != nil {
-		t.Fatalf("RenderAnyData yaml: %v", err)
+		t.Fatalf("RenderUnknown yaml: %v", err)
 	}
 
 	out := buf.String()
 	assertContains(t, out, "name: Alice", "yaml output")
 }
 
-func TestRenderAnyData_TOML(t *testing.T) {
+func TestRenderUnknown_TOML(t *testing.T) {
 	t.Parallel()
 
 	var buf bytes.Buffer
 
-	err := output.RenderAnyData(
+	err := output.RenderUnknown(
 		map[string]string{"name": "Alice"},
 		output.FormatTOML,
 		output.RenderOptions{Writer: &buf},
 	)
 	if err != nil {
-		t.Fatalf("RenderAnyData toml: %v", err)
+		t.Fatalf("RenderUnknown toml: %v", err)
 	}
 
 	out := buf.String()
 	assertContains(t, out, "name", "toml output")
 }
 
-func TestRenderAnyData_UnsupportedFormat(t *testing.T) {
+func TestRenderUnknown_UnsupportedFormat(t *testing.T) {
 	t.Parallel()
 
 	var buf bytes.Buffer
 
-	err := output.RenderAnyData("data", output.FormatCSV, output.RenderOptions{Writer: &buf})
+	err := output.RenderUnknown("data", output.FormatCSV, output.RenderOptions{Writer: &buf})
 	if err == nil {
 		t.Fatal("expected UnsupportedFormatError")
 	}
 }
 
-func TestRenderAnyData_DefaultWriter(t *testing.T) {
+func TestRenderUnknown_DefaultWriter(t *testing.T) {
 	t.Parallel()
 
-	// Verify that an explicit empty writer is used as-is; RenderAnyData
+	// Verify that an explicit empty writer is used as-is; RenderUnknown
 	// itself falls back to os.Stdout if Writer is nil, but the path under
 	// test reaches the registered marshaler which always uses opts.Writer.
 	var buf bytes.Buffer
 
-	err := output.RenderAnyData("x", output.FormatJSON, output.RenderOptions{Writer: &buf})
+	err := output.RenderUnknown("x", output.FormatJSON, output.RenderOptions{Writer: &buf})
 	if err != nil {
-		t.Fatalf("RenderAnyData with explicit writer: %v", err)
+		t.Fatalf("RenderUnknown with explicit writer: %v", err)
 	}
 
 	if buf.Len() == 0 {

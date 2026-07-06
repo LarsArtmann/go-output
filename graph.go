@@ -18,7 +18,7 @@ type GraphNode struct {
 	// Shape defines the visual shape (box, ellipse, diamond, etc.).
 	Shape NodeShape
 	// Style contains optional visual styling attributes.
-	Style GraphStyle
+	Style NodeStyle
 	// Metadata holds arbitrary key-value pairs for custom data.
 	Metadata map[string]string
 }
@@ -143,8 +143,8 @@ func (s NodeShape) IsValid() bool {
 	return ContainsEnum(nodeShapeValues, s)
 }
 
-// GraphStyle represents styling attributes for a graph node.
-type GraphStyle struct {
+// NodeStyle represents styling attributes for a graph node.
+type NodeStyle struct {
 	// Fill is the background color (e.g., "#f9f9f9").
 	Fill string
 	// Stroke is the border color.

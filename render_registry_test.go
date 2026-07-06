@@ -57,10 +57,10 @@ func TestRegisteredTableDataFormats(t *testing.T) {
 	}
 }
 
-func TestRegisteredAnyDataFormats(t *testing.T) {
+func TestRegisteredUnknownFormats(t *testing.T) {
 	t.Parallel()
 
-	formats := RegisteredAnyDataFormats()
+	formats := RegisteredUnknownFormats()
 
 	// Root does not register any any-data renderers in init(); this should
 	// return an empty slice (or whatever sub-modules have registered).
@@ -68,19 +68,19 @@ func TestRegisteredAnyDataFormats(t *testing.T) {
 	seen := make(map[Format]bool, len(formats))
 	for _, f := range formats {
 		if seen[f] {
-			t.Errorf("duplicate format in RegisteredAnyDataFormats: %q", f)
+			t.Errorf("duplicate format in RegisteredUnknownFormats: %q", f)
 		}
 
 		seen[f] = true
 	}
 }
 
-func TestRenderAnyData_UnsupportedFormatError(t *testing.T) {
+func TestRenderUnknown_UnsupportedFormatError(t *testing.T) {
 	t.Parallel()
 
 	var buf bytes.Buffer
 
-	err := RenderAnyData("data", Format("unknown"), RenderOptions{Writer: &buf})
+	err := RenderUnknown("data", Format("unknown"), RenderOptions{Writer: &buf})
 	if err == nil {
 		t.Fatal("expected UnsupportedFormatError")
 	}

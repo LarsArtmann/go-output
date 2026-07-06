@@ -14,14 +14,14 @@ var (
 	_ output.TableRenderer = (*YAMLTableRenderer)(nil)
 )
 
-//nolint:gochecknoinits // Registers YAML TableData and AnyData marshalers plus format capabilities.
+//nolint:gochecknoinits // Registers YAML TableData and Unknown marshalers plus format capabilities.
 func init() {
 	output.RegisterFormatShapes(output.FormatYAML, output.ShapeTable, output.ShapeTree, output.ShapeGraph)
 	output.RegisterTableDataRenderer(output.FormatYAML, renderYAMLTableData)
-	output.RegisterAnyDataRenderer(output.FormatYAML, renderYAMLAnyData)
+	output.RegisterUnknownRenderer(output.FormatYAML, renderYAMLUnknown)
 }
 
-func renderYAMLAnyData(w io.Writer, data any, _ output.RenderOptions) error {
+func renderYAMLUnknown(w io.Writer, data any, _ output.RenderOptions) error {
 	b, err := yaml.Marshal(data)
 	if err != nil {
 		return fmt.Errorf("marshal YAML: %w", err)

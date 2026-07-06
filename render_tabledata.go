@@ -72,32 +72,32 @@ func (e *UnsupportedFormatError) Error() string {
 	return fmt.Sprintf("render table data: format %q not supported", e.Format)
 }
 
-// AnyDataRenderer renders arbitrary data (any) in a specific format to a writer.
-type AnyDataRenderer func(w io.Writer, data any, opts RenderOptions) error
+// UnknownRenderer renders arbitrary data (any) in a specific format to a writer.
+type UnknownRenderer func(w io.Writer, data any, opts RenderOptions) error
 
 //nolint:gochecknoglobals // Registry for any-data renderers, populated by sub-module init().
-var anyDataRegistry = newFormatRegistry[AnyDataRenderer]()
+var unknownRegistry = newFormatRegistry[UnknownRenderer]()
 
-// RegisterAnyDataRenderer registers a renderer for arbitrary (non-TableData) data.
-// Sub-modules call this from their init() to enable RenderAnyData dispatch.
-func RegisterAnyDataRenderer(format Format, renderer AnyDataRenderer) {
-	anyDataRegistry.register(format, renderer)
+// RegisterUnknownRenderer registers a renderer for arbitrary (non-TableData) data.
+// Sub-modules call this from their init() to enable RenderUnknown dispatch.
+func RegisterUnknownRenderer(format Format, renderer UnknownRenderer) {
+	unknownRegistry.register(format, renderer)
 }
 
-func getAnyDataRenderer(format Format) (AnyDataRenderer, bool) {
-	return anyDataRegistry.get(format)
+func getUnknownRenderer(format Format) (UnknownRenderer, bool) {
+	return unknownRegistry.get(format)
 }
 
-// RenderAnyData renders arbitrary data in the given format and writes to w (or os.Stdout).
-// Supports formats that registered an AnyDataRenderer (typically JSON, YAML, TOML).
+// RenderUnknown renders arbitrary data in the given format and writes to w (or os.Stdout).
+// Supports formats that registered an UnknownRenderer (typically JSON, YAML, TOML).
 // Returns UnsupportedFormatError if no renderer is registered for the format.
-func RenderAnyData(data any, format Format, opts RenderOptions) error {
+func RenderUnknown(data any, format Format, opts RenderOptions) error {
 	w := opts.Writer
 	if w == nil {
 		w = os.Stdout
 	}
 
-	if m, ok := getAnyDataRenderer(format); ok {
+	if m, ok := getUnknownRenderer(format); ok {
 		return m(w, data, opts)
 	}
 
@@ -109,7 +109,7 @@ func RegisteredTableDataFormats() []Format {
 	return tableDataRegistry.formats()
 }
 
-// RegisteredAnyDataFormats returns all formats with registered AnyDataRenderers.
-func RegisteredAnyDataFormats() []Format {
-	return anyDataRegistry.formats()
+// RegisteredUnknownFormats returns all formats with registered UnknownRenderers.
+func RegisteredUnknownFormats() []Format {
+	return unknownRegistry.formats()
 }

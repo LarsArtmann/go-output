@@ -133,7 +133,7 @@ func FuzzDOTNodeStyleNewlines(f *testing.F) {
 				ID:    output.NewBrandedID[output.GraphNodeIDBrand]("n"),
 				Label: output.NewBrandedID[output.GraphNodeLabelBrand]("Test"),
 				Shape: output.NodeShapeBox,
-				Style: output.GraphStyle{
+				Style: output.NodeStyle{
 					Fill:   styleVal,
 					Stroke: styleVal,
 				},
@@ -155,7 +155,7 @@ func FuzzDOTNodeStyleNewlines(f *testing.F) {
 					ID:    output.NewBrandedID[output.GraphNodeIDBrand]("n"),
 					Label: output.NewBrandedID[output.GraphNodeLabelBrand]("Test"),
 					Shape: output.NodeShapeBox,
-					Style: output.GraphStyle{
+					Style: output.NodeStyle{
 						Fill:   "safe",
 						Stroke: "safe",
 					},

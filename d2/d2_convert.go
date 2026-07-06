@@ -86,7 +86,7 @@ func nodeShapeToD2(s output.NodeShape) D2NodeShape {
 	}
 }
 
-func graphStyleToD2(s output.GraphStyle) D2NodeStyle {
+func graphStyleToD2(s output.NodeStyle) D2NodeStyle {
 	return D2NodeStyle{
 		Fill: s.Fill,
 		D2StrokeStyle: D2StrokeStyle{

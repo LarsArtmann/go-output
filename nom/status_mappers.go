@@ -12,13 +12,13 @@ func (s ActivityStatus) NodeShape() output.NodeShape {
 	return output.NodeShapeBox
 }
 
-// GraphStyle returns the root output.GraphStyle (hex fill/stroke/font colors)
+// NodeStyle returns the root output.NodeStyle (hex fill/stroke/font colors)
 // for diagram export. These are hex strings consumed by DOT/Mermaid/D2 — they
 // are separate from the lipgloss color.Color values used for terminal display.
-func (s ActivityStatus) GraphStyle() output.GraphStyle {
+func (s ActivityStatus) NodeStyle() output.NodeStyle {
 	if def, ok := LookupStatus(s); ok {
-		return def.GraphStyle
+		return def.NodeStyle
 	}
 
-	return output.GraphStyle{}
+	return output.NodeStyle{}
 }

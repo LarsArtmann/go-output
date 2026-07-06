@@ -51,8 +51,8 @@ func (n *TreeNode) Parent() *TreeNode {
 	return n.parent
 }
 
-// TreeOutputRenderer defines the interface for tree format renderers.
-type TreeOutputRenderer interface {
+// TreeRenderer defines the interface for tree format renderers.
+type TreeRenderer interface {
 	Renderer
 	// SetRoot sets the root node of the tree.
 	SetRoot(node *TreeNode)

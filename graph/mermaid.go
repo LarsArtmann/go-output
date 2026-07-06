@@ -124,7 +124,7 @@ func (r *MermaidRenderer) getMermaidShape(shape output.NodeShape) (string, strin
 }
 
 // writeNodeStyles emits per-node Mermaid style directives for nodes that have
-// a non-zero GraphStyle. This replaces the previous hardcoded pink classDef,
+// a non-zero NodeStyle. This replaces the previous hardcoded pink classDef,
 // giving consumers full control over node appearance.
 func (r *MermaidRenderer) writeNodeStyles(b *strings.Builder) {
 	wroteAny := false
@@ -145,8 +145,8 @@ func (r *MermaidRenderer) writeNodeStyles(b *strings.Builder) {
 	}
 }
 
-// mermaidStyleParts converts a GraphStyle into Mermaid style key-value pairs.
-func mermaidStyleParts(s output.GraphStyle) []string {
+// mermaidStyleParts converts a NodeStyle into Mermaid style key-value pairs.
+func mermaidStyleParts(s output.NodeStyle) []string {
 	var parts []string
 
 	if s.Fill != "" {

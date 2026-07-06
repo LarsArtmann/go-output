@@ -9,7 +9,7 @@ import (
 
 var (
 	_ output.Renderer           = (*JSONTreeRenderer)(nil)
-	_ output.TreeOutputRenderer = (*JSONTreeRenderer)(nil)
+	_ output.TreeRenderer = (*JSONTreeRenderer)(nil)
 	_ output.Renderer           = (*JSONGraphRenderer)(nil)
 	_ output.GraphRenderer      = (*JSONGraphRenderer)(nil)
 )

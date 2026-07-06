@@ -8,7 +8,7 @@ import (
 // type T. It deduplicates the registry boilerplate previously repeated for
 // table-data marshalers, any-data marshalers, and format shape capabilities.
 //
-// T is typically a function type (TableDataRenderer, AnyDataRenderer) or
+// T is typically a function type (TableDataRenderer, UnknownRenderer) or
 // a value type ([]Shape).
 type formatRegistry[T any] struct {
 	mu    sync.RWMutex

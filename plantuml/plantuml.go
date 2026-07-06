@@ -90,12 +90,12 @@ func sanitizePlantUMLID(s string) string {
 	return escape.SlugifyID(s)
 }
 
-// plantumlColorSpec converts a GraphStyle into a PlantUML color specification
+// plantumlColorSpec converts a NodeStyle into a PlantUML color specification
 // string for per-element styling. Returns empty string when no colors are set.
 //
 // PlantUML syntax: the spec starts with '#' and joins attributes with ';'.
 // Example: #e8a838;line:#4a4030;text:#14110d.
-func plantumlColorSpec(s output.GraphStyle) string {
+func plantumlColorSpec(s output.NodeStyle) string {
 	var parts []string
 
 	if s.Fill != "" {

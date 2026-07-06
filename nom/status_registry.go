@@ -17,7 +17,7 @@ type StatusDef struct {
 	Color      color.Color
 	Interest   int
 	NodeShape  output.NodeShape
-	GraphStyle output.GraphStyle
+	NodeStyle output.NodeStyle
 }
 
 // statusRegistry is a thread-safe, open registry of activity statuses. Core
@@ -44,7 +44,7 @@ func newStatusRegistry() *statusRegistry {
 		Colors.Pending,
 		2,
 		output.NodeShapeEllipse,
-		output.GraphStyle{
+		output.NodeStyle{
 			Fill:      "#e5e7eb",
 			Stroke:    "#9ca3af",
 			FontColor: "#374151",
@@ -57,7 +57,7 @@ func newStatusRegistry() *statusRegistry {
 		Colors.Running,
 		1,
 		output.NodeShapeBox,
-		output.GraphStyle{
+		output.NodeStyle{
 			Fill:      "#16a34a",
 			Stroke:    "#15803d",
 			FontColor: "#ffffff",
@@ -70,7 +70,7 @@ func newStatusRegistry() *statusRegistry {
 		Colors.Completed,
 		3,
 		output.NodeShapeHexagon,
-		output.GraphStyle{
+		output.NodeStyle{
 			Fill:      "#6b7280",
 			Stroke:    "#4b5563",
 			FontColor: "#ffffff",
@@ -83,7 +83,7 @@ func newStatusRegistry() *statusRegistry {
 		Colors.Failed,
 		0,
 		output.NodeShapeDiamond,
-		output.GraphStyle{
+		output.NodeStyle{
 			Fill:      "#dc2626",
 			Stroke:    "#991b1b",
 			FontColor: "#ffffff",
@@ -105,7 +105,7 @@ func RegisterStatus(
 	c color.Color,
 	interest int,
 	shape output.NodeShape,
-	style output.GraphStyle,
+	style output.NodeStyle,
 ) ActivityStatus {
 	globalRegistry.mu.Lock()
 	defer globalRegistry.mu.Unlock()
@@ -123,7 +123,7 @@ func RegisterStatus(
 		Color:      c,
 		Interest:   interest,
 		NodeShape:  shape,
-		GraphStyle: style,
+		NodeStyle: style,
 	}
 	globalRegistry.byName[normalizeStatusName(name)] = id
 
@@ -201,7 +201,7 @@ func (r *statusRegistry) registerLocked(
 	c color.Color,
 	interest int,
 	shape output.NodeShape,
-	style output.GraphStyle,
+	style output.NodeStyle,
 ) {
 	id := r.nextID
 	r.nextID++
@@ -212,7 +212,7 @@ func (r *statusRegistry) registerLocked(
 		Color:      c,
 		Interest:   interest,
 		NodeShape:  shape,
-		GraphStyle: style,
+		NodeStyle: style,
 	}
 	r.byName[normalizeStatusName(name)] = id
 }

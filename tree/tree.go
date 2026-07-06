@@ -32,7 +32,7 @@ const (
 //nolint:gochecknoglobals // Color cycle lookup table for depth-based tree coloring.
 var depthColors = []string{ansiGreen, ansiBlue, ansiMagenta, ansiCyan}
 
-// ASCIITreeRenderer implements the output.TreeOutputRenderer interface for ASCII tree output.
+// ASCIITreeRenderer implements the output.TreeRenderer interface for ASCII tree output.
 type ASCIITreeRenderer struct {
 	root      *output.TreeNode
 	colorMode output.ColorMode
@@ -51,7 +51,7 @@ func (r *ASCIITreeRenderer) SetColorMode(mode output.ColorMode) {
 // Compile-time interface checks.
 var (
 	_ output.Renderer           = (*ASCIITreeRenderer)(nil)
-	_ output.TreeOutputRenderer = (*ASCIITreeRenderer)(nil)
+	_ output.TreeRenderer = (*ASCIITreeRenderer)(nil)
 )
 
 // SetRoot sets the root node of the tree.

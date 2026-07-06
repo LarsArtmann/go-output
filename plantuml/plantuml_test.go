@@ -189,7 +189,7 @@ func TestPlantUMLDiagramWithNodeStyle(t *testing.T) {
 	d.AddNode(output.GraphNode{
 		ID:    output.NewBrandedID[output.GraphNodeIDBrand]("svc"),
 		Label: output.NewBrandedID[output.GraphNodeLabelBrand]("Service"),
-		Style: output.GraphStyle{
+		Style: output.NodeStyle{
 			Fill:      "#e8a838",
 			Stroke:    "#4a4030",
 			FontColor: "#14110d",
@@ -252,7 +252,7 @@ func TestPlantUMLNodeStyleEscapesInjection(t *testing.T) {
 			d.AddNode(output.GraphNode{ //nolint:exhaustruct // Test uses minimal fields
 				ID:    output.NewBrandedID[output.GraphNodeIDBrand]("n"),
 				Label: output.NewBrandedID[output.GraphNodeLabelBrand]("Test"),
-				Style: output.GraphStyle{
+				Style: output.NodeStyle{
 					Fill:      tt.value,
 					Stroke:    tt.value,
 					FontColor: tt.value,

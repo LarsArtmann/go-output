@@ -18,12 +18,12 @@ func assertActivityShape(t *testing.T, a *Activity, want output.NodeShape, label
 	}
 }
 
-// assertActivityFill checks that the Status-derived GraphStyle.Fill equals want.
+// assertActivityFill checks that the Status-derived NodeStyle.Fill equals want.
 func assertActivityFill(t *testing.T, a *Activity, want string) {
 	t.Helper()
 
-	if got := a.Status.GraphStyle().Fill; got != want {
-		t.Errorf("Status.GraphStyle().Fill = %q, want %q", got, want)
+	if got := a.Status.NodeStyle().Fill; got != want {
+		t.Errorf("Status.NodeStyle().Fill = %q, want %q", got, want)
 	}
 }
 
@@ -132,7 +132,7 @@ func TestActivityStatus_NodeShape(t *testing.T) {
 	}
 }
 
-func TestActivityStatus_GraphStyle(t *testing.T) {
+func TestActivityStatus_NodeStyle(t *testing.T) {
 	t.Parallel()
 
 	cases := []struct {
@@ -145,13 +145,13 @@ func TestActivityStatus_GraphStyle(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		got := tc.status.GraphStyle()
+		got := tc.status.NodeStyle()
 		if tc.status == ActivityStatusFailed && got.Fill == "" {
-			t.Errorf("%s.GraphStyle() should have non-empty Fill", tc.status)
+			t.Errorf("%s.NodeStyle() should have non-empty Fill", tc.status)
 		}
 
 		if tc.status == ActivityStatusRunning && got.Fill == "" {
-			t.Errorf("%s.GraphStyle() should have non-empty Fill", tc.status)
+			t.Errorf("%s.NodeStyle() should have non-empty Fill", tc.status)
 		}
 	}
 }
