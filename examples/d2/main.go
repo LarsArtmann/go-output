@@ -9,48 +9,48 @@ import (
 
 func main() {
 	diagram := shared.NewServiceD2Diagram("Microservice Architecture").
-		AddClass("database", d2.D2NodeStyle{
+		AddClass("database", d2.NodeStyle{
 			Fill: "lightyellow",
-			D2StrokeStyle: d2.D2StrokeStyle{
+			StrokeStyle: d2.StrokeStyle{
 				Stroke: "goldenrod",
 			},
 		}).
-		AddTable("users", []d2.D2Column{
-			{Name: "id", Type: "serial", Constraint: d2.D2ConstraintPrimary},
-			{Name: "email", Type: "varchar(255)", Constraint: d2.D2ConstraintUnique},
+		AddTable("users", []d2.Column{
+			{Name: "id", Type: "serial", Constraint: d2.ConstraintPrimary},
+			{Name: "email", Type: "varchar(255)", Constraint: d2.ConstraintUnique},
 			{Name: "created_at", Type: "timestamp"},
 		}).
-		AddTable("orders", []d2.D2Column{
-			{Name: "id", Type: "serial", Constraint: d2.D2ConstraintPrimary},
-			{Name: "user_id", Type: "int", Constraint: d2.D2ConstraintForeign},
+		AddTable("orders", []d2.Column{
+			{Name: "id", Type: "serial", Constraint: d2.ConstraintPrimary},
+			{Name: "user_id", Type: "int", Constraint: d2.ConstraintForeign},
 			{Name: "total", Type: "decimal(10,2)"},
 		})
 
 	diagram.
-		AddNodeWithShape("api", "API Gateway", d2.D2ShapeHexagon).
-		AddNodeWithShape("auth", "Auth Service", d2.D2ShapeCircle).
-		AddNodeWithShape("orders-svc", "Order Service", d2.D2ShapeRectangle).
-		AddNodeWithShape("cache", "Redis Cache", d2.D2ShapeCylinder).
-		AddNode(d2.D2Node{
+		AddNodeWithShape("api", "API Gateway", d2.ShapeHexagon).
+		AddNodeWithShape("auth", "Auth Service", d2.ShapeCircle).
+		AddNodeWithShape("orders-svc", "Order Service", d2.ShapeRectangle).
+		AddNodeWithShape("cache", "Redis Cache", d2.ShapeCylinder).
+		AddNode(d2.Node{
 			ID:    output.NewBrandedID[output.D2NodeIDBrand]("db"),
 			Label: output.NewBrandedID[output.D2NodeLabelBrand]("PostgreSQL"),
-			Shape: d2.D2ShapeCylinder,
+			Shape: d2.ShapeCylinder,
 			Class: "database",
 		})
 
 	diagram.
 		AddLabeledEdge("api", "auth", "authenticate").
 		AddLabeledEdge("api", "orders-svc", "route").
-		AddEdge(d2.D2Edge{
+		AddEdge(d2.Edge{
 			From:        output.NewBrandedID[output.D2NodeIDBrand]("orders-svc"),
 			To:          output.NewBrandedID[output.D2NodeIDBrand]("cache"),
-			TargetArrow: d2.D2ArrowArrow,
+			TargetArrow: d2.ArrowArrow,
 		}).
 		AddEdgeSimple("orders-svc", "db").
-		AddEdge(d2.D2Edge{
+		AddEdge(d2.Edge{
 			From:        output.NewBrandedID[output.D2NodeIDBrand]("users"),
 			To:          output.NewBrandedID[output.D2NodeIDBrand]("db"),
-			TargetArrow: d2.D2ArrowCFMany,
+			TargetArrow: d2.ArrowCFMany,
 			Label:       output.NewBrandedID[output.D2NodeLabelBrand]("stores"),
 		})
 

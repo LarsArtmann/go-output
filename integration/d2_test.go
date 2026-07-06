@@ -37,11 +37,11 @@ func TestD2FromTreeIntegration(t *testing.T) {
 func TestD2ConstraintsIntegration(t *testing.T) {
 	t.Parallel()
 
-	d2Diagram := d2.NewD2Diagram()
-	d2Diagram.AddTable("users", []d2.D2Column{
-		{Name: "id", Type: "int", Constraint: d2.D2ConstraintPrimary},
-		{Name: "email", Type: "string", Constraint: d2.D2ConstraintUnique},
-		{Name: "org_id", Type: "int", Constraint: d2.D2ConstraintForeign},
+	d2Diagram := d2.NewDiagram()
+	d2Diagram.AddTable("users", []d2.Column{
+		{Name: "id", Type: "int", Constraint: d2.ConstraintPrimary},
+		{Name: "email", Type: "string", Constraint: d2.ConstraintUnique},
+		{Name: "org_id", Type: "int", Constraint: d2.ConstraintForeign},
 	})
 
 	result, err := d2Diagram.Render()
@@ -57,11 +57,11 @@ func TestD2ConstraintsIntegration(t *testing.T) {
 func TestD2ClassesIntegration(t *testing.T) {
 	t.Parallel()
 
-	d2Diagram := d2.NewD2Diagram()
-	d2Diagram.AddClass("server", d2.D2NodeStyle{
-		Fill: "blue", D2StrokeStyle: d2.D2StrokeStyle{Stroke: "black"},
+	d2Diagram := d2.NewDiagram()
+	d2Diagram.AddClass("server", d2.NodeStyle{
+		Fill: "blue", StrokeStyle: d2.StrokeStyle{Stroke: "black"},
 	})
-	d2Diagram.AddNode(d2.D2Node{
+	d2Diagram.AddNode(d2.Node{
 		ID:    output.NewBrandedID[output.D2NodeIDBrand]("api"),
 		Label: output.NewBrandedID[output.D2NodeLabelBrand]("API"),
 		Class: "server",
@@ -79,12 +79,12 @@ func TestD2ClassesIntegration(t *testing.T) {
 func TestD2ArrowTypesIntegration(t *testing.T) {
 	t.Parallel()
 
-	d2Diagram := d2.NewD2Diagram()
-	d2Diagram.AddEdge(d2.D2Edge{
+	d2Diagram := d2.NewDiagram()
+	d2Diagram.AddEdge(d2.Edge{
 		From:        output.NewBrandedID[output.D2NodeIDBrand]("a"),
 		To:          output.NewBrandedID[output.D2NodeIDBrand]("b"),
-		TargetArrow: d2.D2ArrowDiamond,
-		SourceArrow: d2.D2ArrowCFMany,
+		TargetArrow: d2.ArrowDiamond,
+		SourceArrow: d2.ArrowCFMany,
 	})
 
 	result, err := d2Diagram.Render()
@@ -109,14 +109,14 @@ func TestD2ArrowTypesIntegration(t *testing.T) {
 func TestD2GridAndNearIntegration(t *testing.T) {
 	t.Parallel()
 
-	d2Diagram := d2.NewD2Diagram()
-	d2Diagram.AddNode(d2.D2Node{
+	d2Diagram := d2.NewDiagram()
+	d2Diagram.AddNode(d2.Node{
 		ID:          output.NewBrandedID[output.D2NodeIDBrand]("grid"),
 		Label:       output.NewBrandedID[output.D2NodeLabelBrand]("Grid"),
 		GridRows:    2,
 		GridColumns: 3,
 	})
-	d2Diagram.AddNode(d2.D2Node{
+	d2Diagram.AddNode(d2.Node{
 		ID:    output.NewBrandedID[output.D2NodeIDBrand]("note"),
 		Label: output.NewBrandedID[output.D2NodeLabelBrand]("Note"),
 		Near:  "grid",

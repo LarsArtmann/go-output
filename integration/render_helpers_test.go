@@ -179,13 +179,13 @@ func renderTreeFormat(projects []TestProject) string {
 }
 
 func renderD2Format(projects []TestProject) string {
-	d2Diagram := d2.NewD2Diagram()
-	d2Diagram.AddTable("projects", []d2.D2Column{
+	d2Diagram := d2.NewDiagram()
+	d2Diagram.AddTable("projects", []d2.Column{
 		{Name: "name", Type: "string"},
 	})
 
 	for _, p := range projects {
-		d2Diagram.AddNodeWithShape(p.Name, p.Name, d2.D2ShapeCircle)
+		d2Diagram.AddNodeWithShape(p.Name, p.Name, d2.ShapeCircle)
 	}
 
 	out, err := d2Diagram.Render()

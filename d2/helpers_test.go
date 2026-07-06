@@ -14,10 +14,10 @@ func newD2NodeLabel(label string) output.D2NodeLabel {
 	return output.NewBrandedID[output.D2NodeLabelBrand](label)
 }
 
-// newD2ClassNode creates a D2Node with minimal fields (ID, Label, Class).
+// newClassNode creates a Node with minimal fields (ID, Label, Class).
 // Test helper for nodes that belong to a style class.
-func newD2ClassNode(id, label, class string) D2Node {
-	return D2Node{ //nolint:exhaustruct // Test uses minimal required fields
+func newClassNode(id, label, class string) Node {
+	return Node{ //nolint:exhaustruct // Test uses minimal required fields
 		ID:    newD2NodeID(id),
 		Label: newD2NodeLabel(label),
 		Class: class,

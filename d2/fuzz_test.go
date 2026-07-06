@@ -25,20 +25,20 @@ func FuzzD2Escape(f *testing.F) {
 	})
 }
 
-func FuzzParseD2Direction(f *testing.F) {
-	fuzzTestParseEnum(f, d2DirectionValues, ParseD2Direction)
+func FuzzParseDirection(f *testing.F) {
+	fuzzTestParseEnum(f, directionValues, ParseDirection)
 }
 
-func FuzzParseD2NodeShape(f *testing.F) {
-	fuzzTestParseEnum(f, d2NodeShapeValues, ParseD2NodeShape)
+func FuzzParseNodeShape(f *testing.F) {
+	fuzzTestParseEnum(f, nodeShapeValues, ParseNodeShape)
 }
 
-func FuzzParseD2ArrowType(f *testing.F) {
-	fuzzTestParseEnum(f, d2ArrowTypeValues, ParseD2ArrowType)
+func FuzzParseArrowType(f *testing.F) {
+	fuzzTestParseEnum(f, arrowTypeValues, ParseArrowType)
 }
 
-func FuzzParseD2Constraint(f *testing.F) {
-	fuzzTestParseEnum(f, allD2Constraints, ParseD2Constraint)
+func FuzzParseConstraint(f *testing.F) {
+	fuzzTestParseEnum(f, allConstraints, ParseConstraint)
 }
 
 func FuzzD2DiagramRender(f *testing.F) {
@@ -47,7 +47,7 @@ func FuzzD2DiagramRender(f *testing.F) {
 	f.Add(`"quoted"`, `\slash`, "normal", "ok")
 
 	f.Fuzz(func(t *testing.T, idA, labelA, idB, labelB string) {
-		d := NewD2Diagram()
+		d := NewDiagram()
 		d.AddNodeSimple(idA, labelA)
 		d.AddNodeSimple(idB, labelB)
 		d.AddEdgeSimple(idA, idB)
@@ -80,7 +80,7 @@ func FuzzGraphNodeRoundTrip(f *testing.F) {
 
 		node := graphtest.NewTestNodeWithShape(id, label, shape)
 
-		d := NewD2Diagram()
+		d := NewDiagram()
 		d.SetNodes([]output.GraphNode{node})
 
 		got, err := d.Render()
@@ -107,17 +107,17 @@ func FuzzD2NodeStyleRendering(f *testing.F) {
 	f.Add("")
 
 	f.Fuzz(func(t *testing.T, styleVal string) {
-		d := NewD2Diagram()
-		d.AddNode(D2Node{ //nolint:exhaustruct // Fuzz test uses minimal fields
+		d := NewDiagram()
+		d.AddNode(Node{ //nolint:exhaustruct // Fuzz test uses minimal fields
 			ID:    output.NewBrandedID[output.D2NodeIDBrand]("n"),
 			Label: output.NewBrandedID[output.D2NodeLabelBrand]("Test"),
-			Style: D2NodeStyle{
+			Style: NodeStyle{
 				Fill: styleVal,
-				D2StrokeStyle: D2StrokeStyle{
+				StrokeStyle: StrokeStyle{
 					Stroke:    styleVal,
 					FontColor: styleVal,
 				},
-				TextTransform: D2TextTransform(styleVal),
+				TextTransform: TextTransform(styleVal),
 			},
 		})
 

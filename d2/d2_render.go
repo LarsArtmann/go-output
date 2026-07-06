@@ -11,78 +11,78 @@ import (
 
 // Compile-time interface checks.
 var (
-	_ output.Renderer      = (*D2Diagram)(nil)
-	_ output.GraphRenderer = (*D2Diagram)(nil)
+	_ output.Renderer      = (*Diagram)(nil)
+	_ output.GraphRenderer = (*Diagram)(nil)
 )
 
-// D2Diagram builds D2 diagram output with full support for nodes, edges,
+// Diagram builds D2 diagram output with full support for nodes, edges,
 // SQL table shapes, styling, nesting, icons, links, tooltips, classes, and layout configuration.
-type D2Diagram struct {
-	direction D2Direction
+type Diagram struct {
+	direction Direction
 	layout    string
 	title     string
-	classes   map[string]D2NodeStyle
-	tables    []D2Table
-	nodes     []D2Node
-	edges     []D2Edge
+	classes   map[string]NodeStyle
+	tables    []Table
+	nodes     []Node
+	edges     []Edge
 }
 
-// NewD2Diagram creates a new D2Diagram.
-func NewD2Diagram() *D2Diagram {
-	return &D2Diagram{
-		classes: make(map[string]D2NodeStyle),
-		nodes:   make([]D2Node, 0),
-		edges:   make([]D2Edge, 0),
+// NewDiagram creates a new Diagram.
+func NewDiagram() *Diagram {
+	return &Diagram{
+		classes: make(map[string]NodeStyle),
+		nodes:   make([]Node, 0),
+		edges:   make([]Edge, 0),
 	}
 }
 
 // SetDirection sets the layout direction for the diagram.
-func (d *D2Diagram) SetDirection(dir D2Direction) *D2Diagram {
+func (d *Diagram) SetDirection(dir Direction) *Diagram {
 	d.direction = dir
 	return d
 }
 
 // SetLayout sets the layout engine (e.g., "elk", "dagre").
-func (d *D2Diagram) SetLayout(engine string) *D2Diagram {
+func (d *Diagram) SetLayout(engine string) *Diagram {
 	d.layout = engine
 	return d
 }
 
 // SetTitle sets the diagram title.
-func (d *D2Diagram) SetTitle(title string) *D2Diagram {
+func (d *Diagram) SetTitle(title string) *Diagram {
 	d.title = title
 	return d
 }
 
 // AddClass adds a reusable style class that can be referenced by nodes.
-func (d *D2Diagram) AddClass(name string, style D2NodeStyle) *D2Diagram {
+func (d *Diagram) AddClass(name string, style NodeStyle) *Diagram {
 	d.classes[name] = style
 	return d
 }
 
 // AddTable adds a SQL table shape to the diagram.
-func (d *D2Diagram) AddTable(name string, columns []D2Column) *D2Diagram {
-	d.tables = append(d.tables, D2Table{Name: name, Columns: columns})
+func (d *Diagram) AddTable(name string, columns []Column) *Diagram {
+	d.tables = append(d.tables, Table{Name: name, Columns: columns})
 	return d
 }
 
 // AddNode adds a node to the diagram.
-func (d *D2Diagram) AddNode(node D2Node) *D2Diagram {
+func (d *Diagram) AddNode(node Node) *Diagram {
 	d.nodes = append(d.nodes, node)
 	return d
 }
 
 // AddNodeSimple adds a simple node with just ID and label.
-func (d *D2Diagram) AddNodeSimple(id, label string) *D2Diagram {
-	return d.AddNode(D2Node{
+func (d *Diagram) AddNodeSimple(id, label string) *Diagram {
+	return d.AddNode(Node{
 		ID:    output.NewBrandedID[output.D2NodeIDBrand](id),
 		Label: output.NewBrandedID[output.D2NodeLabelBrand](label),
 	})
 }
 
 // AddNodeWithShape adds a node with a specific shape.
-func (d *D2Diagram) AddNodeWithShape(id, label string, shape D2NodeShape) *D2Diagram {
-	return d.AddNode(D2Node{
+func (d *Diagram) AddNodeWithShape(id, label string, shape NodeShape) *Diagram {
+	return d.AddNode(Node{
 		ID:    output.NewBrandedID[output.D2NodeIDBrand](id),
 		Label: output.NewBrandedID[output.D2NodeLabelBrand](label),
 		Shape: shape,
@@ -90,15 +90,15 @@ func (d *D2Diagram) AddNodeWithShape(id, label string, shape D2NodeShape) *D2Dia
 }
 
 // AddEdge adds an edge between two nodes.
-func (d *D2Diagram) AddEdge(edge D2Edge) *D2Diagram {
+func (d *Diagram) AddEdge(edge Edge) *Diagram {
 	d.edges = append(d.edges, edge)
 	return d
 }
 
 // AddEdgeSimple adds a simple edge between two nodes.
-func (d *D2Diagram) AddEdgeSimple(from, to string) *D2Diagram {
+func (d *Diagram) AddEdgeSimple(from, to string) *Diagram {
 	return d.AddEdge( //nolint:exhaustruct // Simple edge uses defaults for optional fields
-		D2Edge{
+		Edge{
 			From: output.NewBrandedID[output.D2NodeIDBrand](from),
 			To:   output.NewBrandedID[output.D2NodeIDBrand](to),
 		},
@@ -106,9 +106,9 @@ func (d *D2Diagram) AddEdgeSimple(from, to string) *D2Diagram {
 }
 
 // AddLabeledEdge adds an edge with a label.
-func (d *D2Diagram) AddLabeledEdge(from, to, label string) *D2Diagram {
+func (d *Diagram) AddLabeledEdge(from, to, label string) *Diagram {
 	return d.AddEdge( //nolint:exhaustruct // Labeled edge uses defaults for optional fields
-		D2Edge{
+		Edge{
 			From:  output.NewBrandedID[output.D2NodeIDBrand](from),
 			To:    output.NewBrandedID[output.D2NodeIDBrand](to),
 			Label: output.NewBrandedID[output.D2NodeLabelBrand](label),
@@ -117,7 +117,7 @@ func (d *D2Diagram) AddLabeledEdge(from, to, label string) *D2Diagram {
 }
 
 // Render returns the D2 diagram as a valid D2 language string.
-func (d *D2Diagram) Render() (string, error) {
+func (d *Diagram) Render() (string, error) {
 	var b strings.Builder
 
 	d.writeConfig(&b)
@@ -141,13 +141,13 @@ func (d *D2Diagram) Render() (string, error) {
 	return strings.TrimRight(b.String(), "\n"), nil
 }
 
-func (d *D2Diagram) writeConfig(b *strings.Builder) {
+func (d *Diagram) writeConfig(b *strings.Builder) {
 	hasConfig := d.direction != "" || d.layout != "" || d.title != ""
 	if !hasConfig {
 		return
 	}
 
-	if d.direction != "" && d.direction != D2DirDown {
+	if d.direction != "" && d.direction != DirDown {
 		fmt.Fprintf(b, "direction: %s\n", d.direction)
 	}
 
@@ -162,7 +162,7 @@ func (d *D2Diagram) writeConfig(b *strings.Builder) {
 	b.WriteString("\n")
 }
 
-func (d *D2Diagram) writeClasses(b *strings.Builder) {
+func (d *Diagram) writeClasses(b *strings.Builder) {
 	b.WriteString("classes: {\n")
 
 	names := make([]string, 0, len(d.classes))
@@ -183,7 +183,7 @@ func (d *D2Diagram) writeClasses(b *strings.Builder) {
 	b.WriteString("}\n\n")
 }
 
-func (d *D2Diagram) writeTable(b *strings.Builder, table D2Table) {
+func (d *Diagram) writeTable(b *strings.Builder, table Table) {
 	fmt.Fprintf(b, "%s: {\n  shape: sql_table\n", escape.D2(table.Name))
 
 	for _, col := range table.Columns {
@@ -193,7 +193,7 @@ func (d *D2Diagram) writeTable(b *strings.Builder, table D2Table) {
 	b.WriteString("}\n\n")
 }
 
-func (*D2Diagram) writeColumn(b *strings.Builder, col D2Column) {
+func (*Diagram) writeColumn(b *strings.Builder, col Column) {
 	if col.Constraint != "" {
 		fmt.Fprintf(b, "  %s: %s {constraint: %s}\n",
 			escape.D2(col.Name), escape.D2(col.Type), string(col.Constraint))
@@ -202,7 +202,7 @@ func (*D2Diagram) writeColumn(b *strings.Builder, col D2Column) {
 	}
 }
 
-func (d *D2Diagram) writeNode(b *strings.Builder, node D2Node) {
+func (d *Diagram) writeNode(b *strings.Builder, node Node) {
 	if node.Nested != "" {
 		d.writeNestedNode(b, node)
 		return
@@ -217,15 +217,15 @@ func (d *D2Diagram) writeNode(b *strings.Builder, node D2Node) {
 	}
 }
 
-func (d *D2Diagram) writeNestedNode(b *strings.Builder, node D2Node) {
+func (d *Diagram) writeNestedNode(b *strings.Builder, node Node) {
 	fmt.Fprintf(b, "%s: %s {\n", escape.D2(node.ID.Get()), escape.D2(node.Label.Get()))
 	d.writeNodeAttrs(b, node)
 	b.WriteString(node.Nested)
 	b.WriteString("}\n")
 }
 
-func (d *D2Diagram) writeNodeAttrs(b *strings.Builder, node D2Node) {
-	if node.Shape != "" && node.Shape != D2ShapeRectangle {
+func (d *Diagram) writeNodeAttrs(b *strings.Builder, node Node) {
+	if node.Shape != "" && node.Shape != ShapeRectangle {
 		fmt.Fprintf(b, "  shape: %s\n", node.Shape)
 	}
 
@@ -235,7 +235,7 @@ func (d *D2Diagram) writeNodeAttrs(b *strings.Builder, node D2Node) {
 	d.writeNodeRefs(b, node)
 }
 
-func (*D2Diagram) writeNodeSize(b *strings.Builder, node D2Node) {
+func (*Diagram) writeNodeSize(b *strings.Builder, node Node) {
 	if node.Width > 0 {
 		fmt.Fprintf(b, "  width: %d\n", node.Width)
 	}
@@ -245,7 +245,7 @@ func (*D2Diagram) writeNodeSize(b *strings.Builder, node D2Node) {
 	}
 }
 
-func (*D2Diagram) writeNodeLayout(b *strings.Builder, node D2Node) {
+func (*Diagram) writeNodeLayout(b *strings.Builder, node Node) {
 	if node.Near != "" {
 		fmt.Fprintf(b, "  near: %s\n", escape.D2(node.Near))
 	}
@@ -263,7 +263,7 @@ func (*D2Diagram) writeNodeLayout(b *strings.Builder, node D2Node) {
 	}
 }
 
-func (*D2Diagram) writeNodeRefs(b *strings.Builder, node D2Node) {
+func (*Diagram) writeNodeRefs(b *strings.Builder, node Node) {
 	if node.Class != "" {
 		fmt.Fprintf(b, "  class: %s\n", escape.D2(node.Class))
 	}

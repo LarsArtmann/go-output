@@ -120,24 +120,24 @@ func renderYAML(projects []Project) {
 
 func renderD2(projects []Project) {
 	d2Diagram := shared.NewServiceD2Diagram("Project Architecture").
-		AddTable("projects", []d2.D2Column{
-			{Name: "id", Type: "serial", Constraint: d2.D2ConstraintPrimary},
+		AddTable("projects", []d2.Column{
+			{Name: "id", Type: "serial", Constraint: d2.ConstraintPrimary},
 			{Name: "name", Type: "varchar(255)"},
 			{Name: "health", Type: "int"},
 			{Name: "complexity", Type: "int"},
 		})
 
 	for _, p := range projects {
-		d2Diagram.AddNode(d2.D2Node{
+		d2Diagram.AddNode(d2.Node{
 			ID:    output.NewBrandedID[output.D2NodeIDBrand](p.Name),
 			Label: output.NewBrandedID[output.D2NodeLabelBrand](p.Name),
-			Shape: d2.D2ShapeCircle,
+			Shape: d2.ShapeCircle,
 			Class: "service",
 		})
-		d2Diagram.AddEdge(d2.D2Edge{
+		d2Diagram.AddEdge(d2.Edge{
 			From:        output.NewBrandedID[output.D2NodeIDBrand]("projects"),
 			To:          output.NewBrandedID[output.D2NodeIDBrand](p.Name),
-			TargetArrow: d2.D2ArrowCFMany,
+			TargetArrow: d2.ArrowCFMany,
 		})
 	}
 

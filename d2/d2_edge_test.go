@@ -7,8 +7,8 @@ import (
 	"github.com/larsartmann/go-output/testhelpers"
 )
 
-func newTestD2Edge(opts ...func(*D2Edge)) D2Edge {
-	edge := D2Edge{ //nolint:exhaustruct // Test uses minimal required fields
+func newTestEdge(opts ...func(*Edge)) Edge {
+	edge := Edge{ //nolint:exhaustruct // Test uses minimal required fields
 		From: output.NewBrandedID[output.D2NodeIDBrand]("a"),
 		To:   output.NewBrandedID[output.D2NodeIDBrand]("b"),
 	}
@@ -22,11 +22,11 @@ func newTestD2Edge(opts ...func(*D2Edge)) D2Edge {
 func TestD2EdgeWithArrows(t *testing.T) {
 	t.Parallel()
 
-	d := NewD2Diagram()
-	d.AddEdge(newTestD2Edge(func(e *D2Edge) {
+	d := NewDiagram()
+	d.AddEdge(newTestEdge(func(e *Edge) {
 		e.Label = output.NewBrandedID[output.D2NodeLabelBrand]("test")
-		e.SourceArrow = D2ArrowDiamond
-		e.TargetArrow = D2ArrowTriangle
+		e.SourceArrow = ArrowDiamond
+		e.TargetArrow = ArrowTriangle
 	}))
 
 	got, err := d.Render()
@@ -51,26 +51,26 @@ func TestD2EdgeWithArrows(t *testing.T) {
 func TestD2AllArrowTypes(t *testing.T) {
 	t.Parallel()
 
-	arrows := []D2ArrowType{
-		D2ArrowArrow,
-		D2ArrowTriangle,
-		D2ArrowDiamond,
-		D2ArrowCircle,
-		D2ArrowFilled,
-		D2ArrowBox,
-		D2ArrowCross,
-		D2ArrowCFOne,
-		D2ArrowCFMany,
-		D2ArrowCFOneRequired,
-		D2ArrowCFManyRequired,
+	arrows := []ArrowType{
+		ArrowArrow,
+		ArrowTriangle,
+		ArrowDiamond,
+		ArrowCircle,
+		ArrowFilled,
+		ArrowBox,
+		ArrowCross,
+		ArrowCFOne,
+		ArrowCFMany,
+		ArrowCFOneRequired,
+		ArrowCFManyRequired,
 	}
 
 	for _, arrow := range arrows {
 		t.Run(string(arrow), func(t *testing.T) {
 			t.Parallel()
 
-			d := NewD2Diagram()
-			d.AddEdge(newTestD2Edge(func(e *D2Edge) {
+			d := NewDiagram()
+			d.AddEdge(newTestEdge(func(e *Edge) {
 				e.TargetArrow = arrow
 			}))
 
@@ -88,9 +88,9 @@ func TestD2AllArrowTypes(t *testing.T) {
 func TestD2EdgeWithFilledArrow(t *testing.T) {
 	t.Parallel()
 
-	d := NewD2Diagram()
-	d.AddEdge(newTestD2Edge(func(e *D2Edge) {
-		e.TargetArrow = D2ArrowFilled
+	d := NewDiagram()
+	d.AddEdge(newTestEdge(func(e *Edge) {
+		e.TargetArrow = ArrowFilled
 	}))
 
 	got, err := d.Render()
@@ -106,16 +106,16 @@ func TestD2EdgeWithFilledArrow(t *testing.T) {
 	)
 }
 
-func TestD2EdgeStyle(t *testing.T) {
+func TestEdgeStyle(t *testing.T) {
 	t.Parallel()
 
-	d := NewD2Diagram()
-	d.AddEdge(D2Edge{
+	d := NewDiagram()
+	d.AddEdge(Edge{
 		From:  output.NewBrandedID[output.D2NodeIDBrand]("a"),
 		To:    output.NewBrandedID[output.D2NodeIDBrand]("b"),
 		Label: output.NewBrandedID[output.D2NodeLabelBrand]("styled"),
-		Style: D2EdgeStyle{
-			D2StrokeStyle: D2StrokeStyle{
+		Style: EdgeStyle{
+			StrokeStyle: StrokeStyle{
 				Stroke:      "red",
 				StrokeWidth: 3,
 				StrokeDash:  5,

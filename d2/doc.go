@@ -2,8 +2,8 @@
 // shapes, arrows, SQL tables, classes, and nested containers.
 //
 // D2 (https://d2lang.com) is a modern diagram language. This package provides
-// typed constructors for all D2 elements: D2Node, D2Edge, D2Table, D2Class,
-// D2Arrow, and their respective styles. Use D2Diagram to compose and render
+// typed constructors for all D2 elements: Node, Edge, Table, D2Class,
+// D2Arrow, and their respective styles. Use Diagram to compose and render
 // diagrams as D2 source code.
 //
 // # Branded IDs
@@ -15,7 +15,7 @@
 //
 // # Quick Start
 //
-//	diagram := d2.NewD2Diagram()
+//	diagram := d2.NewDiagram()
 //	diagram.AddNodeSimple("server", "Web Server")
 //	diagram.AddNodeSimple("db", "Database")
 //	diagram.AddEdgeSimple("server", "db")

@@ -11,11 +11,11 @@ import (
 func TestD2TableWithConstraints(t *testing.T) {
 	t.Parallel()
 
-	d := NewD2Diagram()
-	d.AddTable("users", []D2Column{
-		{Name: "id", Type: "int", Constraint: D2ConstraintPrimary},
-		{Name: "email", Type: "string", Constraint: D2ConstraintUnique},
-		{Name: "org_id", Type: "int", Constraint: D2ConstraintForeign},
+	d := NewDiagram()
+	d.AddTable("users", []Column{
+		{Name: "id", Type: "int", Constraint: ConstraintPrimary},
+		{Name: "email", Type: "string", Constraint: ConstraintUnique},
+		{Name: "org_id", Type: "int", Constraint: ConstraintForeign},
 		{Name: "name", Type: "string"},
 	})
 
@@ -52,16 +52,16 @@ func TestD2TableWithConstraints(t *testing.T) {
 func TestD2ConstraintConstants(t *testing.T) {
 	t.Parallel()
 
-	if D2ConstraintPrimary != "primary_key" {
-		t.Errorf("D2ConstraintPrimary = %q, want %q", D2ConstraintPrimary, "primary_key")
+	if ConstraintPrimary != "primary_key" {
+		t.Errorf("ConstraintPrimary = %q, want %q", ConstraintPrimary, "primary_key")
 	}
 
-	if D2ConstraintForeign != "foreign_key" {
-		t.Errorf("D2ConstraintForeign = %q, want %q", D2ConstraintForeign, "foreign_key")
+	if ConstraintForeign != "foreign_key" {
+		t.Errorf("ConstraintForeign = %q, want %q", ConstraintForeign, "foreign_key")
 	}
 
-	if D2ConstraintUnique != "unique" {
-		t.Errorf("D2ConstraintUnique = %q, want %q", D2ConstraintUnique, "unique")
+	if ConstraintUnique != "unique" {
+		t.Errorf("ConstraintUnique = %q, want %q", ConstraintUnique, "unique")
 	}
 }
 
@@ -199,9 +199,9 @@ func TestNewD2FromTree(t *testing.T) {
 func TestD2GraphRendererInterface(t *testing.T) {
 	t.Parallel()
 
-	var _ output.GraphRenderer = NewD2Diagram()
+	var _ output.GraphRenderer = NewDiagram()
 
-	d := NewD2Diagram()
+	d := NewDiagram()
 	d.SetNodes([]output.GraphNode{
 		*output.NewGraphNode("a", "Node A"),
 		*output.NewGraphNode("b", "Node B"),
@@ -241,7 +241,7 @@ func TestD2NodeShapeConversion(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			d := NewD2Diagram()
+			d := NewDiagram()
 			d.SetNodes([]output.GraphNode{
 				{
 					ID:    output.NewBrandedID[output.GraphNodeIDBrand]("node"),
@@ -270,7 +270,7 @@ func TestD2NodeShapeConversion(t *testing.T) {
 func TestD2NodeStyleConversion(t *testing.T) {
 	t.Parallel()
 
-	d := NewD2Diagram()
+	d := NewDiagram()
 	d.SetNodes([]output.GraphNode{
 		{
 			ID:    output.NewBrandedID[output.GraphNodeIDBrand]("styled"),

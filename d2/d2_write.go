@@ -7,16 +7,16 @@ import (
 	"github.com/larsartmann/go-output/escape"
 )
 
-func (d *D2Diagram) writeStyleAttrs(b *strings.Builder, s D2NodeStyle, indent string) {
+func (d *Diagram) writeStyleAttrs(b *strings.Builder, s NodeStyle, indent string) {
 	if s.Fill != "" {
 		fmt.Fprintf(b, "%sstyle.fill: %s\n", indent, escape.D2(s.Fill))
 	}
 
-	d.writeStyleColors(b, s.D2StrokeStyle, indent)
+	d.writeStyleColors(b, s.StrokeStyle, indent)
 	d.writeStyleEffects(b, s, indent)
 }
 
-func (*D2Diagram) writeStyleColors(b *strings.Builder, s D2StrokeStyle, indent string) {
+func (*Diagram) writeStyleColors(b *strings.Builder, s StrokeStyle, indent string) {
 	if s.Stroke != "" {
 		fmt.Fprintf(b, "%sstyle.stroke: %s\n", indent, escape.D2(s.Stroke))
 	}
@@ -38,7 +38,7 @@ func (*D2Diagram) writeStyleColors(b *strings.Builder, s D2StrokeStyle, indent s
 	}
 }
 
-func (*D2Diagram) writeStyleEffects(b *strings.Builder, s D2NodeStyle, indent string) {
+func (*Diagram) writeStyleEffects(b *strings.Builder, s NodeStyle, indent string) {
 	if s.Opacity > 0 {
 		opacity := s.Opacity
 		if opacity > 1 {
@@ -58,12 +58,12 @@ func (*D2Diagram) writeStyleEffects(b *strings.Builder, s D2NodeStyle, indent st
 		fmt.Fprintf(b, "%sborder-radius: %d\n", indent, s.BorderRadius)
 	}
 
-	if s.TextTransform != D2TextTransformNone {
+	if s.TextTransform != TextTransformNone {
 		fmt.Fprintf(b, "%sstyle.text-transform: %s\n", indent, escape.D2(string(s.TextTransform)))
 	}
 }
 
-func (d *D2Diagram) writeEdge(b *strings.Builder, edge D2Edge) {
+func (d *Diagram) writeEdge(b *strings.Builder, edge Edge) {
 	from := escape.D2(edge.From.Get())
 	to := escape.D2(edge.To.Get())
 
@@ -82,8 +82,8 @@ func (d *D2Diagram) writeEdge(b *strings.Builder, edge D2Edge) {
 	b.WriteString("}\n")
 }
 
-func (d *D2Diagram) writeEdgeBlockAttrs(b *strings.Builder, edge D2Edge) {
-	d.writeStyleColors(b, edge.Style.D2StrokeStyle, "  ")
+func (d *Diagram) writeEdgeBlockAttrs(b *strings.Builder, edge Edge) {
+	d.writeStyleColors(b, edge.Style.StrokeStyle, "  ")
 
 	if edge.Style.Animated {
 		b.WriteString("  style.animated: true\n")

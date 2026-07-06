@@ -9,9 +9,9 @@ import (
 )
 
 //nolint:testableexamples // Demonstration example, output is dynamic
-func ExampleNewD2Diagram() {
-	diagram := d2.NewD2Diagram().
-		SetDirection(d2.D2DirRight).
+func ExampleNewDiagram() {
+	diagram := d2.NewDiagram().
+		SetDirection(d2.DirRight).
 		SetTitle("System Architecture").
 		AddNodeSimple("frontend", "Frontend App").
 		AddNodeSimple("api", "API Server").
@@ -24,17 +24,17 @@ func ExampleNewD2Diagram() {
 }
 
 //nolint:testableexamples // Demonstration example, output is dynamic
-func ExampleNewD2Diagram_tables() {
-	diagram := d2.NewD2Diagram()
+func ExampleNewDiagram_tables() {
+	diagram := d2.NewDiagram()
 
 	diagram.
-		AddTable("accounts", []d2.D2Column{
-			{Name: "id", Type: "serial", Constraint: d2.D2ConstraintPrimary},
-			{Name: "email", Type: "varchar", Constraint: d2.D2ConstraintUnique},
+		AddTable("accounts", []d2.Column{
+			{Name: "id", Type: "serial", Constraint: d2.ConstraintPrimary},
+			{Name: "email", Type: "varchar", Constraint: d2.ConstraintUnique},
 		}).
-		AddTable("profiles", []d2.D2Column{
-			{Name: "id", Type: "bigint", Constraint: d2.D2ConstraintPrimary},
-			{Name: "account_id", Type: "bigint", Constraint: d2.D2ConstraintForeign},
+		AddTable("profiles", []d2.Column{
+			{Name: "id", Type: "bigint", Constraint: d2.ConstraintPrimary},
+			{Name: "account_id", Type: "bigint", Constraint: d2.ConstraintForeign},
 			{Name: "bio", Type: "text"},
 			{Name: "avatar_url", Type: "varchar"},
 		})
@@ -45,15 +45,15 @@ func ExampleNewD2Diagram_tables() {
 }
 
 //nolint:testableexamples // Demonstration example, output is dynamic
-func ExampleNewD2Diagram_styledNodes() {
-	diagram := d2.NewD2Diagram()
-	diagram.AddNode(d2.D2Node{
+func ExampleNewDiagram_styledNodes() {
+	diagram := d2.NewDiagram()
+	diagram.AddNode(d2.Node{
 		ID:    output.NewBrandedID[output.D2NodeIDBrand]("server"),
 		Label: output.NewBrandedID[output.D2NodeLabelBrand]("Web Server"),
-		Shape: d2.D2ShapeHexagon,
-		Style: d2.D2NodeStyle{
+		Shape: d2.ShapeHexagon,
+		Style: d2.NodeStyle{
 			Fill: "#E0F0FF",
-			D2StrokeStyle: d2.D2StrokeStyle{
+			StrokeStyle: d2.StrokeStyle{
 				Stroke: "#0066CC",
 			},
 			Shadow: true,

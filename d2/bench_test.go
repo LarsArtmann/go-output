@@ -7,10 +7,10 @@ import (
 	"github.com/larsartmann/go-output"
 )
 
-func generateBenchmarkD2Nodes(n int) []D2Node {
-	nodes := make([]D2Node, 0, n)
+func generateBenchmarkD2Nodes(n int) []Node {
+	nodes := make([]Node, 0, n)
 	for i := range n {
-		nodes = append(nodes, D2Node{
+		nodes = append(nodes, Node{
 			ID:    output.NewBrandedID[output.D2NodeIDBrand](fmt.Sprintf("node%d", i)),
 			Label: output.NewBrandedID[output.D2NodeLabelBrand](fmt.Sprintf("Node %d", i)),
 		})
@@ -19,10 +19,10 @@ func generateBenchmarkD2Nodes(n int) []D2Node {
 	return nodes
 }
 
-func generateBenchmarkD2Edges(n int) []D2Edge {
-	edges := make([]D2Edge, 0, n)
+func generateBenchmarkD2Edges(n int) []Edge {
+	edges := make([]Edge, 0, n)
 	for i := range n {
-		edges = append(edges, D2Edge{
+		edges = append(edges, Edge{
 			From: output.NewBrandedID[output.D2NodeIDBrand](fmt.Sprintf("node%d", i)),
 			To:   output.NewBrandedID[output.D2NodeIDBrand](fmt.Sprintf("node%d", i+1)),
 		})
@@ -31,12 +31,12 @@ func generateBenchmarkD2Edges(n int) []D2Edge {
 	return edges
 }
 
-func generateBenchmarkD2Tables(n int) []D2Table {
-	tables := make([]D2Table, 0, n)
+func generateBenchmarkD2Tables(n int) []Table {
+	tables := make([]Table, 0, n)
 	for i := range n {
-		tables = append(tables, D2Table{
+		tables = append(tables, Table{
 			Name: fmt.Sprintf("table%d", i),
-			Columns: []D2Column{
+			Columns: []Column{
 				{Name: "id", Type: "int"},
 				{Name: "name", Type: "string"},
 				{Name: "email", Type: "string"},
@@ -47,8 +47,8 @@ func generateBenchmarkD2Tables(n int) []D2Table {
 	return tables
 }
 
-func benchmarkD2Diagram(b *testing.B, setup func(*D2Diagram)) {
-	d := NewD2Diagram()
+func benchmarkDiagram(b *testing.B, setup func(*Diagram)) {
+	d := NewDiagram()
 	setup(d)
 
 	b.ResetTimer()
@@ -59,11 +59,11 @@ func benchmarkD2Diagram(b *testing.B, setup func(*D2Diagram)) {
 }
 
 func BenchmarkD2DiagramEmpty(b *testing.B) {
-	benchmarkD2Diagram(b, func(_ *D2Diagram) {})
+	benchmarkDiagram(b, func(_ *Diagram) {})
 }
 
 func BenchmarkD2DiagramNodes(b *testing.B) {
-	benchmarkD2Diagram(b, func(d *D2Diagram) {
+	benchmarkDiagram(b, func(d *Diagram) {
 		for _, node := range generateBenchmarkD2Nodes(100) {
 			d.AddNode(node)
 		}
@@ -71,7 +71,7 @@ func BenchmarkD2DiagramNodes(b *testing.B) {
 }
 
 func BenchmarkD2DiagramEdges(b *testing.B) {
-	benchmarkD2Diagram(b, func(d *D2Diagram) {
+	benchmarkDiagram(b, func(d *Diagram) {
 		for _, node := range generateBenchmarkD2Nodes(100) {
 			d.AddNode(node)
 		}
@@ -83,21 +83,21 @@ func BenchmarkD2DiagramEdges(b *testing.B) {
 }
 
 func BenchmarkD2DiagramTables(b *testing.B) {
-	benchmarkD2Diagram(b, func(d *D2Diagram) {
+	benchmarkDiagram(b, func(d *Diagram) {
 		addBenchmarkD2Tables(d, 50)
 	})
 }
 
 func BenchmarkD2DiagramStyledNodes(b *testing.B) {
-	benchmarkD2Diagram(b, func(d *D2Diagram) {
+	benchmarkDiagram(b, func(d *Diagram) {
 		for i := range 100 {
-			d.AddNode(D2Node{
+			d.AddNode(Node{
 				ID:    output.NewBrandedID[output.D2NodeIDBrand](fmt.Sprintf("node%d", i)),
 				Label: output.NewBrandedID[output.D2NodeLabelBrand](fmt.Sprintf("Node %d", i)),
-				Shape: D2ShapeCircle,
-				Style: D2NodeStyle{
+				Shape: ShapeCircle,
+				Style: NodeStyle{
 					Fill: "#f0f0f0",
-					D2StrokeStyle: D2StrokeStyle{
+					StrokeStyle: StrokeStyle{
 						Stroke:   "#333333",
 						FontSize: 14,
 					},
@@ -111,14 +111,14 @@ func BenchmarkD2DiagramStyledNodes(b *testing.B) {
 }
 
 func BenchmarkD2DiagramFullConfig(b *testing.B) {
-	benchmarkD2Diagram(b, func(d *D2Diagram) {
-		d.SetDirection(D2DirRight).
+	benchmarkDiagram(b, func(d *Diagram) {
+		d.SetDirection(DirRight).
 			SetTitle("Benchmark Diagram").
 			SetLayout("elk")
 
-		d.AddClass("highlight", D2NodeStyle{
-			Fill:          "#ffcc00",
-			D2StrokeStyle: D2StrokeStyle{Stroke: "#ff9900"},
+		d.AddClass("highlight", NodeStyle{
+			Fill:        "#ffcc00",
+			StrokeStyle: StrokeStyle{Stroke: "#ff9900"},
 		})
 
 		for _, node := range generateBenchmarkD2Nodes(50) {
@@ -133,7 +133,7 @@ func BenchmarkD2DiagramFullConfig(b *testing.B) {
 	})
 }
 
-func addBenchmarkD2Tables(d *D2Diagram, n int) {
+func addBenchmarkD2Tables(d *Diagram, n int) {
 	for _, table := range generateBenchmarkD2Tables(n) {
 		d.AddTable(table.Name, table.Columns)
 	}

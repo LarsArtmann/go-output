@@ -16,13 +16,13 @@ func HandleError(err error) {
 }
 
 // NewServiceD2Diagram creates a D2 diagram with a service class pre-configured.
-func NewServiceD2Diagram(title string) *d2.D2Diagram {
-	return d2.NewD2Diagram().
-		SetDirection(d2.D2DirRight).
+func NewServiceD2Diagram(title string) *d2.Diagram {
+	return d2.NewDiagram().
+		SetDirection(d2.DirRight).
 		SetTitle(title).
-		AddClass("service", d2.D2NodeStyle{
+		AddClass("service", d2.NodeStyle{
 			Fill: "lightblue",
-			D2StrokeStyle: d2.D2StrokeStyle{
+			StrokeStyle: d2.StrokeStyle{
 				Stroke:   "navy",
 				FontSize: 16,
 			},

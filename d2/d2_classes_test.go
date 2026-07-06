@@ -8,11 +8,11 @@ import (
 func TestD2ClassesDeterministic(t *testing.T) {
 	t.Parallel()
 
-	d := NewD2Diagram()
-	d.AddClass("zebra", D2NodeStyle{Fill: "black"})
-	d.AddClass("alpha", D2NodeStyle{Fill: "red"})
-	d.AddClass("beta", D2NodeStyle{Fill: "green"})
-	d.AddNode(newD2ClassNode("n1", "N1", "alpha"))
+	d := NewDiagram()
+	d.AddClass("zebra", NodeStyle{Fill: "black"})
+	d.AddClass("alpha", NodeStyle{Fill: "red"})
+	d.AddClass("beta", NodeStyle{Fill: "green"})
+	d.AddNode(newClassNode("n1", "N1", "alpha"))
 
 	got1, err := d.Render()
 	if err != nil {

@@ -13,8 +13,8 @@ type D2NodeID = output.D2NodeID
 // D2NodeLabel is a branded identifier for D2 diagram node labels.
 type D2NodeLabel = output.D2NodeLabel
 
-// D2StrokeStyle represents shared stroke/font styling for D2 nodes and edges.
-type D2StrokeStyle struct {
+// StrokeStyle represents shared stroke/font styling for D2 nodes and edges.
+type StrokeStyle struct {
 	// Stroke is the border color (e.g., "red", "#ff0000").
 	Stroke string
 	// StrokeWidth is the border thickness in pixels.
@@ -27,14 +27,14 @@ type D2StrokeStyle struct {
 	FontColor string
 }
 
-func (s D2StrokeStyle) isSet() bool {
+func (s StrokeStyle) isSet() bool {
 	return s.Stroke != "" || s.StrokeWidth > 0 || s.StrokeDash > 0 ||
 		s.FontSize > 0 || s.FontColor != ""
 }
 
-// D2NodeStyle represents styling for a D2 node.
-type D2NodeStyle struct {
-	D2StrokeStyle
+// NodeStyle represents styling for a D2 node.
+type NodeStyle struct {
+	StrokeStyle
 
 	// Fill is the background color (e.g., "blue", "#0000ff").
 	Fill string
@@ -45,24 +45,24 @@ type D2NodeStyle struct {
 	// BorderRadius is the corner radius in pixels.
 	BorderRadius int
 	// TextTransform controls text casing (uppercase, lowercase, capitalize).
-	TextTransform D2TextTransform
+	TextTransform TextTransform
 }
 
-func (s D2NodeStyle) isSet() bool {
-	return s.D2StrokeStyle.isSet() || s.Fill != "" ||
+func (s NodeStyle) isSet() bool {
+	return s.StrokeStyle.isSet() || s.Fill != "" ||
 		s.Opacity > 0 || s.Shadow || s.BorderRadius > 0 || s.TextTransform != ""
 }
 
-// D2Node represents a node in a D2 diagram.
-type D2Node struct {
+// Node represents a node in a D2 diagram.
+type Node struct {
 	// ID is the unique identifier for the node (used in connections).
 	ID D2NodeID
 	// Label is the display text. Defaults to ID if empty.
 	Label D2NodeLabel
 	// Shape defines the visual shape (rectangle, circle, etc.).
-	Shape D2NodeShape
+	Shape NodeShape
 	// Style contains optional visual styling.
-	Style D2NodeStyle
+	Style NodeStyle
 	// Icon is an optional icon name or URL.
 	Icon string
 	// Link is an optional URL the node links to.
@@ -87,38 +87,38 @@ type D2Node struct {
 	Nested string
 }
 
-func (n D2Node) hasBlockAttrs() bool {
+func (n Node) hasBlockAttrs() bool {
 	return n.hasVisualAttrs() || n.hasLayoutAttrs()
 }
 
-func (n D2Node) hasVisualAttrs() bool {
-	hasShape := n.Shape != "" && n.Shape != D2ShapeRectangle
+func (n Node) hasVisualAttrs() bool {
+	hasShape := n.Shape != "" && n.Shape != ShapeRectangle
 
 	return hasShape || n.Style.isSet() || n.Icon != "" || n.Link != "" || n.Tooltip != ""
 }
 
-func (n D2Node) hasLayoutAttrs() bool {
+func (n Node) hasLayoutAttrs() bool {
 	return n.Class != "" || n.Near != "" || n.hasGrid() || n.hasSize()
 }
 
-func (n D2Node) hasGrid() bool {
+func (n Node) hasGrid() bool {
 	return n.GridRows > 0 || n.GridColumns > 0 || n.GridGap > 0
 }
 
-func (n D2Node) hasSize() bool {
+func (n Node) hasSize() bool {
 	return n.Width > 0 || n.Height > 0
 }
 
-// D2EdgeStyle represents styling for a D2 edge.
-type D2EdgeStyle struct {
-	D2StrokeStyle
+// EdgeStyle represents styling for a D2 edge.
+type EdgeStyle struct {
+	StrokeStyle
 
 	// Animated enables edge animation.
 	Animated bool
 }
 
-// D2Edge represents an edge in a D2 diagram.
-type D2Edge struct {
+// Edge represents an edge in a D2 diagram.
+type Edge struct {
 	// From is the source node ID.
 	From D2NodeID
 	// To is the target node ID.
@@ -126,34 +126,34 @@ type D2Edge struct {
 	// Label is the optional display text on the edge.
 	Label D2NodeLabel
 	// Style contains optional visual styling.
-	Style D2EdgeStyle
+	Style EdgeStyle
 	// SourceArrow is the arrowhead style at the source end.
-	SourceArrow D2ArrowType
+	SourceArrow ArrowType
 	// TargetArrow is the arrowhead style at the target end.
-	TargetArrow D2ArrowType
+	TargetArrow ArrowType
 }
 
-func (e D2Edge) hasBlockAttrs() bool {
+func (e Edge) hasBlockAttrs() bool {
 	hasStyle := e.Style.isSet() || e.Style.Animated
 	hasArrows := e.SourceArrow != "" || e.TargetArrow != ""
 
 	return hasStyle || hasArrows
 }
 
-// D2Column represents a column in a D2 SQL table shape.
-type D2Column struct {
+// Column represents a column in a D2 SQL table shape.
+type Column struct {
 	// Name is the column name.
 	Name string
 	// Type is the column data type (e.g., "varchar", "int").
 	Type string
 	// Constraint is the column constraint (e.g., primary key, not null).
-	Constraint D2Constraint
+	Constraint Constraint
 }
 
-// D2Table represents a SQL table shape in D2 diagrams.
-type D2Table struct {
+// Table represents a SQL table shape in D2 diagrams.
+type Table struct {
 	// Name is the table name.
 	Name string
 	// Columns lists the table columns.
-	Columns []D2Column
+	Columns []Column
 }

@@ -12,14 +12,14 @@ import (
 func TestD2AllNodeShapes(t *testing.T) {
 	t.Parallel()
 
-	shapes := d2NodeShapeValues
+	shapes := nodeShapeValues
 
 	for _, shape := range shapes {
 		t.Run(string(shape), func(t *testing.T) {
 			t.Parallel()
 
-			d := NewD2Diagram()
-			d.AddNode(D2Node{ //nolint:exhaustruct // Test uses minimal required fields
+			d := NewDiagram()
+			d.AddNode(Node{ //nolint:exhaustruct // Test uses minimal required fields
 				ID:    output.NewBrandedID[output.D2NodeIDBrand]("node"),
 				Label: output.NewBrandedID[output.D2NodeLabelBrand]("Test"),
 				Shape: shape,
@@ -32,7 +32,7 @@ func TestD2AllNodeShapes(t *testing.T) {
 
 			testhelpers.AssertContains(t, got, "node:", "should contain node ID")
 
-			if shape != D2ShapeRectangle {
+			if shape != ShapeRectangle {
 				testhelpers.AssertContains(t, got, "shape: "+string(shape), "should contain shape")
 			}
 		})
@@ -42,11 +42,11 @@ func TestD2AllNodeShapes(t *testing.T) {
 func TestD2NodeRectangleImplicit(t *testing.T) {
 	t.Parallel()
 
-	d := NewD2Diagram()
-	d.AddNode(D2Node{ //nolint:exhaustruct // Test uses minimal required fields
+	d := NewDiagram()
+	d.AddNode(Node{ //nolint:exhaustruct // Test uses minimal required fields
 		ID:    output.NewBrandedID[output.D2NodeIDBrand]("node"),
 		Label: output.NewBrandedID[output.D2NodeLabelBrand]("Simple"),
-		Shape: D2ShapeRectangle,
+		Shape: ShapeRectangle,
 	})
 
 	got, err := d.Render()
@@ -64,15 +64,15 @@ func TestD2NodeRectangleImplicit(t *testing.T) {
 func TestD2NodeWithStyle(t *testing.T) {
 	t.Parallel()
 
-	d := NewD2Diagram()
-	d.AddNode(D2Node{
+	d := NewDiagram()
+	d.AddNode(Node{
 		ID:     output.NewBrandedID[output.D2NodeIDBrand]("styled"),
 		Label:  output.NewBrandedID[output.D2NodeLabelBrand]("Styled Node"),
 		Width:  200,
 		Height: 100,
-		Style: D2NodeStyle{
+		Style: NodeStyle{
 			Fill: "blue",
-			D2StrokeStyle: D2StrokeStyle{
+			StrokeStyle: StrokeStyle{
 				Stroke:      "black",
 				StrokeWidth: 2,
 				StrokeDash:  3,
@@ -82,7 +82,7 @@ func TestD2NodeWithStyle(t *testing.T) {
 			Opacity:       0.8,
 			Shadow:        true,
 			BorderRadius:  8,
-			TextTransform: D2TextTransformUpper,
+			TextTransform: TextTransformUpper,
 		},
 	})
 
@@ -113,8 +113,8 @@ func TestD2NodeWithStyle(t *testing.T) {
 func TestD2NodeWithIcon(t *testing.T) {
 	t.Parallel()
 
-	d := NewD2Diagram()
-	d.AddNode(D2Node{ //nolint:exhaustruct // Test uses minimal required fields
+	d := NewDiagram()
+	d.AddNode(Node{ //nolint:exhaustruct // Test uses minimal required fields
 		ID:    output.NewBrandedID[output.D2NodeIDBrand]("api"),
 		Label: output.NewBrandedID[output.D2NodeLabelBrand]("API Server"),
 		Icon:  "https://icons.terrastruct.com/essentials/004-cloud.svg",
@@ -132,8 +132,8 @@ func TestD2NodeWithIcon(t *testing.T) {
 func TestD2NodeWithLink(t *testing.T) {
 	t.Parallel()
 
-	d := NewD2Diagram()
-	d.AddNode(D2Node{ //nolint:exhaustruct // Test uses minimal required fields
+	d := NewDiagram()
+	d.AddNode(Node{ //nolint:exhaustruct // Test uses minimal required fields
 		ID:    output.NewBrandedID[output.D2NodeIDBrand]("docs"),
 		Label: output.NewBrandedID[output.D2NodeLabelBrand]("Documentation"),
 		Link:  "https://example.com/docs",
@@ -150,8 +150,8 @@ func TestD2NodeWithLink(t *testing.T) {
 func TestD2NodeWithTooltip(t *testing.T) {
 	t.Parallel()
 
-	d := NewD2Diagram()
-	d.AddNode(D2Node{ //nolint:exhaustruct // Test uses minimal required fields
+	d := NewDiagram()
+	d.AddNode(Node{ //nolint:exhaustruct // Test uses minimal required fields
 		ID:      output.NewBrandedID[output.D2NodeIDBrand]("info"),
 		Label:   output.NewBrandedID[output.D2NodeLabelBrand]("Info"),
 		Tooltip: "Additional information",
@@ -168,9 +168,9 @@ func TestD2NodeWithTooltip(t *testing.T) {
 func TestD2NodeWithNear(t *testing.T) {
 	t.Parallel()
 
-	d := NewD2Diagram()
+	d := NewDiagram()
 	d.AddNodeSimple("server", "Server")
-	d.AddNode(D2Node{ //nolint:exhaustruct // Test uses minimal required fields
+	d.AddNode(Node{ //nolint:exhaustruct // Test uses minimal required fields
 		ID:    output.NewBrandedID[output.D2NodeIDBrand]("label"),
 		Label: output.NewBrandedID[output.D2NodeLabelBrand]("Label"),
 		Near:  "server",
@@ -187,8 +187,8 @@ func TestD2NodeWithNear(t *testing.T) {
 func TestD2NodeWithGrid(t *testing.T) {
 	t.Parallel()
 
-	d := NewD2Diagram()
-	d.AddNode(D2Node{ //nolint:exhaustruct // Test uses minimal required fields
+	d := NewDiagram()
+	d.AddNode(Node{ //nolint:exhaustruct // Test uses minimal required fields
 		ID:          output.NewBrandedID[output.D2NodeIDBrand]("grid"),
 		Label:       output.NewBrandedID[output.D2NodeLabelBrand]("Grid Container"),
 		GridRows:    3,
@@ -209,13 +209,13 @@ func TestD2NodeWithGrid(t *testing.T) {
 func TestD2NodeWithClass(t *testing.T) {
 	t.Parallel()
 
-	d := NewD2Diagram()
-	d.AddClass("important", D2NodeStyle{
+	d := NewDiagram()
+	d.AddClass("important", NodeStyle{
 		Fill: "red",
 
-		D2StrokeStyle: D2StrokeStyle{Stroke: "darkred"},
+		StrokeStyle: StrokeStyle{Stroke: "darkred"},
 	})
-	d.AddNode(newD2ClassNode("alert", "Alert", "important"))
+	d.AddNode(newClassNode("alert", "Alert", "important"))
 
 	got, err := d.Render()
 	if err != nil {
@@ -231,8 +231,8 @@ func TestD2NodeWithClass(t *testing.T) {
 func TestD2NodeNested(t *testing.T) {
 	t.Parallel()
 
-	d := NewD2Diagram()
-	d.AddNode(D2Node{ //nolint:exhaustruct // Test uses minimal required fields
+	d := NewDiagram()
+	d.AddNode(Node{ //nolint:exhaustruct // Test uses minimal required fields
 		ID:     output.NewBrandedID[output.D2NodeIDBrand]("parent"),
 		Label:  output.NewBrandedID[output.D2NodeLabelBrand]("Parent"),
 		Nested: "  child: Inner\n",
@@ -250,11 +250,11 @@ func TestD2NodeNested(t *testing.T) {
 func TestD2NodeNestedWithShape(t *testing.T) {
 	t.Parallel()
 
-	d := NewD2Diagram()
-	d.AddNode(D2Node{ //nolint:exhaustruct // Test uses minimal required fields
+	d := NewDiagram()
+	d.AddNode(Node{ //nolint:exhaustruct // Test uses minimal required fields
 		ID:     output.NewBrandedID[output.D2NodeIDBrand]("parent"),
 		Label:  output.NewBrandedID[output.D2NodeLabelBrand]("Parent"),
-		Shape:  D2ShapeCircle,
+		Shape:  ShapeCircle,
 		Nested: "  child: Inner\n",
 	})
 
@@ -270,7 +270,7 @@ func TestD2NodeNestedWithShape(t *testing.T) {
 func TestD2NodeWithSpecialChars(t *testing.T) {
 	t.Parallel()
 
-	d := NewD2Diagram()
+	d := NewDiagram()
 	d.AddNodeSimple("node", `has "quotes" and\nnewlines`)
 
 	got, err := d.Render()
@@ -334,17 +334,17 @@ func TestD2NodeStyleEscapesStyleInjection(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			d := NewD2Diagram()
-			d.AddNode(D2Node{ //nolint:exhaustruct // Test uses minimal required fields
+			d := NewDiagram()
+			d.AddNode(Node{ //nolint:exhaustruct // Test uses minimal required fields
 				ID:    output.NewBrandedID[output.D2NodeIDBrand]("node"),
 				Label: output.NewBrandedID[output.D2NodeLabelBrand]("Test"),
-				Style: D2NodeStyle{
+				Style: NodeStyle{
 					Fill: tt.value,
-					D2StrokeStyle: D2StrokeStyle{
+					StrokeStyle: StrokeStyle{
 						Stroke:    tt.value,
 						FontColor: tt.value,
 					},
-					TextTransform: D2TextTransform(tt.value),
+					TextTransform: TextTransform(tt.value),
 				},
 			})
 
@@ -365,11 +365,11 @@ func TestD2NodeStyleEscapesStyleInjection(t *testing.T) {
 func TestD2NodeStyleEscapeOutput(t *testing.T) {
 	t.Parallel()
 
-	d := NewD2Diagram()
-	d.AddNode(D2Node{ //nolint:exhaustruct // Test uses minimal required fields
+	d := NewDiagram()
+	d.AddNode(Node{ //nolint:exhaustruct // Test uses minimal required fields
 		ID:    output.NewBrandedID[output.D2NodeIDBrand]("node"),
 		Label: output.NewBrandedID[output.D2NodeLabelBrand]("Test"),
-		Style: D2NodeStyle{
+		Style: NodeStyle{
 			Fill: `a"b\c` + "\n" + `d`,
 		},
 	})

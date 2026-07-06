@@ -148,8 +148,8 @@ func TestTreeFormatContent(t *testing.T) {
 func TestD2FormatContent(t *testing.T) {
 	t.Parallel()
 
-	d2Diagram := d2.NewD2Diagram()
-	d2Diagram.AddTable("test", []d2.D2Column{
+	d2Diagram := d2.NewDiagram()
+	d2Diagram.AddTable("test", []d2.Column{
 		{Name: "name", Type: "string"},
 	})
 
