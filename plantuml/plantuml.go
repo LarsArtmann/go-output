@@ -20,7 +20,7 @@ func init() {
 
 // PlantUMLDiagram renders a PlantUML component/class diagram.
 type PlantUMLDiagram struct {
-	output.GraphRendererState
+	output.GraphBuilder
 
 	diagramType string
 }
@@ -28,20 +28,20 @@ type PlantUMLDiagram struct {
 // NewPlantUMLDiagram creates a new PlantUMLDiagram.
 func NewPlantUMLDiagram() *PlantUMLDiagram {
 	return &PlantUMLDiagram{
-		GraphRendererState: output.NewGraphRendererState(),
+		GraphBuilder: output.NewGraphBuilder(),
 		diagramType:        "component",
 	}
 }
 
 // AddNode adds a node to the diagram.
 func (d *PlantUMLDiagram) AddNode(node output.GraphNode) *PlantUMLDiagram {
-	d.GraphRendererState.AddNode(node)
+	d.GraphBuilder.AddNode(node)
 	return d
 }
 
 // AddEdge adds an edge to the diagram.
 func (d *PlantUMLDiagram) AddEdge(edge output.GraphEdge) *PlantUMLDiagram {
-	d.GraphRendererState.AddEdge(edge)
+	d.GraphBuilder.AddEdge(edge)
 	return d
 }
 

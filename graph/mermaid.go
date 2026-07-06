@@ -37,7 +37,7 @@ func renderMermaidTable(w io.Writer, data *output.Table, _ output.RenderOptions)
 
 // MermaidRenderer implements the GraphRenderer interface for Mermaid diagrams.
 type MermaidRenderer struct {
-	output.GraphRendererState
+	output.GraphBuilder
 
 	// codeFence controls whether output is wrapped in a ```mermaid fence.
 	// Default true for backwards compatibility. Set false via SetCodeFence
@@ -48,7 +48,7 @@ type MermaidRenderer struct {
 // NewMermaidRenderer creates a new MermaidRenderer with the code fence enabled.
 func NewMermaidRenderer() *MermaidRenderer {
 	return &MermaidRenderer{
-		GraphRendererState: output.NewGraphRendererState(),
+		GraphBuilder: output.NewGraphBuilder(),
 		codeFence:          true,
 	}
 }
@@ -197,7 +197,7 @@ func mermaidTreeNodeID(node *output.TreeNode) string {
 
 func (r *MermaidRenderer) addTreeNodes(node *output.TreeNode, parentID string) {
 	output.AddTreeNodes(
-		&r.GraphRendererState,
+		&r.GraphBuilder,
 		node,
 		parentID,
 		mermaidTreeNodeID,

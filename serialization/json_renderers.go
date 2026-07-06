@@ -47,19 +47,19 @@ func (r *JSONTreeRenderer) Render() (string, error) {
 
 // JSONGraphRenderer renders graph nodes and edges as JSON.
 type JSONGraphRenderer struct {
-	output.GraphRendererState
+	output.GraphBuilder
 }
 
 // NewJSONGraphRenderer creates a new JSONGraphRenderer.
 func NewJSONGraphRenderer() *JSONGraphRenderer {
 	return &JSONGraphRenderer{
-		GraphRendererState: output.NewGraphRendererState(),
+		GraphBuilder: output.NewGraphBuilder(),
 	}
 }
 
 // Render returns the graph as a JSON string.
 func (r *JSONGraphRenderer) Render() (string, error) {
-	graph := buildGraphView(r.GraphRendererState)
+	graph := buildGraphView(r.GraphBuilder)
 
 	data, err := json.MarshalIndent(graph, "", "  ")
 	if err != nil {

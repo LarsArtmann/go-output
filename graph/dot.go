@@ -37,7 +37,7 @@ func renderDOTTable(w io.Writer, data *output.Table, _ output.RenderOptions) err
 
 // DOTRenderer implements the GraphRenderer interface for DOT/Graphviz output.
 type DOTRenderer struct {
-	output.GraphRendererState
+	output.GraphBuilder
 
 	directed bool
 	graphID  string
@@ -50,7 +50,7 @@ type DOTRenderer struct {
 // newDOTRenderer creates a new DOTRenderer with the specified direction.
 func newDOTRenderer(directed bool) *DOTRenderer {
 	return &DOTRenderer{
-		GraphRendererState: output.NewGraphRendererState(),
+		GraphBuilder: output.NewGraphBuilder(),
 		directed:           directed,
 		graphID:            "G",
 		rankdir:            RankDirTB,
@@ -276,5 +276,5 @@ func dotTreeNodeID(node *output.TreeNode) string {
 }
 
 func (r *DOTRenderer) addTreeNodes(node *output.TreeNode, parentID output.TreeNodeID) {
-	output.AddTreeNodes(&r.GraphRendererState, node, parentID.Get(), dotTreeNodeID, "")
+	output.AddTreeNodes(&r.GraphBuilder, node, parentID.Get(), dotTreeNodeID, "")
 }

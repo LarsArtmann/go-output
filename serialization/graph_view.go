@@ -22,7 +22,7 @@ type graphEdgeView struct {
 	Label string `json:"label,omitempty" toml:"label,omitempty" yaml:"label,omitempty"`
 }
 
-func buildGraphView(mixin output.GraphRendererState) graphView {
+func buildGraphView(mixin output.GraphBuilder) graphView {
 	graph := graphView{
 		Nodes: make([]graphNodeView, 0, len(mixin.Nodes())),
 		Edges: make([]graphEdgeView, 0, len(mixin.Edges())),

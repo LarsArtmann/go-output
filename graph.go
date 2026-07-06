@@ -185,12 +185,12 @@ type EdgeStyle struct {
 }
 
 // AddNode appends a node to the graph.
-func (m *GraphRendererState) AddNode(node GraphNode) {
+func (m *GraphBuilder) AddNode(node GraphNode) {
 	m.nodes = append(m.nodes, node)
 }
 
 // AddEdge appends an edge to the graph.
-func (m *GraphRendererState) AddEdge(edge GraphEdge) {
+func (m *GraphBuilder) AddEdge(edge GraphEdge) {
 	m.edges = append(m.edges, edge)
 }
 
@@ -199,7 +199,7 @@ func (m *GraphRendererState) AddEdge(edge GraphEdge) {
 // is kept; subsequent duplicates are silently discarded. Edges with different
 // labels between the same node pair are also considered duplicates — if you
 // need parallel edges, do not call this method.
-func (m *GraphRendererState) DedupEdges() {
+func (m *GraphBuilder) DedupEdges() {
 	if len(m.edges) <= 1 {
 		return
 	}
@@ -257,40 +257,40 @@ func AddTreeNodes(
 	}
 }
 
-// GraphRendererState contains shared fields and methods for graph renderers.
+// GraphBuilder contains shared fields and methods for graph renderers.
 //
 // D2 does not use this mixin because it has richer domain-specific types
 // (D2Node, D2Edge with classes, SQL tables, shapes, arrow types, etc.)
 // that do not map to the simpler GraphNode/GraphEdge model.
-type GraphRendererState struct {
+type GraphBuilder struct {
 	nodes []GraphNode
 	edges []GraphEdge
 }
 
-// NewGraphRendererState creates a new GraphRendererState with initialized slices.
-func NewGraphRendererState() GraphRendererState {
-	return GraphRendererState{
+// NewGraphBuilder creates a new GraphBuilder with initialized slices.
+func NewGraphBuilder() GraphBuilder {
+	return GraphBuilder{
 		nodes: make([]GraphNode, 0),
 		edges: make([]GraphEdge, 0),
 	}
 }
 
 // SetNodes sets the graph nodes.
-func (m *GraphRendererState) SetNodes(nodes []GraphNode) {
+func (m *GraphBuilder) SetNodes(nodes []GraphNode) {
 	m.nodes = nodes
 }
 
 // SetEdges sets the graph edges.
-func (m *GraphRendererState) SetEdges(edges []GraphEdge) {
+func (m *GraphBuilder) SetEdges(edges []GraphEdge) {
 	m.edges = edges
 }
 
 // Nodes returns the graph nodes.
-func (m *GraphRendererState) Nodes() []GraphNode {
+func (m *GraphBuilder) Nodes() []GraphNode {
 	return m.nodes
 }
 
 // Edges returns the graph edges.
-func (m *GraphRendererState) Edges() []GraphEdge {
+func (m *GraphBuilder) Edges() []GraphEdge {
 	return m.edges
 }

@@ -48,7 +48,7 @@ func NodesFromTable(data *Table, labelFn GraphNodeLabelFunc) []GraphNode {
 }
 
 // AddRowEdges adds edges from data.CreateRowEdges() to the graph.
-func (m *GraphRendererState) AddRowEdges(data *Table) {
+func (m *GraphBuilder) AddRowEdges(data *Table) {
 	for _, edge := range data.CreateRowEdges() {
 		//nolint:exhaustruct // Uses defaults for optional fields
 		m.edges = append(m.edges, GraphEdge{
@@ -60,7 +60,7 @@ func (m *GraphRendererState) AddRowEdges(data *Table) {
 
 // SetNodesFromTable creates nodes from Table, applies per-node modifications,
 // adds them to the graph, and adds row edges.
-func (m *GraphRendererState) SetNodesFromTable(
+func (m *GraphBuilder) SetNodesFromTable(
 	data *Table,
 	modifyNode func(i int, n *GraphNode),
 ) {

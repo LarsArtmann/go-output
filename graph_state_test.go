@@ -81,7 +81,7 @@ func TestAddTreeNodes(t *testing.T) {
 	child := NewTreeNode("child", "Child")
 	root.AddChild(child)
 
-	m := NewGraphRendererState()
+	m := NewGraphBuilder()
 	AddTreeNodes(
 		&m, root, "",
 		func(n *TreeNode) string { return n.ID.Get() },
@@ -131,10 +131,10 @@ func TestNodesFromTable_Nil(t *testing.T) {
 	}
 }
 
-func TestNewGraphRendererState(t *testing.T) {
+func TestNewGraphBuilder(t *testing.T) {
 	t.Parallel()
 
-	m := NewGraphRendererState()
+	m := NewGraphBuilder()
 
 	if m.Nodes() == nil {
 		t.Error("Nodes() should not be nil")
@@ -145,46 +145,46 @@ func TestNewGraphRendererState(t *testing.T) {
 	}
 }
 
-func TestGraphRendererState_SetNodes(t *testing.T) {
+func TestGraphBuilder_SetNodes(t *testing.T) {
 	t.Parallel()
 
-	m := NewGraphRendererState()
+	m := NewGraphBuilder()
 	m.SetNodes(testNodesAB())
 
 	assertSliceLen(t, "Nodes", m.Nodes(), 2)
 }
 
-func TestGraphRendererState_SetEdges(t *testing.T) {
+func TestGraphBuilder_SetEdges(t *testing.T) {
 	t.Parallel()
 
-	m := NewGraphRendererState()
+	m := NewGraphBuilder()
 	m.SetEdges(testEdgesAB())
 
 	assertSliceLen(t, "Edges", m.Edges(), 1)
 }
 
-func TestGraphRendererState_AddNode(t *testing.T) {
+func TestGraphBuilder_AddNode(t *testing.T) {
 	t.Parallel()
 
-	m := NewGraphRendererState()
+	m := NewGraphBuilder()
 	m.AddNode(GraphNode{ID: NewBrandedID[GraphNodeIDBrand]("a")})
 
 	assertSliceLen(t, "Nodes", m.Nodes(), 1)
 }
 
-func TestGraphRendererState_AddEdge(t *testing.T) {
+func TestGraphBuilder_AddEdge(t *testing.T) {
 	t.Parallel()
 
-	m := NewGraphRendererState()
+	m := NewGraphBuilder()
 	m.AddEdge(newTestEdge("a", "b"))
 
 	assertSliceLen(t, "Edges", m.Edges(), 1)
 }
 
-func TestGraphRendererState_DedupEdges(t *testing.T) {
+func TestGraphBuilder_DedupEdges(t *testing.T) {
 	t.Parallel()
 
-	m := NewGraphRendererState()
+	m := NewGraphBuilder()
 	m.AddEdge(newTestEdge("a", "b"))
 	m.AddEdge(newTestEdge("a", "b"))
 	m.AddEdge(newTestEdge("b", "c"))
@@ -195,29 +195,29 @@ func TestGraphRendererState_DedupEdges(t *testing.T) {
 	assertSliceLen(t, "Edges after dedup", m.Edges(), 2)
 }
 
-func TestGraphRendererState_DedupEdgesEmpty(t *testing.T) {
+func TestGraphBuilder_DedupEdgesEmpty(t *testing.T) {
 	t.Parallel()
 
-	m := NewGraphRendererState()
+	m := NewGraphBuilder()
 	m.DedupEdges()
 
 	assertSliceLen(t, "Edges", m.Edges(), 0)
 }
 
-func TestGraphRendererState_DedupEdgesSingle(t *testing.T) {
+func TestGraphBuilder_DedupEdgesSingle(t *testing.T) {
 	t.Parallel()
 
-	m := NewGraphRendererState()
+	m := NewGraphBuilder()
 	m.AddEdge(newTestEdge("a", "b"))
 	m.DedupEdges()
 
 	assertSliceLen(t, "Edges", m.Edges(), 1)
 }
 
-func TestGraphRendererState_AddRowEdges(t *testing.T) {
+func TestGraphBuilder_AddRowEdges(t *testing.T) {
 	t.Parallel()
 
-	m := NewGraphRendererState()
+	m := NewGraphBuilder()
 	m.SetNodes(testNodesABC())
 
 	data := NewTable([]string{"A"})
@@ -229,10 +229,10 @@ func TestGraphRendererState_AddRowEdges(t *testing.T) {
 	assertSliceLen(t, "Edges", m.Edges(), 1)
 }
 
-func TestGraphRendererState_SetNodesFromTable(t *testing.T) {
+func TestGraphBuilder_SetNodesFromTable(t *testing.T) {
 	t.Parallel()
 
-	m := NewGraphRendererState()
+	m := NewGraphBuilder()
 	data := NewTable([]string{"Name"})
 	data.AddRow([]string{"Alpha"})
 	data.AddRow([]string{"Beta"})

@@ -44,7 +44,7 @@ func NewPlantUMLFromTree(root *output.TreeNode) *PlantUMLDiagram {
 }
 
 func (d *PlantUMLDiagram) addTreeNodes(node *output.TreeNode, parentID output.TreeNodeID) {
-	output.AddTreeNodes(&d.GraphRendererState, node, parentID.Get(), plantUMLTreeNodeID, "")
+	output.AddTreeNodes(&d.GraphBuilder, node, parentID.Get(), plantUMLTreeNodeID, "")
 }
 
 func plantUMLTreeNodeID(node *output.TreeNode) string {

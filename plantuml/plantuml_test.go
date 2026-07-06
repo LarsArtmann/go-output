@@ -166,7 +166,7 @@ func TestPlantUMLDiagramAddNodeExistingID(t *testing.T) {
 	t.Parallel()
 
 	// Adding two nodes with the same ID: the second call should replace
-	// the first (matches AddNode semantics from the GraphRendererState).
+	// the first (matches AddNode semantics from the GraphBuilder).
 	d := NewPlantUMLDiagram()
 	d.AddNode(graphtest.NewTestNode("svc", "Original"))
 	d.AddNode(graphtest.NewTestNode("svc", "Updated"))
