@@ -1,7 +1,7 @@
 github.com/larsartmann/go-branded-id v0.3.1 h1:n53Vz3MCUy3S8YfW/v+zxL/qT96iiXZOT6p46HZysyA=
 github.com/larsartmann/go-branded-id v0.3.1/go.mod h1:fiv3t1PyNCITnE/8KtymGCUz7tQRuQxF+8oqNdFmA/Y=
-github.com/larsartmann/go-output/testhelpers v0.23.2 h1:fBOoea1UvbRC1zw2EcM+iiDd2gz9Av79oLq1g94+RzI=
-github.com/larsartmann/go-output/testhelpers v0.23.2/go.mod h1:W4rI3kVhlLVH69t6ueNIPg64sE17fsgtPB3qUyvxgos=
+github.com/larsartmann/go-output/testhelpers v0.30.0 h1:J4UKeiJilfDXJMo37QHBKJYh3t6gKd+MYTkahX/pD9c=
+github.com/larsartmann/go-output/testhelpers v0.30.0/go.mod h1:W4rI3kVhlLVH69t6ueNIPg64sE17fsgtPB3qUyvxgos=
 golang.org/x/sys v0.46.0 h1:noSf2Fq6F8DBgS+LysIkx7rIExoNHJsxOAtPp4rthXw=
 golang.org/x/sys v0.46.0/go.mod h1:4GL1E5IUh+htKOUEOaiffhrAeqysfVGipDYzABqnCmw=
 golang.org/x/term v0.44.0 h1:0rLvDRCtNj0gZkyIXhCyOb2OAzEhLVqc4B+hrsBhrmc=
