@@ -69,7 +69,7 @@
               runtimeInputs = [ go ];
               text = ''
                 set -euo pipefail
-                for mod in ${pkgs.lib.concatStringsSep " " modules}; do
+                for mod in ${lib.concatStringsSep " " modules}; do
                   echo ":: $mod :: go ${action} ./..."
                   ( cd "$mod" && go ${action} ./... )
                 done
@@ -98,7 +98,7 @@
           packages.default =
             pkgs.runCommand "go-output"
               {
-                meta = with pkgs.lib; {
+                meta = with lib; {
                   description = "Reusable Go library for CLI output formatting across 16 formats with NOM-style progress visualization";
                   homepage = "https://github.com/larsartmann/go-output";
                   license = licenses.mit;
@@ -171,7 +171,7 @@
                 ];
                 text = ''
                   set -euo pipefail
-                  for mod in ${pkgs.lib.concatStringsSep " " modules}; do
+                  for mod in ${lib.concatStringsSep " " modules}; do
                     echo ":: $mod :: golangci-lint run ./..."
                     ( cd "$mod" && golangci-lint run ./... )
                   done
@@ -186,7 +186,7 @@
                 runtimeInputs = [ go ];
                 text = ''
                   set -euo pipefail
-                  for mod in ${pkgs.lib.concatStringsSep " " modules}; do
+                  for mod in ${lib.concatStringsSep " " modules}; do
                     echo ":: $mod :: go mod tidy"
                     ( cd "$mod" && go mod tidy )
                   done
@@ -204,7 +204,7 @@
                 ];
                 text = ''
                   set -euo pipefail
-                  for mod in ${pkgs.lib.concatStringsSep " " modules}; do
+                  for mod in ${lib.concatStringsSep " " modules}; do
                     echo ":: $mod :: govulncheck ./..."
                     ( cd "$mod" && govulncheck ./... )
                   done
