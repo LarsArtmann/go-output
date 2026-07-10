@@ -39,6 +39,7 @@
           ...
         }:
         let
+          inherit (pkgs) lib;
           go = pkgs.go_1_26;
           modules = [
             "."
@@ -69,6 +70,7 @@
               runtimeInputs = [ go ];
               text = ''
                 set -euo pipefail
+                export GOEXPERIMENT=jsonv2
                 for mod in ${lib.concatStringsSep " " modules}; do
                   echo ":: $mod :: go ${action} ./..."
                   ( cd "$mod" && go ${action} ./... )
@@ -119,6 +121,7 @@
               };
 
               GOWORK = "off";
+              GOEXPERIMENT = "jsonv2";
 
               shellHook = config.pre-commit.shellHook;
             };
@@ -132,6 +135,7 @@
               };
 
               GOWORK = "off";
+              GOEXPERIMENT = "jsonv2";
             };
           };
 
@@ -148,6 +152,7 @@
                 runtimeInputs = [ go ];
                 text = ''
                   set -euo pipefail
+                  export GOEXPERIMENT=jsonv2
                   for mod in nom tui; do
                     echo ":: $mod :: go test -race -count=1 ./..."
                     ( cd "$mod" && go test -race -count=1 ./... )
@@ -171,6 +176,7 @@
                 ];
                 text = ''
                   set -euo pipefail
+                  export GOEXPERIMENT=jsonv2
                   for mod in ${lib.concatStringsSep " " modules}; do
                     echo ":: $mod :: golangci-lint run ./..."
                     ( cd "$mod" && golangci-lint run ./... )
@@ -186,6 +192,7 @@
                 runtimeInputs = [ go ];
                 text = ''
                   set -euo pipefail
+                  export GOEXPERIMENT=jsonv2
                   for mod in ${lib.concatStringsSep " " modules}; do
                     echo ":: $mod :: go mod tidy"
                     ( cd "$mod" && go mod tidy )
@@ -204,6 +211,7 @@
                 ];
                 text = ''
                   set -euo pipefail
+                  export GOEXPERIMENT=jsonv2
                   for mod in ${lib.concatStringsSep " " modules}; do
                     echo ":: $mod :: govulncheck ./..."
                     ( cd "$mod" && govulncheck ./... )

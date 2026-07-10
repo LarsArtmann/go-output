@@ -3,7 +3,7 @@ package integration
 import (
 	"bytes"
 	"encoding/csv"
-	"encoding/json"
+	"encoding/json/v2"
 	"strings"
 	"testing"
 

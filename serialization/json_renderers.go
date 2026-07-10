@@ -1,7 +1,8 @@
 package serialization
 
 import (
-	"encoding/json"
+	"encoding/json/jsontext"
+	"encoding/json/v2"
 	"fmt"
 
 	"github.com/larsartmann/go-output"
@@ -37,7 +38,7 @@ func (r *JSONTreeRenderer) Render() (string, error) {
 
 	node := toTreeNode(r.root)
 
-	data, err := json.MarshalIndent(node, "", "  ")
+	data, err := json.Marshal(node, json.Deterministic(true), jsontext.WithIndentPrefix(""), jsontext.WithIndent("  "))
 	if err != nil {
 		return "", fmt.Errorf("marshal json tree: %w", err)
 	}
@@ -61,7 +62,7 @@ func NewJSONGraphRenderer() *JSONGraphRenderer {
 func (r *JSONGraphRenderer) Render() (string, error) {
 	graph := buildGraphView(r.GraphBuilder)
 
-	data, err := json.MarshalIndent(graph, "", "  ")
+	data, err := json.Marshal(graph, json.Deterministic(true), jsontext.WithIndentPrefix(""), jsontext.WithIndent("  "))
 	if err != nil {
 		return "", fmt.Errorf("marshal json graph: %w", err)
 	}

@@ -2,7 +2,8 @@ package serialization
 
 import (
 	"bytes"
-	"encoding/json"
+	"encoding/json/v2"
+	"errors"
 	"strings"
 	"testing"
 
@@ -16,7 +17,7 @@ func TestJSONLWriter_FlushError(t *testing.T) {
 	w := NewJSONLWriter(&testhelpers.ErrorWriter{})
 
 	//nolint:errchkjson // Intentionally ignoring to test Flush error
-	_ = w.encoder.Encode(map[string]string{"key": "val"})
+	_ = w.Encode(map[string]string{"key": "val"})
 
 	err := w.Flush()
 	if err == nil {
@@ -98,7 +99,7 @@ func TestRenderTable_MarshalError(t *testing.T) {
 	data.AddRow([]string{"1"})
 
 	_, err := renderTable(data, "[]", "failing", func(v any) ([]byte, error) {
-		return nil, &json.UnsupportedValueError{}
+		return nil, errors.New("unsupported value")
 	})
 	if err == nil {
 		t.Fatal("Expected error from failing marshal function")
@@ -112,7 +113,7 @@ func TestRenderTable_MarshalError(t *testing.T) {
 func TestRenderTable_NilData(t *testing.T) {
 	t.Parallel()
 
-	got, err := renderTable(nil, "empty", "test", json.Marshal)
+	got, err := renderTable(nil, "empty", "test", func(v any) ([]byte, error) { return json.Marshal(v) })
 	if err != nil {
 		t.Fatalf("Expected nil error for nil data, got: %v", err)
 	}
@@ -127,7 +128,7 @@ func TestRenderTable_EmptyHeaders(t *testing.T) {
 
 	data := output.NewTable([]string{})
 
-	got, err := renderTable(data, "empty", "test", json.Marshal)
+	got, err := renderTable(data, "empty", "test", func(v any) ([]byte, error) { return json.Marshal(v) })
 	if err != nil {
 		t.Fatalf("Expected nil error for empty headers, got: %v", err)
 	}

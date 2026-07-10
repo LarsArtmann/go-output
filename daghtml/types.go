@@ -20,7 +20,7 @@ type Node struct {
 
 	// Error, when true, renders a small red dot in the top-right corner of
 	// the node to flag failed or problematic nodes.
-	Error bool `json:"error,omitempty"`
+	Error bool `json:"error,omitzero"`
 }
 
 // Edge represents a directed edge in the DAG. The visual direction is From → To,

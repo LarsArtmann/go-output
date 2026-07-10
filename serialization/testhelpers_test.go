@@ -1,7 +1,7 @@
 package serialization
 
 import (
-	"encoding/json"
+	"encoding/json/jsontext"
 	"testing"
 
 	"github.com/larsartmann/go-output"
@@ -36,7 +36,7 @@ var testEdgesABC = graphtest.TestEdgesABC
 func assertValidJSON(t *testing.T, output string) {
 	t.Helper()
 
-	if !json.Valid([]byte(output)) {
+	if !jsontext.Value([]byte(output)).IsValid() {
 		t.Errorf("output should be valid JSON, got %q", output)
 	}
 }

@@ -2,7 +2,7 @@ package serialization
 
 import (
 	"bytes"
-	"encoding/json"
+	"encoding/json/jsontext"
 	"strings"
 	"testing"
 
@@ -18,7 +18,7 @@ func assertValidJSONLines(t *testing.T, input string, wantLines int) {
 	}
 
 	for _, line := range lines {
-		if !json.Valid([]byte(line)) {
+		if !jsontext.Value([]byte(line)).IsValid() {
 			t.Errorf("invalid JSON line: %q", line)
 		}
 	}

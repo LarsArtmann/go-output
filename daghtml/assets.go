@@ -2,7 +2,8 @@ package daghtml
 
 import (
 	_ "embed"
-	"encoding/json"
+	"encoding/json/jsontext"
+	"encoding/json/v2"
 	"fmt"
 	"strings"
 )
@@ -30,10 +31,9 @@ func dagToJSON(dag DAG) (string, error) {
 
 	var buf strings.Builder
 
-	enc := json.NewEncoder(&buf)
-	enc.SetEscapeHTML(true)
+	enc := jsontext.NewEncoder(&buf, jsontext.EscapeForHTML(true))
 
-	if err := enc.Encode(dag); err != nil {
+	if err := json.MarshalEncode(enc, dag); err != nil {
 		return "", fmt.Errorf("encode DAG JSON: %w", err)
 	}
 

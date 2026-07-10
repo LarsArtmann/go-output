@@ -1,7 +1,8 @@
 package serialization
 
 import (
-	"encoding/json"
+	"encoding/json/jsontext"
+	"encoding/json/v2"
 	"fmt"
 	"io"
 
@@ -21,7 +22,7 @@ func init() {
 }
 
 func renderJSONUnknown(w io.Writer, data any, _ output.RenderOptions) error {
-	b, err := json.MarshalIndent(data, "", "  ")
+	b, err := json.Marshal(data, json.Deterministic(true), jsontext.WithIndentPrefix(""), jsontext.WithIndent("  "))
 	if err != nil {
 		return fmt.Errorf("marshal JSON: %w", err)
 	}
@@ -66,10 +67,9 @@ func NewJSONWriter(w io.Writer) *JSONWriter {
 
 // Encode writes v as JSON to the underlying writer.
 func (j *JSONWriter) Encode(v any) error {
-	encoder := json.NewEncoder(j.Writer)
-	encoder.SetIndent("", "  ")
+	encoder := jsontext.NewEncoder(j.Writer, jsontext.WithIndentPrefix(""), jsontext.WithIndent("  "))
 
-	err := encoder.Encode(v)
+	err := json.MarshalEncode(encoder, v)
 	if err != nil {
 		return fmt.Errorf("encode json (%T): %w", v, err)
 	}
@@ -90,7 +90,7 @@ func NewJSONTableRenderer() *JSONTableRenderer {
 // Render returns the table data as a JSON string.
 func (r *JSONTableRenderer) Render() (string, error) {
 	return renderTable(r.Data(), "[]", "json", func(v any) ([]byte, error) {
-		return json.MarshalIndent(v, "", "  ")
+		return json.Marshal(v, json.Deterministic(true), jsontext.WithIndentPrefix(""), jsontext.WithIndent("  "))
 	})
 }
 

@@ -2,7 +2,8 @@ package serialization
 
 import (
 	"bufio"
-	"encoding/json"
+	"encoding/json/jsontext"
+	"encoding/json/v2"
 	"fmt"
 	"io"
 	"strings"
@@ -24,7 +25,7 @@ func init() {
 // JSONLWriter writes JSON Lines output — one JSON object per line.
 type JSONLWriter struct {
 	writer  *bufio.Writer
-	encoder *json.Encoder
+	encoder *jsontext.Encoder
 }
 
 // NewJSONLWriter creates a new JSONLWriter.
@@ -33,14 +34,13 @@ func NewJSONLWriter(w io.Writer) *JSONLWriter {
 
 	return &JSONLWriter{
 		writer:  bufWriter,
-		encoder: json.NewEncoder(bufWriter),
+		encoder: jsontext.NewEncoder(bufWriter),
 	}
 }
 
 // Encode writes v as a single JSON line to the underlying writer.
 func (j *JSONLWriter) Encode(v any) error {
-	err := j.encoder.Encode(v)
-	if err != nil {
+	if err := json.MarshalEncode(j.encoder, v, json.Deterministic(true)); err != nil {
 		return fmt.Errorf("encode jsonl (%T): %w", v, err)
 	}
 
@@ -106,7 +106,7 @@ func marshalJSONLRows(rows []map[string]string) (string, error) {
 	var buf strings.Builder
 
 	for _, row := range rows {
-		b, err := json.Marshal(row)
+		b, err := json.Marshal(row, json.Deterministic(true))
 		if err != nil {
 			return "", fmt.Errorf("marshal jsonl row (%d fields): %w", len(row), err)
 		}

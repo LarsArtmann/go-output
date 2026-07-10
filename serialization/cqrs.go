@@ -1,7 +1,8 @@
 package serialization
 
 import (
-	"encoding/json"
+	"encoding/json/jsontext"
+	"encoding/json/v2"
 	"fmt"
 	"io"
 	"strings"
@@ -23,12 +24,11 @@ func WriteJSON(w io.Writer, data *output.Table) error {
 		return nil
 	}
 
-	encoder := json.NewEncoder(w)
-	encoder.SetIndent("", "  ")
+	encoder := jsontext.NewEncoder(w, jsontext.WithIndentPrefix(""), jsontext.WithIndent("  "))
 
 	rows := data.ToMapSlice()
 
-	if err := encoder.Encode(rows); err != nil {
+	if err := json.MarshalEncode(encoder, rows, json.Deterministic(true)); err != nil {
 		return fmt.Errorf("encode json table (%d rows): %w", len(rows), err)
 	}
 
