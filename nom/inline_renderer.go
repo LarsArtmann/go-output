@@ -391,16 +391,9 @@ func (r *InlineRenderer) Draw() {
 	pending := r.pendingLines
 	hasPending := len(pending) > 0
 
-	// If there is nothing to render at all, bail out.
-	if (!hasTree || frame == MsgNoActivities) && !hasPending {
-		return
-	}
-
-	// If there is no tree but we have pending log lines, drain them and
-	// return. This handles the rare case where logs arrive before any step
-	// is registered.
-	if !hasTree || frame == MsgNoActivities {
-		r.drainPendingPlain(pending, cfg)
+	// Handle the case where there is no tree to render: either bail out
+	// (nothing at all) or drain pending log lines and return.
+	if r.handleNoTree(frame, hasTree, hasPending, pending, cfg) {
 		return
 	}
 
@@ -434,6 +427,24 @@ func (r *InlineRenderer) Draw() {
 	}
 
 	r.drawInline(frame, pending, hasPending, maxW, cfg)
+}
+
+// handleNoTree returns true if Draw should return immediately because there
+// is no tree frame. If there are pending log lines, it drains them first.
+func (r *InlineRenderer) handleNoTree(
+	frame string, hasTree, hasPending bool, pending []string, cfg rendererConfig,
+) bool {
+	if hasTree && frame != MsgNoActivities {
+		return false
+	}
+
+	if !hasPending {
+		return true
+	}
+
+	r.drainPendingPlain(pending, cfg)
+
+	return true
 }
 
 // drawPlainText handles CI/non-terminal output: appends pending log lines

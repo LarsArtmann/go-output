@@ -4,7 +4,40 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased] — v0.30.0 (Breaking Changes)
+## [Unreleased]
+
+## [0.30.2] - 2026-07-11
+
+### Fixed
+
+- **nom** — Fixed output spam in CI/non-TTY mode: tree diffing is now
+  separated from the summary bar so the volatile elapsed timer no longer
+  causes the entire tree to be re-appended on every tick when the tree
+  state hasn't changed.
+- **nom** — Extracted `handleNoTree` from `Draw()` to resolve cyclop
+  complexity lint failure (14 → 10).
+
+### Changed
+
+- **serialization/daghtml/integration** — Migrated from `encoding/json` v1
+  to `encoding/json/v2` + `encoding/json/jsontext`. Output is byte-for-byte
+  identical (verified by golden tests). Requires `GOEXPERIMENT=jsonv2`.
+- **all modules** — Migrated sibling deps to Pattern B sentinel versions
+  (`v0.0.0-00010101000000-000000000000` + `replace`) for consistent
+  local development.
+- **all modules** — Updated `golang.org/x/sys`, `golang.org/x/term`,
+  `golang.org/x/sync` to latest patch versions.
+- **flake.nix** — Cleaned up `lib` alias usage throughout.
+
+## [0.30.1] - 2026-07-06
+
+### Fixed
+
+- **all modules** — Replaced Pattern B sentinel versions with real published
+  versions for external consumption (quick-fix revert of v0.30.0's sentinel
+  migration, later re-done properly in v0.30.2).
+
+## [0.30.0] - 2026-07-06 (Breaking Changes)
 
 ### Breaking — Deletions (B1-B10)
 
