@@ -23,7 +23,7 @@
   };
 
   outputs =
-    inputs@{ flake-parts, ... }:
+    inputs@{ self, flake-parts, ... }:
     flake-parts.lib.mkFlake { inherit inputs; } {
       imports = [
         inputs.treefmt-nix.flakeModule
@@ -95,7 +95,8 @@
             };
           };
 
-          checks.format = config.treefmt.build.check inputs.self;
+          checks.build = config.packages.default;
+          checks.format = config.treefmt.build.check self;
 
           packages.default =
             pkgs.runCommand "go-output"
