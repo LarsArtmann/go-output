@@ -81,6 +81,15 @@ type InlineRenderer struct {
 	lastFrame      string
 	lastFramePlain bool
 
+	// lastTreeFrame stores the tree content WITHOUT the summary bar.
+	// In plainText mode, Draw uses this for diffing instead of the full
+	// frame (tree + summary). The summary bar contains a volatile elapsed
+	// timer that changes every ~100ms; including it in the diff causes the
+	// entire tree to be re-appended on every tick in plainText (non-TTY)
+	// mode. By diffing on tree content only, the tree is re-appended ONLY
+	// when step state actually changes.
+	lastTreeFrame string
+
 	// estimatedRemaining is an optional callback that returns the estimated
 	// total remaining time for the workflow (sum of pending-step estimates).
 	// When non-nil and returning > 0, the summary bar renders "~Xm left".
@@ -395,19 +404,32 @@ func (r *InlineRenderer) Draw() {
 		return
 	}
 
+	treeFrame := frame // tree content before summary is appended
+
 	summary := r.renderSummary(cfg.startTime)
 	if summary != "" {
 		frame += "\n" + summary
 	}
 
-	// Frame diffing: skip the write entirely if nothing changed since the
-	// last frame AND there are no pending log lines.
-	if !hasPending && frame == r.lastFrame && cfg.plainText == r.lastFramePlain {
+	if cfg.plainText {
+		// In plainText mode, diff on tree content only. The summary bar
+		// contains a volatile elapsed timer that changes every second.
+		// Without separating tree from summary for diffing, the entire
+		// tree is re-appended on every tick even when no step state
+		// changed, producing massive output spam in non-TTY/CI mode.
+		treeChanged := treeFrame != r.lastTreeFrame
+		if !hasPending && !treeChanged {
+			return
+		}
+
+		r.drawPlainText(frame, treeFrame, pending, hasPending, cfg)
+
 		return
 	}
 
-	if cfg.plainText {
-		r.drawPlainText(frame, pending, hasPending, cfg)
+	// Inline (TTY) mode: diff on full frame so the elapsed timer stays
+	// current via efficient cursor-up repaint (in-place, no scroll).
+	if !hasPending && frame == r.lastFrame && cfg.plainText == r.lastFramePlain {
 		return
 	}
 
@@ -418,8 +440,8 @@ func (r *InlineRenderer) Draw() {
 // and the tree frame (only if changed) without any cursor manipulation.
 // This prevents massive tree repetition when logs arrive frequently but the
 // tree state hasn't changed.
-func (r *InlineRenderer) drawPlainText(frame string, pending []string, hasPending bool, cfg rendererConfig) {
-	treeChanged := frame != r.lastFrame
+func (r *InlineRenderer) drawPlainText(frame, treeFrame string, pending []string, hasPending bool, cfg rendererConfig) {
+	treeChanged := treeFrame != r.lastTreeFrame
 
 	if hasPending || treeChanged {
 		var b strings.Builder
@@ -439,6 +461,7 @@ func (r *InlineRenderer) drawPlainText(frame string, pending []string, hasPendin
 
 	r.pendingLines = nil
 	r.lastFrame = frame
+	r.lastTreeFrame = treeFrame
 	r.lastFramePlain = cfg.plainText
 }
 
@@ -680,6 +703,7 @@ func (r *InlineRenderer) listenForResize(ctx context.Context) {
 			// (wrapping, truncation) may differ. Force a full redraw.
 			r.renderMu.Lock()
 			r.lastFrame = ""
+			r.lastTreeFrame = ""
 			r.renderMu.Unlock()
 
 			r.Refresh()
