@@ -8,7 +8,7 @@ require (
 	github.com/charmbracelet/x/ansi v0.11.7
 	github.com/charmbracelet/x/exp/golden v0.0.0-20260705004817-2cc9a8fe1146
 	github.com/charmbracelet/x/vt v0.0.0-20260629091435-9c70f75e26a4
-	github.com/larsartmann/go-output v0.30.2
+	github.com/larsartmann/go-output v0.30.3
 	github.com/larsartmann/go-output/testhelpers v0.30.0
 	github.com/onsi/gomega v1.42.1
 	golang.org/x/term v0.45.0

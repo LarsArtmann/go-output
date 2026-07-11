@@ -3,8 +3,8 @@ module github.com/larsartmann/go-output/markdown
 go 1.26.4
 
 require (
-	github.com/larsartmann/go-output v0.30.2
-	github.com/larsartmann/go-output/testhelpers v0.30.2
+	github.com/larsartmann/go-output v0.30.3
+	github.com/larsartmann/go-output/testhelpers v0.30.3
 )
 
 require (
