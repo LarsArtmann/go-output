@@ -1,0 +1,35 @@
+---
+title: Changelog
+description: Version history and breaking changes.
+---
+
+The full version history lives in the [CHANGELOG.md](https://github.com/larsartmann/go-output/blob/master/CHANGELOG.md) on GitHub.
+
+## Recent Versions
+
+### v0.30.x — CQRS Architecture
+
+- **CQRS pure-function renderers** — Every renderer module exports `WriteXxx(w, model)` (streaming) and `RenderXxx(model)` (convenience)
+- **CQRS builders** — `GraphBuilder`, `TableBuilder`, `TreeBuilder` with fluent API
+- **Cross-shape projections** — `TableToGraph`, `GraphToTree`, `GraphToTable`
+- **Registry dispatch rewired to CQRS** — Registry and CQRS produce byte-for-byte identical output
+- **Breaking**: Registry JSON/YAML/TOML output now has trailing `\n` (standard encoder behavior)
+
+### v0.23.x — Themes & Layered Display
+
+- **Theme system** — Five presets: Default, Dracula, Nord, Monochrome, HighContrast
+- **Layered display mode** — Group nodes by DAG depth
+- **Activity categories** — Semantic tags with optional color tints
+- **Status registry** — Custom statuses with global registration
+- **Critical-path ETA** — Longest remaining-time path through the DAG
+- **Parallelism meter** — Running vs possible activity counts
+
+### v0.22.x — DAG Topology
+
+- **Real DAG topology** — `ActivityNode.Deps` stores all dependency edges
+- **Fixpoint depth computation** — Matching nom's "lowermost dependency" rule
+- **Extra deps annotation** — Optional `WithShowExtraDeps()` for non-tree edges
+
+## Migration Guides
+
+- [v0.23.x to v0.30.x](https://github.com/larsartmann/go-output#migration-from-v023x) — Type renames, CQRS API, streaming trailing-newline change

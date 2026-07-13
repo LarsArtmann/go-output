@@ -1,0 +1,105 @@
+---
+title: Tables
+description: Build and render tabular data in 12 formats.
+---
+
+## Building Tables
+
+```go
+import "github.com/larsartmann/go-output"
+
+data := output.NewTable([]string{"Name", "Status", "Score"})
+data.AddRow([]string{"Alpha", "pass", "95"})
+data.AddRow([]string{"Beta", "pass", "87"})
+data.AddRow([]string{"Gamma", "fail", "42"})
+data.SetFooter([]string{"Total", "2/3", "224"})
+```
+
+### CQRS Builder API
+
+```go
+tbl := output.NewTableBuilder().
+    SetHeaders("Name", "Status").
+    AddRow("Compile", "done").
+    AddRow("Test", "running").
+    Build()
+```
+
+`Build()` copies all slices, so subsequent builder mutations don't affect previously built tables.
+
+## Rendering
+
+### Root module (no extra deps)
+
+```go
+// Markdown
+md := markdown.NewMarkdownTable()
+md.SetHeaders(data.GetHeaders())
+for _, row := range data.GetRows() { md.AddRow(row) }
+out, _ := md.Render()
+```
+
+### Serialization formats
+
+```go
+// JSON
+jtr := serialization.NewJSONTableRenderer()
+jtr.SetData(data)
+out, _ := jtr.Render()
+// [{"Name":"Alpha","Status":"pass","Score":"95"}, ...]
+```
+
+### Delimited formats
+
+```go
+// CSV streaming
+csv := delimited.NewCSVWriter(os.Stdout)
+_ = csv.WriteHeader(data.GetHeaders())
+for _, row := range data.GetRows() { _ = csv.WriteRow(row) }
+csv.Flush()
+```
+
+### Terminal table (lipgloss)
+
+```go
+tbl := table.New(table.WithColorMode(output.ColorModeAuto))
+tbl.SetHeaders("Name", "Status")
+tbl.AddRow("Alpha", "pass")
+out, _ := tbl.Render()
+```
+
+### HTML with footer
+
+```go
+ht := markup.NewHTMLRenderer()
+ht.SetData(data)
+out, _ := ht.Render()
+// Renders <table> with <tfoot> for the footer row
+```
+
+## Footer Row Support
+
+The footer row is rendered differently per format:
+
+| Format                          | Footer                       |
+| ------------------------------- | ---------------------------- |
+| `table`, `markdown`             | Styled/bold footer row       |
+| `csv`, `tsv`                    | Appended as last data row    |
+| `html`                          | `<tfoot>` section            |
+| `xml`                           | `<footer>` element           |
+| `asciidoc`                      | Footer row cells             |
+| `json`, `yaml`, `toml`, `jsonl` | Skipped (data serialization) |
+| `tree`, `d2`, `mermaid`, `dot`  | Skipped (non-tabular)        |
+
+## Cross-Shape Conversion
+
+```go
+// Table -> Graph
+dot := graph.NewDOTFromTable(data)
+mmd := graph.NewMermaidFromTable(data)
+plantuml := plantuml.NewPlantUMLFromTable(data)
+d2Diagram := d2.NewD2FromTable(data)
+
+// Table -> Tree
+tree := tree.NewTreeRendererFromTable(data)
+```

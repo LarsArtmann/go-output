@@ -1,0 +1,88 @@
+---
+title: Installation
+description: Install go-output in your Go project.
+---
+
+## Requirements
+
+- Go 1.26 or later
+- An active Go module (`go.mod`)
+
+## Install the Root Module
+
+Run this in your project directory:
+
+```bash
+go get github.com/larsartmann/go-output
+```
+
+The root module has **zero heavy dependencies** — it pulls only `golang.org/x/term`. No lipgloss, bubbletea, yaml, or diagram libraries.
+
+## Quick Usage
+
+```go
+package main
+
+import (
+    "fmt"
+    "os"
+
+    "github.com/larsartmann/go-output"
+    "github.com/larsartmann/go-output/delimited"
+)
+
+func main() {
+    data := output.NewTable([]string{"Name", "Status"})
+    data.AddRow([]string{"Compile", "done"})
+    data.AddRow([]string{"Test", "running"})
+
+    // Stream to CSV
+    csv := delimited.NewCSVWriter(os.Stdout)
+    _ = csv.WriteHeader(data.GetHeaders())
+    for _, row := range data.GetRows() {
+        _ = csv.WriteRow(row)
+    }
+    csv.Flush()
+}
+```
+
+## Sub-Modules (Advanced)
+
+Sub-modules (diagram renderers, progress visualization, terminal tables) are build-boundary optimizations within this repo. They are **not** independently `go get`-able. To use them:
+
+```bash
+git clone https://github.com/larsartmann/go-output.git
+cd go-output
+nix run .#setup-workspace   # generates go.work from go.work.example
+```
+
+Then import what you need:
+
+| What you want                 | Import path                                      |
+| ----------------------------- | ------------------------------------------------ |
+| Core types, enums, registries | `github.com/larsartmann/go-output`               |
+| CSV + TSV writers             | `github.com/larsartmann/go-output/delimited`     |
+| JSON + YAML + TOML + JSONL    | `github.com/larsartmann/go-output/serialization` |
+| XML + HTML + AsciiDoc         | `github.com/larsartmann/go-output/markup`        |
+| Terminal tables (lipgloss)    | `github.com/larsartmann/go-output/table`         |
+| Markdown tables               | `github.com/larsartmann/go-output/markdown`      |
+| ASCII trees                   | `github.com/larsartmann/go-output/tree`          |
+| D2 diagrams                   | `github.com/larsartmann/go-output/d2`            |
+| DOT + Mermaid                 | `github.com/larsartmann/go-output/graph`         |
+| PlantUML                      | `github.com/larsartmann/go-output/plantuml`      |
+| NOM-style progress            | `github.com/larsartmann/go-output/nom`           |
+| Bubble Tea TUI                | `github.com/larsartmann/go-output/tui`           |
+
+See [ADR 009](https://github.com/larsartmann/go-output/blob/master/docs/adr/009-pattern-b-versioning.md) for the rationale behind this versioning model.
+
+## Verify Installation
+
+```bash
+go list -m github.com/larsartmann/go-output
+```
+
+## Next Steps
+
+- Follow the [Quick Start](/getting-started/quick-start/) for complete examples
+- Learn about the [CQRS architecture](/guides/cqrs/) (Build, Freeze, Render)
+- Browse the [Format Matrix](/format-matrix/) to see all 16 formats

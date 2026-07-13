@@ -1,0 +1,131 @@
+---
+title: NOM Progress
+description: Real-time workflow progress visualization inspired by nix-output-monitor.
+---
+
+## What is NOM?
+
+NOM (Nix Output Monitor) style progress visualization tracks long-running workflows with dependency trees, activity counts, and timing estimates. It's inspired by [`nix-output-monitor`](https://github.com/maralorn/nix-output-monitor).
+
+## Static Rendering (One-Shot)
+
+Build state, take a snapshot, render once — useful for logs, CI output, or testing:
+
+```go
+import (
+    "context"
+    "fmt"
+    "time"
+
+    "github.com/larsartmann/go-output/nom"
+)
+
+ctx := context.Background()
+sub := nom.NewNOMSubscriber()
+
+sub.OnEvent(ctx, nom.WorkflowStarted{
+    ID:   nom.NewWorkflowID("build"),
+    Name: nom.NewWorkflowName("Build Project"),
+})
+sub.OnEvent(ctx, nom.ActivityStarted{
+    ID:   nom.NewActivityID("compile"),
+    Name: nom.NewActivityName("Compile"),
+})
+sub.OnEvent(ctx, nom.ActivityStarted{
+    ID:   nom.NewActivityID("test"),
+    Name: nom.NewActivityName("Run Tests"),
+    Deps: []nom.ActivityID{nom.NewActivityID("compile")},
+})
+sub.OnEvent(ctx, nom.ActivityCompleted{
+    ID:       nom.NewActivityID("compile"),
+    Name:     nom.NewActivityName("Compile"),
+    Duration: 5 * time.Second,
+})
+
+// Render a snapshot
+snaps := sub.SnapshotActivities()
+fmt.Println(sub.DependencyTree().RenderWithSnapshots(snaps, 20, 0))
+
+// O(1) summary counts
+counts := sub.GetActivityCounts()
+fmt.Printf("Running: %d, Completed: %d, Failed: %d\n",
+    counts.Running, counts.Completed, counts.Failed)
+
+sub.OnEvent(ctx, nom.WorkflowCompleted{ID: nom.NewWorkflowID("build")})
+```
+
+## Live Inline Rendering (Terminal)
+
+For real-time updates, the `InlineRenderer` redraws the tree in-place using ANSI escape codes:
+
+```go
+sub := nom.NewNOMSubscriber()
+renderer := nom.NewInlineRenderer(sub, os.Stdout, 20) // maxHeight 20 lines
+
+ctx := context.Background()
+renderer.Start(ctx, 100*time.Millisecond) // redraw every 100ms
+defer renderer.Finish(nil)
+
+// In your workers (goroutines):
+sub.OnEvent(ctx, nom.ActivityStarted{
+    ID:   nom.NewActivityID("compile"),
+    Name: nom.NewActivityName("Compile"),
+})
+// ... do work ...
+sub.OnEvent(ctx, nom.ActivityCompleted{
+    ID:       nom.NewActivityID("compile"),
+    Name:     nom.NewActivityName("Compile"),
+    Duration: 5 * time.Second,
+})
+```
+
+## Features
+
+- **Dependency trees** — Hierarchical parent/child relationships with UTF-8 box-drawing
+- **O(1) activity counts** — Summary bar updates in constant time, even with 10,000+ activities
+- **Timing cache** — Persists duration history for ETA estimates
+- **Progress sub-steps** — `ActivityProgress` events render a dim sub-line beneath each activity
+- **Retry visibility** — `ActivityRetrying` events render retry indicators
+- **Estimated remaining time** — Powers a `~Xm left` summary segment
+- **Snapshot-based rendering** — Race-free: immutable value copies
+- **CI-safe degradation** — Auto-detects CI; appends frames line-by-line instead of ANSI cursor codes
+- **Height-pressure collapse** — Completed children collapse when the tree exceeds `maxHeight`
+
+## Events
+
+Events are typed structs — the `Event` interface is sealed:
+
+| Event                | Purpose                                    |
+| -------------------- | ------------------------------------------ |
+| `WorkflowStarted`    | Begin a workflow                           |
+| `WorkflowCompleted`  | End a workflow successfully                |
+| `WorkflowFailed`     | End a workflow with failure                |
+| `ActivityRegistered` | Register an activity without starting it   |
+| `ActivityStarted`    | Begin an activity (with optional deps)     |
+| `ActivityCompleted`  | Mark an activity as completed              |
+| `ActivityFailed`     | Mark an activity as failed                 |
+| `ActivityProgress`   | Set a live sub-step message                |
+| `ActivityRetrying`   | Transition failed activity back to running |
+
+## Themes
+
+Five built-in theme presets: `ThemeDefault`, `ThemeDracula`, `ThemeNord`, `ThemeMonochrome`, `ThemeHighContrast`.
+
+```go
+sub := nom.NewNOMSubscriber(nom.WithTheme(nom.ThemeDracula))
+```
+
+## Interactive TUI
+
+For a full-screen interactive experience, use the Bubble Tea TUI:
+
+```go
+import "github.com/larsartmann/go-output/tui"
+
+reporter := tui.NewBubbleTeaProgressReporter()
+reporter.SetDisplayMode(tui.DisplayModeNOM)
+reporter.Start()
+defer reporter.Stop()
+```
+
+See the [TUI guide](/getting-started/quick-start/) for controls and display modes.

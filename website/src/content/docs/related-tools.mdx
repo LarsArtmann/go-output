@@ -1,0 +1,34 @@
+---
+title: Related Tools
+description: Other Go libraries for output formatting and progress visualization.
+---
+
+## Output Formatting
+
+| Library                                                  | Focus                                                  |
+| -------------------------------------------------------- | ------------------------------------------------------ |
+| [lipgloss](https://github.com/charmbracelet/lipgloss)    | Terminal styling (used in go-output's `table/` module) |
+| [go-pretty](https://github.com/jedib0t/go-pretty)        | Terminal tables, progress bars, text styling           |
+| [tablewriter](https://github.com/olekukonko/tablewriter) | ASCII tables in Go                                     |
+| [pterm](https://github.com/pterm/pterm)                  | Terminal output with charts, tables, progress bars     |
+
+## Progress Visualization
+
+| Library                                                              | Focus                                                              |
+| -------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| [bubbletea](https://github.com/charmbracelet/bubbletea)              | Elm-based TUI framework (used in go-output's `tui/` module)        |
+| [nix-output-monitor](https://github.com/maralorn/nix-output-monitor) | The original NOM (Haskell) that inspired go-output's `nom/` module |
+| [mpb](https://github.com/vbauerster/mpb)                             | Multi progress bar library for Go                                  |
+
+## Diagram Formats
+
+| Library                           | Focus                                     |
+| --------------------------------- | ----------------------------------------- |
+| [D2](https://d2lang.com)          | Declarative diagram language              |
+| [Mermaid](https://mermaid.js.org) | Diagramming and charting in Markdown      |
+| [Graphviz](https://graphviz.org)  | Graph visualization software (DOT format) |
+| [PlantUML](https://plantuml.com)  | UML and other diagrams from text          |
+
+## Why go-output?
+
+Most formatting libraries are single-purpose (tables only, or progress only, or diagrams only). go-output unifies all three data shapes (table, tree, graph) across 16 output formats with a single CQRS API, and adds NOM-style real-time progress as a bonus.

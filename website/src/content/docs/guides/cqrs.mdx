@@ -1,0 +1,105 @@
+---
+title: CQRS Architecture
+description: Build mutable, freeze immutable, render with pure functions.
+---
+
+## What is CQRS?
+
+**Command-Query Responsibility Segregation.** In go-output, this means:
+
+1. **Build** (Command) — Mutable builders accumulate state via fluent API
+2. **Freeze** (Query) — `Build()` returns an immutable snapshot
+3. **Render** (Query) — Pure functions produce output with no side effects
+
+## The Three Builders
+
+### GraphBuilder
+
+```go
+b := output.NewGraphBuilder()
+b.AddNode(output.NewGraphNode("compile", "Compile"))
+b.AddNode(output.NewGraphNode("test", "Test"))
+b.AddEdge(output.NewGraphEdge("compile", "test"))
+
+g := b.Build() // Immutable Graph
+
+// Accessors only — no mutation
+nodes := g.Nodes()  // []GraphNode
+edges := g.Edges()  // []GraphEdge
+```
+
+### TableBuilder
+
+```go
+tbl := output.NewTableBuilder().
+    SetHeaders("Name", "Status").
+    AddRow("Compile", "done").
+    AddRow("Test", "running").
+    SetFooter("Total", "2").
+    Build()
+```
+
+`Build()` copies all slices, so subsequent builder mutations don't affect previously built tables.
+
+### TreeBuilder
+
+```go
+root := output.NewTreeBuilder().
+    SetRoot("build", "Build").
+    AddChild("build", "compile", "Compile").
+    AddChild("compile", "lint", "Lint").
+    Build()
+```
+
+## Pure-Function Renderers
+
+Every renderer module exports `WriteXxx` (primary, streaming) and `RenderXxx` (convenience):
+
+```go
+// Primary: streams to io.Writer
+err := graph.WriteDOT(os.Stdout, g)
+
+// Convenience: returns string
+dot, err := graph.RenderDOT(g)
+```
+
+The same pattern across all modules:
+
+| Module          | Primary                     | Convenience                   |
+| --------------- | --------------------------- | ----------------------------- |
+| `graph`         | `WriteDOT` / `WriteMermaid` | `RenderDOT` / `RenderMermaid` |
+| `d2`            | `Write` / `WriteGraph`      | `Render` / `RenderGraph`      |
+| `plantuml`      | `Write`                     | `Render`                      |
+| `tree`          | `WriteASCII`                | `RenderASCII`                 |
+| `markdown`      | `Write`                     | `Render`                      |
+| `delimited`     | `WriteCSV` / `WriteTSV`     | `RenderCSV` / `RenderTSV`     |
+| `serialization` | `WriteJSON` / `WriteYAML`   | `RenderJSON` / `RenderYAML`   |
+| `markup`        | `WriteXML` / `WriteHTML`    | `RenderXML` / `RenderHTML`    |
+
+## Streaming
+
+`WriteXxx` functions stream directly via standard Go encoders — no intermediate `[]byte` or `string` allocation:
+
+```go
+// Streams row-by-row via json.Encoder
+err := serialization.WriteJSON(os.Stdout, data)
+
+// Streams row-by-row via csv.Writer
+err := delimited.WriteCSV(os.Stdout, data)
+```
+
+## Registry Dispatch
+
+Registry dispatch (`output.RenderTable`) uses the **same streaming code path** as the CQRS API. This means registry dispatch and CQRS produce byte-for-byte identical output.
+
+## Cross-Shape Projections
+
+Pure functions in root that convert between data shapes:
+
+```go
+g := output.TableToGraph(tbl)     // Table -> Graph (edges between rows)
+t := output.GraphToTree(g)        // Graph -> Tree (follows edges, cycle-guarded)
+tbl := output.GraphToTable(g)     // Graph -> Table (one row per node)
+```
+
+These are projections — the input is never modified.

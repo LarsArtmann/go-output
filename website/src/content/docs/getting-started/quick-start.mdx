@@ -1,0 +1,110 @@
+---
+title: Quick Start
+description: Build data once, render it in any of 16 formats.
+---
+
+## Define Your Data
+
+go-output has three core data shapes: **Table**, **Tree**, and **Graph**. Define your data once, then render it in any format that supports that shape.
+
+### Tables
+
+```go
+import "github.com/larsartmann/go-output"
+
+data := output.NewTable([]string{"Name", "Health", "Complexity"})
+data.AddRow([]string{"Alpha", "90%", "7/10"})
+data.AddRow([]string{"Beta", "75%", "5/10"})
+data.SetFooter([]string{"Total", "2", "-"})
+```
+
+### Trees
+
+```go
+root := output.NewTreeNode("root", "Projects")
+root.AddChild(output.NewTreeNode("alpha", "Alpha"))
+root.AddChild(output.NewTreeNode("beta", "Beta"))
+```
+
+### Graphs
+
+```go
+b := output.NewGraphBuilder()
+b.AddNode(output.NewGraphNode("a", "API Gateway"))
+b.AddNode(output.NewGraphNode("b", "Backend"))
+b.AddEdge(output.NewGraphEdge("a", "b"))
+g := b.Build()
+```
+
+## Render with CQRS Pure Functions
+
+The CQRS API (v0.30.0+) is the recommended way to render. Pure functions, no side effects:
+
+```go
+import (
+    "github.com/larsartmann/go-output/graph"
+    "github.com/larsartmann/go-output/tree"
+    "github.com/larsartmann/go-output/delimited"
+)
+
+// Same Graph, multiple formats
+dot, _     := graph.RenderDOT(g)
+mermaid, _ := graph.RenderMermaid(g)
+
+// Tree to ASCII
+ascii, _ := tree.RenderASCII(root)
+
+// Table to CSV
+csv, _ := delimited.RenderCSV(data)
+```
+
+## Runtime Format Selection
+
+Use the `Format` enum for CLI flags and runtime dispatch:
+
+```go
+format, err := output.ParseFormat("json")
+if err != nil {
+    panic(err)
+}
+
+fmt.Println(format.Supports(output.ShapeTable)) // true
+fmt.Println(format.Shapes())                     // [table tree graph]
+fmt.Println(format.String())                     // "json"
+
+// Find all formats that support a given shape
+for _, f := range output.FormatsForShape(output.ShapeGraph) {
+    fmt.Println(f) // json, yaml, toml, d2, mermaid, dot, plantuml
+}
+```
+
+## Unified Dispatch
+
+Dispatch through the unified renderer (requires importing the relevant sub-module):
+
+```go
+out, err := output.RenderTable(data, output.FormatHTML, output.RenderOptions{
+    ColorMode: output.ColorModeAuto,
+})
+```
+
+## Cross-Shape Projections
+
+Convert between data shapes as pure functions:
+
+```go
+// Table -> Graph (auto-generates edges between consecutive rows)
+g := output.TableToGraph(data)
+
+// Graph -> Tree (follows edges from root, cycle-guarded)
+t := output.GraphToTree(g)
+
+// Graph -> Table (one row per node)
+tbl := output.GraphToTable(g)
+```
+
+## Next Steps
+
+- Learn about the [CQRS architecture](/guides/cqrs/) in depth
+- Explore [NOM real-time progress](/guides/nom-progress/) for workflow visualization
+- Browse all [16 formats](/format-matrix/)

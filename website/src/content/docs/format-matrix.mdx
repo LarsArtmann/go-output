@@ -1,0 +1,80 @@
+---
+title: Format Matrix
+description: All 16 output formats and their data shape capabilities.
+---
+
+## The 16 Formats
+
+Every format declares which data shapes (table, tree, graph) it supports via `RegisterFormatShapes()`. Query at runtime with `format.Supports(shape)` or `FormatsForShape(shape)`.
+
+| Format     | Table | Tree | Graph | Module        | Notes                                |
+| ---------- | :---: | :--: | :---: | ------------- | ------------------------------------ |
+| `json`     |  ✅   |  ✅  |  ✅   | root          | Shape-agnostic serialization         |
+| `yaml`     |  ✅   |  ✅  |  ✅   | serialization | Shape-agnostic serialization         |
+| `toml`     |  ✅   |  ✅  |  ✅   | serialization | Shape-agnostic serialization         |
+| `csv`      |  ✅   |      |       | delimited     | Streaming writer with auto-quoting   |
+| `tsv`      |  ✅   |      |       | delimited     | Tab-separated                        |
+| `jsonl`    |  ✅   |      |       | serialization | One JSON object per line             |
+| `xml`      |  ✅   |      |       | markup        | Structured with XML escaping         |
+| `html`     |  ✅   |  ✅  |       | markup        | Styled tables, collapsible trees     |
+| `asciidoc` |  ✅   |      |       | markup        | Pipe-bordered tables                 |
+| `markdown` |  ✅   |      |       | root          | Auto column widths, alignment        |
+| `table`    |  ✅   |      |       | table         | Lipgloss terminal tables             |
+| `tree`     |       |  ✅  |       | root          | ASCII box-drawing with color cycling |
+| `d2`       |  ✅   |      |  ✅   | d2            | SQL tables, 20 node shapes           |
+| `mermaid`  |  ✅   |      |  ✅   | graph         | Flowcharts with 8 node shapes        |
+| `dot`      |  ✅   |      |  ✅   | graph         | Graphviz directed graphs             |
+| `plantuml` |  ✅   |      |  ✅   | plantuml      | Component diagrams                   |
+
+## Runtime Queries
+
+```go
+// Check what a format can do
+format, _ := output.ParseFormat("d2")
+format.Supports(output.ShapeTable) // true
+format.Supports(output.ShapeGraph) // true
+format.Supports(output.ShapeTree)  // false
+
+// Find all formats for a shape
+for _, f := range output.FormatsForShape(output.ShapeGraph) {
+    fmt.Println(f) // json, yaml, toml, d2, mermaid, dot, plantuml
+}
+```
+
+## Module Map
+
+The root module (`github.com/larsartmann/go-output`) contains core types, enums, registries, and the `json`/`yaml`/`toml`/`markdown`/`tree` renderers. All other formats live in opt-in sub-modules.
+
+| Module           | Purpose                                              |
+| ---------------- | ---------------------------------------------------- |
+| **root**         | Core types, Format/Shape enums, registries, builders |
+| `delimited/`     | CSV + TSV writers                                    |
+| `serialization/` | JSON + YAML + TOML + JSONL                           |
+| `markup/`        | XML + HTML + AsciiDoc + Streaming HTML               |
+| `table/`         | Lipgloss terminal tables                             |
+| `markdown/`      | Markdown table renderer                              |
+| `tree/`          | ASCII tree renderer                                  |
+| `d2/`            | D2 diagrams (shapes, arrows, SQL tables)             |
+| `graph/`         | DOT + Mermaid renderers                              |
+| `plantuml/`      | PlantUML diagrams                                    |
+| `daghtml/`       | Interactive SVG DAG visualization (zero-dep)         |
+| `nom/`           | NOM-style real-time progress                         |
+| `tui/`           | Bubble Tea interactive TUI                           |
+| `escape/`        | Format-specific escaping (zero deps)                 |
+| `testhelpers/`   | Shared test assertions (zero deps)                   |
+
+## Registry Dispatch
+
+Importing a sub-module activates its renderers automatically via `init()`:
+
+```go
+import (
+    _ "github.com/larsartmann/go-output/markup" // activates HTML, XML, AsciiDoc
+)
+```
+
+Then dispatch through the unified renderer:
+
+```go
+out, err := output.RenderTable(data, output.FormatHTML, output.RenderOptions{})
+```

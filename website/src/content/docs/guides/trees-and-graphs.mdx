@@ -1,0 +1,120 @@
+---
+title: Trees & Graphs
+description: Hierarchical and network data shapes across multiple formats.
+---
+
+## Trees
+
+Build hierarchical data with `TreeNode`:
+
+```go
+root := output.NewTreeNode("root", "Build")
+compile := output.NewTreeNode("compile", "Compile")
+test := output.NewTreeNode("test", "Test")
+lint := output.NewTreeNode("lint", "Lint")
+
+root.AddChild(compile)
+root.AddChild(test)
+test.AddChild(lint)
+```
+
+### CQRS Builder API
+
+```go
+root := output.NewTreeBuilder().
+    SetRoot("build", "Build").
+    AddChild("build", "compile", "Compile").
+    AddChild("build", "test", "Test").
+    AddChild("test", "lint", "Lint").
+    Build()
+```
+
+### Rendering
+
+```go
+// ASCII tree with box-drawing characters
+renderer := tree.NewASCIITreeRenderer()
+renderer.SetRoot(root)
+renderer.SetColorMode(output.ColorModeAuto)
+out, _ := renderer.Render()
+// Build
+// ├── Compile
+// └── Test
+//     └── Lint
+
+// Or use CQRS pure function
+ascii, _ := tree.RenderASCII(root)
+
+// JSON tree
+jtr := serialization.NewJSONTreeRenderer()
+jtr.SetRoot(root)
+out, _ = jtr.Render()
+
+// HTML collapsible tree
+ht := markup.NewHTMLTreeRenderer()
+ht.SetRoot(root)
+out, _ = ht.Render()
+```
+
+## Graphs
+
+Build network data with the CQRS `GraphBuilder`:
+
+```go
+b := output.NewGraphBuilder()
+b.AddNode(output.NewGraphNode("api", "API Gateway"))
+b.AddNode(output.NewGraphNode("backend", "Backend"))
+b.AddNode(output.NewGraphNode("db", "Database"))
+b.AddEdge(output.NewGraphEdge("api", "backend"))
+b.AddEdge(output.NewGraphEdge("backend", "db"))
+
+g := b.Build()
+```
+
+### Rendering Graphs
+
+```go
+// DOT / Graphviz
+dot, _ := graph.RenderDOT(g)
+
+// Mermaid flowchart
+mermaid, _ := graph.RenderMermaid(g)
+
+// D2 diagram with shapes
+diagram := d2.NewDiagram().
+    AddNodeWithShape("api", "API Gateway", d2.D2ShapeHexagon).
+    AddEdgeSimple("api", "backend")
+out, _ := diagram.Render()
+
+// PlantUML
+out, _ := plantuml.Render(g)
+```
+
+### D2 Advanced Features
+
+SQL tables, constraints, grid layouts, and nested containers:
+
+```go
+table := d2.D2Table{
+    Name: "users",
+    Columns: []d2.D2Column{
+        {Name: "id", Type: "INT", Constraint: d2.D2ConstraintPrimary},
+        {Name: "email", Type: "VARCHAR(255)", Constraint: d2.D2ConstraintUnique},
+    },
+}
+```
+
+## Cross-Shape Projections
+
+```go
+// Table -> Graph (auto-edges between consecutive rows)
+g := output.TableToGraph(data)
+
+// Graph -> Tree (follows edges from root, cycle-guarded)
+root := output.GraphToTree(g)
+
+// Graph -> Table (one row per node)
+tbl := output.GraphToTable(g)
+```
+
+These are pure projections — the input is never modified.

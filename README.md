@@ -9,6 +9,8 @@
 >
 > One library. Sixteen formats. Three data shapes. Zero lock-in.
 
+📚 **[Documentation](https://go-output.lars.software)** · 🚀 **[Quick Start](https://go-output.lars.software/getting-started/quick-start/)** · 📋 **[Format Matrix](https://go-output.lars.software/format-matrix/)**
+
 `go-output` is a Go library that turns your structured data into **16 output formats** — tables, trees, and diagrams — with type-safe enums, branded IDs, and zero-config color support. It also includes **NOM-style real-time progress visualization** for long-running workflows, inspired by [`nix-output-monitor`](https://github.com/maralorn/nix-output-monitor).
 
 ```go
@@ -742,8 +744,8 @@ Other examples:
 
 ```bash
 nix develop                    # Enter dev shell (Go 1.26, golangci-lint, gopls)
-nix run .#build              # Build all 20 modules
-nix run .#test               # Test all 20 modules
+nix run .#build              # Build all 19 modules
+nix run .#test               # Test all 19 modules
 nix run .#test-race          # Race-test nom + tui
 nix run .#lint               # golangci-lint across all modules
 nix run .#tidy               # go mod tidy all modules
@@ -788,7 +790,7 @@ Non-breaking changes until v1: adding new formats, shapes, methods, sub-modules,
 
 ## Architecture
 
-20 modules in a multi-module Go workspace. The root package has **zero imports of any sub-module** — this is the load-bearing architectural guarantee.
+19 modules in a multi-module Go workspace. The root package has **zero imports of any sub-module** — this is the load-bearing architectural guarantee.
 
 - `go get go-output` pulls **no** lipgloss, bubbletea, yaml, d2, graph, table, nom, or tui deps.
 - Sub-modules self-register into root's registries via their own `init()`.

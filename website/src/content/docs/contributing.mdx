@@ -1,0 +1,53 @@
+---
+title: Contributing
+description: How to contribute to go-output.
+---
+
+## Getting Started
+
+go-output uses Nix for reproducible builds. If you have Nix installed:
+
+```bash
+nix develop                # Enter dev shell (Go 1.26, golangci-lint, gopls)
+nix run .#setup-workspace  # Generate go.work from go.work.example
+```
+
+If you don't use Nix, set up the workspace manually:
+
+```bash
+git clone https://github.com/larsartmann/go-output.git
+cd go-output
+cp go.work.example go.work
+```
+
+## Build & Test
+
+```bash
+nix run .#build       # Build all modules
+nix run .#test        # Test all modules
+nix run .#test-race   # Race-test nom + tui
+nix run .#lint        # golangci-lint across all modules
+```
+
+## Architecture
+
+Read these before non-trivial work:
+
+- [`AGENTS.md`](https://github.com/larsartmann/go-output/blob/master/AGENTS.md) — Architecture patterns and gotchas
+- [`docs/FORMAT_ARCHITECTURE.md`](https://github.com/larsartmann/go-output/blob/master/docs/FORMAT_ARCHITECTURE.md) — Format/shape matrix internals
+- [`docs/DOMAIN_LANGUAGE.md`](https://github.com/larsartmann/go-output/blob/master/docs/DOMAIN_LANGUAGE.md) — Ubiquitous language
+- [`docs/adr/`](https://github.com/larsartmann/go-output/tree/master/docs/adr) — Architecture Decision Records
+
+### Core Invariant
+
+**Root (`package output`) has ZERO imports of any sub-module.** This is the load-bearing architectural rule. `go get github.com/larsartmann/go-output` pulls no lipgloss, bubbletea, yaml, or diagram deps.
+
+## Pull Requests
+
+1. Fork and clone the repo
+2. Create a feature branch
+3. Make your changes
+4. Ensure `nix run .#test` and `nix run .#lint` pass
+5. Open a PR with a clear description
+
+See [`CONTRIBUTING.md`](https://github.com/larsartmann/go-output/blob/master/CONTRIBUTING.md) for details.

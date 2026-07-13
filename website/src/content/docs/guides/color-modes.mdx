@@ -1,0 +1,50 @@
+---
+title: Color Modes
+description: Control ANSI color output across all terminal renderers.
+---
+
+## Three Modes
+
+```go
+output.ColorModeAuto    // Detects TTY, respects NO_COLOR / CI / FORCE_COLOR
+output.ColorModeAlways  // Always emit ANSI colors
+output.ColorModeNever   // Never emit ANSI colors
+```
+
+## Wiring Mechanisms
+
+Different renderers accept color mode through different APIs:
+
+### Functional option (terminal tables)
+
+```go
+tbl := table.New(table.WithColorMode(output.ColorModeAlways))
+```
+
+### Setter (ASCII tree, markdown)
+
+```go
+renderer := tree.NewASCIITreeRenderer()
+renderer.SetColorMode(output.ColorModeAlways)
+
+md := markdown.NewMarkdownTable().SetColorMode(output.ColorModeAlways)
+```
+
+### RenderOptions (unified dispatch)
+
+```go
+out, _ := output.RenderTable(data, output.FormatTable, output.RenderOptions{
+    ColorMode: output.ColorModeAuto,
+})
+```
+
+## Auto Detection
+
+`ColorModeAuto` checks (in order):
+
+1. **Writer TTY** — Probes the writer's own FD via `x/term.IsTerminal`
+2. **`NO_COLOR`** — If set, disables color (industry standard)
+3. **CI environments** — `CI`, `GITHUB_ACTIONS`, `GITLAB_CI`, `JENKINS_URL`, `BUILDKITE`
+4. **`GO_OUTPUT_FORCE_COLOR` / `FORCE_COLOR`** — If set, forces color on
+
+The only valid direction is TTY to plain text — a piped writer never gets ANSI codes.

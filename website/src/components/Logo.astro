@@ -1,0 +1,17 @@
+---
+export interface Props {
+  width?: number;
+  height?: number;
+  class?: string;
+}
+
+const { width = 28, height = 28, class: className } = Astro.props;
+---
+
+<svg class={className} width={width} height={height} viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="go-output logo">
+  <rect width="28" height="28" rx="6" class="fill-[var(--color-accent)]" />
+  <path d="M5 9h8M5 14h6M5 19h4" class="stroke-[var(--color-bg-primary)]" stroke-width="2" stroke-linecap="round" />
+  <circle cx="19" cy="10" r="2.5" class="stroke-[var(--color-bg-primary)]" stroke-width="1.8" fill="none" />
+  <circle cx="19" cy="19" r="2.5" class="stroke-[var(--color-bg-primary)]" stroke-width="1.8" fill="none" />
+  <path d="M19 12.5v4" class="stroke-[var(--color-bg-primary)]" stroke-width="1.8" stroke-linecap="round" />
+</svg>

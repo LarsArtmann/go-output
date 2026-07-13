@@ -1,0 +1,23 @@
+---
+import { phases } from '../data/sections';
+import Icon from './Icon.astro';
+import SectionHeader from './SectionHeader.astro';
+---
+
+<SectionHeader title="Build. Freeze. Render." subtitle="CQRS architecture: mutable builders, immutable snapshots, pure-function renderers. Same data, every format." />
+
+<div class="grid gap-4 text-left sm:grid-cols-3">
+  {phases.map((phase) => (
+    <div class="p-6 rounded-xl border border-border bg-bg-card">
+      <div class="flex items-center gap-3 mb-3">
+        <div class={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-mono font-bold ${phase.stepColor === 'accent' ? 'bg-accent-dim text-accent' : phase.stepColor === 'amber' ? 'bg-amber/10 text-amber' : 'bg-violet/10 text-violet'}`}>{phase.step}</div>
+        <h3 class="font-semibold text-text-primary">{phase.title}</h3>
+      </div>
+      <pre class="text-xs text-text-muted mb-3 font-mono bg-code-inline-bg rounded-md p-3 overflow-x-auto leading-relaxed"><code>{phase.code}</code></pre>
+      <span class={`inline-flex items-center gap-1.5 text-xs ${phase.hintColor === 'accent' ? 'text-accent' : phase.hintColor === 'amber' ? 'text-amber' : 'text-violet'}`}>
+        <Icon name={phase.hintIcon} size={14} />
+        {phase.hint}
+      </span>
+    </div>
+  ))}
+</div>

@@ -1,0 +1,59 @@
+---
+import SectionHeader from './SectionHeader.astro';
+
+interface FormatEntry {
+  name: string;
+  module: string;
+  shapes: ('table' | 'tree' | 'graph')[];
+}
+
+const formats: FormatEntry[] = [
+  { name: 'JSON', module: 'root', shapes: ['table', 'tree', 'graph'] },
+  { name: 'YAML', module: 'serialization', shapes: ['table', 'tree', 'graph'] },
+  { name: 'TOML', module: 'serialization', shapes: ['table', 'tree', 'graph'] },
+  { name: 'CSV', module: 'delimited', shapes: ['table'] },
+  { name: 'TSV', module: 'delimited', shapes: ['table'] },
+  { name: 'JSONL', module: 'serialization', shapes: ['table'] },
+  { name: 'XML', module: 'markup', shapes: ['table'] },
+  { name: 'HTML', module: 'markup', shapes: ['table', 'tree'] },
+  { name: 'AsciiDoc', module: 'markup', shapes: ['table'] },
+  { name: 'Markdown', module: 'root', shapes: ['table'] },
+  { name: 'Table', module: 'table', shapes: ['table'] },
+  { name: 'Tree', module: 'root', shapes: ['tree'] },
+  { name: 'D2', module: 'd2', shapes: ['table', 'graph'] },
+  { name: 'Mermaid', module: 'graph', shapes: ['table', 'graph'] },
+  { name: 'DOT', module: 'graph', shapes: ['table', 'graph'] },
+  { name: 'PlantUML', module: 'plantuml', shapes: ['table', 'graph'] },
+];
+
+function shapeIcon(shape: string): string {
+  switch (shape) {
+    case 'table': return 'Table';
+    case 'tree': return 'Tree';
+    case 'graph': return 'Graph';
+    default: return shape;
+  }
+}
+---
+
+<div>
+  <SectionHeader title="16 formats. 3 data shapes." subtitle="Every format declares which shapes it supports. Query the matrix at runtime." />
+
+  <div class="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
+    {formats.map((fmt) => (
+      <div class="p-4 rounded-lg border border-border bg-bg-card hover:border-border-hover transition-colors duration-150">
+        <div class="flex items-center justify-between mb-2">
+          <span class="font-semibold text-text-primary text-sm">{fmt.name}</span>
+          <code class="text-[0.625rem] text-text-muted font-mono bg-code-inline-bg px-1.5 py-0.5 rounded">{fmt.module}</code>
+        </div>
+        <div class="flex gap-1.5 flex-wrap">
+          {fmt.shapes.map((shape) => (
+            <span class="inline-flex items-center gap-1 text-[0.6875rem] px-2 py-0.5 rounded-full bg-accent-dim text-accent">
+              {shapeIcon(shape)}
+            </span>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+</div>

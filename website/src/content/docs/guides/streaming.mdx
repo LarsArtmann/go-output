@@ -1,0 +1,58 @@
+---
+title: Streaming
+description: Stream large datasets with minimal memory overhead.
+---
+
+## CQRS Streaming
+
+All `WriteXxx` functions stream directly via standard Go encoders:
+
+```go
+// JSON — streams via json.Encoder
+err := serialization.WriteJSON(os.Stdout, data)
+
+// CSV — streams row-by-row via csv.Writer
+err := delimited.WriteCSV(os.Stdout, data)
+
+// YAML — streams via yaml.Encoder
+err := serialization.WriteYAML(os.Stdout, data)
+```
+
+No intermediate `[]byte` or `string` allocation. The standard encoders add a trailing `\n` (canonical Go behavior).
+
+## Streaming HTML Renderer
+
+For very large HTML tables, use the streaming renderer:
+
+```go
+renderer := markup.NewStreamingHTMLRenderer()
+renderer.SetData(data)
+err := renderer.Stream(os.Stdout)
+```
+
+This writes the HTML table incrementally, keeping memory usage flat regardless of row count.
+
+## JSONL Writer
+
+For line-delimited JSON (ideal for log streams and event sourcing):
+
+```go
+writer := serialization.NewJSONLWriter(os.Stdout)
+for _, item := range items {
+    _ = writer.Encode(item)
+}
+```
+
+Each call to `Encode` writes one JSON object followed by a newline.
+
+## Registry Dispatch Also Streams
+
+Since v0.30.0, `output.RenderTable` uses the same streaming encoders as the CQRS API. This means:
+
+```go
+// These two produce byte-for-byte identical output:
+serialization.WriteJSON(os.Stdout, data)
+output.RenderTable(data, output.FormatJSON, output.RenderOptions{})
+```
+
+Both stream via `json.Encoder`, both append a trailing `\n`.

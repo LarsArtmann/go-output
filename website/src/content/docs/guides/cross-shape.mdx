@@ -1,0 +1,94 @@
+---
+title: Cross-Shape Conversion
+description: Convert between tables, trees, and graphs as pure functions.
+---
+
+## Available Projections
+
+Three pure functions in the root package convert between data shapes:
+
+```go
+output.TableToGraph(t, opts...) → Graph
+output.GraphToTree(g)           → *TreeNode
+output.GraphToTable(g)           → *Table
+```
+
+These are **projections** — the input is never modified. Each returns a new value.
+
+## Table to Graph
+
+Generates one node per row, with edges between consecutive rows:
+
+```go
+data := output.NewTable([]string{"Step", "Action"})
+data.AddRow([]string{"1", "Build"})
+data.AddRow([]string{"2", "Test"})
+data.AddRow([]string{"3", "Deploy"})
+
+g := output.TableToGraph(data)
+// Node "1: Build" -> Node "2: Test" -> Node "3: Deploy"
+
+// Now render as any graph format
+dot, _ := graph.RenderDOT(g)
+mermaid, _ := graph.RenderMermaid(g)
+```
+
+### Custom Labels
+
+```go
+g := output.TableToGraph(data, output.WithGraphNodeLabelFunc(func(row []string) string {
+    return row[1] // Use the "Action" column as the label
+}))
+```
+
+## Graph to Tree
+
+Follows edges from the root, building a hierarchical tree. Cycle-guarded.
+
+```go
+g := output.TableToGraph(data)
+root := output.GraphToTree(g)
+
+ascii, _ := tree.RenderASCII(root)
+// 1: Build
+// └── 2: Test
+//     └── 3: Deploy
+```
+
+For disconnected graphs, only the first root's subtree is included.
+
+## Graph to Table
+
+One row per node, with columns for ID and Label:
+
+```go
+g := b.Build()
+tbl := output.GraphToTable(g)
+
+csv, _ := delimited.RenderCSV(tbl)
+```
+
+## Chaining Projections
+
+```go
+// Full pipeline: Table -> Graph -> Tree -> ASCII
+data := output.NewTable([]string{"A", "B"})
+data.AddRow([]string{"x", "1"})
+data.AddRow([]string{"y", "2"})
+
+g := output.TableToGraph(data)
+root := output.GraphToTree(g)
+out, _ := tree.RenderASCII(root)
+```
+
+## Legacy Conversion APIs
+
+The renderer-specific constructors still work (they wrap the same projections):
+
+```go
+dot := graph.NewDOTFromTable(data)       // Table -> DOT
+mmd := graph.NewMermaidFromTable(data)   // Table -> Mermaid
+plantuml := plantuml.NewPlantUMLFromTable(data)
+d2Diagram := d2.NewD2FromTable(data)
+tree := tree.NewTreeRendererFromTable(data)
+```
