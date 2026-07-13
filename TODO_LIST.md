@@ -1,99 +1,48 @@
 # TODO_LIST.md — go-output
 
-**Last updated:** 2026-07-05
-**Open items:** 3
+**Last updated:** 2026-07-13
+**Open items:** 2
 **Blocked:** 0
 
 ---
 
 ## Open Items
 
-| #   | Task                                                                                                       | Effort | Status                        |
-| --- | ---------------------------------------------------------------------------------------------------------- | ------ | ----------------------------- |
-| 14  | **Community: Post to r/golang, submit to Awesome Go**                                                      | Low    | Open (needs owner account)    |
-| 16  | **Cut `v1.0.0` tag** — API frozen (ADR 006); CHANGELOG + full checklist done; P0 concurrency fixes applied | Low    | Prepared — awaiting owner tag |
+| #   | Task                                                                                                               | Effort | Status                        |
+| --- | ------------------------------------------------------------------------------------------------------------------ | ------ | ----------------------------- |
+| 14  | **Community: Post to r/golang, submit to Awesome Go**                                                              | Low    | Open (needs owner account)    |
+| 16  | **Cut `v1.0.0` tag** — API frozen (ADR 006); CHANGELOG + full checklist done; all v0.30.x breaking changes shipped | Low    | Prepared — awaiting owner tag |
 
 ---
 
-## Resolved This Session (2026-06-20) — Do Not Redo
+## Recently Resolved (2026-07-06 — v0.30.0 arc)
 
-| Task                                                   | Resolution                                                                                                                                                                                                                                                         |
-| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| #15 `Table` fields vs getters for v1                   | **Resolved — keep both.** Getters (`GetHeaders`/`GetRows`/`GetFooter`) satisfy the `TableProvider` interface in `table/` + test doubles. Load-bearing, not duplication.                                                                                            |
-| `ActivityStatusPaused` / `SetPaused` (dead event path) | **Removed.** No `EventActivityPaused`, zero callers, unreachable. `SymbolPaused`→`SymbolPending` (glyph ⏸→○); Pending given its own honest identity.                                                                                                               |
-| Deprecated APIs (7 markers)                            | **Removed.** `EnsureBuild`, `ParseActivityID`/`ParseWorkflowID`, `NewGraphNodeID`/`NewGraphNodeLabel`, `MarshalTSV(any)`, 6 color aliases — all had zero prod callers. One `Deprecated:` marker remains: `NodeShapeRect` (kept for backward compat, remove in v2). |
-| `OperationSymbol` + `OperationType*` (speculative)     | **Removed.** Zero production callers; stringly-typed mapping to nowhere. `SymbolDownload`/`Upload` kept as palette.                                                                                                                                                |
-| Over-exposed tui public API (~15 symbols)              | **Unexported.** Msg types, `WorkflowState`, `ProgressStep`, `UpdateType`, `TickCmd`, etc. Public surface is now `NewBubbleTeaProgressReporter` + `Report*` + `DisplayMode` + `ProgressModel`.                                                                      |
-| Pre-release checklist (build/test/race/lint/vuln/tidy) | **All green.** 20/20 modules pass, 0 lint issues, `-race` clean, govulncheck 0 vulnerabilities, go mod tidy clean.                                                                                                                                                 |
+Details in CHANGELOG.md and git history.
 
----
+- **v0.30.0 breaking changes shipped**: 7 breaking-change commits — deletions (B1-B10), renames (C1-C8), D2 prefix drop, GraphBuilder split, full CQRS architecture
+- **CQRS architecture complete**: 3 builders, immutable Graph, pure-function renderers for all 16 formats, cross-shape projections
+- **Registry dispatch rewired**: all table formats stream via CQRS streaming functions (byte-for-byte identical output proven)
+- **Golden-file tests**: JSON, YAML, TOML, JSONL, CSV, TSV, XML, HTML, AsciiDoc — all locked in
+- **v0.30.1-v0.30.4 patch releases**: version ref fixes, Pattern B sentinel migration, documentation website
 
-## Resolved Earlier (Summary — details in git history)
+## Recently Resolved (2026-07-05 — P0-P7 brutal review)
 
-| Task                                                             | Resolution                                                                                                                                         |
-| ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `FormatDuration` displaying "60.0s" at 59.95s                    | **Fixed** — integer math (tenths) prevents float rounding                                                                                          |
-| `GetActivitySummaryString` returned bracketed Go slice repr      | **Fixed** — `strings.Join` instead of `fmt.Sprintf("%s", parts)`                                                                                   |
-| DOT/Mermaid double-escaping in Table conversion                  | **Fixed** — removed pre-escape; render-time escape is single source                                                                                |
-| D2 Icon/Link fields not escaped                                  | **Fixed** — `escape.D2()` applied                                                                                                                  |
-| PlantUML labels not escaped                                      | **Fixed** — added `escape.PlantUML()`                                                                                                              |
-| Mermaid node/edge IDs not sanitized in graph Render()            | **Fixed** — `escape.MermaidID()` applied                                                                                                           |
-| GraphEdge.Style and NodeStyle.FontColor dropped in D2 conversion | **Fixed** — edge color and font-color now mapped                                                                                                   |
-| Timing cache goroutine race                                      | **Fixed** — saveMu serializes file writes                                                                                                          |
-| Timing cache entries not capped on load                          | **Fixed** — maxCachedEntries applied during load                                                                                                   |
-| InlineRenderer config setter data race                           | **Fixed** — RWMutex guards all setters and reads                                                                                                   |
-| Tree re-parenting phantom edges                                  | **Fixed** — removeChild from old parent                                                                                                            |
-| DOT nodesep/ranksep injection                                    | **Fixed** — numeric validation                                                                                                                     |
-| DOT edge style attrs not escaped                                 | **Fixed** — escape.DOT applied                                                                                                                     |
-| `GetOperationSymbol` redundant Get prefix                        | **Fixed** — renamed to `OperationSymbol`                                                                                                           |
-| `TreeNode.Depth()` O(n) parent-chain walk                        | **Fixed** — cached field with subtree propagation                                                                                                  |
-| `d2.NodeStyle.Opacity` no bounds validation                      | **Fixed** — clamped to [0.0, 1.0]                                                                                                                  |
-| `ProgressStep.IsActive` allowed impossible state                 | **Fixed** — derived method from CompletedAt                                                                                                        |
-| `DisplayMode` stringly-typed                                     | **Fixed** — int enum with iota                                                                                                                     |
-| `tui/view.go` over 350-line limit                                | **Fixed** — split to render_nom.go                                                                                                                 |
-| `nom/inline_renderer.go` over 350-line limit                     | **Fixed** — split to inline_renderer_summary.go                                                                                                    |
-| Split-brain C1-C5, M1-M3, M9, m2                                 | **Fixed** — all resolved                                                                                                                           |
-| TUI reporter data race                                           | **Fixed** — reporter owns workflowState; all mutations via send() (TODO #22)                                                                       |
-| `RenderOptions.GraphID` dead code                                | **Removed** (TODO #13)                                                                                                                             |
-| `EdgeStyle.Style` free-form string                               | **Fixed** — typed `LineStyle` enum; field renamed to `Line` (TODO #27)                                                                             |
-| `GetActivityCounts()` 4 unnamed int returns                      | **Fixed** — returns `ActivityCounts` struct (TODO #28)                                                                                             |
-| `ColorModeAuto.ShouldColor()` not testable                       | **Fixed** — overridable detection vars; deterministic test (TODO #9)                                                                               |
-| `GraphShape` constants collide with `Shape` enum                 | **Fixed** — renamed to `NodeShape`/`NodeShapeBox` etc. (M5)                                                                                        |
-| `NodeStyle.FillColor`/`StrokeColor` diverge from d2.NodeStyle    | **Fixed** — renamed to `Fill`/`Stroke` (M8)                                                                                                        |
-| No bridge between D2Direction and RankDir                        | **Fixed** — added `output.Direction` (M7)                                                                                                          |
-| D2NodeID canonical import path undocumented                      | **Fixed** — doc comment added (M6)                                                                                                                 |
-| `Marshaler` terminology inconsistent with `Renderer`             | **Fixed** — renamed to `TableMarshaler`/`UnknownRenderer` (#12)                                                                                    |
-| M4: `Render()` name collision (InlineRenderer/DependencyTree)    | **Fixed** — `Draw()` / `RenderString`/`RenderWithWidth`; zero NOTE markers                                                                         |
-| `reflect` depguard violation in integration tests                | **Fixed** — replaced with `fmt.Sprintf("%T")` (no reflect import)                                                                                  |
-| Stale `getTableMarshaler` naming                                 | **Fixed** — renamed to `getTableMarshaler`/`getUnknownRenderer`                                                                                    |
-| Nom timing cache tests wrote to real `~/.cache`                  | **Fixed** — `newTempTimingCache(t)` isolates direct cache tests; `WithCachePath` + `newTestSubscriber(t)` isolate all subscriber/integration tests |
-| #8: `HandleError` → `Must` suggestion                            | **Won't-fix** — `HandleError` is honest; `Must` implies panic                                                                                      |
-| O8: `ActivityStore` YAGNI                                        | **Resolved** — removed as ghost system (155 LOC dead prod code)                                                                                    |
-| nom/tui/bdd/envdetect missing from CI                            | **Fixed** — added to all ci.yml + release.yml loops                                                                                                |
-| Dead fields on `Activity` (Dependencies, OperationType)          | **Fixed** — removed unused fields + methods                                                                                                        |
-| Stale `mustUpdateActivityStatus` comment + unused params         | **Fixed** — updated comment, dropped 3 unused params                                                                                               |
-| Lock-ordering protocol undocumented                              | **Fixed** — documented `ns.mu → tree.mu` on subscriberView.Edges()                                                                                 |
-| ADR 007 `tui/` migration status stale                            | **Fixed** — marked done (tests already use new types)                                                                                              |
-| Test files over 350-line limit                                   | **Fixed** — all split under 350 lines (incl. `render_tabledata_test.go` → `render_registry_test.go`)                                               |
-| No local govulncheck                                             | **Fixed** — added `nix run .#govulncheck` app                                                                                                      |
+- **6 concurrency bugs fixed** (appName race, write-lock-held-across-I/O, unsynchronized renderNotify, unbounded saveAsync goroutines, swallowed save errors, unsynchronized showParallelism)
+- **10 dead exported symbols deprecated then deleted** in v0.30.0
+- **5 split brains resolved** (MsgNoActivities unified, Colors global documented, Direction bridge documented)
+- **Draw() complexity** reduced (cyclop 20 → under 10 via decomposition)
+- **Dead-writer detection** added to InlineRenderer
+- **Build() cycle detection** added
 
----
+## Recently Resolved (earlier sessions)
 
-## Completed Earlier (Summary — details in git history)
+Details in CHANGELOG.md and git history.
 
-- **2026-06-18 v1 Preparation Sprint:** 11 TODO items resolved.
-- **2026-06-17 Split-Brain Sprint + Full Code Review:** 20 findings + 13 review items fixed.
-- **2026-06-15 Full Code Review:** BDD module added, zero lint achieved.
-- **2026-06-08 Architecture & Naming Sprint:** SlugifyID, escape optimization.
-- **2026-05-28 Round 6:** Footer row feature, API stability audit (ADR 006).
-- **2026-05-25 Modularization:** 16 formats, Shape matrix, zero transitive deps.
-
-## Resolved This Session (2026-06-22) — Pattern B Migration — Do Not Redo
-
-| Task                                                   | Resolution                                                                                                                                                                                  |
-| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Version-pin rot (stale sibling deps masked by replace) | **Fixed** — migrated to Pattern B (v0.0.0-00010101000000-000000000000 + replace). All 18 modules use zero sentinel for siblings. Only root + testhelpers retain real versions. See ADR 009. |
-| enum/ + envdetect/ sub-modules                         | **Merged into root** — `ParseEnum`, `ContainsEnum`, `IsCI`, `IsNoColor`, `CIEnvVars` now in `package output`. Directories deleted.                                                          |
-| CI workflows referencing deleted modules               | **Fixed** — removed enum/envdetect from ci.yml and release.yml module loops.                                                                                                                |
-| Dead test code after Pattern B migration               | **Removed** — `testing_errorwriter_test.go` deleted, `ExpectedOutput`/`assertContains` removed from `output_test_helpers_test.go`.                                                          |
-| Dead .golangci.yml entries for enum/envdetect          | **Removed** — depguard allow-list, replace-allow-list, path exclusions all cleaned.                                                                                                         |
+- Pattern B versioning migration (all sibling deps use v0.0.0 sentinel + replace)
+- enum/ + envdetect/ merged into root
+- NOM BuildFlow integration (ActivityProgress, ActivityRetrying, EstimatedTotalRemaining)
+- DAG topology overhaul (true DAG, layered display, critical-path analysis)
+- Theme system, activity categories, parallelism meter, status registry
+- daghtml module (zero-dep SVG DAG visualization)
+- Split-brain elimination (20/20 findings resolved)
+- FormatDuration bug fix, escaping vulnerability fixes, branded IDs, sealed Event sum type

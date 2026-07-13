@@ -260,9 +260,9 @@ Then import what you need. The `replace` directives in each module's `go.mod` re
 | `xml`      |  ✅   |      |       | markup        | Structured `<table>` with XML escaping                  |
 | `html`     |  ✅   |  ✅  |       | markup        | Styled tables + collapsible trees                       |
 | `asciidoc` |  ✅   |      |       | markup        | `\|===` borders with pipe escaping                      |
-| `markdown` |  ✅   |      |       | root          | Auto column widths, alignment, bold headers             |
+| `markdown` |  ✅   |      |       | markdown      | Auto column widths, alignment, bold headers             |
 | `table`    |  ✅   |      |       | table         | Lipgloss terminal tables with rounded borders           |
-| `tree`     |       |  ✅  |       | root          | ASCII box-drawing (`├──`, `└──`) with color cycling     |
+| `tree`     |       |  ✅  |       | tree          | ASCII box-drawing (`├──`, `└──`) with color cycling     |
 | `d2`       |  ✅   |      |  ✅   | d2            | SQL tables, 20 node shapes, grid layouts, style classes |
 | `mermaid`  |  ✅   |      |  ✅   | graph         | Flowcharts with 8 node shapes                           |
 | `dot`      |  ✅   |      |  ✅   | graph         | Graphviz directed graphs                                |
@@ -405,7 +405,7 @@ out, _ = mmd.Render()
 
 // D2 diagrams with SQL tables (requires go-output/d2)
 diagram := d2.NewDiagram().
-    AddNodeWithShape("api", "API Gateway", d2.D2ShapeHexagon).
+    AddNodeWithShape("api", "API Gateway", d2.ShapeHexagon).
     AddEdgeSimple("api", "backend")
 out, _ = diagram.Render()
 ```
@@ -415,11 +415,11 @@ out, _ = diagram.Render()
 SQL tables, constraints, grid layouts, and nested containers:
 
 ```go
-table := d2.D2Table{
+table := d2.Table{
     Name: "users",
-    Columns: []d2.D2Column{
-        {Name: "id", Type: "INT", Constraint: d2.D2ConstraintPrimary},
-        {Name: "email", Type: "VARCHAR(255)", Constraint: d2.D2ConstraintUnique},
+    Columns: []d2.Column{
+        {Name: "id", Type: "INT", Constraint: d2.ConstraintPrimary},
+        {Name: "email", Type: "VARCHAR(255)", Constraint: d2.ConstraintUnique},
     },
 }
 
@@ -443,7 +443,7 @@ plantuml := plantuml.NewPlantUMLFromTable(data)
 d2Diagram := d2.NewD2FromTable(data)
 
 // Table → Tree (hierarchical from tabular data; requires go-output/tree)
-tree := tree.NewTreeRendererFromTable(data)
+tree := tree.TreeRendererFromTable(data)
 
 // Tree → Graph
 d2Diagram := d2.NewD2FromTree(root)
@@ -628,7 +628,7 @@ if format.IsValid() {
 allowed := format.AllowedValues() // ["table", "json", "csv", ...]
 ```
 
-Available enums: `Format` (16 values), `Shape` (3 values), `ColorMode` (auto/always/never), `NodeShape` (8 shapes), `D2NodeShape` (20 shapes), `D2ArrowType` (11 types), `D2Constraint` (3 constraints), `Alignment` (left/right/center).
+Available enums: `Format` (16 values), `Shape` (3 values), `ColorMode` (auto/always/never), `NodeShape` (7 shapes), `d2.NodeShape` (20 shapes), `d2.ArrowType` (11 types), `d2.Constraint` (3 constraints), `Alignment` (left/right/center).
 
 ---
 
@@ -728,13 +728,16 @@ go run ./examples/basic table --color never    # no colors
 
 Other examples:
 
-| Example                    | What it demonstrates                                    |
-| -------------------------- | ------------------------------------------------------- |
-| `examples/basic/`          | All 16 formats with a `Project` dataset                 |
-| `examples/nom_progress/`   | NOM workflow events, dependency trees, activity counts  |
-| `examples/tui_progress/`   | Bubble Tea TUI with step reporting and NOM display mode |
-| `examples/d2/`             | D2 microservice architecture with SQL tables and shapes |
-| `examples/diagram_export/` | Export NOM live state as DOT/Mermaid diagrams           |
+| Example                         | What it demonstrates                                    |
+| ------------------------------- | ------------------------------------------------------- |
+| `examples/basic/`               | All 16 formats with a `Project` dataset                 |
+| `examples/cqrs/`                | CQRS Build→Freeze→Render pipeline for all 3 data shapes |
+| `examples/nom_progress/`        | NOM workflow events, dependency trees, activity counts  |
+| `examples/nom_inline_renderer/` | Live InlineRenderer terminal output                     |
+| `examples/nom_dag/`             | Layered mode, categories, themes, DAG export            |
+| `examples/tui_progress/`        | Bubble Tea TUI with step reporting and NOM display mode |
+| `examples/d2/`                  | D2 microservice architecture with SQL tables and shapes |
+| `examples/diagram_export/`      | Export NOM live state as DOT/Mermaid diagrams           |
 
 ---
 

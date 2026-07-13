@@ -75,21 +75,21 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 
 ## Type-Safe Enums
 
-| Feature               | Status           | Notes                                                                                                                                           |
-| --------------------- | ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Format enum**       | FULLY_FUNCTIONAL | 16 format constants. `ParseFormat()`, `String()`, `IsValid()`, `AllowedValues()`                                                                |
-| **Shape enum**        | FULLY_FUNCTIONAL | 3 shape constants. `ParseShape()`, `String()`, `IsValid()`, `AllowedValues()`                                                                   |
-| **ColorMode enum**    | FULLY_FUNCTIONAL | `auto`, `always`, `never`. `ParseColorMode()`, `ShouldColor()`. Wired into table, tree, markdown renderers                                      |
-| **SortBy enum**       | REMOVED          | Deleted — zero external callers. Use `slices.SortStableFunc` + `cmp.Compare` (stdlib)                                                           |
-| **NodeShape enum**    | FULLY_FUNCTIONAL | 8 node shapes (box, ellipse, diamond, circle, cylinder, hexagon, parallelogram, rect)                                                           |
-| **D2Direction enum**  | FULLY_FUNCTIONAL | 4 directions (down, right, left, up). Default is down                                                                                           |
-| **D2NodeShape enum**  | FULLY_FUNCTIONAL | 20 shapes (rectangle, circle, diamond, hexagon, cloud, person, queue, sql_table, class, code, etc.)                                             |
-| **D2ArrowType enum**  | FULLY_FUNCTIONAL | 11 arrow types (arrow, triangle, diamond, circle, filled, box, cross, CF variants)                                                              |
-| **D2Constraint enum** | FULLY_FUNCTIONAL | 3 SQL constraints (primary_key, foreign_key, unique)                                                                                            |
-| **Alignment enum**    | FULLY_FUNCTIONAL | Markdown column alignment: left, right, center                                                                                                  |
-| **enum utilities**    | FULLY_FUNCTIONAL | `ParseEnum[T]()`, `ContainsEnum[T]()`, `EnumAllowedValues[T]()`, `EnumAllowedStrings[T]()`. Now in root (merged from former `enum/` sub-module) |
-| **FormatCategory**    | REMOVED          | Replaced by `Shape`. `IsTableFormat()`, `IsTreeFormat()`, `IsGraphFormat()`, `Category()` removed                                               |
-| **OutputFormat**      | REMOVED          | Type alias for `Format`. All `OutputFormat*` constants removed                                                                                  |
+| Feature                  | Status           | Notes                                                                                                                                           |
+| ------------------------ | ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Format enum**          | FULLY_FUNCTIONAL | 16 format constants. `ParseFormat()`, `String()`, `IsValid()`, `AllowedValues()`                                                                |
+| **Shape enum**           | FULLY_FUNCTIONAL | 3 shape constants. `ParseShape()`, `String()`, `IsValid()`, `AllowedValues()`                                                                   |
+| **ColorMode enum**       | FULLY_FUNCTIONAL | `auto`, `always`, `never`. `ParseColorMode()`, `ShouldColor()`. Wired into table, tree, markdown renderers                                      |
+| **SortBy enum**          | REMOVED          | Deleted — zero external callers. Use `slices.SortStableFunc` + `cmp.Compare` (stdlib)                                                           |
+| **NodeShape enum**       | FULLY_FUNCTIONAL | 7 node shapes (box, ellipse, diamond, circle, cylinder, hexagon, parallelogram)                                                                 |
+| **Direction enum (d2)**  | FULLY_FUNCTIONAL | 4 directions (down, right, left, up). Default is down (`d2.Direction`)                                                                          |
+| **NodeShape enum (d2)**  | FULLY_FUNCTIONAL | 20 shapes (rectangle, circle, diamond, hexagon, cloud, person, queue, sql_table, class, code, etc.) (`d2.NodeShape`)                            |
+| **ArrowType enum (d2)**  | FULLY_FUNCTIONAL | 11 arrow types (arrow, triangle, diamond, circle, filled, box, cross, CF variants) (`d2.ArrowType`)                                             |
+| **Constraint enum (d2)** | FULLY_FUNCTIONAL | 3 SQL constraints (primary_key, foreign_key, unique) (`d2.Constraint`)                                                                          |
+| **Alignment enum**       | FULLY_FUNCTIONAL | Markdown column alignment: left, right, center                                                                                                  |
+| **enum utilities**       | FULLY_FUNCTIONAL | `ParseEnum[T]()`, `ContainsEnum[T]()`, `EnumAllowedValues[T]()`, `EnumAllowedStrings[T]()`. Now in root (merged from former `enum/` sub-module) |
+| **FormatCategory**       | REMOVED          | Replaced by `Shape`. `IsTableFormat()`, `IsTreeFormat()`, `IsGraphFormat()`, `Category()` removed                                               |
+| **OutputFormat**         | REMOVED          | Type alias for `Format`. All `OutputFormat*` constants removed                                                                                  |
 
 ---
 
@@ -108,7 +108,7 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 
 | Feature                | Status           | Notes                                                                                                                                 |
 | ---------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| **Table → Graph**      | FULLY_FUNCTIONAL | `D2FromTable()`, `DOTFromTable()`, `MermaidFromTable()`, `PlantUMLFromTable()`, `NodesFromTable()`                                    |
+| **Table → Graph**      | FULLY_FUNCTIONAL | `NewD2FromTable()`, `NewDOTFromTable()`, `NewMermaidFromTable()`, `NewPlantUMLFromTable()`, `NodesFromTable()`                        |
 | **Table → Tree**       | FULLY_FUNCTIONAL | `TreeRendererFromTable()` creates hierarchical tree from tabular data                                                                 |
 | **Tree → Graph**       | FULLY_FUNCTIONAL | `NewD2FromTree()`, `NewDOTFromTree()`, `NewMermaidFromTree()`, `NewPlantUMLFromTree()`. Generic `AddTreeNodes()` for custom renderers |
 | **GraphNode → D2Node** | FULLY_FUNCTIONAL | `graphNodeToD2()`, `graphEdgeToD2()`, `graphShapeToD2()` — automatic type mapping for `SetNodes()`/`SetEdges()`                       |
@@ -181,13 +181,13 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 
 ## Registry System
 
-| Feature                 | Status  | Notes                                                                                |
-| ----------------------- | ------- | ------------------------------------------------------------------------------------ |
-| **Register()**          | REMOVED | Deprecated renderer registry deleted. Use direct constructors (`d2.Newd2.Diagram()`) |
-| **Create()**            | REMOVED | Removed with registry. Use format-specific constructors                              |
-| **Unregister()**        | REMOVED | Removed with registry                                                                |
-| **RegisteredFormats()** | REMOVED | Removed with registry                                                                |
-| **IsRegistered()**      | REMOVED | Removed with registry                                                                |
+| Feature                 | Status  | Notes                                                                             |
+| ----------------------- | ------- | --------------------------------------------------------------------------------- |
+| **Register()**          | REMOVED | Deprecated renderer registry deleted. Use direct constructors (`d2.NewDiagram()`) |
+| **Create()**            | REMOVED | Removed with registry. Use format-specific constructors                           |
+| **Unregister()**        | REMOVED | Removed with registry                                                             |
+| **RegisteredFormats()** | REMOVED | Removed with registry                                                             |
+| **IsRegistered()**      | REMOVED | Removed with registry                                                             |
 
 ---
 
@@ -240,7 +240,7 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 | **TimingCache**                      | FULLY_FUNCTIONAL | Persists activity durations as CSV at `~/.cache/nom-timing.csv`. Serialized saves (saveMu), caps 10 entries/activity, applies cap on load                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | **ActivityStatus enum**              | FULLY_FUNCTIONAL | 4 states: Pending, Running, Completed, Failed (with symbol/color mapping; shape projected at subscriberView.Nodes() export boundary)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | **Nom ID/Name types**                | FULLY_FUNCTIONAL | `ActivityID`, `ActivityName`, `WorkflowID`, `WorkflowName` — named types over `string` with constructors + `String()`/`IsZero()`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| **Sealed Event sum type**            | FULLY_FUNCTIONAL | `Event` interface with unexported `isEvent()` marker; 7 concrete structs (`WorkflowStarted`, `ActivityCompleted`, …). Exhaustive type switch replaces string dispatch — event-routing typos are compile errors                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| **Sealed Event sum type**            | FULLY_FUNCTIONAL | `Event` interface with unexported `isEvent()` marker; 9 concrete structs (`WorkflowStarted`, `ActivityCompleted`, `ActivityProgress`, `ActivityRetrying`, …). Exhaustive type switch replaces string dispatch — event-routing typos are compile errors                                                                                                                                                                                                                                                                                                                                                                                        |
 | **ActivityKind**                     | FULLY_FUNCTIONAL | `ActivityKindTask` / `ActivityKindPhase` — set at construction via `NewPhase(id, name)`. Replaces the deleted `"phase:"` ID-prefix convention. Threaded through `ActivitySnapshot.IsPhase()`                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | **Event accessor interfaces**        | REMOVED          | Deleted in v0.17.0. `WorkflowEventAccessor`, `ActivityEventAccessor`, `DurationAccessor`, `ErrorAccessor`, `DependenciesAccessor`, `HostAccessor`, `DownloadAccessor`, `KindAccessor` — all replaced by the sealed `Event` sum type (handlers read fields directly via type switch)                                                                                                                                                                                                                                                                                                                                                           |
 | **Activity symbols**                 | FULLY_FUNCTIONAL | `SymbolRunning`, `SymbolCompleted`, `SymbolFailed`, `SymbolPending`, `SymbolDownload`, `SymbolUpload`, `SymbolAverage`, `SymbolTotal`, `SymbolPhase`, `SymbolProgress`, `SymbolRetrying`                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
@@ -273,43 +273,44 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 
 ## Testing Infrastructure
 
-| Feature                 | Status                | Notes                                                                                                                                                                                                                                                                                                                                                            |
-| ----------------------- | --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **testhelpers package** | FULLY_FUNCTIONAL      | Zero-dep, publicly importable. `AssertStringSliceEqual()`, `AssertContains()`, `AssertEqual[T]()`, `TestEnumIsValid[T]()`, `TestStructFields()`, `StringField()`, `IntField()`                                                                                                                                                                                   |
-| **Fuzz tests**          | FULLY_FUNCTIONAL      | `FuzzMarkdownTable` — seed corpus + coverage-guided fuzzing                                                                                                                                                                                                                                                                                                      |
-| **Benchmarks**          | FULLY_FUNCTIONAL      | `BenchmarkASCIITreeRenderer`, `BenchmarkHTMLRenderer`, `BenchmarkMermaidRenderer`, `BenchmarkDOTRenderer`, `BenchmarkCSVWriter`, `BenchmarkMarkdownTableColored`, `BenchmarkMarkdownTableWithFooter`, `BenchmarkTableCreateRowEdges`, `RenderUnderStepChurn`, `SnapshotActivities_Parallel`, `InlineRenderer_Draw`, `DrawWithChurn` (NOM render-lock contention) |
-| **Integration tests**   | FULLY_FUNCTIONAL      | Cross-module tests in `integration/` package. Tests all 16 formats, streaming, tree depth, edge creation, large datasets                                                                                                                                                                                                                                         |
-| **User journey tests**  | FULLY_FUNCTIONAL      | End-to-end tests simulating CLI developer workflows in `userjourney_test.go`                                                                                                                                                                                                                                                                                     |
-|                         | **VT emulator tests** | FULLY_FUNCTIONAL                                                                                                                                                                                                                                                                                                                                                 | `nom/vttest_test.go` — feeds InlineRenderer output to a real VT emulator (`x/vt`), asserts on screen buffer (10 tests: cursor hide/show, redraw, ghost-line cleanup, sync-output 2026, frame diffing) |
-|                         | **teatest E2E**       | FULLY_FUNCTIONAL                                                                                                                                                                                                                                                                                                                                                 | `tui/teatest_helpers_test.go` — drives the real Bubble Tea program loop via `teatest/v2` (7 tests: startup, scroll, help toggle, quit, ctrl+c, WindowSizeMsg)                                         |
-|                         | **Golden-file tests** | FULLY_FUNCTIONAL                                                                                                                                                                                                                                                                                                                                                 | Snapshot testing in `nom/` (5 tests), `table/` (4 tests: basic, footer, single-col, empty), `tree/` (4 tests: simple, deep, single, mixed). Update with `go test -update`                             |
+| Feature                 | Status           | Notes                                                                                                                                                                                                                                                                                                                                                            |
+| ----------------------- | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **testhelpers package** | FULLY_FUNCTIONAL | Zero-dep, publicly importable. `AssertStringSliceEqual()`, `AssertContains()`, `AssertEqual[T]()`, `TestEnumIsValid[T]()`, `TestStructFields()`, `StringField()`, `IntField()`                                                                                                                                                                                   |
+| **Fuzz tests**          | FULLY_FUNCTIONAL | `FuzzMarkdownTable` — seed corpus + coverage-guided fuzzing                                                                                                                                                                                                                                                                                                      |
+| **Benchmarks**          | FULLY_FUNCTIONAL | `BenchmarkASCIITreeRenderer`, `BenchmarkHTMLRenderer`, `BenchmarkMermaidRenderer`, `BenchmarkDOTRenderer`, `BenchmarkCSVWriter`, `BenchmarkMarkdownTableColored`, `BenchmarkMarkdownTableWithFooter`, `BenchmarkTableCreateRowEdges`, `RenderUnderStepChurn`, `SnapshotActivities_Parallel`, `InlineRenderer_Draw`, `DrawWithChurn` (NOM render-lock contention) |
+| **Integration tests**   | FULLY_FUNCTIONAL | Cross-module tests in `integration/` package. Tests all 16 formats, streaming, tree depth, edge creation, large datasets                                                                                                                                                                                                                                         |
+| **User journey tests**  | FULLY_FUNCTIONAL | End-to-end tests simulating CLI developer workflows in `userjourney_test.go`                                                                                                                                                                                                                                                                                     |
+| **VT emulator tests**   | FULLY_FUNCTIONAL | `nom/vttest_test.go` — feeds InlineRenderer output to a real VT emulator (`x/vt`), asserts on screen buffer (10 tests: cursor hide/show, redraw, ghost-line cleanup, sync-output 2026, frame diffing)                                                                                                                                                            |
+| **teatest E2E**         | FULLY_FUNCTIONAL | `tui/teatest_helpers_test.go` — drives the real Bubble Tea program loop via `teatest/v2` (7 tests: startup, scroll, help toggle, quit, ctrl+c, WindowSizeMsg)                                                                                                                                                                                                    |
+| **Golden-file tests**   | FULLY_FUNCTIONAL | Snapshot testing in `nom/` (5 tests), `table/` (4 tests), `tree/` (4 tests), `graph/` (4 tests), `d2/` (3 tests), `serialization/` (3 tests), `plantuml/` (2 tests). Update with `go test -update`                                                                                                                                                               |
 
 ---
 
 ## Multi-Module Architecture
 
-| Feature                            | Status           | Notes                                                                         |
-| ---------------------------------- | ---------------- | ----------------------------------------------------------------------------- |
-| **Root module** (`package output`) | FULLY_FUNCTIONAL | Core types, formatters, enum + envdetect utilities. Zero lipgloss dependency  |
-| **escape/**                        | FULLY_FUNCTIONAL | Format-specific escaping. Zero dependencies                                   |
-| **envdetect** (in root)            | FULLY_FUNCTIONAL | CI/NO_COLOR env detection (`IsCI()`, `IsNoColor()`). Merged into root         |
-| **testhelpers/**                   | FULLY_FUNCTIONAL | Shared test assertions. Zero dependencies, publicly importable                |
-| **testhelpers/graphtest/**         | FULLY_FUNCTIONAL | Shared graph test fixtures. Zero dependencies                                 |
-| **table/**                         | FULLY_FUNCTIONAL | Lipgloss terminal tables. Isolated from root module                           |
-| **markdown/**                      | FULLY_FUNCTIONAL | Markdown table renderer. Self-registers via `init()`. Zero deps beyond root   |
-| **tree/**                          | FULLY_FUNCTIONAL | ASCII tree renderer (box-drawing, color cycling). Self-registers via `init()` |
-| **integration/**                   | FULLY_FUNCTIONAL | Cross-module integration tests                                                |
-| **examples/**                      | FULLY_FUNCTIONAL | Working examples demonstrating all 16 formats                                 |
-| **bdd/**                           | FULLY_FUNCTIONAL | BDD test suite (Ginkgo/Gomega). Test-only module                              |
-| **delimited/**                     | FULLY_FUNCTIONAL | CSV/TSV writers and marshalers. Isolated from root module                     |
-| **d2/**                            | FULLY_FUNCTIONAL | D2 diagram builder. Isolated from root module                                 |
-| **graph/**                         | FULLY_FUNCTIONAL | DOT and Mermaid renderers. Isolated from root module                          |
-| **markup/**                        | FULLY_FUNCTIONAL | HTML, XML, AsciiDoc renderers. Isolated from root module                      |
-| **plantuml/**                      | FULLY_FUNCTIONAL | PlantUML diagram renderer. Isolated from root module                          |
-| **serialization/**                 | FULLY_FUNCTIONAL | JSON, YAML, TOML, JSONL renderers. Isolated from root module                  |
-| **nom/**                           | FULLY_FUNCTIONAL | NOM-style real-time progress (dependency trees, timing cache). Lipgloss-only  |
-| **tui/**                           | FULLY_FUNCTIONAL | Bubble Tea interactive TUI (depends on nom + bubbletea + lipgloss)            |
-| **go.work**                        | FULLY_FUNCTIONAL | Gitignored. `go.work.example` provided for local development                  |
+| Feature                            | Status           | Notes                                                                                                                          |
+| ---------------------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| **Root module** (`package output`) | FULLY_FUNCTIONAL | Core types, Format/Shape enums, registries, TreeNode, Graph state, Table, enum + envdetect utilities. Zero lipgloss dependency |
+| **daghtml/**                       | FULLY_FUNCTIONAL | Zero-dep interactive SVG DAG visualization for HTML. Independently publishable                                                 |
+| **escape/**                        | FULLY_FUNCTIONAL | Format-specific escaping. Zero dependencies                                                                                    |
+| **envdetect** (in root)            | FULLY_FUNCTIONAL | CI/NO_COLOR env detection (`IsCI()`, `IsNoColor()`). Merged into root                                                          |
+| **testhelpers/**                   | FULLY_FUNCTIONAL | Shared test assertions. Zero dependencies, publicly importable                                                                 |
+| **testhelpers/graphtest/**         | FULLY_FUNCTIONAL | Shared graph test fixtures. Zero dependencies                                                                                  |
+| **table/**                         | FULLY_FUNCTIONAL | Lipgloss terminal tables. Isolated from root module                                                                            |
+| **markdown/**                      | FULLY_FUNCTIONAL | Markdown table renderer. Self-registers via `init()`. Zero deps beyond root                                                    |
+| **tree/**                          | FULLY_FUNCTIONAL | ASCII tree renderer (box-drawing, color cycling). Self-registers via `init()`                                                  |
+| **integration/**                   | FULLY_FUNCTIONAL | Cross-module integration tests                                                                                                 |
+| **examples/**                      | FULLY_FUNCTIONAL | Working examples demonstrating all 16 formats                                                                                  |
+| **bdd/**                           | FULLY_FUNCTIONAL | BDD test suite (Ginkgo/Gomega). Test-only module                                                                               |
+| **delimited/**                     | FULLY_FUNCTIONAL | CSV/TSV writers and marshalers. Isolated from root module                                                                      |
+| **d2/**                            | FULLY_FUNCTIONAL | D2 diagram builder. Isolated from root module                                                                                  |
+| **graph/**                         | FULLY_FUNCTIONAL | DOT and Mermaid renderers. Isolated from root module                                                                           |
+| **markup/**                        | FULLY_FUNCTIONAL | HTML, XML, AsciiDoc renderers. Isolated from root module                                                                       |
+| **plantuml/**                      | FULLY_FUNCTIONAL | PlantUML diagram renderer. Isolated from root module                                                                           |
+| **serialization/**                 | FULLY_FUNCTIONAL | JSON, YAML, TOML, JSONL renderers. Isolated from root module                                                                   |
+| **nom/**                           | FULLY_FUNCTIONAL | NOM-style real-time progress (dependency trees, timing cache). Lipgloss-only                                                   |
+| **tui/**                           | FULLY_FUNCTIONAL | Bubble Tea interactive TUI (depends on nom + bubbletea + lipgloss)                                                             |
+| **go.work**                        | FULLY_FUNCTIONAL | Gitignored. `go.work.example` provided for local development                                                                   |
 
 ---
 
@@ -321,7 +322,7 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 | **Lint**              | FULLY_FUNCTIONAL | `golangci-lint` v2.12 across all modules                                                             |
 | **govulncheck**       | FULLY_FUNCTIONAL | Vulnerability scanning across all modules                                                            |
 | **go mod tidy check** | FULLY_FUNCTIONAL | Verifies all module `go.mod` files are tidy                                                          |
-| **Nix flake**         | FULLY_FUNCTIONAL | Dev shell with Go 1.26.3, golangci-lint, gopls. Uses `flake-parts` + `treefmt-nix` + `git-hooks.nix` |
+| **Nix flake**         | FULLY_FUNCTIONAL | Dev shell with Go 1.26.4, golangci-lint, gopls. Uses `flake-parts` + `treefmt-nix` + `git-hooks.nix` |
 | **Pre-commit hooks**  | FULLY_FUNCTIONAL | Auto-installed via `nix develop`. Also `.pre-commit-config.yaml` for non-Nix users                   |
 
 ---
@@ -341,6 +342,10 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 | **ADR 006**                | FULLY_FUNCTIONAL | Pre-v1 API stability guarantees                            |
 | **ADR 007**                | FULLY_FUNCTIONAL | nom composition via root types                             |
 | **ADR 008**                | FULLY_FUNCTIONAL | Dedup workflow decision (art-dupl threshold + checklist)   |
+| **ADR 009**                | FULLY_FUNCTIONAL | Pattern B versioning (committed replace + v0.0.0 sentinel) |
+| **ADR 010**                | FULLY_FUNCTIONAL | DAG topology design                                        |
+| **ADR 011**                | FULLY_FUNCTIONAL | Status registry extensibility                              |
+| **ADR 012**                | FULLY_FUNCTIONAL | CQRS streaming + registry rewire decision                  |
 | **RELEASE.md**             | FULLY_FUNCTIONAL | Release process for 18-module mono-version workspace       |
 | **ROADMAP.md**             | FULLY_FUNCTIONAL | Long-term direction and raw ideas                          |
 | **DOMAIN_LANGUAGE.md**     | FULLY_FUNCTIONAL | Domain vocabulary                                          |
@@ -359,7 +364,7 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 
 ---
 
-**Last audited:** 2026-07-02
+**Last audited:** 2026-07-13
 **Total features:** 173
 **Fully functional:** 161
 **Partially functional:** 0

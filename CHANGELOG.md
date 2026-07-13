@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.30.4] - 2026-07-12
+
+### Fixed
+
+- **all modules** — Fixed internal version references for Go module proxy resolution.
+
+## [0.30.3] - 2026-07-12
+
+### Fixed
+
+- **all modules** — Replaced zero pseudo-versions with real published versions in all go.mod files and used v0.30.3 consistently for internal go-output dependencies.
+
 ## [0.30.2] - 2026-07-11
 
 ### Fixed
