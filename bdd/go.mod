@@ -3,9 +3,9 @@ module github.com/larsartmann/go-output/bdd
 go 1.26.4
 
 require (
-	github.com/larsartmann/go-output v0.30.4
-	github.com/larsartmann/go-output/delimited v0.30.4
-	github.com/larsartmann/go-output/serialization v0.30.4
+	github.com/larsartmann/go-output v0.0.0-00010101000000-000000000000
+	github.com/larsartmann/go-output/delimited v0.0.0-00010101000000-000000000000
+	github.com/larsartmann/go-output/serialization v0.0.0-00010101000000-000000000000
 	github.com/onsi/ginkgo/v2 v2.32.0
 	github.com/onsi/gomega v1.42.1
 )
@@ -28,8 +28,8 @@ require (
 	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/google/pprof v0.0.0-20260604005048-7023385849c0 // indirect
 	github.com/larsartmann/go-branded-id v0.3.1 // indirect
-	github.com/larsartmann/go-output/markdown v0.30.4
-	github.com/larsartmann/go-output/tree v0.30.4
+	github.com/larsartmann/go-output/markdown v0.0.0-00010101000000-000000000000
+	github.com/larsartmann/go-output/tree v0.0.0-00010101000000-000000000000
 	github.com/pelletier/go-toml/v2 v2.4.3 // indirect
 	github.com/segmentio/asm v1.2.1 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
