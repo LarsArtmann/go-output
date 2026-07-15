@@ -9,6 +9,7 @@ on:
 env:
   GO_VERSION: "1.26"
   GOLANGCI_LINT_VERSION: v2.12
+  GOEXPERIMENT: jsonv2
 
 jobs:
   build-and-test:
@@ -118,13 +119,13 @@ jobs:
           cache: true
 
       - name: Install art-dupl
-        run: go install github.com/art-data/dupl@latest
+        run: go install github.com/LarsArtmann/art-dupl/cmd/art-dupl@latest
 
       - name: Check for harmful code duplication
         run: |
           # Threshold t=50: only egregious duplication surfaces.
           # See ADR 008 for the dedup workflow and accepted patterns.
-          RESULT=$(find . -name '*.go' -not -path './vendor/*' | xargs dupl -t 50 2>/dev/null | wc -l)
+          RESULT=$(find . -name '*.go' -not -path './vendor/*' | xargs art-dupl -t 50 2>/dev/null | wc -l)
           if [ "$RESULT" -gt 0 ]; then
             echo "::warning::Found $RESULT lines of high-threshold duplication (t=50). Review needed."
           else
