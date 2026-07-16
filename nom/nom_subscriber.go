@@ -33,7 +33,7 @@ type NOMSubscriber struct {
 	workflowID   WorkflowID
 	workflowName WorkflowName
 	startTime    time.Time
-	// showParallelism enables the "parallel: N/M possible" segment in the
+	// showParallelism enables the "∥ N/M" segment in the
 	// inline renderer summary bar. Immutable after construction (set only
 	// by WithShowParallelism); safe to read without ns.mu.
 	showParallelism bool
@@ -114,7 +114,7 @@ func WithRenderMode(mode RenderMode) SubscriberOption {
 	}
 }
 
-// WithShowParallelism enables a "parallel: N/M possible" segment in the inline
+// WithShowParallelism enables a "∥ N/M" segment in the inline
 // renderer summary bar. Off by default to keep the summary compact.
 func WithShowParallelism() SubscriberOption {
 	return func(ns *NOMSubscriber) {
@@ -189,6 +189,15 @@ func detectAutoTheme() Theme {
 	}
 
 	return ThemeHighContrast
+}
+
+// GetThemeColors returns the subscriber's current theme colors (thread-safe).
+// Used by InlineRenderer.renderSummary to color the summary bar counts.
+func (ns *NOMSubscriber) GetThemeColors() SemanticColors {
+	ns.mu.RLock()
+	defer ns.mu.RUnlock()
+
+	return ns.theme.Colors
 }
 
 // WithTheme sets the visual theme used for status symbols and colors.

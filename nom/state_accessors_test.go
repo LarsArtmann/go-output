@@ -11,7 +11,7 @@ func TestParallelismStats_String(t *testing.T) {
 	t.Parallel()
 
 	ps := ParallelismStats{Running: 2, Possible: 5}
-	want := "parallel: 2/5 possible"
+	want := "∥ 2/5"
 
 	if got := ps.String(); got != want {
 		t.Errorf("ParallelismStats.String() = %q, want %q", got, want)
@@ -81,4 +81,31 @@ func TestNOMSubscriber_ParallelismStats_AllDone(t *testing.T) {
 	stats := ns.ParallelismStats()
 	testhelpers.AssertEqual(t, "Running", stats, stats.Running, 0)
 	testhelpers.AssertEqual(t, "Possible", stats, stats.Possible, 0)
+}
+
+func TestNOMSubscriber_GetThemeColors_Default(t *testing.T) {
+	t.Parallel()
+
+	ns := NewNOMSubscriber()
+	colors := ns.GetThemeColors()
+
+	if colors.Running != Colors.Running {
+		t.Errorf("default theme Running color mismatch: got %v want %v", colors.Running, Colors.Running)
+	}
+
+	if colors.Completed != Colors.Completed {
+		t.Errorf("default theme Completed color mismatch: got %v want %v", colors.Completed, Colors.Completed)
+	}
+}
+
+func TestNOMSubscriber_GetThemeColors_CustomTheme(t *testing.T) {
+	t.Parallel()
+
+	ns := NewNOMSubscriber(WithTheme(ThemeDracula))
+	colors := ns.GetThemeColors()
+
+	if colors.Running != ThemeDracula.Colors.Running {
+		t.Errorf("dracula theme Running color mismatch: got %v want %v",
+			colors.Running, ThemeDracula.Colors.Running)
+	}
 }

@@ -399,7 +399,7 @@ func (r *InlineRenderer) Draw() {
 
 	treeFrame := frame // tree content before summary is appended
 
-	summary := r.renderSummary(cfg.startTime)
+	summary := r.renderSummary(cfg.startTime, cfg.noColor)
 	if summary != "" {
 		frame += "\n" + summary
 	}

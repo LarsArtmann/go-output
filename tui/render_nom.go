@@ -159,7 +159,7 @@ func (m *ProgressModel) renderNOMSummaryBar() string {
 	counts := m.getActivityCounts()
 	elapsed := time.Since(m.startTime)
 	remaining := m.estimatedRemaining()
-	summary := buildNOMSummary(counts, elapsed, remaining)
+	summary := buildNOMSummary(counts, m.theme.Colors, elapsed, remaining)
 	baseStyle := createSummaryStyle(m.theme.Colors.Fallback)
 
 	switch m.workflowState {

@@ -10,6 +10,8 @@ import (
 	"testing"
 	"time"
 
+	"charm.land/lipgloss/v2"
+	"github.com/charmbracelet/colorprofile"
 	"github.com/charmbracelet/x/ansi"
 )
 
@@ -470,5 +472,107 @@ func TestInlineRenderer_SetMaxHeight_TakesEffect(t *testing.T) {
 	if cappedVisible >= fullVisible {
 		t.Errorf("SetMaxHeight(2) should show fewer activities than SetMaxHeight(20): "+
 			"capped=%d full=%d\ncapped:\n%q\nfull:\n%q", cappedVisible, fullVisible, capped, full)
+	}
+}
+
+func TestRenderSummary_ColoredEmitsANSI(t *testing.T) {
+	// NOT parallel: temporarily mutates global lipgloss.Writer.Profile.
+	oldProfile := lipgloss.Writer.Profile
+	lipgloss.Writer.Profile = colorprofile.ANSI
+
+	t.Cleanup(func() { lipgloss.Writer.Profile = oldProfile })
+
+	sub := newTestSubscriber(t)
+
+	ctx := context.Background()
+	_ = sendWorkflowStarted(sub, ctx, WorkflowID("wf-1"), "")
+	sendActivityStarted(t, sub, ctx, ActivityID("step1"), ActivityName("Step 1"))
+
+	renderer := NewInlineRenderer(sub, &bytes.Buffer{}, 20)
+
+	startTime := time.Now().Add(-5 * time.Second)
+	summary := renderer.renderSummary(startTime, false)
+
+	if !strings.Contains(summary, "\x1b[") {
+		t.Errorf("colored summary should contain ANSI SGR codes, got:\n%s", summary)
+	}
+
+	plain := stripANSI(summary)
+	if !strings.Contains(plain, "⏵1") {
+		t.Errorf("colored summary should contain running count after ANSI strip, got:\n%s", plain)
+	}
+
+	if !strings.Contains(plain, "%") {
+		t.Errorf("colored summary should contain completion percent, got:\n%s", plain)
+	}
+}
+
+func TestRenderSummary_PlainNoANSI(t *testing.T) {
+	t.Parallel()
+
+	sub := newTestSubscriber(t)
+
+	ctx := context.Background()
+	_ = sendWorkflowStarted(sub, ctx, WorkflowID("wf-1"), "")
+	sendActivityStarted(t, sub, ctx, ActivityID("step1"), ActivityName("Step 1"))
+
+	renderer := NewInlineRenderer(sub, &bytes.Buffer{}, 20)
+
+	startTime := time.Now().Add(-5 * time.Second)
+	summary := renderer.renderSummary(startTime, true)
+
+	if strings.Contains(summary, "\x1b[") {
+		t.Errorf("plain summary should NOT contain ANSI codes, got:\n%s", summary)
+	}
+
+	if !strings.Contains(summary, "⏵1") {
+		t.Errorf("plain summary should contain running count, got:\n%s", summary)
+	}
+}
+
+func TestRenderSummary_BorderWidthWithANSI(t *testing.T) {
+	// NOT parallel: temporarily mutates global lipgloss.Writer.Profile.
+	oldProfile := lipgloss.Writer.Profile
+	lipgloss.Writer.Profile = colorprofile.ANSI
+
+	t.Cleanup(func() { lipgloss.Writer.Profile = oldProfile })
+
+	sub := newTestSubscriber(t)
+
+	ctx := context.Background()
+	_ = sendWorkflowStarted(sub, ctx, WorkflowID("wf-1"), "")
+	sendActivityStarted(t, sub, ctx, ActivityID("a"), ActivityName("AAA"))
+	sendActivityStarted(t, sub, ctx, ActivityID("b"), ActivityName("BBB"))
+
+	renderer := NewInlineRenderer(sub, &bytes.Buffer{}, 20)
+
+	startTime := time.Now().Add(-5 * time.Second)
+
+	for _, tc := range []struct {
+		name    string
+		noColor bool
+	}{
+		{"colored", false},
+		{"plain", true},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			summary := renderer.renderSummary(startTime, tc.noColor)
+			lines := strings.Split(summary, "\n")
+
+			if len(lines) != 3 {
+				t.Fatalf("expected 3 lines, got %d", len(lines))
+			}
+
+			widths := make([]int, 3)
+			for i, line := range lines {
+				widths[i] = ansi.StringWidth(line)
+			}
+
+			if widths[0] != widths[1] || widths[1] != widths[2] {
+				t.Errorf("border lines should have equal visual width: top=%d mid=%d bot=%d"+
+					"\ntop: %q\nmid: %q\nbot: %q",
+					widths[0], widths[1], widths[2], lines[0], lines[1], lines[2])
+			}
+		})
 	}
 }

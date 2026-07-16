@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"charm.land/lipgloss/v2"
 	"github.com/charmbracelet/x/ansi"
 	"golang.org/x/term"
 )
@@ -91,37 +92,83 @@ func (r *InlineRenderer) effectiveMaxWidth() int {
 // renderSummary builds a one-line NOM-style summary bar. It takes the
 // already-snapshotted startTime so it does not re-acquire tickMu (Draw, its
 // only caller, already holds renderMu and snapshotted the full config).
-func (r *InlineRenderer) renderSummary(startTime time.Time) string {
+// When noColor is false, counts are colored + bold, secondary metrics are
+// faint, groups are separated by dim │, and the border box is dimmed.
+func (r *InlineRenderer) renderSummary(startTime time.Time, noColor bool) string {
 	counts := r.subscriber.GetActivityCounts()
 
-	var parts []string
+	faint := lipgloss.NewStyle().Faint(true)
+	bold := lipgloss.NewStyle().Bold(true)
 
-	countsStr := counts.Summary()
-	if countsStr != "" {
-		parts = append(parts, countsStr)
+	var groups []string
+
+	// PRIMARY: activity counts (colored + bold when color enabled).
+	if noColor {
+		if s := counts.Summary(); s != "" {
+			groups = append(groups, s)
+		}
+	} else {
+		if s := counts.SummaryColored(r.subscriber.GetThemeColors()); s != "" {
+			groups = append(groups, bold.Render(s))
+		}
 	}
 
+	// SECONDARY: elapsed time.
 	if !startTime.IsZero() {
-		elapsed := time.Since(startTime)
-		parts = append(parts, FormatDuration(elapsed))
+		elapsed := FormatDuration(time.Since(startTime))
+		if noColor {
+			groups = append(groups, elapsed)
+		} else {
+			groups = append(groups, faint.Render(elapsed))
+		}
 	}
 
-	parts = append(parts, r.optionalSummarySegments(startTime)...)
+	// SECONDARY: optional segments (ETA, critical path, parallelism, DAG summary).
+	for _, seg := range r.optionalSummarySegments(startTime) {
+		if noColor {
+			groups = append(groups, seg)
+		} else {
+			groups = append(groups, faint.Render(seg))
+		}
+	}
 
-	if len(parts) == 0 {
+	if len(groups) == 0 {
 		return ""
 	}
 
-	summary := strings.Join(parts, " ") + fmt.Sprintf(" %s%d", SymbolTotal, counts.Total())
-
+	// SECONDARY: total count + completion percent.
+	totalStr := fmt.Sprintf("%s%d", SymbolTotal, counts.Total())
 	if counts.Total() > 0 {
-		summary += fmt.Sprintf(" (%d%%)", counts.CompletionPercent())
+		totalStr += fmt.Sprintf(" (%d%%)", counts.CompletionPercent())
+	}
+
+	if noColor {
+		groups = append(groups, totalStr)
+	} else {
+		groups = append(groups, faint.Render(totalStr))
+	}
+
+	// Join groups — dim │ separator between groups when colored.
+	var summary string
+	if noColor {
+		summary = strings.Join(groups, " ")
+	} else {
+		summary = strings.Join(groups, " "+faint.Render("│")+" ")
 	}
 
 	visualWidth := ansi.StringWidth(summary)
 	border := strings.Repeat("─", max(visualWidth+2, 3))
 
-	return fmt.Sprintf("╭%s╮\n│ %s │\n╰%s╯", border, summary, border)
+	if noColor {
+		return fmt.Sprintf("╭%s╮\n│ %s │\n╰%s╯", border, summary, border)
+	}
+
+	// Colored mode: dim border characters, summary keeps its own styling.
+	topLine := faint.Render("╭" + border + "╮")
+	sideBar := faint.Render("│")
+	botLine := faint.Render("╰" + border + "╯")
+
+	return topLine + "\n" + sideBar + " " + summary + " " + sideBar + "\n" + botLine
 }
 
 // optionalSummarySegments returns the optional summary bar segments: estimated

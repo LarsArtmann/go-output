@@ -73,7 +73,7 @@ func TestBuildNOMSummary(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			got := buildNOMSummary(tt.counts, tt.duration, tt.remaining)
+			got := buildNOMSummary(tt.counts, nom.Colors, tt.duration, tt.remaining)
 			if got == "" {
 				t.Error("expected non-empty summary")
 			}

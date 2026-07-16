@@ -12,9 +12,9 @@ type ParallelismStats struct {
 	Possible int
 }
 
-// String returns a compact display form like "parallel: 3/4 possible".
+// String returns a compact display form like "∥ 3/4".
 func (ps ParallelismStats) String() string {
-	return fmt.Sprintf("parallel: %d/%d possible", ps.Running, ps.Possible)
+	return fmt.Sprintf("∥ %d/%d", ps.Running, ps.Possible)
 }
 
 // RenderSnapshot takes a snapshot of all activity fields (thread-safe), then

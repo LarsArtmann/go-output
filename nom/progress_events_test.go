@@ -241,7 +241,7 @@ func TestEstimatedRemainingInSummary(t *testing.T) {
 		return 2 * time.Minute
 	})
 
-	summary := renderer.renderSummary(time.Now().Add(-10 * time.Second))
+	summary := renderer.renderSummary(time.Now().Add(-10*time.Second), true)
 
 	if !strings.Contains(summary, "~2m left") {
 		t.Errorf("summary missing '~2m left':\n%s", summary)
@@ -265,7 +265,7 @@ func TestEstimatedRemainingZero(t *testing.T) {
 		return 0
 	})
 
-	summary := renderer.renderSummary(time.Now().Add(-10 * time.Second))
+	summary := renderer.renderSummary(time.Now().Add(-10*time.Second), true)
 
 	if strings.Contains(summary, "left") {
 		t.Errorf("summary should not contain 'left' when remaining=0:\n%s", summary)
@@ -286,7 +286,7 @@ func TestEstimatedRemainingNil(t *testing.T) {
 	renderer := NewInlineRenderer(ns, &strings.Builder{}, 0)
 	renderer.SetStartTime(time.Now().Add(-10 * time.Second))
 
-	summary := renderer.renderSummary(time.Now().Add(-10 * time.Second))
+	summary := renderer.renderSummary(time.Now().Add(-10*time.Second), true)
 
 	if strings.Contains(summary, "left") {
 		t.Errorf("summary should not contain 'left' when callback is nil:\n%s", summary)

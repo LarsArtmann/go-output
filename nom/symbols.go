@@ -33,7 +33,7 @@ const (
 	// SymbolAverage represents average duration.
 	SymbolAverage Symbol = "∅"
 	// SymbolTotal represents total count/summary.
-	SymbolTotal Symbol = "∑"
+	SymbolTotal Symbol = "Σ"
 	// SymbolPhase represents a phase/group node in the tree.
 	SymbolPhase Symbol = "◈"
 	// SymbolRetrying represents a retry indicator.

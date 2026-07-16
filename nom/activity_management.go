@@ -3,6 +3,8 @@ package nom
 import (
 	"strconv"
 	"strings"
+
+	"charm.land/lipgloss/v2"
 )
 
 // ActivityCounts holds counts of activities grouped by status.
@@ -82,6 +84,37 @@ func (c ActivityCounts) Summary() string {
 	}
 
 	return strings.Join(parts, " ")
+}
+
+// SummaryColored renders the counts with lipgloss Foreground styling per status.
+// Each non-zero count gets its symbol and number colored according to the
+// provided SemanticColors palette. Zero counts are omitted, matching Summary().
+// Returns "" when all counts are zero.
+func (c ActivityCounts) SummaryColored(colors SemanticColors) string {
+	var parts []string
+
+	style := lipgloss.NewStyle()
+
+	if c.Running > 0 {
+		parts = append(parts, style.Foreground(colors.Running).Render(string(SymbolRunning)+strconv.Itoa(c.Running)))
+	}
+
+	if c.Completed > 0 {
+		parts = append(
+			parts,
+			style.Foreground(colors.Completed).Render(string(SymbolCompleted)+strconv.Itoa(c.Completed)),
+		)
+	}
+
+	if c.Failed > 0 {
+		parts = append(parts, style.Foreground(colors.Failed).Render(string(SymbolFailed)+strconv.Itoa(c.Failed)))
+	}
+
+	if c.Pending > 0 {
+		parts = append(parts, style.Foreground(colors.Pending).Render(string(SymbolPending)+strconv.Itoa(c.Pending)))
+	}
+
+	return strings.Join(parts, "  ")
 }
 
 // GetActivityCounts returns counts of activities by status.
