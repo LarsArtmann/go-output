@@ -1,7 +1,6 @@
 # go-output
 
 [![CI](https://github.com/larsartmann/go-output/actions/workflows/ci.yml/badge.svg)](https://github.com/larsartmann/go-output/actions/workflows/ci.yml)
-[![Go Report Card](https://goreportcard.com/badge/github.com/larsartmann/go-output)](https://goreportcard.com/report/github.com/larsartmann/go-output)
 [![Go Reference](https://pkg.go.dev/badge/github.com/larsartmann/go-output.svg)](https://pkg.go.dev/github.com/larsartmann/go-output)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 

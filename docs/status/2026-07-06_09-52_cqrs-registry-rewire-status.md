@@ -27,14 +27,15 @@
 **Decision: REWIRE.** `output.RenderTable(data, FormatJSON, opts)` now calls `serialization.WriteJSON(w, data)` — the same streaming code path.
 
 Rewired (6 formats):
-| Module | Format | Old path | New path |
-|--------|--------|----------|----------|
-| serialization/ | JSON | `renderViaRenderer(NewJSONTableRenderer())` | `WriteJSON(w, data)` |
-| serialization/ | YAML | `renderViaRenderer(NewYAMLTableRenderer())` | `WriteYAML(w, data)` |
-| serialization/ | TOML | `renderViaRenderer(NewTOMLTableRenderer())` | `WriteTOML(w, data)` |
-| serialization/ | JSONL | inline marshal loop | `WriteJSONL(w, data)` |
-| delimited/ | CSV | `renderDelimitedTable(MarshalCSVFromTable)` | `WriteCSV(w, data)` |
-| delimited/ | TSV | `renderDelimitedTable(MarshalTSVFromTable)` | `WriteTSV(w, data)` |
+
+| Module         | Format | Old path                                    | New path              |
+| -------------- | ------ | ------------------------------------------- | --------------------- |
+| serialization/ | JSON   | `renderViaRenderer(NewJSONTableRenderer())` | `WriteJSON(w, data)`  |
+| serialization/ | YAML   | `renderViaRenderer(NewYAMLTableRenderer())` | `WriteYAML(w, data)`  |
+| serialization/ | TOML   | `renderViaRenderer(NewTOMLTableRenderer())` | `WriteTOML(w, data)`  |
+| serialization/ | JSONL  | inline marshal loop                         | `WriteJSONL(w, data)` |
+| delimited/     | CSV    | `renderDelimitedTable(MarshalCSVFromTable)` | `WriteCSV(w, data)`   |
+| delimited/     | TSV    | `renderDelimitedTable(MarshalTSVFromTable)` | `WriteTSV(w, data)`   |
 
 Dead code removed:
 

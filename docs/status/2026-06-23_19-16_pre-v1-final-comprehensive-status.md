@@ -139,20 +139,20 @@ This session (2026-06-23) executed 14 skills, ran 3 rounds of brutal self-review
 
 ### Session Issues Found and Fixed
 
-| #   | Issue                                 | Severity    | Root Cause                                                                           | Fix                                                                             |
+| # | Issue | Severity | Root Cause | Fix |
 | --- | ------------------------------------- | ----------- | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------- | --- | ---------------------- |
-| 1   | **D2/DOT/Mermaid style injection**    | 🔴 Critical | `Fill`/`Stroke`/`FontColor` rendered raw — newlines could inject statements          | Applied `escape.D2()`/`escape.DOT()`/`escape.MermaidText()` to all style values |
-| 2   | **PlantUML style injection**          | 🔴 Critical | Same pattern — semicolons could inject attributes, newlines inject syntax            | Added `plantumlColorValue()` with `escape.PlantUML()` + semicolon replacement   |
-| 3   | **Opacity semantic bug**              | 🟡 Medium   | I changed `> 0` to `!= 0`, making "not set" indistinguishable from "0.0 (invisible)" | Reverted to `> 0`; kept clamping fix                                            |
-| 4   | **TUI data races**                    | 🔴 Critical | `SetCancelFunc`/`SetDisplayMode` wrote model fields without mutex                    | Added `pr.mu.Lock()`/`Unlock()`                                                 |
-| 5   | **Progress bar panic**                | 🔴 Critical | `strings.Repeat` with negative count on narrow terminals                             | Added `width < 1` guard                                                         |
-| 6   | **Step match bug**                    | 🟡 Medium   | `handleStepUpdate` matched wrong step via `isActive()`                               | Removed `                                                                       |     | m.steps[i].isActive()` |
-| 7   | **Total=0 instant completion**        | 🟡 Medium   | Step with `Total=0` marked complete immediately                                      | Added `Total > 0 &&` guard                                                      |
-| 8   | **Double "s" suffix**                 | 🟢 Low      | Summary templates had `{time}s` but time already included "s"                        | Removed redundant suffix                                                        |
-| 9   | **CODE_OF_CONDUCT.md deleted**        | 🟡 Medium   | BuildFlow pre-commit hook silently deletes it                                        | Restored from pre-deletion commit                                               |
-| 10  | **Stale scrollOffset on mode switch** | 🟡 Medium   | Field shared between NOM/Universal modes, never reset                                | `SetDisplayMode()` resets to 0                                                  |
-| 11  | **NodeShapeRect not deprecated**      | 🟢 Low      | Duplicate of `NodeShapeBox` with different string value                              | Added `// Deprecated:` + `//nolint:staticcheck`                                 |
-| 12  | **Half-strength injection tests**     | 🟡 Medium   | Tests only checked "raw doesn't leak" (negative assertion)                           | Added positive escape-sequence assertions                                       |
+| 1 | **D2/DOT/Mermaid style injection** | 🔴 Critical | `Fill`/`Stroke`/`FontColor` rendered raw — newlines could inject statements | Applied `escape.D2()`/`escape.DOT()`/`escape.MermaidText()` to all style values |
+| 2 | **PlantUML style injection** | 🔴 Critical | Same pattern — semicolons could inject attributes, newlines inject syntax | Added `plantumlColorValue()` with `escape.PlantUML()` + semicolon replacement |
+| 3 | **Opacity semantic bug** | 🟡 Medium | I changed `> 0` to `!= 0`, making "not set" indistinguishable from "0.0 (invisible)" | Reverted to `> 0`; kept clamping fix |
+| 4 | **TUI data races** | 🔴 Critical | `SetCancelFunc`/`SetDisplayMode` wrote model fields without mutex | Added `pr.mu.Lock()`/`Unlock()` |
+| 5 | **Progress bar panic** | 🔴 Critical | `strings.Repeat` with negative count on narrow terminals | Added `width < 1` guard |
+| 6 | **Step match bug** | 🟡 Medium | `handleStepUpdate` matched wrong step via `isActive()` | Removed `                                                                       |     | m.steps[i].isActive()` |
+| 7 | **Total=0 instant completion** | 🟡 Medium | Step with `Total=0` marked complete immediately | Added `Total > 0 &&` guard |
+| 8 | **Double "s" suffix** | 🟢 Low | Summary templates had `{time}s` but time already included "s" | Removed redundant suffix |
+| 9 | **CODE_OF_CONDUCT.md deleted** | 🟡 Medium | BuildFlow pre-commit hook silently deletes it | Restored from pre-deletion commit |
+| 10 | **Stale scrollOffset on mode switch** | 🟡 Medium | Field shared between NOM/Universal modes, never reset | `SetDisplayMode()` resets to 0 |
+| 11 | **NodeShapeRect not deprecated** | 🟢 Low | Duplicate of `NodeShapeBox` with different string value | Added `// Deprecated:` + `//nolint:staticcheck` |
+| 12 | **Half-strength injection tests** | 🟡 Medium | Tests only checked "raw doesn't leak" (negative assertion) | Added positive escape-sequence assertions |
 
 ### Pre-Session Issues (Already Fixed Before This Session)
 

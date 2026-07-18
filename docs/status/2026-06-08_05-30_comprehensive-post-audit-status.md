@@ -45,12 +45,12 @@ The project is in **excellent shape**. All 14 modules build, test (with race det
 
 ### Tier 2 — Optimizations & Architecture (pending commit)
 
-| Task                                         | Files                        | Impact                                             |
+| Task | Files | Impact |
 | -------------------------------------------- | ---------------------------- | -------------------------------------------------- | -------------------------------- |
-| `escape.D2` + `escape.MermaidText` optimized | `escape/escape.go`           | `strings.NewReplacer` — 1 allocation instead of 4  |
-| `NodesPtr`/`EdgesPtr` removed                | `graph.go`, 5 callers, tests | `AddNode`/`AddEdge` + `NodeEdgeAppender` interface |
-| AsciiDoc escaping completed                  | `markup/asciidoc.go`, tests  | Escapes `                                          | `, `\*`, `\_`, `` ` ``, `~`, `^` |
-| lipgloss style cached                        | `table/table.go`             | Base style allocated once, reused per-row          |
+| `escape.D2` + `escape.MermaidText` optimized | `escape/escape.go` | `strings.NewReplacer` — 1 allocation instead of 4 |
+| `NodesPtr`/`EdgesPtr` removed | `graph.go`, 5 callers, tests | `AddNode`/`AddEdge` + `NodeEdgeAppender` interface |
+| AsciiDoc escaping completed | `markup/asciidoc.go`, tests | Escapes `                                         |`, `\*`, `\_`, `` ` ``, `~`, `^` |
+| lipgloss style cached | `table/table.go` | Base style allocated once, reused per-row |
 
 ### Documentation Updates (pending commit)
 
@@ -199,13 +199,13 @@ Sorted by impact × effort (Pareto):
 
 ### P5 — Future Features (low priority)
 
-| #   | Task                                      | Effort      | Why                       |
+| # | Task | Effort | Why |
 | --- | ----------------------------------------- | ----------- | ------------------------- | -------------------------- |
-| 21  | Add `MermaidText` escaping for `          | ` character | 5 min                     | Pipes break Mermaid labels |
-| 22  | Add streaming CSV/TSV (row-by-row writer) | 30 min      | Completes streaming story |
-| 23  | Add `RenderOptions.Indent` for JSON/YAML  | 15 min      | User-requested feature    |
-| 24  | Post to r/golang, submit to Awesome Go    | 30 min      | Community growth          |
-| 25  | Tag v0.7.0 release                        | 10 min      | Ships all improvements    |
+| 21 | Add `MermaidText` escaping for `         |` character | 5 min | Pipes break Mermaid labels |
+| 22 | Add streaming CSV/TSV (row-by-row writer) | 30 min | Completes streaming story |
+| 23 | Add `RenderOptions.Indent` for JSON/YAML | 15 min | User-requested feature |
+| 24 | Post to r/golang, submit to Awesome Go | 30 min | Community growth |
+| 25 | Tag v0.7.0 release | 10 min | Ships all improvements |
 
 ---
 
