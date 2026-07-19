@@ -96,13 +96,7 @@ func TestHTMLFormatContent(t *testing.T) {
 	html.SetHeaders([]string{"Name", "Health"})
 	html.AddRow([]string{"Alpha", "90%"})
 
-	result, err := html.Render()
-	if err != nil {
-		t.Fatalf("Render() error = %v", err)
-	}
-
-	testhelpers.AssertContains(t, result, "<table", "HTML should contain table tag")
-	testhelpers.AssertContains(t, result, "Alpha", "HTML should contain project name 'Alpha'")
+	testhelpers.RenderAssert(t, html, "<table", "Alpha")
 }
 
 func TestHTMLFullPage(t *testing.T) {

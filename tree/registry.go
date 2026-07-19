@@ -22,10 +22,5 @@ func renderTreeTable(w io.Writer, data *output.Table, opts output.RenderOptions)
 		return fmt.Errorf("render tree: %w", err)
 	}
 
-	_, err = fmt.Fprintln(w, out)
-	if err != nil {
-		return fmt.Errorf("write tree output: %w", err)
-	}
-
-	return nil
+	return output.WriteRendered(w, "tree", out)
 }

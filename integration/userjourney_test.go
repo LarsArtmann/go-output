@@ -123,15 +123,8 @@ func TestRenderDataAsMarkdown(t *testing.T) {
 	md.SetHeaders([]string{"Name", "Health"})
 	md.AddRow([]string{"Alpha", "90%"})
 
-	mdStr, err := md.Render()
-	if err != nil {
-		t.Fatalf("Render() error = %v", err)
-	}
-
 	// Then: I get valid Markdown table
-	testhelpers.AssertContains(t, mdStr, "| Name", "Markdown should contain header row")
-	testhelpers.AssertContains(t, mdStr, "| Alpha", "Markdown should contain data row")
-	testhelpers.AssertContains(t, mdStr, "|----", "Markdown should contain separator")
+	testhelpers.RenderAssert(t, md, "| Name", "| Alpha", "|----")
 }
 
 // User Journey: CLI Developer wants to handle edge cases gracefully

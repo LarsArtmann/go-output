@@ -54,7 +54,7 @@ type YAMLGraphRenderer struct {
 // NewYAMLGraphRenderer creates a new YAMLGraphRenderer.
 func NewYAMLGraphRenderer() *YAMLGraphRenderer {
 	return &YAMLGraphRenderer{
-		GraphBuilder: output.NewGraphBuilder(),
+		GraphBuilder: *output.NewGraphBuilder(),
 	}
 }
 

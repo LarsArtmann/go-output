@@ -184,14 +184,18 @@ type EdgeStyle struct {
 	Line LineStyle
 }
 
-// AddNode appends a node to the graph.
-func (m *GraphBuilder) AddNode(node GraphNode) {
+// AddNode appends a node to the graph and returns the builder for chaining.
+func (m *GraphBuilder) AddNode(node GraphNode) *GraphBuilder {
 	m.nodes = append(m.nodes, node)
+
+	return m
 }
 
-// AddEdge appends an edge to the graph.
-func (m *GraphBuilder) AddEdge(edge GraphEdge) {
+// AddEdge appends an edge to the graph and returns the builder for chaining.
+func (m *GraphBuilder) AddEdge(edge GraphEdge) *GraphBuilder {
 	m.edges = append(m.edges, edge)
+
+	return m
 }
 
 // DedupEdges removes duplicate edges in-place. Two edges are considered
@@ -222,9 +226,12 @@ func (m *GraphBuilder) DedupEdges() {
 }
 
 // NodeEdgeAppender is implemented by types that can add nodes and edges.
+// The fluent return value enables chain construction
+// (New...Builder().AddNode(...).AddEdge(...).Build()) without losing the
+// implementation's own type.
 type NodeEdgeAppender interface {
-	AddNode(node GraphNode)
-	AddEdge(edge GraphEdge)
+	AddNode(node GraphNode) *GraphBuilder
+	AddEdge(edge GraphEdge) *GraphBuilder
 }
 
 // AddTreeNodes recursively adds tree nodes and edges to the provided appender.
@@ -268,8 +275,10 @@ type GraphBuilder struct {
 }
 
 // NewGraphBuilder creates a new GraphBuilder with initialized slices.
-func NewGraphBuilder() GraphBuilder {
-	return GraphBuilder{
+// Returns a pointer so call sites can chain (NewGraphBuilder().AddNode(...).
+// AddEdge(...).Build()) without taking an address.
+func NewGraphBuilder() *GraphBuilder {
+	return &GraphBuilder{
 		nodes: make([]GraphNode, 0),
 		edges: make([]GraphEdge, 0),
 	}

@@ -83,7 +83,7 @@ func TestAddTreeNodes(t *testing.T) {
 
 	m := NewGraphBuilder()
 	AddTreeNodes(
-		&m, root, "",
+		m, root, "",
 		func(n *TreeNode) string { return n.ID.Get() },
 		NodeShapeBox,
 	)

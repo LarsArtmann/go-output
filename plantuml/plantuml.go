@@ -28,7 +28,7 @@ type PlantUMLDiagram struct {
 // NewPlantUMLDiagram creates a new PlantUMLDiagram.
 func NewPlantUMLDiagram() *PlantUMLDiagram {
 	return &PlantUMLDiagram{
-		GraphBuilder: output.NewGraphBuilder(),
+		GraphBuilder: *output.NewGraphBuilder(),
 		diagramType:  "component",
 	}
 }

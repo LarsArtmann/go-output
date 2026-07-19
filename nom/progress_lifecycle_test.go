@@ -90,12 +90,7 @@ func TestResetClearsProgressAndRetry(t *testing.T) {
 func TestProgressClearedOnRetry(t *testing.T) {
 	t.Parallel()
 
-	ns := NewNOMSubscriber()
-	ctx := context.Background()
-
-	_ = ns.OnEvent(ctx, WorkflowStarted{ID: "wf", Name: "test"})
-	_ = ns.OnEvent(ctx, ActivityStarted{ID: "step", Name: "build"})
-	_ = ns.OnEvent(ctx, ActivityProgress{ID: "step", Name: "build", Message: "Attempt 1 progress"})
+	ns, ctx := setupProgressWith(t, "step", "build", "Attempt 1 progress")
 
 	// Verify progress is set.
 	snap := ns.SnapshotActivities()["step"]

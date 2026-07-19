@@ -32,12 +32,11 @@ func ExampleNewTreeBuilder() {
 
 //nolint:testableexamples // Demonstration example, output is dynamic
 func ExampleNewGraphBuilder() {
-	b := output.NewGraphBuilder()
-	b.AddNode(*output.NewGraphNode("a", "Alpha"))
-	b.AddNode(*output.NewGraphNode("b", "Beta"))
-	b.AddEdge(*output.NewGraphEdge("a", "b"))
-
-	g := b.Build()
+	g := output.NewGraphBuilder().
+		AddNode(*output.NewGraphNode("a", "Alpha")).
+		AddNode(*output.NewGraphNode("b", "Beta")).
+		AddEdge(*output.NewGraphEdge("a", "b")).
+		Build()
 
 	fmt.Printf("%d nodes, %d edges\n", len(g.Nodes()), len(g.Edges()))
 }
@@ -58,12 +57,11 @@ func ExampleTableToGraph() {
 
 //nolint:testableexamples // Demonstration example, output is dynamic
 func ExampleGraphToTree() {
-	b := output.NewGraphBuilder()
-	b.AddNode(*output.NewGraphNode("root", "Root"))
-	b.AddNode(*output.NewGraphNode("child", "Child"))
-	b.AddEdge(*output.NewGraphEdge("root", "child"))
-
-	g := b.Build()
+	g := output.NewGraphBuilder().
+		AddNode(*output.NewGraphNode("root", "Root")).
+		AddNode(*output.NewGraphNode("child", "Child")).
+		AddEdge(*output.NewGraphEdge("root", "child")).
+		Build()
 	root := output.GraphToTree(g)
 
 	fmt.Println(root.Label.Get())

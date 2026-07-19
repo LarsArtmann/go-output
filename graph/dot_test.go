@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/larsartmann/go-output"
+	"github.com/larsartmann/go-output/testhelpers"
 )
 
 //nolint:exhaustruct // Test files use partial struct initialization
@@ -51,13 +52,10 @@ func TestDOTRendererWithStyles(t *testing.T) {
 		},
 	})
 
-	out, err := renderer.Render()
-	if err != nil {
-		t.Fatalf("Render() error = %v", err)
-	}
-
-	assertContains(t, out, "shape=\"ellipse\"", "Output should contain shape attribute")
-	assertContains(t, out, "fillcolor=\"#ff0000\"", "Output should contain fillcolor")
+	testhelpers.RenderAssert(t, renderer,
+		`shape="ellipse"`,
+		`fillcolor="#ff0000"`,
+	)
 }
 
 func TestDOTRendererWithEdgeLabel(t *testing.T) {
@@ -201,13 +199,7 @@ func TestDOTRendererDefaultLayout(t *testing.T) {
 	renderer := NewDOTRenderer()
 	renderer.SetNodes(testNodesAB())
 
-	out, err := renderer.Render()
-	if err != nil {
-		t.Fatalf("Render() error = %v", err)
-	}
-
-	assertContains(t, out, "rankdir=TB", "Default rankdir should be TB")
-	assertContains(t, out, "splines=ortho", "Default splines should be ortho")
+	testhelpers.RenderAssert(t, renderer, "rankdir=TB", "splines=ortho")
 }
 
 func TestDOTRendererSetDirection(t *testing.T) {
@@ -300,11 +292,8 @@ func TestDOTNodeStyleEscapeOutput(t *testing.T) {
 		},
 	})
 
-	out, err := renderer.Render()
-	if err != nil {
-		t.Fatalf("Render() error = %v", err)
-	}
-
-	assertContains(t, out, `a\"b\\c`, "double quote and backslash should be escaped in fillcolor")
-	assertContains(t, out, `\nd`, "newline should become literal \\n in fillcolor")
+	testhelpers.RenderAssert(t, renderer,
+		`a\"b\\c`,
+		`\nd`,
+	)
 }

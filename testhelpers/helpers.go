@@ -43,6 +43,22 @@ func AssertAllContained(t *testing.T, haystack string, needles ...string) {
 	}
 }
 
+// RenderAssert renders r.Render() and asserts that the output contains each
+// of substrings. On Render error it calls t.Fatalf; on a missing substring it
+// is reported by AssertAllContained. This collapses the canonical
+// "out, err := Render(); if err...t.Fatalf; AssertContains xN" test idiom
+// into one call.
+func RenderAssert(t *testing.T, r Renderer, substrings ...string) {
+	t.Helper()
+
+	out, err := r.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
+	AssertAllContained(t, out, substrings...)
+}
+
 // AssertEqual checks that got equals want, failing with descriptive error.
 func AssertEqual[T comparable](t *testing.T, name string, input any, got, want T) {
 	t.Helper()

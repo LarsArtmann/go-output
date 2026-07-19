@@ -3,7 +3,6 @@ package table
 import (
 	"fmt"
 	"io"
-	"strings"
 
 	"github.com/larsartmann/go-output"
 )
@@ -22,19 +21,12 @@ func Write(w io.Writer, data *output.Table, opts ...Option) error {
 		return fmt.Errorf("render table: %w", err)
 	}
 
-	if _, err := fmt.Fprintln(w, out); err != nil {
-		return fmt.Errorf("write table output: %w", err)
-	}
-
-	return nil
+	return output.WriteRendered(w, "table", out)
 }
 
 // Render renders a Table as a styled terminal table string.
 func Render(data *output.Table, opts ...Option) (string, error) {
-	var buf strings.Builder
-	if err := Write(&buf, data, opts...); err != nil {
-		return "", err
-	}
-
-	return buf.String(), nil
+	return output.RenderFromWrite(func(w io.Writer) error {
+		return Write(w, data, opts...)
+	})
 }

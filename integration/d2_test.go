@@ -44,14 +44,11 @@ func TestD2ConstraintsIntegration(t *testing.T) {
 		{Name: "org_id", Type: "int", Constraint: d2.ConstraintForeign},
 	})
 
-	result, err := d2Diagram.Render()
-	if err != nil {
-		t.Fatalf("Render() error = %v", err)
-	}
-
-	testhelpers.AssertContains(t, result, "constraint: primary_key", "should contain primary key")
-	testhelpers.AssertContains(t, result, "constraint: unique", "should contain unique constraint")
-	testhelpers.AssertContains(t, result, "constraint: foreign_key", "should contain foreign key")
+	testhelpers.RenderAssert(t, d2Diagram,
+		"constraint: primary_key",
+		"constraint: unique",
+		"constraint: foreign_key",
+	)
 }
 
 func TestD2ClassesIntegration(t *testing.T) {
@@ -67,13 +64,7 @@ func TestD2ClassesIntegration(t *testing.T) {
 		Class: "server",
 	})
 
-	result, err := d2Diagram.Render()
-	if err != nil {
-		t.Fatalf("Render() error = %v", err)
-	}
-
-	testhelpers.AssertContains(t, result, "classes:", "should contain classes block")
-	testhelpers.AssertContains(t, result, "class: server", "should contain class reference")
+	testhelpers.RenderAssert(t, d2Diagram, "classes:", "class: server")
 }
 
 func TestD2ArrowTypesIntegration(t *testing.T) {
@@ -87,22 +78,9 @@ func TestD2ArrowTypesIntegration(t *testing.T) {
 		SourceArrow: d2.ArrowCFMany,
 	})
 
-	result, err := d2Diagram.Render()
-	if err != nil {
-		t.Fatalf("Render() error = %v", err)
-	}
-
-	testhelpers.AssertContains(
-		t,
-		result,
+	testhelpers.RenderAssert(t, d2Diagram,
 		"source-arrowhead.shape: cf-many",
-		"should contain cf-many arrow",
-	)
-	testhelpers.AssertContains(
-		t,
-		result,
 		"target-arrowhead.shape: diamond",
-		"should contain diamond arrow",
 	)
 }
 
@@ -122,12 +100,9 @@ func TestD2GridAndNearIntegration(t *testing.T) {
 		Near:  "grid",
 	})
 
-	result, err := d2Diagram.Render()
-	if err != nil {
-		t.Fatalf("Render() error = %v", err)
-	}
-
-	testhelpers.AssertContains(t, result, "grid-rows: 2", "should contain grid-rows")
-	testhelpers.AssertContains(t, result, "grid-columns: 3", "should contain grid-columns")
-	testhelpers.AssertContains(t, result, "near: grid", "should contain near")
+	testhelpers.RenderAssert(t, d2Diagram,
+		"grid-rows: 2",
+		"grid-columns: 3",
+		"near: grid",
+	)
 }

@@ -27,12 +27,7 @@ func renderTOMLUnknown(w io.Writer, data any, _ output.RenderOptions) error {
 		return fmt.Errorf("marshal TOML: %w", err)
 	}
 
-	_, err = fmt.Fprintln(w, string(b))
-	if err != nil {
-		return fmt.Errorf("write TOML output: %w", err)
-	}
-
-	return nil
+	return output.WriteRendered(w, "TOML", string(b))
 }
 
 // MarshalTOML encodes v to TOML.
@@ -97,17 +92,5 @@ func renderTOMLTable(w io.Writer, data *output.Table, _ output.RenderOptions) er
 
 // MarshalTOMLFromTable marshals Table as TOML.
 func MarshalTOMLFromTable(data *output.Table) ([]byte, error) {
-	if data == nil {
-		return nil, nil
-	}
-
-	renderer := NewTOMLTableRenderer()
-	renderer.SetData(data)
-
-	out, err := renderer.Render()
-	if err != nil {
-		return nil, fmt.Errorf("render toml: %w", err)
-	}
-
-	return []byte(out), nil
+	return output.MarshalViaRenderer(data, "toml", NewTOMLTableRenderer)
 }

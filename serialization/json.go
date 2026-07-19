@@ -27,12 +27,7 @@ func renderJSONUnknown(w io.Writer, data any, _ output.RenderOptions) error {
 		return fmt.Errorf("marshal JSON: %w", err)
 	}
 
-	_, err = fmt.Fprintln(w, string(b))
-	if err != nil {
-		return fmt.Errorf("write JSON output: %w", err)
-	}
-
-	return nil
+	return output.WriteRendered(w, "JSON", string(b))
 }
 
 // MarshalJSON encodes v to JSON.

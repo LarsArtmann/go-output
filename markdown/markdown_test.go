@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/larsartmann/go-output"
+	"github.com/larsartmann/go-output/testhelpers"
 )
 
 func TestMarkdownTable(t *testing.T) {
@@ -22,13 +23,7 @@ func testMarkdownBasicTable(t *testing.T) {
 
 	m := newMarkdownTableWithData()
 
-	got, err := m.Render()
-	if err != nil {
-		t.Fatalf("Render() error = %v", err)
-	}
-
-	assertContains(t, got, "Name", "Render() should contain header text")
-	assertContains(t, got, "Alice", "Render() should contain data row")
+	testhelpers.RenderAssert(t, m, "Name", "Alice")
 }
 
 func newMarkdownTableWithSingleRow() *MarkdownTable {
@@ -67,13 +62,7 @@ func testMarkdownAlignment(t *testing.T) {
 		SetAlign(1, AlignRight).
 		AddRow([]string{"Alice", "30"})
 
-	got, err := m.Render()
-	if err != nil {
-		t.Fatalf("Render() error = %v", err)
-	}
-
-	assertContains(t, got, "|--", "Render() should contain separator row")
-	assertContains(t, got, "--:|", "Render() should contain right-align marker")
+	testhelpers.RenderAssert(t, m, "|--", "--:|")
 }
 
 func TestMarkdownAlignmentMarkers(t *testing.T) {
@@ -249,13 +238,7 @@ func TestMarkdownColorModeDefault(t *testing.T) {
 	m.SetHeaders([]string{"Col"}).
 		AddRow([]string{"Val"})
 
-	got, err := m.Render()
-	if err != nil {
-		t.Fatalf("Render() error = %v", err)
-	}
-
-	assertContains(t, got, "Col", "default render should contain header")
-	assertContains(t, got, "Val", "default render should contain row")
+	testhelpers.RenderAssert(t, m, "Col", "Val")
 }
 
 func TestMarkdownTableGetAlignmentOutOfBounds(t *testing.T) {

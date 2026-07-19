@@ -6,6 +6,7 @@ import (
 
 	"github.com/larsartmann/go-output"
 	"github.com/larsartmann/go-output/escape"
+	"github.com/larsartmann/go-output/testhelpers"
 )
 
 //nolint:exhaustruct // Test files use partial struct initialization
@@ -245,14 +246,10 @@ func TestMermaidRendererWithNodeStyle(t *testing.T) {
 	})
 	renderer.SetEdges([]output.GraphEdge{})
 
-	out, err := renderer.Render()
-	if err != nil {
-		t.Fatalf("Render() error = %v", err)
-	}
-
-	assertContains(t, out, "style A fill:#e8a838,stroke:#4a4030,color:#14110d,font-size:14px",
-		"Output should contain per-node style directive")
-	assertContains(t, out, "% Styling", "Styling section should be present")
+	testhelpers.RenderAssert(t, renderer,
+		"style A fill:#e8a838,stroke:#4a4030,color:#14110d,font-size:14px",
+		"% Styling",
+	)
 }
 
 func TestMermaidRendererNoStyleNoStylingSection(t *testing.T) {

@@ -18,12 +18,7 @@ func renderPlantUMLTable(w io.Writer, data *output.Table, _ output.RenderOptions
 		return fmt.Errorf("render PlantUML: %w", err)
 	}
 
-	_, err = fmt.Fprintln(w, out)
-	if err != nil {
-		return fmt.Errorf("write PlantUML output: %w", err)
-	}
-
-	return nil
+	return output.WriteRendered(w, "PlantUML", out)
 }
 
 // NewPlantUMLFromTable creates a PlantUML diagram from table data.

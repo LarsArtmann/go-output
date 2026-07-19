@@ -9,12 +9,11 @@ import (
 
 //nolint:testableexamples // Demonstration example, output is dynamic
 func ExampleRender() {
-	b := output.NewGraphBuilder()
-	b.AddNode(*output.NewGraphNode("client", "Client"))
-	b.AddNode(*output.NewGraphNode("server", "Server"))
-	b.AddEdge(*output.NewGraphEdge("client", "server"))
-
-	g := b.Build()
+	g := output.NewGraphBuilder().
+		AddNode(*output.NewGraphNode("client", "Client")).
+		AddNode(*output.NewGraphNode("server", "Server")).
+		AddEdge(*output.NewGraphEdge("client", "server")).
+		Build()
 
 	out, err := plantuml.Render(g)
 	if err != nil {

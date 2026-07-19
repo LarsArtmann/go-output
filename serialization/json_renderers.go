@@ -54,7 +54,7 @@ type JSONGraphRenderer struct {
 // NewJSONGraphRenderer creates a new JSONGraphRenderer.
 func NewJSONGraphRenderer() *JSONGraphRenderer {
 	return &JSONGraphRenderer{
-		GraphBuilder: output.NewGraphBuilder(),
+		GraphBuilder: *output.NewGraphBuilder(),
 	}
 }
 

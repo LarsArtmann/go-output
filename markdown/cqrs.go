@@ -3,7 +3,6 @@ package markdown
 import (
 	"fmt"
 	"io"
-	"strings"
 
 	"github.com/larsartmann/go-output"
 )
@@ -33,20 +32,15 @@ func Write(w io.Writer, data *output.Table, opts ...Option) error {
 
 	out, err := m.Render()
 	if err != nil {
-		return fmt.Errorf("write output: %w", err)
+		return fmt.Errorf("markdown: %w", err)
 	}
 
-	_, err = io.WriteString(w, out)
-
-	return fmt.Errorf("write output: %w", err)
+	return output.WriteRenderedRaw(w, "markdown", out)
 }
 
 // Render renders a Table as a Markdown string.
 func Render(data *output.Table, opts ...Option) (string, error) {
-	var buf strings.Builder
-	if err := Write(&buf, data, opts...); err != nil {
-		return "", err
-	}
-
-	return buf.String(), nil
+	return output.RenderFromWrite(func(w io.Writer) error {
+		return Write(w, data, opts...)
+	})
 }

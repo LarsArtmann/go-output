@@ -27,12 +27,7 @@ func renderDOTTable(w io.Writer, data *output.Table, _ output.RenderOptions) err
 		return fmt.Errorf("render DOT: %w", err)
 	}
 
-	_, err = fmt.Fprintln(w, out)
-	if err != nil {
-		return fmt.Errorf("write DOT output: %w", err)
-	}
-
-	return nil
+	return output.WriteRendered(w, "DOT", out)
 }
 
 // DOTRenderer implements the GraphRenderer interface for DOT/Graphviz output.
@@ -56,7 +51,7 @@ type DOTRenderer struct {
 // newDOTRenderer creates a new DOTRenderer with the specified direction.
 func newDOTRenderer(directed bool) *DOTRenderer {
 	return &DOTRenderer{
-		GraphBuilder: output.NewGraphBuilder(),
+		GraphBuilder: *output.NewGraphBuilder(),
 		directed:     directed,
 		graphID:      "G",
 		rankdir:      RankDirTB,

@@ -37,11 +37,7 @@ func WriteASCII(w io.Writer, root *output.TreeNode, opts ...Option) error {
 		return fmt.Errorf("render ascii tree: %w", err)
 	}
 
-	if _, err := io.WriteString(w, out); err != nil {
-		return fmt.Errorf("write ascii tree output: %w", err)
-	}
-
-	return nil
+	return output.WriteRenderedRaw(w, "ascii tree", out)
 }
 
 // RenderASCII renders a TreeNode as an ASCII tree string.

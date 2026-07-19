@@ -9,12 +9,11 @@ import (
 
 //nolint:testableexamples // Demonstration example, output is dynamic
 func ExampleRenderGraph() {
-	b := output.NewGraphBuilder()
-	b.AddNode(*output.NewGraphNode("design", "Design"))
-	b.AddNode(*output.NewGraphNode("implement", "Implement"))
-	b.AddEdge(*output.NewGraphEdge("design", "implement"))
-
-	g := b.Build()
+	g := output.NewGraphBuilder().
+		AddNode(*output.NewGraphNode("design", "Design")).
+		AddNode(*output.NewGraphNode("implement", "Implement")).
+		AddEdge(*output.NewGraphEdge("design", "implement")).
+		Build()
 
 	out, err := d2.RenderGraph(g)
 	if err != nil {

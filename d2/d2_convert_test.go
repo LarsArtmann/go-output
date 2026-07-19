@@ -210,14 +210,7 @@ func TestD2GraphRendererInterface(t *testing.T) {
 		*output.NewGraphEdge("a", "b"),
 	})
 
-	got, err := d.Render()
-	if err != nil {
-		t.Fatalf("Render() error = %v", err)
-	}
-
-	testhelpers.AssertContains(t, got, "a: Node A", "should contain node A")
-	testhelpers.AssertContains(t, got, "b: Node B", "should contain node B")
-	testhelpers.AssertContains(t, got, "a -> b", "should contain edge")
+	testhelpers.RenderAssert(t, d, "a: Node A", "b: Node B", "a -> b")
 }
 
 func TestD2NodeShapeConversion(t *testing.T) {
@@ -283,12 +276,5 @@ func TestD2NodeStyleConversion(t *testing.T) {
 		},
 	})
 
-	got, err := d.Render()
-	if err != nil {
-		t.Fatalf("Render() error = %v", err)
-	}
-
-	testhelpers.AssertContains(t, got, "style.fill: blue", "should convert fill color")
-	testhelpers.AssertContains(t, got, "style.stroke: black", "should convert stroke color")
-	testhelpers.AssertContains(t, got, "style.font-size: 14", "should convert font size")
+	testhelpers.RenderAssert(t, d, "style.fill: blue", "style.stroke: black", "style.font-size: 14")
 }

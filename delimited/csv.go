@@ -75,7 +75,10 @@ type Writer interface {
 // type. tableDataWriter == delimited.Writer structurally; keep them in sync.
 type tableDataWriter = Writer
 
-// marshalFromTable marshals Table using any delimited writer (CSV or TSV).
+// marshalFromTable writes data to the provided writer using the writer
+// constructor supplied. Returns nil when data is nil (callers can treat that
+// as "nothing to do"). All row writing, error wrapping, and flush logic live
+// here; CSV/TSV callers just supply the right writer constructor.
 func marshalFromTable(
 	data *output.Table,
 	name string,
@@ -87,33 +90,54 @@ func marshalFromTable(
 
 	var builder strings.Builder
 
-	w := newWriter(&builder)
+	if err := writeDelimited(&builder, data, name, newWriter); err != nil {
+		return nil, err
+	}
+
+	return []byte(builder.String()), nil
+}
+
+// writeDelimited is the streaming core shared by WriteCSV/WriteTSV (which
+// pass their target io.Writer directly) and marshalFromTable (which buffers
+// through strings.Builder). Pulling the body out eliminates a near-identical
+// 22-line copy/paste between the two WriteCSV/WriteTSV entry points.
+func writeDelimited(
+	w io.Writer,
+	data *output.Table,
+	name string,
+	newWriter func(io.Writer) tableDataWriter,
+) error {
+	if data == nil {
+		return nil
+	}
+
+	dw := newWriter(w)
 
 	if len(data.Headers) > 0 {
-		if err := w.WriteHeader(data.Headers); err != nil {
-			return nil, fmt.Errorf("write %s header: %w", name, err)
+		if err := dw.WriteHeader(data.Headers); err != nil {
+			return fmt.Errorf("write %s header: %w", name, err)
 		}
 	}
 
 	for _, row := range data.Rows {
-		if err := w.WriteRow(row); err != nil {
-			return nil, fmt.Errorf("write %s row: %w", name, err)
+		if err := dw.WriteRow(row); err != nil {
+			return fmt.Errorf("write %s row: %w", name, err)
 		}
 	}
 
 	if data.HasFooter() {
-		if err := w.WriteFooter(data.Footer); err != nil {
-			return nil, fmt.Errorf("write %s footer: %w", name, err)
+		if err := dw.WriteFooter(data.Footer); err != nil {
+			return fmt.Errorf("write %s footer: %w", name, err)
 		}
 	}
 
-	w.Flush()
+	dw.Flush()
 
-	if err := w.Error(); err != nil {
-		return nil, fmt.Errorf("flush %s writer: %w", name, err)
+	if err := dw.Error(); err != nil {
+		return fmt.Errorf("flush %s writer: %w", name, err)
 	}
 
-	return []byte(builder.String()), nil
+	return nil
 }
 
 // MarshalCSVFromTable marshals Table as CSV with a header row.

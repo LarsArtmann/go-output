@@ -1,7 +1,6 @@
 package markup
 
 import (
-	"fmt"
 	"io"
 	"strings"
 
@@ -65,19 +64,7 @@ func (r *AsciiDocTableRenderer) Render() (string, error) {
 
 // MarshalAsciiDocFromTable marshals Table as an AsciiDoc table.
 func MarshalAsciiDocFromTable(data *output.Table) ([]byte, error) {
-	if data == nil {
-		return nil, nil
-	}
-
-	renderer := NewAsciiDocTableRenderer()
-	renderer.SetData(data)
-
-	out, err := renderer.Render()
-	if err != nil {
-		return nil, fmt.Errorf("render asciidoc table: %w", err)
-	}
-
-	return []byte(out), nil
+	return output.MarshalViaRenderer(data, "asciidoc table", NewAsciiDocTableRenderer)
 }
 
 func renderAsciiDocTable(w io.Writer, data *output.Table, _ output.RenderOptions) error {

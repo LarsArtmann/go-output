@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/larsartmann/go-output"
+	"github.com/larsartmann/go-output/testhelpers"
 )
 
 func TestHTMLRenderer(t *testing.T) {
@@ -104,13 +105,7 @@ func TestHTMLRendererSetData(t *testing.T) {
 		Rows:    [][]string{{"1", "2"}},
 	})
 
-	out, err := renderer.Render()
-	if err != nil {
-		t.Fatalf("Render() error = %v", err)
-	}
-
-	assertContains(t, out, "<th>A", "Output should contain header 'A'")
-	assertContains(t, out, "<td>1", "Output should contain cell '1'")
+	testhelpers.RenderAssert(t, renderer, "<th>A", "<td>1")
 }
 
 func TestHTMLRendererWithFooter(t *testing.T) {

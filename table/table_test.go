@@ -71,14 +71,7 @@ func TestAddRowMultiple(t *testing.T) {
 	tbl.AddRow("Bob", "90")
 	tbl.AddRow("Charlie", "85")
 
-	output, err := tbl.Render()
-	if err != nil {
-		t.Fatalf("Render() error = %v", err)
-	}
-
-	testhelpers.AssertContains(t, output, "Alice", "Render() should contain 'Alice'")
-	testhelpers.AssertContains(t, output, "Bob", "Render() should contain 'Bob'")
-	testhelpers.AssertContains(t, output, "Charlie", "Render() should contain 'Charlie'")
+	testhelpers.RenderAssert(t, tbl, "Alice", "Bob", "Charlie")
 }
 
 func TestStyleFunc(t *testing.T) {
@@ -171,23 +164,7 @@ func TestHeadersOnlyNoRows(t *testing.T) {
 	tbl := New()
 	tbl.SetHeaders("Only", "Headers")
 
-	output, err := tbl.Render()
-	if err != nil {
-		t.Fatalf("Render() error = %v", err)
-	}
-
-	testhelpers.AssertContains(
-		t,
-		output,
-		"Only",
-		"Render() should contain headers even without rows",
-	)
-	testhelpers.AssertContains(
-		t,
-		output,
-		"Headers",
-		"Render() should contain headers even without rows",
-	)
+	testhelpers.RenderAssert(t, tbl, "Only", "Headers")
 }
 
 type testTable struct {

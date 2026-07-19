@@ -10,9 +10,6 @@ import (
 	"github.com/larsartmann/go-output/testhelpers/graphtest"
 )
 
-// errWriteFailed aliases testhelpers.ErrWrite for backward-compatible error checks.
-var errWriteFailed = testhelpers.ErrWrite
-
 func TestPlantUMLDiagramRender(t *testing.T) {
 	t.Parallel()
 

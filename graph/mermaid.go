@@ -27,12 +27,7 @@ func renderMermaidTable(w io.Writer, data *output.Table, _ output.RenderOptions)
 		return fmt.Errorf("render Mermaid: %w", err)
 	}
 
-	_, err = fmt.Fprintln(w, out)
-	if err != nil {
-		return fmt.Errorf("write Mermaid output: %w", err)
-	}
-
-	return nil
+	return output.WriteRendered(w, "Mermaid", out)
 }
 
 // MermaidRenderer implements the GraphRenderer interface for Mermaid diagrams.
@@ -48,7 +43,7 @@ type MermaidRenderer struct {
 // NewMermaidRenderer creates a new MermaidRenderer with the code fence enabled.
 func NewMermaidRenderer() *MermaidRenderer {
 	return &MermaidRenderer{
-		GraphBuilder: output.NewGraphBuilder(),
+		GraphBuilder: *output.NewGraphBuilder(),
 		codeFence:    true,
 	}
 }

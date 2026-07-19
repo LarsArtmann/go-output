@@ -30,12 +30,7 @@ func renderStyledTable(w io.Writer, data *output.Table, opts output.RenderOption
 		return fmt.Errorf("render table: %w", err)
 	}
 
-	_, err = fmt.Fprintln(w, out)
-	if err != nil {
-		return fmt.Errorf("write table output: %w", err)
-	}
-
-	return nil
+	return output.WriteRendered(w, "table", out)
 }
 
 // TableProvider defines the interface for types that provide tabular data.

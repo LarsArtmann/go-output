@@ -120,13 +120,7 @@ func TestD2NodeWithIcon(t *testing.T) {
 		Icon:  "https://icons.terrastruct.com/essentials/004-cloud.svg",
 	})
 
-	got, err := d.Render()
-	if err != nil {
-		t.Fatalf("Render() error = %v", err)
-	}
-
-	testhelpers.AssertContains(t, got, "icon:", "should contain icon attribute")
-	testhelpers.AssertContains(t, got, "004-cloud.svg", "should contain icon URL")
+	testhelpers.RenderAssert(t, d, "icon:", "004-cloud.svg")
 }
 
 func TestD2NodeWithLink(t *testing.T) {
@@ -196,14 +190,7 @@ func TestD2NodeWithGrid(t *testing.T) {
 		GridGap:     10,
 	})
 
-	got, err := d.Render()
-	if err != nil {
-		t.Fatalf("Render() error = %v", err)
-	}
-
-	testhelpers.AssertContains(t, got, "grid-rows: 3", "should contain grid-rows")
-	testhelpers.AssertContains(t, got, "grid-columns: 2", "should contain grid-columns")
-	testhelpers.AssertContains(t, got, "grid-gap: 10", "should contain grid-gap")
+	testhelpers.RenderAssert(t, d, "grid-rows: 3", "grid-columns: 2", "grid-gap: 10")
 }
 
 func TestD2NodeWithClass(t *testing.T) {
@@ -238,13 +225,7 @@ func TestD2NodeNested(t *testing.T) {
 		Nested: "  child: Inner\n",
 	})
 
-	got, err := d.Render()
-	if err != nil {
-		t.Fatalf("Render() error = %v", err)
-	}
-
-	testhelpers.AssertContains(t, got, "child: Inner", "should contain nested content")
-	testhelpers.AssertContains(t, got, "parent: Parent {", "should contain parent block")
+	testhelpers.RenderAssert(t, d, "child: Inner", "parent: Parent {")
 }
 
 func TestD2NodeNestedWithShape(t *testing.T) {
@@ -258,13 +239,7 @@ func TestD2NodeNestedWithShape(t *testing.T) {
 		Nested: "  child: Inner\n",
 	})
 
-	got, err := d.Render()
-	if err != nil {
-		t.Fatalf("Render() error = %v", err)
-	}
-
-	testhelpers.AssertContains(t, got, "shape: circle", "nested node should support shape")
-	testhelpers.AssertContains(t, got, "child: Inner", "should contain nested content")
+	testhelpers.RenderAssert(t, d, "shape: circle", "child: Inner")
 }
 
 func TestD2NodeWithSpecialChars(t *testing.T) {
@@ -374,11 +349,8 @@ func TestD2NodeStyleEscapeOutput(t *testing.T) {
 		},
 	})
 
-	got, err := d.Render()
-	if err != nil {
-		t.Fatalf("Render() error = %v", err)
-	}
-
-	testhelpers.AssertContains(t, got, `a\"b\\c`, "double quote and backslash should be escaped")
-	testhelpers.AssertContains(t, got, `\nd`, "newline should become literal \\n")
+	testhelpers.RenderAssert(t, d,
+		`a\"b\\c`,
+		`\nd`,
+	)
 }

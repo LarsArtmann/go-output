@@ -81,14 +81,7 @@ func TestTableSetFooter(t *testing.T) {
 	tbl.AddRow("Bob", "20")
 	tbl.SetFooter("Total", "30")
 
-	output, err := tbl.Render()
-	if err != nil {
-		t.Fatalf("Render() error = %v", err)
-	}
-
-	testhelpers.AssertContains(t, output, "Alice", "should contain row")
-	testhelpers.AssertContains(t, output, "Total", "should contain footer")
-	testhelpers.AssertContains(t, output, "30", "should contain footer value")
+	testhelpers.RenderAssert(t, tbl, "Alice", "Total", "30")
 }
 
 func TestTableSetFooter_MultipleCalls(t *testing.T) {
@@ -104,14 +97,7 @@ func TestTableSetFooter_MultipleCalls(t *testing.T) {
 		t.Errorf("footerRowIndex = %d, want 3 (last footer row)", tbl.footerRowIndex)
 	}
 
-	output, err := tbl.Render()
-	if err != nil {
-		t.Fatalf("Render() error = %v", err)
-	}
-
-	testhelpers.AssertContains(t, output, "Alice", "should contain data row")
-	testhelpers.AssertContains(t, output, "Old", "should contain first footer as data")
-	testhelpers.AssertContains(t, output, "Total", "should contain last footer")
+	testhelpers.RenderAssert(t, tbl, "Alice", "Old", "Total")
 }
 
 func TestWithFooterStyle(t *testing.T) {

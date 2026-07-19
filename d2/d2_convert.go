@@ -19,12 +19,7 @@ func renderTable(w io.Writer, data *output.Table, _ output.RenderOptions) error 
 		return fmt.Errorf("render D2: %w", err)
 	}
 
-	_, err = fmt.Fprintln(w, out)
-	if err != nil {
-		return fmt.Errorf("write D2 output: %w", err)
-	}
-
-	return nil
+	return output.WriteRendered(w, "D2", out)
 }
 
 // SetNodes sets graph nodes from the generic GraphNode type, satisfying GraphRenderer.

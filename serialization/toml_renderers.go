@@ -23,7 +23,7 @@ type TOMLGraphRenderer struct {
 // NewTOMLGraphRenderer creates a new TOMLGraphRenderer.
 func NewTOMLGraphRenderer() *TOMLGraphRenderer {
 	return &TOMLGraphRenderer{
-		GraphBuilder: output.NewGraphBuilder(),
+		GraphBuilder: *output.NewGraphBuilder(),
 	}
 }
 

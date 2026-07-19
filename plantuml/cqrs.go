@@ -35,12 +35,10 @@ func Write(w io.Writer, g output.Graph, opts ...Option) error {
 
 	out, err := d.Render()
 	if err != nil {
-		return fmt.Errorf("write output: %w", err)
+		return fmt.Errorf("plantuml: %w", err)
 	}
 
-	_, err = io.WriteString(w, out)
-
-	return fmt.Errorf("write output: %w", err)
+	return output.WriteRenderedRaw(w, "plantuml", out)
 }
 
 // Render renders a Graph as a PlantUML string.

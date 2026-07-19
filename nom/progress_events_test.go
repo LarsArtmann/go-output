@@ -12,16 +12,7 @@ import (
 func TestActivityProgressEvent(t *testing.T) {
 	t.Parallel()
 
-	ns := NewNOMSubscriber()
-	ctx := context.Background()
-
-	_ = ns.OnEvent(ctx, WorkflowStarted{ID: "wf", Name: "test"})
-	_ = ns.OnEvent(ctx, ActivityStarted{ID: "step1", Name: "go-mod-tidy"})
-	_ = ns.OnEvent(ctx, ActivityProgress{
-		ID:      "step1",
-		Name:    "go-mod-tidy",
-		Message: "Tidying module [2/26]: modules/gitignore",
-	})
+	ns, _ := setupProgress(t, "Tidying module [2/26]: modules/gitignore")
 
 	activity := ns.GetActivity("step1")
 	if activity == nil {
@@ -46,16 +37,7 @@ func TestActivityProgressEvent(t *testing.T) {
 func TestActivityProgressClearOnComplete(t *testing.T) {
 	t.Parallel()
 
-	ns := NewNOMSubscriber()
-	ctx := context.Background()
-
-	_ = ns.OnEvent(ctx, WorkflowStarted{ID: "wf", Name: "test"})
-	_ = ns.OnEvent(ctx, ActivityStarted{ID: "step1", Name: "go-mod-tidy"})
-	_ = ns.OnEvent(ctx, ActivityProgress{
-		ID:      "step1",
-		Name:    "go-mod-tidy",
-		Message: "Tidying module [2/26]",
-	})
+	ns, ctx := setupProgress(t, "Tidying module [2/26]")
 	_ = ns.OnEvent(ctx, ActivityCompleted{
 		ID:       "step1",
 		Name:     "go-mod-tidy",
@@ -75,16 +57,7 @@ func TestActivityProgressClearOnComplete(t *testing.T) {
 func TestActivityProgressEmptyMessage(t *testing.T) {
 	t.Parallel()
 
-	ns := NewNOMSubscriber()
-	ctx := context.Background()
-
-	_ = ns.OnEvent(ctx, WorkflowStarted{ID: "wf", Name: "test"})
-	_ = ns.OnEvent(ctx, ActivityStarted{ID: "step1", Name: "go-mod-tidy"})
-	_ = ns.OnEvent(ctx, ActivityProgress{
-		ID:      "step1",
-		Name:    "go-mod-tidy",
-		Message: "Working on it",
-	})
+	ns, ctx := setupProgress(t, "Working on it")
 	_ = ns.OnEvent(ctx, ActivityProgress{
 		ID:      "step1",
 		Name:    "go-mod-tidy",
@@ -298,16 +271,7 @@ func TestEstimatedRemainingNil(t *testing.T) {
 func TestProgressRendersInTree(t *testing.T) {
 	t.Parallel()
 
-	ns := NewNOMSubscriber()
-	ctx := context.Background()
-
-	_ = ns.OnEvent(ctx, WorkflowStarted{ID: "wf", Name: "test"})
-	_ = ns.OnEvent(ctx, ActivityStarted{ID: "step1", Name: "go-mod-tidy"})
-	_ = ns.OnEvent(ctx, ActivityProgress{
-		ID:      "step1",
-		Name:    "go-mod-tidy",
-		Message: "Tidying [2/26]",
-	})
+	ns, _ := setupProgress(t, "Tidying [2/26]")
 
 	frame, ok := ns.RenderSnapshot(0, 0)
 	if !ok {
