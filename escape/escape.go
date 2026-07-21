@@ -127,3 +127,13 @@ var plantumlReplacer = strings.NewReplacer(
 func PlantUML(s string) string {
 	return plantumlReplacer.Replace(s)
 }
+
+// Standard ANSI escape sequences for terminal styling. Shared across the
+// zero-dep renderer modules that emit ANSI styling (markdown, tree).
+// Prefixed ANSI to keep their purpose explicit and avoid collision with
+// user-defined names at call sites.
+const (
+	ANSIReturn = "\033[0m"
+	ANSIBold   = "\033[1m"
+	ANSIDim    = "\033[2m"
+)

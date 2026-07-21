@@ -254,8 +254,7 @@ func TestCSVWriter_WriteFooter(t *testing.T) {
 func TestMarshalFromTable_FlushError(t *testing.T) {
 	t.Parallel()
 
-	data := output.NewTable([]string{"Name"})
-	data.AddRow([]string{"Alice"})
+	data := output.NewTableWithRow([]string{"Name"}, "Alice")
 
 	_, err := marshalFromTable(data, "csv", func(w io.Writer) tableDataWriter {
 		return NewCSVWriter(&errorWriter{})

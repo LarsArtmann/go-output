@@ -1,7 +1,6 @@
 package tree
 
 import (
-	"fmt"
 	"io"
 
 	"github.com/larsartmann/go-output"
@@ -17,10 +16,5 @@ func renderTreeTable(w io.Writer, data *output.Table, opts output.RenderOptions)
 	renderer := TreeRendererFromTable(data)
 	renderer.SetColorMode(opts.ColorMode)
 
-	out, err := renderer.Render()
-	if err != nil {
-		return fmt.Errorf("render tree: %w", err)
-	}
-
-	return output.WriteRendered(w, "tree", out)
+	return output.WriteRenderedFrom(w, renderer.Render, "tree", "render tree")
 }

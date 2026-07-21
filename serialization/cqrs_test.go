@@ -83,8 +83,7 @@ func TestCQRS_RenderJSONL(t *testing.T) {
 func TestCQRS_WriteJSON_ErrorWriter(t *testing.T) {
 	t.Parallel()
 
-	tbl := output.NewTable([]string{"Name"})
-	tbl.AddRow([]string{"Alice"})
+	tbl := output.NewTableWithRow([]string{"Name"}, "Alice")
 
 	err := WriteJSON(&errorWriter{}, tbl)
 	if err == nil {
@@ -95,8 +94,7 @@ func TestCQRS_WriteJSON_ErrorWriter(t *testing.T) {
 func TestCQRS_WriteYAML_ErrorWriter(t *testing.T) {
 	t.Parallel()
 
-	tbl := output.NewTable([]string{"Name"})
-	tbl.AddRow([]string{"Alice"})
+	tbl := output.NewTableWithRow([]string{"Name"}, "Alice")
 
 	err := WriteYAML(&errorWriter{}, tbl)
 	if err == nil {
@@ -107,8 +105,7 @@ func TestCQRS_WriteYAML_ErrorWriter(t *testing.T) {
 func TestCQRS_WriteTOML_ErrorWriter(t *testing.T) {
 	t.Parallel()
 
-	tbl := output.NewTable([]string{"Name"})
-	tbl.AddRow([]string{"Alice"})
+	tbl := output.NewTableWithRow([]string{"Name"}, "Alice")
 
 	err := WriteTOML(&errorWriter{}, tbl)
 	if err == nil {
@@ -119,8 +116,7 @@ func TestCQRS_WriteTOML_ErrorWriter(t *testing.T) {
 func TestCQRS_WriteJSONL_ErrorWriter(t *testing.T) {
 	t.Parallel()
 
-	tbl := output.NewTable([]string{"Name"})
-	tbl.AddRow([]string{"Alice"})
+	tbl := output.NewTableWithRow([]string{"Name"}, "Alice")
 
 	err := WriteJSONL(&errorWriter{}, tbl)
 	if err == nil {

@@ -101,26 +101,28 @@ func (ns *NOMSubscriber) getOrCreateActivity(
 // handleActivityStarted transitions the activity to running, applies optional
 // host/download annotations, and records the dependency edges in the tree.
 func (ns *NOMSubscriber) handleActivityStarted(e ActivityStarted) error {
-	ns.mu.Lock()
-	defer ns.mu.Unlock()
-
-	activity := ns.getOrCreateActivity(e.ID, e.Name, e.Kind)
-	applyCountsDelta(&ns.counts, activity.Status, ActivityStatusRunning)
-	activity.SetRunning()
-	activity.Host = e.Host
-	activity.Download = e.Download
-
-	if e.Category != "" {
-		activity.Category = e.Category
-	} else if activity.Category == "" {
-		// Auto-inference: inherit category from the first dep if it's a phase.
-		activity.Category = ns.inheritCategoryLocked(e.ID, e.Deps)
-	}
-
+	// Read the timing cache outside the lock — it has its own internal
+	// locking and is independent of subscriber state. Capturing it before
+	// the locked section avoids holding ns.mu across the cache read.
 	medianDuration := ns.timingCache.GetMedian(e.Name.String())
-	if medianDuration > 0 {
-		activity.SetEstimatedTime(medianDuration)
-	}
+
+	ns.withLockedActivity(e.ID, e.Name, e.Kind, func(a *Activity) {
+		applyCountsDelta(&ns.counts, a.Status, ActivityStatusRunning)
+		a.SetRunning()
+		a.Host = e.Host
+		a.Download = e.Download
+
+		if e.Category != "" {
+			a.Category = e.Category
+		} else if a.Category == "" {
+			// Auto-inference: inherit category from the first dep if it's a phase.
+			a.Category = ns.inheritCategoryLocked(e.ID, e.Deps)
+		}
+
+		if medianDuration > 0 {
+			a.SetEstimatedTime(medianDuration)
+		}
+	})
 
 	return ns.dependencyTree.AddActivity(e.ID, e.Deps)
 }
@@ -129,16 +131,13 @@ func (ns *NOMSubscriber) handleActivityStarted(e ActivityStarted) error {
 // without transitioning it to running. Used for declaring structure before
 // work starts.
 func (ns *NOMSubscriber) handleActivityRegistered(e ActivityRegistered) error {
-	ns.mu.Lock()
-	defer ns.mu.Unlock()
-
-	activity := ns.getOrCreateActivity(e.ID, e.Name, e.Kind)
-
-	if e.Category != "" {
-		activity.Category = e.Category
-	} else if activity.Category == "" {
-		activity.Category = ns.inheritCategoryLocked(e.ID, e.Deps)
-	}
+	ns.withLockedActivity(e.ID, e.Name, e.Kind, func(a *Activity) {
+		if e.Category != "" {
+			a.Category = e.Category
+		} else if a.Category == "" {
+			a.Category = ns.inheritCategoryLocked(e.ID, e.Deps)
+		}
+	})
 
 	return ns.dependencyTree.AddActivity(e.ID, e.Deps)
 }
@@ -180,6 +179,25 @@ func (ns *NOMSubscriber) transitionTask(
 	apply(activity)
 }
 
+// withLockedActivity acquires ns.mu, looks up (or creates) the named
+// activity, and invokes apply while still holding the lock. The entire
+// sequence runs under ns.mu so callers don't need to manage locks
+// themselves — apply sees the activity as it exists at this moment, with
+// no risk of mid-transition reads from SnapshotActivities.
+//
+// This is the no-state-change variant of transitionTask: use it when the
+// handler's only mutation is on the activity itself (e.g. setting
+// Progress, Category, RetryCount) without a status transition.
+func (ns *NOMSubscriber) withLockedActivity(
+	id ActivityID, name ActivityName, kind ActivityKind, apply func(*Activity),
+) {
+	ns.mu.Lock()
+	defer ns.mu.Unlock()
+
+	activity := ns.getOrCreateActivity(id, name, kind)
+	apply(activity)
+}
+
 // recordDuration stores the observed duration in the timing cache if positive.
 func (ns *NOMSubscriber) recordDuration(name ActivityName, duration time.Duration) error {
 	if duration > 0 {
@@ -195,11 +213,9 @@ func (ns *NOMSubscriber) recordDuration(name ActivityName, duration time.Duratio
 // Message clears any prior progress. The activity is created if it doesn't
 // exist yet (progress events may arrive before started in some orderings).
 func (ns *NOMSubscriber) handleActivityProgress(e ActivityProgress) error {
-	ns.mu.Lock()
-	defer ns.mu.Unlock()
-
-	activity := ns.getOrCreateActivity(e.ID, e.Name, ActivityKindTask)
-	activity.Progress = e.Message
+	ns.withLockedActivity(e.ID, e.Name, ActivityKindTask, func(activity *Activity) {
+		activity.Progress = e.Message
+	})
 
 	return nil
 }

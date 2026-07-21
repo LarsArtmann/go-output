@@ -13,14 +13,7 @@ import (
 	"strings"
 
 	"github.com/larsartmann/go-output"
-)
-
-// Standard ANSI escape sequences for terminal styling. Local to this module
-// so markdown stays dependency-free beyond the core output types.
-const (
-	ansiReset = "\033[0m"
-	ansiBold  = "\033[1m"
-	ansiDim   = "\033[2m"
+	"github.com/larsartmann/go-output/escape"
 )
 
 // Compile-time interface check.
@@ -175,13 +168,13 @@ func (m *MarkdownTable) writeHeader(b *strings.Builder, colWidths []int) {
 		b.WriteString(" ")
 
 		if m.useColor() {
-			b.WriteString(ansiBold)
+			b.WriteString(escape.ANSIBold)
 		}
 
 		b.WriteString(header)
 
 		if m.useColor() {
-			b.WriteString(ansiReset)
+			b.WriteString(escape.ANSIReturn)
 		}
 
 		b.WriteString(strings.Repeat(" ", colWidths[i]-len(header)+1))
@@ -193,7 +186,7 @@ func (m *MarkdownTable) writeHeader(b *strings.Builder, colWidths []int) {
 
 func (m *MarkdownTable) writeSeparator(b *strings.Builder, colWidths []int) {
 	if m.useColor() {
-		b.WriteString(ansiDim)
+		b.WriteString(escape.ANSIDim)
 	}
 
 	b.WriteString("|")
@@ -209,7 +202,7 @@ func (m *MarkdownTable) writeSeparator(b *strings.Builder, colWidths []int) {
 	b.WriteString("\n")
 
 	if m.useColor() {
-		b.WriteString(ansiReset)
+		b.WriteString(escape.ANSIReturn)
 	}
 }
 
@@ -234,13 +227,13 @@ func (m *MarkdownTable) writeRows(b *strings.Builder, colWidths []int) {
 
 func (m *MarkdownTable) writeFooterRow(b *strings.Builder, colWidths []int) {
 	if m.useColor() {
-		b.WriteString(ansiBold)
+		b.WriteString(escape.ANSIBold)
 	}
 
 	m.writeSingleRow(b, m.footer, colWidths)
 
 	if m.useColor() {
-		b.WriteString(ansiReset)
+		b.WriteString(escape.ANSIReturn)
 	}
 }
 

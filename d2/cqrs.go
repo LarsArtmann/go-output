@@ -67,12 +67,9 @@ func Write(w io.Writer, diagram *Diagram, opts ...Option) error {
 
 // Render renders a D2 diagram as a string.
 func Render(diagram *Diagram, opts ...Option) (string, error) {
-	var buf strings.Builder
-	if err := Write(&buf, diagram, opts...); err != nil {
-		return "", err
-	}
-
-	return buf.String(), nil
+	return output.RenderFromWrite(func(w io.Writer) error {
+		return Write(w, diagram, opts...)
+	})
 }
 
 // WriteGraph writes a generic Graph as a D2 diagram.

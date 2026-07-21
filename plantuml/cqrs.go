@@ -1,9 +1,7 @@
 package plantuml
 
 import (
-	"fmt"
 	"io"
-	"strings"
 
 	"github.com/larsartmann/go-output"
 )
@@ -33,20 +31,12 @@ func Write(w io.Writer, g output.Graph, opts ...Option) error {
 	d.SetNodes(g.Nodes())
 	d.SetEdges(g.Edges())
 
-	out, err := d.Render()
-	if err != nil {
-		return fmt.Errorf("plantuml: %w", err)
-	}
-
-	return output.WriteRenderedRaw(w, "plantuml", out)
+	return output.WriteRenderedRawFrom(w, d.Render, "plantuml", "plantuml")
 }
 
 // Render renders a Graph as a PlantUML string.
 func Render(g output.Graph, opts ...Option) (string, error) {
-	var buf strings.Builder
-	if err := Write(&buf, g, opts...); err != nil {
-		return "", err
-	}
-
-	return buf.String(), nil
+	return output.RenderFromWrite(func(w io.Writer) error {
+		return Write(w, g, opts...)
+	})
 }

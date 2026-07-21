@@ -48,33 +48,28 @@ func NewXMLWriter(w io.Writer) *XMLWriter {
 
 // WriteHeader writes the XML header and opening tags.
 func (x *XMLWriter) WriteHeader(cols []string) error {
-	_, err := x.Writer.Write([]byte("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"))
-	if err != nil {
-		return fmt.Errorf("write xml header: %w", err)
+	if err := writeBytes(x.Writer, "write xml header", "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"); err != nil {
+		return err
 	}
 
-	_, err = x.Writer.Write([]byte("<table>\n"))
-	if err != nil {
-		return fmt.Errorf("write table open: %w", err)
+	if err := writeBytes(x.Writer, "write table open", "<table>\n"); err != nil {
+		return err
 	}
 
-	_, err = x.Writer.Write([]byte("  <headers>\n"))
-	if err != nil {
-		return fmt.Errorf("write headers open: %w", err)
+	if err := writeBytes(x.Writer, "write headers open", "  <headers>\n"); err != nil {
+		return err
 	}
 
 	if err := writeMarkupColumns(x.Writer, cols, "    ", escape.XML); err != nil {
 		return fmt.Errorf("write columns: %w", err)
 	}
 
-	_, err = x.Writer.Write([]byte("  </headers>\n"))
-	if err != nil {
-		return fmt.Errorf("write headers close: %w", err)
+	if err := writeBytes(x.Writer, "write headers close", "  </headers>\n"); err != nil {
+		return err
 	}
 
-	_, err = x.Writer.Write([]byte("  <rows>\n"))
-	if err != nil {
-		return fmt.Errorf("write rows open: %w", err)
+	if err := writeBytes(x.Writer, "write rows open", "  <rows>\n"); err != nil {
+		return err
 	}
 
 	return nil
@@ -103,17 +98,11 @@ func (x *XMLWriter) WriteRows(values [][]string) error {
 
 // WriteFooter writes the closing tags.
 func (x *XMLWriter) WriteFooter() error {
-	_, err := x.Writer.Write([]byte("  </rows>\n"))
-	if err != nil {
-		return fmt.Errorf("write rows close: %w", err)
+	if err := writeBytes(x.Writer, "write rows close", "  </rows>\n"); err != nil {
+		return err
 	}
 
-	_, err = x.Writer.Write([]byte("</table>\n"))
-	if err != nil {
-		return fmt.Errorf("write table close: %w", err)
-	}
-
-	return nil
+	return writeBytes(x.Writer, "write table close", "</table>\n")
 }
 
 // MarshalXMLFromTable marshals Table to XML.

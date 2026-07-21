@@ -72,6 +72,22 @@ func (c ColorMode) ShouldColor() bool {
 	}
 }
 
+// ColorConfig is the shared color-mode configuration that every sub-module's
+// CQRS Config embeds. It carries the ColorMode field and the canonical
+// default value. Embedding it lets a module's Config reuse the same
+// color-mode behavior across markdown, tree, table, and any future
+// module that needs to honor WithColorMode(...) without re-declaring the
+// field or its default.
+type ColorConfig struct {
+	ColorMode ColorMode
+}
+
+// DefaultColorConfig returns a ColorConfig pre-initialized to ColorModeAuto.
+// Use it as the starting value in your module's CQRS Config literal.
+func DefaultColorConfig() ColorConfig {
+	return ColorConfig{ColorMode: ColorModeAuto}
+}
+
 // Detection functions are overridable variables for deterministic testing.
 // Tests can swap these to control ShouldColor() output without relying on
 // the real TTY, env vars, or CI environment.

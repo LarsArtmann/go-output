@@ -216,8 +216,7 @@ func TestStreamingRenderer(t *testing.T) {
 func TestTableRowEdges(t *testing.T) {
 	t.Parallel()
 
-	data := output.NewTable([]string{"Name"})
-	data.AddRow([]string{"Row0"})
+	data := output.NewTableWithRow([]string{"Name"}, "Row0")
 	data.AddRow([]string{"Row1"})
 	data.AddRow([]string{"Row2"})
 

@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/larsartmann/go-output"
+	"github.com/larsartmann/go-output/escape"
 	"github.com/larsartmann/go-output/testhelpers"
 )
 
@@ -201,11 +202,11 @@ func TestMarkdownColorModeNever(t *testing.T) {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	if strings.Contains(got, ansiBold) {
+	if strings.Contains(got, escape.ANSIBold) {
 		t.Error("output.ColorModeNever should not produce ANSI escape codes")
 	}
 
-	if strings.Contains(got, ansiDim) {
+	if strings.Contains(got, escape.ANSIDim) {
 		t.Error("output.ColorModeNever should not produce dim ANSI codes")
 	}
 
@@ -224,9 +225,9 @@ func TestMarkdownColorModeAlways(t *testing.T) {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	assertContains(t, got, ansiBold, "output.ColorModeAlways should bold headers")
-	assertContains(t, got, ansiReset, "output.ColorModeAlways should reset after bold")
-	assertContains(t, got, ansiDim, "output.ColorModeAlways should dim separators")
+	assertContains(t, got, escape.ANSIBold, "output.ColorModeAlways should bold headers")
+	assertContains(t, got, escape.ANSIReturn, "output.ColorModeAlways should reset after bold")
+	assertContains(t, got, escape.ANSIDim, "output.ColorModeAlways should dim separators")
 	assertContains(t, got, "Name", "should contain header text")
 	assertContains(t, got, "Alice", "should contain data row")
 }

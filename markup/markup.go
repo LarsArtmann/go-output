@@ -25,6 +25,14 @@ func renderMarshalAndWrite(
 	return nil
 }
 
+func writeBytes(w io.Writer, errCtx, content string) error {
+	if _, err := io.WriteString(w, content); err != nil {
+		return fmt.Errorf("%s: %w", errCtx, err)
+	}
+
+	return nil
+}
+
 func writeRowTag(w io.Writer, indent, tag string, isClose bool) error {
 	var content string
 	if isClose {

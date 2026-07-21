@@ -1,8 +1,6 @@
 package serialization
 
 import (
-	"fmt"
-
 	"github.com/pelletier/go-toml/v2"
 
 	"github.com/larsartmann/go-output"
@@ -32,11 +30,8 @@ func (r *TOMLGraphRenderer) Render() (string, error) {
 	graph := buildGraphView(r.GraphBuilder)
 
 	data, err := toml.Marshal(graph)
-	if err != nil {
-		return "", fmt.Errorf("marshal toml graph: %w", err)
-	}
 
-	return string(data), nil
+	return stringFromBytes("toml", "graph", data, err)
 }
 
 // TOMLTreeRenderer renders a TreeNode hierarchy as TOML.
@@ -63,9 +58,6 @@ func (r *TOMLTreeRenderer) Render() (string, error) {
 	node := toTreeNode(r.root)
 
 	data, err := toml.Marshal(node)
-	if err != nil {
-		return "", fmt.Errorf("marshal toml tree: %w", err)
-	}
 
-	return string(data), nil
+	return stringFromBytes("toml", "tree", data, err)
 }

@@ -49,3 +49,54 @@ func RenderFromWrite(write func(io.Writer) error) (string, error) {
 
 	return buf.String(), nil
 }
+
+// WriteRenderedRawFrom is the shared body of every CQRS Write function that
+// takes a configured renderer, calls its Render method, wraps any render
+// error with a "<format>:" prefix, and writes the rendered output via
+// WriteRenderedRaw. It collapses the canonical
+//
+//	out, err := renderer.Render()
+//	if err != nil { return fmt.Errorf("%s: %w", err) }
+//	return output.WriteRenderedRaw(w, formatName, out)
+//
+// pattern into a single call.
+//
+// Pass the renderer's Render method as a method value (e.g. `m.Render`);
+// formatName is the human-readable format string ("markdown", "plantuml",
+// "ascii tree"); formatErrorPrefix is the wrapping key for render errors
+// (typically the same as formatName).
+func WriteRenderedRawFrom(
+	w io.Writer,
+	render func() (string, error),
+	formatName, formatErrorPrefix string,
+) error {
+	out, err := render()
+	if err != nil {
+		return fmt.Errorf("%s: %w", formatErrorPrefix, err)
+	}
+
+	return WriteRenderedRaw(w, formatName, out)
+}
+
+// WriteRenderedFrom mirrors WriteRenderedRawFrom but routes the rendered
+// output through WriteRendered (which appends a trailing newline). It is
+// the shared body of CQRS Write functions whose rendered payload does NOT
+// carry its own trailing newline — e.g. table.Write, tree/registry's
+// renderTreeTable, and any renderers writing plain text without an
+// embedded \n.
+//
+// Same semantics as WriteRenderedRawFrom: pass the renderer's Render method
+// as a method value, formatName for the trailing error wrap, and
+// formatErrorPrefix for the render-time error wrap.
+func WriteRenderedFrom(
+	w io.Writer,
+	render func() (string, error),
+	formatName, formatErrorPrefix string,
+) error {
+	out, err := render()
+	if err != nil {
+		return fmt.Errorf("%s: %w", formatErrorPrefix, err)
+	}
+
+	return WriteRendered(w, formatName, out)
+}

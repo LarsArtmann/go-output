@@ -95,8 +95,7 @@ func TestMarshalJSONLFromTable_EmptyRows(t *testing.T) {
 func TestRenderTable_MarshalError(t *testing.T) {
 	t.Parallel()
 
-	data := output.NewTable([]string{"A"})
-	data.AddRow([]string{"1"})
+	data := output.NewTableWithRow([]string{"A"}, "1")
 
 	_, err := renderTable(data, "[]", "failing", func(v any) ([]byte, error) {
 		return nil, errors.New("unsupported value")
@@ -225,8 +224,7 @@ func TestYAMLGraphRenderer_MarshalError(t *testing.T) {
 func TestMarshalTOMLFromTable_RenderError(t *testing.T) {
 	t.Parallel()
 
-	data := output.NewTable([]string{"A"})
-	data.AddRow([]string{"1"})
+	data := output.NewTableWithRow([]string{"A"}, "1")
 
 	_, err := MarshalTOMLFromTable(data)
 	if err != nil {
@@ -292,8 +290,7 @@ func TestRenderTOMLUnknown_WriteError(t *testing.T) {
 func TestRenderJSONLTable_WriteRowError(t *testing.T) {
 	t.Parallel()
 
-	data := output.NewTable([]string{"Name"})
-	data.AddRow([]string{"Alice"})
+	data := output.NewTableWithRow([]string{"Name"}, "Alice")
 
 	err := renderJSONLTable(&errorWriter{}, data, output.RenderOptions{})
 	if err == nil {

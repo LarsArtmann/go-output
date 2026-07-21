@@ -13,41 +13,33 @@ type Option func(*Config)
 
 // Config holds tree rendering configuration.
 type Config struct {
-	colorMode output.ColorMode
+	output.ColorConfig
 }
 
 // WithColorMode sets the color output mode.
 func WithColorMode(mode output.ColorMode) Option {
-	return func(c *Config) { c.colorMode = mode }
+	return func(c *Config) { c.ColorMode = mode }
 }
 
 // WriteASCII writes a TreeNode as an ASCII tree to the provided writer.
 func WriteASCII(w io.Writer, root *output.TreeNode, opts ...Option) error {
-	cfg := Config{colorMode: output.ColorModeAuto}
+	cfg := Config{ColorConfig: output.DefaultColorConfig()}
 	for _, opt := range opts {
 		opt(&cfg)
 	}
 
 	r := NewASCIITreeRenderer()
-	r.SetColorMode(cfg.colorMode)
+	r.SetColorMode(cfg.ColorMode)
 	r.SetRoot(root)
 
-	out, err := r.Render()
-	if err != nil {
-		return fmt.Errorf("render ascii tree: %w", err)
-	}
-
-	return output.WriteRenderedRaw(w, "ascii tree", out)
+	return output.WriteRenderedRawFrom(w, r.Render, "ascii tree", "render ascii tree")
 }
 
 // RenderASCII renders a TreeNode as an ASCII tree string.
 func RenderASCII(root *output.TreeNode, opts ...Option) (string, error) {
-	var buf strings.Builder
-	if err := WriteASCII(&buf, root, opts...); err != nil {
-		return "", err
-	}
-
-	return buf.String(), nil
+	return output.RenderFromWrite(func(w io.Writer) error {
+		return WriteASCII(w, root, opts...)
+	})
 }
 
 // WriteMarkdown writes a TreeNode as a nested Markdown bullet list to the provided writer.

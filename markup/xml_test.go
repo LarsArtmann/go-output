@@ -230,8 +230,7 @@ func TestMarshalXMLFromTableWithFooter(t *testing.T) {
 func TestMarshalXMLFromTableNoFooter(t *testing.T) {
 	t.Parallel()
 
-	data := output.NewTable([]string{"Name"})
-	data.AddRow([]string{"Alice"})
+	data := output.NewTableWithRow([]string{"Name"}, "Alice")
 
 	result, err := MarshalXMLFromTable(data)
 	if err != nil {

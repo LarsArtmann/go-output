@@ -1,7 +1,6 @@
 package markdown
 
 import (
-	"fmt"
 	"io"
 
 	"github.com/larsartmann/go-output"
@@ -12,30 +11,25 @@ type Option func(*Config)
 
 // Config holds Markdown rendering configuration.
 type Config struct {
-	colorMode output.ColorMode
+	output.ColorConfig
 }
 
 // WithColorMode sets the color output mode.
 func WithColorMode(mode output.ColorMode) Option {
-	return func(c *Config) { c.colorMode = mode }
+	return func(c *Config) { c.ColorMode = mode }
 }
 
 // Write writes a Table as a Markdown table to the provided writer.
 func Write(w io.Writer, data *output.Table, opts ...Option) error {
-	cfg := Config{colorMode: output.ColorModeAuto}
+	cfg := Config{ColorConfig: output.DefaultColorConfig()}
 	for _, opt := range opts {
 		opt(&cfg)
 	}
 
 	m := NewMarkdownTableFromTable(data)
-	m.SetColorMode(cfg.colorMode)
+	m.SetColorMode(cfg.ColorMode)
 
-	out, err := m.Render()
-	if err != nil {
-		return fmt.Errorf("markdown: %w", err)
-	}
-
-	return output.WriteRenderedRaw(w, "markdown", out)
+	return output.WriteRenderedRawFrom(w, m.Render, "markdown", "markdown")
 }
 
 // Render renders a Table as a Markdown string.

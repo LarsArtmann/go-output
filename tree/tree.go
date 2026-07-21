@@ -15,14 +15,13 @@ import (
 	"strings"
 
 	"github.com/larsartmann/go-output"
+	"github.com/larsartmann/go-output/escape"
 )
 
-// Standard ANSI escape sequences for terminal styling. Local to this module
-// so tree stays dependency-free beyond the core output types.
+// Local ANSI color constants for depth-based tree coloring. The Reset and Bold
+// sequences come from the shared escape package; Cyan, Blue, Green, and Magenta
+// are tree-specific and remain local since tree is the only consumer.
 const (
-	ansiReset   = "\033[0m"
-	ansiBold    = "\033[1m"
-	ansiDim     = "\033[2m"
 	ansiCyan    = "\033[36m"
 	ansiBlue    = "\033[34m"
 	ansiGreen   = "\033[32m"
@@ -96,21 +95,21 @@ func (r *ASCIITreeRenderer) renderNode(
 	b.WriteString(prefix)
 
 	if r.useColor() {
-		b.WriteString(ansiDim)
+		b.WriteString(escape.ANSIDim)
 	}
 
 	b.WriteString(connector)
 
 	if r.useColor() {
-		b.WriteString(ansiReset)
+		b.WriteString(escape.ANSIReturn)
 		b.WriteString(r.colorForDepth(depth))
-		b.WriteString(ansiBold)
+		b.WriteString(escape.ANSIBold)
 	}
 
 	b.WriteString(node.Label.Get())
 
 	if r.useColor() {
-		b.WriteString(ansiReset)
+		b.WriteString(escape.ANSIReturn)
 	}
 
 	if len(node.Metadata) > 0 {
@@ -121,7 +120,7 @@ func (r *ASCIITreeRenderer) renderNode(
 
 		if r.useColor() {
 			b.WriteString(" ")
-			b.WriteString(ansiDim)
+			b.WriteString(escape.ANSIDim)
 			b.WriteString(ansiCyan)
 		} else {
 			b.WriteString(" ")
@@ -132,7 +131,7 @@ func (r *ASCIITreeRenderer) renderNode(
 		b.WriteString(")")
 
 		if r.useColor() {
-			b.WriteString(ansiReset)
+			b.WriteString(escape.ANSIReturn)
 		}
 	}
 

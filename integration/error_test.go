@@ -40,8 +40,7 @@ func TestRenderTable_InvalidFooter(t *testing.T) {
 func TestRenderTable_PreviouslyUnsupportedFormats(t *testing.T) {
 	t.Parallel()
 
-	data := output.NewTable([]string{"A"})
-	data.AddRow([]string{"1"})
+	data := output.NewTableWithRow([]string{"A"}, "1")
 
 	formats := []output.Format{
 		output.FormatD2,
@@ -109,8 +108,7 @@ func TestCreateRowEdges_EdgeCases(t *testing.T) {
 func TestRenderTable_WithWriter(t *testing.T) {
 	t.Parallel()
 
-	data := output.NewTable([]string{"Name"})
-	data.AddRow([]string{"Alpha"})
+	data := output.NewTableWithRow([]string{"Name"}, "Alpha")
 
 	t.Run("nil writer defaults to stdout", func(t *testing.T) {
 		t.Parallel()

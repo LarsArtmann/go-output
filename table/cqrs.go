@@ -1,7 +1,6 @@
 package table
 
 import (
-	"fmt"
 	"io"
 
 	"github.com/larsartmann/go-output"
@@ -16,12 +15,7 @@ func Write(w io.Writer, data *output.Table, opts ...Option) error {
 
 	t := FromTable(data, opts...)
 
-	out, err := t.Render()
-	if err != nil {
-		return fmt.Errorf("render table: %w", err)
-	}
-
-	return output.WriteRendered(w, "table", out)
+	return output.WriteRenderedFrom(w, t.Render, "table", "render table")
 }
 
 // Render renders a Table as a styled terminal table string.

@@ -3,7 +3,6 @@ package serialization
 import (
 	"encoding/json/jsontext"
 	"encoding/json/v2"
-	"fmt"
 
 	"github.com/larsartmann/go-output"
 )
@@ -39,11 +38,8 @@ func (r *JSONTreeRenderer) Render() (string, error) {
 	node := toTreeNode(r.root)
 
 	data, err := json.Marshal(node, json.Deterministic(true), jsontext.WithIndentPrefix(""), jsontext.WithIndent("  "))
-	if err != nil {
-		return "", fmt.Errorf("marshal json tree: %w", err)
-	}
 
-	return string(data), nil
+	return stringFromBytes("json", "tree", data, err)
 }
 
 // JSONGraphRenderer renders graph nodes and edges as JSON.
@@ -63,11 +59,8 @@ func (r *JSONGraphRenderer) Render() (string, error) {
 	graph := buildGraphView(r.GraphBuilder)
 
 	data, err := json.Marshal(graph, json.Deterministic(true), jsontext.WithIndentPrefix(""), jsontext.WithIndent("  "))
-	if err != nil {
-		return "", fmt.Errorf("marshal json graph: %w", err)
-	}
 
-	return string(data), nil
+	return stringFromBytes("json", "graph", data, err)
 }
 
 func brandedEdgeLabel(label output.GraphNodeLabel) string {

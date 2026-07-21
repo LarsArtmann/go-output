@@ -37,8 +37,7 @@ func TestWrite_ReturnsNilOnSuccess(t *testing.T) {
 func TestWrite_PropagatesWriterError(t *testing.T) {
 	t.Parallel()
 
-	data := output.NewTable([]string{"Name"})
-	data.AddRow([]string{"Alpha"})
+	data := output.NewTableWithRow([]string{"Name"}, "Alpha")
 
 	err := Write(&testhelpers.ErrorWriter{}, data)
 	if err == nil {
@@ -55,8 +54,7 @@ func TestWrite_PropagatesWriterError(t *testing.T) {
 func TestRender_ReturnsMarkdownString(t *testing.T) {
 	t.Parallel()
 
-	data := output.NewTable([]string{"Name"})
-	data.AddRow([]string{"Alpha"})
+	data := output.NewTableWithRow([]string{"Name"}, "Alpha")
 
 	out, err := Render(data)
 	if err != nil {

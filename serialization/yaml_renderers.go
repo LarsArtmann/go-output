@@ -1,8 +1,6 @@
 package serialization
 
 import (
-	"fmt"
-
 	"github.com/go-faster/yaml"
 
 	"github.com/larsartmann/go-output"
@@ -39,11 +37,8 @@ func (r *YAMLTreeRenderer) Render() (string, error) {
 	node := toTreeNode(r.root)
 
 	data, err := yaml.Marshal(node)
-	if err != nil {
-		return "", fmt.Errorf("marshal yaml tree: %w", err)
-	}
 
-	return string(data), nil
+	return stringFromBytes("yaml", "tree", data, err)
 }
 
 // YAMLGraphRenderer renders graph nodes and edges as YAML.
@@ -63,9 +58,6 @@ func (r *YAMLGraphRenderer) Render() (string, error) {
 	graph := buildGraphView(r.GraphBuilder)
 
 	data, err := yaml.Marshal(graph)
-	if err != nil {
-		return "", fmt.Errorf("marshal yaml graph: %w", err)
-	}
 
-	return string(data), nil
+	return stringFromBytes("yaml", "graph", data, err)
 }

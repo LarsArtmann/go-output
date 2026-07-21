@@ -2,7 +2,6 @@
 package table
 
 import (
-	"fmt"
 	"io"
 
 	"charm.land/lipgloss/v2"
@@ -25,12 +24,7 @@ func init() {
 func renderStyledTable(w io.Writer, data *output.Table, opts output.RenderOptions) error {
 	t := FromTable(data, WithColorMode(opts.ColorMode))
 
-	out, err := t.Render()
-	if err != nil {
-		return fmt.Errorf("render table: %w", err)
-	}
-
-	return output.WriteRendered(w, "table", out)
+	return output.WriteRenderedFrom(w, t.Render, "table", "render table")
 }
 
 // TableProvider defines the interface for types that provide tabular data.
