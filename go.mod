@@ -3,7 +3,7 @@ module github.com/larsartmann/go-output
 go 1.26.4
 
 require (
-	github.com/larsartmann/go-branded-id v0.3.1
+	github.com/larsartmann/go-branded-id v0.3.2
 	github.com/larsartmann/go-output/testhelpers v0.0.0-00010101000000-000000000000
 	golang.org/x/term v0.45.0
 )

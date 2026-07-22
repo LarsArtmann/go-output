@@ -2,8 +2,8 @@ github.com/aymanbagabas/go-udiff v0.4.1 h1:OEIrQ8maEeDBXQDoGCbbTTXYJMYRCRO1fnodZ
 github.com/aymanbagabas/go-udiff v0.4.1/go.mod h1:0L9PGwj20lrtmEMeyw4WKJ/TMyDtvAoK9bf2u/mNo3w=
 github.com/charmbracelet/x/exp/golden v0.0.0-20260705004817-2cc9a8fe1146 h1:+Gg3H2AVBIiYRUG/ctd7XjvUVbZ11odkbdkOrImmtbg=
 github.com/charmbracelet/x/exp/golden v0.0.0-20260705004817-2cc9a8fe1146/go.mod h1:6fMpcW6iwN/kX+xJ52eqVWsDiBTe0UJD24JLoHFe+P0=
-github.com/larsartmann/go-branded-id v0.3.1 h1:n53Vz3MCUy3S8YfW/v+zxL/qT96iiXZOT6p46HZysyA=
-github.com/larsartmann/go-branded-id v0.3.1/go.mod h1:fiv3t1PyNCITnE/8KtymGCUz7tQRuQxF+8oqNdFmA/Y=
+github.com/larsartmann/go-branded-id v0.3.2 h1:Vbe5/LRuR2ycDFpDKuuuG8brBRYvSYcOU1nqV8IIZPI=
+github.com/larsartmann/go-branded-id v0.3.2/go.mod h1:xoQYcGTGrMqRYB8cMKHe2efq8S6stQGg3nW4DzXVWpA=
 golang.org/x/sys v0.47.0 h1:o7XGOvZQCADBQQ4Y7VNq2dRWQR7JmOUW8Kxx4ZsNgWs=
 golang.org/x/sys v0.47.0/go.mod h1:4GL1E5IUh+htKOUEOaiffhrAeqysfVGipDYzABqnCmw=
 golang.org/x/term v0.45.0 h1:NwWyBmoJCbfTHpxrWoZ9C6/VxOf7ic219I8xZZFdrf0=
