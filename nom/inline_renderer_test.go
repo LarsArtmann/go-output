@@ -563,7 +563,7 @@ func TestRenderSummary_BorderWidthWithANSI(t *testing.T) {
 				t.Fatalf("expected 3 lines, got %d", len(lines))
 			}
 
-			widths := make([]int, 3)
+			var widths [3]int
 			for i, line := range lines {
 				widths[i] = ansi.StringWidth(line)
 			}

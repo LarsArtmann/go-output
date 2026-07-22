@@ -89,6 +89,15 @@ func (r *InlineRenderer) effectiveMaxWidth() int {
 	return GetTerminalWidth(r.writer)
 }
 
+// styleGroup appends text to groups, applying faint styling when color is enabled.
+func styleGroup(groups []string, text string, noColor bool, faint lipgloss.Style) []string {
+	if noColor {
+		return append(groups, text)
+	}
+
+	return append(groups, faint.Render(text))
+}
+
 // renderSummary builds a one-line NOM-style summary bar. It takes the
 // already-snapshotted startTime so it does not re-acquire tickMu (Draw, its
 // only caller, already holds renderMu and snapshotted the full config).
@@ -115,21 +124,12 @@ func (r *InlineRenderer) renderSummary(startTime time.Time, noColor bool) string
 
 	// SECONDARY: elapsed time.
 	if !startTime.IsZero() {
-		elapsed := FormatDuration(time.Since(startTime))
-		if noColor {
-			groups = append(groups, elapsed)
-		} else {
-			groups = append(groups, faint.Render(elapsed))
-		}
+		groups = styleGroup(groups, FormatDuration(time.Since(startTime)), noColor, faint)
 	}
 
 	// SECONDARY: optional segments (ETA, critical path, parallelism, DAG summary).
 	for _, seg := range r.optionalSummarySegments(startTime) {
-		if noColor {
-			groups = append(groups, seg)
-		} else {
-			groups = append(groups, faint.Render(seg))
-		}
+		groups = styleGroup(groups, seg, noColor, faint)
 	}
 
 	if len(groups) == 0 {
@@ -142,11 +142,7 @@ func (r *InlineRenderer) renderSummary(startTime time.Time, noColor bool) string
 		totalStr += fmt.Sprintf(" (%d%%)", counts.CompletionPercent())
 	}
 
-	if noColor {
-		groups = append(groups, totalStr)
-	} else {
-		groups = append(groups, faint.Render(totalStr))
-	}
+	groups = styleGroup(groups, totalStr, noColor, faint)
 
 	// Join groups — dim │ separator between groups when colored.
 	var summary string
