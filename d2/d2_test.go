@@ -161,7 +161,7 @@ func TestD2Diagram_AddNode(t *testing.T) {
 			t.Fatalf("Render() error = %v", err)
 		}
 
-		testhelpers.AssertContains(t, got, "server: Web Server", "should contain node")
+		testhelpers.AssertContains(t, got, `server: "Web Server"`, "should contain node")
 	})
 
 	t.Run("AddNodeSimple", func(t *testing.T) {

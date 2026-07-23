@@ -3,13 +3,11 @@ package d2
 import (
 	"fmt"
 	"strings"
-
-	"github.com/larsartmann/go-output/escape"
 )
 
 func (d *Diagram) writeStyleAttrs(b *strings.Builder, s NodeStyle, indent string) {
 	if s.Fill != "" {
-		fmt.Fprintf(b, "%sstyle.fill: %s\n", indent, escape.D2(s.Fill))
+		fmt.Fprintf(b, "%sstyle.fill: %s\n", indent, d2Quote(s.Fill))
 	}
 
 	d.writeStyleColors(b, s.StrokeStyle, indent)
@@ -18,7 +16,7 @@ func (d *Diagram) writeStyleAttrs(b *strings.Builder, s NodeStyle, indent string
 
 func (*Diagram) writeStyleColors(b *strings.Builder, s StrokeStyle, indent string) {
 	if s.Stroke != "" {
-		fmt.Fprintf(b, "%sstyle.stroke: %s\n", indent, escape.D2(s.Stroke))
+		fmt.Fprintf(b, "%sstyle.stroke: %s\n", indent, d2Quote(s.Stroke))
 	}
 
 	if s.StrokeWidth > 0 {
@@ -34,7 +32,7 @@ func (*Diagram) writeStyleColors(b *strings.Builder, s StrokeStyle, indent strin
 	}
 
 	if s.FontColor != "" {
-		fmt.Fprintf(b, "%sstyle.font-color: %s\n", indent, escape.D2(s.FontColor))
+		fmt.Fprintf(b, "%sstyle.font-color: %s\n", indent, d2Quote(s.FontColor))
 	}
 }
 
@@ -59,17 +57,17 @@ func (*Diagram) writeStyleEffects(b *strings.Builder, s NodeStyle, indent string
 	}
 
 	if s.TextTransform != TextTransformNone {
-		fmt.Fprintf(b, "%sstyle.text-transform: %s\n", indent, escape.D2(string(s.TextTransform)))
+		fmt.Fprintf(b, "%sstyle.text-transform: %s\n", indent, d2Quote(string(s.TextTransform)))
 	}
 }
 
 func (d *Diagram) writeEdge(b *strings.Builder, edge Edge) {
-	from := escape.D2(edge.From.Get())
-	to := escape.D2(edge.To.Get())
+	from := d2Quote(edge.From.Get())
+	to := d2Quote(edge.To.Get())
 
 	label := ""
 	if !edge.Label.IsZero() {
-		label = ": " + escape.D2(edge.Label.Get())
+		label = ": " + d2Quote(edge.Label.Get())
 	}
 
 	if !edge.hasBlockAttrs() {

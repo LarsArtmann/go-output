@@ -15,6 +15,41 @@ var (
 	_ output.GraphRenderer = (*Diagram)(nil)
 )
 
+// d2NeedsQuoting reports whether s contains characters that are special in
+// D2 syntax and would break parsing if left unquoted. D2 treats # as a
+// comment character, and {}, [], (), :, ;, |, ", \, and whitespace as
+// structural or syntactic characters. Strings containing any of these must
+// be wrapped in double quotes to produce valid D2.
+func d2NeedsQuoting(s string) bool {
+	if s == "" {
+		return true
+	}
+
+	for _, r := range s {
+		switch r {
+		case ' ', '\t', '\n', '\r',
+			'#', ':', ';', '|',
+			'{', '}', '[', ']', '(', ')',
+			'"', '\\':
+			return true
+		}
+	}
+
+	return false
+}
+
+// d2Quote wraps s in double quotes (after D2 escaping) when s contains
+// characters that require quoting. Simple identifiers (alphanumeric,
+// underscores, hyphens) are returned unquoted for readability and backward
+// compatibility.
+func d2Quote(s string) string {
+	if d2NeedsQuoting(s) {
+		return `"` + escape.D2(s) + `"`
+	}
+
+	return escape.D2(s)
+}
+
 // Diagram builds D2 diagram output with full support for nodes, edges,
 // SQL table shapes, styling, nesting, icons, links, tooltips, classes, and layout configuration.
 type Diagram struct {
@@ -152,11 +187,11 @@ func (d *Diagram) writeConfig(b *strings.Builder) {
 	}
 
 	if d.title != "" {
-		fmt.Fprintf(b, "title: {\n  label: %s\n}\n", escape.D2(d.title))
+		fmt.Fprintf(b, "title: {\n  label: %s\n}\n", d2Quote(d.title))
 	}
 
 	if d.layout != "" {
-		fmt.Fprintf(b, "layout: %s\n", escape.D2(d.layout))
+		fmt.Fprintf(b, "layout: %s\n", d2Quote(d.layout))
 	}
 
 	b.WriteString("\n")
@@ -174,7 +209,7 @@ func (d *Diagram) writeClasses(b *strings.Builder) {
 
 	for _, name := range names {
 		b.WriteString("  ")
-		b.WriteString(escape.D2(name))
+		b.WriteString(d2Quote(name))
 		b.WriteString(": {\n")
 		d.writeStyleAttrs(b, d.classes[name], "    ")
 		b.WriteString("  }\n")
@@ -184,7 +219,7 @@ func (d *Diagram) writeClasses(b *strings.Builder) {
 }
 
 func (d *Diagram) writeTable(b *strings.Builder, table Table) {
-	fmt.Fprintf(b, "%s: {\n  shape: sql_table\n", escape.D2(table.Name))
+	fmt.Fprintf(b, "%s: {\n  shape: sql_table\n", d2Quote(table.Name))
 
 	for _, col := range table.Columns {
 		d.writeColumn(b, col)
@@ -196,9 +231,9 @@ func (d *Diagram) writeTable(b *strings.Builder, table Table) {
 func (*Diagram) writeColumn(b *strings.Builder, col Column) {
 	if col.Constraint != "" {
 		fmt.Fprintf(b, "  %s: %s {constraint: %s}\n",
-			escape.D2(col.Name), escape.D2(col.Type), string(col.Constraint))
+			d2Quote(col.Name), d2Quote(col.Type), string(col.Constraint))
 	} else {
-		fmt.Fprintf(b, "  %s: %s\n", escape.D2(col.Name), escape.D2(col.Type))
+		fmt.Fprintf(b, "  %s: %s\n", d2Quote(col.Name), d2Quote(col.Type))
 	}
 }
 
@@ -209,16 +244,16 @@ func (d *Diagram) writeNode(b *strings.Builder, node Node) {
 	}
 
 	if node.hasBlockAttrs() {
-		fmt.Fprintf(b, "%s: %s {\n", escape.D2(node.ID.Get()), escape.D2(node.Label.Get()))
+		fmt.Fprintf(b, "%s: %s {\n", d2Quote(node.ID.Get()), d2Quote(node.Label.Get()))
 		d.writeNodeAttrs(b, node)
 		b.WriteString("}\n")
 	} else {
-		fmt.Fprintf(b, "%s: %s\n", escape.D2(node.ID.Get()), escape.D2(node.Label.Get()))
+		fmt.Fprintf(b, "%s: %s\n", d2Quote(node.ID.Get()), d2Quote(node.Label.Get()))
 	}
 }
 
 func (d *Diagram) writeNestedNode(b *strings.Builder, node Node) {
-	fmt.Fprintf(b, "%s: %s {\n", escape.D2(node.ID.Get()), escape.D2(node.Label.Get()))
+	fmt.Fprintf(b, "%s: %s {\n", d2Quote(node.ID.Get()), d2Quote(node.Label.Get()))
 	d.writeNodeAttrs(b, node)
 	b.WriteString(node.Nested)
 	b.WriteString("}\n")
@@ -247,7 +282,7 @@ func (*Diagram) writeNodeSize(b *strings.Builder, node Node) {
 
 func (*Diagram) writeNodeLayout(b *strings.Builder, node Node) {
 	if node.Near != "" {
-		fmt.Fprintf(b, "  near: %s\n", escape.D2(node.Near))
+		fmt.Fprintf(b, "  near: %s\n", d2Quote(node.Near))
 	}
 
 	if node.GridRows > 0 {
@@ -265,18 +300,18 @@ func (*Diagram) writeNodeLayout(b *strings.Builder, node Node) {
 
 func (*Diagram) writeNodeRefs(b *strings.Builder, node Node) {
 	if node.Class != "" {
-		fmt.Fprintf(b, "  class: %s\n", escape.D2(node.Class))
+		fmt.Fprintf(b, "  class: %s\n", d2Quote(node.Class))
 	}
 
 	if node.Icon != "" {
-		fmt.Fprintf(b, "  icon: %s\n", escape.D2(node.Icon))
+		fmt.Fprintf(b, "  icon: %s\n", d2Quote(node.Icon))
 	}
 
 	if node.Link != "" {
-		fmt.Fprintf(b, "  link: %s\n", escape.D2(node.Link))
+		fmt.Fprintf(b, "  link: %s\n", d2Quote(node.Link))
 	}
 
 	if node.Tooltip != "" {
-		fmt.Fprintf(b, "  tooltip: %s\n", escape.D2(node.Tooltip))
+		fmt.Fprintf(b, "  tooltip: %s\n", d2Quote(node.Tooltip))
 	}
 }

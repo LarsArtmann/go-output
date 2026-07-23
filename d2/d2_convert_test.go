@@ -144,8 +144,8 @@ func TestNewD2FromTree(t *testing.T) {
 		}
 
 		testhelpers.AssertContains(t, got, "root: Root", "should contain root node")
-		testhelpers.AssertContains(t, got, "child1: Child 1", "should contain first child")
-		testhelpers.AssertContains(t, got, "child2: Child 2", "should contain second child")
+		testhelpers.AssertContains(t, got, `child1: "Child 1"`, "should contain first child")
+		testhelpers.AssertContains(t, got, `child2: "Child 2"`, "should contain second child")
 		testhelpers.AssertContains(t, got, "root -> child1", "should contain edge to first child")
 		testhelpers.AssertContains(t, got, "root -> child2", "should contain edge to second child")
 	})
@@ -191,7 +191,7 @@ func TestNewD2FromTree(t *testing.T) {
 			t.Fatalf("Render() error = %v", err)
 		}
 
-		testhelpers.AssertContains(t, got, "My_Root: My Root", "should use slug for empty ID")
+		testhelpers.AssertContains(t, got, `My_Root: "My Root"`, "should use slug for empty ID")
 		testhelpers.AssertContains(t, got, "My_Root -> Child_Node", "should use slug in edge")
 	})
 }
@@ -210,7 +210,7 @@ func TestD2GraphRendererInterface(t *testing.T) {
 		*output.NewGraphEdge("a", "b"),
 	})
 
-	testhelpers.RenderAssert(t, d, "a: Node A", "b: Node B", "a -> b")
+	testhelpers.RenderAssert(t, d, `a: "Node A"`, `b: "Node B"`, "a -> b")
 }
 
 func TestD2NodeShapeConversion(t *testing.T) {

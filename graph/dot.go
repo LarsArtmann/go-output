@@ -245,7 +245,7 @@ func writeDOTEdgeStmt(b *strings.Builder, edge output.GraphEdge, directed bool) 
 	}
 
 	if edge.Style.Color != "" {
-		attrs = append(attrs, "color="+escape.DOT(edge.Style.Color))
+		attrs = append(attrs, fmt.Sprintf("color=\"%s\"", escape.DOT(edge.Style.Color)))
 	}
 
 	if edge.Style.Line != "" {

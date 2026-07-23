@@ -138,7 +138,7 @@ func TestD2NodeWithLink(t *testing.T) {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	testhelpers.AssertContains(t, got, "link: https://example.com/docs", "should contain link")
+	testhelpers.AssertContains(t, got, `link: "https://example.com/docs"`, "should contain link")
 }
 
 func TestD2NodeWithTooltip(t *testing.T) {
@@ -156,7 +156,7 @@ func TestD2NodeWithTooltip(t *testing.T) {
 		t.Fatalf("Render() error = %v", err)
 	}
 
-	testhelpers.AssertContains(t, got, "tooltip: Additional information", "should contain tooltip")
+	testhelpers.AssertContains(t, got, `tooltip: "Additional information"`, "should contain tooltip")
 }
 
 func TestD2NodeWithNear(t *testing.T) {
@@ -353,4 +353,87 @@ func TestD2NodeStyleEscapeOutput(t *testing.T) {
 		`a\"b\\c`,
 		`\nd`,
 	)
+}
+
+// TestD2ValueQuoting verifies that D2 values containing special characters
+// (spaces, #, brackets, colons) are wrapped in double quotes to produce valid
+// D2 syntax, while simple identifiers remain unquoted for readability.
+// Regression test for a bug where hex colors like #2d5a2d were emitted
+// unquoted, causing # to be parsed as a D2 comment.
+func TestD2ValueQuoting(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name     string
+		node     Node
+		mustHave string
+		mustNot  string
+	}{
+		{
+			name: "hex color fill is quoted",
+			node: Node{ //nolint:exhaustruct // Test uses minimal fields
+				ID:    output.NewBrandedID[output.D2NodeIDBrand]("n"),
+				Label: output.NewBrandedID[output.D2NodeLabelBrand]("N"),
+				Style: NodeStyle{Fill: "#2d5a2d"},
+			},
+			mustHave: `style.fill: "#2d5a2d"`,
+			mustNot:  `style.fill: #2d5a2d`,
+		},
+		{
+			name: "label with space is quoted",
+			node: Node{ //nolint:exhaustruct // Test uses minimal fields
+				ID:    output.NewBrandedID[output.D2NodeIDBrand]("n"),
+				Label: output.NewBrandedID[output.D2NodeLabelBrand]("Node A"),
+			},
+			mustHave: `"Node A"`,
+		},
+		{
+			name: "label with brackets is quoted",
+			node: Node{ //nolint:exhaustruct // Test uses minimal fields
+				ID:    output.NewBrandedID[output.D2NodeIDBrand]("n"),
+				Label: output.NewBrandedID[output.D2NodeLabelBrand]("step [OK]"),
+			},
+			mustHave: `"step [OK]"`,
+		},
+		{
+			name: "simple label not quoted",
+			node: Node{ //nolint:exhaustruct // Test uses minimal fields
+				ID:    output.NewBrandedID[output.D2NodeIDBrand]("n"),
+				Label: output.NewBrandedID[output.D2NodeLabelBrand]("Alpha"),
+			},
+			mustHave: "n: Alpha",
+			mustNot:  `"Alpha"`,
+		},
+		{
+			name: "named color not quoted",
+			node: Node{ //nolint:exhaustruct // Test uses minimal fields
+				ID:    output.NewBrandedID[output.D2NodeIDBrand]("n"),
+				Label: output.NewBrandedID[output.D2NodeLabelBrand]("N"),
+				Style: NodeStyle{Fill: "blue"},
+			},
+			mustHave: "style.fill: blue",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			d := NewDiagram()
+			d.AddNode(tt.node)
+
+			got, err := d.Render()
+			if err != nil {
+				t.Fatalf("Render() error = %v", err)
+			}
+
+			if !strings.Contains(got, tt.mustHave) {
+				t.Errorf("expected output to contain %q, got:\n%s", tt.mustHave, got)
+			}
+
+			if tt.mustNot != "" && strings.Contains(got, tt.mustNot) {
+				t.Errorf("output should NOT contain %q, got:\n%s", tt.mustNot, got)
+			}
+		})
+	}
 }
