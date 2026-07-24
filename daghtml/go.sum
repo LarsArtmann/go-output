@@ -1,4 +1,3 @@
 github.com/aymanbagabas/go-udiff v0.4.1 h1:OEIrQ8maEeDBXQDoGCbbTTXYJMYRCRO1fnodZ12Gv5o=
 github.com/aymanbagabas/go-udiff v0.4.1/go.mod h1:0L9PGwj20lrtmEMeyw4WKJ/TMyDtvAoK9bf2u/mNo3w=
-github.com/charmbracelet/x/exp/golden v0.0.0-20260629091435-9c70f75e26a4 h1:Ixrvza17xB1Hm2kAesipn1IKaxJRbHYnwkrQiwfu0tI=
-github.com/charmbracelet/x/exp/golden v0.0.0-20260629091435-9c70f75e26a4/go.mod h1:6fMpcW6iwN/kX+xJ52eqVWsDiBTe0UJD24JLoHFe+P0=
+github.com/charmbracelet/x/exp/golden v0.0.0-20260705004817-2cc9a8fe1146 h1:+Gg3H2AVBIiYRUG/ctd7XjvUVbZ11odkbdkOrImmtbg=
