@@ -34,7 +34,7 @@ require (
 	github.com/larsartmann/go-output/markdown v0.0.0-00010101000000-000000000000
 	github.com/larsartmann/go-output/tree v0.0.0-00010101000000-000000000000
 	github.com/lucasb-eyer/go-colorful v1.4.0 // indirect
-	github.com/mattn/go-runewidth v0.0.24 // indirect
+	github.com/mattn/go-runewidth v0.0.27 // indirect
 	github.com/muesli/cancelreader v0.2.2 // indirect
 	github.com/pelletier/go-toml/v2 v2.4.3 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
