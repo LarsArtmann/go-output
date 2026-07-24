@@ -13,7 +13,7 @@ require (
 
 require (
 	github.com/aymanbagabas/go-udiff v0.4.1 // indirect
-	github.com/go-faster/errors v0.7.1 // indirect
+	github.com/go-faster/errors v0.8.0 // indirect
 	github.com/go-faster/jx v1.2.0 // indirect
 	github.com/larsartmann/go-branded-id v0.3.2 // indirect
 	github.com/segmentio/asm v1.2.1 // indirect
