@@ -13,7 +13,7 @@ require (
 	github.com/larsartmann/go-output/plantuml v0.0.0-00010101000000-000000000000
 	github.com/larsartmann/go-output/serialization v0.0.0-00010101000000-000000000000
 	github.com/larsartmann/go-output/table v0.0.0-00010101000000-000000000000
-	github.com/larsartmann/go-output/testhelpers v0.0.0-00010101000000-000000000000
+	github.com/larsartmann/go-output/testhelpers v0.31.1
 	github.com/larsartmann/go-output/tui v0.0.0-00010101000000-000000000000
 )
 
