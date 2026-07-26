@@ -26,10 +26,9 @@ func BenchmarkFormatActivityLabel(b *testing.B) {
 				CurrentElapsed: 5 * time.Second,
 			}
 
-			b.ResetTimer()
 			b.ReportAllocs()
 
-			for range b.N {
+			for b.Loop() {
 				_, _ = formatActivityLabel(snap)
 			}
 		})

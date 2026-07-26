@@ -2,7 +2,6 @@ package tui
 
 import (
 	"context"
-	"io"
 	"strings"
 	"testing"
 	"time"
@@ -51,18 +50,6 @@ func newTeatestModel(t *testing.T, width, height int) *teatest.TestModel {
 	})
 
 	return tm
-}
-
-// stripOutput reads and ANSI-strips teatest output for visible-text assertions.
-func stripOutput(t *testing.T, r io.Reader) string {
-	t.Helper()
-
-	bts, err := io.ReadAll(r)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	return ansi.Strip(string(bts))
 }
 
 // waitForVisible polls teatest output (ANSI-stripped) until it contains substr.
