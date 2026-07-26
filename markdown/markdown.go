@@ -161,7 +161,17 @@ func (m *MarkdownTable) useColor() bool {
 	return m.colorMode.ShouldColor()
 }
 
+// writeReset emits the ANSI reset code when colour mode is active; no-op
+// otherwise. Centralises the "reset at table boundary" idiom shared by
+// writeSeparator and writeFooter.
+func (m *MarkdownTable) writeReset(b *strings.Builder) {
+	if m.useColor() {
+		b.WriteString(escape.ANSIReturn)
+	}
+}
+
 func (m *MarkdownTable) writeHeader(b *strings.Builder, colWidths []int) {
+	b.WriteString("|")
 	b.WriteString("|")
 
 	for i, header := range m.headers {
@@ -201,9 +211,7 @@ func (m *MarkdownTable) writeSeparator(b *strings.Builder, colWidths []int) {
 
 	b.WriteString("\n")
 
-	if m.useColor() {
-		b.WriteString(escape.ANSIReturn)
-	}
+	m.writeReset(b)
 }
 
 func (m *MarkdownTable) getAlignmentMarkers(col int) (prefix, suffix string) {
@@ -232,9 +240,7 @@ func (m *MarkdownTable) writeFooterRow(b *strings.Builder, colWidths []int) {
 
 	m.writeSingleRow(b, m.footer, colWidths)
 
-	if m.useColor() {
-		b.WriteString(escape.ANSIReturn)
-	}
+	m.writeReset(b)
 }
 
 func (m *MarkdownTable) writeSingleRow(b *strings.Builder, row []string, colWidths []int) {

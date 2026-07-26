@@ -198,8 +198,14 @@ func (m *ProgressModel) touchLastUpdate() {
 	m.lastUpdate = time.Now()
 }
 
+// acceptUpdate is the guard shared by every progress- and step-update handler.
+// Returns true when the workflow state is willing to accept a new update.
+func (m *ProgressModel) acceptUpdate() bool {
+	return m.workflowState.canAcceptUpdates()
+}
+
 func (m *ProgressModel) handleProgressUpdate(msg progressUpdateMsg) (tea.Model, tea.Cmd) {
-	if !m.workflowState.canAcceptUpdates() {
+	if !m.acceptUpdate() {
 		return m, nil
 	}
 
@@ -257,7 +263,7 @@ func (m *ProgressModel) updateWorkflowCompletionState() {
 // handleStepUpdate processes a step-based progress update on the TUI goroutine.
 // It creates a new step or updates an existing step with a matching message.
 func (m *ProgressModel) handleStepUpdate(msg stepUpdateMsg) (tea.Model, tea.Cmd) {
-	if !m.workflowState.canAcceptUpdates() {
+	if !m.acceptUpdate() {
 		return m, nil
 	}
 
