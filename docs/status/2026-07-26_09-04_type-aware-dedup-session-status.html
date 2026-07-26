@@ -1,0 +1,860 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Report Title</title>
+    <style>
+      /* =========================================================================
+         BAUHAUS LIGHT — Editorial template
+         Design language: form follows function. Primary colors on warm paper.
+         Zero external dependencies: system fonts, no CDN, no build step.
+         Token architecture: see references/bauhaus-tokens.md
+         ========================================================================= */
+
+      :root {
+        /* --- Primitive palette (Bauhaus Light) --- */
+        --color-paper: #f4f4f0;
+        --color-paper-2: #ffffff;
+        --color-paper-3: #e8e8e2;
+        --color-ink: #111111;
+        --color-red: #e63946;
+        --color-blue: #1d3557;
+        --color-yellow: #f4d35e;
+        --color-hairline: rgba(17, 17, 17, 0.14);
+        --color-hairline-strong: rgba(17, 17, 17, 0.3);
+
+        /* --- Semantic layer (shared vocabulary with dark template) --- */
+        --surface: var(--color-paper);
+        --surface-raised: var(--color-paper-2);
+        --surface-sunken: var(--color-paper-3);
+        --text: var(--color-ink);
+        --text-muted: rgba(17, 17, 17, 0.72);
+        --text-faint: rgba(17, 17, 17, 0.5);
+        --border: var(--color-hairline);
+        --border-strong: var(--color-hairline-strong);
+        --accent: var(--color-red);
+        --problem: var(--color-red);
+        --solution: var(--color-blue);
+        --warning: var(--color-yellow);
+
+        /* --- Backward-compatible aliases (do not break consumer skills) --- */
+        --bg: var(--surface);
+        --bg-elevated: var(--surface-raised);
+        --bg-sunken: var(--surface-sunken);
+        --bg-card: var(--surface-raised);
+        --bg-code: var(--surface-sunken);
+        --ink: var(--text);
+        --ink-secondary: var(--text-muted);
+        --ink-muted: var(--text-faint);
+        --rose: var(--problem);
+        --rose-glow: color-mix(in srgb, var(--problem) 15%, transparent);
+        --emerald: var(--solution);
+        --emerald-glow: color-mix(in srgb, var(--solution) 15%, transparent);
+        --amber: var(--warning);
+        --amber-glow: color-mix(in srgb, var(--warning) 15%, transparent);
+        --amber-light: color-mix(in srgb, var(--warning) 22%, transparent);
+        --coral: var(--problem);
+        --coral-light: color-mix(in srgb, var(--problem) 12%, transparent);
+        --teal: var(--solution);
+        --teal-light: color-mix(in srgb, var(--solution) 12%, transparent);
+
+        /* --- Shape --- */
+        --radius: 0px;
+        --radius-sm: 0px;
+
+        /* --- Type stacks (system only — zero external fonts) --- */
+        --font-heading:
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+        --font-body:
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+        --font-mono:
+          ui-monospace, "Cascadia Code", "Source Code Pro", "JetBrains Mono", Menlo, Consolas,
+          monospace;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      section[id],
+      [id] {
+        scroll-margin-top: 60px;
+      }
+
+      body {
+        background: var(--surface);
+        color: var(--text);
+        font-family: var(--font-body);
+        font-size: 16px;
+        line-height: 1.65;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      /* --- Accessibility: keyboard focus --- */
+      :focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+      a:focus-visible {
+        outline-offset: -1px;
+      }
+
+      /* --- Full-bleed top bar --- */
+      .top-bar {
+        background: var(--text);
+        color: var(--surface);
+        padding: 0.6rem 2rem;
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      /* --- Layout: optional sticky sidebar TOC --- */
+      .layout {
+        display: flex;
+        gap: 2.5rem;
+        padding: 2rem;
+      }
+      .sidebar {
+        width: 220px;
+        flex-shrink: 0;
+        position: sticky;
+        top: 1rem;
+        align-self: flex-start;
+        height: calc(100vh - 2rem);
+        overflow-y: auto;
+        display: none;
+      }
+      .sidebar nav {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+      }
+      .sidebar .label {
+        font-family: var(--font-mono);
+        font-size: 0.68rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--accent);
+        margin-bottom: 0.75rem;
+        padding-bottom: 0.4rem;
+        border-bottom: 2px solid var(--text);
+      }
+      .sidebar a {
+        font-size: 0.86rem;
+        color: var(--text);
+        text-decoration: none;
+        padding: 0.5rem 0.75rem;
+        border-left: 4px solid transparent;
+        font-weight: 600;
+        transition: all 0.15s ease;
+        line-height: 1.4;
+      }
+      .sidebar a:hover,
+      .sidebar a.active {
+        border-left-color: var(--accent);
+        background: color-mix(in srgb, var(--accent) 8%, transparent);
+        color: var(--accent);
+      }
+      .main {
+        flex: 1;
+        min-width: 0;
+      }
+
+      /* --- Headings --- */
+      h1,
+      h2,
+      h3,
+      h4 {
+        font-family: var(--font-heading);
+        font-weight: 900;
+        letter-spacing: -0.02em;
+        color: var(--text);
+      }
+      h1 {
+        font-size: clamp(1.9rem, 4.5vw, 2.8rem);
+        line-height: 1.05;
+        margin: 0 0 0.6rem;
+      }
+      h2 {
+        font-size: 1.5rem;
+        margin: 2.5rem 0 1rem;
+        padding-bottom: 0.4rem;
+        border-bottom: 3px solid var(--text);
+        display: flex;
+        align-items: baseline;
+        gap: 0.7rem;
+      }
+      h2 .num {
+        font-family: var(--font-mono);
+        font-size: 0.82rem;
+        color: var(--accent);
+        font-weight: 700;
+        letter-spacing: 0.04em;
+      }
+      h3 {
+        font-size: 1.15rem;
+        margin: 0 0 0.4rem;
+        font-weight: 700;
+      }
+      h4 {
+        font-size: 1rem;
+        margin: 0 0 0.3rem;
+        font-weight: 700;
+      }
+      p {
+        margin: 0 0 1rem;
+      }
+
+      /* --- Hero --- */
+      .hero {
+        padding: 1.5rem 0 2rem;
+        margin-bottom: 1.5rem;
+        border-bottom: 3px solid var(--text);
+      }
+      .eyebrow {
+        font-family: var(--font-mono);
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.16em;
+        color: var(--accent);
+        margin-bottom: 0.9rem;
+      }
+      .subtitle {
+        font-size: 1.1rem;
+        color: var(--text-muted);
+        max-width: 70ch;
+        margin: 0 0 1rem;
+      }
+      .meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+      .tag {
+        display: inline-block;
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        padding: 0.25rem 0.6rem;
+        background: var(--surface-sunken);
+        color: var(--text);
+        border: 1px solid var(--border-strong);
+      }
+      .tag.amber {
+        background: var(--warning);
+        border-color: var(--warning);
+        color: var(--text);
+      }
+      .tag.teal {
+        background: var(--solution);
+        border-color: var(--solution);
+        color: var(--surface);
+      }
+
+      /* Bauhaus signature: geometric shape cluster (optional) */
+      .hero-shapes {
+        position: relative;
+        height: 90px;
+        margin-bottom: 1.2rem;
+      }
+      .hero-shapes .circle {
+        position: absolute;
+        top: 0;
+        right: 180px;
+        width: 64px;
+        height: 64px;
+        background: var(--problem);
+        border-radius: 50%;
+      }
+      .hero-shapes .square {
+        position: absolute;
+        top: 26px;
+        right: 90px;
+        width: 56px;
+        height: 56px;
+        background: var(--solution);
+      }
+      .hero-shapes .tri {
+        position: absolute;
+        top: 8px;
+        right: 0;
+        width: 0;
+        height: 0;
+        border-left: 32px solid transparent;
+        border-right: 32px solid transparent;
+        border-bottom: 56px solid var(--warning);
+      }
+      .hero-shapes .bar {
+        position: absolute;
+        bottom: 0;
+        right: 230px;
+        width: 100px;
+        height: 14px;
+        background: var(--text);
+      }
+
+      /* --- Scorecard / stat cards --- */
+      .scorecard,
+      .stat-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 0;
+        margin: 1.5rem 0 2rem;
+        border: 3px solid var(--text);
+      }
+      .score-card,
+      .stat-card {
+        padding: 1.3rem 1rem;
+        text-align: center;
+        border-right: 3px solid var(--text);
+        background: var(--surface-raised);
+      }
+      .score-card:last-child,
+      .stat-card:last-child {
+        border-right: none;
+      }
+
+      .score,
+      .stat-value {
+        font-family: var(--font-heading);
+        font-size: 2.6rem;
+        font-weight: 900;
+        line-height: 1;
+        letter-spacing: -0.04em;
+      }
+      .score-card .label,
+      .stat-label {
+        font-family: var(--font-mono);
+        font-size: 0.62rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        margin-top: 0.5rem;
+      }
+      /* Semantic state classes — no nth-child decoration, no !important */
+      .score-good,
+      .stat-good {
+        background: var(--solution);
+        color: var(--surface);
+      }
+      .score-warn,
+      .stat-warn {
+        background: var(--warning);
+        color: var(--text);
+      }
+      .score-bad,
+      .stat-bad {
+        background: var(--problem);
+        color: var(--surface);
+      }
+
+      /* --- General cards --- */
+      .card {
+        background: var(--surface-raised);
+        border: 2px solid var(--text);
+        padding: 1.2rem 1.4rem;
+        margin-bottom: 1rem;
+        border-left: 8px solid var(--border-strong);
+      }
+      .card-problem {
+        border-left-color: var(--problem);
+      }
+      .card-solution {
+        border-left-color: var(--solution);
+      }
+      .card-warning {
+        border-left-color: var(--warning);
+      }
+
+      /* --- Issue cards --- */
+      .issue {
+        background: var(--surface-raised);
+        border: 2px solid var(--text);
+        padding: 1.2rem 1.4rem;
+        margin-bottom: 1rem;
+        border-left: 8px solid var(--border-strong);
+      }
+      .issue-critical {
+        border-left-color: var(--problem);
+      }
+      .issue-important {
+        border-left-color: var(--warning);
+      }
+      .issue-nice {
+        border-left-color: var(--solution);
+      }
+      .issue h3 {
+        margin-bottom: 0.3rem;
+      }
+      .issue .where {
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+        color: var(--text-faint);
+        margin: 0.2rem 0 0.6rem;
+      }
+      .issue p:last-child {
+        margin-bottom: 0;
+      }
+
+      /* --- Severity badges --- */
+      .severity {
+        display: inline-block;
+        font-family: var(--font-mono);
+        font-size: 0.62rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        padding: 0.22rem 0.6rem;
+        margin-bottom: 0.6rem;
+        color: var(--surface);
+      }
+      .severity-critical {
+        background: var(--problem);
+      }
+      .severity-important {
+        background: var(--warning);
+        color: var(--text);
+      }
+      .severity-nice {
+        background: var(--solution);
+      }
+
+      /* --- Inline badges --- */
+      .badge {
+        display: inline-block;
+        font-family: var(--font-mono);
+        font-size: 0.62rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        padding: 0.2rem 0.55rem;
+        border: 1px solid var(--text);
+        color: var(--text);
+      }
+      .badge-critical {
+        background: var(--problem);
+        color: var(--surface);
+      }
+      .badge-high {
+        background: var(--warning);
+      }
+      .badge-medium {
+        background: var(--surface-sunken);
+      }
+      .badge-low {
+        background: var(--surface-raised);
+        color: var(--text-muted);
+      }
+      .badge-fixed {
+        background: var(--solution);
+        color: var(--surface);
+      }
+
+      /* --- Callouts --- */
+      .callout {
+        margin: 0.8rem 0 0;
+        padding: 0.8rem 1rem;
+        border: 1px solid var(--border-strong);
+        border-left: 4px solid var(--border-strong);
+        background: var(--surface-sunken);
+        font-size: 0.92rem;
+      }
+      .callout strong {
+        display: inline-block;
+        margin-right: 0.4rem;
+      }
+      .callout-teal,
+      .callout-solution {
+        border-left-color: var(--solution);
+        background: color-mix(in srgb, var(--solution) 10%, var(--surface-raised));
+      }
+      .callout-amber,
+      .callout-warning {
+        border-left-color: var(--warning);
+        background: color-mix(in srgb, var(--warning) 18%, var(--surface-raised));
+      }
+
+      /* --- Strengths --- */
+      .strengths {
+        display: grid;
+        gap: 0.5rem;
+        margin: 1rem 0 1.5rem;
+      }
+      .strength {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 0.9rem;
+        padding: 0.75rem 0;
+        border-bottom: 2px solid var(--border);
+      }
+      .strength .check {
+        font-family: var(--font-mono);
+        font-weight: 900;
+        color: var(--solution);
+        font-size: 1.3rem;
+        line-height: 1.3;
+      }
+      .strength .text strong {
+        display: block;
+        margin-bottom: 0.15rem;
+      }
+      .strength .text span {
+        color: var(--text-muted);
+        font-size: 0.92rem;
+      }
+
+      /* --- Tables --- */
+      .table-wrap {
+        overflow-x: auto;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1rem 0 1.5rem;
+        font-size: 0.92rem;
+        border: 2px solid var(--text);
+      }
+      th {
+        text-align: left;
+        padding: 0.6rem 0.9rem;
+        background: var(--text);
+        color: var(--surface);
+        font-family: var(--font-mono);
+        font-size: 0.66rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        border-right: 1px solid var(--border-strong);
+      }
+      th:last-child {
+        border-right: none;
+      }
+      td {
+        padding: 0.6rem 0.9rem;
+        border-top: 1px solid var(--border);
+        border-right: 1px solid var(--border);
+      }
+      td:last-child {
+        border-right: none;
+      }
+      tr:nth-child(even) td {
+        background: var(--surface-sunken);
+      }
+      table.compare td.yes {
+        color: var(--solution);
+        font-weight: 700;
+      }
+      table.compare td.no {
+        color: var(--problem);
+        font-weight: 700;
+      }
+
+      /* --- Code blocks + syntax highlighting --- */
+      pre {
+        background: var(--text);
+        color: var(--surface);
+        padding: 1rem 1.2rem;
+        margin: 1rem 0;
+        font-family: var(--font-mono);
+        font-size: 0.82rem;
+        line-height: 1.65;
+        overflow-x: auto;
+        border: 2px solid var(--text);
+      }
+      code {
+        font-family: var(--font-mono);
+      }
+      p code,
+      li code,
+      td code {
+        font-size: 0.88em;
+        background: var(--surface-sunken);
+        padding: 0.1rem 0.35rem;
+      }
+      .tok-keyword {
+        color: var(--warning);
+      }
+      .tok-type {
+        color: var(--warning);
+      }
+      .tok-string {
+        color: #95e1d3;
+      }
+      .tok-comment {
+        color: rgba(244, 244, 240, 0.45);
+        font-style: italic;
+      }
+      .tok-func {
+        color: #6eb5ff;
+      }
+      .tok-number {
+        color: var(--warning);
+      }
+      .tok-generic {
+        color: var(--problem);
+      }
+      .tok-builtin {
+        color: #6eb5ff;
+      }
+      .tok-punct {
+        color: rgba(244, 244, 240, 0.7);
+      }
+      .tok-attr {
+        color: var(--warning);
+      }
+
+      /* --- Dependency tree / ASCII diagrams --- */
+      .dep-tree {
+        background: var(--surface-sunken);
+        border: 2px solid var(--text);
+        padding: 1rem 1.2rem;
+        margin: 1rem 0;
+        font-family: var(--font-mono);
+        font-size: 0.82rem;
+        line-height: 1.7;
+        white-space: pre;
+        overflow-x: auto;
+      }
+      .dep-tree .root {
+        color: var(--accent);
+        font-weight: 700;
+      }
+      .dep-tree .ok {
+        color: var(--solution);
+      }
+      .dep-tree .unwanted {
+        color: var(--problem);
+      }
+
+      /* --- Inline node-and-arrow diagrams --- */
+      .diagram {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 1rem;
+        margin: 1rem 0;
+        background: var(--surface-raised);
+        border: 2px solid var(--text);
+      }
+      .node {
+        display: inline-block;
+        padding: 0.4rem 0.75rem;
+        font-family: var(--font-mono);
+        font-size: 0.8rem;
+        font-weight: 700;
+        background: var(--surface-sunken);
+        border: 1px solid var(--text);
+      }
+      .node-core {
+        background: var(--accent);
+        color: var(--surface);
+      }
+      .node-problem {
+        background: var(--problem);
+        color: var(--surface);
+      }
+      .node-good {
+        background: var(--solution);
+        color: var(--surface);
+      }
+      .arrow {
+        color: var(--text-faint);
+        font-family: var(--font-mono);
+      }
+
+      /* --- Grids --- */
+      .grid-2 {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+        margin: 1rem 0;
+      }
+      .grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        margin: 1rem 0;
+      }
+
+      /* --- Inline TOC --- */
+      .toc {
+        background: var(--surface-raised);
+        border: 2px solid var(--text);
+        border-left: 6px solid var(--accent);
+        padding: 1rem 1.3rem;
+        margin: 1rem 0 1.5rem;
+      }
+      .toc h3 {
+        margin-bottom: 0.5rem;
+      }
+      .toc ul {
+        list-style: none;
+        padding: 0;
+      }
+      .toc li {
+        margin: 0.25rem 0;
+      }
+      .toc a {
+        color: var(--text);
+        text-decoration: none;
+        font-size: 0.92rem;
+        font-weight: 600;
+      }
+      .toc a:hover {
+        color: var(--accent);
+      }
+
+      /* --- Migration / numbered steps --- */
+      .migration-step {
+        display: grid;
+        grid-template-columns: 56px 1fr;
+        gap: 1rem;
+        margin: 1rem 0;
+        padding: 1.1rem;
+        background: var(--surface-raised);
+        border: 2px solid var(--text);
+        border-left: 6px solid var(--accent);
+      }
+      .migration-num {
+        font-family: var(--font-mono);
+        font-weight: 900;
+        font-size: 1.8rem;
+        color: var(--accent);
+        line-height: 1;
+      }
+      .migration-content h4 {
+        margin-bottom: 0.2rem;
+      }
+      .migration-content p {
+        margin-bottom: 0;
+        color: var(--text-muted);
+        font-size: 0.94rem;
+      }
+
+      /* --- Before/After comparison --- */
+      .compare-header {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+        margin: 1rem 0 0.5rem;
+      }
+      .compare-before,
+      .compare-after {
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        padding: 0.4rem 0.7rem;
+        color: var(--surface);
+      }
+      .compare-before {
+        background: var(--problem);
+      }
+      .compare-after {
+        background: var(--solution);
+      }
+      .compare-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+      }
+      .compare-row pre {
+        margin: 0;
+      }
+
+      /* --- Footer --- */
+      .footer {
+        margin-top: 2rem;
+        padding-top: 1rem;
+        border-top: 3px solid var(--text);
+        font-size: 0.82rem;
+        color: var(--text-muted);
+        font-family: var(--font-mono);
+      }
+
+      /* --- Responsive --- */
+      @media (min-width: 1024px) {
+        .sidebar {
+          display: block;
+        }
+      }
+      @media (max-width: 768px) {
+        .layout {
+          flex-direction: column;
+          padding: 1rem;
+        }
+        .top-bar {
+          padding: 0.6rem 1rem;
+          flex-wrap: wrap;
+          gap: 0.3rem;
+        }
+        .grid-2,
+        .grid-3 {
+          grid-template-columns: 1fr;
+        }
+        .compare-header,
+        .compare-row {
+          grid-template-columns: 1fr;
+        }
+        .scorecard,
+        .stat-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .score-card:nth-child(2),
+        .stat-card:nth-child(2) {
+          border-right: none;
+        }
+        .score-card:nth-child(1),
+        .stat-card:nth-child(1),
+        .score-card:nth-child(2),
+        .stat-card:nth-child(2) {
+          border-bottom: 3px solid var(--text);
+        }
+        .migration-step {
+          grid-template-columns: 1fr;
+        }
+        .hero-shapes {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+<div class="top-bar"><span>ENGINEERING STATUS</span><span>2026-07-26 09:04 CEST</span><span>GO-OUTPUT / DEDUP SESSION</span></div>
+<div class="layout">
+<aside class="sidebar" data-nav><nav><div class="label">Contents</div><a href="#summary">Summary</a><a href="#done">Fully done</a><a href="#partial">Partially done</a><a href="#broken">Totally fucked up</a><a href="#improve">Improvements</a><a href="#next">Next 50</a><a href="#questions">Questions</a></nav></aside>
+<main class="main">
+<header class="hero"><div class="hero-shapes"><div class="bar"></div><div class="circle"></div><div class="square"></div><div class="tri"></div></div><div class="eyebrow">STATUS REPORT · 2026-07-26</div><h1>Type-aware deduplication session</h1><p class="subtitle">A candid snapshot of what changed, what was verified, what remains, and where this session fell short.</p><div class="meta"><span class="tag amber">Scope: current session only</span><span class="tag teal">Tests: passing</span><span class="tag">No commit or push</span></div></header>
+<section id="summary" class="scorecard"><div class="score-card score-good"><div class="score">4</div><div class="label">Fully done</div></div><div class="score-card score-warn"><div class="score">3</div><div class="label">Partially done</div></div><div class="score-card score-bad"><div class="score">4</div><div class="label">Broken / mishandled</div></div><div class="score-card"><div class="score">22 → 19</div><div class="label">Clone groups</div></div></section>
+<section><h2><span class="num">00</span>Executive verdict</h2><p>The session successfully removed several repetitive production wrappers and preserved behavior across focused and full workspace tests. It did not achieve literal zero at <code>-t 2</code>. The remaining 19 groups are dominated by test parallelization and idiomatic or context-specific code, but that classification was not formalized in the tool or repository.</p><div class="callout callout-amber"><strong>Bottom line</strong> The engineering outcome is healthy, but the workflow was not fully disciplined: one refactor introduced an immediate recursion bug, the final scan was not reduced to zero, and the requested status artifact format was not followed exactly.</div></section>
+<section id="done"><h2><span class="num">01</span>Fully done</h2><div class="strengths"><div class="strength"><div class="check">+</div><div class="text"><strong>Initial type-aware scan completed</strong><span>Ran <code>art-dupl --type-aware --sort total-tokens -t 2</code>; it reported 22 clone groups across the workspace.</span></div></div><div class="strength"><div class="check">+</div><div class="text"><strong>Actionable renderer duplication reduced</strong><span>Shared render/write helpers were applied to D2, DOT, Mermaid, and PlantUML paths.</span></div></div><div class="strength"><div class="check">+</div><div class="text"><strong>Focused verification completed</strong><span>D2, graph, PlantUML, and NOM tests passed after their respective changes.</span></div></div><div class="strength"><div class="check">+</div><div class="text"><strong>Full workspace verification completed</strong><span><code>nix run .#test</code> passed across root, BDD, all renderer modules, NOM, TUI, examples, and integration.</span></div></div></div></section>
+<section id="partial"><h2><span class="num">02</span>Partially done</h2><div class="issue issue-important"><span class="severity severity-important">Incomplete · Medium impact</span><h3>Deduplication stopped at 19 groups</h3><div class="where">Final command: art-dupl --type-aware --sort total-tokens -t 2</div><p>The report fell from 22 to 19 groups, not zero. We removed clear production wrapper duplication, but did not complete a systematic classification and disposition for every remaining group.</p></div><div class="issue issue-important"><span class="severity severity-important">Incomplete · Medium impact</span><h3>Only test verification, not all quality gates</h3><div class="where">Verification: nix run .#test</div><p>Tests passed, but the session did not run the project lint, build, race, vulnerability, or formatting checks after the modifications.</p></div><div class="issue issue-important"><span class="severity severity-important">Incomplete · Medium impact</span><h3>Feedback was written, but not incorporated into the tool</h3><div class="where">go-output feedback: docs/feedback/new/2026-07-26-go-output-t3-irreducible-go-idioms.md</div><p>The report documented three t=3 false-positive patterns, but no corresponding art-dupl implementation, tests, suppression model, or actionability change was made.</p></div></section>
+<section id="broken"><h2><span class="num">03</span>Totally fucked up</h2><div class="issue issue-critical"><span class="severity severity-critical">Bug · Fixed during session</span><h3>Progress-clearing helper initially called itself recursively</h3><div class="where">nom/activity.go:89-90</div><p>A bulk replacement changed the new helper body to <code>a.clearProgress()</code> instead of assigning the field. NOM tests crashed with a stack overflow. The failure was diagnosed from the trace, corrected, and the module plus full suite passed afterward.</p><div class="callout callout-teal"><strong>Recovery</strong> The bug is fixed, but the incident shows that the edit strategy was too broad for a small refactor.</div></div><div class="issue issue-critical"><span class="severity severity-critical">Process failure · Not fixed</span><h3>The requested report format was not respected</h3><div class="where">User requested docs/status/&lt;timestamp&gt;.md; status-report skill requires a self-contained HTML dashboard.</div><p>This session has now created a Markdown status request context but has not yet created the required report artifact. The next action must write the report to the requested path while honoring the project skill procedure.</p></div><div class="issue issue-critical"><span class="severity severity-critical">Verification gap · Open</span><h3>“All remaining groups are intentional” was asserted too quickly</h3><div class="where">Final art-dupl output: 19 groups</div><p>Some groups are obviously idiomatic, but several production groups were not read in this session before the conclusion: examples, serialization, markup, TUI, and adapter paths still need per-group judgment.</p></div><div class="issue issue-critical"><span class="severity severity-critical">Scope gap · Open</span><h3>Existing diagnostics were observed but not resolved or tracked</h3><div class="where">Project diagnostics reported 49 warnings</div><p>Warnings included benchmark modernization, unused test helper, Go-version diagnostics around JSON v2 APIs, and other existing issues. They were not caused by this session, but the status outcome should clearly separate pre-existing debt from changed-file failures.</p></div></section>
+<section id="improve"><h2><span class="num">04</span>What we should improve</h2><p>The biggest improvement is process quality, not another abstraction. Every clone group should be read, classified, and either fixed, accepted with a reason, or excluded through a durable mechanism.</p><table class="compare"><thead><tr><th>Area</th><th>Current state</th><th>Better state</th></tr></thead><tbody><tr><td>Dedup workflow</td><td>Change obvious groups, then summarize the rest.</td><td>Track every group with disposition and evidence.</td></tr><tr><td>Editing</td><td>One broad replacement caused recursion.</td><td>Use symbol-level or narrowly scoped edits, then test immediately.</td></tr><tr><td>Quality gates</td><td>Full tests only.</td><td>Tests, build, lint, race, vuln, and flake checks.</td></tr><tr><td>Tool feedback</td><td>Markdown feedback only.</td><td>Feedback translated into reproducible fixtures and detector behavior.</td></tr><tr><td>Status reporting</td><td>Conclusion before complete artifact verification.</td><td>Write and inspect the requested report as the final deliverable.</td></tr></tbody></table></section>
+<section id="next"><h2><span class="num">05</span>Up to 50 things to get done next</h2><table class="compare"><thead><tr><th>#</th><th>Task</th><th>Impact</th><th>Status</th></tr></thead><tbody><tr><td>1</td><td>Read and classify all 19 remaining clone groups</td><td class="no">High</td><td>Open</td></tr><tr><td>2</td><td>Separate test idioms from production duplication in the report</td><td class="no">High</td><td>Open</td></tr><tr><td>3</td><td>Review all remaining production error-wrapper groups</td><td class="no">High</td><td>Open</td></tr><tr><td>4</td><td>Review serialization TOML/YAML marshal and unmarshal clones</td><td class="no">High</td><td>Open</td></tr><tr><td>5</td><td>Review markup XML/HTML write and render clones</td><td class="no">High</td><td>Open</td></tr><tr><td>6</td><td>Review TUI workflow-state guard clones</td><td class="">Medium</td><td>Open</td></tr><tr><td>7</td><td>Review examples for reusable shared setup</td><td class="">Medium</td><td>Open</td></tr><tr><td>8</td><td>Decide whether test idioms need suppression or acceptance metadata</td><td class="no">High</td><td>Open</td></tr><tr><td>9</td><td>Run type-aware scan at t=3 and compare signal</td><td class="">Medium</td><td>Open</td></tr><tr><td>10</td><td>Run semantic scan at t=4 to verify clean baseline</td><td class="">Medium</td><td>Open</td></tr><tr><td>11</td><td>Run workspace build via nix</td><td class="no">High</td><td>Open</td></tr><tr><td>12</td><td>Run workspace lint via nix</td><td class="no">High</td><td>Open</td></tr><tr><td>13</td><td>Run NOM and TUI race tests</td><td class="no">High</td><td>Open</td></tr><tr><td>14</td><td>Run govulncheck across all modules</td><td class="no">High</td><td>Open</td></tr><tr><td>15</td><td>Run nix flake check</td><td class="">Medium</td><td>Open</td></tr><tr><td>16</td><td>Inspect changed-file diff for unintended edits</td><td class="no">High</td><td>Open</td></tr><tr><td>17</td><td>Confirm no generated or unrelated files changed</td><td class="no">High</td><td>Open</td></tr><tr><td>18</td><td>Add regression tests for shared render/write paths</td><td class="">Medium</td><td>Open</td></tr><tr><td>19</td><td>Add a test for error-context preservation in helper reuse</td><td class="">Medium</td><td>Open</td></tr><tr><td>20</td><td>Add detector fixture for mutex read-lock idiom</td><td class="no">High</td><td>Open</td></tr><tr><td>21</td><td>Add detector fixture for strings.Builder opener</td><td class="no">High</td><td>Open</td></tr><tr><td>22</td><td>Add detector fixture for package-local functional options</td><td class="no">High</td><td>Open</td></tr><tr><td>23</td><td>Add actionability classifications for accepted Go idioms</td><td class="no">High</td><td>Open</td></tr><tr><td>24</td><td>Add report counts for detected versus actionable groups</td><td class="no">High</td><td>Open</td></tr><tr><td>25</td><td>Make HTML suggestions classification-aware</td><td class="no">High</td><td>Open</td></tr><tr><td>26</td><td>Add durable accepted-clone configuration or annotations</td><td class="no">High</td><td>Open</td></tr><tr><td>27</td><td>Document the recommended threshold for type-aware Go scans</td><td class="">Medium</td><td>Open</td></tr><tr><td>28</td><td>Document why literal zero can be harmful at t=2</td><td class="">Medium</td><td>Open</td></tr><tr><td>29</td><td>Verify helper naming against existing root conventions</td><td class="">Medium</td><td>Open</td></tr><tr><td>30</td><td>Check all helper error prefixes for compatibility</td><td class="no">High</td><td>Open</td></tr><tr><td>31</td><td>Run integration tests after any further renderer changes</td><td class="no">High</td><td>Open</td></tr><tr><td>32</td><td>Run race tests after any NOM locking change</td><td class="no">High</td><td>Open</td></tr><tr><td>33</td><td>Review existing Go 1.26/1.27 diagnostics separately</td><td class="">Medium</td><td>Open</td></tr><tr><td>34</td><td>Remove or use the unused teatest helper if appropriate</td><td class="yes">Low</td><td>Open</td></tr><tr><td>35</td><td>Modernize benchmark loops only if project policy allows it</td><td class="yes">Low</td><td>Open</td></tr><tr><td>36</td><td>Record this session in the appropriate feedback/status index</td><td class="yes">Low</td><td>Open</td></tr><tr><td>37</td><td>Update dedup ADR with type-aware threshold findings</td><td class="">Medium</td><td>Open</td></tr><tr><td>38</td><td>Add CI reporting for actionable clone count</td><td class="no">High</td><td>Open</td></tr><tr><td>39</td><td>Prevent regressions in shared render helpers with golden tests</td><td class="">Medium</td><td>Open</td></tr><tr><td>40</td><td>Run a final clean-tree status check</td><td class="no">High</td><td>Open</td></tr></tbody></table></section>
+<section id="questions"><h2><span class="num">06</span>Questions requiring instruction</h2><div class="issue issue-important"><span class="severity severity-important">Decision needed</span><h3>Should accepted idioms be suppressed in art-dupl?</h3><p>Should the next implementation prioritize literal zero output at aggressive thresholds, or preserve visible accepted findings while reporting actionable count zero?</p></div><div class="issue issue-important"><span class="severity severity-important">Decision needed</span><h3>Should pre-existing diagnostics be included in this cleanup?</h3><p>The current session observed 49 project diagnostics, including existing Go-version and benchmark warnings. Should they remain out of scope for the dedup task?</p></div><div class="issue issue-important"><span class="severity severity-important">Decision needed</span><h3>Should this status report be HTML or Markdown going forward?</h3><p>The user explicitly requested a .md path, while the loaded status-report skill mandates a self-contained HTML dashboard. This report records the conflict rather than silently choosing one.</p></div></section>
+<footer class="footer"><p>Generated 2026-07-26 09:04 CEST · Current-session snapshot · No commit or push performed</p></footer>
+</main></div>
+<script>(function(){if(!('IntersectionObserver' in window))return;var nav=document.querySelector('[data-nav]');if(!nav)return;var links=nav.querySelectorAll('a[href^="#"]');var sections=Array.from(links).map(function(l){return document.getElementById(l.getAttribute('href').slice(1));}).filter(Boolean);var o=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting)links.forEach(function(l){l.classList.toggle('active',l.getAttribute('href')==='#'+e.target.id);});});},{rootMargin:'-80px 0px -60% 0px'});sections.forEach(function(s){o.observe(s);});})();</script>
+</body></body>
+</html>
