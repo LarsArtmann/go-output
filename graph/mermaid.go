@@ -22,12 +22,7 @@ func init() {
 }
 
 func renderMermaidTable(w io.Writer, data *output.Table, _ output.RenderOptions) error {
-	out, err := NewMermaidFromTable(data).Render()
-	if err != nil {
-		return fmt.Errorf("render Mermaid: %w", err)
-	}
-
-	return output.WriteRendered(w, "Mermaid", out)
+	return output.WriteRenderedFrom(w, NewMermaidFromTable(data).Render, "Mermaid", "render Mermaid")
 }
 
 // MermaidRenderer implements the GraphRenderer interface for Mermaid diagrams.

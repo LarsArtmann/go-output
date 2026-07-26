@@ -1,7 +1,6 @@
 package d2
 
 import (
-	"fmt"
 	"io"
 
 	"github.com/larsartmann/go-output"
@@ -14,12 +13,7 @@ func init() {
 }
 
 func renderTable(w io.Writer, data *output.Table, _ output.RenderOptions) error {
-	out, err := NewD2FromTable(data).Render()
-	if err != nil {
-		return fmt.Errorf("render D2: %w", err)
-	}
-
-	return output.WriteRendered(w, "D2", out)
+	return output.WriteRenderedFrom(w, NewD2FromTable(data).Render, "D2", "render D2")
 }
 
 // SetNodes sets graph nodes from the generic GraphNode type, satisfying GraphRenderer.

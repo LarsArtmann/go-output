@@ -1,7 +1,6 @@
 package plantuml
 
 import (
-	"fmt"
 	"io"
 
 	"github.com/larsartmann/go-output"
@@ -13,12 +12,12 @@ func init() {
 }
 
 func renderPlantUMLTable(w io.Writer, data *output.Table, _ output.RenderOptions) error {
-	out, err := NewPlantUMLFromTable(data).Render()
-	if err != nil {
-		return fmt.Errorf("render PlantUML: %w", err)
-	}
-
-	return output.WriteRendered(w, "PlantUML", out)
+	return output.WriteRenderedFrom(
+		w,
+		NewPlantUMLFromTable(data).Render,
+		"PlantUML",
+		"render PlantUML",
+	)
 }
 
 // NewPlantUMLFromTable creates a PlantUML diagram from table data.

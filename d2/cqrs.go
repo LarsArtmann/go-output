@@ -1,7 +1,6 @@
 package d2
 
 import (
-	"fmt"
 	"io"
 	"strings"
 
@@ -52,17 +51,7 @@ func Write(w io.Writer, diagram *Diagram, opts ...Option) error {
 		diagram.SetTitle(cfg.title)
 	}
 
-	out, err := diagram.Render()
-	if err != nil {
-		return err
-	}
-
-	_, err = io.WriteString(w, out)
-	if err != nil {
-		return fmt.Errorf("write d2 output: %w", err)
-	}
-
-	return nil
+	return output.WriteRenderedRawFrom(w, diagram.Render, "d2", "render d2")
 }
 
 // Render renders a D2 diagram as a string.
@@ -83,10 +72,7 @@ func WriteGraph(w io.Writer, g output.Graph, opts ...Option) error {
 
 // RenderGraph renders a generic Graph as a D2 string.
 func RenderGraph(g output.Graph, opts ...Option) (string, error) {
-	var buf strings.Builder
-	if err := WriteGraph(&buf, g, opts...); err != nil {
-		return "", err
-	}
-
-	return buf.String(), nil
+	return output.RenderFromWrite(func(w io.Writer) error {
+		return WriteGraph(w, g, opts...)
+	})
 }
