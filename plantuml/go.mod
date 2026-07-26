@@ -1,6 +1,6 @@
 module github.com/larsartmann/go-output/plantuml
 
-go 1.26.4
+go 1.26.5
 
 require (
 	github.com/charmbracelet/x/exp/golden v0.0.0-20260705004817-2cc9a8fe1146
