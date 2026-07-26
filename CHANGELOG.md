@@ -6,11 +6,47 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.32.0] - 2026-07-26
+
+### Added
+
+- **d2/graph/nom** — Unified activity rendering across the three primary output backends (D2 diagrams, DOT/Mermaid graphs, and NOM nominal output) through a consistent CQRS command/query handler interface.
+- **output** — New shared render/write helpers that collapse per-module boilerplate: `WriteRenderedFrom` / `WriteRenderedRawFrom` (adapt a `Render() (string, error)` into a streaming write with trailing-newline control).
+
 ### Changed
 
-- **all modules** — Reduced the strict type-aware `art-dupl -t 2` audit from 18 to 16 groups while preserving behavior; extracted `serialization.renderUnknown` helper (shared body of JSON/TOML/YAML unknown renderers) and rewired `markdown/registry.go` to use `output.WriteRendered`. All remaining groups are documented minimum Go idioms, module-boundary contracts, or self-contained examples.
-- **all modules** — Reduced the strict type-aware `art-dupl -t 1` audit from 29 to 24 groups while preserving behavior; all remaining groups are documented minimum Go idioms, module-boundary contracts, or self-contained examples.
-- **tui** — Centralized accepted-update timestamping so progress and step handlers cannot drift.
+- **graph/d2/plantuml** — Standardized the CQRS read/write separation across all diagram format converters (DOT, Mermaid, PlantUML, D2) behind a single conversion interface, removing duplicated conversion logic.
+- **serialization/markdown** — Standardized output handling across all formats; extracted `serialization.renderUnknown` (shared body of the JSON/TOML/YAML unknown renderers) and rewired `markdown/registry.go` to dispatch through `output.WriteRendered`.
+- **tui** — Enhanced markdown rendering integration with the TUI model and expanded test coverage; centralized accepted-update timestamping so progress and step handlers cannot drift.
+- **nom** — Modernized benchmarks to `b.Loop()` and removed the dead `stripOutput` helper.
+- **all modules** — Deduplication sweep tightened: strict type-aware `art-dupl -t 2` reduced from 18 to 16 groups, and `t=1` from 29 to 24 groups. All remaining groups are documented minimum Go idioms, module-boundary contracts, or self-contained examples.
+
+### Build
+
+- **all modules** — Bumped Go toolchain to 1.26.5 and refreshed Go module dependencies + Nix flake lock.
+
+## [0.31.1] - 2026-07-23
+
+### Fixed
+
+- **d2/graph (dot)** — Quote diagram values containing special characters to prevent malformed syntax errors.
+
+### Changed
+
+- **all modules** — Deduplication closure sweep: `art-dupl -t 4` clones reduced to **zero** and `t=3` clones from 15 to 3 (all remaining are minimum idiomatic patterns). Extracted shared helpers into root and sub-modules: `output.WriteRendered` / `WriteRenderedRaw` / `RenderFromWrite` / `MarshalViaRenderer`, `output.ColorConfig` + `DefaultColorConfig()`, `output.WriteRenderedFrom` / `WriteRenderedRawFrom`, `output.NewTableWithRow`, `serialization.stringFromBytes`, `markup.writeBytes`, `nom.withLockedActivity`, and `escape.ANSIReturn` / `ANSIBold` / `ANSIDim`.
+- **nom** — Expanded inline-renderer summary test coverage.
+
+## [0.31.0] - 2026-07-16
+
+### Added
+
+- **nom** — Colored status bar with visual hierarchy and a compact parallelism meter (`parallel: N/M possible`) in the inline renderer summary.
+- **docs** — Launched the public documentation website at go-output.lars.software.
+
+### Changed
+
+- **all modules** — Migrated all sibling go-output dependencies to Pattern B sentinel versions (`v0.0.0-00010101000000-000000000000` + `replace => ../path`), eliminating sibling version-pin maintenance.
+- **ci** — Added `GOEXPERIMENT=jsonv2` to the CI configuration.
 
 ## [0.30.4] - 2026-07-12
 
