@@ -1,6 +1,7 @@
 package nom
 
 import (
+	"maps"
 	"slices"
 	"time"
 )
@@ -47,13 +48,7 @@ func (dt *DependencyTree) computeCriticalPath(
 	}
 
 	// Find the maximum total duration.
-	maxTotal := time.Duration(0)
-
-	for _, d := range longestTo {
-		if d > maxTotal {
-			maxTotal = d
-		}
-	}
+	maxTotal := slices.Max(slices.Collect(maps.Values(longestTo)))
 
 	if maxTotal <= 0 {
 		return nil

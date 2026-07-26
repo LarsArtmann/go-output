@@ -51,13 +51,21 @@ func (r *MermaidRenderer) SetCodeFence(enabled bool) *MermaidRenderer {
 	return r
 }
 
+// writeMermaidCodeFence writes the ```mermaid open/close fence lines when
+// codeFence is enabled; otherwise it writes nothing. Centralised so Render
+// opens and closes the fence through a single function, eliminating the
+// duplicated `if r.codeFence { b.WriteString(...) }` pair.
+func writeMermaidCodeFence(b *strings.Builder, codeFence bool, fence string) {
+	if codeFence {
+		b.WriteString(fence)
+	}
+}
+
 // Render returns the Mermaid diagram as a string.
 func (r *MermaidRenderer) Render() (string, error) {
 	var b strings.Builder
 
-	if r.codeFence {
-		b.WriteString("```mermaid\n")
-	}
+	writeMermaidCodeFence(&b, r.codeFence, "```mermaid\n")
 
 	b.WriteString("flowchart TD\n")
 
@@ -84,9 +92,7 @@ func (r *MermaidRenderer) Render() (string, error) {
 
 	r.writeNodeStyles(&b)
 
-	if r.codeFence {
-		b.WriteString("```\n")
-	}
+	writeMermaidCodeFence(&b, r.codeFence, "```\n")
 
 	return b.String(), nil
 }

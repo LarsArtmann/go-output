@@ -192,12 +192,18 @@ func (m *ProgressModel) handleMouseClick(msg tea.MouseClickMsg) (tea.Model, tea.
 	return m, nil
 }
 
+// touchLastUpdate stamps the message handler's last-seen timestamp. Centralised
+// so every "accept update" handler updates it through the same call site.
+func (m *ProgressModel) touchLastUpdate() {
+	m.lastUpdate = time.Now()
+}
+
 func (m *ProgressModel) handleProgressUpdate(msg progressUpdateMsg) (tea.Model, tea.Cmd) {
 	if !m.workflowState.canAcceptUpdates() {
 		return m, nil
 	}
 
-	m.lastUpdate = time.Now()
+	m.touchLastUpdate()
 
 	switch msg.Type {
 	case progressUpdate:
@@ -255,7 +261,7 @@ func (m *ProgressModel) handleStepUpdate(msg stepUpdateMsg) (tea.Model, tea.Cmd)
 		return m, nil
 	}
 
-	m.lastUpdate = time.Now()
+	m.touchLastUpdate()
 
 	for i := range m.steps {
 		if m.steps[i].Message == msg.Message {

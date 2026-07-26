@@ -17,11 +17,7 @@ import (
 // json.NewEncoder — no intermediate string allocation.
 func WriteJSON(w io.Writer, data *output.Table) error {
 	if data == nil || len(data.Headers) == 0 {
-		if _, err := io.WriteString(w, "[]\n"); err != nil {
-			return fmt.Errorf("write empty json: %w", err)
-		}
-
-		return nil
+		return writeEmptyArrayPayload(w, "json")
 	}
 
 	encoder := jsontext.NewEncoder(w, jsontext.WithIndentPrefix(""), jsontext.WithIndent("  "))
@@ -49,11 +45,7 @@ func RenderJSON(data *output.Table) (string, error) {
 // yaml.NewEncoder — no intermediate string allocation.
 func WriteYAML(w io.Writer, data *output.Table) error {
 	if data == nil || len(data.Headers) == 0 {
-		if _, err := io.WriteString(w, "[]\n"); err != nil {
-			return fmt.Errorf("write empty yaml: %w", err)
-		}
-
-		return nil
+		return writeEmptyArrayPayload(w, "yaml")
 	}
 
 	encoder := yaml.NewEncoder(w)
