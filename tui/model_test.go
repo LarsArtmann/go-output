@@ -182,6 +182,25 @@ func TestProgressModel_Update_ProgressUpdateMsg_RejectedWhenCompleted(t *testing
 	}
 }
 
+func TestProgressModel_AcceptedUpdatesStampLastUpdate(t *testing.T) {
+	t.Parallel()
+
+	model := newTestModel()
+	model.workflowState = workflowStateRunning
+	before := model.lastUpdate
+
+	model.Update(progressUpdateMsg{Type: messageUpdate, Message: "Building"})
+	progressUpdate := model.lastUpdate
+	if !progressUpdate.After(before) {
+		t.Error("progress update should advance lastUpdate")
+	}
+
+	model.Update(stepUpdateMsg{Current: 1, Total: 2, Message: "Compile"})
+	if model.lastUpdate.Before(progressUpdate) {
+		t.Error("step update should not move lastUpdate backwards")
+	}
+}
+
 func TestProgressModel_Update_TickMsg_RejectedWhenNotRunning(t *testing.T) {
 	t.Parallel()
 

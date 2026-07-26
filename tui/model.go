@@ -198,18 +198,22 @@ func (m *ProgressModel) touchLastUpdate() {
 	m.lastUpdate = time.Now()
 }
 
-// acceptUpdate is the guard shared by every progress- and step-update handler.
-// Returns true when the workflow state is willing to accept a new update.
+// acceptUpdate validates whether the workflow can accept an update and stamps
+// the last-seen timestamp when it can.
 func (m *ProgressModel) acceptUpdate() bool {
-	return m.workflowState.canAcceptUpdates()
+	if !m.workflowState.canAcceptUpdates() {
+		return false
+	}
+
+	m.touchLastUpdate()
+
+	return true
 }
 
 func (m *ProgressModel) handleProgressUpdate(msg progressUpdateMsg) (tea.Model, tea.Cmd) {
 	if !m.acceptUpdate() {
 		return m, nil
 	}
-
-	m.touchLastUpdate()
 
 	switch msg.Type {
 	case progressUpdate:
@@ -266,8 +270,6 @@ func (m *ProgressModel) handleStepUpdate(msg stepUpdateMsg) (tea.Model, tea.Cmd)
 	if !m.acceptUpdate() {
 		return m, nil
 	}
-
-	m.touchLastUpdate()
 
 	for i := range m.steps {
 		if m.steps[i].Message == msg.Message {
