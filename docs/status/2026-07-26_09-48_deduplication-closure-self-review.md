@@ -18,20 +18,20 @@ The session is not perfectly closed operationally. The auto-git daemon split the
 
 ### Current scorecard
 
-| Measure | Result |
-|---|---:|
-| Strict type-aware clone groups at session start | 25 |
-| Strict type-aware clone groups now | 24 |
-| Full continuation movement | 29 → 24 |
-| Standard `t=4` clone groups | 0 |
-| Workspace modules tested | 19 entries in flake module list, all passed |
-| Race-tested modules | `nom`, `tui`, both passed |
-| Lint findings | 0 after correction |
-| Known vulnerabilities | 0 |
-| Fuzz executions | ~2.28 million, no new failures |
-| Nix checks | Passed |
-| Uncommitted living docs | 3 |
-| Uncommitted status report | 1 |
+| Measure                                         |                                      Result |
+| ----------------------------------------------- | ------------------------------------------: |
+| Strict type-aware clone groups at session start |                                          25 |
+| Strict type-aware clone groups now              |                                          24 |
+| Full continuation movement                      |                                     29 → 24 |
+| Standard `t=4` clone groups                     |                                           0 |
+| Workspace modules tested                        | 19 entries in flake module list, all passed |
+| Race-tested modules                             |                   `nom`, `tui`, both passed |
+| Lint findings                                   |                          0 after correction |
+| Known vulnerabilities                           |                                           0 |
+| Fuzz executions                                 |              ~2.28 million, no new failures |
+| Nix checks                                      |                                      Passed |
+| Uncommitted living docs                         |                                           3 |
+| Uncommitted status report                       |                                           1 |
 
 ---
 

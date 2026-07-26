@@ -17,13 +17,13 @@ This is **session 2** of the type-aware dedup sweep. Session 1 (in the previous 
 
 ## 2. Fully Done (a)
 
-| ID | Change | File | Method |
-|---|---|---|---|
-| F1 | `writeEmptyArrayPayload(w, format)` helper | `serialization/marshal_helpers.go` | New helper extracted; JSON & YAML `cqrs.go` empty-cell guard now routes through it |
-| F2 | `writeMermaidCodeFence(b, codeFence, fence)` helper | `graph/mermaid.go` | Replaces 2× duplicated `if r.codeFence { b.WriteString(fence) }` pair |
-| F3 | `touchLastUpdate()` + `acceptUpdate()` helpers | `tui/model.go` | Replaces 2× duplicated `canAcceptUpdates` guard + `time.Now` stamp shared between `handleProgressUpdate` & `handleStepUpdate` |
-| F4 | `m.writeReset(b)` helper | `markdown/markdown.go` | Replaces 2× `if m.useColor() { b.WriteString(escape.ANSIReturn) }` blocks in `writeSeparator` & `writeFooter` |
-| F5 | Nom tree-critical max-of-map loops reviewed | `nom/tree_critical.go` | Investigated; standard library `slices.Max` doesn't accept empty `maps.Values()` without materialization — collapsed first attempt caused integration panic on empty DAG, **reverted to ranged loop**. Net code unchanged; reconfirmed the original loops are minimum idioms. |
+| ID  | Change                                              | File                               | Method                                                                                                                                                                                                                                                                        |
+| --- | --------------------------------------------------- | ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| F1  | `writeEmptyArrayPayload(w, format)` helper          | `serialization/marshal_helpers.go` | New helper extracted; JSON & YAML `cqrs.go` empty-cell guard now routes through it                                                                                                                                                                                            |
+| F2  | `writeMermaidCodeFence(b, codeFence, fence)` helper | `graph/mermaid.go`                 | Replaces 2× duplicated `if r.codeFence { b.WriteString(fence) }` pair                                                                                                                                                                                                         |
+| F3  | `touchLastUpdate()` + `acceptUpdate()` helpers      | `tui/model.go`                     | Replaces 2× duplicated `canAcceptUpdates` guard + `time.Now` stamp shared between `handleProgressUpdate` & `handleStepUpdate`                                                                                                                                                 |
+| F4  | `m.writeReset(b)` helper                            | `markdown/markdown.go`             | Replaces 2× `if m.useColor() { b.WriteString(escape.ANSIReturn) }` blocks in `writeSeparator` & `writeFooter`                                                                                                                                                                 |
+| F5  | Nom tree-critical max-of-map loops reviewed         | `nom/tree_critical.go`             | Investigated; standard library `slices.Max` doesn't accept empty `maps.Values()` without materialization — collapsed first attempt caused integration panic on empty DAG, **reverted to ranged loop**. Net code unchanged; reconfirmed the original loops are minimum idioms. |
 
 All 5 changes verified by `nix run .#test` (18 modules, all `ok`).
 The 2 helpers in production code commit (`markdown`/`tui` — `1499f5d feat(output): enhance markdown rendering integration with TUI model`).
@@ -66,7 +66,7 @@ Wider type-aware sweep targets beyond clone elimination:
 
 ## 6. What We Should Improve (e)
 
-**Improvement 1: Never use `replace_all=true` when introducing a new symbol that contains the matched pattern.** The markdown recursion incident was structurally guaranteed: I declared `writeReset` and then asked the tool to replace `if m.useColor() { b.WriteString... }` *globally*, which includes the body of the just-declared `writeReset`. Always anchor replacements to a unique enclosing context.
+**Improvement 1: Never use `replace_all=true` when introducing a new symbol that contains the matched pattern.** The markdown recursion incident was structurally guaranteed: I declared `writeReset` and then asked the tool to replace `if m.useColor() { b.WriteString... }` _globally_, which includes the body of the just-declared `writeReset`. Always anchor replacements to a unique enclosing context.
 
 **Improvement 2: Verify edge-case semantics of `slices.Max` / `maps.Values` / `min` / `max` builtins BEFORE using them as replacements for ranged max-loops.** These all panic on empty input. Always retain a guard or use the explicit ranged form when the collection can be empty.
 
@@ -87,6 +87,7 @@ Wider type-aware sweep targets beyond clone elimination:
 Ordered by Pareto impact (easiest maintenance wins first).
 
 ### High-impact (correctness / project invariant maintenance)
+
 1. Verify `bdd` golden files after a fresh `nix run .#test -u` (no drift introduced).
 2. Audit `tui/model.go` for any remaining `m.workflowState.canAcceptUpdates()` calls that should route through `m.acceptUpdate()`.
 3. Investigate whether `serialization/marshal_helpers.go` should add a `(format, subject, ...)` parallel helper covering `MarshalYAML`/`MarshalTOML`/`MarshalJSON` to eliminate the 3 remaining `MarshalX` 5-line wrappers.
@@ -97,12 +98,14 @@ Ordered by Pareto impact (easiest maintenance wins first).
 8. Run `nix run .#govulncheck` after the refactors.
 
 ### Type-aware dedup refinements
+
 9. Extract a `nom.writeReset(progress *Activity)` helper to collapse the remaining `if width < 4` / `if width < 1` guards if the floor can be standardized.
 10. Investigate the `nom/tree_critical.go` `slices.Max` opportunity again — using a nil-guard + slices.Collect.
 11. Add `t.Helper()` and `t.Parallel()` to the project's `testhelpers/` accept-list (single canonical location).
 12. Add an `EXAMPLES_NOT_DEDUPED.md` note documenting why `examples/*` clones are excluded.
 
 ### Documentation updates
+
 13. Update `FEATURES.md` with the "type-aware dedup verified" entry.
 14. Update `CHANGELOG.md` with a v0.33 summary including this dedup pass.
 15. Add a "Maintenance" section to `ROADMAP.md` with the recurring `art-dupl` run + acceptance review.
@@ -111,12 +114,14 @@ Ordered by Pareto impact (easiest maintenance wins first).
 18. Cross-link the v0.32 sweep ADR with this session's accepted-idiom list.
 
 ### Quality gates
+
 19. Run `go test -race` in `nom/` and `tui/` (these are concurrency-sensitive).
 20. Verify `testhelpers/graphtest` works under the new `cqrs.go` math.
 21. Run `go test -fuzz=FuzzFormatActivityLabel -fuzztime=10s` to catch rendering regressions.
 22. Verify all golden tests pass with `nix run .#lint && nix run .#test`.
 
 ### Investigation
+
 23. Investigate why `examples/basic`, `examples/cqrs`, `examples/d2` have no test files (should they? can they?).
 24. Check whether `d2/d2_enum.go:Direction` re-export is documented or discovered-by-coincidence.
 25. Check whether `d2/d2_enum.go:NodeShape` re-export breaks compile-time deprecation workflow.
@@ -125,17 +130,20 @@ Ordered by Pareto impact (easiest maintenance wins first).
 28. Investigate: should the `tui/model.go` `touchLastUpdate` helper also be called from any other `handle*` methods (handleError, handleStateTransition)?
 
 ### Project hygiene
+
 29. Run `nix fmt` to verify `.nix` files are formatted.
 30. Run `nix flake check` for nix-level validation.
 31. Investigate the 49 pre-existing LSP warnings listed in the session diagnostics (gopls bloop `b.N` modernization, stdversion warnings) — none of these were touched in this session.
 32. The `projections_bench_test.go` and `graph/benchmark_test.go` modernization is a `b.Loop()` micro-update, queued but not blocking.
 
 ### Concrete cleanup targets
+
 33. Rewrite `tui/model.go:handleTick` to use `m.touchLastUpdate()` if it makes sense semantically (currently uses `time.Time(msg)`).
 34. Add an inline annotation at `nom/activity_snapshot.go:84` and `nom/state_accessors.go:97` marking them as "intentional lock-scope idiom (ADR 005)".
 35. Add an inline annotation at the remaining 25 type-aware -t 1 clone sites cross-referencing this status report.
 
 ### Process
+
 36. Create a recurring `docs/maintenance/dedup.md` checklist item.
 37. Investigate: should the next dedup session target the `examples/*` directory specifically?
 38. Pick a stable format for status reports — the prior session wrote HTML (per `status-report` skill), this session writes Markdown (per user). Decide which is canonical.
@@ -147,6 +155,7 @@ Ordered by Pareto impact (easiest maintenance wins first).
 ## 8. Three Questions I Cannot Answer (g)
 
 **Q1.** The previous session wrote an HTML status report (`2026-07-26_09-04_type-aware-dedup-session-status.html`), and you explicitly requested a Markdown status report this session. Which is canonical going forward? I followed the `status-report` skill in the prior session (which mandates HTML dashboard), but your direct instruction here is `.md`. Picking inconsistently between these formats means future sessions have a confused reference frame. Should I:
+
 - **(a)** always write `.md` for status reports (faster, simpler, version-controllable, grep-friendly), abandoning the HTML skill mandate;
 - **(b)** always write `.html` for status reports (skill-compliant, richer presentation, but more bytes);
 - **(c)** write both — a `.md` skeleton + an `.html` dashboard? (cost: 2 files per session)
