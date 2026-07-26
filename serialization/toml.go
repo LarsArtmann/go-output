@@ -22,12 +22,7 @@ func init() {
 }
 
 func renderTOMLUnknown(w io.Writer, data any, _ output.RenderOptions) error {
-	b, err := toml.Marshal(data)
-	if err != nil {
-		return fmt.Errorf("marshal TOML: %w", err)
-	}
-
-	return output.WriteRendered(w, "TOML", string(b))
+	return renderUnknown(w, data, "TOML", toml.Marshal)
 }
 
 // MarshalTOML encodes v to TOML.

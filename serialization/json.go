@@ -22,12 +22,9 @@ func init() {
 }
 
 func renderJSONUnknown(w io.Writer, data any, _ output.RenderOptions) error {
-	b, err := json.Marshal(data, json.Deterministic(true), jsontext.WithIndentPrefix(""), jsontext.WithIndent("  "))
-	if err != nil {
-		return fmt.Errorf("marshal JSON: %w", err)
-	}
-
-	return output.WriteRendered(w, "JSON", string(b))
+	return renderUnknown(w, data, "JSON", func(v any) ([]byte, error) {
+		return json.Marshal(v, json.Deterministic(true), jsontext.WithIndentPrefix(""), jsontext.WithIndent("  "))
+	})
 }
 
 // MarshalJSON encodes v to JSON.

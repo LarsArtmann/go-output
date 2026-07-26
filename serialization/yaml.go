@@ -22,12 +22,7 @@ func init() {
 }
 
 func renderYAMLUnknown(w io.Writer, data any, _ output.RenderOptions) error {
-	b, err := yaml.Marshal(data)
-	if err != nil {
-		return fmt.Errorf("marshal YAML: %w", err)
-	}
-
-	return output.WriteRendered(w, "YAML", string(b))
+	return renderUnknown(w, data, "YAML", yaml.Marshal)
 }
 
 // MarshalYAML encodes v to YAML.
