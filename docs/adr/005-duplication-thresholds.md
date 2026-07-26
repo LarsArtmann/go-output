@@ -50,12 +50,12 @@ _**(Counts in this table are the original 2026-05-28 snapshot — see [Update](#
 **The decision and category policy above still hold — only the counts have drifted.**
 After multiple dedup sweeps (v0.30–v0.32), the current `art-dupl` figures are:
 
-| Threshold                    | Clone Groups | Notes                                                                                                |
-| ---------------------------- | ------------ | --------------------------------------------------------------------------------------------------- |
-| **t=4** (production gate)    | **0**        | Gate is clean — zero actionable clones.                                                             |
-| **t=3**                      | **2**        | Both accepted minimum idioms: thread-safe time-read lock scope; `strings.Builder` opener.           |
-| **t=2**                      | **16**       | All accepted: test idioms, module boundaries, examples, single-line patterns, minimum Go idioms.    |
-| **t=1** (strict type-aware)  | **20**       | All accepted per the category policy above.                                                         |
+| Threshold                   | Clone Groups | Notes                                                                                            |
+| --------------------------- | ------------ | ------------------------------------------------------------------------------------------------ |
+| **t=4** (production gate)   | **0**        | Gate is clean — zero actionable clones.                                                          |
+| **t=3**                     | **2**        | Both accepted minimum idioms: thread-safe time-read lock scope; `strings.Builder` opener.        |
+| **t=2**                     | **16**       | All accepted: test idioms, module boundaries, examples, single-line patterns, minimum Go idioms. |
+| **t=1** (strict type-aware) | **20**       | All accepted per the category policy above.                                                      |
 
 The category definitions (Accept: B/C/D/E; Fix: 1–4) are unchanged and remain the
 governing rules for all future dedup judgment calls. Current accepted-group
