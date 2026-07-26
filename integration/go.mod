@@ -1,6 +1,6 @@
 module github.com/larsartmann/go-output/integration
 
-go 1.26.5
+go 1.26.4
 
 require (
 	github.com/go-faster/yaml v0.4.6
