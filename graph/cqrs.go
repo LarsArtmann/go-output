@@ -1,9 +1,7 @@
 package graph
 
 import (
-	"fmt"
 	"io"
-	"strings"
 
 	"github.com/larsartmann/go-output"
 )
@@ -78,24 +76,14 @@ func WriteDOT(w io.Writer, g output.Graph, opts ...DOTOption) error {
 		opt(&cfg)
 	}
 
-	out := renderDOTString(g.Nodes(), g.Edges(), cfg)
-
-	_, err := io.WriteString(w, out)
-	if err != nil {
-		return fmt.Errorf("write dot output: %w", err)
-	}
-
-	return nil
+	return output.WriteRenderedRaw(w, "write dot", renderDOTString(g.Nodes(), g.Edges(), cfg))
 }
 
 // RenderDOT renders a Graph as a DOT string.
 func RenderDOT(g output.Graph, opts ...DOTOption) (string, error) {
-	var buf strings.Builder
-	if err := WriteDOT(&buf, g, opts...); err != nil {
-		return "", err
-	}
-
-	return buf.String(), nil
+	return output.RenderFromWrite(func(w io.Writer) error {
+		return WriteDOT(w, g, opts...)
+	})
 }
 
 // MermaidOption configures Mermaid rendering.
@@ -122,25 +110,12 @@ func WriteMermaid(w io.Writer, g output.Graph, opts ...MermaidOption) error {
 	r.SetNodes(g.Nodes())
 	r.SetEdges(g.Edges())
 
-	out, err := r.Render()
-	if err != nil {
-		return err
-	}
-
-	_, err = io.WriteString(w, out)
-	if err != nil {
-		return fmt.Errorf("write mermaid output: %w", err)
-	}
-
-	return nil
+	return output.WriteRenderedRawFrom(w, r.Render, "write mermaid", "render mermaid")
 }
 
 // RenderMermaid renders a Graph as a Mermaid string.
 func RenderMermaid(g output.Graph, opts ...MermaidOption) (string, error) {
-	var buf strings.Builder
-	if err := WriteMermaid(&buf, g, opts...); err != nil {
-		return "", err
-	}
-
-	return buf.String(), nil
+	return output.RenderFromWrite(func(w io.Writer) error {
+		return WriteMermaid(w, g, opts...)
+	})
 }

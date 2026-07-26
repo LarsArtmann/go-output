@@ -2,7 +2,6 @@ package d2
 
 import (
 	"io"
-	"strings"
 
 	"github.com/larsartmann/go-output"
 )

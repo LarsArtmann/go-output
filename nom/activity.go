@@ -86,14 +86,17 @@ func newActivity(id, name string, kind ActivityKind) *Activity {
 	return a
 }
 
-// SetRunning transitions the activity to running and stamps StartedAt.
+func (a *Activity) clearProgress() {
+	a.Progress = ""
+}
+
 // Clears any prior progress message (a fresh run starts with no sub-step).
 func (a *Activity) SetRunning() {
 	a.Status = ActivityStatusRunning
 	a.StartTime = time.Now()
 	a.EndTime = time.Time{}
 	a.Err = nil
-	a.Progress = ""
+	a.clearProgress()
 	a.applyDisplayStyle()
 }
 
@@ -103,7 +106,7 @@ func (a *Activity) SetCompleted() {
 	a.Status = ActivityStatusCompleted
 
 	a.EndTime = time.Now()
-	a.Progress = ""
+	a.clearProgress()
 
 	a.applyDisplayStyle()
 }
@@ -113,7 +116,7 @@ func (a *Activity) SetCompleted() {
 func (a *Activity) SetFailed(err error) {
 	a.Status = ActivityStatusFailed
 	a.Err = err
-	a.Progress = ""
+	a.clearProgress()
 
 	a.EndTime = time.Now()
 
