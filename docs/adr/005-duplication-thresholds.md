@@ -1,15 +1,17 @@
 # ADR 005: Code Duplication Thresholds and Acceptable Categories
 
-**Status:** Accepted  
+**Status:** Accepted _(decision still holds; **counts below are outdated as of 2026-07-26** — see [Update](#update-2026-07-26) at the end)_
 **Date:** 2026-05-28
 
 ## Context
 
-Running `art-dupl --semantic -t 15` reports ~50 clone groups in the codebase. We need clear guidelines on which clones to fix vs accept.
+Running `art-dupl --semantic -t 15` reported approximately 50 clone groups in the codebase at the time. _(As of 2026-07-26 the codebase is far cleaner: `art-dupl -t 4` = **0** groups, `-t 3` = **2**, `-t 2` = **16**, `-t 1` = **20** accepted. See the [Update](#update-2026-07-26) appendix.)_ We need clear guidelines on which clones to fix vs accept.
 
 ## Decision
 
 ### Threshold Policy
+
+_**(Counts in this table are the original 2026-05-28 snapshot — see [Update](#update-2026-07-26) for current figures.)**_
 
 | Threshold                    | Clone Groups | Action                                  |
 | ---------------------------- | ------------ | --------------------------------------- |
@@ -42,3 +44,19 @@ Running `art-dupl --semantic -t 15` reports ~50 clone groups in the codebase. We
 - At t=30: Only cross-module test patterns remain (acceptable)
 - Dedup work focuses on production code and truly identical test functions
 - `testhelpers` remains zero-dep, preserving the lightweight dependency profile
+
+## Update (2026-07-26)
+
+**The decision and category policy above still hold — only the counts have drifted.**
+After multiple dedup sweeps (v0.30–v0.32), the current `art-dupl` figures are:
+
+| Threshold                    | Clone Groups | Notes                                                                                                |
+| ---------------------------- | ------------ | --------------------------------------------------------------------------------------------------- |
+| **t=4** (production gate)    | **0**        | Gate is clean — zero actionable clones.                                                             |
+| **t=3**                      | **2**        | Both accepted minimum idioms: thread-safe time-read lock scope; `strings.Builder` opener.           |
+| **t=2**                      | **16**       | All accepted: test idioms, module boundaries, examples, single-line patterns, minimum Go idioms.    |
+| **t=1** (strict type-aware)  | **20**       | All accepted per the category policy above.                                                         |
+
+The category definitions (Accept: B/C/D/E; Fix: 1–4) are unchanged and remain the
+governing rules for all future dedup judgment calls. Current accepted-group
+enumeration lives in `AGENTS.md` ("Current dedup state" bullet).

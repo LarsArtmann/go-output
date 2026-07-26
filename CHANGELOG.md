@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 
+- **all modules** — Reduced the strict type-aware `art-dupl -t 2` audit from 18 to 16 groups while preserving behavior; extracted `serialization.renderUnknown` helper (shared body of JSON/TOML/YAML unknown renderers) and rewired `markdown/registry.go` to use `output.WriteRendered`. All remaining groups are documented minimum Go idioms, module-boundary contracts, or self-contained examples.
 - **all modules** — Reduced the strict type-aware `art-dupl -t 1` audit from 29 to 24 groups while preserving behavior; all remaining groups are documented minimum Go idioms, module-boundary contracts, or self-contained examples.
 - **tui** — Centralized accepted-update timestamping so progress and step handlers cannot drift.
 

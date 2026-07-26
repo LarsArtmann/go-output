@@ -25,9 +25,7 @@ func benchTable(rows int) *output.Table {
 func BenchmarkCQRS_WriteJSON_100Rows(b *testing.B) {
 	data := benchTable(100)
 
-	b.ResetTimer()
-
-	for range b.N {
+	for b.Loop() {
 		_ = WriteJSON(io.Discard, data)
 	}
 }
@@ -35,9 +33,7 @@ func BenchmarkCQRS_WriteJSON_100Rows(b *testing.B) {
 func BenchmarkCQRS_WriteYAML_100Rows(b *testing.B) {
 	data := benchTable(100)
 
-	b.ResetTimer()
-
-	for range b.N {
+	for b.Loop() {
 		_ = WriteYAML(io.Discard, data)
 	}
 }
@@ -45,9 +41,7 @@ func BenchmarkCQRS_WriteYAML_100Rows(b *testing.B) {
 func BenchmarkCQRS_WriteTOML_100Rows(b *testing.B) {
 	data := benchTable(100)
 
-	b.ResetTimer()
-
-	for range b.N {
+	for b.Loop() {
 		_ = WriteTOML(io.Discard, data)
 	}
 }

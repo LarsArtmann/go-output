@@ -11,9 +11,7 @@ func BenchmarkTableToGraph_100Rows(b *testing.B) {
 		tbl.AddRow([]string{"task-" + string(rune(i)), "done", "1.0s"})
 	}
 
-	b.ResetTimer()
-
-	for range b.N {
+	for b.Loop() {
 		_ = TableToGraph(tbl)
 	}
 }
@@ -29,9 +27,7 @@ func BenchmarkGraphBuilder_Build_Freeze(b *testing.B) {
 		gb.AddEdge(*NewGraphEdge("n"+string(rune(i)), "n"+string(rune(i+1))))
 	}
 
-	b.ResetTimer()
-
-	for range b.N {
+	for b.Loop() {
 		_ = gb.Build()
 	}
 }
@@ -44,9 +40,7 @@ func BenchmarkTableBuilder_Build(b *testing.B) {
 		bb.AddRow(string(rune(i))+"a", string(rune(i))+"b", string(rune(i))+"c")
 	}
 
-	b.ResetTimer()
-
-	for range b.N {
+	for b.Loop() {
 		_ = bb.Build()
 	}
 }
