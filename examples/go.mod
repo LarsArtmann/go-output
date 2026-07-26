@@ -15,6 +15,8 @@ require (
 	github.com/larsartmann/go-output/tui v0.0.0-00010101000000-000000000000
 )
 
+require github.com/larsartmann/go-output/testhelpers v0.32.0 // indirect
+
 require (
 	charm.land/bubbletea/v2 v2.0.8 // indirect
 	charm.land/lipgloss/v2 v2.0.5 // indirect
