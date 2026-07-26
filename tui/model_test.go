@@ -190,12 +190,14 @@ func TestProgressModel_AcceptedUpdatesStampLastUpdate(t *testing.T) {
 	before := model.lastUpdate
 
 	model.Update(progressUpdateMsg{Type: messageUpdate, Message: "Building"})
+
 	progressUpdate := model.lastUpdate
 	if !progressUpdate.After(before) {
 		t.Error("progress update should advance lastUpdate")
 	}
 
 	model.Update(stepUpdateMsg{Current: 1, Total: 2, Message: "Compile"})
+
 	if model.lastUpdate.Before(progressUpdate) {
 		t.Error("step update should not move lastUpdate backwards")
 	}
