@@ -318,9 +318,10 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 
 | Feature               | Status           | Notes                                                                                                |
 | --------------------- | ---------------- | ---------------------------------------------------------------------------------------------------- |
-| **Build & Test**      | FULLY_FUNCTIONAL | Per-module build and test with `-race` flag                                                          |
-| **Lint**              | FULLY_FUNCTIONAL | `golangci-lint` v2.12 across all modules                                                             |
-| **govulncheck**       | FULLY_FUNCTIONAL | Vulnerability scanning across all modules                                                            |
+| **Build & Test**      | FULLY_FUNCTIONAL | Per-module build and test, plus race tests for concurrency-sensitive modules                             |
+| **Lint**              | FULLY_FUNCTIONAL | `golangci-lint` v2.12 across all modules                                                                 |
+| **govulncheck**       | FULLY_FUNCTIONAL | Vulnerability scanning across all modules                                                                |
+| **Deduplication**     | FULLY_FUNCTIONAL | Zero clones at standard `t=4`; strict type-aware `t=1` audit has 24 accepted minimum-idiom groups        |
 | **go mod tidy check** | FULLY_FUNCTIONAL | Verifies all module `go.mod` files are tidy                                                          |
 | **Nix flake**         | FULLY_FUNCTIONAL | Dev shell with Go 1.26.4, golangci-lint, gopls. Uses `flake-parts` + `treefmt-nix` + `git-hooks.nix` |
 | **Pre-commit hooks**  | FULLY_FUNCTIONAL | Auto-installed via `nix develop`. Also `.pre-commit-config.yaml` for non-Nix users                   |
@@ -364,9 +365,9 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 
 ---
 
-**Last audited:** 2026-07-13
-**Total features:** 173
-**Fully functional:** 161
+**Last audited:** 2026-07-26
+**Total features:** 174
+**Fully functional:** 162
 **Partially functional:** 0
 **Removed:** 10 (FormatCategory, OutputFormat, SortBy, FilledStrings, Register, Create, Unregister, RegisteredFormats, IsRegistered, Event accessor interfaces)
 **Known issues:** 0

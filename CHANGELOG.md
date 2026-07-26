@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- **all modules** — Reduced the strict type-aware `art-dupl -t 1` audit from 29 to 24 groups while preserving behavior; all remaining groups are documented minimum Go idioms, module-boundary contracts, or self-contained examples.
+- **tui** — Centralized accepted-update timestamping so progress and step handlers cannot drift.
+
 ## [0.30.4] - 2026-07-12
 
 ### Fixed
