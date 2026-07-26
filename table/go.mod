@@ -6,7 +6,7 @@ require (
 	charm.land/lipgloss/v2 v2.0.5
 	github.com/charmbracelet/x/exp/golden v0.0.0-20260705004817-2cc9a8fe1146
 	github.com/larsartmann/go-output v0.0.0-00010101000000-000000000000
-	github.com/larsartmann/go-output/testhelpers v0.0.0-00010101000000-000000000000
+	github.com/larsartmann/go-output/testhelpers v0.32.0
 )
 
 require (
