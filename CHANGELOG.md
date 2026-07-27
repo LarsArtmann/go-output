@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.34.0] - 2026-07-27
+
+### Fixed
+
+- **release** — Retracted two bogus git tags (`v0.32.1`, `v0.33.0`) that were pushed on 2026-07-27 but mistakenly pointed at a stale June commit (`194441b`, "chore: prepare v0.9.0 release") instead of current code. The `retract` directives in `go.mod` poison the Go module proxy cache so consumers can no longer resolve them via `go get`. Both tags were also deleted from `origin`. `v0.34.0` is the first valid release after `v0.32.0`.
+
+### Changed
+
+- **output** — `go-branded-id` bumped to `v0.3.3`, which removed the runtime brand-name visibility system (`BrandNamer`, `BrandName[B]()`, `valueString()`). Branded IDs are now compile-time-only phantom types. **Functional impact on go-output: none** — production code uses branded IDs purely for type safety, never parsing the `"Brand:value"` prefix. The only observable change is the `%#v` debug representation (`id(test-id)` instead of `id.output.GraphNodeIDBrand(test-id)`), covered by `TestBrandedIDFormat`.
+- **all modules** — Refreshed Go module dependencies across all 19 modules for consistency and reproducibility.
+
 ## [0.32.0] - 2026-07-26
 
 ### Added

@@ -18,6 +18,12 @@ replace (
 
 require golang.org/x/sys v0.47.0 // indirect
 
+retract (
+	// Bogus tags: pointed at a stale June commit, never real releases. Deleted from git; retracted here to poison proxy cache.
+	v0.32.1
+	v0.33.0
+)
+
 replace github.com/larsartmann/go-output/markdown => ./markdown
 
 replace github.com/larsartmann/go-output/tree => ./tree
