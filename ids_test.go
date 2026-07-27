@@ -77,7 +77,7 @@ func TestBrandedIDFormat(t *testing.T) {
 		t.Parallel()
 
 		got := fmt.Sprintf("%#v", id)
-		want := `id.output.GraphNodeIDBrand(test-id)`
+		want := `id(test-id)`
 
 		if got != want {
 			t.Errorf("%%#v = %q, want %q", got, want)
