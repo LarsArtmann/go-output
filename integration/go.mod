@@ -4,19 +4,19 @@ go 1.26.5
 
 require (
 	github.com/go-faster/yaml v0.4.6
-	github.com/larsartmann/go-output v0.34.0
-	github.com/larsartmann/go-output/d2 v0.34.0
-	github.com/larsartmann/go-output/delimited v0.34.0
-	github.com/larsartmann/go-output/graph v0.34.0
-	github.com/larsartmann/go-output/markdown v0.34.0
-	github.com/larsartmann/go-output/markup v0.34.0
-	github.com/larsartmann/go-output/nom v0.34.0
-	github.com/larsartmann/go-output/plantuml v0.34.0
-	github.com/larsartmann/go-output/serialization v0.34.0
-	github.com/larsartmann/go-output/table v0.34.0
-	github.com/larsartmann/go-output/testhelpers v0.34.0
-	github.com/larsartmann/go-output/tree v0.34.0
-	github.com/larsartmann/go-output/tui v0.34.0
+	github.com/larsartmann/go-output v0.35.0
+	github.com/larsartmann/go-output/d2 v0.35.0
+	github.com/larsartmann/go-output/delimited v0.35.0
+	github.com/larsartmann/go-output/graph v0.35.0
+	github.com/larsartmann/go-output/markdown v0.35.0
+	github.com/larsartmann/go-output/markup v0.35.0
+	github.com/larsartmann/go-output/nom v0.35.0
+	github.com/larsartmann/go-output/plantuml v0.35.0
+	github.com/larsartmann/go-output/serialization v0.35.0
+	github.com/larsartmann/go-output/table v0.35.0
+	github.com/larsartmann/go-output/testhelpers v0.35.0
+	github.com/larsartmann/go-output/tree v0.35.0
+	github.com/larsartmann/go-output/tui v0.35.0
 )
 
 require (
@@ -33,7 +33,7 @@ require (
 	github.com/go-faster/errors v0.8.0 // indirect
 	github.com/go-faster/jx v1.2.0 // indirect
 	github.com/larsartmann/go-branded-id v0.4.0 // indirect
-	github.com/larsartmann/go-output/escape v0.34.0 // indirect
+	github.com/larsartmann/go-output/escape v0.35.0 // indirect
 	github.com/lucasb-eyer/go-colorful v1.4.0 // indirect
 	github.com/mattn/go-runewidth v0.0.27 // indirect
 	github.com/muesli/cancelreader v0.2.2 // indirect
