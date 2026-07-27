@@ -19,8 +19,8 @@ replace (
 require golang.org/x/sys v0.47.0 // indirect
 
 retract (
-	v0.33.0
 	// Bogus tags: pointed at a stale June commit, never real releases. Deleted from git; retracted here to poison proxy cache.
+	v0.33.0
 	v0.32.1
 )
 

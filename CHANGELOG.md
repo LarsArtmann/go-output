@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.35.0] - 2026-07-27
+
+### Changed
+
+- **all modules** — Aligned all internal sibling dependency versions to `v0.34.0` (the version label, not code — `v0.34.0` and `v0.35.0` are code-identical for sub-modules). `go-branded-id` bumped from `v0.3.3` to `v0.4.0` (same commit, re-tagged — zero code change). `testhelpers` bumped from `v0.32.0` to `v0.34.0`. Supersedes `v0.34.0` which was tagged before these version-alignments landed.
+
 ## [0.34.0] - 2026-07-27
 
 ### Fixed
