@@ -8,8 +8,8 @@ require (
 	github.com/charmbracelet/x/ansi v0.11.7
 	github.com/charmbracelet/x/exp/golden v0.0.0-20260705004817-2cc9a8fe1146
 	github.com/charmbracelet/x/vt v0.0.0-20260629091435-9c70f75e26a4
-	github.com/larsartmann/go-output v0.0.0-00010101000000-000000000000
-	github.com/larsartmann/go-output/testhelpers v0.32.0
+	github.com/larsartmann/go-output v0.34.0
+	github.com/larsartmann/go-output/testhelpers v0.34.0
 	github.com/onsi/gomega v1.42.1
 	golang.org/x/term v0.45.0
 )
@@ -25,7 +25,7 @@ require (
 	github.com/clipperhouse/uax29/v2 v2.7.0 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
-	github.com/larsartmann/go-branded-id v0.3.3 // indirect
+	github.com/larsartmann/go-branded-id v0.4.0 // indirect
 	github.com/lucasb-eyer/go-colorful v1.4.0 // indirect
 	github.com/mattn/go-runewidth v0.0.27 // indirect
 	github.com/muesli/cancelreader v0.2.2 // indirect
@@ -48,3 +48,5 @@ replace github.com/larsartmann/go-output/escape => ../escape
 replace github.com/larsartmann/go-output/markdown => ../markdown
 
 replace github.com/larsartmann/go-output/tree => ../tree
+
+replace github.com/larsartmann/go-output/testhelpers => ../testhelpers
