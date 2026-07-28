@@ -29,7 +29,7 @@ require (
 	github.com/go-faster/errors v0.8.0 // indirect
 	github.com/go-faster/jx v1.2.0 // indirect
 	github.com/go-faster/yaml v0.4.6 // indirect
-	github.com/larsartmann/go-branded-id v0.4.0 // indirect
+	github.com/larsartmann/go-branded-id v0.5.0 // indirect
 	github.com/larsartmann/go-output/escape v0.35.0 // indirect
 	github.com/larsartmann/go-output/markdown v0.35.0
 	github.com/larsartmann/go-output/tree v0.35.0

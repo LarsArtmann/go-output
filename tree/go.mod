@@ -11,7 +11,7 @@ require (
 
 require (
 	github.com/aymanbagabas/go-udiff v0.4.1 // indirect
-	github.com/larsartmann/go-branded-id v0.4.0 // indirect
+	github.com/larsartmann/go-branded-id v0.5.0 // indirect
 	golang.org/x/sys v0.47.0 // indirect
 	golang.org/x/term v0.45.0 // indirect
 )
