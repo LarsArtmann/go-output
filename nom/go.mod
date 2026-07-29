@@ -16,7 +16,7 @@ require (
 
 require (
 	github.com/aymanbagabas/go-udiff v0.4.1 // indirect
-	github.com/charmbracelet/ultraviolet v0.0.0-20260720091822-7cc6674724ac // indirect
+	github.com/charmbracelet/ultraviolet v0.0.0-20260729215302-f2cf2bdb65a2 // indirect
 	github.com/charmbracelet/x/exp/ordered v0.1.0 // indirect
 	github.com/charmbracelet/x/term v0.2.2 // indirect
 	github.com/charmbracelet/x/termios v0.1.1 // indirect
@@ -25,7 +25,7 @@ require (
 	github.com/clipperhouse/uax29/v2 v2.7.0 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
-	github.com/larsartmann/go-branded-id v0.5.0 // indirect
+	github.com/larsartmann/go-branded-id v0.5.1 // indirect
 	github.com/lucasb-eyer/go-colorful v1.4.0 // indirect
 	github.com/mattn/go-runewidth v0.0.27 // indirect
 	github.com/muesli/cancelreader v0.2.2 // indirect

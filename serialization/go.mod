@@ -15,7 +15,7 @@ require (
 	github.com/aymanbagabas/go-udiff v0.4.1 // indirect
 	github.com/go-faster/errors v0.8.0 // indirect
 	github.com/go-faster/jx v1.2.0 // indirect
-	github.com/larsartmann/go-branded-id v0.5.0 // indirect
+	github.com/larsartmann/go-branded-id v0.5.1 // indirect
 	github.com/segmentio/asm v1.2.1 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/exp v0.0.0-20260611194520-c48552f49976 // indirect

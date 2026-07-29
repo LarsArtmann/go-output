@@ -19,7 +19,7 @@ require (
 	charm.land/bubbletea/v2 v2.0.8 // indirect
 	charm.land/lipgloss/v2 v2.0.5 // indirect
 	github.com/charmbracelet/colorprofile v0.4.3 // indirect
-	github.com/charmbracelet/ultraviolet v0.0.0-20260720091822-7cc6674724ac // indirect
+	github.com/charmbracelet/ultraviolet v0.0.0-20260729215302-f2cf2bdb65a2 // indirect
 	github.com/charmbracelet/x/ansi v0.11.7 // indirect
 	github.com/charmbracelet/x/term v0.2.2 // indirect
 	github.com/charmbracelet/x/termios v0.1.1 // indirect
@@ -29,7 +29,7 @@ require (
 	github.com/go-faster/errors v0.8.0 // indirect
 	github.com/go-faster/jx v1.2.0 // indirect
 	github.com/go-faster/yaml v0.4.6 // indirect
-	github.com/larsartmann/go-branded-id v0.5.0 // indirect
+	github.com/larsartmann/go-branded-id v0.5.1 // indirect
 	github.com/larsartmann/go-output/escape v0.35.0 // indirect
 	github.com/larsartmann/go-output/markdown v0.35.0
 	github.com/larsartmann/go-output/tree v0.35.0

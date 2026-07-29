@@ -28,7 +28,7 @@ require (
 	github.com/go-task/slim-sprig/v3 v3.0.0 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/google/pprof v0.0.0-20260604005048-7023385849c0 // indirect
-	github.com/larsartmann/go-branded-id v0.5.0 // indirect
+	github.com/larsartmann/go-branded-id v0.5.1 // indirect
 	github.com/larsartmann/go-output/markdown v0.35.0
 	github.com/larsartmann/go-output/tree v0.35.0
 	github.com/pelletier/go-toml/v2 v2.4.3 // indirect
