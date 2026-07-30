@@ -118,6 +118,10 @@ type InvalidNodeShapeError struct {
 
 // Error returns a descriptive error message for the invalid node shape.
 func (e *InvalidNodeShapeError) Error() string {
+	if len(e.Allowed) == 0 {
+		return "invalid node shape: " + e.Value
+	}
+
 	return "invalid node shape: " + e.Value + " (allowed: " + joinStrings(EnumAllowedValues(e.Allowed)) + ")"
 }
 

@@ -98,7 +98,7 @@ func TestErrorTypes(t *testing.T) {
 			&InvalidShapeError{Value: "bad", Allowed: AllShapes},
 			"invalid shape: bad (allowed: table, tree, graph)",
 		},
-		{"InvalidNodeShapeError", &InvalidNodeShapeError{Value: "bad"}, "invalid graph shape: bad"},
+		{"InvalidNodeShapeError", &InvalidNodeShapeError{Value: "bad"}, "invalid node shape: bad"},
 	}
 
 	for _, tt := range tests {

@@ -33,6 +33,10 @@ type InvalidColorModeError struct {
 
 // Error returns a descriptive error message for the invalid color mode.
 func (e *InvalidColorModeError) Error() string {
+	if len(e.Allowed) == 0 {
+		return "invalid color mode: " + e.Value
+	}
+
 	return "invalid color mode: " + e.Value + " (allowed: " + joinStrings(EnumAllowedValues(e.Allowed)) + ")"
 }
 

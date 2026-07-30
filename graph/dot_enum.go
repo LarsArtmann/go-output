@@ -35,6 +35,10 @@ type InvalidRankDirError struct {
 
 // Error returns a descriptive error message for the invalid rank direction.
 func (e *InvalidRankDirError) Error() string {
+	if len(e.Allowed) == 0 {
+		return "invalid rank direction: " + e.Value
+	}
+
 	return "invalid rank direction: " + e.Value + " (allowed: " + strings.Join(output.EnumAllowedValues(e.Allowed), ", ") + ")"
 }
 
@@ -96,6 +100,10 @@ type InvalidSplineStyleError struct {
 
 // Error returns a descriptive error message for the invalid spline style.
 func (e *InvalidSplineStyleError) Error() string {
+	if len(e.Allowed) == 0 {
+		return "invalid spline style: " + e.Value
+	}
+
 	return "invalid spline style: " + e.Value + " (allowed: " + strings.Join(output.EnumAllowedValues(e.Allowed), ", ") + ")"
 }
 
