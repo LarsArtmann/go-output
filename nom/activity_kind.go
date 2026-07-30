@@ -1,6 +1,11 @@
 package nom
 
-import "slices"
+import (
+	"slices"
+	"strings"
+
+	"github.com/larsartmann/go-output"
+)
 
 // ActivityKind classifies what an activity IS in the workflow topology,
 // independent of its lifecycle Status. A Task is a concrete unit of work; a
@@ -54,13 +59,22 @@ func ParseActivityKind(s string) (ActivityKind, error) {
 		}
 	}
 
-	return ActivityKindTask, &InvalidActivityKindError{Value: s}
+	return ActivityKindTask, &InvalidActivityKindError{Value: s, Allowed: AllActivityKinds}
 }
 
 // IsValid returns true if the kind is a recognized ActivityKind value.
 func (k ActivityKind) IsValid() bool { return slices.Contains(AllActivityKinds, k) }
 
 // InvalidActivityKindError represents an invalid activity kind.
-type InvalidActivityKindError struct{ Value string }
+type InvalidActivityKindError struct {
+	Value   string
+	Allowed []ActivityKind
+}
 
-func (e *InvalidActivityKindError) Error() string { return "invalid activity kind: " + e.Value }
+func (e *InvalidActivityKindError) Error() string {
+	if len(e.Allowed) == 0 {
+		return "invalid activity kind: " + e.Value
+	}
+
+	return "invalid activity kind: " + e.Value + " (allowed: " + strings.Join(output.EnumAllowedValues(e.Allowed), ", ") + ")"
+}

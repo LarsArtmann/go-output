@@ -3,6 +3,7 @@ package nom
 import (
 	"image/color"
 	"slices"
+	"strings"
 
 	"github.com/larsartmann/go-output"
 )
@@ -80,7 +81,7 @@ func ParseActivityStatus(s string) (ActivityStatus, error) {
 		}
 	}
 
-	return ActivityStatusPending, &InvalidActivityStatusError{Value: s}
+	return ActivityStatusPending, &InvalidActivityStatusError{Value: s, Allowed: AllActivityStatuses()}
 }
 
 // IsValid returns true if the status is a recognized ActivityStatus value.
@@ -95,9 +96,14 @@ func (ActivityStatus) AllowedValues() []string {
 
 // InvalidActivityStatusError represents an invalid activity status.
 type InvalidActivityStatusError struct {
-	Value string
+	Value   string
+	Allowed []ActivityStatus
 }
 
 func (e *InvalidActivityStatusError) Error() string {
-	return "invalid activity status: " + e.Value
+	if len(e.Allowed) == 0 {
+		return "invalid activity status: " + e.Value
+	}
+
+	return "invalid activity status: " + e.Value + " (allowed: " + strings.Join(output.EnumAllowedValues(e.Allowed), ", ") + ")"
 }
