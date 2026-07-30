@@ -21,6 +21,7 @@ require golang.org/x/sys v0.47.0 // indirect
 retract (
 	// Bogus tags: pointed at a stale June commit, never real releases. Deleted from git; retracted here to poison proxy cache.
 	v0.33.0
+	// Same incident as v0.33.0 — bogus tag on stale commit, deleted from git; retracted to poison proxy cache.
 	v0.32.1
 )
 

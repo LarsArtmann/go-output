@@ -6,6 +6,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+
+- **output** — Exported `AllColorModes` (was `colorModeValues`) and `AllNodeShapes` (was `nodeShapeValues`) for programmatic enumeration and typed-error `Allowed` population.
+- **graph** — Exported `AllRankDirs` (was `rankDirValues`) and `AllSplineStyles` (was `splineStyleValues`).
+- **output/graph/d2/nom** — Error contract tests verifying `errors.Is` sentinel matching through wrapping and `errors.AsType[*T]` typed-error field extraction.
+- **docs** — `docs/ERROR_SYSTEM.md` (consumer-facing error reference) and ADR 013 (`docs/adr/0013-error-system-design.md`).
+
+### Changed
+
+- **output** — `InvalidColorModeError` and `InvalidNodeShapeError` now carry `Allowed` fields populated dynamically from `AllColorModes`/`AllNodeShapes`; `Error()` renders the allowed-values list from the slice, never hardcoded strings.
+- **graph** — `InvalidRankDirError` and `InvalidSplineStyleError` now carry `Allowed` fields; hardcoded allowed-value string literals (`"TB, LR, BT, RL"`, `"ortho, spline, ..."`) replaced with dynamic formatting from the `Allowed` slice to prevent drift.
+- **nom** — `InvalidActivityStatusError` and `InvalidActivityKindError` now carry `Allowed` fields populated from `AllActivityStatuses()` / `AllActivityKinds`.
+
+### Fixed
+
+- **output** — `InvalidNodeShapeError` message corrected from "invalid graph shape" to "invalid node shape".
+
 ## [0.35.0] - 2026-07-27
 
 ### Changed

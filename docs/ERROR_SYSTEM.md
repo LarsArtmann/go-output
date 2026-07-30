@@ -93,8 +93,8 @@ type InvalidXxxError struct {
 
 | Type | Fields | Returned By |
 |------|--------|-------------|
-| `*InvalidActivityStatusError` | `Value string` | `ParseActivityStatus` |
-| `*InvalidActivityKindError` | `Value string` | `ParseActivityKind` |
+| `*InvalidActivityStatusError` | `Value string`, `Allowed []ActivityStatus` | `ParseActivityStatus` |
+| `*InvalidActivityKindError` | `Value string`, `Allowed []ActivityKind` | `ParseActivityKind` |
 
 ---
 
