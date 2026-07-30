@@ -13,9 +13,8 @@ func TestSentinels_Is_ThroughWrapping(t *testing.T) {
 		t.Parallel()
 
 		tree := NewDependencyTree()
-		tree.AddActivity("a", "A", nil)
-		tree.AddActivity("b", "B", []string{"a"})
-		tree.AddActivity("a", "A", []string{"b"}) // creates cycle: a→b→a
+		_ = tree.AddActivity(ActivityID("a"), []ActivityID{"b"})
+		_ = tree.AddActivity(ActivityID("b"), []ActivityID{"a"}) // creates cycle: a→b→a
 
 		err := tree.Build()
 		if err == nil {

@@ -49,6 +49,12 @@ func EnumAllowedValues[T StringEnum](values []T) []string {
 }
 
 // ParseError represents a parse error for enum types.
+//
+// This is the internal error returned by ParseEnum. Domain-specific Parse
+// functions (ParseShape, ParseFormat, etc.) discard it and return their own
+// typed errors (InvalidShapeError, InvalidFormatError, etc.) which carry
+// richer type information. Consumers should match against the domain-specific
+// types, not ParseError.
 type ParseError struct {
 	Value  string
 	Values []string
