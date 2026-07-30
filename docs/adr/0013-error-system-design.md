@@ -48,13 +48,13 @@ return fmt.Errorf("render %s: %w", formatName, err)
 
 ## What We Explicitly Rejected
 
-| Rejected | Why |
-|---|---|
-| Concrete return types (`func() *MarshalError`) | Couples consumers to implementation; Go returns `error` |
-| Error hierarchy (`RenderError` interface) | Over-engineering; flat model is sufficient and idiomatic |
-| `out=%v` in error messages | Failed render result is garbage; leaks noise, breaks grep |
-| Merging d2/graph error types | Different domains (D2 shapes vs graph shapes) |
-| `errors.As(err, &target)` | Legacy in Go 1.26+; use `errors.AsType[*T](err)` |
+| Rejected                                       | Why                                                       |
+| ---------------------------------------------- | --------------------------------------------------------- |
+| Concrete return types (`func() *MarshalError`) | Couples consumers to implementation; Go returns `error`   |
+| Error hierarchy (`RenderError` interface)      | Over-engineering; flat model is sufficient and idiomatic  |
+| `out=%v` in error messages                     | Failed render result is garbage; leaks noise, breaks grep |
+| Merging d2/graph error types                   | Different domains (D2 shapes vs graph shapes)             |
+| `errors.As(err, &target)`                      | Legacy in Go 1.26+; use `errors.AsType[*T](err)`          |
 
 ## Consequences
 

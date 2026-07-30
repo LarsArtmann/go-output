@@ -7,21 +7,21 @@ Every term below should mean the **same thing** to everyone who reads it.
 
 ## Glossary
 
-| Term             | Definition                                                                            | Context                                                                      |
-| ---------------- | ------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| **Format**       | A string enum identifying an output format (e.g., "json", "csv", "d2")                | Used for CLI flags, runtime dispatch, capability queries                     |
-| **Shape**        | A data shape an output format can render: table, tree, or graph                       | `ShapeTable`, `ShapeTree`, `ShapeGraph` — formats declare which they support |
-| **Renderer**     | The core interface: `Render() (string, error)`                                        | Every format implements this — JSON, CSV, HTML, D2, DOT, Mermaid, etc.       |
-| **Table**        | Tabular data structure with headers, rows, and optional footer                        | Central data type shared across all table-capable formats                    |
-| **TreeNode**     | A node in a tree hierarchy with id, label, children, metadata                         | Used by Tree, JSON Tree, YAML Tree, HTML Tree renderers                      |
-| **GraphNode**    | A node in a graph with branded ID, label, and optional shape                          | Used by DOT, Mermaid, JSON Graph, YAML Graph renderers                       |
-| **GraphEdge**    | A directed edge between two GraphNodes with optional label and style                  | Used alongside GraphNode in graph renderers                                  |
-| **Branded ID**   | A phantom-typed identifier (e.g., `D2NodeID`, `TreeNodeID`)                           | Prevents mixing different ID types at compile time                           |
-| **GraphBuilder** | Write-side builder for graph data (nodes, edges). `Build()` returns immutable `Graph` | Embedded by DOT/Mermaid/PlantUML renderers for shared state                  |
-| **ColorMode**    | Terminal color output mode: auto, always, never                                       | Respects `NO_COLOR`, CI env vars, TTY detection                              |
-| **Registry**     | Format→marshaler dispatch map for `RenderTable`                                       | `RegisterTableMarshaler(format, fn)` — sub-modules register in `init()`      |
-| **Sentinel Error** | An exported `var ErrFoo = errors.New(...)` that consumers match via `errors.Is`   | Root owns `ErrColumnMismatch`, `ErrNilRow`; sub-modules own domain-specific ones |
-| **Typed Error**  | An exported struct (`*UnsupportedFormatError`, `*ParseError`) with structured fields | Consumers extract via `errors.AsType[*T](err)` (Go 1.26+)                   |
+| Term               | Definition                                                                            | Context                                                                          |
+| ------------------ | ------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| **Format**         | A string enum identifying an output format (e.g., "json", "csv", "d2")                | Used for CLI flags, runtime dispatch, capability queries                         |
+| **Shape**          | A data shape an output format can render: table, tree, or graph                       | `ShapeTable`, `ShapeTree`, `ShapeGraph` — formats declare which they support     |
+| **Renderer**       | The core interface: `Render() (string, error)`                                        | Every format implements this — JSON, CSV, HTML, D2, DOT, Mermaid, etc.           |
+| **Table**          | Tabular data structure with headers, rows, and optional footer                        | Central data type shared across all table-capable formats                        |
+| **TreeNode**       | A node in a tree hierarchy with id, label, children, metadata                         | Used by Tree, JSON Tree, YAML Tree, HTML Tree renderers                          |
+| **GraphNode**      | A node in a graph with branded ID, label, and optional shape                          | Used by DOT, Mermaid, JSON Graph, YAML Graph renderers                           |
+| **GraphEdge**      | A directed edge between two GraphNodes with optional label and style                  | Used alongside GraphNode in graph renderers                                      |
+| **Branded ID**     | A phantom-typed identifier (e.g., `D2NodeID`, `TreeNodeID`)                           | Prevents mixing different ID types at compile time                               |
+| **GraphBuilder**   | Write-side builder for graph data (nodes, edges). `Build()` returns immutable `Graph` | Embedded by DOT/Mermaid/PlantUML renderers for shared state                      |
+| **ColorMode**      | Terminal color output mode: auto, always, never                                       | Respects `NO_COLOR`, CI env vars, TTY detection                                  |
+| **Registry**       | Format→marshaler dispatch map for `RenderTable`                                       | `RegisterTableMarshaler(format, fn)` — sub-modules register in `init()`          |
+| **Sentinel Error** | An exported `var ErrFoo = errors.New(...)` that consumers match via `errors.Is`       | Root owns `ErrColumnMismatch`, `ErrNilRow`; sub-modules own domain-specific ones |
+| **Typed Error**    | An exported struct (`*UnsupportedFormatError`, `*ParseError`) with structured fields  | Consumers extract via `errors.AsType[*T](err)` (Go 1.26+)                        |
 
 ## Entities
 

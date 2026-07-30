@@ -89,7 +89,7 @@
    - `gocognit` complexity 46 (limit 30) — monolithic 150-line function with 6 subtests
    - `golines` formatting — table test entries not properly broken
    - `wsl_v5` — missing whitespace above `if`
-   
+
    **I had to rewrite the entire file twice.** The first version was careless — I should have split into individual test functions from the start and used `strings.Contains` like a competent Go programmer.
 
 3. **nom test used wrong API** — I wrote `tree.AddActivity("a", "A", nil)` without checking the actual signature, which is `AddActivity(ActivityID, []ActivityID)`. Build failed. I should have read the existing tests (`tree_test.go`) before writing my own.
@@ -117,12 +117,14 @@
 ## f) Up to 50 Things We Should Get Done Next
 
 ### Critical (blocks CI/test pipeline)
+
 1. Fix `TestBrandedIDFormat` in `ids_test.go:83` — update expected `%#v` output
 2. Add CHANGELOG.md `[Unreleased]` entry for all new exported symbols
 3. Fix `go.mod:24` — add retract comment for `v0.32.1`
 4. Update ERROR_SYSTEM.md nom section — `InvalidActivityStatusError` and `InvalidActivityKindError` now have `Allowed` fields
 
 ### High impact
+
 5. Run full `nix run .#test` after fixing TestBrandedIDFormat to verify ALL 19 modules
 6. Verify golden file tests in ALL modules (serialization, markup, table, tree, etc.) for error message regressions
 7. Consider migrating d2's 5 enum sentinels to typed error structs with `Allowed` fields (matches root/graph/nom pattern)
@@ -130,6 +132,7 @@
 9. Update `docs/planning/2026-07-30_22-10_superb-error-system-v2.md` task statuses to "Done"
 
 ### Error system polish
+
 10. Add `Allowed` field to `InvalidDirection`/`InvalidNodeShape`/`InvalidArrowType`/`InvalidConstraint`/`InvalidTextTransform` in d2 (if migrating to typed structs)
 11. Consider whether `ParseError` should be unexported (it's exported but unreachable from public API)
 12. Add `errors.AsType` examples to module-level doc.go files
@@ -140,6 +143,7 @@
 17. Review whether `nom/timing_cache_persist.go:59` `continue` on parse error should log a warning instead of silently skipping
 
 ### Test coverage
+
 18. Add fuzz test for `ParseColorMode` / `ParseNodeShape` (like existing `d2/fuzz_test.go` pattern)
 19. Add table-driven test for nil-`Allowed` behavior on ALL typed errors (only root has partial coverage)
 20. Add test proving `errors.AsType` fails for non-pointer types (e.g., `errors.AsType[InvalidShapeError]` vs `errors.AsType[*InvalidShapeError]`)
@@ -147,6 +151,7 @@
 22. Add integration test: render with unsupported format → wrap → extract type → read Format field
 
 ### Documentation
+
 23. Add error handling section to README.md for consumers
 24. Update `docs/DOMAIN_LANGUAGE.md` with "Typed Error" and "Sentinel Error" entries (may already be there from prior session)
 25. Create ADR for the `Allowed` field convention (companion to ADR 013)
@@ -155,6 +160,7 @@
 28. Add `// ExampleError` test function showing `errors.Is` and `errors.AsType` usage
 
 ### Code quality
+
 29. Run `art-dupl -t 4` to verify the nil-`Allowed` guard pattern didn't introduce duplication
 30. Consider extracting the nil-guard + format pattern into a shared `formatAllowed[T StringEnum](allowed []T) string` helper
 31. Review whether `joinStrings` in `enum.go` should be exported (used by root, but sub-modules can't use it)
@@ -162,11 +168,13 @@
 33. Run `golangci-lint` on nom module specifically (new `strings` and `output` imports added)
 
 ### Dependency management
+
 34. Address 8 GitHub Dependabot vulnerabilities (3 high, 3 moderate, 2 low)
 35. Review `go-branded-id` v0.4.0 changelog for other breaking changes beyond `%#v` format
 36. Run `nix run .#govulncheck` across all modules
 
 ### Broader workspace health
+
 37. Investigate markup module's 54 erraudit violations more deeply (highest count)
 38. Investigate nom module's 34 erraudit violations more deeply
 39. Investigate serialization module's 30 erraudit violations more deeply

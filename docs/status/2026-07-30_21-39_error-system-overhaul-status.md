@@ -14,48 +14,48 @@ User ran `erraudit ./...` on root and got 27 violations (16 ERROR, 11 WARNING). 
 
 ## a) FULLY DONE
 
-| What | Status | Evidence |
-|---|---|---|
-| Exported `ErrColumnMismatch` + `ErrNilRow` sentinels | Done | `tabledata.go:9-14` |
-| Fixed lying doc comment (`AddRowChecked` promised exported sentinel, delivered unexported) | Done | `tabledata.go:48-57` |
-| Fixed `Validate` doc comment to reference exported sentinels | Done | `tabledata.go:130-132` |
-| Migrated `errors.As` → `errors.AsType` (Go 1.26 generic) | Done | `render_registry_test.go:88-93` |
-| Added 4 contract tests proving `errors.Is` works through `%w` wrapping | Done | `tabledata_test.go:319-386` |
-| Documented intentional error suppression in `shape.go:107` | Done | `shape.go:105-110` |
-| Added error system pattern to AGENTS.md (three-tier model) | Done | `AGENTS.md:131` |
-| Added erraudit false-positive gotcha to AGENTS.md | Done | `AGENTS.md:154` |
-| Fixed ADR count in AGENTS.md (was "9 ADRs", actually 13) | Done | `AGENTS.md:162` |
-| Wrote ADR 013 (Error System Design) | Done | `docs/adr/0013-error-system-design.md` |
-| Added Sentinel Error + Typed Error terms to DOMAIN_LANGUAGE.md | Done | `docs/DOMAIN_LANGUAGE.md:23-24` |
-| Wrote execution plan with mermaid graph | Done | `docs/planning/2026-07-30_21-28_superb-error-system.md` |
-| `nix run .#build` passes all 19 modules | Done | Verified post-commit |
-| `nix run .#lint` passes (only pre-existing `gomoddirectives` warning) | Done | Verified post-commit |
-| Root tests pass (except pre-existing `TestBrandedIDFormat`) | Done | Verified post-commit |
-| Committed + pushed to `master` | Done | `d0c67fd` |
-| `CODE_OF_CONDUCT.md` intact (used `--no-verify` per AGENTS.md gotcha) | Done | Verified post-commit |
+| What                                                                                       | Status | Evidence                                                |
+| ------------------------------------------------------------------------------------------ | ------ | ------------------------------------------------------- |
+| Exported `ErrColumnMismatch` + `ErrNilRow` sentinels                                       | Done   | `tabledata.go:9-14`                                     |
+| Fixed lying doc comment (`AddRowChecked` promised exported sentinel, delivered unexported) | Done   | `tabledata.go:48-57`                                    |
+| Fixed `Validate` doc comment to reference exported sentinels                               | Done   | `tabledata.go:130-132`                                  |
+| Migrated `errors.As` → `errors.AsType` (Go 1.26 generic)                                   | Done   | `render_registry_test.go:88-93`                         |
+| Added 4 contract tests proving `errors.Is` works through `%w` wrapping                     | Done   | `tabledata_test.go:319-386`                             |
+| Documented intentional error suppression in `shape.go:107`                                 | Done   | `shape.go:105-110`                                      |
+| Added error system pattern to AGENTS.md (three-tier model)                                 | Done   | `AGENTS.md:131`                                         |
+| Added erraudit false-positive gotcha to AGENTS.md                                          | Done   | `AGENTS.md:154`                                         |
+| Fixed ADR count in AGENTS.md (was "9 ADRs", actually 13)                                   | Done   | `AGENTS.md:162`                                         |
+| Wrote ADR 013 (Error System Design)                                                        | Done   | `docs/adr/0013-error-system-design.md`                  |
+| Added Sentinel Error + Typed Error terms to DOMAIN_LANGUAGE.md                             | Done   | `docs/DOMAIN_LANGUAGE.md:23-24`                         |
+| Wrote execution plan with mermaid graph                                                    | Done   | `docs/planning/2026-07-30_21-28_superb-error-system.md` |
+| `nix run .#build` passes all 19 modules                                                    | Done   | Verified post-commit                                    |
+| `nix run .#lint` passes (only pre-existing `gomoddirectives` warning)                      | Done   | Verified post-commit                                    |
+| Root tests pass (except pre-existing `TestBrandedIDFormat`)                                | Done   | Verified post-commit                                    |
+| Committed + pushed to `master`                                                             | Done   | `d0c67fd`                                               |
+| `CODE_OF_CONDUCT.md` intact (used `--no-verify` per AGENTS.md gotcha)                      | Done   | Verified post-commit                                    |
 
 ---
 
 ## b) PARTIALLY DONE
 
-| What | What's Done | What's Missing |
-|---|---|---|
+| What                     | What's Done                                       | What's Missing                                                                                                                                 |
+| ------------------------ | ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
 | Cross-module error audit | Ran erraudit summary counts across all 19 modules | Did NOT investigate whether sub-module findings contain real bugs (markup has 54 violations, nom has 34, serialization has 30, daghtml has 28) |
-| Contract test coverage | 4 tests covering root sentinels through wrapping | No contract tests for typed errors in sub-modules (e.g., `d2.ErrInvalidDirection`, `nom.ErrCycleDetected`) |
+| Contract test coverage   | 4 tests covering root sentinels through wrapping  | No contract tests for typed errors in sub-modules (e.g., `d2.ErrInvalidDirection`, `nom.ErrCycleDetected`)                                     |
 
 ---
 
 ## c) NOT STARTED
 
-| What | Why It Matters |
-|---|---|
-| CHANGELOG.md entry | New exported symbols (`ErrColumnMismatch`, `ErrNilRow`) are a user-facing API addition. The `[Unreleased]` section is empty. |
-| Fix pre-existing `TestBrandedIDFormat` failure | Blocks `nix run .#test` from reaching any sub-module — root failure stops the whole pipeline |
-| Fix pre-existing `gomoddirectives` lint warning | `go.mod:24` retracted version `v0.32.1` lacks a mandatory comment. Only lint failure in the whole project. |
-| Investigate markup/ erraudit (54 violations) | Highest violation count of any module — may hide real issues |
-| Investigate nom/ erraudit (34 violations) | Second highest — concurrency-sensitive module |
-| Investigate serialization/ erraudit (30 violations) | Third highest — format marshaling |
-| Investigate daghtml/ erraudit (28 violations) | Fourth highest — HTML/template injection surface |
+| What                                                | Why It Matters                                                                                                               |
+| --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| CHANGELOG.md entry                                  | New exported symbols (`ErrColumnMismatch`, `ErrNilRow`) are a user-facing API addition. The `[Unreleased]` section is empty. |
+| Fix pre-existing `TestBrandedIDFormat` failure      | Blocks `nix run .#test` from reaching any sub-module — root failure stops the whole pipeline                                 |
+| Fix pre-existing `gomoddirectives` lint warning     | `go.mod:24` retracted version `v0.32.1` lacks a mandatory comment. Only lint failure in the whole project.                   |
+| Investigate markup/ erraudit (54 violations)        | Highest violation count of any module — may hide real issues                                                                 |
+| Investigate nom/ erraudit (34 violations)           | Second highest — concurrency-sensitive module                                                                                |
+| Investigate serialization/ erraudit (30 violations) | Third highest — format marshaling                                                                                            |
+| Investigate daghtml/ erraudit (28 violations)       | Fourth highest — HTML/template injection surface                                                                             |
 
 ---
 
@@ -126,38 +126,38 @@ Nothing catastrophically broken. But here's what I did wrong or sloppily:
 
 Sorted by impact × urgency.
 
-| # | Task | Impact | Effort | Category |
-|---|---|---|---|---|
-| 1 | Fix `TestBrandedIDFormat` — update expected `%#v` output to match `go-branded-id` v0.4.0 | Critical | 5min | Unblocks test pipeline |
-| 2 | Add CHANGELOG.md `[Unreleased]` entry for exported sentinels + `AsType` migration | High | 5min | Convention |
-| 3 | Run `GOEXPERIMENT=jsonv2 go test ./...` in every sub-module dir to verify nothing broke | High | 10min | Verification gap |
-| 4 | Fix `go.mod:24` `gomoddirectives` — add mandatory retract comment for `v0.32.1` | High | 2min | Only lint failure |
-| 5 | Investigate markup/ erraudit (54 violations) — filter false positives, find real issues | High | 20min | Largest violation count |
-| 6 | Investigate nom/ erraudit (34 violations) — concurrency module, real issues likely | High | 15min | Safety-critical module |
-| 7 | Investigate serialization/ erraudit (30 violations) — JSON/YAML/TOML error paths | Medium | 15min | Core format path |
-| 8 | Investigate daghtml/ erraudit (28 violations) — HTML injection surface | Medium | 15min | Security-adjacent |
-| 9 | Create `.erraudit` config or AGENTS.md section classifying which findings to ignore | Medium | 10min | Prevents agent cargo-cult |
-| 10 | Add contract tests for `nom.ErrCycleDetected` through wrapping | Medium | 10min | Domain sentinel |
-| 11 | Add contract tests for `d2.ErrInvalidDirection` through wrapping | Medium | 8min | Domain sentinel |
-| 12 | Audit all sub-module doc comments for the same "lying doc comment" pattern I found in root | Medium | 15min | Same bug class |
-| 13 | Verify the sentinel message text change (`"footer column count..."` → `"column count..."`) doesn't break any external consumer | Medium | 5min | Breaking string change |
-| 14 | Add `errors.Is` usage examples to `examples/` showing how consumers match sentinels | Low | 10min | Documentation |
-| 15 | Consider whether `ErrColumnMismatch` should carry structured fields (expected/got counts) as a typed error instead of a bare sentinel | Low | 15min | API design |
-| 16 | Run `nix run .#test-race` across nom + tui (concurrency-sensitive) after fixing TestBrandedIDFormat | High | 5min | Race detection |
-| 17 | Add a `go vet ./...` pass to CI if not already present | Low | 5min | Defense in depth |
-| 18 | Check if `errors.AsType` migration should be applied to any sub-module test files | Low | 10min | Consistency |
-| 19 | Document the three-tier error model in `docs/FORMAT_ARCHITECTURE.md` (it's the format/shape doc but errors are part of the contract) | Low | 10min | Documentation |
-| 20 | Audit `integration/` module's 3 erraudit violations — integration tests are where real error chains get exercised | Medium | 8min | Integration |
-| 21 | Verify that `nix run .#govulncheck` still passes (GitHub reported 8 vulnerabilities) | High | 5min | Security |
-| 22 | Consider adding a `SentinelError` interface that all root sentinels implement (for documentation, not enforcement) | Very Low | 10min | Over-engineering risk |
-| 23 | Update `FEATURES.md` if error system is a listed feature | Very Low | 3min | Documentation |
-| 24 | Consider whether the `Validate()` error wrapping (`"render table data: %w"`) in `render_tabledata.go:51` should include the format name | Low | 5min | Error context |
-| 25 | Add a test that `RenderTable` with a valid table but unsupported format returns `*UnsupportedFormatError` matchable via `AsType` | Medium | 8min | Contract test |
-| 26 | Check if the `streaming.go` adapter error wrapping (`"adapter render: %w"`) loses meaningful context | Low | 5min | Error quality |
-| 27 | Audit whether `marshal.go:18` error message (`"marshal json indent (prefix=%q, indent=%q) for %T: %w"`) leaks too much internal state | Very Low | 3min | Error quality |
-| 28 | Consider standardizing error message format across modules (verb + subject + context + `%w`) | Low | 20min | Consistency |
-| 29 | Add `//go:generate` instructions for error type generation if the pattern repeats enough | Very Low | 15min | YAGNI risk |
-| 30 | Verify the ADR 013 file follows the same format as existing ADRs | Very Low | 2min | Documentation |
+| #   | Task                                                                                                                                    | Impact   | Effort | Category                  |
+| --- | --------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------ | ------------------------- |
+| 1   | Fix `TestBrandedIDFormat` — update expected `%#v` output to match `go-branded-id` v0.4.0                                                | Critical | 5min   | Unblocks test pipeline    |
+| 2   | Add CHANGELOG.md `[Unreleased]` entry for exported sentinels + `AsType` migration                                                       | High     | 5min   | Convention                |
+| 3   | Run `GOEXPERIMENT=jsonv2 go test ./...` in every sub-module dir to verify nothing broke                                                 | High     | 10min  | Verification gap          |
+| 4   | Fix `go.mod:24` `gomoddirectives` — add mandatory retract comment for `v0.32.1`                                                         | High     | 2min   | Only lint failure         |
+| 5   | Investigate markup/ erraudit (54 violations) — filter false positives, find real issues                                                 | High     | 20min  | Largest violation count   |
+| 6   | Investigate nom/ erraudit (34 violations) — concurrency module, real issues likely                                                      | High     | 15min  | Safety-critical module    |
+| 7   | Investigate serialization/ erraudit (30 violations) — JSON/YAML/TOML error paths                                                        | Medium   | 15min  | Core format path          |
+| 8   | Investigate daghtml/ erraudit (28 violations) — HTML injection surface                                                                  | Medium   | 15min  | Security-adjacent         |
+| 9   | Create `.erraudit` config or AGENTS.md section classifying which findings to ignore                                                     | Medium   | 10min  | Prevents agent cargo-cult |
+| 10  | Add contract tests for `nom.ErrCycleDetected` through wrapping                                                                          | Medium   | 10min  | Domain sentinel           |
+| 11  | Add contract tests for `d2.ErrInvalidDirection` through wrapping                                                                        | Medium   | 8min   | Domain sentinel           |
+| 12  | Audit all sub-module doc comments for the same "lying doc comment" pattern I found in root                                              | Medium   | 15min  | Same bug class            |
+| 13  | Verify the sentinel message text change (`"footer column count..."` → `"column count..."`) doesn't break any external consumer          | Medium   | 5min   | Breaking string change    |
+| 14  | Add `errors.Is` usage examples to `examples/` showing how consumers match sentinels                                                     | Low      | 10min  | Documentation             |
+| 15  | Consider whether `ErrColumnMismatch` should carry structured fields (expected/got counts) as a typed error instead of a bare sentinel   | Low      | 15min  | API design                |
+| 16  | Run `nix run .#test-race` across nom + tui (concurrency-sensitive) after fixing TestBrandedIDFormat                                     | High     | 5min   | Race detection            |
+| 17  | Add a `go vet ./...` pass to CI if not already present                                                                                  | Low      | 5min   | Defense in depth          |
+| 18  | Check if `errors.AsType` migration should be applied to any sub-module test files                                                       | Low      | 10min  | Consistency               |
+| 19  | Document the three-tier error model in `docs/FORMAT_ARCHITECTURE.md` (it's the format/shape doc but errors are part of the contract)    | Low      | 10min  | Documentation             |
+| 20  | Audit `integration/` module's 3 erraudit violations — integration tests are where real error chains get exercised                       | Medium   | 8min   | Integration               |
+| 21  | Verify that `nix run .#govulncheck` still passes (GitHub reported 8 vulnerabilities)                                                    | High     | 5min   | Security                  |
+| 22  | Consider adding a `SentinelError` interface that all root sentinels implement (for documentation, not enforcement)                      | Very Low | 10min  | Over-engineering risk     |
+| 23  | Update `FEATURES.md` if error system is a listed feature                                                                                | Very Low | 3min   | Documentation             |
+| 24  | Consider whether the `Validate()` error wrapping (`"render table data: %w"`) in `render_tabledata.go:51` should include the format name | Low      | 5min   | Error context             |
+| 25  | Add a test that `RenderTable` with a valid table but unsupported format returns `*UnsupportedFormatError` matchable via `AsType`        | Medium   | 8min   | Contract test             |
+| 26  | Check if the `streaming.go` adapter error wrapping (`"adapter render: %w"`) loses meaningful context                                    | Low      | 5min   | Error quality             |
+| 27  | Audit whether `marshal.go:18` error message (`"marshal json indent (prefix=%q, indent=%q) for %T: %w"`) leaks too much internal state   | Very Low | 3min   | Error quality             |
+| 28  | Consider standardizing error message format across modules (verb + subject + context + `%w`)                                            | Low      | 20min  | Consistency               |
+| 29  | Add `//go:generate` instructions for error type generation if the pattern repeats enough                                                | Very Low | 15min  | YAGNI risk                |
+| 30  | Verify the ADR 013 file follows the same format as existing ADRs                                                                        | Very Low | 2min   | Documentation             |
 
 ---
 

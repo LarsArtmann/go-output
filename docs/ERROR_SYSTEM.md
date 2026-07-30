@@ -9,11 +9,11 @@
 
 The error system uses Go 1.26's three complementary primitives:
 
-| Tier | Pattern | Match Via | When to Use |
-|------|---------|-----------|-------------|
-| **Sentinel** | `var ErrFoo = errors.New("...")` | `errors.Is(err, ErrFoo)` | Known failure condition with no structured data |
-| **Typed** | `*FooError{Value, Allowed}` | `errors.AsType[*FooError](err)` | Structured error with fields consumers can read |
-| **Wrapped** | `fmt.Errorf("context: %w", err)` | Preserves chain through `%w` | Adding context to any error |
+| Tier         | Pattern                          | Match Via                       | When to Use                                     |
+| ------------ | -------------------------------- | ------------------------------- | ----------------------------------------------- |
+| **Sentinel** | `var ErrFoo = errors.New("...")` | `errors.Is(err, ErrFoo)`        | Known failure condition with no structured data |
+| **Typed**    | `*FooError{Value, Allowed}`      | `errors.AsType[*FooError](err)` | Structured error with fields consumers can read |
+| **Wrapped**  | `fmt.Errorf("context: %w", err)` | Preserves chain through `%w`    | Adding context to any error                     |
 
 ### Key principle: `errors.Is` for values, `errors.AsType` for types
 
@@ -36,25 +36,25 @@ if shapeErr, ok := errors.AsType[*output.InvalidShapeError](err); ok {
 
 ### Root package (`output`)
 
-| Sentinel | Returned By | Meaning |
-|----------|-------------|---------|
+| Sentinel            | Returned By                             | Meaning                                          |
+| ------------------- | --------------------------------------- | ------------------------------------------------ |
 | `ErrColumnMismatch` | `Table.AddRowChecked`, `Table.Validate` | Row or footer column count doesn't match headers |
-| `ErrNilRow` | `Table.Validate` | A row in `Table.Rows` is nil |
+| `ErrNilRow`         | `Table.Validate`                        | A row in `Table.Rows` is nil                     |
 
 ### d2 package
 
-| Sentinel | Returned By | Meaning |
-|----------|-------------|---------|
-| `ErrInvalidDirection` | `ParseDirection` | Invalid D2 layout direction |
-| `ErrInvalidNodeShape` | `ParseNodeShape` | Invalid D2 node shape |
-| `ErrInvalidArrowType` | `ParseArrowType` | Invalid D2 arrow type |
-| `ErrInvalidConstraint` | `ParseConstraint` | Invalid D2 layout constraint |
-| `ErrInvalidTextTransform` | `ParseTextTransform` | Invalid D2 text transform |
+| Sentinel                  | Returned By          | Meaning                      |
+| ------------------------- | -------------------- | ---------------------------- |
+| `ErrInvalidDirection`     | `ParseDirection`     | Invalid D2 layout direction  |
+| `ErrInvalidNodeShape`     | `ParseNodeShape`     | Invalid D2 node shape        |
+| `ErrInvalidArrowType`     | `ParseArrowType`     | Invalid D2 arrow type        |
+| `ErrInvalidConstraint`    | `ParseConstraint`    | Invalid D2 layout constraint |
+| `ErrInvalidTextTransform` | `ParseTextTransform` | Invalid D2 text transform    |
 
 ### nom package
 
-| Sentinel | Returned By | Meaning |
-|----------|-------------|---------|
+| Sentinel           | Returned By            | Meaning                           |
+| ------------------ | ---------------------- | --------------------------------- |
 | `ErrCycleDetected` | `DependencyTree.Build` | Dependency graph contains a cycle |
 
 ---
@@ -72,29 +72,29 @@ type InvalidXxxError struct {
 
 ### Root package (`output`)
 
-| Type | Fields | Returned By |
-|------|--------|-------------|
-| `*InvalidShapeError` | `Value string`, `Allowed []Shape` | `ParseShape` |
-| `*InvalidColorModeError` | `Value string`, `Allowed []ColorMode` | `ParseColorMode` |
-| `*InvalidFormatError` | `Value string`, `Allowed []Format` | `ParseFormat` |
-| `*InvalidLineStyleError` | `Value string`, `Allowed []LineStyle` | `ParseLineStyle` |
-| `*InvalidNodeShapeError` | `Value string`, `Allowed []NodeShape` | `ParseNodeShape` |
-| `*UnsupportedFormatError` | `Format Format` | `RenderTable`, `RenderUnknown` |
-| `*ParseError` | `Value string`, `Values []string` | `ParseEnum` (internal; domain-specific `Parse*` functions return their own typed errors instead) |
+| Type                      | Fields                                | Returned By                                                                                      |
+| ------------------------- | ------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `*InvalidShapeError`      | `Value string`, `Allowed []Shape`     | `ParseShape`                                                                                     |
+| `*InvalidColorModeError`  | `Value string`, `Allowed []ColorMode` | `ParseColorMode`                                                                                 |
+| `*InvalidFormatError`     | `Value string`, `Allowed []Format`    | `ParseFormat`                                                                                    |
+| `*InvalidLineStyleError`  | `Value string`, `Allowed []LineStyle` | `ParseLineStyle`                                                                                 |
+| `*InvalidNodeShapeError`  | `Value string`, `Allowed []NodeShape` | `ParseNodeShape`                                                                                 |
+| `*UnsupportedFormatError` | `Format Format`                       | `RenderTable`, `RenderUnknown`                                                                   |
+| `*ParseError`             | `Value string`, `Values []string`     | `ParseEnum` (internal; domain-specific `Parse*` functions return their own typed errors instead) |
 
 ### graph package
 
-| Type | Fields | Returned By |
-|------|--------|-------------|
-| `*InvalidRankDirError` | `Value string`, `Allowed []RankDir` | `ParseRankDir` |
+| Type                       | Fields                                  | Returned By        |
+| -------------------------- | --------------------------------------- | ------------------ |
+| `*InvalidRankDirError`     | `Value string`, `Allowed []RankDir`     | `ParseRankDir`     |
 | `*InvalidSplineStyleError` | `Value string`, `Allowed []SplineStyle` | `ParseSplineStyle` |
 
 ### nom package
 
-| Type | Fields | Returned By |
-|------|--------|-------------|
+| Type                          | Fields                                     | Returned By           |
+| ----------------------------- | ------------------------------------------ | --------------------- |
 | `*InvalidActivityStatusError` | `Value string`, `Allowed []ActivityStatus` | `ParseActivityStatus` |
-| `*InvalidActivityKindError` | `Value string`, `Allowed []ActivityKind` | `ParseActivityKind` |
+| `*InvalidActivityKindError`   | `Value string`, `Allowed []ActivityKind`   | `ParseActivityKind`   |
 
 ---
 
