@@ -76,5 +76,6 @@ func (e *InvalidActivityKindError) Error() string {
 		return "invalid activity kind: " + e.Value
 	}
 
-	return "invalid activity kind: " + e.Value + " (allowed: " + strings.Join(output.EnumAllowedValues(e.Allowed), ", ") + ")"
+	return "invalid activity kind: " + e.Value +
+		" (allowed: " + strings.Join(output.EnumAllowedValues(e.Allowed), ", ") + ")"
 }

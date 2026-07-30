@@ -3,7 +3,7 @@
 > **Created**: 2026-07-30 22:10
 > **Trigger**: Full `erraudit --type-aware` sweep of all 19 modules (209 violations, all false positives) + deep manual audit of every error type, sentinel, and pattern across the workspace.
 > **Predecessor**: `docs/planning/2026-07-30_21-28_superb-error-system.md` (Phase 1: root sentinel export, AsType migration)
-> **Status**: Planning → Execution
+> **Status**: Done (all phases shipped, commits a1b56e6 through 8aba9ae)
 
 ---
 
@@ -125,40 +125,40 @@ graph TD
 
 | # | Task | Module | Impact | Effort | Status |
 |---|------|--------|--------|--------|--------|
-| 1.1 | Export `AllColorModes` (was `colorModeValues`) + add `Allowed []ColorMode` field to `InvalidColorModeError` + update `Error()` to include allowed list | root | High | 15min | Pending |
-| 1.2 | Export `AllNodeShapes` (was `nodeShapeValues`) + add `Allowed []NodeShape` field to `InvalidNodeShapeError` + fix message "graph shape"→"node shape" + update `Error()` | root | High | 15min | Pending |
-| 1.3 | Update `ParseColorMode` + `ParseNodeShape` construction sites to populate `Allowed` | root | High | 5min | Pending |
-| 1.4 | Export `AllRankDirs` (was `rankDirValues`) + add `Allowed []RankDir` to `InvalidRankDirError` + replace hardcoded string in `Error()` with dynamic | graph/ | High | 15min | Pending |
-| 1.5 | Export `AllSplineStyles` (was `splineStyleValues`) + add `Allowed []SplineStyle` to `InvalidSplineStyleError` + replace hardcoded string in `Error()` with dynamic | graph/ | High | 15min | Pending |
-| 1.6 | Update `ParseRankDir` + `ParseSplineStyle` construction sites to populate `Allowed` | graph/ | High | 5min | Pending |
-| 1.7 | Build + test root + graph to verify no breakage | root + graph | Critical | 10min | Pending |
+| 1.1 | Export `AllColorModes` (was `colorModeValues`) + add `Allowed []ColorMode` field to `InvalidColorModeError` + update `Error()` to include allowed list | root | High | 15min | Done |
+| 1.2 | Export `AllNodeShapes` (was `nodeShapeValues`) + add `Allowed []NodeShape` field to `InvalidNodeShapeError` + fix message "graph shape"→"node shape" + update `Error()` | root | High | 15min | Done |
+| 1.3 | Update `ParseColorMode` + `ParseNodeShape` construction sites to populate `Allowed` | root | High | 5min | Done |
+| 1.4 | Export `AllRankDirs` (was `rankDirValues`) + add `Allowed []RankDir` to `InvalidRankDirError` + replace hardcoded string in `Error()` with dynamic | graph/ | High | 15min | Done |
+| 1.5 | Export `AllSplineStyles` (was `splineStyleValues`) + add `Allowed []SplineStyle` to `InvalidSplineStyleError` + replace hardcoded string in `Error()` with dynamic | graph/ | High | 15min | Done |
+| 1.6 | Update `ParseRankDir` + `ParseSplineStyle` construction sites to populate `Allowed` | graph/ | High | 5min | Done |
+| 1.7 | Build + test root + graph to verify no breakage | root + graph | Critical | 10min | Done |
 
 ## Task Breakdown — Phase 2 (30-100 min tasks)
 
 | # | Task | Module | Impact | Effort | Status |
 |---|------|--------|--------|--------|--------|
-| 2.1 | Add `TestTypedErrors_AsType_ThroughWrapping` in root: prove all 6 typed errors extractable via `errors.AsType[*T](fmt.Errorf("ctx: %w", err))` | root | High | 20min | Pending |
-| 2.2 | Add `TestTypedErrors_AsType_ThroughWrapping` in graph: prove both typed errors extractable through wrapping | graph/ | Medium | 10min | Pending |
-| 2.3 | Add `TestSentinels_Is_ThroughWrapping` in d2: prove all 5 sentinels matchable via `errors.Is` through wrapping | d2/ | Medium | 15min | Pending |
-| 2.4 | Add `TestErrors_Matchable` in nom: prove `ErrCycleDetected` + both typed errors matchable through wrapping | nom/ | Medium | 15min | Pending |
-| 2.5 | Build + test all affected modules | all | Critical | 15min | Pending |
+| 2.1 | Add `TestTypedErrors_AsType_ThroughWrapping` in root: prove all 6 typed errors extractable via `errors.AsType[*T](fmt.Errorf("ctx: %w", err))` | root | High | 20min | Done |
+| 2.2 | Add `TestTypedErrors_AsType_ThroughWrapping` in graph: prove both typed errors extractable through wrapping | graph/ | Medium | 10min | Done |
+| 2.3 | Add `TestSentinels_Is_ThroughWrapping` in d2: prove all 5 sentinels matchable via `errors.Is` through wrapping | d2/ | Medium | 15min | Done |
+| 2.4 | Add `TestErrors_Matchable` in nom: prove `ErrCycleDetected` + both typed errors matchable through wrapping | nom/ | Medium | 15min | Done |
+| 2.5 | Build + test all affected modules | all | Critical | 15min | Done |
 
 ## Task Breakdown — Phase 3 (30-100 min tasks)
 
 | # | Task | Module | Impact | Effort | Status |
 |---|------|--------|--------|--------|--------|
-| 3.1 | Create `docs/ERROR_SYSTEM.md`: catalog every exported error (sentinels + typed), matching strategy, example code | docs | High | 30min | Pending |
-| 3.2 | Update `AGENTS.md`: add `Allowed` field convention to error system pattern | root | Medium | 10min | Pending |
-| 3.3 | Document `ParseError` as internal-only (add doc comment noting it's returned by `ParseEnum` but domain-specific `Parse*` functions return their own typed errors) | root | Low | 5min | Pending |
+| 3.1 | Create `docs/ERROR_SYSTEM.md`: catalog every exported error (sentinels + typed), matching strategy, example code | docs | High | 30min | Done |
+| 3.2 | Update `AGENTS.md`: add `Allowed` field convention to error system pattern | root | Medium | 10min | Done |
+| 3.3 | Document `ParseError` as internal-only (add doc comment noting it's returned by `ParseEnum` but domain-specific `Parse*` functions return their own typed errors) | root | Low | 5min | Done |
 
 ## Task Breakdown — Phase 4 (30-100 min tasks)
 
 | # | Task | Module | Impact | Effort | Status |
 |---|------|--------|--------|--------|--------|
-| 4.1 | Check nom `InvalidActivityStatusError` + `InvalidActivityKindError` — add `Allowed` if the allowed values are available at parse time | nom/ | Medium | 15min | Pending |
-| 4.2 | Run golden file tests — update if error message text changes broke them | all | Medium | 10min | Pending |
-| 4.3 | Final verification: `nix run .#build` + `nix run .#lint` + targeted `go test` in every module | all | Critical | 20min | Pending |
-| 4.4 | Commit with detailed message + push | git | Required | 5min | Pending |
+| 4.1 | Check nom `InvalidActivityStatusError` + `InvalidActivityKindError` — add `Allowed` if the allowed values are available at parse time | nom/ | Medium | 15min | Done |
+| 4.2 | Run golden file tests — update if error message text changes broke them | all | Medium | 10min | Done |
+| 4.3 | Final verification: `nix run .#build` + `nix run .#lint` + targeted `go test` in every module | all | Critical | 20min | Done |
+| 4.4 | Commit with detailed message + push | git | Required | 5min | Done |
 
 ---
 

@@ -105,5 +105,6 @@ func (e *InvalidActivityStatusError) Error() string {
 		return "invalid activity status: " + e.Value
 	}
 
-	return "invalid activity status: " + e.Value + " (allowed: " + strings.Join(output.EnumAllowedValues(e.Allowed), ", ") + ")"
+	return "invalid activity status: " + e.Value +
+		" (allowed: " + strings.Join(output.EnumAllowedValues(e.Allowed), ", ") + ")"
 }
