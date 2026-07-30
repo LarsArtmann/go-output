@@ -53,12 +53,12 @@ func (c ColorMode) String() string {
 
 // AllowedValues returns all valid color mode values.
 func (c ColorMode) AllowedValues() []string {
-	return EnumAllowedValues(colorModeValues)
+	return EnumAllowedValues(AllColorModes)
 }
 
 // IsValid checks if the color mode is valid.
 func (c ColorMode) IsValid() bool {
-	return ContainsEnum(colorModeValues, c)
+	return ContainsEnum(AllColorModes, c)
 }
 
 // ShouldColor returns true if colors should be enabled.

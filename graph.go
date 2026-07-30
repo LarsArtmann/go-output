@@ -47,8 +47,10 @@ const (
 	NodeShapeParallelogram NodeShape = "parallelogram"
 )
 
+// AllNodeShapes contains all valid graph node shape values.
+//
 //nolint:gochecknoglobals // Global variable used for value iteration.
-var nodeShapeValues = []NodeShape{
+var AllNodeShapes = []NodeShape{
 	NodeShapeBox,
 	NodeShapeEllipse,
 	NodeShapeDiamond,
@@ -108,21 +110,22 @@ func (e *InvalidLineStyleError) Error() string {
 	return "invalid line style: " + e.Value + " (allowed: " + joinStrings(EnumAllowedValues(e.Allowed)) + ")"
 }
 
-// InvalidNodeShapeError is returned when an invalid graph shape is provided.
+// InvalidNodeShapeError is returned when an invalid node shape is provided.
 type InvalidNodeShapeError struct {
-	Value string
+	Value   string
+	Allowed []NodeShape
 }
 
-// Error returns a descriptive error message for the invalid graph shape.
+// Error returns a descriptive error message for the invalid node shape.
 func (e *InvalidNodeShapeError) Error() string {
-	return "invalid graph shape: " + e.Value
+	return "invalid node shape: " + e.Value + " (allowed: " + joinStrings(EnumAllowedValues(e.Allowed)) + ")"
 }
 
 // ParseNodeShape converts a string to NodeShape, returning an error if invalid.
 func ParseNodeShape(s string) (NodeShape, error) {
-	v, err := ParseEnum(nodeShapeValues, s, func(g NodeShape) string { return string(g) })
+	v, err := ParseEnum(AllNodeShapes, s, func(g NodeShape) string { return string(g) })
 	if err != nil {
-		return "", &InvalidNodeShapeError{Value: s}
+		return "", &InvalidNodeShapeError{Value: s, Allowed: AllNodeShapes}
 	}
 
 	return v, nil
@@ -135,12 +138,12 @@ func (s NodeShape) String() string {
 
 // AllowedValues returns all valid graph shape values.
 func (s NodeShape) AllowedValues() []string {
-	return EnumAllowedValues(nodeShapeValues)
+	return EnumAllowedValues(AllNodeShapes)
 }
 
 // IsValid checks if the graph shape is valid.
 func (s NodeShape) IsValid() bool {
-	return ContainsEnum(nodeShapeValues, s)
+	return ContainsEnum(AllNodeShapes, s)
 }
 
 // NodeStyle represents styling attributes for a graph node.

@@ -1,6 +1,10 @@
 package graph
 
-import output "github.com/larsartmann/go-output"
+import (
+	"strings"
+
+	output "github.com/larsartmann/go-output"
+)
 
 // RankDir controls the layout direction of a DOT graph.
 type RankDir string
@@ -13,8 +17,10 @@ const (
 	RankDirRL RankDir = "RL" // Right to left
 )
 
+// AllRankDirs contains all valid rank direction values.
+//
 //nolint:gochecknoglobals // Global variable used for value iteration.
-var rankDirValues = []RankDir{
+var AllRankDirs = []RankDir{
 	RankDirTB,
 	RankDirLR,
 	RankDirBT,
@@ -23,19 +29,20 @@ var rankDirValues = []RankDir{
 
 // InvalidRankDirError is returned when an invalid rank direction is provided.
 type InvalidRankDirError struct {
-	Value string
+	Value   string
+	Allowed []RankDir
 }
 
 // Error returns a descriptive error message for the invalid rank direction.
 func (e *InvalidRankDirError) Error() string {
-	return "invalid rank direction: " + e.Value + " (allowed: TB, LR, BT, RL)"
+	return "invalid rank direction: " + e.Value + " (allowed: " + strings.Join(output.EnumAllowedValues(e.Allowed), ", ") + ")"
 }
 
 // ParseRankDir converts a string to RankDir, returning an error if invalid.
 func ParseRankDir(s string) (RankDir, error) {
-	v, err := output.ParseEnum(rankDirValues, s, func(r RankDir) string { return string(r) })
+	v, err := output.ParseEnum(AllRankDirs, s, func(r RankDir) string { return string(r) })
 	if err != nil {
-		return "", &InvalidRankDirError{Value: s}
+		return "", &InvalidRankDirError{Value: s, Allowed: AllRankDirs}
 	}
 
 	return v, nil
@@ -48,12 +55,12 @@ func (r RankDir) String() string {
 
 // AllowedValues returns all valid rank direction values.
 func (RankDir) AllowedValues() []string {
-	return output.EnumAllowedValues(rankDirValues)
+	return output.EnumAllowedValues(AllRankDirs)
 }
 
 // IsValid checks if the rank direction is valid.
 func (r RankDir) IsValid() bool {
-	return output.ContainsEnum(rankDirValues, r)
+	return output.ContainsEnum(AllRankDirs, r)
 }
 
 // SplineStyle controls the edge routing style of a DOT graph.
@@ -69,8 +76,10 @@ const (
 	SplineNone     SplineStyle = "none"     // No edge routing
 )
 
+// AllSplineStyles contains all valid spline style values.
+//
 //nolint:gochecknoglobals // Global variable used for value iteration.
-var splineStyleValues = []SplineStyle{
+var AllSplineStyles = []SplineStyle{
 	SplineOrtho,
 	SplineSpline,
 	SplinePolyline,
@@ -81,19 +90,20 @@ var splineStyleValues = []SplineStyle{
 
 // InvalidSplineStyleError is returned when an invalid spline style is provided.
 type InvalidSplineStyleError struct {
-	Value string
+	Value   string
+	Allowed []SplineStyle
 }
 
 // Error returns a descriptive error message for the invalid spline style.
 func (e *InvalidSplineStyleError) Error() string {
-	return "invalid spline style: " + e.Value + " (allowed: ortho, spline, polyline, line, curved, none)"
+	return "invalid spline style: " + e.Value + " (allowed: " + strings.Join(output.EnumAllowedValues(e.Allowed), ", ") + ")"
 }
 
 // ParseSplineStyle converts a string to SplineStyle, returning an error if invalid.
 func ParseSplineStyle(s string) (SplineStyle, error) {
-	v, err := output.ParseEnum(splineStyleValues, s, func(s SplineStyle) string { return string(s) })
+	v, err := output.ParseEnum(AllSplineStyles, s, func(s SplineStyle) string { return string(s) })
 	if err != nil {
-		return "", &InvalidSplineStyleError{Value: s}
+		return "", &InvalidSplineStyleError{Value: s, Allowed: AllSplineStyles}
 	}
 
 	return v, nil
@@ -106,10 +116,10 @@ func (s SplineStyle) String() string {
 
 // AllowedValues returns all valid spline style values.
 func (SplineStyle) AllowedValues() []string {
-	return output.EnumAllowedValues(splineStyleValues)
+	return output.EnumAllowedValues(AllSplineStyles)
 }
 
 // IsValid checks if the spline style is valid.
 func (s SplineStyle) IsValid() bool {
-	return output.ContainsEnum(splineStyleValues, s)
+	return output.ContainsEnum(AllSplineStyles, s)
 }
