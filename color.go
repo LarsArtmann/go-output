@@ -16,8 +16,10 @@ const (
 	ColorModeNever  ColorMode = "never"
 )
 
+// AllColorModes contains all valid color mode values.
+//
 //nolint:gochecknoglobals // Global variable used for value iteration.
-var colorModeValues = []ColorMode{
+var AllColorModes = []ColorMode{
 	ColorModeAuto,
 	ColorModeAlways,
 	ColorModeNever,
@@ -25,19 +27,20 @@ var colorModeValues = []ColorMode{
 
 // InvalidColorModeError is returned when an invalid color mode is provided.
 type InvalidColorModeError struct {
-	Value string
+	Value   string
+	Allowed []ColorMode
 }
 
 // Error returns a descriptive error message for the invalid color mode.
 func (e *InvalidColorModeError) Error() string {
-	return "invalid color mode: " + e.Value
+	return "invalid color mode: " + e.Value + " (allowed: " + joinStrings(EnumAllowedValues(e.Allowed)) + ")"
 }
 
 // ParseColorMode converts a string to ColorMode, returning an error if invalid.
 func ParseColorMode(s string) (ColorMode, error) {
-	v, err := ParseEnum(colorModeValues, s, func(c ColorMode) string { return string(c) })
+	v, err := ParseEnum(AllColorModes, s, func(c ColorMode) string { return string(c) })
 	if err != nil {
-		return "", &InvalidColorModeError{Value: s}
+		return "", &InvalidColorModeError{Value: s, Allowed: AllColorModes}
 	}
 
 	return v, nil
