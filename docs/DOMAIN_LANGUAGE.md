@@ -20,6 +20,8 @@ Every term below should mean the **same thing** to everyone who reads it.
 | **GraphBuilder** | Write-side builder for graph data (nodes, edges). `Build()` returns immutable `Graph` | Embedded by DOT/Mermaid/PlantUML renderers for shared state                  |
 | **ColorMode**    | Terminal color output mode: auto, always, never                                       | Respects `NO_COLOR`, CI env vars, TTY detection                              |
 | **Registry**     | Format→marshaler dispatch map for `RenderTable`                                       | `RegisterTableMarshaler(format, fn)` — sub-modules register in `init()`      |
+| **Sentinel Error** | An exported `var ErrFoo = errors.New(...)` that consumers match via `errors.Is`   | Root owns `ErrColumnMismatch`, `ErrNilRow`; sub-modules own domain-specific ones |
+| **Typed Error**  | An exported struct (`*UnsupportedFormatError`, `*ParseError`) with structured fields | Consumers extract via `errors.AsType[*T](err)` (Go 1.26+)                   |
 
 ## Entities
 

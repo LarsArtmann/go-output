@@ -103,6 +103,9 @@ func (f Format) Supports(s Shape) bool {
 }
 
 // Shapes returns all data shapes this format supports.
+// Returns nil for unregistered formats — the error from getFormatShapes is
+// intentionally suppressed because an empty result is the correct representation
+// of "this format supports no shapes" (consistent with Supports() returning false).
 func (f Format) Shapes() []Shape {
 	shapes, _ := getFormatShapes(f)
 

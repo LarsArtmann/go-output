@@ -85,9 +85,13 @@ func TestRenderUnknown_UnsupportedFormatError(t *testing.T) {
 		t.Fatal("expected UnsupportedFormatError")
 	}
 
-	var unsupportedErr *UnsupportedFormatError
-	if !errors.As(err, &unsupportedErr) {
-		t.Errorf("expected UnsupportedFormatError, got %T: %v", err, err)
+	unsupportedErr, ok := errors.AsType[*UnsupportedFormatError](err)
+	if !ok {
+		t.Fatalf("expected UnsupportedFormatError, got %T: %v", err, err)
+	}
+
+	if unsupportedErr.Format != Format("unknown") {
+		t.Errorf("expected Format %q, got %q", "unknown", unsupportedErr.Format)
 	}
 }
 

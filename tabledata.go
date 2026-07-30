@@ -6,8 +6,12 @@ import (
 )
 
 var (
-	errColumnMismatch = errors.New("footer column count does not match headers")
-	errNilRow         = errors.New("nil row in data")
+	// ErrColumnMismatch is the sentinel for a row or footer whose column
+	// count does not match the header count. Match via errors.Is.
+	ErrColumnMismatch = errors.New("column count does not match headers")
+	// ErrNilRow is the sentinel for a nil row encountered during validation.
+	// Match via errors.Is.
+	ErrNilRow = errors.New("nil row in data")
 )
 
 // Table represents tabular data with headers, rows, and an optional footer.
@@ -44,11 +48,12 @@ func (d *Table) AddRow(row []string) {
 // row's column count does not match the header count.
 //
 // Returns nil if no headers are set, deferring validation to Validate().
-// Returns ErrColumnMismatch if the row length differs from len(Headers).
+// Returns ErrColumnMismatch if the row length differs from len(Headers);
+// callers can match via errors.Is(err, output.ErrColumnMismatch).
 func (d *Table) AddRowChecked(row []string) error {
 	if len(d.Headers) > 0 && len(row) != len(d.Headers) {
 		return fmt.Errorf("%w: row has %d columns, expected %d",
-			errColumnMismatch, len(row), len(d.Headers))
+			ErrColumnMismatch, len(row), len(d.Headers))
 	}
 
 	d.Rows = append(d.Rows, row)
@@ -123,7 +128,8 @@ func (d *Table) SetFooter(footer []string) {
 }
 
 // Validate checks the Table for consistency.
-// Returns an error if rows are nil, or if the footer column count does not match the header count.
+// Returns ErrNilRow (wrap-matched via errors.Is) if any row is nil.
+// Returns ErrColumnMismatch if the footer column count does not match the header count.
 func (d *Table) Validate() error {
 	if d == nil {
 		return nil
@@ -131,7 +137,7 @@ func (d *Table) Validate() error {
 
 	for i, row := range d.Rows {
 		if row == nil {
-			return fmt.Errorf("%w at index %d", errNilRow, i)
+			return fmt.Errorf("%w at index %d", ErrNilRow, i)
 		}
 	}
 
@@ -141,7 +147,7 @@ func (d *Table) Validate() error {
 
 	if len(d.Footer) != len(d.Headers) {
 		return fmt.Errorf("%w: footer has %d columns, expected %d",
-			errColumnMismatch, len(d.Footer), len(d.Headers))
+			ErrColumnMismatch, len(d.Footer), len(d.Headers))
 	}
 
 	return nil

@@ -1,6 +1,7 @@
 package output
 
 import (
+	"errors"
 	"testing"
 )
 
@@ -311,6 +312,73 @@ func TestAddRowChecked(t *testing.T) {
 
 		if err := data.AddRowChecked([]string{"a", "b", "c", "d"}); err != nil {
 			t.Errorf("AddRowChecked() with no headers = %v, want nil", err)
+		}
+	})
+}
+
+func TestSentinelErrors_MatchThroughWrapping(t *testing.T) {
+	t.Parallel()
+
+	t.Run("AddRowChecked error matches ErrColumnMismatch", func(t *testing.T) {
+		t.Parallel()
+
+		data := NewTable([]string{"A", "B"})
+
+		err := data.AddRowChecked([]string{"1", "2", "3"})
+		if err == nil {
+			t.Fatal("expected error for column mismatch")
+		}
+
+		if !errors.Is(err, ErrColumnMismatch) {
+			t.Errorf("errors.Is(err, ErrColumnMismatch) = false, want true; err=%v", err)
+		}
+	})
+
+	t.Run("Validate footer error matches ErrColumnMismatch", func(t *testing.T) {
+		t.Parallel()
+
+		data := NewTable([]string{"A", "B"})
+		data.SetFooter([]string{"only-one"})
+
+		err := data.Validate()
+		if err == nil {
+			t.Fatal("expected error for footer column mismatch")
+		}
+
+		if !errors.Is(err, ErrColumnMismatch) {
+			t.Errorf("errors.Is(err, ErrColumnMismatch) = false, want true; err=%v", err)
+		}
+	})
+
+	t.Run("Validate nil row matches ErrNilRow", func(t *testing.T) {
+		t.Parallel()
+
+		data := NewTable([]string{"A", "B"})
+		data.Rows = [][]string{nil}
+
+		err := data.Validate()
+		if err == nil {
+			t.Fatal("expected error for nil row")
+		}
+
+		if !errors.Is(err, ErrNilRow) {
+			t.Errorf("errors.Is(err, ErrNilRow) = false, want true; err=%v", err)
+		}
+	})
+
+	t.Run("ErrColumnMismatch does not match ErrNilRow", func(t *testing.T) {
+		t.Parallel()
+
+		data := NewTable([]string{"A", "B"})
+		data.Rows = [][]string{nil}
+
+		err := data.Validate()
+		if err == nil {
+			t.Fatal("expected error for nil row")
+		}
+
+		if errors.Is(err, ErrColumnMismatch) {
+			t.Errorf("errors.Is(nilRowErr, ErrColumnMismatch) = true, want false; err=%v", err)
 		}
 	})
 }
