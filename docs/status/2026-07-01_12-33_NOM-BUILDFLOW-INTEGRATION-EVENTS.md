@@ -277,3 +277,9 @@ Rendered as `→ Label [████░░░░░░] 3/26` when populated, fa
 | All modules passing      | 18/18                                                                      |
 | Lint issues              | 0                                                                          |
 | BuildFlow gaps closed    | 4 of top 8 P0/P1 items from 2026-07-01 status reports                      |
+
+---
+
+## Resolution (2026-08-04)
+
+All in-repo items closed by session 2 (18:40): retry reason display (`⟳2 (timeout)`), subscriber-owned `EstimatedTotalRemaining()`, TUI summary bar wired, concurrency/race tests. Critical-path ETA implemented in v0.23.0 (`EstimatedCriticalPathRemaining`). Golden test snapshots for progress/retry exist. Remaining genuinely open: structured progress type (ROADMAP), BuildFlow wiring (external).
