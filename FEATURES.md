@@ -323,7 +323,7 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 | **govulncheck**       | FULLY_FUNCTIONAL | Vulnerability scanning across all modules                                                            |
 | **Deduplication**     | FULLY_FUNCTIONAL | Zero clones at standard `t=4`; strict type-aware `t=1` audit has 24 accepted minimum-idiom groups    |
 | **go mod tidy check** | FULLY_FUNCTIONAL | Verifies all module `go.mod` files are tidy                                                          |
-| **Nix flake**         | FULLY_FUNCTIONAL | Dev shell with Go 1.26.4, golangci-lint, gopls. Uses `flake-parts` + `treefmt-nix` + `git-hooks.nix` |
+| **Nix flake**         | FULLY_FUNCTIONAL | Dev shell with Go 1.26.5, golangci-lint, gopls. Uses `flake-parts` + `treefmt-nix` + `git-hooks.nix` |
 | **Pre-commit hooks**  | FULLY_FUNCTIONAL | Auto-installed via `nix develop`. Also `.pre-commit-config.yaml` for non-Nix users                   |
 
 ---

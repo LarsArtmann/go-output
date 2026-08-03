@@ -1,6 +1,6 @@
 # Charmbracelet/x Integration — VT Testing, teatest E2E, Golden Expansion
 
-> Created: 2026-07-01 23:43 | Status: ACTIVE
+> Created: 2026-07-01 23:43 | Status: **Done** — VT tests, teatest E2E, golden expansion all shipped in v0.23.0. Cellbuf evaluation: DEFER (poor risk/reward).
 
 ## Context
 

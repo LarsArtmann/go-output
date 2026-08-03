@@ -2,6 +2,7 @@
 
 **Source:** Brutal self-review `docs/reviews/2026-07-05_20-57_brutal-self-review.html`
 **59 tasks** — each ≤12 min. Sorted by impact ÷ effort (Pareto).
+**Resolution (2026-08-04):** All P0–P7 tasks shipped in v0.30.0. Concurrency bugs fixed, dead code deleted, split brains resolved, deprecated APIs removed. See CHANGELOG `[0.30.0]` for details.
 
 ## Priority Key
 
