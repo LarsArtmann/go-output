@@ -178,3 +178,9 @@ Arguments against: removes caller choice, v2's default is non-deterministic for 
 v1's `json.Marshal` escaped `<`, `>`, `&` by default (`SetEscapeHTML(true)`). v2's `json.Marshal` does NOT escape HTML by default — you must explicitly pass `jsontext.EscapeForHTML(true)`. The `daghtml` module correctly passes this option in `dagToJSON`. But are there ANY other JSON output paths that could end up embedded in HTML? If so, they're now silently not escaping HTML, which is an XSS vector.
 
 I checked the obvious paths (daghtml is the only HTML-embedding consumer), but I cannot guarantee there isn't an external consumer (go-workflow-auditlog, samber-do-auditlog) that embeds JSON output in HTML without re-escaping. This needs a human threat model review.
+
+---
+
+## Resolution (2026-08-04)
+
+JSON v2 migration is the established codebase state since v0.30.2. `json.Deterministic(true)` is used on all Marshal/MarshalEncode calls. `GOEXPERIMENT=jsonv2` is set in CI, release workflow, flake devShell, and direnv. `.pre-commit-config.yaml` updated. The `daghtml/dagToJSON` Deterministic fix was applied. The escapeHTML question is moot — `jsontext.EscapeForHTML(true)` is used at encoder construction.
