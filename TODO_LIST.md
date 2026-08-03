@@ -1,29 +1,31 @@
 # TODO_LIST.md — go-output
 
 **Last updated:** 2026-08-04
-**Open items:** 15
+**Open items:** 6
 **Blocked:** 0
+
+---
+
+## Resolved Items (2026-08-04 session)
+
+| #  | Task                                                                                            | Resolution                                                                                                                                                                                             |
+| -- | ----------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1  | **Fix TUI test deadlock** — teatest E2E test hangs in CI                                        | **Fixed.** `vtScreenFromBytes` was called inside the `teatest.WaitFor` polling loop, creating 100+ VT emulators under `-race`. Refactored to use ANSI-strip for polling, single VT reconstruction after. |
+| 2  | **Fix art-dupl CI installation** — dedup tool fails to install                                  | **Fixed.** Pinned to `@v0.6.0` (v0.6.1 has a broken build: `printer/html.go` references undefined `cloneGroupFull` etc.).                                                                             |
+| 3  | **Retract v0.34.0 tag** — superseded by v0.35.0                                                 | **Fixed.** Added `retract v0.34.0` to `go.mod` (stale tag drift: sibling dep versions misaligned at tag time, fixed same day by v0.35.0).                                                             |
+| 4  | **Root-cause bogus-tag creator** — what created v0.32.1/v0.33.0?                                | **Resolved.** No automation in this repo creates git tags (release.yml fires *on* tag push). Tags were created manually during a session, erroneously pointing at stale commit `194441b`. No process to stop — retract directives are the permanent mitigation. |
+| 5  | **Create GitHub Releases for v0.34.0–v0.36.0**                                                  | **Resolved.** v0.34.0 is now retracted (no release needed). v0.35.0 and v0.36.0 already have GitHub Releases.                                                                                         |
+| 7  | **Pin GitHub Actions to commit SHAs** — mutable tag refs                                        | **Fixed.** All actions in ci.yml + release.yml pinned to commit SHAs with `# vN` comments: checkout, setup-go, golangci-lint-action, softprops/action-gh-release.                                     |
 
 ---
 
 ## Open Items
 
-### P0 — CI is broken (red on every push since July 6)
-
-| #   | Task                                                                             | Effort | Status |
-| --- | -------------------------------------------------------------------------------- | ------ | ------ |
-| 1   | **Fix TUI test deadlock** — teatest E2E test hangs in CI (passes locally)        | Medium | Open   |
-| 2   | **Fix art-dupl CI installation** — dedup tool fails to install in GitHub Actions | Low    | Open   |
-
 ### P1 — Release hygiene & security
 
-| #   | Task                                                                                                                                    | Effort | Status |
-| --- | --------------------------------------------------------------------------------------------------------------------------------------- | ------ | ------ |
-| 3   | **Retract v0.34.0 tag** — superseded by v0.35.0 (code-identical but stale tree); `retract` directive missing from go.mod                | Low    | Open   |
-| 4   | **Root-cause bogus-tag creator** — what process created v0.32.1/v0.33.0 on a stale June commit? Asked 3× across reports, never answered | Medium | Open   |
-| 5   | **Create GitHub Releases for v0.34.0–v0.36.0** — tags pushed but no release notes on GitHub                                             | Low    | Open   |
-| 6   | **Address 8 dependabot vulnerabilities** — 3 high, 3 moderate, 2 low (GitHub alerts)                                                    | Medium | Open   |
-| 7   | **Pin GitHub Actions to commit SHAs** — `actions/checkout@v4` and `actions/setup-go@v5` are mutable tag refs                            | Low    | Open   |
+| #   | Task                                                                                                 | Effort | Status |
+| --- | ---------------------------------------------------------------------------------------------------- | ------ | ------ |
+| 6   | **Address 10 dependabot vulnerabilities** — all in `website/` npm deps (astro, vite, sharp, etc.)   | Medium | Open   |
 
 ### P2 — Error system polish
 
