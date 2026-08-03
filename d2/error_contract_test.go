@@ -3,13 +3,14 @@ package d2
 import (
 	"errors"
 	"fmt"
+	"strings"
 	"testing"
 )
 
-func TestSentinels_Is_ThroughWrapping(t *testing.T) {
+func TestTypedErrors_AsType_ThroughWrapping(t *testing.T) {
 	t.Parallel()
 
-	t.Run("ErrInvalidDirection from ParseDirection", func(t *testing.T) {
+	t.Run("InvalidDirectionError from ParseDirection", func(t *testing.T) {
 		t.Parallel()
 
 		_, err := ParseDirection("bogus")
@@ -19,12 +20,21 @@ func TestSentinels_Is_ThroughWrapping(t *testing.T) {
 
 		wrapped := fmt.Errorf("diagram config: %w", err)
 
-		if !errors.Is(wrapped, ErrInvalidDirection) {
-			t.Errorf("errors.Is(wrapped, ErrInvalidDirection) = false; err=%v", wrapped)
+		extracted, ok := errors.AsType[*InvalidDirectionError](wrapped)
+		if !ok {
+			t.Fatalf("errors.AsType[*InvalidDirectionError] failed; err=%v", wrapped)
+		}
+
+		if extracted.Value != "bogus" {
+			t.Errorf("Value = %q, want %q", extracted.Value, "bogus")
+		}
+
+		if len(extracted.Allowed) != len(directionValues) {
+			t.Errorf("Allowed length = %d, want %d", len(extracted.Allowed), len(directionValues))
 		}
 	})
 
-	t.Run("ErrInvalidNodeShape from ParseNodeShape", func(t *testing.T) {
+	t.Run("InvalidNodeShapeError from ParseNodeShape", func(t *testing.T) {
 		t.Parallel()
 
 		_, err := ParseNodeShape("bogus")
@@ -34,12 +44,21 @@ func TestSentinels_Is_ThroughWrapping(t *testing.T) {
 
 		wrapped := fmt.Errorf("node config: %w", err)
 
-		if !errors.Is(wrapped, ErrInvalidNodeShape) {
-			t.Errorf("errors.Is(wrapped, ErrInvalidNodeShape) = false; err=%v", wrapped)
+		extracted, ok := errors.AsType[*InvalidNodeShapeError](wrapped)
+		if !ok {
+			t.Fatalf("errors.AsType[*InvalidNodeShapeError] failed; err=%v", wrapped)
+		}
+
+		if extracted.Value != "bogus" {
+			t.Errorf("Value = %q, want %q", extracted.Value, "bogus")
+		}
+
+		if len(extracted.Allowed) != len(nodeShapeValues) {
+			t.Errorf("Allowed length = %d, want %d", len(extracted.Allowed), len(nodeShapeValues))
 		}
 	})
 
-	t.Run("ErrInvalidArrowType from ParseArrowType", func(t *testing.T) {
+	t.Run("InvalidArrowTypeError from ParseArrowType", func(t *testing.T) {
 		t.Parallel()
 
 		_, err := ParseArrowType("bogus")
@@ -49,12 +68,21 @@ func TestSentinels_Is_ThroughWrapping(t *testing.T) {
 
 		wrapped := fmt.Errorf("edge config: %w", err)
 
-		if !errors.Is(wrapped, ErrInvalidArrowType) {
-			t.Errorf("errors.Is(wrapped, ErrInvalidArrowType) = false; err=%v", wrapped)
+		extracted, ok := errors.AsType[*InvalidArrowTypeError](wrapped)
+		if !ok {
+			t.Fatalf("errors.AsType[*InvalidArrowTypeError] failed; err=%v", wrapped)
+		}
+
+		if extracted.Value != "bogus" {
+			t.Errorf("Value = %q, want %q", extracted.Value, "bogus")
+		}
+
+		if len(extracted.Allowed) != len(arrowTypeValues) {
+			t.Errorf("Allowed length = %d, want %d", len(extracted.Allowed), len(arrowTypeValues))
 		}
 	})
 
-	t.Run("ErrInvalidConstraint from ParseConstraint", func(t *testing.T) {
+	t.Run("InvalidConstraintError from ParseConstraint", func(t *testing.T) {
 		t.Parallel()
 
 		_, err := ParseConstraint("bogus")
@@ -64,12 +92,21 @@ func TestSentinels_Is_ThroughWrapping(t *testing.T) {
 
 		wrapped := fmt.Errorf("layout constraint: %w", err)
 
-		if !errors.Is(wrapped, ErrInvalidConstraint) {
-			t.Errorf("errors.Is(wrapped, ErrInvalidConstraint) = false; err=%v", wrapped)
+		extracted, ok := errors.AsType[*InvalidConstraintError](wrapped)
+		if !ok {
+			t.Fatalf("errors.AsType[*InvalidConstraintError] failed; err=%v", wrapped)
+		}
+
+		if extracted.Value != "bogus" {
+			t.Errorf("Value = %q, want %q", extracted.Value, "bogus")
+		}
+
+		if len(extracted.Allowed) != len(allConstraints) {
+			t.Errorf("Allowed length = %d, want %d", len(extracted.Allowed), len(allConstraints))
 		}
 	})
 
-	t.Run("ErrInvalidTextTransform from ParseTextTransform", func(t *testing.T) {
+	t.Run("InvalidTextTransformError from ParseTextTransform", func(t *testing.T) {
 		t.Parallel()
 
 		_, err := ParseTextTransform("bogus")
@@ -79,22 +116,44 @@ func TestSentinels_Is_ThroughWrapping(t *testing.T) {
 
 		wrapped := fmt.Errorf("label style: %w", err)
 
-		if !errors.Is(wrapped, ErrInvalidTextTransform) {
-			t.Errorf("errors.Is(wrapped, ErrInvalidTextTransform) = false; err=%v", wrapped)
+		extracted, ok := errors.AsType[*InvalidTextTransformError](wrapped)
+		if !ok {
+			t.Fatalf("errors.AsType[*InvalidTextTransformError] failed; err=%v", wrapped)
+		}
+
+		if extracted.Value != "bogus" {
+			t.Errorf("Value = %q, want %q", extracted.Value, "bogus")
+		}
+
+		if len(extracted.Allowed) != len(textTransformValues) {
+			t.Errorf("Allowed length = %d, want %d", len(extracted.Allowed), len(textTransformValues))
 		}
 	})
 
-	t.Run("sentinels are distinct", func(t *testing.T) {
+	t.Run("typed errors are distinct", func(t *testing.T) {
 		t.Parallel()
 
 		_, dirErr := ParseDirection("bogus")
-		if errors.Is(dirErr, ErrInvalidNodeShape) {
-			t.Errorf("direction error should not match ErrInvalidNodeShape")
+		if _, ok := errors.AsType[*InvalidNodeShapeError](dirErr); ok {
+			t.Errorf("direction error should not match *InvalidNodeShapeError")
 		}
 
 		_, shapeErr := ParseNodeShape("bogus")
-		if errors.Is(shapeErr, ErrInvalidDirection) {
-			t.Errorf("shape error should not match ErrInvalidDirection")
+		if _, ok := errors.AsType[*InvalidDirectionError](shapeErr); ok {
+			t.Errorf("shape error should not match *InvalidDirectionError")
+		}
+	})
+
+	t.Run("error messages include allowed values", func(t *testing.T) {
+		t.Parallel()
+
+		err := &InvalidDirectionError{Value: "bogus", Allowed: directionValues}
+		msg := err.Error()
+		if !strings.Contains(msg, "(allowed:") {
+			t.Errorf("error message should include allowed values list; got: %s", msg)
+		}
+		if !strings.Contains(msg, "bogus") {
+			t.Errorf("error message should include the invalid value; got: %s", msg)
 		}
 	})
 }

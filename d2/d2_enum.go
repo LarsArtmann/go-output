@@ -1,8 +1,7 @@
 package d2
 
 import (
-	"errors"
-	"fmt"
+	"strings"
 
 	output "github.com/larsartmann/go-output"
 )
@@ -28,14 +27,31 @@ var directionValues = []Direction{
 	DirUp,
 }
 
-// ErrInvalidDirection is returned when an invalid D2 direction is provided.
-var ErrInvalidDirection = errors.New("invalid D2 direction")
+// AllDirections returns all valid Direction values.
+func AllDirections() []Direction {
+	return directionValues
+}
+
+// InvalidDirectionError is returned when an invalid D2 direction is provided.
+type InvalidDirectionError struct {
+	Value   string
+	Allowed []Direction
+}
+
+// Error returns a descriptive error message for the invalid direction.
+func (e *InvalidDirectionError) Error() string {
+	if len(e.Allowed) == 0 {
+		return "invalid D2 direction: " + e.Value
+	}
+
+	return "invalid D2 direction: " + e.Value + " (allowed: " + strings.Join(output.EnumAllowedValues(e.Allowed), ", ") + ")"
+}
 
 // ParseDirection converts a string to Direction, returning an error if invalid.
 func ParseDirection(s string) (Direction, error) {
 	v, err := output.ParseEnum(directionValues, s, func(d Direction) string { return string(d) })
 	if err != nil {
-		return "", fmt.Errorf("%w: %q", ErrInvalidDirection, s)
+		return "", &InvalidDirectionError{Value: s, Allowed: directionValues}
 	}
 
 	return v, nil
@@ -107,14 +123,31 @@ var nodeShapeValues = []NodeShape{
 	ShapeStoredData,
 }
 
-// ErrInvalidNodeShape is returned when an invalid D2 node shape is provided.
-var ErrInvalidNodeShape = errors.New("invalid D2 node shape")
+// AllNodeShapes returns all valid NodeShape values.
+func AllNodeShapes() []NodeShape {
+	return nodeShapeValues
+}
+
+// InvalidNodeShapeError is returned when an invalid D2 node shape is provided.
+type InvalidNodeShapeError struct {
+	Value   string
+	Allowed []NodeShape
+}
+
+// Error returns a descriptive error message for the invalid node shape.
+func (e *InvalidNodeShapeError) Error() string {
+	if len(e.Allowed) == 0 {
+		return "invalid D2 node shape: " + e.Value
+	}
+
+	return "invalid D2 node shape: " + e.Value + " (allowed: " + strings.Join(output.EnumAllowedValues(e.Allowed), ", ") + ")"
+}
 
 // ParseNodeShape converts a string to NodeShape, returning an error if invalid.
 func ParseNodeShape(s string) (NodeShape, error) {
 	v, err := output.ParseEnum(nodeShapeValues, s, func(ns NodeShape) string { return string(ns) })
 	if err != nil {
-		return "", fmt.Errorf("%w: %q", ErrInvalidNodeShape, s)
+		return "", &InvalidNodeShapeError{Value: s, Allowed: nodeShapeValues}
 	}
 
 	return v, nil
@@ -170,14 +203,31 @@ var arrowTypeValues = []ArrowType{
 	ArrowCFManyRequired,
 }
 
-// ErrInvalidArrowType is returned when an invalid D2 arrow type is provided.
-var ErrInvalidArrowType = errors.New("invalid D2 arrow type")
+// AllArrowTypes returns all valid ArrowType values.
+func AllArrowTypes() []ArrowType {
+	return arrowTypeValues
+}
+
+// InvalidArrowTypeError is returned when an invalid D2 arrow type is provided.
+type InvalidArrowTypeError struct {
+	Value   string
+	Allowed []ArrowType
+}
+
+// Error returns a descriptive error message for the invalid arrow type.
+func (e *InvalidArrowTypeError) Error() string {
+	if len(e.Allowed) == 0 {
+		return "invalid D2 arrow type: " + e.Value
+	}
+
+	return "invalid D2 arrow type: " + e.Value + " (allowed: " + strings.Join(output.EnumAllowedValues(e.Allowed), ", ") + ")"
+}
 
 // ParseArrowType converts a string to ArrowType, returning an error if invalid.
 func ParseArrowType(s string) (ArrowType, error) {
 	v, err := output.ParseEnum(arrowTypeValues, s, func(a ArrowType) string { return string(a) })
 	if err != nil {
-		return "", fmt.Errorf("%w: %q", ErrInvalidArrowType, s)
+		return "", &InvalidArrowTypeError{Value: s, Allowed: arrowTypeValues}
 	}
 
 	return v, nil
@@ -208,9 +258,6 @@ const (
 	ConstraintUnique  Constraint = "unique"
 )
 
-// ErrInvalidConstraint is returned when an invalid D2 constraint is provided.
-var ErrInvalidConstraint = errors.New("invalid D2 constraint")
-
 //nolint:gochecknoglobals // Allowed values for Constraint validation.
 var allConstraints = []Constraint{
 	ConstraintPrimary,
@@ -223,11 +270,26 @@ func AllConstraints() []Constraint {
 	return allConstraints
 }
 
+// InvalidConstraintError is returned when an invalid D2 constraint is provided.
+type InvalidConstraintError struct {
+	Value   string
+	Allowed []Constraint
+}
+
+// Error returns a descriptive error message for the invalid constraint.
+func (e *InvalidConstraintError) Error() string {
+	if len(e.Allowed) == 0 {
+		return "invalid D2 constraint: " + e.Value
+	}
+
+	return "invalid D2 constraint: " + e.Value + " (allowed: " + strings.Join(output.EnumAllowedValues(e.Allowed), ", ") + ")"
+}
+
 // ParseConstraint converts a string to Constraint, returning an error if invalid.
 func ParseConstraint(s string) (Constraint, error) {
 	v, err := output.ParseEnum(allConstraints, s, func(d Constraint) string { return string(d) })
 	if err != nil {
-		return "", fmt.Errorf("%w: %q", ErrInvalidConstraint, s)
+		return "", &InvalidConstraintError{Value: s, Allowed: allConstraints}
 	}
 
 	return v, nil
@@ -264,8 +326,25 @@ var textTransformValues = []TextTransform{
 	TextTransformCapitalize,
 }
 
-// ErrInvalidTextTransform is returned when an invalid text transform is provided.
-var ErrInvalidTextTransform = errors.New("invalid D2 text transform")
+// AllTextTransforms returns all valid TextTransform values.
+func AllTextTransforms() []TextTransform {
+	return textTransformValues
+}
+
+// InvalidTextTransformError is returned when an invalid text transform is provided.
+type InvalidTextTransformError struct {
+	Value   string
+	Allowed []TextTransform
+}
+
+// Error returns a descriptive error message for the invalid text transform.
+func (e *InvalidTextTransformError) Error() string {
+	if len(e.Allowed) == 0 {
+		return "invalid D2 text transform: " + e.Value
+	}
+
+	return "invalid D2 text transform: " + e.Value + " (allowed: " + strings.Join(output.EnumAllowedValues(e.Allowed), ", ") + ")"
+}
 
 // ParseTextTransform converts a string to TextTransform, returning an error if invalid.
 func ParseTextTransform(s string) (TextTransform, error) {
@@ -275,7 +354,7 @@ func ParseTextTransform(s string) (TextTransform, error) {
 
 	v, err := output.ParseEnum(textTransformValues, s, func(t TextTransform) string { return string(t) })
 	if err != nil {
-		return "", fmt.Errorf("%w: %q", ErrInvalidTextTransform, s)
+		return "", &InvalidTextTransformError{Value: s, Allowed: textTransformValues}
 	}
 
 	return v, nil
