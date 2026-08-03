@@ -6,22 +6,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.36.0] - 2026-08-03
+
 ### Added
 
+- **output** — Three-tier error system: exported sentinel errors `ErrColumnMismatch` and `ErrNilRow` (previously unexported `errColumnMismatch`/`errNilRow`) so consumers can match validation failures via `errors.Is`. The doc comment on `AddRowChecked` documented them as exported — now they actually are.
 - **output** — Exported `AllColorModes` (was `colorModeValues`) and `AllNodeShapes` (was `nodeShapeValues`) for programmatic enumeration and typed-error `Allowed` population.
-- **graph** — Exported `AllRankDirs` (was `rankDirValues`) and `AllSplineStyles` (was `splineStyleValues`).
+- **graph** — Exported `AllRankDirs` (was `rankDirValues`) and `AllSplineStyles` (was `splineStyleValues`); extended DOT graph rendering with color and enum support.
+- **output/graph/nom** — All typed error structs (`InvalidColorModeError`, `InvalidNodeShapeError`, `InvalidLineStyleError`, `InvalidRankDirError`, `InvalidSplineStyleError`, `InvalidActivityStatusError`, `InvalidActivityKindError`) now carry `Allowed` fields populated dynamically from their respective `All*` slices.
 - **output/graph/d2/nom** — Error contract tests verifying `errors.Is` sentinel matching through wrapping and `errors.AsType[*T]` typed-error field extraction.
 - **docs** — `docs/ERROR_SYSTEM.md` (consumer-facing error reference) and ADR 013 (`docs/adr/0013-error-system-design.md`).
 
 ### Changed
 
-- **output** — `InvalidColorModeError` and `InvalidNodeShapeError` now carry `Allowed` fields populated dynamically from `AllColorModes`/`AllNodeShapes`; `Error()` renders the allowed-values list from the slice, never hardcoded strings.
-- **graph** — `InvalidRankDirError` and `InvalidSplineStyleError` now carry `Allowed` fields; hardcoded allowed-value string literals (`"TB, LR, BT, RL"`, `"ortho, spline, ..."`) replaced with dynamic formatting from the `Allowed` slice to prevent drift.
-- **nom** — `InvalidActivityStatusError` and `InvalidActivityKindError` now carry `Allowed` fields populated from `AllActivityStatuses()` / `AllActivityKinds`.
+- **output/graph/nom** — Hardcoded allowed-value string literals in error messages (e.g. `"TB, LR, BT, RL"`, `"ortho, spline, ..."`) replaced with dynamic formatting from the `Allowed` slice to prevent drift between the error message and the actual set of valid values.
+- **output** — Migrated the sole `errors.As` call to Go 1.26's generic `errors.AsType[*T]` in `render_registry_test.go`.
+- **all modules** — Refreshed Go module dependencies across all 19 modules.
 
 ### Fixed
 
+- **nom** — Prevent tree re-printing on every tick in plainText (CI/non-TTY) mode. Live elapsed-time values on running step labels (e.g. `nix-build 12.3s`) changed every second, causing the full tree to be re-appended on each `Draw()` tick. Timing values are now stripped before diffing so only structural changes (step started/completed/failed) trigger a tree reprint.
 - **output** — `InvalidNodeShapeError` message corrected from "invalid graph shape" to "invalid node shape".
+- **output** — `ErrColumnMismatch` error message corrected from "footer column count does not match headers" to "column count does not match headers" (applies to both rows and footers, not just footers).
 
 ## [0.35.0] - 2026-07-27
 
