@@ -8,15 +8,15 @@ require (
 	github.com/charmbracelet/x/ansi v0.11.7
 	github.com/charmbracelet/x/exp/golden v0.0.0-20260705004817-2cc9a8fe1146
 	github.com/charmbracelet/x/vt v0.0.0-20260629091435-9c70f75e26a4
-	github.com/larsartmann/go-output v0.36.0
-	github.com/larsartmann/go-output/testhelpers v0.36.0
+	github.com/larsartmann/go-output v0.0.0-00010101000000-000000000000
+	github.com/larsartmann/go-output/testhelpers v0.0.0-00010101000000-000000000000
 	github.com/onsi/gomega v1.42.1
 	golang.org/x/term v0.45.0
 )
 
 require (
 	github.com/aymanbagabas/go-udiff v0.4.1 // indirect
-	github.com/charmbracelet/ultraviolet v0.0.0-20260730003005-19049f296fa9 // indirect
+	github.com/charmbracelet/ultraviolet v0.0.0-20260803092147-8b693049ce2a // indirect
 	github.com/charmbracelet/x/exp/ordered v0.1.0 // indirect
 	github.com/charmbracelet/x/term v0.2.2 // indirect
 	github.com/charmbracelet/x/termios v0.1.1 // indirect
@@ -26,7 +26,7 @@ require (
 	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/larsartmann/go-branded-id v0.5.1 // indirect
-	github.com/lucasb-eyer/go-colorful v1.4.0 // indirect
+	github.com/lucasb-eyer/go-colorful v1.4.1 // indirect
 	github.com/mattn/go-runewidth v0.0.27 // indirect
 	github.com/muesli/cancelreader v0.2.2 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
