@@ -11,6 +11,7 @@ permissions:
 env:
   GO_VERSION: "1.26"
   GOLANGCI_LINT_VERSION: v2.12
+  GOEXPERIMENT: jsonv2
 
 jobs:
   release:
