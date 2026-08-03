@@ -6,6 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Fixed
+
+- **tui** — Fix teatest E2E test deadlock in CI: `vtScreenFromBytes` was called inside the `teatest.WaitFor` polling loop, creating 100+ VT emulators under `-race`. Refactored to use ANSI-strip for polling, single VT reconstruction after.
+- **ci** — Pin art-dupl to `@v0.6.0` (v0.6.1 has a broken build). Pin all GitHub Actions to commit SHAs (checkout, setup-go, golangci-lint-action, softprops/action-gh-release) for supply-chain security.
+- **go.mod** — Retract v0.34.0 (stale tag drift: sibling dep versions misaligned at tag time, superseded by v0.35.0 same day).
+- **website** — Fix 10 dependabot vulnerabilities (0 remaining): astro v6→v7.1.6 (XSS fixes), starlight v0.39→v0.41, vite v7→v8 (removed stale override), esbuild pinned to 0.28.1, fast-uri 3.1.5, postcss 8.5.25.
+
+### Changed
+
+- **d2** — Migrated 5 sentinel errors (`ErrInvalidDirection`, `ErrInvalidNodeShape`, `ErrInvalidArrowType`, `ErrInvalidConstraint`, `ErrInvalidTextTransform`) to typed error structs (`*InvalidDirectionError`, `*InvalidNodeShapeError`, `*InvalidArrowTypeError`, `*InvalidConstraintError`, `*InvalidTextTransformError`) matching the root/graph/nom pattern. Each carries `Value` + `Allowed` fields, extractable via `errors.AsType[*T]`. Added `AllDirections()`, `AllNodeShapes()`, `AllArrowTypes()`, `AllTextTransforms()` functions.
+
+### Added
+
+- **integration** — Cross-module error integration test (`cross_module_error_test.go`) verifying `errors.Is` and `errors.AsType` work across module boundaries: root sentinels through dispatch, root typed errors, d2+graph typed errors, error distinctness, and deep wrapping preservation.
+
 ## [0.36.0] - 2026-08-03
 
 ### Added
