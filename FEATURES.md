@@ -276,7 +276,7 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 | Feature                 | Status           | Notes                                                                                                                                                                                                                                                                                                                                                            |
 | ----------------------- | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **testhelpers package** | FULLY_FUNCTIONAL | Zero-dep, publicly importable. `AssertStringSliceEqual()`, `AssertContains()`, `AssertEqual[T]()`, `TestEnumIsValid[T]()`, `TestStructFields()`, `StringField()`, `IntField()`                                                                                                                                                                                   |
-| **Fuzz tests**          | FULLY_FUNCTIONAL | Coverage-guided fuzzing: `nom/` (FormatDuration, formatActivityLabel), `graph/` (DOT/Mermaid escaping + rendering), `d2/` (escape, ParseDirection/NodeShape/ArrowType). Run with `go test -fuzz=Fuzz...` |
+| **Fuzz tests**          | FULLY_FUNCTIONAL | Coverage-guided fuzzing: `nom/` (FormatDuration, formatActivityLabel), `graph/` (DOT/Mermaid escaping + rendering), `d2/` (escape, ParseDirection/NodeShape/ArrowType). Run with `go test -fuzz=Fuzz...`                                                                                                                                                         |
 | **Benchmarks**          | FULLY_FUNCTIONAL | `BenchmarkASCIITreeRenderer`, `BenchmarkHTMLRenderer`, `BenchmarkMermaidRenderer`, `BenchmarkDOTRenderer`, `BenchmarkCSVWriter`, `BenchmarkMarkdownTableColored`, `BenchmarkMarkdownTableWithFooter`, `BenchmarkTableCreateRowEdges`, `RenderUnderStepChurn`, `SnapshotActivities_Parallel`, `InlineRenderer_Draw`, `DrawWithChurn` (NOM render-lock contention) |
 | **Integration tests**   | FULLY_FUNCTIONAL | Cross-module tests in `integration/` package. Tests all 16 formats, streaming, tree depth, edge creation, large datasets                                                                                                                                                                                                                                         |
 | **User journey tests**  | FULLY_FUNCTIONAL | End-to-end tests simulating CLI developer workflows in `userjourney_test.go`                                                                                                                                                                                                                                                                                     |
@@ -330,29 +330,29 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 
 ## Documentation
 
-| Feature                    | Status           | Notes                                                      |
-| -------------------------- | ---------------- | ---------------------------------------------------------- |
-| **README.md**              | FULLY_FUNCTIONAL | All examples verified correct after deprecated API removal |
-| **CHANGELOG.md**           | FULLY_FUNCTIONAL | Version history                                            |
-| **CONTRIBUTING.md**        | FULLY_FUNCTIONAL | Contribution guidelines                                    |
-| **ADR 001**                | FULLY_FUNCTIONAL | Multi-module workspace decision                            |
-| **ADR 002**                | FULLY_FUNCTIONAL | Shape capability matrix decision                           |
-| **ADR 003**                | FULLY_FUNCTIONAL | D2/graph module extraction decision                        |
-| **ADR 004**                | FULLY_FUNCTIONAL | Footer row design decision                                 |
-| **ADR 005**                | FULLY_FUNCTIONAL | Code duplication thresholds decision                       |
-| **ADR 006**                | FULLY_FUNCTIONAL | Pre-v1 API stability guarantees                            |
-| **ADR 007**                | FULLY_FUNCTIONAL | nom composition via root types                             |
-| **ADR 008**                | FULLY_FUNCTIONAL | Dedup workflow decision (art-dupl threshold + checklist)   |
-| **ADR 009**                | FULLY_FUNCTIONAL | Pattern B versioning (committed replace + v0.0.0 sentinel) |
-| **ADR 010**                | FULLY_FUNCTIONAL | DAG topology design                                        |
-| **ADR 011**                | FULLY_FUNCTIONAL | Status registry extensibility                              |
-| **ADR 012**                | FULLY_FUNCTIONAL | CQRS streaming + registry rewire decision                  |
+| Feature                    | Status           | Notes                                                                        |
+| -------------------------- | ---------------- | ---------------------------------------------------------------------------- |
+| **README.md**              | FULLY_FUNCTIONAL | All examples verified correct after deprecated API removal                   |
+| **CHANGELOG.md**           | FULLY_FUNCTIONAL | Version history                                                              |
+| **CONTRIBUTING.md**        | FULLY_FUNCTIONAL | Contribution guidelines                                                      |
+| **ADR 001**                | FULLY_FUNCTIONAL | Multi-module workspace decision                                              |
+| **ADR 002**                | FULLY_FUNCTIONAL | Shape capability matrix decision                                             |
+| **ADR 003**                | FULLY_FUNCTIONAL | D2/graph module extraction decision                                          |
+| **ADR 004**                | FULLY_FUNCTIONAL | Footer row design decision                                                   |
+| **ADR 005**                | FULLY_FUNCTIONAL | Code duplication thresholds decision                                         |
+| **ADR 006**                | FULLY_FUNCTIONAL | Pre-v1 API stability guarantees                                              |
+| **ADR 007**                | FULLY_FUNCTIONAL | nom composition via root types                                               |
+| **ADR 008**                | FULLY_FUNCTIONAL | Dedup workflow decision (art-dupl threshold + checklist)                     |
+| **ADR 009**                | FULLY_FUNCTIONAL | Pattern B versioning (committed replace + v0.0.0 sentinel)                   |
+| **ADR 010**                | FULLY_FUNCTIONAL | DAG topology design                                                          |
+| **ADR 011**                | FULLY_FUNCTIONAL | Status registry extensibility                                                |
+| **ADR 012**                | FULLY_FUNCTIONAL | CQRS streaming + registry rewire decision                                    |
 | **ADR 013**                | FULLY_FUNCTIONAL | Error system design (three-tier model: sentinels + typed structs + wrapping) |
-| **ERROR_SYSTEM.md**        | FULLY_FUNCTIONAL | Consumer-facing error reference (`docs/ERROR_SYSTEM.md`)   |
-| **RELEASE.md**             | FULLY_FUNCTIONAL | Release process for 19-module Pattern B workspace          |
-| **ROADMAP.md**             | FULLY_FUNCTIONAL | Long-term direction and raw ideas                          |
-| **DOMAIN_LANGUAGE.md**     | FULLY_FUNCTIONAL | Domain vocabulary                                          |
-| **FORMAT_ARCHITECTURE.md** | FULLY_FUNCTIONAL | Format architecture documentation                          |
+| **ERROR_SYSTEM.md**        | FULLY_FUNCTIONAL | Consumer-facing error reference (`docs/ERROR_SYSTEM.md`)                     |
+| **RELEASE.md**             | FULLY_FUNCTIONAL | Release process for 19-module Pattern B workspace                            |
+| **ROADMAP.md**             | FULLY_FUNCTIONAL | Long-term direction and raw ideas                                            |
+| **DOMAIN_LANGUAGE.md**     | FULLY_FUNCTIONAL | Domain vocabulary                                                            |
+| **FORMAT_ARCHITECTURE.md** | FULLY_FUNCTIONAL | Format architecture documentation                                            |
 
 ---
 
