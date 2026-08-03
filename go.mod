@@ -19,6 +19,8 @@ replace (
 require golang.org/x/sys v0.47.0 // indirect
 
 retract (
+	// Stale tag drift: sibling dep versions were misaligned at tag time; v0.35.0 realigned them the same day.
+	v0.34.0
 	// Bogus tags: pointed at a stale June commit, never real releases. Deleted from git; retracted here to poison proxy cache.
 	v0.33.0
 	// Same incident as v0.33.0 — bogus tag on stale commit, deleted from git; retracted to poison proxy cache.
