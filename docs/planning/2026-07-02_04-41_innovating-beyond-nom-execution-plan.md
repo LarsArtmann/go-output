@@ -5,6 +5,8 @@
 **Project:** `go-output` / `nom/` module
 **Goal:** Finish the entire Innovating Beyond nom feature stack, building on the true DAG topology introduced in `9e6719f`.
 
+> ~~What remains is the integration of the registry into the existing code, the theme system, and all downstream features (parallelism meter, layered display, categories, auto-theme, TUI enhancements, and documentation).~~ **Done — all Tiers 1–4 shipped in v0.23.0** (commit `e23a2f3`). Layered mode, themes, categories, critical-path, parallelism meter, DAG summary, status registry — all implemented.
+
 ## Executive Summary
 
 The DAG-overhaul work has been committed in two waves. Wave 1 (critical-path, blockage, convergence markers) and the registry _structure_ of Wave 2 are already on `master`. What remains is the integration of the registry into the existing code, the theme system, and all downstream features (parallelism meter, layered display, categories, auto-theme, TUI enhancements, and documentation).
