@@ -55,6 +55,7 @@ func (r *InlineRenderer) Finish(workflowErr error) {
 	// Reset frame cache so a new workflow can render from scratch.
 	r.lastFrame = ""
 	r.lastTreeFrame = ""
+	r.lastStableTreeFrame = ""
 
 	// Render from immutable snapshot (same race-free path as Draw).
 	if final, ok := r.subscriber.RenderSnapshot(0, 0); ok && final != MsgNoActivities {

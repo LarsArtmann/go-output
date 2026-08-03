@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"os/signal"
+	"regexp"
 	"strings"
 	"sync"
 	"syscall"
@@ -90,6 +91,13 @@ type InlineRenderer struct {
 	// when step state actually changes.
 	lastTreeFrame string
 
+	// lastStableTreeFrame stores the tree content with timing values stripped.
+	// Used for plainText diffing so that live elapsed timers on running steps
+	// (which change every tick) don't cause the full tree to be re-appended
+	// on every Draw. Only structural changes (step started/completed/failed)
+	// trigger a tree reprint in plainText mode.
+	lastStableTreeFrame string
+
 	// estimatedRemaining is an optional callback that returns the estimated
 	// total remaining time for the workflow (sum of pending-step estimates).
 	// When non-nil and returning > 0, the summary bar renders "~Xm left".
@@ -129,6 +137,20 @@ type InlineRenderer struct {
 	// on a broken pipe. Guarded by renderMu.
 	consecutiveWriteErrors int
 	writerDead             bool
+}
+
+// timingStripRe matches elapsed-time and estimate patterns embedded in
+// tree activity labels: "12.3s", "456ms", "~2.0s", etc. Stripping these
+// from the tree frame produces a stable string that only changes when the
+// tree STRUCTURE changes (steps start/complete/fail), not when live timers
+// tick. This prevents endless tree reprints in plainText (non-TTY) mode.
+var timingStripRe = regexp.MustCompile(`\d+(?:\.\d+)?(?:ms|s)`)
+
+// stripTimings replaces all timing values in a tree frame with a fixed
+// placeholder. The result is stable across ticks where only elapsed-time
+// display values changed.
+func stripTimings(s string) string {
+	return timingStripRe.ReplaceAllString(s, "T")
 }
 
 const maxConsecutiveWriteErrors = 10
@@ -405,17 +427,22 @@ func (r *InlineRenderer) Draw() {
 	}
 
 	if cfg.plainText {
-		// In plainText mode, diff on tree content only. The summary bar
-		// contains a volatile elapsed timer that changes every second.
-		// Without separating tree from summary for diffing, the entire
-		// tree is re-appended on every tick even when no step state
-		// changed, producing massive output spam in non-TTY/CI mode.
-		treeChanged := treeFrame != r.lastTreeFrame
+		// In plainText mode, diff on tree content with timing values
+		// stripped. The tree contains live elapsed timers on running steps
+		// (e.g. "nix-build 12.3s") that change every tick. Without stripping,
+		// the entire tree is re-appended on every tick even when no step state
+		// changed — producing massive output spam in non-TTY/CI mode. Pending
+		// log lines are printed without the tree; the tree is printed only on
+		// structural changes.
+		stableTree := stripTimings(treeFrame)
+
+		treeChanged := stableTree != r.lastStableTreeFrame
 		if !hasPending && !treeChanged {
 			return
 		}
 
-		r.drawPlainText(frame, treeFrame, pending, hasPending, cfg)
+		r.drawPlainText(frame, treeChanged, pending, hasPending, cfg)
+		r.lastStableTreeFrame = stableTree
 
 		return
 	}
@@ -451,10 +478,14 @@ func (r *InlineRenderer) handleNoTree(
 // and the tree frame (only if changed) without any cursor manipulation.
 // This prevents massive tree repetition when logs arrive frequently but the
 // tree state hasn't changed.
-func (r *InlineRenderer) drawPlainText(frame, treeFrame string, pending []string, hasPending bool, cfg rendererConfig) {
-	treeChanged := treeFrame != r.lastTreeFrame
-
-	if hasPending || treeChanged {
+func (r *InlineRenderer) drawPlainText(
+	frame string,
+	treeChanged bool,
+	pending []string,
+	hasPending bool,
+	cfg rendererConfig,
+) {
+	if hasPending {
 		var b strings.Builder
 
 		for _, line := range pending {
@@ -462,17 +493,16 @@ func (r *InlineRenderer) drawPlainText(frame, treeFrame string, pending []string
 			b.WriteByte('\n')
 		}
 
-		if treeChanged {
-			b.WriteString(frame)
-			b.WriteByte('\n')
-		}
-
 		r.write(b.String())
+	}
+
+	if treeChanged {
+		r.write(frame + "\n")
 	}
 
 	r.pendingLines = nil
 	r.lastFrame = frame
-	r.lastTreeFrame = treeFrame
+	r.lastTreeFrame = frame
 	r.lastFramePlain = cfg.plainText
 }
 
@@ -715,6 +745,7 @@ func (r *InlineRenderer) listenForResize(ctx context.Context) {
 			r.renderMu.Lock()
 			r.lastFrame = ""
 			r.lastTreeFrame = ""
+			r.lastStableTreeFrame = ""
 			r.renderMu.Unlock()
 
 			r.Refresh()
