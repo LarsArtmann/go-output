@@ -370,6 +370,7 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 
 **Last audited:** 2026-08-04
 **Counts** (recompute with `grep -c '| FULLY_FUNCTIONAL |' FEATURES.md`):
+
 - Fully functional: 189
 - Removed: 5
 - Deprecated: 1

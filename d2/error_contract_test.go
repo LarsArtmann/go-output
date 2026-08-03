@@ -148,10 +148,12 @@ func TestTypedErrors_AsType_ThroughWrapping(t *testing.T) {
 		t.Parallel()
 
 		err := &InvalidDirectionError{Value: "bogus", Allowed: directionValues}
+
 		msg := err.Error()
 		if !strings.Contains(msg, "(allowed:") {
 			t.Errorf("error message should include allowed values list; got: %s", msg)
 		}
+
 		if !strings.Contains(msg, "bogus") {
 			t.Errorf("error message should include the invalid value; got: %s", msg)
 		}

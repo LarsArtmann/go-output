@@ -52,6 +52,7 @@ func TestTeatest_VTScreen_ShowsActivityLabels(t *testing.T) {
 
 	teatest.WaitFor(t, tm.Output(), func(raw []byte) bool {
 		capturedOutput = raw
+
 		return strings.Contains(ansi.Strip(string(raw)), "Build Module") &&
 			strings.Contains(ansi.Strip(string(raw)), "Run Tests")
 	}, teatest.WithDuration(5*time.Second), teatest.WithCheckInterval(50*time.Millisecond))
