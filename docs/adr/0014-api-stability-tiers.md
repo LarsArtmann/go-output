@@ -1,4 +1,4 @@
-# ADR 011: API Stability Tiers
+# ADR 014: API Stability Tiers
 
 **Date:** 2026-07-07
 **Status:** Accepted

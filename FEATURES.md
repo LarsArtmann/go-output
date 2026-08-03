@@ -348,6 +348,7 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 | **ADR 011**                | FULLY_FUNCTIONAL | Status registry extensibility                                                |
 | **ADR 012**                | FULLY_FUNCTIONAL | CQRS streaming + registry rewire decision                                    |
 | **ADR 013**                | FULLY_FUNCTIONAL | Error system design (three-tier model: sentinels + typed structs + wrapping) |
+| **ADR 014**                | FULLY_FUNCTIONAL | API stability tiers (Frozen vs Experimental post-v0.30.0)                    |
 | **ERROR_SYSTEM.md**        | FULLY_FUNCTIONAL | Consumer-facing error reference (`docs/ERROR_SYSTEM.md`)                     |
 | **RELEASE.md**             | FULLY_FUNCTIONAL | Release process for 19-module Pattern B workspace                            |
 | **ROADMAP.md**             | FULLY_FUNCTIONAL | Long-term direction and raw ideas                                            |
@@ -368,8 +369,9 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 ---
 
 **Last audited:** 2026-08-04
-**Total features:** ~175 (grows with each release; see tables above for the authoritative inventory)
-**Fully functional:** ~163
+**Total features:** 194 (counted via `grep -c '| FULLY_FUNCTIONAL |' FEATURES.md` + removed/deprecated)
+**Fully functional:** 188
 **Partially functional:** 0
-**Removed:** 10 (FormatCategory, OutputFormat, SortBy, FilledStrings, Register, Create, Unregister, RegisteredFormats, IsRegistered, Event accessor interfaces)
+**Removed:** 5 (FormatCategory, OutputFormat, SortBy, FilledStrings, Register/Create/Unregister/RegisteredFormats/IsRegistered grouped)
+**Deprecated:** 1
 **Known issues:** 0

@@ -32,8 +32,8 @@ func TestRenderTable_InvalidFooter(t *testing.T) {
 		t.Fatal("Expected error for footer with wrong column count")
 	}
 
-	if !strings.Contains(err.Error(), "footer column count") {
-		t.Errorf("Expected footer column mismatch error, got: %v", err)
+	if !strings.Contains(err.Error(), "column count does not match") {
+		t.Errorf("Expected column count mismatch error, got: %v", err)
 	}
 }
 
