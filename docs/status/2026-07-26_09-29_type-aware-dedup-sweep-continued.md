@@ -174,3 +174,9 @@ Ordered by Pareto impact (easiest maintenance wins first).
 - **Test runs:** 5× `nix run .#test` (one caught the markdown recursion, one caught the `slices.Max` panic)
 - **Golden tests:** passed byte-for-byte (CQRS streaming output identical to registry dispatch)
 - **Auto-git daemon:** active (per AGENTS.md "Git Workflow")
+
+---
+
+## Resolution (2026-08-04)
+
+Superseded by the 09:48 closure report which drove the count from 25→24 and completed all verification gates this session deferred. All dedup work is closed — t=4 = 0 groups, t=3 = 2 accepted minimum idioms, t=2 = 16 accepted, t=1 = 20 accepted (all documented in AGENTS.md).

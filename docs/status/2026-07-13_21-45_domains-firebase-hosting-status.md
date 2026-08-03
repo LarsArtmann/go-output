@@ -233,3 +233,9 @@ All deploy attempts fail with "retries exhausted" trying to reach `upload-fireba
 | SSL cert                   | Pending     | N/A      | Blocked on DNS + deploy                                    |
 | Code correctness           | Broken      | 2/10     | Pointer dereference bug still unfixed in hero code         |
 | **Overall**                | **Partial** | **4/10** | **Multiple blockers, collateral damage to existing infra** |
+
+---
+
+## Resolution (2026-08-04)
+
+Website deployed at `go-output.lars.software` (live). Pointer dereference bug superseded — GraphBuilder changed to fluent chain API in v0.31.0 (`*GraphBuilder`, not `*NewGraphNode`). Firebase hosting configured. The terraform collateral damage to `auditlog` DNS records was repaired externally.

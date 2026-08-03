@@ -369,9 +369,9 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 ---
 
 **Last audited:** 2026-08-04
-**Total features:** 194 (counted via `grep -c '| FULLY_FUNCTIONAL |' FEATURES.md` + removed/deprecated)
-**Fully functional:** 188
-**Partially functional:** 0
-**Removed:** 5 (FormatCategory, OutputFormat, SortBy, FilledStrings, Register/Create/Unregister/RegisteredFormats/IsRegistered grouped)
-**Deprecated:** 1
-**Known issues:** 0
+**Counts** (recompute with `grep -c '| FULLY_FUNCTIONAL |' FEATURES.md`):
+- Fully functional: 189
+- Removed: 5
+- Deprecated: 1
+- Partially functional: 0
+- Known issues: 0
