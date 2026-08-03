@@ -1,48 +1,49 @@
 # TODO_LIST.md — go-output
 
-**Last updated:** 2026-07-13
-**Open items:** 2
+**Last updated:** 2026-08-04
+**Open items:** 15
 **Blocked:** 0
 
 ---
 
 ## Open Items
 
-| #   | Task                                                                                                               | Effort | Status                        |
-| --- | ------------------------------------------------------------------------------------------------------------------ | ------ | ----------------------------- |
-| 14  | **Community: Post to r/golang, submit to Awesome Go**                                                              | Low    | Open (needs owner account)    |
-| 16  | **Cut `v1.0.0` tag** — API frozen (ADR 006); CHANGELOG + full checklist done; all v0.30.x breaking changes shipped | Low    | Prepared — awaiting owner tag |
+### P0 — CI is broken (red on every push since July 6)
 
----
+| #   | Task                                                                                          | Effort | Status |
+| --- | --------------------------------------------------------------------------------------------- | ------ | ------ |
+| 1   | **Fix TUI test deadlock** — teatest E2E test hangs in CI (passes locally)                     | Medium | Open   |
+| 2   | **Fix art-dupl CI installation** — dedup tool fails to install in GitHub Actions              | Low    | Open   |
 
-## Recently Resolved (2026-07-06 — v0.30.0 arc)
+### P1 — Release hygiene & security
 
-Details in CHANGELOG.md and git history.
+| #   | Task                                                                                                                  | Effort | Status                      |
+| --- | --------------------------------------------------------------------------------------------------------------------- | ------ | --------------------------- |
+| 3   | **Retract v0.34.0 tag** — superseded by v0.35.0 (code-identical but stale tree); `retract` directive missing from go.mod | Low    | Open                        |
+| 4   | **Root-cause bogus-tag creator** — what process created v0.32.1/v0.33.0 on a stale June commit? Asked 3× across reports, never answered | Medium | Open                        |
+| 5   | **Create GitHub Releases for v0.34.0–v0.36.0** — tags pushed but no release notes on GitHub                           | Low    | Open                        |
+| 6   | **Address 8 dependabot vulnerabilities** — 3 high, 3 moderate, 2 low (GitHub alerts)                                  | Medium | Open                        |
+| 7   | **Pin GitHub Actions to commit SHAs** — `actions/checkout@v4` and `actions/setup-go@v5` are mutable tag refs           | Low    | Open                        |
 
-- **v0.30.0 breaking changes shipped**: 7 breaking-change commits — deletions (B1-B10), renames (C1-C8), D2 prefix drop, GraphBuilder split, full CQRS architecture
-- **CQRS architecture complete**: 3 builders, immutable Graph, pure-function renderers for all 16 formats, cross-shape projections
-- **Registry dispatch rewired**: all table formats stream via CQRS streaming functions (byte-for-byte identical output proven)
-- **Golden-file tests**: JSON, YAML, TOML, JSONL, CSV, TSV, XML, HTML, AsciiDoc — all locked in
-- **v0.30.1-v0.30.4 patch releases**: version ref fixes, Pattern B sentinel migration, documentation website
+### P2 — Error system polish
 
-## Recently Resolved (2026-07-05 — P0-P7 brutal review)
+| #   | Task                                                                                                              | Effort | Status |
+| --- | ----------------------------------------------------------------------------------------------------------------- | ------ | ------ |
+| 8   | **Migrate d2 module from sentinels to typed error structs** — root/graph/nom use typed structs; d2 still uses sentinels | Medium | Open   |
+| 9   | **Add cross-module error integration test** — verify `errors.Is`/`errors.AsType` works across module boundaries    | Low    | Open   |
 
-- **6 concurrency bugs fixed** (appName race, write-lock-held-across-I/O, unsynchronized renderNotify, unbounded saveAsync goroutines, swallowed save errors, unsynchronized showParallelism)
-- **10 dead exported symbols deprecated then deleted** in v0.30.0
-- **5 split brains resolved** (MsgNoActivities unified, Colors global documented, Direction bridge documented)
-- **Draw() complexity** reduced (cyclop 20 → under 10 via decomposition)
-- **Dead-writer detection** added to InlineRenderer
-- **Build() cycle detection** added
+### P3 — Code quality & documentation
 
-## Recently Resolved (earlier sessions)
+| #   | Task                                                                                                                                          | Effort | Status |
+| --- | --------------------------------------------------------------------------------------------------------------------------------------------- | ------ | ------ |
+| 10  | **Fix ADR numbering collision** — `011-status-registry.md` and `0011-api-stability-tiers.md` both claim ADR 011; renumber one                 | Low    | Open   |
+| 11  | **Add happy-path `err == nil` assertion tests for all CQRS `WriteXxx` functions** — gap identified in post-v0.30.0 self-review                 | Medium | Open   |
+| 12  | **Push 7 consumer repos with unpushed commits** — go-wizard-sdk, index, projects-management-automation, etc. (committed locally, not pushed)  | Low    | Open   |
+| 13  | **Add `Flush()` call to TUI shutdown path** — TimingCache.Flush() exists but TUI never calls it on clean shutdown                            | Low    | Open   |
 
-Details in CHANGELOG.md and git history.
+### Community (owner-dependent)
 
-- Pattern B versioning migration (all sibling deps use v0.0.0 sentinel + replace)
-- enum/ + envdetect/ merged into root
-- NOM BuildFlow integration (ActivityProgress, ActivityRetrying, EstimatedTotalRemaining)
-- DAG topology overhaul (true DAG, layered display, critical-path analysis)
-- Theme system, activity categories, parallelism meter, status registry
-- daghtml module (zero-dep SVG DAG visualization)
-- Split-brain elimination (20/20 findings resolved)
-- FormatDuration bug fix, escaping vulnerability fixes, branded IDs, sealed Event sum type
+| #   | Task                                               | Effort | Status                        |
+| --- | -------------------------------------------------- | ------ | ----------------------------- |
+| 14  | **Post to r/golang, submit to Awesome Go**         | Low    | Open (needs owner account)    |
+| 15  | **Cut `v1.0.0` tag** — API frozen (ADR 006); all v0.30.x–v0.36.x breaking changes shipped | Low    | Prepared — awaiting owner tag |

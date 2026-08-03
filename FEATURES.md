@@ -276,7 +276,7 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 | Feature                 | Status           | Notes                                                                                                                                                                                                                                                                                                                                                            |
 | ----------------------- | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **testhelpers package** | FULLY_FUNCTIONAL | Zero-dep, publicly importable. `AssertStringSliceEqual()`, `AssertContains()`, `AssertEqual[T]()`, `TestEnumIsValid[T]()`, `TestStructFields()`, `StringField()`, `IntField()`                                                                                                                                                                                   |
-| **Fuzz tests**          | FULLY_FUNCTIONAL | `FuzzMarkdownTable` — seed corpus + coverage-guided fuzzing                                                                                                                                                                                                                                                                                                      |
+| **Fuzz tests**          | FULLY_FUNCTIONAL | Coverage-guided fuzzing: `nom/` (FormatDuration, formatActivityLabel), `graph/` (DOT/Mermaid escaping + rendering), `d2/` (escape, ParseDirection/NodeShape/ArrowType). Run with `go test -fuzz=Fuzz...` |
 | **Benchmarks**          | FULLY_FUNCTIONAL | `BenchmarkASCIITreeRenderer`, `BenchmarkHTMLRenderer`, `BenchmarkMermaidRenderer`, `BenchmarkDOTRenderer`, `BenchmarkCSVWriter`, `BenchmarkMarkdownTableColored`, `BenchmarkMarkdownTableWithFooter`, `BenchmarkTableCreateRowEdges`, `RenderUnderStepChurn`, `SnapshotActivities_Parallel`, `InlineRenderer_Draw`, `DrawWithChurn` (NOM render-lock contention) |
 | **Integration tests**   | FULLY_FUNCTIONAL | Cross-module tests in `integration/` package. Tests all 16 formats, streaming, tree depth, edge creation, large datasets                                                                                                                                                                                                                                         |
 | **User journey tests**  | FULLY_FUNCTIONAL | End-to-end tests simulating CLI developer workflows in `userjourney_test.go`                                                                                                                                                                                                                                                                                     |
@@ -347,7 +347,9 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 | **ADR 010**                | FULLY_FUNCTIONAL | DAG topology design                                        |
 | **ADR 011**                | FULLY_FUNCTIONAL | Status registry extensibility                              |
 | **ADR 012**                | FULLY_FUNCTIONAL | CQRS streaming + registry rewire decision                  |
-| **RELEASE.md**             | FULLY_FUNCTIONAL | Release process for 18-module mono-version workspace       |
+| **ADR 013**                | FULLY_FUNCTIONAL | Error system design (three-tier model: sentinels + typed structs + wrapping) |
+| **ERROR_SYSTEM.md**        | FULLY_FUNCTIONAL | Consumer-facing error reference (`docs/ERROR_SYSTEM.md`)   |
+| **RELEASE.md**             | FULLY_FUNCTIONAL | Release process for 19-module Pattern B workspace          |
 | **ROADMAP.md**             | FULLY_FUNCTIONAL | Long-term direction and raw ideas                          |
 | **DOMAIN_LANGUAGE.md**     | FULLY_FUNCTIONAL | Domain vocabulary                                          |
 | **FORMAT_ARCHITECTURE.md** | FULLY_FUNCTIONAL | Format architecture documentation                          |
@@ -365,9 +367,9 @@ Complete feature inventory for `go-output` — a Go library providing consistent
 
 ---
 
-**Last audited:** 2026-07-26
-**Total features:** 174
-**Fully functional:** 162
+**Last audited:** 2026-08-04
+**Total features:** ~175 (grows with each release; see tables above for the authoritative inventory)
+**Fully functional:** ~163
 **Partially functional:** 0
 **Removed:** 10 (FormatCategory, OutputFormat, SortBy, FilledStrings, Register, Create, Unregister, RegisteredFormats, IsRegistered, Event accessor interfaces)
 **Known issues:** 0
