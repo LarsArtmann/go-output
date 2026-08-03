@@ -1,7 +1,7 @@
 # Superb Error System for go-output
 
 **Date:** 2026-07-30
-**Status:** Planned — awaiting execution
+**Status:** Done — shipped in v0.36.0 (commits `f4b58e0`–`ed3785d`)
 **Scope:** Root package (`output`) error contract + cross-module consistency
 
 ---
