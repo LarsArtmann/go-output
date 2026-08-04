@@ -35,7 +35,7 @@ jobs:
         run: |
           for mod in . delimited serialization markup d2 graph plantuml escape testhelpers testhelpers/graphtest table markdown tree nom tui bdd integration examples; do
             echo "::group::Test $mod"
-            (cd $mod && go test -v -race -coverprofile=cover.out ./...)
+            (cd $mod && go test -v -race -timeout 120s -coverprofile=cover.out ./...)
             echo "::endgroup::"
           done
 

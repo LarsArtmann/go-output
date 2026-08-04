@@ -8,13 +8,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
-- **tui** — Fix teatest E2E test deadlock in CI: `vtScreenFromBytes` was called inside the `teatest.WaitFor` polling loop, creating 100+ VT emulators under `-race`. Refactored to use ANSI-strip for polling, single VT reconstruction after.
-- **ci** — Pin art-dupl to `@v0.6.0` (v0.6.1 has a broken build). Pin all GitHub Actions to commit SHAs (checkout, setup-go, golangci-lint-action, softprops/action-gh-release) for supply-chain security.
+- **tui** — Fix teatest E2E test deadlock in CI: `teatest.WaitFor` internally calls `io.ReadAll(io.TeeReader(...))` which blocks forever when the test program writes continuously to its output buffer (deadlock surfaces under `-race` at the 10-minute default timeout). Replaced with a new `pollTeatestOutput` helper that uses bounded `var buf [8192]byte` reads with a hard deadline, eliminating the unbounded `io.ReadAll`.
+- **ci** — Fix art-dupl CI installation: the generated file `report_templ.go` was globally gitignored (`*_templ.go` in `~/.config/git/ignore`), so all released versions (v0.5.0–v0.6.1) shipped without it, making `go install @version` fail with undefined symbols. Fixed at the source (art-dupl repo): force-added the generated file, removed the gitignore rule, tagged **v0.6.2**. Pinned CI to `@v0.6.2`.
+- **ci** — Pin all GitHub Actions to commit SHAs (checkout, setup-go, golangci-lint-action, softprops/action-gh-release) for supply-chain security.
 - **go.mod** — Retract v0.34.0 (stale tag drift: sibling dep versions misaligned at tag time, superseded by v0.35.0 same day).
 - **website** — Fix 10 dependabot vulnerabilities (0 remaining): astro v6→v7.1.6 (XSS fixes), starlight v0.39→v0.41, vite v7→v8 (removed stale override), esbuild pinned to 0.28.1, fast-uri 3.1.5, postcss 8.5.25.
 - **tui** — `BubbleTeaProgressReporter.Stop()` now calls `nomSubscriber.Flush()` before the quit signal, ensuring timing-cache data is persisted to disk on clean shutdown.
 - **docs** — Fixed stale ADR reference in AGENTS.md (`ADR 0011` → `ADR 014`) and updated d2 error-system description (sentinels → typed structs).
 - **graph/d2/tree** — Added happy-path `err == nil` tests for `WriteMermaid`, `WriteGraph`, `Write` (d2), and `WriteMarkdown` — closing the last CQRS test coverage gaps. All 14 `WriteXxx` functions now have happy-path coverage.
+- **docs** — Converted 39 historical report annotations from hidden bottom-of-file appendices to visible top-of-file banners (28 markdown files: `> **Resolved:**` blockquotes; 10 HTML files: colored `<div>` banners after `<body>`).
+- **nom** — Fixed lint findings in `tree_render.go` and `tree_root_priority_test.go` (exhaustive switch, makezero, whitespace) from unpushed feature commits.
+- **d2** — Extracted generic `assertWrappedTypedError[T error]` test helper to reduce cognitive complexity in `error_contract_test.go` (48 → under 30).
 
 ### Changed
 
