@@ -81,13 +81,13 @@ type InvalidXxxError struct {
 
 ### d2 package
 
-| Type                          | Fields                                         | Returned By           |
-| ----------------------------- | ---------------------------------------------- | --------------------- |
-| `*InvalidDirectionError`      | `Value string`, `Allowed []Direction`          | `ParseDirection`      |
-| `*InvalidNodeShapeError`      | `Value string`, `Allowed []NodeShape`          | `ParseNodeShape`      |
-| `*InvalidArrowTypeError`      | `Value string`, `Allowed []ArrowType`          | `ParseArrowType`      |
-| `*InvalidConstraintError`     | `Value string`, `Allowed []Constraint`         | `ParseConstraint`     |
-| `*InvalidTextTransformError`  | `Value string`, `Allowed []TextTransform`      | `ParseTextTransform`  |
+| Type                         | Fields                                    | Returned By          |
+| ---------------------------- | ----------------------------------------- | -------------------- |
+| `*InvalidDirectionError`     | `Value string`, `Allowed []Direction`     | `ParseDirection`     |
+| `*InvalidNodeShapeError`     | `Value string`, `Allowed []NodeShape`     | `ParseNodeShape`     |
+| `*InvalidArrowTypeError`     | `Value string`, `Allowed []ArrowType`     | `ParseArrowType`     |
+| `*InvalidConstraintError`    | `Value string`, `Allowed []Constraint`    | `ParseConstraint`    |
+| `*InvalidTextTransformError` | `Value string`, `Allowed []TextTransform` | `ParseTextTransform` |
 
 ### nom package
 

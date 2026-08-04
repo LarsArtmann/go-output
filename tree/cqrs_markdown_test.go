@@ -82,6 +82,7 @@ func TestCQRS_WriteMarkdown_HappyPath(t *testing.T) {
 	root := output.NewTreeNode("root", "Root")
 	child1 := output.NewTreeNode("c1", "Child 1")
 	child2 := output.NewTreeNode("c2", "Child 2")
+
 	root.AddChild(child1)
 	root.AddChild(child2)
 
