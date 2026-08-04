@@ -3,12 +3,18 @@ package nom
 import (
 	"fmt"
 	"image/color"
+	"sort"
 	"strings"
 	"time"
 
 	"charm.land/lipgloss/v2"
 	"github.com/charmbracelet/x/ansi"
 )
+
+// minChildrenForPartialCollapse is the minimum number of children a phase must
+// have before the partial-collapse-under-pressure logic kicks in. Phases with
+// fewer children are always expanded — they fit comfortably in any viewport.
+const minChildrenForPartialCollapse = 4
 
 // RenderWithSnapshots generates the tree rendering using immutable activity
 // snapshots instead of reading the shared *Activity pointer. This is the
@@ -65,7 +71,9 @@ func (dt *DependencyTree) collectVisibleNodes(
 
 	var visible []VisibleEntry
 
-	for _, root := range dt.roots {
+	sortedRoots := dt.sortRootsByPriority(dt.roots, snapshots, criticalPath)
+
+	for _, root := range sortedRoots {
 		dt.walkSubtree(root, "", true, true, &visible, snapshots, maxHeight, criticalPath)
 
 		if len(visible) >= maxHeight {
@@ -74,6 +82,32 @@ func (dt *DependencyTree) collectVisibleNodes(
 	}
 
 	return visible
+}
+
+// sortRootsByPriority sorts root nodes by display priority using the same
+// sortKey logic as childPriority: failed > running > pending > completed,
+// with longer-elapsed steps surfacing first within each status group. This
+// ensures running steps are always at the top of the tree and visible even
+// when many completed roots would otherwise consume the viewport budget.
+func (dt *DependencyTree) sortRootsByPriority(
+	roots []*ActivityNode,
+	snapshots map[ActivityID]ActivitySnapshot,
+	criticalPath map[ActivityID]bool,
+) []*ActivityNode {
+	if len(roots) <= 1 {
+		return roots
+	}
+
+	sorted := make([]*ActivityNode, len(roots))
+	copy(sorted, roots)
+
+	sort.SliceStable(sorted, func(i, j int) bool {
+		ki := sortKeyForNode(sorted[i], snapshots, criticalPath)
+		kj := sortKeyForNode(sorted[j], snapshots, criticalPath)
+		return ki.less(kj)
+	})
+
+	return sorted
 }
 
 func (dt *DependencyTree) elideCompletedUnderPressure(
@@ -147,6 +181,23 @@ func (dt *DependencyTree) walkSubtree( //nolint:cyclop // DFS traversal with pha
 	snap := lookupSnapshot(snapshots, node.ID)
 	if snap.IsPhase() && dt.collapseCompletedPhases && len(node.Children) > 0 {
 		if pc, ok := computePhaseCounts(snapshots, node.Children); ok {
+			(*visible)[len(*visible)-1].PhaseCounts = &pc
+			return
+		}
+	}
+
+	// Partial phase collapse under height pressure: when a phase has
+	// running/pending children but the remaining viewport can't fit them all,
+	// show a summary line with progress counts instead of expanding every
+	// child. This prevents one large fan-out phase (e.g. golangci-lint with
+	// 30 modules) from monopolizing the viewport, keeping other concurrent
+	// work visible. Independent of collapseCompletedPhases — driven purely
+	// by viewport pressure.
+	if snap.IsPhase() && len(node.Children) >= minChildrenForPartialCollapse {
+		remaining := maxHeight - len(*visible)
+		nonTerminal := countNonTerminalChildren(snapshots, node.Children)
+		if nonTerminal > remaining {
+			pc := computePartialPhaseCounts(snapshots, node.Children)
 			(*visible)[len(*visible)-1].PhaseCounts = &pc
 			return
 		}
@@ -417,18 +468,80 @@ func computePhaseCounts(snapshots map[ActivityID]ActivitySnapshot, children []*A
 	return pc, true
 }
 
-// formatCollapsedPhaseLabel builds the display string for a collapsed phase:
-// "◈ Code Formatting  6/6 · 4.1s". Uses the phase symbol and phase color,
-// or the failed color if any children failed.
-func formatCollapsedPhaseLabel(snap ActivitySnapshot, pc PhaseCounts, theme Theme) (display string, c color.Color) {
-	symbol := SymbolPhase
-	c = theme.Colors.Phase
+// computePartialPhaseCounts computes aggregate counts for a phase's children
+// regardless of their status. Unlike computePhaseCounts, this includes running
+// and pending children — used for partial collapse under viewport pressure.
+func computePartialPhaseCounts(
+	snapshots map[ActivityID]ActivitySnapshot,
+	children []*ActivityNode,
+) PhaseCounts {
+	var pc PhaseCounts
 
-	if pc.Failed > 0 {
-		c = theme.Colors.Failed
+	for _, child := range children {
+		snap := lookupSnapshot(snapshots, child.ID)
+
+		switch snap.Status {
+		case ActivityStatusCompleted:
+			pc.Completed++
+		case ActivityStatusFailed:
+			pc.Failed++
+		case ActivityStatusRunning:
+			pc.Running++
+		default:
+			pc.Pending++
+		}
+
+		if snap.CurrentElapsed > pc.MaxElapsed {
+			pc.MaxElapsed = snap.CurrentElapsed
+		}
 	}
 
-	display = fmt.Sprintf("%s %s  %d/%d", symbol, snap.Label, pc.Completed, pc.Total())
+	return pc
+}
+
+// countNonTerminalChildren returns how many children are running or pending.
+func countNonTerminalChildren(
+	snapshots map[ActivityID]ActivitySnapshot,
+	children []*ActivityNode,
+) int {
+	count := 0
+
+	for _, child := range children {
+		snap := lookupSnapshot(snapshots, child.ID)
+		if snap.Status != ActivityStatusCompleted && snap.Status != ActivityStatusFailed {
+			count++
+		}
+	}
+
+	return count
+}
+
+// formatCollapsedPhaseLabel builds the display string for a collapsed phase.
+// For fully terminal phases: "◈ Code Formatting  6/6 · 4.1s".
+// For partially running phases (viewport pressure collapse):
+// "⏵ golangci-lint  15/30 · 12.3s" — shows progress while indicating work
+// is still in flight.
+func formatCollapsedPhaseLabel(snap ActivitySnapshot, pc PhaseCounts, theme Theme) (display string, c color.Color) {
+	if pc.IsPartial() {
+		symbol := SymbolRunning
+		c = theme.Colors.Running
+
+		if pc.Failed > 0 {
+			c = theme.Colors.Failed
+		}
+
+		done := pc.Completed + pc.Failed
+		display = fmt.Sprintf("%s %s  %d/%d", symbol, snap.Label, done, pc.Total())
+	} else {
+		symbol := SymbolPhase
+		c = theme.Colors.Phase
+
+		if pc.Failed > 0 {
+			c = theme.Colors.Failed
+		}
+
+		display = fmt.Sprintf("%s %s  %d/%d", symbol, snap.Label, pc.Completed, pc.Total())
+	}
 
 	if pc.MaxElapsed > 0 {
 		display += " · " + FormatDuration(pc.MaxElapsed)
@@ -592,11 +705,22 @@ type VisibleEntry struct {
 type PhaseCounts struct {
 	Completed  int
 	Failed     int
+	Running    int
+	Pending    int
 	MaxElapsed time.Duration
 }
 
 // Total returns the total number of children accounted for.
-func (pc PhaseCounts) Total() int { return pc.Completed + pc.Failed }
+func (pc PhaseCounts) Total() int {
+	return pc.Completed + pc.Failed + pc.Running + pc.Pending
+}
+
+// IsPartial returns true when the phase still has running or pending children,
+// meaning the collapse was triggered by viewport pressure rather than all
+// children reaching terminal state.
+func (pc PhaseCounts) IsPartial() bool {
+	return pc.Running > 0 || pc.Pending > 0
+}
 
 // ContainsNode reports whether this visible entry represents the given activity
 // ID. It checks real nodes, collapsed phase entries, and layered-mode rows.
