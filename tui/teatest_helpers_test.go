@@ -47,18 +47,23 @@ func newTeatestModel(t *testing.T, width, height int) *teatest.TestModel {
 
 	t.Cleanup(func() {
 		_ = tm.Quit()
+		tm.WaitFinished(t, teatest.WithFinalTimeout(3*time.Second))
 	})
 
 	return tm
 }
 
 // waitForVisible polls teatest output (ANSI-stripped) until it contains substr.
+// Uses pollTeatestOutput (bounded reads) instead of teatest.WaitFor because
+// teatest.WaitFor internally calls io.ReadAll, which blocks indefinitely when
+// the program writes continuously (the tick loop never lets the buffer go empty
+// long enough for io.ReadAll to see EOF). Under -race this deadlock is reliable.
 func waitForVisible(t *testing.T, tm *teatest.TestModel, substr string) {
 	t.Helper()
 
-	teatest.WaitFor(t, tm.Output(), func(bts []byte) bool {
-		return strings.Contains(ansi.Strip(string(bts)), substr)
-	}, teatest.WithDuration(3*time.Second), teatest.WithCheckInterval(20*time.Millisecond))
+	pollTeatestOutput(t, tm, func(b []byte) bool {
+		return strings.Contains(ansi.Strip(string(b)), substr)
+	}, 3*time.Second)
 }
 
 // --- F24: Program starts, renders NOM content through the real loop ---
