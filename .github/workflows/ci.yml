@@ -119,7 +119,7 @@ jobs:
           cache: true
 
       - name: Install art-dupl
-        run: go install github.com/LarsArtmann/art-dupl/cmd/art-dupl@v0.6.0
+        run: go install github.com/LarsArtmann/art-dupl/cmd/art-dupl@v0.6.2
 
       - name: Check for harmful code duplication
         run: |
