@@ -44,21 +44,29 @@ func vtScreenFromBytes(raw []byte, width, height int) (string, error) {
 // keeping the deadline check live.
 func pollTeatestOutput(t *testing.T, tm *teatest.TestModel, cond func([]byte) bool, timeout time.Duration) []byte {
 	t.Helper()
+
 	out := tm.Output()
 	deadline := time.Now().Add(timeout)
+
 	var accumulated []byte
+
+	var buf [8192]byte //nolint:mnd
+
 	for time.Now().Before(deadline) {
-		chunk := make([]byte, 8192) //nolint:mnd
-		n, _ := out.Read(chunk)     // empty buffer returns (0, io.EOF) — non-blocking
+		n, _ := out.Read(buf[:]) // empty buffer returns (0, io.EOF) — non-blocking
 		if n > 0 {
-			accumulated = append(accumulated, chunk[:n]...)
+			accumulated = append(accumulated, buf[:n]...)
 		}
+
 		if cond(accumulated) {
 			return accumulated
 		}
+
 		time.Sleep(50 * time.Millisecond) //nolint:mnd
 	}
+
 	t.Fatalf("teatest output condition not met after %s\nLast output:\n%s", timeout, string(accumulated))
+
 	return accumulated
 }
 
