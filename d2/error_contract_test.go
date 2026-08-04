@@ -7,128 +7,114 @@ import (
 	"testing"
 )
 
+// assertWrappedTypedError wraps a parse error and asserts errors.AsType extracts
+// the expected typed error through fmt.Errorf wrapping. Extracted as a generic
+// helper so the test function's cognitive complexity stays low.
+func assertWrappedTypedError[T error](
+	t *testing.T,
+	name string,
+	parseErr func() error,
+	wrapCtx string,
+	checkExtracted func(t *testing.T, extracted T),
+) {
+	t.Helper()
+
+	t.Run(name, func(t *testing.T) {
+		t.Parallel()
+
+		err := parseErr()
+		if err == nil {
+			t.Fatal("expected error")
+		}
+
+		wrapped := fmt.Errorf("%s: %w", wrapCtx, err)
+
+		extracted, ok := errors.AsType[T](wrapped)
+		if !ok {
+			t.Fatalf("errors.AsType failed; err=%v", wrapped)
+		}
+
+		checkExtracted(t, extracted)
+	})
+}
+
 func TestTypedErrors_AsType_ThroughWrapping(t *testing.T) {
 	t.Parallel()
 
-	t.Run("InvalidDirectionError from ParseDirection", func(t *testing.T) {
-		t.Parallel()
+	assertWrappedTypedError[*InvalidDirectionError](t,
+		"InvalidDirectionError from ParseDirection",
+		func() error { _, err := ParseDirection("bogus"); return err },
+		"diagram config",
+		func(t *testing.T, e *InvalidDirectionError) {
+			if e.Value != "bogus" {
+				t.Errorf("Value = %q, want %q", e.Value, "bogus")
+			}
 
-		_, err := ParseDirection("bogus")
-		if err == nil {
-			t.Fatal("expected error from ParseDirection")
-		}
+			if len(e.Allowed) != len(directionValues) {
+				t.Errorf("Allowed length = %d, want %d", len(e.Allowed), len(directionValues))
+			}
+		},
+	)
 
-		wrapped := fmt.Errorf("diagram config: %w", err)
+	assertWrappedTypedError[*InvalidNodeShapeError](t,
+		"InvalidNodeShapeError from ParseNodeShape",
+		func() error { _, err := ParseNodeShape("bogus"); return err },
+		"node config",
+		func(t *testing.T, e *InvalidNodeShapeError) {
+			if e.Value != "bogus" {
+				t.Errorf("Value = %q, want %q", e.Value, "bogus")
+			}
 
-		extracted, ok := errors.AsType[*InvalidDirectionError](wrapped)
-		if !ok {
-			t.Fatalf("errors.AsType[*InvalidDirectionError] failed; err=%v", wrapped)
-		}
+			if len(e.Allowed) != len(nodeShapeValues) {
+				t.Errorf("Allowed length = %d, want %d", len(e.Allowed), len(nodeShapeValues))
+			}
+		},
+	)
 
-		if extracted.Value != "bogus" {
-			t.Errorf("Value = %q, want %q", extracted.Value, "bogus")
-		}
+	assertWrappedTypedError[*InvalidArrowTypeError](t,
+		"InvalidArrowTypeError from ParseArrowType",
+		func() error { _, err := ParseArrowType("bogus"); return err },
+		"edge config",
+		func(t *testing.T, e *InvalidArrowTypeError) {
+			if e.Value != "bogus" {
+				t.Errorf("Value = %q, want %q", e.Value, "bogus")
+			}
 
-		if len(extracted.Allowed) != len(directionValues) {
-			t.Errorf("Allowed length = %d, want %d", len(extracted.Allowed), len(directionValues))
-		}
-	})
+			if len(e.Allowed) != len(arrowTypeValues) {
+				t.Errorf("Allowed length = %d, want %d", len(e.Allowed), len(arrowTypeValues))
+			}
+		},
+	)
 
-	t.Run("InvalidNodeShapeError from ParseNodeShape", func(t *testing.T) {
-		t.Parallel()
+	assertWrappedTypedError[*InvalidConstraintError](t,
+		"InvalidConstraintError from ParseConstraint",
+		func() error { _, err := ParseConstraint("bogus"); return err },
+		"layout constraint",
+		func(t *testing.T, e *InvalidConstraintError) {
+			if e.Value != "bogus" {
+				t.Errorf("Value = %q, want %q", e.Value, "bogus")
+			}
 
-		_, err := ParseNodeShape("bogus")
-		if err == nil {
-			t.Fatal("expected error from ParseNodeShape")
-		}
+			if len(e.Allowed) != len(allConstraints) {
+				t.Errorf("Allowed length = %d, want %d", len(e.Allowed), len(allConstraints))
+			}
+		},
+	)
 
-		wrapped := fmt.Errorf("node config: %w", err)
+	assertWrappedTypedError[*InvalidTextTransformError](t,
+		"InvalidTextTransformError from ParseTextTransform",
+		func() error { _, err := ParseTextTransform("bogus"); return err },
+		"label style",
+		func(t *testing.T, e *InvalidTextTransformError) {
+			if e.Value != "bogus" {
+				t.Errorf("Value = %q, want %q", e.Value, "bogus")
+			}
 
-		extracted, ok := errors.AsType[*InvalidNodeShapeError](wrapped)
-		if !ok {
-			t.Fatalf("errors.AsType[*InvalidNodeShapeError] failed; err=%v", wrapped)
-		}
-
-		if extracted.Value != "bogus" {
-			t.Errorf("Value = %q, want %q", extracted.Value, "bogus")
-		}
-
-		if len(extracted.Allowed) != len(nodeShapeValues) {
-			t.Errorf("Allowed length = %d, want %d", len(extracted.Allowed), len(nodeShapeValues))
-		}
-	})
-
-	t.Run("InvalidArrowTypeError from ParseArrowType", func(t *testing.T) {
-		t.Parallel()
-
-		_, err := ParseArrowType("bogus")
-		if err == nil {
-			t.Fatal("expected error from ParseArrowType")
-		}
-
-		wrapped := fmt.Errorf("edge config: %w", err)
-
-		extracted, ok := errors.AsType[*InvalidArrowTypeError](wrapped)
-		if !ok {
-			t.Fatalf("errors.AsType[*InvalidArrowTypeError] failed; err=%v", wrapped)
-		}
-
-		if extracted.Value != "bogus" {
-			t.Errorf("Value = %q, want %q", extracted.Value, "bogus")
-		}
-
-		if len(extracted.Allowed) != len(arrowTypeValues) {
-			t.Errorf("Allowed length = %d, want %d", len(extracted.Allowed), len(arrowTypeValues))
-		}
-	})
-
-	t.Run("InvalidConstraintError from ParseConstraint", func(t *testing.T) {
-		t.Parallel()
-
-		_, err := ParseConstraint("bogus")
-		if err == nil {
-			t.Fatal("expected error from ParseConstraint")
-		}
-
-		wrapped := fmt.Errorf("layout constraint: %w", err)
-
-		extracted, ok := errors.AsType[*InvalidConstraintError](wrapped)
-		if !ok {
-			t.Fatalf("errors.AsType[*InvalidConstraintError] failed; err=%v", wrapped)
-		}
-
-		if extracted.Value != "bogus" {
-			t.Errorf("Value = %q, want %q", extracted.Value, "bogus")
-		}
-
-		if len(extracted.Allowed) != len(allConstraints) {
-			t.Errorf("Allowed length = %d, want %d", len(extracted.Allowed), len(allConstraints))
-		}
-	})
-
-	t.Run("InvalidTextTransformError from ParseTextTransform", func(t *testing.T) {
-		t.Parallel()
-
-		_, err := ParseTextTransform("bogus")
-		if err == nil {
-			t.Fatal("expected error from ParseTextTransform")
-		}
-
-		wrapped := fmt.Errorf("label style: %w", err)
-
-		extracted, ok := errors.AsType[*InvalidTextTransformError](wrapped)
-		if !ok {
-			t.Fatalf("errors.AsType[*InvalidTextTransformError] failed; err=%v", wrapped)
-		}
-
-		if extracted.Value != "bogus" {
-			t.Errorf("Value = %q, want %q", extracted.Value, "bogus")
-		}
-
-		if len(extracted.Allowed) != len(textTransformValues) {
-			t.Errorf("Allowed length = %d, want %d", len(extracted.Allowed), len(textTransformValues))
-		}
-	})
+			if len(e.Allowed) != len(textTransformValues) {
+				t.Errorf("Allowed length = %d, want %d", len(e.Allowed), len(textTransformValues))
+			}
+		},
+	)
 
 	t.Run("typed errors are distinct", func(t *testing.T) {
 		t.Parallel()
