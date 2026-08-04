@@ -6,6 +6,13 @@
 
 ---
 
+
+> **✅ Resolved (2026-08-04):**
+>
+> Bogus tags `v0.32.1` and `v0.33.0` are retracted in `go.mod` (poison the proxy cache) and deleted from origin. The `TestBrandedIDFormat` fix was confirmed correct — `go-branded-id` v0.3.3 changed the `%#v` representation, and go-output's production code never parses brand prefixes (uses branded IDs only for compile-time type safety). Consumer repos were repinned in v0.34.0/v0.35.0. The root-cause question (what process created the bogus tags?) remains **unanswered** (TODO_LIST item 4).
+
+---
+
 ## TL;DR — What happened this session
 
 1. User asked "What is the v0.33 release?" → I discovered `v0.33.0` and `v0.32.1` tags both pointed at stale commit `194441b` (June 12, "chore: prepare v0.9.0 release"), not at real release commits.
@@ -217,8 +224,3 @@ Sorted roughly by **impact × urgency**. The top ones are cleanup from THIS sess
 
 **Overall grade for this session: C+.** I diagnosed the real problem correctly and executed the deletion cleanly, but I broke dependents in the wrong order and papered over a test I didn't understand. Fixing both is straightforward once you answer the three questions.
 
----
-
-## Resolution (2026-08-04)
-
-Bogus tags `v0.32.1` and `v0.33.0` are retracted in `go.mod` (poison the proxy cache) and deleted from origin. The `TestBrandedIDFormat` fix was confirmed correct — `go-branded-id` v0.3.3 changed the `%#v` representation, and go-output's production code never parses brand prefixes (uses branded IDs only for compile-time type safety). Consumer repos were repinned in v0.34.0/v0.35.0. The root-cause question (what process created the bogus tags?) remains **unanswered** (TODO_LIST item 4).

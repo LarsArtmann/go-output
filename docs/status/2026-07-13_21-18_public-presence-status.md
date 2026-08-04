@@ -6,6 +6,13 @@ Goal: make the three public-facing surfaces (README.md, website, GitHub metadata
 
 ---
 
+
+> **✅ Resolved (2026-08-04):**
+>
+> The pointer dereference bug was superseded — GraphBuilder changed to fluent chain API in v0.31.0 (`NewGraphBuilder()` returns `*GraphBuilder`, `AddNode`/`AddEdge` return `*GraphBuilder`). The old `*output.NewGraphNode(...)` pattern no longer applies. Website deployed at `go-output.lars.software`. Remaining open items are in TODO_LIST (v1.0.0 tag #15, community launch #14).
+
+---
+
 ## a) FULLY DONE
 
 ### 1. GitHub Metadata
@@ -307,8 +314,3 @@ I set the homepage URL to `https://go-output.lars.software` in both GitHub and t
 | README          | Touched     | 4/10     | Only 3 edits, no deep improvement              |
 | **Overall**     | **Partial** | **6/10** | **Correctness issues in public code examples** |
 
----
-
-## Resolution (2026-08-04)
-
-The pointer dereference bug was superseded — GraphBuilder changed to fluent chain API in v0.31.0 (`NewGraphBuilder()` returns `*GraphBuilder`, `AddNode`/`AddEdge` return `*GraphBuilder`). The old `*output.NewGraphNode(...)` pattern no longer applies. Website deployed at `go-output.lars.software`. Remaining open items are in TODO_LIST (v1.0.0 tag #15, community launch #14).

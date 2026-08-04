@@ -63,6 +63,7 @@ func TestCollectVisibleNodes_RunningRootsVisibleWithManyCompleted(t *testing.T) 
 	dt.AddActivity(ActivityID("z-running"), nil)
 
 	snaps := newSnapshotBuilder()
+
 	for i := range 20 {
 		id := ActivityID(string(rune('a' + i)))
 		snaps.set(id, string(id), ActivityStatusCompleted, 1*time.Second)
@@ -86,8 +87,7 @@ func TestCollectVisibleNodes_RunningRootsVisibleWithManyCompleted(t *testing.T) 
 	}
 
 	if !foundRunning {
-		t.Errorf("running root 'z-running' must be visible in viewport of 5 even with 20 completed roots; visible IDs: %v",
-			visibleNodeIDs(visible))
+		t.Errorf("root 'z-running' not visible with 20 completed roots; IDs: %v", visibleNodeIDs(visible))
 	}
 }
 
@@ -109,6 +109,7 @@ func TestWalkSubtree_PartialPhaseCollapseUnderPressure(t *testing.T) {
 
 	for i := range 10 {
 		childID := ActivityID("golangci-lint [mod" + string(rune('0'+i)) + "]")
+
 		status := ActivityStatusCompleted
 		if i >= 5 {
 			status = ActivityStatusRunning

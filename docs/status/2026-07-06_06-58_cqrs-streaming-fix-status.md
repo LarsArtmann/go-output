@@ -7,6 +7,13 @@
 
 ---
 
+
+> **✅ Resolved (2026-08-04):**
+>
+> Golden-file tests for CQRS streaming output added in session 09:52. Registry dispatch rewired to CQRS streaming functions (byte-for-byte identical output proven by `TestCQRS_StreamVsRegistry_JSON/CSV`). TableToGraph refactored to functional options. graph.WriteDOT writes directly from Graph. v0.30.0 tagged. HTML/AsciiDoc still buffer (no streaming writer exists — documented).
+
+---
+
 ## A. FULLY DONE ✓
 
 ### CQRS Streaming Architecture (All 7 Formats)
@@ -250,8 +257,3 @@ The rewire is cleaner, faster, and uses less memory. BUT: the output may differ 
 - `ade1816` — Streaming refactoring: all WriteXxx now use encoders directly
 - `375f353` — table/ CQRS, integration tests, benchmarks, doc fixes, AddRows, CHANGELOG cleanup
 
----
-
-## Resolution (2026-08-04)
-
-Golden-file tests for CQRS streaming output added in session 09:52. Registry dispatch rewired to CQRS streaming functions (byte-for-byte identical output proven by `TestCQRS_StreamVsRegistry_JSON/CSV`). TableToGraph refactored to functional options. graph.WriteDOT writes directly from Graph. v0.30.0 tagged. HTML/AsciiDoc still buffer (no streaming writer exists — documented).

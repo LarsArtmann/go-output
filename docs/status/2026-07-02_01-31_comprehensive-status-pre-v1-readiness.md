@@ -7,6 +7,13 @@
 
 ---
 
+
+> **✅ Resolved (2026-08-04):**
+>
+> All testing gaps closed. Color-on VT test added. Golden tests added for graph, d2, plantuml, serialization, markup. `SemanticColors.Info` → `.Fallback` rename done (v0.30.0). CHANGELOG entries written. The only genuinely open items: v1.0.0 tag (TODO_LIST #15) and community launch (TODO_LIST #14).
+
+---
+
 ## Executive Summary
 
 18-module Go library for CLI output formatting (16 formats × 3 shapes) and NOM-style real-time progress visualization. **Everything is green: 795 tests, 49 benchmarks, 0 lint issues, 0 vulnerabilities, 0 skipped tests, 0 race conditions, 0 gopls warnings.** The project is v1.0.0-ready by every objective measure — API frozen (ADR 006), all ADRs implemented, 173 features fully functional.
@@ -219,8 +226,3 @@ nix run .#lint       → 18/18 modules 0 issues
 
 _Generated 2026-07-02 01:31 · All metrics verified against source code · 18 modules, 795 tests, 0 issues_
 
----
-
-## Resolution (2026-08-04)
-
-All testing gaps closed. Color-on VT test added. Golden tests added for graph, d2, plantuml, serialization, markup. `SemanticColors.Info` → `.Fallback` rename done (v0.30.0). CHANGELOG entries written. The only genuinely open items: v1.0.0 tag (TODO_LIST #15) and community launch (TODO_LIST #14).

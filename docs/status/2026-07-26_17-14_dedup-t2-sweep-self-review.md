@@ -6,6 +6,13 @@
 
 ---
 
+
+> **✅ Resolved (2026-08-04):**
+>
+> All 3 critical items completed in the 17:26 follow-up session: ADR 005 annotated as out-of-date, CHANGELOG entry added, `serialization.renderUnknown` pattern bullet added to AGENTS.md. Benchmarks modernized to `b.Loop()`, dead `stripOutput` deleted. The dedup baseline is at t=4 = 0 (production gate clean).
+
+---
+
 ## Executive Summary
 
 Ran a strict type-aware `art-dupl -t 2` audit, found 18 clone groups, fixed the 2 genuine semantic clones, accepted 16 per ADR 005. All 19 modules pass `nix run .#test` and `nix run .#lint` (0 issues). Production gate `t=4` remains at **0 groups**.
@@ -178,8 +185,3 @@ At session start, `git status` showed 15 modified `go.mod` files (`bdd/`, `d2/`,
 
 **Net:** the dedup work itself is sound and verified. The process around it (dropped instruction, daemon-authored messages, missed docs) is not. Fixing items 1–3 in section (f) would close every gap I created.
 
----
-
-## Resolution (2026-08-04)
-
-All 3 critical items completed in the 17:26 follow-up session: ADR 005 annotated as out-of-date, CHANGELOG entry added, `serialization.renderUnknown` pattern bullet added to AGENTS.md. Benchmarks modernized to `b.Loop()`, dead `stripOutput` deleted. The dedup baseline is at t=4 = 0 (production gate clean).

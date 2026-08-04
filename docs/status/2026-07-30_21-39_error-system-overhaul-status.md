@@ -6,6 +6,13 @@
 
 ---
 
+
+> **✅ Resolved (2026-08-04):**
+>
+> All Phase 1–4 items from the superb-error-system plan shipped in **v0.36.0** (`f4b58e0`–`ed3785d`). CHANGELOG entry written, ADR 013 committed, ERROR_SYSTEM.md created. The `TestBrandedIDFormat` failure was fixed in the v0.34.0 bogus-tag incident session (confirmed correct — `go-branded-id` v0.3.3 changed `%#v` format; production code never parsed brand prefixes). The 245 cross-module erraudit violations are ~90% false positives — documented in AGENTS.md. Still open: d2 sentinel→typed migration (TODO_LIST item 8).
+
+---
+
 ## What Triggered This Session
 
 User ran `erraudit ./...` on root and got 27 violations (16 ERROR, 11 WARNING). Asked how to build a "superb error system." I analyzed the findings, concluded ~90% were false positives, identified the real bugs, planned the fix, executed it, and committed.
@@ -169,8 +176,3 @@ Sorted by impact × urgency.
 
 3. **The erraudit tool reports 245 total violations across all 19 modules — should I investigate every module for real issues, or accept that the false-positive rate is ~90% everywhere?** I only deeply analyzed root (27 violations → 1 real bug). The other modules might have similar 1-in-27 real-issue rates, or they might be 100% false positives. I can't tell without investigating each one.
 
----
-
-## Resolution (2026-08-04)
-
-All Phase 1–4 items from the superb-error-system plan shipped in **v0.36.0** (`f4b58e0`–`ed3785d`). CHANGELOG entry written, ADR 013 committed, ERROR_SYSTEM.md created. The `TestBrandedIDFormat` failure was fixed in the v0.34.0 bogus-tag incident session (confirmed correct — `go-branded-id` v0.3.3 changed `%#v` format; production code never parsed brand prefixes). The 245 cross-module erraudit violations are ~90% false positives — documented in AGENTS.md. Still open: d2 sentinel→typed migration (TODO_LIST item 8).

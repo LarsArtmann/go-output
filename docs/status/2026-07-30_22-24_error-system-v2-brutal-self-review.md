@@ -7,6 +7,13 @@
 
 ---
 
+
+> **✅ Resolved (2026-08-04):**
+>
+> The error system v2 work shipped in **v0.36.0**. `All*` variables exported, typed errors carry `Allowed` fields populated dynamically, ADR 013 + `docs/ERROR_SYSTEM.md` committed. CHANGELOG `[0.36.0]` entry written (`ebb087f`). Planning doc task statuses updated to "Done." Still open: d2 sentinel→typed migration (TODO_LIST item 8), cross-module error integration test (TODO_LIST item 9).
+
+---
+
 ## a) FULLY DONE
 
 1. **Full erraudit sweep** — All 19 modules, both `--type-aware` and `--type-aware --enforce-go-error-family`. 209 violations cataloged, every one classified as false positive for this library's design. Raw output at `/tmp/erraudit-full-sweep.txt`.
@@ -208,8 +215,3 @@ It's exported but unreachable — every `Parse*` function discards it and return
 
 I changed `"invalid graph shape: bad"` to `"invalid node shape: bad (allowed: box, ellipse, ...)"` and `"invalid rank direction: bogus (allowed: TB, LR, BT, RL)"` to `"...(allowed: TB, LR, BT, RL)"` (same text, now dynamic). Error messages are not part of the Go API contract (types + sentinels are). But if any external consumer greps for the old strings... **Safe to keep, or should I add a note to CHANGELOG?**
 
----
-
-## Resolution (2026-08-04)
-
-The error system v2 work shipped in **v0.36.0**. `All*` variables exported, typed errors carry `Allowed` fields populated dynamically, ADR 013 + `docs/ERROR_SYSTEM.md` committed. CHANGELOG `[0.36.0]` entry written (`ebb087f`). Planning doc task statuses updated to "Done." Still open: d2 sentinel→typed migration (TODO_LIST item 8), cross-module error integration test (TODO_LIST item 9).

@@ -7,6 +7,13 @@
 
 ---
 
+
+> **✅ Resolved (2026-08-04):**
+>
+> All 65 planned tasks shipped. The `Info → Fallback` rename was accepted (option A); old deprecated names (`NOMStyleSubscriber`, `msgNoActivitiesToDisplay`) were fully deleted in v0.30.0. `msgNoActivitiesToDisplay` alias cleaned up (#24 done). The 56 changed files were committed across subsequent v0.30.0 sessions. Remaining follow-up: `Flush()` in TUI shutdown path (TODO_LIST item 13).
+
+---
+
 ## Verification Summary (ALL GREEN)
 
 | Check                                 | Modules                             | Result                             |
@@ -315,8 +322,3 @@ I chose (A) because v1.0.0 hasn't been tagged and this is the right time for bre
 | Race detector          | Clean                                         |
 | Govulncheck            | 0 vulnerabilities                             |
 
----
-
-## Resolution (2026-08-04)
-
-All 65 planned tasks shipped. The `Info → Fallback` rename was accepted (option A); old deprecated names (`NOMStyleSubscriber`, `msgNoActivitiesToDisplay`) were fully deleted in v0.30.0. `msgNoActivitiesToDisplay` alias cleaned up (#24 done). The 56 changed files were committed across subsequent v0.30.0 sessions. Remaining follow-up: `Flush()` in TUI shutdown path (TODO_LIST item 13).

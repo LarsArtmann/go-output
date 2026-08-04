@@ -6,6 +6,13 @@
 
 ---
 
+
+> **✅ Resolved (2026-08-04):**
+>
+> Dedup work fully closed. t=4 = 0 groups (production gate clean). All 19 modules pass test + lint + race + govulncheck. The 3 living docs (AGENTS.md, CHANGELOG.md, FEATURES.md) were committed. The TUI `acceptedUpdate()` timestamp invariant was further improved in later sessions. The dedup baseline is preserved in AGENTS.md "Dedup workflow" pattern entry.
+
+---
+
 ## Executive Verdict
 
 The session moved the strict audit from **25 to 24 clone groups** and the full continuation from **29 to 24**, while preserving **zero clone groups at the standard `t=4` gate**. The remaining 24 strict groups were reviewed and classified as intentional minimum Go idioms, module-boundary contracts, self-contained examples, test scaffolding, or tiny error-handling patterns where abstraction would make the code worse.
@@ -407,8 +414,3 @@ d2a2ad8 docs(adr): update dedup workflow decision and align TUI model tests
 
 All technical quality gates are green. Operational closure is waiting on instructions about the remaining documentation/report commit and possible history cleanup.
 
----
-
-## Resolution (2026-08-04)
-
-Dedup work fully closed. t=4 = 0 groups (production gate clean). All 19 modules pass test + lint + race + govulncheck. The 3 living docs (AGENTS.md, CHANGELOG.md, FEATURES.md) were committed. The TUI `acceptedUpdate()` timestamp invariant was further improved in later sessions. The dedup baseline is preserved in AGENTS.md "Dedup workflow" pattern entry.

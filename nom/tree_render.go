@@ -98,12 +98,13 @@ func (dt *DependencyTree) sortRootsByPriority(
 		return roots
 	}
 
-	sorted := make([]*ActivityNode, len(roots))
-	copy(sorted, roots)
+	sorted := make([]*ActivityNode, 0, len(roots))
+	sorted = append(sorted, roots...)
 
 	sort.SliceStable(sorted, func(i, j int) bool {
 		ki := sortKeyForNode(sorted[i], snapshots, criticalPath)
 		kj := sortKeyForNode(sorted[j], snapshots, criticalPath)
+
 		return ki.less(kj)
 	})
 
@@ -195,10 +196,12 @@ func (dt *DependencyTree) walkSubtree( //nolint:cyclop // DFS traversal with pha
 	// by viewport pressure.
 	if snap.IsPhase() && len(node.Children) >= minChildrenForPartialCollapse {
 		remaining := maxHeight - len(*visible)
+
 		nonTerminal := countNonTerminalChildren(snapshots, node.Children)
 		if nonTerminal > remaining {
 			pc := computePartialPhaseCounts(snapshots, node.Children)
 			(*visible)[len(*visible)-1].PhaseCounts = &pc
+
 			return
 		}
 	}
@@ -487,6 +490,8 @@ func computePartialPhaseCounts(
 			pc.Failed++
 		case ActivityStatusRunning:
 			pc.Running++
+		case ActivityStatusPending:
+			pc.Pending++
 		default:
 			pc.Pending++
 		}

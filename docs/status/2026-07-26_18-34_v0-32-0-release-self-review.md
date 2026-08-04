@@ -6,6 +6,13 @@
 
 ---
 
+
+> **✅ Resolved (2026-08-04):**
+>
+> v0.32.0 tag-placement defect (tag points at commit referencing v0.31.1) was worked around by v0.34.0 and superseded by v0.35.0 (clean tag == tree == HEAD). The bogus v0.32.1/v0.33.0 tags were retracted in v0.34.0. Dependabot vulnerabilities, GitHub Actions SHA pinning, and release runbook recommendations recur across all later reports and remain in TODO_LIST (items 5–7).
+
+---
+
 ## TL;DR
 
 v0.32.0 was released: 17 tags pushed, GitHub release live, all 19 modules build/test/race green, lint clean. **But the tag points at the wrong commit** and the git history is polluted with 6 auto-git-daemon intermediate commits that should not exist. See section (d).
@@ -216,8 +223,3 @@ Per AGENTS.md this is the documented workaround for the BuildFlow pre-commit hoo
 
 3. **Does the docs website (go-output.lars.software) need a manual redeploy for v0.32.0, or is it auto-triggered by tags/CI?** I didn't touch the website this session and don't know its deploy pipeline trigger.
 
----
-
-## Resolution (2026-08-04)
-
-v0.32.0 tag-placement defect (tag points at commit referencing v0.31.1) was worked around by v0.34.0 and superseded by v0.35.0 (clean tag == tree == HEAD). The bogus v0.32.1/v0.33.0 tags were retracted in v0.34.0. Dependabot vulnerabilities, GitHub Actions SHA pinning, and release runbook recommendations recur across all later reports and remain in TODO_LIST (items 5–7).

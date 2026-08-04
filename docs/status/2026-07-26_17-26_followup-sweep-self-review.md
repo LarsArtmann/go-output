@@ -7,6 +7,13 @@
 
 ---
 
+
+> **✅ Resolved (2026-08-04):**
+>
+> All 7 follow-up items from the 17:14 report are resolved. ADR 005 annotated, CHANGELOG + AGENTS.md entries added, benchmarks modernized, `stripOutput` deleted. The remaining open items (race tests, govulncheck, GitHub Actions SHA pinning) are tracked in TODO_LIST. The daemon commit-hygiene issue remains an ongoing process challenge documented across multiple self-reviews.
+
+---
+
 ## Executive Summary
 
 Executed all 7 follow-up items from the previous self-review: annotated ADR 005 as out-of-date (the dropped user instruction), added CHANGELOG + AGENTS.md entries, modernized 7 benchmark sites to `b.Loop()`, deleted dead `stripOutput`. All 19 modules pass `nix run .#test` + `nix run .#lint` (0 issues).
@@ -217,8 +224,3 @@ The `update-old-docs` skill says to annotate resolved items with `DONE: <hash>;`
 
 **Net:** The technical work is clean and complete — every item from the prior self-review's "should do next" list is done and verified. But I violated my own #1 process improvement ("commit incrementally, don't let the daemon grab your work") within 12 minutes of writing it. The gap between "knowing the lesson" and "executing the lesson" is the real failure here.
 
----
-
-## Resolution (2026-08-04)
-
-All 7 follow-up items from the 17:14 report are resolved. ADR 005 annotated, CHANGELOG + AGENTS.md entries added, benchmarks modernized, `stripOutput` deleted. The remaining open items (race tests, govulncheck, GitHub Actions SHA pinning) are tracked in TODO_LIST. The daemon commit-hygiene issue remains an ongoing process challenge documented across multiple self-reviews.

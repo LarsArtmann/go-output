@@ -6,6 +6,13 @@
 
 ---
 
+
+> **✅ Resolved (2026-08-04):**
+>
+> v0.35.0 remains the clean release before v0.36.0. Open items from this report are tracked in TODO_LIST: retract v0.34.0 (item 3), root-cause bogus-tag creator (item 4), push 7 consumer repos (item 12), GitHub Releases for v0.34.0–v0.36.0 (item 5), dependabot vulnerabilities (item 6), pin GitHub Actions (item 7).
+
+---
+
 ## TL;DR
 
 Released `v0.35.0` on commit `35814f9`. `git diff v0.35.0` is **0 files** — this time the tag equals the tree equals HEAD. 17 tags pushed (root + 16 sub-modules), GitHub Release created with notes. All 11 consumers bumped. Zero bogus refs remain.
@@ -208,8 +215,3 @@ Sorted by **impact × urgency**.
 | ~16:50      | Repinned all consumers to v0.35.0                                                       |
 | 16:52       | This report.                                                                            |
 
----
-
-## Resolution (2026-08-04)
-
-v0.35.0 remains the clean release before v0.36.0. Open items from this report are tracked in TODO_LIST: retract v0.34.0 (item 3), root-cause bogus-tag creator (item 4), push 7 consumer repos (item 12), GitHub Releases for v0.34.0–v0.36.0 (item 5), dependabot vulnerabilities (item 6), pin GitHub Actions (item 7).

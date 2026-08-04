@@ -6,6 +6,13 @@
 
 ---
 
+
+> **✅ Resolved (2026-08-04):**
+>
+> All items resolved. Critical-path ETA (the #1 question: "sum vs critical-path") was answered — both implemented in v0.23.0 (`EstimatedTotalRemaining` for sum, `EstimatedCriticalPathRemaining` for longest path). Reset() clearing, multi-subscriber fan-out tests done. Remaining open: structured progress type, adaptive tree pruning (both in ROADMAP).
+
+---
+
 ## Executive Summary
 
 This session continued the NOM BuildFlow integration work from the 12:33 status report. The previous session shipped four new capabilities (ActivityProgress, ActivityRetrying, SetEstimatedTime, SetEstimatedRemainingFunc). This session closed the top in-repo follow-up items: added retry **reason** display (`⟳2 (timeout)`), built a subscriber-owned `EstimatedTotalRemaining()` primitive that powers `~Xm left` in both renderers, wired the TUI summary bar to consume it automatically, wrote comprehensive concurrency/race tests, and updated all documentation and examples.
@@ -272,8 +279,3 @@ The sum is shipped and working. A critical-path variant can be added as a non-br
 | Report items closed          | 6 of 8 P1/P2 in-repo items (#6, #7, #8, #9, #11, #12)                   |
 | Report items corrected       | 1 (#6 was already done — proved with tests)                             |
 
----
-
-## Resolution (2026-08-04)
-
-All items resolved. Critical-path ETA (the #1 question: "sum vs critical-path") was answered — both implemented in v0.23.0 (`EstimatedTotalRemaining` for sum, `EstimatedCriticalPathRemaining` for longest path). Reset() clearing, multi-subscriber fan-out tests done. Remaining open: structured progress type, adaptive tree pruning (both in ROADMAP).

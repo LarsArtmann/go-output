@@ -6,6 +6,13 @@
 
 ---
 
+
+> **✅ Resolved (2026-08-04):**
+>
+> JSON v2 migration is the established codebase state since v0.30.2. `json.Deterministic(true)` is used on all Marshal/MarshalEncode calls. `GOEXPERIMENT=jsonv2` is set in CI, release workflow, flake devShell, and direnv. `.pre-commit-config.yaml` updated. The `daghtml/dagToJSON` Deterministic fix was applied. The escapeHTML question is moot — `jsontext.EscapeForHTML(true)` is used at encoder construction.
+
+---
+
 ## A) FULLY DONE
 
 1. **6 production compilation errors fixed** — `json.Encoder`, `json.NewEncoder`, `encoder.SetIndent`, `enc.SetEscapeHTML`, `json.MarshalEncode` with wrong encoder type. All resolved with correct v2 API.
@@ -179,8 +186,3 @@ v1's `json.Marshal` escaped `<`, `>`, `&` by default (`SetEscapeHTML(true)`). v2
 
 I checked the obvious paths (daghtml is the only HTML-embedding consumer), but I cannot guarantee there isn't an external consumer (go-workflow-auditlog, samber-do-auditlog) that embeds JSON output in HTML without re-escaping. This needs a human threat model review.
 
----
-
-## Resolution (2026-08-04)
-
-JSON v2 migration is the established codebase state since v0.30.2. `json.Deterministic(true)` is used on all Marshal/MarshalEncode calls. `GOEXPERIMENT=jsonv2` is set in CI, release workflow, flake devShell, and direnv. `.pre-commit-config.yaml` updated. The `daghtml/dagToJSON` Deterministic fix was applied. The escapeHTML question is moot — `jsontext.EscapeForHTML(true)` is used at encoder construction.
