@@ -123,11 +123,12 @@ jobs:
 
       - name: Check for harmful code duplication
         run: |
-          # Threshold t=50: only egregious duplication surfaces.
-          # See ADR 008 for the dedup workflow and accepted patterns.
-          RESULT=$(find . -name '*.go' -not -path './vendor/*' | xargs art-dupl -t 50 2>/dev/null | wc -l)
+          # Threshold t=4: the production dedup gate per ADR 008.
+          # The codebase is documented as clean at t=4 (0 groups).
+          # If new duplication appears, this surfaces it as a warning for review.
+          RESULT=$(find . -name '*.go' -not -path './vendor/*' | xargs art-dupl -t 4 2>/dev/null | wc -l)
           if [ "$RESULT" -gt 0 ]; then
-            echo "::warning::Found $RESULT lines of high-threshold duplication (t=50). Review needed."
+            echo "::warning::Found $RESULT lines of duplication (t=4). Review needed — see ADR 008 for accepted patterns."
           else
-            echo "No harmful duplication detected (t=50 threshold)."
+            echo "No harmful duplication detected (t=4 production gate)."
           fi
