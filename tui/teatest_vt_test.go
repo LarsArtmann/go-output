@@ -36,26 +36,46 @@ func vtScreenFromBytes(raw []byte, width, height int) (string, error) {
 	return strings.Join(result, "\n"), nil
 }
 
+// pollTeatestOutput reads a teatest TestModel's output with bounded reads and a
+// hard deadline, returning the accumulated bytes. teatest.WaitFor uses io.ReadAll
+// which blocks indefinitely when the program writes continuously (the tick loop
+// keeps appending to the output buffer, so io.ReadAll never sees EOF). Bounded
+// reads drain available bytes and return immediately on the empty-buffer EOF,
+// keeping the deadline check live.
+func pollTeatestOutput(t *testing.T, tm *teatest.TestModel, cond func([]byte) bool, timeout time.Duration) []byte {
+	t.Helper()
+	out := tm.Output()
+	deadline := time.Now().Add(timeout)
+	var accumulated []byte
+	for time.Now().Before(deadline) {
+		chunk := make([]byte, 8192) //nolint:mnd
+		n, _ := out.Read(chunk)     // empty buffer returns (0, io.EOF) — non-blocking
+		if n > 0 {
+			accumulated = append(accumulated, chunk[:n]...)
+		}
+		if cond(accumulated) {
+			return accumulated
+		}
+		time.Sleep(50 * time.Millisecond) //nolint:mnd
+	}
+	t.Fatalf("teatest output condition not met after %s\nLast output:\n%s", timeout, string(accumulated))
+	return accumulated
+}
+
 // TestTeatest_VTScreen_ShowsActivityLabels feeds teatest's raw diff output
 // through a VT emulator and asserts that activity labels appear on the
 // reconstructed screen. This is a deeper assertion than ANSI-stripped text —
 // it proves the diff renderer's cursor sequences produce correct screen state.
 //
-// The wait uses ANSI-strip (the proven stable approach) to know when content
-// is ready, capturing the raw bytes during polling. A SINGLE VT reconstruction
-// is done afterward — never inside the polling loop, which created dozens of
-// VT emulators under -race and caused CI deadlocks.
+// Uses bounded polling (pollTeatestOutput) instead of teatest.WaitFor to avoid
+// the io.ReadAll deadlock under -race when the program writes continuously.
 func TestTeatest_VTScreen_ShowsActivityLabels(t *testing.T) {
 	tm := newTeatestModel(t, 100, 30)
 
-	var capturedOutput []byte
-
-	teatest.WaitFor(t, tm.Output(), func(raw []byte) bool {
-		capturedOutput = raw
-
+	capturedOutput := pollTeatestOutput(t, tm, func(raw []byte) bool {
 		return strings.Contains(ansi.Strip(string(raw)), "Build Module") &&
 			strings.Contains(ansi.Strip(string(raw)), "Run Tests")
-	}, teatest.WithDuration(5*time.Second), teatest.WithCheckInterval(50*time.Millisecond))
+	}, 5*time.Second)
 
 	screenSnapshot, err := vtScreenFromBytes(capturedOutput, 100, 30)
 	if err != nil {
