@@ -41,16 +41,6 @@ if shapeErr, ok := errors.AsType[*output.InvalidShapeError](err); ok {
 | `ErrColumnMismatch` | `Table.AddRowChecked`, `Table.Validate` | Row or footer column count doesn't match headers |
 | `ErrNilRow`         | `Table.Validate`                        | A row in `Table.Rows` is nil                     |
 
-### d2 package
-
-| Sentinel                  | Returned By          | Meaning                      |
-| ------------------------- | -------------------- | ---------------------------- |
-| `ErrInvalidDirection`     | `ParseDirection`     | Invalid D2 layout direction  |
-| `ErrInvalidNodeShape`     | `ParseNodeShape`     | Invalid D2 node shape        |
-| `ErrInvalidArrowType`     | `ParseArrowType`     | Invalid D2 arrow type        |
-| `ErrInvalidConstraint`    | `ParseConstraint`    | Invalid D2 layout constraint |
-| `ErrInvalidTextTransform` | `ParseTextTransform` | Invalid D2 text transform    |
-
 ### nom package
 
 | Sentinel           | Returned By            | Meaning                           |
@@ -89,6 +79,16 @@ type InvalidXxxError struct {
 | `*InvalidRankDirError`     | `Value string`, `Allowed []RankDir`     | `ParseRankDir`     |
 | `*InvalidSplineStyleError` | `Value string`, `Allowed []SplineStyle` | `ParseSplineStyle` |
 
+### d2 package
+
+| Type                          | Fields                                         | Returned By           |
+| ----------------------------- | ---------------------------------------------- | --------------------- |
+| `*InvalidDirectionError`      | `Value string`, `Allowed []Direction`          | `ParseDirection`      |
+| `*InvalidNodeShapeError`      | `Value string`, `Allowed []NodeShape`          | `ParseNodeShape`      |
+| `*InvalidArrowTypeError`      | `Value string`, `Allowed []ArrowType`          | `ParseArrowType`      |
+| `*InvalidConstraintError`     | `Value string`, `Allowed []Constraint`         | `ParseConstraint`     |
+| `*InvalidTextTransformError`  | `Value string`, `Allowed []TextTransform`      | `ParseTextTransform`  |
+
 ### nom package
 
 | Type                          | Fields                                     | Returned By           |
@@ -118,13 +118,13 @@ if shapeErr, ok := errors.AsType[*output.InvalidShapeError](err); ok {
 }
 ```
 
-### Matching a d2 sentinel through wrapping
+### Extracting a d2 typed error through wrapping
 
 ```go
 _, err := d2.ParseDirection("sideways")
 wrapped := fmt.Errorf("loading diagram: %w", err)
-if errors.Is(wrapped, d2.ErrInvalidDirection) {
-    // matches through the wrapping chain
+if dirErr, ok := errors.AsType[*d2.InvalidDirectionError](wrapped); ok {
+    log.Printf("got %q, valid options: %v", dirErr.Value, dirErr.Allowed)
 }
 ```
 
