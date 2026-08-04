@@ -5,7 +5,6 @@
 
 ---
 
-
 > **✅ Resolved (2026-08-04):**
 >
 > All go-output-side items done. daghtml included in v0.23.0. AGENTS.md module map updated. CHANGELOG written. daghtml lint clean (0 issues). The samber-do-auditlog completion is external. daghtml is independently publishable (zero-dep).
@@ -188,4 +187,3 @@ The consuming projects currently use real versions for all go-output sub-modules
 | `daghtml_adapter.go` | NEW — Report → DAG converter (untracked)                |
 | `html.templ`         | Replaced 306-line renderGraph with SDK call placeholder |
 | `html.go`            | Added daghtml JS injection via strings.Replace          |
-

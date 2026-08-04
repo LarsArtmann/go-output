@@ -8,7 +8,6 @@
 
 ---
 
-
 > **✅ Resolved (2026-08-04):**
 >
 > Most items resolved. `SemanticColors.Info` → `.Fallback` done (v0.30.0). Golden test gaps for markup/markdown/delimited remain partially open. VT color test for all 4 activity states was added. v1.0.0 tag and community launch still open (TODO_LIST #14–15).
@@ -298,4 +297,3 @@ I recommend **Path A** — the branding is a nice-to-have, not a blocker. The AP
 
 **Total commits since v0.22.0:** 23
 **Total diff:** 83 files changed, +4,799 lines, -48 lines
-

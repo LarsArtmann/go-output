@@ -7,7 +7,6 @@
 
 ---
 
-
 > **✅ Resolved (2026-08-04):**
 >
 > XML registry dispatch rewired to CQRS streaming. Error-path tests added (WriteJSON, WriteYAML, WriteTOML, WriteJSONL). All work committed. v0.30.0 tagged. The old renderer struct split-brain (different output than registry) persists until v0.31.0 deletion plan executes (TODO_LIST — old structs still exist as implementation detail). gopls warnings on projections.go + tree_builder.go resolved.
@@ -285,4 +284,3 @@ New:
 - `serialization/cqrs_golden_test.go` + 4 golden files
 - `delimited/cqrs_golden_test.go` + 2 golden files
 - `docs/adr/012-cqrs-streaming-registry-rewire.md`
-

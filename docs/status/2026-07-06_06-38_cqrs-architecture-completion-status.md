@@ -6,7 +6,6 @@
 
 ---
 
-
 > **✅ Resolved (2026-08-04):**
 >
 > All items resolved in session 06:58. Serialization WriteJSON/WriteYAML now stream via stdlib encoders (no intermediate string). TableBuilder.Build() doc corrected (stopped saying "freeze"). Table CQRS added. The 22 uncommitted files were committed (`a70b46d`, `ade1816`, `375f353`). v0.30.0 tagged. The FrozenTable/FrozenTree question for v1.0.0 remains in ROADMAP.
@@ -240,4 +239,3 @@ The same question applies to `TreeBuilder.Build() → *TreeNode` vs `FrozenTree`
 - `README.md` (+94 lines: CQRS quick-start, migration guide)
 - `CHANGELOG.md` (+18 lines: CQRS section)
 - `AGENTS.md` (+3 pattern entries)
-

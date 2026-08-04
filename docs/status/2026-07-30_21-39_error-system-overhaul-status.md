@@ -6,7 +6,6 @@
 
 ---
 
-
 > **✅ Resolved (2026-08-04):**
 >
 > All Phase 1–4 items from the superb-error-system plan shipped in **v0.36.0** (`f4b58e0`–`ed3785d`). CHANGELOG entry written, ADR 013 committed, ERROR_SYSTEM.md created. The `TestBrandedIDFormat` failure was fixed in the v0.34.0 bogus-tag incident session (confirmed correct — `go-branded-id` v0.3.3 changed `%#v` format; production code never parsed brand prefixes). The 245 cross-module erraudit violations are ~90% false positives — documented in AGENTS.md. Still open: d2 sentinel→typed migration (TODO_LIST item 8).
@@ -175,4 +174,3 @@ Sorted by impact × urgency.
 2. **Should I fix the pre-existing `TestBrandedIDFormat` failure as part of this work?** It blocks `nix run .#test` from reaching sub-modules, but it's unrelated to the error system. Fixing it would unblock full test verification, but it's scope creep. Do you want me to fix it now or leave it?
 
 3. **The erraudit tool reports 245 total violations across all 19 modules — should I investigate every module for real issues, or accept that the false-positive rate is ~90% everywhere?** I only deeply analyzed root (27 violations → 1 real bug). The other modules might have similar 1-in-27 real-issue rates, or they might be 100% false positives. I can't tell without investigating each one.
-

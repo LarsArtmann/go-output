@@ -6,7 +6,6 @@
 
 ---
 
-
 > **✅ Resolved (2026-08-04):**
 >
 > All items resolved. Critical-path ETA (the #1 question: "sum vs critical-path") was answered — both implemented in v0.23.0 (`EstimatedTotalRemaining` for sum, `EstimatedCriticalPathRemaining` for longest path). Reset() clearing, multi-subscriber fan-out tests done. Remaining open: structured progress type, adaptive tree pruning (both in ROADMAP).
@@ -278,4 +277,3 @@ The sum is shipped and working. A critical-path variant can be added as a non-br
 | New event fields             | 2 (`RetryReason` on Activity/Snapshot, `Reason` on ActivityRetrying)    |
 | Report items closed          | 6 of 8 P1/P2 in-repo items (#6, #7, #8, #9, #11, #12)                   |
 | Report items corrected       | 1 (#6 was already done — proved with tests)                             |
-

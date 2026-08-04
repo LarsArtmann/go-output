@@ -6,7 +6,6 @@
 
 ---
 
-
 > **✅ Resolved (2026-08-04):**
 >
 > v0.32.0 tag-placement defect (tag points at commit referencing v0.31.1) was worked around by v0.34.0 and superseded by v0.35.0 (clean tag == tree == HEAD). The bogus v0.32.1/v0.33.0 tags were retracted in v0.34.0. Dependabot vulnerabilities, GitHub Actions SHA pinning, and release runbook recommendations recur across all later reports and remain in TODO_LIST (items 5–7).
@@ -222,4 +221,3 @@ Per AGENTS.md this is the documented workaround for the BuildFlow pre-commit hoo
 2. **Should the auto-git daemon be disabled during release windows, or should I learn to work around it?** It committed 4 intermediate states and one active regression this session. I don't know whether it's intentional (you want continuous commits) or a convenience you'd pause for controlled operations.
 
 3. **Does the docs website (go-output.lars.software) need a manual redeploy for v0.32.0, or is it auto-triggered by tags/CI?** I didn't touch the website this session and don't know its deploy pipeline trigger.
-

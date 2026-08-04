@@ -7,7 +7,6 @@
 
 ---
 
-
 > **✅ Resolved (2026-08-04):**
 >
 > The error system v2 work shipped in **v0.36.0**. `All*` variables exported, typed errors carry `Allowed` fields populated dynamically, ADR 013 + `docs/ERROR_SYSTEM.md` committed. CHANGELOG `[0.36.0]` entry written (`ebb087f`). Planning doc task statuses updated to "Done." Still open: d2 sentinel→typed migration (TODO_LIST item 8), cross-module error integration test (TODO_LIST item 9).
@@ -214,4 +213,3 @@ It's exported but unreachable — every `Parse*` function discards it and return
 ### Q3: Is the error message text change a breaking change worth reverting?
 
 I changed `"invalid graph shape: bad"` to `"invalid node shape: bad (allowed: box, ellipse, ...)"` and `"invalid rank direction: bogus (allowed: TB, LR, BT, RL)"` to `"...(allowed: TB, LR, BT, RL)"` (same text, now dynamic). Error messages are not part of the Go API contract (types + sentinels are). But if any external consumer greps for the old strings... **Safe to keep, or should I add a note to CHANGELOG?**
-

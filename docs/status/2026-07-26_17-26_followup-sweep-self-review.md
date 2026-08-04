@@ -7,7 +7,6 @@
 
 ---
 
-
 > **✅ Resolved (2026-08-04):**
 >
 > All 7 follow-up items from the 17:14 report are resolved. ADR 005 annotated, CHANGELOG + AGENTS.md entries added, benchmarks modernized, `stripOutput` deleted. The remaining open items (race tests, govulncheck, GitHub Actions SHA pinning) are tracked in TODO_LIST. The daemon commit-hygiene issue remains an ongoing process challenge documented across multiple self-reviews.
@@ -223,4 +222,3 @@ The `update-old-docs` skill says to annotate resolved items with `DONE: <hash>;`
 | Process learning      | Good (identified failures)       | **Poor** (didn't apply own lessons)         | ↓                  |
 
 **Net:** The technical work is clean and complete — every item from the prior self-review's "should do next" list is done and verified. But I violated my own #1 process improvement ("commit incrementally, don't let the daemon grab your work") within 12 minutes of writing it. The gap between "knowing the lesson" and "executing the lesson" is the real failure here.
-

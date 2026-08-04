@@ -6,7 +6,6 @@
 
 ---
 
-
 > **✅ Resolved (2026-08-04):**
 >
 > v0.35.0 remains the clean release before v0.36.0. Open items from this report are tracked in TODO_LIST: retract v0.34.0 (item 3), root-cause bogus-tag creator (item 4), push 7 consumer repos (item 12), GitHub Releases for v0.34.0–v0.36.0 (item 5), dependabot vulnerabilities (item 6), pin GitHub Actions (item 7).
@@ -214,4 +213,3 @@ Sorted by **impact × urgency**.
 | ~16:47      | Tagged v0.35.0, **verified `git diff` empty**, pushed, created GitHub Release           |
 | ~16:50      | Repinned all consumers to v0.35.0                                                       |
 | 16:52       | This report.                                                                            |
-

@@ -7,7 +7,6 @@
 
 ---
 
-
 > **✅ Resolved (2026-08-04):**
 >
 > Fixes applied in this and subsequent sessions. FEATURES.md was further updated through v0.36.0 (ADR 013, ADR 014, fuzz test corrections, CQRS entries). TODO_LIST was fully rebuilt in the 2026-08-04 session (removed all "Recently Resolved" sections). DOMAIN_LANGUAGE.md rebuilt. This self-review's findings were the foundation for the current docs-health state.
@@ -269,4 +268,3 @@ I cannot determine the source because I have no visibility into what other proce
 | Code samples verified  | **NOT VERIFIED** (grep only, not compiled)                                 |
 | Full FEATURES.md audit | **NOT DONE** (spot-checked ~10% of rows)                                   |
 | Git commit             | **NOT DONE** (awaiting user instruction)                                   |
-

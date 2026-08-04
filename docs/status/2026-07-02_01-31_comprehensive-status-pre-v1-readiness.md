@@ -7,7 +7,6 @@
 
 ---
 
-
 > **✅ Resolved (2026-08-04):**
 >
 > All testing gaps closed. Color-on VT test added. Golden tests added for graph, d2, plantuml, serialization, markup. `SemanticColors.Info` → `.Fallback` rename done (v0.30.0). CHANGELOG entries written. The only genuinely open items: v1.0.0 tag (TODO_LIST #15) and community launch (TODO_LIST #14).
@@ -225,4 +224,3 @@ nix run .#lint       → 18/18 modules 0 issues
 ---
 
 _Generated 2026-07-02 01:31 · All metrics verified against source code · 18 modules, 795 tests, 0 issues_
-

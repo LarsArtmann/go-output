@@ -6,7 +6,6 @@
 
 ---
 
-
 > **✅ Resolved (2026-08-04):**
 >
 > v0.34.0 was **superseded by v0.35.0** (commit `35814f9`) which includes the 34-file drift and has `git diff v0.35.0` = 0. The go-branded-id v0.4.0 compatibility was validated (same commit as v0.3.3, zero code change). v0.34.0 is NOT yet retracted (TODO_LIST item 3). The bogus-tag root cause remains unanswered (TODO_LIST item 4).
@@ -221,4 +220,3 @@ Sorted by **impact × urgency**.
 | ~14:00           | Final sweep: zero bogus refs. Declared done.                                                                                             |
 | **~14:00–16:41** | **`go-auto-upgrade` drifted go-output's working tree (go-branded-id v0.3.3→v0.4.0 + 34 files). I didn't notice until this self-review.** |
 | 16:41            | This report.                                                                                                                             |
-

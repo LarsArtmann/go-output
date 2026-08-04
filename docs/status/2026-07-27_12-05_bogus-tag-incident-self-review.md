@@ -6,7 +6,6 @@
 
 ---
 
-
 > **✅ Resolved (2026-08-04):**
 >
 > Bogus tags `v0.32.1` and `v0.33.0` are retracted in `go.mod` (poison the proxy cache) and deleted from origin. The `TestBrandedIDFormat` fix was confirmed correct — `go-branded-id` v0.3.3 changed the `%#v` representation, and go-output's production code never parses brand prefixes (uses branded IDs only for compile-time type safety). Consumer repos were repinned in v0.34.0/v0.35.0. The root-cause question (what process created the bogus tags?) remains **unanswered** (TODO_LIST item 4).
@@ -223,4 +222,3 @@ Sorted roughly by **impact × urgency**. The top ones are cleanup from THIS sess
 | How are tests?                 | Green now, but one "fix" is suspect until Q3 is answered                                                 |
 
 **Overall grade for this session: C+.** I diagnosed the real problem correctly and executed the deletion cleanly, but I broke dependents in the wrong order and papered over a test I didn't understand. Fixing both is straightforward once you answer the three questions.
-

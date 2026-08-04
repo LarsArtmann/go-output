@@ -8,7 +8,6 @@
 
 ---
 
-
 > **✅ Resolved (2026-08-04):**
 >
 > The three-tier error system shipped in **v0.36.0**. Sentinels (`ErrColumnMismatch`, `ErrNilRow`) exported, `All*` variables exported, typed errors carry `Allowed` fields, ADR 013 + `docs/ERROR_SYSTEM.md` committed. The erraudit false positives (`context_loss`, `generic_return`, `stdlib_constructor`) are documented in AGENTS.md as intentional — do NOT zero them by following the tool's suggestions. Still open: d2 sentinel→typed migration (TODO_LIST item 8), cross-module error integration test (TODO_LIST item 9).
@@ -169,4 +168,3 @@ The flag produces 14 `stdlib_constructor` violations, all false positives (go-er
 ### Q3: Should I run the full test suite right now to verify this session's changes?
 
 I changed code in 2 nom files (golines line breaks in `Error()` methods). Build and lint pass, but I never ran tests. `cd nom && GOEXPERIMENT=jsonv2 go test ./...` would take ~10 seconds and prove the error messages are unchanged. **Should I do this before we move on, or is the build+lint evidence sufficient given the change was purely whitespace?**
-
