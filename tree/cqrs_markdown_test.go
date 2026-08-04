@@ -76,6 +76,34 @@ func TestCQRS_WriteMarkdown_NilRoot(t *testing.T) {
 	}
 }
 
+func TestCQRS_WriteMarkdown_HappyPath(t *testing.T) {
+	t.Parallel()
+
+	root := output.NewTreeNode("root", "Root")
+	child1 := output.NewTreeNode("c1", "Child 1")
+	child2 := output.NewTreeNode("c2", "Child 2")
+	root.AddChild(child1)
+	root.AddChild(child2)
+
+	var buf strings.Builder
+	if err := WriteMarkdown(&buf, root); err != nil {
+		t.Fatalf("WriteMarkdown should return nil on success, got: %v", err)
+	}
+
+	output := buf.String()
+	if !strings.Contains(output, "- Root") {
+		t.Errorf("expected output to contain '- Root', got %q", output)
+	}
+
+	if !strings.Contains(output, "- Child 1") {
+		t.Errorf("expected output to contain '- Child 1', got %q", output)
+	}
+
+	if !strings.Contains(output, "- Child 2") {
+		t.Errorf("expected output to contain '- Child 2', got %q", output)
+	}
+}
+
 func ExampleRenderMarkdown() {
 	root := output.NewTreeNode("build", "Build")
 	compile := output.NewTreeNode("compile", "Compile")

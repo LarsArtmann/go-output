@@ -1,7 +1,7 @@
 # TODO_LIST.md — go-output
 
 **Last updated:** 2026-08-04
-**Open items:** 6
+**Open items:** 2
 **Blocked:** 0
 
 ---
@@ -19,18 +19,13 @@
 | 7   | **Pin GitHub Actions to commit SHAs** — mutable tag refs                | **Fixed.** All actions in ci.yml + release.yml pinned to commit SHAs with `# vN` comments: checkout, setup-go, golangci-lint-action, softprops/action-gh-release.                                                                                                                                                             |
 | 8   | **Migrate d2 module from sentinels to typed error structs**             | **Fixed.** Replaced 5 sentinel errors with typed structs (`InvalidDirectionError`, `InvalidNodeShapeError`, `InvalidArrowTypeError`, `InvalidConstraintError`, `InvalidTextTransformError`) following the root/graph pattern. Added `AllDirections()`, `AllNodeShapes()`, `AllArrowTypes()`, `AllTextTransforms()` functions. |
 | 9   | **Add cross-module error integration test**                             | **Fixed.** Added `integration/cross_module_error_test.go` with 5 test groups: root sentinels via `errors.Is`, root typed errors via `errors.AsType`, sub-module typed errors (d2+graph), error distinctness, and deep wrapping preservation.                                                                                  |
+| 10  | **Fix ADR numbering collision**                                         | **Fixed.** ADR file was already renamed `0011-api-stability-tiers.md` → `0014-api-stability-tiers.md` in a prior session. Fixed remaining stale reference in AGENTS.md (`ADR 0011` → `ADR 014`) and updated the d2 error-system description (sentinels → typed structs).                                                       |
+| 11  | **Add happy-path tests for all CQRS `WriteXxx` functions**              | **Fixed.** Added `TestWriteMermaid_PureFunction` (graph), `TestWriteGraph_HappyPath` + `TestWrite_HappyPath` (d2), and `TestCQRS_WriteMarkdown_HappyPath` (tree). All 14 CQRS WriteXxx functions now have happy-path `err == nil` coverage.                                                                                    |
+| 12  | **Add `Flush()` call to TUI shutdown path**                             | **Fixed.** `BubbleTeaProgressReporter.Stop()` now calls `nomSubscriber.Flush()` after the 100% progress update and before the quit signal, ensuring timing-cache data is persisted to disk on clean shutdown. Added `TestBubbleTeaProgressReporter_Stop_FlushesTimingCache`.                                                 |
 
 ---
 
 ## Open Items
-
-### P3 — Code quality & documentation
-
-| #   | Task                                                                                                                           | Effort | Status |
-| --- | ------------------------------------------------------------------------------------------------------------------------------ | ------ | ------ |
-| 10  | **Fix ADR numbering collision** — `011-status-registry.md` and `0011-api-stability-tiers.md` both claim ADR 011; renumber one  | Low    | Open   |
-| 11  | **Add happy-path `err == nil` assertion tests for all CQRS `WriteXxx` functions** — gap identified in post-v0.30.0 self-review | Medium | Open   |
-| 12  | **Add `Flush()` call to TUI shutdown path** — TimingCache.Flush() exists but TUI never calls it on clean shutdown              | Low    | Open   |
 
 ### Community (owner-dependent)
 

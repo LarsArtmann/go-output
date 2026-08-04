@@ -46,6 +46,7 @@ func (pr *BubbleTeaProgressReporter) Stop() {
 
 	nomMode := pr.model.displayMode == DisplayModeNOM
 	prog := pr.program
+	sub := pr.model.nomSubscriber
 	pr.mu.Unlock()
 
 	// The model self-transitions to Completed from the 100% progress update.
@@ -53,6 +54,13 @@ func (pr *BubbleTeaProgressReporter) Stop() {
 		Type:     progressUpdate,
 		Progress: 100.0,
 	})
+
+	// Persist timing data to disk before shutdown so no history is lost.
+	if sub != nil {
+		if err := sub.Flush(); err != nil {
+			slog.Error("TUI timing-cache flush failed", "error", err)
+		}
+	}
 
 	// In NOM mode with a real program, signal graceful shutdown.
 	if prog != nil && nomMode {

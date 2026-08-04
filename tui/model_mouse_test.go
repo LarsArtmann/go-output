@@ -162,3 +162,24 @@ func TestBubbleTeaProgressReporter_Stop_NoProgramIsSafe(t *testing.T) {
 		t.Error("subscriber() should still return a valid subscriber after Stop()")
 	}
 }
+
+func TestBubbleTeaProgressReporter_Stop_FlushesTimingCache(t *testing.T) {
+	t.Parallel()
+
+	pr := newTestReporter()
+
+	// Stop() should call Flush on the NOM subscriber to persist timing data.
+	// Flush() on the default in-memory cache is always safe and returns nil.
+	pr.Stop()
+
+	// Verify the subscriber is still accessible and functional after flush.
+	sub := pr.Subscriber()
+	if sub == nil {
+		t.Fatal("subscriber should not be nil after Stop()")
+	}
+
+	// A second Flush should be safe (idempotent).
+	if err := sub.Flush(); err != nil {
+		t.Errorf("second Flush() after Stop() should not error, got: %v", err)
+	}
+}

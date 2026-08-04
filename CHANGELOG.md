@@ -12,6 +12,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **ci** — Pin art-dupl to `@v0.6.0` (v0.6.1 has a broken build). Pin all GitHub Actions to commit SHAs (checkout, setup-go, golangci-lint-action, softprops/action-gh-release) for supply-chain security.
 - **go.mod** — Retract v0.34.0 (stale tag drift: sibling dep versions misaligned at tag time, superseded by v0.35.0 same day).
 - **website** — Fix 10 dependabot vulnerabilities (0 remaining): astro v6→v7.1.6 (XSS fixes), starlight v0.39→v0.41, vite v7→v8 (removed stale override), esbuild pinned to 0.28.1, fast-uri 3.1.5, postcss 8.5.25.
+- **tui** — `BubbleTeaProgressReporter.Stop()` now calls `nomSubscriber.Flush()` before the quit signal, ensuring timing-cache data is persisted to disk on clean shutdown.
+- **docs** — Fixed stale ADR reference in AGENTS.md (`ADR 0011` → `ADR 014`) and updated d2 error-system description (sentinels → typed structs).
+- **graph/d2/tree** — Added happy-path `err == nil` tests for `WriteMermaid`, `WriteGraph`, `Write` (d2), and `WriteMarkdown` — closing the last CQRS test coverage gaps. All 14 `WriteXxx` functions now have happy-path coverage.
 
 ### Changed
 

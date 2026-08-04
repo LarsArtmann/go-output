@@ -73,3 +73,26 @@ func TestRenderMermaid_PureFunction(t *testing.T) {
 		t.Error("expected node label in output")
 	}
 }
+
+func TestWriteMermaid_PureFunction(t *testing.T) {
+	t.Parallel()
+
+	b := output.NewGraphBuilder()
+	b.AddNode(*output.NewGraphNode("x", "Node X"))
+	b.AddNode(*output.NewGraphNode("y", "Node Y"))
+	b.AddEdge(*output.NewGraphEdge("x", "y"))
+	g := b.Build()
+
+	var buf strings.Builder
+	if err := WriteMermaid(&buf, g); err != nil {
+		t.Fatalf("WriteMermaid error: %v", err)
+	}
+
+	if !strings.Contains(buf.String(), "Node X") {
+		t.Error("expected node label in output")
+	}
+
+	if !strings.Contains(buf.String(), "flowchart") {
+		t.Error("expected flowchart declaration in output")
+	}
+}
