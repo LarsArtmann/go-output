@@ -8,6 +8,7 @@ description: Convert between tables, trees, and graphs as pure functions.
 Three pure functions in the root package convert between data shapes:
 
 ```go
+// skip-validate
 output.TableToGraph(t, opts...) → Graph
 output.GraphToTree(g)           → *TreeNode
 output.GraphToTable(g)           → *Table
