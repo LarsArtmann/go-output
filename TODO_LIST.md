@@ -1,7 +1,7 @@
 # TODO_LIST.md — go-output
 
 **Last updated:** 2026-08-06
-**Open items:** 10
+**Open items:** 2
 
 ---
 
@@ -9,24 +9,24 @@
 
 | #   | Task                                                                                                                                                          | Effort | Status |
 | --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | ------ |
-| 1   | **Move `pollTeatestOutput` to `teatest_helpers_test.go`** — currently lives in `teatest_vt_test.go` but is used by the helpers file; fragile coupling.        | 5 min  | Open   |
-| 2   | **Strengthen `waitForVisible` conditions** — 14 call sites pass `"s"` which matches any English text; should wait for actual content (`"Build Module"`, etc.) | 20 min | Open   |
-| 3   | **Add goroutine-leak test** — `runtime.NumGoroutine()` before/after teatest cycle to catch leaks without relying on `-race` to surface them as hangs.         | 20 min | Open   |
-| 4   | **Add `nix run .#test-race-all`** — race-test ALL 19 modules, not just nom + tui. Other modules could have races that only surface in CI.                     | 15 min | Open   |
+| 1   | **Move `pollTeatestOutput` to `teatest_helpers_test.go`** — currently lives in `teatest_vt_test.go` but is used by the helpers file; fragile coupling.        | 5 min  | Done   |
+| 2   | **Strengthen `waitForVisible` conditions** — 14 call sites pass `"s"` which matches any English text; should wait for actual content (`"Build Module"`, etc.) | 20 min | Done   |
+| 3   | **Add goroutine-leak test** — `runtime.NumGoroutine()` before/after teatest cycle to catch leaks without relying on `-race` to surface them as hangs.         | 20 min | Done   |
+| 4   | **Add `nix run .#test-race-all`** — race-test ALL 19 modules, not just nom + tui. Other modules could have races that only surface in CI.                     | 15 min | Done   |
 
 ## Code Quality
 
 | #   | Task                                                                                                                                                                                 | Effort | Status |
 | --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------ | ------ |
-| 5   | **Align `go.mod` versions** — `daghtml/`, `escape/`, `testhelpers/` use `go 1.26.4` while all other modules use `go 1.26.5`. Align to `1.26.5`.                                      | 5 min  | Open   |
-| 6   | **Fix `docs/ERROR_SYSTEM.md` contributor example** — uses unexported `joinStrings` (line 147); contributors can't use it. Replace with `strings.Join(output.EnumAllowedValues(...))` | 5 min  | Open   |
+| 5   | **Align `go.mod` versions** — `daghtml/`, `escape/`, `testhelpers/` use `go 1.26.4` while all other modules use `go 1.26.5`. Align to `1.26.5`.                                      | 5 min  | Done   |
+| 6   | **Fix `docs/ERROR_SYSTEM.md` contributor example** — uses unexported `joinStrings` (line 147); contributors can't use it. Replace with `strings.Join(output.EnumAllowedValues(...))` | 5 min  | Done   |
 
 ## CI / DevOps
 
 | #   | Task                                                                                                                                                                                 | Effort | Status |
 | --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------ | ------ |
-| 7   | **Add `.github/dependabot.yml`** for GitHub Actions version updates — actions are now SHA-pinned; dependabot can track new releases.                                                 | 10 min | Open   |
-| 8   | **Add quality gates to `scripts/pre-tag-check.sh`** — currently only build/test/race + tag parity. Add `art-dupl -t 4`, `govulncheck`, `golangci-lint`, golden-file freshness check. | 30 min | Open   |
+| 7   | **Add `.github/dependabot.yml`** for GitHub Actions version updates — actions are now SHA-pinned; dependabot can track new releases.                                                 | 10 min | Done   |
+| 8   | **Add quality gates to `scripts/pre-tag-check.sh`** — currently only build/test/race + tag parity. Add `art-dupl -t 4`, `govulncheck`, `golangci-lint`, golden-file freshness check. | 30 min | Done   |
 
 ## Community (owner-dependent)
 
