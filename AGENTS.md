@@ -66,11 +66,21 @@ nix flake check            # Formatting + pre-commit hooks
 
 Go checks are NOT in `nix flake check` (sandbox blocks `go mod download`); CI handles them. `.pre-commit-config.yaml` exists for non-Nix users.
 
+### Releasing
+
+```bash
+scripts/tag-release.sh vX.Y.Z   # Create root + 16 submodule annotated tags (does NOT push)
+scripts/pre-tag-check.sh vX.Y.Z # Build + test + race all 19 modules + tag-parity check
+```
+
+See `docs/RELEASE_CHECKLIST.md` for the full 8-step release sequence. The `release.yml` workflow auto-creates missing submodule tags when a root `v*` tag is pushed — but always use `scripts/tag-release.sh` as the primary path.
+
 ## Patterns
 
 These are non-obvious from reading code alone — the "how does this even work" knowledge.
 
 - **Pattern B versioning (committed replace + v0.0.0)**: All sibling deps use `v0.0.0-00010101000000-000000000000` with `replace => ../path`. This is Go's canonical zero sentinel for locally-replaced deps. `replace` directives do NOT propagate to consumers, so external `go get` of a sub-module fails — by design. Only root is independently consumable. See ADR 009.
+- **Release tag convention — 17 tags per release**: Every release creates 1 root tag (`vX.Y.Z`) + 16 submodule tags (`<module>/vX.Y.Z`), ALL annotated (`git cat-file -t` returns `tag`, never `commit`), ALL on the same commit. Excluded from tagging: `examples/` and `integration/` (test-only). Use `scripts/tag-release.sh vX.Y.Z` as the primary path — it runs the full sequence and verifies parity. The `release.yml` workflow auto-creates missing submodule tags as a safety net. The `pre-tag-check.sh` script verifies tag-family parity (latest release has all 17 annotated tags). See `docs/RELEASE_CHECKLIST.md`. This convention exists because v0.36.0 AND v0.37.0 both shipped without submodule tags — the auto-tagging in release.yml is the systemic fix.
 - **Registry dispatch via `init()`**: Root's `RenderTable()` / `RenderUnknown()` dispatch to registered marshalers, yet root imports no sub-module. Each sub-module calls `RegisterFormatShapes(...)` / registers its marshaler in its own `init()`. The generic `formatRegistry[T]` backs shape capabilities, table, and unknown registries. Importing a sub-module is what activates it.
 - **Enum utilities are in root**: `ParseEnum[T]`, `ContainsEnum[T]`, `EnumAllowedValues[T]`, `EnumAllowedStrings[T]` live in `package output` (file: `enum.go`). Sub-modules call them via `output.ParseEnum[T](...)`. The `StringEnum` interface and `ParseError` type are also in root.
 - **CI/NO_COLOR detection is in root**: `IsCI()` and `IsNoColor()` live in `package output` (file: `envdetect.go`). `CIEnvVars` is the exported list of CI env var names. Sub-modules call `output.IsCI()` / `output.IsNoColor()`.
@@ -138,6 +148,7 @@ Things that will silently break or that an agent would get wrong from code alone
 - **v2 `omitempty` does NOT omit `false`/`0`** — In `encoding/json/v2`, `omitempty` only omits empty strings, nil pointers, empty slices/maps. It does NOT omit `false` bools or `0` ints (breaking change from v1). Use `omitzero` instead.
 - **Never import a sub-module into root** — see Core Invariant above.
 - **Pattern B: sibling deps SHOULD be v0.0.0-00010101000000-000000000000** — never change a sibling `require` to a real version. The `replace` directive makes it work locally; a real version would re-introduce version rot. Only `testhelpers` keeps real versions. All sibling requires across 19 modules now use the sentinel (migrated 2026-06-23). `daghtml` is zero-dep (like `testhelpers`) and independently publishable.
+- **Releases need 17 tags, not 1** — cutting only the root `vX.Y.Z` tag without the 16 submodule tags (`<module>/vX.Y.Z`) has happened TWICE (v0.36.0, v0.37.0). Always use `scripts/tag-release.sh` or verify via `scripts/pre-tag-check.sh` (which now checks parity). The `release.yml` auto-tagging step is the systemic backstop. See `docs/RELEASE_CHECKLIST.md`.
 - **`testhelpers/` is the ONLY independently versioned sub-module** — it has real published tags. All other sub-modules use v0.0.0 + replace.
 - **`testhelpers/` is zero-dep by design** — it cannot import `output`. Cross-module test helpers must stay local to each module or use table-driven patterns.
 - **`internal/` is root-only (if added)** — Go forbids sub-modules from importing `internal/` packages, so any `internal/` package in root cannot be shared with sub-modules. Currently root has no `internal/` dir; sub-modules inline their own test helpers (shared zero-dep helpers live in the `testhelpers/` module).

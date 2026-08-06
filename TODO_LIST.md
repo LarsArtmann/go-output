@@ -1,22 +1,22 @@
 # TODO_LIST.md — go-output
 
 **Last updated:** 2026-08-06
-**Open items:** 16
+**Open items:** 9
 
 ---
 
 ## Release Process
 
-The v0.37.0 tag was cut without submodule tags, without a release-prepare commit, and as a lightweight tag — repeating every v0.36.0 mistake. These items fix the systemic gap.
+The v0.37.0 tag was cut without submodule tags, without a release-prepare commit, and as a lightweight tag — repeating every v0.36.0 mistake. **Items #1–#6 were resolved on 2026-08-06.** The tag family was created (17 annotated tags), root tag converted to annotated, `release.yml` gained auto-tagging, `scripts/tag-release.sh` and `docs/RELEASE_CHECKLIST.md` were created, and `pre-tag-check.sh` now verifies tag-family parity.
 
-| #  | Task                                                                                                                                                  | Effort  | Status |
-| -- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ------- | ------ |
-| 1  | **Create v0.37.0 submodule tags** (16 submodules) — no `*/v0.37.0` tags exist (`git tag -l '*/v0.37.0'` returns empty). Match v0.36.0 coverage.       | 5 min   | Open   |
-| 2  | **Fix v0.37.0 root tag** — convert lightweight → annotated (`git cat-file -t v0.37.0` returns `commit`, should be `tag`). Matches v0.34.0/v0.35.0.    | 5 min   | Open   |
-| 3  | **Add submodule auto-tagging step to `release.yml`** — iterate modules, create annotated `<module>/v<version>` tags on root tag push. Eliminates #1.   | 1 hr    | Open   |
-| 4  | **Create `docs/RELEASE_CHECKLIST.md`** — the 8-step sequence: CHANGELOG → release-prepare commit → pre-tag-check → CI green → tag root + 16 submodules → push → verify GitHub Release → verify `go get` | 30 min  | Open   |
-| 5  | **Add annotated-tag enforcement** — CI check or pre-receive hook that rejects lightweight tags (`git for-each-ref --format='%(objecttype)' refs/tags/v*` must return `tag`) | 30 min  | Open   |
-| 6  | **Create `scripts/tag-release.sh`** — wrapper that runs the full release sequence: fetch, verify clean tree, pre-tag-check, tag root + submodules, verify parity | 45 min  | Open   |
+| #  | Task                                                                                                                                                  | Effort  | Status   |
+| -- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ------- | -------- |
+| 1  | **Create v0.37.0 submodule tags** (16 submodules) — annotated, on `dd051b4`, parity with v0.36.0 verified.                                             | 5 min   | ✅ Done  |
+| 2  | **Fix v0.37.0 root tag** — converted lightweight → annotated. Now `tag` type on `dd051b4`.                                                             | 5 min   | ✅ Done  |
+| 3  | **Add submodule auto-tagging step to `release.yml`** — new "Create and push submodule tags" step + `daghtml` added to all module lists (was missing).  | 1 hr    | ✅ Done  |
+| 4  | **Create `docs/RELEASE_CHECKLIST.md`** — 8-step sequence with tag convention, manual/automated paths, and recovery procedures.                         | 30 min  | ✅ Done  |
+| 5  | **Add annotated-tag enforcement** — `pre-tag-check.sh` now verifies latest release has all annotated tags (parity check). release.yml creates annotated.| 30 min  | ✅ Done  |
+| 6  | **Create `scripts/tag-release.sh`** — full release wrapper: fetch, verify clean tree, pre-tag-check, tag root + 16 submodules, verify parity.          | 45 min  | ✅ Done  |
 
 ## Test Infrastructure
 

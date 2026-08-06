@@ -91,6 +91,43 @@ done
 pass "race tests clean"
 
 # ---------------------------------------------------------------------------
+# 4. Tag-family parity check (verify the latest release has all 17 tags)
+# ---------------------------------------------------------------------------
+# Submodules that get release tags (excludes test-only: examples, integration).
+# Keep in sync with scripts/tag-release.sh and .github/workflows/release.yml.
+TAGGED_SUBMODULES=(
+  bdd d2 daghtml delimited escape graph markdown markup
+  nom plantuml serialization table testhelpers testhelpers/graphtest tree tui
+)
+
+echo
+info "checking tag-family parity for the latest release"
+LATEST_ROOT=$(git tag --list 'v[0-9]*' --sort=-v:refname | grep -v '/' | head -1 || true)
+if [ -n "$LATEST_ROOT" ]; then
+  LATEST_VER="${LATEST_ROOT#v}"
+  EXPECTED=$((1 + ${#TAGGED_SUBMODULES[@]}))
+  ACTUAL=$(git tag -l "*v${LATEST_VER}" | wc -l)
+  if [ "$ACTUAL" -ne "$EXPECTED" ]; then
+    fail "latest release $LATEST_ROOT has $ACTUAL tags, expected $EXPECTED (root + ${#TAGGED_SUBMODULES[@]} submodules). Missing: $(comm -23 <(echo "$LATEST_ROOT"; printf '%s/v%s\n' "${TAGGED_SUBMODULES[@]}" "$LATEST_VER" | sort) <(git tag -l "*v${LATEST_VER}" | sort))"
+  fi
+
+  # Verify all tags are annotated (not lightweight)
+  NON_ANNOTATED=""
+  for t in $(git tag -l "*v${LATEST_VER}"); do
+    if [ "$(git cat-file -t "$t")" != "tag" ]; then
+      NON_ANNOTATED="$NON_ANNOTATED $t"
+    fi
+  done
+  if [ -n "$NON_ANNOTATED" ]; then
+    fail "lightweight tags found (should be annotated):$NON_ANNOTATED"
+  fi
+
+  pass "release $LATEST_ROOT has $EXPECTED annotated tags (parity OK)"
+else
+  echo "  (no releases yet — skipping parity check)"
+fi
+
+# ---------------------------------------------------------------------------
 # Done
 # ---------------------------------------------------------------------------
 echo
