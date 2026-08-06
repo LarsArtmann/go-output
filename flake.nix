@@ -162,6 +162,22 @@
               };
             };
 
+            test-race-all = {
+              type = "app";
+              program = pkgs.writeShellApplication {
+                name = "go-test-race-all";
+                runtimeInputs = [ go ];
+                text = ''
+                  set -euo pipefail
+                  export GOEXPERIMENT=jsonv2
+                  for mod in ${lib.concatStringsSep " " modules}; do
+                    echo ":: $mod :: go test -race -count=1 ./..."
+                    ( cd "$mod" && go test -race -count=1 ./... )
+                  done
+                '';
+              };
+            };
+
             build = {
               type = "app";
               program = runForModules "build";
