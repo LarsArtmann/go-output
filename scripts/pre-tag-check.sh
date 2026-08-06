@@ -6,6 +6,7 @@
 #   If a version is passed, the script also verifies the working tree is clean
 #   and that the version tag does not already exist.
 set -euo pipefail
+export GOEXPERIMENT=jsonv2
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -91,7 +92,61 @@ done
 pass "race tests clean"
 
 # ---------------------------------------------------------------------------
-# 4. Tag-family parity check (verify the latest release has all 17 tags)
+# 4. Lint every module (golangci-lint)
+# ---------------------------------------------------------------------------
+echo
+info "linting all modules (golangci-lint run ./...)"
+command -v golangci-lint >/dev/null 2>&1 \
+  || fail "golangci-lint not found — run inside 'nix develop' or install from golangci-lint.run"
+for mod in "${MODULES[@]}"; do
+  (cd "$mod" && GOWORK=off golangci-lint run ./...) \
+    || fail "lint failed in $mod"
+done
+pass "lint clean"
+
+# ---------------------------------------------------------------------------
+# 5. Vulnerability scan (govulncheck)
+# ---------------------------------------------------------------------------
+echo
+info "running govulncheck across all modules"
+command -v govulncheck >/dev/null 2>&1 \
+  || fail "govulncheck not found — install: go install golang.org/x/vuln/cmd/govulncheck@latest"
+for mod in "${MODULES[@]}"; do
+  (cd "$mod" && GOWORK=off govulncheck ./...) \
+    || fail "govulncheck failed in $mod"
+done
+pass "govulncheck clean"
+
+# ---------------------------------------------------------------------------
+# 6. Code duplication gate (art-dupl -t 4, production threshold per ADR 008)
+# ---------------------------------------------------------------------------
+echo
+info "checking for harmful code duplication (art-dupl -t 4)"
+command -v art-dupl >/dev/null 2>&1 \
+  || fail "art-dupl not found — install: go install github.com/LarsArtmann/art-dupl/cmd/art-dupl@v0.6.2"
+DUP_LINES=$(find . -name '*.go' -not -path './vendor/*' -print0 \
+  | xargs -0 art-dupl -t 4 2>/dev/null | wc -l)
+if [ "$DUP_LINES" -gt 0 ]; then
+  fail "found $DUP_LINES lines of duplication at t=4 (production gate per ADR 008). \
+Run 'art-dupl -t 4' to review clone groups."
+fi
+pass "no harmful duplication (t=4 production gate)"
+
+# ---------------------------------------------------------------------------
+# 7. Golden-file freshness (renderers with golden tests)
+# ---------------------------------------------------------------------------
+echo
+info "checking golden-file freshness"
+GOLDEN_MODULES=("d2" "daghtml" "graph" "nom" "plantuml" "serialization" "table" "tree")
+for mod in "${GOLDEN_MODULES[@]}"; do
+  (cd "$mod" && GOWORK=off go test -run Golden -count=1 ./...) \
+    || fail "golden-file tests failed in $mod — output drifted. \
+Regenerate: (cd $mod && go test -run Golden -update)"
+done
+pass "golden files match current output"
+
+# ---------------------------------------------------------------------------
+# 8. Tag-family parity check (verify the latest release has all 17 tags)
 # ---------------------------------------------------------------------------
 # Submodules that get release tags (excludes test-only: examples, integration).
 # Keep in sync with scripts/tag-release.sh and .github/workflows/release.yml.

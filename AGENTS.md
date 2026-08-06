@@ -56,6 +56,7 @@ nix develop                # Dev shell (Go 1.26, golangci-lint, gopls)
 nix run .#build            # Build all 19 modules
 nix run .#test             # Test all 19 modules
 nix run .#test-race        # Race-test nom + tui (concurrency-sensitive)
+nix run .#test-race-all    # Race-test ALL 19 modules (slower, catches CI-only races)
 nix run .#lint             # golangci-lint across all modules
 nix run .#tidy             # go mod tidy all modules
 nix run .#govulncheck      # govulncheck across all modules
@@ -70,7 +71,7 @@ Go checks are NOT in `nix flake check` (sandbox blocks `go mod download`); CI ha
 
 ```bash
 scripts/tag-release.sh vX.Y.Z   # Create root + 16 submodule annotated tags (does NOT push)
-scripts/pre-tag-check.sh vX.Y.Z # Build + test + race all 19 modules + tag-parity check
+scripts/pre-tag-check.sh vX.Y.Z # Build + test + race + lint + govulncheck + art-dupl + golden-freshness + tag-parity
 ```
 
 See `docs/RELEASE_CHECKLIST.md` for the full 8-step release sequence. The `release.yml` workflow auto-creates missing submodule tags when a root `v*` tag is pushed — but always use `scripts/tag-release.sh` as the primary path.

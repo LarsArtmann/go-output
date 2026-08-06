@@ -144,7 +144,7 @@ func (e *InvalidTypeError) Error() string {
     if len(e.Allowed) == 0 {
         return "invalid type: " + e.Value
     }
-    return "invalid type: " + e.Value + " (allowed: " + joinStrings(EnumAllowedValues(e.Allowed)) + ")"
+    return "invalid type: " + e.Value + " (allowed: " + strings.Join(output.EnumAllowedValues(e.Allowed), ", ") + ")"
 }
 ```
 
