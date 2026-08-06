@@ -6,6 +6,8 @@
 > **Reporter**: Crush (glm-5.2)
 > **Honesty mode**: BRUTAL
 
+> **✅ Resolved 2026-08-06:** The ADR numbering collision was fixed in session 02:02 (0011→0014, commit `644c9bb`). The annotation sweep was completed to 98% in session 01:09, then the remaining files were converted to blockquote style in session 05:00. All section f items harvested into `TODO_LIST.md`. The FEATURES.md count issue (item 7 in section e) is resolved — count is now 189 and verified against `grep -c`.
+
 ---
 
 ## TL;DR

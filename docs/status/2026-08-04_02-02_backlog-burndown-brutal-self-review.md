@@ -4,6 +4,8 @@
 **Session scope:** Resolve 9 open backlog items (P0 CI fixes, P1 release hygiene/security, P2 error system polish) + 3 remaining P3 items. Then brutal self-review.
 **Honesty mode:** BRUTAL. No spin.
 
+> **✅ Resolved 2026-08-06:** All 12 items completed in this session shipped in v0.37.0 (CHANGELOG `[0.37.0]`). The TUI deadlock fix here was the **first attempt** (hoisting VT reconstruction out of the polling loop) — it was incomplete; the real fix landed at 05:47 (commit `307c304`, replacing `teatest.WaitFor` in `waitForVisible`). The `docs/ERROR_SYSTEM.md` `joinStrings` issue (section e, item 8) is still open → TODO_LIST #12. All section f items harvested: completed items in CHANGELOG, open items in TODO_LIST.
+
 ---
 
 ## TL;DR — What happened this session

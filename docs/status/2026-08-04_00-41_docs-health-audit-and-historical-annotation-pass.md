@@ -5,6 +5,8 @@
 > **Reporter**: Crush (glm-5.2)
 > **Honesty mode**: BRUTAL
 
+> **✅ Resolved 2026-08-06:** This was the first docs-health session of 2026-08-04. The ADR collision (item c.5) was fixed in session 02:02. The FEATURES count (item d.3) is now 189, verified. The living doc rebuild (TODO_LIST, ROADMAP, FEATURES) was superseded by the 2026-08-06 full AUDIT pass which rebuilt all four living docs from scratch. All section f items harvested into current `TODO_LIST.md` / `ROADMAP.md`.
+
 ---
 
 ## TL;DR

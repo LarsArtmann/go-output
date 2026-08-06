@@ -6,6 +6,8 @@
 > **Reporter**: Crush (glm-5.2)
 > **Honesty mode**: BRUTAL
 
+> **✅ Resolved 2026-08-06:** This session's work (annotation conversion to blockquote style, FEATURES.md count fix, stale test assertion fix) shipped. The ADR numbering collision (0011→0014) was fixed in the 02:02 session. All section f items harvested into `TODO_LIST.md` / `ROADMAP.md`. The "convert appendix annotations to inline strikethrough" request (P0 item #1) was overtaken by the 05:00 session which converted all 39 files to visible blockquote banners instead.
+
 ---
 
 ## TL;DR
