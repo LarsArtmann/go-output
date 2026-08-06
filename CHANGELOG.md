@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.37.0] - 2026-08-04
+
 ### Fixed
 
 - **tui** — Fix teatest E2E test deadlock in CI: two root causes fixed. (1) `waitForVisible` (used by 5 tests) still called `teatest.WaitFor`, which internally uses `io.ReadAll` — this blocks indefinitely when the program's tick loop writes continuously (the output buffer never empties long enough for EOF). Replaced with the existing `pollTeatestOutput` bounded-read helper. (2) Test cleanup called only `tm.Quit()` (fire-and-forget) without `tm.WaitFinished()`, leaking the program goroutine. Added `WaitFinished` with a 3-second timeout to the cleanup. All 10 teatest tests now pass under `-race` in 2 seconds (was a 600-second hang).
@@ -29,6 +31,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
+- **nom** — Root prioritization and partial phase collapse under viewport pressure. Root nodes are now sorted by display priority (failed > running > pending > completed, longer-elapsed first) so running steps stay at the top even when many completed roots exist. Phases with 4+ children that cannot fit in the remaining viewport collapse into a progress summary line (e.g. `⟳ golangci-lint 12/30`) instead of monopolizing the viewport.
 - **integration** — Cross-module error integration test (`cross_module_error_test.go`) verifying `errors.Is` and `errors.AsType` work across module boundaries: root sentinels through dispatch, root typed errors, d2+graph typed errors, error distinctness, and deep wrapping preservation.
 
 ## [0.36.0] - 2026-08-03
