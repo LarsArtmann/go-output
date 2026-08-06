@@ -2,6 +2,7 @@ package tui
 
 import (
 	"context"
+	"runtime"
 	"strings"
 	"testing"
 	"time"
@@ -53,6 +54,40 @@ func newTeatestModel(t *testing.T, width, height int) *teatest.TestModel {
 	return tm
 }
 
+// pollTeatestOutput reads a teatest TestModel's output with bounded reads and a
+// hard deadline, returning the accumulated bytes. teatest.WaitFor uses io.ReadAll
+// which blocks indefinitely when the program writes continuously (the tick loop
+// keeps appending to the output buffer, so io.ReadAll never sees EOF). Bounded
+// reads drain available bytes and return immediately on the empty-buffer EOF,
+// keeping the deadline check live.
+func pollTeatestOutput(t *testing.T, tm *teatest.TestModel, cond func([]byte) bool, timeout time.Duration) []byte {
+	t.Helper()
+
+	out := tm.Output()
+	deadline := time.Now().Add(timeout)
+
+	var accumulated []byte
+
+	var buf [8192]byte //nolint:mnd
+
+	for time.Now().Before(deadline) {
+		n, _ := out.Read(buf[:]) // empty buffer returns (0, io.EOF) — non-blocking
+		if n > 0 {
+			accumulated = append(accumulated, buf[:n]...)
+		}
+
+		if cond(accumulated) {
+			return accumulated
+		}
+
+		time.Sleep(50 * time.Millisecond) //nolint:mnd
+	}
+
+	t.Fatalf("teatest output condition not met after %s\nLast output:\n%s", timeout, string(accumulated))
+
+	return accumulated
+}
+
 // waitForVisible polls teatest output (ANSI-stripped) until it contains substr.
 // Uses pollTeatestOutput (bounded reads) instead of teatest.WaitFor because
 // teatest.WaitFor internally calls io.ReadAll, which blocks indefinitely when
@@ -66,14 +101,26 @@ func waitForVisible(t *testing.T, tm *teatest.TestModel, substr string) {
 	}, 3*time.Second)
 }
 
+// waitForTick confirms the program is still alive and producing output (the
+// tick loop is running). Use after keypresses where the bubbletea v2 diff
+// renderer only emits changed regions — content labels from the initial full
+// render are not re-emitted, so waitForVisible would time out.
+func waitForTick(t *testing.T, tm *teatest.TestModel) {
+	t.Helper()
+
+	pollTeatestOutput(t, tm, func(b []byte) bool {
+		return len(b) > 0
+	}, 3*time.Second)
+}
+
 // --- F24: Program starts, renders NOM content through the real loop ---
 
 func TestTeatest_ProgramStarts_RendersContent(t *testing.T) {
 	tm := newTeatestModel(t, 100, 30)
 
-	// The summary bar border is a stable substring in the diff output.
-	// Timing values (e.g. "100ms", "1.0s") confirm the tick loop is running.
-	waitForVisible(t, tm, "s")
+	// The activity labels confirm the NOM dependency tree rendered through the
+	// real program loop (tick dispatch + View rendering).
+	waitForVisible(t, tm, "Build Module")
 }
 
 // --- F25: Scroll down (j key) is processed without crashing ---
@@ -81,13 +128,13 @@ func TestTeatest_ProgramStarts_RendersContent(t *testing.T) {
 func TestTeatest_ScrollDown_NoCrash(t *testing.T) {
 	tm := newTeatestModel(t, 100, 30)
 
-	waitForVisible(t, tm, "s")
+	waitForVisible(t, tm, "Build Module")
 
 	// Scroll down — the program should process the keypress via Update.
 	tm.Send(tea.KeyPressMsg{Code: 'j'})
 
 	// Program should still be producing output (tick loop still running).
-	waitForVisible(t, tm, "s")
+	waitForTick(t, tm)
 }
 
 // --- F26: Scroll up (k key) ---
@@ -95,14 +142,14 @@ func TestTeatest_ScrollDown_NoCrash(t *testing.T) {
 func TestTeatest_ScrollUp_NoCrash(t *testing.T) {
 	tm := newTeatestModel(t, 100, 30)
 
-	waitForVisible(t, tm, "s")
+	waitForVisible(t, tm, "Build Module")
 
 	// Scroll down then back up.
 	tm.Send(tea.KeyPressMsg{Code: 'j'})
 	tm.Send(tea.KeyPressMsg{Code: 'k'})
 
 	// Program should still render correctly.
-	waitForVisible(t, tm, "s")
+	waitForTick(t, tm)
 }
 
 // --- F27: Help toggle (? key) ---
@@ -110,14 +157,14 @@ func TestTeatest_ScrollUp_NoCrash(t *testing.T) {
 func TestTeatest_HelpToggle_NoCrash(t *testing.T) {
 	tm := newTeatestModel(t, 100, 30)
 
-	waitForVisible(t, tm, "s")
+	waitForVisible(t, tm, "Build Module")
 
 	// Toggle help overlay on and off.
 	tm.Send(tea.KeyPressMsg{Code: '?'})
 	tm.Send(tea.KeyPressMsg{Code: '?'})
 
 	// Program should still be responsive.
-	waitForVisible(t, tm, "s")
+	waitForTick(t, tm)
 }
 
 // --- F28: Quit with 'q' exits cleanly and preserves model state ---
@@ -125,7 +172,7 @@ func TestTeatest_HelpToggle_NoCrash(t *testing.T) {
 func TestTeatest_Quit_ExitsCleanly(t *testing.T) {
 	tm := newTeatestModel(t, 100, 30)
 
-	waitForVisible(t, tm, "s")
+	waitForVisible(t, tm, "Build Module")
 
 	// Send 'q' to quit the program.
 	tm.Send(tea.KeyPressMsg{Code: 'q'})
@@ -156,7 +203,7 @@ func TestTeatest_Quit_ExitsCleanly(t *testing.T) {
 func TestTeatest_CtrlC_TriggersQuit(t *testing.T) {
 	tm := newTeatestModel(t, 100, 30)
 
-	waitForVisible(t, tm, "s")
+	waitForVisible(t, tm, "Build Module")
 
 	// Send ctrl+c to quit.
 	tm.Send(tea.KeyPressMsg{Code: 'c', Mod: tea.ModCtrl})
@@ -198,18 +245,18 @@ func TestTeatest_WindowSize_Propagates(t *testing.T) {
 func TestTeatest_LKey_TogglesMode(t *testing.T) {
 	tm := newTeatestModel(t, 100, 30)
 
-	waitForVisible(t, tm, "s")
+	waitForVisible(t, tm, "Build Module")
 
 	// Send 'L' to toggle to layered mode.
 	tm.Send(tea.KeyPressMsg{Code: 'L'})
 
 	// Program should still be responsive after the toggle.
-	waitForVisible(t, tm, "s")
+	waitForTick(t, tm)
 
 	// Send 'L' again to toggle back to tree mode.
 	tm.Send(tea.KeyPressMsg{Code: 'L'})
 
-	waitForVisible(t, tm, "s")
+	waitForTick(t, tm)
 
 	// Verify the final model state reflects the expected mode.
 	tm.Send(tea.KeyPressMsg{Code: 'q'})
@@ -235,17 +282,17 @@ func TestTeatest_LKey_TogglesMode(t *testing.T) {
 func TestTeatest_CKey_TogglesCriticalFilter(t *testing.T) {
 	tm := newTeatestModel(t, 100, 30)
 
-	waitForVisible(t, tm, "s")
+	waitForVisible(t, tm, "Build Module")
 
 	// Send 'C' to enable critical-path filter.
 	tm.Send(tea.KeyPressMsg{Code: 'C'})
 
-	waitForVisible(t, tm, "s")
+	waitForTick(t, tm)
 
 	// Send 'C' again to disable.
 	tm.Send(tea.KeyPressMsg{Code: 'C'})
 
-	waitForVisible(t, tm, "s")
+	waitForTick(t, tm)
 
 	// Quit and verify model state.
 	tm.Send(tea.KeyPressMsg{Code: 'q'})
@@ -259,5 +306,28 @@ func TestTeatest_CKey_TogglesCriticalFilter(t *testing.T) {
 	// Filter should be off after toggling twice.
 	if m.criticalPathFilter {
 		t.Error("criticalPathFilter should be false after toggling twice")
+	}
+}
+
+// --- F33: No goroutine leak after a full teatest lifecycle ---
+
+func TestTeatest_NoGoroutineLeak(t *testing.T) {
+	before := runtime.NumGoroutine()
+
+	tm := newTeatestModel(t, 100, 30)
+	waitForVisible(t, tm, "Build Module")
+
+	tm.Send(tea.KeyPressMsg{Code: 'q'})
+	tm.WaitFinished(t, teatest.WithFinalTimeout(3*time.Second))
+
+	// Grace period for goroutine cleanup (teatest readers, runtime finalizers).
+	time.Sleep(250 * time.Millisecond) //nolint:mnd
+
+	after := runtime.NumGoroutine()
+	leaked := after - before
+
+	// Tolerance of 2 accounts for GC/runtime scheduling noise.
+	if leaked > 2 {
+		t.Errorf("goroutine leak detected: before=%d, after=%d (%d leaked)", before, after, leaked)
 	}
 }
