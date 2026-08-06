@@ -12,6 +12,10 @@ env:
   GO_VERSION: "1.26"
   GOLANGCI_LINT_VERSION: v2.12
   GOEXPERIMENT: jsonv2
+  # All 19 modules (root "." + 18 sub-modules) — keep in sync with scripts/pre-tag-check.sh
+  ALL_MODULES: . delimited serialization markup d2 daghtml graph plantuml escape testhelpers testhelpers/graphtest table markdown tree nom tui bdd integration examples
+  # Submodules that get release tags (excludes test-only: examples, integration)
+  TAGGED_SUBMODULES: bdd d2 daghtml delimited escape graph markdown markup nom plantuml serialization table testhelpers testhelpers/graphtest tree tui
 
 jobs:
   release:
@@ -33,7 +37,7 @@ jobs:
 
       - name: Build all modules
         run: |
-          for mod in . delimited serialization markup d2 graph plantuml escape testhelpers testhelpers/graphtest table markdown tree nom tui bdd integration examples; do
+          for mod in $ALL_MODULES; do
             echo "::group::Build $mod"
             (cd $mod && go build ./...)
             echo "::endgroup::"
@@ -41,7 +45,7 @@ jobs:
 
       - name: Test all modules
         run: |
-          for mod in . delimited serialization markup d2 graph plantuml escape testhelpers testhelpers/graphtest table markdown tree nom tui bdd integration examples; do
+          for mod in $ALL_MODULES; do
             echo "::group::Test $mod"
             (cd $mod && go test -v -race -timeout 120s ./...)
             echo "::endgroup::"
@@ -56,7 +60,7 @@ jobs:
       - name: Run govulncheck
         run: |
           go install golang.org/x/vuln/cmd/govulncheck@latest
-          for mod in . delimited serialization markup d2 graph plantuml escape testhelpers testhelpers/graphtest table markdown tree nom tui bdd integration examples; do
+          for mod in $ALL_MODULES; do
             echo "::group::govulncheck $mod"
             (cd $mod && govulncheck ./...)
             echo "::endgroup::"
@@ -64,9 +68,40 @@ jobs:
 
       - name: Run benchmarks
         run: |
-          for mod in . delimited serialization markup d2 graph plantuml escape testhelpers testhelpers/graphtest table markdown tree nom tui bdd integration examples; do
+          for mod in $ALL_MODULES; do
             (cd $mod && go test -run=^$ -bench=. -benchmem ./...)
           done
+
+      - name: Create and push submodule tags
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
+          # Only process root-level version tags (vX.Y.Z), not submodule tags (module/vX.Y.Z)
+          if [[ "$TAG" == */* ]]; then
+            echo "Submodule tag ($TAG) — skipping auto-tagging"
+            exit 0
+          fi
+
+          VERSION="${TAG#v}"
+          COMMIT=$(git rev-parse HEAD)
+
+          created=0
+          for mod in $TAGGED_SUBMODULES; do
+            SUBTAG="${mod}/v${VERSION}"
+            if git rev-parse -q --verify "refs/tags/${SUBTAG}" >/dev/null; then
+              echo "::warning::Tag ${SUBTAG} already exists, skipping"
+            else
+              git tag -a "${SUBTAG}" -m "${TAG}" "${COMMIT}"
+              echo "Created annotated tag ${SUBTAG} at ${COMMIT}"
+              created=$((created + 1))
+            fi
+          done
+
+          if [ "$created" -gt 0 ]; then
+            echo "Pushing $created new submodule tags…"
+            git push origin "refs/tags/*"
+          else
+            echo "All submodule tags already exist — nothing to push"
+          fi
 
       - name: Create GitHub Release
         if: github.event_name == 'push'
