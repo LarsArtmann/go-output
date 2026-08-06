@@ -4,6 +4,8 @@
 **Session scope:** User noticed v0.36.0 had no submodule tags. I investigated, created them, and verified.
 **Verdict:** Tags landed on origin and are correct, but the process had real gaps I should have caught earlier.
 
+> **✅ Resolved 2026-08-06:** Section f items harvested into `TODO_LIST.md` (release process items #1–#6, #11, #13–#14) and `ROADMAP.md` (release-automation theme). Items already done: CI red-for-a-month fixed (commits `307c304`, `e5eaf8b`), art-dupl pinned to v0.6.2, `[Unreleased]` CHANGELOG promoted to `[0.37.0]`, v0.33.0 bogus tags retracted, TUI deadlock fixed. **Still open:** v0.37.0 submodule tags missing (TODO_LIST #1), v0.37.0 root tag is lightweight (TODO_LIST #2), `docs/RELEASE_CHECKLIST.md` not created (TODO_LIST #4), `scripts/tag-release.sh` not created (TODO_LIST #6), go.mod version misalignment daghtml/escape/testhelpers 1.26.4→1.26.5 (TODO_LIST #11).
+
 ---
 
 ## a) FULLY DONE

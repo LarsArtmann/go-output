@@ -4,6 +4,8 @@
 **Session scope:** Fix P0 CI failures, lint cleanup, annotation style conversion, quality gates
 **Reporter:** Crush (glm-5.2)
 
+> **✅ Resolved 2026-08-06:** This session's TUI deadlock fix was **incomplete** — it only replaced `teatest.WaitFor` in the VT test, but `waitForVisible` (used by 5 other teatest tests) still called it. The real fix landed in the 05:47 session (commit `307c304`). All CI fixes are pushed and v0.37.0 is tagged. The `[Unreleased]` CHANGELOG was promoted to `[0.37.0]`. Section f items harvested into `TODO_LIST.md`. The annotation conversions (39 files) were validated in the 05:47 session.
+
 ---
 
 ## Executive Summary

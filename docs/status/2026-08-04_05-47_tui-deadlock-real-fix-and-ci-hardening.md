@@ -4,6 +4,8 @@
 **Session Focus:** Continue from prior session's CI health work — correct stale docs, harden CI, find and fix the REAL TUI deadlock root cause
 **Overall Health:** All 19 modules passing locally · 0 lint issues · 0 vulnerabilities · 0 duplication (t=4) · **2 commits unpushed** · CI still red (last run used the incomplete fix)
 
+> **✅ Resolved 2026-08-06:** The 2 unpushed commits are now pushed (origin/master..master is empty). v0.37.0 has been tagged. CI fixes (timeout, SHA pins, t=4 threshold) are all on origin. Section f items harvested: completed items are in `CHANGELOG.md [0.37.0]`, open items are in `TODO_LIST.md` (#7–#10 test infra, #13–#14 CI), long-term ideas in `ROADMAP.md`. **Still open from section f:** `pollTeatestOutput` still in VT file (TODO_LIST #7), `waitForVisible` still uses `"s"` (TODO_LIST #8), no goroutine-leak test (TODO_LIST #9), no `nix run .#test-race-all` (TODO_LIST #10), no `dependabot.yml` for Actions (TODO_LIST #13).
+
 ---
 
 ## a) FULLY DONE
