@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+
+- **ci** — Submodule auto-tagging in `release.yml`: on root `v*` tag push, automatically creates annotated `<module>/v<version>` tags for all 16 submodules (excluding `examples/` and `integration/`). Eliminates the manual submodule-tagging step that was forgotten on v0.36.0 and v0.37.0.
+- **docs** — `docs/RELEASE_CHECKLIST.md`: 8-step release sequence (CHANGELOG → release-prepare commit → pre-tag-check → CI green → tag root + submodules → push → verify GitHub Release → verify `go get`), with tag convention, manual/automated paths, and recovery procedures.
+- **ci** — `scripts/tag-release.sh`: full release wrapper that fetches, verifies a clean tree, runs `pre-tag-check.sh`, tags root + 16 submodules with annotated tags, and verifies tag-family parity.
+- **ci** — Annotated-tag enforcement: `pre-tag-check.sh` now verifies the latest release has all annotated tags (parity check), preventing lightweight tags from shipping.
+
+### Fixed
+
+- **release** — v0.37.0 root tag converted from lightweight to annotated (matching v0.34.0/v0.35.0 convention). 16 missing submodule tags created for v0.37.0 with full parity verification against v0.36.0.
+
 ## [0.37.0] - 2026-08-04
 
 ### Fixed

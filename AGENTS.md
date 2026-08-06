@@ -171,4 +171,5 @@ Deeper knowledge lives in dedicated docs — read these before non-trivial work:
 - `docs/DOMAIN_LANGUAGE.md` — ubiquitous language (Format, Shape, Renderer, Table, TreeNode, GraphNode, ...)
 - `docs/FORMAT_ARCHITECTURE.md` — the 16 formats × 3 shapes matrix and registry internals
 - `docs/adr/` — 14 ADRs: multi-module workspace (001), shape matrix (002), d2/graph extraction (003), footer row (004), duplication thresholds (005), API stability (006), nom composition (007), dedup workflow (008), Pattern B versioning (009), dag topology (010), status registry (011), CQRS streaming (012), error system design (013), API stability tiers (014)
+- `docs/RELEASE_CHECKLIST.md` — the 8-step release sequence, tag convention, and recovery procedures
 - `FEATURES.md`, `TODO_LIST.md`, `CHANGELOG.md`, `README.md`
