@@ -172,7 +172,6 @@ func (m *MarkdownTable) writeReset(b *strings.Builder) {
 
 func (m *MarkdownTable) writeHeader(b *strings.Builder, colWidths []int) {
 	b.WriteString("|")
-	b.WriteString("|")
 
 	for i, header := range m.headers {
 		b.WriteString(" ")
