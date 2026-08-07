@@ -10,26 +10,29 @@
 
 ### 1.1 Baseline (before any change)
 
-| Threshold | Groups | Status |
-|---|---|---|
-| t=4 (production gate, CI parity) | 0 | clean |
-| t=1 (strict type-aware) | **27** | mixed |
+| Threshold                        | Groups | Status |
+| -------------------------------- | ------ | ------ |
+| t=4 (production gate, CI parity) | 0      | clean  |
+| t=1 (strict type-aware)          | **27** | mixed  |
 
 The 27 groups contained a mix of (H)armful production duplication, (I)ntentional idioms documented in ADR 005, (T)est boilerplate, and (X) module-boundary type re-exports. Only the H-groups were in scope for refactoring — every I/T/X group carries a documented reason for being there.
 
 ### 1.2 Refactors landed (all three new commits, all in working tree before auto-commit daemon split them)
 
 **Commit 1 — `1774c09` — `refactor(enum): centralize enum error message formatting via EnumErrorMessage helper`**
+
 - Added `output.EnumErrorMessage(kind, value string, allowed []string) string` in `enum.go:71-86`
 - Replaced 8 `Error()` method bodies in `color.go`, `graph.go` (×2), `d2/d2_enum.go` (×5), `graph/dot_enum.go` (×1)
 - Dropped now-unused `strings` import from `d2/d2_enum.go` and `graph/dot_enum.go`
 - Net: -50 / +29 lines (5 files)
 
 **Commit 2 — `1c6295a` — `refactor(enum): consolidate duplicated invalid-value error message formatting`**
+
 - Same refactor scope extended to `nom/activity_kind.go` (`InvalidActivityKindError`)
 - Net: -7 / +1 lines (1 file) — but documents the rationale at the helper definition and lists every call site it replaces
 
 **Commit 3 — `fc112ba` — `refactor(serialization): extract shared tree rendering and error formatting helpers`**
+
 - Added `serialization.renderTreeNode(root, emptyPayload, format, marshal)` in `marshal_helpers.go:26-47`
 - Refactored 3 tree-renderer bodies: `JSONTreeRenderer.Render` → 1 line, `TOMLTreeRenderer.Render` → 1 line, `YAMLTreeRenderer.Render` → 1 line
 - Added `markup.marshalOrError(label, v, data, err)` in `markup/xml.go:18-28`
@@ -39,22 +42,24 @@ The 27 groups contained a mix of (H)armful production duplication, (I)ntentional
 
 ### 1.3 Final state
 
-| Threshold | Groups | Change |
-|---|---|---|
-| t=4 (production gate) | 0 | unchanged |
-| t=1 (strict type-aware) | **23** | **-4** |
+| Threshold               | Groups | Change    |
+| ----------------------- | ------ | --------- |
+| t=4 (production gate)   | 0      | unchanged |
+| t=1 (strict type-aware) | **23** | **-4**    |
 
 The 4 eliminated groups were:
-| # | Pattern | Sites | Helper introduced |
-|---|---|---|---|
-| G1 | `if len(e.Allowed) == 0` InvalidXxxError.Error() | 9 (root × 4, d2 × 5, graph × 2, nom × 2) — wait, the report had it as 9 sites | `output.EnumErrorMessage` |
-| G2 | `markup.MarshalXML` `xml.Marshal` wrap with `if err != nil` | 1 (only the 2 within `markup/xml.go`; the 3 cross-module matches were false positives — `json`/`toml`/`yaml` marshal helpers in `serialization/` already use `stringFromBytes` and a different signature) | `markup.marshalOrError` |
-| G3 | `serialization/{json,toml,yaml}TreeRenderer.Render` `if r.root == nil` guard | 3 | `serialization.renderTreeNode` |
-| G4 | `nom/activity_status.go` `InvalidActivityStatusError.Error()` `if err != nil` body | 1 (folded into G1's pattern, separately committed for documentation clarity) | `output.EnumErrorMessage` |
+
+| #   | Pattern                                                                            | Sites                                                                                                                                                                                                     | Helper introduced              |
+| --- | ---------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------ |
+| G1  | `if len(e.Allowed) == 0` InvalidXxxError.Error()                                   | 9 (root × 4, d2 × 5, graph × 2, nom × 2) — wait, the report had it as 9 sites                                                                                                                             | `output.EnumErrorMessage`      |
+| G2  | `markup.MarshalXML` `xml.Marshal` wrap with `if err != nil`                        | 1 (only the 2 within `markup/xml.go`; the 3 cross-module matches were false positives — `json`/`toml`/`yaml` marshal helpers in `serialization/` already use `stringFromBytes` and a different signature) | `markup.marshalOrError`        |
+| G3  | `serialization/{json,toml,yaml}TreeRenderer.Render` `if r.root == nil` guard       | 3                                                                                                                                                                                                         | `serialization.renderTreeNode` |
+| G4  | `nom/activity_status.go` `InvalidActivityStatusError.Error()` `if err != nil` body | 1 (folded into G1's pattern, separately committed for documentation clarity)                                                                                                                              | `output.EnumErrorMessage`      |
 
 ### 1.4 What was NOT done (and why)
 
 Every remaining strict-audit group was classified as I (intentional idiom), T (test boilerplate), or X (module-boundary type that root cannot host). Specifically:
+
 - `t.Parallel()` (39 sites) — Category B, standard Go test idiom
 - `for _, opt := range opts { opt(&cfg) }` (4 sites across d2/graph/plantuml/nom/table) — Category C, functional options require per-module `Option` types
 - `type Option func(*Config)` re-exports — X-class module boundary
@@ -179,15 +184,15 @@ These all carry an ADR 005 reason for existing as-is. Forcing them out would be 
 
 ## 4. Work summary
 
-| Status | Count | Notes |
-|---|---|---|
-| **a) FULLY DONE** | 5 | (1) `output.EnumErrorMessage` introduced; (2) 13 typed errors updated; (3) `serialization.renderTreeNode` introduced; (4) 3 tree renderers simplified; (5) `markup.marshalOrError` introduced, `MarshalXML` simplified. Plus 3 unused `strings` imports removed, plus `MarshalXMLIndent` named return normalized. |
-| **b) PARTIALLY DONE** | 2 | (a) Dedup target: strict audit 27 → 23 — not to 0, but every remaining group is intentional. (b) `MarshalXMLIndent` body untouched but named return removed — that was scope creep, may revert. |
-| **c) NOT STARTED** | 4 | (a) `nix run .#test-race` / `test-race-all`; (b) `nix run .#lint`; (c) `nix flake check`; (d) Unit tests for the three new helpers. |
-| **d) TOTALLY FUCKED UP** | 0 | All 19 modules pass `nix run .#test`. Public API surface unchanged. No data loss. No broken tests. The 4 build-fix iterations during the session were each caught within the same change-set and resolved before the next refactor. |
-| **e) WHAT WE SHOULD IMPROVE** | 5 | (1) Run race + lint + flake check before declaring done; (2) Update AGENTS.md "Patterns" + ADR 005/008 state figures; (3) Write unit tests for new helpers; (4) Avoid scope creep in dedup commits (don't bundle style changes with dedup); (5) Don't spawn sub-agents to do what a one-line bash call does inline. |
-| **f) Up to 50 things next** | 50 | See section 3. |
-| **g) Up to 3 questions** | 3 | See section 5. |
+| Status                        | Count | Notes                                                                                                                                                                                                                                                                                                               |
+| ----------------------------- | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **a) FULLY DONE**             | 5     | (1) `output.EnumErrorMessage` introduced; (2) 13 typed errors updated; (3) `serialization.renderTreeNode` introduced; (4) 3 tree renderers simplified; (5) `markup.marshalOrError` introduced, `MarshalXML` simplified. Plus 3 unused `strings` imports removed, plus `MarshalXMLIndent` named return normalized.   |
+| **b) PARTIALLY DONE**         | 2     | (a) Dedup target: strict audit 27 → 23 — not to 0, but every remaining group is intentional. (b) `MarshalXMLIndent` body untouched but named return removed — that was scope creep, may revert.                                                                                                                     |
+| **c) NOT STARTED**            | 4     | (a) `nix run .#test-race` / `test-race-all`; (b) `nix run .#lint`; (c) `nix flake check`; (d) Unit tests for the three new helpers.                                                                                                                                                                                 |
+| **d) TOTALLY FUCKED UP**      | 0     | All 19 modules pass `nix run .#test`. Public API surface unchanged. No data loss. No broken tests. The 4 build-fix iterations during the session were each caught within the same change-set and resolved before the next refactor.                                                                                 |
+| **e) WHAT WE SHOULD IMPROVE** | 5     | (1) Run race + lint + flake check before declaring done; (2) Update AGENTS.md "Patterns" + ADR 005/008 state figures; (3) Write unit tests for new helpers; (4) Avoid scope creep in dedup commits (don't bundle style changes with dedup); (5) Don't spawn sub-agents to do what a one-line bash call does inline. |
+| **f) Up to 50 things next**   | 50    | See section 3.                                                                                                                                                                                                                                                                                                      |
+| **g) Up to 3 questions**      | 3     | See section 5.                                                                                                                                                                                                                                                                                                      |
 
 ---
 

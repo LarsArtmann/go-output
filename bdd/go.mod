@@ -3,7 +3,7 @@ module github.com/larsartmann/go-output/bdd
 go 1.26.5
 
 require (
-	github.com/larsartmann/go-output v0.0.0-00010101000000-000000000000
+	github.com/larsartmann/go-output v0.37.0
 	github.com/larsartmann/go-output/delimited v0.0.0-00010101000000-000000000000
 	github.com/larsartmann/go-output/serialization v0.0.0-00010101000000-000000000000
 	github.com/onsi/ginkgo/v2 v2.32.0
@@ -12,7 +12,7 @@ require (
 
 require (
 	github.com/Masterminds/semver/v3 v3.5.0 // indirect
-	github.com/larsartmann/go-output/escape v0.0.0-00010101000000-000000000000 // indirect
+	github.com/larsartmann/go-output/escape v0.37.0 // indirect
 	github.com/rogpeppe/go-internal v1.15.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/mod v0.37.0 // indirect

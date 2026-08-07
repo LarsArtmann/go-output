@@ -5,7 +5,7 @@ go 1.26.5
 require (
 	github.com/charmbracelet/x/exp/golden v0.0.0-20260705004817-2cc9a8fe1146
 	github.com/go-faster/yaml v0.4.6
-	github.com/larsartmann/go-output v0.0.0-00010101000000-000000000000
+	github.com/larsartmann/go-output v0.37.0
 	github.com/larsartmann/go-output/testhelpers v0.0.0-00010101000000-000000000000
 	github.com/larsartmann/go-output/testhelpers/graphtest v0.0.0-00010101000000-000000000000
 	github.com/pelletier/go-toml/v2 v2.4.3
