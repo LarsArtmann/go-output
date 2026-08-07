@@ -2,7 +2,6 @@ package nom
 
 import (
 	"slices"
-	"strings"
 
 	"github.com/larsartmann/go-output"
 )
@@ -72,10 +71,5 @@ type InvalidActivityKindError struct {
 }
 
 func (e *InvalidActivityKindError) Error() string {
-	if len(e.Allowed) == 0 {
-		return "invalid activity kind: " + e.Value
-	}
-
-	return "invalid activity kind: " + e.Value +
-		" (allowed: " + strings.Join(output.EnumAllowedValues(e.Allowed), ", ") + ")"
+	return output.EnumErrorMessage("activity kind", e.Value, output.EnumAllowedValues(e.Allowed))
 }
