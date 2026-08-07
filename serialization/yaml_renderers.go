@@ -30,15 +30,7 @@ func (r *YAMLTreeRenderer) SetRoot(node *output.TreeNode) {
 
 // Render returns the tree as a YAML string.
 func (r *YAMLTreeRenderer) Render() (string, error) {
-	if r.root == nil {
-		return "null\n", nil
-	}
-
-	node := toTreeNode(r.root)
-
-	data, err := yaml.Marshal(node)
-
-	return stringFromBytes("yaml", "tree", data, err)
+	return renderTreeNode(r.root, "null\n", "yaml", yaml.Marshal)
 }
 
 // YAMLGraphRenderer renders graph nodes and edges as YAML.

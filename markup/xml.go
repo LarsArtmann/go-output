@@ -16,24 +16,31 @@ func init() {
 	output.RegisterTableMarshaler(output.FormatXML, renderXMLTable)
 }
 
-// MarshalXML encodes v to XML.
-func MarshalXML(v any) ([]byte, error) {
-	data, err := xml.Marshal(v)
+// marshalOrError wraps a stdlib marshal call with the canonical "marshal <what> %T: %w"
+// error message that the public MarshalXML function emits. Caller supplies the
+// raw (data, err) return pair of the stdlib encoder.
+func marshalOrError(label string, v any, data []byte, err error) ([]byte, error) {
 	if err != nil {
-		return nil, fmt.Errorf("marshal xml %T: %w", v, err)
+		return nil, fmt.Errorf("%s %T: %w", label, v, err)
 	}
 
 	return data, nil
 }
 
+// MarshalXML encodes v to XML.
+func MarshalXML(v any) ([]byte, error) {
+	data, err := xml.Marshal(v)
+	return marshalOrError("marshal xml", v, data, err)
+}
+
 // MarshalXMLIndent encodes v to indented XML.
-func MarshalXMLIndent(v any, prefix, indent string) (result []byte, err error) {
-	result, err = xml.MarshalIndent(v, prefix, indent)
+func MarshalXMLIndent(v any, prefix, indent string) ([]byte, error) {
+	data, err := xml.MarshalIndent(v, prefix, indent)
 	if err != nil {
 		return nil, fmt.Errorf("marshal xml with prefix=%q indent=%q: %w", prefix, indent, err)
 	}
 
-	return result, nil
+	return data, nil
 }
 
 // XMLWriter writes XML output to an io.Writer.

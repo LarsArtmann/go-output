@@ -3,6 +3,8 @@ package serialization
 import (
 	"fmt"
 	"io"
+
+	"github.com/larsartmann/go-output"
 )
 
 // stringFromBytes wraps the standard "marshal bytes to string with an error
@@ -18,6 +20,32 @@ import (
 func stringFromBytes(format, subject string, data []byte, err error) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("marshal %s %s: %w", format, subject, err)
+	}
+
+	return string(data), nil
+}
+
+// renderTreeNode is the shared Render body for {JSON,TOML,YAML}TreeRenderer.
+// It collapses the "if r.root == nil { return <format-empty> }" guard together
+// with the toTreeNode projection and the stringFromBytes wrapper, leaving each
+// renderer's Render() body as a single line.
+//
+// The empty-payload value differs per format (JSON: "null", TOML: "", YAML:
+// "null\n") so the caller passes the right one. The marshal function is the
+// per-format encoder (json.Marshal/yaml.Marshal/toml.Marshal or a closure that
+// captures json.Deterministic + indent options).
+func renderTreeNode(
+	root *output.TreeNode,
+	emptyPayload, format string,
+	marshal func(any) ([]byte, error),
+) (string, error) {
+	if root == nil {
+		return emptyPayload, nil
+	}
+
+	data, err := marshal(toTreeNode(root))
+	if err != nil {
+		return "", fmt.Errorf("marshal %s %s: %w", format, "tree", err)
 	}
 
 	return string(data), nil

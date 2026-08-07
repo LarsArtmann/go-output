@@ -31,15 +31,9 @@ func (r *JSONTreeRenderer) SetRoot(node *output.TreeNode) {
 
 // Render returns the tree as a JSON string.
 func (r *JSONTreeRenderer) Render() (string, error) {
-	if r.root == nil {
-		return "null", nil
-	}
-
-	node := toTreeNode(r.root)
-
-	data, err := json.Marshal(node, json.Deterministic(true), jsontext.WithIndentPrefix(""), jsontext.WithIndent("  "))
-
-	return stringFromBytes("json", "tree", data, err)
+	return renderTreeNode(r.root, "null", "json", func(v any) ([]byte, error) {
+		return json.Marshal(v, json.Deterministic(true), jsontext.WithIndentPrefix(""), jsontext.WithIndent("  "))
+	})
 }
 
 // JSONGraphRenderer renders graph nodes and edges as JSON.

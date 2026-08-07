@@ -3,7 +3,6 @@ package nom
 import (
 	"image/color"
 	"slices"
-	"strings"
 
 	"github.com/larsartmann/go-output"
 )
@@ -101,10 +100,5 @@ type InvalidActivityStatusError struct {
 }
 
 func (e *InvalidActivityStatusError) Error() string {
-	if len(e.Allowed) == 0 {
-		return "invalid activity status: " + e.Value
-	}
-
-	return "invalid activity status: " + e.Value +
-		" (allowed: " + strings.Join(output.EnumAllowedValues(e.Allowed), ", ") + ")"
+	return output.EnumErrorMessage("activity status", e.Value, output.EnumAllowedValues(e.Allowed))
 }

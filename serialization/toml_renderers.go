@@ -51,13 +51,5 @@ func (r *TOMLTreeRenderer) SetRoot(node *output.TreeNode) {
 
 // Render returns the tree as a TOML string.
 func (r *TOMLTreeRenderer) Render() (string, error) {
-	if r.root == nil {
-		return "", nil
-	}
-
-	node := toTreeNode(r.root)
-
-	data, err := toml.Marshal(node)
-
-	return stringFromBytes("toml", "tree", data, err)
+	return renderTreeNode(r.root, "", "toml", toml.Marshal)
 }
