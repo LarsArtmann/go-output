@@ -33,11 +33,7 @@ type InvalidColorModeError struct {
 
 // Error returns a descriptive error message for the invalid color mode.
 func (e *InvalidColorModeError) Error() string {
-	if len(e.Allowed) == 0 {
-		return "invalid color mode: " + e.Value
-	}
-
-	return "invalid color mode: " + e.Value + " (allowed: " + joinStrings(EnumAllowedValues(e.Allowed)) + ")"
+	return EnumErrorMessage("color mode", e.Value, EnumAllowedValues(e.Allowed))
 }
 
 // ParseColorMode converts a string to ColorMode, returning an error if invalid.

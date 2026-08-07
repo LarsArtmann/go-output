@@ -68,3 +68,22 @@ func (e *ParseError) Error() string {
 func joinStrings(ss []string) string {
 	return strings.Join(ss, ", ")
 }
+
+// EnumErrorMessage formats the canonical "invalid <kind>: <value> (allowed: a, b, c)"
+// message used by every module's InvalidXxxError.Error() implementation. The
+// empty-allowed branch mirrors the "len(Allowed) == 0" guard the typed errors
+// all carry, so callers can collapse their 4-line Error() body to a one-liner.
+//
+// This helper exists because the same body was duplicated in 13 sites across
+// root (color/line-style/node-shape), d2/ (direction/node-shape/arrow-type/
+// constraint/text-transform), graph/ (rank-dir/spline-style), and nom/
+// (activity-status/activity-kind). Each module keeps its own typed error
+// struct (root cannot import sub-modules per the Core Invariant); only the
+// message-formatting predicate is shared.
+func EnumErrorMessage(kind, value string, allowed []string) string {
+	if len(allowed) == 0 {
+		return "invalid " + kind + ": " + value
+	}
+
+	return "invalid " + kind + ": " + value + " (allowed: " + joinStrings(allowed) + ")"
+}

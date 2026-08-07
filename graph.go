@@ -107,7 +107,7 @@ type InvalidLineStyleError struct {
 
 // Error returns a descriptive error message for the invalid line style.
 func (e *InvalidLineStyleError) Error() string {
-	return "invalid line style: " + e.Value + " (allowed: " + joinStrings(EnumAllowedValues(e.Allowed)) + ")"
+	return EnumErrorMessage("line style", e.Value, EnumAllowedValues(e.Allowed))
 }
 
 // InvalidNodeShapeError is returned when an invalid node shape is provided.
@@ -118,11 +118,7 @@ type InvalidNodeShapeError struct {
 
 // Error returns a descriptive error message for the invalid node shape.
 func (e *InvalidNodeShapeError) Error() string {
-	if len(e.Allowed) == 0 {
-		return "invalid node shape: " + e.Value
-	}
-
-	return "invalid node shape: " + e.Value + " (allowed: " + joinStrings(EnumAllowedValues(e.Allowed)) + ")"
+	return EnumErrorMessage("node shape", e.Value, EnumAllowedValues(e.Allowed))
 }
 
 // ParseNodeShape converts a string to NodeShape, returning an error if invalid.

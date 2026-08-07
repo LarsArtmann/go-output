@@ -1,8 +1,6 @@
 package d2
 
 import (
-	"strings"
-
 	output "github.com/larsartmann/go-output"
 )
 
@@ -40,11 +38,7 @@ type InvalidDirectionError struct {
 
 // Error returns a descriptive error message for the invalid direction.
 func (e *InvalidDirectionError) Error() string {
-	if len(e.Allowed) == 0 {
-		return "invalid D2 direction: " + e.Value
-	}
-
-	return "invalid D2 direction: " + e.Value + " (allowed: " + strings.Join(output.EnumAllowedValues(e.Allowed), ", ") + ")"
+	return output.EnumErrorMessage("D2 direction", e.Value, output.EnumAllowedValues(e.Allowed))
 }
 
 // ParseDirection converts a string to Direction, returning an error if invalid.
@@ -136,11 +130,7 @@ type InvalidNodeShapeError struct {
 
 // Error returns a descriptive error message for the invalid node shape.
 func (e *InvalidNodeShapeError) Error() string {
-	if len(e.Allowed) == 0 {
-		return "invalid D2 node shape: " + e.Value
-	}
-
-	return "invalid D2 node shape: " + e.Value + " (allowed: " + strings.Join(output.EnumAllowedValues(e.Allowed), ", ") + ")"
+	return output.EnumErrorMessage("D2 node shape", e.Value, output.EnumAllowedValues(e.Allowed))
 }
 
 // ParseNodeShape converts a string to NodeShape, returning an error if invalid.
@@ -216,11 +206,7 @@ type InvalidArrowTypeError struct {
 
 // Error returns a descriptive error message for the invalid arrow type.
 func (e *InvalidArrowTypeError) Error() string {
-	if len(e.Allowed) == 0 {
-		return "invalid D2 arrow type: " + e.Value
-	}
-
-	return "invalid D2 arrow type: " + e.Value + " (allowed: " + strings.Join(output.EnumAllowedValues(e.Allowed), ", ") + ")"
+	return output.EnumErrorMessage("D2 arrow type", e.Value, output.EnumAllowedValues(e.Allowed))
 }
 
 // ParseArrowType converts a string to ArrowType, returning an error if invalid.
@@ -278,11 +264,7 @@ type InvalidConstraintError struct {
 
 // Error returns a descriptive error message for the invalid constraint.
 func (e *InvalidConstraintError) Error() string {
-	if len(e.Allowed) == 0 {
-		return "invalid D2 constraint: " + e.Value
-	}
-
-	return "invalid D2 constraint: " + e.Value + " (allowed: " + strings.Join(output.EnumAllowedValues(e.Allowed), ", ") + ")"
+	return output.EnumErrorMessage("D2 constraint", e.Value, output.EnumAllowedValues(e.Allowed))
 }
 
 // ParseConstraint converts a string to Constraint, returning an error if invalid.
@@ -339,11 +321,7 @@ type InvalidTextTransformError struct {
 
 // Error returns a descriptive error message for the invalid text transform.
 func (e *InvalidTextTransformError) Error() string {
-	if len(e.Allowed) == 0 {
-		return "invalid D2 text transform: " + e.Value
-	}
-
-	return "invalid D2 text transform: " + e.Value + " (allowed: " + strings.Join(output.EnumAllowedValues(e.Allowed), ", ") + ")"
+	return output.EnumErrorMessage("D2 text transform", e.Value, output.EnumAllowedValues(e.Allowed))
 }
 
 // ParseTextTransform converts a string to TextTransform, returning an error if invalid.
