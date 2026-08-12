@@ -31,17 +31,20 @@ GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
 NC='\033[0m'
 
-fail() { echo -e "${RED}FAIL:${NC} $*" >&2; exit 1; }
+fail() {
+	echo -e "${RED}FAIL:${NC} $*" >&2
+	exit 1
+}
 info() { echo -e ":: $*"; }
-pass()  { echo -e "${GREEN}ok${NC}  $*"; }
+pass() { echo -e "${GREEN}ok${NC}  $*"; }
 
 # ---------------------------------------------------------------------------
 # Submodules that get release tags (excludes test-only: examples, integration).
 # Keep in sync with .github/workflows/release.yml TAGGED_SUBMODULES.
 # ---------------------------------------------------------------------------
 TAGGED_SUBMODULES=(
-  bdd d2 daghtml delimited escape graph markdown markup
-  nom plantuml serialization table testhelpers testhelpers/graphtest tree tui
+	bdd d2 daghtml delimited escape graph markdown markup
+	nom plantuml serialization table testhelpers testhelpers/graphtest tree tui
 )
 
 # ---------------------------------------------------------------------------
@@ -49,11 +52,11 @@ TAGGED_SUBMODULES=(
 # ---------------------------------------------------------------------------
 VERSION="${1:-}"
 if [ -z "$VERSION" ]; then
-  fail "usage: scripts/tag-release.sh <version>  (e.g. v0.38.0)"
+	fail "usage: scripts/tag-release.sh <version>  (e.g. v0.38.0)"
 fi
 case "$VERSION" in
-  v*) ;;
-  *) fail "version must start with 'v' (got: $VERSION)" ;;
+v*) ;;
+*) fail "version must start with 'v' (got: $VERSION)" ;;
 esac
 
 VER_NUM="${VERSION#v}"
@@ -71,8 +74,8 @@ pass "tags synced"
 info "checking remote for existing $VERSION tags"
 REMOTE_TAGS=$(git ls-remote --tags origin | grep -F "/$VERSION" || true)
 if [ -n "$REMOTE_TAGS" ]; then
-  echo "$REMOTE_TAGS"
-  fail "$VERSION tags already exist on origin — use a new version or retract"
+	echo "$REMOTE_TAGS"
+	fail "$VERSION tags already exist on origin — use a new version or retract"
 fi
 pass "no $VERSION tags on origin"
 
@@ -81,7 +84,7 @@ pass "no $VERSION tags on origin"
 # ---------------------------------------------------------------------------
 info "checking working tree"
 if ! git diff-index --quiet HEAD --; then
-  fail "working tree is dirty — commit or stash before tagging"
+	fail "working tree is dirty — commit or stash before tagging"
 fi
 pass "working tree is clean"
 
@@ -89,13 +92,13 @@ pass "working tree is clean"
 # 3. Verify version does not exist locally
 # ---------------------------------------------------------------------------
 if git rev-parse -q --verify "refs/tags/$VERSION" >/dev/null; then
-  fail "root tag $VERSION already exists locally"
+	fail "root tag $VERSION already exists locally"
 fi
 for mod in "${TAGGED_SUBMODULES[@]}"; do
-  SUBTAG="${mod}/${VERSION}"
-  if git rev-parse -q --verify "refs/tags/${SUBTAG}" >/dev/null; then
-    fail "submodule tag $SUBTAG already exists locally"
-  fi
+	SUBTAG="${mod}/${VERSION}"
+	if git rev-parse -q --verify "refs/tags/${SUBTAG}" >/dev/null; then
+		fail "submodule tag $SUBTAG already exists locally"
+	fi
 done
 pass "no $VERSION tags exist locally"
 
@@ -116,9 +119,9 @@ git tag -a "$VERSION" -m "$VERSION" "$COMMIT"
 pass "created root $VERSION"
 
 for mod in "${TAGGED_SUBMODULES[@]}"; do
-  SUBTAG="${mod}/${VERSION}"
-  git tag -a "$SUBTAG" -m "$VERSION" "$COMMIT"
-  pass "created $SUBTAG"
+	SUBTAG="${mod}/${VERSION}"
+	git tag -a "$SUBTAG" -m "$VERSION" "$COMMIT"
+	pass "created $SUBTAG"
 done
 
 # ---------------------------------------------------------------------------
@@ -130,14 +133,14 @@ info "verifying tag family ($((1 + ${#TAGGED_SUBMODULES[@]})) tags, all annotate
 TAG_COUNT=$(git tag -l "*$VERSION" | wc -l)
 EXPECTED=$((1 + ${#TAGGED_SUBMODULES[@]}))
 if [ "$TAG_COUNT" -ne "$EXPECTED" ]; then
-  fail "expected $EXPECTED tags, found $TAG_COUNT"
+	fail "expected $EXPECTED tags, found $TAG_COUNT"
 fi
 
 NON_ANNOTATED=0
 WRONG_COMMIT=0
 for t in $(git tag -l "*$VERSION"); do
-  [ "$(git cat-file -t "$t")" = "tag" ] || NON_ANNOTATED=$((NON_ANNOTATED + 1))
-  [ "$(git rev-list -n1 "$t")" = "$COMMIT" ] || WRONG_COMMIT=$((WRONG_COMMIT + 1))
+	[ "$(git cat-file -t "$t")" = "tag" ] || NON_ANNOTATED=$((NON_ANNOTATED + 1))
+	[ "$(git rev-list -n1 "$t")" = "$COMMIT" ] || WRONG_COMMIT=$((WRONG_COMMIT + 1))
 done
 
 [ "$NON_ANNOTATED" -eq 0 ] || fail "$NON_ANNOTATED tag(s) are not annotated"

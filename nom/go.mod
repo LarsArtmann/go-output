@@ -3,9 +3,9 @@ module github.com/larsartmann/go-output/nom
 go 1.26.5
 
 require (
-	charm.land/lipgloss/v2 v2.0.5
+	charm.land/lipgloss/v2 v2.0.6
 	github.com/charmbracelet/colorprofile v0.4.3
-	github.com/charmbracelet/x/ansi v0.11.7
+	github.com/charmbracelet/x/ansi v0.11.8
 	github.com/charmbracelet/x/exp/golden v0.0.0-20260705004817-2cc9a8fe1146
 	github.com/charmbracelet/x/vt v0.0.0-20260629091435-9c70f75e26a4
 	github.com/larsartmann/go-output v0.37.0
@@ -16,7 +16,7 @@ require (
 
 require (
 	github.com/aymanbagabas/go-udiff v0.4.1 // indirect
-	github.com/charmbracelet/ultraviolet v0.0.0-20260803092147-8b693049ce2a // indirect
+	github.com/charmbracelet/ultraviolet v0.0.0-20260811164956-006e29f97886 // indirect
 	github.com/charmbracelet/x/exp/ordered v0.1.0 // indirect
 	github.com/charmbracelet/x/term v0.2.2 // indirect
 	github.com/charmbracelet/x/termios v0.1.1 // indirect
@@ -31,7 +31,7 @@ require (
 	github.com/muesli/cancelreader v0.2.2 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/rogpeppe/go-internal v1.15.0 // indirect
-	github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect
+	github.com/xo/terminfo v1.0.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/exp v0.0.0-20260611194520-c48552f49976 // indirect
 	golang.org/x/net v0.56.0 // indirect

@@ -172,7 +172,7 @@ body {
 
 type fullHTMLData struct {
 	Title   string
-	Styles  string
+	Styles  template.CSS
 	Content template.HTML
 }
 
@@ -180,10 +180,10 @@ func renderFullHTMLDocument(title, styles, content string) (string, error) {
 	var b strings.Builder
 
 	// #nosec G203 — Content is already-rendered HTML from the table/tree renderer.
-	// The template auto-escapes Title and Styles; Content is trusted HTML output.
+	// Styles and Content are trusted: Styles is our own CSS, Content is rendered table/tree HTML.
 	err := fullHTMLTemplate.Execute(&b, fullHTMLData{
 		Title:   title,
-		Styles:  styles,
+		Styles:  template.CSS(styles),
 		Content: template.HTML(content),
 	})
 	if err != nil {

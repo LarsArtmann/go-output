@@ -29,4 +29,6 @@ retract (
 
 replace github.com/larsartmann/go-output/markdown => ./markdown
 
+replace github.com/larsartmann/go-output/markup => ./markup
+
 replace github.com/larsartmann/go-output/tree => ./tree
