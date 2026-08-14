@@ -106,7 +106,7 @@ b.AddNode(*output.NewGraphNode("compile", "Compile"))  // has *
 
 The README was already correct (has `*`), but the website hero code snippet still lacks the dereference. This means the most prominent code example on the website doesn't compile.
 
-### 3. Used `--legacy-peer-deps` for npm Install
+### 3. Used `--legacy-peer-deps` for pnpm Install
 
 The `package-lock.json` was generated with `--legacy-peer-deps` due to `astro-og-canvas@0.11.1` peer dependency conflict with Astro 6.x. No `.npmrc` file documents this requirement — future builds will fail without it.
 

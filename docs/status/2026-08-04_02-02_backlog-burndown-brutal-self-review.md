@@ -24,7 +24,7 @@ Resolved **12 of 12** actionable backlog items. All 19 modules build and test gr
 | 4   | Retract v0.34.0 tag (P1)                 | `go.mod` — `retract v0.34.0` added. Commit `d750c16`.                                                                                                |
 | 5   | Create/verify GitHub Releases (P1)       | v0.34.0 retracted (no release needed). v0.35.0 + v0.36.0 confirmed have releases.                                                                    |
 | 6   | Root-cause bogus-tag creator (P1)        | No automation creates tags in this repo. Manual error pointing at `194441b`. Retract directives are permanent mitigation.                            |
-| 7   | Fix 10 dependabot vulnerabilities (P1)   | `website/package.json` + `package-lock.json` — astro v7.1.6, vite v8, esbuild 0.28.1. `npm audit` → 0 vulnerabilities. Commits `db92aa6`, `1f5de4c`. |
+| 7   | Fix 10 dependabot vulnerabilities (P1)   | `website/package.json` + `package-lock.json` — astro v7.1.6, vite v8, esbuild 0.28.1. `pnpm audit` → 0 vulnerabilities. Commits `db92aa6`, `1f5de4c`. |
 | 8   | Migrate d2 sentinels → typed errors (P2) | `d2/d2_enum.go` — 5 typed structs. `d2/error_contract_test.go` — `errors.AsType` tests. Commit `f92227b`.                                            |
 | 9   | Cross-module error integration test (P2) | `integration/cross_module_error_test.go` — 5 test groups across root/d2/graph.                                                                       |
 | 10  | Fix ADR numbering collision (P3)         | File already renamed. Fixed stale `ADR 0011` → `ADR 014` in AGENTS.md. Updated d2 error-system description.                                          |
@@ -90,7 +90,7 @@ None. All actionable items resolved. Remaining 2 TODO items (community tasks) ar
 
 11. **The TUI `Flush()` call logs errors via `slog.Error` but doesn't surface them to the caller.** A caller can't tell if timing data was lost. Consider returning the error or adding a callback.
 
-12. **npm binary was found via `/nix/store/32f9l3m7...`** — a fragile hardcoded path. The website should have npm available through the devShell or a documented `nix run` command.
+12. **pnpm binary was found via `/nix/store/32f9l3m7...`** — a fragile hardcoded path. The website should have pnpm available through the devShell or a documented `nix run` command.
 
 ---
 
@@ -144,7 +144,7 @@ None. All actionable items resolved. Remaining 2 TODO items (community tasks) ar
 | 22  | Add a `name:` comment to the retract directives in go.mod for future grep-ability                          | 2 min  |
 | 23  | Consider adding `go mod verify` to CI to catch corrupted module caches                                     | 10 min |
 | 24  | Add CI job for `nix flake check` (if Nix is available in CI)                                               | 30 min |
-| 25  | Consider adding dependabot config for Go modules (currently only npm alerts exist)                         | 15 min |
+| 25  | Consider adding dependabot config for Go modules (currently only pnpm alerts exist)                         | 15 min |
 | 26  | Add a `.github/dependabot.yml` for GitHub Actions version updates                                          | 10 min |
 | 27  | Verify the SHA-pinned actions are the latest stable (they were checked at session time, but versions move) | 5 min  |
 
@@ -191,8 +191,8 @@ None. All actionable items resolved. Remaining 2 TODO items (community tasks) ar
 
 | #   | Task                                                                                                                      | Effort |
 | --- | ------------------------------------------------------------------------------------------------------------------------- | ------ |
-| 47  | Add `npm audit` to CI for the website directory                                                                           | 15 min |
-| 48  | Document the npm dependency management approach in AGENTS.md (how to update, what overrides exist and why)                | 20 min |
+| 47  | Add `pnpm audit` to CI for the website directory                                                                           | 15 min |
+| 48  | Document the pnpm dependency management approach in AGENTS.md (how to update, what overrides exist and why)                | 20 min |
 | 49  | Run `go mod tidy` across all modules to ensure cleanliness                                                                | 5 min  |
 | 50  | Clean up `docs/status/` — there are 20+ status reports; consider archiving old ones to a `docs/status/archive/` directory | 30 min |
 
@@ -225,6 +225,6 @@ All 19 modules: BUILD OK
 All 19 modules: TEST OK (non-race)
 TUI (race): TEST OK
 go vet (root, d2, tui, integration): CLEAN
-npm audit (website): 0 vulnerabilities
+pnpm audit (website): 0 vulnerabilities
 CI: NOT VERIFIED (10 unpushed commits)
 ```

@@ -56,8 +56,8 @@ Goal: make the three public-facing surfaces (README.md, website, GitHub metadata
 
 ### 6. Website — Build Verified
 
-- `npm run build` succeeds: 15 HTML pages, 5 OG images, sitemap, CSP patched 15/15 files
-- `npm run typecheck`: 0 errors, 0 warnings, 0 hints (31 files)
+- `pnpm run build` succeeds: 15 HTML pages, 5 OG images, sitemap, CSP patched 15/15 files
+- `pnpm run typecheck`: 0 errors, 0 warnings, 0 hints (31 files)
 - Pagefind search index built
 
 ### 7. README — Minimal Improvements
@@ -88,7 +88,7 @@ I wrote code examples from the README and AGENTS.md, **not from verifying agains
 ### 3. Package Dependency Health
 
 - Used `--legacy-peer-deps` to work around `astro-og-canvas@0.11.1` peer dep conflict with Astro 6.x
-- 3 npm audit vulnerabilities (1 low, 1 moderate, 1 high) — not investigated
+- 3 pnpm audit vulnerabilities (1 low, 1 moderate, 1 high) — not investigated
 - The `overrides` section in package.json may need updating
 
 ---
