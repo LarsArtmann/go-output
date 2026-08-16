@@ -27,9 +27,10 @@ func renderJSONUnknown(w io.Writer, data any, _ output.RenderOptions) error {
 	})
 }
 
-// MarshalJSON encodes v to JSON.
+// MarshalJSON encodes v to JSON. Map keys are emitted deterministically
+// (sorted) to match the indent and table render paths.
 func MarshalJSON(v any) ([]byte, error) {
-	data, err := json.Marshal(v)
+	data, err := json.Marshal(v, json.Deterministic(true))
 	if err != nil {
 		return nil, fmt.Errorf("marshal json %T: %w", v, err)
 	}
@@ -57,11 +58,12 @@ func NewJSONWriter(w io.Writer) *JSONWriter {
 	return &JSONWriter{Writer: w}
 }
 
-// Encode writes v as JSON to the underlying writer.
+// Encode writes v as JSON to the underlying writer. Map keys are emitted
+// deterministically (sorted) to match MarshalJSON.
 func (j *JSONWriter) Encode(v any) error {
 	encoder := jsontext.NewEncoder(j.Writer, jsontext.WithIndentPrefix(""), jsontext.WithIndent("  "))
 
-	err := json.MarshalEncode(encoder, v)
+	err := json.MarshalEncode(encoder, v, json.Deterministic(true))
 	if err != nil {
 		return fmt.Errorf("encode json (%T): %w", v, err)
 	}

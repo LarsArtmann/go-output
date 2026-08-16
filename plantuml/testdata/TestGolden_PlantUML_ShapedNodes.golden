@@ -5,6 +5,6 @@ skinparam defaultFontSize 12
 [Start] as start
 [End] as end
 
-start --> : flows to end
+start --> end : flows to
 
 @enduml

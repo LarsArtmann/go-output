@@ -297,3 +297,55 @@ func TestDOTNodeStyleEscapeOutput(t *testing.T) {
 		`\nd`,
 	)
 }
+
+func TestDOTGraphIDInjectionNeutralized(t *testing.T) {
+	t.Parallel()
+
+	renderer := NewDOTRenderer()
+	renderer.SetGraphID("x\nlabel=\"injected\"; //")
+	renderer.AddNode(output.GraphNode{ //nolint:exhaustruct // Injection test
+		ID:    output.NewBrandedID[output.GraphNodeIDBrand]("a"),
+		Label: output.NewBrandedID[output.GraphNodeLabelBrand]("A"),
+	})
+
+	got, err := renderer.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
+	// The header must stay on ONE line: the quoted form may contain the
+	// word "injected" as inert ID text, but the raw newline must not split
+	// it into a second statement line.
+	firstLine := strings.SplitN(got, "\n", 2)[0]
+	if !strings.HasSuffix(firstLine, "{") {
+		t.Errorf("graph ID broke the DOT header onto multiple lines:\n%s", got)
+	}
+
+	if !strings.HasPrefix(firstLine, `digraph "x\nlabel=`) {
+		t.Errorf("hostile graph ID should be quoted+escaped, got header %q", firstLine)
+	}
+}
+
+func TestDOTInvalidRankDirNotEmitted(t *testing.T) {
+	t.Parallel()
+
+	renderer := NewDOTRenderer()
+	renderer.SetRankDir(RankDir("TB\nlabel=x"))
+	renderer.AddNode(output.GraphNode{ //nolint:exhaustruct // Injection test
+		ID:    output.NewBrandedID[output.GraphNodeIDBrand]("a"),
+		Label: output.NewBrandedID[output.GraphNodeLabelBrand]("A"),
+	})
+
+	got, err := renderer.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
+	if strings.Contains(got, "label=x") {
+		t.Errorf("invalid rankdir value emitted:\n%s", got)
+	}
+
+	if strings.Contains(got, "rankdir=") {
+		t.Errorf("invalid rankdir should be omitted entirely:\n%s", got)
+	}
+}

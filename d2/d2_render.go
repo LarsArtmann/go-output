@@ -182,7 +182,7 @@ func (d *Diagram) writeConfig(b *strings.Builder) {
 		return
 	}
 
-	if d.direction != "" && d.direction != DirDown {
+	if d.direction != "" && d.direction != DirDown && d.direction.IsValid() {
 		fmt.Fprintf(b, "direction: %s\n", d.direction)
 	}
 
@@ -231,7 +231,7 @@ func (d *Diagram) writeTable(b *strings.Builder, table Table) {
 func (*Diagram) writeColumn(b *strings.Builder, col Column) {
 	if col.Constraint != "" {
 		fmt.Fprintf(b, "  %s: %s {constraint: %s}\n",
-			d2Quote(col.Name), d2Quote(col.Type), string(col.Constraint))
+			d2Quote(col.Name), d2Quote(col.Type), d2Quote(string(col.Constraint)))
 	} else {
 		fmt.Fprintf(b, "  %s: %s\n", d2Quote(col.Name), d2Quote(col.Type))
 	}
@@ -260,7 +260,7 @@ func (d *Diagram) writeNestedNode(b *strings.Builder, node Node) {
 }
 
 func (d *Diagram) writeNodeAttrs(b *strings.Builder, node Node) {
-	if node.Shape != "" && node.Shape != ShapeRectangle {
+	if node.Shape != "" && node.Shape != ShapeRectangle && node.Shape.IsValid() {
 		fmt.Fprintf(b, "  shape: %s\n", node.Shape)
 	}
 

@@ -87,11 +87,11 @@ func (d *Diagram) writeEdgeBlockAttrs(b *strings.Builder, edge Edge) {
 		b.WriteString("  style.animated: true\n")
 	}
 
-	if edge.SourceArrow != "" {
+	if edge.SourceArrow != "" && edge.SourceArrow.IsValid() {
 		fmt.Fprintf(b, "  source-arrowhead.shape: %s\n", edge.SourceArrow)
 	}
 
-	if edge.TargetArrow != "" {
+	if edge.TargetArrow != "" && edge.TargetArrow.IsValid() {
 		fmt.Fprintf(b, "  target-arrowhead.shape: %s\n", edge.TargetArrow)
 	}
 }

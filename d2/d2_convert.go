@@ -117,6 +117,10 @@ func (d *Diagram) addTreeNodes(node *output.TreeNode, parentID string) {
 		nodeID = escape.SlugifyID(node.Label.Get())
 	}
 
+	if nodeID == "" {
+		nodeID = "node"
+	}
+
 	d.AddNode(Node{
 		ID:    output.NewBrandedID[output.D2NodeIDBrand](nodeID),
 		Label: output.NewBrandedID[output.D2NodeLabelBrand](node.Label.Get()),

@@ -31,26 +31,31 @@ func WithTitle(title string) Option {
 	return func(c *Config) { c.title = title }
 }
 
-// Write writes a D2 diagram to the provided writer.
+// Write writes a D2 diagram to the provided writer. Options are applied to
+// a shallow copy — the caller's diagram is never mutated, so rendering the
+// same diagram with different options (or no options) cannot leak settings
+// across calls.
 func Write(w io.Writer, diagram *Diagram, opts ...Option) error {
 	cfg := Config{}
 	for _, opt := range opts {
 		opt(&cfg)
 	}
 
+	rendered := *diagram
+
 	if cfg.direction != "" {
-		diagram.SetDirection(Direction(cfg.direction))
+		rendered.SetDirection(Direction(cfg.direction))
 	}
 
 	if cfg.layout != "" {
-		diagram.SetLayout(cfg.layout)
+		rendered.SetLayout(cfg.layout)
 	}
 
 	if cfg.title != "" {
-		diagram.SetTitle(cfg.title)
+		rendered.SetTitle(cfg.title)
 	}
 
-	return output.WriteRenderedRawFrom(w, diagram.Render, "d2", "render d2")
+	return output.WriteRenderedRawFrom(w, rendered.Render, "d2", "render d2")
 }
 
 // Render renders a D2 diagram as a string.

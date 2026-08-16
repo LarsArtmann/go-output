@@ -151,6 +151,22 @@ func (r *DOTRenderer) Render() (string, error) {
 // renderDOTString builds the complete DOT document from nodes, edges, and config.
 // This is the single source of truth for DOT formatting — shared by both
 // WriteDOT (CQRS path) and DOTRenderer.Render() (legacy path).
+// dotGraphID returns a safe DOT graph identifier: bare when it contains only
+// ASCII letters, digits, and underscores (the common case, matching existing
+// goldens), otherwise quoted and escaped. Arbitrary raw IDs could inject
+// statements via newlines or break the header syntax via spaces.
+func dotGraphID(id string) string {
+	for _, r := range id {
+		if !((r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') || (r >= '0' && r <= '9') || r == '_') {
+			// %q produces a valid quoted DOT ID: it escapes quotes,
+			// backslashes, and newlines in exactly the forms DOT accepts.
+			return fmt.Sprintf("%q", id)
+		}
+	}
+
+	return id
+}
+
 func renderDOTString(nodes []output.GraphNode, edges []output.GraphEdge, cfg dotConfig) string {
 	var b strings.Builder
 
@@ -160,12 +176,17 @@ func renderDOTString(nodes []output.GraphNode, edges []output.GraphEdge, cfg dot
 		b.WriteString("graph ")
 	}
 
-	b.WriteString(cfg.graphID)
+	b.WriteString(dotGraphID(cfg.graphID))
 	b.WriteString(" {\n")
 
 	b.WriteString("  // Graph attributes\n")
-	fmt.Fprintf(&b, "  rankdir=%s;\n", cfg.rankdir.String())
-	fmt.Fprintf(&b, "  splines=%s;\n", cfg.splines.String())
+	if cfg.rankdir.IsValid() {
+		fmt.Fprintf(&b, "  rankdir=%s;\n", cfg.rankdir.String())
+	}
+
+	if cfg.splines.IsValid() {
+		fmt.Fprintf(&b, "  splines=%s;\n", cfg.splines.String())
+	}
 	fmt.Fprintf(&b, "  nodesep=%s;\n", cfg.nodesep)
 	fmt.Fprintf(&b, "  ranksep=%s;\n\n", cfg.ranksep)
 
@@ -243,8 +264,8 @@ func writeDOTEdgeStmt(b *strings.Builder, edge output.GraphEdge, directed bool) 
 		attrs = append(attrs, fmt.Sprintf("color=\"%s\"", escape.DOT(edge.Style.Color)))
 	}
 
-	if edge.Style.Line != "" {
-		attrs = append(attrs, "style="+escape.DOT(edge.Style.Line.String()))
+	if edge.Style.Line != "" && edge.Style.Line.IsValid() {
+		attrs = append(attrs, "style="+edge.Style.Line.String())
 	}
 
 	if len(attrs) > 0 {

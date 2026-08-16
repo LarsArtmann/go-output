@@ -77,6 +77,24 @@ func mermaidIDTestCases() []escapeTestCase {
 	}
 }
 
+func markdownCellTestCases() []escapeTestCase {
+	return []escapeTestCase{
+		{"plain", "hello", "hello"},
+		{"pipe", "a|b", `a\|b`},
+		{"backslash", `a\b`, `a\\b`},
+		{"backslash pipe", `a\|b`, `a\\\|b`},
+		{"newline", "a\nb", "a<br>b"},
+		{"carriage return", "a\rb", "ab"},
+		{"or-pattern", "yes|no", `yes\|no`},
+	}
+}
+
+func TestMarkdownCell(t *testing.T) {
+	t.Parallel()
+
+	testEscapeFunc(t, "MarkdownCell", MarkdownCell, markdownCellTestCases())
+}
+
 var mermaidSlugTestData = []escapeTestCase{
 	{"simple text", "simple", "simple"},
 	{"has spaces", "has spaces", "has_spaces"},

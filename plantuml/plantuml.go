@@ -58,9 +58,9 @@ func (d *PlantUMLDiagram) Render() (string, error) {
 
 		label := escape.PlantUML(node.Label.Get())
 		if colorSpec != "" {
-			fmt.Fprintf(&b, "[%s] as %s %s\n", label, sanitizePlantUMLID(node.ID.Get()), colorSpec)
+			fmt.Fprintf(&b, "[%s] as %s %s\n", label, escape.PlantUMLID(node.ID.Get()), colorSpec)
 		} else {
-			fmt.Fprintf(&b, "[%s] as %s\n", label, sanitizePlantUMLID(node.ID.Get()))
+			fmt.Fprintf(&b, "[%s] as %s\n", label, escape.PlantUMLID(node.ID.Get()))
 		}
 	}
 
@@ -72,22 +72,20 @@ func (d *PlantUMLDiagram) Render() (string, error) {
 			label = " : " + escape.PlantUML(edge.Label.Get())
 		}
 
+		// PlantUML edge syntax is `from --> to : label`. Emitting the label
+		// before the target made the target part of the label text and left
+		// the edge dangling.
 		fmt.Fprintf(
-			&b, "%s -->%s %s\n",
-			sanitizePlantUMLID(edge.From.Get()),
+			&b, "%s --> %s%s\n",
+			escape.PlantUMLID(edge.From.Get()),
+			escape.PlantUMLID(edge.To.Get()),
 			label,
-			sanitizePlantUMLID(edge.To.Get()),
 		)
 	}
 
 	b.WriteString("\n@enduml")
 
 	return b.String(), nil
-}
-
-// sanitizePlantUMLID converts a string to a valid PlantUML identifier.
-func sanitizePlantUMLID(s string) string {
-	return escape.SlugifyID(s)
 }
 
 // plantumlColorSpec converts a NodeStyle into a PlantUML color specification

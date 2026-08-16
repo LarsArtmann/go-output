@@ -118,20 +118,49 @@ func (m *MarkdownTable) Render() (string, error) {
 		return "", nil
 	}
 
-	colWidths := m.calculateColumnWidths()
+	// Escape cells up front so column widths are computed on the escaped
+	// text — a `|` in a cell becomes `\|` (one rune wider) and would
+	// otherwise skew the padding of every aligned column.
+	escaped := &MarkdownTable{
+		headers:   markdownCells(m.headers),
+		rows:      make([][]string, len(m.rows)),
+		footer:    markdownCells(m.footer),
+		align:     m.align,
+		colorMode: m.colorMode,
+	}
+
+	for i, row := range m.rows {
+		escaped.rows[i] = markdownCells(row)
+	}
+
+	colWidths := escaped.calculateColumnWidths()
 
 	var b strings.Builder
 
-	m.writeHeader(&b, colWidths)
-	m.writeSeparator(&b, colWidths)
-	m.writeRows(&b, colWidths)
+	escaped.writeHeader(&b, colWidths)
+	escaped.writeSeparator(&b, colWidths)
+	escaped.writeRows(&b, colWidths)
 
-	if len(m.footer) > 0 {
-		m.writeSeparator(&b, colWidths)
-		m.writeFooterRow(&b, colWidths)
+	if len(escaped.footer) > 0 {
+		escaped.writeSeparator(&b, colWidths)
+		escaped.writeFooterRow(&b, colWidths)
 	}
 
 	return b.String(), nil
+}
+
+// markdownCells escapes every cell for Markdown table output.
+func markdownCells(cells []string) []string {
+	if len(cells) == 0 {
+		return nil
+	}
+
+	escaped := make([]string, len(cells))
+	for i, cell := range cells {
+		escaped[i] = escape.MarkdownCell(cell)
+	}
+
+	return escaped
 }
 
 func (m *MarkdownTable) calculateColumnWidths() []int {

@@ -278,3 +278,87 @@ func TestMarkdownTable_AsTableRenderer(t *testing.T) {
 
 	_ = tr
 }
+
+func TestMarkdownTable_EscapesCellContent(t *testing.T) {
+	t.Parallel()
+
+	m := NewMarkdownTable()
+	m.SetHeaders([]string{"Expr", "Note"})
+	m.AddRow([]string{"a|b", "plain"})
+	m.AddRow([]string{"line1\nline2", `back\slash`})
+
+	out, err := m.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
+	lines := strings.Split(strings.TrimRight(out, "\n"), "\n")
+
+	// Header + separator + 2 data rows = 4 lines: no cell newline may
+	// create an extra rendered row.
+	if len(lines) != 4 {
+		t.Fatalf("escaping must not add rows: got %d lines:\n%s", len(lines), out)
+	}
+
+	if !strings.Contains(lines[2], `a\|b`) {
+		t.Errorf("pipe not escaped in data row: %q", lines[2])
+	}
+
+	if !strings.Contains(lines[3], "line1<br>line2") {
+		t.Errorf("newline not escaped as <br>: %q", lines[3])
+	}
+
+	if !strings.Contains(lines[3], "back"+`\`+`\`+"slash") {
+		t.Errorf("backslash not escaped: %q", lines[3])
+	}
+
+	// Each line must contain exactly 3 UNESCAPED pipes (2 columns).
+	for i, line := range lines {
+		unescaped := strings.Count(line, "|") - strings.Count(line, `\|`)
+		if unescaped != 3 {
+			t.Errorf("line %d has %d unescaped pipes, want 3 (cell content leaked):\n%s", i, unescaped, out)
+		}
+	}
+}
+
+func TestMarkdownTable_EscapedWidthsStayAligned(t *testing.T) {
+	t.Parallel()
+
+	m := NewMarkdownTable()
+	m.SetHeaders([]string{"A", "B"})
+	m.AddRow([]string{"x|y", "z"})
+
+	out, err := m.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
+	lines := strings.Split(strings.TrimRight(out, "\n"), "\n")
+	if len(lines) < 3 {
+		t.Fatalf("expected header/sep/row, got:\n%s", out)
+	}
+
+	header, separator, row := lines[0], lines[1], lines[2]
+
+	// Header and data rows share the same per-cell " | " framing, so their
+	// raw lengths must match — widths must be computed on the ESCAPED text
+	// (x\|y is 4 runes), otherwise the wider cell skews row padding.
+	if len(header) != len(row) {
+		t.Errorf("header (%d) and row (%d) lengths diverge:\n%s", len(header), len(row), out)
+	}
+
+	// Column 0 width = len("x\\|y") = 4: header "A" pads to 4, the escaped
+	// cell is followed by exactly one pad space, and the separator run is
+	// width+1 = 5 dashes.
+	if !strings.Contains(header, "| A    |") {
+		t.Errorf("header not padded to escaped width (want A + 4 spaces):\n%s", out)
+	}
+
+	if !strings.Contains(row, "| x\\|y |") {
+		t.Errorf("row not padded to escaped width (want x\\|y + 1 space):\n%s", out)
+	}
+
+	if !strings.Contains(separator, "|-----|") {
+		t.Errorf("separator dashes must be escaped-width+1 = 5:\n%s", out)
+	}
+}

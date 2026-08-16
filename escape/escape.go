@@ -18,13 +18,15 @@ func HTML(s string) string {
 	return html.EscapeString(s)
 }
 
-// d2Replacer escapes backslash, double quote, newline, and tab for D2 strings.
+// d2Replacer escapes backslash, double quote, newline, carriage return, and
+// tab for D2 strings.
 //
 //nolint:gochecknoglobals // Reusable strings.Replacer, safe to share.
 var d2Replacer = strings.NewReplacer(
 	`\`, `\\`,
 	`"`, `\"`,
 	"\n", `\n`,
+	"\r", `\r`,
 	"\t", `\t`,
 )
 
@@ -129,6 +131,49 @@ var mermaidEntityGuard = regexp.MustCompile(`#([0-9A-Za-z]+;)`)
 // MermaidText escapes special characters for Mermaid display labels.
 func MermaidText(s string) string {
 	return mermaidEntityGuard.ReplaceAllString(mermaidTextReplacer.Replace(s), "&#35;$1")
+}
+
+// MarkdownCell escapes a string for use inside a GitHub-Flavored Markdown
+// table cell. A raw `|` would end the cell (corrupting the column layout),
+// and a raw newline would break the row; a raw `\` could combine with a
+// following `|` into an unintended escape. Newlines become <br> line breaks,
+// which Markdown renders inside the cell.
+//
+//nolint:gochecknoglobals // Reusable strings.Replacer, safe to share.
+var markdownCellReplacer = strings.NewReplacer(
+	`\`, `\\`,
+	"|", `\|`,
+	"\n", "<br>",
+	"\r", "",
+)
+
+// MarkdownCell escapes special characters for Markdown table cells.
+func MarkdownCell(s string) string {
+	return markdownCellReplacer.Replace(s)
+}
+
+// PlantUMLID sanitizes a string for use as a PlantUML node identifier.
+// PlantUML has no quoted-ID escape hatch (unlike DOT), so IDs must be
+// allowlisted: SlugifyID first (preserving the established underscore
+// slugging), then any rune outside ASCII letters, digits, and underscore is
+// dropped — this removes newline/`@`/`:`/`;` vectors like `a\n@enduml`
+// that could terminate the diagram or forge directives. Empty results fall
+// back to "node", matching MermaidID.
+func PlantUMLID(s string) string {
+	slug := SlugifyID(s)
+
+	var result strings.Builder
+	for _, r := range slug {
+		if isMermaidIdentRune(r) {
+			result.WriteRune(r)
+		}
+	}
+
+	if result.Len() == 0 {
+		return "node"
+	}
+
+	return result.String()
 }
 
 // plantumlReplacer escapes characters that break PlantUML component notation

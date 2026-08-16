@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/larsartmann/go-output"
+	"github.com/larsartmann/go-output/escape"
 	"github.com/larsartmann/go-output/testhelpers"
 	"github.com/larsartmann/go-output/testhelpers/graphtest"
 )
@@ -43,7 +44,7 @@ func TestPlantUMLDiagramRender(t *testing.T) {
 	})
 }
 
-func TestSanitizePlantUMLID(t *testing.T) {
+func TestPlantUMLID(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
@@ -54,14 +55,18 @@ func TestSanitizePlantUMLID(t *testing.T) {
 		{"hello world", "hello_world"},
 		{"my-service", "my_service"},
 		{"my-cool-service", "my_cool_service"},
+		{"a\n@enduml", "aenduml"},
+		{"colon:semi;hash#", "colonsemihash"},
+		{"", "node"},
+		{"###", "node"},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.input, func(t *testing.T) {
 			t.Parallel()
 
-			got := sanitizePlantUMLID(tt.input)
-			testhelpers.AssertEqual(t, "sanitizePlantUMLID", tt.input, got, tt.want)
+			got := escape.PlantUMLID(tt.input)
+			testhelpers.AssertEqual(t, "PlantUMLID", tt.input, got, tt.want)
 		})
 	}
 }

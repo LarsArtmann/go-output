@@ -4,6 +4,7 @@ import (
 	"io"
 
 	"github.com/larsartmann/go-output"
+	"github.com/larsartmann/go-output/escape"
 )
 
 //nolint:gochecknoinits // Registers PlantUML TableRenderer for registry-based dispatch.
@@ -43,8 +44,8 @@ func (d *PlantUMLDiagram) addTreeNodes(node *output.TreeNode, parentID output.Tr
 
 func plantUMLTreeNodeID(node *output.TreeNode) string {
 	if !node.ID.IsZero() {
-		return node.ID.Get()
+		return escape.PlantUMLID(node.ID.Get())
 	}
 
-	return sanitizePlantUMLID(node.Label.Get())
+	return escape.PlantUMLID(node.Label.Get())
 }
