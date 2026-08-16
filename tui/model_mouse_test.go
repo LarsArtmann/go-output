@@ -48,6 +48,7 @@ func TestProgressModel_MouseClick_ToggleOffNode(t *testing.T) {
 	_ = tree.GetRootNodes()
 
 	_ = model.renderNOMStyle()
+	model.selectedNode = nom.ActivityID("step-a")
 
 	clickY := model.treeStartLine + 0
 

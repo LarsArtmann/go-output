@@ -36,13 +36,13 @@ func TestProgressModel_LayeredMode_RendersLayers(t *testing.T) {
 func TestProgressModel_LayeredMode_MouseClickSelectsNode(t *testing.T) {
 	t.Parallel()
 
-	model, tree := setupLayeredTestModel(t, true)
+	model, _ := setupLayeredTestModel(t, true)
 
-	// Force visibleEntries population before mouse click.
-	model.visibleEntries = tree.VisibleEntriesWithSnapshots(model.nomSubscriber.SnapshotActivities(), 20)
+	// Render once so visibleEntries AND treeStartLine reflect the real layout.
+	_ = model.renderNOMStyle()
 
-	// Layer 0 header is line 0; the first node row is line 1.
-	clickY := model.treeStartLine + chromeLinesAboveTree + 1
+	// Layer 0 header is tree-relative line 0; the first node row is line 1.
+	clickY := model.treeStartLine + 1
 
 	m := clickAt(model, clickY)
 
@@ -54,12 +54,12 @@ func TestProgressModel_LayeredMode_MouseClickSelectsNode(t *testing.T) {
 func TestProgressModel_LayeredMode_ClickHeaderClearsSelection(t *testing.T) {
 	t.Parallel()
 
-	model, tree := setupLayeredTestModel(t, false)
+	model, _ := setupLayeredTestModel(t, false)
 
-	model.visibleEntries = tree.VisibleEntriesWithSnapshots(model.nomSubscriber.SnapshotActivities(), 20)
+	_ = model.renderNOMStyle()
 	model.selectedNode = nom.ActivityID("root")
 
-	clickY := model.treeStartLine + chromeLinesAboveTree + 0
+	clickY := model.treeStartLine + 0
 
 	updatedModel, _ := model.Update(tea.MouseClickMsg{
 		X: 5, Y: clickY, Button: tea.MouseLeft,
