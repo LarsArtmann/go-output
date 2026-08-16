@@ -56,6 +56,14 @@ func mermaidTextTestCases() []escapeTestCase {
 		{"brackets", "a[b]c", "a(b)c"},
 		{"braces", "a{b}c", "a(b)c"},
 		{"newline", "a\nb", "a<br>b"},
+		{"ampersand", "a&b", "a&amp;b"},
+		{"script tag", "<script>alert(1)</script>", "&lt;script&gt;alert(1)&lt;/script&gt;"},
+		{"img onerror", `<img src=x onerror=alert(1)>`, "&lt;img src=x onerror=alert(1)&gt;"},
+		{"numeric entity smuggle", "#60;script#62;", "&#35;60;script&#35;62;"},
+		{"named entity smuggle", "#quot;", "&#35;quot;"},
+		{"typed html entity guarded", "&#60;", "&amp;&#35;60;"},
+		{"hex color untouched", "#ff0000", "#ff0000"},
+		{"hash without semicolon untouched", "C# dev", "C# dev"},
 	}
 }
 

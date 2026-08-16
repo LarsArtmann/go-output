@@ -52,6 +52,9 @@ const (
 	// SymbolBlocked introduces the blockage sub-line for pending nodes that
 	// have incomplete dependencies.
 	SymbolBlocked Symbol = "⊘"
+	// SymbolOther aggregates activities in registered custom statuses
+	// (e.g. "skipped", "cached") in count summaries.
+	SymbolOther Symbol = "⋯"
 )
 
 // ============================================================================

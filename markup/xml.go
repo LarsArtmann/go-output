@@ -53,7 +53,8 @@ func NewXMLWriter(w io.Writer) *XMLWriter {
 	return &XMLWriter{Writer: w}
 }
 
-// WriteHeader writes the XML header and opening tags.
+// WriteHeader writes the XML header and opening tags. The <headers> block
+// is omitted when cols is empty, matching MarshalXMLFromTable.
 func (x *XMLWriter) WriteHeader(cols []string) error {
 	if err := writeBytes(x.Writer, "write xml header", "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"); err != nil {
 		return err
@@ -63,16 +64,18 @@ func (x *XMLWriter) WriteHeader(cols []string) error {
 		return err
 	}
 
-	if err := writeBytes(x.Writer, "write headers open", "  <headers>\n"); err != nil {
-		return err
-	}
+	if len(cols) > 0 {
+		if err := writeBytes(x.Writer, "write headers open", "  <headers>\n"); err != nil {
+			return err
+		}
 
-	if err := writeMarkupColumns(x.Writer, cols, "    ", escape.XML); err != nil {
-		return fmt.Errorf("write columns: %w", err)
-	}
+		if err := writeMarkupColumns(x.Writer, cols, "    ", escape.XML); err != nil {
+			return fmt.Errorf("write columns: %w", err)
+		}
 
-	if err := writeBytes(x.Writer, "write headers close", "  </headers>\n"); err != nil {
-		return err
+		if err := writeBytes(x.Writer, "write headers close", "  </headers>\n"); err != nil {
+			return err
+		}
 	}
 
 	if err := writeBytes(x.Writer, "write rows open", "  <rows>\n"); err != nil {
@@ -103,56 +106,43 @@ func (x *XMLWriter) WriteRows(values [][]string) error {
 	return nil
 }
 
-// WriteFooter writes the closing tags.
-func (x *XMLWriter) WriteFooter() error {
+// WriteFooter closes the rows block, writes the optional footer row, and
+// closes the table element. Pass nil (or an empty slice) when the table has
+// no footer — the <footer> block is emitted only for non-empty footers.
+func (x *XMLWriter) WriteFooter(footer []string) error {
 	if err := writeBytes(x.Writer, "write rows close", "  </rows>\n"); err != nil {
 		return err
+	}
+
+	if len(footer) > 0 {
+		if err := writeBytes(x.Writer, "write footer open", "  <footer>\n"); err != nil {
+			return err
+		}
+
+		if err := writeMarkupRow(x.Writer, footer, "row", "cell", "    ", escape.XML); err != nil {
+			return fmt.Errorf("write footer: %w", err)
+		}
+
+		if err := writeBytes(x.Writer, "write footer close", "  </footer>\n"); err != nil {
+			return err
+		}
 	}
 
 	return writeBytes(x.Writer, "write table close", "</table>\n")
 }
 
-// MarshalXMLFromTable marshals Table to XML.
+// MarshalXMLFromTable marshals Table to XML. Non-nil tables delegate to
+// WriteXML so the streaming writer and this function are byte-identical by
+// construction (single formatting implementation).
 func MarshalXMLFromTable(data *output.Table) ([]byte, error) {
 	if data == nil {
 		return []byte("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<table/>\n"), nil
 	}
 
 	var b strings.Builder
-	b.WriteString("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
-	b.WriteString("<table>\n")
-
-	if len(data.Headers) > 0 {
-		b.WriteString("  <headers>\n")
-
-		if err := writeMarkupColumns(&b, data.Headers, "    ", escape.XML); err != nil {
-			return nil, fmt.Errorf("write columns: %w", err)
-		}
-
-		b.WriteString("  </headers>\n")
+	if err := WriteXML(&b, data); err != nil {
+		return nil, err
 	}
-
-	b.WriteString("  <rows>\n")
-
-	for _, row := range data.Rows {
-		if err := writeMarkupRow(&b, row, "row", "cell", "    ", escape.XML); err != nil {
-			return nil, fmt.Errorf("write row: %w", err)
-		}
-	}
-
-	b.WriteString("  </rows>\n")
-
-	if data.HasFooter() {
-		b.WriteString("  <footer>\n")
-
-		if err := writeMarkupRow(&b, data.Footer, "row", "cell", "    ", escape.XML); err != nil {
-			return nil, fmt.Errorf("write footer: %w", err)
-		}
-
-		b.WriteString("  </footer>\n")
-	}
-
-	b.WriteString("</table>\n")
 
 	return []byte(b.String()), nil
 }

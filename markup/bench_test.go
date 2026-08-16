@@ -38,7 +38,7 @@ func BenchmarkXMLWriter(b *testing.B) {
 
 		_ = w.WriteHeader(headers)
 		_ = w.WriteRows(rows)
-		_ = w.WriteFooter()
+		_ = w.WriteFooter(nil)
 	}
 }
 

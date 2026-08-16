@@ -110,7 +110,7 @@ func WithShowBlockage() SubscriberOption {
 // renders each layer horizontally, making parallel work explicit.
 func WithRenderMode(mode RenderMode) SubscriberOption {
 	return func(ns *NOMSubscriber) {
-		ns.dependencyTree.renderMode = mode
+		ns.dependencyTree.SetRenderMode(mode)
 	}
 }
 

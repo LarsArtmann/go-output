@@ -7,12 +7,16 @@ import (
 	"charm.land/lipgloss/v2"
 )
 
-// ActivityCounts holds counts of activities grouped by status.
+// ActivityCounts holds counts of activities grouped by status. The four
+// named buckets cover the core statuses; Other aggregates activities in
+// registered custom statuses (e.g. "skipped", "cached") so the open status
+// registry can never silently vanish from counts, totals, or percentages.
 type ActivityCounts struct {
 	Running   int
 	Completed int
 	Failed    int
 	Pending   int
+	Other     int
 }
 
 // applyCountsDelta adjusts the counts by decrementing the old status and
@@ -30,7 +34,7 @@ func applyCountsDelta(c *ActivityCounts, from, to ActivityStatus) {
 }
 
 // adjustStatusCount applies a delta (+1 or -1) to the count bucket for the
-// given status.
+// given status. Statuses outside the four core ones land in Other.
 func adjustStatusCount(c *ActivityCounts, status ActivityStatus, delta int) {
 	switch status {
 	case ActivityStatusRunning:
@@ -41,12 +45,14 @@ func adjustStatusCount(c *ActivityCounts, status ActivityStatus, delta int) {
 		c.Failed += delta
 	case ActivityStatusPending:
 		c.Pending += delta
+	default:
+		c.Other += delta
 	}
 }
 
-// Total returns the sum of all activity counts.
+// Total returns the sum of all activity counts, including custom statuses.
 func (c ActivityCounts) Total() int {
-	return c.Running + c.Completed + c.Failed + c.Pending
+	return c.Running + c.Completed + c.Failed + c.Pending + c.Other
 }
 
 // CompletionPercent returns the percentage of activities that have reached a
@@ -83,6 +89,10 @@ func (c ActivityCounts) Summary() string {
 		parts = append(parts, string(SymbolPending)+strconv.Itoa(c.Pending))
 	}
 
+	if c.Other > 0 {
+		parts = append(parts, string(SymbolOther)+strconv.Itoa(c.Other))
+	}
+
 	return strings.Join(parts, " ")
 }
 
@@ -114,6 +124,10 @@ func (c ActivityCounts) SummaryColored(colors SemanticColors) string {
 		parts = append(parts, style.Foreground(colors.Pending).Render(string(SymbolPending)+strconv.Itoa(c.Pending)))
 	}
 
+	if c.Other > 0 {
+		parts = append(parts, style.Foreground(colors.Pending).Render(string(SymbolOther)+strconv.Itoa(c.Other)))
+	}
+
 	return strings.Join(parts, "  ")
 }
 
@@ -130,8 +144,13 @@ func (ns *NOMSubscriber) GetActivityCounts() ActivityCounts {
 
 // SetActivityState sets an activity's state (for testing purposes).
 // Maintains the count cache: if replacing an existing activity, the old
-// status is decremented before the new one is counted.
+// status is decremented before the new one is counted. A nil activity is
+// ignored — matching the defensive contract of the renderer entry points.
 func (ns *NOMSubscriber) SetActivityState(id ActivityID, activity *Activity) {
+	if activity == nil {
+		return
+	}
+
 	ns.mu.Lock()
 	defer ns.mu.Unlock()
 

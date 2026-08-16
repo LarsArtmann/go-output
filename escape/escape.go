@@ -3,6 +3,7 @@ package escape
 
 import (
 	"html"
+	"regexp"
 	"strings"
 )
 
@@ -94,10 +95,17 @@ func MermaidSlug(label string) string {
 	return SlugifyID(label)
 }
 
-// mermaidTextReplacer escapes brackets, braces, quotes, and newlines for Mermaid labels.
+// mermaidTextReplacer escapes HTML-significant characters, brackets, braces,
+// quotes, and newlines for Mermaid labels. Mermaid renders labels as HTML by
+// default (htmlLabels), so raw `&`, `<`, and `>` in node labels, edge labels,
+// and style values would be interpreted as markup (`<script>`, `<img
+// onerror=...>`), not text.
 //
 //nolint:gochecknoglobals // Reusable strings.Replacer, safe to share.
 var mermaidTextReplacer = strings.NewReplacer(
+	`&`, "&amp;",
+	`<`, "&lt;",
+	`>`, "&gt;",
 	`"`, "'",
 	"[", "(",
 	"]", ")",
@@ -106,9 +114,21 @@ var mermaidTextReplacer = strings.NewReplacer(
 	"\n", "<br>",
 )
 
+// mermaidEntityGuard neutralizes Mermaid entity codes (`#60;`, `#quot;`):
+// Mermaid decodes `#…;` sequences inside labels into raw characters before the
+// HTML render, which would re-manufacture the `<`, `>`, and `&` characters the
+// replacer above already escaped. Prefixing the `#` with `&#35;` renders
+// the sequence literally in HTML contexts. Only a `#` directly followed by
+// alphanumeric characters and a semicolon is guarded, so hex color values in
+// style directives (`fill:#ff0000`, never semicolon-terminated) pass through
+// unchanged. Applied after the replacer; its own output is never rescanned.
+//
+//nolint:gochecknoglobals // Compiled once, safe to share.
+var mermaidEntityGuard = regexp.MustCompile(`#([0-9A-Za-z]+;)`)
+
 // MermaidText escapes special characters for Mermaid display labels.
 func MermaidText(s string) string {
-	return mermaidTextReplacer.Replace(s)
+	return mermaidEntityGuard.ReplaceAllString(mermaidTextReplacer.Replace(s), "&#35;$1")
 }
 
 // plantumlReplacer escapes characters that break PlantUML component notation

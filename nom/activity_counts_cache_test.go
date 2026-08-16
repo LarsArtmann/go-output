@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"testing"
+
+	"github.com/larsartmann/go-output"
 )
 
 // recount brute-force recomputes ActivityCounts by scanning the subscriber's
@@ -25,6 +27,8 @@ func recount(ns *NOMSubscriber) ActivityCounts {
 			c.Failed++
 		case ActivityStatusPending:
 			c.Pending++
+		default:
+			c.Other++
 		}
 	}
 
@@ -193,5 +197,58 @@ func TestActivityCountsCache_SetActivityState(t *testing.T) {
 
 	if c := ns.GetActivityCounts(); c.Running != 0 || c.Completed != 1 {
 		t.Errorf("after replace: running=%d completed=%d, want 0/1", c.Running, c.Completed)
+	}
+}
+
+// TestActivityCountsCache_CustomStatusNotLost verifies that activities in
+// registered custom statuses land in the Other bucket instead of vanishing
+// from counts, totals, and percentages. The open status registry must never
+// make activities invisible to the count cache.
+func TestActivityCountsCache_CustomStatusNotLost(t *testing.T) {
+	t.Parallel()
+
+	custom := RegisterStatus(
+		"counts-test-skipped",
+		SymbolOther,
+		Colors.Pending,
+		3,
+		output.NodeShapeBox,
+		output.NodeStyle{}, //nolint:exhaustruct // Count cache test ignores diagram style
+	)
+
+	ns := newTestSubscriber(t)
+
+	a := NewActivity("a1", "Build")
+	a.Status = custom
+	ns.SetActivityState(ActivityID("a1"), a)
+	assertCountsMatch(t, ns, "after custom-status insert")
+
+	counts := ns.GetActivityCounts()
+	if counts.Other != 1 || counts.Total() != 1 {
+		t.Errorf("custom status lost: counts=%+v, want Other=1 Total=1", counts)
+	}
+
+	// Transition custom → completed: Other decremented, Completed incremented.
+	b := NewActivity("a1", "Build")
+	b.SetCompleted()
+	ns.SetActivityState(ActivityID("a1"), b)
+	assertCountsMatch(t, ns, "after custom→completed replace")
+
+	if c := ns.GetActivityCounts(); c.Other != 0 || c.Completed != 1 {
+		t.Errorf("after custom→completed: other=%d completed=%d, want 0/1", c.Other, c.Completed)
+	}
+}
+
+// TestSetActivityStateNilGuard verifies a nil activity is ignored instead of
+// panicking on activity.Status.
+func TestSetActivityStateNilGuard(t *testing.T) {
+	t.Parallel()
+
+	ns := newTestSubscriber(t)
+
+	ns.SetActivityState(ActivityID("a1"), nil)
+
+	if c := ns.GetActivityCounts(); c != (ActivityCounts{}) {
+		t.Errorf("counts after nil SetActivityState = %+v, want zero value", c)
 	}
 }

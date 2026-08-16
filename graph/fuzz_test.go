@@ -30,6 +30,9 @@ func FuzzMermaidTextEscape(f *testing.F) {
 	f.Add("brackets[here]")
 	f.Add("braces{here}")
 	f.Add("new\nline")
+	f.Add("<script>alert('xss')</script>")
+	f.Add("#60;script#62;")
+	f.Add("#ff0000")
 	f.Add("")
 
 	f.Fuzz(func(t *testing.T, input string) {
@@ -37,6 +40,8 @@ func FuzzMermaidTextEscape(f *testing.F) {
 
 		assertEscaped(t, input, escaped, `"`, "double quotes", "MermaidText")
 		assertEscaped(t, input, escaped, "[", "brackets", "MermaidText")
+		assertEscaped(t, input, escaped, "<", "angle brackets", "MermaidText")
+		assertEscaped(t, input, escaped, ">", "angle brackets", "MermaidText")
 	})
 }
 

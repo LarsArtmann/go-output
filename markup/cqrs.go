@@ -25,7 +25,7 @@ func WriteXML(w io.Writer, data *output.Table) error {
 		return fmt.Errorf("write xml rows: %w", err)
 	}
 
-	if err := xw.WriteFooter(); err != nil {
+	if err := xw.WriteFooter(data.Footer); err != nil {
 		return fmt.Errorf("write xml footer: %w", err)
 	}
 

@@ -195,6 +195,20 @@ func TestInlineRenderer_NilSubscriber(t *testing.T) {
 	}
 }
 
+func TestInlineRenderer_Finish_NilSubscriber(t *testing.T) {
+	t.Parallel()
+
+	var buf bytes.Buffer
+
+	renderer := NewInlineRenderer(nil, &buf, 10)
+
+	renderer.Finish(nil)
+
+	if buf.String() != "" {
+		t.Error("Finish with nil subscriber should produce no output")
+	}
+}
+
 func TestInlineRenderer_EmptyTree(t *testing.T) {
 	t.Parallel()
 

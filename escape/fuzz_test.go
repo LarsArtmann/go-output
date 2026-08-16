@@ -95,12 +95,21 @@ func FuzzMermaidText(f *testing.F) {
 	f.Add(`"quoted"`)
 	f.Add("with [brackets] and {braces}")
 	f.Add("line1\nline2")
+	f.Add("<script>alert('xss')</script>")
+	f.Add(`<img src=x onerror=alert(1)>`)
+	f.Add("a & b")
+	f.Add("#60;script#62;")
+	f.Add("&#60;")
+	f.Add("#ff0000")
+	f.Add("C# dev")
 
 	f.Fuzz(func(t *testing.T, s string) {
 		result := MermaidText(s)
 
 		assertStripped(t, "MermaidText", s, result, `"`)
 		assertStripped(t, "MermaidText", s, result, "[")
+		assertEscaped(t, "MermaidText", s, result, "<", "&lt;")
+		assertEscaped(t, "MermaidText", s, result, ">", "&gt;")
 	})
 }
 

@@ -53,7 +53,7 @@ func TestXMLWriterWriteFooterTableCloseError(t *testing.T) {
 
 	x := NewXMLWriter(&writeNThenFailWriter{Remaining: 1})
 
-	err := x.WriteFooter()
+	err := x.WriteFooter(nil)
 	if err == nil {
 		t.Fatal("expected error on table close")
 	}
@@ -92,7 +92,7 @@ func TestXMLWriterWriteFooterError(t *testing.T) {
 
 	x := NewXMLWriter(&errorWriter{})
 
-	err := x.WriteFooter()
+	err := x.WriteFooter(nil)
 	if err == nil {
 		t.Fatal("expected error from errorWriter")
 	}

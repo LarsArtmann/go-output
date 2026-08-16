@@ -19,9 +19,9 @@ func TestXMLWriterWriteHeader(t *testing.T) {
 		t.Fatalf("WriteHeader() error = %v", err)
 	}
 
-	err = x.WriteFooter()
+	err = x.WriteFooter(nil)
 	if err != nil {
-		t.Fatalf("WriteFooter() error = %v", err)
+		t.Fatalf("WriteFooter(nil) error = %v", err)
 	}
 
 	result := buf.String()
@@ -43,9 +43,9 @@ func TestXMLWriterWriteRow(t *testing.T) {
 		t.Fatalf("WriteRow() error = %v", err)
 	}
 
-	err = x.WriteFooter()
+	err = x.WriteFooter(nil)
 	if err != nil {
-		t.Fatalf("WriteFooter() error = %v", err)
+		t.Fatalf("WriteFooter(nil) error = %v", err)
 	}
 
 	result := buf.String()
@@ -70,9 +70,9 @@ func TestXMLWriterWriteRows(t *testing.T) {
 		t.Fatalf("WriteRows() error = %v", err)
 	}
 
-	err = x.WriteFooter()
+	err = x.WriteFooter(nil)
 	if err != nil {
-		t.Fatalf("WriteFooter() error = %v", err)
+		t.Fatalf("WriteFooter(nil) error = %v", err)
 	}
 
 	result := buf.String()
@@ -90,7 +90,7 @@ func TestXMLWriterEscape(t *testing.T) {
 
 	_ = x.WriteHeader([]string{"Name"})
 	_ = x.WriteRow([]string{"<script>alert('xss')</script>"})
-	_ = x.WriteFooter()
+	_ = x.WriteFooter(nil)
 
 	result := buf.String()
 	if strings.Contains(result, "<script>") {
@@ -239,5 +239,70 @@ func TestMarshalXMLFromTableNoFooter(t *testing.T) {
 
 	if strings.Contains(string(result), "<footer>") {
 		t.Error("XML should not contain <footer> when no footer is set")
+	}
+}
+
+func TestWriteXMLFooterNotDropped(t *testing.T) {
+	t.Parallel()
+
+	data := output.NewTable([]string{"Name", "Count"})
+	data.AddRow([]string{"Alice", "10"})
+	data.Footer = []string{"Total", "10"}
+
+	var buf strings.Builder
+	if err := WriteXML(&buf, data); err != nil {
+		t.Fatalf("WriteXML() error = %v", err)
+	}
+
+	result := buf.String()
+	assertContains(t, result, "<footer>", "WriteXML should contain <footer>")
+	assertContains(t, result, "<cell>Total</cell>", "WriteXML footer should contain footer text")
+	assertContains(t, result, "</footer>", "WriteXML should contain </footer>")
+	assertContains(t, result, "</table>", "WriteXML should contain </table>")
+}
+
+func TestWriteXMLOmitsEmptyHeaders(t *testing.T) {
+	t.Parallel()
+
+	data := output.NewTable(nil)
+	data.AddRow([]string{"a", "b"})
+
+	var buf strings.Builder
+	if err := WriteXML(&buf, data); err != nil {
+		t.Fatalf("WriteXML() error = %v", err)
+	}
+
+	result := buf.String()
+	if strings.Contains(result, "<headers>") {
+		t.Error("WriteXML should omit the <headers> block for empty headers")
+	}
+
+	assertContains(t, result, "<rows>", "WriteXML should contain <rows>")
+	assertContains(t, result, "</table>", "WriteXML should contain </table>")
+}
+
+func TestWriteXMLMatchesMarshalXMLFromTable(t *testing.T) {
+	t.Parallel()
+
+	data := output.NewTable([]string{"Name", "Count"})
+	data.AddRow([]string{"Alice", "10"})
+	data.AddRow([]string{"Bob", "20"})
+	data.Footer = []string{"Total", "30"}
+
+	marshaled, err := MarshalXMLFromTable(data)
+	if err != nil {
+		t.Fatalf("MarshalXMLFromTable() error = %v", err)
+	}
+
+	var buf strings.Builder
+	if err := WriteXML(&buf, data); err != nil {
+		t.Fatalf("WriteXML() error = %v", err)
+	}
+
+	if buf.String() != string(marshaled) {
+		t.Errorf(
+			"WriteXML and MarshalXMLFromTable diverge:\nWriteXML:\n%s\nMarshal:\n%s",
+			buf.String(), string(marshaled),
+		)
 	}
 }
