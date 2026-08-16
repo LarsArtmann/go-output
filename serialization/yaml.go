@@ -25,8 +25,17 @@ func renderYAMLUnknown(w io.Writer, data any, _ output.RenderOptions) error {
 	return renderUnknown(w, data, "YAML", yaml.Marshal)
 }
 
-// MarshalYAML encodes v to YAML.
-func MarshalYAML(v any) ([]byte, error) {
+// MarshalYAML encodes v to YAML. Panics from the underlying encoder (e.g.
+// for channel or function values, which go-faster/yaml panics on rather
+// than erroring) are converted to errors so callers never crash on
+// unmarshalable input.
+func MarshalYAML(v any) (out []byte, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			err = fmt.Errorf("marshal yaml %T: %v", v, r)
+		}
+	}()
+
 	data, err := yaml.Marshal(v)
 	if err != nil {
 		return nil, fmt.Errorf("marshal yaml %T: %w", v, err)

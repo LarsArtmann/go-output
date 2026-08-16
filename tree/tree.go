@@ -11,6 +11,7 @@
 package tree
 
 import (
+	"sort"
 	"strconv"
 	"strings"
 
@@ -113,9 +114,16 @@ func (r *ASCIITreeRenderer) renderNode(
 	}
 
 	if len(node.Metadata) > 0 {
+		metaKeys := make([]string, 0, len(node.Metadata))
+		for k := range node.Metadata {
+			metaKeys = append(metaKeys, k)
+		}
+
+		sort.Strings(metaKeys)
+
 		metaParts := make([]string, 0, len(node.Metadata))
-		for k, v := range node.Metadata {
-			metaParts = append(metaParts, k+": "+v)
+		for _, k := range metaKeys {
+			metaParts = append(metaParts, k+": "+node.Metadata[k])
 		}
 
 		if r.useColor() {

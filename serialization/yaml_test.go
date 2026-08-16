@@ -115,13 +115,12 @@ func TestYAMLTableRenderer(t *testing.T) {
 func TestMarshalYAMLError(t *testing.T) {
 	t.Parallel()
 
-	defer func() {
-		if r := recover(); r == nil {
-			t.Error("expected panic for unmarshalable type")
-		}
-	}()
-
-	_, _ = MarshalYAML(make(chan int))
+	// Channels are unmarshalable: the encoder panics, and MarshalYAML must
+	// convert that panic into an error instead of crashing the caller.
+	_, err := MarshalYAML(make(chan int))
+	if err == nil {
+		t.Fatal("expected error for unmarshalable type, got nil")
+	}
 }
 
 type benchmarkYAMLStruct struct {

@@ -4,6 +4,7 @@ import (
 	"cmp"
 	"fmt"
 	"slices"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -138,40 +139,25 @@ func (dt *DependencyTree) dependencyIDsLocked() map[ActivityID]bool {
 	return deps
 }
 
-// sortNodesByPriority orders nodes by activity status priority (running >
-// pending > failed > completed), then by ID for stability. This surfaces live
-// work before completed work in each layer.
+// sortNodesByPriority orders nodes by display urgency using the status
+// registry's Interest ranking (lower = more urgent: failed < running <
+// pending < completed), then by ID for stability. This matches tree-mode
+// ordering (sortKey.interest) so a failed activity surfaces first in BOTH
+// display modes, and custom registered statuses get their Interest for
+// free instead of sinking below completed work.
 func (dt *DependencyTree) sortNodesByPriority(
 	nodes []*ActivityNode,
 	snapshots map[ActivityID]ActivitySnapshot,
 ) {
 	slices.SortStableFunc(nodes, func(a, b *ActivityNode) int {
-		pa := statusPriority(lookupSnapshot(snapshots, a.ID).Status)
-
-		pb := statusPriority(lookupSnapshot(snapshots, b.ID).Status)
+		pa := lookupSnapshot(snapshots, a.ID).Status.Interest()
+		pb := lookupSnapshot(snapshots, b.ID).Status.Interest()
 		if pa != pb {
-			return pb - pa // higher priority first
+			return pa - pb // lower interest value = more urgent, first
 		}
 
 		return cmp.Compare(string(a.ID), string(b.ID))
 	})
-}
-
-// statusPriority returns a sort rank for status ordering: running > pending >
-// failed > completed. Lower values are less urgent.
-func statusPriority(s ActivityStatus) int {
-	switch s {
-	case ActivityStatusRunning:
-		return 4
-	case ActivityStatusPending:
-		return 3
-	case ActivityStatusFailed:
-		return 2
-	case ActivityStatusCompleted:
-		return 1
-	default:
-		return 0
-	}
 }
 
 func (dt *DependencyTree) allNodesTerminal(
@@ -298,8 +284,17 @@ func groupByCategory(
 		individuals = append(individuals, node)
 	}
 
-	for cat, count := range counts {
-		if count >= 2 {
+	// Sort category names so collapsed groups render deterministically —
+	// map iteration order is random.
+	cats := make([]string, 0, len(counts))
+	for cat := range counts {
+		cats = append(cats, cat)
+	}
+
+	sort.Strings(cats)
+
+	for _, cat := range cats {
+		if count := counts[cat]; count >= 2 {
 			collapsed = append(collapsed, categoryGroup{name: cat, count: count})
 		}
 	}

@@ -159,3 +159,44 @@ func TestTreeColoredMetadata(t *testing.T) {
 	assertContains(t, got, "count: 42", "should contain metadata")
 	assertContains(t, got, "status: active", "should contain metadata")
 }
+
+func TestTreeMetadataDeterministicOrder(t *testing.T) {
+	t.Parallel()
+
+	build := func() string {
+		root := &output.TreeNode{
+			ID:    output.NewBrandedID[output.TreeNodeIDBrand]("root"),
+			Label: output.NewBrandedID[output.TreeNodeLabelBrand]("Root"),
+			Metadata: map[string]string{
+				"zeta":  "last",
+				"alpha": "first",
+				"mid":   "middle",
+			},
+		}
+
+		r := NewASCIITreeRenderer()
+		r.SetRoot(root)
+
+		out, err := r.Render()
+		if err != nil {
+			t.Fatalf("Render() error = %v", err)
+		}
+
+		return out
+	}
+
+	first := build()
+
+	// Re-render many times: map iteration order is random, so an unsorted
+	// loop produces different (k: v) orders across calls.
+	for i := 0; i < 20; i++ {
+		if got := build(); got != first {
+			t.Fatalf("metadata order nondeterministic between renders:\nfirst:\n%s\ngot:\n%s", first, got)
+		}
+	}
+
+	want := "(alpha: first, mid: middle, zeta: last)"
+	if !strings.Contains(first, want) {
+		t.Errorf("metadata not in sorted key order, want %s in:\n%s", want, first)
+	}
+}
