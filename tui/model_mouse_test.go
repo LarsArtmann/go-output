@@ -22,10 +22,12 @@ func TestProgressModel_MouseClick_SelectsNode(t *testing.T) {
 	_ = tree.AddActivity(nom.ActivityID("step-a"), nil)
 	_ = tree.AddActivity(nom.ActivityID("step-b"), []nom.ActivityID{"step-a"})
 	_ = tree.GetRootNodes()
-	model.visibleEntries = tree.VisibleEntriesWithSnapshots(nil, 20)
 
-	// Click on the first tree line (line 0 relative to tree = line 7 absolute with chrome)
-	clickY := model.treeStartLine + chromeLinesAboveTree + 0
+	// Render once so visibleEntries AND treeStartLine reflect the real layout.
+	_ = model.renderNOMStyle()
+
+	// Click on the first tree line (tree-relative line 0).
+	clickY := model.treeStartLine + 0
 
 	m := clickAt(model, clickY)
 	if m.selectedNode != nom.ActivityID("step-a") {
@@ -44,10 +46,10 @@ func TestProgressModel_MouseClick_ToggleOffNode(t *testing.T) {
 	tree := setupTestTree(model)
 	_ = tree.AddActivity(nom.ActivityID("step-a"), nil)
 	_ = tree.GetRootNodes()
-	model.visibleEntries = tree.VisibleEntriesWithSnapshots(nil, 20)
-	model.selectedNode = nom.ActivityID("step-a")
 
-	clickY := model.treeStartLine + chromeLinesAboveTree + 0
+	_ = model.renderNOMStyle()
+
+	clickY := model.treeStartLine + 0
 
 	m := clickAt(model, clickY)
 	if m.selectedNode != "" {
@@ -69,10 +71,9 @@ func TestProgressModel_MouseClick_IgnoresRightClick(t *testing.T) {
 
 	model.dependencyTree = tree
 	model.visibleEntries = tree.VisibleEntriesWithSnapshots(nil, 20)
-	model.treeStartLine = 2
 
-	updatedModel, _ := model.Update(tea.MouseClickMsg{
-		X: 5, Y: 7, Button: tea.MouseRight,
+	updatedModel, _ := model.Update(tea.MouseClickMsg{ //nolint:exhaustruct // Right-click test
+		X: 5, Y: 0, Button: tea.MouseRight,
 	})
 
 	m := updatedModel.(*ProgressModel)

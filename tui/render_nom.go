@@ -40,7 +40,7 @@ func filterCriticalPath(
 
 // renderNOMStyle creates a NOM-style display with dependency tree.
 func (m *ProgressModel) renderNOMStyle() string {
-	m.treeStartLine = 0
+	m.treeStartLine = m.nomTreeStartLine()
 
 	var contentSections []string
 
@@ -56,9 +56,27 @@ func (m *ProgressModel) renderNOMStyle() string {
 		contentSections,
 		m.renderNOMSummaryBar,
 	)
-	m.treeStartLine = 2
 
 	return result
+}
+
+// nomTreeStartLine computes the zero-based screen line where the first tree
+// entry renders, matching assembleProgressSections' actual layout: the title
+// block (title + MarginBottom) takes lines 0-1, the "\n\n" section separator
+// takes one more, and an active current-message section adds its own two
+// lines. The mouse-click handler maps clicks relative to this value, so it
+// must track the layout exactly — a fixed guess mis-selects nodes.
+func (m *ProgressModel) nomTreeStartLine() int {
+	const titleBlockLines = 2 // title (1) + MarginBottom(1)
+	const sectionGapLines = 1 // "\n\n" join between sections
+
+	start := titleBlockLines + sectionGapLines
+
+	if m.currentMessage != "" {
+		start += 2 // message line (1) + section gap (1)
+	}
+
+	return start
 }
 
 // renderDependencyTree renders the activity dependency tree in NOM style.

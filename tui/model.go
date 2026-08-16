@@ -10,8 +10,6 @@ import (
 	"github.com/larsartmann/go-output/nom"
 )
 
-const chromeLinesAboveTree = 5
-
 // percentScale is the maximum progress value; progress is reported on a 0–100 scale,
 // so 100.0 means fully complete. Used both to normalize the progress bar fill and
 // to detect workflow completion.
@@ -155,11 +153,13 @@ func (m *ProgressModel) handleMouseClick(msg tea.MouseClickMsg) (tea.Model, tea.
 		return m, nil
 	}
 
-	// Map the physical Y coordinate to a visibleEntries index. This assumes
-	// one terminal line per entry (real node or collapse marker), which holds
-	// because the tree is rendered via RenderVisibleEntry which truncates long
-	// lines to prevent wrapping.
-	treeLine := mouse.Y - m.treeStartLine - chromeLinesAboveTree
+	// Map the physical Y coordinate to a visibleEntries index. treeStartLine
+	// is computed by renderNOMStyle from the actual layout (title block,
+	// section gaps, optional message), so mouse.Y - treeStartLine is the
+	// tree-relative row. This assumes one terminal line per entry, which
+	// holds because the tree is rendered via RenderVisibleEntry which
+	// truncates long lines to prevent wrapping.
+	treeLine := mouse.Y - m.treeStartLine
 	if treeLine < 0 || treeLine >= len(m.visibleEntries) {
 		m.selectedNode = ""
 		return m, nil
