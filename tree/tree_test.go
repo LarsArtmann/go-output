@@ -189,7 +189,7 @@ func TestTreeMetadataDeterministicOrder(t *testing.T) {
 
 	// Re-render many times: map iteration order is random, so an unsorted
 	// loop produces different (k: v) orders across calls.
-	for i := 0; i < 20; i++ {
+	for range 20 {
 		if got := build(); got != first {
 			t.Fatalf("metadata order nondeterministic between renders:\nfirst:\n%s\ngot:\n%s", first, got)
 		}

@@ -28,14 +28,14 @@ func TestRenderMode_ConcurrentToggleAndRender(t *testing.T) {
 	go func() {
 		defer close(writerDone)
 
-		for i := 0; i < 500; i++ {
+		for range 500 {
 			dt.SetRenderMode(RenderModeLayered)
 			dt.SetRenderMode(RenderModeTree)
 		}
 	}()
 
 	entries := dt.VisibleEntriesWithSnapshots(snaps.snaps, 0)
-	for i := 0; i < 500; i++ {
+	for range 500 {
 		_ = dt.RenderWithSnapshots(snaps.snaps, 0, 80)
 		_ = dt.VisibleEntriesWithSnapshots(snaps.snaps, 0)
 

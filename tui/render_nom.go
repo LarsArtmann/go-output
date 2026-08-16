@@ -68,6 +68,7 @@ func (m *ProgressModel) renderNOMStyle() string {
 // must track the layout exactly — a fixed guess mis-selects nodes.
 func (m *ProgressModel) nomTreeStartLine() int {
 	const titleBlockLines = 2 // title (1) + MarginBottom(1)
+
 	const sectionGapLines = 1 // "\n\n" join between sections
 
 	start := titleBlockLines + sectionGapLines

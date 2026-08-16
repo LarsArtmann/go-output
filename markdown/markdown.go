@@ -155,9 +155,9 @@ func markdownCells(cells []string) []string {
 		return nil
 	}
 
-	escaped := make([]string, len(cells))
-	for i, cell := range cells {
-		escaped[i] = escape.MarkdownCell(cell)
+	escaped := make([]string, 0, len(cells))
+	for _, cell := range cells {
+		escaped = append(escaped, escape.MarkdownCell(cell))
 	}
 
 	return escaped

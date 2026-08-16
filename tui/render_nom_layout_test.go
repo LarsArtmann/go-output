@@ -47,7 +47,7 @@ func TestNOMStyle_TreeStartLineMatchesRenderedLayout(t *testing.T) {
 			t.Fatalf("%s: treeStartLine %d out of range (%d lines)", label, model.treeStartLine, len(lines))
 		}
 
-		for i := 0; i < model.treeStartLine; i++ {
+		for i := range model.treeStartLine {
 			if strings.Contains(ansi.Strip(lines[i]), "Step A") {
 				t.Fatalf(
 					"%s: first tree row renders at line %d but treeStartLine is %d:\n%s",

@@ -32,6 +32,7 @@ func renderYAMLUnknown(w io.Writer, data any, _ output.RenderOptions) error {
 func MarshalYAML(v any) (out []byte, err error) {
 	defer func() {
 		if r := recover(); r != nil {
+			//nolint:err113 // r is a recovered panic value (any), not an error — %w cannot wrap it.
 			err = fmt.Errorf("marshal yaml %T: %v", v, r)
 		}
 	}()

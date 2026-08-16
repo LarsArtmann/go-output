@@ -98,6 +98,7 @@ func TestTableSetFooter_MultipleCalls(t *testing.T) {
 	}
 
 	sf := tbl.buildStyleFunc(tbl.footerRowIndex)
+
 	footerStyle := sf(2, 0)
 	if !footerStyle.GetBold() {
 		t.Error("footer row (index 2) should be bold-styled")

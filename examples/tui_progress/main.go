@@ -52,9 +52,21 @@ func main() {
 
 	send(nom.WorkflowStarted{ID: nom.NewWorkflowID("demo"), Name: nom.NewWorkflowName("CI Pipeline")})
 	send(nom.ActivityStarted{ID: nom.NewActivityID("build"), Name: nom.NewActivityName("Build Module")})
-	send(nom.ActivityProgress{ID: nom.NewActivityID("build"), Name: nom.NewActivityName("Build Module"), Message: "compiling main.go"})
+	send(
+		nom.ActivityProgress{
+			ID:      nom.NewActivityID("build"),
+			Name:    nom.NewActivityName("Build Module"),
+			Message: "compiling main.go",
+		},
+	)
 	time.Sleep(100 * time.Millisecond)
-	send(nom.ActivityCompleted{ID: nom.NewActivityID("build"), Name: nom.NewActivityName("Build Module"), Duration: 100 * time.Millisecond})
+	send(
+		nom.ActivityCompleted{
+			ID:       nom.NewActivityID("build"),
+			Name:     nom.NewActivityName("Build Module"),
+			Duration: 100 * time.Millisecond,
+		},
+	)
 
 	// Stop flushes the timing cache and shuts the TUI down gracefully.
 	// Always call it before exiting — otherwise the program goroutine leaks.

@@ -157,7 +157,10 @@ func (r *DOTRenderer) Render() (string, error) {
 // statements via newlines or break the header syntax via spaces.
 func dotGraphID(id string) string {
 	for _, r := range id {
-		if !((r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') || (r >= '0' && r <= '9') || r == '_') {
+		isBareRune := (r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') ||
+			(r >= '0' && r <= '9') || r == '_'
+
+		if !isBareRune {
 			// %q produces a valid quoted DOT ID: it escapes quotes,
 			// backslashes, and newlines in exactly the forms DOT accepts.
 			return fmt.Sprintf("%q", id)
@@ -180,6 +183,7 @@ func renderDOTString(nodes []output.GraphNode, edges []output.GraphEdge, cfg dot
 	b.WriteString(" {\n")
 
 	b.WriteString("  // Graph attributes\n")
+
 	if cfg.rankdir.IsValid() {
 		fmt.Fprintf(&b, "  rankdir=%s;\n", cfg.rankdir.String())
 	}
@@ -187,6 +191,7 @@ func renderDOTString(nodes []output.GraphNode, edges []output.GraphEdge, cfg dot
 	if cfg.splines.IsValid() {
 		fmt.Fprintf(&b, "  splines=%s;\n", cfg.splines.String())
 	}
+
 	fmt.Fprintf(&b, "  nodesep=%s;\n", cfg.nodesep)
 	fmt.Fprintf(&b, "  ranksep=%s;\n\n", cfg.ranksep)
 

@@ -229,12 +229,12 @@ func TestSortingBehavior(t *testing.T) {
 		t.Parallel()
 
 		type testCase struct {
-			name     string
-			data     []Project
-			desc     bool
-			first    string
-			second   string
-			third    string
+			name   string
+			data   []Project
+			desc   bool
+			first  string
+			second string
+			third  string
 		}
 
 		cases := []testCase{

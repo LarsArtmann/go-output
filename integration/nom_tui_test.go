@@ -184,6 +184,7 @@ func TestTUIProgressReporter_Integration(t *testing.T) {
 		completeActivity(t, sub, ctx, "build", "Build", 2*time.Second)
 
 		snaps := sub.SnapshotActivities()
+
 		buildSnap, ok := snaps[nom.NewActivityID("build")]
 		if !ok {
 			t.Fatal("build activity missing from reporter subscriber snapshots")
@@ -298,9 +299,9 @@ func startActivity(t *testing.T, sub *nom.NOMSubscriber, ctx context.Context, id
 func registerActivity(t *testing.T, sub *nom.NOMSubscriber, ctx context.Context, id, name string, deps ...string) {
 	t.Helper()
 
-	depIDs := make([]nom.ActivityID, len(deps))
-	for i, dep := range deps {
-		depIDs[i] = nom.NewActivityID(dep)
+	depIDs := make([]nom.ActivityID, 0, len(deps))
+	for _, dep := range deps {
+		depIDs = append(depIDs, nom.NewActivityID(dep))
 	}
 
 	if err := sub.OnEvent(ctx, nom.ActivityRegistered{
@@ -325,7 +326,13 @@ func fireWorkflowStarted(t *testing.T, sub *nom.NOMSubscriber, ctx context.Conte
 }
 
 // completeActivity sends an activity.completed event, failing the test on error.
-func completeActivity(t *testing.T, sub *nom.NOMSubscriber, ctx context.Context, id, name string, duration time.Duration) {
+func completeActivity(
+	t *testing.T,
+	sub *nom.NOMSubscriber,
+	ctx context.Context,
+	id, name string,
+	duration time.Duration,
+) {
 	t.Helper()
 
 	if err := sub.OnEvent(ctx, nom.ActivityCompleted{

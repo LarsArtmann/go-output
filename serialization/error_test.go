@@ -157,7 +157,7 @@ func TestJSONTreeRenderer_RendersMetadata(t *testing.T) {
 	}
 
 	// Invalid UTF-8 is replaced, not rejected — the payload must still carry the key.
-	if !strings.Contains(string(out), "bad") {
+	if !strings.Contains(out, "bad") {
 		t.Errorf("JSON tree output should contain metadata key %q, got: %s", "bad", out)
 	}
 }
@@ -175,7 +175,7 @@ func TestJSONGraphRenderer_RendersMetadata(t *testing.T) {
 		t.Fatalf("JSON graph render should succeed: %v", err)
 	}
 
-	if !strings.Contains(string(out), "Node A") {
+	if !strings.Contains(out, "Node A") {
 		t.Errorf("JSON graph output should contain node label, got: %s", out)
 	}
 }
@@ -193,7 +193,7 @@ func TestTOMLTreeRenderer_RendersMetadata(t *testing.T) {
 		t.Fatalf("TOML tree render should succeed: %v", err)
 	}
 
-	if !strings.Contains(string(out), "key") || !strings.Contains(string(out), "value") {
+	if !strings.Contains(out, "key") || !strings.Contains(out, "value") {
 		t.Errorf("TOML tree output should contain metadata, got: %s", out)
 	}
 }
@@ -211,7 +211,7 @@ func TestTOMLGraphRenderer_RendersMetadata(t *testing.T) {
 		t.Fatalf("TOML graph render should succeed: %v", err)
 	}
 
-	if !strings.Contains(string(out), "service") {
+	if !strings.Contains(out, "service") {
 		t.Errorf("TOML graph output should contain metadata value, got: %s", out)
 	}
 }
@@ -229,7 +229,7 @@ func TestYAMLTreeRenderer_RendersMetadata(t *testing.T) {
 		t.Fatalf("YAML tree render should succeed: %v", err)
 	}
 
-	if !strings.Contains(string(out), "key: value") {
+	if !strings.Contains(out, "key: value") {
 		t.Errorf("YAML tree output should contain metadata, got: %s", out)
 	}
 }
@@ -247,7 +247,7 @@ func TestYAMLGraphRenderer_RendersMetadata(t *testing.T) {
 		t.Fatalf("YAML graph render should succeed: %v", err)
 	}
 
-	if !strings.Contains(string(out), "type: service") {
+	if !strings.Contains(out, "type: service") {
 		t.Errorf("YAML graph output should contain metadata, got: %s", out)
 	}
 }

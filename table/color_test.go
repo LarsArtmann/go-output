@@ -71,7 +71,7 @@ func TestTable_ColoredFooterBoldOnFooterLineOnly(t *testing.T) {
 
 	var footerLine, dataLine string
 
-	for _, line := range strings.Split(got, "\n") {
+	for line := range strings.SplitSeq(got, "\n") {
 		switch {
 		case strings.Contains(line, "TOTAL"):
 			footerLine = line

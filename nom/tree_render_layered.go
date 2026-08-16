@@ -151,6 +151,7 @@ func (dt *DependencyTree) sortNodesByPriority(
 ) {
 	slices.SortStableFunc(nodes, func(a, b *ActivityNode) int {
 		pa := lookupSnapshot(snapshots, a.ID).Status.Interest()
+
 		pb := lookupSnapshot(snapshots, b.ID).Status.Interest()
 		if pa != pb {
 			return pa - pb // lower interest value = more urgent, first

@@ -81,7 +81,6 @@ func main() {
 }
 
 func startAndProgress(send func(evt nom.Event)) {
-
 	send(nom.ActivityStarted{ID: nom.NewActivityID("setup"), Name: nom.NewActivityName("Setup")})
 	time.Sleep(100 * time.Millisecond)
 	send(nom.ActivityCompleted{
