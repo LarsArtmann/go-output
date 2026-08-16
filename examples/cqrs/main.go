@@ -27,12 +27,14 @@ func main() {
 
 	if err := delimited.WriteCSV(os.Stdout, tbl); err != nil {
 		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
 	}
 
 	fmt.Println("=== JSON ===")
 
 	if err := serialization.WriteJSON(os.Stdout, tbl); err != nil {
 		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
 	}
 
 	// ── Tree: Build → Freeze → Render ──
@@ -48,12 +50,14 @@ func main() {
 
 	if err := tree.WriteASCII(os.Stdout, root); err != nil {
 		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
 	}
 
 	fmt.Println("=== Markdown Tree ===")
 
 	if err := tree.WriteMarkdown(os.Stdout, root); err != nil {
 		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
 	}
 
 	// ── Graph: Build → Freeze → Render ──
@@ -63,5 +67,6 @@ func main() {
 
 	if err := graph.WriteDOT(os.Stdout, g); err != nil {
 		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
 	}
 }

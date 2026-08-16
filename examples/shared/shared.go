@@ -4,6 +4,7 @@ package shared
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/larsartmann/go-output"
 	"github.com/larsartmann/go-output/d2"
@@ -38,5 +39,7 @@ func RenderAndPrint(r output.Renderer) {
 		HandleError(err)
 	}
 
-	fmt.Println(out)
+	// Several renderers (tree, diagrams) already end their payload with a
+	// trailing newline; Println would add a spurious blank line.
+	fmt.Println(strings.TrimSuffix(out, "\n"))
 }

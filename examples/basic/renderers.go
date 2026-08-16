@@ -156,9 +156,6 @@ func renderHTML(projects []Project) {
 }
 
 func renderTree(projects []Project) {
-	tree := tree.NewASCIITreeRenderer()
-	tree.SetColorMode(colorMode)
-
 	root := output.NewTreeNode("root", "Projects")
 	for _, p := range projects {
 		projNode := output.NewTreeNode("proj-"+p.Name, p.Name)
@@ -167,17 +164,17 @@ func renderTree(projects []Project) {
 		root.AddChild(projNode)
 	}
 
-	tree.SetRoot(root)
-
-	shared.RenderAndPrint(tree)
+	// CQRS: stream the rendered tree straight to stdout.
+	if err := tree.WriteASCII(os.Stdout, root, tree.WithColorMode(colorMode)); err != nil {
+		shared.HandleError(err)
+	}
 }
 
 func renderMermaid(projects []Project) {
-	renderer := graph.NewMermaidRenderer()
-	renderer.SetCodeFence(false)
+	builder := output.NewGraphBuilder()
 
 	for _, p := range projects {
-		renderer.AddNode(output.GraphNode{
+		builder.AddNode(output.GraphNode{
 			ID:    output.NewBrandedID[output.GraphNodeIDBrand](p.Name),
 			Label: output.NewBrandedID[output.GraphNodeLabelBrand](p.Name),
 			Style: output.NodeStyle{
@@ -190,32 +187,48 @@ func renderMermaid(projects []Project) {
 
 	// The same edge added twice demonstrates the DedupEdges() feature.
 	for range 2 {
-		renderer.AddEdge(alphaToBetaEdge)
+		builder.AddEdge(alphaToBetaEdge)
 	}
 
-	// Removes the duplicate Alpha -> Beta edge before rendering.
-	renderer.DedupEdges()
+	// Removes the duplicate Alpha -> Beta edge before freezing the graph.
+	builder.DedupEdges()
 
-	shared.RenderAndPrint(renderer)
+	g := builder.Build()
+
+	// CQRS render without a surrounding ```mermaid code fence.
+	out, err := graph.RenderMermaid(g, graph.WithCodeFence(false))
+	if err != nil {
+		shared.HandleError(err)
+	}
+
+	fmt.Print(out)
 }
 
 func renderDOT(projects []Project) {
-	renderer := graph.NewDOTRenderer().
-		SetRankDir(graph.RankDirLR).
-		SetSplines(graph.SplineSpline).
-		SetNodeSep("0.8").
-		SetRankSep("1.0")
+	builder := output.NewGraphBuilder()
 
 	for _, p := range projects {
-		renderer.AddNode(output.GraphNode{
+		builder.AddNode(output.GraphNode{
 			ID:    output.NewBrandedID[output.GraphNodeIDBrand](p.Name),
 			Label: output.NewBrandedID[output.GraphNodeLabelBrand](p.Name),
 		})
 	}
 
-	renderer.AddEdge(alphaToBetaEdge)
+	builder.AddEdge(alphaToBetaEdge)
 
-	shared.RenderAndPrint(renderer)
+	// CQRS render with layout options — the functional equivalents of the
+	// legacy renderer's SetRankDir/SetSplines/SetNodeSep/SetRankSep chain.
+	err := graph.WriteDOT(
+		os.Stdout,
+		builder.Build(),
+		graph.WithDOTRankDir(graph.RankDirLR),
+		graph.WithDOTSplines(graph.SplineSpline),
+		graph.WithNodeSep("0.8"),
+		graph.WithRankSep("1.0"),
+	)
+	if err != nil {
+		shared.HandleError(err)
+	}
 }
 
 func renderJSONL(projects []Project) {

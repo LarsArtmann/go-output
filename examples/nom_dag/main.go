@@ -18,13 +18,21 @@ func main() {
 		nom.WithTheme(nom.ThemeDracula),
 	)
 
-	_ = subscriber.OnEvent(ctx, nom.WorkflowStarted{
+	// Every event goes through one checked send helper — ignoring OnEvent
+	// errors hides subscriber rejections in real pipelines.
+	send := func(evt nom.Event) {
+		if err := subscriber.OnEvent(ctx, evt); err != nil {
+			fmt.Fprintf(os.Stderr, "event error: %v\n", err)
+		}
+	}
+
+	send(nom.WorkflowStarted{
 		ID:   nom.NewWorkflowID("dag-demo"),
 		Name: nom.NewWorkflowName("DAG Build Pipeline"),
 	})
 
 	// Layer 0: root setup phase.
-	_ = subscriber.OnEvent(ctx, nom.ActivityRegistered{
+	send(nom.ActivityRegistered{
 		ID:       nom.NewActivityID("setup"),
 		Name:     nom.NewActivityName("Setup"),
 		Kind:     nom.ActivityKindPhase,
@@ -32,13 +40,13 @@ func main() {
 	})
 
 	// Layer 1: compile + lint depend on setup.
-	_ = subscriber.OnEvent(ctx, nom.ActivityRegistered{
+	send(nom.ActivityRegistered{
 		ID:       nom.NewActivityID("compile"),
 		Name:     nom.NewActivityName("Compile"),
 		Deps:     []nom.ActivityID{nom.NewActivityID("setup")},
 		Category: nom.ActivityCategory("build"),
 	})
-	_ = subscriber.OnEvent(ctx, nom.ActivityRegistered{
+	send(nom.ActivityRegistered{
 		ID:       nom.NewActivityID("lint"),
 		Name:     nom.NewActivityName("Lint"),
 		Deps:     []nom.ActivityID{nom.NewActivityID("setup")},
@@ -46,13 +54,13 @@ func main() {
 	})
 
 	// Layer 2: test depends on compile, deploy depends on lint.
-	_ = subscriber.OnEvent(ctx, nom.ActivityRegistered{
+	send(nom.ActivityRegistered{
 		ID:       nom.NewActivityID("test"),
 		Name:     nom.NewActivityName("Test"),
 		Deps:     []nom.ActivityID{nom.NewActivityID("compile")},
 		Category: nom.ActivityCategory("test"),
 	})
-	_ = subscriber.OnEvent(ctx, nom.ActivityRegistered{
+	send(nom.ActivityRegistered{
 		ID:       nom.NewActivityID("deploy"),
 		Name:     nom.NewActivityName("Deploy"),
 		Deps:     []nom.ActivityID{nom.NewActivityID("lint")},
@@ -60,7 +68,7 @@ func main() {
 	})
 
 	// Start the workflow.
-	startAndProgress(subscriber, ctx)
+	startAndProgress(send)
 
 	// Render the final tree.
 	snaps := subscriber.SnapshotActivities()
@@ -72,13 +80,7 @@ func main() {
 	fmt.Printf("\nDAG: %s\n", summary.String())
 }
 
-func startAndProgress(sub *nom.NOMSubscriber, ctx context.Context) {
-	// Setup phase.
-	send := func(evt nom.Event) {
-		if err := sub.OnEvent(ctx, evt); err != nil {
-			fmt.Fprintf(os.Stderr, "event error: %v\n", err)
-		}
-	}
+func startAndProgress(send func(evt nom.Event)) {
 
 	send(nom.ActivityStarted{ID: nom.NewActivityID("setup"), Name: nom.NewActivityName("Setup")})
 	time.Sleep(100 * time.Millisecond)

@@ -7,7 +7,9 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
 
+	"github.com/larsartmann/go-output"
 	"github.com/larsartmann/go-output/graph"
 	"github.com/larsartmann/go-output/nom"
 )
@@ -43,29 +45,30 @@ func main() {
 
 	fmt.Printf("Nodes: %d, Edges: %d\n\n", len(reader.Nodes()), len(reader.Edges()))
 
-	// Export as DOT
-	dot := graph.NewDOTRenderer()
-	dot.SetNodes(reader.Nodes())
-	dot.SetEdges(reader.Edges())
+	// Project the reader's nodes and edges into an immutable Graph, then
+	// render via the CQRS pure functions — the canonical v0.30+ API.
+	builder := output.NewGraphBuilder()
 
-	dotOut, err := dot.Render()
-	if err != nil {
-		panic(err)
+	for _, node := range reader.Nodes() {
+		builder.AddNode(node)
 	}
+
+	for _, edge := range reader.Edges() {
+		builder.AddEdge(edge)
+	}
+
+	g := builder.Build()
 
 	fmt.Println("=== DOT Diagram ===")
-	fmt.Println(dotOut)
 
-	// Export as Mermaid
-	mermaid := graph.NewMermaidRenderer()
-	mermaid.SetNodes(reader.Nodes())
-	mermaid.SetEdges(reader.Edges())
-
-	mermaidOut, err := mermaid.Render()
-	if err != nil {
-		panic(err)
+	if err := graph.WriteDOT(os.Stdout, g); err != nil {
+		log.Fatalf("WriteDOT failed: %v", err)
 	}
 
+	fmt.Println()
 	fmt.Println("=== Mermaid Diagram ===")
-	fmt.Println(mermaidOut)
+
+	if err := graph.WriteMermaid(os.Stdout, g); err != nil {
+		log.Fatalf("WriteMermaid failed: %v", err)
+	}
 }

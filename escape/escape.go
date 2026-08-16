@@ -41,6 +41,10 @@ func DOT(s string) string {
 	return D2(s)
 }
 
+// fallbackID is returned by MermaidID/PlantUMLID when sanitization strips
+// every rune — diagram renderers need a non-empty identifier.
+const fallbackID = "node"
+
 // MermaidID sanitizes a string for use as a Mermaid node identifier.
 func MermaidID(id string) string {
 	var result strings.Builder
@@ -52,7 +56,7 @@ func MermaidID(id string) string {
 	}
 
 	if result.Len() == 0 {
-		return "node"
+		return fallbackID
 	}
 
 	return result.String()
@@ -163,6 +167,7 @@ func PlantUMLID(s string) string {
 	slug := SlugifyID(s)
 
 	var result strings.Builder
+
 	for _, r := range slug {
 		if isMermaidIdentRune(r) {
 			result.WriteRune(r)
@@ -170,7 +175,7 @@ func PlantUMLID(s string) string {
 	}
 
 	if result.Len() == 0 {
-		return "node"
+		return fallbackID
 	}
 
 	return result.String()
