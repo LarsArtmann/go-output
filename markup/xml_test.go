@@ -159,8 +159,8 @@ func TestMarshalXML(t *testing.T) {
 	}
 
 	result := string(data)
-	if !strings.Contains(result, "<Person>") && !strings.Contains(result, "<name>John</name>") {
-		t.Error("XML should contain person data")
+	if !strings.Contains(result, "<Person>") || !strings.Contains(result, "<name>John</name>") {
+		t.Errorf("XML should contain person data, got: %s", result)
 	}
 }
 

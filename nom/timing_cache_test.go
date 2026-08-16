@@ -212,8 +212,6 @@ func TestTimingCache_SaveAndLoad(t *testing.T) {
 	if median == 0 {
 		t.Error("expected non-zero median after loading from file")
 	}
-
-	time.Sleep(50 * time.Millisecond)
 }
 
 func TestTimingCache_Load_NonExistentFile(t *testing.T) {

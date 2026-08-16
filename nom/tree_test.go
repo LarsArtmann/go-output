@@ -151,19 +151,6 @@ func TestDependencyTree_Clear(t *testing.T) {
 	}
 }
 
-func TestDependencyTree_SnapshotRoots(t *testing.T) {
-	t.Parallel()
-
-	dt := NewDependencyTree()
-	dt.AddActivity(ActivityID("a"), nil)
-	dt.AddActivity(ActivityID("b"), nil)
-
-	snapshot := dt.snapshotRoots()
-	if len(snapshot) != 2 {
-		t.Errorf("expected 2 roots, got %d", len(snapshot))
-	}
-}
-
 func TestDependencyTree_Render(t *testing.T) {
 	t.Parallel()
 

@@ -47,6 +47,52 @@ func TestTableColorModeAlways(t *testing.T) {
 	}
 }
 
+// TestTable_ColoredFooterBoldOnFooterLineOnly asserts end-to-end that the
+// bold style lands on the line whose CONTENT is the footer — not merely on
+// whatever row index footerRowIndex happens to name. The style-level tests
+// in TestBuildStyleFunc_DirectCall read tbl.footerRowIndex itself, so they
+// cannot catch an off-by-one in the rendered table (the footer-index bug
+// class fixed in the v0.38 review).
+func TestTable_ColoredFooterBoldOnFooterLineOnly(t *testing.T) {
+	t.Parallel()
+
+	tbl := New(WithColorMode(output.ColorModeAlways))
+	tbl.SetHeaders("Name", "Value")
+	tbl.AddRow("Alice", "30")
+	tbl.AddRow("Bob", "40")
+	tbl.SetFooter("TOTAL", "70")
+
+	got, err := tbl.Render()
+	if err != nil {
+		t.Fatalf("Render() error = %v", err)
+	}
+
+	bold := "\x1b[1m"
+
+	var footerLine, dataLine string
+
+	for _, line := range strings.Split(got, "\n") {
+		switch {
+		case strings.Contains(line, "TOTAL"):
+			footerLine = line
+		case strings.Contains(line, "Alice"):
+			dataLine = line
+		}
+	}
+
+	if footerLine == "" || dataLine == "" {
+		t.Fatalf("rendered table missing footer or data line:\n%s", got)
+	}
+
+	if !strings.Contains(footerLine, bold) {
+		t.Errorf("footer line should carry bold styling:\n%q", footerLine)
+	}
+
+	if strings.Contains(dataLine, bold) {
+		t.Errorf("data row should not carry footer bold styling:\n%q", dataLine)
+	}
+}
+
 func TestTableColorModeDefault(t *testing.T) {
 	t.Parallel()
 

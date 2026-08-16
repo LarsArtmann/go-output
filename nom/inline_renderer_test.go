@@ -231,13 +231,17 @@ func TestInlineRenderer_StartStop_PeriodicRender(t *testing.T) {
 	var buf bytes.Buffer
 
 	renderer := newInlineTestRenderer(sub, &buf, 10)
+	renderer.renderNotify = make(chan struct{}, 1)
 
 	ctx := context.Background()
 	_ = sendWorkflowStarted(sub, ctx, WorkflowID("wf-1"), "")
 	sendActivityStarted(t, sub, ctx, ActivityID("step1"), ActivityName("Step 1"))
 
 	renderer.Start(ctx, 50*time.Millisecond)
-	time.Sleep(180 * time.Millisecond)
+
+	// Deterministic wait for the first periodic render instead of a blind sleep.
+	waitForRender(t, renderer, "first periodic render")
+
 	renderer.Stop()
 
 	output := buf.String()

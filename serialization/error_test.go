@@ -137,7 +137,13 @@ func TestRenderTable_EmptyHeaders(t *testing.T) {
 	}
 }
 
-func TestJSONTreeRenderer_MarshalError(t *testing.T) {
+// The *Renderer_MarshalError tests below were originally written to expect
+// marshal failures, but their inputs (TreeNode/GraphNode with string-only
+// metadata) marshal fine — and the old bodies only t.Logf'd the error, so
+// they could never fail. They now assert the opposite invariant: the tree
+// and graph renderers succeed and carry the metadata through.
+
+func TestJSONTreeRenderer_RendersMetadata(t *testing.T) {
 	t.Parallel()
 
 	r := NewJSONTreeRenderer()
@@ -145,13 +151,18 @@ func TestJSONTreeRenderer_MarshalError(t *testing.T) {
 	root.Metadata = map[string]string{"bad": string(rune(0x80))}
 	r.SetRoot(root)
 
-	_, err := r.Render()
+	out, err := r.Render()
 	if err != nil {
-		t.Logf("JSON tree marshal error (expected for some implementations): %v", err)
+		t.Fatalf("JSON tree render should succeed: %v", err)
+	}
+
+	// Invalid UTF-8 is replaced, not rejected — the payload must still carry the key.
+	if !strings.Contains(string(out), "bad") {
+		t.Errorf("JSON tree output should contain metadata key %q, got: %s", "bad", out)
 	}
 }
 
-func TestJSONGraphRenderer_MarshalError(t *testing.T) {
+func TestJSONGraphRenderer_RendersMetadata(t *testing.T) {
 	t.Parallel()
 
 	r := NewJSONGraphRenderer()
@@ -159,13 +170,17 @@ func TestJSONGraphRenderer_MarshalError(t *testing.T) {
 	node.Metadata = map[string]string{}
 	r.SetNodes([]output.GraphNode{*node})
 
-	_, err := r.Render()
+	out, err := r.Render()
 	if err != nil {
-		t.Logf("JSON graph marshal error (expected for some implementations): %v", err)
+		t.Fatalf("JSON graph render should succeed: %v", err)
+	}
+
+	if !strings.Contains(string(out), "Node A") {
+		t.Errorf("JSON graph output should contain node label, got: %s", out)
 	}
 }
 
-func TestTOMLTreeRenderer_MarshalError(t *testing.T) {
+func TestTOMLTreeRenderer_RendersMetadata(t *testing.T) {
 	t.Parallel()
 
 	r := NewTOMLTreeRenderer()
@@ -173,13 +188,17 @@ func TestTOMLTreeRenderer_MarshalError(t *testing.T) {
 	root.Metadata = map[string]string{"key": "value"}
 	r.SetRoot(root)
 
-	_, err := r.Render()
+	out, err := r.Render()
 	if err != nil {
-		t.Logf("TOML tree marshal error: %v", err)
+		t.Fatalf("TOML tree render should succeed: %v", err)
+	}
+
+	if !strings.Contains(string(out), "key") || !strings.Contains(string(out), "value") {
+		t.Errorf("TOML tree output should contain metadata, got: %s", out)
 	}
 }
 
-func TestTOMLGraphRenderer_MarshalError(t *testing.T) {
+func TestTOMLGraphRenderer_RendersMetadata(t *testing.T) {
 	t.Parallel()
 
 	r := NewTOMLGraphRenderer()
@@ -187,13 +206,17 @@ func TestTOMLGraphRenderer_MarshalError(t *testing.T) {
 	node.Metadata = map[string]string{"type": "service"}
 	r.SetNodes([]output.GraphNode{*node})
 
-	_, err := r.Render()
+	out, err := r.Render()
 	if err != nil {
-		t.Logf("TOML graph marshal error: %v", err)
+		t.Fatalf("TOML graph render should succeed: %v", err)
+	}
+
+	if !strings.Contains(string(out), "service") {
+		t.Errorf("TOML graph output should contain metadata value, got: %s", out)
 	}
 }
 
-func TestYAMLTreeRenderer_MarshalError(t *testing.T) {
+func TestYAMLTreeRenderer_RendersMetadata(t *testing.T) {
 	t.Parallel()
 
 	r := NewYAMLTreeRenderer()
@@ -201,13 +224,17 @@ func TestYAMLTreeRenderer_MarshalError(t *testing.T) {
 	root.Metadata = map[string]string{"key": "value"}
 	r.SetRoot(root)
 
-	_, err := r.Render()
+	out, err := r.Render()
 	if err != nil {
-		t.Logf("YAML tree marshal error: %v", err)
+		t.Fatalf("YAML tree render should succeed: %v", err)
+	}
+
+	if !strings.Contains(string(out), "key: value") {
+		t.Errorf("YAML tree output should contain metadata, got: %s", out)
 	}
 }
 
-func TestYAMLGraphRenderer_MarshalError(t *testing.T) {
+func TestYAMLGraphRenderer_RendersMetadata(t *testing.T) {
 	t.Parallel()
 
 	r := NewYAMLGraphRenderer()
@@ -215,9 +242,13 @@ func TestYAMLGraphRenderer_MarshalError(t *testing.T) {
 	node.Metadata = map[string]string{"type": "service"}
 	r.SetNodes([]output.GraphNode{*node})
 
-	_, err := r.Render()
+	out, err := r.Render()
 	if err != nil {
-		t.Logf("YAML graph marshal error: %v", err)
+		t.Fatalf("YAML graph render should succeed: %v", err)
+	}
+
+	if !strings.Contains(string(out), "type: service") {
+		t.Errorf("YAML graph output should contain metadata, got: %s", out)
 	}
 }
 

@@ -912,26 +912,13 @@ func (r *InlineRenderer) RenderCompletion(result CompletionResult) {
 	var detail string
 
 	if result.Success {
-		detail = fmt.Sprintf("%d steps, %s", result.TotalSteps, formatDuration(result.Elapsed))
+		detail = fmt.Sprintf("%d steps, %s", result.TotalSteps, FormatDuration(result.Elapsed))
 	} else {
 		detail = fmt.Sprintf("%d/%d steps failed, %s",
-			result.FailedSteps, result.TotalSteps, formatDuration(result.Elapsed))
+			result.FailedSteps, result.TotalSteps, FormatDuration(result.Elapsed))
 	}
 
 	cfg := r.snapshotConfig()
 
 	r.write(fmt.Sprintf("%s %s completed (%s)\n", status, cfg.appName, detail))
-}
-
-// formatDuration renders a time.Duration in a compact human-readable form.
-func formatDuration(d time.Duration) string {
-	if d < time.Second {
-		return fmt.Sprintf("%dms", d.Milliseconds())
-	}
-
-	if d < time.Minute {
-		return fmt.Sprintf("%.1fs", d.Seconds())
-	}
-
-	return d.Round(time.Second).String()
 }

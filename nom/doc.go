@@ -20,17 +20,19 @@
 //	renderer.Start(ctx, 100*time.Millisecond)
 //	defer renderer.Finish(nil)
 //
-//	sub.OnEvent(ctx, &workflowStarted{...})
-//	sub.OnEvent(ctx, &activityStarted{...})
+//	sub.OnEvent(ctx, nom.WorkflowStarted{ID: nom.NewWorkflowID("wf"), Name: nom.NewWorkflowName("Build")})
+//	sub.OnEvent(ctx, nom.ActivityStarted{ID: nom.NewActivityID("build"), Name: nom.NewActivityName("Build")})
 //	// ... activities run ...
-//	sub.OnEvent(ctx, &workflowCompleted{...})
+//	sub.OnEvent(ctx, nom.WorkflowCompleted{})
 //
 // # Concurrency model
 //
-// The subscriber and tree share the same *Activity pointers — mutations via
-// SetRunning/SetCompleted/SetFailed are instantly visible to both without any
-// sync call. All event handlers and rendering take the subscriber's RWMutex to
-// prevent garbled frames. See ADR 007 for the composition rationale.
+// The subscriber owns the mutable activity state; the dependency tree holds
+// only IDs and topology. Renderers never share pointers with the subscriber:
+// they consume [NOMSubscriber.SnapshotActivities], an immutable value copy
+// taken under the subscriber's read lock, so every frame is a consistent
+// point-in-time view. All event handlers take the subscriber's RWMutex.
+// See ADR 007 for the composition rationale.
 //
 // # Timing cache
 //

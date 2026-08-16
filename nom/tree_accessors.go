@@ -75,14 +75,6 @@ func (dt *DependencyTree) GetRootNodes() []*ActivityNode {
 	return dt.roots
 }
 
-func (dt *DependencyTree) snapshotRoots() []*ActivityNode {
-	roots := dt.GetRootNodes()
-	snapshot := make([]*ActivityNode, 0, len(roots))
-	snapshot = append(snapshot, roots...)
-
-	return snapshot
-}
-
 func (dt *DependencyTree) findNodesByStatus(
 	status ActivityStatus,
 	snapshots map[ActivityID]ActivitySnapshot,
