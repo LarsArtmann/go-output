@@ -219,7 +219,7 @@ Run `go run ./examples/basic <format>` to see them all.
 go get github.com/larsartmann/go-output
 ```
 
-Sub-modules (diagram renderers, progress visualization, etc.) are build-boundary optimizations within this repo — they are NOT independently `go get`-able. To use them, clone the repo and set up the workspace:
+Sub-modules (diagram renderers, progress visualization, etc.) are build-boundary optimizations within this repo. Their `go.mod` files pin released versions plus committed `replace` directives — external `go get` resolves the published release, but the intended consumption path (matching how this repo develops and tests them) is cloning the workspace:
 
 ```bash
 git clone https://github.com/larsartmann/go-output.git

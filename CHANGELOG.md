@@ -13,6 +13,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **ci** — `scripts/tag-release.sh`: full release wrapper that fetches, verifies a clean tree, runs `pre-tag-check.sh`, tags root + 16 submodules with annotated tags, and verifies tag-family parity.
 - **ci** — Annotated-tag enforcement: `pre-tag-check.sh` now verifies the latest release has all annotated tags (parity check), preventing lightweight tags from shipping.
 
+### Changed (from the 2026-08-16 full code review — see `docs/reviews/2026-08-16_12-15_full-code-review.html`)
+
+- **markup** — BREAKING: `XMLWriter.WriteFooter` now takes the footer row (`WriteFooter(footer []string)`); previously `Table.Footer` was silently dropped by the streaming writer. `MarshalXMLFromTable` delegates to `WriteXML` (byte-identical by construction).
+- **escape** — New shared helpers: `MarkdownCell` (pipe/newline/backslash), `PlantUMLID` (allowlist + `fallbackID`), `MermaidText` HTML-escaping with entity-smuggling guard, DOT graph-ID quoting (`dotGraphID`).
+- **nom** — `ActivityCounts` gains an `Other` bucket: custom statuses registered via `RegisterStatus` now count toward `Total`/`CompletionPercent` instead of vanishing.
+- **nom** — Layered-mode priority sort now shares the tree-mode `Status.Interest()` ordering (failed > running > pending > completed); was inverted so failed nodes sank below pending.
+
+### Fixed (from the 2026-08-16 full code review)
+
+- **security** — Mermaid label HTML injection + `#60;` entity smuggling; PlantUML dangling labeled edges + `@enduml`/newline ID injection (both convert branches); D2 constraint/style injection + option-mutation of caller diagrams; DOT graph-ID breakout; markdown cell escaping (`|` ended cells, newlines broke rows).
+- **tui** — NOM-mode mouse clicks selected the wrong node: the click formula used a stale chrome-lines constant while the rendered tree starts at a different line. `treeStartLine` is now computed from the actual layout and pinned by `TestNOMStyle_TreeStartLineMatchesRenderedLayout`.
+- **nom** — Data race on `renderMode` (4 render sites read the raw field while the TUI toggles it); `Finish` nil-subscriber panic; duplicate private `formatDuration` drifted from `FormatDuration` at minute/hour boundaries.
+- **serialization** — `MarshalJSON`/`JSONWriter.Encode` now pass `json.Deterministic(true)` (map keys were non-deterministic); `MarshalYAML` recovers encoder panics (chan/func input) into errors.
+- **tree/markdown/nom** — Map-iteration order no longer randomizes tree metadata ordering or collapsed-layer category ordering between renders.
+- **plantuml/d2/graph** — Invalid enum values (Direction, NodeShape, RankDir, Splines, LineStyle, arrows, constraints) are validated before emission instead of written raw.
+- **tests** — 28 test-quality fixes: 12 integration tests that could not fail (vacuous guards, `t.Logf` assertions, swallowed setup errors, a stdlib-only "journey" test), 6 no-op `MarshalError` tests rewritten as metadata regression guards, blind sleeps replaced with the `renderNotify` determinism hook, content-based footer-bold assertion replacing footerRowIndex-derived expectations, per-test cache isolation.
+- **examples** — Migrated the flagship basic/diagram_export examples from legacy renderer structs to the CQRS API; `tui_progress` now demonstrates the full reporter lifecycle including `Stop()` and a real NOM-mode event feed; `RenderAndPrint` no longer prints a spurious blank line for `\n`-terminated payloads.
+- **docs** — `nom/doc.go` described the deleted shared-pointer concurrency model and pointer event syntax (now the v0.22 snapshot model with sealed value events); daghtml duplicate-ID comment told the opposite of the truth; AGENTS.md/README still documented the v0.0.0-sentinel versioning model abandoned in `d16650b` (now documents released pins + replace).
+
 ### Fixed
 
 - **release** — v0.37.0 root tag converted from lightweight to annotated (matching v0.34.0/v0.35.0 convention). 16 missing submodule tags created for v0.37.0 with full parity verification against v0.36.0.
