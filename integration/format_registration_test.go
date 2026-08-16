@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/larsartmann/go-output"
-	"github.com/larsartmann/go-output/testhelpers"
 )
 
 // TestFormatRegistration verifies that importing all sub-modules activates every
@@ -45,12 +44,18 @@ func TestFormatRegistration(t *testing.T) {
 
 	// At least 14 formats should support ShapeTable (all except tree-only formats).
 	tableFormats := output.FormatsForShape(output.ShapeTable)
-	testhelpers.AssertEqual(t, "table format count", nil, len(tableFormats) >= 14, true)
+	if len(tableFormats) < 14 {
+		t.Errorf("table format count = %d, want >= 14: %v", len(tableFormats), tableFormats)
+	}
 
 	// Verify tree and graph formats are also registered.
 	treeFormats := output.FormatsForShape(output.ShapeTree)
-	testhelpers.AssertEqual(t, "tree format count", nil, len(treeFormats) >= 2, true)
+	if len(treeFormats) < 2 {
+		t.Errorf("tree format count = %d, want >= 2: %v", len(treeFormats), treeFormats)
+	}
 
 	graphFormats := output.FormatsForShape(output.ShapeGraph)
-	testhelpers.AssertEqual(t, "graph format count", nil, len(graphFormats) >= 4, true)
+	if len(graphFormats) < 4 {
+		t.Errorf("graph format count = %d, want >= 4: %v", len(graphFormats), graphFormats)
+	}
 }

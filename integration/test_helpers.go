@@ -32,8 +32,11 @@ func assertTable(t *testing.T, data *output.Table, expectedCols, expectedRows in
 	}
 }
 
-// renderMarkdownTable renders a markdown table with the given headers and rows.
-func renderMarkdownTable(headers []string, rows [][]string) string {
+// renderMarkdownTable renders a markdown table with the given headers and rows,
+// failing the test if rendering errors.
+func renderMarkdownTable(t *testing.T, headers []string, rows [][]string) string {
+	t.Helper()
+
 	md := markdown.NewMarkdownTable()
 	md.SetHeaders(headers)
 
@@ -41,29 +44,42 @@ func renderMarkdownTable(headers []string, rows [][]string) string {
 		md.AddRow(row)
 	}
 
-	out, _ := md.Render()
-
-	return out
+	return mustRenderMarkdown(t, md)
 }
 
 // renderSampleMarkdownTable returns a rendered markdown table with sample project data.
-func renderSampleMarkdownTable() string {
+func renderSampleMarkdownTable(t *testing.T) string {
+	t.Helper()
+
 	md := markdown.NewMarkdownTable()
 	md.SetHeaders([]string{headerName, headerHealth})
 	md.AddRow([]string{sampleAlpha, sampleHealth})
 
-	out, _ := md.Render()
+	return mustRenderMarkdown(t, md)
+}
+
+// mustRenderMarkdown renders a MarkdownTable, failing the test on error so
+// content assertions report the real cause instead of "missing X".
+func mustRenderMarkdown(t *testing.T, md *markdown.MarkdownTable) string {
+	t.Helper()
+
+	out, err := md.Render()
+	if err != nil {
+		t.Fatalf("markdown render failed: %v", err)
+	}
 
 	return out
 }
 
 // runEmptyDataRendersJSONWithoutPanic runs the "empty data renders without panic" test sub-case.
 func runEmptyDataRendersJSONWithoutPanic(t *testing.T) {
-	t.Run("empty data renders without panic", func(t *testing.T) {
+	t.Run("empty data renders without error", func(t *testing.T) {
 		t.Parallel()
 
 		data := output.NewTable([]string{})
 
-		_, _ = serialization.MarshalJSON(data)
+		if _, err := serialization.MarshalJSON(data); err != nil {
+			t.Errorf("MarshalJSON on empty table failed: %v", err)
+		}
 	})
 }

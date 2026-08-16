@@ -20,7 +20,7 @@ func TestTableFormatContent(t *testing.T) {
 
 	projects := SampleProjects()
 
-	result := renderTableFormat(projects)
+	result := renderTableFormat(t, projects)
 	testhelpers.AssertContains(t, result, "Name", "Table should contain header 'Name'")
 	testhelpers.AssertContains(t, result, "Alpha", "Table should contain project name 'Alpha'")
 	testhelpers.AssertContains(t, result, "Beta", "Table should contain project name 'Beta'")
@@ -44,7 +44,7 @@ func TestJSONFormatContent(t *testing.T) {
 func TestMarkdownTableContent(t *testing.T) {
 	t.Parallel()
 
-	result := renderSampleMarkdownTable()
+	result := renderSampleMarkdownTable(t)
 
 	testhelpers.AssertContains(t, result, "| Name", "Markdown should contain header cell")
 	testhelpers.AssertContains(t, result, "| Alpha", "Markdown should contain row data")

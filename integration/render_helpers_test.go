@@ -3,6 +3,7 @@ package integration
 import (
 	"bytes"
 	"fmt"
+	"testing"
 
 	"github.com/larsartmann/go-output"
 	"github.com/larsartmann/go-output/d2"
@@ -16,46 +17,64 @@ import (
 )
 
 //nolint:cyclop // Complexity is inherent to format handling
-func renderProject(format output.Format, projects []TestProject) string {
+func renderProject(t *testing.T, format output.Format, projects []TestProject) string {
+	t.Helper()
+
 	switch format {
 	case output.FormatTable:
-		return renderTableFormat(projects)
+		return renderTableFormat(t, projects)
 	case output.FormatJSON:
-		return renderJSONFormat(projects)
+		return renderJSONFormat(t, projects)
 	case output.FormatMarkdown:
-		return renderMarkdownFormat(projects)
+		return renderMarkdownFormat(t, projects)
 	case output.FormatCSV:
-		return renderCSVFormat(projects)
+		return renderCSVFormat(t, projects)
 	case output.FormatTSV:
-		return renderTSVFormat(projects)
+		return renderTSVFormat(t, projects)
 	case output.FormatXML:
-		return renderXMLFormat(projects)
+		return renderXMLFormat(t, projects)
 	case output.FormatYAML:
-		return renderYAMLFormat(projects)
+		return renderYAMLFormat(t, projects)
 	case output.FormatHTML:
-		return renderHTMLFormat(projects)
+		return renderHTMLFormat(t, projects)
 	case output.FormatTree:
-		return renderTreeFormat(projects)
+		return renderTreeFormat(t, projects)
 	case output.FormatD2:
-		return renderD2Format(projects)
+		return renderD2Format(t, projects)
 	case output.FormatMermaid:
-		return renderMermaidFormat(projects)
+		return renderMermaidFormat(t, projects)
 	case output.FormatDOT:
-		return renderDOTFormat(projects)
+		return renderDOTFormat(t, projects)
 	case output.FormatJSONL:
-		return renderJSONLFormat(projects)
+		return renderJSONLFormat(t, projects)
 	case output.FormatAsciiDoc:
-		return renderAsciiDocFormat(projects)
+		return renderAsciiDocFormat(t, projects)
 	case output.FormatTOML:
-		return renderTOMLFormat(projects)
+		return renderTOMLFormat(t, projects)
 	case output.FormatPlantUML:
-		return renderPlantUMLFormat(projects)
+		return renderPlantUMLFormat(t, projects)
 	default:
+		t.Fatalf("unhandled format %s in renderProject", format)
+
 		return ""
 	}
 }
 
-func renderTableFormat(projects []TestProject) string {
+// mustRender fails the test on a render error, so content assertions report
+// the real cause instead of degrading to "returned empty output".
+func mustRender(t *testing.T, format output.Format, out string, err error) string {
+	t.Helper()
+
+	if err != nil {
+		t.Fatalf("render %s failed: %v", format, err)
+	}
+
+	return out
+}
+
+func renderTableFormat(t *testing.T, projects []TestProject) string {
+	t.Helper()
+
 	tbl := table.New()
 	tbl.SetHeaders("Name", "Health", "Complexity")
 
@@ -64,33 +83,41 @@ func renderTableFormat(projects []TestProject) string {
 	}
 
 	out, err := tbl.Render()
-	if err != nil {
-		return ""
-	}
 
-	return out
+	return mustRender(t, output.FormatTable, out, err)
 }
 
-func renderJSONFormat(projects []TestProject) string {
-	data, _ := serialization.MarshalJSON(projects)
+func renderJSONFormat(t *testing.T, projects []TestProject) string {
+	t.Helper()
 
-	return string(data)
+	data, err := serialization.MarshalJSON(projects)
+
+	return mustRender(t, output.FormatJSON, string(data), err)
 }
 
-func renderMarkdownFormat(projects []TestProject) string {
+func renderMarkdownFormat(t *testing.T, projects []TestProject) string {
+	t.Helper()
+
 	headers := []string{"Name", "Health", "Complexity"}
 
-	return renderMarkdownTable(headers, formatProjectsToRows(projects))
+	return renderMarkdownTable(t, headers, formatProjectsToRows(projects))
 }
 
-func renderCSVFormat(projects []TestProject) string {
+func renderCSVFormat(t *testing.T, projects []TestProject) string {
+	t.Helper()
+
 	var buf bytes.Buffer
 
 	w := delimited.NewCSVWriter(&buf)
 
-	_ = w.WriteHeader([]string{"Name", "Health", "Complexity"})
+	if err := w.WriteHeader([]string{"Name", "Health", "Complexity"}); err != nil {
+		t.Fatalf("write CSV header: %v", err)
+	}
+
 	for _, row := range formatProjectsToRows(projects) {
-		_ = w.WriteRow(row)
+		if err := w.WriteRow(row); err != nil {
+			t.Fatalf("write CSV row: %v", err)
+		}
 	}
 
 	w.Flush()
@@ -98,14 +125,21 @@ func renderCSVFormat(projects []TestProject) string {
 	return buf.String()
 }
 
-func renderTSVFormat(projects []TestProject) string {
+func renderTSVFormat(t *testing.T, projects []TestProject) string {
+	t.Helper()
+
 	var buf bytes.Buffer
 
 	w := delimited.NewTSVWriter(&buf)
 
-	_ = w.WriteHeader([]string{"Name", "Health", "Complexity"})
+	if err := w.WriteHeader([]string{"Name", "Health", "Complexity"}); err != nil {
+		t.Fatalf("write TSV header: %v", err)
+	}
+
 	for _, row := range formatProjectsToRows(projects) {
-		_ = w.WriteRow(row)
+		if err := w.WriteRow(row); err != nil {
+			t.Fatalf("write TSV row: %v", err)
+		}
 	}
 
 	w.Flush()
@@ -120,10 +154,12 @@ func newProjectTable(projects []TestProject) *output.Table {
 	}
 }
 
-func renderXMLFormat(projects []TestProject) string {
-	data, _ := markup.MarshalXMLFromTable(newProjectTable(projects))
+func renderXMLFormat(t *testing.T, projects []TestProject) string {
+	t.Helper()
 
-	return string(data)
+	data, err := markup.MarshalXMLFromTable(newProjectTable(projects))
+
+	return mustRender(t, output.FormatXML, string(data), err)
 }
 
 func formatProjectsToRows(projects []TestProject) [][]string {
@@ -135,13 +171,17 @@ func formatProjectsToRows(projects []TestProject) [][]string {
 	return rows
 }
 
-func renderYAMLFormat(projects []TestProject) string {
-	data, _ := serialization.MarshalYAML(projects)
+func renderYAMLFormat(t *testing.T, projects []TestProject) string {
+	t.Helper()
 
-	return string(data)
+	data, err := serialization.MarshalYAML(projects)
+
+	return mustRender(t, output.FormatYAML, string(data), err)
 }
 
-func renderHTMLFormat(projects []TestProject) string {
+func renderHTMLFormat(t *testing.T, projects []TestProject) string {
+	t.Helper()
+
 	html := markup.NewHTMLRenderer()
 	html.SetHeaders([]string{"Name", "Health", "Complexity"})
 
@@ -150,11 +190,8 @@ func renderHTMLFormat(projects []TestProject) string {
 	}
 
 	out, err := html.Render()
-	if err != nil {
-		return ""
-	}
 
-	return out
+	return mustRender(t, output.FormatHTML, out, err)
 }
 
 func buildProjectTree(projects []TestProject) *output.TreeNode {
@@ -166,19 +203,20 @@ func buildProjectTree(projects []TestProject) *output.TreeNode {
 	return root
 }
 
-func renderTreeFormat(projects []TestProject) string {
-	tree := tree.NewASCIITreeRenderer()
-	tree.SetRoot(buildProjectTree(projects))
+func renderTreeFormat(t *testing.T, projects []TestProject) string {
+	t.Helper()
 
-	out, err := tree.Render()
-	if err != nil {
-		return ""
-	}
+	tr := tree.NewASCIITreeRenderer()
+	tr.SetRoot(buildProjectTree(projects))
 
-	return out
+	out, err := tr.Render()
+
+	return mustRender(t, output.FormatTree, out, err)
 }
 
-func renderD2Format(projects []TestProject) string {
+func renderD2Format(t *testing.T, projects []TestProject) string {
+	t.Helper()
+
 	d2Diagram := d2.NewDiagram()
 	d2Diagram.AddTable("projects", []d2.Column{
 		{Name: "name", Type: "string"},
@@ -189,31 +227,26 @@ func renderD2Format(projects []TestProject) string {
 	}
 
 	out, err := d2Diagram.Render()
-	if err != nil {
-		return ""
-	}
 
-	return out
+	return mustRender(t, output.FormatD2, out, err)
 }
 
-func renderNewD2FromTable(projects []TestProject) string {
+func renderNewD2FromTable(t *testing.T, projects []TestProject) string {
+	t.Helper()
+
 	data := newGraphTable(projects)
 
 	out, err := d2.NewD2FromTable(data).Render()
-	if err != nil {
-		return ""
-	}
 
-	return out
+	return mustRender(t, output.FormatD2, out, err)
 }
 
-func renderNewD2FromTree(projects []TestProject) string {
-	out, err := d2.NewD2FromTree(buildProjectTree(projects)).Render()
-	if err != nil {
-		return ""
-	}
+func renderNewD2FromTree(t *testing.T, projects []TestProject) string {
+	t.Helper()
 
-	return out
+	out, err := d2.NewD2FromTree(buildProjectTree(projects)).Render()
+
+	return mustRender(t, output.FormatD2, out, err)
 }
 
 func newGraphTable(projects []TestProject) *output.Table {
@@ -225,50 +258,53 @@ func newGraphTable(projects []TestProject) *output.Table {
 	return data
 }
 
-func renderDOTFormat(projects []TestProject) string {
+func renderDOTFormat(t *testing.T, projects []TestProject) string {
+	t.Helper()
+
 	out, err := graph.NewDOTFromTable(newGraphTable(projects)).Render()
-	if err != nil {
-		return ""
-	}
 
-	return out
+	return mustRender(t, output.FormatDOT, out, err)
 }
 
-func renderMermaidFormat(projects []TestProject) string {
+func renderMermaidFormat(t *testing.T, projects []TestProject) string {
+	t.Helper()
+
 	out, err := graph.NewMermaidFromTable(newGraphTable(projects)).Render()
-	if err != nil {
-		return ""
-	}
 
-	return out
+	return mustRender(t, output.FormatMermaid, out, err)
 }
 
-func renderJSONLFormat(projects []TestProject) string {
+func renderJSONLFormat(t *testing.T, projects []TestProject) string {
+	t.Helper()
+
 	data := newGraphTable(projects)
-	b, _ := serialization.MarshalJSONLFromTable(data)
+	b, err := serialization.MarshalJSONLFromTable(data)
 
-	return string(b)
+	return mustRender(t, output.FormatJSONL, string(b), err)
 }
 
-func renderAsciiDocFormat(projects []TestProject) string {
-	b, _ := markup.MarshalAsciiDocFromTable(newProjectTable(projects))
+func renderAsciiDocFormat(t *testing.T, projects []TestProject) string {
+	t.Helper()
 
-	return string(b)
+	b, err := markup.MarshalAsciiDocFromTable(newProjectTable(projects))
+
+	return mustRender(t, output.FormatAsciiDoc, string(b), err)
 }
 
-func renderTOMLFormat(projects []TestProject) string {
-	b, _ := serialization.MarshalTOMLFromTable(newProjectTable(projects))
+func renderTOMLFormat(t *testing.T, projects []TestProject) string {
+	t.Helper()
 
-	return string(b)
+	b, err := serialization.MarshalTOMLFromTable(newProjectTable(projects))
+
+	return mustRender(t, output.FormatTOML, string(b), err)
 }
 
-func renderPlantUMLFormat(projects []TestProject) string {
+func renderPlantUMLFormat(t *testing.T, projects []TestProject) string {
+	t.Helper()
+
 	out, err := plantuml.NewPlantUMLFromTable(newGraphTable(projects)).Render()
-	if err != nil {
-		return ""
-	}
 
-	return out
+	return mustRender(t, output.FormatPlantUML, out, err)
 }
 
 func formatHealth(h int) string {

@@ -50,7 +50,7 @@ func TestAssertTable(t *testing.T) {
 func TestRenderMarkdownTable(t *testing.T) {
 	t.Parallel()
 
-	got := renderMarkdownTable([]string{"X", "Y"}, [][]string{{"1", "2"}})
+	got := renderMarkdownTable(t, []string{"X", "Y"}, [][]string{{"1", "2"}})
 
 	testhelpers.AssertAllContained(t, got, "X", "1")
 }
@@ -58,7 +58,7 @@ func TestRenderMarkdownTable(t *testing.T) {
 func TestRenderSampleMarkdownTable(t *testing.T) {
 	t.Parallel()
 
-	got := renderSampleMarkdownTable()
+	got := renderSampleMarkdownTable(t)
 
 	if !strings.Contains(got, sampleAlpha) || !strings.Contains(got, sampleHealth) {
 		t.Errorf("renderSampleMarkdownTable() = %q, expected sample data", got)

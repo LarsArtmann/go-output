@@ -13,7 +13,7 @@ func TestNewD2FromTableIntegration(t *testing.T) {
 	t.Parallel()
 
 	projects := SampleProjects()
-	result := renderNewD2FromTable(projects)
+	result := renderNewD2FromTable(t, projects)
 	testhelpers.AssertContains(t, result, "row0", "D2 from table data should contain row nodes")
 	testhelpers.AssertContains(t, result, "->", "D2 from table data should contain edges")
 	testhelpers.AssertContains(
@@ -28,7 +28,7 @@ func TestD2FromTreeIntegration(t *testing.T) {
 	t.Parallel()
 
 	projects := SampleProjects()
-	result := renderNewD2FromTree(projects)
+	result := renderNewD2FromTree(t, projects)
 	testhelpers.AssertContains(t, result, "Projects", "D2 from tree should contain root label")
 	testhelpers.AssertContains(t, result, "->", "D2 from tree should contain edges")
 	testhelpers.AssertContains(t, result, "Alpha", "D2 from tree should contain child labels")

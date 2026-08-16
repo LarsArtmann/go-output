@@ -34,9 +34,11 @@ type Edge struct {
 }
 
 // DAG is the complete graph data model consumed by the HTML renderer.
-// Nodes with duplicate IDs are deduplicated (first occurrence wins).
-// Edges referencing unknown node IDs are silently dropped.
-// Duplicate edges (same From/To pair) are deduplicated.
+// Duplicate node IDs are NOT deduplicated: every node renders, and edges
+// referencing a duplicated ID bind to its last occurrence (the JS idMap
+// overwrites earlier entries). Edges referencing unknown node IDs are
+// silently dropped at render time. Duplicate edges (same From/To pair)
+// are deduplicated at render time as well.
 type DAG struct {
 	// Nodes is the list of all nodes in the graph.
 	Nodes []Node `json:"nodes"`

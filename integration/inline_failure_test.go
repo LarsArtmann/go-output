@@ -20,23 +20,25 @@ func TestInlineRenderer_WorkflowFailureErrorDisplayed(t *testing.T) {
 	subscriber := nom.NewNOMSubscriber()
 	ctx := context.Background()
 
-	fireWorkflowStarted(subscriber, ctx, "wf-fail", "Failing Pipeline")
+	fireWorkflowStarted(t, subscriber, ctx, "wf-fail", "Failing Pipeline")
 
-	startActivity(subscriber, ctx, "fetch", "Fetch Dependencies")
-	completeActivity(subscriber, ctx, "fetch", "Fetch Dependencies", 50*time.Millisecond)
+	startActivity(t, subscriber, ctx, "fetch", "Fetch Dependencies")
+	completeActivity(t, subscriber, ctx, "fetch", "Fetch Dependencies", 50*time.Millisecond)
 
-	startActivity(subscriber, ctx, "compile", "Compile Sources")
-	completeActivity(subscriber, ctx, "compile", "Compile Sources", 120*time.Millisecond)
+	startActivity(t, subscriber, ctx, "compile", "Compile Sources")
+	completeActivity(t, subscriber, ctx, "compile", "Compile Sources", 120*time.Millisecond)
 
-	startActivity(subscriber, ctx, "test", "Run Tests")
+	startActivity(t, subscriber, ctx, "test", "Run Tests")
 
 	// The test step fails with a concrete error.
 	stepErr := errors.New("test suite failed: 3 assertions failed")
-	_ = subscriber.OnEvent(ctx, nom.ActivityFailed{
+	if err := subscriber.OnEvent(ctx, nom.ActivityFailed{
 		ID:   nom.NewActivityID("test"),
 		Name: nom.NewActivityName("Run Tests"),
 		Err:  stepErr,
-	})
+	}); err != nil {
+		t.Fatalf("activity.failed(test): %v", err)
+	}
 
 	var buf bytes.Buffer
 

@@ -2,7 +2,6 @@ package integration
 
 import (
 	"context"
-	"errors"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -159,29 +158,40 @@ func TestNOMDependencyTree_Integration(t *testing.T) {
 func TestTUIProgressReporter_Integration(t *testing.T) {
 	t.Parallel()
 
-	t.Run("reporter state transitions via progress", func(t *testing.T) {
+	// Every Report* call lazily starts a REAL tea.Program on os.Stdout
+	// (see tui/lifecycle.go ensureStarted), and the reporter exposes no state
+	// getters outside the tui package. Cross-package smoke coverage of the
+	// Report* surface therefore lives in tui/reporter_test.go, which uses the
+	// package-internal newTestReporter() to suppress program startup.
+	//
+	// The one observable cross-package surface is the embedded nom subscriber:
+	// it must be live, so events fired through it are visible to whatever
+	// renders NOM mode inside the TUI.
+	t.Run("reporter subscriber is live for nom events", func(t *testing.T) {
 		t.Parallel()
 
 		reporter := tui.NewBubbleTeaProgressReporter()
+		defer reporter.Stop()
 
-		reporter.ReportProgress(25.0)
-		reporter.ReportProgress(50.0)
+		sub := reporter.Subscriber()
+		if sub == nil {
+			t.Fatal("reporter.Subscriber() returned nil")
+		}
 
-		reporter.ReportStep(1, 3, "Build")
-		reporter.ReportStep(2, 3, "Build")
-		reporter.ReportStep(3, 3, "Build")
+		ctx := context.Background()
+		fireWorkflowStarted(t, sub, ctx, "w1", "Pipeline")
+		startActivity(t, sub, ctx, "build", "Build")
+		completeActivity(t, sub, ctx, "build", "Build", 2*time.Second)
 
-		reporter.ReportMessage("Compiling sources")
+		snaps := sub.SnapshotActivities()
+		buildSnap, ok := snaps[nom.NewActivityID("build")]
+		if !ok {
+			t.Fatal("build activity missing from reporter subscriber snapshots")
+		}
 
-		reporter.ReportProgress(100.0)
-	})
-
-	t.Run("reporter error transitions to errored", func(t *testing.T) {
-		t.Parallel()
-
-		reporter := tui.NewBubbleTeaProgressReporter()
-		reporter.ReportProgress(50.0)
-		reporter.ReportError(errors.New("disk full"))
+		if buildSnap.Status != nom.ActivityStatusCompleted {
+			t.Errorf("build status = %v, want Completed", buildSnap.Status)
+		}
 	})
 }
 
@@ -191,11 +201,11 @@ func TestNOMSubscriber_RenderNodeVisibleNodes_Integration(t *testing.T) {
 	subscriber := nom.NewNOMSubscriber(nom.WithCachePath(filepath.Join(t.TempDir(), "nom-timing.csv")))
 	ctx := context.Background()
 
-	fireWorkflowStarted(subscriber, ctx, "w1", "Pipeline")
+	fireWorkflowStarted(t, subscriber, ctx, "w1", "Pipeline")
 
-	startActivity(subscriber, ctx, "build", "Build")
-	startActivity(subscriber, ctx, "test", "Test")
-	completeActivity(subscriber, ctx, "build", "Build", 3*time.Second)
+	startActivity(t, subscriber, ctx, "build", "Build")
+	startActivity(t, subscriber, ctx, "test", "Test")
+	completeActivity(t, subscriber, ctx, "build", "Build", 3*time.Second)
 
 	tree := subscriber.DependencyTree()
 	if tree == nil {
@@ -272,30 +282,59 @@ func TestNOMTimingCache_Integration(t *testing.T) {
 // mustUpdateActivityStatus is removed — ActivityNode no longer stores Activity fields.
 // Use SnapshotActivities + RenderWithSnapshots, or send events through the subscriber.
 
-// startActivity sends an activity.started event and discards any error.
-func startActivity(sub *nom.NOMSubscriber, ctx context.Context, id, name string) {
-	_ = sub.OnEvent(ctx, nom.ActivityStarted{
+// startActivity sends an activity.started event, failing the test on error.
+func startActivity(t *testing.T, sub *nom.NOMSubscriber, ctx context.Context, id, name string) {
+	t.Helper()
+
+	if err := sub.OnEvent(ctx, nom.ActivityStarted{
 		ID:   nom.NewActivityID(id),
 		Name: nom.NewActivityName(name),
-	})
+	}); err != nil {
+		t.Fatalf("activity.started(%s): %v", id, err)
+	}
 }
 
-// fireWorkflowStarted sends a workflow.started event and discards any error.
-// Use for tests that only care about downstream behavior, not event errors.
-func fireWorkflowStarted(sub *nom.NOMSubscriber, ctx context.Context, id, name string) {
-	_ = sub.OnEvent(ctx, nom.WorkflowStarted{
+// registerActivity sends an activity.registered event, failing the test on error.
+func registerActivity(t *testing.T, sub *nom.NOMSubscriber, ctx context.Context, id, name string, deps ...string) {
+	t.Helper()
+
+	depIDs := make([]nom.ActivityID, len(deps))
+	for i, dep := range deps {
+		depIDs[i] = nom.NewActivityID(dep)
+	}
+
+	if err := sub.OnEvent(ctx, nom.ActivityRegistered{
+		ID:   nom.NewActivityID(id),
+		Name: nom.NewActivityName(name),
+		Deps: depIDs,
+	}); err != nil {
+		t.Fatalf("activity.registered(%s): %v", id, err)
+	}
+}
+
+// fireWorkflowStarted sends a workflow.started event, failing the test on error.
+func fireWorkflowStarted(t *testing.T, sub *nom.NOMSubscriber, ctx context.Context, id, name string) {
+	t.Helper()
+
+	if err := sub.OnEvent(ctx, nom.WorkflowStarted{
 		ID:   nom.NewWorkflowID(id),
 		Name: nom.NewWorkflowName(name),
-	})
+	}); err != nil {
+		t.Fatalf("workflow.started(%s): %v", id, err)
+	}
 }
 
-// completeActivity sends an activity.completed event and discards any error.
-func completeActivity(sub *nom.NOMSubscriber, ctx context.Context, id, name string, duration time.Duration) {
-	_ = sub.OnEvent(ctx, nom.ActivityCompleted{
+// completeActivity sends an activity.completed event, failing the test on error.
+func completeActivity(t *testing.T, sub *nom.NOMSubscriber, ctx context.Context, id, name string, duration time.Duration) {
+	t.Helper()
+
+	if err := sub.OnEvent(ctx, nom.ActivityCompleted{
 		ID:       nom.NewActivityID(id),
 		Name:     nom.NewActivityName(name),
 		Duration: duration,
-	})
+	}); err != nil {
+		t.Fatalf("activity.completed(%s): %v", id, err)
+	}
 }
 
 func TestNOM_LayeredMode_Integration(t *testing.T) {
@@ -304,38 +343,23 @@ func TestNOM_LayeredMode_Integration(t *testing.T) {
 	sub := nom.NewNOMSubscriber(nom.WithCachePath(filepath.Join(t.TempDir(), "nom-timing.csv")))
 	ctx := context.Background()
 
-	fireWorkflowStarted(sub, ctx, "wf1", "CI Pipeline")
+	fireWorkflowStarted(t, sub, ctx, "wf1", "CI Pipeline")
 
 	// Build a multi-layer DAG via events with explicit deps.
-	_ = sub.OnEvent(ctx, nom.ActivityRegistered{
-		ID:   nom.NewActivityID("setup"),
-		Name: nom.NewActivityName("Setup"),
-	})
-	_ = sub.OnEvent(ctx, nom.ActivityRegistered{
-		ID:   nom.NewActivityID("compile"),
-		Name: nom.NewActivityName("Compile"),
-		Deps: []nom.ActivityID{nom.NewActivityID("setup")},
-	})
-	_ = sub.OnEvent(ctx, nom.ActivityRegistered{
-		ID:   nom.NewActivityID("lint"),
-		Name: nom.NewActivityName("Lint"),
-		Deps: []nom.ActivityID{nom.NewActivityID("setup")},
-	})
-	_ = sub.OnEvent(ctx, nom.ActivityRegistered{
-		ID:   nom.NewActivityID("test"),
-		Name: nom.NewActivityName("Test"),
-		Deps: []nom.ActivityID{nom.NewActivityID("compile")},
-	})
+	registerActivity(t, sub, ctx, "setup", "Setup")
+	registerActivity(t, sub, ctx, "compile", "Compile", "setup")
+	registerActivity(t, sub, ctx, "lint", "Lint", "setup")
+	registerActivity(t, sub, ctx, "test", "Test", "compile")
 
-	startActivity(sub, ctx, "setup", "Setup")
-	startActivity(sub, ctx, "compile", "Compile")
-	startActivity(sub, ctx, "lint", "Lint")
-	startActivity(sub, ctx, "test", "Test")
+	startActivity(t, sub, ctx, "setup", "Setup")
+	startActivity(t, sub, ctx, "compile", "Compile")
+	startActivity(t, sub, ctx, "lint", "Lint")
+	startActivity(t, sub, ctx, "test", "Test")
 
 	tree := sub.DependencyTree()
 	tree.SetRenderMode(nom.RenderModeLayered)
 
-	completeActivity(sub, ctx, "setup", "Setup", 2*time.Second)
+	completeActivity(t, sub, ctx, "setup", "Setup", 2*time.Second)
 
 	snaps := sub.SnapshotActivities()
 	rendered := tree.RenderWithSnapshots(snaps, 20, 100)

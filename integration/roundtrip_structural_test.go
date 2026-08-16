@@ -65,7 +65,11 @@ func TestRoundTripXML(t *testing.T) {
 		t.Fatalf("row count = %d, want 2", len(parsed.Rows))
 	}
 
-	if len(parsed.Rows[0].Cells) > 0 && parsed.Rows[0].Cells[0].Value != "Alice" {
+	if len(parsed.Rows[0].Cells) == 0 {
+		t.Fatal("row 0 has no cells — XML round-trip dropped cell data")
+	}
+
+	if parsed.Rows[0].Cells[0].Value != "Alice" {
 		t.Errorf("row 0 cell 0 = %q, want %q", parsed.Rows[0].Cells[0].Value, "Alice")
 	}
 }

@@ -187,7 +187,7 @@ func TestAllFormatsRender(t *testing.T) {
 		t.Run(string(format), func(t *testing.T) {
 			t.Parallel()
 
-			result := renderProject(format, projects)
+			result := renderProject(t, format, projects)
 			if result == "" {
 				t.Errorf("Format %s returned empty output", format)
 			}

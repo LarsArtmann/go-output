@@ -105,8 +105,14 @@ func TestRenderDataAsCSV(t *testing.T) {
 	var buf strings.Builder
 
 	w := delimited.NewCSVWriter(&buf)
-	_ = w.WriteHeader([]string{"Name", "Health"})
-	_ = w.WriteRow([]string{"Alpha", "90%"})
+	if err := w.WriteHeader([]string{"Name", "Health"}); err != nil {
+		t.Fatalf("WriteHeader failed: %v", err)
+	}
+
+	if err := w.WriteRow([]string{"Alpha", "90%"}); err != nil {
+		t.Fatalf("WriteRow failed: %v", err)
+	}
+
 	w.Flush()
 
 	// Then: I get valid CSV
@@ -171,7 +177,8 @@ func TestHandleEdgeCases(t *testing.T) {
 	})
 }
 
-// User Journey: CLI Developer wants consistent sorting behavior
+// User Journey: CLI Developer wants sorted output — sort data first, then
+// render; the renderer must preserve the caller's row order.
 
 func TestSortingBehavior(t *testing.T) {
 	type Project struct {
@@ -187,28 +194,65 @@ func TestSortingBehavior(t *testing.T) {
 		return projects
 	}
 
-	t.Run("can sort by name", func(t *testing.T) {
+	// renderOrder renders the projects as a markdown table and returns the
+	// line positions of the given names, proving the output preserves input order.
+	renderOrder := func(t *testing.T, projects []Project) map[string]int {
+		t.Helper()
+
+		data := output.NewTable([]string{"Name"})
+		for _, p := range projects {
+			data.AddRow([]string{p.Name})
+		}
+
+		md := markdown.NewMarkdownTableFromTable(data)
+
+		out, err := md.Render()
+		if err != nil {
+			t.Fatalf("markdown render failed: %v", err)
+		}
+
+		lines := strings.Split(out, "\n")
+
+		positions := make(map[string]int, len(projects))
+		for i, line := range lines {
+			for _, p := range projects {
+				if strings.Contains(line, "| "+p.Name+" ") {
+					positions[p.Name] = i
+				}
+			}
+		}
+
+		return positions
+	}
+
+	t.Run("rendered output preserves sorted order", func(t *testing.T) {
 		t.Parallel()
 
 		type testCase struct {
 			name     string
 			data     []Project
 			desc     bool
-			expected string
+			first    string
+			second   string
+			third    string
 		}
 
 		cases := []testCase{
 			{
-				name:     "ascending",
-				data:     makeProjects("zebra", "apple", "banana"),
-				desc:     false,
-				expected: "apple",
+				name:   "ascending",
+				data:   makeProjects("zebra", "apple", "banana"),
+				desc:   false,
+				first:  "apple",
+				second: "banana",
+				third:  "zebra",
 			},
 			{
-				name:     "descending",
-				data:     makeProjects("apple", "zebra", "banana"),
-				desc:     true,
-				expected: "zebra",
+				name:   "descending",
+				data:   makeProjects("apple", "zebra", "banana"),
+				desc:   true,
+				first:  "zebra",
+				second: "banana",
+				third:  "apple",
 			},
 		}
 
@@ -224,21 +268,27 @@ func TestSortingBehavior(t *testing.T) {
 					return cmp.Compare(a.Name, b.Name)
 				})
 
-				if tc.data[0].Name != tc.expected {
-					t.Errorf("Expected first item to be %q, got %s", tc.expected, tc.data[0].Name)
+				positions := renderOrder(t, tc.data)
+
+				if positions[tc.first] >= positions[tc.second] || positions[tc.second] >= positions[tc.third] {
+					t.Errorf(
+						"rendered order = %v, want %s < %s < %s",
+						positions, tc.first, tc.second, tc.third,
+					)
 				}
 			})
 		}
 	})
 
-	t.Run("sorting with no comparator is a no-op", func(t *testing.T) {
+	t.Run("sorting with no comparator leaves render unchanged", func(t *testing.T) {
 		t.Parallel()
 
-		data := []Project{{Name: "test"}}
+		data := []Project{{Name: "solo"}}
 		slices.SortStableFunc(data, nil)
 
-		if data[0].Name != "test" {
-			t.Errorf("Expected item to remain unchanged, got %s", data[0].Name)
+		positions := renderOrder(t, data)
+		if positions["solo"] == 0 {
+			t.Error("expected solo row to appear in rendered output")
 		}
 	})
 }

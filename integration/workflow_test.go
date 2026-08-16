@@ -4,6 +4,7 @@ package integration
 import (
 	"bytes"
 	"cmp"
+	"encoding/json/v2"
 	"slices"
 	"strings"
 	"testing"
@@ -103,7 +104,11 @@ func TestSortAndRenderWorkflow(t *testing.T) {
 			return cmp.Compare(a.Name, b.Name)
 		})
 
-		jsonBytes, _ := output.MarshalJSONIndent(items, "", "  ")
+		jsonBytes, err := output.MarshalJSONIndent(items, "", "  ")
+		if err != nil {
+			t.Fatalf("MarshalJSONIndent failed: %v", err)
+		}
+
 		jsonStr := string(jsonBytes)
 
 		// Then: Apple should come first
@@ -139,7 +144,19 @@ func TestLargeDatasetWorkflow(t *testing.T) {
 
 		// Then: Should complete without error and have correct row count
 		if len(jsonBytes) == 0 {
-			t.Error("JSON output should not be empty")
+			t.Fatal("JSON output should not be empty")
+		}
+
+		var decoded struct {
+			Rows [][]string
+		}
+
+		if err := json.Unmarshal(jsonBytes, &decoded); err != nil {
+			t.Fatalf("decoding rendered JSON: %v", err)
+		}
+
+		if len(decoded.Rows) != 1000 {
+			t.Errorf("decoded row count = %d, want 1000", len(decoded.Rows))
 		}
 	})
 
@@ -184,7 +201,7 @@ func TestErrorHandlingWorkflow(t *testing.T) {
 
 		// Then: Error should be descriptive
 		if err == nil {
-			t.Error("Expected error for invalid format")
+			t.Fatal("Expected error for invalid format")
 		}
 
 		if !strings.Contains(err.Error(), "invalid") {
