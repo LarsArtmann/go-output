@@ -46,7 +46,7 @@ type InvalidShapeError struct {
 
 // Error returns a descriptive error message for the invalid shape.
 func (e *InvalidShapeError) Error() string {
-	return "invalid shape: " + e.Value + " (allowed: " + joinStrings(EnumAllowedValues(e.Allowed)) + ")"
+	return EnumErrorMessage("shape", e.Value, EnumAllowedValues(e.Allowed))
 }
 
 // ParseShape converts a string to Shape, returning an error if invalid.

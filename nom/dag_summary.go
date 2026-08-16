@@ -56,14 +56,9 @@ func (dt *DependencyTree) DAGSummary() DAGSummary {
 	}
 
 	byDepth := make(map[int]int)
-	depSet := make(map[ActivityID]bool)
 
 	for _, node := range dt.nodes {
 		summary.Edges += len(node.Deps)
-
-		for _, dep := range node.Deps {
-			depSet[dep] = true
-		}
 
 		byDepth[node.Depth]++
 
@@ -71,13 +66,11 @@ func (dt *DependencyTree) DAGSummary() DAGSummary {
 			summary.MaxDepth = node.Depth
 		}
 
-		if node.IsRoot || len(node.Deps) == 0 {
+		if node.IsRoot {
 			summary.Roots++
 		}
 
-		if len(node.Children) == 0 && !depSet[node.ID] {
-			summary.Leaves++
-		} else if len(node.Children) == 0 {
+		if len(node.Children) == 0 {
 			summary.Leaves++
 		}
 	}

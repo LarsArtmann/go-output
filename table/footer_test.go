@@ -87,14 +87,24 @@ func TestTableSetFooter(t *testing.T) {
 func TestTableSetFooter_MultipleCalls(t *testing.T) {
 	t.Parallel()
 
-	tbl := New(WithColorMode(output.ColorModeNever))
+	tbl := New(WithColorMode(output.ColorModeAlways))
 	tbl.SetHeaders("Name", "Count")
 	tbl.AddRow("Alice", "10")
 	tbl.SetFooter("Old", "0")
 	tbl.SetFooter("Total", "30")
 
-	if tbl.footerRowIndex != 3 {
-		t.Errorf("footerRowIndex = %d, want 3 (last footer row)", tbl.footerRowIndex)
+	if tbl.footerRowIndex != 2 {
+		t.Errorf("footerRowIndex = %d, want 2 (last footer row)", tbl.footerRowIndex)
+	}
+
+	sf := tbl.buildStyleFunc(tbl.footerRowIndex)
+	footerStyle := sf(2, 0)
+	if !footerStyle.GetBold() {
+		t.Error("footer row (index 2) should be bold-styled")
+	}
+
+	if sf(1, 0).GetBold() {
+		t.Error("data row (index 1) should not be footer-styled")
 	}
 
 	testhelpers.RenderAssert(t, tbl, "Alice", "Old", "Total")

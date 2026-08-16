@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Full Code Review — Execution Plan</title>
+    <style>
+      :root {
+        --color-graphite: #0e0e10;
+        --color-graphite-2: #18181d;
+        --color-graphite-3: #16161a;
+        --color-bone: #f4f4f0;
+        --color-red: #ff6b6b;
+        --color-blue: #6eb5ff;
+        --color-yellow: #f4d35e;
+        --color-amber: #ffb347;
+        --color-hairline: rgba(244, 244, 240, 0.12);
+        --color-hairline-strong: rgba(244, 244, 240, 0.25);
+        --surface: var(--color-graphite);
+        --surface-raised: var(--color-graphite-2);
+        --surface-sunken: var(--color-graphite-3);
+        --text: var(--color-bone);
+        --text-muted: rgba(244, 244, 240, 0.72);
+        --text-faint: rgba(244, 244, 240, 0.45);
+        --border: var(--color-hairline);
+        --border-strong: var(--color-hairline-strong);
+        --accent: var(--color-amber);
+        --problem: var(--color-red);
+        --solution: var(--color-blue);
+        --warning: var(--color-yellow);
+        --radius: 0px;
+        --font-heading: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        --font-body: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        --font-mono: ui-monospace, "Cascadia Code", "Source Code Pro", "JetBrains Mono", Menlo, Consolas, monospace;
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html { scroll-behavior: smooth; }
+      section[id], [id] { scroll-margin-top: 60px; }
+      body { background: var(--surface); color: var(--text); font-family: var(--font-body); font-size: 15px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+      :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+      .top-bar { background: var(--text); color: var(--surface); padding: 0.6rem 2rem; font-family: var(--font-mono); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; }
+      .layout { display: flex; gap: 2.5rem; padding: 2rem; }
+      .sidebar { width: 220px; flex-shrink: 0; position: sticky; top: 1rem; align-self: flex-start; height: calc(100vh - 2rem); overflow-y: auto; display: none; }
+      .sidebar nav { display: flex; flex-direction: column; gap: 0; }
+      .sidebar .label { font-family: var(--font-mono); font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; color: var(--accent); margin-bottom: 0.75rem; padding-bottom: 0.4rem; border-bottom: 2px solid var(--border-strong); }
+      .sidebar a { font-size: 0.85rem; color: var(--text-muted); text-decoration: none; padding: 0.45rem 0.75rem; border-left: 2px solid transparent; transition: all 0.15s ease; font-weight: 500; }
+      .sidebar a:hover, .sidebar a.active { color: var(--accent); border-left-color: var(--accent); }
+      .main { flex: 1; min-width: 0; }
+      h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 800; letter-spacing: -0.02em; }
+      h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); line-height: 1.1; margin: 0 0 0.6rem; }
+      h2 { font-size: 1.4rem; margin: 2.5rem 0 1rem; padding-bottom: 0.4rem; border-bottom: 2px solid var(--border-strong); display: flex; align-items: baseline; gap: 0.6rem; }
+      h2 .num { font-family: var(--font-mono); font-size: 0.78rem; color: var(--accent); font-weight: 700; letter-spacing: 0.06em; }
+      h3 { font-size: 1.1rem; margin: 0 0 0.4rem; font-weight: 700; }
+      h4 { font-size: 0.98rem; margin: 0 0 0.3rem; font-weight: 700; }
+      p { margin: 0 0 1rem; }
+      .hero { padding: 1.5rem 0; margin-bottom: 1.5rem; border-bottom: 2px solid var(--border-strong); }
+      .hero-badge { display: inline-block; font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; color: var(--surface); background: var(--accent); padding: 0.3rem 0.7rem; margin-bottom: 0.9rem; }
+      .hero-subtitle { font-size: 1.05rem; color: var(--text-muted); max-width: 70ch; margin: 0; }
+      .hero-shapes { position: relative; height: 80px; margin-bottom: 1rem; }
+      .hero-shapes .circle { position: absolute; top: 0; left: 0; width: 56px; height: 56px; background: var(--problem); border-radius: 50%; }
+      .hero-shapes .square { position: absolute; top: 24px; left: 72px; width: 48px; height: 48px; background: var(--solution); }
+      .hero-shapes .tri { position: absolute; top: 8px; left: 140px; width: 0; height: 0; border-left: 28px solid transparent; border-right: 28px solid transparent; border-bottom: 48px solid var(--warning); }
+      .card { background: var(--surface-raised); border: 1px solid var(--border); padding: 1.1rem 1.3rem; margin-bottom: 1rem; border-left: 4px solid var(--border-strong); }
+      .card-problem { border-left-color: var(--problem); background: color-mix(in srgb, var(--problem) 8%, var(--surface-raised)); }
+      .card-solution { border-left-color: var(--solution); background: color-mix(in srgb, var(--solution) 8%, var(--surface-raised)); }
+      .card-warning { border-left-color: var(--warning); background: color-mix(in srgb, var(--warning) 8%, var(--surface-raised)); }
+      .stat-grid, .scorecard { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.75rem; margin: 1rem 0 1.5rem; }
+      .stat-card, .score-card { background: var(--surface-raised); border: 1px solid var(--border); padding: 1.1rem 1rem; position: relative; }
+      .stat-card::before, .score-card::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--border-strong); }
+      .stat-bad::before, .score-bad::before { background: var(--problem); }
+      .stat-good::before, .score-good::before { background: var(--solution); }
+      .stat-warn::before, .score-warn::before { background: var(--warning); }
+      .stat-value, .score { font-family: var(--font-heading); font-size: 2rem; font-weight: 800; line-height: 1; letter-spacing: -0.03em; color: var(--text); }
+      .stat-label, .score-card .label { font-family: var(--font-mono); font-size: 0.65rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-faint); margin-top: 0.5rem; }
+      .badge { display: inline-block; font-family: var(--font-mono); font-size: 0.62rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.18rem 0.5rem; border: 1px solid var(--border-strong); color: var(--text-muted); }
+      .badge-critical { color: var(--problem); border-color: var(--problem); }
+      .badge-high { color: var(--warning); border-color: var(--warning); }
+      .badge-medium { color: var(--accent); border-color: var(--accent); }
+      .badge-low { color: var(--text-muted); }
+      .badge-fixed { color: var(--solution); border-color: var(--solution); }
+      .table-wrap { overflow-x: auto; }
+      table { width: 100%; border-collapse: collapse; margin: 1rem 0 1.5rem; font-size: 0.9rem; }
+      th { text-align: left; padding: 0.6rem 0.9rem; background: var(--surface-raised); color: var(--text-faint); font-family: var(--font-mono); font-size: 0.66rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; border-bottom: 1px solid var(--border-strong); }
+      td { padding: 0.6rem 0.9rem; border-bottom: 1px solid var(--border); }
+      tr:hover td { background: var(--surface-raised); }
+      pre { background: var(--surface-sunken); border: 1px solid var(--border); padding: 1rem 1.2rem; margin: 1rem 0; font-family: var(--font-mono); font-size: 0.82rem; line-height: 1.65; overflow-x: auto; }
+      code { font-family: var(--font-mono); }
+      p code, li code, td code { font-size: 0.88em; background: var(--surface-sunken); padding: 0.1rem 0.35rem; }
+      .toc { background: var(--surface-raised); border: 1px solid var(--border); border-left: 3px solid var(--accent); padding: 1rem 1.3rem; margin: 1rem 0 1.5rem; }
+      .toc h3 { margin-bottom: 0.5rem; }
+      .toc ul { list-style: none; padding: 0; }
+      .toc li { margin: 0.25rem 0; }
+      .toc a { color: var(--text-muted); text-decoration: none; font-size: 0.9rem; }
+      .toc a:hover { color: var(--accent); }
+      .footer { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border); font-size: 0.8rem; color: var(--text-faint); font-family: var(--font-mono); }
+      .d2-svg { width: 100%; height: auto; }
+      @media (min-width: 1024px) { .sidebar { display: block; } }
+      @media (max-width: 768px) {
+        .layout { flex-direction: column; padding: 1rem; }
+        .top-bar { padding: 0.6rem 1rem; flex-wrap: wrap; gap: 0.3rem; }
+        .stat-grid { grid-template-columns: repeat(2, 1fr); }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="top-bar">
+      <span>Pareto Execution Plan</span>
+      <span>2026-08-16 07:50</span>
+      <span>Full Code Review</span>
+    </div>
+
+    <div class="layout">
+      <aside class="sidebar" data-nav>
+        <nav>
+          <div class="label">Contents</div>
+          <a href="#summary">Summary</a>
+          <a href="#pareto">Pareto Breakdown</a>
+          <a href="#graph">Execution Graph</a>
+          <a href="#tasks">Task Table</a>
+        </nav>
+      </aside>
+
+      <main class="main">
+        <div class="hero">
+          <div class="hero-shapes">
+            <div class="circle"></div>
+            <div class="square"></div>
+            <div class="tri"></div>
+          </div>
+          <div class="hero-badge">Full Code Review</div>
+          <h1>Deep Review Execution Plan</h1>
+          <p class="hero-subtitle">
+            Visit every code and test file across all 19 modules of go-output, verify the
+            build/test/lint/race gates, fix critical findings on the spot, and produce the
+            point-in-time HTML review report.
+          </p>
+        </div>
+
+        <nav class="toc">
+          <h3>Contents</h3>
+          <ul>
+            <li><a href="#summary">Summary</a></li>
+            <li><a href="#pareto">Pareto Breakdown</a></li>
+            <li><a href="#graph">Execution Graph</a></li>
+            <li><a href="#tasks">Task Table</a></li>
+          </ul>
+        </nav>
+
+        <h2 id="summary"><span class="num">00</span>Summary</h2>
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-value">375</div>
+            <div class="stat-label">Go files</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">49.1k</div>
+            <div class="stat-label">Lines of Go</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">19</div>
+            <div class="stat-label">Modules</div>
+          </div>
+          <div class="stat-card stat-warn">
+            <div class="stat-value">43</div>
+            <div class="stat-label">Fine-grained tasks</div>
+          </div>
+        </div>
+
+        <h2 id="pareto"><span class="num">01</span>Pareto Breakdown</h2>
+        <div class="card card-problem">
+          <h4>Tier 1% → 51% of the result</h4>
+          <p>
+            Verify a green baseline first (truth before opinions), then review the two
+            load-bearing areas: the root module (Core Invariant: zero sub-module imports,
+            all shared types, registries, error contract) and nom's concurrency model
+            (InlineRenderer two-mutex design, subscriber event handling, counts cache
+            invariant). A defect here invalidates everything downstream.
+          </p>
+        </div>
+        <div class="card card-warning">
+          <h4>Tier 4% → 64%</h4>
+          <p>
+            The rest of nom (tree rendering, layered mode, critical path, timing cache,
+            theme, status registry — 16.4k lines, the largest module) plus tui/ (the
+            bubbletea v2 program). Fixes for critical findings land immediately as found.
+          </p>
+        </div>
+        <div class="card card-solution">
+          <h4>Tier 20% → 80%</h4>
+          <p>
+            The 11 format/diagram modules (escaping security review included), integration
+            + bdd + examples tests, and infrastructure (flake.nix, scripts, CI workflows,
+            go.mod Pattern B hygiene, docs-vs-code drift). Closeout: re-verify, write the
+            review report, harvest unfixed findings into TODO_LIST.md, commit.
+          </p>
+        </div>
+
+        <h2 id="graph"><span class="num">02</span>Execution Graph</h2>
+        <?xml version="1.0" encoding="utf-8"?><svg class="d2-svg" style="width:100%;height:auto" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" data-d2-version="v0.7.1" preserveAspectRatio="xMinYMin meet" viewBox="0 0 4414 2423"><svg class="d2-4123731219 d2-svg" width="4414" height="2423" viewBox="-101 -98 4414 2423"><rect x="-101.000000" y="-98.000000" width="4414.000000" height="2423.000000" rx="0.000000" fill="#FFFFFF" class=" fill-N7" stroke-width="0" /><style type="text/css"><![CDATA[
+.d2-4123731219 .text {
+	font-family: "d2-4123731219-font-regular";
+}
+@font-face {
+	font-family: d2-4123731219-font-regular;
+	src: url("data:application/font-woff;base64,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");
+}
+.d2-4123731219 .text-bold {
+	font-family: "d2-4123731219-font-bold";
+}
+@font-face {
+	font-family: d2-4123731219-font-bold;
+	src: url("data:application/font-woff;base64,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");
+}]]></style><style type="text/css"><![CDATA[.shape {
+  shape-rendering: geometricPrecision;
+  stroke-linejoin: round;
+}
+.connection {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.blend {
+  mix-blend-mode: multiply;
+  opacity: 0.5;
+}
+
+		.d2-4123731219 .fill-N1{fill:#0A0F25;}
+		.d2-4123731219 .fill-N2{fill:#676C7E;}
+		.d2-4123731219 .fill-N3{fill:#9499AB;}
+		.d2-4123731219 .fill-N4{fill:#CFD2DD;}
+		.d2-4123731219 .fill-N5{fill:#DEE1EB;}
+		.d2-4123731219 .fill-N6{fill:#EEF1F8;}
+		.d2-4123731219 .fill-N7{fill:#FFFFFF;}
+		.d2-4123731219 .fill-B1{fill:#0D32B2;}
+		.d2-4123731219 .fill-B2{fill:#0D32B2;}
+		.d2-4123731219 .fill-B3{fill:#E3E9FD;}
+		.d2-4123731219 .fill-B4{fill:#E3E9FD;}
+		.d2-4123731219 .fill-B5{fill:#EDF0FD;}
+		.d2-4123731219 .fill-B6{fill:#F7F8FE;}
+		.d2-4123731219 .fill-AA2{fill:#4A6FF3;}
+		.d2-4123731219 .fill-AA4{fill:#EDF0FD;}
+		.d2-4123731219 .fill-AA5{fill:#F7F8FE;}
+		.d2-4123731219 .fill-AB4{fill:#EDF0FD;}
+		.d2-4123731219 .fill-AB5{fill:#F7F8FE;}
+		.d2-4123731219 .stroke-N1{stroke:#0A0F25;}
+		.d2-4123731219 .stroke-N2{stroke:#676C7E;}
+		.d2-4123731219 .stroke-N3{stroke:#9499AB;}
+		.d2-4123731219 .stroke-N4{stroke:#CFD2DD;}
+		.d2-4123731219 .stroke-N5{stroke:#DEE1EB;}
+		.d2-4123731219 .stroke-N6{stroke:#EEF1F8;}
+		.d2-4123731219 .stroke-N7{stroke:#FFFFFF;}
+		.d2-4123731219 .stroke-B1{stroke:#0D32B2;}
+		.d2-4123731219 .stroke-B2{stroke:#0D32B2;}
+		.d2-4123731219 .stroke-B3{stroke:#E3E9FD;}
+		.d2-4123731219 .stroke-B4{stroke:#E3E9FD;}
+		.d2-4123731219 .stroke-B5{stroke:#EDF0FD;}
+		.d2-4123731219 .stroke-B6{stroke:#F7F8FE;}
+		.d2-4123731219 .stroke-AA2{stroke:#4A6FF3;}
+		.d2-4123731219 .stroke-AA4{stroke:#EDF0FD;}
+		.d2-4123731219 .stroke-AA5{stroke:#F7F8FE;}
+		.d2-4123731219 .stroke-AB4{stroke:#EDF0FD;}
+		.d2-4123731219 .stroke-AB5{stroke:#F7F8FE;}
+		.d2-4123731219 .background-color-N1{background-color:#0A0F25;}
+		.d2-4123731219 .background-color-N2{background-color:#676C7E;}
+		.d2-4123731219 .background-color-N3{background-color:#9499AB;}
+		.d2-4123731219 .background-color-N4{background-color:#CFD2DD;}
+		.d2-4123731219 .background-color-N5{background-color:#DEE1EB;}
+		.d2-4123731219 .background-color-N6{background-color:#EEF1F8;}
+		.d2-4123731219 .background-color-N7{background-color:#FFFFFF;}
+		.d2-4123731219 .background-color-B1{background-color:#0D32B2;}
+		.d2-4123731219 .background-color-B2{background-color:#0D32B2;}
+		.d2-4123731219 .background-color-B3{background-color:#E3E9FD;}
+		.d2-4123731219 .background-color-B4{background-color:#E3E9FD;}
+		.d2-4123731219 .background-color-B5{background-color:#EDF0FD;}
+		.d2-4123731219 .background-color-B6{background-color:#F7F8FE;}
+		.d2-4123731219 .background-color-AA2{background-color:#4A6FF3;}
+		.d2-4123731219 .background-color-AA4{background-color:#EDF0FD;}
+		.d2-4123731219 .background-color-AA5{background-color:#F7F8FE;}
+		.d2-4123731219 .background-color-AB4{background-color:#EDF0FD;}
+		.d2-4123731219 .background-color-AB5{background-color:#F7F8FE;}
+		.d2-4123731219 .color-N1{color:#0A0F25;}
+		.d2-4123731219 .color-N2{color:#676C7E;}
+		.d2-4123731219 .color-N3{color:#9499AB;}
+		.d2-4123731219 .color-N4{color:#CFD2DD;}
+		.d2-4123731219 .color-N5{color:#DEE1EB;}
+		.d2-4123731219 .color-N6{color:#EEF1F8;}
+		.d2-4123731219 .color-N7{color:#FFFFFF;}
+		.d2-4123731219 .color-B1{color:#0D32B2;}
+		.d2-4123731219 .color-B2{color:#0D32B2;}
+		.d2-4123731219 .color-B3{color:#E3E9FD;}
+		.d2-4123731219 .color-B4{color:#E3E9FD;}
+		.d2-4123731219 .color-B5{color:#EDF0FD;}
+		.d2-4123731219 .color-B6{color:#F7F8FE;}
+		.d2-4123731219 .color-AA2{color:#4A6FF3;}
+		.d2-4123731219 .color-AA4{color:#EDF0FD;}
+		.d2-4123731219 .color-AA5{color:#F7F8FE;}
+		.d2-4123731219 .color-AB4{color:#EDF0FD;}
+		.d2-4123731219 .color-AB5{color:#F7F8FE;}.appendix text.text{fill:#0A0F25}.md{--color-fg-default:#0A0F25;--color-fg-muted:#676C7E;--color-fg-subtle:#9499AB;--color-canvas-default:#FFFFFF;--color-canvas-subtle:#EEF1F8;--color-border-default:#0D32B2;--color-border-muted:#0D32B2;--color-neutral-muted:#EEF1F8;--color-accent-fg:#0D32B2;--color-accent-emphasis:#0D32B2;--color-attention-subtle:#676C7E;--color-danger-fg:red;}.sketch-overlay-B1{fill:url(#streaks-darker-d2-4123731219);mix-blend-mode:lighten}.sketch-overlay-B2{fill:url(#streaks-darker-d2-4123731219);mix-blend-mode:lighten}.sketch-overlay-B3{fill:url(#streaks-bright-d2-4123731219);mix-blend-mode:darken}.sketch-overlay-B4{fill:url(#streaks-bright-d2-4123731219);mix-blend-mode:darken}.sketch-overlay-B5{fill:url(#streaks-bright-d2-4123731219);mix-blend-mode:darken}.sketch-overlay-B6{fill:url(#streaks-bright-d2-4123731219);mix-blend-mode:darken}.sketch-overlay-AA2{fill:url(#streaks-dark-d2-4123731219);mix-blend-mode:overlay}.sketch-overlay-AA4{fill:url(#streaks-bright-d2-4123731219);mix-blend-mode:darken}.sketch-overlay-AA5{fill:url(#streaks-bright-d2-4123731219);mix-blend-mode:darken}.sketch-overlay-AB4{fill:url(#streaks-bright-d2-4123731219);mix-blend-mode:darken}.sketch-overlay-AB5{fill:url(#streaks-bright-d2-4123731219);mix-blend-mode:darken}.sketch-overlay-N1{fill:url(#streaks-darker-d2-4123731219);mix-blend-mode:lighten}.sketch-overlay-N2{fill:url(#streaks-dark-d2-4123731219);mix-blend-mode:overlay}.sketch-overlay-N3{fill:url(#streaks-normal-d2-4123731219);mix-blend-mode:color-burn}.sketch-overlay-N4{fill:url(#streaks-normal-d2-4123731219);mix-blend-mode:color-burn}.sketch-overlay-N5{fill:url(#streaks-bright-d2-4123731219);mix-blend-mode:darken}.sketch-overlay-N6{fill:url(#streaks-bright-d2-4123731219);mix-blend-mode:darken}.sketch-overlay-N7{fill:url(#streaks-bright-d2-4123731219);mix-blend-mode:darken}.light-code{display: block}.dark-code{display: none}]]></style><g class="ZGlycw=="><g class="shape" ><rect x="0.000000" y="43.000000" width="4015.000000" height="295.000000" stroke="#0D32B2" fill="#E3E9FD" class=" stroke-B1 fill-B4" style="stroke-width:2;" /></g><text x="2007.500000" y="30.000000" fill="#0A0F25" class="text fill-N1" style="text-anchor:middle;font-size:28px">dirs</text></g><g class="YmFzZWxpbmU="><g class="shape" ><rect x="4055.000000" y="166.000000" width="104.000000" height="66.000000" stroke="#0D32B2" fill="#F7F8FE" class=" stroke-B1 fill-B6" style="stroke-width:2;" /></g><text x="4107.000000" y="204.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px">baseline</text></g><g class="cm9vdC1jb3Jl"><g class="shape" ><rect x="4052.000000" y="498.000000" width="111.000000" height="66.000000" stroke="#0D32B2" fill="#F7F8FE" class=" stroke-B1 fill-B6" style="stroke-width:2;" /></g><text x="4107.500000" y="536.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px">root-core</text></g><g class="bm9tLWNvcmU="><g class="shape" ><rect x="4051.000000" y="664.000000" width="112.000000" height="66.000000" stroke="#0D32B2" fill="#F7F8FE" class=" stroke-B1 fill-B6" style="stroke-width:2;" /></g><text x="4107.000000" y="702.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px">nom-core</text></g><g class="bm9tLXJlc3Q="><g class="shape" ><rect x="3989.000000" y="830.000000" width="109.000000" height="66.000000" stroke="#0D32B2" fill="#F7F8FE" class=" stroke-B1 fill-B6" style="stroke-width:2;" /></g><text x="4043.500000" y="868.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px">nom-rest</text></g><g class="dHVp"><g class="shape" ><rect x="4011.000000" y="996.000000" width="65.000000" height="66.000000" stroke="#0D32B2" fill="#F7F8FE" class=" stroke-B1 fill-B6" style="stroke-width:2;" /></g><text x="4043.500000" y="1034.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px">tui</text></g><g class="Zml4"><g class="shape" ><rect x="4149.000000" y="1162.000000" width="63.000000" height="66.000000" stroke="#0D32B2" fill="#F7F8FE" class=" stroke-B1 fill-B6" style="stroke-width:2;" /></g><text x="4180.500000" y="1200.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px">fix</text></g><g class="ZGlhZ3JhbXM="><g class="shape" ><rect x="3977.000000" y="1162.000000" width="112.000000" height="66.000000" stroke="#0D32B2" fill="#F7F8FE" class=" stroke-B1 fill-B6" style="stroke-width:2;" /></g><text x="4033.000000" y="1200.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px">diagrams</text></g><g class="Zm9ybWF0cw=="><g class="shape" ><rect x="3983.000000" y="1328.000000" width="101.000000" height="66.000000" stroke="#0D32B2" fill="#F7F8FE" class=" stroke-B1 fill-B6" style="stroke-width:2;" /></g><text x="4033.500000" y="1366.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px">formats</text></g><g class="dGVzdHM="><g class="shape" ><rect x="3993.000000" y="1494.000000" width="80.000000" height="66.000000" stroke="#0D32B2" fill="#F7F8FE" class=" stroke-B1 fill-B6" style="stroke-width:2;" /></g><text x="4033.000000" y="1532.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px">tests</text></g><g class="aW5mcmE="><g class="shape" ><rect x="3994.000000" y="1660.000000" width="79.000000" height="66.000000" stroke="#0D32B2" fill="#F7F8FE" class=" stroke-B1 fill-B6" style="stroke-width:2;" /></g><text x="4033.500000" y="1698.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px">infra</text></g><g class="dmVyaWZ5"><g class="shape" ><rect x="4064.000000" y="1826.000000" width="87.000000" height="66.000000" stroke="#0D32B2" fill="#F7F8FE" class=" stroke-B1 fill-B6" style="stroke-width:2;" /></g><text x="4107.500000" y="1864.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px">verify</text></g><g class="cmVwb3J0"><g class="shape" ><rect x="4062.000000" y="1992.000000" width="90.000000" height="66.000000" stroke="#0D32B2" fill="#F7F8FE" class=" stroke-B1 fill-B6" style="stroke-width:2;" /></g><text x="4107.000000" y="2030.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px">report</text></g><g class="Y29tbWl0"><g class="shape" ><rect x="4057.000000" y="2158.000000" width="100.000000" height="66.000000" stroke="#0D32B2" fill="#F7F8FE" class=" stroke-B1 fill-B6" style="stroke-width:2;" /></g><text x="4107.000000" y="2196.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px">commit</text></g><g class="ZGlycy5kMQ=="><g class="shape" ><rect x="20.000000" y="92.000000" width="925.000000" height="208.000000" stroke="#0D32B2" fill="#EDF0FD" class=" stroke-B1 fill-B5" style="stroke-width:2;" /></g><text x="482.500000" y="81.000000" fill="#0A0F25" class="text fill-N1" style="text-anchor:middle;font-size:20px">d1</text></g><g class="ZGlycy5kMg=="><g class="shape" ><rect x="965.000000" y="92.000000" width="856.000000" height="208.000000" stroke="#0D32B2" fill="#EDF0FD" class=" stroke-B1 fill-B5" style="stroke-width:2;" /></g><text x="1393.000000" y="80.000000" fill="#0A0F25" class="text fill-N1" style="text-anchor:middle;font-size:24px">d2</text></g><g class="ZGlycy5kMw=="><g class="shape" ><rect x="1841.000000" y="84.000000" width="1246.000000" height="224.000000" stroke="#0D32B2" fill="#EDF0FD" class=" stroke-B1 fill-B5" style="stroke-width:2;" /></g><text x="2464.000000" y="72.000000" fill="#0A0F25" class="text fill-N1" style="text-anchor:middle;font-size:24px">d3</text></g><g class="ZGlycy5kNA=="><g class="shape" ><rect x="3107.000000" y="92.000000" width="888.000000" height="208.000000" stroke="#0D32B2" fill="#EDF0FD" class=" stroke-B1 fill-B5" style="stroke-width:2;" /></g><text x="3551.000000" y="80.000000" fill="#0A0F25" class="text fill-N1" style="text-anchor:middle;font-size:24px">d4</text></g><g class="ZGlycy5kMS5USUVSIDElIC0gNTEl"><g class="shape" ><rect x="50.000000" y="128.000000" width="865.000000" height="142.000000" stroke="#0D32B2" fill="#F7F8FE" class=" stroke-B1 fill-B6" style="stroke-width:2;" /></g><text x="482.500000" y="117.000000" fill="#0A0F25" class="text fill-N1" style="text-anchor:middle;font-size:20px">TIER 1% - 51%</text></g><g class="ZGlycy5kMi5USUVSIDQlIC0gNjQl"><g class="shape" ><rect x="995.000000" y="128.000000" width="796.000000" height="142.000000" stroke="#0D32B2" fill="#F7F8FE" class=" stroke-B1 fill-B6" style="stroke-width:2;" /></g><text x="1393.000000" y="117.000000" fill="#0A0F25" class="text fill-N1" style="text-anchor:middle;font-size:20px">TIER 4% - 64%</text></g><g class="ZGlycy5kMy5USUVSIDIwJSAtIDgwJQ=="><g class="shape" ><rect x="1871.000000" y="120.000000" width="1186.000000" height="158.000000" stroke="#0D32B2" fill="#F7F8FE" class=" stroke-B1 fill-B6" style="stroke-width:2;" /></g><text x="2464.000000" y="109.000000" fill="#0A0F25" class="text fill-N1" style="text-anchor:middle;font-size:20px">TIER 20% - 80%</text></g><g class="ZGlycy5kNC5DTE9TRU9VVA=="><g class="shape" ><rect x="3137.000000" y="128.000000" width="828.000000" height="142.000000" stroke="#0D32B2" fill="#F7F8FE" class=" stroke-B1 fill-B6" style="stroke-width:2;" /></g><text x="3551.000000" y="117.000000" fill="#0A0F25" class="text fill-N1" style="text-anchor:middle;font-size:20px">CLOSEOUT</text></g><g class="ZGlycy5kMS5USUVSIDElIC0gNTElLmJhc2VsaW5l"><g class="shape" ><rect x="80.000000" y="158.000000" width="215.000000" height="82.000000" stroke="#0D32B2" fill="#f4d35e" class=" stroke-B1" style="stroke-width:2;" /></g><text x="187.500000" y="196.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="187.500000" dy="0.000000">Verify green baseline</tspan><tspan x="187.500000" dy="18.500000">nix build+test+lint+race</tspan></text></g><g class="ZGlycy5kMS5USUVSIDElIC0gNTElLnJvb3QtY29yZQ=="><g class="shape" ><rect x="355.000000" y="158.000000" width="214.000000" height="82.000000" stroke="#0D32B2" fill="#f4d35e" class=" stroke-B1" style="stroke-width:2;" /></g><text x="462.000000" y="196.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="462.000000" dy="0.000000">Review root core</tspan><tspan x="462.000000" dy="18.500000">(46 files, Core Invariant)</tspan></text></g><g class="ZGlycy5kMS5USUVSIDElIC0gNTElLm5vbS1jb3Jl"><g class="shape" ><rect x="629.000000" y="158.000000" width="256.000000" height="82.000000" stroke="#0D32B2" fill="#f4d35e" class=" stroke-B1" style="stroke-width:2;" /></g><text x="757.000000" y="196.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="757.000000" dy="0.000000">Review nom concurrency</tspan><tspan x="757.000000" dy="18.500000">(renderer+subscriber+events)</tspan></text></g><g class="ZGlycy5kMi5USUVSIDQlIC0gNjQlLm5vbS1yZXN0"><g class="shape" ><rect x="1025.000000" y="158.000000" width="243.000000" height="82.000000" stroke="#0D32B2" fill="#ffb347" class=" stroke-B1" style="stroke-width:2;" /></g><text x="1146.500000" y="196.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="1146.500000" dy="0.000000">Review nom remainder</tspan><tspan x="1146.500000" dy="18.500000">(tree, layers, timing, theme)</tspan></text></g><g class="ZGlycy5kMi5USUVSIDQlIC0gNjQlLnR1aQ=="><g class="shape" ><rect x="1328.000000" y="158.000000" width="193.000000" height="82.000000" stroke="#0D32B2" fill="#ffb347" class=" stroke-B1" style="stroke-width:2;" /></g><text x="1424.500000" y="196.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="1424.500000" dy="0.000000">Review tui/</tspan><tspan x="1424.500000" dy="18.500000">(34 files, teatest E2E)</tspan></text></g><g class="ZGlycy5kMi5USUVSIDQlIC0gNjQlLmZpeA=="><g class="shape" ><rect x="1581.000000" y="158.000000" width="180.000000" height="82.000000" stroke="#0D32B2" fill="#ff6b6b" class=" stroke-B1" style="stroke-width:2;" /></g><text x="1671.000000" y="196.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="1671.000000" dy="0.000000">Fix critical findings</tspan><tspan x="1671.000000" dy="18.500000">on the spot</tspan></text></g><g class="ZGlycy5kMy5USUVSIDIwJSAtIDgwJS5kaWFncmFtcw=="><g class="shape" ><rect x="1901.000000" y="158.000000" width="245.000000" height="82.000000" stroke="#0D32B2" fill="#6eb5ff" class=" stroke-B1" style="stroke-width:2;" /></g><text x="2023.500000" y="196.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="2023.500000" dy="0.000000">Review d2, graph, plantuml,</tspan><tspan x="2023.500000" dy="18.500000">daghtml (escaping!)</tspan></text></g><g class="ZGlycy5kMy5USUVSIDIwJSAtIDgwJS5mb3JtYXRz"><g class="shape" ><rect x="2206.000000" y="150.000000" width="257.000000" height="98.000000" stroke="#0D32B2" fill="#6eb5ff" class=" stroke-B1" style="stroke-width:2;" /></g><text x="2334.500000" y="188.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="2334.500000" dy="0.000000">Review serialization, markup,</tspan><tspan x="2334.500000" dy="17.666667">markdown, delimited, table,</tspan><tspan x="2334.500000" dy="17.666667">tree, escape, testhelpers</tspan></text></g><g class="ZGlycy5kMy5USUVSIDIwJSAtIDgwJS50ZXN0cw=="><g class="shape" ><rect x="2523.000000" y="158.000000" width="221.000000" height="82.000000" stroke="#0D32B2" fill="#6eb5ff" class=" stroke-B1" style="stroke-width:2;" /></g><text x="2633.500000" y="196.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="2633.500000" dy="0.000000">Review integration, bdd,</tspan><tspan x="2633.500000" dy="18.500000">examples</tspan></text></g><g class="ZGlycy5kMy5USUVSIDIwJSAtIDgwJS5pbmZyYQ=="><g class="shape" ><rect x="2804.000000" y="158.000000" width="223.000000" height="82.000000" stroke="#0D32B2" fill="#6eb5ff" class=" stroke-B1" style="stroke-width:2;" /></g><text x="2915.500000" y="196.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="2915.500000" dy="0.000000">Review flake.nix, scripts,</tspan><tspan x="2915.500000" dy="18.500000">CI, go.mod hygiene</tspan></text></g><g class="ZGlycy5kNC5DTE9TRU9VVC52ZXJpZnk="><g class="shape" ><rect x="3167.000000" y="158.000000" width="205.000000" height="82.000000" stroke="#0D32B2" fill="#FFFFFF" class=" stroke-B1 fill-N7" style="stroke-width:2;" /></g><text x="3269.500000" y="196.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="3269.500000" dy="0.000000">Re-run full verification</tspan><tspan x="3269.500000" dy="18.500000">after fixes</tspan></text></g><g class="ZGlycy5kNC5DTE9TRU9VVC5yZXBvcnQ="><g class="shape" ><rect x="3432.000000" y="158.000000" width="227.000000" height="82.000000" stroke="#0D32B2" fill="#FFFFFF" class=" stroke-B1 fill-N7" style="stroke-width:2;" /></g><text x="3545.500000" y="196.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="3545.500000" dy="0.000000">Write HTML review report</tspan><tspan x="3545.500000" dy="18.500000">+ TODO_LIST harvest</tspan></text></g><g class="ZGlycy5kNC5DTE9TRU9VVC5jb21taXQ="><g class="shape" ><rect x="3719.000000" y="166.000000" width="216.000000" height="66.000000" stroke="#0D32B2" fill="#f4f4f0" class=" stroke-B1" style="stroke-width:2;" /></g><text x="3827.000000" y="204.500000" fill="#0e0e10" class="text-bold" style="text-anchor:middle;font-size:16px">Commit review artifacts</text></g><g class="KGJhc2VsaW5lIC0mZ3Q7IHJvb3QtY29yZSlbMF0="><marker id="mk-d2-4123731219-3488378134" markerWidth="10.000000" markerHeight="12.000000" refX="7.000000" refY="6.000000" viewBox="0.000000 0.000000 10.000000 12.000000" orient="auto" markerUnits="userSpaceOnUse"> <polygon points="0.000000,0.000000 10.000000,6.000000 0.000000,12.000000" fill="#0D32B2" class="connection fill-B1" stroke-width="2" /> </marker><path d="M 4107.000000 234.000000 C 4107.000000 284.799988 4107.000000 308.000000 4107.000000 323.000000 C 4107.000000 338.000000 4107.000000 358.000000 4107.000000 373.000000 C 4107.000000 388.000000 4107.000000 458.000000 4107.000000 494.000000" stroke="#0D32B2" fill="none" class="connection stroke-B1" style="stroke-width:2;" marker-end="url(#mk-d2-4123731219-3488378134)" mask="url(#d2-4123731219)" /></g><g class="KHJvb3QtY29yZSAtJmd0OyBub20tY29yZSlbMF0="><path d="M 4107.000000 566.000000 C 4107.000000 604.000000 4107.000000 624.000000 4107.000000 660.000000" stroke="#0D32B2" fill="none" class="connection stroke-B1" style="stroke-width:2;" marker-end="url(#mk-d2-4123731219-3488378134)" mask="url(#d2-4123731219)" /></g><g class="KG5vbS1jb3JlIC0mZ3Q7IG5vbS1yZXN0KVswXQ=="><path d="M 4080.039836 731.592326 C 4050.850098 770.000000 4043.250000 790.000000 4043.250000 826.000000" stroke="#0D32B2" fill="none" class="connection stroke-B1" style="stroke-width:2;" marker-end="url(#mk-d2-4123731219-3488378134)" mask="url(#d2-4123731219)" /></g><g class="KG5vbS1yZXN0IC0mZ3Q7IHR1aSlbMF0="><path d="M 4043.250000 898.000000 C 4043.250000 936.000000 4043.250000 956.000000 4043.250000 992.000000" stroke="#0D32B2" fill="none" class="connection stroke-B1" style="stroke-width:2;" marker-end="url(#mk-d2-4123731219-3488378134)" mask="url(#d2-4123731219)" /></g><g class="KHR1aSAtJmd0OyBmaXgpWzBd"><path d="M 4074.321260 1063.501423 C 4108.200195 1102.000000 4124.600098 1122.000000 4152.579672 1158.815347" stroke="#0D32B2" fill="none" class="connection stroke-B1" style="stroke-width:2;" marker-end="url(#mk-d2-4123731219-3488378134)" mask="url(#d2-4123731219)" /></g><g class="KG5vbS1jb3JlIC0mZ3Q7IGZpeClbMF0="><path d="M 4142.164214 731.414214 C 4180.750000 770.000000 4190.750000 796.599976 4190.750000 821.500000 C 4190.750000 846.400024 4190.750000 879.599976 4190.750000 904.500000 C 4190.750000 929.400024 4190.750000 962.599976 4190.750000 987.500000 C 4190.750000 1012.400024 4189.549805 1122.000000 4185.226562 1158.028490" stroke="#0D32B2" fill="none" class="connection stroke-B1" style="stroke-width:2;" marker-end="url(#mk-d2-4123731219-3488378134)" mask="url(#d2-4123731219)" /></g><g class="KGRpYWdyYW1zIC0mZ3Q7IGZvcm1hdHMpWzBd"><path d="M 4033.250000 1230.000000 C 4033.250000 1268.000000 4033.250000 1288.000000 4033.250000 1324.000000" stroke="#0D32B2" fill="none" class="connection stroke-B1" style="stroke-width:2;" marker-end="url(#mk-d2-4123731219-3488378134)" mask="url(#d2-4123731219)" /></g><g class="KGZvcm1hdHMgLSZndDsgdGVzdHMpWzBd"><path d="M 4033.250000 1396.000000 C 4033.250000 1434.000000 4033.250000 1454.000000 4033.250000 1490.000000" stroke="#0D32B2" fill="none" class="connection stroke-B1" style="stroke-width:2;" marker-end="url(#mk-d2-4123731219-3488378134)" mask="url(#d2-4123731219)" /></g><g class="KHRlc3RzIC0mZ3Q7IGluZnJhKVswXQ=="><path d="M 4033.250000 1562.000000 C 4033.250000 1600.000000 4033.250000 1620.000000 4033.250000 1656.000000" stroke="#0D32B2" fill="none" class="connection stroke-B1" style="stroke-width:2;" marker-end="url(#mk-d2-4123731219-3488378134)" mask="url(#d2-4123731219)" /></g><g class="KGluZnJhIC0mZ3Q7IHZlcmlmeSlbMF0="><path d="M 4033.250000 1728.000000 C 4033.250000 1766.000000 4042.050049 1786.000000 4074.607490 1822.997144" stroke="#0D32B2" fill="none" class="connection stroke-B1" style="stroke-width:2;" marker-end="url(#mk-d2-4123731219-3488378134)" mask="url(#d2-4123731219)" /></g><g class="KHR1aSAtJmd0OyBkaWFncmFtcylbMF0="><path d="M 4039.011707 1063.985753 C 4034.449951 1102.000000 4033.250000 1122.000000 4033.250000 1158.000000" stroke="#0D32B2" fill="none" class="connection stroke-B1" style="stroke-width:2;" marker-end="url(#mk-d2-4123731219-3488378134)" mask="url(#d2-4123731219)" /></g><g class="KGZpeCAtJmd0OyB2ZXJpZnkpWzBd"><path d="M 4180.750000 1230.000000 C 4180.750000 1268.000000 4180.750000 1294.599976 4180.750000 1319.500000 C 4180.750000 1344.400024 4180.750000 1377.599976 4180.750000 1402.500000 C 4180.750000 1427.400024 4180.750000 1460.599976 4180.750000 1485.500000 C 4180.750000 1510.400024 4180.750000 1543.599976 4180.750000 1568.500000 C 4180.750000 1593.400024 4180.750000 1626.599976 4180.750000 1651.500000 C 4180.750000 1676.400024 4171.950195 1786.000000 4139.392520 1822.997153" stroke="#0D32B2" fill="none" class="connection stroke-B1" style="stroke-width:2;" marker-end="url(#mk-d2-4123731219-3488378134)" mask="url(#d2-4123731219)" /></g><g class="KHZlcmlmeSAtJmd0OyByZXBvcnQpWzBd"><path d="M 4107.000000 1894.000000 C 4107.000000 1932.000000 4107.000000 1952.000000 4107.000000 1988.000000" stroke="#0D32B2" fill="none" class="connection stroke-B1" style="stroke-width:2;" marker-end="url(#mk-d2-4123731219-3488378134)" mask="url(#d2-4123731219)" /></g><g class="KHJlcG9ydCAtJmd0OyBjb21taXQpWzBd"><path d="M 4107.000000 2060.000000 C 4107.000000 2098.000000 4107.000000 2118.000000 4107.000000 2154.000000" stroke="#0D32B2" fill="none" class="connection stroke-B1" style="stroke-width:2;" marker-end="url(#mk-d2-4123731219-3488378134)" mask="url(#d2-4123731219)" /></g><mask id="d2-4123731219" maskUnits="userSpaceOnUse" x="-101" y="-98" width="4414" height="2423">
+<rect x="-101" y="-98" width="4414" height="2423" fill="white"></rect>
+
+</mask></svg></svg>
+
+
+        <h2 id="tasks"><span class="num">03</span>Task Table</h2>
+        <p>
+          Fine-grained breakdown; each task bounded to ~15 minutes of focused review work.
+          Tasks execute top to bottom within a tier; the fix task (21) is rolling.
+        </p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Tier</th>
+                <th>Task</th>
+                <th>Scope</th>
+                <th>Impact</th>
+                <th>Effort</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>1</td><td><span class="badge badge-critical">1%</span></td><td>Baseline: nix build</td><td>all 19 modules compile</td><td>truth</td><td>5m</td></tr>
+              <tr><td>2</td><td><span class="badge badge-critical">1%</span></td><td>Baseline: nix test</td><td>all module tests</td><td>truth</td><td>5m</td></tr>
+              <tr><td>3</td><td><span class="badge badge-critical">1%</span></td><td>Baseline: nix lint</td><td>golangci-lint all modules</td><td>truth</td><td>5m</td></tr>
+              <tr><td>4</td><td><span class="badge badge-critical">1%</span></td><td>Baseline: nix test-race</td><td>nom + tui race detector</td><td>truth</td><td>10m</td></tr>
+              <tr><td>5</td><td><span class="badge badge-critical">1%</span></td><td>Root: enums + error contract</td><td>format, shape, color, direction, enum, envdetect, ids, typed errors</td><td>critical</td><td>15m</td></tr>
+              <tr><td>6</td><td><span class="badge badge-critical">1%</span></td><td>Root: data model</td><td>tabledata, table_helpers, graph, treenode</td><td>critical</td><td>15m</td></tr>
+              <tr><td>7</td><td><span class="badge badge-critical">1%</span></td><td>Root: registry + dispatch + write helpers</td><td>registry, renderer, render_tabledata, streaming, marshal*, write_rendered</td><td>critical</td><td>15m</td></tr>
+              <tr><td>8</td><td><span class="badge badge-critical">1%</span></td><td>Root: builders + projections</td><td>table_builder, tree_builder, projections</td><td>critical</td><td>15m</td></tr>
+              <tr><td>9</td><td><span class="badge badge-critical">1%</span></td><td>Root: test files</td><td>all root *_test.go</td><td>high</td><td>15m</td></tr>
+              <tr><td>10</td><td><span class="badge badge-critical">1%</span></td><td>nom: InlineRenderer deep review</td><td>inline_renderer.go (937 lines), locks, diffing, CI degradation</td><td>critical</td><td>15m</td></tr>
+              <tr><td>11</td><td><span class="badge badge-critical">1%</span></td><td>nom: subscriber + events</td><td>nom_subscriber, subscriber_handlers, event sealed sum, activity*</td><td>critical</td><td>15m</td></tr>
+              <tr><td>12</td><td><span class="badge badge-high">4%</span></td><td>nom: tree rendering</td><td>tree_render.go (926 lines), symbols, format</td><td>high</td><td>15m</td></tr>
+              <tr><td>13</td><td><span class="badge badge-high">4%</span></td><td>nom: layered + critical path</td><td>tree_render_layered, tree_critical, tree_priority</td><td>high</td><td>15m</td></tr>
+              <tr><td>14</td><td><span class="badge badge-high">4%</span></td><td>nom: timing cache</td><td>timing_cache.go, timing_cache_persist.go</td><td>high</td><td>15m</td></tr>
+              <tr><td>15</td><td><span class="badge badge-high">4%</span></td><td>nom: theme + status registry</td><td>theme.go, symbols.go, status_registry.go</td><td>high</td><td>15m</td></tr>
+              <tr><td>16</td><td><span class="badge badge-high">4%</span></td><td>nom: remainder + tests</td><td>types, doc, dag_summary, multi_subscriber, accessors, tree_building, terminal, test files</td><td>high</td><td>15m</td></tr>
+              <tr><td>17</td><td><span class="badge badge-high">4%</span></td><td>tui: model + state + lifecycle</td><td>model.go, state.go, messages.go, lifecycle.go</td><td>high</td><td>15m</td></tr>
+              <tr><td>18</td><td><span class="badge badge-high">4%</span></td><td>tui: views + reporter</td><td>view.go, render_nom.go, summary.go, colors.go, dot_export.go, reporter.go</td><td>high</td><td>15m</td></tr>
+              <tr><td>19</td><td><span class="badge badge-high">4%</span></td><td>tui: teatest harness + tests</td><td>teatest_helpers, teatest_vt, all *_test.go</td><td>high</td><td>15m</td></tr>
+              <tr><td>20</td><td><span class="badge badge-high">4%</span></td><td>nom+tui tests deep check</td><td>race tests, VT tests, fuzz seeds</td><td>high</td><td>15m</td></tr>
+              <tr><td>21</td><td><span class="badge badge-critical">4%</span></td><td>Fix critical findings (rolling)</td><td>whatever tasks 1–20 surface</td><td>critical</td><td>rolling</td></tr>
+              <tr><td>22</td><td><span class="badge badge-medium">20%</span></td><td>d2: domain model + render</td><td>d2.go, d2_node, d2_render, d2_convert, d2_write, cqrs, d2_enum</td><td>medium</td><td>15m</td></tr>
+              <tr><td>23</td><td><span class="badge badge-medium">20%</span></td><td>graph: DOT + Mermaid</td><td>dot.go, mermaid.go, cqrs, dot_enum</td><td>medium</td><td>15m</td></tr>
+              <tr><td>24</td><td><span class="badge badge-medium">20%</span></td><td>plantuml + daghtml</td><td>plantuml.go, convert, cqrs; daghtml render/types/options/assets + JS</td><td>medium</td><td>15m</td></tr>
+              <tr><td>25</td><td><span class="badge badge-medium">20%</span></td><td>serialization</td><td>cqrs, json, yaml, toml, jsonl, renderers, helpers, graph_view</td><td>medium</td><td>15m</td></tr>
+              <tr><td>26</td><td><span class="badge badge-medium">20%</span></td><td>markup</td><td>xml, html, asciidoc, streaming, cqrs</td><td>medium</td><td>15m</td></tr>
+              <tr><td>27</td><td><span class="badge badge-medium">20%</span></td><td>markdown + delimited + table + tree</td><td>each module's core + cqrs + registry</td><td>medium</td><td>15m</td></tr>
+              <tr><td>28</td><td><span class="badge badge-medium">20%</span></td><td>escape: security review</td><td>all escape functions (diagram injection surface)</td><td>high</td><td>15m</td></tr>
+              <tr><td>29</td><td><span class="badge badge-medium">20%</span></td><td>testhelpers + graphtest</td><td>helpers.go, renderers.go, graphtest</td><td>medium</td><td>10m</td></tr>
+              <tr><td>30</td><td><span class="badge badge-medium">20%</span></td><td>integration tests</td><td>all 20 files incl. user journey + roundtrip</td><td>medium</td><td>15m</td></tr>
+              <tr><td>31</td><td><span class="badge badge-medium">20%</span></td><td>bdd + examples</td><td>bdd suite, 8 example programs</td><td>low</td><td>10m</td></tr>
+              <tr><td>32</td><td><span class="badge badge-medium">20%</span></td><td>infra: flake + lint config + go.mod parity</td><td>flake.nix, .golangci.yml, go.work.example, all 19 go.mod (Pattern B)</td><td>high</td><td>15m</td></tr>
+              <tr><td>33</td><td><span class="badge badge-medium">20%</span></td><td>infra: scripts + CI workflows</td><td>tag-release.sh, pre-tag-check.sh, setup-workspace.sh, ci.yml, release.yml</td><td>high</td><td>15m</td></tr>
+              <tr><td>34</td><td><span class="badge badge-medium">20%</span></td><td>infra: docs drift check</td><td>AGENTS.md/README/CHANGELOG claims vs code</td><td>medium</td><td>15m</td></tr>
+              <tr><td>35</td><td><span class="badge badge-low">close</span></td><td>Re-run full verification</td><td>nix build + test + lint (+race if touched nom/tui)</td><td>critical</td><td>15m</td></tr>
+              <tr><td>36</td><td><span class="badge badge-low">close</span></td><td>Write HTML review report</td><td>docs/reviews/2026-08-16_07-50_full-code-review.html</td><td>deliverable</td><td>15m</td></tr>
+              <tr><td>37</td><td><span class="badge badge-low">close</span></td><td>Harvest unfixed findings → TODO_LIST.md</td><td>debt to ticket</td><td>deliverable</td><td>10m</td></tr>
+              <tr><td>38</td><td><span class="badge badge-low">close</span></td><td>Commit review artifacts</td><td>detailed message</td><td>hygiene</td><td>5m</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="footer">
+          go-output · full-code-review execution plan · 2026-08-16 07:50 · point-in-time snapshot
+        </div>
+      </main>
+    </div>
+
+    <script>
+      const nav = document.querySelector('[data-nav]');
+      if (nav) {
+        const links = nav.querySelectorAll('a[href^="#"]');
+        const map = new Map();
+        links.forEach((l) => {
+          const el = document.getElementById(l.getAttribute('href').slice(1));
+          if (el) map.set(el, l);
+        });
+        const obs = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((e) => {
+              if (e.isIntersecting) {
+                links.forEach((l) => l.classList.remove('active'));
+                map.get(e.target)?.classList.add('active');
+              }
+            });
+          },
+          { rootMargin: '-20% 0px -70% 0px' }
+        );
+        map.forEach((_, el) => obs.observe(el));
+      }
+    </script>
+  </body>
+</html>

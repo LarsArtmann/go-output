@@ -1,9 +1,5 @@
 package output
 
-import (
-	"strings"
-)
-
 // Format represents the available output format options for CLI applications.
 type Format string
 
@@ -81,24 +77,5 @@ type InvalidFormatError struct {
 
 // Error returns a descriptive error message including allowed values.
 func (e *InvalidFormatError) Error() string {
-	if e.Allowed == nil {
-		return "invalid format: " + e.Value
-	}
-
-	var b strings.Builder
-	b.WriteString("invalid format: ")
-	b.WriteString(e.Value)
-	b.WriteString(" (allowed: ")
-
-	for i, f := range e.Allowed {
-		if i > 0 {
-			b.WriteString(", ")
-		}
-
-		b.WriteString(string(f))
-	}
-
-	b.WriteString(")")
-
-	return b.String()
+	return EnumErrorMessage("format", e.Value, EnumAllowedValues(e.Allowed))
 }

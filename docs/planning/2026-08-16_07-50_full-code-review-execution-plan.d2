@@ -1,0 +1,67 @@
+dirs: {
+  direction: right
+  d1: {
+    shape: rectangle
+    style.font-size: 20
+    TIER 1% - 51%: {
+      baseline: "Verify green baseline\nnix build+test+lint+race" {
+        style.fill: "#f4d35e"
+      }
+      root-core: "Review root core\n(46 files, Core Invariant)" {
+        style.fill: "#f4d35e"
+      }
+      nom-core: "Review nom concurrency\n(renderer+subscriber+events)" {
+        style.fill: "#f4d35e"
+      }
+    }
+  }
+  d2: {
+    shape: rectangle
+    TIER 4% - 64%: {
+      nom-rest: "Review nom remainder\n(tree, layers, timing, theme)" {
+        style.fill: "#ffb347"
+      }
+      tui: "Review tui/\n(34 files, teatest E2E)" {
+        style.fill: "#ffb347"
+      }
+      fix: "Fix critical findings\non the spot" {
+        style.fill: "#ff6b6b"
+      }
+    }
+  }
+  d3: {
+    shape: rectangle
+    TIER 20% - 80%: {
+      diagrams: "Review d2, graph, plantuml,\ndaghtml (escaping!)" {
+        style.fill: "#6eb5ff"
+      }
+      formats: "Review serialization, markup,\nmarkdown, delimited, table,\ntree, escape, testhelpers" {
+        style.fill: "#6eb5ff"
+      }
+      tests: "Review integration, bdd,\nexamples" {
+        style.fill: "#6eb5ff"
+      }
+      infra: "Review flake.nix, scripts,\nCI, go.mod hygiene" {
+        style.fill: "#6eb5ff"
+      }
+    }
+  }
+  d4: {
+    shape: rectangle
+    CLOSEOUT: {
+      verify: "Re-run full verification\nafter fixes"
+      report: "Write HTML review report\n+ TODO_LIST harvest"
+      commit: "Commit review artifacts" {
+        style.fill: "#f4f4f0"
+        style.font-color: "#0e0e10"
+      }
+    }
+  }
+}
+
+baseline -> root-core -> nom-core -> nom-rest -> tui -> fix
+nom-core -> fix
+diagrams -> formats -> tests -> infra -> verify
+tui -> diagrams
+fix -> verify
+verify -> report -> commit

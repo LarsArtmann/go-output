@@ -71,7 +71,7 @@ type Table struct {
 // New creates a new Table with default styling.
 // Pass WithColorMode to control ANSI color output (default: ColorModeAuto).
 func New(opts ...Option) *Table {
-	tbl := &Table{colorMode: output.ColorModeAuto}
+	tbl := &Table{colorMode: output.ColorModeAuto, footerRowIndex: -1}
 
 	for _, opt := range opts {
 		opt(tbl)
@@ -107,7 +107,7 @@ func (t *Table) AddRow(row ...string) *Table {
 // Only the last footer row receives bold styling; previous footer rows
 // become unstyled data rows. Use SetFooter once for a single summary row.
 func (t *Table) SetFooter(row ...string) *Table {
-	t.footerRowIndex = t.rowCount + 1
+	t.footerRowIndex = t.rowCount
 	t.rowCount++
 
 	t.t.Row(row...)
@@ -152,7 +152,7 @@ func FromTable(data TableProvider, opts ...Option) *Table {
 }
 
 // buildStyleFunc returns a StyleFunc that applies header, footer, and alternating row styles.
-// footerRow > 0 enables bold footer styling on that row index.
+// footerRow >= 0 enables bold footer styling on that row index; -1 means no footer.
 func (t *Table) buildStyleFunc(footerRow int) func(row, col int) lipgloss.Style {
 	useColor := t.colorMode.ShouldColor()
 	baseStyle := lipgloss.NewStyle().Padding(0, 1)
@@ -167,7 +167,7 @@ func (t *Table) buildStyleFunc(footerRow int) func(row, col int) lipgloss.Style 
 			return style
 		}
 
-		if footerRow > 0 && row == footerRow {
+		if footerRow >= 0 && row == footerRow {
 			style := baseStyle
 			if useColor {
 				style = style.Bold(true)
