@@ -101,6 +101,12 @@ nix shell nixpkgs#nodejs nixpkgs#firebase-tools -c \
   firebase hosting:rollback --site go-output --project lars-software
 ```
 
+## Analytics
+
+Intentionally none — no trackers, no cookies, no telemetry. The newsletter
+form is the only data collection and it posts to its own service. Keep it
+this way unless there is a concrete product reason not to.
+
 ## Custom domain & SSL
 
 `go-output.lars.software` is a CNAME to `go-output.web.app` (Terraform in

@@ -8,6 +8,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
+- **website** — CI/CD pipeline (`website.yml`): frozen-lockfile install → typecheck → build → HTML-validate on every `website/**` change, Firebase deploy + dual-domain smoke test on master; `release.yml` redeploys the site on every root version tag. Requires the `FIREBASE_SERVICE_ACCOUNT` repo secret.
+- **website** — Fleet uptime monitor (`uptime.yml`): 30-minute availability checks across all 16 `*.lars.software` sites with a deduplicated `[uptime]` GitHub issue on failure and auto-close on recovery. The 2026-09-03 go-output outage went unnoticed for ~7 weeks — this is the systemic fix.
+- **website** — `scripts/pre-deploy-check.sh` (frozen install + typecheck + build + html-validate + og-image presence) and `pnpm run verify` (same gates in one target). Full runbook in `website/README.md`.
+
+### Fixed
+
+- **website** — go-output.lars.software served Firebase's "Site Not Found" from launch (2026-07-13) until 2026-09-03: a hand-bumped `package.json` broke the lockfile, no rebuild was possible, and the site had zero Hosting releases. Root cause fixed with exact pins (`canvaskit-wasm 0.41.1` as a direct dependency) and the new deploy pipeline; full post-mortem in `docs/status/2026-09-03_23-07_website-outage-root-cause-and-redeploy.md`.
+- **website** — HTML pages were cached `max-age=3600` on the CDN: the `**/*.html` header rule never matched clean URLs. Cache-Control moved to the catch-all rule (must-revalidate), assets override with `immutable` (verified live post-deploy).
+- **website** — Format Matrix page showed `d2`/`mermaid`/`dot`/`plantuml` without tree support and claimed `d2.Supports(ShapeTree) == false`; source (`RegisterFormatShapes`) says all four support tree. Module Map annotated with the test-only modules.
+- **website** — Hero star widget no longer renders "1 Stars": the live count only shows at ≥10 stars, otherwise the neutral "Star on GitHub" CTA. Footer now stamps the build date (`Last deployed YYYY-MM-DD`).
+- **go.mod** — Restored the Pattern B model fleet-wide: all 14 module `go.mod` files that had drifted back to `v0.0.0-…` sentinel requires (after `d16650b` bumped them) now pin `v0.37.0` again; `go mod tidy` across all 19 modules preserves the pins. Root's `testhelpers` pin was never bumped and is included.
+- **tests** — `daghtml` golden file regenerated after the font-stack change in the `30e6331` formatting sweep left `TestGolden_Render_SimpleDAG` failing.
+
+### Added
+
 - **ci** — Submodule auto-tagging in `release.yml`: on root `v*` tag push, automatically creates annotated `<module>/v<version>` tags for all 16 submodules (excluding `examples/` and `integration/`). Eliminates the manual submodule-tagging step that was forgotten on v0.36.0 and v0.37.0.
 - **docs** — `docs/RELEASE_CHECKLIST.md`: 8-step release sequence (CHANGELOG → release-prepare commit → pre-tag-check → CI green → tag root + submodules → push → verify GitHub Release → verify `go get`), with tag convention, manual/automated paths, and recovery procedures.
 - **ci** — `scripts/tag-release.sh`: full release wrapper that fetches, verifies a clean tree, runs `pre-tag-check.sh`, tags root + 16 submodules with annotated tags, and verifies tag-family parity.

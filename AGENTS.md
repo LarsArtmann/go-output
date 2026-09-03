@@ -68,6 +68,17 @@ nix flake check            # Formatting + pre-commit hooks
 
 Go checks are NOT in `nix flake check` (sandbox blocks `go mod download`); CI handles them. `.pre-commit-config.yaml` exists for non-Nix users.
 
+### Website
+
+Website deploys are automated: `website.yml` builds + deploys on every `master` push touching `website/**` and `release.yml` redeploys on every root version tag (needs the `FIREBASE_SERVICE_ACCOUNT` repo secret). For manual work, all gates + the deploy command live in `website/README.md`:
+
+```bash
+scripts/pre-deploy-check.sh  # frozen install + typecheck + build + html-validate + og presence
+nix shell nixpkgs#nodejs nixpkgs#firebase-tools -c firebase deploy --only hosting:go-output --project lars-software  # from website/
+```
+
+An `uptime.yml` cron (every 30 min) monitors all 16 `*.lars.software` sites and files a deduplicated `[uptime]` issue on failure.
+
 ### Releasing
 
 ```bash
@@ -155,7 +166,7 @@ Things that will silently break or that an agent would get wrong from code alone
 - **`GOEXPERIMENT=jsonv2` is required** — All `encoding/json/v2` and `encoding/json/jsontext` imports need this env var. The flake apps (`nix run .#build`, `nix run .#test`, `nix run .#lint`, etc.) and devShells auto-set it. Running bare `go build`/`go test` fails with "build constraints exclude all Go files" — set it: `GOEXPERIMENT=jsonv2 go test ./...`.
 - **v2 `omitempty` does NOT omit `false`/`0`** — In `encoding/json/v2`, `omitempty` only omits empty strings, nil pointers, empty slices/maps. It does NOT omit `false` bools or `0` ints (breaking change from v1). Use `omitzero` instead.
 - **Never import a sub-module into root** — see Core Invariant above.
-- **Pattern B: sibling deps pin the released version + `replace`** — after `d16650b` (2026-08-07) all sibling requires use real versions (currently `v0.37.0`) plus committed `replace` directives. Do NOT revert pins to the `v0.0.0` sentinel (that model is dead) and do NOT delete the `replace` directives. On each release, bump every sibling pin. `daghtml` and `escape` are zero/low-dep like `testhelpers` and independently publishable.
+- **Pattern B: sibling deps pin the released version + `replace`** — after `d16650b` (2026-08-07) all sibling requires use real versions (currently `v0.37.0`) plus committed `replace` directives. Do NOT revert pins to the `v0.0.0` sentinel (that model is dead) and do NOT delete the `replace` directives. On each release, bump every sibling pin — **including root's `testhelpers` require, which `d16650b` missed**. Verified 2026-09-03: `go mod tidy` preserves directory-replaced pins (the 14 modules later found drifted back to sentinels were NOT reverted by tidy; the cause was never reproduced — if pins drift again, suspect manual edits or a tool that rewrites go.mod, and re-check all 19 modules, not just the obvious ones). `daghtml` and `escape` are zero/low-dep like `testhelpers` and independently publishable.
 - **Releases need 17 tags, not 1** — cutting only the root `vX.Y.Z` tag without the 16 submodule tags (`<module>/vX.Y.Z`) has happened TWICE (v0.36.0, v0.37.0). Always use `scripts/tag-release.sh` or verify via `scripts/pre-tag-check.sh` (which now checks parity). The `release.yml` auto-tagging step is the systemic backstop. See `docs/RELEASE_CHECKLIST.md`.
 - **`testhelpers/` is the ONLY independently versioned sub-module** — it has real published tags. All other sub-modules use v0.0.0 + replace.
 - **`testhelpers/` is zero-dep by design** — it cannot import `output`. Cross-module test helpers must stay local to each module or use table-driven patterns.
