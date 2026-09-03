@@ -237,6 +237,44 @@
               };
             };
 
+            website-build = {
+              type = "app";
+              program = pkgs.writeShellApplication {
+                name = "website-build";
+                runtimeInputs = [
+                  pkgs.nodejs
+                  pkgs.pnpm
+                ];
+                text = ''
+                  set -euo pipefail
+                  export CI=true
+                  cd website
+                  pnpm install --frozen-lockfile
+                  pnpm run verify
+                '';
+              };
+            };
+
+            website-deploy = {
+              type = "app";
+              program = pkgs.writeShellApplication {
+                name = "website-deploy";
+                runtimeInputs = [
+                  pkgs.nodejs
+                  pkgs.pnpm
+                  pkgs.firebase-tools
+                ];
+                text = ''
+                  set -euo pipefail
+                  export CI=true
+                  cd website
+                  pnpm install --frozen-lockfile
+                  pnpm run verify
+                  firebase deploy --only hosting:go-output --project lars-software
+                '';
+              };
+            };
+
             setup-workspace = {
               type = "app";
               program = pkgs.writeShellApplication {
