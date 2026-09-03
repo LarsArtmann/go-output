@@ -2,6 +2,9 @@
 import Logo from './Logo.astro';
 import Newsletter from './Newsletter.astro';
 import { siteConfig } from '../data/config';
+
+const buildDate = new Date().toISOString().slice(0, 10);
+const goOutputVersion = process.env.GO_OUTPUT_VERSION ?? null;
 ---
 
 <footer role="contentinfo" class="border-t border-border mt-32" data-animate>
@@ -16,5 +19,8 @@ import { siteConfig } from '../data/config';
       <a href={siteConfig.github} target="_blank" rel="noopener noreferrer" class="text-text-muted hover:text-text-primary transition-colors duration-150">GitHub</a>
       <a href={siteConfig.pkgGoDev} target="_blank" rel="noopener noreferrer" class="text-text-muted hover:text-text-primary transition-colors duration-150">pkg.go.dev</a>
     </div>
+  </div>
+  <div class="max-w-6xl mx-auto px-6 pb-8 text-center text-xs text-text-muted/60">
+    Last deployed {buildDate}{goOutputVersion ? ` (v${goOutputVersion})` : ''}
   </div>
 </footer>

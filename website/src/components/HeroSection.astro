@@ -19,7 +19,7 @@ async function getGitHubStars(): Promise<number | null> {
 }
 
 const stars = await getGitHubStars();
-const starsText = stars !== null ? `${stars} Stars` : 'Star on GitHub';
+const starsText = stars !== null && stars >= 10 ? `${stars} Stars` : 'Star on GitHub';
 
 const highlightedCode = `<span class="text-text-muted">package</span> <span class="text-text-secondary">main</span>
 
