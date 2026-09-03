@@ -163,33 +163,33 @@ The lipgloss table module is the most user-facing renderer and it has no CQRS pu
 
 ## F. TOP 25 THINGS TO DO NEXT 📋
 
-| #   | Task                                                                                | Impact   | Effort | Deps |
-| --- | ----------------------------------------------------------------------------------- | -------- | ------ | ---- |
-| 1   | **Commit the 22 uncommitted files**                                                 | Critical | 2m     | —    |
-| 2   | Fix `TableBuilder.Build()` doc: stop saying "freeze" for mutable `*Table`           | High     | 5m     | —    |
-| 3   | Make `serialization.WriteJSON` actually stream (use `json.NewEncoder(w)`)           | High     | 15m    | —    |
-| 4   | Make `serialization.WriteYAML` actually stream (use `yaml.NewEncoder(w)`)           | High     | 10m    | —    |
-| 5   | Make `delimited.WriteCSV` use `CSVWriter` directly instead of `MarshalCSVFromTable` | High     | 10m    | —    |
-| 6   | Add `table.Render(t, opts...)` / `table.Write(w, t)` CQRS to table/                 | High     | 10m    | —    |
-| 7   | Add `tree.RenderMarkdown(root)` / `tree.WriteMarkdown(w, root)`                     | Med      | 10m    | —    |
-| 8   | Add integration test: `TableToGraph → graph.RenderDOT` end-to-end                   | High     | 10m    | 1    |
-| 9   | Add `TableToGraph` options (custom label func, edge strategy)                       | Med      | 15m    | —    |
-| 10  | Add benchmarks for new CQRS functions (RenderDOT, RenderCSV, etc.)                  | Med      | 15m    | —    |
-| 11  | Clean up CHANGELOG stale self-referential "Deprecated" entries                      | Low      | 5m     | —    |
-| 12  | Consider `FrozenTable` / `FrozenTree` types for real immutability                   | High     | 30m    | —    |
-| 13  | Unify root `RenderTable` dispatch to functional options                             | Med      | 15m    | —    |
-| 14  | Tag testhelpers/ v0.30.0 (D4)                                                       | Low      | 3m     | 1    |
-| 15  | Add `GraphToTree` test for disconnected nodes (forest)                              | Low      | 5m     | —    |
-| 16  | Add `GraphToTable` test for styled nodes (style preservation)                       | Low      | 5m     | —    |
-| 17  | Add `daghtml.Render(g)` CQRS function                                               | Low      | 10m    | —    |
-| 18  | Delete old renderer structs (DOTRenderer etc.) — v0.31.0 decision                   | High     | 30m    | —    |
-| 19  | Make `graph.RenderDOT` read from `Graph` without intermediate DOTRenderer           | High     | 20m    | —    |
-| 20  | Add `TableBuilder.AddRows(rows [][]string)` bulk method                             | Low      | 5m     | —    |
-| 21  | Add `TreeBuilder.AddChildren(parentID, children...)` bulk method                    | Low      | 5m     | —    |
-| 22  | Investigate stale gopls cache (NodeShapeRect, physicalLines warnings)               | Low      | 10m    | —    |
-| 23  | Add CQRS example to `examples/` directory                                           | Med      | 10m    | 1    |
-| 24  | Wire CQRS functions into registry: `output.RegisterFormat(fmt, RenderFunc)`         | Med      | 20m    | —    |
-| 25  | Tag v0.30.0 root module                                                             | Critical | 2m     | 1-12 |
+| #  | Task                                                                                | Impact   | Effort | Deps |
+| -- | ----------------------------------------------------------------------------------- | -------- | ------ | ---- |
+| 1  | **Commit the 22 uncommitted files**                                                 | Critical | 2m     | —    |
+| 2  | Fix `TableBuilder.Build()` doc: stop saying "freeze" for mutable `*Table`           | High     | 5m     | —    |
+| 3  | Make `serialization.WriteJSON` actually stream (use `json.NewEncoder(w)`)           | High     | 15m    | —    |
+| 4  | Make `serialization.WriteYAML` actually stream (use `yaml.NewEncoder(w)`)           | High     | 10m    | —    |
+| 5  | Make `delimited.WriteCSV` use `CSVWriter` directly instead of `MarshalCSVFromTable` | High     | 10m    | —    |
+| 6  | Add `table.Render(t, opts...)` / `table.Write(w, t)` CQRS to table/                 | High     | 10m    | —    |
+| 7  | Add `tree.RenderMarkdown(root)` / `tree.WriteMarkdown(w, root)`                     | Med      | 10m    | —    |
+| 8  | Add integration test: `TableToGraph → graph.RenderDOT` end-to-end                   | High     | 10m    | 1    |
+| 9  | Add `TableToGraph` options (custom label func, edge strategy)                       | Med      | 15m    | —    |
+| 10 | Add benchmarks for new CQRS functions (RenderDOT, RenderCSV, etc.)                  | Med      | 15m    | —    |
+| 11 | Clean up CHANGELOG stale self-referential "Deprecated" entries                      | Low      | 5m     | —    |
+| 12 | Consider `FrozenTable` / `FrozenTree` types for real immutability                   | High     | 30m    | —    |
+| 13 | Unify root `RenderTable` dispatch to functional options                             | Med      | 15m    | —    |
+| 14 | Tag testhelpers/ v0.30.0 (D4)                                                       | Low      | 3m     | 1    |
+| 15 | Add `GraphToTree` test for disconnected nodes (forest)                              | Low      | 5m     | —    |
+| 16 | Add `GraphToTable` test for styled nodes (style preservation)                       | Low      | 5m     | —    |
+| 17 | Add `daghtml.Render(g)` CQRS function                                               | Low      | 10m    | —    |
+| 18 | Delete old renderer structs (DOTRenderer etc.) — v0.31.0 decision                   | High     | 30m    | —    |
+| 19 | Make `graph.RenderDOT` read from `Graph` without intermediate DOTRenderer           | High     | 20m    | —    |
+| 20 | Add `TableBuilder.AddRows(rows [][]string)` bulk method                             | Low      | 5m     | —    |
+| 21 | Add `TreeBuilder.AddChildren(parentID, children...)` bulk method                    | Low      | 5m     | —    |
+| 22 | Investigate stale gopls cache (NodeShapeRect, physicalLines warnings)               | Low      | 10m    | —    |
+| 23 | Add CQRS example to `examples/` directory                                           | Med      | 10m    | 1    |
+| 24 | Wire CQRS functions into registry: `output.RegisterFormat(fmt, RenderFunc)`         | Med      | 20m    | —    |
+| 25 | Tag v0.30.0 root module                                                             | Critical | 2m     | 1-12 |
 
 ---
 
@@ -210,13 +210,13 @@ The same question applies to `TreeBuilder.Build() → *TreeNode` vs `FrozenTree`
 
 ## Verification Summary
 
-| Check                   | Result                      |
-| ----------------------- | --------------------------- |
-| `nix run .#build`       | 19/19 ✓                     |
-| `nix run .#test`        | 19/19 ✓                     |
-| `nix run .#lint`        | 0 issues ✓                  |
-| `nix run .#test-race`   | nom + tui race-free ✓       |
-| `nix run .#govulncheck` | 0 vulnerabilities ✓         |
+| Check                   | Result                     |
+| ----------------------- | -------------------------- |
+| `nix run .#build`       | 19/19 ✓                    |
+| `nix run .#test`        | 19/19 ✓                    |
+| `nix run .#lint`        | 0 issues ✓                 |
+| `nix run .#test-race`   | nom + tui race-free ✓      |
+| `nix run .#govulncheck` | 0 vulnerabilities ✓        |
 | Git status              | **22 files uncommitted** ⚠️ |
 
 ---

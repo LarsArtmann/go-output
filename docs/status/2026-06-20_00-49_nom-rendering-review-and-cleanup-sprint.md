@@ -134,33 +134,33 @@ Five near-identical test structs implementing `nom.Event` exist across nom, tui,
 
 Sorted by impact/effort ratio (highest first).
 
-| #   | Task                                                                                   | Impact | Effort |
-| --- | -------------------------------------------------------------------------------------- | ------ | ------ |
-| 1   | **Wire `EventActivityPaused` + handler** OR remove `SetPaused` + paused visual support | 🔥🔥   | 🟡     |
-| 2   | **Unexport tui internals** — move 15 symbols to unexported or `internal/`              | 🔥🔥   | 🟡     |
-| 3   | **Remove deprecated APIs** (7 markers) before v1.0                                     | 🔥🔥   | 🟢     |
-| 4   | **Extract shared `testevent` package** to `testhelpers/`                               | 🔥     | 🟡     |
-| 5   | **Cut v1.0.0 tag** — API is frozen, all tests pass, zero lint                          | 🔥🔥   | 🟢     |
-| 6   | **Resolve #15: TableData fields vs getters** for v1                                    | 🔥     | 🟢     |
-| 7   | **Add `Copy()` test for nil-metadata branch**                                          | 🟡     | 🟢     |
-| 8   | **Add integration test: full workflow → events → inline render → Finish**              | 🔥     | 🟡     |
-| 9   | **Post to r/golang, submit to Awesome Go** (#14)                                       | 🔥     | 🟢     |
-| 10  | **Replace `fmt.Sprintf("%s%d", ...)` with strconv in remaining tui/summary.go**        | 🟡     | 🟢     |
-| 11  | **Extract `100.0` completion threshold** to named constant in tui                      | 🟡     | 🟢     |
-| 12  | **Add `OperationType` typed enum** instead of bare string constants                    | 🟡     | 🟢     |
-| 13  | **Add `nom.SymbolDownload`/`SymbolUpload` to summary** or remove if unused             | 🟡     | 🟢     |
-| 14  | **Fuzz test `FormatDuration`** with property-based testing                             | 🟡     | 🟡     |
-| 15  | **Benchmark `formatActivityLabel` under high node count**                              | 🟡     | 🟢     |
-| 16  | **Add `VisibleLineCount` test for wide Unicode (CJK, emoji)**                          | 🟡     | 🟢     |
-| 17  | **Consider `otter/v2` for TimingCache** in-memory map                                  | 🟡     | 🟡     |
-| 18  | **Add `StripANSI` test coverage**                                                      | 🟢     | 🟢     |
-| 19  | **Add `removeChild` direct unit test**                                                 | 🟡     | 🟢     |
-| 20  | **Review graph/d2 modules** with same depth as nom/ review                             | 🔥     | 🔴     |
-| 21  | **Review tui/ module with same depth** as nom/ review                                  | 🔥     | 🔴     |
-| 22  | **Add `.gitignore` for `go.work` if not present**                                      | 🟢     | 🟢     |
-| 23  | **Verify `go.work` is gitignored** and `go.work.example` is current                    | 🟢     | 🟢     |
-| 24  | **Add CI badge to README**                                                             | 🟡     | 🟢     |
-| 25  | **Consider BDD tests for critical nom/ paths** (via bdd-testing skill)                 | 🟡     | 🔴     |
+| #  | Task                                                                                   | Impact | Effort |
+| -- | -------------------------------------------------------------------------------------- | ------ | ------ |
+| 1  | **Wire `EventActivityPaused` + handler** OR remove `SetPaused` + paused visual support | 🔥🔥   | 🟡     |
+| 2  | **Unexport tui internals** — move 15 symbols to unexported or `internal/`              | 🔥🔥   | 🟡     |
+| 3  | **Remove deprecated APIs** (7 markers) before v1.0                                     | 🔥🔥   | 🟢     |
+| 4  | **Extract shared `testevent` package** to `testhelpers/`                               | 🔥     | 🟡     |
+| 5  | **Cut v1.0.0 tag** — API is frozen, all tests pass, zero lint                          | 🔥🔥   | 🟢     |
+| 6  | **Resolve #15: TableData fields vs getters** for v1                                    | 🔥     | 🟢     |
+| 7  | **Add `Copy()` test for nil-metadata branch**                                          | 🟡     | 🟢     |
+| 8  | **Add integration test: full workflow → events → inline render → Finish**              | 🔥     | 🟡     |
+| 9  | **Post to r/golang, submit to Awesome Go** (#14)                                       | 🔥     | 🟢     |
+| 10 | **Replace `fmt.Sprintf("%s%d", ...)` with strconv in remaining tui/summary.go**        | 🟡     | 🟢     |
+| 11 | **Extract `100.0` completion threshold** to named constant in tui                      | 🟡     | 🟢     |
+| 12 | **Add `OperationType` typed enum** instead of bare string constants                    | 🟡     | 🟢     |
+| 13 | **Add `nom.SymbolDownload`/`SymbolUpload` to summary** or remove if unused             | 🟡     | 🟢     |
+| 14 | **Fuzz test `FormatDuration`** with property-based testing                             | 🟡     | 🟡     |
+| 15 | **Benchmark `formatActivityLabel` under high node count**                              | 🟡     | 🟢     |
+| 16 | **Add `VisibleLineCount` test for wide Unicode (CJK, emoji)**                          | 🟡     | 🟢     |
+| 17 | **Consider `otter/v2` for TimingCache** in-memory map                                  | 🟡     | 🟡     |
+| 18 | **Add `StripANSI` test coverage**                                                      | 🟢     | 🟢     |
+| 19 | **Add `removeChild` direct unit test**                                                 | 🟡     | 🟢     |
+| 20 | **Review graph/d2 modules** with same depth as nom/ review                             | 🔥     | 🔴     |
+| 21 | **Review tui/ module with same depth** as nom/ review                                  | 🔥     | 🔴     |
+| 22 | **Add `.gitignore` for `go.work` if not present**                                      | 🟢     | 🟢     |
+| 23 | **Verify `go.work` is gitignored** and `go.work.example` is current                    | 🟢     | 🟢     |
+| 24 | **Add CI badge to README**                                                             | 🟡     | 🟢     |
+| 25 | **Consider BDD tests for critical nom/ paths** (via bdd-testing skill)                 | 🟡     | 🔴     |
 
 ---
 

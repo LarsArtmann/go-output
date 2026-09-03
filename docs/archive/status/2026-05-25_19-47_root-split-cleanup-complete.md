@@ -24,16 +24,16 @@
 
 ### Cleanup Pass (this session — 8 commits)
 
-| #   | Commit                | What                                                                                 |
-| --- | --------------------- | ------------------------------------------------------------------------------------ |
-| 1   | `f85ebdd`             | Fix CI: add `delimited`, `serialization`, `markup` to all 4 module loops             |
-| 2   | `ac68903`             | Fix `d2/go.mod` + `graph/go.mod`: add replace directives, change v0.5.0→v0.0.0       |
-| 3   | `ab47b7f`             | Fix `.golangci.yml`: update depguard rules + gomoddirectives.replace-allow-list      |
-| 4   | `187be16`             | Fix README.md: update 13 stale `output.X` → sub-module imports, add install commands |
-| 5   | `9d87e29`             | Remove stale `escape`/`markup` replace directives from root `go.mod`                 |
-| 6   | `2039ffd`             | Remove dead code: 10 unused test helpers, 3 unused benchmark types (−156 lines)      |
-| 7   | `f48b7c5`             | Update CHANGELOG.md + mark `root-split-proposal.md` as implemented                   |
-| 8   | `dff300d` + `99f0b9b` | Update execution plan to 100%, update AGENTS.md dependency lists                     |
+| # | Commit                | What                                                                                 |
+| - | --------------------- | ------------------------------------------------------------------------------------ |
+| 1 | `f85ebdd`             | Fix CI: add `delimited`, `serialization`, `markup` to all 4 module loops             |
+| 2 | `ac68903`             | Fix `d2/go.mod` + `graph/go.mod`: add replace directives, change v0.5.0→v0.0.0       |
+| 3 | `ab47b7f`             | Fix `.golangci.yml`: update depguard rules + gomoddirectives.replace-allow-list      |
+| 4 | `187be16`             | Fix README.md: update 13 stale `output.X` → sub-module imports, add install commands |
+| 5 | `9d87e29`             | Remove stale `escape`/`markup` replace directives from root `go.mod`                 |
+| 6 | `2039ffd`             | Remove dead code: 10 unused test helpers, 3 unused benchmark types (−156 lines)      |
+| 7 | `f48b7c5`             | Update CHANGELOG.md + mark `root-split-proposal.md` as implemented                   |
+| 8 | `dff300d` + `99f0b9b` | Update execution plan to 100%, update AGENTS.md dependency lists                     |
 
 ### Architecture Invariants (all verified)
 
@@ -127,33 +127,33 @@ The closest to "fucked up" is that `delimited/` coverage is only 50% — not bro
 
 Sorted by impact × effort (highest first):
 
-| #   | Task                                                                   | Impact | Effort          | Module           |
-| --- | ---------------------------------------------------------------------- | ------ | --------------- | ---------------- |
-| 1   | Fix `delimited/` test coverage (50% → 80%+)                            | HIGH   | small           | delimited        |
-| 2   | Remove unused `testExpectedOutputs` from `output_test_helpers_test.go` | MED    | tiny            | root             |
-| 3   | Fix depguard config for `userjourney_test.go` (add exclusion)          | MED    | tiny            | root             |
-| 4   | Fix `render_tabledata.go` wsl_v5 warning (add blank line)              | LOW    | tiny            | root             |
-| 5   | Move `userjourney_test.go` to `integration/` module                    | MED    | small           | root→integration |
-| 6   | Add ADR-004 for delimited/serialization/markup extraction              | MED    | small           | docs             |
-| 7   | Consolidate `docs/modularization/` execution plans (old + new)         | LOW    | small           | docs             |
-| 8   | Add benchmarks to `delimited/` module                                  | MED    | small           | delimited        |
-| 9   | Add benchmarks to `markup/` module                                     | MED    | small           | markup           |
-| 10  | Add fuzz tests to `delimited/`, `serialization/`, `markup/`            | MED    | small           | new modules      |
-| 11  | Fix `.structure-linter.yml` to exclude root-package-files rule         | LOW    | tiny            | config           |
-| 12  | Extract shared graph/tree test helpers to `testhelpers/`               | MED    | small           | testhelpers      |
-| 13  | Improve root test coverage 88.8% → 90%+                                | MED    | small           | root             |
-| 14  | Add `go.work.example` or auto-generate go.work in docs                 | LOW    | tiny            | docs             |
-| 15  | Consider JSON/YAML streaming renderers                                 | HIGH   | large           | serialization    |
-| 16  | Add CSV streaming renderer                                             | MED    | medium          | delimited        |
-| 17  | Version tag `v0.5.0` — decide when to release                          | HIGH   | tiny (decision) | project          |
-| 18  | Archive stale `docs/planning/` files                                   | LOW    | tiny            | docs             |
-| 19  | Add `TableDataMarshaler` registration for DOT/Mermaid (consistency)    | MED    | small           | graph            |
-| 20  | Split `internal/gentest` yaml dependency into separate package         | MED    | medium          | root             |
-| 21  | Add structured error types (replace `fmt.Errorf` chains)               | MED    | large           | root             |
-| 22  | Add CI badge for new sub-modules to README                             | LOW    | tiny            | docs             |
-| 23  | Add `CONTRIBUTING.md` with module setup instructions                   | MED    | small           | docs             |
-| 24  | Performance: benchmark `RenderTableData` dispatch overhead             | LOW    | small           | root             |
-| 25  | Add `go.work.sync` to CI for workspace consistency                     | MED    | small           | CI               |
+| #  | Task                                                                   | Impact | Effort          | Module           |
+| -- | ---------------------------------------------------------------------- | ------ | --------------- | ---------------- |
+| 1  | Fix `delimited/` test coverage (50% → 80%+)                            | HIGH   | small           | delimited        |
+| 2  | Remove unused `testExpectedOutputs` from `output_test_helpers_test.go` | MED    | tiny            | root             |
+| 3  | Fix depguard config for `userjourney_test.go` (add exclusion)          | MED    | tiny            | root             |
+| 4  | Fix `render_tabledata.go` wsl_v5 warning (add blank line)              | LOW    | tiny            | root             |
+| 5  | Move `userjourney_test.go` to `integration/` module                    | MED    | small           | root→integration |
+| 6  | Add ADR-004 for delimited/serialization/markup extraction              | MED    | small           | docs             |
+| 7  | Consolidate `docs/modularization/` execution plans (old + new)         | LOW    | small           | docs             |
+| 8  | Add benchmarks to `delimited/` module                                  | MED    | small           | delimited        |
+| 9  | Add benchmarks to `markup/` module                                     | MED    | small           | markup           |
+| 10 | Add fuzz tests to `delimited/`, `serialization/`, `markup/`            | MED    | small           | new modules      |
+| 11 | Fix `.structure-linter.yml` to exclude root-package-files rule         | LOW    | tiny            | config           |
+| 12 | Extract shared graph/tree test helpers to `testhelpers/`               | MED    | small           | testhelpers      |
+| 13 | Improve root test coverage 88.8% → 90%+                                | MED    | small           | root             |
+| 14 | Add `go.work.example` or auto-generate go.work in docs                 | LOW    | tiny            | docs             |
+| 15 | Consider JSON/YAML streaming renderers                                 | HIGH   | large           | serialization    |
+| 16 | Add CSV streaming renderer                                             | MED    | medium          | delimited        |
+| 17 | Version tag `v0.5.0` — decide when to release                          | HIGH   | tiny (decision) | project          |
+| 18 | Archive stale `docs/planning/` files                                   | LOW    | tiny            | docs             |
+| 19 | Add `TableDataMarshaler` registration for DOT/Mermaid (consistency)    | MED    | small           | graph            |
+| 20 | Split `internal/gentest` yaml dependency into separate package         | MED    | medium          | root             |
+| 21 | Add structured error types (replace `fmt.Errorf` chains)               | MED    | large           | root             |
+| 22 | Add CI badge for new sub-modules to README                             | LOW    | tiny            | docs             |
+| 23 | Add `CONTRIBUTING.md` with module setup instructions                   | MED    | small           | docs             |
+| 24 | Performance: benchmark `RenderTableData` dispatch overhead             | LOW    | small           | root             |
+| 25 | Add `go.work.sync` to CI for workspace consistency                     | MED    | small           | CI               |
 
 ---
 
@@ -179,20 +179,20 @@ This is a product/release decision that requires your input.
 
 ## Test Coverage Summary
 
-| Module             | Coverage | Status              |
-| ------------------ | -------- | ------------------- |
+| Module             | Coverage | Status             |
+| ------------------ | -------- | ------------------ |
 | Root (`output`)    | 88.8%    | ⚠️ Below 90% target |
-| `internal/gentest` | 87.5%    | ✅                  |
-| `delimited/`       | 50.0%    | 🔴 Below standard   |
-| `serialization/`   | 84.4%    | ✅                  |
-| `markup/`          | 87.9%    | ✅                  |
-| `d2/`              | 100.0%   | ✅                  |
-| `graph/`           | 96.0%    | ✅                  |
-| `enum/`            | 100.0%   | ✅                  |
-| `escape/`          | 100.0%   | ✅                  |
-| `testhelpers/`     | 93.8%    | ✅                  |
-| `table/`           | 100.0%   | ✅                  |
-| `integration/`     | 82.8%    | ✅                  |
+| `internal/gentest` | 87.5%    | ✅                 |
+| `delimited/`       | 50.0%    | 🔴 Below standard  |
+| `serialization/`   | 84.4%    | ✅                 |
+| `markup/`          | 87.9%    | ✅                 |
+| `d2/`              | 100.0%   | ✅                 |
+| `graph/`           | 96.0%    | ✅                 |
+| `enum/`            | 100.0%   | ✅                 |
+| `escape/`          | 100.0%   | ✅                 |
+| `testhelpers/`     | 93.8%    | ✅                 |
+| `table/`           | 100.0%   | ✅                 |
+| `integration/`     | 82.8%    | ✅                 |
 
 ## Module Structure
 

@@ -1,8 +1,8 @@
 # Status Report — Comprehensive Post-Modularization Polish
 
-**Date:** 2026-05-25 01:21  
-**Branch:** `modularize/extract-d2-graph` (77 commits ahead of master)  
-**Tree:** 2 uncommitted fixes (goimports on `color.go`, `table/table.go`) + 1 untracked doc  
+**Date:** 2026-05-25 01:21\
+**Branch:** `modularize/extract-d2-graph` (77 commits ahead of master)\
+**Tree:** 2 uncommitted fixes (goimports on `color.go`, `table/table.go`) + 1 untracked doc\
 **State:** Ready for squash + merge
 
 ---
@@ -155,53 +155,53 @@ The closest things to "fucked up":
 
 ### 🔴 P0 — Merge Blockers
 
-| #   | Task                                                   | Impact         | Effort |
-| --- | ------------------------------------------------------ | -------------- | ------ |
-| 1   | **Squash 77 commits into ~10-15 logical groups**       | Unblocks merge | 30min  |
-| 2   | **Rebase onto master**                                 | Clean merge    | 5min   |
-| 3   | **Final verification (build+test+lint all 9 modules)** | Confidence     | 5min   |
-| 4   | **Push and merge PR**                                  | Ships the work | 5min   |
-| 5   | **Tag `v0.5.0`**                                       | Release        | 2min   |
+| # | Task                                                   | Impact         | Effort |
+| - | ------------------------------------------------------ | -------------- | ------ |
+| 1 | **Squash 77 commits into ~10-15 logical groups**       | Unblocks merge | 30min  |
+| 2 | **Rebase onto master**                                 | Clean merge    | 5min   |
+| 3 | **Final verification (build+test+lint all 9 modules)** | Confidence     | 5min   |
+| 4 | **Push and merge PR**                                  | Ships the work | 5min   |
+| 5 | **Tag `v0.5.0`**                                       | Release        | 2min   |
 
 ### 🟠 P1 — High Impact, Low Effort
 
-| #   | Task                                                                          | Impact                          | Effort |
-| --- | ----------------------------------------------------------------------------- | ------------------------------- | ------ |
-| 6   | **Remove unused `testBoolMethod`/`testBoolValue` from `testing_test.go`**     | Cleans gopls warnings           | 2min   |
-| 7   | **Fix gocritic double-disable in `.golangci.yml`**                            | Eliminates 21 warnings/lint-run | 2min   |
-| 8   | **Extract render helpers from `integration/integration_test.go`** (352 lines) | Under 350-line limit            | 15min  |
-| 9   | **Write `MIGRATION.md`** for v0.4→v0.5 upgrade                                | User-facing value               | 30min  |
-| 10  | **Add `goimports -local` to `.pre-commit-config.yaml`** or script             | Prevents formatting regressions | 15min  |
+| #  | Task                                                                          | Impact                          | Effort |
+| -- | ----------------------------------------------------------------------------- | ------------------------------- | ------ |
+| 6  | **Remove unused `testBoolMethod`/`testBoolValue` from `testing_test.go`**     | Cleans gopls warnings           | 2min   |
+| 7  | **Fix gocritic double-disable in `.golangci.yml`**                            | Eliminates 21 warnings/lint-run | 2min   |
+| 8  | **Extract render helpers from `integration/integration_test.go`** (352 lines) | Under 350-line limit            | 15min  |
+| 9  | **Write `MIGRATION.md`** for v0.4→v0.5 upgrade                                | User-facing value               | 30min  |
+| 10 | **Add `goimports -local` to `.pre-commit-config.yaml`** or script             | Prevents formatting regressions | 15min  |
 
 ### 🟡 P2 — High Impact, Medium Effort
 
-| #   | Task                                                                  | Impact              | Effort |
-| --- | --------------------------------------------------------------------- | ------------------- | ------ |
-| 11  | **Normalize renderer constructors** (`New{Format}Renderer()` pattern) | API consistency     | 1hr    |
-| 12  | **Standardize `FromTableData` naming** across renderers               | API clarity         | 45min  |
-| 13  | **Remove or finalize `SortBy` deprecation** in root                   | Reduces API surface | 30min  |
-| 14  | **Add property-based tests** for enum roundtrips                      | Robustness          | 45min  |
-| 15  | **Bump integration coverage to 90%+**                                 | Quality gate        | 30min  |
+| #  | Task                                                                  | Impact              | Effort |
+| -- | --------------------------------------------------------------------- | ------------------- | ------ |
+| 11 | **Normalize renderer constructors** (`New{Format}Renderer()` pattern) | API consistency     | 1hr    |
+| 12 | **Standardize `FromTableData` naming** across renderers               | API clarity         | 45min  |
+| 13 | **Remove or finalize `SortBy` deprecation** in root                   | Reduces API surface | 30min  |
+| 14 | **Add property-based tests** for enum roundtrips                      | Robustness          | 45min  |
+| 15 | **Bump integration coverage to 90%+**                                 | Quality gate        | 30min  |
 
 ### 🟢 P3 — Medium Impact, Medium Effort
 
-| #   | Task                                                                       | Impact             | Effort |
-| --- | -------------------------------------------------------------------------- | ------------------ | ------ |
-| 16  | **Update `flake.nix` for per-module build/test**                           | Nix completeness   | 2hr    |
-| 17  | **Add fuzz tests** for ParseFormat/ParseShape                              | Edge case coverage | 1hr    |
-| 18  | **Clean up stale planning docs** (`EXECUTION_PLAN_TODO.md`, `PROPOSAL.md`) | Doc hygiene        | 15min  |
-| 19  | **Remove registry entirely** (breaking, but zero users)                    | Simpler API        | 30min  |
-| 20  | **Add `EdgeStyle.Style` as defined type**                                  | Type safety        | 15min  |
+| #  | Task                                                                       | Impact             | Effort |
+| -- | -------------------------------------------------------------------------- | ------------------ | ------ |
+| 16 | **Update `flake.nix` for per-module build/test**                           | Nix completeness   | 2hr    |
+| 17 | **Add fuzz tests** for ParseFormat/ParseShape                              | Edge case coverage | 1hr    |
+| 18 | **Clean up stale planning docs** (`EXECUTION_PLAN_TODO.md`, `PROPOSAL.md`) | Doc hygiene        | 15min  |
+| 19 | **Remove registry entirely** (breaking, but zero users)                    | Simpler API        | 30min  |
+| 20 | **Add `EdgeStyle.Style` as defined type**                                  | Type safety        | 15min  |
 
 ### 🔵 P4 — Nice to Have
 
-| #   | Task                                                                                  | Impact                | Effort |
-| --- | ------------------------------------------------------------------------------------- | --------------------- | ------ |
-| 21  | **Fix BuildFlow `todo-check` false positive** on `// Note:` comments                  | DevEx                 | 30min  |
-| 22  | **Commit `go.work`** or add script to generate it                                     | Dev onboarding        | 15min  |
-| 23  | **Update `.pre-commit-config.yaml`** with current hook versions + sub-module coverage | Non-Nix users         | 20min  |
-| 24  | **Add `CONTRIBUTING.md`** with module structure + dev setup                           | Open-source readiness | 1hr    |
-| 25  | **Add Go doc examples** (`Example*` functions) for all public renderers               | godoc quality         | 2hr    |
+| #  | Task                                                                                  | Impact                | Effort |
+| -- | ------------------------------------------------------------------------------------- | --------------------- | ------ |
+| 21 | **Fix BuildFlow `todo-check` false positive** on `// Note:` comments                  | DevEx                 | 30min  |
+| 22 | **Commit `go.work`** or add script to generate it                                     | Dev onboarding        | 15min  |
+| 23 | **Update `.pre-commit-config.yaml`** with current hook versions + sub-module coverage | Non-Nix users         | 20min  |
+| 24 | **Add `CONTRIBUTING.md`** with module structure + dev setup                           | Open-source readiness | 1hr    |
+| 25 | **Add Go doc examples** (`Example*` functions) for all public renderers               | godoc quality         | 2hr    |
 
 ---
 

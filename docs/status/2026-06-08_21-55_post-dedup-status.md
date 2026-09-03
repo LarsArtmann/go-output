@@ -22,11 +22,11 @@ Since the architecture & naming sprint (10:26 CEST), the only change is this sta
 
 After writing this status report, 3 improvement items from the deep-dive analysis were implemented:
 
-| #   | Task                                         | Commit    | Why                                                                                                                                                                                          |
-| --- | -------------------------------------------- | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | Race test for `RegisterFormatShapes`         | `86eebac` | `RegisterTableDataMarshaler` had a race test; `RegisterFormatShapes` (identical RWMutex+map pattern) did not. Documents thread-safety contract.                                              |
-| 2   | Nil row validation in `TableData.Validate()` | `34570b1` | Nil rows in `[][]string` are almost certainly bugs and could cause panics in downstream renderers. Catches them at validation time with clear error messages including the row index.        |
-| 3   | AGENTS.md documentation update               | `6f6114f` | The `RegisterFormatShapes` registry pattern was implemented but undocumented. Updated Key Design Patterns and "Adding a New Output Format" task. Removed stale `internal/gentest` reference. |
+| # | Task                                         | Commit    | Why                                                                                                                                                                                          |
+| - | -------------------------------------------- | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1 | Race test for `RegisterFormatShapes`         | `86eebac` | `RegisterTableDataMarshaler` had a race test; `RegisterFormatShapes` (identical RWMutex+map pattern) did not. Documents thread-safety contract.                                              |
+| 2 | Nil row validation in `TableData.Validate()` | `34570b1` | Nil rows in `[][]string` are almost certainly bugs and could cause panics in downstream renderers. Catches them at validation time with clear error messages including the row index.        |
+| 3 | AGENTS.md documentation update               | `6f6114f` | The `RegisterFormatShapes` registry pattern was implemented but undocumented. Updated Key Design Patterns and "Adding a New Output Format" task. Removed stale `internal/gentest` reference. |
 
 **Impact:** +40 lines, -3 lines. Zero breaking changes. All quality gates still pass.
 

@@ -1,7 +1,7 @@
 # encoding/json/v2 Migration — Brutal Self-Review
 
-**Date:** 2026-07-10 23:18  
-**Session scope:** Migrate all `encoding/json` (v1) usage to `encoding/json/v2` + `encoding/json/jsontext` across 19 Go modules  
+**Date:** 2026-07-10 23:18\
+**Session scope:** Migrate all `encoding/json` (v1) usage to `encoding/json/v2` + `encoding/json/jsontext` across 19 Go modules\
 **Verdict:** Functional but sloppy. The build is green and all tests pass, but there are real gaps and missed details.
 
 ---

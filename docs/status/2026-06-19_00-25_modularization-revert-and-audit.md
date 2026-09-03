@@ -107,48 +107,48 @@ Sorted by **impact / effort ratio** (highest first):
 
 ### Tier 1 — High Impact, Low Effort
 
-| #   | Task                                                                                                                          | Impact      | Effort |
-| --- | ----------------------------------------------------------------------------------------------------------------------------- | ----------- | ------ |
-| 1   | **Delete stale proposal doc** (`docs/modularization/2026-06-18_PROPOSAL.md`) — describes reverted merge, misleading           | Cleanup     | 1 min  |
-| 2   | **Remove stale `internal/` references from AGENTS.md** — references `internal/gentest`, `internal/testutils` that don't exist | Accuracy    | 2 min  |
-| 3   | **Tag envdetect/v0.12.0** on next release — eliminates replace directive fragility                                            | Stability   | 5 min  |
-| 4   | **Add envdetect to CI release workflow** — it's missing from the tagging automation                                           | Correctness | 10 min |
+| # | Task                                                                                                                          | Impact      | Effort |
+| - | ----------------------------------------------------------------------------------------------------------------------------- | ----------- | ------ |
+| 1 | **Delete stale proposal doc** (`docs/modularization/2026-06-18_PROPOSAL.md`) — describes reverted merge, misleading           | Cleanup     | 1 min  |
+| 2 | **Remove stale `internal/` references from AGENTS.md** — references `internal/gentest`, `internal/testutils` that don't exist | Accuracy    | 2 min  |
+| 3 | **Tag envdetect/v0.12.0** on next release — eliminates replace directive fragility                                            | Stability   | 5 min  |
+| 4 | **Add envdetect to CI release workflow** — it's missing from the tagging automation                                           | Correctness | 10 min |
 
 ### Tier 2 — High Impact, Medium Effort
 
-| #   | Task                                                                                                                                   | Impact        | Effort  |
-| --- | -------------------------------------------------------------------------------------------------------------------------------------- | ------------- | ------- |
-| 5   | **Extract `markdown/` as standalone module** — MarkdownTable is 289 lines, a format renderer like `table/`. Root shrinks by 289 lines. | Composability | 1-2 hrs |
-| 6   | **Extract `tree/` as standalone module** — ASCIITreeRenderer is 229 lines, a shape renderer. Root shrinks by 229 lines.                | Composability | 1-2 hrs |
-| 7   | **Move GraphRendererState to core or graphcore/** — shared state used by d2/graph/plantuml. 359 lines. Root shrinks further.           | Composability | 2-3 hrs |
-| 8   | **Define `core/` module** — Format, Shape, ColorMode, registry interfaces, TableData/GraphNode/TreeNode types. The thin API surface.   | Composability | 3-4 hrs |
+| # | Task                                                                                                                                   | Impact        | Effort  |
+| - | -------------------------------------------------------------------------------------------------------------------------------------- | ------------- | ------- |
+| 5 | **Extract `markdown/` as standalone module** — MarkdownTable is 289 lines, a format renderer like `table/`. Root shrinks by 289 lines. | Composability | 1-2 hrs |
+| 6 | **Extract `tree/` as standalone module** — ASCIITreeRenderer is 229 lines, a shape renderer. Root shrinks by 229 lines.                | Composability | 1-2 hrs |
+| 7 | **Move GraphRendererState to core or graphcore/** — shared state used by d2/graph/plantuml. 359 lines. Root shrinks further.           | Composability | 2-3 hrs |
+| 8 | **Define `core/` module** — Format, Shape, ColorMode, registry interfaces, TableData/GraphNode/TreeNode types. The thin API surface.   | Composability | 3-4 hrs |
 
 ### Tier 3 — Medium Impact, Medium Effort
 
-| #   | Task                                                                                                    | Impact          | Effort |
-| --- | ------------------------------------------------------------------------------------------------------- | --------------- | ------ |
-| 9   | **Replace replace directives with committed go.work** — cleaner for multi-module repo, eliminates drift | Maintainability | 1 hr   |
-| 10  | **Add `go work sync` to setup-workspace** — prevent stale go.work after module changes                  | DX              | 30 min |
-| 11  | **Audit all exported types for naming quality** — load `naming-review` skill                            | Quality         | 2 hrs  |
-| 12  | **Review if `direction.go` belongs in root** — 40 lines, only used by graph/. Could move.               | Composability   | 30 min |
-| 13  | **Review if `ids.go` belongs in root** — 58 lines, branded ID re-exports. Could stay.                   | Composability   | 30 min |
+| #  | Task                                                                                                    | Impact          | Effort |
+| -- | ------------------------------------------------------------------------------------------------------- | --------------- | ------ |
+| 9  | **Replace replace directives with committed go.work** — cleaner for multi-module repo, eliminates drift | Maintainability | 1 hr   |
+| 10 | **Add `go work sync` to setup-workspace** — prevent stale go.work after module changes                  | DX              | 30 min |
+| 11 | **Audit all exported types for naming quality** — load `naming-review` skill                            | Quality         | 2 hrs  |
+| 12 | **Review if `direction.go` belongs in root** — 40 lines, only used by graph/. Could move.               | Composability   | 30 min |
+| 13 | **Review if `ids.go` belongs in root** — 58 lines, branded ID re-exports. Could stay.                   | Composability   | 30 min |
 
 ### Tier 4 — Lower Priority
 
-| #   | Task                                                                                        | Impact         | Effort  |
-| --- | ------------------------------------------------------------------------------------------- | -------------- | ------- |
-| 14  | **Consolidate ColorMode into core** — it's a cross-cutting type used by multiple renderers  | Architecture   | 1 hr    |
-| 15  | **Review streaming.go** (53 lines) — is it core or should it be separate?                   | Architecture   | 30 min  |
-| 16  | **Consider value-object pattern for Format/Shape** — make impossible states unrepresentable | Type safety    | 2 hrs   |
-| 17  | **Run `deduplicate-code` skill** — check for duplication across root + sub-modules          | Quality        | 1 hr    |
-| 18  | **Add integration test for isolated module builds** — CI should verify GOWORK=off builds    | CI             | 1 hr    |
-| 19  | **Document module dependency DAG** in FORMAT_ARCHITECTURE.md                                | Docs           | 30 min  |
-| 20  | **Review if testhelpers/graphtest should merge into testhelpers** — nested module, 2 files  | Simplification | 1 hr    |
-| 21  | **Consider `cmd/` or `cli/` module for examples** — examples currently imports everything   | Architecture   | 2 hrs   |
-| 22  | **Audit go.sum files for unnecessary entries** — clean up after module changes              | Hygiene        | 30 min  |
-| 23  | **Add `make docs` equivalent for module graph visualization** — auto-generate DAG diagram   | DX             | 2 hrs   |
-| 24  | **Review nom/ (49 files) for god-package** — largest module, may need internal split        | Quality        | 3 hrs   |
-| 25  | **Consider adopting `go-runtime` or `x/exp` patterns** — leverage stdlib ecosystem          | Modernization  | Ongoing |
+| #  | Task                                                                                        | Impact         | Effort  |
+| -- | ------------------------------------------------------------------------------------------- | -------------- | ------- |
+| 14 | **Consolidate ColorMode into core** — it's a cross-cutting type used by multiple renderers  | Architecture   | 1 hr    |
+| 15 | **Review streaming.go** (53 lines) — is it core or should it be separate?                   | Architecture   | 30 min  |
+| 16 | **Consider value-object pattern for Format/Shape** — make impossible states unrepresentable | Type safety    | 2 hrs   |
+| 17 | **Run `deduplicate-code` skill** — check for duplication across root + sub-modules          | Quality        | 1 hr    |
+| 18 | **Add integration test for isolated module builds** — CI should verify GOWORK=off builds    | CI             | 1 hr    |
+| 19 | **Document module dependency DAG** in FORMAT_ARCHITECTURE.md                                | Docs           | 30 min  |
+| 20 | **Review if testhelpers/graphtest should merge into testhelpers** — nested module, 2 files  | Simplification | 1 hr    |
+| 21 | **Consider `cmd/` or `cli/` module for examples** — examples currently imports everything   | Architecture   | 2 hrs   |
+| 22 | **Audit go.sum files for unnecessary entries** — clean up after module changes              | Hygiene        | 30 min  |
+| 23 | **Add `make docs` equivalent for module graph visualization** — auto-generate DAG diagram   | DX             | 2 hrs   |
+| 24 | **Review nom/ (49 files) for god-package** — largest module, may need internal split        | Quality        | 3 hrs   |
+| 25 | **Consider adopting `go-runtime` or `x/exp` patterns** — leverage stdlib ecosystem          | Modernization  | Ongoing |
 
 ---
 

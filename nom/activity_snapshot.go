@@ -81,6 +81,7 @@ func (d DownloadProgress) Fraction() float64 {
 // and its O(n) write-per-tick scan: running activities compute now-StartTime
 // at snapshot time; terminal activities use EndTime-StartTime.
 func (ns *NOMSubscriber) SnapshotActivities() map[ActivityID]ActivitySnapshot {
+	// art-dupl:accept standard RLock read-accessor prologue shared by the snapshot methods
 	ns.mu.RLock()
 	defer ns.mu.RUnlock()
 

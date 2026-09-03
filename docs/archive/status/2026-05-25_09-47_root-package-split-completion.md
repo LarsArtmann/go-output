@@ -205,33 +205,33 @@ Root still defines `StreamingRenderer` interface and `StreamingRendererFromRende
 
 ## f) Top #25 Things To Get Done Next
 
-| #   | Task                                                                   | Effort | Impact | Category         |
-| --- | ---------------------------------------------------------------------- | ------ | ------ | ---------------- |
-| 1   | Fix README.md import paths (12 references)                             | 10 min | HIGH   | User-facing docs |
-| 2   | Remove 7 dead helpers from `output_test_helpers_test.go`               | 8 min  | LOW    | Root cleanup     |
-| 3   | Remove dead code from `benchmarks_test.go`                             | 5 min  | LOW    | Root cleanup     |
-| 4   | Remove dead code from `testing_test.go`                                | 5 min  | LOW    | Root cleanup     |
-| 5   | Add `go.work.sum` to `.gitignore`                                      | 2 min  | LOW    | Repo hygiene     |
-| 6   | Update ADR-001 with 12-module structure                                | 10 min | MEDIUM | Documentation    |
-| 7   | Run `go mod tidy` on `integration/` to fix LSP noise                   | 3 min  | LOW    | Repo hygiene     |
-| 8   | Align `integration/` and `examples/` go.mod version refs to `v0.0.0`   | 3 min  | LOW    | Consistency      |
-| 9   | Port CSV/TSV benchmarks to `delimited/` module                         | 15 min | LOW    | Performance      |
-| 10  | Add `RenderTableData` cross-module registration test in `integration/` | 12 min | MEDIUM | Test coverage    |
-| 11  | Run coverage reports for `delimited/`, `serialization/`, `markup/`     | 10 min | MEDIUM | Quality          |
-| 12  | Verify all `//nolint` comments are still valid                         | 8 min  | LOW    | Lint hygiene     |
-| 13  | Consider deleting deprecated `sort.go`                                 | 5 min  | LOW    | Tech debt        |
-| 14  | Consider deleting deprecated `registry.go`                             | 5 min  | LOW    | Tech debt        |
-| 15  | Add `StreamingRendererFromRenderer` tests in root                      | 10 min | MEDIUM | Test gap         |
-| 16  | Add fuzz tests for new formatters in sub-modules                       | 20 min | MEDIUM | Quality          |
-| 17  | Review all struct tags in `benchmarks_test.go` for json/yaml           | 3 min  | LOW    | Dead code        |
-| 18  | Verify `go.work` example in AGENTS.md matches actual go.work           | 3 min  | LOW    | Docs accuracy    |
-| 19  | Add `examples/basic/README.md` with updated import examples            | 15 min | MEDIUM | User docs        |
-| 20  | Consider moving `MarshalJSONIndent` to `serialization/`                | 10 min | LOW    | API clarity      |
-| 21  | Verify `delimited/go.mod` has complete replace directives              | 3 min  | LOW    | Consistency      |
-| 22  | Add nil-data tests for `MarshalCSVFromTableData`                       | 5 min  | LOW    | Test coverage    |
-| 23  | Review `markup/go.mod` for unnecessary `delimited` replace             | 2 min  | LOW    | Hygiene          |
-| 24  | Consider running `golangci-lint` across all modules                    | 10 min | MEDIUM | Quality gate     |
-| 25  | Document the `TableDataMarshaler` registration pattern in AGENTS.md    | 8 min  | MEDIUM | Arch docs        |
+| #  | Task                                                                   | Effort | Impact | Category         |
+| -- | ---------------------------------------------------------------------- | ------ | ------ | ---------------- |
+| 1  | Fix README.md import paths (12 references)                             | 10 min | HIGH   | User-facing docs |
+| 2  | Remove 7 dead helpers from `output_test_helpers_test.go`               | 8 min  | LOW    | Root cleanup     |
+| 3  | Remove dead code from `benchmarks_test.go`                             | 5 min  | LOW    | Root cleanup     |
+| 4  | Remove dead code from `testing_test.go`                                | 5 min  | LOW    | Root cleanup     |
+| 5  | Add `go.work.sum` to `.gitignore`                                      | 2 min  | LOW    | Repo hygiene     |
+| 6  | Update ADR-001 with 12-module structure                                | 10 min | MEDIUM | Documentation    |
+| 7  | Run `go mod tidy` on `integration/` to fix LSP noise                   | 3 min  | LOW    | Repo hygiene     |
+| 8  | Align `integration/` and `examples/` go.mod version refs to `v0.0.0`   | 3 min  | LOW    | Consistency      |
+| 9  | Port CSV/TSV benchmarks to `delimited/` module                         | 15 min | LOW    | Performance      |
+| 10 | Add `RenderTableData` cross-module registration test in `integration/` | 12 min | MEDIUM | Test coverage    |
+| 11 | Run coverage reports for `delimited/`, `serialization/`, `markup/`     | 10 min | MEDIUM | Quality          |
+| 12 | Verify all `//nolint` comments are still valid                         | 8 min  | LOW    | Lint hygiene     |
+| 13 | Consider deleting deprecated `sort.go`                                 | 5 min  | LOW    | Tech debt        |
+| 14 | Consider deleting deprecated `registry.go`                             | 5 min  | LOW    | Tech debt        |
+| 15 | Add `StreamingRendererFromRenderer` tests in root                      | 10 min | MEDIUM | Test gap         |
+| 16 | Add fuzz tests for new formatters in sub-modules                       | 20 min | MEDIUM | Quality          |
+| 17 | Review all struct tags in `benchmarks_test.go` for json/yaml           | 3 min  | LOW    | Dead code        |
+| 18 | Verify `go.work` example in AGENTS.md matches actual go.work           | 3 min  | LOW    | Docs accuracy    |
+| 19 | Add `examples/basic/README.md` with updated import examples            | 15 min | MEDIUM | User docs        |
+| 20 | Consider moving `MarshalJSONIndent` to `serialization/`                | 10 min | LOW    | API clarity      |
+| 21 | Verify `delimited/go.mod` has complete replace directives              | 3 min  | LOW    | Consistency      |
+| 22 | Add nil-data tests for `MarshalCSVFromTableData`                       | 5 min  | LOW    | Test coverage    |
+| 23 | Review `markup/go.mod` for unnecessary `delimited` replace             | 2 min  | LOW    | Hygiene          |
+| 24 | Consider running `golangci-lint` across all modules                    | 10 min | MEDIUM | Quality gate     |
+| 25 | Document the `TableDataMarshaler` registration pattern in AGENTS.md    | 8 min  | MEDIUM | Arch docs        |
 
 **Sorted by impact/effort ratio (highest value first):**
 1, 6, 10, 11, 15, 19, 9, 16, 2, 3, 4, 25, 12, 20, 5, 7, 8, 23, 21, 22, 13, 14, 17, 18, 24

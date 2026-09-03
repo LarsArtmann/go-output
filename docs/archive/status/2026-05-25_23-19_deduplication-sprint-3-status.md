@@ -113,33 +113,33 @@ New module has no test files. Functions are exercised via graph and serializatio
 
 ## f) Top 25 Things to Do Next
 
-| #   | Priority | Task                                                                          | Impact                 |
-| --- | -------- | ----------------------------------------------------------------------------- | ---------------------- |
-| 1   | 🔴 HIGH  | Add tests for testhelpers generic enum helpers (push coverage to 70%+)        | Quality gate           |
-| 2   | 🔴 HIGH  | Update AGENTS.md with graphtest module in dependency graph and module table   | Documentation accuracy |
-| 3   | 🔴 HIGH  | Add CHANGELOG.md entry for deduplication work across all 3 sprints            | Release readiness      |
-| 4   | 🟡 MED   | Add basic test file for graphtest module                                      | Coverage               |
-| 5   | 🟡 MED   | Add fuzz tests for `escape.HTML()` and `escape.XML()`                         | Security               |
-| 6   | 🟡 MED   | Add benchmarks for `delimited` module                                         | Performance baseline   |
-| 7   | 🟡 MED   | Add benchmarks for `serialization` module                                     | Performance baseline   |
-| 8   | 🟡 MED   | Add benchmarks for `markup` module                                            | Performance baseline   |
-| 9   | 🟡 MED   | Add error-path tests for `delimited` (push to 90%+)                           | Coverage               |
-| 10  | 🟡 MED   | Add error-path tests for `serialization` (push to 90%+)                       | Coverage               |
-| 11  | 🟡 MED   | Add streaming error-path tests for `markup` (push to 90%+)                    | Coverage               |
-| 12  | 🟡 MED   | Write ADR 003: Why graphtest lives in testhelpers/ sub-module                 | Architecture clarity   |
-| 13  | 🟡 MED   | Consider using graphtest from d2 fuzz tests (eliminate 2 clone groups)        | Dedup                  |
-| 14  | 🟡 MED   | Consider using graphtest from d2/d2_convert_test.go (eliminate 1 clone group) | Dedup                  |
-| 15  | 🟡 MED   | Add integration tests for edge cases (empty rows, single column)              | Coverage               |
-| 16  | 🟡 MED   | Test `examples/shared` package directly                                       | Coverage               |
-| 17  | 🟡 MED   | Add `// Example` functions to key public APIs for godoc                       | Documentation          |
-| 18  | 🟢 LOW   | Create `go.work.example` for contributors                                     | DX                     |
-| 19  | 🟢 LOW   | Profile memory allocations in hot paths                                       | Performance            |
-| 20  | 🟢 LOW   | Add `FormatString()` method to Format enum                                    | DX                     |
-| 21  | 🟢 LOW   | Add `CONTRIBUTING.md` with dev setup instructions                             | DX                     |
-| 22  | 🟢 LOW   | Add README badges (coverage, godoc, Go version)                               | Presentation           |
-| 23  | 🟢 LOW   | Property-based testing with `rapid` for format round-trips                    | Quality                |
-| 24  | 🟢 LOW   | Investigate `gob` format support                                              | Feature                |
-| 25  | 🟢 LOW   | Explore terminal width detection for table wrapping                           | Feature                |
+| #  | Priority | Task                                                                          | Impact                 |
+| -- | -------- | ----------------------------------------------------------------------------- | ---------------------- |
+| 1  | 🔴 HIGH  | Add tests for testhelpers generic enum helpers (push coverage to 70%+)        | Quality gate           |
+| 2  | 🔴 HIGH  | Update AGENTS.md with graphtest module in dependency graph and module table   | Documentation accuracy |
+| 3  | 🔴 HIGH  | Add CHANGELOG.md entry for deduplication work across all 3 sprints            | Release readiness      |
+| 4  | 🟡 MED   | Add basic test file for graphtest module                                      | Coverage               |
+| 5  | 🟡 MED   | Add fuzz tests for `escape.HTML()` and `escape.XML()`                         | Security               |
+| 6  | 🟡 MED   | Add benchmarks for `delimited` module                                         | Performance baseline   |
+| 7  | 🟡 MED   | Add benchmarks for `serialization` module                                     | Performance baseline   |
+| 8  | 🟡 MED   | Add benchmarks for `markup` module                                            | Performance baseline   |
+| 9  | 🟡 MED   | Add error-path tests for `delimited` (push to 90%+)                           | Coverage               |
+| 10 | 🟡 MED   | Add error-path tests for `serialization` (push to 90%+)                       | Coverage               |
+| 11 | 🟡 MED   | Add streaming error-path tests for `markup` (push to 90%+)                    | Coverage               |
+| 12 | 🟡 MED   | Write ADR 003: Why graphtest lives in testhelpers/ sub-module                 | Architecture clarity   |
+| 13 | 🟡 MED   | Consider using graphtest from d2 fuzz tests (eliminate 2 clone groups)        | Dedup                  |
+| 14 | 🟡 MED   | Consider using graphtest from d2/d2_convert_test.go (eliminate 1 clone group) | Dedup                  |
+| 15 | 🟡 MED   | Add integration tests for edge cases (empty rows, single column)              | Coverage               |
+| 16 | 🟡 MED   | Test `examples/shared` package directly                                       | Coverage               |
+| 17 | 🟡 MED   | Add `// Example` functions to key public APIs for godoc                       | Documentation          |
+| 18 | 🟢 LOW   | Create `go.work.example` for contributors                                     | DX                     |
+| 19 | 🟢 LOW   | Profile memory allocations in hot paths                                       | Performance            |
+| 20 | 🟢 LOW   | Add `FormatString()` method to Format enum                                    | DX                     |
+| 21 | 🟢 LOW   | Add `CONTRIBUTING.md` with dev setup instructions                             | DX                     |
+| 22 | 🟢 LOW   | Add README badges (coverage, godoc, Go version)                               | Presentation           |
+| 23 | 🟢 LOW   | Property-based testing with `rapid` for format round-trips                    | Quality                |
+| 24 | 🟢 LOW   | Investigate `gob` format support                                              | Feature                |
+| 25 | 🟢 LOW   | Explore terminal width detection for table wrapping                           | Feature                |
 
 ---
 

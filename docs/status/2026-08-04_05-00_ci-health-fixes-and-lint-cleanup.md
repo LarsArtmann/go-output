@@ -16,38 +16,38 @@ CI had been red on **every single push since July 6** (50+ consecutive failures)
 
 ## a) FULLY DONE
 
-| #   | Item                                   | Details                                                                                                                                                                                                                                                                                                                                                                                                         |
-| --- | -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | **TUI test deadlock fixed**            | `TestTeatest_VTScreen_ShowsActivityLabels` hung 10min under `-race`. Root cause: `teatest.WaitFor` uses `io.ReadAll` on a `bytes.Buffer` the program writes to continuously — under `-race` it never sees EOF and blocks indefinitely. Fixed with `pollTeatestOutput` helper: bounded `buf[:]` reads + hard deadline. Test now passes in **0.06s** (was 600s timeout). `tui/teatest_vt_test.go`                 |
-| 2   | **art-dupl CI install fixed**          | `go install @v0.6.0` failed with `undefined: cloneGroupFull` etc. Root cause: art-dupl's `report.templ` generated `report_templ.go` was gitignored (global `~/.config/git/ignore` rule `*_templ.go`). Fixed at source: generated file, force-added past gitignore, removed local `.gitignore` rule, committed in `LarsArtmann/art-dupl`, tagged **v0.6.2**, pushed to GitHub. go-output CI pinned to `@v0.6.2`. |
-| 3   | **d2 gocognit lint fixed**             | `TestTypedErrors_AsType_ThroughWrapping` had cognitive complexity 48 (>30 limit). Extracted generic `assertWrappedTypedError[T error]` helper — 5 repetitive subtests became 5 one-liner calls. All 7 subtests still pass. `d2/error_contract_test.go`                                                                                                                                                          |
-| 4   | **nom lint fixed (8 issues)**          | 8 lint issues in nom module from unpushed feature commits (`e16aa2a`, `8867e21`): exhaustive switch (missing `ActivityStatusPending`), makezero (slice init), 5× wsl_v5 (whitespace), golines (line too long). All fixed in `nom/tree_render.go` + `nom/tree_root_priority_test.go`.                                                                                                                            |
-| 5   | **tui lint fixed (9 issues)**          | 9 lint issues from the new `pollTeatestOutput` helper: makezero, 8× wsl_v5. Rewrote with stack-allocated `var buf [8192]byte` + proper whitespace separation.                                                                                                                                                                                                                                                   |
-| 6   | **39 annotation appendices converted** | 28 `.md` files: bottom `## Resolution` sections → top-of-file `> **✅ Resolved:**` blockquotes (visible immediately). 10 `.html` files: `<!-- Resolution -->` comments → visible colored `<div>` banners near `<body>`. 1 file (`v0.36.0-ci-health-status.md`) got full inline strike-through corrections for the specific stale claims that were resolved.                                                     |
-| 7   | **v0.36.0 CI health report annotated** | The 3 open questions in the v0.36.0 status report (TUI deadlock root cause, art-dupl ownership, retract v0.36.0?) all got inline `> **✅ Resolved:**` answers with the actual fix details.                                                                                                                                                                                                                      |
-| 8   | **Quality gates verified**             | `nix run .#build` 19/19 ✓, `nix run .#test` 19/19 ✓, `nix run .#lint` 19/19 ✓ (0 issues), `nix run .#test-race` nom+tui ✓, `nix flake check` all passed ✓                                                                                                                                                                                                                                                       |
-| 9   | **Dependabot alerts verified**         | 0 open alerts (12 fixed by prior dependabot updates).                                                                                                                                                                                                                                                                                                                                                           |
+| # | Item                                   | Details                                                                                                                                                                                                                                                                                                                                                                                                         |
+| - | -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1 | **TUI test deadlock fixed**            | `TestTeatest_VTScreen_ShowsActivityLabels` hung 10min under `-race`. Root cause: `teatest.WaitFor` uses `io.ReadAll` on a `bytes.Buffer` the program writes to continuously — under `-race` it never sees EOF and blocks indefinitely. Fixed with `pollTeatestOutput` helper: bounded `buf[:]` reads + hard deadline. Test now passes in **0.06s** (was 600s timeout). `tui/teatest_vt_test.go`                 |
+| 2 | **art-dupl CI install fixed**          | `go install @v0.6.0` failed with `undefined: cloneGroupFull` etc. Root cause: art-dupl's `report.templ` generated `report_templ.go` was gitignored (global `~/.config/git/ignore` rule `*_templ.go`). Fixed at source: generated file, force-added past gitignore, removed local `.gitignore` rule, committed in `LarsArtmann/art-dupl`, tagged **v0.6.2**, pushed to GitHub. go-output CI pinned to `@v0.6.2`. |
+| 3 | **d2 gocognit lint fixed**             | `TestTypedErrors_AsType_ThroughWrapping` had cognitive complexity 48 (>30 limit). Extracted generic `assertWrappedTypedError[T error]` helper — 5 repetitive subtests became 5 one-liner calls. All 7 subtests still pass. `d2/error_contract_test.go`                                                                                                                                                          |
+| 4 | **nom lint fixed (8 issues)**          | 8 lint issues in nom module from unpushed feature commits (`e16aa2a`, `8867e21`): exhaustive switch (missing `ActivityStatusPending`), makezero (slice init), 5× wsl_v5 (whitespace), golines (line too long). All fixed in `nom/tree_render.go` + `nom/tree_root_priority_test.go`.                                                                                                                            |
+| 5 | **tui lint fixed (9 issues)**          | 9 lint issues from the new `pollTeatestOutput` helper: makezero, 8× wsl_v5. Rewrote with stack-allocated `var buf [8192]byte` + proper whitespace separation.                                                                                                                                                                                                                                                   |
+| 6 | **39 annotation appendices converted** | 28 `.md` files: bottom `## Resolution` sections → top-of-file `> **✅ Resolved:**` blockquotes (visible immediately). 10 `.html` files: `<!-- Resolution -->` comments → visible colored `<div>` banners near `<body>`. 1 file (`v0.36.0-ci-health-status.md`) got full inline strike-through corrections for the specific stale claims that were resolved.                                                     |
+| 7 | **v0.36.0 CI health report annotated** | The 3 open questions in the v0.36.0 status report (TUI deadlock root cause, art-dupl ownership, retract v0.36.0?) all got inline `> **✅ Resolved:**` answers with the actual fix details.                                                                                                                                                                                                                      |
+| 8 | **Quality gates verified**             | `nix run .#build` 19/19 ✓, `nix run .#test` 19/19 ✓, `nix run .#lint` 19/19 ✓ (0 issues), `nix run .#test-race` nom+tui ✓, `nix flake check` all passed ✓                                                                                                                                                                                                                                                       |
+| 9 | **Dependabot alerts verified**         | 0 open alerts (12 fixed by prior dependabot updates).                                                                                                                                                                                                                                                                                                                                                           |
 
 ---
 
 ## b) PARTIALLY DONE
 
-| #   | Item                                  | What's done                                             | What's missing                                                                                                                         |
-| --- | ------------------------------------- | ------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | **CI green verification**             | All fixes committed locally, quality gates pass locally | **7 commits NOT pushed to origin** — CI has not run on the fixed code. Last CI run (30864547420) still shows failure.                  |
-| 2   | **art-dupl v0.6.2 proxy propagation** | Tag pushed to GitHub                                    | Go module proxy may take time to cache v0.6.2; CI `go install @v0.6.2` is untested in CI (blocked by item 1)                           |
-| 3   | **Annotation conversion**             | 39 files converted to prominent blockquote style        | 3 docs-health session report files retain appendix style (intentionally — they're current-work process docs, not historical snapshots) |
+| # | Item                                  | What's done                                             | What's missing                                                                                                                         |
+| - | ------------------------------------- | ------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| 1 | **CI green verification**             | All fixes committed locally, quality gates pass locally | **7 commits NOT pushed to origin** — CI has not run on the fixed code. Last CI run (30864547420) still shows failure.                  |
+| 2 | **art-dupl v0.6.2 proxy propagation** | Tag pushed to GitHub                                    | Go module proxy may take time to cache v0.6.2; CI `go install @v0.6.2` is untested in CI (blocked by item 1)                           |
+| 3 | **Annotation conversion**             | 39 files converted to prominent blockquote style        | 3 docs-health session report files retain appendix style (intentionally — they're current-work process docs, not historical snapshots) |
 
 ---
 
 ## c) NOT STARTED
 
-| #   | Item                               | Why                                                                                                                                            |
-| --- | ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | **Push commits to origin**         | Respecting "never push" rule — owner must push the 7 local commits                                                                             |
-| 2   | **Cut v0.37.0 tag**                | TODO_LIST item — should be done after CI is confirmed green on origin                                                                          |
-| 3   | **Retract v0.36.0**                | Open question — v0.36.0 was tagged on code that never passed CI; now that the deadlock is fixed, decide whether to retract or just cut v0.37.0 |
-| 4   | **Govulncheck across all modules** | CI shows it passing, but `nix run .#govulncheck` was not run locally this session                                                              |
+| # | Item                               | Why                                                                                                                                            |
+| - | ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1 | **Push commits to origin**         | Respecting "never push" rule — owner must push the 7 local commits                                                                             |
+| 2 | **Cut v0.37.0 tag**                | TODO_LIST item — should be done after CI is confirmed green on origin                                                                          |
+| 3 | **Retract v0.36.0**                | Open question — v0.36.0 was tagged on code that never passed CI; now that the deadlock is fixed, decide whether to retract or just cut v0.37.0 |
+| 4 | **Govulncheck across all modules** | CI shows it passing, but `nix run .#govulncheck` was not run locally this session                                                              |
 
 ---
 
@@ -107,78 +107,78 @@ The `go install github.com/LarsArtmann/art-dupl/cmd/art-dupl@v0.6.2` command was
 
 ### P0 — Critical (verify this session's work)
 
-| #   | Task                                                                                                     | Impact                                                          | Effort |
-| --- | -------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- | ------ |
-| 1   | **Push 7 local commits to origin**                                                                       | Verify CI goes green                                            | 1min   |
-| 2   | **Monitor CI run after push** — confirm all 4 jobs pass (build-and-test, lint, govulncheck, duplication) | Verify the session's core value                                 | 15min  |
-| 3   | **Verify `go install ...art-dupl@v0.6.2` works from clean state**                                        | Confirm the art-dupl fix propagates through the Go module proxy | 2min   |
-| 4   | **Validate all 39 annotation conversions** — scan for malformed blockquotes or misplaced insertions      | Correctness of batch operation                                  | 15min  |
+| # | Task                                                                                                     | Impact                                                          | Effort |
+| - | -------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- | ------ |
+| 1 | **Push 7 local commits to origin**                                                                       | Verify CI goes green                                            | 1min   |
+| 2 | **Monitor CI run after push** — confirm all 4 jobs pass (build-and-test, lint, govulncheck, duplication) | Verify the session's core value                                 | 15min  |
+| 3 | **Verify `go install ...art-dupl@v0.6.2` works from clean state**                                        | Confirm the art-dupl fix propagates through the Go module proxy | 2min   |
+| 4 | **Validate all 39 annotation conversions** — scan for malformed blockquotes or misplaced insertions      | Correctness of batch operation                                  | 15min  |
 
 ### P1 — High (release health)
 
-| #   | Task                                                                                                                                   | Impact                                               | Effort |
-| --- | -------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- | ------ |
-| 5   | **Cut v0.37.0 tag** — first release with green CI since July 6                                                                         | Consumer trust — first releasable version in a month | 15min  |
-| 6   | **Add `-timeout 120s` to CI test step** — fail fast on deadlocks instead of 10min timeout                                              | CI efficiency                                        | 2min   |
-| 7   | **Update CHANGELOG `[Unreleased]`** with TUI deadlock fix + art-dupl CI fix + lint cleanup                                             | Release documentation                                | 10min  |
-| 8   | **Decide on v0.36.0 retraction** — it was tagged on deadlocking code; v0.37.0 supersedes                                               | Consumer safety                                      | 5min   |
-| 9   | **Update TODO_LIST resolution text** — replace stale "vtScreenFromBytes in polling loop" diagnosis with actual `io.ReadAll` root cause | Doc accuracy                                         | 5min   |
-| 10  | **Run `nix run .#govulncheck` locally** — verify zero vulnerabilities across all 19 modules                                            | Security verification                                | 10min  |
+| #  | Task                                                                                                                                   | Impact                                               | Effort |
+| -- | -------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- | ------ |
+| 5  | **Cut v0.37.0 tag** — first release with green CI since July 6                                                                         | Consumer trust — first releasable version in a month | 15min  |
+| 6  | **Add `-timeout 120s` to CI test step** — fail fast on deadlocks instead of 10min timeout                                              | CI efficiency                                        | 2min   |
+| 7  | **Update CHANGELOG `[Unreleased]`** with TUI deadlock fix + art-dupl CI fix + lint cleanup                                             | Release documentation                                | 10min  |
+| 8  | **Decide on v0.36.0 retraction** — it was tagged on deadlocking code; v0.37.0 supersedes                                               | Consumer safety                                      | 5min   |
+| 9  | **Update TODO_LIST resolution text** — replace stale "vtScreenFromBytes in polling loop" diagnosis with actual `io.ReadAll` root cause | Doc accuracy                                         | 5min   |
+| 10 | **Run `nix run .#govulncheck` locally** — verify zero vulnerabilities across all 19 modules                                            | Security verification                                | 10min  |
 
 ### P2 — Medium (CI hardening)
 
-| #   | Task                                                                                       | Impact                      | Effort |
-| --- | ------------------------------------------------------------------------------------------ | --------------------------- | ------ |
-| 11  | **Lower art-dupl threshold in CI from t=50 to t=4** — the production gate; t=50 is a no-op | CI catches real duplication | 2min   |
-| 12  | **Add CI status badge to README.md** — makes red CI immediately visible                    | Visibility                  | 5min   |
-| 13  | **Consider GitHub branch protection** — require CI pass before push to master              | Prevention                  | 10min  |
-| 14  | **Write postmortem ADR: "How CI was red for a month and nobody noticed"**                  | Learning                    | 30min  |
-| 15  | **Add pre-tag git hook that runs `scripts/pre-tag-check.sh`**                              | Prevent future bad tags     | 15min  |
-| 16  | **Audit all 39 annotation conversions via `git diff`** — ensure no file was corrupted      | Correctness                 | 10min  |
-| 17  | **Add `nix flake check` step to CI** — currently only in pre-commit                        | Coverage                    | 15min  |
+| #  | Task                                                                                       | Impact                      | Effort |
+| -- | ------------------------------------------------------------------------------------------ | --------------------------- | ------ |
+| 11 | **Lower art-dupl threshold in CI from t=50 to t=4** — the production gate; t=50 is a no-op | CI catches real duplication | 2min   |
+| 12 | **Add CI status badge to README.md** — makes red CI immediately visible                    | Visibility                  | 5min   |
+| 13 | **Consider GitHub branch protection** — require CI pass before push to master              | Prevention                  | 10min  |
+| 14 | **Write postmortem ADR: "How CI was red for a month and nobody noticed"**                  | Learning                    | 30min  |
+| 15 | **Add pre-tag git hook that runs `scripts/pre-tag-check.sh`**                              | Prevent future bad tags     | 15min  |
+| 16 | **Audit all 39 annotation conversions via `git diff`** — ensure no file was corrupted      | Correctness                 | 10min  |
+| 17 | **Add `nix flake check` step to CI** — currently only in pre-commit                        | Coverage                    | 15min  |
 
 ### P3 — Lower (cleanup and polish)
 
-| #   | Task                                                                                                     | Impact                   | Effort |
-| --- | -------------------------------------------------------------------------------------------------------- | ------------------------ | ------ |
-| 18  | **Clean up empty auto-git daemon commit** (`d056ab1` has empty message)                                  | History cleanliness      | 5min   |
-| 19  | **Convert 3 remaining docs-health session reports** to blockquote style (for consistency)                | Style consistency        | 10min  |
-| 20  | **Fix the `integration/roundtrip_test.go` gopls warnings** — 3 `json.Unmarshal requires go1.27` warnings | LSP cleanliness          | 10min  |
-| 21  | **Update ROADMAP.md** — CI health is no longer a blocker; update priorities                              | Planning accuracy        | 10min  |
-| 22  | **Document the `teatest.WaitFor` + `io.ReadAll` deadlock pattern** in AGENTS.md gotchas                  | Prevent future deadlocks | 10min  |
-| 23  | **Consider replacing `teatest.WaitFor` in ALL teatest tests** with `pollTeatestOutput`                   | Test stability           | 30min  |
-| 24  | **Add a regression test for the `pollTeatestOutput` helper itself**                                      | Test infrastructure      | 15min  |
-| 25  | **Review whether `pollTeatestOutput` should be promoted to `testhelpers/`**                              | Reusability              | 10min  |
-| 26  | **Verify website (go-output.lars.software) is up to date**                                               | Doc accuracy             | 5min   |
-| 27  | **Create GitHub Releases for v0.34.0–v0.36.0** if missing (prior session said done — verify)             | Release completeness     | 10min  |
+| #  | Task                                                                                                     | Impact                   | Effort |
+| -- | -------------------------------------------------------------------------------------------------------- | ------------------------ | ------ |
+| 18 | **Clean up empty auto-git daemon commit** (`d056ab1` has empty message)                                  | History cleanliness      | 5min   |
+| 19 | **Convert 3 remaining docs-health session reports** to blockquote style (for consistency)                | Style consistency        | 10min  |
+| 20 | **Fix the `integration/roundtrip_test.go` gopls warnings** — 3 `json.Unmarshal requires go1.27` warnings | LSP cleanliness          | 10min  |
+| 21 | **Update ROADMAP.md** — CI health is no longer a blocker; update priorities                              | Planning accuracy        | 10min  |
+| 22 | **Document the `teatest.WaitFor` + `io.ReadAll` deadlock pattern** in AGENTS.md gotchas                  | Prevent future deadlocks | 10min  |
+| 23 | **Consider replacing `teatest.WaitFor` in ALL teatest tests** with `pollTeatestOutput`                   | Test stability           | 30min  |
+| 24 | **Add a regression test for the `pollTeatestOutput` helper itself**                                      | Test infrastructure      | 15min  |
+| 25 | **Review whether `pollTeatestOutput` should be promoted to `testhelpers/`**                              | Reusability              | 10min  |
+| 26 | **Verify website (go-output.lars.software) is up to date**                                               | Doc accuracy             | 5min   |
+| 27 | **Create GitHub Releases for v0.34.0–v0.36.0** if missing (prior session said done — verify)             | Release completeness     | 10min  |
 
 ### P4 — Backlog
 
-| #   | Task                                                                                                                 | Impact               | Effort |
-| --- | -------------------------------------------------------------------------------------------------------------------- | -------------------- | ------ |
-| 28  | **Disable or configure the auto-git daemon** — it creates empty-message commits and overrides manual commit messages | Commit hygiene       | 15min  |
-| 29  | **Add semantic versioning automation** (e.g., semantic-release)                                                      | Release automation   | 60min  |
-| 30  | **Add `CODEOWNERS` file**                                                                                            | Process              | 5min   |
-| 31  | **Add `.github/ISSUE_TEMPLATE/bug_report.md`**                                                                       | Process              | 10min  |
-| 32  | **Consider `gosec` or `govet` beyond golangci-lint**                                                                 | Security             | 15min  |
-| 33  | **Add nightly CI job with `-race` on all modules**                                                                   | Coverage             | 20min  |
-| 34  | **Document `GOEXPERIMENT=jsonv2` requirement in CONTRIBUTING.md**                                                    | Onboarding           | 10min  |
-| 35  | **Audit `go.work.example` is up to date with all 19 modules**                                                        | Accuracy             | 5min   |
-| 36  | **Add CHANGELOG validation to CI** (keep-a-changelog format)                                                         | Quality              | 20min  |
-| 37  | **Consider adding `gofumpt` to CI**                                                                                  | Style consistency    | 10min  |
-| 38  | **Review whether `bdd/` module tests pass in CI** (Ginkgo special handling)                                          | Coverage             | 15min  |
-| 39  | **Check if `testhelpers/graphtest` needs its own tag**                                                               | Release completeness | 10min  |
-| 40  | **Add `scripts/release.sh` that automates full release checklist**                                                   | Automation           | 45min  |
-| 41  | **Consider adding retry logic to flaky teatest tests**                                                               | Stability            | 30min  |
-| 42  | **Run `scripts/pre-tag-check.sh` locally** to verify codebase passes                                                 | Verify state         | 10min  |
-| 43  | **Review old renderer struct deletion plan** (v0.31.0 plan, still not executed)                                      | Debt cleanup         | 30min  |
-| 44  | **Consider FrozenTable/FrozenTree types for v1.0.0** (ROADMAP item)                                                  | API design           | 60min  |
-| 45  | **Add structured progress type** (ROADMAP — nom currently uses string messages)                                      | Feature              | 45min  |
-| 46  | **Implement adaptive tree pruning** (ROADMAP — dynamic height management)                                            | Feature              | 60min  |
-| 47  | **Consider OSC 11 auto-theme query** for daghtml (ROADMAP)                                                           | Feature              | 45min  |
-| 48  | **Review whether the d2 typed errors should get `All*` exported variables** (consistency with root)                  | API consistency      | 15min  |
-| 49  | **Add cross-module error integration test for markup module** (extends item 9 from prior session)                    | Test coverage        | 20min  |
-| 50  | **Post to r/golang, submit to Awesome Go** (TODO_LIST #14)                                                           | Community            | 30min  |
+| #  | Task                                                                                                                 | Impact               | Effort |
+| -- | -------------------------------------------------------------------------------------------------------------------- | -------------------- | ------ |
+| 28 | **Disable or configure the auto-git daemon** — it creates empty-message commits and overrides manual commit messages | Commit hygiene       | 15min  |
+| 29 | **Add semantic versioning automation** (e.g., semantic-release)                                                      | Release automation   | 60min  |
+| 30 | **Add `CODEOWNERS` file**                                                                                            | Process              | 5min   |
+| 31 | **Add `.github/ISSUE_TEMPLATE/bug_report.md`**                                                                       | Process              | 10min  |
+| 32 | **Consider `gosec` or `govet` beyond golangci-lint**                                                                 | Security             | 15min  |
+| 33 | **Add nightly CI job with `-race` on all modules**                                                                   | Coverage             | 20min  |
+| 34 | **Document `GOEXPERIMENT=jsonv2` requirement in CONTRIBUTING.md**                                                    | Onboarding           | 10min  |
+| 35 | **Audit `go.work.example` is up to date with all 19 modules**                                                        | Accuracy             | 5min   |
+| 36 | **Add CHANGELOG validation to CI** (keep-a-changelog format)                                                         | Quality              | 20min  |
+| 37 | **Consider adding `gofumpt` to CI**                                                                                  | Style consistency    | 10min  |
+| 38 | **Review whether `bdd/` module tests pass in CI** (Ginkgo special handling)                                          | Coverage             | 15min  |
+| 39 | **Check if `testhelpers/graphtest` needs its own tag**                                                               | Release completeness | 10min  |
+| 40 | **Add `scripts/release.sh` that automates full release checklist**                                                   | Automation           | 45min  |
+| 41 | **Consider adding retry logic to flaky teatest tests**                                                               | Stability            | 30min  |
+| 42 | **Run `scripts/pre-tag-check.sh` locally** to verify codebase passes                                                 | Verify state         | 10min  |
+| 43 | **Review old renderer struct deletion plan** (v0.31.0 plan, still not executed)                                      | Debt cleanup         | 30min  |
+| 44 | **Consider FrozenTable/FrozenTree types for v1.0.0** (ROADMAP item)                                                  | API design           | 60min  |
+| 45 | **Add structured progress type** (ROADMAP — nom currently uses string messages)                                      | Feature              | 45min  |
+| 46 | **Implement adaptive tree pruning** (ROADMAP — dynamic height management)                                            | Feature              | 60min  |
+| 47 | **Consider OSC 11 auto-theme query** for daghtml (ROADMAP)                                                           | Feature              | 45min  |
+| 48 | **Review whether the d2 typed errors should get `All*` exported variables** (consistency with root)                  | API consistency      | 15min  |
+| 49 | **Add cross-module error integration test for markup module** (extends item 9 from prior session)                    | Test coverage        | 20min  |
+| 50 | **Post to r/golang, submit to Awesome Go** (TODO_LIST #14)                                                           | Community            | 30min  |
 
 ---
 

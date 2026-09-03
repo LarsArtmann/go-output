@@ -183,58 +183,58 @@ I reported findings incrementally as I fixed them. A better approach: run the FU
 
 ## F) TOP 50 THINGS TO DO NEXT
 
-| #   | Priority | Task                                                                                                         | Effort |
-| --- | -------- | ------------------------------------------------------------------------------------------------------------ | ------ |
-| 1   | **P0**   | **Recount FEATURES.md totals** — currently claims 173/161, likely wrong after additions                      | 10m    |
-| 2   | **P0**   | **Fix FEATURES.md fuzz tests row** — claims 1, reality is 28 across 8 modules                                | 5m     |
-| 3   | **P0**   | **Add `tree.RenderMarkdown`/`WriteMarkdown` to FEATURES.md** — shipped, missing from inventory               | 3m     |
-| 4   | **P0**   | **Add `table.Render`/`Write` CQRS to FEATURES.md** — shipped, missing                                        | 3m     |
-| 5   | **P0**   | **Add daghtml CQRS (`Render`/`Write`) to FEATURES.md** — exists, not documented                              | 3m     |
-| 6   | **P0**   | **Run `nix run .#build && .#test && .#lint`** — verify session changes don't break anything                  | 10m    |
-| 7   | **P1**   | **Full FEATURES.md rebuild from code** — grep every type/function, verify against codebase                   | 60m    |
-| 8   | **P1**   | **Audit docs/FORMAT_ARCHITECTURE.md** — may have stale v0.30.0 type names                                    | 15m    |
-| 9   | **P1**   | **Audit RELEASE.md** — may say "18 modules" instead of 19                                                    | 5m     |
-| 10  | **P1**   | **Restore D2 Value Objects in DOMAIN_LANGUAGE.md** — `d2.NodeShape`, `d2.ArrowType`, `d2.Constraint`         | 10m    |
-| 11  | **P1**   | **Verify README.md code samples compile** — extract and `go build` the Go blocks                             | 30m    |
-| 12  | **P1**   | **Commit all docs-health changes** from this session                                                         | 5m     |
-| 13  | **P2**   | **Audit ADR 009** (Pattern B versioning) for stale references                                                | 5m     |
-| 14  | **P2**   | **Audit ADR 010** (DAG topology) for stale references                                                        | 5m     |
-| 15  | **P2**   | **Audit ADR 011** (Status registry) for stale references                                                     | 5m     |
-| 16  | **P2**   | **Audit ADR 012** (CQRS streaming) for stale references                                                      | 5m     |
-| 17  | **P2**   | **Audit CONTRIBUTING.md** for stale content                                                                  | 10m    |
-| 18  | **P2**   | **Investigate untracked `2026-07-13_21-45_domains-firebase-hosting-status.md`** — not mine                   | 5m     |
-| 19  | **P2**   | **Add FEATURES.md entries for all CQRS Write/Render functions** across every module                          | 20m    |
-| 20  | **P2**   | **Verify FEATURES.md "Benchmarks" row** — may be incomplete vs actual benchmark functions                    | 10m    |
-| 21  | **P2**   | **Verify FEATURES.md "Integration tests" description** — says "16 formats" but formats may have changed      | 5m     |
-| 22  | **P2**   | **Add FEATURES.md entry for `nom.Build()` cycle detection** (`ErrCycleDetected`)                             | 3m     |
-| 23  | **P2**   | **Add FEATURES.md entry for InlineRenderer dead-writer detection** (consecutive error tracking)              | 3m     |
-| 24  | **P2**   | **Add FEATURES.md entry for `NOMSubscriber.Flush()`** — shutdown drain for timing cache                      | 3m     |
-| 25  | **P2**   | **Add FEATURES.md entry for `WithGraphNodeLabelFunc` option** on `TableToGraph`                              | 3m     |
-| 26  | **P3**   | **Add FEATURES.md entry for `TreeBuilder.AddChildren`** bulk method                                          | 3m     |
-| 27  | **P3**   | **Add FEATURES.md entry for `TableBuilder.AddRows`** bulk method                                             | 3m     |
-| 28  | **P3**   | **Create doc-code-sample CI check** — extract Go blocks from .md, verify they compile                        | 60m    |
-| 29  | **P3**   | **Audit all internal doc cross-references** — links between ADRs, docs, etc.                                 | 30m    |
-| 30  | **P3**   | **Add FEATURES.md entry for `encoding/json/v2` migration** — GOEXPERIMENT=jsonv2 requirement                 | 5m     |
-| 31  | **P3**   | **Update FEATURES.md CQRS section** to list every module's Write/Render functions                            | 15m    |
-| 32  | **P3**   | **Add FEATURES.md entry for `CORS StreamVsRegistry` equivalence tests**                                      | 3m     |
-| 33  | **P3**   | **Check FEATURES.md "Golden-file tests"** — list may miss markup/ and delimited/ CQRS goldens                | 10m    |
-| 34  | **P3**   | **Add FEATURES.md entry for error-writer tests** (WriteJSON/WriteYAML I/O error propagation)                 | 3m     |
-| 35  | **P3**   | **Add FEATURES.md entry for streaming benchmarks** (WriteJSON/YAML/TOML 100-row)                             | 3m     |
-| 36  | **P3**   | **Verify FEATURES.md "Nix flake" apps list** matches actual flake.nix apps                                   | 10m    |
-| 37  | **P4**   | **Add FEATURES.md entry for `examples/cqrs/`** example directory                                             | 3m     |
-| 38  | **P4**   | **Check README.md escape functions table** — verify all escape functions exist                               | 10m    |
-| 39  | **P4**   | **Check README.md "Frozen Interfaces" table** — verify all implementations listed                            | 10m    |
-| 40  | **P4**   | **Audit docs/archive/ content** — verify archived docs aren't causing confusion                              | 15m    |
-| 41  | **P4**   | **Add docs-health audit to pre-release checklist** — prevent future doc drift                                | 10m    |
-| 42  | **P4**   | **Create AGENTS.md entry for docs-health skill** — document the audit process                                | 5m     |
-| 43  | **P4**   | **Consider `features.json` or code-generated FEATURES.md** — prevent manual drift                            | 60m    |
-| 44  | **P5**   | **Add FEATURES.md entry for `Renderer interface` ROADMAP note** — `Render() (string, error)` smell           | 3m     |
-| 45  | **P5**   | **Check if FEATURES.md needs `RenderOptions`** entry (rigid struct vs functional options)                    | 5m     |
-| 46  | **P5**   | **Verify FEATURES.md `StreamingHTMLRenderer`** claim — still exists, still works?                            | 5m     |
-| 47  | **P5**   | **Add FEATURES.md note about old renderer structs** — still exist, backing CQRS, slated for v0.31.0 deletion | 5m     |
-| 48  | **P5**   | **Check FEATURES.md "testhelpers" claim** — verify exported function list is current                         | 10m    |
-| 49  | **P5**   | **Add FEATURES.md entry for `daghtml` golden test** — if it exists                                           | 5m     |
-| 50  | **P5**   | **Schedule recurring docs-health audit** — monthly cadence to prevent drift accumulation                     | 5m     |
+| #  | Priority | Task                                                                                                         | Effort |
+| -- | -------- | ------------------------------------------------------------------------------------------------------------ | ------ |
+| 1  | **P0**   | **Recount FEATURES.md totals** — currently claims 173/161, likely wrong after additions                      | 10m    |
+| 2  | **P0**   | **Fix FEATURES.md fuzz tests row** — claims 1, reality is 28 across 8 modules                                | 5m     |
+| 3  | **P0**   | **Add `tree.RenderMarkdown`/`WriteMarkdown` to FEATURES.md** — shipped, missing from inventory               | 3m     |
+| 4  | **P0**   | **Add `table.Render`/`Write` CQRS to FEATURES.md** — shipped, missing                                        | 3m     |
+| 5  | **P0**   | **Add daghtml CQRS (`Render`/`Write`) to FEATURES.md** — exists, not documented                              | 3m     |
+| 6  | **P0**   | **Run `nix run .#build && .#test && .#lint`** — verify session changes don't break anything                  | 10m    |
+| 7  | **P1**   | **Full FEATURES.md rebuild from code** — grep every type/function, verify against codebase                   | 60m    |
+| 8  | **P1**   | **Audit docs/FORMAT_ARCHITECTURE.md** — may have stale v0.30.0 type names                                    | 15m    |
+| 9  | **P1**   | **Audit RELEASE.md** — may say "18 modules" instead of 19                                                    | 5m     |
+| 10 | **P1**   | **Restore D2 Value Objects in DOMAIN_LANGUAGE.md** — `d2.NodeShape`, `d2.ArrowType`, `d2.Constraint`         | 10m    |
+| 11 | **P1**   | **Verify README.md code samples compile** — extract and `go build` the Go blocks                             | 30m    |
+| 12 | **P1**   | **Commit all docs-health changes** from this session                                                         | 5m     |
+| 13 | **P2**   | **Audit ADR 009** (Pattern B versioning) for stale references                                                | 5m     |
+| 14 | **P2**   | **Audit ADR 010** (DAG topology) for stale references                                                        | 5m     |
+| 15 | **P2**   | **Audit ADR 011** (Status registry) for stale references                                                     | 5m     |
+| 16 | **P2**   | **Audit ADR 012** (CQRS streaming) for stale references                                                      | 5m     |
+| 17 | **P2**   | **Audit CONTRIBUTING.md** for stale content                                                                  | 10m    |
+| 18 | **P2**   | **Investigate untracked `2026-07-13_21-45_domains-firebase-hosting-status.md`** — not mine                   | 5m     |
+| 19 | **P2**   | **Add FEATURES.md entries for all CQRS Write/Render functions** across every module                          | 20m    |
+| 20 | **P2**   | **Verify FEATURES.md "Benchmarks" row** — may be incomplete vs actual benchmark functions                    | 10m    |
+| 21 | **P2**   | **Verify FEATURES.md "Integration tests" description** — says "16 formats" but formats may have changed      | 5m     |
+| 22 | **P2**   | **Add FEATURES.md entry for `nom.Build()` cycle detection** (`ErrCycleDetected`)                             | 3m     |
+| 23 | **P2**   | **Add FEATURES.md entry for InlineRenderer dead-writer detection** (consecutive error tracking)              | 3m     |
+| 24 | **P2**   | **Add FEATURES.md entry for `NOMSubscriber.Flush()`** — shutdown drain for timing cache                      | 3m     |
+| 25 | **P2**   | **Add FEATURES.md entry for `WithGraphNodeLabelFunc` option** on `TableToGraph`                              | 3m     |
+| 26 | **P3**   | **Add FEATURES.md entry for `TreeBuilder.AddChildren`** bulk method                                          | 3m     |
+| 27 | **P3**   | **Add FEATURES.md entry for `TableBuilder.AddRows`** bulk method                                             | 3m     |
+| 28 | **P3**   | **Create doc-code-sample CI check** — extract Go blocks from .md, verify they compile                        | 60m    |
+| 29 | **P3**   | **Audit all internal doc cross-references** — links between ADRs, docs, etc.                                 | 30m    |
+| 30 | **P3**   | **Add FEATURES.md entry for `encoding/json/v2` migration** — GOEXPERIMENT=jsonv2 requirement                 | 5m     |
+| 31 | **P3**   | **Update FEATURES.md CQRS section** to list every module's Write/Render functions                            | 15m    |
+| 32 | **P3**   | **Add FEATURES.md entry for `CORS StreamVsRegistry` equivalence tests**                                      | 3m     |
+| 33 | **P3**   | **Check FEATURES.md "Golden-file tests"** — list may miss markup/ and delimited/ CQRS goldens                | 10m    |
+| 34 | **P3**   | **Add FEATURES.md entry for error-writer tests** (WriteJSON/WriteYAML I/O error propagation)                 | 3m     |
+| 35 | **P3**   | **Add FEATURES.md entry for streaming benchmarks** (WriteJSON/YAML/TOML 100-row)                             | 3m     |
+| 36 | **P3**   | **Verify FEATURES.md "Nix flake" apps list** matches actual flake.nix apps                                   | 10m    |
+| 37 | **P4**   | **Add FEATURES.md entry for `examples/cqrs/`** example directory                                             | 3m     |
+| 38 | **P4**   | **Check README.md escape functions table** — verify all escape functions exist                               | 10m    |
+| 39 | **P4**   | **Check README.md "Frozen Interfaces" table** — verify all implementations listed                            | 10m    |
+| 40 | **P4**   | **Audit docs/archive/ content** — verify archived docs aren't causing confusion                              | 15m    |
+| 41 | **P4**   | **Add docs-health audit to pre-release checklist** — prevent future doc drift                                | 10m    |
+| 42 | **P4**   | **Create AGENTS.md entry for docs-health skill** — document the audit process                                | 5m     |
+| 43 | **P4**   | **Consider `features.json` or code-generated FEATURES.md** — prevent manual drift                            | 60m    |
+| 44 | **P5**   | **Add FEATURES.md entry for `Renderer interface` ROADMAP note** — `Render() (string, error)` smell           | 3m     |
+| 45 | **P5**   | **Check if FEATURES.md needs `RenderOptions`** entry (rigid struct vs functional options)                    | 5m     |
+| 46 | **P5**   | **Verify FEATURES.md `StreamingHTMLRenderer`** claim — still exists, still works?                            | 5m     |
+| 47 | **P5**   | **Add FEATURES.md note about old renderer structs** — still exist, backing CQRS, slated for v0.31.0 deletion | 5m     |
+| 48 | **P5**   | **Check FEATURES.md "testhelpers" claim** — verify exported function list is current                         | 10m    |
+| 49 | **P5**   | **Add FEATURES.md entry for `daghtml` golden test** — if it exists                                           | 5m     |
+| 50 | **P5**   | **Schedule recurring docs-health audit** — monthly cadence to prevent drift accumulation                     | 5m     |
 
 ---
 

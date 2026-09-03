@@ -1,6 +1,6 @@
 module github.com/larsartmann/go-output
 
-go 1.26.5
+go 1.26.7
 
 require (
 	github.com/larsartmann/go-branded-id v0.5.1

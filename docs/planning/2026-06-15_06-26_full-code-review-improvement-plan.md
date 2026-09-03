@@ -37,28 +37,28 @@ The go-output codebase is **architecturally excellent** — correct module bound
 
 ### 🟠 Tier 1 — 4% → 64% (high value, low effort)
 
-| #   | Task                                                                                  | Files                          | Effort | Value  |
-| --- | ------------------------------------------------------------------------------------- | ------------------------------ | ------ | ------ |
-| 1   | `tui/colors.go`: convert 10 mutable globals → immutable style struct                  | colors.go, view.go, summary.go | Medium | Medium |
-| 2   | `tui/model_test.go`: replace deprecated `EnsureBuild()` → `GetRootNodes()` (3 SA1019) | model_test.go                  | Low    | Low    |
-| 3   | `tui/event_sequence_test.go`: guard 3 type assertions (forcetypeassert)               | event_sequence_test.go         | Low    | Low    |
+| # | Task                                                                                  | Files                          | Effort | Value  |
+| - | ------------------------------------------------------------------------------------- | ------------------------------ | ------ | ------ |
+| 1 | `tui/colors.go`: convert 10 mutable globals → immutable style struct                  | colors.go, view.go, summary.go | Medium | Medium |
+| 2 | `tui/model_test.go`: replace deprecated `EnsureBuild()` → `GetRootNodes()` (3 SA1019) | model_test.go                  | Low    | Low    |
+| 3 | `tui/event_sequence_test.go`: guard 3 type assertions (forcetypeassert)               | event_sequence_test.go         | Low    | Low    |
 
 ### 🟡 Tier 2 — 20% → 80% (medium value)
 
-| #   | Task                                                                                                         | Files           | Effort | Value                           |
-| --- | ------------------------------------------------------------------------------------------------------------ | --------------- | ------ | ------------------------------- |
-| 4   | Decompose `nom/` into `internal/` sub-packages (tree, cache, render, subscriber) keeping thin public API     | nom/ (35 files) | High   | Medium (locality, navigability) |
-| 5   | Test errcheck sweep (31 unchecked `AddActivity`/`Record`/`OnEvent` returns across nom/tui/integration tests) | many \_test.go  | Medium | Low                             |
-| 6   | err113 test sweep (7 dynamic `errors.New` → wrapped static errors)                                           | tests           | Low    | Low                             |
+| # | Task                                                                                                         | Files           | Effort | Value                           |
+| - | ------------------------------------------------------------------------------------------------------------ | --------------- | ------ | ------------------------------- |
+| 4 | Decompose `nom/` into `internal/` sub-packages (tree, cache, render, subscriber) keeping thin public API     | nom/ (35 files) | High   | Medium (locality, navigability) |
+| 5 | Test errcheck sweep (31 unchecked `AddActivity`/`Record`/`OnEvent` returns across nom/tui/integration tests) | many \_test.go  | Medium | Low                             |
+| 6 | err113 test sweep (7 dynamic `errors.New` → wrapped static errors)                                           | tests           | Low    | Low                             |
 
 ### 🔵 Tier 3 — Polish (long-term health)
 
-| #   | Task                                                                                                                        | Notes                                    |
-| --- | --------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------- |
-| 7   | `TableData` invariant enforcement (unexport fields, validated setters) — **post-v1, ADR 006 conflict**                      | See improve-codebase-architecture report |
-| 8   | Unify `Marshaler` → `Renderer` terminology in registry                                                                      | Post-v1 API change                       |
-| 9   | Collapse `InlineRenderer` 8-method interface behind smaller render seam                                                     | See deepening report                     |
-| 10  | `DOMAIN_LANGUAGE.md` staleness: says `GraphRendererMixin`, code says `GraphRendererState`; missing nom/tui bounded contexts | docs-freshness                           |
+| #  | Task                                                                                                                        | Notes                                    |
+| -- | --------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------- |
+| 7  | `TableData` invariant enforcement (unexport fields, validated setters) — **post-v1, ADR 006 conflict**                      | See improve-codebase-architecture report |
+| 8  | Unify `Marshaler` → `Renderer` terminology in registry                                                                      | Post-v1 API change                       |
+| 9  | Collapse `InlineRenderer` 8-method interface behind smaller render seam                                                     | See deepening report                     |
+| 10 | `DOMAIN_LANGUAGE.md` staleness: says `GraphRendererMixin`, code says `GraphRendererState`; missing nom/tui bounded contexts | docs-freshness                           |
 
 ---
 

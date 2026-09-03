@@ -81,26 +81,26 @@ Suggests `github.com/a-h/templ` and `github.com/larsartmann/go-error-family`. Bo
 
 ### Phase 1: Low Effort, Medium Impact
 
-| #   | Task                                               | Effort | Impact | Status      | Commit    |
-| --- | -------------------------------------------------- | ------ | ------ | ----------- | --------- |
-| 1   | Add race test for `RegisterFormatShapes`           | 10 min | Medium | ✅ Done     | `86eebac` |
-| 2   | Improve `TableData.Validate()` — nil row detection | 15 min | Medium | ✅ Done     | `34570b1` |
-| 3   | Unify root error patterns                          | 20 min | Medium | ⏸️ Deferred | —         |
+| # | Task                                               | Effort | Impact | Status     | Commit    |
+| - | -------------------------------------------------- | ------ | ------ | ---------- | --------- |
+| 1 | Add race test for `RegisterFormatShapes`           | 10 min | Medium | ✅ Done    | `86eebac` |
+| 2 | Improve `TableData.Validate()` — nil row detection | 15 min | Medium | ✅ Done    | `34570b1` |
+| 3 | Unify root error patterns                          | 20 min | Medium | ⏸️ Deferred | —         |
 
 ### Phase 2: Medium Effort, Medium Impact
 
-| #   | Task                                              | Effort | Impact | Status  | Commit    |
-| --- | ------------------------------------------------- | ------ | ------ | ------- | --------- |
-| 4   | Update AGENTS.md with `RegisterFormatShapes` docs | 10 min | Low    | ✅ Done | `6f6114f` |
-| 5   | Verify all `replace` directives                   | 15 min | Low    | ✅ Done | —         |
+| # | Task                                              | Effort | Impact | Status  | Commit    |
+| - | ------------------------------------------------- | ------ | ------ | ------- | --------- |
+| 4 | Update AGENTS.md with `RegisterFormatShapes` docs | 10 min | Low    | ✅ Done | `6f6114f` |
+| 5 | Verify all `replace` directives                   | 15 min | Low    | ✅ Done | —         |
 
 ### Phase 3: Deferred (Needs Owner Decision)
 
-| #   | Task                                        | Effort | Impact | Blocker        |
-| --- | ------------------------------------------- | ------ | ------ | -------------- |
-| 6   | Configure BuildFlow `library-policy`        | 15 min | High   | Owner decision |
-| 7   | Decide v1 API: exported fields vs getters   | 30 min | High   | Owner decision |
-| 8   | Add `gomod2nix` for reproducible Nix builds | 2h     | High   | Nix expertise  |
+| # | Task                                        | Effort | Impact | Blocker        |
+| - | ------------------------------------------- | ------ | ------ | -------------- |
+| 6 | Configure BuildFlow `library-policy`        | 15 min | High   | Owner decision |
+| 7 | Decide v1 API: exported fields vs getters   | 30 min | High   | Owner decision |
+| 8 | Add `gomod2nix` for reproducible Nix builds | 2h     | High   | Nix expertise  |
 
 ---
 

@@ -161,58 +161,58 @@ The user's context explicitly flagged the auto-git daemon as an ongoing problem.
 
 ## f) Up to 50 Things to Do Next
 
-| #   | Task                                                                                                           | Impact   | Effort   |
-| --- | -------------------------------------------------------------------------------------------------------------- | -------- | -------- |
-| 1   | **Push 2 unpushed commits** (`git push origin master`)                                                         | Critical | 5s       |
-| 2   | **Monitor CI to green** — first green run since July 6                                                         | Critical | 5min     |
-| 3   | **Cut v0.37.0 tag** after CI confirmed green                                                                   | High     | 2min     |
-| 4   | **Update prior status report** (`05-00`) with real root causes                                                 | Medium   | 5min     |
-| 5   | **Move `pollTeatestOutput` to `teatest_helpers_test.go`** (canonical location)                                 | Medium   | 5min     |
-| 6   | **Strengthen `waitForVisible` conditions** — wait for actual content, not `"s"`                                | Medium   | 15min    |
-| 7   | **Add goroutine-leak test** — `runtime.NumGoroutine()` before/after teatest cycle                              | Medium   | 20min    |
-| 8   | **Add `nix run .#test-race-all`** — race-test ALL 19 modules, not just nom+tui                                 | Medium   | 15min    |
-| 9   | **Add dependabot.yml** for GitHub Actions version updates                                                      | Low      | 10min    |
-| 10  | **File upstream bug report** on teatest/v2 `io.ReadAll` deadlock                                               | Low      | 15min    |
-| 11  | **Post to r/golang + submit to Awesome Go** (TODO_LIST #14)                                                    | Low      | 30min    |
-| 12  | **Cut v1.0.0 tag** (TODO_LIST #15) — API frozen per ADR 006                                                    | Low      | 2min     |
-| 13  | **Investigate `integration/roundtrip_test.go` gopls warnings** — `json.Unmarshal` flagged as requiring go1.27  | Low      | 15min    |
-| 14  | **Verify GitHub Action SHAs work in CI** — currently untested                                                  | Medium   | passive  |
-| 15  | **Consider adding `CODEOWNERS`** file                                                                          | Low      | 5min     |
-| 16  | **Consider adding `SECURITY.md`**                                                                              | Low      | 10min    |
-| 17  | **Add CI status badge to README.md**                                                                           | Low      | 5min     |
-| 18  | **The CI coverage step uses `bc`** — consider a Go-native alternative                                          | Low      | 30min    |
-| 19  | **Parallelize CI jobs per module** instead of sequential loop                                                  | Low      | 1hr      |
-| 20  | **Run `nix run .#tidy`** to ensure all go.mod files are clean                                                  | Low      | 2min     |
-| 21  | **Add pre-commit hook** that greps for `teatest.WaitFor` to prevent reintroduction                             | Low      | 10min    |
-| 22  | **Verify `TestTeatest_WindowSize_Propagates` cleanup** — it creates an inline model, not via `newTeatestModel` | Low      | 5min     |
-| 23  | **Consider whether 3s `WaitFinished` timeout is sufficient for slow CI runners**                               | Low      | 5min     |
-| 24  | **Run full module test suite under `-race` locally** to catch races in other modules                           | Medium   | 10min    |
-| 25  | **Archive old status reports** — 50+ files in `docs/status/`                                                   | Low      | 30min    |
-| 26  | **Consider whether `-timeout 120s` is too aggressive** for the full 19-module suite in CI                      | Low      | passive  |
-| 27  | **Verify release.yml works end-to-end** (only fires on tag push)                                               | Low      | passive  |
-| 28  | **Check if `website/` dependabot checks are passing in CI**                                                    | Low      | 5min     |
-| 29  | **Consider adding a funding.yml**                                                                              | Low      | 5min     |
-| 30  | **Review whether the auto-git daemon should be disabled** (ongoing discussion)                                 | Medium   | decision |
-| 31  | **Add `CONTRIBUTING.md`** with GOEXPERIMENT=jsonv2 requirement                                                 | Low      | 20min    |
-| 32  | **Verify the 39 annotation conversions render correctly in a browser** (HTML files)                            | Low      | 15min    |
-| 33  | **Consider adding a lint rule** for `teatest.WaitFor` usage (custom golangci-lint linter)                      | Low      | 1hr      |
-| 34  | **Document the CI workflow architecture** in a docs/ ADR                                                       | Low      | 30min    |
-| 35  | **Run `art-dupl --sort total-tokens -t 1 --type-aware`** for a strict dedup audit                              | Low      | 10min    |
-| 36  | **Verify the d2 `assertWrappedTypedError[T error]` refactor compiles in CI**                                   | Low      | passive  |
-| 37  | **Consider whether nom lint fixes changed behavior** (exhaustive switch, makezero)                             | Low      | 10min    |
-| 38  | **Add a benchmark for `pollTeatestOutput`** to verify it's not a performance regression                        | Low      | 20min    |
-| 39  | **Check if any other test files in the codebase use `teatest.WaitFor`**                                        | Low      | 2min     |
-| 40  | **Consider contributing `pollTeatestOutput` upstream to teatest/v2**                                           | Low      | 30min    |
-| 41  | **Add a `.editorconfig`** for consistent formatting across editors                                             | Low      | 10min    |
-| 42  | **Review ROADMAP.md** for accuracy against current state                                                       | Low      | 15min    |
-| 43  | **Consider whether the coverage threshold (80%) is being met** in CI                                           | Low      | 5min     |
-| 44  | **Verify FEATURES.md** is up to date with v0.36.0 changes                                                      | Low      | 15min    |
-| 45  | **Consider adding a `Makefile`-to-flake migration guide** for non-Nix contributors                             | Low      | 30min    |
-| 46  | **Review whether the CI workflow needs `permissions: contents: read`** explicitly                              | Low      | 5min     |
-| 47  | **Check if `GOLANGCI_LINT_VERSION: v2.12` in CI matches the Nix devShell**                                     | Low      | 5min     |
-| 48  | **Consider adding a `renovate.json`** as an alternative to dependabot for Go modules                           | Low      | 15min    |
-| 49  | **Add a test that runs under `GOMAXPROCS=1`** to catch scheduling-dependent races                              | Low      | 20min    |
-| 50  | **Celebrate when CI goes green** — it's been red since July 6                                                  | Low      | deserved |
+| #  | Task                                                                                                           | Impact   | Effort   |
+| -- | -------------------------------------------------------------------------------------------------------------- | -------- | -------- |
+| 1  | **Push 2 unpushed commits** (`git push origin master`)                                                         | Critical | 5s       |
+| 2  | **Monitor CI to green** — first green run since July 6                                                         | Critical | 5min     |
+| 3  | **Cut v0.37.0 tag** after CI confirmed green                                                                   | High     | 2min     |
+| 4  | **Update prior status report** (`05-00`) with real root causes                                                 | Medium   | 5min     |
+| 5  | **Move `pollTeatestOutput` to `teatest_helpers_test.go`** (canonical location)                                 | Medium   | 5min     |
+| 6  | **Strengthen `waitForVisible` conditions** — wait for actual content, not `"s"`                                | Medium   | 15min    |
+| 7  | **Add goroutine-leak test** — `runtime.NumGoroutine()` before/after teatest cycle                              | Medium   | 20min    |
+| 8  | **Add `nix run .#test-race-all`** — race-test ALL 19 modules, not just nom+tui                                 | Medium   | 15min    |
+| 9  | **Add dependabot.yml** for GitHub Actions version updates                                                      | Low      | 10min    |
+| 10 | **File upstream bug report** on teatest/v2 `io.ReadAll` deadlock                                               | Low      | 15min    |
+| 11 | **Post to r/golang + submit to Awesome Go** (TODO_LIST #14)                                                    | Low      | 30min    |
+| 12 | **Cut v1.0.0 tag** (TODO_LIST #15) — API frozen per ADR 006                                                    | Low      | 2min     |
+| 13 | **Investigate `integration/roundtrip_test.go` gopls warnings** — `json.Unmarshal` flagged as requiring go1.27  | Low      | 15min    |
+| 14 | **Verify GitHub Action SHAs work in CI** — currently untested                                                  | Medium   | passive  |
+| 15 | **Consider adding `CODEOWNERS`** file                                                                          | Low      | 5min     |
+| 16 | **Consider adding `SECURITY.md`**                                                                              | Low      | 10min    |
+| 17 | **Add CI status badge to README.md**                                                                           | Low      | 5min     |
+| 18 | **The CI coverage step uses `bc`** — consider a Go-native alternative                                          | Low      | 30min    |
+| 19 | **Parallelize CI jobs per module** instead of sequential loop                                                  | Low      | 1hr      |
+| 20 | **Run `nix run .#tidy`** to ensure all go.mod files are clean                                                  | Low      | 2min     |
+| 21 | **Add pre-commit hook** that greps for `teatest.WaitFor` to prevent reintroduction                             | Low      | 10min    |
+| 22 | **Verify `TestTeatest_WindowSize_Propagates` cleanup** — it creates an inline model, not via `newTeatestModel` | Low      | 5min     |
+| 23 | **Consider whether 3s `WaitFinished` timeout is sufficient for slow CI runners**                               | Low      | 5min     |
+| 24 | **Run full module test suite under `-race` locally** to catch races in other modules                           | Medium   | 10min    |
+| 25 | **Archive old status reports** — 50+ files in `docs/status/`                                                   | Low      | 30min    |
+| 26 | **Consider whether `-timeout 120s` is too aggressive** for the full 19-module suite in CI                      | Low      | passive  |
+| 27 | **Verify release.yml works end-to-end** (only fires on tag push)                                               | Low      | passive  |
+| 28 | **Check if `website/` dependabot checks are passing in CI**                                                    | Low      | 5min     |
+| 29 | **Consider adding a funding.yml**                                                                              | Low      | 5min     |
+| 30 | **Review whether the auto-git daemon should be disabled** (ongoing discussion)                                 | Medium   | decision |
+| 31 | **Add `CONTRIBUTING.md`** with GOEXPERIMENT=jsonv2 requirement                                                 | Low      | 20min    |
+| 32 | **Verify the 39 annotation conversions render correctly in a browser** (HTML files)                            | Low      | 15min    |
+| 33 | **Consider adding a lint rule** for `teatest.WaitFor` usage (custom golangci-lint linter)                      | Low      | 1hr      |
+| 34 | **Document the CI workflow architecture** in a docs/ ADR                                                       | Low      | 30min    |
+| 35 | **Run `art-dupl --sort total-tokens -t 1 --type-aware`** for a strict dedup audit                              | Low      | 10min    |
+| 36 | **Verify the d2 `assertWrappedTypedError[T error]` refactor compiles in CI**                                   | Low      | passive  |
+| 37 | **Consider whether nom lint fixes changed behavior** (exhaustive switch, makezero)                             | Low      | 10min    |
+| 38 | **Add a benchmark for `pollTeatestOutput`** to verify it's not a performance regression                        | Low      | 20min    |
+| 39 | **Check if any other test files in the codebase use `teatest.WaitFor`**                                        | Low      | 2min     |
+| 40 | **Consider contributing `pollTeatestOutput` upstream to teatest/v2**                                           | Low      | 30min    |
+| 41 | **Add a `.editorconfig`** for consistent formatting across editors                                             | Low      | 10min    |
+| 42 | **Review ROADMAP.md** for accuracy against current state                                                       | Low      | 15min    |
+| 43 | **Consider whether the coverage threshold (80%) is being met** in CI                                           | Low      | 5min     |
+| 44 | **Verify FEATURES.md** is up to date with v0.36.0 changes                                                      | Low      | 15min    |
+| 45 | **Consider adding a `Makefile`-to-flake migration guide** for non-Nix contributors                             | Low      | 30min    |
+| 46 | **Review whether the CI workflow needs `permissions: contents: read`** explicitly                              | Low      | 5min     |
+| 47 | **Check if `GOLANGCI_LINT_VERSION: v2.12` in CI matches the Nix devShell**                                     | Low      | 5min     |
+| 48 | **Consider adding a `renovate.json`** as an alternative to dependabot for Go modules                           | Low      | 15min    |
+| 49 | **Add a test that runs under `GOMAXPROCS=1`** to catch scheduling-dependent races                              | Low      | 20min    |
+| 50 | **Celebrate when CI goes green** — it's been red since July 6                                                  | Low      | deserved |
 
 ---
 

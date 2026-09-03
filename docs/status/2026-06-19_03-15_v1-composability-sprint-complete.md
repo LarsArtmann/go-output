@@ -118,53 +118,53 @@ Sorted by **impact / effort ratio** (highest first):
 
 ### Tier 1 — Owner-blocked (cannot execute autonomously)
 
-| #   | Task                                                           | Impact   | Effort |
-| --- | -------------------------------------------------------------- | -------- | ------ |
-| 1   | **Decide `TableData` fields vs getters for v1** (Option A/B/C) | Critical | 5m     |
-| 2   | **Cut `v1.0.0` tag** — API declared frozen (ADR 006)           | Critical | 10m    |
-| 3   | **Tag `envdetect/v0.12.0`** — eliminates replace fragility     | High     | 5m     |
-| 4   | **Submit to r/golang + Awesome Go**                            | High     | 30m    |
+| # | Task                                                           | Impact   | Effort |
+| - | -------------------------------------------------------------- | -------- | ------ |
+| 1 | **Decide `TableData` fields vs getters for v1** (Option A/B/C) | Critical | 5m     |
+| 2 | **Cut `v1.0.0` tag** — API declared frozen (ADR 006)           | Critical | 10m    |
+| 3 | **Tag `envdetect/v0.12.0`** — eliminates replace fragility     | High     | 5m     |
+| 4 | **Submit to r/golang + Awesome Go**                            | High     | 30m    |
 
 ### Tier 2 — High-impact code work
 
-| #   | Task                                                               | Impact | Effort |
-| --- | ------------------------------------------------------------------ | ------ | ------ |
-| 5   | **Brand `ActivityID`/`WorkflowID`** via `go-branded-id` (293 refs) | 🔥🔥   | 2 hrs  |
-| 6   | **Typed `Color` for `GraphStyle`** Fill/Stroke/FontColor           | 🟡     | 30m    |
-| 7   | **Extract `graphcore/`** — GraphRendererState + graph state (359L) | 🔥     | 3 hrs  |
-| 8   | **Decide: `core/` module or keep types in root**                   | 🔥     | Design |
-| 9   | **BDD spec name verification** — specs match post-extraction names | 🟡     | 15m    |
+| # | Task                                                               | Impact | Effort |
+| - | ------------------------------------------------------------------ | ------ | ------ |
+| 5 | **Brand `ActivityID`/`WorkflowID`** via `go-branded-id` (293 refs) | 🔥🔥   | 2 hrs  |
+| 6 | **Typed `Color` for `GraphStyle`** Fill/Stroke/FontColor           | 🟡     | 30m    |
+| 7 | **Extract `graphcore/`** — GraphRendererState + graph state (359L) | 🔥     | 3 hrs  |
+| 8 | **Decide: `core/` module or keep types in root**                   | 🔥     | Design |
+| 9 | **BDD spec name verification** — specs match post-extraction names | 🟡     | 15m    |
 
 ### Tier 3 — CI/process hardening
 
-| #   | Task                                                               | Impact | Effort |
-| --- | ------------------------------------------------------------------ | ------ | ------ |
-| 10  | **benchstat CI step** with stored baseline artifact                | 🔥     | 30m    |
-| 11  | **GitHub release notes draft** for v1.0.0                          | 🟡     | 20m    |
-| 12  | **Commit `go.work` or document workspace-first workflow**          | 🟡     | 30m    |
-| 13  | **Add `go work sync` to setup-workspace** app                      | 🟡     | 15m    |
-| 14  | **art-dupl threshold tuning** — verify t=50 doesn't false-positive | 🟢     | 30m    |
-| 15  | **CI: verify markdown/tree actually tested** after module loop fix | 🟢     | 5m     |
+| #  | Task                                                               | Impact | Effort |
+| -- | ------------------------------------------------------------------ | ------ | ------ |
+| 10 | **benchstat CI step** with stored baseline artifact                | 🔥     | 30m    |
+| 11 | **GitHub release notes draft** for v1.0.0                          | 🟡     | 20m    |
+| 12 | **Commit `go.work` or document workspace-first workflow**          | 🟡     | 30m    |
+| 13 | **Add `go work sync` to setup-workspace** app                      | 🟡     | 15m    |
+| 14 | **art-dupl threshold tuning** — verify t=50 doesn't false-positive | 🟢     | 30m    |
+| 15 | **CI: verify markdown/tree actually tested** after module loop fix | 🟢     | 5m     |
 
 ### Tier 4 — Documentation
 
-| #   | Task                                                                              | Impact | Effort |
-| --- | --------------------------------------------------------------------------------- | ------ | ------ |
-| 16  | **Document module dependency DAG** in FORMAT_ARCHITECTURE.md                      | 🟡     | 30m    |
-| 17  | **Update `doc.go`** root package doc — remove stale markdown/tree refs            | 🟡     | 10m    |
-| 18  | **CHANGELOG.md** — document markdown/tree extraction + Symbol type                | 🔥     | 20m    |
-| 19  | **Update FEATURES.md** — mark markdown/ and tree/ as standalone modules           | 🟡     | 15m    |
-| 20  | **Godoc review** — new exported types (Symbol, ActivityStatus methods) documented | 🟡     | 15m    |
+| #  | Task                                                                              | Impact | Effort |
+| -- | --------------------------------------------------------------------------------- | ------ | ------ |
+| 16 | **Document module dependency DAG** in FORMAT_ARCHITECTURE.md                      | 🟡     | 30m    |
+| 17 | **Update `doc.go`** root package doc — remove stale markdown/tree refs            | 🟡     | 10m    |
+| 18 | **CHANGELOG.md** — document markdown/tree extraction + Symbol type                | 🔥     | 20m    |
+| 19 | **Update FEATURES.md** — mark markdown/ and tree/ as standalone modules           | 🟡     | 15m    |
+| 20 | **Godoc review** — new exported types (Symbol, ActivityStatus methods) documented | 🟡     | 15m    |
 
 ### Tier 5 — Optional / future
 
-| #   | Task                                                                  | Impact | Effort |
-| --- | --------------------------------------------------------------------- | ------ | ------ |
-| 21  | **`direction.go` relocation** to graphcore/ (40L, only used by graph) | 🟢     | 15m    |
-| 22  | **`ids.go` relocation review** (58L, branded ID re-exports)           | 🟢     | 15m    |
-| 23  | **`streaming.go` review** (53L, is it core or separate?)              | 🟢     | 15m    |
-| 24  | **Run `deduplicate-code` skill** across root + new modules            | 🟢     | 1 hr   |
-| 25  | **CBOR format** (ROADMAP) — only on real user demand                  | 🟢     | 3 hrs  |
+| #  | Task                                                                  | Impact | Effort |
+| -- | --------------------------------------------------------------------- | ------ | ------ |
+| 21 | **`direction.go` relocation** to graphcore/ (40L, only used by graph) | 🟢     | 15m    |
+| 22 | **`ids.go` relocation review** (58L, branded ID re-exports)           | 🟢     | 15m    |
+| 23 | **`streaming.go` review** (53L, is it core or separate?)              | 🟢     | 15m    |
+| 24 | **Run `deduplicate-code` skill** across root + new modules            | 🟢     | 1 hr   |
+| 25 | **CBOR format** (ROADMAP) — only on real user demand                  | 🟢     | 3 hrs  |
 
 ---
 

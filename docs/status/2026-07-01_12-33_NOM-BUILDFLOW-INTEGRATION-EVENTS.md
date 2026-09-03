@@ -204,33 +204,33 @@ All changes compile, all 18 modules pass, 0 lint issues, 0 regressions. The impl
 
 ## f) Top 25 Things to Do Next
 
-| #   | Priority | Task                                                                                                                                          |
-| --- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | **P0**   | **Bump go-output to v0.21.0 in BuildFlow** — push tags, update flake input, remove local replace directives                                   |
-| 2   | **P0**   | **Wire `ActivityProgress` events from BuildFlow** — call `subscriber.OnEvent(ctx, nom.ActivityProgress{...})` from `ForEachGoModule` callback |
-| 3   | **P0**   | **Wire `ActivityRetrying` events from BuildFlow** — call from retry path in `ProgressBridge.stepRetrying()`                                   |
-| 4   | **P0**   | **Wire `SetEstimatedTime` from BuildFlow** — inject SQLite P50 estimates after loading from `dbstore`                                         |
-| 5   | **P0**   | **Wire `SetEstimatedRemainingFunc` from BuildFlow** — connect `TimeEstimator.EstimatedTotalRemaining()` to the renderer                       |
-| 6   | **P1**   | **TUI rendering of Progress/RetryCount** — update `tui/view.go` to render the new snapshot fields                                             |
-| 7   | **P1**   | **Golden test snapshots** — add rendered examples of progress/retry output to `testdata/`                                                     |
-| 8   | **P1**   | **Multi-subscriber fan-out test** — verify progress events propagate through `MultiSubscriber`                                                |
-| 9   | **P1**   | **Progress throttling guidance** — document recommended cadence for progress updates (e.g. 1/sec)                                             |
-| 10  | **P2**   | **Structured progress type** — `ProgressDetail{Current, Total, Label}` for progress-bar rendering                                             |
-| 11  | **P2**   | **Subscriber-level `EstimatedTotalRemaining()`** — compute from activity estimates internally                                                 |
-| 12  | **P2**   | **Render remaining estimate in TUI** — wire `~Xm left` into `tui/summary.go`                                                                  |
-| 13  | **P2**   | **Retry reason display** — `ActivityRetrying` could carry a `Reason string` for `⟳2 (timeout)`                                                |
-| 14  | **P2**   | **Progress bar rendering for structured progress** — if structured type is added                                                              |
-| 15  | **P2**   | **Clear RetryCount on fresh workflow** — verify `Reset()` clears it (it clears activities entirely, so this works, but worth testing)         |
-| 16  | **P3**   | **Examples update** — `examples/nom_progress/` demonstrate progress/retry events                                                              |
-| 17  | **P3**   | **Fuzz test for progress events** — rapid progress/retry/complete sequences                                                                   |
-| 18  | **P3**   | **Benchmark progress event path** — ensure no latency under high-frequency progress updates                                                   |
-| 19  | **P3**   | **Progress during retry** — when retried, should progress from prior attempt persist? Currently cleared by SetRunning                         |
-| 20  | **P3**   | **Concurrent progress + retry** — race test sending progress and retry simultaneously                                                         |
-| 21  | **P3**   | **Documentation** — update `AGENTS.md` patterns section with new event types                                                                  |
-| 22  | **P3**   | **CHANGELOG entry** for v0.21.0                                                                                                               |
-| 23  | **P4**   | **Explore `aymanbagabas/go-udiff` for frame diffing** (from BuildFlow backlog)                                                                |
-| 24  | **P4**   | **Explore `charmbracelet/x/term` as replacement for `golang.org/x/term`**                                                                     |
-| 25  | **P4**   | **Adaptive tree pruning** — nom-style "fill 1/3 of terminal, prune low-priority"                                                              |
+| #  | Priority | Task                                                                                                                                          |
+| -- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1  | **P0**   | **Bump go-output to v0.21.0 in BuildFlow** — push tags, update flake input, remove local replace directives                                   |
+| 2  | **P0**   | **Wire `ActivityProgress` events from BuildFlow** — call `subscriber.OnEvent(ctx, nom.ActivityProgress{...})` from `ForEachGoModule` callback |
+| 3  | **P0**   | **Wire `ActivityRetrying` events from BuildFlow** — call from retry path in `ProgressBridge.stepRetrying()`                                   |
+| 4  | **P0**   | **Wire `SetEstimatedTime` from BuildFlow** — inject SQLite P50 estimates after loading from `dbstore`                                         |
+| 5  | **P0**   | **Wire `SetEstimatedRemainingFunc` from BuildFlow** — connect `TimeEstimator.EstimatedTotalRemaining()` to the renderer                       |
+| 6  | **P1**   | **TUI rendering of Progress/RetryCount** — update `tui/view.go` to render the new snapshot fields                                             |
+| 7  | **P1**   | **Golden test snapshots** — add rendered examples of progress/retry output to `testdata/`                                                     |
+| 8  | **P1**   | **Multi-subscriber fan-out test** — verify progress events propagate through `MultiSubscriber`                                                |
+| 9  | **P1**   | **Progress throttling guidance** — document recommended cadence for progress updates (e.g. 1/sec)                                             |
+| 10 | **P2**   | **Structured progress type** — `ProgressDetail{Current, Total, Label}` for progress-bar rendering                                             |
+| 11 | **P2**   | **Subscriber-level `EstimatedTotalRemaining()`** — compute from activity estimates internally                                                 |
+| 12 | **P2**   | **Render remaining estimate in TUI** — wire `~Xm left` into `tui/summary.go`                                                                  |
+| 13 | **P2**   | **Retry reason display** — `ActivityRetrying` could carry a `Reason string` for `⟳2 (timeout)`                                                |
+| 14 | **P2**   | **Progress bar rendering for structured progress** — if structured type is added                                                              |
+| 15 | **P2**   | **Clear RetryCount on fresh workflow** — verify `Reset()` clears it (it clears activities entirely, so this works, but worth testing)         |
+| 16 | **P3**   | **Examples update** — `examples/nom_progress/` demonstrate progress/retry events                                                              |
+| 17 | **P3**   | **Fuzz test for progress events** — rapid progress/retry/complete sequences                                                                   |
+| 18 | **P3**   | **Benchmark progress event path** — ensure no latency under high-frequency progress updates                                                   |
+| 19 | **P3**   | **Progress during retry** — when retried, should progress from prior attempt persist? Currently cleared by SetRunning                         |
+| 20 | **P3**   | **Concurrent progress + retry** — race test sending progress and retry simultaneously                                                         |
+| 21 | **P3**   | **Documentation** — update `AGENTS.md` patterns section with new event types                                                                  |
+| 22 | **P3**   | **CHANGELOG entry** for v0.21.0                                                                                                               |
+| 23 | **P4**   | **Explore `aymanbagabas/go-udiff` for frame diffing** (from BuildFlow backlog)                                                                |
+| 24 | **P4**   | **Explore `charmbracelet/x/term` as replacement for `golang.org/x/term`**                                                                     |
+| 25 | **P4**   | **Adaptive tree pruning** — nom-style "fill 1/3 of terminal, prune low-priority"                                                              |
 
 ---
 

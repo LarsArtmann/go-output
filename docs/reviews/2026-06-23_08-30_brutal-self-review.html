@@ -30,14 +30,14 @@
         --warning: var(--color-yellow);
         --radius: 0px;
         --font-heading:
-          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          sans-serif;
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", Roboto, sans-serif;
         --font-body:
-          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          sans-serif;
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", Roboto, sans-serif;
         --font-mono:
-          ui-monospace, "Cascadia Code", "Source Code Pro", "JetBrains Mono", Menlo, Consolas,
-          monospace;
+          ui-monospace, "Cascadia Code", "Source Code Pro", "JetBrains Mono",
+          Menlo, Consolas, monospace;
       }
       * {
         box-sizing: border-box;
@@ -175,15 +175,27 @@
       }
       .card-problem {
         border-left-color: var(--problem);
-        background: color-mix(in srgb, var(--problem) 8%, var(--surface-raised));
+        background: color-mix(
+          in srgb,
+          var(--problem) 8%,
+          var(--surface-raised)
+        );
       }
       .card-solution {
         border-left-color: var(--solution);
-        background: color-mix(in srgb, var(--solution) 8%, var(--surface-raised));
+        background: color-mix(
+          in srgb,
+          var(--solution) 8%,
+          var(--surface-raised)
+        );
       }
       .card-warning {
         border-left-color: var(--warning);
-        background: color-mix(in srgb, var(--warning) 8%, var(--surface-raised));
+        background: color-mix(
+          in srgb,
+          var(--warning) 8%,
+          var(--surface-raised)
+        );
       }
       .stat-grid {
         display: grid;
@@ -334,9 +346,10 @@
           <div class="hero-badge">Brutal Self-Review</div>
           <h1>What I Fucked Up, What I Fixed, What's Left</h1>
           <p class="hero-subtitle">
-            Honest reflection on the multi-skill review session. 7 commits, 30 files changed, 6
-            critical fixes — but I also forgot to commit, wrote zero regression tests initially, and
-            left the biggest architectural issue as a "note."
+            Honest reflection on the multi-skill review session. 7 commits, 30
+            files changed, 6 critical fixes — but I also forgot to commit, wrote
+            zero regression tests initially, and left the biggest architectural
+            issue as a "note."
           </p>
         </div>
 
@@ -368,55 +381,59 @@
         <div class="card card-problem">
           <h4>1. I never committed during the first session</h4>
           <p>
-            22 modified + 9 untracked files sat uncommitted. One <code>git checkout</code> or crash
-            would have lost everything. I claimed skills "completed" without persisting the work.
-            The user had to remind me to commit.
+            22 modified + 9 untracked files sat uncommitted. One
+            <code>git checkout</code> or crash would have lost everything. I
+            claimed skills "completed" without persisting the work. The user had
+            to remind me to commit.
           </p>
         </div>
         <div class="card card-problem">
           <h4>2. No regression tests for the 4 critical bug fixes</h4>
           <p>
-            I fixed a progress-bar panic, a wrong-step-match bug, a Total=0 bug, and a double-suffix
-            bug — then moved on without a single test. The fixes were unverifiable. Fixed in Phase 2
-            (4 regression tests added).
+            I fixed a progress-bar panic, a wrong-step-match bug, a Total=0 bug,
+            and a double-suffix bug — then moved on without a single test. The
+            fixes were unverifiable. Fixed in Phase 2 (4 regression tests
+            added).
           </p>
         </div>
         <div class="card card-problem">
           <h4>3. Pattern B migration was "noted" not "fixed"</h4>
           <p>
-            I discovered the biggest architectural issue (165 sibling requires using real versions
-            instead of v0.0.0 sentinel) and just wrote a TODO. I should have fixed it immediately.
-            Fixed in Phase 5 (all 47 sibling requires converted).
+            I discovered the biggest architectural issue (165 sibling requires
+            using real versions instead of v0.0.0 sentinel) and just wrote a
+            TODO. I should have fixed it immediately. Fixed in Phase 5 (all 47
+            sibling requires converted).
           </p>
         </div>
         <div class="card card-problem">
           <h4>4. TUI data races were "noted" not "fixed"</h4>
           <p>
-            SetCancelFunc and SetDisplayMode wrote model fields without synchronization. I
-            documented it as "Low risk if used as documented." That's not how race conditions work.
-            Fixed in Phase 6.
+            SetCancelFunc and SetDisplayMode wrote model fields without
+            synchronization. I documented it as "Low risk if used as
+            documented." That's not how race conditions work. Fixed in Phase 6.
           </p>
         </div>
         <div class="card card-problem">
           <h4>5. SPLIT-BRAIN.html cluttering repo root</h4>
           <p>
-            A 2163-line HTML report sat in the repo root for weeks. Should have been in
-            docs/reviews/ from day one. Fixed in Phase 1a.
+            A 2163-line HTML report sat in the repo root for weeks. Should have
+            been in docs/reviews/ from day one. Fixed in Phase 1a.
           </p>
         </div>
         <div class="card card-problem">
           <h4>6. Dead pass-through wrapper survived review</h4>
           <p>
-            <code>buildActivityCountsSummary</code> was a single-line delegation to
-            <code>counts.Summary()</code>. I noted it in the code review but didn't remove it. Fixed
-            in Phase 1b.
+            <code>buildActivityCountsSummary</code> was a single-line delegation
+            to <code>counts.Summary()</code>. I noted it in the code review but
+            didn't remove it. Fixed in Phase 1b.
           </p>
         </div>
         <div class="card card-problem">
           <h4>7. LineStyle enum was incomplete and I just noted it</h4>
           <p>
-            Every other enum had Parse/AllowedValues/Error — LineStyle was half-built. I documented
-            the gap instead of completing it. Fixed in Phase 3.
+            Every other enum had Parse/AllowedValues/Error — LineStyle was
+            half-built. I documented the gap instead of completing it. Fixed in
+            Phase 3.
           </p>
         </div>
 
@@ -424,42 +441,51 @@
         <div class="card card-problem">
           <h4>1. Claiming skills "completed" that were superficial</h4>
           <p>
-            I marked deduplicate-code as "completed" because I ran a tool. I marked features-audit
-            as "completed" because I made 3 edits. That's not what "completed" means. The real work
-            was deeper — and I did it in the self-review, not the original skill execution.
+            I marked deduplicate-code as "completed" because I ran a tool. I
+            marked features-audit as "completed" because I made 3 edits. That's
+            not what "completed" means. The real work was deeper — and I did it
+            in the self-review, not the original skill execution.
           </p>
         </div>
         <div class="card card-problem">
           <h4>2. I lied about encoding/json v1 being "banned"</h4>
           <p>
-            I wrote <code>encoding/json v1</code> on the self-review TODO list as a banned library,
-            implying we needed to migrate to <code>encoding/json/v2</code>. But that package doesn't
-            exist in Go 1.26.3. I parroted the how-to-golang skill without verifying. The skill is
-            aspirational, not current.
-            <strong>I did not lie to myself — I caught this before implementing.</strong>
+            I wrote <code>encoding/json v1</code> on the self-review TODO list
+            as a banned library, implying we needed to migrate to
+            <code>encoding/json/v2</code>. But that package doesn't exist in Go
+            1.26.3. I parroted the how-to-golang skill without verifying. The
+            skill is aspirational, not current.
+            <strong
+              >I did not lie to myself — I caught this before
+              implementing.</strong
+            >
           </p>
         </div>
         <div class="card card-problem">
           <h4>3. No integration test for the escape fixes</h4>
           <p>
-            I fixed 5 injection vulnerabilities (DOT node colors, D2 style values, Mermaid IDs, D2
-            layout, D2 opacity) but only one has a dedicated test that verifies the escape output.
-            The others are covered by existing tests that happened to still pass — but no test
-            verifies that <code>escape.D2()</code> was actually applied to style values
-            specifically.
+            I fixed 5 injection vulnerabilities (DOT node colors, D2 style
+            values, Mermaid IDs, D2 layout, D2 opacity) but only one has a
+            dedicated test that verifies the escape output. The others are
+            covered by existing tests that happened to still pass — but no test
+            verifies that <code>escape.D2()</code> was actually applied to style
+            values specifically.
           </p>
         </div>
 
-        <h2 id="what-i-fixed"><span class="num">03</span>What I Fixed This Session</h2>
+        <h2 id="what-i-fixed">
+          <span class="num">03</span>What I Fixed This Session
+        </h2>
         <div class="strengths">
           <div class="strength">
             <div class="check">+</div>
             <div class="text">
               <strong>Pattern B migration completed</strong
               ><span
-                >All 47 sibling requires converted to v0.0.0 sentinel. The version-rot problem
-                Pattern B was designed to eliminate is now actually eliminated. This was the single
-                highest-impact architectural fix.</span
+                >All 47 sibling requires converted to v0.0.0 sentinel. The
+                version-rot problem Pattern B was designed to eliminate is now
+                actually eliminated. This was the single highest-impact
+                architectural fix.</span
               >
             </div>
           </div>
@@ -468,8 +494,8 @@
             <div class="text">
               <strong>4 regression tests for critical bugs</strong
               ><span
-                >Narrow-width panic, Total=0 instant-complete, wrong-step-match, double-suffix.
-                Guards against reintroduction.</span
+                >Narrow-width panic, Total=0 instant-complete, wrong-step-match,
+                double-suffix. Guards against reintroduction.</span
               >
             </div>
           </div>
@@ -478,8 +504,8 @@
             <div class="text">
               <strong>LineStyle enum completed</strong
               ><span
-                >ParseLineStyle, AllowedValues, InvalidLineStyleError. Every enum in the project now
-                has the full API surface.</span
+                >ParseLineStyle, AllowedValues, InvalidLineStyleError. Every
+                enum in the project now has the full API surface.</span
               >
             </div>
           </div>
@@ -488,8 +514,9 @@
             <div class="text">
               <strong>RowEdge type safety closed</strong
               ><span
-                >RowEdge.From/To now use branded GraphNodeID. The branded-ID perimeter is complete —
-                no raw strings flow through the graph type system.</span
+                >RowEdge.From/To now use branded GraphNodeID. The branded-ID
+                perimeter is complete — no raw strings flow through the graph
+                type system.</span
               >
             </div>
           </div>
@@ -498,8 +525,8 @@
             <div class="text">
               <strong>TUI reporter races fixed</strong
               ><span
-                >SetCancelFunc/SetDisplayMode now take pr.mu.Lock(). Race detector passes
-                clean.</span
+                >SetCancelFunc/SetDisplayMode now take pr.mu.Lock(). Race
+                detector passes clean.</span
               >
             </div>
           </div>
@@ -508,8 +535,9 @@
             <div class="text">
               <strong>Dead code and clutter removed</strong
               ><span
-                >buildActivityCountsSummary pass-through inlined. SPLIT-BRAIN.html moved to
-                docs/reviews/. makezero lint violations fixed.</span
+                >buildActivityCountsSummary pass-through inlined.
+                SPLIT-BRAIN.html moved to docs/reviews/. makezero lint
+                violations fixed.</span
               >
             </div>
           </div>
@@ -519,29 +547,36 @@
         <div class="card card-warning">
           <h4>NodeShapeBox / NodeShapeRect duplicate</h4>
           <p>
-            Two exported names for the same visual concept. Every renderer treats them identically.
-            Can't remove pre-v1 (ADR 006 stability).
+            Two exported names for the same visual concept. Every renderer
+            treats them identically. Can't remove pre-v1 (ADR 006 stability).
             <strong>Low priority — cosmetic, not functional.</strong>
           </p>
         </div>
         <div class="card card-warning">
           <h4>No dedicated tests for escape fixes on style values</h4>
           <p>
-            The 5 injection fixes are verified by existing tests passing, but no test explicitly
-            asserts that <code>escape.D2("malicious\ninput")</code> is applied to style values
-            specifically. <strong>Medium priority — should add targeted injection tests.</strong>
+            The 5 injection fixes are verified by existing tests passing, but no
+            test explicitly asserts that
+            <code>escape.D2("malicious\ninput")</code> is applied to style
+            values specifically.
+            <strong
+              >Medium priority — should add targeted injection tests.</strong
+            >
           </p>
         </div>
         <div class="card card-warning">
           <h4>NOM-mode scroll renders entire tree before clipping</h4>
           <p>
-            <code>tui/render_nom.go:50-51</code> renders with height=0 then clips. Non-scroll path
-            uses VisibleEntriesWithSnapshots. O(n) for large trees.
+            <code>tui/render_nom.go:50-51</code> renders with height=0 then
+            clips. Non-scroll path uses VisibleEntriesWithSnapshots. O(n) for
+            large trees.
             <strong>Low priority — performance, not correctness.</strong>
           </p>
         </div>
 
-        <h2 id="plan"><span class="num">05</span>Prioritized Improvement Plan</h2>
+        <h2 id="plan">
+          <span class="num">05</span>Prioritized Improvement Plan
+        </h2>
         <p>Sorted by impact / effort ratio (highest first).</p>
 
         <div class="migration-step">
@@ -549,10 +584,11 @@
           <div class="migration-content">
             <h4>Add injection regression tests for style escapes</h4>
             <p>
-              <strong>Impact: High | Effort: Low.</strong> Write tests that pass newlines and
-              special chars in D2 Fill/Stroke, DOT fillcolor/color, Mermaid style fill/stroke and
-              assert the output is escaped. Prevents the exact vulnerabilities we just fixed from
-              being reintroduced.
+              <strong>Impact: High | Effort: Low.</strong> Write tests that pass
+              newlines and special chars in D2 Fill/Stroke, DOT fillcolor/color,
+              Mermaid style fill/stroke and assert the output is escaped.
+              Prevents the exact vulnerabilities we just fixed from being
+              reintroduced.
             </p>
           </div>
         </div>
@@ -561,9 +597,9 @@
           <div class="migration-content">
             <h4>Cut v1.0.0 tag</h4>
             <p>
-              <strong>Impact: High | Effort: Low.</strong> API is frozen (ADR 006). Pattern B is
-              complete. All bugs fixed. CHANGELOG is ready. Just needs the owner to run
-              <code>git tag v1.0.0</code>.
+              <strong>Impact: High | Effort: Low.</strong> API is frozen (ADR
+              006). Pattern B is complete. All bugs fixed. CHANGELOG is ready.
+              Just needs the owner to run <code>git tag v1.0.0</code>.
             </p>
           </div>
         </div>
@@ -572,9 +608,10 @@
           <div class="migration-content">
             <h4>Optimize NOM scroll rendering</h4>
             <p>
-              <strong>Impact: Medium | Effort: Medium.</strong> Use VisibleEntriesWithSnapshots with
-              a large height limit during scroll, instead of rendering with height=0 then
-              string-splitting. Eliminates O(n) render+clip.
+              <strong>Impact: Medium | Effort: Medium.</strong> Use
+              VisibleEntriesWithSnapshots with a large height limit during
+              scroll, instead of rendering with height=0 then string-splitting.
+              Eliminates O(n) render+clip.
             </p>
           </div>
         </div>
@@ -584,15 +621,16 @@
             <h4>Deprecate NodeShapeRect in favor of NodeShapeBox</h4>
             <p>
               <strong>Impact: Low | Effort: Low.</strong> Add
-              <code>// Deprecated: use NodeShapeBox</code> comment. Remove at v2. These are semantic
-              duplicates.
+              <code>// Deprecated: use NodeShapeBox</code> comment. Remove at
+              v2. These are semantic duplicates.
             </p>
           </div>
         </div>
 
         <footer class="footer">
-          Generated 2026-06-23 &middot; 7 commits, 30 files changed &middot; nix run .#build
-          (18/18), nix run .#test (18/18), nix run .#lint (0 issues), nix run .#test-race (clean)
+          Generated 2026-06-23 &middot; 7 commits, 30 files changed &middot; nix
+          run .#build (18/18), nix run .#test (18/18), nix run .#lint (0
+          issues), nix run .#test-race (clean)
         </footer>
       </main>
     </div>

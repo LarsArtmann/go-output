@@ -26,8 +26,10 @@
         --solution: var(--color-blue);
         --warning: var(--color-yellow);
         --radius: 0px;
-        --font-heading: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-        --font-body: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+        --font-heading:
+          ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+        --font-body:
+          ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
         --font-mono: ui-monospace, "JetBrains Mono", Menlo, monospace;
       }
       * {
@@ -264,8 +266,9 @@
           <div class="eyebrow">DATA MODEL REVIEW &middot; 2026-06-23</div>
           <h1>Type System Architecture Deep-Dive</h1>
           <p class="subtitle">
-            A first-principles review of go-output's Go type system. 45+ types across 18 modules,
-            scored against the "make impossible states unrepresentable" principle.
+            A first-principles review of go-output's Go type system. 45+ types
+            across 18 modules, scored against the "make impossible states
+            unrepresentable" principle.
           </p>
         </header>
 
@@ -294,10 +297,11 @@
         </div>
 
         <p>
-          The type system is remarkably well-designed for a library of this scope. Branded phantom
-          types prevent ID-mixing at compile time, a sealed Event sum type makes non-exhaustive
-          switches compile errors, and generic registries eliminate boilerplate. The problems found
-          are minor inconsistencies, not structural flaws.
+          The type system is remarkably well-designed for a library of this
+          scope. Branded phantom types prevent ID-mixing at compile time, a
+          sealed Event sum type makes non-exhaustive switches compile errors,
+          and generic registries eliminate boilerplate. The problems found are
+          minor inconsistencies, not structural flaws.
         </p>
 
         <h2 id="strengths">Strengths — What the Type System Gets Right</h2>
@@ -313,65 +317,85 @@
             <tr>
               <td><strong>Branded phantom types</strong></td>
               <td>
-                <code>BrandedID[T]</code>, <code>GraphNodeID</code>, <code>TreeNodeID</code>,
+                <code>BrandedID[T]</code>, <code>GraphNodeID</code>,
+                <code>TreeNodeID</code>,
                 <code>D2NodeID</code>
               </td>
               <td>
                 Compile-time prevention of ID-type mixing. You cannot pass a
-                <code>TreeNodeID</code> where a <code>GraphNodeID</code> is expected.
+                <code>TreeNodeID</code> where a <code>GraphNodeID</code> is
+                expected.
               </td>
             </tr>
             <tr>
               <td><strong>Sealed Event sum type</strong></td>
-              <td><code>nom.Event</code> interface with unexported <code>isEvent()</code></td>
               <td>
-                Only the 7 structs in event.go can implement Event. Adding a new event makes every
-                non-exhaustive switch a compile error. No string dispatch.
+                <code>nom.Event</code> interface with unexported
+                <code>isEvent()</code>
+              </td>
+              <td>
+                Only the 7 structs in event.go can implement Event. Adding a new
+                event makes every non-exhaustive switch a compile error. No
+                string dispatch.
               </td>
             </tr>
             <tr>
               <td><strong>Generic format registry</strong></td>
               <td><code>formatRegistry[T]</code></td>
               <td>
-                One implementation backs shape capabilities, tableData, and anyData registries. Zero
-                code duplication.
+                One implementation backs shape capabilities, tableData, and
+                anyData registries. Zero code duplication.
               </td>
             </tr>
             <tr>
               <td><strong>Generic enum utilities</strong></td>
-              <td><code>ParseEnum[T]()</code>, <code>ContainsEnum[T]()</code></td>
-              <td>All enums share parse/validate logic via generics. No boilerplate per enum.</td>
+              <td>
+                <code>ParseEnum[T]()</code>, <code>ContainsEnum[T]()</code>
+              </td>
+              <td>
+                All enums share parse/validate logic via generics. No
+                boilerplate per enum.
+              </td>
             </tr>
             <tr>
               <td><strong>Immutable snapshot model</strong></td>
               <td><code>ActivitySnapshot</code></td>
               <td>
-                Mutable <code>Activity</code> fields consumed via immutable value copies under read
-                lock. Eliminates the data race the old shared-pointer model caused.
+                Mutable <code>Activity</code> fields consumed via immutable
+                value copies under read lock. Eliminates the data race the old
+                shared-pointer model caused.
               </td>
             </tr>
             <tr>
               <td><strong>O(1) count cache</strong></td>
               <td><code>ActivityCounts</code> struct</td>
               <td>
-                Incrementally maintained via <code>applyCountsDelta</code> on every transition.
-                <code>GetActivityCounts()</code> never scans the activity map.
+                Incrementally maintained via <code>applyCountsDelta</code> on
+                every transition. <code>GetActivityCounts()</code> never scans
+                the activity map.
               </td>
             </tr>
             <tr>
               <td><strong>Composition via GraphRendererState</strong></td>
-              <td>DOT/Mermaid/PlantUML embed <code>GraphRendererState</code></td>
+              <td>
+                DOT/Mermaid/PlantUML embed <code>GraphRendererState</code>
+              </td>
               <td>
                 Shared node/edge state via embedding without inheritance.
-                <code>AddTreeNodes</code> accepts an interface, not a raw slice pointer.
+                <code>AddTreeNodes</code> accepts an interface, not a raw slice
+                pointer.
               </td>
             </tr>
             <tr>
               <td><strong>Named types over string</strong></td>
-              <td><code>ActivityID</code>, <code>ActivityName</code>, <code>WorkflowID</code></td>
               <td>
-                Named string types with constructors + <code>String()</code>/<code>IsZero()</code>.
-                Prevents accidentally passing a workflow name as an activity ID.
+                <code>ActivityID</code>, <code>ActivityName</code>,
+                <code>WorkflowID</code>
+              </td>
+              <td>
+                Named string types with constructors +
+                <code>String()</code>/<code>IsZero()</code>. Prevents
+                accidentally passing a workflow name as an activity ID.
               </td>
             </tr>
           </tbody>
@@ -381,59 +405,78 @@
 
         <div class="card card-problem">
           <h4>P1: RowEdge uses raw string instead of branded GraphNodeID</h4>
-          <p><strong>Severity: Medium</strong> &middot; <code>tabledata.go:174-178</code></p>
           <p>
-            <code>RowEdge.From</code> and <code>RowEdge.To</code> are raw <code>string</code> while
-            the rest of the graph type system uses branded <code>GraphNodeID</code>.
-            <code>AddRowEdges</code> immediately re-wraps them in <code>NewBrandedID</code>. The
-            type boundary is unenforced — a caller could pass arbitrary strings.
+            <strong>Severity: Medium</strong> &middot;
+            <code>tabledata.go:174-178</code>
+          </p>
+          <p>
+            <code>RowEdge.From</code> and <code>RowEdge.To</code> are raw
+            <code>string</code> while the rest of the graph type system uses
+            branded <code>GraphNodeID</code>.
+            <code>AddRowEdges</code> immediately re-wraps them in
+            <code>NewBrandedID</code>. The type boundary is unenforced — a
+            caller could pass arbitrary strings.
           </p>
           <p>
             <strong>Fix:</strong> Change <code>RowEdge</code> to use
-            <code>GraphNodeID</code> fields. Internal-only type, so no breaking change.
+            <code>GraphNodeID</code> fields. Internal-only type, so no breaking
+            change.
           </p>
         </div>
 
         <div class="card card-problem">
           <h4>P2: NodeShapeBox and NodeShapeRect are semantic duplicates</h4>
-          <p><strong>Severity: Low</strong> &middot; <code>graph.go:45,52</code></p>
           <p>
-            Two exported names for the same visual concept. Every renderer treats them identically
-            (<code>d2_convert.go:70</code>, <code>mermaid.go:119</code>). This is a split-brain: two
-            names, one meaning.
+            <strong>Severity: Low</strong> &middot; <code>graph.go:45,52</code>
           </p>
           <p>
-            <strong>Fix:</strong> Deprecate <code>NodeShapeRect</code> and alias to
-            <code>NodeShapeBox</code>. Can't remove pre-v1 (ADR 006 stability).
+            Two exported names for the same visual concept. Every renderer
+            treats them identically (<code>d2_convert.go:70</code>,
+            <code>mermaid.go:119</code>). This is a split-brain: two names, one
+            meaning.
+          </p>
+          <p>
+            <strong>Fix:</strong> Deprecate <code>NodeShapeRect</code> and alias
+            to <code>NodeShapeBox</code>. Can't remove pre-v1 (ADR 006
+            stability).
           </p>
         </div>
 
         <div class="card card-warning">
           <h4>P3: LineStyle enum is incomplete</h4>
-          <p><strong>Severity: Low</strong> &middot; <code>graph.go:67-89</code></p>
+          <p>
+            <strong>Severity: Low</strong> &middot; <code>graph.go:67-89</code>
+          </p>
           <p>
             Has <code>IsValid()</code> but no <code>ParseLineStyle</code>,
-            <code>AllowedValues()</code>, or <code>InvalidLineStyleError</code>. Inconsistent with
-            Format/Shape/ColorMode/NodeShape which all have the full set.
+            <code>AllowedValues()</code>, or <code>InvalidLineStyleError</code>.
+            Inconsistent with Format/Shape/ColorMode/NodeShape which all have
+            the full set.
           </p>
         </div>
 
         <div class="card card-solution">
           <h4>P4: Direction enum lacked validation (FIXED)</h4>
-          <p><strong>Severity: Medium</strong> &middot; <code>direction.go</code></p>
           <p>
-            <strong>Fixed this session:</strong> Added <code>AllDirections</code> and
-            <code>IsValid()</code> method. Direction now has the same validation surface as other
-            enums.
+            <strong>Severity: Medium</strong> &middot; <code>direction.go</code>
+          </p>
+          <p>
+            <strong>Fixed this session:</strong> Added
+            <code>AllDirections</code> and <code>IsValid()</code> method.
+            Direction now has the same validation surface as other enums.
           </p>
         </div>
 
         <div class="card card-solution">
           <h4>P5: InvalidShapeError omitted Allowed field (FIXED)</h4>
-          <p><strong>Severity: Low</strong> &middot; <code>shape.go:42-59</code></p>
           <p>
-            <strong>Fixed this session:</strong> Added <code>Allowed []Shape</code> field matching
-            <code>InvalidFormatError</code>. Error message now lists valid options.
+            <strong>Severity: Low</strong> &middot; <code>shape.go:42-59</code>
+          </p>
+          <p>
+            <strong>Fixed this session:</strong> Added
+            <code>Allowed []Shape</code> field matching
+            <code>InvalidFormatError</code>. Error message now lists valid
+            options.
           </p>
         </div>
 
@@ -441,21 +484,26 @@
         <div class="card card-solution">
           <h4>Goal: Zero raw-string type boundaries</h4>
           <p>
-            Every ID flowing through the public API should be branded. The only remaining gap is
-            <code>RowEdge</code> (P1). Fixing it would complete the branded-ID perimeter.
+            Every ID flowing through the public API should be branded. The only
+            remaining gap is
+            <code>RowEdge</code> (P1). Fixing it would complete the branded-ID
+            perimeter.
           </p>
         </div>
         <div class="card card-solution">
           <h4>Goal: Complete enum parity</h4>
           <p>
-            Every enum should have the full set: constants, <code>All*</code> slice,
-            <code>IsValid()</code>, <code>Parse*()</code>, <code>AllowedValues()</code>, typed
-            error. <code>LineStyle</code> (P3) is the last incomplete one. Direction (P4) was fixed.
+            Every enum should have the full set: constants,
+            <code>All*</code> slice, <code>IsValid()</code>,
+            <code>Parse*()</code>, <code>AllowedValues()</code>, typed error.
+            <code>LineStyle</code> (P3) is the last incomplete one. Direction
+            (P4) was fixed.
           </p>
         </div>
 
         <footer class="footer">
-          Generated 2026-06-23 &middot; Type system review across 18 modules, 45+ types
+          Generated 2026-06-23 &middot; Type system review across 18 modules,
+          45+ types
         </footer>
       </main>
     </div>

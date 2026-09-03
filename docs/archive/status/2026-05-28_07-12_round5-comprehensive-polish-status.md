@@ -11,39 +11,39 @@
 
 ### Features
 
-| #   | Item                                          | Commit    | Impact                                                           |
-| --- | --------------------------------------------- | --------- | ---------------------------------------------------------------- |
-| 1   | **`MarkdownTable.AsTableRenderer()`** adapter | `7e3b54d` | Fluent API now satisfies `TableRenderer` interface via adapter   |
-| 2   | **`table.Table.AsTableRenderer()`** adapter   | `adc40e5` | Variadic API now satisfies `TableRenderer` interface via adapter |
-| 3   | **`table.WithFooterStyle()`** option          | `12c644c` | Composable lipgloss footer styling via functional option         |
-| 4   | **Unexport `AlignmentLeft/Right/Center`**     | `4b75922` | Fixed exported-but-documented-as-unexported iota constants       |
+| # | Item                                          | Commit    | Impact                                                           |
+| - | --------------------------------------------- | --------- | ---------------------------------------------------------------- |
+| 1 | **`MarkdownTable.AsTableRenderer()`** adapter | `7e3b54d` | Fluent API now satisfies `TableRenderer` interface via adapter   |
+| 2 | **`table.Table.AsTableRenderer()`** adapter   | `adc40e5` | Variadic API now satisfies `TableRenderer` interface via adapter |
+| 3 | **`table.WithFooterStyle()`** option          | `12c644c` | Composable lipgloss footer styling via functional option         |
+| 4 | **Unexport `AlignmentLeft/Right/Center`**     | `4b75922` | Fixed exported-but-documented-as-unexported iota constants       |
 
 ### Tests
 
-| #   | Item                                              | Commit               | Coverage Change                        |
-| --- | ------------------------------------------------- | -------------------- | -------------------------------------- |
-| 5   | **Serialization error path tests**                | `bf23f52`            | 89.0% → **91.4%**                      |
-| 6   | **Integration error path tests**                  | `7e3b54d`            | 82.8% → **88.0%**                      |
-| 7   | **Gentest negative HTML escape tests**            | `4bb4b78`            | 80.8% → **96.2%**                      |
-| 8   | **WithFooterStyle test**                          | `12c644c`            | Covers `footerStyleFn` branch          |
-| 9   | **AsTableRenderer tests** (MarkdownTable + Table) | `7e3b54d`, `adc40e5` | Both adapters verified                 |
-| 10  | **buildStyleFunc branch tests**                   | `8ab9a53`            | Color/NoColor × Header/Footer/Even/Odd |
+| #  | Item                                              | Commit               | Coverage Change                        |
+| -- | ------------------------------------------------- | -------------------- | -------------------------------------- |
+| 5  | **Serialization error path tests**                | `bf23f52`            | 89.0% → **91.4%**                      |
+| 6  | **Integration error path tests**                  | `7e3b54d`            | 82.8% → **88.0%**                      |
+| 7  | **Gentest negative HTML escape tests**            | `4bb4b78`            | 80.8% → **96.2%**                      |
+| 8  | **WithFooterStyle test**                          | `12c644c`            | Covers `footerStyleFn` branch          |
+| 9  | **AsTableRenderer tests** (MarkdownTable + Table) | `7e3b54d`, `adc40e5` | Both adapters verified                 |
+| 10 | **buildStyleFunc branch tests**                   | `8ab9a53`            | Color/NoColor × Header/Footer/Even/Odd |
 
 ### Documentation
 
-| #   | Item                                                         | Commit                       |
-| --- | ------------------------------------------------------------ | ---------------------------- |
-| 11  | **ADR 004: Footer Row Design Decision**                      | `e16e13a`                    |
-| 12  | **AGENTS.md: patterns #10, #11** (adapter + WithFooterStyle) | `2b853bb`                    |
-| 13  | **GoDoc on 6 testhelpers exports** + graphtest package doc   | (committed in Round 4 batch) |
-| 14  | **Planning doc renamed to `-COMPLETED.md`**                  | `940c24b`                    |
+| #  | Item                                                         | Commit                       |
+| -- | ------------------------------------------------------------ | ---------------------------- |
+| 11 | **ADR 004: Footer Row Design Decision**                      | `e16e13a`                    |
+| 12 | **AGENTS.md: patterns #10, #11** (adapter + WithFooterStyle) | `2b853bb`                    |
+| 13 | **GoDoc on 6 testhelpers exports** + graphtest package doc   | (committed in Round 4 batch) |
+| 14 | **Planning doc renamed to `-COMPLETED.md`**                  | `940c24b`                    |
 
 ### Refactoring
 
-| #   | Item                                                                                                  | Commit    |
-| --- | ----------------------------------------------------------------------------------------------------- | --------- |
-| 15  | **Remove `UnsupportedFormatError.Unwrap()`** (returned nil — semantically identical to not having it) | `57a01e4` |
-| 16  | **Split `table/table_test.go`** (391→274 lines, under 350 limit)                                      | `8ab9a53` |
+| #  | Item                                                                                                  | Commit    |
+| -- | ----------------------------------------------------------------------------------------------------- | --------- |
+| 15 | **Remove `UnsupportedFormatError.Unwrap()`** (returned nil — semantically identical to not having it) | `57a01e4` |
+| 16 | **Split `table/table_test.go`** (391→274 lines, under 350 limit)                                      | `8ab9a53` |
 
 ---
 
@@ -62,24 +62,24 @@
 
 ### Architecture & Design
 
-| #   | Item                                                                                                                                                                                                                             | Effort          | Impact |
-| --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------- | ------ |
-| 1   | **Unify error types** — `InvalidFormatError`, `UnsupportedFormatError`, `InvalidGraphShapeError`, `InvalidShapeError` are 4 separate structs with overlapping patterns. Consider `go-error-family` or a unified error kind enum. | Medium          | Medium |
-| 2   | **Strengthen `MarshalTSV(data any)`** — accepts `any` but only handles `[][]string` and `[]string`. Could use a typed interface or method overloads.                                                                             | Low             | Low    |
-| 3   | **Coverage files in root** — `coverage.out`, `cover.out` in root and sub-modules. Should be in `.gitignore` or `/coverage/` directory (go-structure-linter flags this).                                                          | Low             | Low    |
-| 4   | **`root-package-files` linter warnings** — 14 Go files in project root flagged by go-structure-linter. This is by design (library root package), but the linter disagrees.                                                       | High (breaking) | Low    |
-| 5   | **Replace directives in go.mod** — 14 `replace` directives for local development. Correct pattern for multi-module, but linter flags as supply chain risk.                                                                       | High (infra)    | Low    |
+| # | Item                                                                                                                                                                                                                             | Effort          | Impact |
+| - | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------- | ------ |
+| 1 | **Unify error types** — `InvalidFormatError`, `UnsupportedFormatError`, `InvalidGraphShapeError`, `InvalidShapeError` are 4 separate structs with overlapping patterns. Consider `go-error-family` or a unified error kind enum. | Medium          | Medium |
+| 2 | **Strengthen `MarshalTSV(data any)`** — accepts `any` but only handles `[][]string` and `[]string`. Could use a typed interface or method overloads.                                                                             | Low             | Low    |
+| 3 | **Coverage files in root** — `coverage.out`, `cover.out` in root and sub-modules. Should be in `.gitignore` or `/coverage/` directory (go-structure-linter flags this).                                                          | Low             | Low    |
+| 4 | **`root-package-files` linter warnings** — 14 Go files in project root flagged by go-structure-linter. This is by design (library root package), but the linter disagrees.                                                       | High (breaking) | Low    |
+| 5 | **Replace directives in go.mod** — 14 `replace` directives for local development. Correct pattern for multi-module, but linter flags as supply chain risk.                                                                       | High (infra)    | Low    |
 
 ### Missing Test Coverage (Nice-to-Have)
 
-| #   | Item                                                                                             | Module        |
-| --- | ------------------------------------------------------------------------------------------------ | ------------- |
-| 6   | Tree/Graph renderer marshal error paths (JSON, YAML, TOML) — hard to trigger with standard types | serialization |
-| 7   | `JSONLWriter.Flush` error path (needs buffered data before failing writer)                       | serialization |
-| 8   | `MarshalTOML` error path for unserializable types                                                | serialization |
-| 9   | `renderTable` marshal error path via `renderTable()` helper                                      | serialization |
-| 10  | `RenderTableData` with `Title` option for Markdown title rendering                               | integration   |
-| 11  | `RenderTableData` with `GraphID` option for DOT output                                           | integration   |
+| #  | Item                                                                                             | Module        |
+| -- | ------------------------------------------------------------------------------------------------ | ------------- |
+| 6  | Tree/Graph renderer marshal error paths (JSON, YAML, TOML) — hard to trigger with standard types | serialization |
+| 7  | `JSONLWriter.Flush` error path (needs buffered data before failing writer)                       | serialization |
+| 8  | `MarshalTOML` error path for unserializable types                                                | serialization |
+| 9  | `renderTable` marshal error path via `renderTable()` helper                                      | serialization |
+| 10 | `RenderTableData` with `Title` option for Markdown title rendering                               | integration   |
+| 11 | `RenderTableData` with `GraphID` option for DOT output                                           | integration   |
 
 ---
 
@@ -121,53 +121,53 @@
 
 ### P0 — Production Readiness (1-2 hours)
 
-| #   | Task                                                  | Effort | Why                             |
-| --- | ----------------------------------------------------- | ------ | ------------------------------- |
-| 1   | Update `CHANGELOG.md` with Round 5 changes            | 10min  | Users need to know what changed |
-| 2   | Update `FEATURES.md` with WithFooterStyle + adapters  | 10min  | Feature inventory accuracy      |
-| 3   | Update `TODO_LIST.md` — mark completed items          | 15min  | Track progress honestly         |
-| 4   | Gitignore `coverage.out` / `cover.out` in all modules | 5min   | Artifact cleanup                |
-| 5   | Verify `go.work.example` matches current module list  | 5min   | Developer onboarding            |
+| # | Task                                                  | Effort | Why                             |
+| - | ----------------------------------------------------- | ------ | ------------------------------- |
+| 1 | Update `CHANGELOG.md` with Round 5 changes            | 10min  | Users need to know what changed |
+| 2 | Update `FEATURES.md` with WithFooterStyle + adapters  | 10min  | Feature inventory accuracy      |
+| 3 | Update `TODO_LIST.md` — mark completed items          | 15min  | Track progress honestly         |
+| 4 | Gitignore `coverage.out` / `cover.out` in all modules | 5min   | Artifact cleanup                |
+| 5 | Verify `go.work.example` matches current module list  | 5min   | Developer onboarding            |
 
 ### P1 — Documentation & Architecture (2-4 hours)
 
-| #   | Task                                                     | Effort | Why                                          |
-| --- | -------------------------------------------------------- | ------ | -------------------------------------------- |
-| 6   | ADR 005: TableRenderer adapter pattern                   | 15min  | Document the convention                      |
-| 7   | Add GoDoc examples for `AsTableRenderer()` on both types | 15min  | pkg.go.dev discoverability                   |
-| 8   | Add GoDoc example for `WithFooterStyle()`                | 10min  | Usage documentation                          |
-| 9   | Update `README.md` with footer + adapter patterns        | 20min  | Main entry point for users                   |
-| 10  | Document coverage ceiling reasons in AGENTS.md           | 5min   | Future contributors understand why 88%/89.8% |
+| #  | Task                                                     | Effort | Why                                          |
+| -- | -------------------------------------------------------- | ------ | -------------------------------------------- |
+| 6  | ADR 005: TableRenderer adapter pattern                   | 15min  | Document the convention                      |
+| 7  | Add GoDoc examples for `AsTableRenderer()` on both types | 15min  | pkg.go.dev discoverability                   |
+| 8  | Add GoDoc example for `WithFooterStyle()`                | 10min  | Usage documentation                          |
+| 9  | Update `README.md` with footer + adapter patterns        | 20min  | Main entry point for users                   |
+| 10 | Document coverage ceiling reasons in AGENTS.md           | 5min   | Future contributors understand why 88%/89.8% |
 
 ### P2 — Quality & Consistency (2-4 hours)
 
-| #   | Task                                                           | Effort | Why                                      |
-| --- | -------------------------------------------------------------- | ------ | ---------------------------------------- |
-| 11  | Consolidate error types — evaluate `go-error-family`           | 30min  | Consistency, programmatic error handling |
-| 12  | Strengthen `MarshalTSV` typing                                 | 20min  | Type safety                              |
-| 13  | Add `//nolint:gochecknoglobals` to root coverage files if kept | 2min   | Lint hygiene                             |
-| 14  | Verify all `doc.go` files exist for all 14 modules             | 10min  | pkg.go.dev display                       |
-| 15  | Run `golangci-lint` on all modules, fix issues                 | 30min  | Zero-lint goal                           |
+| #  | Task                                                           | Effort | Why                                      |
+| -- | -------------------------------------------------------------- | ------ | ---------------------------------------- |
+| 11 | Consolidate error types — evaluate `go-error-family`           | 30min  | Consistency, programmatic error handling |
+| 12 | Strengthen `MarshalTSV` typing                                 | 20min  | Type safety                              |
+| 13 | Add `//nolint:gochecknoglobals` to root coverage files if kept | 2min   | Lint hygiene                             |
+| 14 | Verify all `doc.go` files exist for all 14 modules             | 10min  | pkg.go.dev display                       |
+| 15 | Run `golangci-lint` on all modules, fix issues                 | 30min  | Zero-lint goal                           |
 
 ### P3 — Test Coverage Push (4-8 hours)
 
-| #   | Task                                                            | Effort | Why                                               |
-| --- | --------------------------------------------------------------- | ------ | ------------------------------------------------- |
-| 16  | Integration: add `RenderTableData` with `Title` option test     | 15min  | Cover markdown title path                         |
-| 17  | Integration: add `RenderTableData` with `GraphID` option test   | 15min  | Cover DOT graph ID path                           |
-| 18  | Serialization: add tree renderer marshal error tests            | 30min  | Hard to trigger, requires unserializable Metadata |
-| 19  | Serialization: add `MarshalTOML` error for unserializable type  | 10min  | Simple error path                                 |
-| 20  | Serialization: add `JSONLWriter.Flush` error with buffered data | 10min  | Already partially covered                         |
+| #  | Task                                                            | Effort | Why                                               |
+| -- | --------------------------------------------------------------- | ------ | ------------------------------------------------- |
+| 16 | Integration: add `RenderTableData` with `Title` option test     | 15min  | Cover markdown title path                         |
+| 17 | Integration: add `RenderTableData` with `GraphID` option test   | 15min  | Cover DOT graph ID path                           |
+| 18 | Serialization: add tree renderer marshal error tests            | 30min  | Hard to trigger, requires unserializable Metadata |
+| 19 | Serialization: add `MarshalTOML` error for unserializable type  | 10min  | Simple error path                                 |
+| 20 | Serialization: add `JSONLWriter.Flush` error with buffered data | 10min  | Already partially covered                         |
 
 ### P4 — Future Features (8+ hours)
 
-| #   | Task                                          | Effort | Why                                     |
-| --- | --------------------------------------------- | ------ | --------------------------------------- |
-| 21  | Add `WithHeaderStyle` option to `table.New()` | 20min  | Symmetry with `WithFooterStyle`         |
-| 22  | Add `WithRowStyle` option for per-row styling | 30min  | Alternating colors, conditional styling |
-| 23  | Investigate `go-error-family` integration     | 1hr    | Structured error classification         |
-| 24  | Evaluate `slog` integration for debug logging | 1hr    | Observability for production use        |
-| 25  | Benchmark suite for all 16 formats            | 2hr    | Performance regression detection        |
+| #  | Task                                          | Effort | Why                                     |
+| -- | --------------------------------------------- | ------ | --------------------------------------- |
+| 21 | Add `WithHeaderStyle` option to `table.New()` | 20min  | Symmetry with `WithFooterStyle`         |
+| 22 | Add `WithRowStyle` option for per-row styling | 30min  | Alternating colors, conditional styling |
+| 23 | Investigate `go-error-family` integration     | 1hr    | Structured error classification         |
+| 24 | Evaluate `slog` integration for debug logging | 1hr    | Observability for production use        |
+| 25 | Benchmark suite for all 16 formats            | 2hr    | Performance regression detection        |
 
 ---
 
@@ -194,21 +194,21 @@ The go-structure-linter flags this as a missing dependency. Currently the projec
 
 ## Module Coverage Summary
 
-| Module        | Coverage   | vs Round 4 | Status                  |
-| ------------- | ---------- | ---------- | ----------------------- |
-| root (output) | **96.1%**  | —          | ✅                      |
-| gentest       | **96.2%**  | +15.4%     | ✅ was 80.8%            |
-| delimited     | **90.2%**  | —          | ✅                      |
-| d2            | **100.0%** | —          | ✅                      |
-| enum          | **100.0%** | —          | ✅                      |
-| escape        | **100.0%** | —          | ✅                      |
-| graph         | **96.0%**  | —          | ✅                      |
+| Module        | Coverage   | vs Round 4 | Status                 |
+| ------------- | ---------- | ---------- | ---------------------- |
+| root (output) | **96.1%**  | —          | ✅                     |
+| gentest       | **96.2%**  | +15.4%     | ✅ was 80.8%           |
+| delimited     | **90.2%**  | —          | ✅                     |
+| d2            | **100.0%** | —          | ✅                     |
+| enum          | **100.0%** | —          | ✅                     |
+| escape        | **100.0%** | —          | ✅                     |
+| graph         | **96.0%**  | —          | ✅                     |
 | integration   | **88.0%**  | +5.2%      | ⚠️ structural ceiling   |
-| markup        | **93.9%**  | —          | ✅                      |
-| plantuml      | **97.2%**  | —          | ✅                      |
-| serialization | **91.4%**  | +2.4%      | ✅ was 89.0%            |
+| markup        | **93.9%**  | —          | ✅                     |
+| plantuml      | **97.2%**  | —          | ✅                     |
+| serialization | **91.4%**  | +2.4%      | ✅ was 89.0%           |
 | table         | **89.8%**  | +4.3%      | ⚠️ lipgloss closure gap |
-| testhelpers   | **91.3%**  | —          | ✅                      |
+| testhelpers   | **91.3%**  | —          | ✅                     |
 
 **Average: 93.8%** | **Modules ≥90%: 10/13** | **Modules = 100%: 3/13**
 

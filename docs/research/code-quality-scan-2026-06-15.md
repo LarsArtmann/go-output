@@ -9,7 +9,7 @@ Scanned all 15 modules (`.` + 14 sub-modules + testhelpers/graphtest).
 | Build       | ✅ All 16 modules compile (`go build ./...` per module)                                        |
 | `go vet`    | ✅ Clean across all modules                                                                    |
 | Tests       | ✅ All pass (verified during later skills)                                                     |
-| Lint        | ⚠️ 118 issues across 9 modules; 4 modules clean (d2, enum, escape, examples, graphtest)        |
+| Lint        | ⚠️ 118 issues across 9 modules; 4 modules clean (d2, enum, escape, examples, graphtest)         |
 | Duplication | ✅ art-dupl: "Excellent code health" — 110 groups, all low/idiom (test patterns). 1 actionable |
 
 ## Issue Counts by Linter

@@ -1,7 +1,7 @@
 # Comprehensive Improvement Plan — go-output
 
-**Date:** 2026-06-08  
-**Author:** Post-audit reflection  
+**Date:** 2026-06-08\
+**Author:** Post-audit reflection\
 **Method:** Pareto prioritization (1% → 51%, 4% → 64%, 20% → 80%)
 
 ---
@@ -79,26 +79,26 @@
 
 ### 1. `RenderOptions` — From Variadic to Concrete
 
-**Current:** `RenderTableData(data *TableData, format Format, opts ...RenderOptions) error`  
-**Problem:** Only `opts[0]` is used. Variadic implies merge semantics that don't exist.  
-**Better:** `RenderTableData(data *TableData, format Format, opts RenderOptions) error`  
+**Current:** `RenderTableData(data *TableData, format Format, opts ...RenderOptions) error`\
+**Problem:** Only `opts[0]` is used. Variadic implies merge semantics that don't exist.\
+**Better:** `RenderTableData(data *TableData, format Format, opts RenderOptions) error`\
 **Every caller** already passes 0 or 1 arg. `RenderOptions{}` for default.
 
 ### 2. `GraphRendererMixin` — Stop Leaking Mutable State
 
-**Current:** `NodesPtr() *[]GraphNode` / `EdgesPtr() *[]GraphEdge`  
-**Problem:** Callers can mutate internal slices directly, bypassing interface contracts.  
+**Current:** `NodesPtr() *[]GraphNode` / `EdgesPtr() *[]GraphEdge`\
+**Problem:** Callers can mutate internal slices directly, bypassing interface contracts.\
 **Better:** Remove `NodesPtr/EdgesPtr`. Add `AddNode(node GraphNode)` and `AddEdge(edge GraphEdge)` to the mixin. Callers use controlled mutation.
 
 ### 3. `TableData` — Exported Fields + Getters = Tension
 
-**Current:** `Headers`, `Rows`, `Footer` are exported fields. `GetHeaders()`, `GetRows()`, `GetFooter()` are getters.  
-**Problem:** Both exist. Which is canonical? Callers can mutate `data.Headers = ...` directly, bypassing any future validation.  
+**Current:** `Headers`, `Rows`, `Footer` are exported fields. `GetHeaders()`, `GetRows()`, `GetFooter()` are getters.\
+**Problem:** Both exist. Which is canonical? Callers can mutate `data.Headers = ...` directly, bypassing any future validation.\
 **Better:** Either make fields unexported and getters the only access (breaking change), OR document that direct mutation is the intended API and remove getters (also breaking). For v0.x, document the tension and plan for v1.
 
 ### 4. `TableDataMarshaler` — Function Type is Fine
 
-**Current:** `type TableDataMarshaler func(w io.Writer, data *TableData, opts RenderOptions) error`  
+**Current:** `type TableDataMarshaler func(w io.Writer, data *TableData, opts RenderOptions) error`\
 **Assessment:** Function type is correct here. An interface would add indirection without benefit. Keep as-is.
 
 ---

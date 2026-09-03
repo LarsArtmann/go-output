@@ -120,53 +120,53 @@ Sorted by impact / effort (highest ROI first):
 
 ### P0 — Bugs / Safety (Must Fix)
 
-| #   | Task                                                                                   | Effort | Impact      |
-| --- | -------------------------------------------------------------------------------------- | ------ | ----------- |
-| 1   | Fix data race: `GetDependencyTree()` should return copy or document unsafe             | 30min  | Critical    |
-| 2   | Add lock to `GetTimingCache()`                                                         | 5min   | Critical    |
-| 3   | Fix unused param `renderHelpOverlay(content string)` → `renderHelpOverlay()`           | 10min  | Cleanup     |
-| 4   | Replace 4× `//nolint:errcheck` in `integration/nom_tui_test.go` with `require.NoError` | 10min  | Correctness |
-| 5   | Replace `scrollOffset = 9999` with computed `maxOffset`                                | 15min  | Correctness |
+| # | Task                                                                                   | Effort | Impact      |
+| - | -------------------------------------------------------------------------------------- | ------ | ----------- |
+| 1 | Fix data race: `GetDependencyTree()` should return copy or document unsafe             | 30min  | Critical    |
+| 2 | Add lock to `GetTimingCache()`                                                         | 5min   | Critical    |
+| 3 | Fix unused param `renderHelpOverlay(content string)` → `renderHelpOverlay()`           | 10min  | Cleanup     |
+| 4 | Replace 4× `//nolint:errcheck` in `integration/nom_tui_test.go` with `require.NoError` | 10min  | Correctness |
+| 5 | Replace `scrollOffset = 9999` with computed `maxOffset`                                | 15min  | Correctness |
 
 ### P1 — Architecture (High Value)
 
-| #   | Task                                                                                      | Effort | Impact       |
-| --- | ----------------------------------------------------------------------------------------- | ------ | ------------ |
-| 6   | Consolidate `ActivityDisplayState` + `TreeNode` timing fields into single source of truth | 2h     | Architecture |
-| 7   | Generic `Registry[T]` to deduplicate two marshaler registries                             | 1h     | DRY          |
-| 8   | Add `TableData.AddRow` column count validation                                            | 15min  | Robustness   |
-| 9   | Modernize `min()` in `tui/view.go:62`                                                     | 5min   | Style        |
-| 10  | Use `slices.Contains` in `nom/tree.go:82-89`                                              | 5min   | Style        |
+| #  | Task                                                                                      | Effort | Impact       |
+| -- | ----------------------------------------------------------------------------------------- | ------ | ------------ |
+| 6  | Consolidate `ActivityDisplayState` + `TreeNode` timing fields into single source of truth | 2h     | Architecture |
+| 7  | Generic `Registry[T]` to deduplicate two marshaler registries                             | 1h     | DRY          |
+| 8  | Add `TableData.AddRow` column count validation                                            | 15min  | Robustness   |
+| 9  | Modernize `min()` in `tui/view.go:62`                                                     | 5min   | Style        |
+| 10 | Use `slices.Contains` in `nom/tree.go:82-89`                                              | 5min   | Style        |
 
 ### P2 — Test Coverage (Closing Gaps)
 
-| #   | Task                                                                                          | Effort | Impact   |
-| --- | --------------------------------------------------------------------------------------------- | ------ | -------- |
-| 11  | Add tests for `plantuml` (81.4% → 90%+)                                                       | 30min  | Coverage |
-| 12  | Add tests for `serialization` (82.3% → 90%+)                                                  | 30min  | Coverage |
-| 13  | Add tests for `graph` (86.8% → 90%+)                                                          | 20min  | Coverage |
-| 14  | Add tests for `RenderAnyData()`, `RegisteredTableDataFormats()`, `RegisteredAnyDataFormats()` | 20min  | Coverage |
-| 15  | Add direct tests for `tui/Subscriber()`, `SetCancelFunc()`, `SetDisplayMode()`                | 15min  | Coverage |
+| #  | Task                                                                                          | Effort | Impact   |
+| -- | --------------------------------------------------------------------------------------------- | ------ | -------- |
+| 11 | Add tests for `plantuml` (81.4% → 90%+)                                                       | 30min  | Coverage |
+| 12 | Add tests for `serialization` (82.3% → 90%+)                                                  | 30min  | Coverage |
+| 13 | Add tests for `graph` (86.8% → 90%+)                                                          | 20min  | Coverage |
+| 14 | Add tests for `RenderAnyData()`, `RegisteredTableDataFormats()`, `RegisteredAnyDataFormats()` | 20min  | Coverage |
+| 15 | Add direct tests for `tui/Subscriber()`, `SetCancelFunc()`, `SetDisplayMode()`                | 15min  | Coverage |
 
 ### P3 — Further Deduplication (Diminishing Returns)
 
-| #   | Task                                                                                   | Effort | Impact   |
-| --- | -------------------------------------------------------------------------------------- | ------ | -------- |
-| 16  | Extract `assertErrorContains` helper across integration/serialization/root error tests | 20min  | Test DRY |
-| 17  | Convert remaining `nom/types_test.go` ActivityID/WorkflowID to parameterized tests     | 20min  | Test DRY |
-| 18  | Extract `assertFooterLineCountContains` across delimited/integration/root footer tests | 30min  | Test DRY |
-| 19  | Extract round-trip parse helpers in `integration/roundtrip_test.go`                    | 30min  | Test DRY |
-| 20  | Convert `tui/view_test.go` Contains pairs to table-driven                              | 10min  | Test DRY |
+| #  | Task                                                                                   | Effort | Impact   |
+| -- | -------------------------------------------------------------------------------------- | ------ | -------- |
+| 16 | Extract `assertErrorContains` helper across integration/serialization/root error tests | 20min  | Test DRY |
+| 17 | Convert remaining `nom/types_test.go` ActivityID/WorkflowID to parameterized tests     | 20min  | Test DRY |
+| 18 | Extract `assertFooterLineCountContains` across delimited/integration/root footer tests | 30min  | Test DRY |
+| 19 | Extract round-trip parse helpers in `integration/roundtrip_test.go`                    | 30min  | Test DRY |
+| 20 | Convert `tui/view_test.go` Contains pairs to table-driven                              | 10min  | Test DRY |
 
 ### P4 — Nice-to-Have
 
-| #   | Task                                                                | Effort | Impact       |
-| --- | ------------------------------------------------------------------- | ------ | ------------ |
-| 21  | Add type-safe event constants (replace string-based routing in nom) | 1h     | Safety       |
-| 22  | Fix unused struct field writes in `tui/messages_test.go:30-31`      | 5min   | Cleanup      |
-| 23  | Add `nom/configuration.go` direct tests                             | 15min  | Coverage     |
-| 24  | Add `tui/lifecycle.go` direct tests                                 | 15min  | Coverage     |
-| 25  | Review shape registration coupling with marshaler registration      | 30min  | Architecture |
+| #  | Task                                                                | Effort | Impact       |
+| -- | ------------------------------------------------------------------- | ------ | ------------ |
+| 21 | Add type-safe event constants (replace string-based routing in nom) | 1h     | Safety       |
+| 22 | Fix unused struct field writes in `tui/messages_test.go:30-31`      | 5min   | Cleanup      |
+| 23 | Add `nom/configuration.go` direct tests                             | 15min  | Coverage     |
+| 24 | Add `tui/lifecycle.go` direct tests                                 | 15min  | Coverage     |
+| 25 | Review shape registration coupling with marshaler registration      | 30min  | Architecture |
 
 ---
 

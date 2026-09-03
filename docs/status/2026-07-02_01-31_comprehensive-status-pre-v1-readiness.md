@@ -1,8 +1,8 @@
 # go-output — Comprehensive Status Report
 
-> **Generated:** 2026-07-02 01:31  
-> **Version:** Pre-v1 (latest release: v0.20.0, go.mod: v0.21.0)  
-> **Branch:** master (clean, pushed)  
+> **Generated:** 2026-07-02 01:31\
+> **Version:** Pre-v1 (latest release: v0.20.0, go.mod: v0.21.0)\
+> **Branch:** master (clean, pushed)\
 > **Commit:** 9da9de1
 
 ---
@@ -88,7 +88,7 @@ Everything in this section is shipped, tested, race-clean, lint-clean, and docum
 | **Golden tests** (tree/)       | ✅ Done | 4                                                                     | Simple, deep nesting, single node, mixed branching                                    |
 | **Fuzz tests**                 | ✅ Done | 4+                                                                    | escape/ module (D2, XML, HTML, MermaidID, MermaidText, SlugifyID)                     |
 | **Race tests**                 | ✅ Done | nom/ + tui/                                                           | `-race` clean                                                                         |
-| **Concurrency invariant test** | ✅ Done | `TestActivityCountsCache_LifecycleConsistency` (brute-force vs cache) |
+| **Concurrency invariant test** | ✅ Done | `TestActivityCountsCache_LifecycleConsistency` (brute-force vs cache) |                                                                                       |
 
 ### Documentation
 
@@ -117,20 +117,20 @@ Everything in this section is shipped, tested, race-clean, lint-clean, and docum
 
 ## (c) NOT STARTED
 
-| #   | Item                                                                                 | Impact | Effort |
-| --- | ------------------------------------------------------------------------------------ | ------ | ------ |
-| 1   | **VT-based TUI View() testing** — feed TUI output through x/vt for screen assertions | High   | 2h     |
-| 2   | **Color-on VT test** — verify SGR sequences in VT screen buffer                      | Medium | 30min  |
-| 3   | **Golden tests for graph/ (DOT, Mermaid)**                                           | Medium | 1h     |
-| 4   | **Golden tests for d2/ (shapes, arrows, SQL tables)**                                | Medium | 1h     |
-| 5   | **Golden tests for plantuml/**                                                       | Low    | 30min  |
-| 6   | **Golden tests for serialization/ (JSON/YAML/TOML)**                                 | Low    | 30min  |
-| 7   | **Coverage report in CI** — `-coverprofile` + threshold gate                         | Medium | 2h     |
-| 8   | **godoc examples (Example\* functions)**                                             | Medium | 2h     |
-| 9   | **README NOM example** — showcase InlineRenderer real-time progress                  | Medium | 1h     |
-| 10  | **Community launch** — Reddit r/golang, Awesome Go submission                        | High   | 30min  |
-| 11  | **cellbuf evaluation (deferred)** — re-evaluate when package stabilizes              | Low    | High   |
-| 12  | **TUI display mode toggle key** — currently programmatic only                        | Low    | 30min  |
+| #  | Item                                                                                 | Impact | Effort |
+| -- | ------------------------------------------------------------------------------------ | ------ | ------ |
+| 1  | **VT-based TUI View() testing** — feed TUI output through x/vt for screen assertions | High   | 2h     |
+| 2  | **Color-on VT test** — verify SGR sequences in VT screen buffer                      | Medium | 30min  |
+| 3  | **Golden tests for graph/ (DOT, Mermaid)**                                           | Medium | 1h     |
+| 4  | **Golden tests for d2/ (shapes, arrows, SQL tables)**                                | Medium | 1h     |
+| 5  | **Golden tests for plantuml/**                                                       | Low    | 30min  |
+| 6  | **Golden tests for serialization/ (JSON/YAML/TOML)**                                 | Low    | 30min  |
+| 7  | **Coverage report in CI** — `-coverprofile` + threshold gate                         | Medium | 2h     |
+| 8  | **godoc examples (Example\* functions)**                                             | Medium | 2h     |
+| 9  | **README NOM example** — showcase InlineRenderer real-time progress                  | Medium | 1h     |
+| 10 | **Community launch** — Reddit r/golang, Awesome Go submission                        | High   | 30min  |
+| 11 | **cellbuf evaluation (deferred)** — re-evaluate when package stabilizes              | Low    | High   |
+| 12 | **TUI display mode toggle key** — currently programmatic only                        | Low    | 30min  |
 
 ---
 
@@ -148,15 +148,15 @@ Everything in this section is shipped, tested, race-clean, lint-clean, and docum
 
 ## (e) WHAT WE SHOULD IMPROVE
 
-| #   | Improvement                                                                                            | Why                                                                             | Effort   |
-| --- | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------- | -------- |
-| 1   | **Deepen teatest assertions** — pipe output through x/vt for screen-level content checks               | Current tests prove the program loop works but not that correct content renders | 2h       |
-| 2   | **Add color-on VT test** — at least one test with `SetNoColor(false)` checking `term.Render()` for SGR | Color rendering path completely untested by VT harness                          | 30min    |
-| 3   | **Expand golden tests** to graph/, d2/, plantuml/, serialization/                                      | Only 3 of 16 formats have golden coverage                                       | 3h total |
-| 4   | **Add coverage threshold to CI**                                                                       | 795 tests is substantial but no coverage gate exists                            | 2h       |
-| 5   | **Add godoc examples**                                                                                 | Makes the library more discoverable and self-documenting                        | 2h       |
-| 6   | **Dogfood in BuildFlow**                                                                               | Real-world usage validates the API design                                       | 3h       |
-| 7   | **README NOM example**                                                                                 | The most impressive feature isn't showcased in the README                       | 1h       |
+| # | Improvement                                                                                            | Why                                                                             | Effort   |
+| - | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------- | -------- |
+| 1 | **Deepen teatest assertions** — pipe output through x/vt for screen-level content checks               | Current tests prove the program loop works but not that correct content renders | 2h       |
+| 2 | **Add color-on VT test** — at least one test with `SetNoColor(false)` checking `term.Render()` for SGR | Color rendering path completely untested by VT harness                          | 30min    |
+| 3 | **Expand golden tests** to graph/, d2/, plantuml/, serialization/                                      | Only 3 of 16 formats have golden coverage                                       | 3h total |
+| 4 | **Add coverage threshold to CI**                                                                       | 795 tests is substantial but no coverage gate exists                            | 2h       |
+| 5 | **Add godoc examples**                                                                                 | Makes the library more discoverable and self-documenting                        | 2h       |
+| 6 | **Dogfood in BuildFlow**                                                                               | Real-world usage validates the API design                                       | 3h       |
+| 7 | **README NOM example**                                                                                 | The most impressive feature isn't showcased in the README                       | 1h       |
 
 ---
 
@@ -164,33 +164,33 @@ Everything in this section is shipped, tested, race-clean, lint-clean, and docum
 
 Sorted by impact × (1/effort) — highest value first.
 
-| #   | Task                                                            | Impact   | Effort | Category  |
-| --- | --------------------------------------------------------------- | -------- | ------ | --------- |
-| 1   | **Cut v1.0.0 tag**                                              | Critical | 5min   | Release   |
-| 2   | **Post to r/golang**                                            | Critical | 30min  | Community |
-| 3   | **Submit to Awesome Go**                                        | High     | 30min  | Community |
-| 4   | **Add color-on VT test**                                        | High     | 30min  | Testing   |
-| 5   | **Deepen teatest assertions (pipe through x/vt)**               | High     | 2h     | Testing   |
-| 6   | **VT-test the TUI View() output**                               | High     | 2h     | Testing   |
-| 7   | **Add README NOM example**                                      | High     | 1h     | Docs      |
-| 8   | **Add golden tests for graph/ (DOT, Mermaid)**                  | Medium   | 1h     | Testing   |
-| 9   | **Add golden tests for d2/**                                    | Medium   | 1h     | Testing   |
-| 10  | **Add golden tests for plantuml/**                              | Low      | 30min  | Testing   |
-| 11  | **Add golden tests for serialization/**                         | Low      | 30min  | Testing   |
-| 12  | **Add coverage report to CI**                                   | Medium   | 2h     | CI/CD     |
-| 13  | **Add integration test: importing sub-module activates format** | Medium   | 1h     | Testing   |
-| 14  | **Add godoc examples (Example\* functions)**                    | Medium   | 2h     | Docs      |
-| 15  | **Add examples/nom_inline_renderer standalone demo**            | Medium   | 1h     | Docs      |
-| 16  | **Dogfood in BuildFlow**                                        | Medium   | 3h     | Dogfood   |
-| 17  | **Add fuzz tests for nom format_activity_label**                | Low      | 1h     | Testing   |
-| 18  | **Add TUI display mode toggle key**                             | Low      | 30min  | Feature   |
-| 19  | **Benchmark: InlineRenderer frame diff vs cellbuf**             | Low      | 2h     | Perf      |
-| 20  | **Consider x/cellbuf when it stabilizes**                       | Medium   | High   | Future    |
-| 21  | **Add streaming progress consumer interface**                   | Medium   | High   | Feature   |
-| 22  | **Update CHANGELOG with [0.21.0] release notes**                | Medium   | 30min  | Release   |
-| 23  | **Add README badge for test count / coverage**                  | Low      | 30min  | Docs      |
-| 24  | **Review if golang.org/x/term can be replaced by x/term**       | Low      | 1h     | Tech Debt |
-| 25  | **Add CONTRIBUTING guide for external contributors**            | Low      | 1h     | Community |
+| #  | Task                                                            | Impact   | Effort | Category  |
+| -- | --------------------------------------------------------------- | -------- | ------ | --------- |
+| 1  | **Cut v1.0.0 tag**                                              | Critical | 5min   | Release   |
+| 2  | **Post to r/golang**                                            | Critical | 30min  | Community |
+| 3  | **Submit to Awesome Go**                                        | High     | 30min  | Community |
+| 4  | **Add color-on VT test**                                        | High     | 30min  | Testing   |
+| 5  | **Deepen teatest assertions (pipe through x/vt)**               | High     | 2h     | Testing   |
+| 6  | **VT-test the TUI View() output**                               | High     | 2h     | Testing   |
+| 7  | **Add README NOM example**                                      | High     | 1h     | Docs      |
+| 8  | **Add golden tests for graph/ (DOT, Mermaid)**                  | Medium   | 1h     | Testing   |
+| 9  | **Add golden tests for d2/**                                    | Medium   | 1h     | Testing   |
+| 10 | **Add golden tests for plantuml/**                              | Low      | 30min  | Testing   |
+| 11 | **Add golden tests for serialization/**                         | Low      | 30min  | Testing   |
+| 12 | **Add coverage report to CI**                                   | Medium   | 2h     | CI/CD     |
+| 13 | **Add integration test: importing sub-module activates format** | Medium   | 1h     | Testing   |
+| 14 | **Add godoc examples (Example\* functions)**                    | Medium   | 2h     | Docs      |
+| 15 | **Add examples/nom_inline_renderer standalone demo**            | Medium   | 1h     | Docs      |
+| 16 | **Dogfood in BuildFlow**                                        | Medium   | 3h     | Dogfood   |
+| 17 | **Add fuzz tests for nom format_activity_label**                | Low      | 1h     | Testing   |
+| 18 | **Add TUI display mode toggle key**                             | Low      | 30min  | Feature   |
+| 19 | **Benchmark: InlineRenderer frame diff vs cellbuf**             | Low      | 2h     | Perf      |
+| 20 | **Consider x/cellbuf when it stabilizes**                       | Medium   | High   | Future    |
+| 21 | **Add streaming progress consumer interface**                   | Medium   | High   | Feature   |
+| 22 | **Update CHANGELOG with [0.21.0] release notes**                | Medium   | 30min  | Release   |
+| 23 | **Add README badge for test count / coverage**                  | Low      | 30min  | Docs      |
+| 24 | **Review if golang.org/x/term can be replaced by x/term**       | Low      | 1h     | Tech Debt |
+| 25 | **Add CONTRIBUTING guide for external contributors**            | Low      | 1h     | Community |
 
 ---
 

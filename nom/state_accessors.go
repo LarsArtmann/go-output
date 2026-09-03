@@ -94,6 +94,7 @@ func (ns *NOMSubscriber) GetStartTime() time.Time {
 // SetEstimatedRemainingFunc callback can delegate to it when the caller has no
 // external estimator. Returns 0 when no unfinished activity has an estimate.
 func (ns *NOMSubscriber) EstimatedTotalRemaining() time.Duration {
+	// art-dupl:accept standard RLock read-accessor prologue shared by the snapshot methods
 	ns.mu.RLock()
 	defer ns.mu.RUnlock()
 

@@ -153,18 +153,18 @@ The project is in **excellent shape for a v1.0.0 release**. All 18 modules build
 
 ## c) NOT STARTED ⬜
 
-| #   | Task                                                | Impact   | Effort | Notes                                                           |
-| --- | --------------------------------------------------- | -------- | ------ | --------------------------------------------------------------- |
-| 1   | **Cut v1.0.0 tag**                                  | CRITICAL | 5min   | API frozen, everything green. Owner decision only.              |
-| 2   | **Community launch** (Reddit r/golang, Awesome Go)  | HIGH     | 1h     | Needs owner account                                             |
-| 3   | **CI coverage report**                              | MEDIUM   | 2h     | Add coverage upload to GitHub Actions                           |
-| 4   | **CONTRIBUTING guide**                              | LOW      | 1h     | For external contributors                                       |
-| 5   | **README badges** (coverage, test count)            | LOW      | 30min  | Needs CI coverage first                                         |
-| 6   | **Streaming progress consumer interface**           | MEDIUM   | HIGH   | Design decision — what interface for external progress sources? |
-| 7   | **cellbuf migration**                               | MEDIUM   | HIGH   | x/cellbuf still experimental (no SemVer). Revisit when stable.  |
-| 8   | **Dogfood in BuildFlow**                            | MEDIUM   | 3h     | External project — use go-output's NOM renderer in BuildFlow    |
-| 9   | **TUI display mode toggle key**                     | LOW      | 30min  | Feature: hotkey to switch NOM↔Universal mode                    |
-| 10  | **Benchmark: InlineRenderer frame diff vs cellbuf** | LOW      | 2h     | Performance comparison — only useful when cellbuf stabilizes    |
+| #  | Task                                                | Impact   | Effort | Notes                                                           |
+| -- | --------------------------------------------------- | -------- | ------ | --------------------------------------------------------------- |
+| 1  | **Cut v1.0.0 tag**                                  | CRITICAL | 5min   | API frozen, everything green. Owner decision only.              |
+| 2  | **Community launch** (Reddit r/golang, Awesome Go)  | HIGH     | 1h     | Needs owner account                                             |
+| 3  | **CI coverage report**                              | MEDIUM   | 2h     | Add coverage upload to GitHub Actions                           |
+| 4  | **CONTRIBUTING guide**                              | LOW      | 1h     | For external contributors                                       |
+| 5  | **README badges** (coverage, test count)            | LOW      | 30min  | Needs CI coverage first                                         |
+| 6  | **Streaming progress consumer interface**           | MEDIUM   | HIGH   | Design decision — what interface for external progress sources? |
+| 7  | **cellbuf migration**                               | MEDIUM   | HIGH   | x/cellbuf still experimental (no SemVer). Revisit when stable.  |
+| 8  | **Dogfood in BuildFlow**                            | MEDIUM   | 3h     | External project — use go-output's NOM renderer in BuildFlow    |
+| 9  | **TUI display mode toggle key**                     | LOW      | 30min  | Feature: hotkey to switch NOM↔Universal mode                    |
+| 10 | **Benchmark: InlineRenderer frame diff vs cellbuf** | LOW      | 2h     | Performance comparison — only useful when cellbuf stabilizes    |
 
 ---
 
@@ -221,33 +221,33 @@ The project is in **excellent shape for a v1.0.0 release**. All 18 modules build
 
 Sorted by impact/effort ratio (highest first):
 
-| #   | Task                                                           | Impact   | Effort | Category     |
-| --- | -------------------------------------------------------------- | -------- | ------ | ------------ |
-| 1   | **Cut v1.0.0 tag**                                             | CRITICAL | 5min   | Release      |
-| 2   | **Post to Reddit r/golang + submit to Awesome Go**             | HIGH     | 1h     | Community    |
-| 3   | **Add golden tests for markup/ (XML, HTML, AsciiDoc)**         | MEDIUM   | 15min  | Testing      |
-| 4   | **Add golden tests for markdown/**                             | MEDIUM   | 10min  | Testing      |
-| 5   | **Add golden tests for delimited/ (CSV, TSV)**                 | MEDIUM   | 10min  | Testing      |
-| 6   | **Update TODO_LIST.md** with this session's completed work     | LOW      | 10min  | Docs         |
-| 7   | **Brand nom ActivityID/WorkflowID with go-branded-id**         | HIGH     | 30min  | Architecture |
-| 8   | **VT color test for all 4 activity states**                    | MEDIUM   | 20min  | Testing      |
-| 9   | **Pipe ALL teatest tests through VT screen**                   | MEDIUM   | 30min  | Testing      |
-| 10  | **Add coverage report to CI** (GitHub Actions)                 | MEDIUM   | 2h     | CI/CD        |
-| 11  | **Add README coverage badge**                                  | LOW      | 10min  | Docs         |
-| 12  | **Add godoc examples for escape/ module**                      | LOW      | 15min  | Docs         |
-| 13  | **Add CONTRIBUTING guide**                                     | LOW      | 1h     | Community    |
-| 14  | **Streaming progress consumer interface design**               | MEDIUM   | HIGH   | Feature      |
-| 15  | **TUI display mode toggle hotkey**                             | LOW      | 30min  | Feature      |
-| 16  | **Dogfood go-output NOM in BuildFlow**                         | MEDIUM   | 3h     | Dogfood      |
-| 17  | **CI: add coverage floor gate (fail < 85%)**                   | LOW      | 30min  | CI/CD        |
-| 18  | **Investigate x/cellbuf stability** for InlineRenderer         | LOW      | 2h     | Future       |
-| 19  | **Benchmark: InlineRenderer vs cellbuf**                       | LOW      | 2h     | Perf         |
-| 20  | **Add fuzz test for escape module** (all 6 functions)          | LOW      | 30min  | Testing      |
-| 21  | **Add property-based test for ActivityCounts cache invariant** | LOW      | 1h     | Testing      |
-| 22  | **Review if golang.org/x/term can be replaced by x/term**      | LOW      | 1h     | Tech Debt    |
-| 23  | **Add nom timing cache to example (with custom path)**         | LOW      | 15min  | Docs         |
-| 24  | **Document bubbletea v1 → v2 migration path** in README        | LOW      | 30min  | Docs         |
-| 25  | **Add TUI screenshot/asciinema to README**                     | LOW      | 30min  | Docs         |
+| #  | Task                                                           | Impact   | Effort | Category     |
+| -- | -------------------------------------------------------------- | -------- | ------ | ------------ |
+| 1  | **Cut v1.0.0 tag**                                             | CRITICAL | 5min   | Release      |
+| 2  | **Post to Reddit r/golang + submit to Awesome Go**             | HIGH     | 1h     | Community    |
+| 3  | **Add golden tests for markup/ (XML, HTML, AsciiDoc)**         | MEDIUM   | 15min  | Testing      |
+| 4  | **Add golden tests for markdown/**                             | MEDIUM   | 10min  | Testing      |
+| 5  | **Add golden tests for delimited/ (CSV, TSV)**                 | MEDIUM   | 10min  | Testing      |
+| 6  | **Update TODO_LIST.md** with this session's completed work     | LOW      | 10min  | Docs         |
+| 7  | **Brand nom ActivityID/WorkflowID with go-branded-id**         | HIGH     | 30min  | Architecture |
+| 8  | **VT color test for all 4 activity states**                    | MEDIUM   | 20min  | Testing      |
+| 9  | **Pipe ALL teatest tests through VT screen**                   | MEDIUM   | 30min  | Testing      |
+| 10 | **Add coverage report to CI** (GitHub Actions)                 | MEDIUM   | 2h     | CI/CD        |
+| 11 | **Add README coverage badge**                                  | LOW      | 10min  | Docs         |
+| 12 | **Add godoc examples for escape/ module**                      | LOW      | 15min  | Docs         |
+| 13 | **Add CONTRIBUTING guide**                                     | LOW      | 1h     | Community    |
+| 14 | **Streaming progress consumer interface design**               | MEDIUM   | HIGH   | Feature      |
+| 15 | **TUI display mode toggle hotkey**                             | LOW      | 30min  | Feature      |
+| 16 | **Dogfood go-output NOM in BuildFlow**                         | MEDIUM   | 3h     | Dogfood      |
+| 17 | **CI: add coverage floor gate (fail < 85%)**                   | LOW      | 30min  | CI/CD        |
+| 18 | **Investigate x/cellbuf stability** for InlineRenderer         | LOW      | 2h     | Future       |
+| 19 | **Benchmark: InlineRenderer vs cellbuf**                       | LOW      | 2h     | Perf         |
+| 20 | **Add fuzz test for escape module** (all 6 functions)          | LOW      | 30min  | Testing      |
+| 21 | **Add property-based test for ActivityCounts cache invariant** | LOW      | 1h     | Testing      |
+| 22 | **Review if golang.org/x/term can be replaced by x/term**      | LOW      | 1h     | Tech Debt    |
+| 23 | **Add nom timing cache to example (with custom path)**         | LOW      | 15min  | Docs         |
+| 24 | **Document bubbletea v1 → v2 migration path** in README        | LOW      | 30min  | Docs         |
+| 25 | **Add TUI screenshot/asciinema to README**                     | LOW      | 30min  | Docs         |
 
 ---
 

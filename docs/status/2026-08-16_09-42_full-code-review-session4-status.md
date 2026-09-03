@@ -105,4 +105,4 @@ None blocking. Standing judgment call (unchanged, non-blocking): v0.38.0 should 
 
 ---
 
-*Point-in-time snapshot. Review resumes at task f.1 on instruction. Tree is green and fully committed.*
+_Point-in-time snapshot. Review resumes at task f.1 on instruction. Tree is green and fully committed._

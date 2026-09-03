@@ -99,33 +99,33 @@ Nothing is irrecoverably broken. However:
 
 ## f) TOP 25 THINGS TO DO NEXT
 
-| #   | Task                                                                     | Repo                 | Impact   | Effort     |
-| --- | ------------------------------------------------------------------------ | -------------------- | -------- | ---------- |
-| 1   | Add `daghtml` to samber-do-auditlog `go.mod` + `go mod tidy`             | samber-do-auditlog   | Critical | 5min       |
-| 2   | Run `templ generate` in samber-do-auditlog                               | samber-do-auditlog   | Critical | 1min       |
-| 3   | Fix samber-do-auditlog tests (script count, golden, XSS)                 | samber-do-auditlog   | Critical | 15min      |
-| 4   | Commit samber-do-auditlog daghtml refactor                               | samber-do-auditlog   | Critical | 5min       |
-| 5   | Add `daghtml/` to go-output AGENTS.md module map                         | go-output            | High     | 5min       |
-| 6   | Commit AGENTS.md update                                                  | go-output            | High     | 2min       |
-| 7   | Add golden file test to daghtml (`golden_test.go`)                       | go-output            | Medium   | 15min      |
-| 8   | Tag go-output v0.23.0 (includes daghtml module)                          | go-output            | High     | 5min       |
-| 9   | Push go-output to remote                                                 | go-output            | High     | 1min       |
-| 10  | Update go-workflow-auditlog go.mod to `daghtml v0.23.0` (remove replace) | go-workflow-auditlog | High     | 5min       |
-| 11  | Tag go-workflow-auditlog release                                         | go-workflow-auditlog | Medium   | 5min       |
-| 12  | Push go-workflow-auditlog to remote                                      | go-workflow-auditlog | High     | 1min       |
-| 13  | Update samber-do-auditlog go.mod to `daghtml v0.23.0` (remove replace)   | samber-do-auditlog   | High     | 5min       |
-| 14  | Tag samber-do-auditlog release                                           | samber-do-auditlog   | Medium   | 5min       |
-| 15  | Push samber-do-auditlog to remote                                        | samber-do-auditlog   | High     | 1min       |
-| 16  | Add `daghtml` to go-output README.md module list                         | go-output            | Low      | 5min       |
-| 17  | Add daghtml usage example to go-output examples/                         | go-output            | Low      | 15min      |
-| 18  | Consider `Theme` option for daghtml CSS customization                    | go-output            | Low      | 30min      |
-| 19  | Consider `Metadata map[string]any` on daghtml Node                       | go-output            | Low      | 20min      |
-| 20  | Add `--lazy`, `--eager`, `--alias` CSS vars to daghtml graph.css         | go-output            | Low      | 5min       |
-| 21  | Verify `nix run .#build` builds daghtml                                  | go-output            | Medium   | 5min       |
-| 22  | Verify `nix run .#test` tests daghtml                                    | go-output            | Medium   | 5min       |
-| 23  | Verify `nix run .#lint` lints daghtml                                    | go-output            | Medium   | 5min       |
-| 24  | Update go-output CHANGELOG.md with daghtml addition                      | go-output            | Low      | 5min       |
-| 25  | Evaluate whether daghtml should be a standalone repo                     | go-output            | Low      | Discussion |
+| #  | Task                                                                     | Repo                 | Impact   | Effort     |
+| -- | ------------------------------------------------------------------------ | -------------------- | -------- | ---------- |
+| 1  | Add `daghtml` to samber-do-auditlog `go.mod` + `go mod tidy`             | samber-do-auditlog   | Critical | 5min       |
+| 2  | Run `templ generate` in samber-do-auditlog                               | samber-do-auditlog   | Critical | 1min       |
+| 3  | Fix samber-do-auditlog tests (script count, golden, XSS)                 | samber-do-auditlog   | Critical | 15min      |
+| 4  | Commit samber-do-auditlog daghtml refactor                               | samber-do-auditlog   | Critical | 5min       |
+| 5  | Add `daghtml/` to go-output AGENTS.md module map                         | go-output            | High     | 5min       |
+| 6  | Commit AGENTS.md update                                                  | go-output            | High     | 2min       |
+| 7  | Add golden file test to daghtml (`golden_test.go`)                       | go-output            | Medium   | 15min      |
+| 8  | Tag go-output v0.23.0 (includes daghtml module)                          | go-output            | High     | 5min       |
+| 9  | Push go-output to remote                                                 | go-output            | High     | 1min       |
+| 10 | Update go-workflow-auditlog go.mod to `daghtml v0.23.0` (remove replace) | go-workflow-auditlog | High     | 5min       |
+| 11 | Tag go-workflow-auditlog release                                         | go-workflow-auditlog | Medium   | 5min       |
+| 12 | Push go-workflow-auditlog to remote                                      | go-workflow-auditlog | High     | 1min       |
+| 13 | Update samber-do-auditlog go.mod to `daghtml v0.23.0` (remove replace)   | samber-do-auditlog   | High     | 5min       |
+| 14 | Tag samber-do-auditlog release                                           | samber-do-auditlog   | Medium   | 5min       |
+| 15 | Push samber-do-auditlog to remote                                        | samber-do-auditlog   | High     | 1min       |
+| 16 | Add `daghtml` to go-output README.md module list                         | go-output            | Low      | 5min       |
+| 17 | Add daghtml usage example to go-output examples/                         | go-output            | Low      | 15min      |
+| 18 | Consider `Theme` option for daghtml CSS customization                    | go-output            | Low      | 30min      |
+| 19 | Consider `Metadata map[string]any` on daghtml Node                       | go-output            | Low      | 20min      |
+| 20 | Add `--lazy`, `--eager`, `--alias` CSS vars to daghtml graph.css         | go-output            | Low      | 5min       |
+| 21 | Verify `nix run .#build` builds daghtml                                  | go-output            | Medium   | 5min       |
+| 22 | Verify `nix run .#test` tests daghtml                                    | go-output            | Medium   | 5min       |
+| 23 | Verify `nix run .#lint` lints daghtml                                    | go-output            | Medium   | 5min       |
+| 24 | Update go-output CHANGELOG.md with daghtml addition                      | go-output            | Low      | 5min       |
+| 25 | Evaluate whether daghtml should be a standalone repo                     | go-output            | Low      | Discussion |
 
 ---
 

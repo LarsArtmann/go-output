@@ -147,53 +147,53 @@ The `go-structure-linter` and `golangci-lint` pre-commit hooks have known false 
 
 ### Priority 1: Merge & Release (do first)
 
-| #   | Task                                                                         | Impact                          | Effort |
-| --- | ---------------------------------------------------------------------------- | ------------------------------- | ------ |
-| 1   | **Merge `feature/superb-outputs` into `master`**                             | Unblocks everything             | 5 min  |
-| 2   | **Tag `v0.5.0` release** with CHANGELOG                                      | Users get ColorMode + clean API | 10 min |
-| 3   | **Update `docs/modularization/DEPENDENCY_GRAPH.md`** — remove registry/sort  | Accurate docs                   | 5 min  |
-| 4   | **Update `docs/DOMAIN_LANGUAGE.md`** — remove SortBy                         | Accurate domain model           | 5 min  |
-| 5   | **Update `docs/planning/EXECUTION_PLAN_TODO.md`** — mark superb-outputs done | Tracking accuracy               | 5 min  |
+| # | Task                                                                         | Impact                          | Effort |
+| - | ---------------------------------------------------------------------------- | ------------------------------- | ------ |
+| 1 | **Merge `feature/superb-outputs` into `master`**                             | Unblocks everything             | 5 min  |
+| 2 | **Tag `v0.5.0` release** with CHANGELOG                                      | Users get ColorMode + clean API | 10 min |
+| 3 | **Update `docs/modularization/DEPENDENCY_GRAPH.md`** — remove registry/sort  | Accurate docs                   | 5 min  |
+| 4 | **Update `docs/DOMAIN_LANGUAGE.md`** — remove SortBy                         | Accurate domain model           | 5 min  |
+| 5 | **Update `docs/planning/EXECUTION_PLAN_TODO.md`** — mark superb-outputs done | Tracking accuracy               | 5 min  |
 
 ### Priority 2: Test Coverage & Robustness
 
-| #   | Task                                                                                                                      | Impact                       | Effort |
-| --- | ------------------------------------------------------------------------------------------------------------------------- | ---------------------------- | ------ |
-| 6   | **Add ColorMode integration test** — test `RenderTableData` with `RenderOptions{ColorMode: Always}` for tree and markdown | Catches dispatch regressions | 15 min |
-| 7   | **Add benchmark: colored vs uncolored render** — verify `ShouldColor()` overhead is negligible                            | Performance confidence       | 10 min |
-| 8   | **Run full coverage report** — verify we haven't dropped below 90% target                                                 | Quality gate                 | 10 min |
-| 9   | **Add `go test -race` to CI** — ensure race detection is a gate                                                           | Correctness                  | 5 min  |
-| 10  | **Add fuzz test for `ParseColorMode`** — fuzz all enums consistently                                                      | Robustness                   | 10 min |
+| #  | Task                                                                                                                      | Impact                       | Effort |
+| -- | ------------------------------------------------------------------------------------------------------------------------- | ---------------------------- | ------ |
+| 6  | **Add ColorMode integration test** — test `RenderTableData` with `RenderOptions{ColorMode: Always}` for tree and markdown | Catches dispatch regressions | 15 min |
+| 7  | **Add benchmark: colored vs uncolored render** — verify `ShouldColor()` overhead is negligible                            | Performance confidence       | 10 min |
+| 8  | **Run full coverage report** — verify we haven't dropped below 90% target                                                 | Quality gate                 | 10 min |
+| 9  | **Add `go test -race` to CI** — ensure race detection is a gate                                                           | Correctness                  | 5 min  |
+| 10 | **Add fuzz test for `ParseColorMode`** — fuzz all enums consistently                                                      | Robustness                   | 10 min |
 
 ### Priority 3: Code Quality
 
-| #   | Task                                                                                                                  | Impact               | Effort |
-| --- | --------------------------------------------------------------------------------------------------------------------- | -------------------- | ------ |
-| 11  | **Split `render_tabledata.go`** — move `renderMarkdownTableData` to `markdown.go`, `renderTreeTableData` to `tree.go` | File size hygiene    | 15 min |
-| 12  | **Extract ANSI color constants** to `color.go` (currently in `tree.go` but used by `markdown.go` too)                 | DRY                  | 10 min |
-| 13  | **Consider `ColorPalette` type** — centralize color choices for future renderers                                      | Extensibility        | 30 min |
-| 14  | **Wire ColorMode into `markup/` StreamingHTMLRenderer** — optional syntax highlighting for terminal HTML preview      | Feature completeness | 30 min |
-| 15  | **Add `SetColorMode` to `TreeOutputRenderer` interface** — standardize the setter across all tree renderers           | API consistency      | 20 min |
+| #  | Task                                                                                                                  | Impact               | Effort |
+| -- | --------------------------------------------------------------------------------------------------------------------- | -------------------- | ------ |
+| 11 | **Split `render_tabledata.go`** — move `renderMarkdownTableData` to `markdown.go`, `renderTreeTableData` to `tree.go` | File size hygiene    | 15 min |
+| 12 | **Extract ANSI color constants** to `color.go` (currently in `tree.go` but used by `markdown.go` too)                 | DRY                  | 10 min |
+| 13 | **Consider `ColorPalette` type** — centralize color choices for future renderers                                      | Extensibility        | 30 min |
+| 14 | **Wire ColorMode into `markup/` StreamingHTMLRenderer** — optional syntax highlighting for terminal HTML preview      | Feature completeness | 30 min |
+| 15 | **Add `SetColorMode` to `TreeOutputRenderer` interface** — standardize the setter across all tree renderers           | API consistency      | 20 min |
 
 ### Priority 4: Developer Experience
 
-| #   | Task                                                                                        | Impact          | Effort |
-| --- | ------------------------------------------------------------------------------------------- | --------------- | ------ |
-| 16  | **Add `--color` flag to all example commands** — currently only in `basic/main.go`          | Discoverability | 15 min |
-| 17  | **Create `examples/color/main.go`** — dedicated example showing ColorMode in all renderers  | Documentation   | 20 min |
-| 18  | **Add Go doc examples** (testable `Example*` functions) for `WithColorMode`, `SetColorMode` | godoc quality   | 20 min |
-| 19  | **Write blog post / community announcement** for v0.5.0                                     | Adoption        | 60 min |
-| 20  | **Fix pre-commit hook false positives** — investigate `go-structure-linter` config          | DX improvement  | 30 min |
+| #  | Task                                                                                        | Impact          | Effort |
+| -- | ------------------------------------------------------------------------------------------- | --------------- | ------ |
+| 16 | **Add `--color` flag to all example commands** — currently only in `basic/main.go`          | Discoverability | 15 min |
+| 17 | **Create `examples/color/main.go`** — dedicated example showing ColorMode in all renderers  | Documentation   | 20 min |
+| 18 | **Add Go doc examples** (testable `Example*` functions) for `WithColorMode`, `SetColorMode` | godoc quality   | 20 min |
+| 19 | **Write blog post / community announcement** for v0.5.0                                     | Adoption        | 60 min |
+| 20 | **Fix pre-commit hook false positives** — investigate `go-structure-linter` config          | DX improvement  | 30 min |
 
 ### Priority 5: Architecture & Future
 
-| #   | Task                                                                                                                  | Impact          | Effort  |
-| --- | --------------------------------------------------------------------------------------------------------------------- | --------------- | ------- |
-| 21  | **ADR 003: ColorMode integration decision** — document why we kept ColorMode and how it's wired                       | Decision record | 15 min  |
-| 22  | **Evaluate `lipgloss/v2` for tree/markdown coloring** — instead of raw ANSI codes                                     | Consistency     | 60 min  |
-| 23  | **Consider `ColorMode` in sub-module `RenderOptions`** — JSON/YAML could use colored output for terminal pretty-print | Feature parity  | 60 min  |
-| 24  | **Add `FormatSupportsColor()` to capability matrix** — declare which formats produce ANSI output                      | Discoverability | 30 min  |
-| 25  | **Explore Progressive Enhancement** — color as first step, then unicode box-drawing, then hyperlinks (OSC 8)          | Vision          | 120 min |
+| #  | Task                                                                                                                  | Impact          | Effort  |
+| -- | --------------------------------------------------------------------------------------------------------------------- | --------------- | ------- |
+| 21 | **ADR 003: ColorMode integration decision** — document why we kept ColorMode and how it's wired                       | Decision record | 15 min  |
+| 22 | **Evaluate `lipgloss/v2` for tree/markdown coloring** — instead of raw ANSI codes                                     | Consistency     | 60 min  |
+| 23 | **Consider `ColorMode` in sub-module `RenderOptions`** — JSON/YAML could use colored output for terminal pretty-print | Feature parity  | 60 min  |
+| 24 | **Add `FormatSupportsColor()` to capability matrix** — declare which formats produce ANSI output                      | Discoverability | 30 min  |
+| 25 | **Explore Progressive Enhancement** — color as first step, then unicode box-drawing, then hyperlinks (OSC 8)          | Vision          | 120 min |
 
 ---
 
@@ -238,7 +238,7 @@ c4caff1 feat: wire ColorMode into table + tree renderers, delete dead code
 ## Change Statistics
 
 ```
- 23 files changed, 430 insertions(+), 632 deletions(-)
+23 files changed, 430 insertions(+), 632 deletions(-)
 ```
 
 **Deleted files (6):** `registry.go`, `registry_test.go`, `sort.go`, `sort_test.go`, `slices.go`, `slices_test.go`

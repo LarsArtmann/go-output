@@ -171,33 +171,33 @@ No broken builds, no failing tests, no lint errors, no circular deps. All 13 mod
 
 ## f) Top 25 Things to Do Next
 
-| #   | Priority | Task                                                                     | Impact         | Effort |
-| --- | -------- | ------------------------------------------------------------------------ | -------------- | ------ |
-| 1   | P0       | Fix serialization coverage → 90%+ (TOML/JSONL error paths)               | Quality        | Low    |
-| 2   | P0       | Update ADR-001 to reflect 13 modules                                     | Accuracy       | Low    |
-| 3   | P1       | Add benchmarks for JSONL, AsciiDoc, TOML, PlantUML                       | Perf           | Low    |
-| 3   | P1       | Add `Example*` functions for all 4 new formats (godoc)                   | Docs           | Low    |
-| 5   | P1       | PlantUML rich domain model (shapes, arrows, classes)                     | Feature        | Medium |
-| 6   | P1       | TOML graph renderer (`TOMLGraphRenderer`)                                | Feature parity | Low    |
-| 7   | P1       | Verify root `go.mod` has zero `go-toml/v2` import in production code     | Correctness    | Low    |
-| 8   | P1       | Add fuzz tests for TOML/JSONL/AsciiDoc parsing                           | Robustness     | Low    |
-| 9   | P2       | PlantUML sequence diagram support                                        | Feature        | Medium |
-| 10  | P2       | PlantUML `sanitizePlantUMLID` — handle dots, colons, unicode             | Correctness    | Low    |
-| 11  | P2       | JSONL streaming renderer (line-by-line to `io.Writer`)                   | Streaming      | Low    |
-| 12  | P2       | AsciiDoc tree renderer                                                   | Feature parity | Low    |
-| 13  | P2       | README.md usage examples for JSONL, TOML, AsciiDoc, PlantUML             | Docs           | Low    |
-| 14  | P2       | Write ADR for PlantUML module creation                                   | Docs           | Low    |
-| 15  | P2       | Tag a release (v0.6.0?) with 16 formats, 13 modules                      | Release        | Low    |
-| 16  | P3       | Script to auto-generate replace directives in go.mod files               | DX             | Medium |
-| 17  | P3       | Testhelpers coverage investigation (43.5% vs 93.8%)                      | Quality        | Low    |
-| 18  | P3       | JSONL tree/graph renderers                                               | Feature parity | Medium |
-| 19  | P3       | TOML `MarshalTOMLFromTableData` — idiomatic TOML array of tables         | Quality        | Low    |
-| 20  | P3       | Root `go.mod` dep cleanup — remove transitive deps pulled by new modules | Hygiene        | Low    |
-| 21  | P3       | PlantUML class diagram support (methods, fields)                         | Feature        | Medium |
-| 22  | P3       | AsciiDoc include directives / cross-references                           | Feature        | Low    |
-| 23  | P4       | Integration test for `RenderTableData` dispatch with new formats         | Coverage       | Low    |
-| 24  | P4       | Consider `go.work` sync script or justfile recipe                        | DX             | Low    |
-| 25  | P4       | Split CHANGELOG into recent + archived                                   | Hygiene        | Low    |
+| #  | Priority | Task                                                                     | Impact         | Effort |
+| -- | -------- | ------------------------------------------------------------------------ | -------------- | ------ |
+| 1  | P0       | Fix serialization coverage → 90%+ (TOML/JSONL error paths)               | Quality        | Low    |
+| 2  | P0       | Update ADR-001 to reflect 13 modules                                     | Accuracy       | Low    |
+| 3  | P1       | Add benchmarks for JSONL, AsciiDoc, TOML, PlantUML                       | Perf           | Low    |
+| 3  | P1       | Add `Example*` functions for all 4 new formats (godoc)                   | Docs           | Low    |
+| 5  | P1       | PlantUML rich domain model (shapes, arrows, classes)                     | Feature        | Medium |
+| 6  | P1       | TOML graph renderer (`TOMLGraphRenderer`)                                | Feature parity | Low    |
+| 7  | P1       | Verify root `go.mod` has zero `go-toml/v2` import in production code     | Correctness    | Low    |
+| 8  | P1       | Add fuzz tests for TOML/JSONL/AsciiDoc parsing                           | Robustness     | Low    |
+| 9  | P2       | PlantUML sequence diagram support                                        | Feature        | Medium |
+| 10 | P2       | PlantUML `sanitizePlantUMLID` — handle dots, colons, unicode             | Correctness    | Low    |
+| 11 | P2       | JSONL streaming renderer (line-by-line to `io.Writer`)                   | Streaming      | Low    |
+| 12 | P2       | AsciiDoc tree renderer                                                   | Feature parity | Low    |
+| 13 | P2       | README.md usage examples for JSONL, TOML, AsciiDoc, PlantUML             | Docs           | Low    |
+| 14 | P2       | Write ADR for PlantUML module creation                                   | Docs           | Low    |
+| 15 | P2       | Tag a release (v0.6.0?) with 16 formats, 13 modules                      | Release        | Low    |
+| 16 | P3       | Script to auto-generate replace directives in go.mod files               | DX             | Medium |
+| 17 | P3       | Testhelpers coverage investigation (43.5% vs 93.8%)                      | Quality        | Low    |
+| 18 | P3       | JSONL tree/graph renderers                                               | Feature parity | Medium |
+| 19 | P3       | TOML `MarshalTOMLFromTableData` — idiomatic TOML array of tables         | Quality        | Low    |
+| 20 | P3       | Root `go.mod` dep cleanup — remove transitive deps pulled by new modules | Hygiene        | Low    |
+| 21 | P3       | PlantUML class diagram support (methods, fields)                         | Feature        | Medium |
+| 22 | P3       | AsciiDoc include directives / cross-references                           | Feature        | Low    |
+| 23 | P4       | Integration test for `RenderTableData` dispatch with new formats         | Coverage       | Low    |
+| 24 | P4       | Consider `go.work` sync script or justfile recipe                        | DX             | Low    |
+| 25 | P4       | Split CHANGELOG into recent + archived                                   | Hygiene        | Low    |
 
 ---
 

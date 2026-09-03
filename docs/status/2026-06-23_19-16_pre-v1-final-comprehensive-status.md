@@ -146,7 +146,7 @@ This session (2026-06-23) executed 14 skills, ran 3 rounds of brutal self-review
 | 3 | **Opacity semantic bug** | 🟡 Medium | I changed `> 0` to `!= 0`, making "not set" indistinguishable from "0.0 (invisible)" | Reverted to `> 0`; kept clamping fix |
 | 4 | **TUI data races** | 🔴 Critical | `SetCancelFunc`/`SetDisplayMode` wrote model fields without mutex | Added `pr.mu.Lock()`/`Unlock()` |
 | 5 | **Progress bar panic** | 🔴 Critical | `strings.Repeat` with negative count on narrow terminals | Added `width < 1` guard |
-| 6 | **Step match bug** | 🟡 Medium | `handleStepUpdate` matched wrong step via `isActive()` | Removed `                                                                       |     | m.steps[i].isActive()` |
+| 6 | **Step match bug** | 🟡 Medium | `handleStepUpdate` matched wrong step via `isActive()` | Removed `|     | m.steps[i].isActive()` |
 | 7 | **Total=0 instant completion** | 🟡 Medium | Step with `Total=0` marked complete immediately | Added `Total > 0 &&` guard |
 | 8 | **Double "s" suffix** | 🟢 Low | Summary templates had `{time}s` but time already included "s" | Removed redundant suffix |
 | 9 | **CODE_OF_CONDUCT.md deleted** | 🟡 Medium | BuildFlow pre-commit hook silently deletes it | Restored from pre-deletion commit |
@@ -202,53 +202,53 @@ This session (2026-06-23) executed 14 skills, ran 3 rounds of brutal self-review
 
 ### Owner Action Required (Blocking v1.0.0)
 
-| #   | Task                              | Effort | Impact      | Type         |
-| --- | --------------------------------- | ------ | ----------- | ------------ |
-| 1   | **Cut v1.0.0 tag**                | Low    | 🔴 Critical | Milestone    |
-| 2   | **Update CHANGELOG [Unreleased]** | Low    | High        | Release prep |
-| 3   | **Post to r/golang + Awesome Go** | Low    | Medium      | Community    |
+| # | Task                              | Effort | Impact      | Type         |
+| - | --------------------------------- | ------ | ----------- | ------------ |
+| 1 | **Cut v1.0.0 tag**                | Low    | 🔴 Critical | Milestone    |
+| 2 | **Update CHANGELOG [Unreleased]** | Low    | High        | Release prep |
+| 3 | **Post to r/golang + Awesome Go** | Low    | Medium      | Community    |
 
 ### High-Impact, Low-Effort (Ship Now)
 
-| #   | Task                                               | Effort | Impact | Type     |
-| --- | -------------------------------------------------- | ------ | ------ | -------- |
-| 4   | **Add PlantUML fuzz test** (match D2/DOT coverage) | Low    | Medium | Security |
-| 5   | **Create cross-renderer escape fuzz harness**      | Low    | Medium | Security |
-| 6   | **Add `go-arch-lint` to CI**                       | Low    | Medium | Tooling  |
+| # | Task                                               | Effort | Impact | Type     |
+| - | -------------------------------------------------- | ------ | ------ | -------- |
+| 4 | **Add PlantUML fuzz test** (match D2/DOT coverage) | Low    | Medium | Security |
+| 5 | **Create cross-renderer escape fuzz harness**      | Low    | Medium | Security |
+| 6 | **Add `go-arch-lint` to CI**                       | Low    | Medium | Tooling  |
 
 ### High-Impact, Medium-Effort (Post-v1.0.0)
 
-| #   | Task                                                     | Effort | Impact | Type         |
-| --- | -------------------------------------------------------- | ------ | ------ | ------------ |
-| 7   | **Adopt `samber/lo` for slice transforms**               | Medium | Medium | Code quality |
-| 8   | **ColorValue branded type** (v2 breaking change)         | High   | High   | Architecture |
-| 9   | **`mo.Option[T]` for FontSize/Opacity/StrokeWidth**      | High   | Medium | Architecture |
-| 10  | **`StyleEscaper` interface per renderer**                | Medium | Medium | Architecture |
-| 11  | **VisibleEntriesRange for O(visible) scroll**            | High   | Low    | Performance  |
-| 12  | **Migrate go-branded-id → go-composable-business-types** | High   | Low    | Alignment    |
+| #  | Task                                                     | Effort | Impact | Type         |
+| -- | -------------------------------------------------------- | ------ | ------ | ------------ |
+| 7  | **Adopt `samber/lo` for slice transforms**               | Medium | Medium | Code quality |
+| 8  | **ColorValue branded type** (v2 breaking change)         | High   | High   | Architecture |
+| 9  | **`mo.Option[T]` for FontSize/Opacity/StrokeWidth**      | High   | Medium | Architecture |
+| 10 | **`StyleEscaper` interface per renderer**                | Medium | Medium | Architecture |
+| 11 | **VisibleEntriesRange for O(visible) scroll**            | High   | Low    | Performance  |
+| 12 | **Migrate go-branded-id → go-composable-business-types** | High   | Low    | Alignment    |
 
 ### Medium-Impact (Quality of Life)
 
-| #   | Task                                                                  | Effort  | Impact | Type          |
-| --- | --------------------------------------------------------------------- | ------- | ------ | ------------- |
-| 13  | **Add Mermaid fuzz test for style newlines**                          | Low     | Low    | Security      |
-| 14  | **Universal mode entry-level scroll**                                 | Medium  | Low    | Performance   |
-| 15  | **Remove `RenderWithSnapshots` if TUI no longer uses it**             | Low     | Low    | Cleanup       |
-| 16  | **Add `docs/adr/010-color-value-branded-type.md`**                    | Low     | Low    | Documentation |
-| 17  | **Document NOM scroll architecture in FORMAT_ARCHITECTURE.md**        | Low     | Low    | Documentation |
-| 18  | **Add `.gitignore` entry for `go.work` (already gitignored, verify)** | Trivial | Low    | Hygiene       |
-| 19  | **Sweep for remaining `make([]T, len)` patterns**                     | Low     | Low    | Lint          |
-| 20  | **Add integration test for SetDisplayMode scroll reset**              | Low     | Low    | Testing       |
+| #  | Task                                                                  | Effort  | Impact | Type          |
+| -- | --------------------------------------------------------------------- | ------- | ------ | ------------- |
+| 13 | **Add Mermaid fuzz test for style newlines**                          | Low     | Low    | Security      |
+| 14 | **Universal mode entry-level scroll**                                 | Medium  | Low    | Performance   |
+| 15 | **Remove `RenderWithSnapshots` if TUI no longer uses it**             | Low     | Low    | Cleanup       |
+| 16 | **Add `docs/adr/010-color-value-branded-type.md`**                    | Low     | Low    | Documentation |
+| 17 | **Document NOM scroll architecture in FORMAT_ARCHITECTURE.md**        | Low     | Low    | Documentation |
+| 18 | **Add `.gitignore` entry for `go.work` (already gitignored, verify)** | Trivial | Low    | Hygiene       |
+| 19 | **Sweep for remaining `make([]T, len)` patterns**                     | Low     | Low    | Lint          |
+| 20 | **Add integration test for SetDisplayMode scroll reset**              | Low     | Low    | Testing       |
 
 ### Future / Backlog
 
-| #   | Task                                                    | Effort | Impact | Type          |
-| --- | ------------------------------------------------------- | ------ | ------ | ------------- |
-| 21  | **Streaming JSON/CSV/YAML for large datasets**          | High   | Medium | Feature       |
-| 22  | **Context-aware cancellation in NOM subscriber**        | Medium | Medium | Feature       |
-| 23  | **Plugin system for custom formats**                    | High   | Medium | Feature       |
-| 24  | **OpenTelemetry spans for NOM activity lifecycle**      | Medium | Low    | Observability |
-| 25  | **Snapshot testing with `go-snaps` for all 16 formats** | Medium | Medium | Testing       |
+| #  | Task                                                    | Effort | Impact | Type          |
+| -- | ------------------------------------------------------- | ------ | ------ | ------------- |
+| 21 | **Streaming JSON/CSV/YAML for large datasets**          | High   | Medium | Feature       |
+| 22 | **Context-aware cancellation in NOM subscriber**        | Medium | Medium | Feature       |
+| 23 | **Plugin system for custom formats**                    | High   | Medium | Feature       |
+| 24 | **OpenTelemetry spans for NOM activity lifecycle**      | Medium | Low    | Observability |
+| 25 | **Snapshot testing with `go-snaps` for all 16 formats** | Medium | Medium | Testing       |
 
 ---
 

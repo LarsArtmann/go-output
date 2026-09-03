@@ -81,11 +81,13 @@ Agent findings on nom test hygiene (blind sleeps, non-hermetic `NewNOMSubscriber
 ## e) What to improve (process + codebase)
 
 **Process (mine):**
+
 - Commit artifacts earlier and more often (plan should have been committed the moment it was written)
 - Verify-before-fix discipline for agent findings (2/2 verified so far — keep the ratio)
 - Batch module test runs via flake instead of ad-hoc cd's
 
 **Codebase (from findings so far, highest value first):**
+
 - Security: finish Mermaid escaping; consider AsciiDoc newline escape + Markdown `|`/newline escaping (currently ZERO content escaping in markdown module)
 - Data loss: `markup.WriteXML` silently drops `Table.Footer` while `MarshalXMLFromTable` keeps it (CQRS/registry drift)
 - Correctness: nom `renderMode` read lock-free in render path (data race if `SetRenderMode` called during render); `ActivityCounts` has only 4 buckets while the status registry is open (custom statuses silently vanish from counts/percent); layered-mode `statusPriority` inverts the package-wide failed-first ordering
@@ -98,6 +100,7 @@ Agent findings on nom test hygiene (blind sleeps, non-hermetic `NewNOMSubscriber
 ## f) Next tasks (Pareto order; up to 50)
 
 **1% — the three verified/critical fixes (do first):**
+
 1. Apply MermaidText escaping fix + test cases + fuzz seeds (decision needed on `#`/`;`)
 2. Verify + fix nom renderMode data race (read under RLock in render dispatch or make construction-only)
 3. Verify + fix markup WriteXML footer data loss (route through shared core with MarshalXMLFromTable)
@@ -166,9 +169,9 @@ Agent findings on nom test hygiene (blind sleeps, non-hermetic `NewNOMSubscriber
 ## g) Questions I cannot figure out myself (max 3)
 
 1. **Mermaid escaping scope:** For `MermaidText`, escape `& < >` with HTML entities (matches htmlLabels default rendering, goldens unaffected) — and also neutralize `#`/`;` (mermaid entity-code injection like `#60;`) at the cost of turning literal `#` into `#35;`/`&#35;` in renderers that don't decode entities ("C# dev" → "C&#35; dev" in such renderers)? Full-hardening or minimal `&<>` only?
-2. **Fix-on-the-spot boundary:** Keep fixing only *verified critical bugs* (races, data loss, security) on the spot, and put the behavior-drift family (registry-vs-CQRS newline unification, empty-JSONL/TOML unification, markdown cell escaping) into TODO_LIST for a deliberate v0.38.0 breaking-change release — or unify everything now inside this review?
+2. **Fix-on-the-spot boundary:** Keep fixing only _verified critical bugs_ (races, data loss, security) on the spot, and put the behavior-drift family (registry-vs-CQRS newline unification, empty-JSONL/TOML unification, markdown cell escaping) into TODO_LIST for a deliberate v0.38.0 breaking-change release — or unify everything now inside this review?
 3. **nom `Finish(err)` API:** render the error (e.g. ✗ line with cause) as the parameter implies, or drop the parameter (breaking, next minor)? doc.go currently teaches `Finish(nil)`.
 
 ---
 
-*Point-in-time snapshot. Review continues on instruction.*
+_Point-in-time snapshot. Review continues on instruction._

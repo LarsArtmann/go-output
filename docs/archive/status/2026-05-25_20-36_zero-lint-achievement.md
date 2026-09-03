@@ -180,43 +180,43 @@ Sorted by impact × effort (Pareto order):
 
 ### HIGH IMPACT, LOW EFFORT (do first)
 
-| #   | Task                                                                                            | Impact | Effort |
-| --- | ----------------------------------------------------------------------------------------------- | ------ | ------ |
-| 1   | **Tag v0.5.0** — Bundle 5 BREAKING changes, update CHANGELOG                                    | High   | 5 min  |
-| 2   | **Add fuzz tests to delimited/, serialization/, markup/** — Copy pattern from root/d2/graph     | High   | 1 hr   |
-| 3   | **Write ADR-004** — Document delimited/serialization/markup extraction rationale                | Med    | 20 min |
-| 4   | **Move internal/gentest to testhelpers/gentest** — Eliminate test helper duplication (TODO #20) | Med    | 30 min |
-| 5   | **Deduplicate graph/ test helpers** — Depends on #4 (TODO #21)                                  | Med    | 15 min |
-| 6   | **Add coverage threshold to CI** — Fail if any module drops below 80%                           | Med    | 15 min |
-| 7   | **Add JSONL format** — Trivial extension of JSON writer, high demand format                     | High   | 1 hr   |
-| 8   | **Fix integration/ coverage to 90%+** — Add error path tests                                    | Med    | 30 min |
-| 9   | **Fix serialization/ coverage to 90%+** — Add graph renderer error tests                        | Med    | 20 min |
-| 10  | **Fix delimited/ coverage to 90%+** — Add DelimitedWriter error tests                           | Med    | 20 min |
+| #  | Task                                                                                            | Impact | Effort |
+| -- | ----------------------------------------------------------------------------------------------- | ------ | ------ |
+| 1  | **Tag v0.5.0** — Bundle 5 BREAKING changes, update CHANGELOG                                    | High   | 5 min  |
+| 2  | **Add fuzz tests to delimited/, serialization/, markup/** — Copy pattern from root/d2/graph     | High   | 1 hr   |
+| 3  | **Write ADR-004** — Document delimited/serialization/markup extraction rationale                | Med    | 20 min |
+| 4  | **Move internal/gentest to testhelpers/gentest** — Eliminate test helper duplication (TODO #20) | Med    | 30 min |
+| 5  | **Deduplicate graph/ test helpers** — Depends on #4 (TODO #21)                                  | Med    | 15 min |
+| 6  | **Add coverage threshold to CI** — Fail if any module drops below 80%                           | Med    | 15 min |
+| 7  | **Add JSONL format** — Trivial extension of JSON writer, high demand format                     | High   | 1 hr   |
+| 8  | **Fix integration/ coverage to 90%+** — Add error path tests                                    | Med    | 30 min |
+| 9  | **Fix serialization/ coverage to 90%+** — Add graph renderer error tests                        | Med    | 20 min |
+| 10 | **Fix delimited/ coverage to 90%+** — Add DelimitedWriter error tests                           | Med    | 20 min |
 
 ### HIGH IMPACT, MEDIUM EFFORT
 
-| #   | Task                                                                                 | Impact | Effort |
-| --- | ------------------------------------------------------------------------------------ | ------ | ------ |
-| 11  | **Unified error types** — `output.Error` with `Kind` enum for programmatic handling  | High   | 2 hr   |
-| 12  | **Consistent streaming API** — Common `StreamingWriter` interface across all formats | High   | 3 hr   |
-| 13  | **Add TOML format** — New module `toml/`, popular in Go ecosystem                    | Med    | 2 hr   |
-| 14  | **Add snapshot testing** — Catch unintended output format changes                    | Med    | 2 hr   |
-| 15  | **Pre-v1 API audit** — Review all public APIs for stability guarantees               | High   | 3 hr   |
-| 16  | **goreleaser config** — Automate version tagging and release notes                   | Med    | 1 hr   |
-| 17  | **Move userjourney_test.go to integration/** — Cleaner module separation             | Low    | 15 min |
-| 18  | **Add AsciiDoc format** — New renderer in markup/ or new module                      | Low    | 1 hr   |
+| #  | Task                                                                                 | Impact | Effort |
+| -- | ------------------------------------------------------------------------------------ | ------ | ------ |
+| 11 | **Unified error types** — `output.Error` with `Kind` enum for programmatic handling  | High   | 2 hr   |
+| 12 | **Consistent streaming API** — Common `StreamingWriter` interface across all formats | High   | 3 hr   |
+| 13 | **Add TOML format** — New module `toml/`, popular in Go ecosystem                    | Med    | 2 hr   |
+| 14 | **Add snapshot testing** — Catch unintended output format changes                    | Med    | 2 hr   |
+| 15 | **Pre-v1 API audit** — Review all public APIs for stability guarantees               | High   | 3 hr   |
+| 16 | **goreleaser config** — Automate version tagging and release notes                   | Med    | 1 hr   |
+| 17 | **Move userjourney_test.go to integration/** — Cleaner module separation             | Low    | 15 min |
+| 18 | **Add AsciiDoc format** — New renderer in markup/ or new module                      | Low    | 1 hr   |
 
 ### MEDIUM IMPACT, HIGHER EFFORT
 
-| #   | Task                                                                                   | Impact    | Effort |
-| --- | -------------------------------------------------------------------------------------- | --------- | ------ |
-| 19  | **Generic TableData[T]** — Type-safe column access instead of `[][]string`             | Very High | 1 day  |
-| 20  | **go-output CLI tool** — Companion CLI for ad-hoc format conversion                    | Very High | 2 days |
-| 21  | **Add PlantUML format** — New module with UML diagram types                            | Med       | 4 hr   |
-| 22  | **Benchmark regression CI** — Track performance across commits                         | Med       | 2 hr   |
-| 23  | **Fix pre-commit hooks** — Configure BuildFlow's go-structure-linter                   | Low       | 30 min |
-| 24  | **Shape-specific renderer constructors** — ADR-002 Phase 2: `NewTableRenderer(format)` | Med       | 3 hr   |
-| 25  | **Community posting** — r/golang, Awesome Go, Go newsletter                            | High      | 1 hr   |
+| #  | Task                                                                                   | Impact    | Effort |
+| -- | -------------------------------------------------------------------------------------- | --------- | ------ |
+| 19 | **Generic TableData[T]** — Type-safe column access instead of `[][]string`             | Very High | 1 day  |
+| 20 | **go-output CLI tool** — Companion CLI for ad-hoc format conversion                    | Very High | 2 days |
+| 21 | **Add PlantUML format** — New module with UML diagram types                            | Med       | 4 hr   |
+| 22 | **Benchmark regression CI** — Track performance across commits                         | Med       | 2 hr   |
+| 23 | **Fix pre-commit hooks** — Configure BuildFlow's go-structure-linter                   | Low       | 30 min |
+| 24 | **Shape-specific renderer constructors** — ADR-002 Phase 2: `NewTableRenderer(format)` | Med       | 3 hr   |
+| 25 | **Community posting** — r/golang, Awesome Go, Go newsletter                            | High      | 1 hr   |
 
 ---
 

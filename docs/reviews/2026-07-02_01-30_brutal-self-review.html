@@ -31,7 +31,8 @@
         --radius: 0px;
         --font-heading: ui-sans-serif, system-ui, -apple-system, sans-serif;
         --font-body: ui-sans-serif, system-ui, -apple-system, sans-serif;
-        --font-mono: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, monospace;
+        --font-mono:
+          ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, monospace;
       }
       * {
         box-sizing: border-box;
@@ -344,7 +345,20 @@
     </style>
   </head>
   <body>
-    <div style="background:#1a1a2e;border-left:3px solid #50fa7b;padding:12px 16px;margin:16px 0;border-radius:4px;"><strong>✅ Resolved (2026-08-04):</strong> All 5 open items resolved. teatest VT screen assertions added. Color-on VT test added. Golden tests for graph/d2/plantuml added. teatest helper deduped. v1.0.0 tag still open (TODO_LIST #15).</div>
+    <div
+      style="
+        background: #1a1a2e;
+        border-left: 3px solid #50fa7b;
+        padding: 12px 16px;
+        margin: 16px 0;
+        border-radius: 4px;
+      "
+    >
+      <strong>✅ Resolved (2026-08-04):</strong> All 5 open items resolved.
+      teatest VT screen assertions added. Color-on VT test added. Golden tests
+      for graph/d2/plantuml added. teatest helper deduped. v1.0.0 tag still open
+      (TODO_LIST #15).
+    </div>
 
     <div class="top-bar">
       <span>BRUTAL SELF-REVIEW</span>
@@ -366,12 +380,15 @@
       </aside>
       <main class="main">
         <div class="hero">
-          <div class="hero-badge">Brutally Honest &middot; No Self-Deception</div>
+          <div class="hero-badge">
+            Brutally Honest &middot; No Self-Deception
+          </div>
           <h1>What I Fucked Up</h1>
           <p class="hero-subtitle">
-            Self-critique of the charmbracelet/x integration sprint and the overall codebase state.
-            I missed documentation updates, left dead code, shipped a latent wide-char bug, and
-            forgot to update stale references. Here's everything, fixed.
+            Self-critique of the charmbracelet/x integration sprint and the
+            overall codebase state. I missed documentation updates, left dead
+            code, shipped a latent wide-char bug, and forgot to update stale
+            references. Here's everything, fixed.
           </p>
         </div>
 
@@ -399,96 +416,120 @@
         <div class="card card-problem">
           <h4>1. CHANGELOG was not updated with the charmbracelet/x work</h4>
           <p>
-            I shipped VT tests, teatest E2E, golden expansion, and a wide-char fix — but never added
-            them to the CHANGELOG Unreleased section. Anyone reading the changelog would have no
-            idea this work happened.
-            <strong><span class="badge badge-fixed">Fixed</span></strong> — added three subsections
-            to [Unreleased].
+            I shipped VT tests, teatest E2E, golden expansion, and a wide-char
+            fix — but never added them to the CHANGELOG Unreleased section.
+            Anyone reading the changelog would have no idea this work happened.
+            <strong><span class="badge badge-fixed">Fixed</span></strong> —
+            added three subsections to [Unreleased].
           </p>
         </div>
 
         <div class="card card-problem">
           <h4>2. FEATURES.md had a stale SymbolTiming reference</h4>
           <p>
-            <code>SymbolTiming</code> was deleted in v0.20.0 but FEATURES.md still listed it as
-            FULLY_FUNCTIONAL. I should have caught this during the v0.20.0 release.
-            <strong><span class="badge badge-fixed">Fixed</span></strong> — removed SymbolTiming,
-            added SymbolProgress and SymbolRetrying, added testing infra rows.
+            <code>SymbolTiming</code> was deleted in v0.20.0 but FEATURES.md
+            still listed it as FULLY_FUNCTIONAL. I should have caught this
+            during the v0.20.0 release.
+            <strong><span class="badge badge-fixed">Fixed</span></strong> —
+            removed SymbolTiming, added SymbolProgress and SymbolRetrying, added
+            testing infra rows.
           </p>
         </div>
 
         <div class="card card-problem">
           <h4>3. Three dead code items left rotting</h4>
           <p>
-            <code>snapshotBuilder.snapshot()</code>, <code>snapshotBuilder.has()</code> in nom/, and
-            <code>errWriteFailed</code> in table/ were flagged by gopls but I mentioned them in the
-            status report without fixing them. I documented the problem instead of solving it.
-            Inexcusable — it was a 5-minute delete.
-            <strong><span class="badge badge-fixed">Fixed</span></strong> — all 3 deleted.
+            <code>snapshotBuilder.snapshot()</code>,
+            <code>snapshotBuilder.has()</code> in nom/, and
+            <code>errWriteFailed</code> in table/ were flagged by gopls but I
+            mentioned them in the status report without fixing them. I
+            documented the problem instead of solving it. Inexcusable — it was a
+            5-minute delete.
+            <strong><span class="badge badge-fixed">Fixed</span></strong> — all
+            3 deleted.
           </p>
         </div>
 
         <div class="card card-problem">
           <h4>4. go.work.example had stale Go version</h4>
           <p>
-            <code>go 1.26.3</code> in go.work.example while everything else is 1.26.4. A new
-            contributor running <code>nix run .#setup-workspace</code> would get a stale workspace
-            file. <strong><span class="badge badge-fixed">Fixed</span></strong> — bumped to 1.26.4.
+            <code>go 1.26.3</code> in go.work.example while everything else is
+            1.26.4. A new contributor running
+            <code>nix run .#setup-workspace</code> would get a stale workspace
+            file.
+            <strong><span class="badge badge-fixed">Fixed</span></strong> —
+            bumped to 1.26.4.
           </p>
         </div>
 
         <div class="card card-problem">
-          <h4>5. PhysicalLineCount had a latent wide-char bug I documented instead of fixed</h4>
+          <h4>
+            5. PhysicalLineCount had a latent wide-char bug I documented instead
+            of fixed
+          </h4>
           <p>
-            The ceiling-division formula <code>(w + termWidth - 1) / termWidth</code> undercounted
-            lines when wide characters (CJK, emoji) straddled odd terminal widths. I wrote about it
-            in the evaluation doc, the status report, and the planning doc — three places I
-            described the bug without fixing it. The fix was a one-function replacement using
-            <code>ansi.Hardwrap</code> that was already imported in the same file.
-            <strong><span class="badge badge-fixed">Fixed</span></strong> — replaced with Hardwrap,
-            added two straddle test cases.
+            The ceiling-division formula
+            <code>(w + termWidth - 1) / termWidth</code> undercounted lines when
+            wide characters (CJK, emoji) straddled odd terminal widths. I wrote
+            about it in the evaluation doc, the status report, and the planning
+            doc — three places I described the bug without fixing it. The fix
+            was a one-function replacement using <code>ansi.Hardwrap</code> that
+            was already imported in the same file.
+            <strong><span class="badge badge-fixed">Fixed</span></strong> —
+            replaced with Hardwrap, added two straddle test cases.
           </p>
         </div>
 
-        <h2 id="better"><span class="num">02</span>What I Could Have Done Better</h2>
+        <h2 id="better">
+          <span class="num">02</span>What I Could Have Done Better
+        </h2>
 
         <div class="card card-warning">
           <h4>teatest assertions are shallow</h4>
           <p>
-            The teatest E2E tests verify "program doesn't crash" but not "program renders correct
-            content". I hit the bubbletea v2 diff-renderer output format issue (cursor-positioning
-            sequences, not full text frames) and adapted by asserting on timing strings and
-            FinalModel state instead of pushing harder. I should have piped teatest output through
-            x/vt for true screen-level assertions.
+            The teatest E2E tests verify "program doesn't crash" but not
+            "program renders correct content". I hit the bubbletea v2
+            diff-renderer output format issue (cursor-positioning sequences, not
+            full text frames) and adapted by asserting on timing strings and
+            FinalModel state instead of pushing harder. I should have piped
+            teatest output through x/vt for true screen-level assertions.
           </p>
           <div class="callout callout-solution">
-            <strong>Action:</strong> This is the #1 remaining improvement. Feed teatest output to
-            <code>vt.NewEmulator()</code>, assert on <code>term.String()</code>.
+            <strong>Action:</strong> This is the #1 remaining improvement. Feed
+            teatest output to <code>vt.NewEmulator()</code>, assert on
+            <code>term.String()</code>.
           </div>
         </div>
 
         <div class="card card-warning">
-          <h4>I didn't leverage existing code patterns when writing teatest helpers</h4>
+          <h4>
+            I didn't leverage existing code patterns when writing teatest
+            helpers
+          </h4>
           <p>
             The project already has <code>newTestModel()</code> and
             <code>addTestActivity()</code> in <code>tui/model_test.go</code>. My
-            <code>newTeatestModel()</code> duplicates the activity setup logic instead of composing
-            with the existing helpers. I should have reused <code>addTestActivity</code> or
-            extracted a shared setup function.
+            <code>newTeatestModel()</code> duplicates the activity setup logic
+            instead of composing with the existing helpers. I should have reused
+            <code>addTestActivity</code> or extracted a shared setup function.
           </p>
         </div>
 
         <div class="card card-warning">
           <h4>VT test harness doesn't test ANSI color content</h4>
           <p>
-            All VT tests use <code>SetNoColor(true)</code> for deterministic output. This means the
-            VT harness never exercises the color-rendering path. If a future change breaks how
-            colors are emitted, the VT tests won't catch it. I should add at least one color-on VT
-            test that checks <code>term.Render()</code> for SGR sequences.
+            All VT tests use <code>SetNoColor(true)</code> for deterministic
+            output. This means the VT harness never exercises the
+            color-rendering path. If a future change breaks how colors are
+            emitted, the VT tests won't catch it. I should add at least one
+            color-on VT test that checks <code>term.Render()</code> for SGR
+            sequences.
           </p>
         </div>
 
-        <h2 id="improve"><span class="num">03</span>What I Can Still Improve</h2>
+        <h2 id="improve">
+          <span class="num">03</span>What I Can Still Improve
+        </h2>
 
         <table>
           <thead>
@@ -501,25 +542,34 @@
           </thead>
           <tbody>
             <tr>
-              <td>Pipe teatest output through x/vt for screen-level assertions</td>
+              <td>
+                Pipe teatest output through x/vt for screen-level assertions
+              </td>
               <td><span class="badge badge-high">High</span></td>
               <td><span class="badge badge-low">2h</span></td>
               <td><span class="badge badge-critical">Open</span></td>
             </tr>
             <tr>
-              <td>Add color-on VT test (verify SGR sequences in screen buffer)</td>
+              <td>
+                Add color-on VT test (verify SGR sequences in screen buffer)
+              </td>
               <td><span class="badge badge-high">High</span></td>
               <td><span class="badge badge-low">30min</span></td>
               <td><span class="badge badge-critical">Open</span></td>
             </tr>
             <tr>
-              <td>Add golden tests for graph/ (DOT, Mermaid) and d2/ renderers</td>
+              <td>
+                Add golden tests for graph/ (DOT, Mermaid) and d2/ renderers
+              </td>
               <td><span class="badge badge-low">Medium</span></td>
               <td><span class="badge badge-low">1h</span></td>
               <td><span class="badge badge-critical">Open</span></td>
             </tr>
             <tr>
-              <td>Dedupe teatest helper activity setup with existing addTestActivity</td>
+              <td>
+                Dedupe teatest helper activity setup with existing
+                addTestActivity
+              </td>
               <td><span class="badge badge-low">Low</span></td>
               <td><span class="badge badge-low">15min</span></td>
               <td><span class="badge badge-critical">Open</span></td>
@@ -540,17 +590,19 @@
           <p>
             <code>ansiReset</code> (<code>\033[0m</code>),
             <code>ansiBold</code> (<code>\033[1m</code>), and
-            <code>ansiDim</code> (<code>\033[2m</code>) are defined identically in both
-            <code>tree/tree.go:23-25</code> and <code>markdown/markdown.go:21-23</code>. The
-            <code>nom/</code> module already uses <code>charmbracelet/x/ansi</code> canonical
-            constants.
+            <code>ansiDim</code> (<code>\033[2m</code>) are defined identically
+            in both <code>tree/tree.go:23-25</code> and
+            <code>markdown/markdown.go:21-23</code>. The
+            <code>nom/</code> module already uses
+            <code>charmbracelet/x/ansi</code> canonical constants.
           </p>
           <div class="callout callout-warning">
-            <strong>Intentional — DO NOT FIX.</strong> tree/ and markdown/ are designed to be
-            dependency-light (only depend on <code>output</code> root). Adding <code>x/ansi</code>
-            would pull lipgloss's colorprofile machinery into two featherweight modules. The
-            constants are trivially correct (3-byte SGR sequences) and will never drift. This is an
-            acceptable, documented duplication.
+            <strong>Intentional — DO NOT FIX.</strong> tree/ and markdown/ are
+            designed to be dependency-light (only depend on
+            <code>output</code> root). Adding <code>x/ansi</code>
+            would pull lipgloss's colorprofile machinery into two featherweight
+            modules. The constants are trivially correct (3-byte SGR sequences)
+            and will never drift. This is an acceptable, documented duplication.
           </div>
         </div>
 
@@ -558,12 +610,15 @@
         <div class="card card-solution">
           <h4>None found.</h4>
           <p>
-            Every module is wired. StreamingHTMLRenderer is tested and used in integration tests.
-            All examples reference current APIs. No orphaned code, no disconnected systems.
+            Every module is wired. StreamingHTMLRenderer is tested and used in
+            integration tests. All examples reference current APIs. No orphaned
+            code, no disconnected systems.
           </p>
         </div>
 
-        <h2 id="plan"><span class="num">06</span>Execution Plan (Already Completed)</h2>
+        <h2 id="plan">
+          <span class="num">06</span>Execution Plan (Already Completed)
+        </h2>
         <div class="migration-step">
           <div class="migration-num">1</div>
           <div class="migration-content">
@@ -586,7 +641,8 @@
           <div class="migration-content">
             <h4>Update CHANGELOG</h4>
             <p>
-              Added charmbracelet/x work to Unreleased. <span class="badge badge-fixed">Done</span>
+              Added charmbracelet/x work to Unreleased.
+              <span class="badge badge-fixed">Done</span>
             </p>
           </div>
         </div>
@@ -595,7 +651,8 @@
           <div class="migration-content">
             <h4>Fix FEATURES.md</h4>
             <p>
-              Removed SymbolTiming, added testing infra. <span class="badge badge-fixed">Done</span>
+              Removed SymbolTiming, added testing infra.
+              <span class="badge badge-fixed">Done</span>
             </p>
           </div>
         </div>
@@ -603,7 +660,10 @@
           <div class="migration-num">5</div>
           <div class="migration-content">
             <h4>Fix go.work.example</h4>
-            <p>Bumped 1.26.3 → 1.26.4. <span class="badge badge-fixed">Done</span></p>
+            <p>
+              Bumped 1.26.3 → 1.26.4.
+              <span class="badge badge-fixed">Done</span>
+            </p>
           </div>
         </div>
 
@@ -612,23 +672,23 @@
           <h4>Did I lie to you?</h4>
           <p>
             <strong>No — but I was lazy in ways that felt like lying.</strong>
-            I documented bugs instead of fixing them (PhysicalLineCount). I mentioned dead code in a
-            status report instead of deleting it. I shipped new features without updating the
-            CHANGELOG. Each individual omission was small, but together they create a pattern: I
-            optimized for "looking done" over "being done."
+            I documented bugs instead of fixing them (PhysicalLineCount). I
+            mentioned dead code in a status report instead of deleting it. I
+            shipped new features without updating the CHANGELOG. Each individual
+            omission was small, but together they create a pattern: I optimized
+            for "looking done" over "being done."
           </p>
           <p>
-            The fixes took 30 minutes total. The report writing took longer. That's the wrong ratio.
+            The fixes took 30 minutes total. The report writing took longer.
+            That's the wrong ratio.
           </p>
         </div>
 
         <footer class="footer">
-          Generated 2026-07-02 &middot; All findings verified against source code &middot; 5 issues
-          found, 5 fixed
+          Generated 2026-07-02 &middot; All findings verified against source
+          code &middot; 5 issues found, 5 fixed
         </footer>
       </main>
     </div>
-
-    
   </body>
 </html>

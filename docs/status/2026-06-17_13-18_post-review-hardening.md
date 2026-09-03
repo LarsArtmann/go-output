@@ -1,9 +1,9 @@
 # Comprehensive Status Report: Post-Review Hardening Pass
 
-**Date:** 2026-06-17 13:18  
-**Scope:** Full `go-output` project — nom/, tui/, root, serialization, docs  
-**Branch:** master (in sync with origin/master)  
-**Last commit:** `6c91833` docs: update AGENTS.md coverage table and add CHANGELOG entries  
+**Date:** 2026-06-17 13:18\
+**Scope:** Full `go-output` project — nom/, tui/, root, serialization, docs\
+**Branch:** master (in sync with origin/master)\
+**Last commit:** `6c91833` docs: update AGENTS.md coverage table and add CHANGELOG entries\
 **Session commits:** 12 total (`cc140cb` → `6c91833`), spanning two phases
 
 ---
@@ -144,33 +144,33 @@ BenchmarkDependencyTree_ChildPriority           786171     2595 ns/op      952 B
 
 Sorted by **impact ÷ effort** (highest first):
 
-| #   | Task                                                           | Module      | Impact           | Effort  | Why                                           |
-| --- | -------------------------------------------------------------- | ----------- | ---------------- | ------- | --------------------------------------------- |
-| 1   | Add `.github/workflows/ci.yml` with lint+test+race             | `.github/`  | 🔴 CI gate       | Low     | No CI exists; relies on manual runs           |
-| 2   | Commit CHANGELOG formatting fix from pre-commit hook           | root        | 🟢 hygiene       | Trivial | Uncommitted diff in working tree              |
-| 3   | Cut `v1.0.0` tag                                               | root        | 🔴 release       | Low     | API frozen (ADR 006); still at v0.10.x        |
-| 4   | Update `TODO_LIST.md` — re-verify items, fix "17 modules" → 16 | root        | 🟡 docs          | Low     | Stale since 2026-06-15                        |
-| 5   | Cache `TreeNode.Depth()` as field set during `Build()`         | `nom/`      | 🟢 performance   | Low     | Currently O(n) parent-chain walk              |
-| 6   | Add fuzz tests for `TruncateVisible` / `PhysicalLineCount`     | `nom/`      | 🟡 robustness    | Low     | Hot paths only tested with hand-picked inputs |
-| 7   | Restore tui/ coverage to 90%+ — test View() rendering paths    | `tui/`      | 🟡 quality       | Medium  | 88.8% → 90%+ target                           |
-| 8   | Add `CLICOLOR=0` / `CLICOLOR_FORCE` detection                  | `nom/`      | 🟢 compatibility | Low     | Standard color detection env vars             |
-| 9   | Add visual progress bar in summary                             | `nom/`      | 🟢 UX            | Medium  | More scannable than text percentage           |
-| 10  | Rename `GetOperationSymbol` → `OperationSymbol`                | `nom/`      | 🟢 naming        | Low     | Getter prefix on non-getter (TODO_LIST #7)    |
-| 11  | Rename `HandleError` → `Must` in examples                      | `examples/` | 🟢 naming        | Low     | Convention alignment (TODO_LIST #8)           |
-| 12  | Add ETA estimate to summary bar                                | `nom/`      | 🟢 UX            | Medium  | Leverage existing timing cache                |
-| 13  | `nom/` internal/ packaging — split 25 files into sub-packages  | `nom/`      | 🟡 architecture  | High    | Better locality & navigability                |
-| 14  | Add bounds validation for `D2NodeStyle.Opacity`                | `d2/`       | 🟡 safety        | Low     | No validation currently                       |
-| 15  | `ColorModeAuto.ShouldColor()` deterministic testing            | root        | 🟡 testability   | Low     | Reads env+TTY at runtime                      |
-| 16  | Add `Snapshot()` to `DependencyTree` for lock-free rendering   | `nom/`      | 🟡 architecture  | Medium  | Eliminate lock during render                  |
-| 17  | Community: Post to r/golang, submit to Awesome Go              | docs        | 🟢 visibility    | Low     | Project is ready for users                    |
-| 18  | Add `nom.DisplayConfig` struct for bundled render config       | `nom/`      | 🟢 API           | Medium  | Better discoverability than ad-hoc params     |
-| 19  | Unify `Marshaler` → `Renderer` terminology                     | root        | 🟡 consistency   | Medium  | Blocked by ADR 006; plan for v1               |
-| 20  | Wire or remove `RenderOptions.GraphID`                         | root        | 🟢 hygiene       | Low     | Dead code; blocked by ADR 006                 |
-| 21  | Add BDD tests for nom inline renderer lifecycle                | `bdd/`      | 🟢 quality       | Medium  | Integration-level behavior verification       |
-| 22  | Profile 1000+ node trees for render performance                | `nom/`      | 🟢 performance   | Low     | Current bench is 500 nodes                    |
-| 23  | Investigate bubbletea v2 program testing helpers               | `tui/`      | 🟡 testability   | Low     | May eliminate need for newTestReporter hack   |
-| 24  | Add `--no-color` flag support to InlineRenderer                | `nom/`      | 🟢 UX            | Low     | SetNoColor exists but not CLI-exposed         |
-| 25  | Document `renderNotify` test hook in type doc comment          | `nom/`      | 🟢 docs          | Low     | Unexported field, undocumented in type doc    |
+| #  | Task                                                           | Module      | Impact           | Effort  | Why                                           |
+| -- | -------------------------------------------------------------- | ----------- | ---------------- | ------- | --------------------------------------------- |
+| 1  | Add `.github/workflows/ci.yml` with lint+test+race             | `.github/`  | 🔴 CI gate       | Low     | No CI exists; relies on manual runs           |
+| 2  | Commit CHANGELOG formatting fix from pre-commit hook           | root        | 🟢 hygiene       | Trivial | Uncommitted diff in working tree              |
+| 3  | Cut `v1.0.0` tag                                               | root        | 🔴 release       | Low     | API frozen (ADR 006); still at v0.10.x        |
+| 4  | Update `TODO_LIST.md` — re-verify items, fix "17 modules" → 16 | root        | 🟡 docs          | Low     | Stale since 2026-06-15                        |
+| 5  | Cache `TreeNode.Depth()` as field set during `Build()`         | `nom/`      | 🟢 performance   | Low     | Currently O(n) parent-chain walk              |
+| 6  | Add fuzz tests for `TruncateVisible` / `PhysicalLineCount`     | `nom/`      | 🟡 robustness    | Low     | Hot paths only tested with hand-picked inputs |
+| 7  | Restore tui/ coverage to 90%+ — test View() rendering paths    | `tui/`      | 🟡 quality       | Medium  | 88.8% → 90%+ target                           |
+| 8  | Add `CLICOLOR=0` / `CLICOLOR_FORCE` detection                  | `nom/`      | 🟢 compatibility | Low     | Standard color detection env vars             |
+| 9  | Add visual progress bar in summary                             | `nom/`      | 🟢 UX            | Medium  | More scannable than text percentage           |
+| 10 | Rename `GetOperationSymbol` → `OperationSymbol`                | `nom/`      | 🟢 naming        | Low     | Getter prefix on non-getter (TODO_LIST #7)    |
+| 11 | Rename `HandleError` → `Must` in examples                      | `examples/` | 🟢 naming        | Low     | Convention alignment (TODO_LIST #8)           |
+| 12 | Add ETA estimate to summary bar                                | `nom/`      | 🟢 UX            | Medium  | Leverage existing timing cache                |
+| 13 | `nom/` internal/ packaging — split 25 files into sub-packages  | `nom/`      | 🟡 architecture  | High    | Better locality & navigability                |
+| 14 | Add bounds validation for `D2NodeStyle.Opacity`                | `d2/`       | 🟡 safety        | Low     | No validation currently                       |
+| 15 | `ColorModeAuto.ShouldColor()` deterministic testing            | root        | 🟡 testability   | Low     | Reads env+TTY at runtime                      |
+| 16 | Add `Snapshot()` to `DependencyTree` for lock-free rendering   | `nom/`      | 🟡 architecture  | Medium  | Eliminate lock during render                  |
+| 17 | Community: Post to r/golang, submit to Awesome Go              | docs        | 🟢 visibility    | Low     | Project is ready for users                    |
+| 18 | Add `nom.DisplayConfig` struct for bundled render config       | `nom/`      | 🟢 API           | Medium  | Better discoverability than ad-hoc params     |
+| 19 | Unify `Marshaler` → `Renderer` terminology                     | root        | 🟡 consistency   | Medium  | Blocked by ADR 006; plan for v1               |
+| 20 | Wire or remove `RenderOptions.GraphID`                         | root        | 🟢 hygiene       | Low     | Dead code; blocked by ADR 006                 |
+| 21 | Add BDD tests for nom inline renderer lifecycle                | `bdd/`      | 🟢 quality       | Medium  | Integration-level behavior verification       |
+| 22 | Profile 1000+ node trees for render performance                | `nom/`      | 🟢 performance   | Low     | Current bench is 500 nodes                    |
+| 23 | Investigate bubbletea v2 program testing helpers               | `tui/`      | 🟡 testability   | Low     | May eliminate need for newTestReporter hack   |
+| 24 | Add `--no-color` flag support to InlineRenderer                | `nom/`      | 🟢 UX            | Low     | SetNoColor exists but not CLI-exposed         |
+| 25 | Document `renderNotify` test hook in type doc comment          | `nom/`      | 🟢 docs          | Low     | Unexported field, undocumented in type doc    |
 
 ---
 

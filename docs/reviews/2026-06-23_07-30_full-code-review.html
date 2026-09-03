@@ -30,12 +30,14 @@
         --warning: var(--color-yellow);
         --radius: 0px;
         --font-heading:
-          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          sans-serif;
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", Roboto, sans-serif;
         --font-body:
-          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          sans-serif;
-        --font-mono: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", Roboto, sans-serif;
+        --font-mono:
+          ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas,
+          monospace;
       }
       * {
         box-sizing: border-box;
@@ -173,15 +175,27 @@
       }
       .card-problem {
         border-left-color: var(--problem);
-        background: color-mix(in srgb, var(--problem) 8%, var(--surface-raised));
+        background: color-mix(
+          in srgb,
+          var(--problem) 8%,
+          var(--surface-raised)
+        );
       }
       .card-solution {
         border-left-color: var(--solution);
-        background: color-mix(in srgb, var(--solution) 8%, var(--surface-raised));
+        background: color-mix(
+          in srgb,
+          var(--solution) 8%,
+          var(--surface-raised)
+        );
       }
       .card-warning {
         border-left-color: var(--warning);
-        background: color-mix(in srgb, var(--warning) 8%, var(--surface-raised));
+        background: color-mix(
+          in srgb,
+          var(--warning) 8%,
+          var(--surface-raised)
+        );
       }
       .issue {
         background: var(--surface-raised);
@@ -192,15 +206,27 @@
       }
       .issue-critical {
         border-left-color: var(--problem);
-        background: color-mix(in srgb, var(--problem) 8%, var(--surface-raised));
+        background: color-mix(
+          in srgb,
+          var(--problem) 8%,
+          var(--surface-raised)
+        );
       }
       .issue-important {
         border-left-color: var(--warning);
-        background: color-mix(in srgb, var(--warning) 8%, var(--surface-raised));
+        background: color-mix(
+          in srgb,
+          var(--warning) 8%,
+          var(--surface-raised)
+        );
       }
       .issue-nice {
         border-left-color: var(--solution);
-        background: color-mix(in srgb, var(--solution) 8%, var(--surface-raised));
+        background: color-mix(
+          in srgb,
+          var(--solution) 8%,
+          var(--surface-raised)
+        );
       }
       .issue .where {
         font-family: var(--font-mono);
@@ -410,9 +436,10 @@
           <div class="hero-badge">Full Code Review</div>
           <h1>go-output — Senior Architect Review</h1>
           <p class="hero-subtitle">
-            Comprehensive review of all production code across 18 modules. Found 4 critical bugs, 5
-            injection vulnerabilities, and 4 dead code items — all fixed on the spot. Post-fix: 0
-            build errors, 0 lint issues, 0 test failures.
+            Comprehensive review of all production code across 18 modules. Found
+            4 critical bugs, 5 injection vulnerabilities, and 4 dead code items
+            — all fixed on the spot. Post-fix: 0 build errors, 0 lint issues, 0
+            test failures.
           </p>
         </div>
 
@@ -451,8 +478,9 @@
           <h3>Progress bar panics on narrow terminals</h3>
           <div class="where">tui/view.go:207-213</div>
           <p>
-            <code>strings.Repeat</code> panics when terminal width is 1-29, producing a negative bar
-            width. Fixed with a <code>width < 1</code> guard.
+            <code>strings.Repeat</code> panics when terminal width is 1-29,
+            producing a negative bar width. Fixed with a
+            <code>width < 1</code> guard.
           </p>
         </div>
 
@@ -461,8 +489,9 @@
           <h3>handleStepUpdate matches wrong step</h3>
           <div class="where">tui/model.go:233</div>
           <p>
-            <code>|| m.steps[i].isActive()</code> matched ANY active step, not the intended one.
-            With concurrent steps, updates overwrote the wrong step. Fixed: match by message only.
+            <code>|| m.steps[i].isActive()</code> matched ANY active step, not
+            the intended one. With concurrent steps, updates overwrote the wrong
+            step. Fixed: match by message only.
           </p>
         </div>
 
@@ -471,8 +500,8 @@
           <h3>Total=0 instantly marks step completed</h3>
           <div class="where">tui/model.go:238</div>
           <p>
-            Unsigned comparison <code>Current >= Total</code> is always true when Total=0. Fixed
-            with <code>msg.Total > 0 &&</code> guard.
+            Unsigned comparison <code>Current >= Total</code> is always true
+            when Total=0. Fixed with <code>msg.Total > 0 &&</code> guard.
           </p>
         </div>
 
@@ -481,8 +510,9 @@
           <h3>Double "s" suffix in elapsed time display</h3>
           <div class="where">tui/summary.go:68,72,74</div>
           <p>
-            Templates had <code>{time}s</code> but <code>formatElapsedTime</code> already returns
-            unit-suffixed strings ("1.5s", "500ms"). Output was "1.5ss". Fixed: removed trailing
+            Templates had <code>{time}s</code> but
+            <code>formatElapsedTime</code> already returns unit-suffixed strings
+            ("1.5s", "500ms"). Output was "1.5ss". Fixed: removed trailing
             <code>s</code>.
           </p>
         </div>
@@ -492,8 +522,9 @@
           <h3>DOT node color attributes not escaped</h3>
           <div class="where">graph/dot.go:196-214</div>
           <p>
-            <code>writeNodeAttr</code> wrote fillcolor/color without quoting or escaping. Edges were
-            escaped but nodes were not. Fixed: quote and escape all node attributes.
+            <code>writeNodeAttr</code> wrote fillcolor/color without quoting or
+            escaping. Edges were escaped but nodes were not. Fixed: quote and
+            escape all node attributes.
           </p>
         </div>
 
@@ -502,8 +533,9 @@
           <h3>D2 style values not escaped</h3>
           <div class="where">d2/d2_write.go:12,21,37,60</div>
           <p>
-            Fill, Stroke, FontColor, TextTransform values were written raw. A newline in a color
-            value could inject D2 directives. Fixed: <code>escape.D2()</code> applied.
+            Fill, Stroke, FontColor, TextTransform values were written raw. A
+            newline in a color value could inject D2 directives. Fixed:
+            <code>escape.D2()</code> applied.
           </p>
         </div>
 
@@ -512,9 +544,9 @@
           <h3>Mermaid node ID not escaped in style directive</h3>
           <div class="where">graph/mermaid.go:144</div>
           <p>
-            Style directive used raw <code>node.ID.Get()</code> while the node definition used
-            <code>escape.MermaidID()</code>. Styling silently failed for IDs with special chars.
-            Fixed.
+            Style directive used raw <code>node.ID.Get()</code> while the node
+            definition used <code>escape.MermaidID()</code>. Styling silently
+            failed for IDs with special chars. Fixed.
           </p>
         </div>
 
@@ -523,8 +555,8 @@
           <h3>D2 layout string not escaped</h3>
           <div class="where">d2/d2_render.go:159</div>
           <p>
-            <code>SetLayout(engine)</code> accepted any string without escaping. Fixed:
-            <code>escape.D2()</code> applied.
+            <code>SetLayout(engine)</code> accepted any string without escaping.
+            Fixed: <code>escape.D2()</code> applied.
           </p>
         </div>
 
@@ -534,19 +566,22 @@
           <div class="where">d2/d2_write.go:42-49</div>
           <p>
             Opacity was clamped to max 1.0 but negative values passed through as
-            <code>style.opacity: -0.5</code>. Fixed: clamp to [0, 1] range. Also fixed zero-value
-            opacity (0.0) now representable.
+            <code>style.opacity: -0.5</code>. Fixed: clamp to [0, 1] range. Also
+            fixed zero-value opacity (0.0) now representable.
           </p>
         </div>
 
         <div class="issue issue-nice">
           <span class="severity severity-nice">Dead Code</span>
           <h3>Unused fields and unreachable code path removed</h3>
-          <div class="where">tui/messages.go:24-25,16; tui/model.go:182-183</div>
+          <div class="where">
+            tui/messages.go:24-25,16; tui/model.go:182-183
+          </div>
           <p>
             Removed <code>Current</code>/<code>Total</code> from
-            <code>progressUpdateMsg</code> (never set), <code>stepUpdate</code> constant
-            (unreachable case), and updated test.
+            <code>progressUpdateMsg</code> (never set),
+            <code>stepUpdate</code> constant (unreachable case), and updated
+            test.
           </p>
         </div>
 
@@ -555,8 +590,9 @@
           <h3>Dead ANSI constants removed from root</h3>
           <div class="where">color.go:10-18</div>
           <p>
-            Root's <code>ansiReset</code>, <code>ansiBold</code>, etc. were unused —
-            <code>tree/</code> and <code>markdown/</code> have their own copies. Removed from root.
+            Root's <code>ansiReset</code>, <code>ansiBold</code>, etc. were
+            unused — <code>tree/</code> and <code>markdown/</code> have their
+            own copies. Removed from root.
           </p>
         </div>
 
@@ -565,8 +601,9 @@
           <h3>InvalidShapeError now includes allowed values</h3>
           <div class="where">shape.go:42-59</div>
           <p>
-            Added <code>Allowed []Shape</code> field matching <code>InvalidFormatError</code>'s
-            pattern. Error now shows "invalid shape: bad (allowed: table, tree, graph)".
+            Added <code>Allowed []Shape</code> field matching
+            <code>InvalidFormatError</code>'s pattern. Error now shows "invalid
+            shape: bad (allowed: table, tree, graph)".
           </p>
         </div>
 
@@ -575,29 +612,31 @@
           <h3>Direction enum validation added</h3>
           <div class="where">direction.go:14-26</div>
           <p>
-            Added <code>AllDirections</code> and <code>IsValid()</code> to bring Direction in line
-            with Format, Shape, ColorMode, NodeShape enums.
+            Added <code>AllDirections</code> and <code>IsValid()</code> to bring
+            Direction in line with Format, Shape, ColorMode, NodeShape enums.
           </p>
         </div>
 
-        <h2 id="noted"><span class="num">02</span>Noted (Not Fixed — Design Decisions)</h2>
+        <h2 id="noted">
+          <span class="num">02</span>Noted (Not Fixed — Design Decisions)
+        </h2>
 
         <div class="card card-warning">
           <h4>RowEdge uses raw string instead of branded GraphNodeID</h4>
           <p>
-            <code>tabledata.go:174-178</code> — <code>RowEdge.From/To</code> are raw
-            <code>string</code> while the rest of the graph type system uses branded IDs.
-            <code>AddRowEdges</code> immediately re-wraps them. This is an internal-only type
-            boundary that could be tightened.
+            <code>tabledata.go:174-178</code> — <code>RowEdge.From/To</code> are
+            raw <code>string</code> while the rest of the graph type system uses
+            branded IDs. <code>AddRowEdges</code> immediately re-wraps them.
+            This is an internal-only type boundary that could be tightened.
           </p>
         </div>
 
         <div class="card card-warning">
           <h4>NodeShapeBox and NodeShapeRect are semantic duplicates</h4>
           <p>
-            <code>graph.go:45,52</code> — Two exported names for the same visual concept. All
-            renderers treat them identically. Removing one would be a breaking change (pre-v1 API
-            stability per ADR 006).
+            <code>graph.go:45,52</code> — Two exported names for the same visual
+            concept. All renderers treat them identically. Removing one would be
+            a breaking change (pre-v1 API stability per ADR 006).
           </p>
         </div>
 
@@ -605,25 +644,26 @@
           <h4>LineStyle enum is incomplete</h4>
           <p>
             <code>graph.go:67-89</code> — Has <code>IsValid()</code> but lacks
-            <code>ParseLineStyle</code>, <code>AllowedValues()</code>. Inconsistent with other
-            enums.
+            <code>ParseLineStyle</code>, <code>AllowedValues()</code>.
+            Inconsistent with other enums.
           </p>
         </div>
 
         <div class="card card-warning">
           <h4>SetCancelFunc/SetDisplayMode write without synchronization</h4>
           <p>
-            <code>tui/reporter.go:77,84</code> — Doc says "Must be called before Start()" but no
-            enforcement. <code>displayMode</code> is read under lock in lifecycle.go. Low risk if
-            used as documented.
+            <code>tui/reporter.go:77,84</code> — Doc says "Must be called before
+            Start()" but no enforcement. <code>displayMode</code> is read under
+            lock in lifecycle.go. Low risk if used as documented.
           </p>
         </div>
 
         <div class="card card-warning">
           <h4>NOM-mode scroll renders entire tree before clipping</h4>
           <p>
-            <code>tui/render_nom.go:50-51</code> — When scrolling, renders with height=0 then clips.
-            Non-scroll path uses <code>VisibleEntriesWithSnapshots</code>. O(n) render for large
+            <code>tui/render_nom.go:50-51</code> — When scrolling, renders with
+            height=0 then clips. Non-scroll path uses
+            <code>VisibleEntriesWithSnapshots</code>. O(n) render for large
             trees when scrolling.
           </p>
         </div>
@@ -635,8 +675,9 @@
             <div class="text">
               <strong>Exceptional type safety</strong
               ><span
-                >Branded IDs prevent ID-type mixing at compile time. Sealed Event sum type makes
-                non-exhaustive switches compile errors. Typed enums everywhere.</span
+                >Branded IDs prevent ID-type mixing at compile time. Sealed
+                Event sum type makes non-exhaustive switches compile errors.
+                Typed enums everywhere.</span
               >
             </div>
           </div>
@@ -645,8 +686,9 @@
             <div class="text">
               <strong>Outstanding test coverage</strong
               ><span
-                >158 test files for 113 production files (1.4:1 ratio). Race tests for
-                concurrency-sensitive modules. Fuzz tests for rendering.</span
+                >158 test files for 113 production files (1.4:1 ratio). Race
+                tests for concurrency-sensitive modules. Fuzz tests for
+                rendering.</span
               >
             </div>
           </div>
@@ -655,8 +697,9 @@
             <div class="text">
               <strong>Clean module boundaries</strong
               ><span
-                >Pattern B with committed replace directives. Root zero-import invariant holds.
-                Depguard enforces import allow-lists per module.</span
+                >Pattern B with committed replace directives. Root zero-import
+                invariant holds. Depguard enforces import allow-lists per
+                module.</span
               >
             </div>
           </div>
@@ -665,8 +708,8 @@
             <div class="text">
               <strong>Zero harmful duplication</strong
               ><span
-                >art-dupl at t=10 reports zero clone groups. The codebase has been deduplicated
-                across multiple review cycles.</span
+                >art-dupl at t=10 reports zero clone groups. The codebase has
+                been deduplicated across multiple review cycles.</span
               >
             </div>
           </div>
@@ -675,8 +718,9 @@
             <div class="text">
               <strong>Sophisticated concurrency model</strong
               ><span
-                >Two-mutex InlineRenderer design prevents Stop() deadlock. Snapshot-based rendering
-                eliminates data races. Incremental count cache (O(1)).</span
+                >Two-mutex InlineRenderer design prevents Stop() deadlock.
+                Snapshot-based rendering eliminates data races. Incremental
+                count cache (O(1)).</span
               >
             </div>
           </div>
@@ -685,16 +729,17 @@
             <div class="text">
               <strong>Thorough escaping</strong
               ><span
-                >Format-specific escape functions for every diagram format (D2, DOT, Mermaid,
-                PlantUML, HTML, XML). This review found and closed the remaining gaps.</span
+                >Format-specific escape functions for every diagram format (D2,
+                DOT, Mermaid, PlantUML, HTML, XML). This review found and closed
+                the remaining gaps.</span
               >
             </div>
           </div>
         </div>
 
         <footer class="footer">
-          Generated 2026-06-23 &middot; All fixes verified via nix run .#build, nix run .#test
-          (18/18 pass), nix run .#lint (0 issues)
+          Generated 2026-06-23 &middot; All fixes verified via nix run .#build,
+          nix run .#test (18/18 pass), nix run .#lint (0 issues)
         </footer>
       </main>
     </div>

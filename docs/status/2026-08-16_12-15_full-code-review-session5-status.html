@@ -959,7 +959,8 @@
                 data race, layered-mode urgency inversion, ActivityCounts blind
                 to custom statuses, JSON map nondeterminism, YAML panics,
                 formatDuration drift, footer bold landing on wrong row class —
-                each with a regression test that pins actual rendered output.</span
+                each with a regression test that pins actual rendered
+                output.</span
               >
             </div>
           </div>
@@ -995,16 +996,20 @@
         <h2 id="partial"><span class="num">02</span>Partially Done</h2>
 
         <div class="issue issue-important">
-          <span class="severity severity-important">T14 — Verification gate</span>
+          <span class="severity severity-important"
+            >T14 — Verification gate</span
+          >
           <h3>Build + lint green; full test + race run still pending</h3>
-          <div class="where">nix run .#build / .#lint / .#test / .#test-race</div>
+          <div class="where">
+            nix run .#build / .#lint / .#test / .#test-race
+          </div>
           <p>
             Build completed across all 19 modules and golangci-lint reports 0
             issues everywhere (after clearing 2 leftover findings in
             escape/escape.go). Per-module test runs are green for every module
-            touched this session, but the full end-to-end <code>.#test</code>
-            and <code>.#test-race</code> gate has not been re-run since the last
-            three commits landed.
+            touched this session, but the full end-to-end
+            <code>.#test</code> and <code>.#test-race</code> gate has not been
+            re-run since the last three commits landed.
           </p>
         </div>
 
@@ -1035,9 +1040,9 @@
               <td>TODO_LIST.md harvest + AGENTS.md invariants</td>
               <td>
                 Pull ~15 deferred findings (v0.38.0 behavior-drift family + new
-                ones) into TODO_LIST.md; document new invariants (escape helpers,
-                DOT quoting, layered Interest ordering, counts Other bucket,
-                layout pin test)
+                ones) into TODO_LIST.md; document new invariants (escape
+                helpers, DOT quoting, layered Interest ordering, counts Other
+                bucket, layout pin test)
               </td>
             </tr>
             <tr>
@@ -1057,10 +1062,10 @@
           <h4>Nothing currently broken</h4>
           <p>
             Working tree clean, all commits green at their timestamp, no failing
-            gates. One historical incident worth remembering: the auto-git daemon
-            committed a broken tui build mid-edit (e58c8bf) during session 3 —
-            repaired in b28aa31; the "never stop mid-edit" rule exists because of
-            it. No recurrence in sessions 4–5.
+            gates. One historical incident worth remembering: the auto-git
+            daemon committed a broken tui build mid-edit (e58c8bf) during
+            session 3 — repaired in b28aa31; the "never stop mid-edit" rule
+            exists because of it. No recurrence in sessions 4–5.
           </p>
         </div>
 
@@ -1070,7 +1075,9 @@
         <div class="issue issue-critical">
           <span class="severity severity-critical">Split brain</span>
           <h3>AGENTS.md documents a versioning model the repo abandoned</h3>
-          <div class="where">AGENTS.md “Pattern B” vs commit d16650b (2026-08-07)</div>
+          <div class="where">
+            AGENTS.md “Pattern B” vs commit d16650b (2026-08-07)
+          </div>
           <p>
             AGENTS.md still says all sibling requires use the
             <code>v0.0.0-00010101000000-000000000000</code> sentinel and that
@@ -1093,18 +1100,20 @@
         <div class="card card-warning">
           <h4>Deferred findings need a home</h4>
           <p>
-            Intentionally harvested rather than fixed: plantuml
-            WithDiagramType dead option, registry-vs-CQRS trailing-newline
-            divergence, Finish(err) parameter decision, layered separator
-            alignment ≥10 layers, separator rune-sniffing → VisibleEntry kind
-            field, magic-16 format tripwires, format_test matrix re-encoding,
-            basic-example dual table APIs, parallel stdout-writing dispatch
-            test. All belong in TODO_LIST.md (T16), not entombed in reports.
+            Intentionally harvested rather than fixed: plantuml WithDiagramType
+            dead option, registry-vs-CQRS trailing-newline divergence,
+            Finish(err) parameter decision, layered separator alignment ≥10
+            layers, separator rune-sniffing → VisibleEntry kind field, magic-16
+            format tripwires, format_test matrix re-encoding, basic-example dual
+            table APIs, parallel stdout-writing dispatch test. All belong in
+            TODO_LIST.md (T16), not entombed in reports.
           </p>
         </div>
 
         <!-- Next tasks -->
-        <h2 id="next"><span class="num">06</span>Top Things To Get Done Next</h2>
+        <h2 id="next">
+          <span class="num">06</span>Top Things To Get Done Next
+        </h2>
         <table>
           <thead>
             <tr>
@@ -1118,13 +1127,18 @@
             <tr>
               <td>1</td>
               <td><span class="badge badge-critical">Critical</span></td>
-              <td>Finish T14: full <code>.#test</code> + <code>.#test-race</code> across 19 modules</td>
+              <td>
+                Finish T14: full <code>.#test</code> +
+                <code>.#test-race</code> across 19 modules
+              </td>
               <td><span class="badge badge-low">Open</span></td>
             </tr>
             <tr>
               <td>2</td>
               <td><span class="badge badge-critical">Critical</span></td>
-              <td>Rewrite AGENTS.md Pattern B for the v0.37.0-pins + replace model</td>
+              <td>
+                Rewrite AGENTS.md Pattern B for the v0.37.0-pins + replace model
+              </td>
               <td><span class="badge badge-low">Open</span></td>
             </tr>
             <tr>
@@ -1142,7 +1156,10 @@
             <tr>
               <td>5</td>
               <td><span class="badge badge-high">High</span></td>
-              <td>Document new invariants in AGENTS.md (escape, DOT quoting, counts, layout pin)</td>
+              <td>
+                Document new invariants in AGENTS.md (escape, DOT quoting,
+                counts, layout pin)
+              </td>
               <td><span class="badge badge-low">Open</span></td>
             </tr>
             <tr>
@@ -1160,13 +1177,18 @@
             <tr>
               <td>8</td>
               <td><span class="badge badge-medium">Medium</span></td>
-              <td>v0.38.0: VisibleEntry kind field (replace separator rune-sniffing)</td>
+              <td>
+                v0.38.0: VisibleEntry kind field (replace separator
+                rune-sniffing)
+              </td>
               <td><span class="badge badge-low">Open</span></td>
             </tr>
             <tr>
               <td>9</td>
               <td><span class="badge badge-medium">Medium</span></td>
-              <td>v0.38.0: decide Finish(err) parameter contract (render or drop)</td>
+              <td>
+                v0.38.0: decide Finish(err) parameter contract (render or drop)
+              </td>
               <td><span class="badge badge-low">Open</span></td>
             </tr>
             <tr>
@@ -1184,7 +1206,9 @@
             <tr>
               <td>12</td>
               <td><span class="badge badge-low">Low</span></td>
-              <td>Derive format-count tripwires from literal format-name lists</td>
+              <td>
+                Derive format-count tripwires from literal format-name lists
+              </td>
               <td><span class="badge badge-low">Open</span></td>
             </tr>
             <tr>
@@ -1200,9 +1224,9 @@
         <h2 id="question"><span class="num">07</span>My #1 Open Question</h2>
         <div class="card card-warning">
           <h4>
-            Should AGENTS.md be rewritten to canonize the v0.37.0-pins +
-            replace model as THE Pattern B, or is d16650b a temporary state you
-            plan to revert to sentinels?
+            Should AGENTS.md be rewritten to canonize the v0.37.0-pins + replace
+            model as THE Pattern B, or is d16650b a temporary state you plan to
+            revert to sentinels?
           </h4>
           <p>
             d16650b's message frames the bump as deliberate ("pins the workspace

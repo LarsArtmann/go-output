@@ -55,11 +55,11 @@
 
 ## SECTION 1 — BLOCKED ON OWNER DECISION (cannot execute autonomously)
 
-| ID  | Task                                              | Impact | Effort | CV  | Status | Why blocked                                                        |
-| --- | ------------------------------------------------- | ------ | ------ | --- | ------ | ------------------------------------------------------------------ |
-| B1  | Decide `TableData` fields vs getters for v1 (#15) | 🔥🔥🔥 | 5m     | ★★★ | ⛔     | Needs owner call: A (fields) / B (getters+setters) / C (keep both) |
-| B2  | Cut `v1.0.0` tag (#16)                            | 🔥🔥🔥 | 10m    | ★★★ | ⛔     | Depends on B1; needs explicit owner go-ahead                       |
-| B3  | Submit to r/golang + Awesome Go (#14)             | 🔥🔥   | 30m    | ★★☆ | ⛔     | Needs owner's Reddit/GitHub account                                |
+| ID | Task                                              | Impact | Effort | CV  | Status | Why blocked                                                        |
+| -- | ------------------------------------------------- | ------ | ------ | --- | ------ | ------------------------------------------------------------------ |
+| B1 | Decide `TableData` fields vs getters for v1 (#15) | 🔥🔥🔥 | 5m     | ★★★ | ⛔     | Needs owner call: A (fields) / B (getters+setters) / C (keep both) |
+| B2 | Cut `v1.0.0` tag (#16)                            | 🔥🔥🔥 | 10m    | ★★★ | ⛔     | Depends on B1; needs explicit owner go-ahead                       |
+| B3 | Submit to r/golang + Awesome Go (#14)             | 🔥🔥   | 30m    | ★★☆ | ⛔     | Needs owner's Reddit/GitHub account                                |
 
 ---
 
@@ -142,41 +142,41 @@ The single largest pending refactor. Eliminates the dual-state `Activity` vs `Ac
 
 ## SECTION 5 — TEST DEDUPLICATION (ADR 005 follow-up)
 
-| ID  | Task                                                      | Impact | Effort | CV  | Status | Depends  |
-| --- | --------------------------------------------------------- | ------ | ------ | --- | ------ | -------- |
-| T1  | Extract `fireEvents(sub, ctx, events...)` in tui tests    | 🔥     | 12m    | ★☆☆ | ⬜     | —        |
-| T2  | Extract `roundtrip(t, fmt, headers, rows)` in integration | 🔥     | 12m    | ★☆☆ | ⬜     | —        |
-| T3  | Extract `setUpFiveActivityFixture()` for golden tests     | 🟡     | 12m    | ★☆☆ | ⬜     | —        |
-| T4  | Extract enum-test helpers via `testhelpers/`              | 🟡     | 12m    | ★☆☆ | ⬜     | —        |
-| T5  | Golden test for DOT diagram export output                 | 🟡     | 12m    | ★★☆ | ⬜     | S-series |
-| T6  | Integration test: full workflow → DOT export              | 🟡     | 12m    | ★★☆ | ⬜     | S-series |
+| ID | Task                                                      | Impact | Effort | CV  | Status | Depends  |
+| -- | --------------------------------------------------------- | ------ | ------ | --- | ------ | -------- |
+| T1 | Extract `fireEvents(sub, ctx, events...)` in tui tests    | 🔥     | 12m    | ★☆☆ | ⬜     | —        |
+| T2 | Extract `roundtrip(t, fmt, headers, rows)` in integration | 🔥     | 12m    | ★☆☆ | ⬜     | —        |
+| T3 | Extract `setUpFiveActivityFixture()` for golden tests     | 🟡     | 12m    | ★☆☆ | ⬜     | —        |
+| T4 | Extract enum-test helpers via `testhelpers/`              | 🟡     | 12m    | ★☆☆ | ⬜     | —        |
+| T5 | Golden test for DOT diagram export output                 | 🟡     | 12m    | ★★☆ | ⬜     | S-series |
+| T6 | Integration test: full workflow → DOT export              | 🟡     | 12m    | ★★☆ | ⬜     | S-series |
 
 ---
 
 ## SECTION 6 — PROCESS / CI
 
-| ID  | Task                                                        | Impact | Effort | CV  | Status | Depends |
-| --- | ----------------------------------------------------------- | ------ | ------ | --- | ------ | ------- |
-| P1  | CI gate on `art-dupl -t 30` (prevent prod-clone regression) | 🔥🔥   | 12m    | ★☆☆ | ⬜     | —       |
-| P2  | Pre-commit: run `nix run .#build` across all modules        | 🔥🔥   | 10m    | ★☆☆ | ⬜     | —       |
-| P3  | Per-module pre-commit lint                                  | 🟡     | 12m    | ★☆☆ | ⬜     | —       |
-| P4  | Audit `image/color` transitive usage in nom/                | 🟢     | 8m     | ★☆☆ | ⬜     | —       |
-| P5  | Final pre-v1.0 sweep — all `nix run .#*` apps end-to-end    | 🔥🔥   | 10m    | ★★★ | ⬜     | all     |
+| ID | Task                                                        | Impact | Effort | CV  | Status | Depends |
+| -- | ----------------------------------------------------------- | ------ | ------ | --- | ------ | ------- |
+| P1 | CI gate on `art-dupl -t 30` (prevent prod-clone regression) | 🔥🔥   | 12m    | ★☆☆ | ⬜     | —       |
+| P2 | Pre-commit: run `nix run .#build` across all modules        | 🔥🔥   | 10m    | ★☆☆ | ⬜     | —       |
+| P3 | Per-module pre-commit lint                                  | 🟡     | 12m    | ★☆☆ | ⬜     | —       |
+| P4 | Audit `image/color` transitive usage in nom/                | 🟢     | 8m     | ★☆☆ | ⬜     | —       |
+| P5 | Final pre-v1.0 sweep — all `nix run .#*` apps end-to-end    | 🔥🔥   | 10m    | ★★★ | ⬜     | all     |
 
 ---
 
 ## SECTION 7 — OPTIONAL / SPECULATIVE (defer unless time)
 
-| ID  | Task                                                          | Impact | Effort | CV  | Status   |
-| --- | ------------------------------------------------------------- | ------ | ------ | --- | -------- |
-| O1  | Composite `Event` accessor interface (drop 5 type assertions) | 🟡     | —      | ★☆☆ | ⬜       |
-| O2  | Replace `switch event.GetEventType()` with handler map        | 🟡     | —      | ★☆☆ | ⬜       |
-| O3  | `DependencyTree.SetStore()` store-backed mode                 | 🟡     | —      | ★☆☆ | ⬜       |
-| O4  | `RenderOptions` for diagram export (title, theme)             | 🟢     | —      | ★☆☆ | ⬜       |
-| O5  | `Theme` struct for custom symbols/colors                      | 🟢     | —      | ★☆☆ | ⬜       |
-| O6  | `examples/nom_progress/diagram_export.go` demo                | 🟢     | 12m    | ★★☆ | ⬜       |
-| O7  | `examples/tui_progress/diagram_export.go` demo                | 🟢     | 12m    | ★☆☆ | ⬜       |
-| O8  | Decide: keep standalone `ActivityStore` or remove (YAGNI)     | 🟡     | 5m     | ★☆☆ | ⛔ owner |
+| ID | Task                                                          | Impact | Effort | CV  | Status   |
+| -- | ------------------------------------------------------------- | ------ | ------ | --- | -------- |
+| O1 | Composite `Event` accessor interface (drop 5 type assertions) | 🟡     | —      | ★☆☆ | ⬜       |
+| O2 | Replace `switch event.GetEventType()` with handler map        | 🟡     | —      | ★☆☆ | ⬜       |
+| O3 | `DependencyTree.SetStore()` store-backed mode                 | 🟡     | —      | ★☆☆ | ⬜       |
+| O4 | `RenderOptions` for diagram export (title, theme)             | 🟢     | —      | ★☆☆ | ⬜       |
+| O5 | `Theme` struct for custom symbols/colors                      | 🟢     | —      | ★☆☆ | ⬜       |
+| O6 | `examples/nom_progress/diagram_export.go` demo                | 🟢     | 12m    | ★★☆ | ⬜       |
+| O7 | `examples/tui_progress/diagram_export.go` demo                | 🟢     | 12m    | ★☆☆ | ⬜       |
+| O8 | Decide: keep standalone `ActivityStore` or remove (YAGNI)     | 🟡     | 5m     | ★☆☆ | ⛔ owner |
 
 ---
 

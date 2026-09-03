@@ -162,48 +162,48 @@ Sorted by **impact / effort ratio** (highest first).
 
 ### Tier 1 — Owner-blocked (cannot execute autonomously)
 
-| #   | Task                                                                 | Impact   | Effort |
-| --- | -------------------------------------------------------------------- | -------- | ------ |
-| 1   | **Cut `v1.0.0` tag** — API frozen, CHANGELOG ready, all gates green  | Critical | 10m    |
-| 2   | **Submit to r/golang + Awesome Go**                                  | High     | 30m    |
-| 3   | **Decide: `core/` module extraction or keep types in root**          | High     | Design |
-| 4   | **Tag `envdetect/v0.12.0`** — eliminates replace directive fragility | Medium   | 5m     |
+| # | Task                                                                 | Impact   | Effort |
+| - | -------------------------------------------------------------------- | -------- | ------ |
+| 1 | **Cut `v1.0.0` tag** — API frozen, CHANGELOG ready, all gates green  | Critical | 10m    |
+| 2 | **Submit to r/golang + Awesome Go**                                  | High     | 30m    |
+| 3 | **Decide: `core/` module extraction or keep types in root**          | High     | Design |
+| 4 | **Tag `envdetect/v0.12.0`** — eliminates replace directive fragility | Medium   | 5m     |
 
 ### Tier 2 — High-impact code work
 
-| #   | Task                                                                                                 | Impact | Effort |
-| --- | ---------------------------------------------------------------------------------------------------- | ------ | ------ |
-| 5   | **Fix examples/ exhaustive lint issue** — the only lint issue in the project                         | Medium | 2m     |
-| 6   | **Write ADR 009: incremental counts architecture** — anchors the subscriber-level aggregate decision | Medium | 30m    |
-| 7   | **Extract `graphcore/`** — move `GraphRendererState` + graph state out of root (359 lines)           | Medium | 3h     |
-| 8   | **Deep review: graph/ module** — same depth as nom/ review (3 rounds)                                | High   | 3h     |
-| 9   | **Deep review: d2/ module**                                                                          | High   | 2h     |
-| 10  | **Deep review: tui/ module**                                                                         | High   | 2h     |
-| 11  | **Add benchstat CI step** with stored baseline artifact                                              | Medium | 30m    |
-| 12  | **BDD tests for critical nom/ paths** (via bdd-testing skill)                                        | Medium | 2h     |
+| #  | Task                                                                                                 | Impact | Effort |
+| -- | ---------------------------------------------------------------------------------------------------- | ------ | ------ |
+| 5  | **Fix examples/ exhaustive lint issue** — the only lint issue in the project                         | Medium | 2m     |
+| 6  | **Write ADR 009: incremental counts architecture** — anchors the subscriber-level aggregate decision | Medium | 30m    |
+| 7  | **Extract `graphcore/`** — move `GraphRendererState` + graph state out of root (359 lines)           | Medium | 3h     |
+| 8  | **Deep review: graph/ module** — same depth as nom/ review (3 rounds)                                | High   | 3h     |
+| 9  | **Deep review: d2/ module**                                                                          | High   | 2h     |
+| 10 | **Deep review: tui/ module**                                                                         | High   | 2h     |
+| 11 | **Add benchstat CI step** with stored baseline artifact                                              | Medium | 30m    |
+| 12 | **BDD tests for critical nom/ paths** (via bdd-testing skill)                                        | Medium | 2h     |
 
 ### Tier 3 — Type-model opportunities
 
-| #   | Task                                                                                                                 | Impact | Effort |
-| --- | -------------------------------------------------------------------------------------------------------------------- | ------ | ------ |
-| 13  | **`ActivityStatus.Interest()` → named `SortOrder` enum** — removes magic numbers from sort path                      | Low    | 30m    |
-| 14  | **Branded type for `TimingCache` key** (currently bare `string`)                                                     | Low    | 30m    |
-| 15  | **Typed `Color` for `GraphStyle`** Fill/Stroke/FontColor — branded type prevents invalid values                      | Low    | 1h     |
-| 16  | **`nom/` internal sub-package split** (`event`, `render`, `tree`, `cache`) — improves navigability of 60-file module | Medium | 2h     |
-| 17  | **Narrow `tui/`→`nom/` coupling** (`WithSubscriberRLock` → interface)                                                | Low    | 1h     |
+| #  | Task                                                                                                                 | Impact | Effort |
+| -- | -------------------------------------------------------------------------------------------------------------------- | ------ | ------ |
+| 13 | **`ActivityStatus.Interest()` → named `SortOrder` enum** — removes magic numbers from sort path                      | Low    | 30m    |
+| 14 | **Branded type for `TimingCache` key** (currently bare `string`)                                                     | Low    | 30m    |
+| 15 | **Typed `Color` for `GraphStyle`** Fill/Stroke/FontColor — branded type prevents invalid values                      | Low    | 1h     |
+| 16 | **`nom/` internal sub-package split** (`event`, `render`, `tree`, `cache`) — improves navigability of 60-file module | Medium | 2h     |
+| 17 | **Narrow `tui/`→`nom/` coupling** (`WithSubscriberRLock` → interface)                                                | Low    | 1h     |
 
 ### Tier 4 — Polish & DX
 
-| #   | Task                                                                              | Impact | Effort |
-| --- | --------------------------------------------------------------------------------- | ------ | ------ |
-| 18  | **CLI demo binary** (`cmd/go-output-demo`) showcasing all 16 formats + NOM        | Low    | 2h     |
-| 19  | **Add CI badge to README**                                                        | Low    | 5m     |
-| 20  | **Update FEATURES.md** with incremental counts + derived elapsed                  | Low    | 15m    |
-| 21  | **Document module dependency DAG** in FORMAT_ARCHITECTURE.md                      | Low    | 30m    |
-| 22  | **`go work sync` to setup-workspace app**                                         | Low    | 15m    |
-| 23  | **Integration test: full workflow → DOT diagram export** with new types           | Low    | 45m    |
-| 24  | **Audit `examples/` for stale patterns** post-refactor                            | Low    | 30m    |
-| 25  | **Consider `otter/v2` for TimingCache** — only if cap is raised beyond 10 samples | Low    | 1h     |
+| #  | Task                                                                              | Impact | Effort |
+| -- | --------------------------------------------------------------------------------- | ------ | ------ |
+| 18 | **CLI demo binary** (`cmd/go-output-demo`) showcasing all 16 formats + NOM        | Low    | 2h     |
+| 19 | **Add CI badge to README**                                                        | Low    | 5m     |
+| 20 | **Update FEATURES.md** with incremental counts + derived elapsed                  | Low    | 15m    |
+| 21 | **Document module dependency DAG** in FORMAT_ARCHITECTURE.md                      | Low    | 30m    |
+| 22 | **`go work sync` to setup-workspace app**                                         | Low    | 15m    |
+| 23 | **Integration test: full workflow → DOT diagram export** with new types           | Low    | 45m    |
+| 24 | **Audit `examples/` for stale patterns** post-refactor                            | Low    | 30m    |
+| 25 | **Consider `otter/v2` for TimingCache** — only if cap is raised beyond 10 samples | Low    | 1h     |
 
 ---
 

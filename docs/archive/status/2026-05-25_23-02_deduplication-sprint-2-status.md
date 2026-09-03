@@ -108,33 +108,33 @@ Nothing. All changes compile, test, and lint cleanly. Zero regressions.
 
 ## f) Top 25 Things to Do Next
 
-| #   | Priority | Task                                                                    | Impact               |
-| --- | -------- | ----------------------------------------------------------------------- | -------------------- |
-| 1   | 🔴 HIGH  | Add direct tests for `testhelpers` to push coverage to 90%+             | Quality gate         |
-| 2   | 🔴 HIGH  | Add fuzz tests for `escape.HTML()` and `escape.XML()`                   | Security             |
-| 3   | 🔴 HIGH  | Add `CHANGELOG.md` entry for v0.x deduplication work                    | Documentation        |
-| 4   | 🟡 MED   | Write ADR 003: Zero-dep testhelpers boundary                            | Architecture clarity |
-| 5   | 🟡 MED   | Add benchmarks for `delimited` module (CSV/TSV throughput)              | Performance baseline |
-| 6   | 🟡 MED   | Add benchmarks for `serialization` module (JSON/YAML throughput)        | Performance baseline |
-| 7   | 🟡 MED   | Add benchmarks for `markup` module (HTML/XML throughput)                | Performance baseline |
-| 8   | 🟡 MED   | Add error-path tests for `delimited` to push coverage to 90%+           | Coverage             |
-| 9   | 🟡 MED   | Add error-path tests for `serialization` to push coverage to 90%+       | Coverage             |
-| 10  | 🟡 MED   | Add streaming error-path tests for `markup` to push to 90%+             | Coverage             |
-| 11  | 🟡 MED   | Create `go.work.example` for contributors                               | DX                   |
-| 12  | 🟡 MED   | Add integration tests for edge cases (empty rows, single column)        | Coverage             |
-| 13  | 🟡 MED   | Test `examples/shared` package directly                                 | Coverage             |
-| 14  | 🟡 MED   | Add `// Example` functions to key public APIs for godoc                 | Documentation        |
-| 15  | 🟢 LOW   | Investigate `gob` format support (binary serialization)                 | Feature              |
-| 16  | 🟢 LOW   | Add `FormatString()` method to Format enum for human-readable names     | DX                   |
-| 17  | 🟢 LOW   | Add `RenderToWriter()` convenience function                             | DX                   |
-| 18  | 🟢 LOW   | Profile memory allocations in hot paths (table rendering)               | Performance          |
-| 19  | 🟢 LOW   | Add `cio` (Colored IO) streaming renderer with ANSI support             | Feature              |
-| 20  | 🟢 LOW   | Consider `text/tabwriter` integration for aligned terminal output       | Feature              |
-| 21  | 🟢 LOW   | Add `README.md` badges (coverage, godoc, Go version)                    | Presentation         |
-| 22  | 🟢 LOW   | Add `CONTRIBUTING.md` with dev setup instructions                       | DX                   |
-| 23  | 🟢 LOW   | Explore `golang.org/x/term` terminal width detection for table wrapping | Feature              |
-| 24  | 🟢 LOW   | Add property-based testing with `rapid` for format round-trips          | Quality              |
-| 25  | 🟢 LOW   | Evaluate `slog` handler for structured logging output                   | Feature              |
+| #  | Priority | Task                                                                    | Impact               |
+| -- | -------- | ----------------------------------------------------------------------- | -------------------- |
+| 1  | 🔴 HIGH  | Add direct tests for `testhelpers` to push coverage to 90%+             | Quality gate         |
+| 2  | 🔴 HIGH  | Add fuzz tests for `escape.HTML()` and `escape.XML()`                   | Security             |
+| 3  | 🔴 HIGH  | Add `CHANGELOG.md` entry for v0.x deduplication work                    | Documentation        |
+| 4  | 🟡 MED   | Write ADR 003: Zero-dep testhelpers boundary                            | Architecture clarity |
+| 5  | 🟡 MED   | Add benchmarks for `delimited` module (CSV/TSV throughput)              | Performance baseline |
+| 6  | 🟡 MED   | Add benchmarks for `serialization` module (JSON/YAML throughput)        | Performance baseline |
+| 7  | 🟡 MED   | Add benchmarks for `markup` module (HTML/XML throughput)                | Performance baseline |
+| 8  | 🟡 MED   | Add error-path tests for `delimited` to push coverage to 90%+           | Coverage             |
+| 9  | 🟡 MED   | Add error-path tests for `serialization` to push coverage to 90%+       | Coverage             |
+| 10 | 🟡 MED   | Add streaming error-path tests for `markup` to push to 90%+             | Coverage             |
+| 11 | 🟡 MED   | Create `go.work.example` for contributors                               | DX                   |
+| 12 | 🟡 MED   | Add integration tests for edge cases (empty rows, single column)        | Coverage             |
+| 13 | 🟡 MED   | Test `examples/shared` package directly                                 | Coverage             |
+| 14 | 🟡 MED   | Add `// Example` functions to key public APIs for godoc                 | Documentation        |
+| 15 | 🟢 LOW   | Investigate `gob` format support (binary serialization)                 | Feature              |
+| 16 | 🟢 LOW   | Add `FormatString()` method to Format enum for human-readable names     | DX                   |
+| 17 | 🟢 LOW   | Add `RenderToWriter()` convenience function                             | DX                   |
+| 18 | 🟢 LOW   | Profile memory allocations in hot paths (table rendering)               | Performance          |
+| 19 | 🟢 LOW   | Add `cio` (Colored IO) streaming renderer with ANSI support             | Feature              |
+| 20 | 🟢 LOW   | Consider `text/tabwriter` integration for aligned terminal output       | Feature              |
+| 21 | 🟢 LOW   | Add `README.md` badges (coverage, godoc, Go version)                    | Presentation         |
+| 22 | 🟢 LOW   | Add `CONTRIBUTING.md` with dev setup instructions                       | DX                   |
+| 23 | 🟢 LOW   | Explore `golang.org/x/term` terminal width detection for table wrapping | Feature              |
+| 24 | 🟢 LOW   | Add property-based testing with `rapid` for format round-trips          | Quality              |
+| 25 | 🟢 LOW   | Evaluate `slog` handler for structured logging output                   | Feature              |
 
 ---
 

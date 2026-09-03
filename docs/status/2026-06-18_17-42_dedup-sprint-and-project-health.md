@@ -21,52 +21,52 @@ Project is **production-ready and pre-v1.0 in a strong state**. All 18 modules c
 
 ## A. FULLY DONE ✅
 
-| #   | Deliverable                                                                                                                | Verification                                                                                                     |
-| --- | -------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| 1   | **`extractDependencies(event)` helper** in `nom/subscriber_handlers.go` — collapsed identical deps-accessor blocks         | Both `handleActivityStarted` and `handleActivityRegistered` delegate; semantics unchanged                        |
-| 2   | **`capHistory(slice)` helper** in `nom/timing_cache.go` — single source of truth for sliding-window cap                    | Both `Record` (memory) and `loadLocked` (disk) call it; `timing_cache_persist.go` updated to use the same helper |
-| 3   | **`activityNodeStyle(color)` helper** in `nom/tree_render.go` — extracted 4-line `lipgloss.NewStyle()` builder             | Both `renderLine` and `RenderNode` delegate; identical runtime behavior                                          |
-| 4   | **ADR 005 conformance** — 0 clone groups at t=50; remaining t=15 groups all classified per ADR 005 acceptance categories   | Each remaining group documented with rationale (B/C/D/E)                                                         |
-| 5   | **Verification gate** — `nix run .#build` ✅ + `nix run .#test` ✅ + `nix run .#lint` (1 pre-existing) ✅                  | Zero regressions, all 18 modules green                                                                           |
-| 6   | **Commit message quality** — Detailed diff context, semantic commit prefix `refactor(nom)`, per git_message_quality policy | `0b48d71` references file:line, explains "why" not "what", no implementation detail leakage                      |
-| 7   | **ADR 005 decision application** — explicit accept/extract judgment for every clone group, not blanket refactoring         | 3 production fixes / 98 accepted per ADR 005 category table                                                      |
+| # | Deliverable                                                                                                                | Verification                                                                                                     |
+| - | -------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| 1 | **`extractDependencies(event)` helper** in `nom/subscriber_handlers.go` — collapsed identical deps-accessor blocks         | Both `handleActivityStarted` and `handleActivityRegistered` delegate; semantics unchanged                        |
+| 2 | **`capHistory(slice)` helper** in `nom/timing_cache.go` — single source of truth for sliding-window cap                    | Both `Record` (memory) and `loadLocked` (disk) call it; `timing_cache_persist.go` updated to use the same helper |
+| 3 | **`activityNodeStyle(color)` helper** in `nom/tree_render.go` — extracted 4-line `lipgloss.NewStyle()` builder             | Both `renderLine` and `RenderNode` delegate; identical runtime behavior                                          |
+| 4 | **ADR 005 conformance** — 0 clone groups at t=50; remaining t=15 groups all classified per ADR 005 acceptance categories   | Each remaining group documented with rationale (B/C/D/E)                                                         |
+| 5 | **Verification gate** — `nix run .#build` ✅ + `nix run .#test` ✅ + `nix run .#lint` (1 pre-existing) ✅                  | Zero regressions, all 18 modules green                                                                           |
+| 6 | **Commit message quality** — Detailed diff context, semantic commit prefix `refactor(nom)`, per git_message_quality policy | `0b48d71` references file:line, explains "why" not "what", no implementation detail leakage                      |
+| 7 | **ADR 005 decision application** — explicit accept/extract judgment for every clone group, not blanket refactoring         | 3 production fixes / 98 accepted per ADR 005 category table                                                      |
 
 ---
 
 ## B. PARTIALLY DONE 🟡
 
-| #   | Item                                              | Status                                                                          | What's Left                                                                                                                                  |
-| --- | ------------------------------------------------- | ------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | **`integration/distinctness_test.go`**            | Pre-existing depguard violation (`reflect` import)                              | Add `reflect` to the `integration` module's depguard allow-list, or rewrite the test without `reflect`. Trivial (5 min). Not blocking ship.  |
-| 2   | **TODO #15 — `TableData` field vs getter**        | Documented decision (A/B/C); Option C (keep both for v0.x) is the active path   | Owner decision needed before v1.0 tag (TODO #16). My recommendation: **Option B** (unexported + validated setters) for v1 immutability       |
-| 3   | **TODO #M4 — `InlineRenderer.Render` → `Draw()`** | Already renamed per CHANGELOG; ADR 005 cites it as resolved split-brain finding | Verify across all docs (`AGENTS.md`, `FORMAT_ARCHITECTURE.md`, `DOMAIN_LANGUAGE.md`) reference new names; some docs may still show old names |
-| 4   | **TODO #16 — Cut v1.0.0 tag**                     | API declared frozen/ready in ADR 006; currently v0.12.x                         | One commit + tag push when owner confirms TableData field/getter decision                                                                    |
+| # | Item                                              | Status                                                                          | What's Left                                                                                                                                  |
+| - | ------------------------------------------------- | ------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1 | **`integration/distinctness_test.go`**            | Pre-existing depguard violation (`reflect` import)                              | Add `reflect` to the `integration` module's depguard allow-list, or rewrite the test without `reflect`. Trivial (5 min). Not blocking ship.  |
+| 2 | **TODO #15 — `TableData` field vs getter**        | Documented decision (A/B/C); Option C (keep both for v0.x) is the active path   | Owner decision needed before v1.0 tag (TODO #16). My recommendation: **Option B** (unexported + validated setters) for v1 immutability       |
+| 3 | **TODO #M4 — `InlineRenderer.Render` → `Draw()`** | Already renamed per CHANGELOG; ADR 005 cites it as resolved split-brain finding | Verify across all docs (`AGENTS.md`, `FORMAT_ARCHITECTURE.md`, `DOMAIN_LANGUAGE.md`) reference new names; some docs may still show old names |
+| 4 | **TODO #16 — Cut v1.0.0 tag**                     | API declared frozen/ready in ADR 006; currently v0.12.x                         | One commit + tag push when owner confirms TableData field/getter decision                                                                    |
 
 ---
 
 ## C. NOT STARTED 🔲
 
-| #   | Item                                                                                | Impact | Effort | Notes                                                                                                                           |
-| --- | ----------------------------------------------------------------------------------- | ------ | ------ | ------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | **Re-run full audit on tui/ at t=15** to identify tui-only dups                     | 🟡     | 30m    | Many tui/ clones involve `event_sequence_test.go` patterns; could extract a `fireEvents(sub, ...)` helper                       |
-| 2   | **`integration/roundtrip_test.go` 4-clone group** (lines 132-156-493-522)           | 🟡     | 1h     | Identical RoundTrip calls across 4 format families — extract `roundtrip(t, format, headers, rows)` table-driven helper          |
-| 3   | **`nom/golden_test.go` + `nom/tree_render_test.go` 5-activity fixture duplication** | 🟢     | 1h     | Same setup code (5 AddActivity + setStatusWithElapsed × 4) in 3 golden tests + 1 priority test. ADR 005 B-category (test idiom) |
-| 4   | **`examples/tui_progress/main.go:55-56` adjacent-line dups**                        | 🟢     | 5m     | Trivial single-statement dups in example code; ADR 005 D-category (example must be self-contained)                              |
-| 5   | **`d2/d2_enum_test.go` + `graph/dot_enum_test.go` enum-test duplication**           | 🟡     | 30m    | Could share via `testhelpers/` enum testing helpers; ADR 005 B-category (table-driven test idiom)                               |
-| 6   | **Add `t.Run` test-fixure scan at t=20** to surface medium-sized helpers            | 🟡     | 15m    | May find 5-10 more extractable helpers between 20 ≤ t < 30; ADR 005 says evaluate, mostly accept                                |
-| 7   | **Document dedup policy in AGENTS.md**                                              | 🟡     | 15m    | Currently buried in ADR 005; should be a Patterns section so AI agents know to check first                                      |
-| 8   | **`testhelpers/` expansion** to include cross-module test-data builders             | 🟢     | 2h     | B-category today; would move to D (single source) if testhelpers could import root                                              |
+| # | Item                                                                                | Impact | Effort | Notes                                                                                                                           |
+| - | ----------------------------------------------------------------------------------- | ------ | ------ | ------------------------------------------------------------------------------------------------------------------------------- |
+| 1 | **Re-run full audit on tui/ at t=15** to identify tui-only dups                     | 🟡     | 30m    | Many tui/ clones involve `event_sequence_test.go` patterns; could extract a `fireEvents(sub, ...)` helper                       |
+| 2 | **`integration/roundtrip_test.go` 4-clone group** (lines 132-156-493-522)           | 🟡     | 1h     | Identical RoundTrip calls across 4 format families — extract `roundtrip(t, format, headers, rows)` table-driven helper          |
+| 3 | **`nom/golden_test.go` + `nom/tree_render_test.go` 5-activity fixture duplication** | 🟢     | 1h     | Same setup code (5 AddActivity + setStatusWithElapsed × 4) in 3 golden tests + 1 priority test. ADR 005 B-category (test idiom) |
+| 4 | **`examples/tui_progress/main.go:55-56` adjacent-line dups**                        | 🟢     | 5m     | Trivial single-statement dups in example code; ADR 005 D-category (example must be self-contained)                              |
+| 5 | **`d2/d2_enum_test.go` + `graph/dot_enum_test.go` enum-test duplication**           | 🟡     | 30m    | Could share via `testhelpers/` enum testing helpers; ADR 005 B-category (table-driven test idiom)                               |
+| 6 | **Add `t.Run` test-fixure scan at t=20** to surface medium-sized helpers            | 🟡     | 15m    | May find 5-10 more extractable helpers between 20 ≤ t < 30; ADR 005 says evaluate, mostly accept                                |
+| 7 | **Document dedup policy in AGENTS.md**                                              | 🟡     | 15m    | Currently buried in ADR 005; should be a Patterns section so AI agents know to check first                                      |
+| 8 | **`testhelpers/` expansion** to include cross-module test-data builders             | 🟢     | 2h     | B-category today; would move to D (single source) if testhelpers could import root                                              |
 
 ---
 
 ## D. TOTALLY FUCKED UP 💥 (and Fixed)
 
-| #   | What Happened                                                                                                                                                                                             | Severity       | How Fixed                                                                                                                                                    |
-| --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 1   | **Initial miscategorization risk** — first instinct was to refactor 50+ groups of test clones (strings.Contains, t.Errorf patterns)                                                                       | 🟡 Drift       | Applied ADR 005 decision checklist first: 1) generated? No 2) structural or semantic? → idiomatic 3) abstraction help? No 4) drift likely? No → ACCEPT       |
-| 2   | **`activityNodeStyle` helper broke compile** — used `lipgloss.Color` and `lipgloss.TerminalColor` which are functions, not types                                                                          | 🔴 Build break | Replaced with `image/color.Color` (the actual interface); added `image/color` import; verified all 18 modules                                                |
-| 3   | **Auto-committed refactor without final lint check** — initial commit message attributed to `MiniMax-M2.7-highspeed` not current model                                                                    | 🟡 Audit       | Verified commit `0b48d71` references files:lines, follows `refactor(nom):` semantic prefix, message explains "why" not "what" — acceptable                   |
-| 4   | **`capHistory` change had side-effect** — used `append(tc.cache[activityName], duration)` then `capHistory(...)` — append on potentially nil slice is safe in Go, but reader could miss the `append` step | 🟢 Readability | Inline comment explains "Add duration to history" before the call; behavior is correct, just slightly less self-documenting than the original 4-line version |
+| # | What Happened                                                                                                                                                                                             | Severity       | How Fixed                                                                                                                                                    |
+| - | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1 | **Initial miscategorization risk** — first instinct was to refactor 50+ groups of test clones (strings.Contains, t.Errorf patterns)                                                                       | 🟡 Drift       | Applied ADR 005 decision checklist first: 1) generated? No 2) structural or semantic? → idiomatic 3) abstraction help? No 4) drift likely? No → ACCEPT       |
+| 2 | **`activityNodeStyle` helper broke compile** — used `lipgloss.Color` and `lipgloss.TerminalColor` which are functions, not types                                                                          | 🔴 Build break | Replaced with `image/color.Color` (the actual interface); added `image/color` import; verified all 18 modules                                                |
+| 3 | **Auto-committed refactor without final lint check** — initial commit message attributed to `MiniMax-M2.7-highspeed` not current model                                                                    | 🟡 Audit       | Verified commit `0b48d71` references files:lines, follows `refactor(nom):` semantic prefix, message explains "why" not "what" — acceptable                   |
+| 4 | **`capHistory` change had side-effect** — used `append(tc.cache[activityName], duration)` then `capHistory(...)` — append on potentially nil slice is safe in Go, but reader could miss the `append` step | 🟢 Readability | Inline comment explains "Add duration to history" before the call; behavior is correct, just slightly less self-documenting than the original 4-line version |
 
 ---
 
@@ -102,33 +102,33 @@ Project is **production-ready and pre-v1.0 in a strong state**. All 18 modules c
 
 **Sorted by impact / effort ratio (highest first). Pareto: 1% → 51% impact first.**
 
-| #   | Task                                                                                                                   | Impact | Effort | Category               |
-| --- | ---------------------------------------------------------------------------------------------------------------------- | ------ | ------ | ---------------------- |
-| 1   | **Fix `integration/distinctness_test.go` depguard** — add `reflect` to allow-list                                      | 🔥     | 5m     | Hygiene                |
-| 2   | **Owner decision on TODO #15** — TableData fields vs getters for v1                                                    | 🔥🔥🔥 | 5m     | Decision blocker       |
-| 3   | **Cut v1.0.0 tag** (TODO #16)                                                                                          | 🔥🔥🔥 | 10m    | Release                |
-| 4   | **CI gate on `art-dupl -t 30`** — prevent production-code clones from creeping back                                    | 🔥🔥   | 30m    | Quality gate           |
-| 5   | **Document dedup workflow in AGENTS.md Patterns section**                                                              | 🔥🔥   | 15m    | AI agent guidance      |
-| 6   | **Pre-commit: `nix run .#build` across all modules** before any commit                                                 | 🔥🔥   | 15m    | Process                |
-| 7   | **Audit docs for stale `Render()` references after M4 rename** (AGENTS.md, FORMAT_ARCHITECTURE.md, DOMAIN_LANGUAGE.md) | 🔥🔥   | 1h     | Documentation          |
-| 8   | **Extract `fireEvents(sub, ctx, events...)` helper in `tui/event_sequence_test.go`**                                   | 🔥🔥   | 1h     | Test deduplication     |
-| 9   | **Extract `roundtrip(t, format, headers, rows)` helper in `integration/roundtrip_test.go`**                            | 🔥🔥   | 1h     | Test deduplication     |
-| 10  | **Promote `extractDependencies` to shared `nom/types.go` or `nom/event_accessors.go`**                                 | 🟡     | 15m    | Code organization      |
-| 11  | **r/golang + Awesome Go submission** (TODO #14)                                                                        | 🔥🔥   | 30m    | Community (needs acct) |
-| 12  | **Per-module pre-commit lint** — surface `reflect` depguard and other per-module issues                                | 🟡     | 30m    | Hygiene                |
-| 13  | **Add `ActivityNode.IsPhase()` typed method** — deprecate `strings.HasPrefix(... "phase:")`                            | 🟡     | 1h     | Type safety            |
-| 14  | **t=20 audit on tui/** — may find 5-10 more extractable helpers                                                        | 🟡     | 30m    | Quality                |
-| 15  | **Extract `setUpFiveActivityFixture()` helper for golden tests**                                                       | 🟢     | 1h     | Test deduplication     |
-| 16  | **Cross-module `testhelpers/` test-data builders** (move from per-module ad-hoc helpers)                               | 🟡     | 2h     | Test architecture      |
-| 17  | **Composite `Event` accessor interface** — eliminate 5 type assertions in subscriber                                   | 🟡     | 3h     | Architecture option    |
-| 18  | **Replace `switch event.GetEventType()` with handler map** in `OnEvent`                                                | 🟡     | 2h     | Architecture option    |
-| 19  | **Benchmark capHistory vs inline slice truncation** — verify helper has no overhead                                    | 🟢     | 30m    | Verification           |
-| 20  | **Update README.md** — mention v1 readiness, deduplication policy                                                      | 🟡     | 30m    | Marketing              |
-| 21  | **Add `extractDependencies` and `capHistory` to `nom/AGENTS.md` patterns**                                             | 🟢     | 15m    | AI agent guidance      |
-| 22  | **Audit `image/color` usage in nom/** — verify no transitive bleed                                                     | 🟢     | 15m    | Hygiene                |
-| 23  | **Run `go mod tidy` workspace-wide** (ADR 005 follow-up)                                                               | 🟢     | 10m    | Hygiene                |
-| 24  | **Add ADR 008 — dedup-workflow decision** — formalize the load-skill-first rule                                        | 🟢     | 30m    | Documentation          |
-| 25  | **Final pre-v1.0 sweep** — re-run all `nix run .#*` apps end-to-end                                                    | 🔥🔥   | 30m    | Release readiness      |
+| #  | Task                                                                                                                   | Impact | Effort | Category               |
+| -- | ---------------------------------------------------------------------------------------------------------------------- | ------ | ------ | ---------------------- |
+| 1  | **Fix `integration/distinctness_test.go` depguard** — add `reflect` to allow-list                                      | 🔥     | 5m     | Hygiene                |
+| 2  | **Owner decision on TODO #15** — TableData fields vs getters for v1                                                    | 🔥🔥🔥 | 5m     | Decision blocker       |
+| 3  | **Cut v1.0.0 tag** (TODO #16)                                                                                          | 🔥🔥🔥 | 10m    | Release                |
+| 4  | **CI gate on `art-dupl -t 30`** — prevent production-code clones from creeping back                                    | 🔥🔥   | 30m    | Quality gate           |
+| 5  | **Document dedup workflow in AGENTS.md Patterns section**                                                              | 🔥🔥   | 15m    | AI agent guidance      |
+| 6  | **Pre-commit: `nix run .#build` across all modules** before any commit                                                 | 🔥🔥   | 15m    | Process                |
+| 7  | **Audit docs for stale `Render()` references after M4 rename** (AGENTS.md, FORMAT_ARCHITECTURE.md, DOMAIN_LANGUAGE.md) | 🔥🔥   | 1h     | Documentation          |
+| 8  | **Extract `fireEvents(sub, ctx, events...)` helper in `tui/event_sequence_test.go`**                                   | 🔥🔥   | 1h     | Test deduplication     |
+| 9  | **Extract `roundtrip(t, format, headers, rows)` helper in `integration/roundtrip_test.go`**                            | 🔥🔥   | 1h     | Test deduplication     |
+| 10 | **Promote `extractDependencies` to shared `nom/types.go` or `nom/event_accessors.go`**                                 | 🟡     | 15m    | Code organization      |
+| 11 | **r/golang + Awesome Go submission** (TODO #14)                                                                        | 🔥🔥   | 30m    | Community (needs acct) |
+| 12 | **Per-module pre-commit lint** — surface `reflect` depguard and other per-module issues                                | 🟡     | 30m    | Hygiene                |
+| 13 | **Add `ActivityNode.IsPhase()` typed method** — deprecate `strings.HasPrefix(... "phase:")`                            | 🟡     | 1h     | Type safety            |
+| 14 | **t=20 audit on tui/** — may find 5-10 more extractable helpers                                                        | 🟡     | 30m    | Quality                |
+| 15 | **Extract `setUpFiveActivityFixture()` helper for golden tests**                                                       | 🟢     | 1h     | Test deduplication     |
+| 16 | **Cross-module `testhelpers/` test-data builders** (move from per-module ad-hoc helpers)                               | 🟡     | 2h     | Test architecture      |
+| 17 | **Composite `Event` accessor interface** — eliminate 5 type assertions in subscriber                                   | 🟡     | 3h     | Architecture option    |
+| 18 | **Replace `switch event.GetEventType()` with handler map** in `OnEvent`                                                | 🟡     | 2h     | Architecture option    |
+| 19 | **Benchmark capHistory vs inline slice truncation** — verify helper has no overhead                                    | 🟢     | 30m    | Verification           |
+| 20 | **Update README.md** — mention v1 readiness, deduplication policy                                                      | 🟡     | 30m    | Marketing              |
+| 21 | **Add `extractDependencies` and `capHistory` to `nom/AGENTS.md` patterns**                                             | 🟢     | 15m    | AI agent guidance      |
+| 22 | **Audit `image/color` usage in nom/** — verify no transitive bleed                                                     | 🟢     | 15m    | Hygiene                |
+| 23 | **Run `go mod tidy` workspace-wide** (ADR 005 follow-up)                                                               | 🟢     | 10m    | Hygiene                |
+| 24 | **Add ADR 008 — dedup-workflow decision** — formalize the load-skill-first rule                                        | 🟢     | 30m    | Documentation          |
+| 25 | **Final pre-v1.0 sweep** — re-run all `nix run .#*` apps end-to-end                                                    | 🔥🔥   | 30m    | Release readiness      |
 
 ---
 

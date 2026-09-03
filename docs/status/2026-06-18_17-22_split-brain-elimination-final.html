@@ -31,14 +31,14 @@
         --warning: var(--color-yellow);
 
         --font-heading:
-          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          Helvetica, Arial, sans-serif;
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         --font-body:
-          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          Helvetica, Arial, sans-serif;
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         --font-mono:
-          ui-monospace, "Cascadia Code", "Source Code Pro", "JetBrains Mono", Menlo, Consolas,
-          monospace;
+          ui-monospace, "Cascadia Code", "Source Code Pro", "JetBrains Mono",
+          Menlo, Consolas, monospace;
       }
 
       * {
@@ -544,10 +544,12 @@
           <div class="hero-badge">STATUS REPORT</div>
           <h1>Split-Brain Elimination — 20/20 Resolved</h1>
           <p class="hero-subtitle">
-            All 20 split-brain findings from the 2026-06-17 audit are now eliminated. The audit
-            tracked duplicate type definitions, multiple sources of truth, and inconsistent modeling
-            across 16 modules. Resolution required two coordinated sprints: one by a parallel
-            process (17/20) and one completing the final 3 (M4, m3, m6) plus regression tests.
+            All 20 split-brain findings from the 2026-06-17 audit are now
+            eliminated. The audit tracked duplicate type definitions, multiple
+            sources of truth, and inconsistent modeling across 16 modules.
+            Resolution required two coordinated sprints: one by a parallel
+            process (17/20) and one completing the final 3 (M4, m3, m6) plus
+            regression tests.
           </p>
         </div>
 
@@ -602,8 +604,9 @@
             <div class="text">
               <strong>Shared envdetect module</strong>
               <span
-                >New zero-dep `envdetect/` module is the single source of truth for CI/NO_COLOR
-                detection across root and nom/. Eliminates the M2 divergence permanently.</span
+                >New zero-dep `envdetect/` module is the single source of truth
+                for CI/NO_COLOR detection across root and nom/. Eliminates the
+                M2 divergence permanently.</span
               >
             </div>
           </div>
@@ -612,9 +615,10 @@
             <div class="text">
               <strong>Render naming convention established</strong>
               <span
-                >`Render() (string, error)` is now reserved for the `output.Renderer` contract.
-                `nom.InlineRenderer.Draw()` and `nom.DependencyTree.RenderString()` have distinct
-                names that communicate their different semantics.</span
+                >`Render() (string, error)` is now reserved for the
+                `output.Renderer` contract. `nom.InlineRenderer.Draw()` and
+                `nom.DependencyTree.RenderString()` have distinct names that
+                communicate their different semantics.</span
               >
             </div>
           </div>
@@ -624,8 +628,9 @@
               <strong>Type-safe enums everywhere</strong>
               <span
                 >`Direction`, `LineStyle`, `NodeShape` all have
-                `IsValid()`/`String()`/`AllowedValues()`. The shape bridge (`nodeShapeToD2`,
-                `ToD2Direction`, `ToRankDir`) is now exhaustively tested.</span
+                `IsValid()`/`String()`/`AllowedValues()`. The shape bridge
+                (`nodeShapeToD2`, `ToD2Direction`, `ToRankDir`) is now
+                exhaustively tested.</span
               >
             </div>
           </div>
@@ -634,9 +639,10 @@
             <div class="text">
               <strong>Zero bare event literals</strong>
               <span
-                >All 34+ hardcoded event strings replaced with `nom.EventWorkflowStarted`,
-                `nom.EventActivityCompleted`, etc. A `TestEventConstantsUnique` guard prevents
-                future collisions.</span
+                >All 34+ hardcoded event strings replaced with
+                `nom.EventWorkflowStarted`, `nom.EventActivityCompleted`, etc. A
+                `TestEventConstantsUnique` guard prevents future
+                collisions.</span
               >
             </div>
           </div>
@@ -645,16 +651,18 @@
             <div class="text">
               <strong>Compile-time C1 guard</strong>
               <span
-                >`integration.TestActivityNodeDistinctFromTreeNode` fails if `nom.ActivityNode` and
-                `output.TreeNode` ever resolve to the same type — a permanent regression
-                barrier.</span
+                >`integration.TestActivityNodeDistinctFromTreeNode` fails if
+                `nom.ActivityNode` and `output.TreeNode` ever resolve to the
+                same type — a permanent regression barrier.</span
               >
             </div>
           </div>
         </div>
 
         <!-- a) FULLY DONE -->
-        <h2 id="done"><span class="num">01</span>Fully Done — 20/20 Findings</h2>
+        <h2 id="done">
+          <span class="num">01</span>Fully Done — 20/20 Findings
+        </h2>
 
         <table>
           <thead>
@@ -678,7 +686,10 @@
               <td>C2</td>
               <td><span class="badge badge-critical">Critical</span></td>
               <td>`ProgressModel` hand-synced subscriber state</td>
-              <td>`activities` field eliminated; delegated to `GetActivityCounts()`</td>
+              <td>
+                `activities` field eliminated; delegated to
+                `GetActivityCounts()`
+              </td>
               <td><span class="badge badge-fixed">Fixed</span></td>
             </tr>
             <tr>
@@ -706,7 +717,10 @@
               <td>M1</td>
               <td><span class="badge badge-high">Major</span></td>
               <td>Three independent color systems</td>
-              <td>`nom.ColorWarning` deleted; `SemanticColors` struct replaces mutable vars</td>
+              <td>
+                `nom.ColorWarning` deleted; `SemanticColors` struct replaces
+                mutable vars
+              </td>
               <td><span class="badge badge-fixed">Fixed</span></td>
             </tr>
             <tr>
@@ -714,8 +728,8 @@
               <td><span class="badge badge-high">Major</span></td>
               <td>Two divergent color detectors</td>
               <td>
-                New `envdetect/` shared zero-dep module; root + nom delegate to `envdetect.IsCI()` /
-                `IsNoColor()`
+                New `envdetect/` shared zero-dep module; root + nom delegate to
+                `envdetect.IsCI()` / `IsNoColor()`
               </td>
               <td><span class="badge badge-fixed">Fixed</span></td>
             </tr>
@@ -731,7 +745,8 @@
               <td><span class="badge badge-high">Major</span></td>
               <td>Three incompatible `Render()` contracts</td>
               <td>
-                `InlineRenderer.Render()` → `Draw()`; `DependencyTree.Render()` → `RenderString()`
+                `InlineRenderer.Render()` → `Draw()`; `DependencyTree.Render()`
+                → `RenderString()`
               </td>
               <td><span class="badge badge-fixed">Fixed</span></td>
             </tr>
@@ -739,7 +754,9 @@
               <td>M5</td>
               <td><span class="badge badge-high">Major</span></td>
               <td>`Shape` / `GraphShape` prefix collision</td>
-              <td>`GraphShape` → `NodeShape`; `ShapeBox` → `NodeShapeBox`; etc.</td>
+              <td>
+                `GraphShape` → `NodeShape`; `ShapeBox` → `NodeShapeBox`; etc.
+              </td>
               <td><span class="badge badge-fixed">Fixed</span></td>
             </tr>
             <tr>
@@ -747,7 +764,8 @@
               <td><span class="badge badge-high">Major</span></td>
               <td>Two node-shape enums, hand-written bridge</td>
               <td>
-                `nodeShapeToD2()` renamed; `Direction` enum with `ToD2Direction()` / `ToRankDir()`
+                `nodeShapeToD2()` renamed; `Direction` enum with
+                `ToD2Direction()` / `ToRankDir()`
               </td>
               <td><span class="badge badge-fixed">Fixed</span></td>
             </tr>
@@ -756,7 +774,8 @@
               <td><span class="badge badge-high">Major</span></td>
               <td>Two layout-direction enums, no bridge</td>
               <td>
-                `Direction` enum (`DirectionDown`/`Up`/`Left`/`Right`) with format translators
+                `Direction` enum (`DirectionDown`/`Up`/`Left`/`Right`) with
+                format translators
               </td>
               <td><span class="badge badge-fixed">Fixed</span></td>
             </tr>
@@ -765,8 +784,8 @@
               <td><span class="badge badge-high">Major</span></td>
               <td>Five overlapping style structs, inconsistent names</td>
               <td>
-                `GraphStyle.FillColor` → `Fill`, `StrokeColor` → `Stroke`; aligned with
-                `D2NodeStyle`
+                `GraphStyle.FillColor` → `Fill`, `StrokeColor` → `Stroke`;
+                aligned with `D2NodeStyle`
               </td>
               <td><span class="badge badge-fixed">Fixed</span></td>
             </tr>
@@ -775,7 +794,8 @@
               <td><span class="badge badge-high">Major</span></td>
               <td>Example re-declared `delimitedWriter` (drifted)</td>
               <td>
-                `delimited.tableDataWriter` → exported `delimited.Writer`; includes `WriteFooter`
+                `delimited.tableDataWriter` → exported `delimited.Writer`;
+                includes `WriteFooter`
               </td>
               <td><span class="badge badge-fixed">Fixed</span></td>
             </tr>
@@ -800,21 +820,27 @@
               <td>m3</td>
               <td><span class="badge badge-low">Minor</span></td>
               <td>`WorkflowState` vs `ActivityStatus` overlap</td>
-              <td>Doc comment: intentionally separate lifecycles — do NOT merge</td>
+              <td>
+                Doc comment: intentionally separate lifecycles — do NOT merge
+              </td>
               <td><span class="badge badge-fixed">Fixed</span></td>
             </tr>
             <tr>
               <td>m4</td>
               <td><span class="badge badge-low">Minor</span></td>
               <td>Docs copy of `GraphEdge` stale (missing `Style`)</td>
-              <td>`FORMAT_ARCHITECTURE.md` updated with `GraphEdge.Style` field</td>
+              <td>
+                `FORMAT_ARCHITECTURE.md` updated with `GraphEdge.Style` field
+              </td>
               <td><span class="badge badge-fixed">Fixed</span></td>
             </tr>
             <tr>
               <td>m5</td>
               <td><span class="badge badge-low">Minor</span></td>
               <td>`GetWorkflowID()` returns different types</td>
-              <td>Accessor returns `WorkflowID` (branded), matching interface</td>
+              <td>
+                Accessor returns `WorkflowID` (branded), matching interface
+              </td>
               <td><span class="badge badge-fixed">Fixed</span></td>
             </tr>
             <tr>
@@ -822,8 +848,8 @@
               <td><span class="badge badge-low">Minor</span></td>
               <td>Branded IDs re-exported through 3 layers</td>
               <td>
-                Canonical paths documented in `ids.go`: root is brand home; `d2/` re-exports are
-                convenience aliases
+                Canonical paths documented in `ids.go`: root is brand home;
+                `d2/` re-exports are convenience aliases
               </td>
               <td><span class="badge badge-fixed">Fixed</span></td>
             </tr>
@@ -835,22 +861,27 @@
         <div class="card card-solution">
           <h4>Nothing partially done — all 20 findings are fully resolved.</h4>
           <p>
-            The `dependencyTree` field in `ProgressModel` was previously flagged as "partially done"
-            (a shared pointer cache, not a deep copy). During the M4 sprint, this was re-evaluated:
-            the field provides legitimate value by caching the tree reference between render frames,
-            avoiding repeated `GetDependencyTree()` calls in the hot render path. It is not a
-            split-brain issue — the pointer always refers to the subscriber's canonical tree.
-            Status: <strong>accepted as-is, documented</strong>.
+            The `dependencyTree` field in `ProgressModel` was previously flagged
+            as "partially done" (a shared pointer cache, not a deep copy).
+            During the M4 sprint, this was re-evaluated: the field provides
+            legitimate value by caching the tree reference between render
+            frames, avoiding repeated `GetDependencyTree()` calls in the hot
+            render path. It is not a split-brain issue — the pointer always
+            refers to the subscriber's canonical tree. Status:
+            <strong>accepted as-is, documented</strong>.
           </p>
         </div>
 
         <!-- c) NOT STARTED -->
         <h2 id="notstarted"><span class="num">03</span>Not Started</h2>
         <div class="card card-solution">
-          <h4>Nothing not started — all planned work from the audit is complete.</h4>
+          <h4>
+            Nothing not started — all planned work from the audit is complete.
+          </h4>
           <p>
-            Five items were previously deferred with `TODO(split-brain)` markers (M4, M5, M6/M7, M8,
-            m6). All are now resolved. No deferred markers remain in the codebase.
+            Five items were previously deferred with `TODO(split-brain)` markers
+            (M4, M5, M6/M7, M8, m6). All are now resolved. No deferred markers
+            remain in the codebase.
           </p>
         </div>
 
@@ -859,31 +890,36 @@
         <div class="card card-solution">
           <h4>Nothing is fucked up.</h4>
           <p>
-            The brutal self-review from the first sprint identified 5 process failures (AGENTS.md
-            stale, CHANGELOG empty, zero tests, TODO typo, mutable `ColorX` vars). All 5 were
-            resolved in the first sprint. The second sprint added 3 new regression tests and
-            completed the remaining deferred items with zero new process failures.
+            The brutal self-review from the first sprint identified 5 process
+            failures (AGENTS.md stale, CHANGELOG empty, zero tests, TODO typo,
+            mutable `ColorX` vars). All 5 were resolved in the first sprint. The
+            second sprint added 3 new regression tests and completed the
+            remaining deferred items with zero new process failures.
           </p>
         </div>
 
         <!-- e) WHAT WE SHOULD IMPROVE -->
-        <h2 id="improvements"><span class="num">05</span>What We Should Improve</h2>
+        <h2 id="improvements">
+          <span class="num">05</span>What We Should Improve
+        </h2>
 
         <div class="issue issue-important">
           <span class="severity severity-important">Type Model</span>
           <h3>Typed Events — Replace string routing + 7 accessor interfaces</h3>
           <p>
-            The current event system uses string-based routing (`OnEvent` → `GetEventType() string`
-            → switch on string) with 7 type-assertion accessor interfaces. A sealed `Event`
-            interface + exhaustive type switch would eliminate the silent-typo-drop failure mode and
-            ~60 lines of accessor boilerplate. This is the highest-impact remaining architectural
-            improvement.
+            The current event system uses string-based routing (`OnEvent` →
+            `GetEventType() string` → switch on string) with 7 type-assertion
+            accessor interfaces. A sealed `Event` interface + exhaustive type
+            switch would eliminate the silent-typo-drop failure mode and ~60
+            lines of accessor boilerplate. This is the highest-impact remaining
+            architectural improvement.
           </p>
           <div class="callout callout-warning">
-            <strong>Trade-off</strong> Changes the `EventSubscriber` interface contract. Any
-            external implementers would break. Viable as a 0.x minor breaking change or as a
-            backward-compatible addition (keep `GetEventType()` as a legacy method alongside the new
-            sealed interface).
+            <strong>Trade-off</strong> Changes the `EventSubscriber` interface
+            contract. Any external implementers would break. Viable as a 0.x
+            minor breaking change or as a backward-compatible addition (keep
+            `GetEventType()` as a legacy method alongside the new sealed
+            interface).
           </div>
         </div>
 
@@ -891,19 +927,24 @@
           <span class="severity severity-important">Test Gap</span>
           <h3>Cross-module color agreement test</h3>
           <p>
-            No executable contract asserts root `ShouldColor()` and nom `detectNoColor()` agree. A
-            table-driven test in `integration/` that iterates env-var combinations would catch
-            regressions if `envdetect/` logic ever drifts from the callers.
+            No executable contract asserts root `ShouldColor()` and nom
+            `detectNoColor()` agree. A table-driven test in `integration/` that
+            iterates env-var combinations would catch regressions if
+            `envdetect/` logic ever drifts from the callers.
           </p>
         </div>
 
         <div class="issue issue-nice">
           <span class="severity severity-nice">Cleanup</span>
-          <h3>tui consumes `nom.Colors` instead of maintaining `terminalColors`</h3>
+          <h3>
+            tui consumes `nom.Colors` instead of maintaining `terminalColors`
+          </h3>
           <p>
-            The `SemanticColors` struct is available in nom. The `tui` module (which depends on nom)
-            could consume it directly instead of maintaining its own `terminalColors` struct with
-            duplicate ANSI codes. This is a cleanup, not a bug — the values are already aligned.
+            The `SemanticColors` struct is available in nom. The `tui` module
+            (which depends on nom) could consume it directly instead of
+            maintaining its own `terminalColors` struct with duplicate ANSI
+            codes. This is a cleanup, not a bug — the values are already
+            aligned.
           </p>
         </div>
 
@@ -911,9 +952,10 @@
           <span class="severity severity-nice">Cleanup</span>
           <h3>Unify "No activities to display" to single source</h3>
           <p>
-            Both `nom` and `tui` define the same string. Since `tui` imports `nom`, it could
-            re-export `nom.msgNoActivitiesToDisplay` (or nom could export it). Low priority — the
-            constants are already aligned in value, just not in canonical location.
+            Both `nom` and `tui` define the same string. Since `tui` imports
+            `nom`, it could re-export `nom.msgNoActivitiesToDisplay` (or nom
+            could export it). Low priority — the constants are already aligned
+            in value, just not in canonical location.
           </p>
         </div>
 
@@ -921,17 +963,21 @@
           <span class="severity severity-nice">Test Gap</span>
           <h3>Add `FormatDuration` fuzzing for edge cases</h3>
           <p>
-            The `FormatDuration` function (in `nom/format.go`) handles sub-minute, minute, hour, and
-            day boundaries. A fuzz test would verify no panic on negative, zero, or extremely large
-            durations, and would catch regressions in the "60.0s" boundary fix that was already
+            The `FormatDuration` function (in `nom/format.go`) handles
+            sub-minute, minute, hour, and day boundaries. A fuzz test would
+            verify no panic on negative, zero, or extremely large durations, and
+            would catch regressions in the "60.0s" boundary fix that was already
             shipped.
           </p>
         </div>
 
         <!-- f) Top 25 -->
-        <h2 id="next25"><span class="num">06</span>Top 25 Things to Get Done Next</h2>
+        <h2 id="next25">
+          <span class="num">06</span>Top 25 Things to Get Done Next
+        </h2>
         <p>
-          Sorted by impact/effort (highest first). All are post-split-brain improvements, not fixes.
+          Sorted by impact/effort (highest first). All are post-split-brain
+          improvements, not fixes.
         </p>
 
         <table>
@@ -948,8 +994,8 @@
             <tr>
               <td>1</td>
               <td>
-                <strong>Typed events</strong> — sealed `Event` interface + type switch (eliminates
-                string-routing typo risk)
+                <strong>Typed events</strong> — sealed `Event` interface + type
+                switch (eliminates string-routing typo risk)
               </td>
               <td>High</td>
               <td>90min</td>
@@ -958,8 +1004,8 @@
             <tr>
               <td>2</td>
               <td>
-                <strong>Cross-module color agreement test</strong> — table-driven env-var combos in
-                integration/
+                <strong>Cross-module color agreement test</strong> —
+                table-driven env-var combos in integration/
               </td>
               <td>High</td>
               <td>20min</td>
@@ -968,8 +1014,8 @@
             <tr>
               <td>3</td>
               <td>
-                <strong>Profile `GetActivityCounts()`</strong> vs old `GetActivities()` deep-copy —
-                verify no perf regression
+                <strong>Profile `GetActivityCounts()`</strong> vs old
+                `GetActivities()` deep-copy — verify no perf regression
               </td>
               <td>Med</td>
               <td>15min</td>
@@ -978,7 +1024,8 @@
             <tr>
               <td>4</td>
               <td>
-                <strong>Have tui consume `nom.Colors`</strong> instead of own `terminalColors`
+                <strong>Have tui consume `nom.Colors`</strong> instead of own
+                `terminalColors`
               </td>
               <td>Med</td>
               <td>40min</td>
@@ -987,7 +1034,8 @@
             <tr>
               <td>5</td>
               <td>
-                <strong>Add `FormatDuration` fuzzing</strong> — negative, zero, boundary durations
+                <strong>Add `FormatDuration` fuzzing</strong> — negative, zero,
+                boundary durations
               </td>
               <td>Med</td>
               <td>15min</td>
@@ -996,7 +1044,10 @@
             <tr>
               <td>6</td>
               <td>
-                <strong>Deprecate `ColorRunning`/`ColorCompleted` aliases</strong> → `Colors.X`
+                <strong
+                  >Deprecate `ColorRunning`/`ColorCompleted` aliases</strong
+                >
+                → `Colors.X`
               </td>
               <td>Low</td>
               <td>30min</td>
@@ -1004,14 +1055,20 @@
             </tr>
             <tr>
               <td>7</td>
-              <td><strong>Consider `muesli/termenv`</strong> for TrueColor/256-color detection</td>
+              <td>
+                <strong>Consider `muesli/termenv`</strong> for
+                TrueColor/256-color detection
+              </td>
               <td>Med</td>
               <td>Research</td>
               <td>Library</td>
             </tr>
             <tr>
               <td>8</td>
-              <td><strong>Add `FORCE_COLOR` env var support</strong> to color detection</td>
+              <td>
+                <strong>Add `FORCE_COLOR` env var support</strong> to color
+                detection
+              </td>
               <td>Low</td>
               <td>10min</td>
               <td>Feature</td>
@@ -1019,8 +1076,8 @@
             <tr>
               <td>9</td>
               <td>
-                <strong>Unify "No activities to display"</strong> to single source (nom exports, tui
-                re-exports)
+                <strong>Unify "No activities to display"</strong> to single
+                source (nom exports, tui re-exports)
               </td>
               <td>Low</td>
               <td>10min</td>
@@ -1029,8 +1086,8 @@
             <tr>
               <td>10</td>
               <td>
-                <strong>Document color-detection architecture decision</strong> — root hand-rolled
-                vs nom aligned via envdetect
+                <strong>Document color-detection architecture decision</strong>
+                — root hand-rolled vs nom aligned via envdetect
               </td>
               <td>Low</td>
               <td>10min</td>
@@ -1039,8 +1096,8 @@
             <tr>
               <td>11</td>
               <td>
-                <strong>Consider shared `terminal/` zero-dep module</strong> for detection logic
-                beyond envdetect
+                <strong>Consider shared `terminal/` zero-dep module</strong> for
+                detection logic beyond envdetect
               </td>
               <td>Med</td>
               <td>60min</td>
@@ -1049,8 +1106,11 @@
             <tr>
               <td>12</td>
               <td>
-                <strong>Review if `tui.terminalColors` can become a `nom.Theme`</strong> that tui
-                consumes
+                <strong
+                  >Review if `tui.terminalColors` can become a
+                  `nom.Theme`</strong
+                >
+                that tui consumes
               </td>
               <td>Med</td>
               <td>45min</td>
@@ -1058,14 +1118,23 @@
             </tr>
             <tr>
               <td>13</td>
-              <td><strong>Update planning doc with actual completion times</strong></td>
+              <td>
+                <strong
+                  >Update planning doc with actual completion times</strong
+                >
+              </td>
               <td>Low</td>
               <td>10min</td>
               <td>Process</td>
             </tr>
             <tr>
               <td>14</td>
-              <td><strong>Add test that `nom.Colors` values match `tui.colors` values</strong></td>
+              <td>
+                <strong
+                  >Add test that `nom.Colors` values match `tui.colors`
+                  values</strong
+                >
+              </td>
               <td>Med</td>
               <td>15min</td>
               <td>Test gap</td>
@@ -1073,8 +1142,10 @@
             <tr>
               <td>15</td>
               <td>
-                <strong>Add `detectNoColor` test for `FORCE_COLOR` env var</strong> (once #8 is
-                implemented)
+                <strong
+                  >Add `detectNoColor` test for `FORCE_COLOR` env var</strong
+                >
+                (once #8 is implemented)
               </td>
               <td>Low</td>
               <td>10min</td>
@@ -1083,8 +1154,11 @@
             <tr>
               <td>16</td>
               <td>
-                <strong>Move D2 brand types from root `ids.go` to `d2/` module</strong> (m6
-                deferred, now re-evaluated: root is correct home)
+                <strong
+                  >Move D2 brand types from root `ids.go` to `d2/`
+                  module</strong
+                >
+                (m6 deferred, now re-evaluated: root is correct home)
               </td>
               <td>Low</td>
               <td>N/A</td>
@@ -1093,8 +1167,8 @@
             <tr>
               <td>17</td>
               <td>
-                <strong>Add `NodeShape` exhaustiveness test</strong> — every `NodeShape` maps to
-                non-default `D2NodeShape`
+                <strong>Add `NodeShape` exhaustiveness test</strong> — every
+                `NodeShape` maps to non-default `D2NodeShape`
               </td>
               <td>Med</td>
               <td>20min</td>
@@ -1103,8 +1177,8 @@
             <tr>
               <td>18</td>
               <td>
-                <strong>Add `Direction` exhaustiveness test</strong> — every `Direction` maps to
-                both `D2Direction` and `RankDir`
+                <strong>Add `Direction` exhaustiveness test</strong> — every
+                `Direction` maps to both `D2Direction` and `RankDir`
               </td>
               <td>Med</td>
               <td>20min</td>
@@ -1113,8 +1187,10 @@
             <tr>
               <td>19</td>
               <td>
-                <strong>Audit `GraphStyle` ↔ `D2NodeStyle` field alignment</strong> for any
-                remaining mismatches
+                <strong
+                  >Audit `GraphStyle` ↔ `D2NodeStyle` field alignment</strong
+                >
+                for any remaining mismatches
               </td>
               <td>Low</td>
               <td>30min</td>
@@ -1123,8 +1199,10 @@
             <tr>
               <td>20</td>
               <td>
-                <strong>Add `ActivityNode` distinctness compile-time test</strong> (already shipped
-                — verify it stays)
+                <strong
+                  >Add `ActivityNode` distinctness compile-time test</strong
+                >
+                (already shipped — verify it stays)
               </td>
               <td>Low</td>
               <td>5min</td>
@@ -1133,8 +1211,8 @@
             <tr>
               <td>21</td>
               <td>
-                <strong>Add `ActivityCounts.Total()` test</strong> — edge cases (all zero, all
-                non-zero, overflow)
+                <strong>Add `ActivityCounts.Total()` test</strong> — edge cases
+                (all zero, all non-zero, overflow)
               </td>
               <td>Low</td>
               <td>10min</td>
@@ -1143,8 +1221,8 @@
             <tr>
               <td>22</td>
               <td>
-                <strong>Review `nom.MultiSubscriber` error handling</strong> — currently logs and
-                continues; should it aggregate?
+                <strong>Review `nom.MultiSubscriber` error handling</strong> —
+                currently logs and continues; should it aggregate?
               </td>
               <td>Low</td>
               <td>30min</td>
@@ -1153,8 +1231,8 @@
             <tr>
               <td>23</td>
               <td>
-                <strong>Add `ActivityStore` concurrency stress test</strong> — concurrent Upsert +
-                Nodes + Edges
+                <strong>Add `ActivityStore` concurrency stress test</strong> —
+                concurrent Upsert + Nodes + Edges
               </td>
               <td>Med</td>
               <td>45min</td>
@@ -1163,8 +1241,8 @@
             <tr>
               <td>24</td>
               <td>
-                <strong>Consider `sync.Map` vs `RWMutex` + `map`</strong> in `ActivityStore` for
-                high-concurrency scenarios
+                <strong>Consider `sync.Map` vs `RWMutex` + `map`</strong> in
+                `ActivityStore` for high-concurrency scenarios
               </td>
               <td>Low</td>
               <td>Research</td>
@@ -1184,57 +1262,67 @@
         </table>
 
         <!-- g) Top #1 Question -->
-        <h2 id="question"><span class="num">07</span>Top #1 Question I Cannot Figure Out</h2>
+        <h2 id="question">
+          <span class="num">07</span>Top #1 Question I Cannot Figure Out
+        </h2>
 
         <div class="issue issue-critical">
           <span class="severity severity-critical">BLOCKING</span>
           <h3>
-            Should the typed-events refactor happen as a 0.x breaking change or a
-            backward-compatible addition?
+            Should the typed-events refactor happen as a 0.x breaking change or
+            a backward-compatible addition?
           </h3>
           <p>
-            The current event system uses string-based routing (<code>OnEvent</code> →
-            <code>GetEventType() string</code> → switch on string) with 7 type-assertion accessor
-            interfaces. Replacing it with a sealed <code>Event</code> interface + exhaustive type
-            switch would eliminate the silent-typo-drop failure mode.
+            The current event system uses string-based routing (<code
+              >OnEvent</code
+            >
+            → <code>GetEventType() string</code> → switch on string) with 7
+            type-assertion accessor interfaces. Replacing it with a sealed
+            <code>Event</code> interface + exhaustive type switch would
+            eliminate the silent-typo-drop failure mode.
           </p>
           <p>But:</p>
           <ul style="color: var(--text-muted); margin: 0 0 1rem 1.5rem">
             <li>
-              It changes the <code>EventSubscriber</code> interface contract — any external code
-              implementing <code>Event</code> with <code>GetEventType() string</code> would break
+              It changes the <code>EventSubscriber</code> interface contract —
+              any external code implementing <code>Event</code> with
+              <code>GetEventType() string</code> would break
             </li>
             <li>
-              The <code>nom.Event*</code> constants are now all in place and properly used (zero
-              bare literals)
+              The <code>nom.Event*</code> constants are now all in place and
+              properly used (zero bare literals)
             </li>
             <li>The accessor interfaces are ugly but working</li>
-            <li>The <code>bdd/</code> module tests events via the string API</li>
+            <li>
+              The <code>bdd/</code> module tests events via the string API
+            </li>
           </ul>
           <div class="callout callout-solution">
-            <strong>Option A (breaking, 0.x minor)</strong> Replace <code>Event</code> with sealed
-            interface; remove <code>GetEventType()</code>. Clean, correct, but breaks external
+            <strong>Option A (breaking, 0.x minor)</strong> Replace
+            <code>Event</code> with sealed interface; remove
+            <code>GetEventType()</code>. Clean, correct, but breaks external
             implementers.
           </div>
           <div class="callout callout-warning" style="margin-top: 0.5rem">
             <strong>Option B (backward-compatible)</strong> Keep
-            <code>GetEventType() string</code> as a legacy method; add new sealed
-            <code>Event</code> interface alongside. No breakage, but maintains two event systems in
-            parallel.
+            <code>GetEventType() string</code> as a legacy method; add new
+            sealed <code>Event</code> interface alongside. No breakage, but
+            maintains two event systems in parallel.
           </div>
           <p style="margin-top: 1rem">
-            <strong>I lean toward Option A (breaking)</strong> because the current system is
-            genuinely fragile (a typo in a string silently drops an event), and we are in 0.x where
-            breaking changes are expected. But I need your call on timing — is now the right window,
+            <strong>I lean toward Option A (breaking)</strong> because the
+            current system is genuinely fragile (a typo in a string silently
+            drops an event), and we are in 0.x where breaking changes are
+            expected. But I need your call on timing — is now the right window,
             or should this wait until after a release candidate?
           </p>
         </div>
 
         <!-- Footer -->
         <footer class="footer">
-          Generated 2026-06-18 17:22 CEST &middot; Split-brain audit 20/20 resolved &middot; 18
-          modules build clean &middot; 36/36 pre-commit checks pass &middot; Verified against source
-          code
+          Generated 2026-06-18 17:22 CEST &middot; Split-brain audit 20/20
+          resolved &middot; 18 modules build clean &middot; 36/36 pre-commit
+          checks pass &middot; Verified against source code
         </footer>
       </main>
     </div>

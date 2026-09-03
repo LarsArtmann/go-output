@@ -559,9 +559,10 @@
           <h1>What would make me adopt go-output</h1>
           <p class="subtitle">
             An honest, code-referenced review from the perspective of
-            <strong>samber-do-auditlog</strong> — a DI container observability plugin that exports
-            dependency graphs as Mermaid, PlantUML, JSON, and interactive HTML. I wanted to use your
-            library. Here's what stopped me, and what would change my mind.
+            <strong>samber-do-auditlog</strong> — a DI container observability
+            plugin that exports dependency graphs as Mermaid, PlantUML, JSON,
+            and interactive HTML. I wanted to use your library. Here's what
+            stopped me, and what would change my mind.
           </p>
           <div class="meta">
             <span class="tag amber">Reviewer: samber-do-auditlog v0.0.4</span>
@@ -594,9 +595,10 @@
         <section id="strengths">
           <h2><span class="num">&#9670;</span>What's already excellent</h2>
           <p>
-            Before the criticism: this library gets a lot right. The architecture is thoughtful, the
-            multi-module workspace is well-executed, and the escape package is genuinely
-            best-in-class. These are the foundations that made me want to adopt it in the first
+            Before the criticism: this library gets a lot right. The
+            architecture is thoughtful, the multi-module workspace is
+            well-executed, and the escape package is genuinely best-in-class.
+            These are the foundations that made me want to adopt it in the first
             place:
           </p>
 
@@ -606,9 +608,10 @@
               <div class="text">
                 <strong>Multi-module isolation done right</strong>
                 <span
-                  >Lipgloss stays in <code>table/</code>, Bubble Tea stays in <code>tui/</code>.
-                  Importing the root pulls only <code>x/term</code>. This is the correct way to
-                  structure a formatting library.</span
+                  >Lipgloss stays in <code>table/</code>, Bubble Tea stays in
+                  <code>tui/</code>. Importing the root pulls only
+                  <code>x/term</code>. This is the correct way to structure a
+                  formatting library.</span
                 >
               </div>
             </div>
@@ -617,10 +620,11 @@
               <div class="text">
                 <strong>The <code>escape/</code> package is perfect</strong>
                 <span
-                  >Zero dependencies. <code>MermaidID</code>, <code>MermaidText</code>,
-                  <code>SlugifyID</code>, <code>D2</code>, <code>DOT</code> — all correct, all
-                  tested. I borrowed these concepts locally. This module alone is worth publishing
-                  standalone.</span
+                  >Zero dependencies. <code>MermaidID</code>,
+                  <code>MermaidText</code>, <code>SlugifyID</code>,
+                  <code>D2</code>, <code>DOT</code> — all correct, all tested. I
+                  borrowed these concepts locally. This module alone is worth
+                  publishing standalone.</span
                 >
               </div>
             </div>
@@ -630,8 +634,9 @@
                 <strong>Shape capability matrix</strong>
                 <span
                   >The <code>Format &#8594; []Shape</code> registry with
-                  <code>f.Supports(shape)</code> and <code>FormatsForShape(shape)</code> is elegant.
-                  Runtime format selection from CLI flags becomes trivial.</span
+                  <code>f.Supports(shape)</code> and
+                  <code>FormatsForShape(shape)</code> is elegant. Runtime format
+                  selection from CLI flags becomes trivial.</span
                 >
               </div>
             </div>
@@ -640,9 +645,10 @@
               <div class="text">
                 <strong>Branded phantom ID types</strong>
                 <span
-                  ><code>GraphNodeID</code> vs <code>TreeNodeID</code> vs <code>D2NodeID</code> —
-                  compile-time safety preventing ID mixups. This is the kind of type-level design
-                  most Go libraries skip.</span
+                  ><code>GraphNodeID</code> vs <code>TreeNodeID</code> vs
+                  <code>D2NodeID</code> — compile-time safety preventing ID
+                  mixups. This is the kind of type-level design most Go
+                  libraries skip.</span
                 >
               </div>
             </div>
@@ -651,9 +657,11 @@
               <div class="text">
                 <strong>Cross-shape conversion</strong>
                 <span
-                  ><code>TableData &#8594; Graph</code>, <code>Tree &#8594; Graph</code> — the
-                  <code>SetNodesFromTableData</code> and <code>AddTreeNodes</code> patterns make the
-                  data models composable rather than siloed.</span
+                  ><code>TableData &#8594; Graph</code>,
+                  <code>Tree &#8594; Graph</code> — the
+                  <code>SetNodesFromTableData</code> and
+                  <code>AddTreeNodes</code> patterns make the data models
+                  composable rather than siloed.</span
                 >
               </div>
             </div>
@@ -664,63 +672,88 @@
         <section id="verdict">
           <div class="callout callout-amber">
             <strong>The bottom line</strong>
-            I declined to adopt go-output for diagram rendering. Not because it's bad — but because
-            the diagram renderers are
+            I declined to adopt go-output for diagram rendering. Not because
+            it's bad — but because the diagram renderers are
             <strong>opinionated where they should be configurable</strong>, and
-            <strong>configurable where they should be invisible</strong>. The escape package is the
-            exception: it's exactly right. Fix the four issues below and I'd adopt it tomorrow.
+            <strong>configurable where they should be invisible</strong>. The
+            escape package is the exception: it's exactly right. Fix the four
+            issues below and I'd adopt it tomorrow.
           </div>
         </section>
 
         <!-- ============ CRITICAL ============ -->
         <section id="critical">
           <h2><span class="num">01</span>Critical gaps blocking adoption</h2>
-          <p>These four issues are why I ship local code instead of importing your library.</p>
+          <p>
+            These four issues are why I ship local code instead of importing
+            your library.
+          </p>
 
           <!-- Issue 1: No theme injection -->
           <div class="issue issue-critical" id="style">
-            <span class="severity severity-critical">Blocking &middot; High impact</span>
+            <span class="severity severity-critical"
+              >Blocking &middot; High impact</span
+            >
             <h3>GraphStyle is dead code in Mermaid and PlantUML</h3>
-            <div class="where">graph/mermaid.go:51-78 &middot; plantuml/plantuml.go:49-79</div>
+            <div class="where">
+              graph/mermaid.go:51-78 &middot; plantuml/plantuml.go:49-79
+            </div>
             <p>
-              The <code>GraphStyle</code> struct exists with <code>FillColor</code>,
-              <code>StrokeColor</code>, <code>FontColor</code>, and <code>FontSize</code> — but
-              <strong>only the DOT renderer reads it</strong>. Mermaid ignores it entirely. PlantUML
-              ignores it entirely. I verified this by grepping for <code>Style</code>,
-              <code>FillColor</code>, and <code>StrokeColor</code> in both files: zero matches in
-              Mermaid, only hardcoded <code>skinparam</code> in PlantUML.
+              The <code>GraphStyle</code> struct exists with
+              <code>FillColor</code>, <code>StrokeColor</code>,
+              <code>FontColor</code>, and <code>FontSize</code> — but
+              <strong>only the DOT renderer reads it</strong>. Mermaid ignores
+              it entirely. PlantUML ignores it entirely. I verified this by
+              grepping for <code>Style</code>, <code>FillColor</code>, and
+              <code>StrokeColor</code> in both files: zero matches in Mermaid,
+              only hardcoded <code>skinparam</code> in PlantUML.
             </p>
-            <p>Meanwhile, the Mermaid renderer hardcodes a <strong>pink classDef</strong>:</p>
+            <p>
+              Meanwhile, the Mermaid renderer hardcodes a
+              <strong>pink classDef</strong>:
+            </p>
             <pre><code>// graph/mermaid.go:73 — hardcoded, cannot be overridden
 b.WriteString("    classDef default fill:#f9f,stroke:#333,stroke-width:4px\n")</code></pre>
             <p>
-              My plugin uses a deliberate warm-amber palette (<code>#e8a838</code> on
-              <code>#14110d</code>) across its HTML visualization. Switching to go-output would
-              replace that with pink. For any library whose value proposition includes visual
-              consistency, this is a non-starter.
+              My plugin uses a deliberate warm-amber palette (<code
+                >#e8a838</code
+              >
+              on <code>#14110d</code>) across its HTML visualization. Switching
+              to go-output would replace that with pink. For any library whose
+              value proposition includes visual consistency, this is a
+              non-starter.
             </p>
             <div class="callout callout-teal">
               <strong>Fix: wire GraphStyle into all renderers</strong>
-              Mermaid: emit <code>style &lt;node-id&gt; fill:#xxx,stroke:#yyy</code> per node when
-              Style is set. PlantUML: emit individual <code>skinparam</code> or inline color
-              directives. Also add a <code>WithTheme(Theme)</code> option for global defaults.
+              Mermaid: emit
+              <code>style &lt;node-id&gt; fill:#xxx,stroke:#yyy</code> per node
+              when Style is set. PlantUML: emit individual
+              <code>skinparam</code> or inline color directives. Also add a
+              <code>WithTheme(Theme)</code> option for global defaults.
             </div>
           </div>
 
           <!-- Issue 2: No edge dedup -->
           <div class="issue issue-critical" id="dedup">
-            <span class="severity severity-critical">Blocking &middot; Data correctness</span>
+            <span class="severity severity-critical"
+              >Blocking &middot; Data correctness</span
+            >
             <h3>No edge deduplication in GraphRendererState</h3>
-            <div class="where">graph.go:148-155 &middot; AddEdge just appends</div>
+            <div class="where">
+              graph.go:148-155 &middot; AddEdge just appends
+            </div>
             <p>
-              <code>AddEdge</code> is a raw <code>append</code> with no dedup. If a dependency graph
-              produces duplicate edges (common with transitive dependencies), the rendered diagram
-              shows visual noise — multiple identical arrows stacked on top of each other.
+              <code>AddEdge</code> is a raw <code>append</code> with no dedup.
+              If a dependency graph produces duplicate edges (common with
+              transitive dependencies), the rendered diagram shows visual noise
+              — multiple identical arrows stacked on top of each other.
             </p>
             <p>
-              I tested this: adding <code>A&#8594;B</code> twice renders two identical edges. My
-              plugin's local <code>writeDiagram</code> deduplicates via a
-              <code>seen map[string]struct{}</code>. The consumer shouldn't have to implement this.
+              I tested this: adding <code>A&#8594;B</code> twice renders two
+              identical edges. My plugin's local
+              <code>writeDiagram</code> deduplicates via a
+              <code>seen map[string]struct{}</code>. The consumer shouldn't have
+              to implement this.
             </p>
             <pre><code>// What the consumer has to do today:
 seen := make(map[string]struct{})
@@ -735,28 +768,33 @@ for _, edge := range edges {
 renderer.AddEdge(edge) // dedup handled internally</code></pre>
             <div class="callout callout-teal">
               <strong
-                >Fix: add <code>SetEdgesDeduplicated([]GraphEdge)</code> or dedup in
-                <code>Render()</code></strong
+                >Fix: add <code>SetEdgesDeduplicated([]GraphEdge)</code> or
+                dedup in <code>Render()</code></strong
               >
-              A simple <code>from + "->" + to</code> key in a <code>map[string]struct{}</code> is
-              all it takes. Optionally dedup on <code>(from, to, label)</code> to allow parallel
-              edges with different labels.
+              A simple <code>from + "->" + to</code> key in a
+              <code>map[string]struct{}</code> is all it takes. Optionally dedup
+              on <code>(from, to, label)</code> to allow parallel edges with
+              different labels.
             </div>
           </div>
 
           <!-- Issue 3: Markdown fence -->
           <div class="issue issue-critical" id="fence">
-            <span class="severity severity-critical">Blocking &middot; Output contract</span>
+            <span class="severity severity-critical"
+              >Blocking &middot; Output contract</span
+            >
             <h3>Mermaid output is locked behind a markdown code fence</h3>
             <div class="where">
-              graph/mermaid.go:54 &middot; <code>b.WriteString("```mermaid\n")</code>
+              graph/mermaid.go:54 &middot;
+              <code>b.WriteString("```mermaid\n")</code>
             </div>
             <p>
               <code>MermaidRenderer.Render()</code> wraps its output in
-              <code>```mermaid ... ```</code>. This assumes the output is going into a Markdown
-              document. But many tools expect <strong>raw flowchart syntax</strong>:
-              <code>.mmd</code> files, the Mermaid CLI, embedded diagrams in HTML, programmatic
-              APIs. The fence is wrong for all of those.
+              <code>```mermaid ... ```</code>. This assumes the output is going
+              into a Markdown document. But many tools expect
+              <strong>raw flowchart syntax</strong>: <code>.mmd</code> files,
+              the Mermaid CLI, embedded diagrams in HTML, programmatic APIs. The
+              fence is wrong for all of those.
             </p>
             <pre><code>// Current output — fence is hardcoded, cannot be removed
 ```mermaid
@@ -769,60 +807,81 @@ flowchart TD
     a[b]</code></pre>
             <div class="callout callout-teal">
               <strong>Fix: make the fence optional</strong>
-              Add <code>WithCodeFence(bool)</code> (default <code>false</code> for raw output). Or
-              provide <code>RenderRaw()</code> alongside <code>Render()</code>. The fence is a
-              presentation concern, not a rendering concern.
+              Add <code>WithCodeFence(bool)</code> (default
+              <code>false</code> for raw output). Or provide
+              <code>RenderRaw()</code> alongside <code>Render()</code>. The
+              fence is a presentation concern, not a rendering concern.
             </div>
           </div>
 
           <!-- Issue 4: Dependency bloat -->
           <div class="issue issue-critical" id="deps">
-            <span class="severity severity-critical">Blocking &middot; Module graph pollution</span>
-            <h3>Importing any sub-module transitively pulls YAML + TOML dependencies</h3>
-            <div class="where">go.mod (root) &middot; requires serialization v0.11.0</div>
+            <span class="severity severity-critical"
+              >Blocking &middot; Module graph pollution</span
+            >
+            <h3>
+              Importing any sub-module transitively pulls YAML + TOML
+              dependencies
+            </h3>
+            <div class="where">
+              go.mod (root) &middot; requires serialization v0.11.0
+            </div>
             <p>
               The README claims:
               <em
-                >"<code>go get go-output</code> pulls ZERO lipgloss deps, ZERO bubbletea deps, ZERO
-                yaml deps, ZERO toml deps"</em
+                >"<code>go get go-output</code> pulls ZERO lipgloss deps, ZERO
+                bubbletea deps, ZERO yaml deps, ZERO toml deps"</em
               >. This is true for the root module alone. But
-              <strong>any sub-module import pulls the root as a dependency</strong>, and the root's
-              <code>go.mod</code> requires <code>serialization v0.11.0</code> — which transitively
-              brings <code>go-faster/yaml</code> and <code>go-toml/v2</code> into every consumer's
-              module graph.
+              <strong
+                >any sub-module import pulls the root as a dependency</strong
+              >, and the root's <code>go.mod</code> requires
+              <code>serialization v0.11.0</code> — which transitively brings
+              <code>go-faster/yaml</code> and <code>go-toml/v2</code> into every
+              consumer's module graph.
             </p>
-            <p>I measured this. Importing only <code>graph</code> + <code>plantuml</code>:</p>
+            <p>
+              I measured this. Importing only <code>graph</code> +
+              <code>plantuml</code>:
+            </p>
 
             <div class="dep-tree">
               <span class="root">go-output/graph</span> (what I wanted) └──
               <span class="root">go-output</span> (root, required by graph) ├──
-              <span class="unwanted">go-output/serialization</span> ← I never asked for this │ ├──
-              <span class="unwanted">go-faster/yaml v0.4.6</span> ← 7 transitive deps │ ├──
-              <span class="unwanted">go-toml/v2 v2.4.0</span> ← 0 deps but module bloat │ ├──
-              <span class="unwanted">go-faster/jx v1.2.0</span> ← JSON encoder │ └──
-              <span class="unwanted">segmentio/asm v1.2.1</span> ← assembly optimizations ├──
-              go-output/enum <span class="ok">← fine</span> ├── go-branded-id v0.3.1
-              <span class="ok">← fine</span> └── golang.org/x/term <span class="ok">← fine</span>
+              <span class="unwanted">go-output/serialization</span> ← I never
+              asked for this │ ├──
+              <span class="unwanted">go-faster/yaml v0.4.6</span> ← 7 transitive
+              deps │ ├── <span class="unwanted">go-toml/v2 v2.4.0</span> ← 0
+              deps but module bloat │ ├──
+              <span class="unwanted">go-faster/jx v1.2.0</span> ← JSON encoder │
+              └── <span class="unwanted">segmentio/asm v1.2.1</span> ← assembly
+              optimizations ├── go-output/enum
+              <span class="ok">← fine</span> ├── go-branded-id v0.3.1
+              <span class="ok">← fine</span> └── golang.org/x/term
+              <span class="ok">← fine</span>
 
-              <span class="unwanted">11 unwanted external modules for a diagram renderer</span>
+              <span class="unwanted"
+                >11 unwanted external modules for a diagram renderer</span
+              >
             </div>
 
             <p>
               For a plugin whose entire value proposition is
-              <strong>minimal-overhead observability</strong>, adding YAML and TOML libraries to the
-              dependency tree for Mermaid output is a hard sell.
+              <strong>minimal-overhead observability</strong>, adding YAML and
+              TOML libraries to the dependency tree for Mermaid output is a hard
+              sell.
             </p>
             <div class="callout callout-teal">
               <strong
                 >Fix: remove <code>serialization</code> from root
                 <code>go.mod</code> requires</strong
               >
-              The root package's source code doesn't import serialization in any non-test file. It's
-              only in <code>go.mod</code> because <code>go mod tidy</code> detected it in
-              <code>examples/</code> and <code>integration/</code> test helpers. Move those to a
-              separate test module, or mark serialization as <code>// indirect</code>. The root
-              should require only: <code>enum</code>, <code>go-branded-id</code>,
-              <code>x/term</code>.
+              The root package's source code doesn't import serialization in any
+              non-test file. It's only in <code>go.mod</code> because
+              <code>go mod tidy</code> detected it in <code>examples/</code> and
+              <code>integration/</code> test helpers. Move those to a separate
+              test module, or mark serialization as <code>// indirect</code>.
+              The root should require only: <code>enum</code>,
+              <code>go-branded-id</code>, <code>x/term</code>.
             </div>
           </div>
         </section>
@@ -830,20 +889,27 @@ flowchart TD
         <!-- ============ IMPORTANT ============ -->
         <section id="important">
           <h2><span class="num">02</span>Important gaps for production use</h2>
-          <p>These wouldn't block a prototype, but they'd make me think twice before shipping.</p>
+          <p>
+            These wouldn't block a prototype, but they'd make me think twice
+            before shipping.
+          </p>
 
           <!-- Issue 5: SlugifyID -->
           <div class="issue issue-important" id="slug">
-            <span class="severity severity-important">Bug &middot; Collision risk</span>
+            <span class="severity severity-important"
+              >Bug &middot; Collision risk</span
+            >
             <h3>SlugifyID doesn't handle dots, brackets, or asterisks</h3>
             <div class="where">
               escape/escape.go:70-74 &middot; only replaces space, hyphen, slash
             </div>
             <p>
-              <code>SlugifyID</code> replaces <code>&#32;&#45;&#47;</code> with underscores — but
-              not <code>&#46;&#42;&#91;&#93;</code>. Two services named <code>foo.bar</code> and
-              <code>foo_bar</code> would produce identical slug IDs, causing a silent node collision
-              in PlantUML (which uses <code>SlugifyID</code> for <code>sanitizePlantUMLID</code>).
+              <code>SlugifyID</code> replaces <code>&#32;&#45;&#47;</code> with
+              underscores — but not <code>&#46;&#42;&#91;&#93;</code>. Two
+              services named <code>foo.bar</code> and <code>foo_bar</code> would
+              produce identical slug IDs, causing a silent node collision in
+              PlantUML (which uses <code>SlugifyID</code> for
+              <code>sanitizePlantUMLID</code>).
             </p>
             <pre><code>// Current replacer — missing . * [ ] { } ( )
 var slugIDReplacer = strings.NewReplacer(
@@ -868,10 +934,12 @@ var slugIDReplacer = strings.NewReplacer(
             <h3>DOT renderer hardcodes layout attributes</h3>
             <div class="where">graph/dot.go:84-87</div>
             <p>
-              <code>rankdir=TB</code>, <code>splines=ortho</code>, <code>nodesep=0.5</code>,
-              <code>ranksep=0.5</code> are all hardcoded. These are layout decisions the consumer
-              should control. A left-to-right service graph needs <code>rankdir=LR</code>. A dense
-              graph needs tighter spacing. The DOT renderer should expose these as configuration.
+              <code>rankdir=TB</code>, <code>splines=ortho</code>,
+              <code>nodesep=0.5</code>, <code>ranksep=0.5</code> are all
+              hardcoded. These are layout decisions the consumer should control.
+              A left-to-right service graph needs <code>rankdir=LR</code>. A
+              dense graph needs tighter spacing. The DOT renderer should expose
+              these as configuration.
             </p>
             <pre><code>// Current — hardcoded in Render()
 b.WriteString("  rankdir=TB;\n")
@@ -893,21 +961,26 @@ type DOTRenderer struct {
           <!-- Issue 7: No Writer API -->
           <div class="issue issue-important" id="writer">
             <span class="severity severity-important">Scalability</span>
-            <h3>All renderers return string — no io.Writer support for diagrams</h3>
-            <div class="where">renderer.go:4-7 &middot; Renderer.Render() (string, error)</div>
+            <h3>
+              All renderers return string — no io.Writer support for diagrams
+            </h3>
+            <div class="where">
+              renderer.go:4-7 &middot; Renderer.Render() (string, error)
+            </div>
             <p>
-              Every renderer returns <code>(string, error)</code>. For large dependency graphs (500+
-              services), the entire diagram is buffered in memory before writing.
-              <code>StreamingRenderer</code> exists but only HTML implements it. The diagram
-              renderers should support <code>io.Writer</code> directly to avoid the string
-              allocation.
+              Every renderer returns <code>(string, error)</code>. For large
+              dependency graphs (500+ services), the entire diagram is buffered
+              in memory before writing. <code>StreamingRenderer</code> exists
+              but only HTML implements it. The diagram renderers should support
+              <code>io.Writer</code> directly to avoid the string allocation.
             </p>
             <div class="callout callout-amber">
               <strong>Compounding factor</strong>
-              The <code>renderMermaidTableData</code> function (mermaid.go:24) calls
-              <code>Render()</code> to get a string, then <code>fmt.Fprintln(w, out)</code> to write
-              it. That's a full double-buffer: builder &#8594; string &#8594; writer. For 500 nodes
-              this is measurable.
+              The <code>renderMermaidTableData</code> function (mermaid.go:24)
+              calls <code>Render()</code> to get a string, then
+              <code>fmt.Fprintln(w, out)</code> to write it. That's a full
+              double-buffer: builder &#8594; string &#8594; writer. For 500
+              nodes this is measurable.
             </div>
           </div>
 
@@ -917,11 +990,13 @@ type DOTRenderer struct {
             <h3>Pre-v1 with no stability promise for diagram APIs</h3>
             <div class="where">All modules at v0.11.0</div>
             <p>
-              At v0.11.0 across a multi-module workspace, there's no stability guarantee. A consumer
-              embedding go-output in a library that other people depend on needs to know the
-              <code>GraphRenderer</code> interface won't break between minor versions. Consider
-              documenting which APIs are stable (like the root <code>Renderer</code> interface) vs
-              experimental (like D2's rich domain model).
+              At v0.11.0 across a multi-module workspace, there's no stability
+              guarantee. A consumer embedding go-output in a library that other
+              people depend on needs to know the
+              <code>GraphRenderer</code> interface won't break between minor
+              versions. Consider documenting which APIs are stable (like the
+              root <code>Renderer</code> interface) vs experimental (like D2's
+              rich domain model).
             </p>
           </div>
         </section>
@@ -930,8 +1005,9 @@ type DOTRenderer struct {
         <section id="proposal">
           <h2><span class="num">03</span>What the API could look like</h2>
           <p>
-            If these four critical fixes were implemented, adopting go-output would be a net
-            positive. Here's what the consumer experience would look like:
+            If these four critical fixes were implemented, adopting go-output
+            would be a net positive. Here's what the consumer experience would
+            look like:
           </p>
 
           <pre><code>// Today: 60 lines of local diagram code, zero deps
@@ -983,9 +1059,9 @@ func WriteMermaid(w io.Writer, report Report) error {
 
           <div class="callout callout-teal">
             <strong>This is the target</strong>
-            Theme injection, raw output, internal dedup, and a clean dependency tree. With these
-            four fixes, go-output goes from "I'll borrow your escape package" to "I'll delete my
-            diagram code and import yours."
+            Theme injection, raw output, internal dedup, and a clean dependency
+            tree. With these four fixes, go-output goes from "I'll borrow your
+            escape package" to "I'll delete my diagram code and import yours."
           </div>
         </section>
 
@@ -1068,18 +1144,20 @@ func WriteMermaid(w io.Writer, report Report) error {
         <section id="appendix">
           <h2><span class="num">05</span>Appendix: maintainer response</h2>
           <p>
-            This feedback was addressed in the master branch on 2026-06-17. A detailed
-            issue-by-issue response, including code examples and verification steps, is available in
-            the companion document:
+            This feedback was addressed in the master branch on 2026-06-17. A
+            detailed issue-by-issue response, including code examples and
+            verification steps, is available in the companion document:
           </p>
           <p>
-            <a href="./2026-06-17_adoption-feedback-from-samber-do-auditlog_APPENDIX.md">
+            <a
+              href="./2026-06-17_adoption-feedback-from-samber-do-auditlog_APPENDIX.md"
+            >
               2026-06-17_adoption-feedback-from-samber-do-auditlog_APPENDIX.md
             </a>
           </p>
           <p>
-            Summary: 4/4 critical gaps resolved, 3/4 important gaps resolved, 1/1 nice-to-have
-            resolved.
+            Summary: 4/4 critical gaps resolved, 3/4 important gaps resolved,
+            1/1 nice-to-have resolved.
           </p>
         </section>
 
@@ -1087,9 +1165,11 @@ func WriteMermaid(w io.Writer, report Report) error {
         <footer class="footer">
           <p>
             Generated 2026-06-17 by
-            <a href="https://github.com/larsartmann/samber-do-auditlog">samber-do-auditlog</a>
-            &middot; Reviewed against go-output v0.11.0 &middot; All claims verified against source
-            code
+            <a href="https://github.com/larsartmann/samber-do-auditlog"
+              >samber-do-auditlog</a
+            >
+            &middot; Reviewed against go-output v0.11.0 &middot; All claims
+            verified against source code
           </p>
         </footer>
       </main>

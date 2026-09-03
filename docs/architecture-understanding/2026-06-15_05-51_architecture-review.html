@@ -24,7 +24,9 @@
         margin: 0;
         background: var(--bg);
         color: var(--text);
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial,
+          sans-serif;
         line-height: 1.6;
         padding: 2rem;
         max-width: 1100px;
@@ -181,35 +183,40 @@
     <div class="card">
       <h3>How scalable/modular is the current architecture?</h3>
       <p>
-        <span class="score ok">Highly modular.</span> The library is split into 16 Go modules with
-        hard, compile-time-enforced boundaries. Root (<code>package output</code>) holds only core
-        types + Markdown/Tree formatters. Every format family lives behind its own
-        <code>go.mod</code>, so consumers import and download only what they use.
-        <code>go get github.com/larsartmann/go-output</code> pulls <strong>zero</strong> lipgloss,
-        bubbletea, yaml, or toml dependencies.
+        <span class="score ok">Highly modular.</span> The library is split into
+        16 Go modules with hard, compile-time-enforced boundaries. Root (<code
+          >package output</code
+        >) holds only core types + Markdown/Tree formatters. Every format family
+        lives behind its own <code>go.mod</code>, so consumers import and
+        download only what they use.
+        <code>go get github.com/larsartmann/go-output</code> pulls
+        <strong>zero</strong> lipgloss, bubbletea, yaml, or toml dependencies.
       </p>
 
       <h3>How can we make this more service-oriented / composable?</h3>
       <p>
-        As a library, "service-oriented" maps to <strong>interface-driven composability</strong> —
-        already strong here. Three seams drive composition: the <code>Renderer</code> interface
-        family, the registry-dispatch pattern (<code>RenderTableData</code>), and the shape
-        capability matrix. Recommendations in §5.
+        As a library, "service-oriented" maps to
+        <strong>interface-driven composability</strong> — already strong here.
+        Three seams drive composition: the <code>Renderer</code> interface
+        family, the registry-dispatch pattern (<code>RenderTableData</code>),
+        and the shape capability matrix. Recommendations in §5.
       </p>
     </div>
 
     <h2>2. Module Dependency Graph (current)</h2>
     <div class="arch">
-      enum ─────────────────┐ escape ─── testhelpers ──┤ nom ──┐ ▼ │ │ ┌──────── ROOT (output)
-      ◄─────┐ │ ▼ │ format · shape · registry │ │ tui │ tabledata · graph · tree │ │ (bubbletea) │
-      markdown · color · ids │ │ └─────────────┬───────────────┘ │ │ depend-on-root │
-      ┌──────┬──────┬────────┼────────┬──────┬───────┴──┐ ▼ ▼ ▼ ▼ ▼ ▼ ▼ delimited d2 graph markup
-      serialization table plantuml (+escape) (+escape,testhelpers) (+root) integration · examples
-      ◄── leaf aggregators (depend on many, nothing depends on them)
+      enum ─────────────────┐ escape ─── testhelpers ──┤ nom ──┐ ▼ │ │ ┌────────
+      ROOT (output) ◄─────┐ │ ▼ │ format · shape · registry │ │ tui │ tabledata
+      · graph · tree │ │ (bubbletea) │ markdown · color · ids │ │
+      └─────────────┬───────────────┘ │ │ depend-on-root │
+      ┌──────┬──────┬────────┼────────┬──────┬───────┴──┐ ▼ ▼ ▼ ▼ ▼ ▼ ▼
+      delimited d2 graph markup serialization table plantuml (+escape)
+      (+escape,testhelpers) (+root) integration · examples ◄── leaf aggregators
+      (depend on many, nothing depends on them)
     </div>
     <p style="color: var(--mute)">
-      <strong>Verified acyclic.</strong> No upward dependencies. No import cycles (all 16 modules
-      build standalone with <code>GOWORK=off</code>).
+      <strong>Verified acyclic.</strong> No upward dependencies. No import
+      cycles (all 16 modules build standalone with <code>GOWORK=off</code>).
     </p>
 
     <h2>3. Module Size & Cohesion</h2>
@@ -314,10 +321,10 @@
       </tr>
     </table>
     <p style="color: var(--mute)">
-      <strong>nom</strong> is the largest/coarsest module (2,167 LOC, 35 files). It bundles
-      subscriber + dependency tree + inline renderer + timing cache + event accessors. Cohesion is
-      still good (all NOM-progress concerns) but it is the prime candidate for internal package
-      decomposition (see §5).
+      <strong>nom</strong> is the largest/coarsest module (2,167 LOC, 35 files).
+      It bundles subscriber + dependency tree + inline renderer + timing cache +
+      event accessors. Cohesion is still good (all NOM-progress concerns) but it
+      is the prime candidate for internal package decomposition (see §5).
     </p>
 
     <h2>4. Composability Seams</h2>
@@ -325,32 +332,36 @@
       <div class="card">
         <h3 class="ok">① Renderer interface family</h3>
         <p>
-          <code>Renderer</code> → <code>TableRenderer</code> → <code>GraphRenderer</code> →
-          <code>TreeOutputRenderer</code>. Every format implements one.
-          <code>MustRender(r)</code> for tests. <strong>Deep, uniform seam.</strong>
+          <code>Renderer</code> → <code>TableRenderer</code> →
+          <code>GraphRenderer</code> → <code>TreeOutputRenderer</code>. Every
+          format implements one. <code>MustRender(r)</code> for tests.
+          <strong>Deep, uniform seam.</strong>
         </p>
       </div>
       <div class="card">
         <h3 class="ok">② Registry dispatch</h3>
         <p>
-          <code>RenderTableData()</code> / <code>RenderAnyData()</code> dispatch to format functions
-          registered in <code>init()</code>. Root has zero sub-module imports; sub-modules
-          self-register. <strong>Excellent inversion.</strong>
+          <code>RenderTableData()</code> / <code>RenderAnyData()</code> dispatch
+          to format functions registered in <code>init()</code>. Root has zero
+          sub-module imports; sub-modules self-register.
+          <strong>Excellent inversion.</strong>
         </p>
       </div>
       <div class="card">
         <h3 class="ok">③ Shape capability matrix</h3>
         <p>
-          <code>Format.Supports(Shape)</code> + <code>FormatsForShape()</code>. Single source of
-          truth for "can format X render shape Y". Enables validation and discovery.
+          <code>Format.Supports(Shape)</code> + <code>FormatsForShape()</code>.
+          Single source of truth for "can format X render shape Y". Enables
+          validation and discovery.
         </p>
       </div>
       <div class="card">
         <h3 class="ok">④ GraphRendererState</h3>
         <p>
-          Shared composition state embedded by DOT/Mermaid/JSON/YAML/TOML/PlantUML.
-          <code>AddTreeNodes()</code> via <code>NodeEdgeAppender</code> interface. Reused, not
-          duplicated.
+          Shared composition state embedded by
+          DOT/Mermaid/JSON/YAML/TOML/PlantUML.
+          <code>AddTreeNodes()</code> via
+          <code>NodeEdgeAppender</code> interface. Reused, not duplicated.
         </p>
       </div>
     </div>
@@ -360,27 +371,29 @@
     <h3 class="ok">Strengths</h3>
     <ul>
       <li>
-        <strong>Radical dependency isolation.</strong> Root imports only <code>enum</code> in
-        production. Heavy deps (lipgloss, bubbletea, yaml, toml) are hermetically sealed in their
-        modules.
+        <strong>Radical dependency isolation.</strong> Root imports only
+        <code>enum</code> in production. Heavy deps (lipgloss, bubbletea, yaml,
+        toml) are hermetically sealed in their modules.
       </li>
       <li>
-        <strong>Self-registering formats.</strong> Zero coupling between root and format modules —
-        the registry pattern means root never imports
+        <strong>Self-registering formats.</strong> Zero coupling between root
+        and format modules — the registry pattern means root never imports
         <code>delimited</code>/<code>serialization</code>/etc. in production.
       </li>
       <li>
-        <strong>Standalone resolvable.</strong> Every module builds with <code>GOWORK=off</code> via
-        committed <code>replace</code> directives. True independence, not just workspace
-        convenience.
+        <strong>Standalone resolvable.</strong> Every module builds with
+        <code>GOWORK=off</code> via committed <code>replace</code> directives.
+        True independence, not just workspace convenience.
       </li>
       <li>
-        <strong>Type safety everywhere.</strong> Branded phantom IDs (<code>D2NodeID</code> vs
-        <code>TreeNodeID</code>) prevent mixing at compile time.
+        <strong>Type safety everywhere.</strong> Branded phantom IDs (<code
+          >D2NodeID</code
+        >
+        vs <code>TreeNodeID</code>) prevent mixing at compile time.
       </li>
       <li>
-        <strong>Minimal duplication.</strong> art-dupl reports "Excellent code health" — only test
-        idioms, one actionable clone.
+        <strong>Minimal duplication.</strong> art-dupl reports "Excellent code
+        health" — only test idioms, one actionable clone.
       </li>
     </ul>
 
@@ -395,20 +408,22 @@
       <tr>
         <td>1</td>
         <td>
-          <strong>nom module is coarse</strong> — subscriber, dependency tree, inline renderer,
-          timing cache, event accessors, tree render all in one package. 35 files, no
-          <code>internal/</code> subdivision.
+          <strong>nom module is coarse</strong> — subscriber, dependency tree,
+          inline renderer, timing cache, event accessors, tree render all in one
+          package. 35 files, no <code>internal/</code> subdivision.
         </td>
         <td>
-          Hurts navigability & test locality; harder to evolve one concern without touching others
+          Hurts navigability & test locality; harder to evolve one concern
+          without touching others
         </td>
         <td><span class="badge b-yellow">Medium</span></td>
       </tr>
       <tr>
         <td>2</td>
         <td>
-          <strong>.golangci.yml not portable</strong> across modules — depguard allow-lists are
-          root-specific, producing 24 false positives in sub-modules.
+          <strong>.golangci.yml not portable</strong> across modules — depguard
+          allow-lists are root-specific, producing 24 false positives in
+          sub-modules.
         </td>
         <td>Lint signal noise; real issues hidden</td>
         <td><span class="badge b-yellow">Medium</span></td>
@@ -416,8 +431,8 @@
       <tr>
         <td>3</td>
         <td>
-          <strong>Registry uses "Marshaler", everything else "Renderer"</strong> — mild terminology
-          split-brain for the same concept.
+          <strong>Registry uses "Marshaler", everything else "Renderer"</strong>
+          — mild terminology split-brain for the same concept.
         </td>
         <td>Cognitive friction for new contributors</td>
         <td><span class="badge b-yellow">Low</span></td>
@@ -425,8 +440,8 @@
       <tr>
         <td>4</td>
         <td>
-          <strong>tui/colors.go: 11 mutable package globals</strong> for colors — should be
-          constants or a style registry.
+          <strong>tui/colors.go: 11 mutable package globals</strong> for colors
+          — should be constants or a style registry.
         </td>
         <td>Mutable global state; not concurrency-safe by construction</td>
         <td><span class="badge b-yellow">Low</span></td>
@@ -434,8 +449,9 @@
       <tr>
         <td>5</td>
         <td>
-          <strong>nom/inline_renderer.go ignores write errors</strong> (6 unchecked
-          <code>fmt.Fprint</code>) — a renderer whose job is writing drops errors.
+          <strong>nom/inline_renderer.go ignores write errors</strong> (6
+          unchecked <code>fmt.Fprint</code>) — a renderer whose job is writing
+          drops errors.
         </td>
         <td>Broken pipe / disk-full silently swallowed</td>
         <td><span class="badge b-yellow">Medium</span></td>
@@ -456,9 +472,9 @@
       <tr>
         <td></td>
         <td>
-          Fix <code>.golangci.yml</code> depguard portability — add <code>files</code> filter to
-          <code>main</code> rule or per-module config. Eliminates 24 false positives and restores
-          lint signal.
+          Fix <code>.golangci.yml</code> depguard portability — add
+          <code>files</code> filter to <code>main</code> rule or per-module
+          config. Eliminates 24 false positives and restores lint signal.
         </td>
         <td>High</td>
         <td>Low</td>
@@ -466,23 +482,27 @@
       <tr>
         <td><strong>2 (20%→80%)</strong></td>
         <td>
-          Handle write errors in <code>nom/inline_renderer.go</code> (collect first error, surface
-          on <code>Finish()</code>).
+          Handle write errors in <code>nom/inline_renderer.go</code> (collect
+          first error, surface on <code>Finish()</code>).
         </td>
         <td>High</td>
         <td>Low</td>
       </tr>
       <tr>
         <td></td>
-        <td>Make <code>tui/colors.go</code> globals immutable (constants or lazy-init struct).</td>
+        <td>
+          Make <code>tui/colors.go</code> globals immutable (constants or
+          lazy-init struct).
+        </td>
         <td>Medium</td>
         <td>Low</td>
       </tr>
       <tr>
         <td><strong>3 (polish)</strong></td>
         <td>
-          Decompose <code>nom/</code> into <code>internal/</code> sub-packages (tree, cache, render,
-          subscriber) keeping the public API surface thin. Improves locality & AI-navigability.
+          Decompose <code>nom/</code> into <code>internal/</code> sub-packages
+          (tree, cache, render, subscriber) keeping the public API surface thin.
+          Improves locality & AI-navigability.
         </td>
         <td>Medium</td>
         <td>Medium</td>
@@ -490,7 +510,8 @@
       <tr>
         <td></td>
         <td>
-          Unify <code>Marshaler</code>→<code>Renderer</code> terminology in a future major version.
+          Unify <code>Marshaler</code>→<code>Renderer</code> terminology in a
+          future major version.
         </td>
         <td>Low</td>
         <td>Medium</td>
@@ -499,20 +520,27 @@
 
     <h2>7. Verdict</h2>
     <div class="card">
-      <p><span class="badge b-green">GRADE A — Production-ready architecture</span></p>
       <p>
-        The go-output architecture is <strong>genuinely excellent</strong> for a multi-format Go
-        library. Module boundaries are correct, dependencies flow one direction, heavy libraries are
-        sealed away from the core, and the registry-dispatch + shape-matrix design is a model of
-        composable, interface-driven Go. The gaps are minor (lint config portability, write-error
-        handling, one coarse module) — none threaten the architecture's soundness. This is a
-        codebase that has clearly been thought about, not just written.
+        <span class="badge b-green"
+          >GRADE A — Production-ready architecture</span
+        >
+      </p>
+      <p>
+        The go-output architecture is <strong>genuinely excellent</strong> for a
+        multi-format Go library. Module boundaries are correct, dependencies
+        flow one direction, heavy libraries are sealed away from the core, and
+        the registry-dispatch + shape-matrix design is a model of composable,
+        interface-driven Go. The gaps are minor (lint config portability,
+        write-error handling, one coarse module) — none threaten the
+        architecture's soundness. This is a codebase that has clearly been
+        thought about, not just written.
       </p>
     </div>
 
     <p style="color: var(--mute); margin-top: 3rem; font-size: 0.8rem">
-      Generated by architecture-review skill. Cross-references: code-quality-scan-2026-06-15.md,
-      modularization/AUDIT-2026-06-15.md, naming-review-2026-06-15.md.
+      Generated by architecture-review skill. Cross-references:
+      code-quality-scan-2026-06-15.md, modularization/AUDIT-2026-06-15.md,
+      naming-review-2026-06-15.md.
     </p>
   </body>
 </html>

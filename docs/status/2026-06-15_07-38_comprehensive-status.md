@@ -123,33 +123,33 @@ The closest things to "fucked up" (all now fixed):
 
 Sorted by **impact / effort ratio** (highest first).
 
-| #   | Task                                                                           | Impact                 | Effort | Ratio      |
-| --- | ------------------------------------------------------------------------------ | ---------------------- | ------ | ---------- |
-| 1   | **Cut `v1.0.0` tag** for all 16 module paths                                   | 🔴 Critical (release)  | Low    | ⭐⭐⭐⭐⭐ |
-| 2   | **README: add nom/tui/bdd to installation + usage section**                    | High (discoverability) | Low    | ⭐⭐⭐⭐⭐ |
-| 3   | **Prune `docs/status/` to latest 3 reports**                                   | Medium (cleanliness)   | Low    | ⭐⭐⭐⭐⭐ |
-| 4   | **Add race test for `tui.BubbleTeaProgressReporter`** (double-checked locking) | High (correctness)     | Low    | ⭐⭐⭐⭐⭐ |
-| 5   | **Cache `TreeNode.Depth()`** — O(n) → O(1) via cached depth field              | Medium (perf)          | Low    | ⭐⭐⭐⭐⭐ |
-| 6   | **Add bounds validation for `D2NodeStyle.Opacity`** (0.0-1.0)                  | Medium (correctness)   | Low    | ⭐⭐⭐⭐   |
-| 7   | **Rename `HandleError` → `Must` in examples/shared**                           | Low (naming)           | Low    | ⭐⭐⭐⭐   |
-| 8   | **Rename `GetOperationSymbol` → `OperationSymbol` in nom**                     | Low (naming)           | Low    | ⭐⭐⭐⭐   |
-| 9   | **Wire or remove `RenderOptions.GraphID`** at v1                               | Medium (dead code)     | Low    | ⭐⭐⭐⭐   |
-| 10  | **Install or remove `nixfmt-standalone`/`deadnix`/`vulnix` from BuildFlow**    | Medium (tooling)       | Low    | ⭐⭐⭐⭐   |
-| 11  | **Split `tui/event_sequence_test.go`** (469 → 2 files)                         | Low (file size)        | Low    | ⭐⭐⭐     |
-| 12  | **Split `nom/subscriber_test.go`** (506 → 2 files)                             | Low (file size)        | Low    | ⭐⭐⭐     |
-| 13  | **Split `integration/roundtrip_test.go`** (520 → 2 files)                      | Low (file size)        | Low    | ⭐⭐⭐     |
-| 14  | **Community: post to r/golang**                                                | Medium (growth)        | Low    | ⭐⭐⭐     |
-| 15  | **Community: submit to Awesome Go**                                            | Medium (growth)        | Low    | ⭐⭐⭐     |
-| 16  | **Add golden/snapshot tests for tui view rendering**                           | Medium (regression)    | Medium | ⭐⭐⭐     |
-| 17  | **Make `ColorModeAuto.ShouldColor()` injectable for testing**                  | Medium (testability)   | Medium | ⭐⭐⭐     |
-| 18  | **nom internal decomposition** (tree/cache/render/subscriber → `internal/`)    | Medium (locality)      | High   | ⭐⭐       |
-| 19  | **Increase tui coverage 90.1% → 95%+**                                         | Medium                 | Medium | ⭐⭐       |
-| 20  | **Increase serialization coverage 91.1% → 95%+**                               | Low                    | Medium | ⭐⭐       |
-| 21  | **Unify `Marshaler` → `Renderer` terminology** (post-v1, breaking)             | Low                    | Medium | ⭐⭐       |
-| 22  | **`TableData` invariant enforcement** (post-v1, breaking)                      | High (architecture)    | High   | ⭐⭐       |
-| 23  | **Add per-module `.golangci.yml` configs**                                     | Low                    | Medium | ⭐         |
-| 24  | **Add fuzz tests for d2 + graph renderers**                                    | Low                    | Medium | ⭐         |
-| 25  | **Profile + optimize nom tree rendering for 1000+ activities**                 | Low                    | Medium | ⭐         |
+| #  | Task                                                                           | Impact                 | Effort | Ratio      |
+| -- | ------------------------------------------------------------------------------ | ---------------------- | ------ | ---------- |
+| 1  | **Cut `v1.0.0` tag** for all 16 module paths                                   | 🔴 Critical (release)  | Low    | ⭐⭐⭐⭐⭐ |
+| 2  | **README: add nom/tui/bdd to installation + usage section**                    | High (discoverability) | Low    | ⭐⭐⭐⭐⭐ |
+| 3  | **Prune `docs/status/` to latest 3 reports**                                   | Medium (cleanliness)   | Low    | ⭐⭐⭐⭐⭐ |
+| 4  | **Add race test for `tui.BubbleTeaProgressReporter`** (double-checked locking) | High (correctness)     | Low    | ⭐⭐⭐⭐⭐ |
+| 5  | **Cache `TreeNode.Depth()`** — O(n) → O(1) via cached depth field              | Medium (perf)          | Low    | ⭐⭐⭐⭐⭐ |
+| 6  | **Add bounds validation for `D2NodeStyle.Opacity`** (0.0-1.0)                  | Medium (correctness)   | Low    | ⭐⭐⭐⭐   |
+| 7  | **Rename `HandleError` → `Must` in examples/shared**                           | Low (naming)           | Low    | ⭐⭐⭐⭐   |
+| 8  | **Rename `GetOperationSymbol` → `OperationSymbol` in nom**                     | Low (naming)           | Low    | ⭐⭐⭐⭐   |
+| 9  | **Wire or remove `RenderOptions.GraphID`** at v1                               | Medium (dead code)     | Low    | ⭐⭐⭐⭐   |
+| 10 | **Install or remove `nixfmt-standalone`/`deadnix`/`vulnix` from BuildFlow**    | Medium (tooling)       | Low    | ⭐⭐⭐⭐   |
+| 11 | **Split `tui/event_sequence_test.go`** (469 → 2 files)                         | Low (file size)        | Low    | ⭐⭐⭐     |
+| 12 | **Split `nom/subscriber_test.go`** (506 → 2 files)                             | Low (file size)        | Low    | ⭐⭐⭐     |
+| 13 | **Split `integration/roundtrip_test.go`** (520 → 2 files)                      | Low (file size)        | Low    | ⭐⭐⭐     |
+| 14 | **Community: post to r/golang**                                                | Medium (growth)        | Low    | ⭐⭐⭐     |
+| 15 | **Community: submit to Awesome Go**                                            | Medium (growth)        | Low    | ⭐⭐⭐     |
+| 16 | **Add golden/snapshot tests for tui view rendering**                           | Medium (regression)    | Medium | ⭐⭐⭐     |
+| 17 | **Make `ColorModeAuto.ShouldColor()` injectable for testing**                  | Medium (testability)   | Medium | ⭐⭐⭐     |
+| 18 | **nom internal decomposition** (tree/cache/render/subscriber → `internal/`)    | Medium (locality)      | High   | ⭐⭐       |
+| 19 | **Increase tui coverage 90.1% → 95%+**                                         | Medium                 | Medium | ⭐⭐       |
+| 20 | **Increase serialization coverage 91.1% → 95%+**                               | Low                    | Medium | ⭐⭐       |
+| 21 | **Unify `Marshaler` → `Renderer` terminology** (post-v1, breaking)             | Low                    | Medium | ⭐⭐       |
+| 22 | **`TableData` invariant enforcement** (post-v1, breaking)                      | High (architecture)    | High   | ⭐⭐       |
+| 23 | **Add per-module `.golangci.yml` configs**                                     | Low                    | Medium | ⭐         |
+| 24 | **Add fuzz tests for d2 + graph renderers**                                    | Low                    | Medium | ⭐         |
+| 25 | **Profile + optimize nom tree rendering for 1000+ activities**                 | Low                    | Medium | ⭐         |
 
 ---
 

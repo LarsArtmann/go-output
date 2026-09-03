@@ -55,11 +55,13 @@
 **Verified real (third "test-encodes-bug" case this review):** the mouse click handler mapped `mouse.Y` via `treeStartLine(2) + chromeLinesAboveTree(5)` = first tree line at screen line 7. Empirical probe of the ACTUAL rendered layout: tree starts at line **3** (no message) / line **5** (with current message). Every NOM-mode click therefore selected the node 2–4 lines BELOW the one clicked (or nothing). All existing mouse tests passed only because they computed click positions with the same wrong formula.
 
 Applied (tui/model.go, tui/render_nom.go, tui/model_mouse_test.go — modified, uncommitted):
+
 - `renderNOMStyle` now computes `treeStartLine` from the real layout (`nomTreeStartLine()`: title block 2 + section gap 1 + optional message 2).
 - `chromeLinesAboveTree` const deleted; click mapping is `mouse.Y - m.treeStartLine`.
 - `model_mouse_test.go` restructured to render first (populating visibleEntries AND the true mapping), then click; right-click test de-hardcoded.
 
 **⚠ NOT DONE — this is why tui does not compile:**
+
 - `tui/layered_test.go:45,62` still reference the deleted `chromeLinesAboveTree` → `go vet` fails.
 - Remediation (next session, ~5 min): drop the `+ chromeLinesAboveTree` from both clickY lines (render first, as in model_mouse_test.go), then `GOEXPERIMENT=jsonv2 go test ./...` in tui/, then add a layout-pinning regression test asserting `lines[treeStartLine]` is actually the first tree row (render → split → assert), so the mapping can never silently drift again.
 - `git status`: 3 modified files, uncommitted. Note: the auto-git daemon may commit this BROKEN state — if a commit lands before the fix, follow-up commit must repair `layered_test.go`.
@@ -123,4 +125,4 @@ None blocking. The three prior questions were resolved autonomously (see a). One
 
 ---
 
-*Point-in-time snapshot. Review resumes at task f.1 on instruction.*
+_Point-in-time snapshot. Review resumes at task f.1 on instruction._

@@ -28,7 +28,9 @@
         box-sizing: border-box;
       }
       body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial,
+          sans-serif;
         background: var(--bg);
         color: var(--text);
         line-height: 1.6;
@@ -180,7 +182,8 @@
         padding: 0.12em 0.38em;
         border-radius: 4px;
         font-size: 0.86em;
-        font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+        font-family:
+          "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
       }
       .check {
         color: var(--good);
@@ -255,18 +258,30 @@
     </style>
   </head>
   <body>
-    <h1>Review: <code>nom/</code> &amp; <code>tui/</code> vs. wizard-tutorial, nh, and NOM</h1>
+    <h1>
+      Review: <code>nom/</code> &amp; <code>tui/</code> vs. wizard-tutorial, nh,
+      and NOM
+    </h1>
     <p class="meta">
-      <strong>Date:</strong> 2026-06-17 &nbsp;·&nbsp; <strong>Scope:</strong> <code>nom/</code> +
-      <code>tui/</code> modules &nbsp;·&nbsp;
+      <strong>Date:</strong> 2026-06-17 &nbsp;·&nbsp; <strong>Scope:</strong>
+      <code>nom/</code> + <code>tui/</code> modules &nbsp;·&nbsp;
       <strong>References:</strong>
-      <a href="https://github.com/charmbracelet/wizard-tutorial" target="_blank" rel="noopener"
+      <a
+        href="https://github.com/charmbracelet/wizard-tutorial"
+        target="_blank"
+        rel="noopener"
         >charmbracelet/wizard-tutorial</a
       >,
-      <a href="https://github.com/nix-community/nh" target="_blank" rel="noopener"
+      <a
+        href="https://github.com/nix-community/nh"
+        target="_blank"
+        rel="noopener"
         >nix-community/nh</a
       >,
-      <a href="https://github.com/maralorn/nix-output-monitor" target="_blank" rel="noopener"
+      <a
+        href="https://github.com/maralorn/nix-output-monitor"
+        target="_blank"
+        rel="noopener"
         >maralorn/nix-output-monitor</a
       >
     </p>
@@ -277,7 +292,11 @@
         <li><a href="#status">Implementation status</a></li>
         <li><a href="#references">What each reference actually is</a></li>
         <li><a href="#strengths">What go-output does well</a></li>
-        <li><a href="#gaps">Rendering gaps that matter for concurrent activities</a></li>
+        <li>
+          <a href="#gaps"
+            >Rendering gaps that matter for concurrent activities</a
+          >
+        </li>
         <li><a href="#wizard">vs. wizard-tutorial (Bubble Tea idioms)</a></li>
         <li><a href="#nh">vs. nh — confirming the integration stance</a></li>
         <li><a href="#next-steps">Recommended next steps (Pareto order)</a></li>
@@ -287,32 +306,38 @@
     <div class="insight-box" id="status">
       <h3>Implementation status</h3>
       <p>
-        All recommended improvements have been implemented and verified (<code>go test ./...</code>
-        and <code>golangci-lint run ./...</code> pass for <code>nom/</code> and <code>tui/</code>).
+        All recommended improvements have been implemented and verified (<code
+          >go test ./...</code
+        >
+        and <code>golangci-lint run ./...</code> pass for <code>nom/</code> and
+        <code>tui/</code>).
       </p>
       <ul>
         <li>
-          <strong>Priority-ordered child sorting:</strong> children at each tree level are now
-          sorted failed → running → paused → pending → completed, with elapsed time and activity ID
-          as tie-breakers.
+          <strong>Priority-ordered child sorting:</strong> children at each tree
+          level are now sorted failed → running → paused → pending → completed,
+          with elapsed time and activity ID as tie-breakers.
         </li>
         <li>
-          <strong>Width truncation + physical line accounting:</strong> long lines are truncated
-          with <code>…</code>; <code>InlineRenderer</code> now tracks wrapped physical lines for
+          <strong>Width truncation + physical line accounting:</strong> long
+          lines are truncated with <code>…</code>;
+          <code>InlineRenderer</code> now tracks wrapped physical lines for
           correct in-place redraws.
         </li>
         <li>
-          <strong>Median timing estimates:</strong> <code>TimingCache</code> now uses median instead
-          of mean for robust duration estimates.
+          <strong>Median timing estimates:</strong> <code>TimingCache</code> now
+          uses median instead of mean for robust duration estimates.
         </li>
         <li>
           <strong>On-demand refresh + 1s max-frame:</strong>
-          <code>InlineRenderer.Refresh()</code> triggers immediate redraws; the background loop also
-          renders at least once per second so timers stay current.
+          <code>InlineRenderer.Refresh()</code> triggers immediate redraws; the
+          background loop also renders at least once per second so timers stay
+          current.
         </li>
         <li>
-          <strong>Terminal-state summary line:</strong> <code>InlineRenderer.Finish</code> reports
-          elapsed time and success/failure; TUI NOM summary bar is colored by workflow state.
+          <strong>Terminal-state summary line:</strong>
+          <code>InlineRenderer.Finish</code> reports elapsed time and
+          success/failure; TUI NOM summary bar is colored by workflow state.
         </li>
       </ul>
     </div>
@@ -321,18 +346,24 @@
       <h3>Key insight up front</h3>
       <p>
         The goal is a
-        <strong>generic CLI progress UI for visualizing multiple concurrent activities</strong> —
-        not a nix tool. NOM's <em>rendering techniques</em> (dependency tree, in-place ANSI redraw,
-        status symbols, timing estimates) are the inspiration; NOM's <em>nix-specific</em> machinery
-        (JSON parsing, per-host transfer tracking, derivation interning, <code>.drv</code> reading)
-        is <strong>out of scope and deliberately not copied</strong>.
+        <strong
+          >generic CLI progress UI for visualizing multiple concurrent
+          activities</strong
+        >
+        — not a nix tool. NOM's <em>rendering techniques</em> (dependency tree,
+        in-place ANSI redraw, status symbols, timing estimates) are the
+        inspiration; NOM's <em>nix-specific</em> machinery (JSON parsing,
+        per-host transfer tracking, derivation interning,
+        <code>.drv</code> reading) is
+        <strong>out of scope and deliberately not copied</strong>.
       </p>
       <p>
-        nh contributes nothing here — it shells out to <code>nom</code> as a subprocess (<code
+        nh contributes nothing here — it shells out to <code>nom</code> as a
+        subprocess (<code
           >nix build --log-format internal-json -v | nom --json</code
         >). Your design instead makes NOM-style rendering an
-        <strong>in-process, event-driven Go library</strong> for <em>any</em> workflow. That's the
-        real differentiator.
+        <strong>in-process, event-driven Go library</strong> for
+        <em>any</em> workflow. That's the real differentiator.
       </p>
     </div>
 
@@ -351,12 +382,13 @@
           <td><strong>charmbracelet/wizard-tutorial</strong></td>
           <td>Go (Bubble Tea)</td>
           <td>
-            A <em>form/wizard</em> TUI — index into a <code>[]Question</code>, alt-screen, keyboard
-            only
+            A <em>form/wizard</em> TUI — index into a <code>[]Question</code>,
+            alt-screen, keyboard only
           </td>
           <td>
-            Teaches <strong>Bubble Tea idioms</strong> (state-as-index, sub-model delegation,
-            <code>Input</code> interface adapter), <em>not</em> progress rendering
+            Teaches <strong>Bubble Tea idioms</strong> (state-as-index,
+            sub-model delegation, <code>Input</code> interface adapter),
+            <em>not</em> progress rendering
           </td>
         </tr>
         <tr>
@@ -365,24 +397,27 @@
           </td>
           <td>Rust (10-crate workspace)</td>
           <td>
-            A thin orchestrator. <code>-v</code> is just <code>tracing</code> log verbosity to
-            stderr. The <strong>build progress is fully delegated to NOM</strong> via a pipe
+            A thin orchestrator. <code>-v</code> is just
+            <code>tracing</code> log verbosity to stderr. The
+            <strong>build progress is fully delegated to NOM</strong> via a pipe
           </td>
           <td>
-            nh itself does <em>zero</em> progress UI for builds. Only network ops get
-            <code>indicatif</code> spinners
+            nh itself does <em>zero</em> progress UI for builds. Only network
+            ops get <code>indicatif</code> spinners
           </td>
         </tr>
         <tr>
           <td><strong>maralorn/nix-output-monitor (NOM)</strong></td>
           <td>Haskell</td>
           <td>
-            The real engine. No TUI framework — raw ANSI via <code>ansi-terminal</code>. Two threads
-            (parse + render), STM coordination, in-place redraw
+            The real engine. No TUI framework — raw ANSI via
+            <code>ansi-terminal</code>. Two threads (parse + render), STM
+            coordination, in-place redraw
           </td>
           <td>
-            <strong>Rendering inspiration</strong> — borrow the tree-printing, in-place redraw,
-            symbols, timing cache. The nix-specific parser/transfer layer is <em>not</em> a target
+            <strong>Rendering inspiration</strong> — borrow the tree-printing,
+            in-place redraw, symbols, timing cache. The nix-specific
+            parser/transfer layer is <em>not</em> a target
           </td>
         </tr>
       </tbody>
@@ -391,38 +426,42 @@
     <h2 id="strengths">2. What go-output does well</h2>
     <div class="good-card">
       <p>
-        <strong>Clean event-driven decoupling.</strong> <code>EventSubscriber</code> +
-        type-assertion accessor interfaces (<code>WorkflowEventAccessor</code>,
-        <code>ActivityEventAccessor</code>, <code>DependenciesAccessor</code>) let the subscriber
-        avoid importing concrete event types. NOM has no equivalent abstraction — it's hardwired to
-        nix's JSON schema. This is a genuinely good, reusable design.
+        <strong>Clean event-driven decoupling.</strong>
+        <code>EventSubscriber</code> + type-assertion accessor interfaces
+        (<code>WorkflowEventAccessor</code>, <code>ActivityEventAccessor</code>,
+        <code>DependenciesAccessor</code>) let the subscriber avoid importing
+        concrete event types. NOM has no equivalent abstraction — it's hardwired
+        to nix's JSON schema. This is a genuinely good, reusable design.
       </p>
     </div>
     <div class="good-card">
       <p>
-        <strong>Two output surfaces.</strong> <code>InlineRenderer</code> (no alt-screen, scrolls
-        naturally — exactly NOM's mode) <strong>and</strong>
-        <code>tui.BubbleTeaProgressReporter</code> (alt-screen, scrollable, mouse, help overlay).
-        NOM offers only inline; nh offers neither. You have strictly more options.
+        <strong>Two output surfaces.</strong> <code>InlineRenderer</code> (no
+        alt-screen, scrolls naturally — exactly NOM's mode) <strong>and</strong>
+        <code>tui.BubbleTeaProgressReporter</code> (alt-screen, scrollable,
+        mouse, help overlay). NOM offers only inline; nh offers neither. You
+        have strictly more options.
       </p>
     </div>
     <div class="good-card">
       <p>
-        <strong>Timing cache.</strong> CSV persistence, 10-entry cap, async saves — architecturally
-        faithful to NOM's <code>build-reports.csv</code>.
+        <strong>Timing cache.</strong> CSV persistence, 10-entry cap, async
+        saves — architecturally faithful to NOM's
+        <code>build-reports.csv</code>.
       </p>
     </div>
     <div class="good-card">
       <p>
-        <strong>Strong workflow state machine</strong> (<code>tui.WorkflowState</code>:
-        Idle→Running→Completed/Errored, terminal states reject updates). NOM has only
+        <strong>Strong workflow state machine</strong>
+        (<code>tui.WorkflowState</code>: Idle→Running→Completed/Errored,
+        terminal states reject updates). NOM has only
         <code>JustStarted|InputReceived|Finished</code>. Yours is more robust.
       </p>
     </div>
     <div class="good-card">
       <p>
-        <strong>lipgloss isolation</strong> in <code>nom/</code> (the AGENTS.md module boundary
-        discipline) keeps the dependency honest.
+        <strong>lipgloss isolation</strong> in <code>nom/</code> (the AGENTS.md
+        module boundary discipline) keeps the dependency honest.
       </p>
     </div>
 
@@ -432,21 +471,26 @@
       <span class="badge">P0</span>
       <h4>Priority-ordered DFS is claimed but not implemented</h4>
       <p>
-        This matters <em>more</em> for a generic concurrent-activity UI than for nix. When many
-        things happen at once, screen space is the scarce resource: the user needs to see what's
-        <strong>running and failing right now</strong>, not a wall of already-finished work.
-        <code>AGENTS.md</code> claims "priority-based filtering (Running &gt; Failed &gt; Pending
-        &gt; Completed)", but <strong>the code doesn't do this.</strong>
-        <code>collectVisibleNodes</code> (<code>tree_render.go:59</code>) walks roots sorted
-        <em>by activity ID string</em> (<code>tree_building.go:22</code>), then children in
-        <em>insertion order</em>, capping at <code>maxHeight</code>. So the first N nodes in tree
-        order win — a long completed branch starves a currently-failing activity of visibility.
+        This matters <em>more</em> for a generic concurrent-activity UI than for
+        nix. When many things happen at once, screen space is the scarce
+        resource: the user needs to see what's
+        <strong>running and failing right now</strong>, not a wall of
+        already-finished work. <code>AGENTS.md</code> claims "priority-based
+        filtering (Running &gt; Failed &gt; Pending &gt; Completed)", but
+        <strong>the code doesn't do this.</strong>
+        <code>collectVisibleNodes</code> (<code>tree_render.go:59</code>) walks
+        roots sorted
+        <em>by activity ID string</em> (<code>tree_building.go:22</code>), then
+        children in <em>insertion order</em>, capping at <code>maxHeight</code>.
+        So the first N nodes in tree order win — a long completed branch starves
+        a currently-failing activity of visibility.
       </p>
       <p>
         NOM's <code>SortKey</code> (<code
           >SFailed &lt; SBuilding &lt; SDownloading &lt; … &lt; SDone</code
-        >) is exactly the right idea to port: rank by interest so the hot nodes always fit. This is
-        the single highest-impact change for "easily see when multiple things are happening."
+        >) is exactly the right idea to port: rank by interest so the hot nodes
+        always fit. This is the single highest-impact change for "easily see
+        when multiple things are happening."
       </p>
     </div>
 
@@ -454,12 +498,14 @@
       <span class="badge">P0</span>
       <h4>No terminal-width handling / line truncation</h4>
       <p>
-        <code>InlineRenderer.effectiveMaxHeight</code> handles <strong>height</strong> only. There
-        is no width truncation, no wrapping prediction. NOM's <code>truncateOutput</code> truncates
-        wide lines with <code>…</code> and, on overflow, shows
-        <code>first line + ⋮ + last 5 lines</code>. With deep trees your lines overflow silently and
-        break the in-place redraw math (cursor-up count vs. actual wrapped lines diverge → screen
-        corruption). This is also a latent bug in your <code>prevLines</code> accounting.
+        <code>InlineRenderer.effectiveMaxHeight</code> handles
+        <strong>height</strong> only. There is no width truncation, no wrapping
+        prediction. NOM's <code>truncateOutput</code> truncates wide lines with
+        <code>…</code> and, on overflow, shows
+        <code>first line + ⋮ + last 5 lines</code>. With deep trees your lines
+        overflow silently and break the in-place redraw math (cursor-up count
+        vs. actual wrapped lines diverge → screen corruption). This is also a
+        latent bug in your <code>prevLines</code> accounting.
       </p>
     </div>
 
@@ -480,24 +526,26 @@
             <td>Fixed <code>time.Ticker</code> interval</td>
             <td>
               60ms min-frame <strong>+</strong> 1s max-frame <strong>+</strong>
-              <code>refresh_display_var</code> signal — redraws on demand <em>and</em> at least
-              once/sec for timers
+              <code>refresh_display_var</code> signal — redraws on demand
+              <em>and</em> at least once/sec for timers
             </td>
           </tr>
           <tr>
             <td>Per-line movement</td>
-            <td>Rewrites every line each frame (<code>ansiClearLine</code> + line)</td>
             <td>
-              <code>howToGoToNextLine</code>: StayInLine / MoveToNextLine (no scroll) / PrintNewLine
-              — minimizes work
+              Rewrites every line each frame (<code>ansiClearLine</code> + line)
+            </td>
+            <td>
+              <code>howToGoToNextLine</code>: StayInLine / MoveToNextLine (no
+              scroll) / PrintNewLine — minimizes work
             </td>
           </tr>
           <tr>
             <td>Tearing</td>
             <td>None</td>
             <td>
-              <strong>iTerm2 synchronized updates</strong> (<code>\x1b[?2026h/l</code>) for
-              flicker-free atomic frames
+              <strong>iTerm2 synchronized updates</strong>
+              (<code>\x1b[?2026h/l</code>) for flicker-free atomic frames
             </td>
           </tr>
           <tr>
@@ -505,24 +553,27 @@
             <td><code>\r\033[K</code> per line</td>
             <td>
               <code>clearLineCode</code> deliberately <em>avoiding</em>
-              <code>clearFromCursorToScreenEnd</code> ("triggers a flush on some terminals")
+              <code>clearFromCursorToScreenEnd</code> ("triggers a flush on some
+              terminals")
             </td>
           </tr>
           <tr>
             <td>Write batching</td>
             <td>
-              Multiple <code>fmt.Fprint</code> in <code>Finish</code> loop; one string in
+              Multiple <code>fmt.Fprint</code> in <code>Finish</code> loop; one
+              string in
               <code>Render</code>
             </td>
             <td>
-              One pre-built <code>ByteString</code>, single <code>hPut</code> + <code>hFlush</code>
+              One pre-built <code>ByteString</code>, single <code>hPut</code> +
+              <code>hFlush</code>
             </td>
           </tr>
         </tbody>
       </table>
       <p>
-        Your fixed-ticker model means either wasted redraws (busy) or stale timers (too slow).
-        Consider an event-signaled + max-interval hybrid.
+        Your fixed-ticker model means either wasted redraws (busy) or stale
+        timers (too slow). Consider an event-signaled + max-interval hybrid.
       </p>
     </div>
 
@@ -530,9 +581,10 @@
       <span class="badge">P1</span>
       <h4>Estimation uses mean, NOM uses median</h4>
       <p>
-        <code>timing_cache.go:74</code> <code>GetAverage</code> = arithmetic mean. NOM takes the
-        <strong>median</strong> of the last ≤10 runs (<code>NOM.Update</code>). Median is robust to
-        outliers (one cold-cache build skews your mean heavily). Easy win.
+        <code>timing_cache.go:74</code> <code>GetAverage</code> = arithmetic
+        mean. NOM takes the <strong>median</strong> of the last ≤10 runs
+        (<code>NOM.Update</code>). Median is robust to outliers (one cold-cache
+        build skews your mean heavily). Easy win.
       </p>
     </div>
 
@@ -540,14 +592,18 @@
       <span class="badge">P2</span>
       <h4>Summary bar is intentionally simpler — that's correct</h4>
       <p>
-        Your <code>renderSummary</code> is a single boxed line (<code>⏵3 ✔2 ⚠1 ⏸4 ⏱1.5s ∑10</code>).
-        NOM renders a dense multi-column <strong>table</strong> with separate
-        Builds/Downloads/Uploads columns and <strong>per-host rows</strong>. That complexity is
-        nix-specific (builds vs transfers vs remote hosts) and
-        <strong>out of scope for a generic activity UI</strong>. Your compact status bar is the
-        right call — one glance shows how many are running/done/failed/pending. The only worthwhile
-        addition: a <strong>terminal-state line</strong> (<code>Finished after 3m42s</code> /
-        <code>⚠ Exited after N failures</code>) since that's universally useful, not nix-specific.
+        Your <code>renderSummary</code> is a single boxed line (<code
+          >⏵3 ✔2 ⚠1 ⏸4 ⏱1.5s ∑10</code
+        >). NOM renders a dense multi-column <strong>table</strong> with
+        separate Builds/Downloads/Uploads columns and
+        <strong>per-host rows</strong>. That complexity is nix-specific (builds
+        vs transfers vs remote hosts) and
+        <strong>out of scope for a generic activity UI</strong>. Your compact
+        status bar is the right call — one glance shows how many are
+        running/done/failed/pending. The only worthwhile addition: a
+        <strong>terminal-state line</strong> (<code>Finished after 3m42s</code>
+        / <code>⚠ Exited after N failures</code>) since that's universally
+        useful, not nix-specific.
       </p>
     </div>
 
@@ -555,17 +611,19 @@
       <span class="badge">P2</span>
       <h4>No subtree-aggregate caching</h4>
       <p>
-        NOM precomputes a <code>DependencySummary</code> <em>monoid</em> per node and propagates
-        changes up <code>derivationParents</code> — O(log n) summary updates instead of full-tree
-        recompute each frame. Your <code>getActivityCounts</code> (<code>view.go:321</code>)
-        iterates <strong>all</strong> activities every tick. Fine at small scale; worth noting.
+        NOM precomputes a <code>DependencySummary</code> <em>monoid</em> per
+        node and propagates changes up <code>derivationParents</code> — O(log n)
+        summary updates instead of full-tree recompute each frame. Your
+        <code>getActivityCounts</code> (<code>view.go:321</code>) iterates
+        <strong>all</strong> activities every tick. Fine at small scale; worth
+        noting.
       </p>
     </div>
 
     <h2 id="wizard">4. vs. wizard-tutorial (Bubble Tea idioms)</h2>
     <p>
-      Your <code>tui/</code> already follows the tutorial's core patterns correctly and goes
-      <em>beyond</em> it. Comparison:
+      Your <code>tui/</code> already follows the tutorial's core patterns
+      correctly and goes <em>beyond</em> it. Comparison:
     </p>
     <table>
       <thead>
@@ -580,16 +638,22 @@
         <tr>
           <td>State representation</td>
           <td><code>index</code> into <code>[]Question</code></td>
-          <td><code>WorkflowState</code> enum + <code>displayMode</code> + scroll offset</td>
+          <td>
+            <code>WorkflowState</code> enum + <code>displayMode</code> + scroll
+            offset
+          </td>
           <td><span class="check">✓</span> Yours is richer &amp; typed</td>
         </tr>
         <tr>
           <td>Sub-model delegation</td>
           <td>
-            <code>Input</code> interface wrapping <code>textinput</code>/<code>textarea</code>
+            <code>Input</code> interface wrapping <code>textinput</code>/<code
+              >textarea</code
+            >
           </td>
           <td>
-            <code>nomSubscriber</code> sync + per-mode <code>renderNOMStyle</code>/<code
+            <code>nomSubscriber</code> sync + per-mode
+            <code>renderNOMStyle</code>/<code
               >renderUniversalWorkflowProgress</code
             >
           </td>
@@ -598,7 +662,10 @@
         <tr>
           <td>Program options</td>
           <td><code>WithAltScreen()</code> only</td>
-          <td><code>AltScreen</code> + <code>MouseModeCellMotion</code> + lazy start</td>
+          <td>
+            <code>AltScreen</code> + <code>MouseModeCellMotion</code> + lazy
+            start
+          </td>
           <td><span class="check">✓</span> You exceed it</td>
         </tr>
         <tr>
@@ -606,8 +673,9 @@
           <td><code>tea.LogToFile</code> (alt-screen owns stdout)</td>
           <td><code>log.Printf</code> to stderr</td>
           <td>
-            <span class="warn">⚠</span> In alt-screen mode, stderr logging can corrupt the frame —
-            consider <code>tea.LogToFile</code> when <code>AltScreen=true</code>
+            <span class="warn">⚠</span> In alt-screen mode, stderr logging can
+            corrupt the frame — consider <code>tea.LogToFile</code> when
+            <code>AltScreen=true</code>
           </td>
         </tr>
         <tr>
@@ -620,73 +688,83 @@
     </table>
     <p>
       The wizard teaches <em>form collection</em> (step→input→enter→next). Your
-      <code>DisplayModeUniversal</code> "nh darwin switch" step tree is a different problem
-      (progress, not input), so the direct overlap is small. The one transferable lesson:
+      <code>DisplayModeUniversal</code> "nh darwin switch" step tree is a
+      different problem (progress, not input), so the direct overlap is small.
+      The one transferable lesson:
       <strong><code>tea.LogToFile</code> for alt-screen debugging</strong>.
     </p>
 
     <h2 id="nh">5. vs. nh — confirming the integration stance</h2>
     <p>
-      nh treats NOM as an <strong>external subprocess</strong> (<code>nix … | nom --json</code>),
-      checking the <em>first</em> process's exit code (nom always exits 0). nh itself contains zero
-      rendering code. That works for nh because NOM is a finished, nix-specific binary and nh only
-      ever needs nix progress.
+      nh treats NOM as an <strong>external subprocess</strong> (<code
+        >nix … | nom --json</code
+      >), checking the <em>first</em> process's exit code (nom always exits 0).
+      nh itself contains zero rendering code. That works for nh because NOM is a
+      finished, nix-specific binary and nh only ever needs nix progress.
     </p>
     <p>
-      Your design is different and stronger for the generic case: NOM-style rendering as an
+      Your design is different and stronger for the generic case: NOM-style
+      rendering as an
       <strong>in-process, event-driven Go library</strong> driven by a generic
-      <code>EventSubscriber</code> interface. Any Go program reports activities via typed events;
-      the library renders them. No subprocess, no nix coupling, no shared output format to parse.
-      This is the right call for a reusable progress UI —
-      <strong>the integration stance is already correct; no decision needed.</strong>
+      <code>EventSubscriber</code> interface. Any Go program reports activities
+      via typed events; the library renders them. No subprocess, no nix
+      coupling, no shared output format to parse. This is the right call for a
+      reusable progress UI —
+      <strong
+        >the integration stance is already correct; no decision needed.</strong
+      >
     </p>
     <p>
       The practical implication: focus effort on
-      <em>rendering quality for many concurrent activities</em> (priority ranking, clean in-place
-      updates, good defaults) rather than chasing NOM's nix-specific feature surface (per-host
-      tables, transfer byte-counters, derivation interning, <code>.drv</code> parsing). Those don't
-      generalize and aren't worth porting.
+      <em>rendering quality for many concurrent activities</em> (priority
+      ranking, clean in-place updates, good defaults) rather than chasing NOM's
+      nix-specific feature surface (per-host tables, transfer byte-counters,
+      derivation interning, <code>.drv</code> parsing). Those don't generalize
+      and aren't worth porting.
     </p>
 
     <h2 id="next-steps">6. Completed improvements</h2>
     <p>
-      All Pareto-ranked items from the original review have been implemented. The checklist below
-      reflects the state after the work in
+      All Pareto-ranked items from the original review have been implemented.
+      The checklist below reflects the state after the work in
       <code>docs/planning/2026-06-17_09_43-nom-tui-improvements.md</code>.
     </p>
     <ol class="steps">
       <li>
-        <strong>✅ Priority-ordered visibility</strong> — children are sorted by interest (Failed
-        &gt; Running &gt; Paused &gt; Pending &gt; Completed) at every tree level. Unit tests and
-        golden files were updated to assert the new order.
+        <strong>✅ Priority-ordered visibility</strong> — children are sorted by
+        interest (Failed &gt; Running &gt; Paused &gt; Pending &gt; Completed)
+        at every tree level. Unit tests and golden files were updated to assert
+        the new order.
       </li>
       <li>
         <strong>✅ Width truncation + physical line accounting</strong> — new
-        <code>nom/terminal.go</code> helpers detect terminal width, strip ANSI, and truncate with
-        <code>…</code>. <code>InlineRenderer</code> now counts wrapped physical lines so redraws
-        don't drift.
+        <code>nom/terminal.go</code> helpers detect terminal width, strip ANSI,
+        and truncate with <code>…</code>. <code>InlineRenderer</code> now counts
+        wrapped physical lines so redraws don't drift.
       </li>
       <li>
-        <strong>✅ Median timing estimates</strong> — <code>GetAverage</code> was replaced by
-        <code>GetMedian</code> in <code>TimingCache</code> and the NOM subscriber, plus a test that
+        <strong>✅ Median timing estimates</strong> —
+        <code>GetAverage</code> was replaced by <code>GetMedian</code> in
+        <code>TimingCache</code> and the NOM subscriber, plus a test that
         verifies outliers are ignored.
       </li>
       <li>
         <strong>✅ On-demand refresh + 1s max-frame timer</strong> —
         <code>InlineRenderer.Refresh()</code>
-        signals an immediate redraw; the background loop renders on tick, on refresh, and at least
-        once per second.
+        signals an immediate redraw; the background loop renders on tick, on
+        refresh, and at least once per second.
       </li>
       <li>
-        <strong>✅ Terminal-state summary line</strong> — <code>InlineRenderer.Finish</code> now
-        prints success/failure with elapsed time; the TUI NOM summary bar is colored by workflow
-        state.
+        <strong>✅ Terminal-state summary line</strong> —
+        <code>InlineRenderer.Finish</code> now prints success/failure with
+        elapsed time; the TUI NOM summary bar is colored by workflow state.
       </li>
     </ol>
 
     <footer>
-      Scope is settled: a generic, in-process concurrent-activity progress UI, NOM-inspired in
-      rendering only. All planned changes were implemented; <code>nom/</code> and <code>tui/</code>
+      Scope is settled: a generic, in-process concurrent-activity progress UI,
+      NOM-inspired in rendering only. All planned changes were implemented;
+      <code>nom/</code> and <code>tui/</code>
       pass tests and lint.
     </footer>
   </body>

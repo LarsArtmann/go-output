@@ -20,8 +20,12 @@
         --major: #ffa657;
         --minor: #d29922;
         --ok: #3fb950;
-        --mono: ui-monospace, "SF Mono", "JetBrains Mono", "Fira Code", Menlo, Consolas, monospace;
-        --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+        --mono:
+          ui-monospace, "SF Mono", "JetBrains Mono", "Fira Code", Menlo,
+          Consolas, monospace;
+        --sans:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial,
+          sans-serif;
       }
       * {
         box-sizing: border-box;
@@ -207,13 +211,13 @@
         <p class="eyebrow">Comprehensive Status Report</p>
         <h1>go-output — Post Code-Review Sprint</h1>
         <p class="lede">
-          35 commits since v0.12.0. Two critical bugs fixed, 4 concurrency races eliminated, 2
-          type-safety improvements shipped, zero lint issues across 17 modules. The codebase is
-          healthier than it has ever been.
+          35 commits since v0.12.0. Two critical bugs fixed, 4 concurrency races
+          eliminated, 2 type-safety improvements shipped, zero lint issues
+          across 17 modules. The codebase is healthier than it has ever been.
         </p>
         <p class="meta">
-          📅 2026-06-18 00:19 · 🔍 228 Go files · 📦 17 modules · 🎯 Go 1.26 · 🏥 96.2% root
-          coverage
+          📅 2026-06-18 00:19 · 🔍 228 Go files · 📦 17 modules · 🎯 Go 1.26 ·
+          🏥 96.2% root coverage
         </p>
       </div>
     </header>
@@ -260,12 +264,13 @@
         <p><strong>Two critical correctness bugs eliminated:</strong></p>
         <ul>
           <li>
-            <code>FormatDuration(59.95s)</code> displayed "60.0s" — fixed with integer math (tenths
-            of a second)
+            <code>FormatDuration(59.95s)</code> displayed "60.0s" — fixed with
+            integer math (tenths of a second)
           </li>
           <li>
             <code>GetActivitySummaryString</code> returned Go slice repr
-            <code>"[⏵3 ↑2 ∑5]"</code> instead of <code>"⏵3↑2∑5"</code> — fixed with
+            <code>"[⏵3 ↑2 ∑5]"</code> instead of <code>"⏵3↑2∑5"</code> — fixed
+            with
             <code>strings.Join</code>
           </li>
         </ul>
@@ -274,32 +279,42 @@
         <p><strong>Four concurrency races eliminated:</strong></p>
         <ul>
           <li>
-            Timing cache unbounded goroutines racing on same CSV file → serialized with
+            Timing cache unbounded goroutines racing on same CSV file →
+            serialized with
             <code>saveMu</code>
           </li>
           <li>
-            InlineRenderer setters mutating fields while refresh loop reads → guarded with
+            InlineRenderer setters mutating fields while refresh loop reads →
+            guarded with
             <code>tickMu</code> (RWMutex)
           </li>
           <li>
-            Tree re-parenting phantom edges → <code>removeChild</code> from old parent before
-            reassigning
+            Tree re-parenting phantom edges → <code>removeChild</code> from old
+            parent before reassigning
           </li>
-          <li>DOT nodesep/ranksep injection → numeric validation rejects non-numeric input</li>
+          <li>
+            DOT nodesep/ranksep injection → numeric validation rejects
+            non-numeric input
+          </li>
         </ul>
       </div>
       <div class="card card-solution">
         <p><strong>Six escaping/security gaps closed:</strong></p>
         <ul>
           <li>
-            DOT/Mermaid double-escaping in TableData conversion (compounded backslashes/quotes)
+            DOT/Mermaid double-escaping in TableData conversion (compounded
+            backslashes/quotes)
           </li>
           <li>D2 Icon/Link fields written raw while siblings were escaped</li>
           <li>Mermaid node/edge IDs unsanitized in direct-graph Render()</li>
           <li>
-            PlantUML labels had zero escaping — new <code>escape.PlantUML()</code> function added
+            PlantUML labels had zero escaping — new
+            <code>escape.PlantUML()</code> function added
           </li>
-          <li>DOT edge style attrs (Color, Style) written raw → now <code>escape.DOT()</code>'d</li>
+          <li>
+            DOT edge style attrs (Color, Style) written raw → now
+            <code>escape.DOT()</code>'d
+          </li>
           <li>D2 conversion silently dropped edge color and node font-color</li>
         </ul>
       </div>
@@ -307,11 +322,16 @@
         <p><strong>Three type-safety improvements shipped:</strong></p>
         <ul>
           <li>
-            <code>ProgressStep.IsActive</code> bool → derived method (impossible state eliminated)
+            <code>ProgressStep.IsActive</code> bool → derived method (impossible
+            state eliminated)
           </li>
-          <li><code>DisplayMode</code> string → int enum (matches WorkflowState pattern)</li>
           <li>
-            <code>TreeNode.Depth()</code> O(n) walk → O(1) cached field with subtree propagation
+            <code>DisplayMode</code> string → int enum (matches WorkflowState
+            pattern)
+          </li>
+          <li>
+            <code>TreeNode.Depth()</code> O(n) walk → O(1) cached field with
+            subtree propagation
           </li>
         </ul>
       </div>
@@ -319,12 +339,14 @@
         <p><strong>Split-brain audit: 20 findings, 14 resolved:</strong></p>
         <ul>
           <li>
-            <strong>5 Critical:</strong> TreeNode rename (C1), ProgressModel dedup (C2),
-            TimingFormat (C3), test redeclarations (C4/C5) — all fixed
+            <strong>5 Critical:</strong> TreeNode rename (C1), ProgressModel
+            dedup (C2), TimingFormat (C3), test redeclarations (C4/C5) — all
+            fixed
           </li>
           <li>
-            <strong>5 Major (safe):</strong> ColorWarning dup (M1), color detection (M2), hardcoded
-            literal (M3), event literals (m2), doc drift (m4) — all fixed
+            <strong>5 Major (safe):</strong> ColorWarning dup (M1), color
+            detection (M2), hardcoded literal (M3), event literals (m2), doc
+            drift (m4) — all fixed
           </li>
           <li>
             <strong>7 Major (breaking):</strong> M4/M5/M6/M7/M8 — deferred with
@@ -335,32 +357,46 @@
       <div class="card card-solution">
         <p><strong>File size, naming, polish:</strong></p>
         <ul>
-          <li><code>tui/view.go</code> split 366→240 lines (new <code>render_nom.go</code>)</li>
+          <li>
+            <code>tui/view.go</code> split 366→240 lines (new
+            <code>render_nom.go</code>)
+          </li>
           <li>
             <code>nom/inline_renderer.go</code> split 427→300 lines (new
             <code>inline_renderer_summary.go</code>)
           </li>
           <li>
-            <code>GetOperationSymbol</code> → <code>OperationSymbol</code> (dropped redundant Get
-            prefix)
+            <code>GetOperationSymbol</code> →
+            <code>OperationSymbol</code> (dropped redundant Get prefix)
           </li>
           <li><code>D2NodeStyle.Opacity</code> clamped to [0.0, 1.0]</li>
-          <li>Broken doc examples in d2/doc.go and serialization/doc.go fixed</li>
-          <li>Timing cache: entries capped on load, sorted write order, strconv parse symmetry</li>
+          <li>
+            Broken doc examples in d2/doc.go and serialization/doc.go fixed
+          </li>
+          <li>
+            Timing cache: entries capped on load, sorted write order, strconv
+            parse symmetry
+          </li>
         </ul>
       </div>
       <div class="card card-solution">
         <p><strong>Documentation deliverables:</strong></p>
         <ul>
-          <li><code>TODO_LIST.md</code> updated: 34 resolved items, 10 open, 7 deferred</li>
           <li>
-            <code>FEATURES.md</code> updated: 151 fully functional, 0 known issues,
-            <code>escape.PlantUML()</code> added
+            <code>TODO_LIST.md</code> updated: 34 resolved items, 10 open, 7
+            deferred
           </li>
-          <li><code>docs/reviews/</code> full-code-review HTML report (226 files reviewed)</li>
           <li>
-            6 deferred API-breaking changes tracked with <code>NOTE(split-brain)</code> in-code
-            markers
+            <code>FEATURES.md</code> updated: 151 fully functional, 0 known
+            issues, <code>escape.PlantUML()</code> added
+          </li>
+          <li>
+            <code>docs/reviews/</code> full-code-review HTML report (226 files
+            reviewed)
+          </li>
+          <li>
+            6 deferred API-breaking changes tracked with
+            <code>NOTE(split-brain)</code> in-code markers
           </li>
         </ul>
       </div>
@@ -380,28 +416,31 @@
             <td><strong>TUI Reporter data race (#22)</strong></td>
             <td><span class="badge badge-major">Partially mitigated</span></td>
             <td>
-              The ProgressModel <code>activities</code> duplication (C2) was eliminated. But
-              <code>BubbleTeaProgressReporter</code> still directly mutates
-              <code>pr.model.*</code> fields (workflowState, steps, currentProgress) from the caller
-              goroutine. The proper fix routes ALL mutations through <code>tea.Program.Send</code>,
-              but that's an architectural change to the reporter's entire API surface.
+              The ProgressModel <code>activities</code> duplication (C2) was
+              eliminated. But <code>BubbleTeaProgressReporter</code> still
+              directly mutates <code>pr.model.*</code> fields (workflowState,
+              steps, currentProgress) from the caller goroutine. The proper fix
+              routes ALL mutations through <code>tea.Program.Send</code>, but
+              that's an architectural change to the reporter's entire API
+              surface.
             </td>
           </tr>
           <tr>
             <td><strong>API stability for v1</strong></td>
             <td><span class="badge badge-minor">ADR 006 frozen</span></td>
             <td>
-              228 exported symbols frozen. 7 API-breaking changes deferred (M4-M8, #12-13). All
-              documented with NOTE markers. Ready for v1.0.0 tag but owner hasn't pulled the
-              trigger.
+              228 exported symbols frozen. 7 API-breaking changes deferred
+              (M4-M8, #12-13). All documented with NOTE markers. Ready for
+              v1.0.0 tag but owner hasn't pulled the trigger.
             </td>
           </tr>
           <tr>
             <td><strong>LSP diagnostics (stale)</strong></td>
             <td><span class="badge badge-minor">Known noise</span></td>
             <td>
-              gopls shows ~49 stale errors (GetOperationSymbol, TreeNode references) from the
-              concurrent session's rename. Build/test/lint all pass clean. Needs
+              gopls shows ~49 stale errors (GetOperationSymbol, TreeNode
+              references) from the concurrent session's rename. Build/test/lint
+              all pass clean. Needs
               <code>lsp_restart</code> to clear cache.
             </td>
           </tr>
@@ -420,7 +459,9 @@
         </thead>
         <tbody>
           <tr>
-            <td><strong>EdgeStyle.Style → typed LineStyle enum (#27)</strong></td>
+            <td>
+              <strong>EdgeStyle.Style → typed LineStyle enum (#27)</strong>
+            </td>
             <td>Medium</td>
             <td>Exported API change — deferred per ADR 006 freeze</td>
           </tr>
@@ -440,7 +481,9 @@
             <td>Post-v1.0.0 marketing</td>
           </tr>
           <tr>
-            <td><strong>BDD tests for TUI reporter (#22 fix verification)</strong></td>
+            <td>
+              <strong>BDD tests for TUI reporter (#22 fix verification)</strong>
+            </td>
             <td>Medium</td>
             <td>Depends on reporter architecture change</td>
           </tr>
@@ -455,16 +498,19 @@
           <strong>Concurrent sessions collided on the same repo</strong>
         </div>
         <p>
-          During this sprint, a concurrent session was actively refactoring the same working tree in
-          real-time. I watched the build flip from broken→green mid-stream as it completed the
-          <code>TreeNode</code>→<code>ActivityNode</code> rename. My edits were swept into their
-          commits without attribution. The <code>SPLIT-BRAIN.html</code> audit report was modified
-          by the other session. This caused significant confusion and required defensive
+          During this sprint, a concurrent session was actively refactoring the
+          same working tree in real-time. I watched the build flip from
+          broken→green mid-stream as it completed the
+          <code>TreeNode</code>→<code>ActivityNode</code> rename. My edits were
+          swept into their commits without attribution. The
+          <code>SPLIT-BRAIN.html</code> audit report was modified by the other
+          session. This caused significant confusion and required defensive
           verification after every commit.
         </p>
         <p>
-          <strong>Impact:</strong> No permanent damage — all changes were beneficial. But the
-          coordination overhead was real, and the risk of overwriting each other's work was high.
+          <strong>Impact:</strong> No permanent damage — all changes were
+          beneficial. But the coordination overhead was real, and the risk of
+          overwriting each other's work was high.
         </p>
       </div>
       <div class="card card-problem">
@@ -474,10 +520,13 @@
         </div>
         <p>
           gopls reports ~49 phantom errors (<code>FormatTreeNodeTiming</code>,
-          <code>TreeNode</code>, <code>GetOperationSymbol</code>) that don't exist in the actual
-          build. The rename from <code>TreeNode</code>→<code>ActivityNode</code> and
-          <code>GetOperationSymbol</code>→<code>OperationSymbol</code> happened but gopls cache
-          wasn't invalidated. This creates false alarm fatigue.
+          <code>TreeNode</code>, <code>GetOperationSymbol</code>) that don't
+          exist in the actual build. The rename from <code>TreeNode</code>→<code
+            >ActivityNode</code
+          >
+          and <code>GetOperationSymbol</code>→<code>OperationSymbol</code>
+          happened but gopls cache wasn't invalidated. This creates false alarm
+          fatigue.
         </p>
       </div>
 
@@ -486,42 +535,47 @@
       <div class="card">
         <ol>
           <li>
-            <strong>Single-session discipline:</strong> Never run two agent sessions on the same
-            repo simultaneously. The collision risk is too high. If parallel work is needed, use
-            branches.
+            <strong>Single-session discipline:</strong> Never run two agent
+            sessions on the same repo simultaneously. The collision risk is too
+            high. If parallel work is needed, use branches.
           </li>
           <li>
-            <strong>LSP cache invalidation:</strong> After renames, the LSP should be restarted. Add
-            a post-rename step to the workflow.
+            <strong>LSP cache invalidation:</strong> After renames, the LSP
+            should be restarted. Add a post-rename step to the workflow.
           </li>
           <li>
-            <strong>BDD coverage for concurrency:</strong> The race fixes (#20, #21) were verified
-            with <code>-race</code> but not with BDD specs. Critical concurrency paths deserve
-            Ginkgo specifications.
+            <strong>BDD coverage for concurrency:</strong> The race fixes (#20,
+            #21) were verified with <code>-race</code> but not with BDD specs.
+            Critical concurrency paths deserve Ginkgo specifications.
           </li>
           <li>
-            <strong>Property-based testing for escape functions:</strong> The escape package now has
-            8 functions. Property tests (gopter) would verify idempotency and round-trip properties
-            systematically.
+            <strong>Property-based testing for escape functions:</strong> The
+            escape package now has 8 functions. Property tests (gopter) would
+            verify idempotency and round-trip properties systematically.
           </li>
           <li>
-            <strong>Integration test for DOT injection:</strong> The nodesep/ranksep validation
-            (#31) should have an integration test that attempts injection and verifies rejection.
+            <strong>Integration test for DOT injection:</strong> The
+            nodesep/ranksep validation (#31) should have an integration test
+            that attempts injection and verifies rejection.
           </li>
           <li>
-            <strong>Fuzz tests for D2/Mermaid/PlantUML renderers:</strong> Only D2 has fuzz
-            coverage. The escaping gaps we found prove the other renderers need it too.
+            <strong>Fuzz tests for D2/Mermaid/PlantUML renderers:</strong> Only
+            D2 has fuzz coverage. The escaping gaps we found prove the other
+            renderers need it too.
           </li>
           <li>
-            <strong>API versioning strategy:</strong> The 7 deferred breaking changes need a
-            concrete v1→v2 migration plan, not just NOTE markers.
+            <strong>API versioning strategy:</strong> The 7 deferred breaking
+            changes need a concrete v1→v2 migration plan, not just NOTE markers.
           </li>
         </ol>
       </div>
 
       <!-- SECTION F: TOP 25 NEXT -->
       <h2>🎯 F) Top 25 Things to Get Done Next</h2>
-      <p>Sorted by impact (high → low), then effort (low → high within same impact tier).</p>
+      <p>
+        Sorted by impact (high → low), then effort (low → high within same
+        impact tier).
+      </p>
       <table>
         <thead>
           <tr>
@@ -537,23 +591,27 @@
             <td><span class="badge badge-critical">Critical</span></td>
             <td>High</td>
             <td>
-              <strong>Fix TUI reporter data race (#22)</strong> — route all model mutations through
-              <code>tea.Program.Send</code>. Last remaining concurrency bug.
+              <strong>Fix TUI reporter data race (#22)</strong> — route all
+              model mutations through <code>tea.Program.Send</code>. Last
+              remaining concurrency bug.
             </td>
           </tr>
           <tr>
             <td>2</td>
             <td><span class="badge badge-critical">Critical</span></td>
             <td>Low</td>
-            <td><strong>Restart LSP</strong> to clear ~49 stale diagnostics polluting the IDE</td>
+            <td>
+              <strong>Restart LSP</strong> to clear ~49 stale diagnostics
+              polluting the IDE
+            </td>
           </tr>
           <tr>
             <td>3</td>
             <td><span class="badge badge-major">High</span></td>
             <td>Low</td>
             <td>
-              <strong>Decision on TableData API (#15)</strong> — exported fields vs getters. Blocks
-              v1.0.0.
+              <strong>Decision on TableData API (#15)</strong> — exported fields
+              vs getters. Blocks v1.0.0.
             </td>
           </tr>
           <tr>
@@ -561,8 +619,8 @@
             <td><span class="badge badge-major">High</span></td>
             <td>Low</td>
             <td>
-              <strong>Cut v1.0.0 tag (#16)</strong> — API frozen per ADR 006, 228 symbols stable,
-              zero lint
+              <strong>Cut v1.0.0 tag (#16)</strong> — API frozen per ADR 006,
+              228 symbols stable, zero lint
             </td>
           </tr>
           <tr>
@@ -570,7 +628,8 @@
             <td><span class="badge badge-major">High</span></td>
             <td>Low</td>
             <td>
-              <strong>Community launch (#14)</strong> — post to r/golang, submit to Awesome Go
+              <strong>Community launch (#14)</strong> — post to r/golang, submit
+              to Awesome Go
             </td>
           </tr>
           <tr>
@@ -578,8 +637,10 @@
             <td><span class="badge badge-major">High</span></td>
             <td>Medium</td>
             <td>
-              <strong>Add fuzz tests for Mermaid, DOT, PlantUML renderers</strong> — escaping gaps
-              prove they're needed
+              <strong
+                >Add fuzz tests for Mermaid, DOT, PlantUML renderers</strong
+              >
+              — escaping gaps prove they're needed
             </td>
           </tr>
           <tr>
@@ -587,8 +648,8 @@
             <td><span class="badge badge-major">High</span></td>
             <td>Medium</td>
             <td>
-              <strong>BDD specs for TUI reporter</strong> — critical user journey, currently only
-              unit-tested
+              <strong>BDD specs for TUI reporter</strong> — critical user
+              journey, currently only unit-tested
             </td>
           </tr>
           <tr>
@@ -596,8 +657,8 @@
             <td><span class="badge badge-minor">Medium</span></td>
             <td>Medium</td>
             <td>
-              <strong>EdgeStyle.Style → LineStyle typed enum (#27)</strong> — prevents invalid line
-              styles at compile time
+              <strong>EdgeStyle.Style → LineStyle typed enum (#27)</strong> —
+              prevents invalid line styles at compile time
             </td>
           </tr>
           <tr>
@@ -605,8 +666,8 @@
             <td><span class="badge badge-minor">Medium</span></td>
             <td>Low</td>
             <td>
-              <strong>GetActivityCounts() → ActivityCounts struct (#28)</strong> — prevents arg-swap
-              bugs
+              <strong>GetActivityCounts() → ActivityCounts struct (#28)</strong>
+              — prevents arg-swap bugs
             </td>
           </tr>
           <tr>
@@ -614,8 +675,8 @@
             <td><span class="badge badge-minor">Medium</span></td>
             <td>Medium</td>
             <td>
-              <strong>Property-based tests for escape package</strong> — verify idempotency across
-              all 8 functions
+              <strong>Property-based tests for escape package</strong> — verify
+              idempotency across all 8 functions
             </td>
           </tr>
           <tr>
@@ -623,29 +684,35 @@
             <td><span class="badge badge-minor">Medium</span></td>
             <td>Low</td>
             <td>
-              <strong>Integration test for DOT injection prevention</strong> — verify
-              nodesep/ranksep validation rejects crafted input
+              <strong>Integration test for DOT injection prevention</strong> —
+              verify nodesep/ranksep validation rejects crafted input
             </td>
           </tr>
           <tr>
             <td>12</td>
             <td><span class="badge badge-minor">Medium</span></td>
             <td>Low</td>
-            <td><strong>Rename examples/shared.HandleError → Must (#8)</strong></td>
+            <td>
+              <strong>Rename examples/shared.HandleError → Must (#8)</strong>
+            </td>
           </tr>
           <tr>
             <td>13</td>
             <td><span class="badge badge-minor">Medium</span></td>
             <td>Low</td>
-            <td><strong>Make ColorModeAuto.ShouldColor() deterministic (#9)</strong></td>
+            <td>
+              <strong
+                >Make ColorModeAuto.ShouldColor() deterministic (#9)</strong
+              >
+            </td>
           </tr>
           <tr>
             <td>14</td>
             <td><span class="badge badge-minor">Medium</span></td>
             <td>Medium</td>
             <td>
-              <strong>D2 addTreeNodes → delegate to output.AddTreeNodes</strong> — eliminate
-              reimplemented tree traversal
+              <strong>D2 addTreeNodes → delegate to output.AddTreeNodes</strong>
+              — eliminate reimplemented tree traversal
             </td>
           </tr>
           <tr>
@@ -653,8 +720,8 @@
             <td><span class="badge badge-minor">Medium</span></td>
             <td>Low</td>
             <td>
-              <strong>Add PlantUML shape mapping</strong> — GraphShape currently ignored;
-              DOT/Mermaid/D2 all map shapes
+              <strong>Add PlantUML shape mapping</strong> — GraphShape currently
+              ignored; DOT/Mermaid/D2 all map shapes
             </td>
           </tr>
           <tr>
@@ -664,7 +731,9 @@
             <td>
               <strong
                 >D2 dead condition:
-                <code>d.direction != "" && d.direction != D2DirDown</code></strong
+                <code
+                  >d.direction != "" && d.direction != D2DirDown</code
+                ></strong
               >
               — D2DirDown is "", second clause always true
             </td>
@@ -674,8 +743,10 @@
             <td><span class="badge badge-minor">Medium</span></td>
             <td>Low</td>
             <td>
-              <strong>Remove dead <code>diagramType</code> field in PlantUML</strong> — set but
-              never read
+              <strong
+                >Remove dead <code>diagramType</code> field in PlantUML</strong
+              >
+              — set but never read
             </td>
           </tr>
           <tr>
@@ -683,8 +754,8 @@
             <td><span class="badge badge-minor">Medium</span></td>
             <td>Medium</td>
             <td>
-              <strong>v1→v2 migration plan for deferred API changes</strong> — M4/M5/M6/M7/M8 need
-              concrete roadmap
+              <strong>v1→v2 migration plan for deferred API changes</strong> —
+              M4/M5/M6/M7/M8 need concrete roadmap
             </td>
           </tr>
           <tr>
@@ -693,8 +764,8 @@
             <td>Low</td>
             <td>
               <strong
-                >D2 <code>d2ArrowTypeValues</code> redundant <code>D2ArrowNone</code> check in
-                IsValid()</strong
+                >D2 <code>d2ArrowTypeValues</code> redundant
+                <code>D2ArrowNone</code> check in IsValid()</strong
               >
             </td>
           </tr>
@@ -704,7 +775,8 @@
             <td>Low</td>
             <td>
               <strong
-                >Rename <code>allD2Constraints</code> → <code>d2ConstraintValues</code></strong
+                >Rename <code>allD2Constraints</code> →
+                <code>d2ConstraintValues</code></strong
               >
               for naming consistency
             </td>
@@ -725,8 +797,8 @@
             <td><span class="badge badge-ok">Low</span></td>
             <td>Low</td>
             <td>
-              <strong>nom/doc.go: write real package documentation</strong> — currently just an
-              ellipsis placeholder
+              <strong>nom/doc.go: write real package documentation</strong> —
+              currently just an ellipsis placeholder
             </td>
           </tr>
           <tr>
@@ -735,8 +807,8 @@
             <td>Low</td>
             <td>
               <strong
-                >nom: remove dead <code>getDisplayActivities()</code> and never-populated
-                <code>order</code> field</strong
+                >nom: remove dead <code>getDisplayActivities()</code> and
+                never-populated <code>order</code> field</strong
               >
             </td>
           </tr>
@@ -745,8 +817,11 @@
             <td><span class="badge badge-ok">Low</span></td>
             <td>Low</td>
             <td>
-              <strong>nom: remove dead <code>IsDisplayed</code> field on ActivityNode</strong> — set
-              but never read
+              <strong
+                >nom: remove dead <code>IsDisplayed</code> field on
+                ActivityNode</strong
+              >
+              — set but never read
             </td>
           </tr>
           <tr>
@@ -754,8 +829,11 @@
             <td><span class="badge badge-ok">Low</span></td>
             <td>Low</td>
             <td>
-              <strong>tui: remove dead <code>SeparatorLineEquals</code> constant</strong> — never
-              used in production
+              <strong
+                >tui: remove dead
+                <code>SeparatorLineEquals</code> constant</strong
+              >
+              — never used in production
             </td>
           </tr>
         </tbody>
@@ -765,27 +843,34 @@
       <h2>❓ G) Top Question I Cannot Figure Out</h2>
       <div class="callout">
         <h3 style="margin-top: 0">
-          Should the TUI reporter data race (#22) be fixed now or deferred to v1?
+          Should the TUI reporter data race (#22) be fixed now or deferred to
+          v1?
         </h3>
         <p>
-          The <code>BubbleTeaProgressReporter</code> mutates <code>pr.model.*</code> fields
-          (workflowState, steps, currentProgress) directly from the caller's goroutine while Bubble
-          Tea's event loop goroutine concurrently reads/writes the same fields via
-          <code>Update()</code>. This is a real data race detectable by <code>-race</code>.
+          The <code>BubbleTeaProgressReporter</code> mutates
+          <code>pr.model.*</code> fields (workflowState, steps, currentProgress)
+          directly from the caller's goroutine while Bubble Tea's event loop
+          goroutine concurrently reads/writes the same fields via
+          <code>Update()</code>. This is a real data race detectable by
+          <code>-race</code>.
         </p>
         <p>
           <strong>The fix:</strong> Route ALL model mutations through
-          <code>tea.Program.Send</code> — no direct field writes from the reporter. This means
-          changing the reporter's entire API surface: <code>ReportStep</code>,
-          <code>ReportProgress</code>, <code>ReportError</code>, <code>ReportMessage</code>, and
-          <code>transitionWorkflowState</code> would all send messages instead of mutating directly.
+          <code>tea.Program.Send</code> — no direct field writes from the
+          reporter. This means changing the reporter's entire API surface:
+          <code>ReportStep</code>, <code>ReportProgress</code>,
+          <code>ReportError</code>, <code>ReportMessage</code>, and
+          <code>transitionWorkflowState</code> would all send messages instead
+          of mutating directly.
         </p>
         <p>
-          <strong>Why I can't decide:</strong> This is an <em>exported API change</em> to the TUI
-          module's reporter interface. ADR 006 says "all exported symbols frozen." But #22 is also
-          the <em>last remaining concurrency bug</em> — a correctness issue, not a naming
-          preference. Does the API freeze cover internal field access patterns of exported types, or
-          just method signatures? I don't know where to draw the line.
+          <strong>Why I can't decide:</strong> This is an
+          <em>exported API change</em> to the TUI module's reporter interface.
+          ADR 006 says "all exported symbols frozen." But #22 is also the
+          <em>last remaining concurrency bug</em> — a correctness issue, not a
+          naming preference. Does the API freeze cover internal field access
+          patterns of exported types, or just method signatures? I don't know
+          where to draw the line.
         </p>
       </div>
 
@@ -869,8 +954,8 @@
       </table>
     </main>
     <footer>
-      go-output comprehensive status report · generated 2026-06-18 00:19 · 35 commits since v0.12.0
-      · 0 critical bugs · 0 lint issues · 0 known issues
+      go-output comprehensive status report · generated 2026-06-18 00:19 · 35
+      commits since v0.12.0 · 0 critical bugs · 0 lint issues · 0 known issues
     </footer>
   </body>
 </html>

@@ -65,14 +65,14 @@
 
         /* --- Type stacks (system only — zero external fonts) --- */
         --font-heading:
-          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          Helvetica, Arial, sans-serif;
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         --font-body:
-          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          Helvetica, Arial, sans-serif;
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         --font-mono:
-          ui-monospace, "Cascadia Code", "Source Code Pro", "JetBrains Mono", Menlo, Consolas,
-          monospace;
+          ui-monospace, "Cascadia Code", "Source Code Pro", "JetBrains Mono",
+          Menlo, Consolas, monospace;
       }
 
       * {
@@ -280,15 +280,27 @@
       }
       .card-problem {
         border-left-color: var(--problem);
-        background: color-mix(in srgb, var(--problem) 8%, var(--surface-raised));
+        background: color-mix(
+          in srgb,
+          var(--problem) 8%,
+          var(--surface-raised)
+        );
       }
       .card-solution {
         border-left-color: var(--solution);
-        background: color-mix(in srgb, var(--solution) 8%, var(--surface-raised));
+        background: color-mix(
+          in srgb,
+          var(--solution) 8%,
+          var(--surface-raised)
+        );
       }
       .card-warning {
         border-left-color: var(--warning);
-        background: color-mix(in srgb, var(--warning) 8%, var(--surface-raised));
+        background: color-mix(
+          in srgb,
+          var(--warning) 8%,
+          var(--surface-raised)
+        );
       }
 
       /* --- Issue cards --- */
@@ -301,15 +313,27 @@
       }
       .issue-critical {
         border-left-color: var(--problem);
-        background: color-mix(in srgb, var(--problem) 8%, var(--surface-raised));
+        background: color-mix(
+          in srgb,
+          var(--problem) 8%,
+          var(--surface-raised)
+        );
       }
       .issue-important {
         border-left-color: var(--warning);
-        background: color-mix(in srgb, var(--warning) 8%, var(--surface-raised));
+        background: color-mix(
+          in srgb,
+          var(--warning) 8%,
+          var(--surface-raised)
+        );
       }
       .issue-nice {
         border-left-color: var(--solution);
-        background: color-mix(in srgb, var(--solution) 8%, var(--surface-raised));
+        background: color-mix(
+          in srgb,
+          var(--solution) 8%,
+          var(--surface-raised)
+        );
       }
       .issue h3 {
         margin-bottom: 0.3rem;
@@ -813,8 +837,8 @@
           <div class="hero-badge">Pareto Plan &middot; Full Execution</div>
           <h1>v1.0 Release &amp; Hardening Plan</h1>
           <p class="hero-subtitle">
-            Every open TODO consolidated, sorted by impact/effort, broken into max-12-minute tasks.
-            Ship v1.0 cleanup, then harden, then polish.
+            Every open TODO consolidated, sorted by impact/effort, broken into
+            max-12-minute tasks. Ship v1.0 cleanup, then harden, then polish.
           </p>
         </div>
 
@@ -859,52 +883,60 @@
           <h4>Research findings that shaped this plan</h4>
           <ul>
             <li>
-              <strong>Zero inline TODO/FIXME comments</strong> anywhere in the codebase &mdash; all
-              work items come from docs, not code markers.
+              <strong>Zero inline TODO/FIXME comments</strong> anywhere in the
+              codebase &mdash; all work items come from docs, not code markers.
             </li>
             <li>
-              <strong>All 11 deprecated symbols have ZERO production callers</strong> (5 functions +
-              6 color aliases) &mdash; safe to delete outright.
+              <strong
+                >All 11 deprecated symbols have ZERO production callers</strong
+              >
+              (5 functions + 6 color aliases) &mdash; safe to delete outright.
             </li>
             <li>
-              <strong>Paused is a fully-decorated dead end:</strong> symbols, colors, shapes, sort
-              priority all defined, but no <code>EventActivityPaused</code> constant, no handler,
-              and <code>SetPaused()</code> has zero callers. The only way to reach it is direct
-              field assignment in tests.
+              <strong>Paused is a fully-decorated dead end:</strong> symbols,
+              colors, shapes, sort priority all defined, but no
+              <code>EventActivityPaused</code> constant, no handler, and
+              <code>SetPaused()</code> has zero callers. The only way to reach
+              it is direct field assignment in tests.
             </li>
             <li>
-              <strong>Bonus smell:</strong> <code>ActivityStatusPending</code> reuses Paused's
-              symbol/color &mdash; Pending and Paused are visually indistinguishable. Fixing this is
-              folded into the Paused removal.
+              <strong>Bonus smell:</strong>
+              <code>ActivityStatusPending</code> reuses Paused's symbol/color
+              &mdash; Pending and Paused are visually indistinguishable. Fixing
+              this is folded into the Paused removal.
             </li>
             <li>
               <strong>TableData getters are load-bearing</strong> (back the
-              <code>TableDataProvider</code> interface in <code>table/table.go</code> + test
-              doubles) &mdash; NOT redundant duplication. Closes TODO #15.
+              <code>TableDataProvider</code> interface in
+              <code>table/table.go</code> + test doubles) &mdash; NOT redundant
+              duplication. Closes TODO #15.
             </li>
           </ul>
         </div>
 
         <h2 id="decisions"><span class="num">01</span>Decisions Resolved</h2>
         <p>
-          Resolved during research so execution can proceed without blocking on ambiguity. Each is
-          reversible pre-v1.0.
+          Resolved during research so execution can proceed without blocking on
+          ambiguity. Each is reversible pre-v1.0.
         </p>
 
         <div class="issue issue-critical">
           <span class="severity severity-critical">Decision</span>
           <h3>D1 &mdash; SetPaused / ActivityStatusPaused: REMOVE</h3>
-          <div class="where">nom/activity_status.go, nom/activity.go, nom/status_mappers.go</div>
+          <div class="where">
+            nom/activity_status.go, nom/activity.go, nom/status_mappers.go
+          </div>
           <p>
-            Option B chosen over wiring (Option A). Rationale: zero callers, no event path, YAGNI
-            ("don't build for imagined future needs"), pre-v1 experimental API. Pending reusing
-            Paused's color/symbol is a real ambiguity bug that removal also fixes.
-            <strong>Reversible:</strong> if a real CI pause/resume use case emerges, re-add WITH a
-            proper event path before v1.0 stabilization.
+            Option B chosen over wiring (Option A). Rationale: zero callers, no
+            event path, YAGNI ("don't build for imagined future needs"), pre-v1
+            experimental API. Pending reusing Paused's color/symbol is a real
+            ambiguity bug that removal also fixes.
+            <strong>Reversible:</strong> if a real CI pause/resume use case
+            emerges, re-add WITH a proper event path before v1.0 stabilization.
           </p>
           <div class="callout callout-warning">
-            <strong>Veto window</strong> Owner can object before v1.0 tag &mdash; this is the single
-            most opinionated call in the plan.
+            <strong>Veto window</strong> Owner can object before v1.0 tag
+            &mdash; this is the single most opinionated call in the plan.
           </div>
         </div>
 
@@ -914,9 +946,10 @@
           <div class="where">tabledata.go:79, table/table.go:44</div>
           <p>
             <code>GetHeaders()</code>/<code>GetRows()</code> satisfy the
-            <code>TableDataProvider</code> interface consumed by <code>table/table.go</code> and
-            test doubles. They are load-bearing abstraction, not redundant accessors. Document the
-            rationale; no code change.
+            <code>TableDataProvider</code> interface consumed by
+            <code>table/table.go</code> and test doubles. They are load-bearing
+            abstraction, not redundant accessors. Document the rationale; no
+            code change.
           </p>
         </div>
 
@@ -925,9 +958,10 @@
           <h3>D3 &mdash; otter/v2 for TimingCache: KEEP hand-rolled</h3>
           <div class="where">nom/timing_cache.go</div>
           <p>
-            The cache is a capped map+slice, already concurrency-safe with lock-free reads (fixed
-            last sprint), eviction handled. Adding a dependency for a solved, tiny, hot-tuned
-            structure violates the root-light philosophy. Document rationale; no code change.
+            The cache is a capped map+slice, already concurrency-safe with
+            lock-free reads (fixed last sprint), eviction handled. Adding a
+            dependency for a solved, tiny, hot-tuned structure violates the
+            root-light philosophy. Document rationale; no code change.
           </p>
         </div>
 
@@ -937,15 +971,16 @@
           <div class="where">.gitignore:19-20</div>
           <p>
             <code>go.work</code> and <code>go.work.sum</code> are gitignored;
-            <code>go.work.example</code> is tracked and current. No action beyond a docs note.
+            <code>go.work.example</code> is tracked and current. No action
+            beyond a docs note.
           </p>
         </div>
 
         <h2 id="graph"><span class="num">02</span>Execution Graph</h2>
         <div class="callout callout-solution">
-          <strong>Flow</strong> Decisions inform the v1.0 path &rarr; Tier 1 unblocks the release
-          &rarr; Tier 2 hardens &rarr; Tier 3 polishes. The v1.0.0 tag is prepared but explicitly
-          NOT cut (owner action).
+          <strong>Flow</strong> Decisions inform the v1.0 path &rarr; Tier 1
+          unblocks the release &rarr; Tier 2 hardens &rarr; Tier 3 polishes. The
+          v1.0.0 tag is prepared but explicitly NOT cut (owner action).
         </div>
         <div
           style="
@@ -1386,8 +1421,12 @@
                   class="text-bold"
                   style="text-anchor: middle; font-size: 16px"
                 >
-                  <tspan x="179.000000" dy="0.000000">T1 Remove Paused feature</tspan>
-                  <tspan x="179.000000" dy="18.500000">+ give Pending own styling</tspan>
+                  <tspan x="179.000000" dy="0.000000">
+                    T1 Remove Paused feature
+                  </tspan>
+                  <tspan x="179.000000" dy="18.500000">
+                    + give Pending own styling
+                  </tspan>
                 </text>
               </g>
               <g class="djEudDI=">
@@ -1410,8 +1449,12 @@
                   class="text-bold fill-N1"
                   style="text-anchor: middle; font-size: 16px"
                 >
-                  <tspan x="425.500000" dy="0.000000">T2 Remove 5 deprecated</tspan>
-                  <tspan x="425.500000" dy="18.500000">functions (0 callers)</tspan>
+                  <tspan x="425.500000" dy="0.000000">
+                    T2 Remove 5 deprecated
+                  </tspan>
+                  <tspan x="425.500000" dy="18.500000">
+                    functions (0 callers)
+                  </tspan>
                 </text>
               </g>
               <g class="djEudDM=">
@@ -1434,7 +1477,9 @@
                   class="text-bold fill-N1"
                   style="text-anchor: middle; font-size: 16px"
                 >
-                  <tspan x="664.500000" dy="0.000000">T3 Remove 6 deprecated</tspan>
+                  <tspan x="664.500000" dy="0.000000">
+                    T3 Remove 6 deprecated
+                  </tspan>
                   <tspan x="664.500000" dy="18.500000">color aliases</tspan>
                 </text>
               </g>
@@ -1483,7 +1528,9 @@
                   style="text-anchor: middle; font-size: 16px"
                 >
                   <tspan x="1062.500000" dy="0.000000">T5 Extract shared</tspan>
-                  <tspan x="1062.500000" dy="18.500000">testevent package</tspan>
+                  <tspan x="1062.500000" dy="18.500000">
+                    testevent package
+                  </tspan>
                 </text>
               </g>
               <g class="djEudDY=">
@@ -1506,8 +1553,12 @@
                   class="text-bold fill-N1"
                   style="text-anchor: middle; font-size: 16px"
                 >
-                  <tspan x="1270.000000" dy="0.000000">T6 v1.0.0 release prep</tspan>
-                  <tspan x="1270.000000" dy="18.500000">(changelog, no tag)</tspan>
+                  <tspan x="1270.000000" dy="0.000000">
+                    T6 v1.0.0 release prep
+                  </tspan>
+                  <tspan x="1270.000000" dy="18.500000">
+                    (changelog, no tag)
+                  </tspan>
                 </text>
               </g>
               <g class="aGFyZGVuaW5nLnQ3">
@@ -1530,8 +1581,12 @@
                   class="text-bold fill-N1"
                   style="text-anchor: middle; font-size: 16px"
                 >
-                  <tspan x="353.500000" dy="0.000000">T7 Integration test</tspan>
-                  <tspan x="353.500000" dy="18.500000">(workflow to render to Finish)</tspan>
+                  <tspan x="353.500000" dy="0.000000">
+                    T7 Integration test
+                  </tspan>
+                  <tspan x="353.500000" dy="18.500000">
+                    (workflow to render to Finish)
+                  </tspan>
                 </text>
               </g>
               <g class="aGFyZGVuaW5nLnQ4">
@@ -1554,8 +1609,12 @@
                   class="text-bold fill-N1"
                   style="text-anchor: middle; font-size: 16px"
                 >
-                  <tspan x="635.500000" dy="0.000000">T8 Fill coverage gaps</tspan>
-                  <tspan x="635.500000" dy="18.500000">(Copy, StripANSI, removeChild)</tspan>
+                  <tspan x="635.500000" dy="0.000000">
+                    T8 Fill coverage gaps
+                  </tspan>
+                  <tspan x="635.500000" dy="18.500000">
+                    (Copy, StripANSI, removeChild)
+                  </tspan>
                 </text>
               </g>
               <g class="aGFyZGVuaW5nLnQ5">
@@ -1578,7 +1637,9 @@
                   class="text-bold fill-N1"
                   style="text-anchor: middle; font-size: 16px"
                 >
-                  <tspan x="892.000000" dy="0.000000">T9 Unicode width tests</tspan>
+                  <tspan x="892.000000" dy="0.000000">
+                    T9 Unicode width tests
+                  </tspan>
                   <tspan x="892.000000" dy="18.500000">(CJK + emoji)</tspan>
                 </text>
               </g>
@@ -1602,7 +1663,9 @@
                   class="text-bold fill-N1"
                   style="text-anchor: middle; font-size: 16px"
                 >
-                  <tspan x="1110.500000" dy="0.000000">T10 strconv + named</tspan>
+                  <tspan x="1110.500000" dy="0.000000">
+                    T10 strconv + named
+                  </tspan>
                   <tspan x="1110.500000" dy="18.500000">constant in tui</tspan>
                 </text>
               </g>
@@ -1718,8 +1781,12 @@
                   class="text-bold fill-N1"
                   style="text-anchor: middle; font-size: 16px"
                 >
-                  <tspan x="550.500000" dy="0.000000">D2 TableData getters: KEEP</tspan>
-                  <tspan x="550.500000" dy="18.500000">(load-bearing interface)</tspan>
+                  <tspan x="550.500000" dy="0.000000">
+                    D2 TableData getters: KEEP
+                  </tspan>
+                  <tspan x="550.500000" dy="18.500000">
+                    (load-bearing interface)
+                  </tspan>
                 </text>
               </g>
               <g class="ZGVjaXNpb25zLmQz">
@@ -1811,7 +1878,9 @@
                   class="text-bold fill-N1"
                   style="text-anchor: middle; font-size: 16px"
                 >
-                  <tspan x="1687.500000" dy="0.000000">Deep review graph/d2/tui:</tspan>
+                  <tspan x="1687.500000" dy="0.000000">
+                    Deep review graph/d2/tui:
+                  </tspan>
                   <tspan x="1687.500000" dy="18.500000">next sprints</tspan>
                 </text>
               </g>
@@ -1958,18 +2027,40 @@
                 width="2136"
                 height="1639"
               >
-                <rect x="-89" y="-89" width="2136" height="1639" fill="white"></rect>
-                <rect x="689.000000" y="287.000000" width="55" height="21" fill="black"></rect>
-                <rect x="1857.000000" y="1276.000000" width="92" height="37" fill="black"></rect>
+                <rect
+                  x="-89"
+                  y="-89"
+                  width="2136"
+                  height="1639"
+                  fill="white"
+                ></rect>
+                <rect
+                  x="689.000000"
+                  y="287.000000"
+                  width="55"
+                  height="21"
+                  fill="black"
+                ></rect>
+                <rect
+                  x="1857.000000"
+                  y="1276.000000"
+                  width="92"
+                  height="37"
+                  fill="black"
+                ></rect>
               </mask>
             </svg>
           </svg>
         </div>
 
         <h2 id="tier1">
-          <span class="num">03</span>Tier 1 &mdash; v1.0 Critical Path (1% &rarr; 51%)
+          <span class="num">03</span>Tier 1 &mdash; v1.0 Critical Path (1%
+          &rarr; 51%)
         </h2>
-        <p>The 6 tasks that ship the v1.0 release. Executed first, verified after each.</p>
+        <p>
+          The 6 tasks that ship the v1.0 release. Executed first, verified after
+          each.
+        </p>
         <table>
           <thead>
             <tr>
@@ -1984,12 +2075,13 @@
             <tr>
               <td>T1</td>
               <td>
-                Remove <code>ActivityStatusPaused</code> + <code>SetPaused()</code> + all paused
-                render cases; give Pending its own distinct symbol/color
+                Remove <code>ActivityStatusPaused</code> +
+                <code>SetPaused()</code> + all paused render cases; give Pending
+                its own distinct symbol/color
               </td>
               <td>
-                nom/activity_status.go, activity.go, status_mappers.go, activity_management.go,
-                format.go, symbols.go
+                nom/activity_status.go, activity.go, status_mappers.go,
+                activity_management.go, format.go, symbols.go
               </td>
               <td><span class="badge badge-medium">Med</span></td>
               <td><span class="badge badge-critical">High</span></td>
@@ -1997,11 +2089,13 @@
             <tr>
               <td>T2</td>
               <td>
-                Remove 5 deprecated functions (0 prod callers): EnsureBuild, ParseActivityID,
-                ParseWorkflowID, NewGraphNodeID, NewGraphNodeLabel, MarshalTSV(any)
+                Remove 5 deprecated functions (0 prod callers): EnsureBuild,
+                ParseActivityID, ParseWorkflowID, NewGraphNodeID,
+                NewGraphNodeLabel, MarshalTSV(any)
               </td>
               <td>
-                nom/tree_accessors.go, nom/types.go, graph/reexports.go, delimited/tsv.go + tests
+                nom/tree_accessors.go, nom/types.go, graph/reexports.go,
+                delimited/tsv.go + tests
               </td>
               <td><span class="badge badge-low">Low</span></td>
               <td><span class="badge badge-critical">High</span></td>
@@ -2009,7 +2103,8 @@
             <tr>
               <td>T3</td>
               <td>
-                Remove 6 deprecated color aliases (ColorRunning/Completed/Paused/Failed/Info/Phase)
+                Remove 6 deprecated color aliases
+                (ColorRunning/Completed/Paused/Failed/Info/Phase)
               </td>
               <td>nom/symbols.go + tests</td>
               <td><span class="badge badge-low">Low</span></td>
@@ -2018,8 +2113,8 @@
             <tr>
               <td>T4</td>
               <td>
-                Unexport ~15 tui internals (msg types, state-check methods, constants) never used
-                outside tui/
+                Unexport ~15 tui internals (msg types, state-check methods,
+                constants) never used outside tui/
               </td>
               <td>tui/*.go</td>
               <td><span class="badge badge-medium">Med</span></td>
@@ -2028,8 +2123,8 @@
             <tr>
               <td>T5</td>
               <td>
-                Extract shared <code>testevent</code> package to testhelpers/ (5 duplicate Event
-                structs)
+                Extract shared <code>testevent</code> package to testhelpers/ (5
+                duplicate Event structs)
               </td>
               <td>testhelpers/testevent/, nom, tui, integration, examples</td>
               <td><span class="badge badge-medium">Med</span></td>
@@ -2038,8 +2133,9 @@
             <tr>
               <td>T6</td>
               <td>
-                v1.0.0 release prep: CHANGELOG [Unreleased]&rarr;[1.0.0], final full verify
-                (build/test/race/lint/vuln). <strong>Do NOT cut tag.</strong>
+                v1.0.0 release prep: CHANGELOG [Unreleased]&rarr;[1.0.0], final
+                full verify (build/test/race/lint/vuln).
+                <strong>Do NOT cut tag.</strong>
               </td>
               <td>CHANGELOG.md, RELEASE.md</td>
               <td><span class="badge badge-low">Low</span></td>
@@ -2049,7 +2145,8 @@
         </table>
 
         <h2 id="tier2">
-          <span class="num">04</span>Tier 2 &mdash; Quality Hardening (4% &rarr; 64%)
+          <span class="num">04</span>Tier 2 &mdash; Quality Hardening (4% &rarr;
+          64%)
         </h2>
         <p>Coverage, correctness, and integration confidence.</p>
         <table>
@@ -2066,7 +2163,8 @@
             <tr>
               <td>T7</td>
               <td>
-                Integration test: full workflow &rarr; events &rarr; inline render &rarr; Finish
+                Integration test: full workflow &rarr; events &rarr; inline
+                render &rarr; Finish
               </td>
               <td>nom/inline_renderer_integration_test.go</td>
               <td><span class="badge badge-medium">Med</span></td>
@@ -2102,7 +2200,8 @@
             <tr>
               <td>T11</td>
               <td>
-                OperationType: convert bare string constants to typed enum OR remove if unused
+                OperationType: convert bare string constants to typed enum OR
+                remove if unused
               </td>
               <td>nom (audit first)</td>
               <td><span class="badge badge-low">Low</span></td>
@@ -2110,7 +2209,9 @@
             </tr>
             <tr>
               <td>T12</td>
-              <td>SymbolDownload/SymbolUpload: wire into summary or remove if dead</td>
+              <td>
+                SymbolDownload/SymbolUpload: wire into summary or remove if dead
+              </td>
               <td>nom/symbols.go</td>
               <td><span class="badge badge-low">Low</span></td>
               <td><span class="badge badge-low">Low</span></td>
@@ -2118,8 +2219,12 @@
           </tbody>
         </table>
 
-        <h2 id="tier3"><span class="num">05</span>Tier 3 &mdash; Polish (20% &rarr; 80%)</h2>
-        <p>Lowest effort-to-impact, but cheap and improve confidence/marketing.</p>
+        <h2 id="tier3">
+          <span class="num">05</span>Tier 3 &mdash; Polish (20% &rarr; 80%)
+        </h2>
+        <p>
+          Lowest effort-to-impact, but cheap and improve confidence/marketing.
+        </p>
         <table>
           <thead>
             <tr>
@@ -2133,7 +2238,10 @@
           <tbody>
             <tr>
               <td>T13</td>
-              <td>Fuzz test FormatDuration (property-based: monotonic, no panics, sane output)</td>
+              <td>
+                Fuzz test FormatDuration (property-based: monotonic, no panics,
+                sane output)
+              </td>
               <td>nom/format_fuzz_test.go</td>
               <td><span class="badge badge-medium">Med</span></td>
               <td><span class="badge badge-medium">Med</span></td>
@@ -2147,14 +2255,19 @@
             </tr>
             <tr>
               <td>T16</td>
-              <td>Add CI badge to README (verify .github/workflows exists first)</td>
+              <td>
+                Add CI badge to README (verify .github/workflows exists first)
+              </td>
               <td>README.md</td>
               <td><span class="badge badge-low">Low</span></td>
               <td><span class="badge badge-medium">Med</span></td>
             </tr>
             <tr>
               <td>T17</td>
-              <td>Confirm graph/d2/tui modules green via quality scan (deep review deferred)</td>
+              <td>
+                Confirm graph/d2/tui modules green via quality scan (deep review
+                deferred)
+              </td>
               <td>nix run .#lint/.#test</td>
               <td><span class="badge badge-low">Low</span></td>
               <td><span class="badge badge-medium">Med</span></td>
@@ -2162,10 +2275,12 @@
           </tbody>
         </table>
 
-        <h2 id="deferred"><span class="num">&diams;</span>Deferred / Owner-Gated</h2>
+        <h2 id="deferred">
+          <span class="num">&diams;</span>Deferred / Owner-Gated
+        </h2>
         <p>
-          Included for completeness; explicitly out of scope for this execution sprint with
-          rationale.
+          Included for completeness; explicitly out of scope for this execution
+          sprint with rationale.
         </p>
         <table>
           <thead>
@@ -2178,20 +2293,28 @@
           <tbody>
             <tr>
               <td><strong>v1.0.0 tag</strong></td>
-              <td>TODO_LIST #16: explicit "needs owner decision"; irreversible release act</td>
-              <td>Owner sign-off &mdash; one-command procedure documented in RELEASE.md</td>
+              <td>
+                TODO_LIST #16: explicit "needs owner decision"; irreversible
+                release act
+              </td>
+              <td>
+                Owner sign-off &mdash; one-command procedure documented in
+                RELEASE.md
+              </td>
             </tr>
             <tr>
               <td><strong>Deep review: graph/d2/tui</strong></td>
               <td>
-                Each is a multi-hour from-scratch review (nom took 3 rounds); doing it shallowly
-                violates the quality bar
+                Each is a multi-hour from-scratch review (nom took 3 rounds);
+                doing it shallowly violates the quality bar
               </td>
               <td>Dedicated next sprints</td>
             </tr>
             <tr>
               <td><strong>BDD tests for nom</strong></td>
-              <td>&#128308; effort; bdd module already exists; separate concern</td>
+              <td>
+                &#128308; effort; bdd module already exists; separate concern
+              </td>
               <td>After v1.0 stabilization</td>
             </tr>
             <tr>
@@ -2208,8 +2331,8 @@
         </table>
 
         <footer class="footer">
-          Generated 2026-06-20 &middot; Pareto execution plan &middot; verified against codebase at
-          v0.13.0
+          Generated 2026-06-20 &middot; Pareto execution plan &middot; verified
+          against codebase at v0.13.0
         </footer>
       </main>
     </div>

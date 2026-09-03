@@ -1,14 +1,14 @@
 # Full Code Review: go-output
 
-**Date:** 2026-06-08  
-**Reviewer:** Senior Staff+ Software Architect  
+**Date:** 2026-06-08\
+**Reviewer:** Senior Staff+ Software Architect\
 **Scope:** All 14 modules, ~120 .go files (production + test)
 
 ---
 
 ## Executive Summary
 
-**Files Reviewed:** ~120 `.go` files across 14 modules.  
+**Files Reviewed:** ~120 `.go` files across 14 modules.\
 **Overall Assessment:** Well-architected, strongly-typed Go library with excellent test hygiene. Two critical bugs and several API anti-patterns need fixing before production-hardened.
 
 | Severity | Count |
@@ -24,14 +24,14 @@
 
 ### 1. D2 `writeClasses` output is non-deterministic
 
-**File:** `d2/d2_render.go`  
-**Problem:** `D2Diagram.writeClasses` iterates over `d.classes` map directly. Go map iteration order is randomized. This causes non-deterministic D2 output, breaking snapshot tests and content-addressable caching.  
+**File:** `d2/d2_render.go`\
+**Problem:** `D2Diagram.writeClasses` iterates over `d.classes` map directly. Go map iteration order is randomized. This causes non-deterministic D2 output, breaking snapshot tests and content-addressable caching.\
 **Fix:** Sort class names before iterating.
 
 ### 2. `D2ArrowType` parse/valid inconsistency
 
-**File:** `d2/d2_enum.go`  
-**Problem:** `ParseD2ArrowType("")` returns an error because `d2ArrowTypeValues` does NOT include `D2ArrowNone` (empty string). However, `D2ArrowType.IsValid()` explicitly returns `true` for `D2ArrowNone`. Incoherent behavior.  
+**File:** `d2/d2_enum.go`\
+**Problem:** `ParseD2ArrowType("")` returns an error because `d2ArrowTypeValues` does NOT include `D2ArrowNone` (empty string). However, `D2ArrowType.IsValid()` explicitly returns `true` for `D2ArrowNone`. Incoherent behavior.\
 **Fix:** Add `D2ArrowNone` to `d2ArrowTypeValues` or remove the special case from `IsValid()`.
 
 ---
@@ -40,26 +40,26 @@
 
 ### 3. `FormatJSON` not registered in `RenderTableData` registry
 
-**File:** `serialization/json.go`  
-**Problem:** `serialization/json.go` does not call `output.RegisterTableDataMarshaler` in `init()`. Contrast with `yaml.go`, `toml.go`, `jsonl.go` which all register themselves. `output.RenderTableData(data, output.FormatJSON)` returns `UnsupportedFormatError`.  
+**File:** `serialization/json.go`\
+**Problem:** `serialization/json.go` does not call `output.RegisterTableDataMarshaler` in `init()`. Contrast with `yaml.go`, `toml.go`, `jsonl.go` which all register themselves. `output.RenderTableData(data, output.FormatJSON)` returns `UnsupportedFormatError`.\
 **Fix:** Add `init()` calling `output.RegisterTableDataMarshaler(output.FormatJSON, renderJSONTableData)`.
 
 ### 4. Variadic `RenderOptions` is misleading
 
-**File:** `render_tabledata.go`  
-**Problem:** `RenderTableData(data *TableData, format Format, opts ...RenderOptions)` uses variadic `opts` but only consumes `opts[0]`. Signature implies multiple options are valid.  
+**File:** `render_tabledata.go`\
+**Problem:** `RenderTableData(data *TableData, format Format, opts ...RenderOptions)` uses variadic `opts` but only consumes `opts[0]`. Signature implies multiple options are valid.\
 **Fix:** Change to single `opts RenderOptions` value, or implement proper merge.
 
 ### 5. `StreamingRendererFromRenderer` is a false promise
 
-**File:** `streaming.go`  
-**Problem:** The adapter calls `Render()` which builds the entire string in memory, then writes it at once. The name `StreamingRenderer` combined with a non-streaming adapter is misleading.  
+**File:** `streaming.go`\
+**Problem:** The adapter calls `Render()` which builds the entire string in memory, then writes it at once. The name `StreamingRenderer` combined with a non-streaming adapter is misleading.\
 **Fix:** Rename to `BufferedRendererAdapter`, or implement chunked writes.
 
 ### 6. `GraphRendererMixin.NodesPtr/EdgesPtr` breaks encapsulation
 
-**File:** `graph.go`  
-**Problem:** Returns pointers to internal slices, allowing external mutation.  
+**File:** `graph.go`\
+**Problem:** Returns pointers to internal slices, allowing external mutation.\
 **Fix:** Remove these methods. Provide controlled mutation methods like `AddNode`/`AddEdge`, or return copies.
 
 ---
@@ -76,57 +76,57 @@
 
 ### 8. `RegisterTableDataMarshaler` silently overwrites
 
-**File:** `render_tabledata.go`  
+**File:** `render_tabledata.go`\
 Should return error or panic on duplicate registration.
 
 ### 9. `table.buildStyleFunc` allocates `lipgloss.NewStyle()` per row
 
-**File:** `table/table.go`  
+**File:** `table/table.go`\
 Cache base styles at construction time.
 
 ### 10. `ColorModeAuto.ShouldColor()` has side effects
 
-**File:** `color.go`  
+**File:** `color.go`\
 Reads environment and checks terminal status, making it non-deterministic and hard to test.
 
 ### 11. Incomplete AsciiDoc escaping
 
-**File:** `markup/asciidoc.go`  
+**File:** `markup/asciidoc.go`\
 Only escapes `|` but AsciiDoc has many more special characters (`*`, `_`, `` ` ``, `~`, `^`).
 
 ### 12. `MermaidText` escaping incomplete
 
-**File:** `escape/escape.go`  
+**File:** `escape/escape.go`\
 Replaces `"` with `'` but does not escape `'` itself.
 
 ### 13. `StreamingHTMLRenderer` string concatenation allocations
 
-**File:** `markup/streaming.go`  
+**File:** `markup/streaming.go`\
 `[]byte("<th>" + escape.HTML(h) + "</th>\n")` allocates intermediate strings per cell.
 
 ### 14. `DOTRenderer.writeEdge` poor slice preallocation
 
-**File:** `graph/dot.go`  
+**File:** `graph/dot.go`\
 `make([]string, 0)` for 4 attributes — should use `make([]string, 0, 4)`.
 
 ### 15. `MermaidRenderer.Render()` uses `fmt.Fprintf` in hot path
 
-**File:** `graph/mermaid.go`  
+**File:** `graph/mermaid.go`\
 Parses format string on every node/edge. Use `b.WriteString` + manual concatenation.
 
 ### 16. Duplicate slug logic across modules
 
-**Files:** `d2/d2_convert.go`, `graph/dot.go`, `graph/mermaid.go`, `plantuml/convert.go`  
+**Files:** `d2/d2_convert.go`, `graph/dot.go`, `graph/mermaid.go`, `plantuml/convert.go`\
 `strings.ReplaceAll(label, " ", "_")` duplicated 4 times.
 
 ### 17. `MarkdownTable.writeCell` inconsistent padding approach
 
-**File:** `markdown.go`  
+**File:** `markdown.go`\
 Uses `fmt.Fprintf` for right-alignment but `strings.Repeat` for left/center.
 
 ### 18. `Alignment` const shadowing
 
-**File:** `markdown.go`  
+**File:** `markdown.go`\
 `alignmentLeft` appears in two const blocks; second shadows first.
 
 ---

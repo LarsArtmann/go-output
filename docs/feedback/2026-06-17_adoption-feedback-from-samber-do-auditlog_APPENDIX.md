@@ -1,8 +1,8 @@
 # Appendix: Response to samber-do-auditlog Adoption Feedback
 
-**Original report:** [`2026-06-17_adoption-feedback-from-samber-do-auditlog.html`](./2026-06-17_adoption-feedback-from-samber-do-auditlog.html)  
-**Library version reviewed:** go-output v0.11.0  
-**Response authored:** 2026-06-17  
+**Original report:** [`2026-06-17_adoption-feedback-from-samber-do-auditlog.html`](./2026-06-17_adoption-feedback-from-samber-do-auditlog.html)\
+**Library version reviewed:** go-output v0.11.0\
+**Response authored:** 2026-06-17\
 **Status:** Addressed in `master` (`bbc8f89` and ancestors)
 
 ---

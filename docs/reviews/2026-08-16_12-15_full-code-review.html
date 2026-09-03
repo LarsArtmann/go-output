@@ -860,8 +860,8 @@
           <h1>go-output Full Code Review</h1>
           <p class="hero-subtitle">
             Every code and test file across 19 modules (375 files, ~49.1k lines)
-            reviewed over sessions 3–5. ~50 findings fixed across 9 commits,
-            ~15 deferred to TODO_LIST.md. All gates green at close.
+            reviewed over sessions 3–5. ~50 findings fixed across 9 commits, ~15
+            deferred to TODO_LIST.md. All gates green at close.
           </p>
         </div>
 
@@ -924,7 +924,9 @@
           </p>
         </div>
 
-        <h2 id="security"><span class="num">01</span>Security Findings — Fixed</h2>
+        <h2 id="security">
+          <span class="num">01</span>Security Findings — Fixed
+        </h2>
         <table>
           <thead>
             <tr>
@@ -940,50 +942,97 @@
               <td>1</td>
               <td><span class="badge badge-critical">Critical</span></td>
               <td>escape/escape.go</td>
-              <td>Mermaid labels are rendered as HTML by the viewer; raw <code>&lt;</code>/<code>&gt;</code>/<code>&amp;</code> enabled script injection; <code>#60;</code>-style entity smuggling bypassed naive escaping</td>
-              <td><code>MermaidText</code> HTML-escapes + <code>mermaidEntityGuard</code> regex rewrites <code>#xx;</code> to <code>&amp;#35;xx;</code>; fuzzed 5M execs</td>
+              <td>
+                Mermaid labels are rendered as HTML by the viewer; raw
+                <code>&lt;</code>/<code>&gt;</code>/<code>&amp;</code> enabled
+                script injection; <code>#60;</code>-style entity smuggling
+                bypassed naive escaping
+              </td>
+              <td>
+                <code>MermaidText</code> HTML-escapes +
+                <code>mermaidEntityGuard</code> regex rewrites
+                <code>#xx;</code> to <code>&amp;#35;xx;</code>; fuzzed 5M execs
+              </td>
             </tr>
             <tr>
               <td>2</td>
               <td><span class="badge badge-critical">Critical</span></td>
               <td>plantuml/plantuml.go</td>
-              <td>Every labeled edge rendered dangling (<code>a --&gt; : label</code> — target swallowed); raw node IDs allowed <code>@enduml</code>/newline directive injection</td>
-              <td>Edge emission <code>from --&gt; to : label</code>; IDs via <code>escape.PlantUMLID</code> allowlist</td>
+              <td>
+                Every labeled edge rendered dangling (<code
+                  >a --&gt; : label</code
+                >
+                — target swallowed); raw node IDs allowed
+                <code>@enduml</code>/newline directive injection
+              </td>
+              <td>
+                Edge emission <code>from --&gt; to : label</code>; IDs via
+                <code>escape.PlantUMLID</code> allowlist
+              </td>
             </tr>
             <tr>
               <td>3</td>
               <td><span class="badge badge-high">High</span></td>
               <td>d2/d2_render.go</td>
-              <td>Column constraints emitted raw — block-close + style injection vector</td>
-              <td>Constraints quoted; Direction/NodeShape gated by <code>IsValid()</code></td>
+              <td>
+                Column constraints emitted raw — block-close + style injection
+                vector
+              </td>
+              <td>
+                Constraints quoted; Direction/NodeShape gated by
+                <code>IsValid()</code>
+              </td>
             </tr>
             <tr>
               <td>4</td>
               <td><span class="badge badge-high">High</span></td>
               <td>graph/dot.go</td>
-              <td>Hostile graph ID (<code>x\nlabel="injected"</code>) could break out of the header line</td>
-              <td><code>dotGraphID</code>: bare when plain alphanumeric, else <code>%q</code>-quoted; rankdir/splines/line-style gated by <code>IsValid()</code></td>
+              <td>
+                Hostile graph ID (<code>x\nlabel="injected"</code>) could break
+                out of the header line
+              </td>
+              <td>
+                <code>dotGraphID</code>: bare when plain alphanumeric, else
+                <code>%q</code>-quoted; rankdir/splines/line-style gated by
+                <code>IsValid()</code>
+              </td>
             </tr>
             <tr>
               <td>5</td>
               <td><span class="badge badge-medium">Medium</span></td>
               <td>markdown/markdown.go</td>
-              <td>A cell containing <code>|</code> ended the cell; a newline broke the row structure</td>
-              <td>Headers/rows/footer escaped up front via new <code>escape.MarkdownCell</code>; widths computed on escaped text so padding stays aligned</td>
+              <td>
+                A cell containing <code>|</code> ended the cell; a newline broke
+                the row structure
+              </td>
+              <td>
+                Headers/rows/footer escaped up front via new
+                <code>escape.MarkdownCell</code>; widths computed on escaped
+                text so padding stays aligned
+              </td>
             </tr>
             <tr>
               <td>6</td>
               <td><span class="badge badge-medium">Medium</span></td>
               <td>plantuml/convert.go</td>
-              <td>Tree-node branch bypassed ID sanitization entirely (raw <code>node.ID.Get()</code>)</td>
-              <td>Both branches sanitized via <code>escape.PlantUMLID</code></td>
+              <td>
+                Tree-node branch bypassed ID sanitization entirely (raw
+                <code>node.ID.Get()</code>)
+              </td>
+              <td>
+                Both branches sanitized via <code>escape.PlantUMLID</code>
+              </td>
             </tr>
             <tr>
               <td>7</td>
               <td><span class="badge badge-medium">Medium</span></td>
               <td>d2/d2_convert.go</td>
-              <td>Empty tree-node ID produced an empty (unusable) D2 identifier</td>
-              <td>Fallback to <code>"node"</code>, matching Mermaid behavior</td>
+              <td>
+                Empty tree-node ID produced an empty (unusable) D2 identifier
+              </td>
+              <td>
+                Fallback to <code>"node"</code>, matching Mermaid behavior
+              </td>
             </tr>
             <tr>
               <td>8</td>
@@ -999,14 +1048,16 @@
           <strong>daghtml: audited personally, clean</strong>
           JSON embedded via <code>jsontext.EscapeForHTML</code> (Unicode escapes
           defeat <code>&lt;/script&gt;</code> injection), typed
-          <code>template.CSS/JS</code> injection with gosec nolints, DOM-safe
-          JS (createElementNS/textContent, static-only innerHTML), restrictive
-          CSP, real XSS tests. One doc lie fixed: duplicate node IDs are NOT
+          <code>template.CSS/JS</code> injection with gosec nolints, DOM-safe JS
+          (createElementNS/textContent, static-only innerHTML), restrictive CSP,
+          real XSS tests. One doc lie fixed: duplicate node IDs are NOT
           deduplicated — the comment now tells the truth (edges bind to last
           occurrence).
         </div>
 
-        <h2 id="correctness"><span class="num">02</span>Correctness Bugs — Fixed</h2>
+        <h2 id="correctness">
+          <span class="num">02</span>Correctness Bugs — Fixed
+        </h2>
         <table>
           <thead>
             <tr>
@@ -1022,42 +1073,75 @@
               <td>9</td>
               <td><span class="badge badge-critical">Critical</span></td>
               <td>tui/render_nom.go, model.go</td>
-              <td>Every NOM-mode mouse click selected the wrong node — click formula used a stale <code>chromeLinesAboveTree</code> constant (7) while the real tree starts at line 3/5</td>
-              <td><code>treeStartLine</code> computed from actual layout; pinned by <code>TestNOMStyle_TreeStartLineMatchesRenderedLayout</code></td>
+              <td>
+                Every NOM-mode mouse click selected the wrong node — click
+                formula used a stale <code>chromeLinesAboveTree</code> constant
+                (7) while the real tree starts at line 3/5
+              </td>
+              <td>
+                <code>treeStartLine</code> computed from actual layout; pinned
+                by <code>TestNOMStyle_TreeStartLineMatchesRenderedLayout</code>
+              </td>
             </tr>
             <tr>
               <td>10</td>
               <td><span class="badge badge-critical">Critical</span></td>
               <td>nom/tree_render.go</td>
-              <td>Data race: 4 render sites read raw <code>dt.renderMode</code> while TUI toggles it</td>
-              <td>All reads via locked <code>dt.RenderMode()</code>; 500-toggle race test added</td>
+              <td>
+                Data race: 4 render sites read raw
+                <code>dt.renderMode</code> while TUI toggles it
+              </td>
+              <td>
+                All reads via locked <code>dt.RenderMode()</code>; 500-toggle
+                race test added
+              </td>
             </tr>
             <tr>
               <td>11</td>
               <td><span class="badge badge-high">High</span></td>
               <td>markup/xml.go</td>
-              <td><code>Table.Footer</code> silently dropped by the streaming XML writer</td>
-              <td><code>WriteFooter(footer []string)</code> signature (breaking, documented); parity test with Marshal path</td>
+              <td>
+                <code>Table.Footer</code> silently dropped by the streaming XML
+                writer
+              </td>
+              <td>
+                <code>WriteFooter(footer []string)</code> signature (breaking,
+                documented); parity test with Marshal path
+              </td>
             </tr>
             <tr>
               <td>12</td>
               <td><span class="badge badge-high">High</span></td>
               <td>nom/tree_render_layered.go</td>
-              <td>Layered priority sort inverted: failed nodes sank below pending — opposite of tree mode</td>
-              <td>Sort by <code>Status.Interest()</code>; deleted ad-hoc ladder</td>
+              <td>
+                Layered priority sort inverted: failed nodes sank below pending
+                — opposite of tree mode
+              </td>
+              <td>
+                Sort by <code>Status.Interest()</code>; deleted ad-hoc ladder
+              </td>
             </tr>
             <tr>
               <td>13</td>
               <td><span class="badge badge-high">High</span></td>
               <td>nom/activity_management.go</td>
-              <td>Custom registered statuses invisible to counts/Total/CompletionPercent</td>
-              <td><code>ActivityCounts.Other</code> bucket + <code>SymbolOther</code>; recount test includes it</td>
+              <td>
+                Custom registered statuses invisible to
+                counts/Total/CompletionPercent
+              </td>
+              <td>
+                <code>ActivityCounts.Other</code> bucket +
+                <code>SymbolOther</code>; recount test includes it
+              </td>
             </tr>
             <tr>
               <td>14</td>
               <td><span class="badge badge-high">High</span></td>
               <td>serialization/json.go</td>
-              <td>Map keys non-deterministic — CQRS vs registry output diverged run-to-run</td>
+              <td>
+                Map keys non-deterministic — CQRS vs registry output diverged
+                run-to-run
+              </td>
               <td><code>json.Deterministic(true)</code> on Marshal + Encode</td>
             </tr>
             <tr>
@@ -1071,7 +1155,10 @@
               <td>16</td>
               <td><span class="badge badge-medium">Medium</span></td>
               <td>nom/tree.go, tree/tree.go</td>
-              <td>Map-iteration order randomized metadata/duplicate ordering between renders</td>
+              <td>
+                Map-iteration order randomized metadata/duplicate ordering
+                between renders
+              </td>
               <td>Keys sorted before render; 20×-render determinism test</td>
             </tr>
             <tr>
@@ -1085,21 +1172,29 @@
               <td>18</td>
               <td><span class="badge badge-medium">Medium</span></td>
               <td>nom/inline_renderer.go</td>
-              <td>Private <code>formatDuration</code> drifted from <code>FormatDuration</code> (59.95s → "60.0s")</td>
+              <td>
+                Private <code>formatDuration</code> drifted from
+                <code>FormatDuration</code> (59.95s → "60.0s")
+              </td>
               <td>Duplicate deleted; Finish uses canonical formatter</td>
             </tr>
             <tr>
               <td>19</td>
               <td><span class="badge badge-medium">Medium</span></td>
               <td>nom/layered, collapsed categories</td>
-              <td>Collapsed category groups built from map order — nondeterministic output</td>
+              <td>
+                Collapsed category groups built from map order —
+                nondeterministic output
+              </td>
               <td>Built from sorted keys</td>
             </tr>
             <tr>
               <td>20</td>
               <td><span class="badge badge-low">Low</span></td>
               <td>nom/inline_renderer_summary.go</td>
-              <td>Finish with nil subscriber panicked (Draw already guarded)</td>
+              <td>
+                Finish with nil subscriber panicked (Draw already guarded)
+              </td>
               <td>Matching nil guard + test</td>
             </tr>
             <tr>
@@ -1113,13 +1208,18 @@
               <td>22</td>
               <td><span class="badge badge-low">Low</span></td>
               <td>root (session 3)</td>
-              <td>Table footer rendered at wrong index; enum error messages inconsistent</td>
+              <td>
+                Table footer rendered at wrong index; enum error messages
+                inconsistent
+              </td>
               <td>Footer index fixed; EnumErrorMessage consolidation</td>
             </tr>
           </tbody>
         </table>
 
-        <h2 id="tests"><span class="num">03</span>Test-Quality Findings — Fixed</h2>
+        <h2 id="tests">
+          <span class="num">03</span>Test-Quality Findings — Fixed
+        </h2>
         <table>
           <thead>
             <tr>
@@ -1135,84 +1235,141 @@
               <td>23</td>
               <td><span class="badge badge-high">High</span></td>
               <td>integration/nom_tui_test.go:162</td>
-              <td>Reporter subtests asserted nothing AND every Report* call starts a real tea.Program writing to stdout, in parallel subtests</td>
-              <td>Replaced with subscriber-liveness composition test; smoke coverage documented as tui-package-internal</td>
+              <td>
+                Reporter subtests asserted nothing AND every Report* call starts
+                a real tea.Program writing to stdout, in parallel subtests
+              </td>
+              <td>
+                Replaced with subscriber-liveness composition test; smoke
+                coverage documented as tui-package-internal
+              </td>
             </tr>
             <tr>
               <td>24</td>
               <td><span class="badge badge-high">High</span></td>
               <td>integration/render_helpers_test.go</td>
-              <td>All 16 format helpers swallowed render/marshal errors; partial writes passed as "non-empty output"</td>
-              <td>Helpers take <code>*testing.T</code>, fail via shared <code>mustRender</code></td>
+              <td>
+                All 16 format helpers swallowed render/marshal errors; partial
+                writes passed as "non-empty output"
+              </td>
+              <td>
+                Helpers take <code>*testing.T</code>, fail via shared
+                <code>mustRender</code>
+              </td>
             </tr>
             <tr>
               <td>25</td>
               <td><span class="badge badge-high">High</span></td>
               <td>serialization/error_test.go:140–222</td>
-              <td>Six MarshalError tests only <code>t.Logf</code>'d — structurally unable to fail; inputs marshal fine anyway</td>
-              <td>Rewritten as RendersMetadata regression guards (success + metadata in output)</td>
+              <td>
+                Six MarshalError tests only <code>t.Logf</code>'d — structurally
+                unable to fail; inputs marshal fine anyway
+              </td>
+              <td>
+                Rewritten as RendersMetadata regression guards (success +
+                metadata in output)
+              </td>
             </tr>
             <tr>
               <td>26</td>
               <td><span class="badge badge-medium">Medium</span></td>
               <td>integration/workflow_test.go:190</td>
-              <td><code>t.Error</code> then <code>err.Error()</code> dereference — panic instead of clean failure on nil error</td>
+              <td>
+                <code>t.Error</code> then <code>err.Error()</code> dereference —
+                panic instead of clean failure on nil error
+              </td>
               <td><code>t.Fatal</code></td>
             </tr>
             <tr>
               <td>27</td>
               <td><span class="badge badge-medium">Medium</span></td>
               <td>integration/workflow_test.go:106</td>
-              <td>Marshal error discarded; empty-string output made the Apple-before-Zebra check silently pass (<code>-1 &gt; -1</code> false)</td>
+              <td>
+                Marshal error discarded; empty-string output made the
+                Apple-before-Zebra check silently pass (<code>-1 &gt; -1</code>
+                false)
+              </td>
               <td>Fatal on marshal error</td>
             </tr>
             <tr>
               <td>28</td>
               <td><span class="badge badge-medium">Medium</span></td>
               <td>integration/roundtrip_structural_test.go:68</td>
-              <td><code>len(cells) &gt; 0 &amp;&amp; value != "Alice"</code> — vacuous when XML round-trip drops all cells</td>
+              <td>
+                <code>len(cells) &gt; 0 &amp;&amp; value != "Alice"</code> —
+                vacuous when XML round-trip drops all cells
+              </td>
               <td>Empty cell slice fails explicitly</td>
             </tr>
             <tr>
               <td>29</td>
               <td><span class="badge badge-medium">Medium</span></td>
               <td>integration/userjourney_test.go:190</td>
-              <td>"Sorting journey" tested only <code>slices.SortStableFunc</code> — zero product code</td>
-              <td>Rewritten as sort→render journey asserting markdown output preserves row order</td>
+              <td>
+                "Sorting journey" tested only
+                <code>slices.SortStableFunc</code> — zero product code
+              </td>
+              <td>
+                Rewritten as sort→render journey asserting markdown output
+                preserves row order
+              </td>
             </tr>
             <tr>
               <td>30</td>
               <td><span class="badge badge-medium">Medium</span></td>
               <td>markup/xml_test.go:162</td>
-              <td><code>&amp;&amp;</code> where <code>||</code> meant — one missing substring still passed</td>
-              <td>Both substrings independently required; failure prints output</td>
+              <td>
+                <code>&amp;&amp;</code> where <code>||</code> meant — one
+                missing substring still passed
+              </td>
+              <td>
+                Both substrings independently required; failure prints output
+              </td>
             </tr>
             <tr>
               <td>31</td>
               <td><span class="badge badge-medium">Medium</span></td>
               <td>nom/inline_renderer_test.go:240</td>
               <td>Blind 180ms sleep for periodic-render test</td>
-              <td><code>renderNotify</code> hook + <code>waitForRender</code> deterministic wait</td>
+              <td>
+                <code>renderNotify</code> hook +
+                <code>waitForRender</code> deterministic wait
+              </td>
             </tr>
             <tr>
               <td>32</td>
               <td><span class="badge badge-medium">Medium</span></td>
               <td>table/color_test.go</td>
-              <td>Footer-bold tests read <code>tbl.footerRowIndex</code> — same field the implementation uses (cannot catch off-by-one in rendered table)</td>
-              <td>New content-based test: footer found by text, bold asserted on it, not on data rows</td>
+              <td>
+                Footer-bold tests read <code>tbl.footerRowIndex</code> — same
+                field the implementation uses (cannot catch off-by-one in
+                rendered table)
+              </td>
+              <td>
+                New content-based test: footer found by text, bold asserted on
+                it, not on data rows
+              </td>
             </tr>
             <tr>
               <td>33</td>
               <td><span class="badge badge-medium">Medium</span></td>
               <td>integration helpers (6 files)</td>
-              <td>Setup events/writers discarded errors — downstream failures misdiagnosed</td>
-              <td>All helpers take <code>*testing.T</code> and fail on error</td>
+              <td>
+                Setup events/writers discarded errors — downstream failures
+                misdiagnosed
+              </td>
+              <td>
+                All helpers take <code>*testing.T</code> and fail on error
+              </td>
             </tr>
             <tr>
               <td>34</td>
               <td><span class="badge badge-low">Low</span></td>
               <td>integration/format_registration_test.go</td>
-              <td>Counts collapsed to booleans before asserting — failures showed "false, want true"</td>
+              <td>
+                Counts collapsed to booleans before asserting — failures showed
+                "false, want true"
+              </td>
               <td>Real counts in messages</td>
             </tr>
             <tr>
@@ -1233,13 +1390,18 @@
               <td>37</td>
               <td><span class="badge badge-low">Low</span></td>
               <td>nom/tree_accessors.go:78</td>
-              <td><code>snapshotRoots</code>: production method whose only caller was its own test</td>
+              <td>
+                <code>snapshotRoots</code>: production method whose only caller
+                was its own test
+              </td>
               <td>Deleted with its test</td>
             </tr>
           </tbody>
         </table>
 
-        <h2 id="examples"><span class="num">04</span>Examples &amp; Docs — Fixed</h2>
+        <h2 id="examples">
+          <span class="num">04</span>Examples &amp; Docs — Fixed
+        </h2>
         <table>
           <thead>
             <tr>
@@ -1255,28 +1417,48 @@
               <td>38</td>
               <td><span class="badge badge-high">High</span></td>
               <td>examples/basic/renderers.go</td>
-              <td>Flagship example taught pre-v0.30 legacy renderer structs (DOTRenderer/MermaidRenderer/ASCIITreeRenderer + setters) instead of the canonical CQRS API</td>
-              <td>Migrated to <code>tree.WriteASCII</code>, <code>graph.RenderMermaid</code>+DedupEdges, <code>graph.WriteDOT</code>+options; output verified</td>
+              <td>
+                Flagship example taught pre-v0.30 legacy renderer structs
+                (DOTRenderer/MermaidRenderer/ASCIITreeRenderer + setters)
+                instead of the canonical CQRS API
+              </td>
+              <td>
+                Migrated to <code>tree.WriteASCII</code>,
+                <code>graph.RenderMermaid</code>+DedupEdges,
+                <code>graph.WriteDOT</code>+options; output verified
+              </td>
             </tr>
             <tr>
               <td>39</td>
               <td><span class="badge badge-high">High</span></td>
               <td>examples/tui_progress/main.go</td>
-              <td>Reporter never stopped (goroutine + cache flush leak); false "in a real application…" comment; NOM section was Printf trivia</td>
-              <td>Explicit <code>Stop()</code>, real NOM-mode event demo, honest comments</td>
+              <td>
+                Reporter never stopped (goroutine + cache flush leak); false "in
+                a real application…" comment; NOM section was Printf trivia
+              </td>
+              <td>
+                Explicit <code>Stop()</code>, real NOM-mode event demo, honest
+                comments
+              </td>
             </tr>
             <tr>
               <td>40</td>
               <td><span class="badge badge-medium">Medium</span></td>
               <td>examples/diagram_export/main.go</td>
-              <td>Legacy renderer path + <code>panic(err)</code> — only example teaching panic-on-failure</td>
+              <td>
+                Legacy renderer path + <code>panic(err)</code> — only example
+                teaching panic-on-failure
+              </td>
               <td>CQRS migration + <code>log.Fatalf</code></td>
             </tr>
             <tr>
               <td>41</td>
               <td><span class="badge badge-medium">Medium</span></td>
               <td>examples/nom_dag/main.go</td>
-              <td>Six <code>_ =</code> OnEvent discards next to a checked helper — taught both disciplines at once</td>
+              <td>
+                Six <code>_ =</code> OnEvent discards next to a checked helper —
+                taught both disciplines at once
+              </td>
               <td>All events through the checked helper</td>
             </tr>
             <tr>
@@ -1290,34 +1472,50 @@
               <td>43</td>
               <td><span class="badge badge-medium">Medium</span></td>
               <td>examples/shared/shared.go</td>
-              <td><code>RenderAndPrint</code> printed a spurious blank line for tree/diagram payloads ending in \n</td>
+              <td>
+                <code>RenderAndPrint</code> printed a spurious blank line for
+                tree/diagram payloads ending in \n
+              </td>
               <td>TrimSuffix before Println</td>
             </tr>
             <tr>
               <td>44</td>
               <td><span class="badge badge-high">High</span></td>
               <td>nom/doc.go</td>
-              <td>Package docs described the deleted shared-*Activity concurrency model and pointer-event syntax that no longer compiles</td>
-              <td>Rewritten for the v0.22 snapshot model with sealed value events</td>
+              <td>
+                Package docs described the deleted shared-*Activity concurrency
+                model and pointer-event syntax that no longer compiles
+              </td>
+              <td>
+                Rewritten for the v0.22 snapshot model with sealed value events
+              </td>
             </tr>
             <tr>
               <td>45</td>
               <td><span class="badge badge-medium">Medium</span></td>
               <td>daghtml/types.go</td>
-              <td>Doc claimed duplicate node IDs are deduplicated (first wins) — JS renders all, edges bind to LAST occurrence</td>
+              <td>
+                Doc claimed duplicate node IDs are deduplicated (first wins) —
+                JS renders all, edges bind to LAST occurrence
+              </td>
               <td>Comment tells the truth</td>
             </tr>
             <tr>
               <td>46</td>
               <td><span class="badge badge-low">Low</span></td>
               <td>escape/escape.go</td>
-              <td>goconst ("node" ×3) + wsl_v5 from commit 4ab5e1a (lint not re-run then)</td>
+              <td>
+                goconst ("node" ×3) + wsl_v5 from commit 4ab5e1a (lint not
+                re-run then)
+              </td>
               <td><code>fallbackID</code> const + whitespace</td>
             </tr>
           </tbody>
         </table>
 
-        <h2 id="deferred"><span class="num">05</span>Deferred — Harvested to TODO_LIST.md</h2>
+        <h2 id="deferred">
+          <span class="num">05</span>Deferred — Harvested to TODO_LIST.md
+        </h2>
         <div class="card card-warning">
           <h4>Deliberately not fixed (v0.38.0 family + minor)</h4>
           <p>
@@ -1338,7 +1536,10 @@
 
         <div class="issue issue-critical">
           <span class="severity severity-critical">6 instances</span>
-          <h3>"Tests encode the bug" — expectations derived from the same constant/formula as the implementation</h3>
+          <h3>
+            "Tests encode the bug" — expectations derived from the same
+            constant/formula as the implementation
+          </h3>
           <div class="where">
             table footer index · tui click formula · nom counts recount helper ·
             PlantUML golden · buildStyleFunc footerRowIndex · XML vacuous guard
@@ -1346,9 +1547,8 @@
           <p>
             When a test computes its expectation from the implementation's own
             field or regenerates its golden from buggy output, it verifies
-            nothing. Every fix in this review first <strong
-              >probed actual rendered output</strong
-            >
+            nothing. Every fix in this review first
+            <strong>probed actual rendered output</strong>
             (render → split lines → assert content), then pinned that.
           </p>
         </div>
@@ -1356,12 +1556,14 @@
         <div class="issue issue-important">
           <span class="severity severity-important">Systemic</span>
           <h3>Swallowed errors turn assertion failures into misdiagnoses</h3>
-          <div class="where">integration helpers, examples, test setup events</div>
+          <div class="where">
+            integration helpers, examples, test setup events
+          </div>
           <p>
             <code>_ =</code> on setup/marshal/render errors makes downstream
-            content assertions fail with misleading messages (or pass
-            vacuously on empty output). Convention going forward: test helpers
-            take <code>*testing.T</code> and fail at the source.
+            content assertions fail with misleading messages (or pass vacuously
+            on empty output). Convention going forward: test helpers take
+            <code>*testing.T</code> and fail at the source.
           </p>
         </div>
 
@@ -1392,9 +1594,9 @@
             <div class="text">
               <strong>Escaping is centralized and render-time</strong>
               <span
-                >All diagram injection fixes landed in escape/ as shared
-                helpers (MarkdownCell, PlantUMLID, MermaidText guard) —
-                consumers can't misuse per-renderer ad-hoc escaping.</span
+                >All diagram injection fixes landed in escape/ as shared helpers
+                (MarkdownCell, PlantUMLID, MermaidText guard) — consumers can't
+                misuse per-renderer ad-hoc escaping.</span
               >
             </div>
           </div>
@@ -1414,15 +1616,17 @@
             <div class="text">
               <strong>daghtml's XSS posture is exemplary</strong>
               <span
-                >Unicode-escape JSON embedding + typed template injection +
-                CSP + real injection tests — survived a hostile personal
-                audit unchanged.</span
+                >Unicode-escape JSON embedding + typed template injection + CSP
+                + real injection tests — survived a hostile personal audit
+                unchanged.</span
               >
             </div>
           </div>
         </div>
 
-        <h2 id="verify"><span class="num">08</span>Verification (all green at close)</h2>
+        <h2 id="verify">
+          <span class="num">08</span>Verification (all green at close)
+        </h2>
         <div class="dep-tree">
           <span class="root">gate</span> ├──
           <span class="ok">nix build ×19</span> ├──
@@ -1437,8 +1641,8 @@
         </p>
 
         <footer class="footer">
-          Generated 2026-08-16 12:15 &middot; Sessions 3–5 &middot; All
-          findings verified at the exact cited line before fixing
+          Generated 2026-08-16 12:15 &middot; Sessions 3–5 &middot; All findings
+          verified at the exact cited line before fixing
         </footer>
       </main>
     </div>

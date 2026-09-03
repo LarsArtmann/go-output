@@ -30,14 +30,14 @@
         --warning: var(--color-yellow);
         --radius: 0px;
         --font-heading:
-          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          Helvetica, Arial, sans-serif;
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         --font-body:
-          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          Helvetica, Arial, sans-serif;
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         --font-mono:
-          ui-monospace, "Cascadia Code", "Source Code Pro", "JetBrains Mono", Menlo, Consolas,
-          monospace;
+          ui-monospace, "Cascadia Code", "Source Code Pro", "JetBrains Mono",
+          Menlo, Consolas, monospace;
       }
       * {
         box-sizing: border-box;
@@ -199,15 +199,27 @@
       }
       .card-problem {
         border-left-color: var(--problem);
-        background: color-mix(in srgb, var(--problem) 8%, var(--surface-raised));
+        background: color-mix(
+          in srgb,
+          var(--problem) 8%,
+          var(--surface-raised)
+        );
       }
       .card-solution {
         border-left-color: var(--solution);
-        background: color-mix(in srgb, var(--solution) 8%, var(--surface-raised));
+        background: color-mix(
+          in srgb,
+          var(--solution) 8%,
+          var(--surface-raised)
+        );
       }
       .card-warning {
         border-left-color: var(--warning);
-        background: color-mix(in srgb, var(--warning) 8%, var(--surface-raised));
+        background: color-mix(
+          in srgb,
+          var(--warning) 8%,
+          var(--surface-raised)
+        );
       }
       .severity {
         display: inline-block;
@@ -427,7 +439,19 @@
     </style>
   </head>
   <body>
-    <div style="background:#1a1a2e;border-left:3px solid #50fa7b;padding:12px 16px;margin:16px 0;border-radius:4px;"><strong>✅ Resolved (2026-08-04):</strong> ADRs 010/011 shipped. TUI C/D/L keys done. RenderMode.String() done. daghtml lint clean. examples/nom_dag created. Category color tints implemented. All shipped in v0.23.0.</div>
+    <div
+      style="
+        background: #1a1a2e;
+        border-left: 3px solid #50fa7b;
+        padding: 12px 16px;
+        margin: 16px 0;
+        border-radius: 4px;
+      "
+    >
+      <strong>✅ Resolved (2026-08-04):</strong> ADRs 010/011 shipped. TUI C/D/L
+      keys done. RenderMode.String() done. daghtml lint clean. examples/nom_dag
+      created. Category color tints implemented. All shipped in v0.23.0.
+    </div>
 
     <div class="top-bar">
       <span>STATUS REPORT</span>
@@ -453,9 +477,10 @@
           <div class="hero-badge">Comprehensive Status</div>
           <h1>DAG Visualization Innovations — Full Status</h1>
           <p class="hero-subtitle">
-            11 commits, 42 files, +2,381 lines implementing layered display mode, theme system,
-            activity categories, critical-path ETA, DAG summary, and TUI interactivity — all
-            building on the true DAG topology.
+            11 commits, 42 files, +2,381 lines implementing layered display
+            mode, theme system, activity categories, critical-path ETA, DAG
+            summary, and TUI interactivity — all building on the true DAG
+            topology.
           </p>
         </div>
 
@@ -497,7 +522,8 @@
 
         <h2 id="done"><span class="num">01</span>A) FULLY DONE</h2>
         <p>
-          Features that are implemented, tested, lint-clean, and committed to <code>master</code>.
+          Features that are implemented, tested, lint-clean, and committed to
+          <code>master</code>.
         </p>
         <div class="strengths">
           <div class="strength">
@@ -506,8 +532,8 @@
               <strong>T1 — Wave 1 verification</strong>
               <span
                 >Verified <code>go test ./... -count=1</code> and
-                <code>golangci-lint run ./...</code> clean for nom module. Commit
-                <code>3d7b49c</code>.</span
+                <code>golangci-lint run ./...</code> clean for nom module.
+                Commit <code>3d7b49c</code>.</span
               >
             </div>
           </div>
@@ -517,10 +543,12 @@
               <strong>T2 — Status registry integration</strong>
               <span
                 >Replaced hardcoded <code>ActivityStatus</code> switches in
-                <code>activity_status.go</code>, <code>status_mappers.go</code>, and
-                <code>activity.go</code> with dynamic <code>LookupStatus</code> calls.
+                <code>activity_status.go</code>, <code>status_mappers.go</code>,
+                and <code>activity.go</code> with dynamic
+                <code>LookupStatus</code> calls.
                 <code>AllActivityStatuses</code> is now a function. Added
-                <code>status_registry_test.go</code> (217 lines). Commit <code>3105dbf</code>.</span
+                <code>status_registry_test.go</code> (217 lines). Commit
+                <code>3105dbf</code>.</span
               >
             </div>
           </div>
@@ -529,11 +557,14 @@
             <div class="text">
               <strong>T3/T4 — Theme system</strong>
               <span
-                ><code>Theme</code> struct with <code>SemanticColors</code>, symbol overrides,
-                category tints. Five presets (Default, Dracula, Nord, Monochrome, HighContrast).
-                <code>WithTheme</code> subscriber option, <code>Theme()</code> accessor.
-                Snapshot-time color/symbol resolution. Tree renderer and TUI chrome theme-aware.
-                <code>theme_test.go</code> (184 lines). Commit <code>40dbddf</code>.</span
+                ><code>Theme</code> struct with <code>SemanticColors</code>,
+                symbol overrides, category tints. Five presets (Default,
+                Dracula, Nord, Monochrome, HighContrast).
+                <code>WithTheme</code> subscriber option,
+                <code>Theme()</code> accessor. Snapshot-time color/symbol
+                resolution. Tree renderer and TUI chrome theme-aware.
+                <code>theme_test.go</code> (184 lines). Commit
+                <code>40dbddf</code>.</span
               >
             </div>
           </div>
@@ -542,11 +573,12 @@
             <div class="text">
               <strong>T5 — Parallelism meter</strong>
               <span
-                ><code>ParallelismStats</code> struct with running/possible counts.
-                <code>ParallelismStats()</code> method on subscriber.
-                <code>"parallel: N/M possible"</code> summary-bar segment gated by
-                <code>WithShowParallelism()</code>. <code>state_accessors_test.go</code> (84 lines).
-                Commit <code>bb8e829</code>.</span
+                ><code>ParallelismStats</code> struct with running/possible
+                counts. <code>ParallelismStats()</code> method on subscriber.
+                <code>"parallel: N/M possible"</code> summary-bar segment gated
+                by <code>WithShowParallelism()</code>.
+                <code>state_accessors_test.go</code> (84 lines). Commit
+                <code>bb8e829</code>.</span
               >
             </div>
           </div>
@@ -557,9 +589,11 @@
               <span
                 ><code>RenderMode</code> enum
                 (<code>RenderModeTree</code>/<code>RenderModeLayered</code>).
-                <code>WithRenderMode</code> option. <code>collectLayeredEntries</code> groups by DAG
-                depth. Priority sorting (running &gt; pending &gt; terminal). Placeholder skipping.
-                Height-pressure layer collapse. <code>tree_render_layered.go</code> (269 lines),
+                <code>WithRenderMode</code> option.
+                <code>collectLayeredEntries</code> groups by DAG depth. Priority
+                sorting (running &gt; pending &gt; terminal). Placeholder
+                skipping. Height-pressure layer collapse.
+                <code>tree_render_layered.go</code> (269 lines),
                 <code>tree_render_layered_test.go</code> (243 lines). Commit
                 <code>e40edbf</code>.</span
               >
@@ -570,10 +604,12 @@
             <div class="text">
               <strong>T7 — Layered mode integration</strong>
               <span
-                ><code>RenderVisibleEntry</code> dispatches to <code>renderLayeredLine</code>.
-                Selection highlight and mouse click recognize <code>LayerNodes</code> rows.
-                <code>VisibleEntry.ContainsNode</code> helper. TUI layered tests (169 lines). Inline
-                renderer dispatch test. Commit <code>609cd00</code>.</span
+                ><code>RenderVisibleEntry</code> dispatches to
+                <code>renderLayeredLine</code>. Selection highlight and mouse
+                click recognize <code>LayerNodes</code> rows.
+                <code>VisibleEntry.ContainsNode</code> helper. TUI layered tests
+                (169 lines). Inline renderer dispatch test. Commit
+                <code>609cd00</code>.</span
               >
             </div>
           </div>
@@ -582,10 +618,12 @@
             <div class="text">
               <strong>T8 — Critical-path ETA</strong>
               <span
-                ><code>EstimatedCriticalPathRemaining()</code> computes longest remaining-time path.
+                ><code>EstimatedCriticalPathRemaining()</code> computes longest
+                remaining-time path.
                 <code>SetShowCriticalPathETA(true)</code> renders
                 <code>"~Xm critical"</code> summary segment. Tests in
-                <code>inline_renderer_test.go</code>. Commit <code>1493b2e</code>.</span
+                <code>inline_renderer_test.go</code>. Commit
+                <code>1493b2e</code>.</span
               >
             </div>
           </div>
@@ -595,10 +633,13 @@
               <strong>T9 — Activity categories</strong>
               <span
                 ><code>ActivityCategory</code> on <code>Activity</code>,
-                <code>ActivitySnapshot</code>, and events (<code>ActivityRegistered</code>,
-                <code>ActivityStarted</code>). <code>SetActivityCategory</code> accessor.
-                <code>[tag]</code> prefix rendering gated by <code>WithShowCategory()</code>.
-                <code>category_test.go</code> (193 lines). Commit <code>8261f1d</code>.</span
+                <code>ActivitySnapshot</code>, and events
+                (<code>ActivityRegistered</code>, <code>ActivityStarted</code>).
+                <code>SetActivityCategory</code> accessor.
+                <code>[tag]</code> prefix rendering gated by
+                <code>WithShowCategory()</code>.
+                <code>category_test.go</code> (193 lines). Commit
+                <code>8261f1d</code>.</span
               >
             </div>
           </div>
@@ -607,10 +648,11 @@
             <div class="text">
               <strong>T10 — DAG summary</strong>
               <span
-                ><code>DAGSummary</code> reports nodes, edges, max depth, max width, roots, leaves.
-                <code>DAGSummaryWithSnapshots</code> adds critical-path time.
-                <code>String()</code> renders compact one-liner. <code>dag_summary.go</code> (107
-                lines), <code>dag_summary_test.go</code> (91 lines). Commit
+                ><code>DAGSummary</code> reports nodes, edges, max depth, max
+                width, roots, leaves. <code>DAGSummaryWithSnapshots</code> adds
+                critical-path time. <code>String()</code> renders compact
+                one-liner. <code>dag_summary.go</code> (107 lines),
+                <code>dag_summary_test.go</code> (91 lines). Commit
                 <code>0a9583c</code>.</span
               >
             </div>
@@ -620,9 +662,10 @@
             <div class="text">
               <strong>T11 — Critical-path priority sort</strong>
               <span
-                >Nodes on the longest-time path sort before non-critical siblings.
-                <code>sortKey.onCriticalPath</code> field. <code>childPriority</code> accepts
-                critical-path map. Commit <code>c3b4689</code>.</span
+                >Nodes on the longest-time path sort before non-critical
+                siblings. <code>sortKey.onCriticalPath</code> field.
+                <code>childPriority</code> accepts critical-path map. Commit
+                <code>c3b4689</code>.</span
               >
             </div>
           </div>
@@ -631,8 +674,9 @@
             <div class="text">
               <strong>T15 — Documentation</strong>
               <span
-                >CHANGELOG updated with 7 feature entries. AGENTS.md has 7 new pattern entries
-                covering all innovations. Commit <code>4ccd511</code>.</span
+                >CHANGELOG updated with 7 feature entries. AGENTS.md has 7 new
+                pattern entries covering all innovations. Commit
+                <code>4ccd511</code>.</span
               >
             </div>
           </div>
@@ -641,8 +685,8 @@
             <div class="text">
               <strong>T16 — Final integration verification</strong>
               <span
-                >All 18 modules pass <code>nix run .#test</code>. Lint clean for nom and tui.
-                BuildFlow passes 27/27 checks.</span
+                >All 18 modules pass <code>nix run .#test</code>. Lint clean for
+                nom and tui. BuildFlow passes 27/27 checks.</span
               >
             </div>
           </div>
@@ -651,8 +695,9 @@
             <div class="text">
               <strong>T13 (partial) — TUI L key toggle</strong>
               <span
-                ><code>L</code> key switches between tree and layered display in NOM mode. Added to
-                help overlay. Commit <code>16abe66</code>.</span
+                ><code>L</code> key switches between tree and layered display in
+                NOM mode. Added to help overlay. Commit
+                <code>16abe66</code>.</span
               >
             </div>
           </div>
@@ -664,21 +709,23 @@
           <h3>T13 — TUI interactivity</h3>
           <p>
             The <code>L</code> key toggle is implemented and tested. Missing:
-            <code>T</code> (tree-only), <code>C</code> (critical-path-only filter),
-            <code>D</code> (DOT export from TUI). No teatest E2E test for the <code>L</code> key
-            press yet.
+            <code>T</code> (tree-only), <code>C</code> (critical-path-only
+            filter), <code>D</code> (DOT export from TUI). No teatest E2E test
+            for the <code>L</code> key press yet.
           </p>
           <div class="callout callout-warning">
             <strong>Remaining:</strong>
-            Add C/D key handlers, DOT export integration, teatest E2E coverage for mode toggle.
+            Add C/D key handlers, DOT export integration, teatest E2E coverage
+            for mode toggle.
           </div>
         </div>
         <div class="card card-warning">
           <span class="severity severity-important">Partial</span>
           <h3>T15 — Documentation &amp; examples</h3>
           <p>
-            CHANGELOG and AGENTS.md are updated. Missing: ADR 010 (DAG topology), ADR 011 (status
-            registry), FEATURES.md update, TODO_LIST.md update, godoc examples for new features,
+            CHANGELOG and AGENTS.md are updated. Missing: ADR 010 (DAG
+            topology), ADR 011 (status registry), FEATURES.md update,
+            TODO_LIST.md update, godoc examples for new features,
             <code>examples/nom_dag/</code> demo program.
           </p>
         </div>
@@ -686,10 +733,12 @@
           <span class="severity severity-important">Partial</span>
           <h3>T12 — Layer collapse &amp; future hiding</h3>
           <p>
-            Height-pressure collapse is implemented (terminal layers summarized as
-            <code>"✔ Layer N: N done"</code>). Missing: future-layer hiding (collapse layers that
-            haven't started yet, showing only a count), and progressive collapse (auto-collapse
-            deeper layers as earlier layers complete).
+            Height-pressure collapse is implemented (terminal layers summarized
+            as
+            <code>"✔ Layer N: N done"</code>). Missing: future-layer hiding
+            (collapse layers that haven't started yet, showing only a count),
+            and progressive collapse (auto-collapse deeper layers as earlier
+            layers complete).
           </p>
         </div>
 
@@ -708,8 +757,9 @@
               <td>1</td>
               <td>OSC 11 auto-theme</td>
               <td>
-                Query terminal background color via OSC 11 escape sequence and auto-select
-                light/dark theme. <code>WithAutoTheme()</code> option.
+                Query terminal background color via OSC 11 escape sequence and
+                auto-select light/dark theme.
+                <code>WithAutoTheme()</code> option.
               </td>
               <td><span class="badge badge-medium">Medium</span></td>
             </tr>
@@ -717,7 +767,8 @@
               <td>2</td>
               <td>Category collapse</td>
               <td>
-                Group sibling activities by category and collapse into a summary line (e.g.
+                Group sibling activities by category and collapse into a summary
+                line (e.g.
                 <code>"3 build tasks"</code>).
               </td>
               <td><span class="badge badge-medium">Medium</span></td>
@@ -726,22 +777,25 @@
               <td>3</td>
               <td>Category auto-inference</td>
               <td>
-                Phase children inherit their parent's category automatically if not explicitly set.
+                Phase children inherit their parent's category automatically if
+                not explicitly set.
               </td>
               <td><span class="badge badge-low">Low</span></td>
             </tr>
             <tr>
               <td>4</td>
               <td>ADR 010 &amp; 011</td>
-              <td>Write ADR for DAG topology decisions and status registry design.</td>
+              <td>
+                Write ADR for DAG topology decisions and status registry design.
+              </td>
               <td><span class="badge badge-low">Low</span></td>
             </tr>
             <tr>
               <td>5</td>
               <td>Demo program</td>
               <td>
-                <code>examples/nom_dag/</code> — standalone demo showing layered mode, categories,
-                themes.
+                <code>examples/nom_dag/</code> — standalone demo showing layered
+                mode, categories, themes.
               </td>
               <td><span class="badge badge-low">Low</span></td>
             </tr>
@@ -753,10 +807,12 @@
           <span class="severity severity-critical">Pre-existing</span>
           <h3>Flaky parallel status-registry test</h3>
           <p>
-            <code>TestStatusRegistry_AllActivityStatuses_IncludesCustom</code> was flaky when run in
-            parallel because it asserted exact count deltas on a global registry that other parallel
-            tests also mutate. <strong>Fixed in this session</strong> (<code>8261f1d</code>) by
-            removing the count-delta assertion and only checking containment. No new damage.
+            <code>TestStatusRegistry_AllActivityStatuses_IncludesCustom</code>
+            was flaky when run in parallel because it asserted exact count
+            deltas on a global registry that other parallel tests also mutate.
+            <strong>Fixed in this session</strong> (<code>8261f1d</code>) by
+            removing the count-delta assertion and only checking containment. No
+            new damage.
           </p>
           <div class="callout callout-solution">
             <strong>Status:</strong>
@@ -767,83 +823,94 @@
           <span class="severity severity-critical">Pre-existing</span>
           <h3>daghtml lint issues (11)</h3>
           <p>
-            The <code>daghtml/</code> module has 11 pre-existing lint issues (depguard, gosec G203
-            for <code>template.CSS</code>/<code>template.JS</code>, gochecknoglobals, wrapcheck,
-            staticcheck SA9003). These existed before this session and are unrelated to the nom/tui
-            innovations.
+            The <code>daghtml/</code> module has 11 pre-existing lint issues
+            (depguard, gosec G203 for
+            <code>template.CSS</code>/<code>template.JS</code>,
+            gochecknoglobals, wrapcheck, staticcheck SA9003). These existed
+            before this session and are unrelated to the nom/tui innovations.
           </p>
           <div class="callout callout-warning">
             <strong>Action:</strong>
-            File as tech debt — daghtml needs its own lint exemption or refactoring pass.
+            File as tech debt — daghtml needs its own lint exemption or
+            refactoring pass.
           </div>
         </div>
         <div class="card card-problem">
           <span class="severity severity-critical">Pre-existing</span>
           <h3>Cache race in test environments</h3>
           <p>
-            <code>nix run .#test</code> has a pre-existing issue where the default
-            <code>~/.cache/nom-timing.csv</code> is shared by tests that don't use
-            <code>WithCachePath</code>. Workaround: clear
+            <code>nix run .#test</code> has a pre-existing issue where the
+            default <code>~/.cache/nom-timing.csv</code> is shared by tests that
+            don't use <code>WithCachePath</code>. Workaround: clear
             <code>/home/lars/.cache/nom-timing.csv</code> before running tests.
           </p>
           <div class="callout callout-warning">
             <strong>Action:</strong>
-            All new tests use <code>WithCachePath(t.TempDir())</code>. The old tests that don't are
-            the issue.
+            All new tests use <code>WithCachePath(t.TempDir())</code>. The old
+            tests that don't are the issue.
           </div>
         </div>
         <div class="card card-problem">
           <span class="severity severity-critical">BuildFlow</span>
           <h3>BuildFlow pre-commit hook deletes CODE_OF_CONDUCT.md</h3>
           <p>
-            The BuildFlow hook auto-deletes <code>CODE_OF_CONDUCT.md</code> and re-stages the
-            deletion. This is a known BuildFlow config issue, not fixable in-repo. Use
+            The BuildFlow hook auto-deletes <code>CODE_OF_CONDUCT.md</code> and
+            re-stages the deletion. This is a known BuildFlow config issue, not
+            fixable in-repo. Use
             <code>git commit --no-verify</code>
             or verify the file is intact after commits.
           </p>
         </div>
 
-        <h2 id="improve"><span class="num">05</span>E) WHAT WE SHOULD IMPROVE!</h2>
+        <h2 id="improve">
+          <span class="num">05</span>E) WHAT WE SHOULD IMPROVE!
+        </h2>
         <div class="card card-solution">
           <h4>1. Layered mode needs golden-file test</h4>
           <p>
-            Layered rendering output has no golden snapshot. A golden test would lock the visual
-            layout and catch regressions in layer separators, header formatting, and priority
-            ordering.
+            Layered rendering output has no golden snapshot. A golden test would
+            lock the visual layout and catch regressions in layer separators,
+            header formatting, and priority ordering.
           </p>
         </div>
         <div class="card card-solution">
           <h4>2. VT emulator test for layered mode</h4>
           <p>
-            No <code>TestVT_</code> test feeds layered-mode output through the VT emulator. Inline
-            rendering of layered mode in a real terminal is untested at the screen-buffer level.
+            No <code>TestVT_</code> test feeds layered-mode output through the
+            VT emulator. Inline rendering of layered mode in a real terminal is
+            untested at the screen-buffer level.
           </p>
         </div>
         <div class="card card-solution">
           <h4>3. Category color tinting is dormant</h4>
           <p>
-            <code>Theme.CategoryColors</code> exists and <code>Theme.CategoryColor()</code> works,
-            but the renderer doesn't apply category tints to activity labels yet — only the
-            <code>[tag]</code> prefix is rendered. The tint should blend with or override the status
-            color.
+            <code>Theme.CategoryColors</code> exists and
+            <code>Theme.CategoryColor()</code> works, but the renderer doesn't
+            apply category tints to activity labels yet — only the
+            <code>[tag]</code> prefix is rendered. The tint should blend with or
+            override the status color.
           </p>
         </div>
         <div class="card card-solution">
           <h4>4. No integration test for full event → layered render</h4>
           <p>
-            The <code>integration/</code> module has cross-module tests but none exercise the new
-            layered mode, categories, or critical-path ETA through the full event dispatch path.
+            The <code>integration/</code> module has cross-module tests but none
+            exercise the new layered mode, categories, or critical-path ETA
+            through the full event dispatch path.
           </p>
         </div>
         <div class="card card-solution">
           <h4>5. DAGSummary is not wired to any UI</h4>
           <p>
-            <code>DAGSummary.String()</code> produces a nice one-liner but it's not displayed in the
-            inline summary bar, the TUI, or any log output yet. It's an API without a consumer.
+            <code>DAGSummary.String()</code> produces a nice one-liner but it's
+            not displayed in the inline summary bar, the TUI, or any log output
+            yet. It's an API without a consumer.
           </p>
         </div>
         <div class="card card-solution">
-          <h4>6. <code>RenderMode</code> has no <code>String()</code> method</h4>
+          <h4>
+            6. <code>RenderMode</code> has no <code>String()</code> method
+          </h4>
           <p>
             Missing for logging/debugging. Should return <code>"tree"</code> /
             <code>"layered"</code>.
@@ -852,13 +919,16 @@
         <div class="card card-solution">
           <h4>7. <code>stripANSI</code> is duplicated in test helpers</h4>
           <p>
-            <code>stripANSI</code> in <code>tree_render_layered_test.go</code> and
-            <code>containsPlain</code> in <code>category_test.go</code> do the same thing. Should be
-            a shared test helper.
+            <code>stripANSI</code> in
+            <code>tree_render_layered_test.go</code> and
+            <code>containsPlain</code> in <code>category_test.go</code> do the
+            same thing. Should be a shared test helper.
           </p>
         </div>
 
-        <h2 id="next25"><span class="num">06</span>F) TOP 25 THINGS TO DO NEXT</h2>
+        <h2 id="next25">
+          <span class="num">06</span>F) TOP 25 THINGS TO DO NEXT
+        </h2>
         <div class="table-wrap">
           <table>
             <thead>
@@ -874,8 +944,8 @@
                 <td>1</td>
                 <td><span class="badge badge-critical">Critical</span></td>
                 <td>
-                  Wire <code>DAGSummary</code> into inline summary bar and TUI — it's built but
-                  invisible
+                  Wire <code>DAGSummary</code> into inline summary bar and TUI —
+                  it's built but invisible
                 </td>
                 <td>30m</td>
               </tr>
@@ -883,14 +953,18 @@
                 <td>2</td>
                 <td><span class="badge badge-critical">Critical</span></td>
                 <td>
-                  Apply category color tints to activity labels (not just <code>[tag]</code> prefix)
+                  Apply category color tints to activity labels (not just
+                  <code>[tag]</code> prefix)
                 </td>
                 <td>45m</td>
               </tr>
               <tr>
                 <td>3</td>
                 <td><span class="badge badge-high">High</span></td>
-                <td>Add <code>String()</code> method on <code>RenderMode</code> for logging</td>
+                <td>
+                  Add <code>String()</code> method on
+                  <code>RenderMode</code> for logging
+                </td>
                 <td>10m</td>
               </tr>
               <tr>
@@ -908,13 +982,17 @@
               <tr>
                 <td>6</td>
                 <td><span class="badge badge-high">High</span></td>
-                <td>TUI <code>C</code> key — toggle critical-path-only filter view</td>
+                <td>
+                  TUI <code>C</code> key — toggle critical-path-only filter view
+                </td>
                 <td>45m</td>
               </tr>
               <tr>
                 <td>7</td>
                 <td><span class="badge badge-high">High</span></td>
-                <td>TUI <code>D</code> key — DOT export from TUI to file/clipboard</td>
+                <td>
+                  TUI <code>D</code> key — DOT export from TUI to file/clipboard
+                </td>
                 <td>60m</td>
               </tr>
               <tr>
@@ -926,32 +1004,45 @@
               <tr>
                 <td>9</td>
                 <td><span class="badge badge-high">High</span></td>
-                <td>Future-layer hiding in layered mode (hide not-yet-started layers)</td>
+                <td>
+                  Future-layer hiding in layered mode (hide not-yet-started
+                  layers)
+                </td>
                 <td>45m</td>
               </tr>
               <tr>
                 <td>10</td>
                 <td><span class="badge badge-medium">Medium</span></td>
-                <td>Integration test: full event flow → layered render → DOT export</td>
+                <td>
+                  Integration test: full event flow → layered render → DOT
+                  export
+                </td>
                 <td>60m</td>
               </tr>
               <tr>
                 <td>11</td>
                 <td><span class="badge badge-medium">Medium</span></td>
-                <td>OSC 11 background query + <code>WithAutoTheme()</code> implementation</td>
+                <td>
+                  OSC 11 background query +
+                  <code>WithAutoTheme()</code> implementation
+                </td>
                 <td>75m</td>
               </tr>
               <tr>
                 <td>12</td>
                 <td><span class="badge badge-medium">Medium</span></td>
-                <td>Category collapse — group siblings by category into summary line</td>
+                <td>
+                  Category collapse — group siblings by category into summary
+                  line
+                </td>
                 <td>60m</td>
               </tr>
               <tr>
                 <td>13</td>
                 <td><span class="badge badge-medium">Medium</span></td>
                 <td>
-                  Deduplicate <code>stripANSI</code> / <code>containsPlain</code> test helpers
+                  Deduplicate <code>stripANSI</code> /
+                  <code>containsPlain</code> test helpers
                 </td>
                 <td>15m</td>
               </tr>
@@ -971,7 +1062,8 @@
                 <td>16</td>
                 <td><span class="badge badge-medium">Medium</span></td>
                 <td>
-                  Godoc examples for <code>WithTheme</code>, <code>WithRenderMode</code>,
+                  Godoc examples for <code>WithTheme</code>,
+                  <code>WithRenderMode</code>,
                   <code>WithShowCategory</code>
                 </td>
                 <td>30m</td>
@@ -979,7 +1071,10 @@
               <tr>
                 <td>17</td>
                 <td><span class="badge badge-medium">Medium</span></td>
-                <td><code>examples/nom_dag/</code> demo program showing all new features</td>
+                <td>
+                  <code>examples/nom_dag/</code> demo program showing all new
+                  features
+                </td>
                 <td>60m</td>
               </tr>
               <tr>
@@ -1003,34 +1098,44 @@
               <tr>
                 <td>21</td>
                 <td><span class="badge badge-low">Low</span></td>
-                <td>Category auto-inference — phase children inherit parent category</td>
+                <td>
+                  Category auto-inference — phase children inherit parent
+                  category
+                </td>
                 <td>30m</td>
               </tr>
               <tr>
                 <td>22</td>
                 <td><span class="badge badge-low">Low</span></td>
-                <td>Fix remaining tests that don't use <code>WithCachePath</code> (cache race)</td>
+                <td>
+                  Fix remaining tests that don't use
+                  <code>WithCachePath</code> (cache race)
+                </td>
                 <td>45m</td>
               </tr>
               <tr>
                 <td>23</td>
                 <td><span class="badge badge-low">Low</span></td>
                 <td>
-                  Add <code>DAGSummary.Phases</code> count to the summary (currently always 0)
+                  Add <code>DAGSummary.Phases</code> count to the summary
+                  (currently always 0)
                 </td>
                 <td>15m</td>
               </tr>
               <tr>
                 <td>24</td>
                 <td><span class="badge badge-low">Low</span></td>
-                <td>Benchmark layered rendering with large DAGs (100+ nodes)</td>
+                <td>
+                  Benchmark layered rendering with large DAGs (100+ nodes)
+                </td>
                 <td>30m</td>
               </tr>
               <tr>
                 <td>25</td>
                 <td><span class="badge badge-low">Low</span></td>
                 <td>
-                  Progressive layer collapse — auto-collapse deeper layers as earlier complete
+                  Progressive layer collapse — auto-collapse deeper layers as
+                  earlier complete
                 </td>
                 <td>45m</td>
               </tr>
@@ -1041,23 +1146,29 @@
         <h2 id="question"><span class="num">07</span>G) THE #1 QUESTION</h2>
         <div class="card card-problem">
           <span class="severity severity-critical">Strategic</span>
-          <h3>Should layered mode become the DEFAULT rendering mode for BuildFlow integration?</h3>
+          <h3>
+            Should layered mode become the DEFAULT rendering mode for BuildFlow
+            integration?
+          </h3>
           <p>
-            The current default is <code>RenderModeTree</code>, which preserves backward
-            compatibility with nix-output-monitor's layout. Layered mode makes parallelism explicit
-            and is arguably more useful for DAG-aware build systems like BuildFlow — but it changes
-            the visual output every existing user sees.
+            The current default is <code>RenderModeTree</code>, which preserves
+            backward compatibility with nix-output-monitor's layout. Layered
+            mode makes parallelism explicit and is arguably more useful for
+            DAG-aware build systems like BuildFlow — but it changes the visual
+            output every existing user sees.
           </p>
           <p>
-            <strong>I cannot figure out:</strong> whether BuildFlow's users rely on the specific
-            tree layout (parent/child connectors, indentation depth) for mentally tracking build
-            phases, or whether they'd welcome the layer-based layout as a strict improvement. This
-            is a product decision that depends on user feedback I don't have access to.
+            <strong>I cannot figure out:</strong> whether BuildFlow's users rely
+            on the specific tree layout (parent/child connectors, indentation
+            depth) for mentally tracking build phases, or whether they'd welcome
+            the layer-based layout as a strict improvement. This is a product
+            decision that depends on user feedback I don't have access to.
           </p>
           <div class="callout callout-warning">
             <strong>Recommendation:</strong>
-            Ship layered mode as opt-in (<code>WithRenderMode</code>) for v1, gather feedback, then
-            consider making it default in v2. But this is your call.
+            Ship layered mode as opt-in (<code>WithRenderMode</code>) for v1,
+            gather feedback, then consider making it default in v2. But this is
+            your call.
           </div>
         </div>
 
@@ -1075,7 +1186,9 @@
             <tbody>
               <tr>
                 <td><code>3105dbf</code></td>
-                <td>Integrate StatusDef registry into ActivityStatus methods</td>
+                <td>
+                  Integrate StatusDef registry into ActivityStatus methods
+                </td>
                 <td>6</td>
                 <td>+220</td>
               </tr>
@@ -1144,8 +1257,9 @@
         </div>
 
         <footer class="footer">
-          Generated 2026-07-02 07:06 &middot; All claims verified against source code &middot; nom:
-          86 .go files (13.7K LOC), tui: 33 .go files (4.3K LOC)
+          Generated 2026-07-02 07:06 &middot; All claims verified against source
+          code &middot; nom: 86 .go files (13.7K LOC), tui: 33 .go files (4.3K
+          LOC)
         </footer>
       </main>
     </div>
@@ -1184,7 +1298,5 @@
         });
       })();
     </script>
-
-    
   </body>
 </html>

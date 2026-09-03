@@ -36,14 +36,14 @@
 
         --radius: 0px;
         --font-heading:
-          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          Helvetica, Arial, sans-serif;
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         --font-body:
-          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          Helvetica, Arial, sans-serif;
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         --font-mono:
-          ui-monospace, "Cascadia Code", "Source Code Pro", "JetBrains Mono", Menlo, Consolas,
-          monospace;
+          ui-monospace, "Cascadia Code", "Source Code Pro", "JetBrains Mono",
+          Menlo, Consolas, monospace;
       }
 
       * {
@@ -291,7 +291,11 @@
       }
       .issue-critical {
         border-left-color: var(--problem);
-        background: color-mix(in srgb, var(--problem) 8%, var(--surface-raised));
+        background: color-mix(
+          in srgb,
+          var(--problem) 8%,
+          var(--surface-raised)
+        );
       }
       .issue-important {
         border-left-color: var(--warning);
@@ -513,9 +517,10 @@
           <div class="hero-badge">STATUS UPDATE · 2026-06-19</div>
           <h1>go-output Comprehensive Status</h1>
           <p class="hero-subtitle">
-            Multi-module Go library for CLI output formatting (16 formats × 3 shapes) + NOM-style
-            real-time progress. Phase 1 quick-wins just landed. Codebase is in its strongest state
-            ever — but one test-isolation regression needs fixing.
+            Multi-module Go library for CLI output formatting (16 formats × 3
+            shapes) + NOM-style real-time progress. Phase 1 quick-wins just
+            landed. Codebase is in its strongest state ever — but one
+            test-isolation regression needs fixing.
           </p>
           <div class="hero-meta">
             <span>18 modules</span>
@@ -567,9 +572,10 @@
           </div>
           <div class="callout callout-solution">
             <strong>Phase 1 Quick Wins — COMPLETE (this session)</strong>
-            5 tasks done: dead depguard entry removed, FEATURES.md accuracy fixed,
-            testhelpers.ErrWrite reuse, deprecated <code>Color*</code> aliases eliminated from nom
-            prod code, raw ANSI codes replaced with lipgloss colors. Build + test + lint all green.
+            5 tasks done: dead depguard entry removed, FEATURES.md accuracy
+            fixed, testhelpers.ErrWrite reuse, deprecated
+            <code>Color*</code> aliases eliminated from nom prod code, raw ANSI
+            codes replaced with lipgloss colors. Build + test + lint all green.
           </div>
         </section>
 
@@ -578,51 +584,58 @@
         <section id="done">
           <h2><span class="num">01</span>Fully Done</h2>
 
-          <h3>Phase 1 Quick Wins — Just Completed (uncommitted, verified green)</h3>
+          <h3>
+            Phase 1 Quick Wins — Just Completed (uncommitted, verified green)
+          </h3>
           <div class="card-grid">
             <div class="card card-solution">
               <h3>Dead depguard entry removed</h3>
               <div class="where">.golangci.yml:164</div>
               <p>
                 Removed reference to nonexistent
-                <code>github.com/larsartmann/go-output/pkg/errors</code> path. No such directory
-                ever existed.
+                <code>github.com/larsartmann/go-output/pkg/errors</code> path.
+                No such directory ever existed.
               </p>
             </div>
             <div class="card card-solution">
               <h3>FEATURES.md accuracy fixed</h3>
               <div class="where">FEATURES.md:227</div>
               <p>
-                Corrected false "compile-time type safety" claim. Now honestly describes IDs as
-                named types over string, with phantom-branding upgrade tracked as future work.
+                Corrected false "compile-time type safety" claim. Now honestly
+                describes IDs as named types over string, with phantom-branding
+                upgrade tracked as future work.
               </p>
             </div>
             <div class="card card-solution">
               <h3>testhelpers.ErrWrite reuse</h3>
               <div class="where">delimited/registry_test.go</div>
               <p>
-                Removed local <code>errWriteFailed</code> + <code>failWriter</code> reinvention. Now
-                uses shared <code>testhelpers.ErrorWriter{}</code>.
+                Removed local <code>errWriteFailed</code> +
+                <code>failWriter</code> reinvention. Now uses shared
+                <code>testhelpers.ErrorWriter{}</code>.
               </p>
             </div>
             <div class="card card-solution">
               <h3>Deprecated Color* aliases eliminated</h3>
-              <div class="where">nom/activity_status.go, tree_render.go, tree_render_test.go</div>
+              <div class="where">
+                nom/activity_status.go, tree_render.go, tree_render_test.go
+              </div>
               <p>
-                8 call sites migrated from deprecated <code>ColorRunning</code>/<code
-                  >ColorCompleted</code
-                >
-                etc. to <code>Colors.Running</code>/<code>Colors.Completed</code>. Removed unused
-                <code>writef</code> method as bonus.
+                8 call sites migrated from deprecated
+                <code>ColorRunning</code>/<code>ColorCompleted</code> etc. to
+                <code>Colors.Running</code>/<code>Colors.Completed</code>.
+                Removed unused <code>writef</code> method as bonus.
               </p>
             </div>
             <div class="card card-solution">
               <h3>Raw ANSI codes → lipgloss</h3>
               <div class="where">nom/inline_renderer_summary.go:53-63</div>
               <p>
-                Replaced hardcoded <code>\033[32m</code>/<code>\033[31m</code> with
+                Replaced hardcoded <code>\033[32m</code>/<code>\033[31m</code>
+                with
                 <code>lipgloss.NewStyle().Foreground(Colors.Completed)</code
-                >/<code>Colors.Failed</code>. Now adapts to terminal color profiles.
+                >/<code>Colors.Failed</code>. Now adapts to terminal color
+                profiles.
               </p>
             </div>
           </div>
@@ -650,12 +663,16 @@
               <tr>
                 <td>−511 LOC dead code removed</td>
                 <td class="yes">✅ Done</td>
-                <td>ActivityStore ghost (155 LOC), dead fields, unused params</td>
+                <td>
+                  ActivityStore ghost (155 LOC), dead fields, unused params
+                </td>
               </tr>
               <tr>
                 <td>CI covers all 18 modules</td>
                 <td class="yes">✅ Done</td>
-                <td>Was missing nom/tui/bdd/envdetect — now in all ci.yml loops</td>
+                <td>
+                  Was missing nom/tui/bdd/envdetect — now in all ci.yml loops
+                </td>
               </tr>
               <tr>
                 <td>Govulncheck clean</td>
@@ -665,22 +682,32 @@
               <tr>
                 <td>Zero TODO/FIXME/HACK in prod Go</td>
                 <td class="yes">✅ Done</td>
-                <td>Verified by grep across all <code>*.go</code> excluding tests</td>
+                <td>
+                  Verified by grep across all <code>*.go</code> excluding tests
+                </td>
               </tr>
               <tr>
                 <td>4 oversized test files split</td>
                 <td class="yes">✅ Done</td>
-                <td>All under 350-line limit (subscriber, roundtrip, event_seq, model)</td>
+                <td>
+                  All under 350-line limit (subscriber, roundtrip, event_seq,
+                  model)
+                </td>
               </tr>
               <tr>
                 <td>Split-brain M1 truly fixed</td>
                 <td class="yes">✅ Done</td>
-                <td>TUI delegates 4 semantic colors to <code>nom.Colors</code></td>
+                <td>
+                  TUI delegates 4 semantic colors to <code>nom.Colors</code>
+                </td>
               </tr>
               <tr>
                 <td>Split-brain M7 truly fixed</td>
                 <td class="yes">✅ Done</td>
-                <td><code>SetDirection(output.Direction)</code> bridges into graph/</td>
+                <td>
+                  <code>SetDirection(output.Direction)</code> bridges into
+                  graph/
+                </td>
               </tr>
               <tr>
                 <td>ADR 007 nom composition landed</td>
@@ -690,7 +717,9 @@
               <tr>
                 <td>Modularization revert</td>
                 <td class="yes">✅ Done</td>
-                <td>enum/envdetect/escape restored as standalone sub-modules</td>
+                <td>
+                  enum/envdetect/escape restored as standalone sub-modules
+                </td>
               </tr>
               <tr>
                 <td>BDD test module</td>
@@ -717,8 +746,9 @@
               <div class="text">
                 <strong>Zero root-to-submodule imports</strong>
                 <span
-                  >The core invariant holds: <code>package output</code> imports no sub-module.
-                  Registry dispatch via <code>init()</code> self-registration.</span
+                  >The core invariant holds: <code>package output</code> imports
+                  no sub-module. Registry dispatch via
+                  <code>init()</code> self-registration.</span
                 >
               </div>
             </div>
@@ -727,8 +757,9 @@
               <div class="text">
                 <strong>Composition over inheritance</strong>
                 <span
-                  >DOT/Mermaid/PlantUML embed root's <code>GraphRendererState</code>. Shared pointer
-                  model between <code>NOMStyleSubscriber</code> and
+                  >DOT/Mermaid/PlantUML embed root's
+                  <code>GraphRendererState</code>. Shared pointer model between
+                  <code>NOMStyleSubscriber</code> and
                   <code>DependencyTree</code>.</span
                 >
               </div>
@@ -738,8 +769,9 @@
               <div class="text">
                 <strong>Branded IDs for graph/d2/tree</strong>
                 <span
-                  ><code>go-branded-id</code> phantom types prevent ID-mixing at compile time for
-                  <code>GraphNodeID</code>, <code>D2NodeID</code>, <code>TreeNodeID</code>.</span
+                  ><code>go-branded-id</code> phantom types prevent ID-mixing at
+                  compile time for <code>GraphNodeID</code>,
+                  <code>D2NodeID</code>, <code>TreeNodeID</code>.</span
                 >
               </div>
             </div>
@@ -749,7 +781,8 @@
                 <strong>Shape capability matrix</strong>
                 <span
                   >16 formats × 3 shapes (table/tree/graph) with
-                  <code>RegisterFormatShapes()</code> in each module's <code>init()</code>.</span
+                  <code>RegisterFormatShapes()</code> in each module's
+                  <code>init()</code>.</span
                 >
               </div>
             </div>
@@ -760,15 +793,18 @@
 
         <section id="partial">
           <h2><span class="num">02</span>Partially Done</h2>
-          <p>Work that has started but has a gap between current state and done.</p>
+          <p>
+            Work that has started but has a gap between current state and done.
+          </p>
 
           <div class="issue issue-important">
             <span class="severity severity-important">Gap</span>
             <h3>Pre-commit hooks: only treefmt, no Go checks</h3>
             <div class="where">flake.nix:89-93 · pre-commit-config.yaml</div>
             <p>
-              Only Nix formatting (treefmt) runs at commit time. No <code>gofumpt</code>,
-              <code>go vet</code>, or <code>golangci-lint</code>. Broken Go code can be committed —
+              Only Nix formatting (treefmt) runs at commit time. No
+              <code>gofumpt</code>, <code>go vet</code>, or
+              <code>golangci-lint</code>. Broken Go code can be committed —
               feedback only arrives from CI on push.
             </p>
           </div>
@@ -779,8 +815,8 @@
             <div class="where">.github/workflows/release.yml</div>
             <p>
               Benchmarks execute in CI but output is discarded — no
-              <code>benchstat</code> comparison, no stored baseline, no threshold. Performance
-              regressions go undetected.
+              <code>benchstat</code> comparison, no stored baseline, no
+              threshold. Performance regressions go undetected.
             </p>
           </div>
 
@@ -790,9 +826,10 @@
             <div class="where">nom/types.go:5,14</div>
             <p>
               <code>ActivityID</code> and <code>WorkflowID</code> exist as
-              <code>type X string</code> — assignable to/from each other and plain
-              <code>string</code> at compile time. Graph/d2/tree IDs already use
-              <code>go-branded-id</code>; nom IDs do not. This is Phase 2 of the comprehensive plan.
+              <code>type X string</code> — assignable to/from each other and
+              plain <code>string</code> at compile time. Graph/d2/tree IDs
+              already use <code>go-branded-id</code>; nom IDs do not. This is
+              Phase 2 of the comprehensive plan.
             </p>
           </div>
 
@@ -801,8 +838,9 @@
             <h3>README sub-module list: 7 of 18</h3>
             <div class="where">README.md</div>
             <p>
-              Lists 7 sub-modules, omits nom, tui, plantuml, enum, escape, testhelpers, envdetect,
-              bdd, integration. Prospective users can't see the full surface.
+              Lists 7 sub-modules, omits nom, tui, plantuml, enum, escape,
+              testhelpers, envdetect, bdd, integration. Prospective users can't
+              see the full surface.
             </p>
           </div>
 
@@ -810,13 +848,15 @@
             <span class="severity severity-important">Gap</span>
             <h3>go.mod escape versions inconsistent (post-revert residue)</h3>
             <div class="where">
-              d2/go.mod, graph/go.mod, examples/go.mod, integration/go.mod, markup/go.mod,
-              plantuml/go.mod
+              d2/go.mod, graph/go.mod, examples/go.mod, integration/go.mod,
+              markup/go.mod, plantuml/go.mod
             </div>
             <p>
-              After the modularization revert, escape module version changed from
-              <code>v0.0.0-00010101</code> pseudo-version to <code>v0.12.0</code> in some go.mod
-              files. Needs <code>nix run .#tidy</code> to normalize.
+              After the modularization revert, escape module version changed
+              from
+              <code>v0.0.0-00010101</code> pseudo-version to
+              <code>v0.12.0</code> in some go.mod files. Needs
+              <code>nix run .#tidy</code> to normalize.
             </p>
           </div>
         </section>
@@ -825,7 +865,9 @@
 
         <section id="notstarted">
           <h2><span class="num">03</span>Not Started</h2>
-          <p>Planned work that hasn't begun. Phase 1 is done; Phases 2–5 remain.</p>
+          <p>
+            Planned work that hasn't begun. Phase 1 is done; Phases 2–5 remain.
+          </p>
 
           <div class="card-grid">
             <div class="card card-warning">
@@ -833,60 +875,69 @@
               <div class="where">nom/activity_status.go:15</div>
               <p>
                 <code>Format</code> and <code>Shape</code> have
-                <code>Parse()</code>/<code>IsValid()</code>/<code>AllowedValues()</code>.
-                <code>ActivityStatus</code> has only <code>String()</code>. Can't parse from
-                config/JSON.
+                <code>Parse()</code
+                >/<code>IsValid()</code>/<code>AllowedValues()</code>.
+                <code>ActivityStatus</code> has only <code>String()</code>.
+                Can't parse from config/JSON.
               </p>
             </div>
             <div class="card card-warning">
               <h3>Symbol type</h3>
               <div class="where">nom/symbols.go</div>
               <p>
-                <code>SymbolRunning</code>, <code>SymbolCompleted</code> etc. are untyped
-                <code>string</code> constants. Should be a typed <code>Symbol</code> to prevent
-                mixing with arbitrary strings.
+                <code>SymbolRunning</code>, <code>SymbolCompleted</code> etc.
+                are untyped <code>string</code> constants. Should be a typed
+                <code>Symbol</code> to prevent mixing with arbitrary strings.
               </p>
             </div>
             <div class="card card-warning">
               <h3>Typed GraphStyle colors</h3>
               <div class="where">graph_state.go · GraphStyle</div>
               <p>
-                <code>Fill</code>, <code>Stroke</code>, <code>FontColor</code> are bare strings.
-                Should be a branded <code>Color</code> type to prevent invalid values.
+                <code>Fill</code>, <code>Stroke</code>,
+                <code>FontColor</code> are bare strings. Should be a branded
+                <code>Color</code> type to prevent invalid values.
               </p>
             </div>
             <div class="card card-warning">
               <h3>RELEASE.md</h3>
               <div class="where">does not exist</div>
-              <p>No documented release process for the 18-module mono-version bump workflow.</p>
+              <p>
+                No documented release process for the 18-module mono-version
+                bump workflow.
+              </p>
             </div>
             <div class="card card-warning">
               <h3>benchstat CI step</h3>
               <div class="where">.github/workflows/release.yml</div>
-              <p>Store baseline, compare on PR, fail on regression threshold.</p>
+              <p>
+                Store baseline, compare on PR, fail on regression threshold.
+              </p>
             </div>
             <div class="card card-warning">
               <h3>Pre-commit Go hooks</h3>
               <div class="where">flake.nix git-hooks</div>
               <p>
-                Add <code>gofumpt</code>, <code>go vet</code>, <code>golangci-lint</code> to
-                git-hooks.nix.
+                Add <code>gofumpt</code>, <code>go vet</code>,
+                <code>golangci-lint</code> to git-hooks.nix.
               </p>
             </div>
             <div class="card card-warning">
               <h3>Migration guide v0.12 → v1.0</h3>
               <div class="where">does not exist</div>
               <p>
-                Breaking renames (<code>GraphShape</code>→<code>NodeShape</code>,
-                <code>Render()</code>→<code>Draw()</code> etc.) need a migration doc.
+                Breaking renames
+                (<code>GraphShape</code>→<code>NodeShape</code>,
+                <code>Render()</code>→<code>Draw()</code> etc.) need a migration
+                doc.
               </p>
             </div>
             <div class="card card-warning">
               <h3>art-dupl CI gate</h3>
               <div class="where">.github/workflows/ci.yml</div>
               <p>
-                No automated clone detection in CI. Threshold <code>-t 30</code> would catch
-                regressions.
+                No automated clone detection in CI. Threshold
+                <code>-t 30</code> would catch regressions.
               </p>
             </div>
             <div class="card card-warning">
@@ -903,37 +954,47 @@
           <h2><span class="num">04</span>Totally Fucked Up</h2>
 
           <div class="issue issue-critical">
-            <span class="severity severity-critical">Bug · False claim in TODO_LIST</span>
+            <span class="severity severity-critical"
+              >Bug · False claim in TODO_LIST</span
+            >
             <h3>Subscriber tests pollute real ~/.cache/nom-timing.csv</h3>
-            <div class="where">nom/timing_cache.go:34-45 · nom/subscriber_test.go:188</div>
+            <div class="where">
+              nom/timing_cache.go:34-45 · nom/subscriber_test.go:188
+            </div>
             <p>
               <strong>What's broken:</strong>
-              <code>TestNOMStyleSubscriber_WorkflowStarted</code> fails intermittently with
-              <code>"failed to read cache file: record on line 357: wrong number of fields"</code>.
-              The real <code>~/.cache/nom-timing.csv</code> had a truncated entry (<code
-                >4264068</code
-              >
+              <code>TestNOMStyleSubscriber_WorkflowStarted</code> fails
+              intermittently with
+              <code
+                >"failed to read cache file: record on line 357: wrong number of
+                fields"</code
+              >. The real <code>~/.cache/nom-timing.csv</code> had a truncated
+              entry (<code>4264068</code>
               with no activity name).
             </p>
             <p>
-              <strong>Why it's fucked up:</strong> TODO_LIST.md:62 claims this is "Fixed —
-              <code>newTempTimingCache(t)</code> uses <code>t.TempDir()</code>". That fix only
-              isolated <strong>direct</strong> TimingCache unit tests. The
+              <strong>Why it's fucked up:</strong> TODO_LIST.md:62 claims this
+              is "Fixed — <code>newTempTimingCache(t)</code> uses
+              <code>t.TempDir()</code>". That fix only isolated
+              <strong>direct</strong> TimingCache unit tests. The
               <strong>subscriber</strong> tests create a subscriber via
-              <code>NewNOMStyleSubscriber()</code>, which calls <code>NewTimingCache()</code>, which
-              <strong>always</strong> reads from <code>~/.cache/nom-timing.csv</code> (line 40:
-              <code>filepath.Join(homeDir, cacheDir, cacheFilename)</code>). There is no injection
-              point for the cache path.
+              <code>NewNOMStyleSubscriber()</code>, which calls
+              <code>NewTimingCache()</code>, which <strong>always</strong> reads
+              from <code>~/.cache/nom-timing.csv</code> (line 40:
+              <code>filepath.Join(homeDir, cacheDir, cacheFilename)</code>).
+              There is no injection point for the cache path.
             </p>
             <p>
-              <strong>Impact:</strong> Any corrupted cache entry from real usage (or prior test run)
-              breaks the entire nom test suite. This is a test-isolation defect that makes the suite
-              non-hermetic.
+              <strong>Impact:</strong> Any corrupted cache entry from real usage
+              (or prior test run) breaks the entire nom test suite. This is a
+              test-isolation defect that makes the suite non-hermetic.
             </p>
             <p>
-              <strong>Fix needed:</strong> Add <code>WithCachePath(path string)</code> option to
-              <code>NOMStyleSubscriber</code>, or make <code>TimingCache.filePath</code> overridable
-              via functional option. Then subscriber tests inject <code>t.TempDir()</code>.
+              <strong>Fix needed:</strong> Add
+              <code>WithCachePath(path string)</code> option to
+              <code>NOMStyleSubscriber</code>, or make
+              <code>TimingCache.filePath</code> overridable via functional
+              option. Then subscriber tests inject <code>t.TempDir()</code>.
             </p>
           </div>
 
@@ -944,16 +1005,18 @@
             <h3>render_tabledata_test.go exceeds 350-line limit</h3>
             <div class="where">render_tabledata_test.go — 355 lines</div>
             <p>
-              TODO_LIST.md:70 claims "All compliant" with ≤350-line limit. This file is 355 lines —
-              5 over. Either the limit check was stale or this file grew after the split sprint.
+              TODO_LIST.md:70 claims "All compliant" with ≤350-line limit. This
+              file is 355 lines — 5 over. Either the limit check was stale or
+              this file grew after the split sprint.
             </p>
           </div>
 
           <div class="callout callout-warning">
             <strong>Not fucked up — just noted</strong>
-            The go.mod escape version residue (post-modularization revert) is cosmetic and won't
-            affect builds — <code>nix run .#tidy</code> normalizes it. Listed in Partially Done, not
-            here.
+            The go.mod escape version residue (post-modularization revert) is
+            cosmetic and won't affect builds —
+            <code>nix run .#tidy</code> normalizes it. Listed in Partially Done,
+            not here.
           </div>
         </section>
 
@@ -966,61 +1029,66 @@
             <div class="card card-solution">
               <h3>1. Make tests hermetic</h3>
               <p>
-                The timing-cache test isolation is the #1 priority. No Go test suite should
-                read/write to real <code>~/.cache</code>. Inject the cache path via functional
-                option.
+                The timing-cache test isolation is the #1 priority. No Go test
+                suite should read/write to real <code>~/.cache</code>. Inject
+                the cache path via functional option.
               </p>
             </div>
             <div class="card card-solution">
               <h3>2. Brand the nom IDs (Phase 2)</h3>
               <p>
-                <code>ActivityID</code>/<code>WorkflowID</code> should be phantom-branded like
-                <code>GraphNodeID</code>/<code>D2NodeID</code>. Eliminates an entire class of
-                ID-mixing bugs at compile time.
+                <code>ActivityID</code>/<code>WorkflowID</code> should be
+                phantom-branded like
+                <code>GraphNodeID</code>/<code>D2NodeID</code>. Eliminates an
+                entire class of ID-mixing bugs at compile time.
               </p>
             </div>
             <div class="card card-solution">
               <h3>3. Gate commits with Go checks</h3>
               <p>
-                Pre-commit should run <code>gofumpt</code> + <code>go vet</code> +
-                <code>golangci-lint</code>. Currently only treefmt (Nix formatting) runs. Broken Go
-                code ships to CI.
+                Pre-commit should run <code>gofumpt</code> +
+                <code>go vet</code> + <code>golangci-lint</code>. Currently only
+                treefmt (Nix formatting) runs. Broken Go code ships to CI.
               </p>
             </div>
             <div class="card card-solution">
               <h3>4. Complete the README</h3>
               <p>
-                7 of 18 modules listed. A v1.0 library's README is its front door. Every module
-                should be discoverable.
+                7 of 18 modules listed. A v1.0 library's README is its front
+                door. Every module should be discoverable.
               </p>
             </div>
             <div class="card card-solution">
               <h3>5. Add enum methods to ActivityStatus</h3>
               <p>
-                <code>Parse()</code>/<code>IsValid()</code>/<code>AllowedValues()</code> — match the
-                pattern already used by <code>Format</code> and <code>Shape</code>. Enables
-                config-driven status parsing.
+                <code>Parse()</code>/<code>IsValid()</code>/<code
+                  >AllowedValues()</code
+                >
+                — match the pattern already used by <code>Format</code> and
+                <code>Shape</code>. Enables config-driven status parsing.
               </p>
             </div>
             <div class="card card-solution">
               <h3>6. Store benchmark baselines</h3>
               <p>
-                Benchmarks run but output is discarded. <code>benchstat</code> comparison against a
-                stored baseline would catch performance regressions before they ship.
+                Benchmarks run but output is discarded.
+                <code>benchstat</code> comparison against a stored baseline
+                would catch performance regressions before they ship.
               </p>
             </div>
             <div class="card card-solution">
               <h3>7. Type the Symbol constants</h3>
               <p>
-                <code>SymbolRunning</code> etc. should be <code>type Symbol string</code>, not bare
-                <code>string</code>. Prevents mixing symbols with arbitrary strings.
+                <code>SymbolRunning</code> etc. should be
+                <code>type Symbol string</code>, not bare <code>string</code>.
+                Prevents mixing symbols with arbitrary strings.
               </p>
             </div>
             <div class="card card-solution">
               <h3>8. Write RELEASE.md</h3>
               <p>
-                The 18-module mono-version bump process is undocumented. A new contributor (or
-                future you) will struggle to cut a release.
+                The 18-module mono-version bump process is undocumented. A new
+                contributor (or future you) will struggle to cut a release.
               </p>
             </div>
           </div>
@@ -1030,7 +1098,9 @@
 
         <section id="top25">
           <h2><span class="num">06</span>Top 25 — What to Get Done Next</h2>
-          <p>Sorted by impact ↓, effort ↑. Phase 1 (items 6–10) is now complete.</p>
+          <p>
+            Sorted by impact ↓, effort ↑. Phase 1 (items 6–10) is now complete.
+          </p>
 
           <table>
             <thead>
@@ -1046,7 +1116,8 @@
               <tr>
                 <td>1</td>
                 <td>
-                  <strong>Owner decision: TableData fields vs getters</strong> — sole v1.0.0 blocker
+                  <strong>Owner decision: TableData fields vs getters</strong> —
+                  sole v1.0.0 blocker
                 </td>
                 <td><span class="badge badge-critical">Critical</span></td>
                 <td>5m</td>
@@ -1055,7 +1126,8 @@
               <tr>
                 <td>2</td>
                 <td>
-                  <strong>Cut v1.0.0 tag</strong> — API declared frozen (ADR 006), still v0.12.x
+                  <strong>Cut v1.0.0 tag</strong> — API declared frozen (ADR
+                  006), still v0.12.x
                 </td>
                 <td><span class="badge badge-critical">Critical</span></td>
                 <td>10m</td>
@@ -1064,8 +1136,8 @@
               <tr>
                 <td>3</td>
                 <td>
-                  <strong>Fix timing-cache test isolation</strong> — inject cache path into
-                  subscriber
+                  <strong>Fix timing-cache test isolation</strong> — inject
+                  cache path into subscriber
                 </td>
                 <td><span class="badge badge-high">High</span></td>
                 <td>15m</td>
@@ -1073,14 +1145,20 @@
               </tr>
               <tr>
                 <td>4</td>
-                <td><strong>Split render_tabledata_test.go</strong> — 355 lines, 5 over limit</td>
+                <td>
+                  <strong>Split render_tabledata_test.go</strong> — 355 lines, 5
+                  over limit
+                </td>
                 <td><span class="badge badge-medium">Medium</span></td>
                 <td>10m</td>
                 <td><span class="badge badge-critical">Bug</span></td>
               </tr>
               <tr>
                 <td>5</td>
-                <td><strong>nix run .#tidy</strong> — normalize go.mod escape versions</td>
+                <td>
+                  <strong>nix run .#tidy</strong> — normalize go.mod escape
+                  versions
+                </td>
                 <td><span class="badge badge-medium">Medium</span></td>
                 <td>2m</td>
                 <td><span class="badge badge-low">Ready</span></td>
@@ -1101,14 +1179,20 @@
               </tr>
               <tr>
                 <td>8</td>
-                <td>Replace <code>errWriteFailed</code> with <code>testhelpers.ErrWrite</code></td>
+                <td>
+                  Replace <code>errWriteFailed</code> with
+                  <code>testhelpers.ErrWrite</code>
+                </td>
                 <td><span class="badge badge-low">Low</span></td>
                 <td>5m</td>
                 <td><span class="badge badge-fixed">Done</span></td>
               </tr>
               <tr>
                 <td>9</td>
-                <td>Replace deprecated <code>Color*</code> aliases with <code>Colors.*</code></td>
+                <td>
+                  Replace deprecated <code>Color*</code> aliases with
+                  <code>Colors.*</code>
+                </td>
                 <td><span class="badge badge-medium">Medium</span></td>
                 <td>10m</td>
                 <td><span class="badge badge-fixed">Done</span></td>
@@ -1122,28 +1206,39 @@
               </tr>
               <tr>
                 <td>11</td>
-                <td><strong>Brand ActivityID/WorkflowID</strong> via <code>go-branded-id</code></td>
+                <td>
+                  <strong>Brand ActivityID/WorkflowID</strong> via
+                  <code>go-branded-id</code>
+                </td>
                 <td><span class="badge badge-high">High</span></td>
                 <td>20m</td>
                 <td><span class="badge badge-low">Ready</span></td>
               </tr>
               <tr>
                 <td>12</td>
-                <td><strong>Add ActivityStatus Parse/IsValid/AllowedValues</strong></td>
+                <td>
+                  <strong
+                    >Add ActivityStatus Parse/IsValid/AllowedValues</strong
+                  >
+                </td>
                 <td><span class="badge badge-medium">Medium</span></td>
                 <td>15m</td>
                 <td><span class="badge badge-low">Ready</span></td>
               </tr>
               <tr>
                 <td>13</td>
-                <td><strong>Add Symbol type</strong> for nom/symbols.go constants</td>
+                <td>
+                  <strong>Add Symbol type</strong> for nom/symbols.go constants
+                </td>
                 <td><span class="badge badge-low">Low</span></td>
                 <td>15m</td>
                 <td><span class="badge badge-low">Ready</span></td>
               </tr>
               <tr>
                 <td>14</td>
-                <td><strong>Typed GraphStyle colors</strong> — branded Color type</td>
+                <td>
+                  <strong>Typed GraphStyle colors</strong> — branded Color type
+                </td>
                 <td><span class="badge badge-low">Low</span></td>
                 <td>20m</td>
                 <td><span class="badge badge-low">Ready</span></td>
@@ -1157,14 +1252,19 @@
               </tr>
               <tr>
                 <td>16</td>
-                <td><strong>Write RELEASE.md</strong> — 18-module version bump process</td>
+                <td>
+                  <strong>Write RELEASE.md</strong> — 18-module version bump
+                  process
+                </td>
                 <td><span class="badge badge-medium">Medium</span></td>
                 <td>20m</td>
                 <td><span class="badge badge-low">Ready</span></td>
               </tr>
               <tr>
                 <td>17</td>
-                <td><strong>Add pre-commit Go hooks</strong> (gofumpt, vet, lint)</td>
+                <td>
+                  <strong>Add pre-commit Go hooks</strong> (gofumpt, vet, lint)
+                </td>
                 <td><span class="badge badge-medium">Medium</span></td>
                 <td>20m</td>
                 <td><span class="badge badge-low">Ready</span></td>
@@ -1200,8 +1300,10 @@
               <tr>
                 <td>22</td>
                 <td>
-                  <strong>CI: add <code>go test -race</code> for all modules</strong> (currently
-                  only nom/tui)
+                  <strong
+                    >CI: add <code>go test -race</code> for all modules</strong
+                  >
+                  (currently only nom/tui)
                 </td>
                 <td><span class="badge badge-medium">Medium</span></td>
                 <td>10m</td>
@@ -1209,7 +1311,10 @@
               </tr>
               <tr>
                 <td>23</td>
-                <td><strong>BDD module verification</strong> — specs match new type names</td>
+                <td>
+                  <strong>BDD module verification</strong> — specs match new
+                  type names
+                </td>
                 <td><span class="badge badge-medium">Medium</span></td>
                 <td>15m</td>
                 <td><span class="badge badge-low">Ready</span></td>
@@ -1239,30 +1344,37 @@
           <div class="issue issue-critical">
             <span class="severity severity-critical">Decision Required</span>
             <h3>Should TableData use exported fields or getters for v1.0.0?</h3>
-            <div class="where">TODO_LIST.md #15 · Blocked — needs owner decision</div>
+            <div class="where">
+              TODO_LIST.md #15 · Blocked — needs owner decision
+            </div>
             <p>
-              This is the <strong>sole release blocker</strong>. The current API has
-              <strong>both</strong>:
+              This is the <strong>sole release blocker</strong>. The current API
+              has <strong>both</strong>:
             </p>
             <p>
-              <strong>Option A (fields only):</strong> Remove getters (<code>GetHeaders()</code>,
-              <code>GetRows()</code>, <code>GetData()</code>). Keep <code>Headers</code>,
-              <code>Rows</code>, <code>Footer</code>. Simpler, more Go-idiomatic, but loses
-              validation — callers can set mismatched column counts. Breaking for getter consumers.
+              <strong>Option A (fields only):</strong> Remove getters
+              (<code>GetHeaders()</code>, <code>GetRows()</code>,
+              <code>GetData()</code>). Keep <code>Headers</code>,
+              <code>Rows</code>, <code>Footer</code>. Simpler, more
+              Go-idiomatic, but loses validation — callers can set mismatched
+              column counts. Breaking for getter consumers.
             </p>
             <p>
-              <strong>Option B (unexported + setters):</strong> Unexport fields, add validated
-              setters. Type-safe but the most breaking change. Every consumer's field-access code
-              breaks.
+              <strong>Option B (unexported + setters):</strong> Unexport fields,
+              add validated setters. Type-safe but the most breaking change.
+              Every consumer's field-access code breaks.
             </p>
             <p>
-              <strong>Option C (keep both):</strong> No breakage in v0.x, but the dual API is a
-              permanent smell. Every future maintainer asks "which do I use?"
+              <strong>Option C (keep both):</strong> No breakage in v0.x, but
+              the dual API is a permanent smell. Every future maintainer asks
+              "which do I use?"
             </p>
             <p>
-              <strong>Why I can't decide:</strong> This is an irreversible commitment. Once v1.0.0
-              ships, the public API is frozen. Each option has real tradeoffs that only the project
-              owner can weigh: simplicity vs safety vs breakage. A wrong choice compounds forever.
+              <strong>Why I can't decide:</strong> This is an irreversible
+              commitment. Once v1.0.0 ships, the public API is frozen. Each
+              option has real tradeoffs that only the project owner can weigh:
+              simplicity vs safety vs breakage. A wrong choice compounds
+              forever.
             </p>
           </div>
         </section>
@@ -1337,7 +1449,8 @@
     </div>
 
     <footer class="footer">
-      Generated 2026-06-19 01:44 · HEAD 1acc917 · 18 modules · Phase 1 quick wins complete
+      Generated 2026-06-19 01:44 · HEAD 1acc917 · 18 modules · Phase 1 quick
+      wins complete
     </footer>
   </body>
 </html>

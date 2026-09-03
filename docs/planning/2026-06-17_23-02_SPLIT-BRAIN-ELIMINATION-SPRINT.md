@@ -25,36 +25,36 @@ All are compiler-verifiable, touch <10 lines each, and have zero or near-zero ca
 
 The above 5, PLUS these 3 mechanical fixes:
 
-| ID  | Fix                                                                | Risk    | Lines Changed |
-| --- | ------------------------------------------------------------------ | ------- | ------------- |
-| C1  | Rename `nom.TreeNode` → `nom.ActivityNode` (compiler-guided)       | Low     | ~73 refs      |
-| M2  | Align color detection: add `TERM=dumb` to root, add CI vars to nom | Low     | ~10           |
-| C2  | Remove dead `timingCache` field, delegate `activities` reads       | Low-Med | ~8            |
+| ID | Fix                                                                | Risk    | Lines Changed |
+| -- | ------------------------------------------------------------------ | ------- | ------------- |
+| C1 | Rename `nom.TreeNode` → `nom.ActivityNode` (compiler-guided)       | Low     | ~73 refs      |
+| M2 | Align color detection: add `TERM=dumb` to root, add CI vars to nom | Low     | ~10           |
+| C2 | Remove dead `timingCache` field, delegate `activities` reads       | Low-Med | ~8            |
 
 ### The 20% that delivers 80% of the result
 
 The above 8, PLUS these 5 cleanup tasks:
 
-| ID  | Fix                                                                | Risk | Lines Changed |
-| --- | ------------------------------------------------------------------ | ---- | ------------- |
-| m2  | Replace 30+ bare event-string literals with `nom.Event*` constants | Low  | ~30           |
-| M9  | Fix drifted example `delimitedWriter` interface                    | Low  | ~3            |
-| m4  | Update stale `GraphEdge` docs (missing `Style` field)              | None | ~2            |
-| m5  | Fix `GetWorkflowID()` return type consistency                      | Low  | ~2            |
-| m1  | Add cross-reference comments for duplicated `"unknown"` sentinel   | None | ~2            |
+| ID | Fix                                                                | Risk | Lines Changed |
+| -- | ------------------------------------------------------------------ | ---- | ------------- |
+| m2 | Replace 30+ bare event-string literals with `nom.Event*` constants | Low  | ~30           |
+| M9 | Fix drifted example `delimitedWriter` interface                    | Low  | ~3            |
+| m4 | Update stale `GraphEdge` docs (missing `Style` field)              | None | ~2            |
+| m5 | Fix `GetWorkflowID()` return type consistency                      | Low  | ~2            |
+| m1 | Add cross-reference comments for duplicated `"unknown"` sentinel   | None | ~2            |
 
 ### Remaining 80% (deferred to next minor version — API-breaking)
 
 These require coordinated version bumps. Listed for completeness, documented as TODOs.
 
-| ID  | Fix                                                                                 | Why Deferred          |
-| --- | ----------------------------------------------------------------------------------- | --------------------- |
-| M4  | Rename `InlineRenderer.Render()` → `Draw()`, `DependencyTree.Render()` → `Format()` | Exported API break    |
-| M5  | Rename `ShapeBox` → `NodeShapeBox` etc.                                             | Exported API break    |
-| M6  | Add canonical `output.Direction` enum + bridge                                      | New API design needed |
-| M7  | Bridge `D2Direction` ↔ `RankDir`                                                    | Depends on M6         |
-| M8  | Align style struct field names (`FillColor` → `Fill` etc.)                          | Exported API break    |
-| m6  | Restructure branded ID re-export canonical paths                                    | Exported API change   |
+| ID | Fix                                                                                 | Why Deferred          |
+| -- | ----------------------------------------------------------------------------------- | --------------------- |
+| M4 | Rename `InlineRenderer.Render()` → `Draw()`, `DependencyTree.Render()` → `Format()` | Exported API break    |
+| M5 | Rename `ShapeBox` → `NodeShapeBox` etc.                                             | Exported API break    |
+| M6 | Add canonical `output.Direction` enum + bridge                                      | New API design needed |
+| M7 | Bridge `D2Direction` ↔ `RankDir`                                                    | Depends on M6         |
+| M8 | Align style struct field names (`FillColor` → `Fill` etc.)                          | Exported API break    |
+| m6 | Restructure branded ID re-export canonical paths                                    | Exported API change   |
 
 ---
 

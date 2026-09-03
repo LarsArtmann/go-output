@@ -58,11 +58,11 @@ Vague verb "Handle". It panics on error. Better: `Must(err)` or `PanicOnError`. 
 
 ## Fix Recommendations
 
-| #   | Issue                      | Priority | Action                                 | Breaking?     |
-| --- | -------------------------- | -------- | -------------------------------------- | ------------- |
-| 1   | Marshaler vs Renderer      | Low      | Rename in next major version (post-v1) | Yes           |
-| 2   | Get-prefix in nom          | Low      | Accept (interface-driven)              | —             |
-| 3   | TableData Get\* redundancy | Low      | Accept (API-frozen)                    | —             |
-| 4   | `HandleError` in examples  | Trivial  | Rename to `Must`                       | No (examples) |
+| # | Issue                      | Priority | Action                                 | Breaking?     |
+| - | -------------------------- | -------- | -------------------------------------- | ------------- |
+| 1 | Marshaler vs Renderer      | Low      | Rename in next major version (post-v1) | Yes           |
+| 2 | Get-prefix in nom          | Low      | Accept (interface-driven)              | —             |
+| 3 | TableData Get\* redundancy | Low      | Accept (API-frozen)                    | —             |
+| 4 | `HandleError` in examples  | Trivial  | Rename to `Must`                       | No (examples) |
 
 No fixes executed: all substantive findings are either API-frozen (ADR 006) or low-value style preferences. The naming is already at a high standard.

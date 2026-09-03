@@ -316,7 +316,7 @@ func TestDOTGraphIDInjectionNeutralized(t *testing.T) {
 	// The header must stay on ONE line: the quoted form may contain the
 	// word "injected" as inert ID text, but the raw newline must not split
 	// it into a second statement line.
-	firstLine := strings.SplitN(got, "\n", 2)[0]
+	firstLine, _, _ := strings.Cut(got, "\n")
 	if !strings.HasSuffix(firstLine, "{") {
 		t.Errorf("graph ID broke the DOT header onto multiple lines:\n%s", got)
 	}

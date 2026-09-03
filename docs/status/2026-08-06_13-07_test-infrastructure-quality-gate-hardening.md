@@ -6,16 +6,16 @@
 
 ## a) FULLY DONE (verified working)
 
-| #   | Task                                                  | Verification                                                                                                                      | Commit                |
-| --- | ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | --------------------- |
-| 1   | Move `pollTeatestOutput` to `teatest_helpers_test.go` | `go vet` clean, removed unused import from VT file                                                                                | `df46d1f`             |
-| 2   | Strengthen `waitForVisible` conditions                | 15 `"s"` calls replaced: 9 → `waitForVisible(tm, "Build Module")`, 7 → `waitForTick(tm)`; all 11 teatest tests pass under `-race` | `df46d1f` + `15a188f` |
-| 3   | Add goroutine-leak test                               | `TestTeatest_NoGoroutineLeak` passes under `-race`; `NumGoroutine` before/after with tolerance 2                                  | `15a188f`             |
-| 4   | Add `nix run .#test-race-all`                         | App registered on all 4 platforms in `nix flake show`; `nix fmt` clean; `nix flake check` passes                                  | `4fa6af0`             |
-| 5   | Align `go.mod` versions to 1.26.5                     | All 19 modules verified via `grep "^go " */go.mod go.mod`; `nix run .#build` passes                                               | `84307d9`             |
-| 6   | Fix `docs/ERROR_SYSTEM.md` contributor example        | `joinStrings(...)` → `strings.Join(output.EnumAllowedValues(...), ", ")` (exported API)                                           | `84307d9`             |
-| 7   | Add `.github/dependabot.yml`                          | Weekly GH Actions updates, grouped PRs, `chore(ci)` prefix                                                                        | `84307d9`             |
-| 8   | Add quality gates to `scripts/pre-tag-check.sh`       | 4 new gates: lint, govulncheck, art-dupl -t 4, golden-freshness; `bash -n` syntax valid                                           | `84307d9`             |
+| # | Task                                                  | Verification                                                                                                                      | Commit                |
+| - | ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | --------------------- |
+| 1 | Move `pollTeatestOutput` to `teatest_helpers_test.go` | `go vet` clean, removed unused import from VT file                                                                                | `df46d1f`             |
+| 2 | Strengthen `waitForVisible` conditions                | 15 `"s"` calls replaced: 9 → `waitForVisible(tm, "Build Module")`, 7 → `waitForTick(tm)`; all 11 teatest tests pass under `-race` | `df46d1f` + `15a188f` |
+| 3 | Add goroutine-leak test                               | `TestTeatest_NoGoroutineLeak` passes under `-race`; `NumGoroutine` before/after with tolerance 2                                  | `15a188f`             |
+| 4 | Add `nix run .#test-race-all`                         | App registered on all 4 platforms in `nix flake show`; `nix fmt` clean; `nix flake check` passes                                  | `4fa6af0`             |
+| 5 | Align `go.mod` versions to 1.26.5                     | All 19 modules verified via `grep "^go " */go.mod go.mod`; `nix run .#build` passes                                               | `84307d9`             |
+| 6 | Fix `docs/ERROR_SYSTEM.md` contributor example        | `joinStrings(...)` → `strings.Join(output.EnumAllowedValues(...), ", ")` (exported API)                                           | `84307d9`             |
+| 7 | Add `.github/dependabot.yml`                          | Weekly GH Actions updates, grouped PRs, `chore(ci)` prefix                                                                        | `84307d9`             |
+| 8 | Add quality gates to `scripts/pre-tag-check.sh`       | 4 new gates: lint, govulncheck, art-dupl -t 4, golden-freshness; `bash -n` syntax valid                                           | `84307d9`             |
 
 **Files changed:** 11 files, +192 / -68 lines across 5 auto-commits.
 

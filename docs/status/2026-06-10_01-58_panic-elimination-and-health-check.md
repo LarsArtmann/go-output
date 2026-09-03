@@ -162,33 +162,33 @@ This is caused by a stale/corrupt `~/.cache/nom-timing.csv` on the local machine
 
 ## F) Top 25 Things to Get Done Next
 
-| #   | Task                                                            | Impact | Effort         | Category        |
-| --- | --------------------------------------------------------------- | ------ | -------------- | --------------- |
-| 1   | Fix flaky `TestTimingCache_EnsureLoaded` — use `t.TempDir()`    | High   | 15 min         | Bug fix         |
-| 2   | Raise TUI coverage to 90%+                                      | High   | 2h             | Test quality    |
-| 3   | Finalize v1.0 API decision on TableData fields                  | High   | Owner decision | Architecture    |
-| 4   | Add ADR 007: No-panic policy                                    | Medium | 20 min         | Documentation   |
-| 5   | Add `go:generate stringer` for 7 enum types                     | Medium | 1h             | Code quality    |
-| 6   | Add benchmark suite for all 16 formats                          | Medium | 2h             | Performance     |
-| 7   | Add structured error types (`FormatError`, `ValidationError`)   | Medium | 3h             | API design      |
-| 8   | Fix pre-commit hook false positives from go-structure-linter    | Medium | 15 min         | Build           |
-| 9   | Update CHANGELOG.md with panic removal                          | Medium | 10 min         | Documentation   |
-| 10  | Update FEATURES.md — remove MustRender entry                    | Low    | 10 min         | Documentation   |
-| 11  | Update AGENTS.md — remove MustRender references                 | Low    | 10 min         | Documentation   |
-| 12  | Add compilation tests for examples module                       | Low    | 30 min         | CI              |
-| 13  | Add streaming API for CSV/TSV/JSONL consumers                   | Low    | 4h             | Feature         |
-| 14  | Polish README.md for community launch                           | Medium | 2h             | Marketing       |
-| 15  | Create gif demos for README                                     | Medium | 1h             | Marketing       |
-| 16  | Submit to Awesome Go                                            | Low    | 30 min         | Community       |
-| 17  | Post to r/golang                                                | Low    | 30 min         | Community       |
-| 18  | Add `gomod2nix` for Nix reproducibility                         | Low    | 30 min         | Build           |
-| 19  | Add fuzz tests for ParseFormat, ParseShape                      | Low    | 1h             | Test quality    |
-| 20  | Review pkg.go.dev rendered docs                                 | Low    | 1h             | Documentation   |
-| 21  | Add cross-module version consistency check in CI                | Medium | 1h             | CI              |
-| 22  | Consider `Go 1.27` compatibility test                           | Low    | 30 min         | Future-proofing |
-| 23  | Add `//go:build ignore` integration test for real-world usage   | Low    | 1h             | Test quality    |
-| 24  | Evaluate `go-error-family` adoption (revisit from research doc) | Low    | 2h             | Architecture    |
-| 25  | Clean up `docs/research/` — archive stale research docs         | Low    | 15 min         | Housekeeping    |
+| #  | Task                                                            | Impact | Effort         | Category        |
+| -- | --------------------------------------------------------------- | ------ | -------------- | --------------- |
+| 1  | Fix flaky `TestTimingCache_EnsureLoaded` — use `t.TempDir()`    | High   | 15 min         | Bug fix         |
+| 2  | Raise TUI coverage to 90%+                                      | High   | 2h             | Test quality    |
+| 3  | Finalize v1.0 API decision on TableData fields                  | High   | Owner decision | Architecture    |
+| 4  | Add ADR 007: No-panic policy                                    | Medium | 20 min         | Documentation   |
+| 5  | Add `go:generate stringer` for 7 enum types                     | Medium | 1h             | Code quality    |
+| 6  | Add benchmark suite for all 16 formats                          | Medium | 2h             | Performance     |
+| 7  | Add structured error types (`FormatError`, `ValidationError`)   | Medium | 3h             | API design      |
+| 8  | Fix pre-commit hook false positives from go-structure-linter    | Medium | 15 min         | Build           |
+| 9  | Update CHANGELOG.md with panic removal                          | Medium | 10 min         | Documentation   |
+| 10 | Update FEATURES.md — remove MustRender entry                    | Low    | 10 min         | Documentation   |
+| 11 | Update AGENTS.md — remove MustRender references                 | Low    | 10 min         | Documentation   |
+| 12 | Add compilation tests for examples module                       | Low    | 30 min         | CI              |
+| 13 | Add streaming API for CSV/TSV/JSONL consumers                   | Low    | 4h             | Feature         |
+| 14 | Polish README.md for community launch                           | Medium | 2h             | Marketing       |
+| 15 | Create gif demos for README                                     | Medium | 1h             | Marketing       |
+| 16 | Submit to Awesome Go                                            | Low    | 30 min         | Community       |
+| 17 | Post to r/golang                                                | Low    | 30 min         | Community       |
+| 18 | Add `gomod2nix` for Nix reproducibility                         | Low    | 30 min         | Build           |
+| 19 | Add fuzz tests for ParseFormat, ParseShape                      | Low    | 1h             | Test quality    |
+| 20 | Review pkg.go.dev rendered docs                                 | Low    | 1h             | Documentation   |
+| 21 | Add cross-module version consistency check in CI                | Medium | 1h             | CI              |
+| 22 | Consider `Go 1.27` compatibility test                           | Low    | 30 min         | Future-proofing |
+| 23 | Add `//go:build ignore` integration test for real-world usage   | Low    | 1h             | Test quality    |
+| 24 | Evaluate `go-error-family` adoption (revisit from research doc) | Low    | 2h             | Architecture    |
+| 25 | Clean up `docs/research/` — archive stale research docs         | Low    | 15 min         | Housekeeping    |
 
 ---
 
@@ -209,17 +209,17 @@ This affects every consumer of the library and locks in the API stability commit
 ## Git Diff Summary (uncommitted)
 
 ```
- example_test.go           | 17 ----------------     (removed ExampleMustRender)
- format_test.go            | 23 --------------       (removed TestMustRender, TestMustRenderPanics)
- graph/dot_test.go         |  2 +-                  (pass t to testDOTEmptyExpected)
- graph/helpers_test.go     | 14 +++++++------       (panic → t.Fatalf, add t param)
- graph/mermaid_test.go     |  2 +-                  (pass t to testMermaidEmptyExpected)
- integration/error_test.go | 13 ----------           (removed TestMustRender_PanicOnFailure)
- nom/tree.go               |  8 +++----             (formatting alignment)
- nom/types.go              | 14 -----------          (removed MustWorkflowID, MustActivityID)
- nom/types_test.go         | 50 --------------------(removed TestMustActivityID, TestMustWorkflowID)
- renderer.go               | 13 ----------           (removed MustRender, fmt import)
- 10 files changed, 14 insertions(+), 142 deletions(-)
+example_test.go           | 17 ----------------     (removed ExampleMustRender)
+format_test.go            | 23 --------------       (removed TestMustRender, TestMustRenderPanics)
+graph/dot_test.go         |  2 +-                  (pass t to testDOTEmptyExpected)
+graph/helpers_test.go     | 14 +++++++------       (panic → t.Fatalf, add t param)
+graph/mermaid_test.go     |  2 +-                  (pass t to testMermaidEmptyExpected)
+integration/error_test.go | 13 ----------           (removed TestMustRender_PanicOnFailure)
+nom/tree.go               |  8 +++----             (formatting alignment)
+nom/types.go              | 14 -----------          (removed MustWorkflowID, MustActivityID)
+nom/types_test.go         | 50 --------------------(removed TestMustActivityID, TestMustWorkflowID)
+renderer.go               | 13 ----------           (removed MustRender, fmt import)
+10 files changed, 14 insertions(+), 142 deletions(-)
 ```
 
 ---

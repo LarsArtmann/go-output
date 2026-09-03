@@ -132,38 +132,38 @@ Nothing catastrophically broken. But here's what I did wrong or sloppily:
 
 Sorted by impact × urgency.
 
-| #   | Task                                                                                                                                    | Impact   | Effort | Category                  |
-| --- | --------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------ | ------------------------- |
-| 1   | Fix `TestBrandedIDFormat` — update expected `%#v` output to match `go-branded-id` v0.4.0                                                | Critical | 5min   | Unblocks test pipeline    |
-| 2   | Add CHANGELOG.md `[Unreleased]` entry for exported sentinels + `AsType` migration                                                       | High     | 5min   | Convention                |
-| 3   | Run `GOEXPERIMENT=jsonv2 go test ./...` in every sub-module dir to verify nothing broke                                                 | High     | 10min  | Verification gap          |
-| 4   | Fix `go.mod:24` `gomoddirectives` — add mandatory retract comment for `v0.32.1`                                                         | High     | 2min   | Only lint failure         |
-| 5   | Investigate markup/ erraudit (54 violations) — filter false positives, find real issues                                                 | High     | 20min  | Largest violation count   |
-| 6   | Investigate nom/ erraudit (34 violations) — concurrency module, real issues likely                                                      | High     | 15min  | Safety-critical module    |
-| 7   | Investigate serialization/ erraudit (30 violations) — JSON/YAML/TOML error paths                                                        | Medium   | 15min  | Core format path          |
-| 8   | Investigate daghtml/ erraudit (28 violations) — HTML injection surface                                                                  | Medium   | 15min  | Security-adjacent         |
-| 9   | Create `.erraudit` config or AGENTS.md section classifying which findings to ignore                                                     | Medium   | 10min  | Prevents agent cargo-cult |
-| 10  | Add contract tests for `nom.ErrCycleDetected` through wrapping                                                                          | Medium   | 10min  | Domain sentinel           |
-| 11  | Add contract tests for `d2.ErrInvalidDirection` through wrapping                                                                        | Medium   | 8min   | Domain sentinel           |
-| 12  | Audit all sub-module doc comments for the same "lying doc comment" pattern I found in root                                              | Medium   | 15min  | Same bug class            |
-| 13  | Verify the sentinel message text change (`"footer column count..."` → `"column count..."`) doesn't break any external consumer          | Medium   | 5min   | Breaking string change    |
-| 14  | Add `errors.Is` usage examples to `examples/` showing how consumers match sentinels                                                     | Low      | 10min  | Documentation             |
-| 15  | Consider whether `ErrColumnMismatch` should carry structured fields (expected/got counts) as a typed error instead of a bare sentinel   | Low      | 15min  | API design                |
-| 16  | Run `nix run .#test-race` across nom + tui (concurrency-sensitive) after fixing TestBrandedIDFormat                                     | High     | 5min   | Race detection            |
-| 17  | Add a `go vet ./...` pass to CI if not already present                                                                                  | Low      | 5min   | Defense in depth          |
-| 18  | Check if `errors.AsType` migration should be applied to any sub-module test files                                                       | Low      | 10min  | Consistency               |
-| 19  | Document the three-tier error model in `docs/FORMAT_ARCHITECTURE.md` (it's the format/shape doc but errors are part of the contract)    | Low      | 10min  | Documentation             |
-| 20  | Audit `integration/` module's 3 erraudit violations — integration tests are where real error chains get exercised                       | Medium   | 8min   | Integration               |
-| 21  | Verify that `nix run .#govulncheck` still passes (GitHub reported 8 vulnerabilities)                                                    | High     | 5min   | Security                  |
-| 22  | Consider adding a `SentinelError` interface that all root sentinels implement (for documentation, not enforcement)                      | Very Low | 10min  | Over-engineering risk     |
-| 23  | Update `FEATURES.md` if error system is a listed feature                                                                                | Very Low | 3min   | Documentation             |
-| 24  | Consider whether the `Validate()` error wrapping (`"render table data: %w"`) in `render_tabledata.go:51` should include the format name | Low      | 5min   | Error context             |
-| 25  | Add a test that `RenderTable` with a valid table but unsupported format returns `*UnsupportedFormatError` matchable via `AsType`        | Medium   | 8min   | Contract test             |
-| 26  | Check if the `streaming.go` adapter error wrapping (`"adapter render: %w"`) loses meaningful context                                    | Low      | 5min   | Error quality             |
-| 27  | Audit whether `marshal.go:18` error message (`"marshal json indent (prefix=%q, indent=%q) for %T: %w"`) leaks too much internal state   | Very Low | 3min   | Error quality             |
-| 28  | Consider standardizing error message format across modules (verb + subject + context + `%w`)                                            | Low      | 20min  | Consistency               |
-| 29  | Add `//go:generate` instructions for error type generation if the pattern repeats enough                                                | Very Low | 15min  | YAGNI risk                |
-| 30  | Verify the ADR 013 file follows the same format as existing ADRs                                                                        | Very Low | 2min   | Documentation             |
+| #  | Task                                                                                                                                    | Impact   | Effort | Category                  |
+| -- | --------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------ | ------------------------- |
+| 1  | Fix `TestBrandedIDFormat` — update expected `%#v` output to match `go-branded-id` v0.4.0                                                | Critical | 5min   | Unblocks test pipeline    |
+| 2  | Add CHANGELOG.md `[Unreleased]` entry for exported sentinels + `AsType` migration                                                       | High     | 5min   | Convention                |
+| 3  | Run `GOEXPERIMENT=jsonv2 go test ./...` in every sub-module dir to verify nothing broke                                                 | High     | 10min  | Verification gap          |
+| 4  | Fix `go.mod:24` `gomoddirectives` — add mandatory retract comment for `v0.32.1`                                                         | High     | 2min   | Only lint failure         |
+| 5  | Investigate markup/ erraudit (54 violations) — filter false positives, find real issues                                                 | High     | 20min  | Largest violation count   |
+| 6  | Investigate nom/ erraudit (34 violations) — concurrency module, real issues likely                                                      | High     | 15min  | Safety-critical module    |
+| 7  | Investigate serialization/ erraudit (30 violations) — JSON/YAML/TOML error paths                                                        | Medium   | 15min  | Core format path          |
+| 8  | Investigate daghtml/ erraudit (28 violations) — HTML injection surface                                                                  | Medium   | 15min  | Security-adjacent         |
+| 9  | Create `.erraudit` config or AGENTS.md section classifying which findings to ignore                                                     | Medium   | 10min  | Prevents agent cargo-cult |
+| 10 | Add contract tests for `nom.ErrCycleDetected` through wrapping                                                                          | Medium   | 10min  | Domain sentinel           |
+| 11 | Add contract tests for `d2.ErrInvalidDirection` through wrapping                                                                        | Medium   | 8min   | Domain sentinel           |
+| 12 | Audit all sub-module doc comments for the same "lying doc comment" pattern I found in root                                              | Medium   | 15min  | Same bug class            |
+| 13 | Verify the sentinel message text change (`"footer column count..."` → `"column count..."`) doesn't break any external consumer          | Medium   | 5min   | Breaking string change    |
+| 14 | Add `errors.Is` usage examples to `examples/` showing how consumers match sentinels                                                     | Low      | 10min  | Documentation             |
+| 15 | Consider whether `ErrColumnMismatch` should carry structured fields (expected/got counts) as a typed error instead of a bare sentinel   | Low      | 15min  | API design                |
+| 16 | Run `nix run .#test-race` across nom + tui (concurrency-sensitive) after fixing TestBrandedIDFormat                                     | High     | 5min   | Race detection            |
+| 17 | Add a `go vet ./...` pass to CI if not already present                                                                                  | Low      | 5min   | Defense in depth          |
+| 18 | Check if `errors.AsType` migration should be applied to any sub-module test files                                                       | Low      | 10min  | Consistency               |
+| 19 | Document the three-tier error model in `docs/FORMAT_ARCHITECTURE.md` (it's the format/shape doc but errors are part of the contract)    | Low      | 10min  | Documentation             |
+| 20 | Audit `integration/` module's 3 erraudit violations — integration tests are where real error chains get exercised                       | Medium   | 8min   | Integration               |
+| 21 | Verify that `nix run .#govulncheck` still passes (GitHub reported 8 vulnerabilities)                                                    | High     | 5min   | Security                  |
+| 22 | Consider adding a `SentinelError` interface that all root sentinels implement (for documentation, not enforcement)                      | Very Low | 10min  | Over-engineering risk     |
+| 23 | Update `FEATURES.md` if error system is a listed feature                                                                                | Very Low | 3min   | Documentation             |
+| 24 | Consider whether the `Validate()` error wrapping (`"render table data: %w"`) in `render_tabledata.go:51` should include the format name | Low      | 5min   | Error context             |
+| 25 | Add a test that `RenderTable` with a valid table but unsupported format returns `*UnsupportedFormatError` matchable via `AsType`        | Medium   | 8min   | Contract test             |
+| 26 | Check if the `streaming.go` adapter error wrapping (`"adapter render: %w"`) loses meaningful context                                    | Low      | 5min   | Error quality             |
+| 27 | Audit whether `marshal.go:18` error message (`"marshal json indent (prefix=%q, indent=%q) for %T: %w"`) leaks too much internal state   | Very Low | 3min   | Error quality             |
+| 28 | Consider standardizing error message format across modules (verb + subject + context + `%w`)                                            | Low      | 20min  | Consistency               |
+| 29 | Add `//go:generate` instructions for error type generation if the pattern repeats enough                                                | Very Low | 15min  | YAGNI risk                |
+| 30 | Verify the ADR 013 file follows the same format as existing ADRs                                                                        | Very Low | 2min   | Documentation             |
 
 ---
 

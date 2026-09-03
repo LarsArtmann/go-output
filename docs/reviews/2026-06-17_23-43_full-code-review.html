@@ -20,8 +20,12 @@
         --major: #ffa657;
         --minor: #d29922;
         --ok: #3fb950;
-        --mono: ui-monospace, "SF Mono", "JetBrains Mono", "Fira Code", Menlo, Consolas, monospace;
-        --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+        --mono:
+          ui-monospace, "SF Mono", "JetBrains Mono", "Fira Code", Menlo,
+          Consolas, monospace;
+        --sans:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial,
+          sans-serif;
       }
       * {
         box-sizing: border-box;
@@ -217,11 +221,13 @@
         <p class="eyebrow">Full Code Review · Senior Staff Architect Audit</p>
         <h1>Full Code Review — go-output</h1>
         <p class="lede">
-          Comprehensive review of 226 Go files across 17 modules — every production and test file
-          visited, issues categorized by severity, and high-impact fixes applied on the spot.
+          Comprehensive review of 226 Go files across 17 modules — every
+          production and test file visited, issues categorized by severity, and
+          high-impact fixes applied on the spot.
         </p>
         <p class="meta">
-          📅 2026-06-17 · 🔍 226 files reviewed · 📦 17 modules · 🎯 Go 1.26 workspace
+          📅 2026-06-17 · 🔍 226 files reviewed · 📦 17 modules · 🎯 Go 1.26
+          workspace
         </p>
       </div>
     </header>
@@ -256,16 +262,17 @@
       <h2>🎯 Scope & Methodology</h2>
       <div class="card">
         <p>
-          Every <code>.go</code> file across all 17 modules was reviewed against the architect
-          checklist: type safety, error handling, naming, dead code, data model integrity,
-          concurrency, file size limits (350 lines), integration gaps, and generics usage. The
-          review was conducted via parallel sub-agents, each assigned a module cluster with the full
+          Every <code>.go</code> file across all 17 modules was reviewed against
+          the architect checklist: type safety, error handling, naming, dead
+          code, data model integrity, concurrency, file size limits (350 lines),
+          integration gaps, and generics usage. The review was conducted via
+          parallel sub-agents, each assigned a module cluster with the full
           checklist and known-issues context.
         </p>
         <p>
-          <strong>Modules reviewed:</strong> root (output), nom, tui, d2, graph, plantuml,
-          delimited, serialization, markup, table, escape, enum, testhelpers, integration, examples,
-          bdd, testhelpers/graphtest.
+          <strong>Modules reviewed:</strong> root (output), nom, tui, d2, graph,
+          plantuml, delimited, serialization, markup, table, escape, enum,
+          testhelpers, integration, examples, bdd, testhelpers/graphtest.
         </p>
       </div>
 
@@ -275,14 +282,18 @@
         <div class="card-head">
           <span class="badge badge-critical">Critical</span>
           <span class="badge badge-fixed">Fixed ✅</span>
-          <strong>GetActivitySummaryString returned bracketed Go slice repr</strong>
+          <strong
+            >GetActivitySummaryString returned bracketed Go slice repr</strong
+          >
         </div>
         <p class="file-ref">nom/format.go:91</p>
         <p>
-          <code>fmt.Sprintf("%s", parts)</code> formatted a <code>[]string</code> as Go's native
-          slice representation (<code>[⏵3 ↑2 ∑5]</code> with brackets and spaces) instead of the
-          documented flat string <code>"⏵3↑2∑5"</code>. A public API silently producing wrong
-          output.
+          <code>fmt.Sprintf("%s", parts)</code> formatted a
+          <code>[]string</code> as Go's native slice representation (<code
+            >[⏵3 ↑2 ∑5]</code
+          >
+          with brackets and spaces) instead of the documented flat string
+          <code>"⏵3↑2∑5"</code>. A public API silently producing wrong output.
         </p>
         <p><strong>Fix:</strong> <code>strings.Join(parts, "")</code></p>
       </div>
@@ -291,13 +302,16 @@
         <div class="card-head">
           <span class="badge badge-critical">Critical</span>
           <span class="badge badge-fixed">Fixed ✅</span>
-          <strong>FormatDuration displayed "60.0s" for sub-minute durations</strong>
+          <strong
+            >FormatDuration displayed "60.0s" for sub-minute durations</strong
+          >
         </div>
         <p class="file-ref">nom/format.go:36-42</p>
         <p>
-          <code>fmt.Sprintf("%.1fs", duration.Seconds())</code> rounds 59.95s to "60.0s" — a
-          sub-minute duration displayed as exactly one minute. The float crosses the integer
-          boundary before the <code>&lt; time.Minute</code> guard catches it.
+          <code>fmt.Sprintf("%.1fs", duration.Seconds())</code> rounds 59.95s to
+          "60.0s" — a sub-minute duration displayed as exactly one minute. The
+          float crosses the integer boundary before the
+          <code>&lt; time.Minute</code> guard catches it.
         </p>
         <p>
           <strong>Fix:</strong> Switched to integer math (tenths of a second):
@@ -311,22 +325,25 @@
         <div class="card-head">
           <span class="badge badge-major">Major</span>
           <span class="badge badge-fixed">Fixed ✅</span>
-          <strong>DOT and Mermaid double-escaping in TableData conversion</strong>
+          <strong
+            >DOT and Mermaid double-escaping in TableData conversion</strong
+          >
         </div>
         <p class="file-ref">graph/dot.go:219-221 · graph/mermaid.go:172-175</p>
         <p>
-          <code>DOTFromTableData</code> and <code>MermaidFromTableData</code> pre-escaped labels in
-          the <code>SetNodesFromTableData</code> callback, then <code>writeNode</code>/<code
-            >Render()</code
-          >
-          escaped them again at render time. For DOT this compounded backslashes and quotes (<code
+          <code>DOTFromTableData</code> and
+          <code>MermaidFromTableData</code> pre-escaped labels in the
+          <code>SetNodesFromTableData</code> callback, then
+          <code>writeNode</code>/<code>Render()</code> escaped them again at
+          render time. For DOT this compounded backslashes and quotes (<code
             >hello"world</code
           >
           → <code>hello\\\"world</code>).
         </p>
         <p>
-          <strong>Fix:</strong> Removed pre-escaping; render-time escape is the single source of
-          truth. Also made <code>SetNodesFromTableData</code>'s callback nil-safe.
+          <strong>Fix:</strong> Removed pre-escaping; render-time escape is the
+          single source of truth. Also made <code>SetNodesFromTableData</code>'s
+          callback nil-safe.
         </p>
       </div>
 
@@ -334,18 +351,21 @@
         <div class="card-head">
           <span class="badge badge-major">Major</span>
           <span class="badge badge-fixed">Fixed ✅</span>
-          <strong>D2 conversion silently dropped edge color and node font-color</strong>
+          <strong
+            >D2 conversion silently dropped edge color and node
+            font-color</strong
+          >
         </div>
         <p class="file-ref">d2/d2_convert.go:55-61, 84-92</p>
         <p>
           <code>graphEdgeToD2</code> mapped only From/To/Label — all
-          <code>EdgeStyle</code> information was lost. <code>graphStyleToD2</code> dropped
-          <code>GraphStyle.FontColor</code>.
+          <code>EdgeStyle</code> information was lost.
+          <code>graphStyleToD2</code> dropped <code>GraphStyle.FontColor</code>.
         </p>
         <p>
           <strong>Fix:</strong> Mapped <code>EdgeStyle.Color</code> →
-          <code>D2StrokeStyle.Stroke</code> and added <code>FontColor</code> to the node style
-          conversion.
+          <code>D2StrokeStyle.Stroke</code> and added <code>FontColor</code> to
+          the node style conversion.
         </p>
       </div>
 
@@ -356,11 +376,13 @@
           <strong>Escaping gaps in D2, Mermaid, and PlantUML renderers</strong>
         </div>
         <p class="file-ref">
-          d2/d2_render.go:272,276 · graph/mermaid.go:77,86 · plantuml/plantuml.go:59-70
+          d2/d2_render.go:272,276 · graph/mermaid.go:77,86 ·
+          plantuml/plantuml.go:59-70
         </p>
         <p>
-          D2: Icon and Link fields were written raw while all other string fields were escaped.
-          Mermaid: node/edge IDs in the direct-graph path were unsanitized (tree path already used
+          D2: Icon and Link fields were written raw while all other string
+          fields were escaped. Mermaid: node/edge IDs in the direct-graph path
+          were unsanitized (tree path already used
           <code>escape.MermaidID</code>). PlantUML: labels had zero escaping.
         </p>
         <p>
@@ -378,10 +400,14 @@
         </div>
         <p class="file-ref">tui/state.go:95 · tui/reporter.go:157</p>
         <p>
-          <code>messages []string</code> was appended to on every <code>ReportMessage</code> call
-          but never read or rendered anywhere — unbounded growth for the lifetime of the process.
+          <code>messages []string</code> was appended to on every
+          <code>ReportMessage</code> call but never read or rendered anywhere —
+          unbounded growth for the lifetime of the process.
         </p>
-        <p><strong>Fix:</strong> Removed the field, the append, and the initializer.</p>
+        <p>
+          <strong>Fix:</strong> Removed the field, the append, and the
+          initializer.
+        </p>
       </div>
 
       <h2>🟡 Major — Open (TODO_LIST.md)</h2>
@@ -402,8 +428,8 @@
             <td><span class="badge badge-critical">Critical</span></td>
             <td class="file-ref">nom/timing_cache.go:68</td>
             <td>
-              Unbounded <code>saveAsync</code> goroutines racing on same file → CSV corruption under
-              burst load
+              Unbounded <code>saveAsync</code> goroutines racing on same file →
+              CSV corruption under burst load
             </td>
             <td>Single goroutine + channel debounce, or mutex serialization</td>
           </tr>
@@ -412,8 +438,8 @@
             <td><span class="badge badge-major">Major</span></td>
             <td class="file-ref">nom/inline_renderer.go:65-99</td>
             <td>
-              Setter methods mutate fields without synchronization while refreshLoop goroutine reads
-              them
+              Setter methods mutate fields without synchronization while
+              refreshLoop goroutine reads them
             </td>
             <td>Guard with mutex or atomic types</td>
           </tr>
@@ -422,16 +448,20 @@
             <td><span class="badge badge-critical">Critical</span></td>
             <td class="file-ref">tui/reporter.go:103-209</td>
             <td>
-              BubbleTeaProgressReporter mutates model fields from caller goroutine while Bubble Tea
-              event loop reads/writes same fields
+              BubbleTeaProgressReporter mutates model fields from caller
+              goroutine while Bubble Tea event loop reads/writes same fields
             </td>
-            <td>Route all model mutations through <code>tea.Program.Send</code></td>
+            <td>
+              Route all model mutations through <code>tea.Program.Send</code>
+            </td>
           </tr>
           <tr>
             <td>24</td>
             <td><span class="badge badge-major">Major</span></td>
             <td class="file-ref">nom/tree_modification.go:31</td>
-            <td>Re-parenting leaves phantom edges in old parent's Children slice</td>
+            <td>
+              Re-parenting leaves phantom edges in old parent's Children slice
+            </td>
             <td>Remove from old parent before reassigning</td>
           </tr>
           <tr>
@@ -445,14 +475,20 @@
             <td>25</td>
             <td><span class="badge badge-major">Major</span></td>
             <td class="file-ref">tui/state.go:83-90</td>
-            <td>ProgressStep allows impossible state (CompletedAt != nil && IsActive)</td>
+            <td>
+              ProgressStep allows impossible state (CompletedAt != nil &&
+              IsActive)
+            </td>
             <td>Make IsActive a derived method</td>
           </tr>
           <tr>
             <td>26</td>
             <td><span class="badge badge-minor">Minor</span></td>
             <td class="file-ref">tui/display.go:3-8</td>
-            <td>DisplayMode is stringly-typed (should be int enum like WorkflowState)</td>
+            <td>
+              DisplayMode is stringly-typed (should be int enum like
+              WorkflowState)
+            </td>
             <td>Change to <code>type DisplayMode int</code></td>
           </tr>
           <tr>
@@ -501,9 +537,9 @@
           <strong>Multi-module zero-dependency architecture</strong>
         </div>
         <p>
-          Root module has ZERO imports from any sub-module. Users get zero transitive deps from
-          modules they don't import. Verified via <code>go mod graph</code>. This is the project's
-          crown jewel.
+          Root module has ZERO imports from any sub-module. Users get zero
+          transitive deps from modules they don't import. Verified via
+          <code>go mod graph</code>. This is the project's crown jewel.
         </p>
       </div>
       <div class="card card-solution">
@@ -513,8 +549,9 @@
         </div>
         <p>
           Three separate mutex+map patterns consolidated into one generic
-          <code>formatRegistry[T]</code> backing capability matrix, TableDataMarshaler, and
-          AnyDataMarshaler registries. Thread-safe, DRY, type-safe.
+          <code>formatRegistry[T]</code> backing capability matrix,
+          TableDataMarshaler, and AnyDataMarshaler registries. Thread-safe, DRY,
+          type-safe.
         </p>
       </div>
       <div class="card card-solution">
@@ -523,27 +560,33 @@
           <strong>Shape capability matrix (ADR 002)</strong>
         </div>
         <p>
-          Single source of truth mapping Format → Shapes. Queryable bidirectionally. Sub-modules
-          register via <code>init()</code>, root provides defaults. Elegant extensible design.
+          Single source of truth mapping Format → Shapes. Queryable
+          bidirectionally. Sub-modules register via <code>init()</code>, root
+          provides defaults. Elegant extensible design.
         </p>
       </div>
       <div class="card card-solution">
         <div class="card-head">
-          <span class="badge badge-ok">Strong</span> <strong>Branded ID phantom types</strong>
+          <span class="badge badge-ok">Strong</span>
+          <strong>Branded ID phantom types</strong>
         </div>
         <p>
-          Compile-time type safety preventing mixing D2NodeID/TreeNodeID/GraphNodeID via
-          <code>go-branded-id</code>. Impossible to accidentally pass the wrong ID type.
+          Compile-time type safety preventing mixing
+          D2NodeID/TreeNodeID/GraphNodeID via
+          <code>go-branded-id</code>. Impossible to accidentally pass the wrong
+          ID type.
         </p>
       </div>
       <div class="card card-solution">
         <div class="card-head">
-          <span class="badge badge-ok">Strong</span> <strong>Escape module centralization</strong>
+          <span class="badge badge-ok">Strong</span>
+          <strong>Escape module centralization</strong>
         </div>
         <p>
-          All format-specific escaping in a zero-dependency <code>escape/</code> module with
-          <code>strings.NewReplacer</code> for single-pass, 1-allocation escaping. Now covers D2,
-          DOT, XML, HTML, MermaidID, MermaidText, SlugifyID, and PlantUML.
+          All format-specific escaping in a zero-dependency
+          <code>escape/</code> module with <code>strings.NewReplacer</code> for
+          single-pass, 1-allocation escaping. Now covers D2, DOT, XML, HTML,
+          MermaidID, MermaidText, SlugifyID, and PlantUML.
         </p>
       </div>
       <div class="card card-solution">
@@ -552,15 +595,16 @@
           <strong>96.5% root coverage, 90%+ everywhere</strong>
         </div>
         <p>
-          All 17 modules maintain 88%+ test coverage. Integration tests verify all 16 formats. Fuzz
-          tests for markdown and D2 enums. Benchmarks for all hot paths.
+          All 17 modules maintain 88%+ test coverage. Integration tests verify
+          all 16 formats. Fuzz tests for markdown and D2 enums. Benchmarks for
+          all hot paths.
         </p>
       </div>
 
       <h2>📋 Deferred API-Breaking Changes (Post-v1)</h2>
       <p>
-        These have in-code <code>TODO(split-brain ...)</code> markers and are tracked in
-        TODO_LIST.md P6:
+        These have in-code <code>TODO(split-brain ...)</code> markers and are
+        tracked in TODO_LIST.md P6:
       </p>
       <table>
         <thead>
@@ -708,8 +752,9 @@
       </table>
     </main>
     <footer>
-      go-output full code review · generated 2026-06-17 · 226 files across 17 modules · 10 fixed on
-      the spot · 12 open majors · 7 deferred breaking changes
+      go-output full code review · generated 2026-06-17 · 226 files across 17
+      modules · 10 fixed on the spot · 12 open majors · 7 deferred breaking
+      changes
     </footer>
   </body>
 </html>

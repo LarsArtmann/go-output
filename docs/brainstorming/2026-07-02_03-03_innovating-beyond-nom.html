@@ -36,14 +36,14 @@
         --radius-sm: 0px;
 
         --font-heading:
-          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          Helvetica, Arial, sans-serif;
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         --font-body:
-          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          Helvetica, Arial, sans-serif;
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         --font-mono:
-          ui-monospace, "Cascadia Code", "Source Code Pro", "JetBrains Mono", Menlo, Consolas,
-          monospace;
+          ui-monospace, "Cascadia Code", "Source Code Pro", "JetBrains Mono",
+          Menlo, Consolas, monospace;
       }
 
       * {
@@ -223,19 +223,35 @@
       }
       .card-problem {
         border-left-color: var(--problem);
-        background: color-mix(in srgb, var(--problem) 8%, var(--surface-raised));
+        background: color-mix(
+          in srgb,
+          var(--problem) 8%,
+          var(--surface-raised)
+        );
       }
       .card-solution {
         border-left-color: var(--solution);
-        background: color-mix(in srgb, var(--solution) 8%, var(--surface-raised));
+        background: color-mix(
+          in srgb,
+          var(--solution) 8%,
+          var(--surface-raised)
+        );
       }
       .card-warning {
         border-left-color: var(--warning);
-        background: color-mix(in srgb, var(--warning) 8%, var(--surface-raised));
+        background: color-mix(
+          in srgb,
+          var(--warning) 8%,
+          var(--surface-raised)
+        );
       }
       .card-innovation {
         border-left-color: var(--innovation);
-        background: color-mix(in srgb, var(--innovation) 8%, var(--surface-raised));
+        background: color-mix(
+          in srgb,
+          var(--innovation) 8%,
+          var(--surface-raised)
+        );
       }
 
       .stat-grid {
@@ -465,7 +481,24 @@
     </style>
   </head>
   <body>
-    <div style="background:#1a1a2e;border-left:3px solid #50fa7b;padding:12px 16px;margin:16px 0;border-radius:4px;"><strong>✅ Resolved (2026-08-04):</strong> SHIPPED in v0.23.0 — Layered Display Mode (#1), Critical Path Highlighting (#2), Parallelism Meter (#4), Critical Path ETA (#5), Compact DAG Summary (#7), Critical-Path Priority Sort (#9), Open Status Registry (#11), Theme System (#12), Category Tints (#13). NOT built — Blockage View (#3, YAGNI), Convergence Markers (#6, trivial but not worth the noise), Smart Layer Filtering (#8, future-layer hiding was built but full smart filtering not), Interactive DAG View (#10, TUI L/C/D keys cover the core). See CHANGELOG [0.23.0].</div>
+    <div
+      style="
+        background: #1a1a2e;
+        border-left: 3px solid #50fa7b;
+        padding: 12px 16px;
+        margin: 16px 0;
+        border-radius: 4px;
+      "
+    >
+      <strong>✅ Resolved (2026-08-04):</strong> SHIPPED in v0.23.0 — Layered
+      Display Mode (#1), Critical Path Highlighting (#2), Parallelism Meter
+      (#4), Critical Path ETA (#5), Compact DAG Summary (#7), Critical-Path
+      Priority Sort (#9), Open Status Registry (#11), Theme System (#12),
+      Category Tints (#13). NOT built — Blockage View (#3, YAGNI), Convergence
+      Markers (#6, trivial but not worth the noise), Smart Layer Filtering (#8,
+      future-layer hiding was built but full smart filtering not), Interactive
+      DAG View (#10, TUI L/C/D keys cover the core). See CHANGELOG [0.23.0].
+    </div>
 
     <div class="top-bar">
       <span>BRAINSTORM</span>
@@ -498,9 +531,10 @@
           <div class="hero-badge">Brainstorm &middot; Innovation</div>
           <h1>Innovating Beyond nom</h1>
           <p class="hero-subtitle">
-            nom treats the DAG as a tree, hardcodes 4 states, and locks colors to a global var.
-            go-output now has the full DAG. Here are 13 concrete ways to use that data &mdash; and
-            to make the status/color system open, themeable, and category-aware.
+            nom treats the DAG as a tree, hardcodes 4 states, and locks colors
+            to a global var. go-output now has the full DAG. Here are 13
+            concrete ways to use that data &mdash; and to make the status/color
+            system open, themeable, and category-aware.
           </p>
         </div>
 
@@ -510,23 +544,26 @@
 
         <div class="card card-innovation">
           <p>
-            <strong>nom's limitation is intentional:</strong> it was built for Nix, where the build
-            graph is massive (thousands of derivations) and the user only cares about "what's
-            happening right now." Showing topology would be noise. So nom deduplicates, picks the
-            deepest parent, and shows a tree.
+            <strong>nom's limitation is intentional:</strong> it was built for
+            Nix, where the build graph is massive (thousands of derivations) and
+            the user only cares about "what's happening right now." Showing
+            topology would be noise. So nom deduplicates, picks the deepest
+            parent, and shows a tree.
           </p>
           <p>
-            <strong>go-output's opportunity is different:</strong> it's a general-purpose library,
-            not tied to Nix. Its consumers (BuildFlow, CI pipelines, deployment tools) have smaller,
-            denser DAGs where <em>understanding the topology</em> is the difference between "why is
-            this slow?" and "oh, Test is blocked because Lint hasn't finished." nom can't answer
-            that question. We can.
+            <strong>go-output's opportunity is different:</strong> it's a
+            general-purpose library, not tied to Nix. Its consumers (BuildFlow,
+            CI pipelines, deployment tools) have smaller, denser DAGs where
+            <em>understanding the topology</em> is the difference between "why
+            is this slow?" and "oh, Test is blocked because Lint hasn't
+            finished." nom can't answer that question. We can.
           </p>
           <p>
-            The DAG topology model (<code>node.Deps</code>, <code>computeDepths()</code>) is already
-            in place. Everything below uses that data. The question isn't <em>whether</em> to
-            innovate &mdash; it's <em>which innovations</em> deliver the most value for the least
-            complexity.
+            The DAG topology model (<code>node.Deps</code>,
+            <code>computeDepths()</code>) is already in place. Everything below
+            uses that data. The question isn't <em>whether</em> to innovate
+            &mdash; it's <em>which innovations</em> deliver the most value for
+            the least complexity.
           </p>
         </div>
 
@@ -551,190 +588,246 @@
 
         <!-- ================================================================== -->
 
-        <h2 id="layered"><span class="num">01</span>Layered / Topological Display Mode</h2>
+        <h2 id="layered">
+          <span class="num">01</span>Layered / Topological Display Mode
+        </h2>
         <p>
-          <span class="badge badge-novel">Novel</span> <span class="badge badge-high">Tier 1</span>
+          <span class="badge badge-novel">Novel</span>
+          <span class="badge badge-high">Tier 1</span>
           <span class="badge badge-medium">Medium Effort</span>
         </p>
 
         <div class="card card-innovation">
           <h4>The Idea</h4>
           <p>
-            Instead of a tree, group nodes by their dependency depth (topological sort waves). Each
-            layer is a row of independent, parallel-safe activities. The <em>position</em> encodes
-            the dependency &mdash; no annotation needed.
+            Instead of a tree, group nodes by their dependency depth
+            (topological sort waves). Each layer is a row of independent,
+            parallel-safe activities. The <em>position</em> encodes the
+            dependency &mdash; no annotation needed.
           </p>
           <div class="dep-tree">
-            <span class="layer-hdr">Layer 0</span> <span class="separator">│</span>
+            <span class="layer-hdr">Layer 0</span>
+            <span class="separator">│</span>
             <span class="root">◈ Build</span>
-            <span class="separator">────────┼──────────────────────────────────</span>
-            <span class="layer-hdr">Layer 1</span> <span class="separator">│</span>
-            <span class="warn">⏵ Compile 2.3s</span> <span class="ok">✔ Lint 1.1s</span>
-            <span class="separator">────────┼──────────────────────────────────</span>
-            <span class="layer-hdr">Layer 2</span> <span class="separator">│</span>
+            <span class="separator"
+              >────────┼──────────────────────────────────</span
+            >
+            <span class="layer-hdr">Layer 1</span>
+            <span class="separator">│</span>
+            <span class="warn">⏵ Compile 2.3s</span>
+            <span class="ok">✔ Lint 1.1s</span>
+            <span class="separator"
+              >────────┼──────────────────────────────────</span
+            >
+            <span class="layer-hdr">Layer 2</span>
+            <span class="separator">│</span>
             <span class="faint">○ Test</span>
             <span class="faint">(blocked: waiting for Compile)</span>
-            <span class="separator">────────┼──────────────────────────────────</span>
-            <span class="layer-hdr">Layer 3</span> <span class="separator">│</span>
+            <span class="separator"
+              >────────┼──────────────────────────────────</span
+            >
+            <span class="layer-hdr">Layer 3</span>
+            <span class="separator">│</span>
             <span class="faint">○ Deploy</span>
           </div>
           <p>
-            Test appears in Layer 2 because it depends on both Compile and Lint &mdash; that's
-            <em>visible from the position</em>. In tree mode, you'd need an annotation to know Test
-            depends on both. In layered mode, the layer number IS the dependency information.
+            Test appears in Layer 2 because it depends on both Compile and Lint
+            &mdash; that's
+            <em>visible from the position</em>. In tree mode, you'd need an
+            annotation to know Test depends on both. In layered mode, the layer
+            number IS the dependency information.
           </p>
 
           <h4>Why nom can't do this</h4>
           <p>
-            nom doesn't expose dependency depth as a concept. Its tree is built from parent-child
-            links, not topological layers. go-output's <code>computeDepths()</code> already computes
-            the exact data needed (longest path from root per node).
+            nom doesn't expose dependency depth as a concept. Its tree is built
+            from parent-child links, not topological layers. go-output's
+            <code>computeDepths()</code> already computes the exact data needed
+            (longest path from root per node).
           </p>
 
           <h4>Implementation</h4>
           <ul>
             <li>
-              <code>RenderLayeredWithSnapshots()</code> on <code>DependencyTree</code> &mdash;
-              groups nodes by <code>node.Depth</code>
+              <code>RenderLayeredWithSnapshots()</code> on
+              <code>DependencyTree</code> &mdash; groups nodes by
+              <code>node.Depth</code>
             </li>
-            <li>Within each layer, sort by priority (same <code>childPriority</code> logic)</li>
-            <li>Layer separator lines (<code>────│────</code>) between groups</li>
-            <li><code>WithRenderMode(RenderModeLayered)</code> subscriber option</li>
-            <li>InlineRenderer and TUI both consume via the same entry interface</li>
+            <li>
+              Within each layer, sort by priority (same
+              <code>childPriority</code> logic)
+            </li>
+            <li>
+              Layer separator lines (<code>────│────</code>) between groups
+            </li>
+            <li>
+              <code>WithRenderMode(RenderModeLayered)</code> subscriber option
+            </li>
+            <li>
+              InlineRenderer and TUI both consume via the same entry interface
+            </li>
           </ul>
 
           <h4>Challenges</h4>
           <ul>
             <li>
-              <strong>Wide layers:</strong> Layer 1 might have 8 parallel tasks. Need wrapping or
-              column layout.
+              <strong>Wide layers:</strong> Layer 1 might have 8 parallel tasks.
+              Need wrapping or column layout.
             </li>
             <li>
-              <strong>Height pressure:</strong> each layer takes 2+ rows (header + nodes). A
-              10-layer DAG needs 20+ rows.
+              <strong>Height pressure:</strong> each layer takes 2+ rows (header
+              + nodes). A 10-layer DAG needs 20+ rows.
             </li>
             <li>
-              <strong>TUI scroll:</strong> <code>visibleEntries[treeLine]</code> mapping needs
-              rework for layer-aware entries.
+              <strong>TUI scroll:</strong>
+              <code>visibleEntries[treeLine]</code> mapping needs rework for
+              layer-aware entries.
             </li>
           </ul>
 
           <div class="callout callout-innovation">
             <strong>Verdict:</strong>
-            Build this first. It's the flagship feature &mdash; the one thing no other terminal
-            progress tool does.
+            Build this first. It's the flagship feature &mdash; the one thing no
+            other terminal progress tool does.
           </div>
         </div>
 
         <!-- ================================================================== -->
 
-        <h2 id="critical-path"><span class="num">02</span>Critical Path Highlighting</h2>
+        <h2 id="critical-path">
+          <span class="num">02</span>Critical Path Highlighting
+        </h2>
         <p>
-          <span class="badge badge-novel">Novel</span> <span class="badge badge-high">Tier 1</span>
+          <span class="badge badge-novel">Novel</span>
+          <span class="badge badge-high">Tier 1</span>
           <span class="badge badge-done">Low Effort</span>
         </p>
 
         <div class="card card-innovation">
           <h4>The Idea</h4>
           <p>
-            With the real DAG, we can compute the <strong>critical path</strong> &mdash; the longest
-            dependency chain from root to the deepest leaf. This is the chain that determines total
-            build time. Highlight it so users see their bottleneck immediately.
+            With the real DAG, we can compute the
+            <strong>critical path</strong> &mdash; the longest dependency chain
+            from root to the deepest leaf. This is the chain that determines
+            total build time. Highlight it so users see their bottleneck
+            immediately.
           </p>
           <div class="dep-tree">
-            <span class="root">◈ Build</span> ├── <span class="ok">✔ Fetch 0.2s</span> ├──
-            <span class="warn">⏵ Compile 12.4s</span> <span class="novel">◆ critical</span> │ └──
-            <span class="warn">⏵ Link 8.1s</span> <span class="novel">◆ critical</span> │ └──
-            <span class="faint">○ Package</span> <span class="novel">◆ critical</span> └──
+            <span class="root">◈ Build</span> ├──
+            <span class="ok">✔ Fetch 0.2s</span> ├──
+            <span class="warn">⏵ Compile 12.4s</span>
+            <span class="novel">◆ critical</span> │ └──
+            <span class="warn">⏵ Link 8.1s</span>
+            <span class="novel">◆ critical</span> │ └──
+            <span class="faint">○ Package</span>
+            <span class="novel">◆ critical</span> └──
             <span class="ok">✔ Lint 1.1s</span>
           </div>
           <p>
             The critical path (Compile → Link → Package) gets a subtle
-            <code>◆ critical</code> marker. The user instantly sees: "if I want to speed up the
-            build, I need to optimize Compile or Link. Lint is irrelevant."
+            <code>◆ critical</code> marker. The user instantly sees: "if I want
+            to speed up the build, I need to optimize Compile or Link. Lint is
+            irrelevant."
           </p>
 
           <h4>Why this matters</h4>
           <p>
-            nom shows you what's running. It can't tell you <em>what matters</em>. In a 20-step
-            pipeline with 3 parallel branches, only one branch is the bottleneck. Critical-path
-            highlighting surfaces that without the user having to trace dependencies manually.
+            nom shows you what's running. It can't tell you
+            <em>what matters</em>. In a 20-step pipeline with 3 parallel
+            branches, only one branch is the bottleneck. Critical-path
+            highlighting surfaces that without the user having to trace
+            dependencies manually.
           </p>
 
           <h4>Implementation</h4>
           <ul>
             <li>
-              <code>dt.CriticalPath() []ActivityID</code> &mdash; longest path through the DAG by
-              estimated time
+              <code>dt.CriticalPath() []ActivityID</code> &mdash; longest path
+              through the DAG by estimated time
             </li>
             <li>
-              Uses timing cache data (<code>snap.EstimatedTime</code>) + elapsed for running nodes
+              Uses timing cache data (<code>snap.EstimatedTime</code>) + elapsed
+              for running nodes
             </li>
             <li>
-              Renderer adds <code>◆</code> marker (or bold styling) to nodes on the critical path
+              Renderer adds <code>◆</code> marker (or bold styling) to nodes on
+              the critical path
             </li>
             <li>Summary bar shows <code>"critical path: ~4m 30s"</code></li>
           </ul>
 
           <div class="callout callout-innovation">
             <strong>Verdict:</strong>
-            Low effort, high impact. The DAG + timing cache already have the data. Just compute +
-            render.
+            Low effort, high impact. The DAG + timing cache already have the
+            data. Just compute + render.
           </div>
         </div>
 
         <!-- ================================================================== -->
 
-        <h2 id="blockage"><span class="num">03</span>Blockage / Waiting View</h2>
+        <h2 id="blockage">
+          <span class="num">03</span>Blockage / Waiting View
+        </h2>
         <p>
-          <span class="badge badge-novel">Novel</span> <span class="badge badge-high">Tier 1</span>
+          <span class="badge badge-novel">Novel</span>
+          <span class="badge badge-high">Tier 1</span>
           <span class="badge badge-medium">Medium Effort</span>
         </p>
 
         <div class="card card-innovation">
           <h4>The Idea</h4>
           <p>
-            When a node is pending (blocked), show <em>why</em> it's blocked and <em>how close</em>
-            its blockers are to completing. This is the "why isn't this starting?" question that nom
-            completely ignores.
+            When a node is pending (blocked), show <em>why</em> it's blocked and
+            <em>how close</em>
+            its blockers are to completing. This is the "why isn't this
+            starting?" question that nom completely ignores.
           </p>
           <div class="dep-tree">
             <span class="root">◈ Build</span> ├──
             <span class="warn">⏵ Compile 45% (4.2s / ~9.3s)</span> ├──
-            <span class="ok">✔ Lint 1.1s</span> └── <span class="faint">○ Test</span>
-            <span class="faint">└ blocked: Compile (45%), Package (not started)</span>
+            <span class="ok">✔ Lint 1.1s</span> └──
+            <span class="faint">○ Test</span>
+            <span class="faint"
+              >└ blocked: Compile (45%), Package (not started)</span
+            >
           </div>
           <p>
-            Test isn't just "pending" &mdash; it's specifically blocked on Compile (45% done) and
-            Package (hasn't started). The user can see exactly what needs to happen before Test can
-            run.
+            Test isn't just "pending" &mdash; it's specifically blocked on
+            Compile (45% done) and Package (hasn't started). The user can see
+            exactly what needs to happen before Test can run.
           </p>
 
           <h4>Why nom can't do this</h4>
           <p>
-            nom's deduplication means a pending derivation may appear under a parent that isn't its
-            real blocker. With the full DAG (<code>node.Deps</code>), we can check every
-            dependency's status and report which ones are still incomplete.
+            nom's deduplication means a pending derivation may appear under a
+            parent that isn't its real blocker. With the full DAG
+            (<code>node.Deps</code>), we can check every dependency's status and
+            report which ones are still incomplete.
           </p>
 
           <h4>Implementation</h4>
           <ul>
             <li>
-              For each pending node, iterate <code>node.Deps</code> and check each dep's snapshot
-              status
+              For each pending node, iterate <code>node.Deps</code> and check
+              each dep's snapshot status
             </li>
-            <li>If any dep is not completed/failed, show the blockage reason</li>
-            <li>For running deps, show progress percentage or elapsed/estimated</li>
+            <li>
+              If any dep is not completed/failed, show the blockage reason
+            </li>
+            <li>
+              For running deps, show progress percentage or elapsed/estimated
+            </li>
             <li>For pending deps, show "not started"</li>
             <li>
-              Render as a dim sub-line beneath the pending node (same pattern as Progress/ExtraDeps)
+              Render as a dim sub-line beneath the pending node (same pattern as
+              Progress/ExtraDeps)
             </li>
           </ul>
 
           <div class="callout callout-innovation">
             <strong>Verdict:</strong>
-            Medium effort, very high UX impact. This answers the #1 question users have during a
-            build: "why isn't this step running yet?"
+            Medium effort, very high UX impact. This answers the #1 question
+            users have during a build: "why isn't this step running yet?"
           </div>
         </div>
 
@@ -750,27 +843,37 @@
         <div class="card">
           <h4>The Idea</h4>
           <p>
-            Show how many activities are running in parallel right now vs. how many
-            <em>could</em> be running. This tells the user whether their pipeline is CPU-bound
-            (everything is running) or dependency-bound (waiting for a bottleneck).
+            Show how many activities are running in parallel right now vs. how
+            many
+            <em>could</em> be running. This tells the user whether their
+            pipeline is CPU-bound (everything is running) or dependency-bound
+            (waiting for a bottleneck).
           </p>
           <div class="dep-tree">
             <span class="separator">╭───────────────────────────────────╮</span>
             <span class="separator">│</span> <span class="warn">⏵3</span>
             <span class="faint">○5</span> <span class="ok">✔2</span>
-            <span class="novel">parallel: 3/4 possible</span> <span class="separator">│</span>
+            <span class="novel">parallel: 3/4 possible</span>
+            <span class="separator">│</span>
             <span class="separator">╰───────────────────────────────────╯</span>
           </div>
           <p>
-            "3/4 possible" means 3 tasks are running but 4 could be &mdash; one slot is idle because
-            the next task is blocked. This is a single-line addition to the summary bar.
+            "3/4 possible" means 3 tasks are running but 4 could be &mdash; one
+            slot is idle because the next task is blocked. This is a single-line
+            addition to the summary bar.
           </p>
 
           <h4>Implementation</h4>
           <ul>
             <li>Count running activities = currently parallel</li>
-            <li>Count pending activities whose deps are ALL complete = could-be-parallel</li>
-            <li>running + could-be-parallel = max possible parallelism at this moment</li>
+            <li>
+              Count pending activities whose deps are ALL complete =
+              could-be-parallel
+            </li>
+            <li>
+              running + could-be-parallel = max possible parallelism at this
+              moment
+            </li>
           </ul>
         </div>
 
@@ -786,47 +889,63 @@
         <div class="card">
           <h4>The Idea</h4>
           <p>
-            nom's ETA sums all estimated times. This is wrong for parallel DAGs &mdash; 5 parallel
-            10-second tasks take 10 seconds, not 50. go-output can compute the
-            <strong>true remaining time</strong> by finding the longest path through the remaining
-            work.
+            nom's ETA sums all estimated times. This is wrong for parallel DAGs
+            &mdash; 5 parallel 10-second tasks take 10 seconds, not 50.
+            go-output can compute the
+            <strong>true remaining time</strong> by finding the longest path
+            through the remaining work.
           </p>
           <div class="dep-tree">
-            <span class="separator">╭─────────────────────────────────────────╮</span>
+            <span class="separator"
+              >╭─────────────────────────────────────────╮</span
+            >
             <span class="separator">│</span> <span class="warn">⏵2</span>
             <span class="faint">○4</span> <span class="ok">✔3</span>
-            <span class="faint">~2m 15s left (critical path)</span> <span class="separator">│</span>
-            <span class="separator">╰─────────────────────────────────────────╯</span>
+            <span class="faint">~2m 15s left (critical path)</span>
+            <span class="separator">│</span>
+            <span class="separator"
+              >╰─────────────────────────────────────────╯</span
+            >
           </div>
           <p>
-            Instead of summing all remaining estimates, walk the DAG from each root, taking the
-            <code>max</code> at each branch point. The result is the true minimum remaining time
-            given perfect parallelism.
+            Instead of summing all remaining estimates, walk the DAG from each
+            root, taking the
+            <code>max</code> at each branch point. The result is the true
+            minimum remaining time given perfect parallelism.
           </p>
 
           <h4>Implementation</h4>
           <ul>
-            <li><code>EstimatedTotalRemaining()</code> already exists but sums all activities</li>
             <li>
-              Add <code>EstimatedCriticalPathRemaining()</code> that walks the DAG taking max at
-              branches
+              <code>EstimatedTotalRemaining()</code> already exists but sums all
+              activities
+            </li>
+            <li>
+              Add <code>EstimatedCriticalPathRemaining()</code> that walks the
+              DAG taking max at branches
             </li>
             <li>For running nodes: <code>max(0, estimated - elapsed)</code></li>
             <li>For pending nodes: full <code>estimated</code></li>
-            <li>Summary bar shows the critical-path estimate instead of (or alongside) the sum</li>
+            <li>
+              Summary bar shows the critical-path estimate instead of (or
+              alongside) the sum
+            </li>
           </ul>
 
           <div class="callout">
             <strong>Note:</strong>
-            The existing <code>EstimatedTotalRemaining</code> in <code>nom_subscriber.go</code>
-            already has per-activity remaining logic. The DAG version adds the max-at-branch
-            computation.
+            The existing <code>EstimatedTotalRemaining</code> in
+            <code>nom_subscriber.go</code>
+            already has per-activity remaining logic. The DAG version adds the
+            max-at-branch computation.
           </div>
         </div>
 
         <!-- ================================================================== -->
 
-        <h2 id="convergence"><span class="num">06</span>Convergence Markers (Fan-in Detection)</h2>
+        <h2 id="convergence">
+          <span class="num">06</span>Convergence Markers (Fan-in Detection)
+        </h2>
         <p>
           <span class="badge badge-novel">Novel</span>
           <span class="badge badge-medium">Tier 2</span>
@@ -836,36 +955,47 @@
         <div class="card">
           <h4>The Idea</h4>
           <p>
-            Detect "convergence points" &mdash; nodes with 2+ dependencies where parallel branches
-            merge back together. These are the places where one slow branch blocks everything. Mark
-            them so the user knows "this is where the pipeline narrows."
+            Detect "convergence points" &mdash; nodes with 2+ dependencies where
+            parallel branches merge back together. These are the places where
+            one slow branch blocks everything. Mark them so the user knows "this
+            is where the pipeline narrows."
           </p>
           <div class="dep-tree">
-            <span class="root">◈ Build</span> ├── <span class="ok">✔ Fetch</span> ├──
+            <span class="root">◈ Build</span> ├──
+            <span class="ok">✔ Fetch</span> ├──
             <span class="warn">⏵ Compile</span> ─────────────┐ ├──
             <span class="ok">✔ Lint</span> ──────────────────┐ │ └──
-            <span class="faint">○ Test</span> <span class="novel">◆ converge (2 deps)</span>
-            <span class="separator">←</span> <span class="separator">waits for both</span>
+            <span class="faint">○ Test</span>
+            <span class="novel">◆ converge (2 deps)</span>
+            <span class="separator">←</span>
+            <span class="separator">waits for both</span>
           </div>
           <p>
             The <code>◆ converge</code> marker appears on any node with
-            <code>len(node.Deps) &gt; 1</code>. It tells the user: "this node is a bottleneck point
-            &mdash; it can't start until ALL its dependencies finish."
+            <code>len(node.Deps) &gt; 1</code>. It tells the user: "this node is
+            a bottleneck point &mdash; it can't start until ALL its dependencies
+            finish."
           </p>
 
           <h4>Implementation</h4>
           <ul>
             <li>
-              Already have <code>ExtraDeps()</code> which returns deps beyond the display parent
+              Already have <code>ExtraDeps()</code> which returns deps beyond
+              the display parent
             </li>
-            <li>If <code>len(node.Deps) &gt; 1</code>, render <code>◆</code> marker</li>
+            <li>
+              If <code>len(node.Deps) &gt; 1</code>, render
+              <code>◆</code> marker
+            </li>
             <li>Works in both tree mode and layered mode</li>
           </ul>
         </div>
 
         <!-- ================================================================== -->
 
-        <h2 id="compact"><span class="num">07</span>Compact DAG Summary Line</h2>
+        <h2 id="compact">
+          <span class="num">07</span>Compact DAG Summary Line
+        </h2>
         <p>
           <span class="badge badge-novel">Novel</span>
           <span class="badge badge-medium">Tier 2</span>
@@ -875,16 +1005,19 @@
         <div class="card">
           <h4>The Idea</h4>
           <p>
-            A single-line topology summary at the top of the display, giving at-a-glance DAG shape
-            understanding:
+            A single-line topology summary at the top of the display, giving
+            at-a-glance DAG shape understanding:
           </p>
           <div class="dep-tree">
-            <span class="novel">DAG: 7 nodes, 9 edges, 4 layers, critical path: ~4m 30s</span>
+            <span class="novel"
+              >DAG: 7 nodes, 9 edges, 4 layers, critical path: ~4m 30s</span
+            >
           </div>
           <p>Or in a more visual form:</p>
           <div class="dep-tree">
             <span class="novel"
-              >DAG ▸ 4 layers ▸ 7 nodes ▸ widest: 3 parallel ▸ critical: Compile→Link→Package</span
+              >DAG ▸ 4 layers ▸ 7 nodes ▸ widest: 3 parallel ▸ critical:
+              Compile→Link→Package</span
             >
           </div>
 
@@ -902,15 +1035,17 @@
 
         <h2 id="filter"><span class="num">08</span>Smart Layer Filtering</h2>
         <p>
-          <span class="badge badge-novel">Novel</span> <span class="badge badge-low">Tier 3</span>
+          <span class="badge badge-novel">Novel</span>
+          <span class="badge badge-low">Tier 3</span>
           <span class="badge badge-medium">Medium Effort</span>
         </p>
 
         <div class="card">
           <h4>The Idea</h4>
           <p>
-            For large DAGs (50+ nodes), show only the layers with active work. Completed layers
-            collapse to a summary; pending layers that aren't next are hidden.
+            For large DAGs (50+ nodes), show only the layers with active work.
+            Completed layers collapse to a summary; pending layers that aren't
+            next are hidden.
           </p>
           <div class="dep-tree">
             <span class="ok">✔ Layer 0: Build (done)</span>
@@ -922,72 +1057,96 @@
             <span class="faint">⋯ 2 more layers (Test, Deploy)</span>
           </div>
           <p>
-            This combines the layered view with the existing height-pressure collapse, but collapsed
-            at the <em>layer</em> level instead of the node level. "Layer 0 and 1 are done, here's
-            the detail for the active layer, and there are 2 more layers after this."
+            This combines the layered view with the existing height-pressure
+            collapse, but collapsed at the <em>layer</em> level instead of the
+            node level. "Layer 0 and 1 are done, here's the detail for the
+            active layer, and there are 2 more layers after this."
           </p>
         </div>
 
         <!-- ================================================================== -->
 
-        <h2 id="priority"><span class="num">09</span>Critical-Path-Aware Rendering Priority</h2>
+        <h2 id="priority">
+          <span class="num">09</span>Critical-Path-Aware Rendering Priority
+        </h2>
         <p>
-          <span class="badge badge-novel">Novel</span> <span class="badge badge-low">Tier 3</span>
+          <span class="badge badge-novel">Novel</span>
+          <span class="badge badge-low">Tier 3</span>
           <span class="badge badge-medium">Medium Effort</span>
         </p>
 
         <div class="card">
           <h4>The Idea</h4>
           <p>
-            When height pressure forces the renderer to drop nodes, keep critical-path nodes visible
-            and deprioritize nodes that aren't on any critical path. nom's priority sort is by
-            interest (failed &gt; running &gt; completed). We add a second dimension: critical-path
+            When height pressure forces the renderer to drop nodes, keep
+            critical-path nodes visible and deprioritize nodes that aren't on
+            any critical path. nom's priority sort is by interest (failed &gt;
+            running &gt; completed). We add a second dimension: critical-path
             nodes get a priority boost.
           </p>
           <p>
-            In a 30-node DAG with height limit 10, this means the user always sees the bottleneck
-            chain, not random leaf nodes that happen to sort first.
+            In a 30-node DAG with height limit 10, this means the user always
+            sees the bottleneck chain, not random leaf nodes that happen to sort
+            first.
           </p>
 
           <h4>Implementation</h4>
           <ul>
             <li>Compute critical path set (idea #2)</li>
             <li>
-              In <code>sortKeyForNode()</code> (<code>tree_priority.go</code>), add a
-              <code>onCriticalPath bool</code> field
+              In <code>sortKeyForNode()</code> (<code>tree_priority.go</code>),
+              add a <code>onCriticalPath bool</code> field
             </li>
-            <li>Critical-path nodes sort before non-critical nodes at the same interest level</li>
+            <li>
+              Critical-path nodes sort before non-critical nodes at the same
+              interest level
+            </li>
           </ul>
         </div>
 
         <!-- ================================================================== -->
 
-        <h2 id="interactive"><span class="num">10</span>Interactive DAG View (TUI)</h2>
+        <h2 id="interactive">
+          <span class="num">10</span>Interactive DAG View (TUI)
+        </h2>
         <p>
-          <span class="badge badge-novel">Novel</span> <span class="badge badge-low">Tier 3</span>
+          <span class="badge badge-novel">Novel</span>
+          <span class="badge badge-low">Tier 3</span>
           <span class="badge badge-critical">High Effort</span>
         </p>
 
         <div class="card">
           <h4>The Idea</h4>
-          <p>In the TUI, let the user toggle between rendering modes with a keypress:</p>
+          <p>
+            In the TUI, let the user toggle between rendering modes with a
+            keypress:
+          </p>
           <ul>
-            <li><code>T</code> &mdash; Tree mode (current default, Option A)</li>
+            <li>
+              <code>T</code> &mdash; Tree mode (current default, Option A)
+            </li>
             <li><code>L</code> &mdash; Layered mode (idea #1)</li>
-            <li><code>C</code> &mdash; Critical path view (shows only the critical chain)</li>
-            <li><code>D</code> &mdash; DOT export (writes the DAG as a .dot file)</li>
+            <li>
+              <code>C</code> &mdash; Critical path view (shows only the critical
+              chain)
+            </li>
+            <li>
+              <code>D</code> &mdash; DOT export (writes the DAG as a .dot file)
+            </li>
           </ul>
           <p>
-            The TUI already has <code>DisplayMode</code> (NOM vs Universal). Adding a render-mode
-            toggle within NOM mode gives the user agency over how they consume the DAG.
+            The TUI already has <code>DisplayMode</code> (NOM vs Universal).
+            Adding a render-mode toggle within NOM mode gives the user agency
+            over how they consume the DAG.
           </p>
 
           <h4>Why this is Tier 3</h4>
           <p>
-            Each view mode needs its own scroll logic, entry type, and rendering path. The TUI
-            already has two modes (NOM + Universal) with separate scroll implementations. Adding
-            layered mode means a third. This is worth doing but should come after the core layered
-            renderer is proven in the InlineRenderer first.
+            Each view mode needs its own scroll logic, entry type, and rendering
+            path. The TUI already has two modes (NOM + Universal) with separate
+            scroll implementations. Adding layered mode means a third. This is
+            worth doing but should come after the core layered renderer is
+            proven in the InlineRenderer first.
           </p>
         </div>
 
@@ -997,26 +1156,30 @@
           <span class="num">11</span>Open Status Registry (User-Defined States)
         </h2>
         <p>
-          <span class="badge badge-novel">Novel</span> <span class="badge badge-high">Tier 1</span>
+          <span class="badge badge-novel">Novel</span>
+          <span class="badge badge-high">Tier 1</span>
           <span class="badge badge-medium">Medium Effort</span>
         </p>
 
         <div class="card card-innovation">
           <h4>The Problem</h4>
           <p>
-            <code>ActivityStatus</code> is a closed <code>iota</code> enum with exactly 4 values
-            (<code>activity_status.go:18</code>). A CI pipeline that wants <strong>Skipped</strong>,
-            <strong>Cached</strong>, <strong>Unstable</strong>, <strong>Warning</strong>, or
-            <strong>Cancelled</strong> has nowhere to put them. They collapse into one of the four,
-            losing semantic information. Every consumer of this library for non-Nix use cases hits
-            this wall.
+            <code>ActivityStatus</code> is a closed <code>iota</code> enum with
+            exactly 4 values (<code>activity_status.go:18</code>). A CI pipeline
+            that wants <strong>Skipped</strong>, <strong>Cached</strong>,
+            <strong>Unstable</strong>, <strong>Warning</strong>, or
+            <strong>Cancelled</strong> has nowhere to put them. They collapse
+            into one of the four, losing semantic information. Every consumer of
+            this library for non-Nix use cases hits this wall.
           </p>
 
           <h4>The Idea</h4>
           <p>
-            Replace the closed enum with a <strong>registration-based system</strong>. Core states
-            are pre-registered at <code>init()</code> time; users add their own at runtime. The
-            registry maps <code>int → StatusDef{Name, Symbol, Color, Interest, Shape}</code>.
+            Replace the closed enum with a
+            <strong>registration-based system</strong>. Core states are
+            pre-registered at <code>init()</code> time; users add their own at
+            runtime. The registry maps
+            <code>int → StatusDef{Name, Symbol, Color, Interest, Shape}</code>.
           </p>
 
           <pre><code><span class="tok-comment">// Pre-registered — backward compatible (IDs 0-3)</span>
@@ -1030,16 +1193,18 @@
 <span class="tok-keyword">var</span> ActivityStatusCancelled = RegisterStatus(<span class="tok-string">"cancelled"</span>, <span class="tok-string">"✕"</span>, lipgloss.Color(<span class="tok-string">"9"</span>))</code></pre>
 
           <p>
-            Rendering looks up the def by status ID at render time. <code>Interest()</code> (sort
-            priority) becomes user-configurable &mdash; a "warning" state can sort between running
-            and failed.
+            Rendering looks up the def by status ID at render time.
+            <code>Interest()</code> (sort priority) becomes user-configurable
+            &mdash; a "warning" state can sort between running and failed.
           </p>
 
           <div class="dep-tree">
-            <span class="root">◈ CI Pipeline</span> ├── <span class="faint">⊘ Skipped Step</span>
+            <span class="root">◈ CI Pipeline</span> ├──
+            <span class="faint">⊘ Skipped Step</span>
             <span class="separator">← user-defined "skipped"</span> ├──
             <span class="ok">▤ Cached Build 0.0s</span>
-            <span class="separator">← user-defined "cached" (from cache)</span> ├──
+            <span class="separator">← user-defined "cached" (from cache)</span>
+            ├──
             <span class="warn">⏵ Test Suite 12.3s</span>
             <span class="separator">← standard running</span> ├──
             <span class="warn">▲ Lint (warnings) 2.1s</span>
@@ -1051,62 +1216,71 @@
           <h4>Key Design Decisions</h4>
           <ul>
             <li>
-              <code>ActivityStatus</code> stays <code>int</code> &mdash; backward compatible,
-              comparable, usable as map key
-            </li>
-            <li>Core constants keep working (they're just pre-registered IDs 0-3)</li>
-            <li><code>AllActivityStatuses</code> becomes dynamic (returns registry entries)</li>
-            <li>
-              <code>ParseActivityStatus</code> / <code>IsValid</code> check the registry, not a
-              hardcoded list
+              <code>ActivityStatus</code> stays <code>int</code> &mdash;
+              backward compatible, comparable, usable as map key
             </li>
             <li>
-              <code>ActivitySnapshot</code> carries the <code>ActivityStatus</code> int; renderers
-              resolve via registry
+              Core constants keep working (they're just pre-registered IDs 0-3)
+            </li>
+            <li>
+              <code>AllActivityStatuses</code> becomes dynamic (returns registry
+              entries)
+            </li>
+            <li>
+              <code>ParseActivityStatus</code> / <code>IsValid</code> check the
+              registry, not a hardcoded list
+            </li>
+            <li>
+              <code>ActivitySnapshot</code> carries the
+              <code>ActivityStatus</code> int; renderers resolve via registry
             </li>
             <li>Thread-safe via <code>sync.RWMutex</code> on the registry</li>
           </ul>
 
           <h4>Why nom can't do this</h4>
           <p>
-            nom's states are baked into Haskell's type system &mdash; adding a new state means
-            modifying the library and recompiling. go-output's runtime registry lets consumers
-            extend without forking.
+            nom's states are baked into Haskell's type system &mdash; adding a
+            new state means modifying the library and recompiling. go-output's
+            runtime registry lets consumers extend without forking.
           </p>
 
           <div class="callout callout-innovation">
             <strong>Verdict:</strong>
-            Highest user impact of all 13 ideas. Unblocks entire use cases (CI with
-            skipped/cached/warning states). The registration API is small; the hard part is auditing
-            every <code>switch</code> on <code>ActivityStatus</code> to use the registry instead of
-            hardcoded cases.
+            Highest user impact of all 13 ideas. Unblocks entire use cases (CI
+            with skipped/cached/warning states). The registration API is small;
+            the hard part is auditing every <code>switch</code> on
+            <code>ActivityStatus</code> to use the registry instead of hardcoded
+            cases.
           </div>
         </div>
 
         <!-- ================================================================== -->
 
         <h2 id="theme-system">
-          <span class="num">12</span>Theme System (Configurable Colors + Symbols)
+          <span class="num">12</span>Theme System (Configurable Colors +
+          Symbols)
         </h2>
         <p>
-          <span class="badge badge-novel">Novel</span> <span class="badge badge-high">Tier 1</span>
+          <span class="badge badge-novel">Novel</span>
+          <span class="badge badge-high">Tier 1</span>
           <span class="badge badge-medium">Medium Effort</span>
         </p>
 
         <div class="card card-innovation">
           <h4>The Problem</h4>
           <p>
-            <code>Colors</code> (<code>symbols.go:69</code>) is a hardcoded package-level global
-            with no override mechanism. No <code>WithTheme()</code>, no <code>SetColors()</code>, no
-            config file. The TUI delegates to this global (<code>tui/colors.go:37-40</code>), so
-            it's equally locked. If you want blue for running instead of yellow, you fork the
-            library.
+            <code>Colors</code> (<code>symbols.go:69</code>) is a hardcoded
+            package-level global with no override mechanism. No
+            <code>WithTheme()</code>, no <code>SetColors()</code>, no config
+            file. The TUI delegates to this global
+            (<code>tui/colors.go:37-40</code>), so it's equally locked. If you
+            want blue for running instead of yellow, you fork the library.
           </p>
 
           <h4>The Idea</h4>
           <p>
-            Make the <code>Colors</code> global injectable via subscriber options, with preset
-            themes and terminal-background auto-detection.
+            Make the <code>Colors</code> global injectable via subscriber
+            options, with preset themes and terminal-background auto-detection.
           </p>
 
           <pre><code><span class="tok-comment">// Option 1: Preset themes</span>
@@ -1129,9 +1303,11 @@ sub := nom.NewNOMStyleSubscriber(nom.WithAutoTheme())</code></pre>
     Symbols SemanticSymbols   <span class="tok-comment">// status → glyph mapping</span>
 }</code></pre>
           <p>
-            The <code>Colors</code> global becomes the <strong>default</strong> theme, used when no
-            <code>WithTheme</code> is passed. The TUI reads from the subscriber's theme instead of
-            importing <code>nom.Colors</code> directly. One source of truth, configurable.
+            The <code>Colors</code> global becomes the
+            <strong>default</strong> theme, used when no
+            <code>WithTheme</code> is passed. The TUI reads from the
+            subscriber's theme instead of importing
+            <code>nom.Colors</code> directly. One source of truth, configurable.
           </p>
 
           <h4>Preset Themes</h4>
@@ -1194,34 +1370,43 @@ sub := nom.NewNOMStyleSubscriber(nom.WithAutoTheme())</code></pre>
 
           <h4>Auto-Detection</h4>
           <p>
-            Query the terminal via <strong>OSC 11</strong> (background color query) &mdash; if the
-            background is dark, use a dark theme; if light, use a light theme. This is what
-            <code>ls</code> and <code>bat</code> do. The <code>x/term</code> package already in the
+            Query the terminal via <strong>OSC 11</strong> (background color
+            query) &mdash; if the background is dark, use a dark theme; if
+            light, use a light theme. This is what <code>ls</code> and
+            <code>bat</code> do. The <code>x/term</code> package already in the
             dependency tree can probe this.
           </p>
 
           <h4>Implementation</h4>
           <ul>
             <li>
-              <code>WithTheme(theme Theme) SubscriberOption</code> &mdash; stores on subscriber
-            </li>
-            <li>Renderers read theme from subscriber/config snapshot, not the global</li>
-            <li>
-              TUI delegates: <code>tui/colors.go</code> reads from <code>nom.Theme</code> on the
-              subscriber
+              <code>WithTheme(theme Theme) SubscriberOption</code> &mdash;
+              stores on subscriber
             </li>
             <li>
-              <code>WithAutoTheme()</code> probes <code>OSC 11</code> at startup, selects light or
-              dark preset
+              Renderers read theme from subscriber/config snapshot, not the
+              global
             </li>
-            <li>Existing global <code>Colors</code> becomes the fallback when no theme is set</li>
+            <li>
+              TUI delegates: <code>tui/colors.go</code> reads from
+              <code>nom.Theme</code> on the subscriber
+            </li>
+            <li>
+              <code>WithAutoTheme()</code> probes <code>OSC 11</code> at
+              startup, selects light or dark preset
+            </li>
+            <li>
+              Existing global <code>Colors</code> becomes the fallback when no
+              theme is set
+            </li>
           </ul>
 
           <div class="callout callout-innovation">
             <strong>Verdict:</strong>
-            Table stakes for a library that wants adoption. Every successful CLI tool has theme
-            support. Medium effort because every renderer reads <code>Colors.*</code> &mdash; all
-            need to route through the theme. But the change is mechanical, not architectural.
+            Table stakes for a library that wants adoption. Every successful CLI
+            tool has theme support. Medium effort because every renderer reads
+            <code>Colors.*</code> &mdash; all need to route through the theme.
+            But the change is mechanical, not architectural.
           </div>
         </div>
 
@@ -1239,24 +1424,27 @@ sub := nom.NewNOMStyleSubscriber(nom.WithAutoTheme())</code></pre>
         <div class="card card-innovation">
           <h4>The Problem</h4>
           <p>
-            Currently status is the <em>only</em> visual dimension. A node is green (completed),
-            yellow (running), gray (pending), or red (failed). In a 20-node pipeline, all completed
-            nodes look identical &mdash; you can't visually distinguish "build" tasks from "test"
+            Currently status is the <em>only</em> visual dimension. A node is
+            green (completed), yellow (running), gray (pending), or red
+            (failed). In a 20-node pipeline, all completed nodes look identical
+            &mdash; you can't visually distinguish "build" tasks from "test"
             tasks from "deploy" tasks at a glance.
           </p>
 
           <h4>The Idea</h4>
           <p>
-            Status and category are <strong>independent axes</strong>. Status determines the symbol
-            + primary color (as today). Category provides a
-            <strong>secondary visual dimension</strong> &mdash; a subtle tag prefix or background
-            tint. The eye can scan vertically and see "all build tasks are green-ish, all test tasks
-            are blue-ish" regardless of their status.
+            Status and category are <strong>independent axes</strong>. Status
+            determines the symbol + primary color (as today). Category provides
+            a <strong>secondary visual dimension</strong> &mdash; a subtle tag
+            prefix or background tint. The eye can scan vertically and see "all
+            build tasks are green-ish, all test tasks are blue-ish" regardless
+            of their status.
           </p>
 
           <div class="dep-tree">
-            <span class="root">◈ Pipeline</span> ├── <span class="warn">⏵ [build]</span> Compile
-            4.2s <span class="separator">← green-tinted (build category)</span> ├──
+            <span class="root">◈ Pipeline</span> ├──
+            <span class="warn">⏵ [build]</span> Compile 4.2s
+            <span class="separator">← green-tinted (build category)</span> ├──
             <span class="warn">⏵ [test]</span> Unit Tests 8.1s
             <span class="separator">← blue-tinted (test category)</span> ├──
             <span class="ok">✔ [build]</span> Lint 1.1s
@@ -1278,52 +1466,63 @@ Category ActivityCategory
     CategoryColors <span class="tok-keyword">map</span>[ActivityCategory]color.Color
 }</code></pre>
           <p>
-            The renderer applies the <strong>status color</strong> to the symbol, and the
-            <strong>category color</strong> to a <code>[tag]</code> prefix or a faint background
-            tint. Empty category = no tint (backward compatible).
+            The renderer applies the <strong>status color</strong> to the
+            symbol, and the <strong>category color</strong> to a
+            <code>[tag]</code> prefix or a faint background tint. Empty category
+            = no tint (backward compatible).
           </p>
 
           <h4>Why nom can't do this</h4>
           <p>
-            nom has no category concept &mdash; every derivation looks the same. A Nix derivation is
-            just a build; there's no "test" vs "deploy" distinction in the derivation model.
-            go-output's general-purpose activities can carry arbitrary metadata, making category
-            tagging natural.
+            nom has no category concept &mdash; every derivation looks the same.
+            A Nix derivation is just a build; there's no "test" vs "deploy"
+            distinction in the derivation model. go-output's general-purpose
+            activities can carry arbitrary metadata, making category tagging
+            natural.
           </p>
 
           <h4>Implementation</h4>
           <ul>
             <li>
-              Add <code>Category ActivityCategory</code> to <code>Activity</code> and
+              Add <code>Category ActivityCategory</code> to
+              <code>Activity</code> and
               <code>ActivitySnapshot</code>
             </li>
             <li><code>SetCategory(id, cat)</code> accessor on subscriber</li>
             <li>
-              Renderer: if category is set and has a tint color, render <code>[tag]</code> prefix
-            </li>
-            <li>Theme: <code>CategoryColors map[ActivityCategory]color.Color</code></li>
-            <li>
-              Optional: <code>CategoryBackground bool</code> &mdash; use tint as background instead
-              of prefix
+              Renderer: if category is set and has a tint color, render
+              <code>[tag]</code> prefix
             </li>
             <li>
-              Category can be inferred from phase membership (children of "Tests" phase get
+              Theme:
+              <code>CategoryColors map[ActivityCategory]color.Color</code>
+            </li>
+            <li>
+              Optional: <code>CategoryBackground bool</code> &mdash; use tint as
+              background instead of prefix
+            </li>
+            <li>
+              Category can be inferred from phase membership (children of
+              "Tests" phase get
               <code>"test"</code> category)
             </li>
           </ul>
 
           <h4>Advanced: Category-Based Collapse</h4>
           <p>
-            With categories, the height-pressure collapse becomes smarter &mdash; instead of
-            collapsing by phase, collapse by category. "All 6 build tasks passed" can become a
-            single summary line regardless of tree structure.
+            With categories, the height-pressure collapse becomes smarter
+            &mdash; instead of collapsing by phase, collapse by category. "All 6
+            build tasks passed" can become a single summary line regardless of
+            tree structure.
           </p>
 
           <div class="callout callout-innovation">
             <strong>Verdict:</strong>
-            The differentiator that nom can't copy. Medium effort &mdash; needs a new field on
-            <code>Activity</code>/<code>ActivitySnapshot</code>, a renderer change, and theme
-            support (depends on idea #12). But the visual impact is immediate and striking.
+            The differentiator that nom can't copy. Medium effort &mdash; needs
+            a new field on
+            <code>Activity</code>/<code>ActivitySnapshot</code>, a renderer
+            change, and theme support (depends on idea #12). But the visual
+            impact is immediate and striking.
           </div>
         </div>
 
@@ -1460,28 +1659,31 @@ Category ActivityCategory
           <h4>Phase 1: Foundation (Tier 1 &mdash; the differentiators)</h4>
           <ol>
             <li>
-              <strong>Critical Path Highlighting (#2)</strong> &mdash; lowest effort, highest
-              insight-per-line. Compute the longest chain, mark it with <code>◆</code>. Adds
+              <strong>Critical Path Highlighting (#2)</strong> &mdash; lowest
+              effort, highest insight-per-line. Compute the longest chain, mark
+              it with <code>◆</code>. Adds
               <code>CriticalPath() []ActivityID</code> to the tree.
             </li>
             <li>
-              <strong>Blockage View (#3)</strong> &mdash; "why is this pending?" Uses
-              <code>node.Deps</code> to check each blocker's status. Pure rendering, no model
-              change.
+              <strong>Blockage View (#3)</strong> &mdash; "why is this pending?"
+              Uses <code>node.Deps</code> to check each blocker's status. Pure
+              rendering, no model change.
             </li>
             <li>
-              <strong>Open Status Registry (#11)</strong> &mdash; unblock CI use cases (skipped,
-              cached, warning states). Registration API replaces closed enum. Highest user impact.
+              <strong>Open Status Registry (#11)</strong> &mdash; unblock CI use
+              cases (skipped, cached, warning states). Registration API replaces
+              closed enum. Highest user impact.
             </li>
             <li>
-              <strong>Theme System (#12)</strong> &mdash; <code>WithTheme()</code> + presets. Table
-              stakes for adoption. Mechanical change to route all <code>Colors.*</code> reads
-              through the theme.
+              <strong>Theme System (#12)</strong> &mdash;
+              <code>WithTheme()</code> + presets. Table stakes for adoption.
+              Mechanical change to route all <code>Colors.*</code> reads through
+              the theme.
             </li>
             <li>
-              <strong>Layered Display Mode (#1)</strong> &mdash; the flagship. New rendering path
-              using <code>node.Depth</code> grouping. Biggest effort in Tier 1 but the most visually
-              distinct from nom.
+              <strong>Layered Display Mode (#1)</strong> &mdash; the flagship.
+              New rendering path using <code>node.Depth</code> grouping. Biggest
+              effort in Tier 1 but the most visually distinct from nom.
             </li>
           </ol>
         </div>
@@ -1490,20 +1692,26 @@ Category ActivityCategory
           <h4>Phase 2: Richness (Tier 2 &mdash; depth features)</h4>
           <ol>
             <li>
-              <strong>Critical Path ETA (#5)</strong> &mdash; accurate remaining time via DAG walk.
-              Depends on #2.
+              <strong>Critical Path ETA (#5)</strong> &mdash; accurate remaining
+              time via DAG walk. Depends on #2.
             </li>
             <li>
-              <strong>Parallelism Meter (#4)</strong> &mdash; one-line addition to summary bar.
+              <strong>Parallelism Meter (#4)</strong> &mdash; one-line addition
+              to summary bar.
             </li>
             <li>
-              <strong>Convergence Markers (#6)</strong> &mdash; <code>◆</code> on fan-in nodes.
-              Trivial with <code>len(node.Deps)</code>.
+              <strong>Convergence Markers (#6)</strong> &mdash;
+              <code>◆</code> on fan-in nodes. Trivial with
+              <code>len(node.Deps)</code>.
             </li>
-            <li><strong>Compact DAG Summary (#7)</strong> &mdash; topology at a glance.</li>
             <li>
-              <strong>Category Tints (#13)</strong> &mdash; orthogonal color axis. Depends on #12
-              (Theme System). The visual differentiator nom can't copy.
+              <strong>Compact DAG Summary (#7)</strong> &mdash; topology at a
+              glance.
+            </li>
+            <li>
+              <strong>Category Tints (#13)</strong> &mdash; orthogonal color
+              axis. Depends on #12 (Theme System). The visual differentiator nom
+              can't copy.
             </li>
           </ol>
         </div>
@@ -1512,28 +1720,33 @@ Category ActivityCategory
           <h4>Phase 3: Polish (Tier 3 &mdash; scale and agency)</h4>
           <ol>
             <li>
-              <strong>Critical-Path Priority (#9)</strong> &mdash; keep bottleneck visible under
-              height pressure.
+              <strong>Critical-Path Priority (#9)</strong> &mdash; keep
+              bottleneck visible under height pressure.
             </li>
             <li>
-              <strong>Smart Layer Filtering (#8)</strong> &mdash; collapse completed/future layers.
+              <strong>Smart Layer Filtering (#8)</strong> &mdash; collapse
+              completed/future layers.
             </li>
-            <li><strong>Interactive DAG View (#10)</strong> &mdash; TUI key to toggle modes.</li>
+            <li>
+              <strong>Interactive DAG View (#10)</strong> &mdash; TUI key to
+              toggle modes.
+            </li>
           </ol>
         </div>
 
         <div class="callout callout-innovation">
           <strong>Key insight:</strong>
-          Ideas #2, #3, #4, #6, and #7 all require <em>zero new model changes</em> &mdash; they're
-          pure rendering additions that use the DAG data we already have. Ideas #11 and #12 are the
-          foundation for #13 (Category Tints) and unblock all non-Nix CI use cases. Only #1 (Layered
-          Mode) needs a new rendering path, and even that reuses <code>computeDepths()</code> which
-          already exists.
+          Ideas #2, #3, #4, #6, and #7 all require
+          <em>zero new model changes</em> &mdash; they're pure rendering
+          additions that use the DAG data we already have. Ideas #11 and #12 are
+          the foundation for #13 (Category Tints) and unblock all non-Nix CI use
+          cases. Only #1 (Layered Mode) needs a new rendering path, and even
+          that reuses <code>computeDepths()</code> which already exists.
         </div>
 
         <footer class="footer">
-          Generated 2026-07-02 03:03 &middot; 13 ideas for innovating beyond nom (DAG topology +
-          open states + themes + category tints)
+          Generated 2026-07-02 03:03 &middot; 13 ideas for innovating beyond nom
+          (DAG topology + open states + themes + category tints)
         </footer>
       </main>
     </div>
@@ -1573,7 +1786,5 @@ Category ActivityCategory
         });
       })();
     </script>
-
-    
   </body>
 </html>

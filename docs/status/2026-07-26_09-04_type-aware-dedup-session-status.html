@@ -65,14 +65,14 @@
 
         /* --- Type stacks (system only — zero external fonts) --- */
         --font-heading:
-          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          Helvetica, Arial, sans-serif;
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         --font-body:
-          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          Helvetica, Arial, sans-serif;
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         --font-mono:
-          ui-monospace, "Cascadia Code", "Source Code Pro", "JetBrains Mono", Menlo, Consolas,
-          monospace;
+          ui-monospace, "Cascadia Code", "Source Code Pro", "JetBrains Mono",
+          Menlo, Consolas, monospace;
       }
 
       * {
@@ -483,12 +483,20 @@
       .callout-teal,
       .callout-solution {
         border-left-color: var(--solution);
-        background: color-mix(in srgb, var(--solution) 10%, var(--surface-raised));
+        background: color-mix(
+          in srgb,
+          var(--solution) 10%,
+          var(--surface-raised)
+        );
       }
       .callout-amber,
       .callout-warning {
         border-left-color: var(--warning);
-        background: color-mix(in srgb, var(--warning) 18%, var(--surface-raised));
+        background: color-mix(
+          in srgb,
+          var(--warning) 18%,
+          var(--surface-raised)
+        );
       }
 
       /* --- Strengths --- */
@@ -840,25 +848,650 @@
     </style>
   </head>
   <body>
-    <div style="background:#1a1a2e;border-left:3px solid #50fa7b;padding:12px 16px;margin:16px 0;border-radius:4px;"><strong>✅ Resolved (2026-08-04):</strong> Session 1 of 3 in dedup arc. Superseded by 09:29 and 09:48 reports which drove count to 24 and closed all verification gates. Recursion bug fixed during session. All 19 groups classified. t=4 = 0 (production gate clean).</div>
+    <div
+      style="
+        background: #1a1a2e;
+        border-left: 3px solid #50fa7b;
+        padding: 12px 16px;
+        margin: 16px 0;
+        border-radius: 4px;
+      "
+    >
+      <strong>✅ Resolved (2026-08-04):</strong> Session 1 of 3 in dedup arc.
+      Superseded by 09:29 and 09:48 reports which drove count to 24 and closed
+      all verification gates. Recursion bug fixed during session. All 19 groups
+      classified. t=4 = 0 (production gate clean).
+    </div>
 
-<div class="top-bar"><span>ENGINEERING STATUS</span><span>2026-07-26 09:04 CEST</span><span>GO-OUTPUT / DEDUP SESSION</span></div>
-<div class="layout">
-<aside class="sidebar" data-nav><nav><div class="label">Contents</div><a href="#summary">Summary</a><a href="#done">Fully done</a><a href="#partial">Partially done</a><a href="#broken">Totally fucked up</a><a href="#improve">Improvements</a><a href="#next">Next 50</a><a href="#questions">Questions</a></nav></aside>
-<main class="main">
-<header class="hero"><div class="hero-shapes"><div class="bar"></div><div class="circle"></div><div class="square"></div><div class="tri"></div></div><div class="eyebrow">STATUS REPORT · 2026-07-26</div><h1>Type-aware deduplication session</h1><p class="subtitle">A candid snapshot of what changed, what was verified, what remains, and where this session fell short.</p><div class="meta"><span class="tag amber">Scope: current session only</span><span class="tag teal">Tests: passing</span><span class="tag">No commit or push</span></div></header>
-<section id="summary" class="scorecard"><div class="score-card score-good"><div class="score">4</div><div class="label">Fully done</div></div><div class="score-card score-warn"><div class="score">3</div><div class="label">Partially done</div></div><div class="score-card score-bad"><div class="score">4</div><div class="label">Broken / mishandled</div></div><div class="score-card"><div class="score">22 → 19</div><div class="label">Clone groups</div></div></section>
-<section><h2><span class="num">00</span>Executive verdict</h2><p>The session successfully removed several repetitive production wrappers and preserved behavior across focused and full workspace tests. It did not achieve literal zero at <code>-t 2</code>. The remaining 19 groups are dominated by test parallelization and idiomatic or context-specific code, but that classification was not formalized in the tool or repository.</p><div class="callout callout-amber"><strong>Bottom line</strong> The engineering outcome is healthy, but the workflow was not fully disciplined: one refactor introduced an immediate recursion bug, the final scan was not reduced to zero, and the requested status artifact format was not followed exactly.</div></section>
-<section id="done"><h2><span class="num">01</span>Fully done</h2><div class="strengths"><div class="strength"><div class="check">+</div><div class="text"><strong>Initial type-aware scan completed</strong><span>Ran <code>art-dupl --type-aware --sort total-tokens -t 2</code>; it reported 22 clone groups across the workspace.</span></div></div><div class="strength"><div class="check">+</div><div class="text"><strong>Actionable renderer duplication reduced</strong><span>Shared render/write helpers were applied to D2, DOT, Mermaid, and PlantUML paths.</span></div></div><div class="strength"><div class="check">+</div><div class="text"><strong>Focused verification completed</strong><span>D2, graph, PlantUML, and NOM tests passed after their respective changes.</span></div></div><div class="strength"><div class="check">+</div><div class="text"><strong>Full workspace verification completed</strong><span><code>nix run .#test</code> passed across root, BDD, all renderer modules, NOM, TUI, examples, and integration.</span></div></div></div></section>
-<section id="partial"><h2><span class="num">02</span>Partially done</h2><div class="issue issue-important"><span class="severity severity-important">Incomplete · Medium impact</span><h3>Deduplication stopped at 19 groups</h3><div class="where">Final command: art-dupl --type-aware --sort total-tokens -t 2</div><p>The report fell from 22 to 19 groups, not zero. We removed clear production wrapper duplication, but did not complete a systematic classification and disposition for every remaining group.</p></div><div class="issue issue-important"><span class="severity severity-important">Incomplete · Medium impact</span><h3>Only test verification, not all quality gates</h3><div class="where">Verification: nix run .#test</div><p>Tests passed, but the session did not run the project lint, build, race, vulnerability, or formatting checks after the modifications.</p></div><div class="issue issue-important"><span class="severity severity-important">Incomplete · Medium impact</span><h3>Feedback was written, but not incorporated into the tool</h3><div class="where">go-output feedback: docs/feedback/new/2026-07-26-go-output-t3-irreducible-go-idioms.md</div><p>The report documented three t=3 false-positive patterns, but no corresponding art-dupl implementation, tests, suppression model, or actionability change was made.</p></div></section>
-<section id="broken"><h2><span class="num">03</span>Totally fucked up</h2><div class="issue issue-critical"><span class="severity severity-critical">Bug · Fixed during session</span><h3>Progress-clearing helper initially called itself recursively</h3><div class="where">nom/activity.go:89-90</div><p>A bulk replacement changed the new helper body to <code>a.clearProgress()</code> instead of assigning the field. NOM tests crashed with a stack overflow. The failure was diagnosed from the trace, corrected, and the module plus full suite passed afterward.</p><div class="callout callout-teal"><strong>Recovery</strong> The bug is fixed, but the incident shows that the edit strategy was too broad for a small refactor.</div></div><div class="issue issue-critical"><span class="severity severity-critical">Process failure · Not fixed</span><h3>The requested report format was not respected</h3><div class="where">User requested docs/status/&lt;timestamp&gt;.md; status-report skill requires a self-contained HTML dashboard.</div><p>This session has now created a Markdown status request context but has not yet created the required report artifact. The next action must write the report to the requested path while honoring the project skill procedure.</p></div><div class="issue issue-critical"><span class="severity severity-critical">Verification gap · Open</span><h3>“All remaining groups are intentional” was asserted too quickly</h3><div class="where">Final art-dupl output: 19 groups</div><p>Some groups are obviously idiomatic, but several production groups were not read in this session before the conclusion: examples, serialization, markup, TUI, and adapter paths still need per-group judgment.</p></div><div class="issue issue-critical"><span class="severity severity-critical">Scope gap · Open</span><h3>Existing diagnostics were observed but not resolved or tracked</h3><div class="where">Project diagnostics reported 49 warnings</div><p>Warnings included benchmark modernization, unused test helper, Go-version diagnostics around JSON v2 APIs, and other existing issues. They were not caused by this session, but the status outcome should clearly separate pre-existing debt from changed-file failures.</p></div></section>
-<section id="improve"><h2><span class="num">04</span>What we should improve</h2><p>The biggest improvement is process quality, not another abstraction. Every clone group should be read, classified, and either fixed, accepted with a reason, or excluded through a durable mechanism.</p><table class="compare"><thead><tr><th>Area</th><th>Current state</th><th>Better state</th></tr></thead><tbody><tr><td>Dedup workflow</td><td>Change obvious groups, then summarize the rest.</td><td>Track every group with disposition and evidence.</td></tr><tr><td>Editing</td><td>One broad replacement caused recursion.</td><td>Use symbol-level or narrowly scoped edits, then test immediately.</td></tr><tr><td>Quality gates</td><td>Full tests only.</td><td>Tests, build, lint, race, vuln, and flake checks.</td></tr><tr><td>Tool feedback</td><td>Markdown feedback only.</td><td>Feedback translated into reproducible fixtures and detector behavior.</td></tr><tr><td>Status reporting</td><td>Conclusion before complete artifact verification.</td><td>Write and inspect the requested report as the final deliverable.</td></tr></tbody></table></section>
-<section id="next"><h2><span class="num">05</span>Up to 50 things to get done next</h2><table class="compare"><thead><tr><th>#</th><th>Task</th><th>Impact</th><th>Status</th></tr></thead><tbody><tr><td>1</td><td>Read and classify all 19 remaining clone groups</td><td class="no">High</td><td>Open</td></tr><tr><td>2</td><td>Separate test idioms from production duplication in the report</td><td class="no">High</td><td>Open</td></tr><tr><td>3</td><td>Review all remaining production error-wrapper groups</td><td class="no">High</td><td>Open</td></tr><tr><td>4</td><td>Review serialization TOML/YAML marshal and unmarshal clones</td><td class="no">High</td><td>Open</td></tr><tr><td>5</td><td>Review markup XML/HTML write and render clones</td><td class="no">High</td><td>Open</td></tr><tr><td>6</td><td>Review TUI workflow-state guard clones</td><td class="">Medium</td><td>Open</td></tr><tr><td>7</td><td>Review examples for reusable shared setup</td><td class="">Medium</td><td>Open</td></tr><tr><td>8</td><td>Decide whether test idioms need suppression or acceptance metadata</td><td class="no">High</td><td>Open</td></tr><tr><td>9</td><td>Run type-aware scan at t=3 and compare signal</td><td class="">Medium</td><td>Open</td></tr><tr><td>10</td><td>Run semantic scan at t=4 to verify clean baseline</td><td class="">Medium</td><td>Open</td></tr><tr><td>11</td><td>Run workspace build via nix</td><td class="no">High</td><td>Open</td></tr><tr><td>12</td><td>Run workspace lint via nix</td><td class="no">High</td><td>Open</td></tr><tr><td>13</td><td>Run NOM and TUI race tests</td><td class="no">High</td><td>Open</td></tr><tr><td>14</td><td>Run govulncheck across all modules</td><td class="no">High</td><td>Open</td></tr><tr><td>15</td><td>Run nix flake check</td><td class="">Medium</td><td>Open</td></tr><tr><td>16</td><td>Inspect changed-file diff for unintended edits</td><td class="no">High</td><td>Open</td></tr><tr><td>17</td><td>Confirm no generated or unrelated files changed</td><td class="no">High</td><td>Open</td></tr><tr><td>18</td><td>Add regression tests for shared render/write paths</td><td class="">Medium</td><td>Open</td></tr><tr><td>19</td><td>Add a test for error-context preservation in helper reuse</td><td class="">Medium</td><td>Open</td></tr><tr><td>20</td><td>Add detector fixture for mutex read-lock idiom</td><td class="no">High</td><td>Open</td></tr><tr><td>21</td><td>Add detector fixture for strings.Builder opener</td><td class="no">High</td><td>Open</td></tr><tr><td>22</td><td>Add detector fixture for package-local functional options</td><td class="no">High</td><td>Open</td></tr><tr><td>23</td><td>Add actionability classifications for accepted Go idioms</td><td class="no">High</td><td>Open</td></tr><tr><td>24</td><td>Add report counts for detected versus actionable groups</td><td class="no">High</td><td>Open</td></tr><tr><td>25</td><td>Make HTML suggestions classification-aware</td><td class="no">High</td><td>Open</td></tr><tr><td>26</td><td>Add durable accepted-clone configuration or annotations</td><td class="no">High</td><td>Open</td></tr><tr><td>27</td><td>Document the recommended threshold for type-aware Go scans</td><td class="">Medium</td><td>Open</td></tr><tr><td>28</td><td>Document why literal zero can be harmful at t=2</td><td class="">Medium</td><td>Open</td></tr><tr><td>29</td><td>Verify helper naming against existing root conventions</td><td class="">Medium</td><td>Open</td></tr><tr><td>30</td><td>Check all helper error prefixes for compatibility</td><td class="no">High</td><td>Open</td></tr><tr><td>31</td><td>Run integration tests after any further renderer changes</td><td class="no">High</td><td>Open</td></tr><tr><td>32</td><td>Run race tests after any NOM locking change</td><td class="no">High</td><td>Open</td></tr><tr><td>33</td><td>Review existing Go 1.26/1.27 diagnostics separately</td><td class="">Medium</td><td>Open</td></tr><tr><td>34</td><td>Remove or use the unused teatest helper if appropriate</td><td class="yes">Low</td><td>Open</td></tr><tr><td>35</td><td>Modernize benchmark loops only if project policy allows it</td><td class="yes">Low</td><td>Open</td></tr><tr><td>36</td><td>Record this session in the appropriate feedback/status index</td><td class="yes">Low</td><td>Open</td></tr><tr><td>37</td><td>Update dedup ADR with type-aware threshold findings</td><td class="">Medium</td><td>Open</td></tr><tr><td>38</td><td>Add CI reporting for actionable clone count</td><td class="no">High</td><td>Open</td></tr><tr><td>39</td><td>Prevent regressions in shared render helpers with golden tests</td><td class="">Medium</td><td>Open</td></tr><tr><td>40</td><td>Run a final clean-tree status check</td><td class="no">High</td><td>Open</td></tr></tbody></table></section>
-<section id="questions"><h2><span class="num">06</span>Questions requiring instruction</h2><div class="issue issue-important"><span class="severity severity-important">Decision needed</span><h3>Should accepted idioms be suppressed in art-dupl?</h3><p>Should the next implementation prioritize literal zero output at aggressive thresholds, or preserve visible accepted findings while reporting actionable count zero?</p></div><div class="issue issue-important"><span class="severity severity-important">Decision needed</span><h3>Should pre-existing diagnostics be included in this cleanup?</h3><p>The current session observed 49 project diagnostics, including existing Go-version and benchmark warnings. Should they remain out of scope for the dedup task?</p></div><div class="issue issue-important"><span class="severity severity-important">Decision needed</span><h3>Should this status report be HTML or Markdown going forward?</h3><p>The user explicitly requested a .md path, while the loaded status-report skill mandates a self-contained HTML dashboard. This report records the conflict rather than silently choosing one.</p></div></section>
-<footer class="footer"><p>Generated 2026-07-26 09:04 CEST · Current-session snapshot · No commit or push performed</p></footer>
-</main></div>
-<script>(function(){if(!('IntersectionObserver' in window))return;var nav=document.querySelector('[data-nav]');if(!nav)return;var links=nav.querySelectorAll('a[href^="#"]');var sections=Array.from(links).map(function(l){return document.getElementById(l.getAttribute('href').slice(1));}).filter(Boolean);var o=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting)links.forEach(function(l){l.classList.toggle('active',l.getAttribute('href')==='#'+e.target.id);});});},{rootMargin:'-80px 0px -60% 0px'});sections.forEach(function(s){o.observe(s);});})();</script>
-</body>
-
-
+    <div class="top-bar">
+      <span>ENGINEERING STATUS</span><span>2026-07-26 09:04 CEST</span
+      ><span>GO-OUTPUT / DEDUP SESSION</span>
+    </div>
+    <div class="layout">
+      <aside class="sidebar" data-nav>
+        <nav>
+          <div class="label">Contents</div>
+          <a href="#summary">Summary</a><a href="#done">Fully done</a
+          ><a href="#partial">Partially done</a
+          ><a href="#broken">Totally fucked up</a
+          ><a href="#improve">Improvements</a><a href="#next">Next 50</a
+          ><a href="#questions">Questions</a>
+        </nav>
+      </aside>
+      <main class="main">
+        <header class="hero">
+          <div class="hero-shapes">
+            <div class="bar"></div>
+            <div class="circle"></div>
+            <div class="square"></div>
+            <div class="tri"></div>
+          </div>
+          <div class="eyebrow">STATUS REPORT · 2026-07-26</div>
+          <h1>Type-aware deduplication session</h1>
+          <p class="subtitle">
+            A candid snapshot of what changed, what was verified, what remains,
+            and where this session fell short.
+          </p>
+          <div class="meta">
+            <span class="tag amber">Scope: current session only</span
+            ><span class="tag teal">Tests: passing</span
+            ><span class="tag">No commit or push</span>
+          </div>
+        </header>
+        <section id="summary" class="scorecard">
+          <div class="score-card score-good">
+            <div class="score">4</div>
+            <div class="label">Fully done</div>
+          </div>
+          <div class="score-card score-warn">
+            <div class="score">3</div>
+            <div class="label">Partially done</div>
+          </div>
+          <div class="score-card score-bad">
+            <div class="score">4</div>
+            <div class="label">Broken / mishandled</div>
+          </div>
+          <div class="score-card">
+            <div class="score">22 → 19</div>
+            <div class="label">Clone groups</div>
+          </div>
+        </section>
+        <section>
+          <h2><span class="num">00</span>Executive verdict</h2>
+          <p>
+            The session successfully removed several repetitive production
+            wrappers and preserved behavior across focused and full workspace
+            tests. It did not achieve literal zero at <code>-t 2</code>. The
+            remaining 19 groups are dominated by test parallelization and
+            idiomatic or context-specific code, but that classification was not
+            formalized in the tool or repository.
+          </p>
+          <div class="callout callout-amber">
+            <strong>Bottom line</strong> The engineering outcome is healthy, but
+            the workflow was not fully disciplined: one refactor introduced an
+            immediate recursion bug, the final scan was not reduced to zero, and
+            the requested status artifact format was not followed exactly.
+          </div>
+        </section>
+        <section id="done">
+          <h2><span class="num">01</span>Fully done</h2>
+          <div class="strengths">
+            <div class="strength">
+              <div class="check">+</div>
+              <div class="text">
+                <strong>Initial type-aware scan completed</strong
+                ><span
+                  >Ran
+                  <code>art-dupl --type-aware --sort total-tokens -t 2</code>;
+                  it reported 22 clone groups across the workspace.</span
+                >
+              </div>
+            </div>
+            <div class="strength">
+              <div class="check">+</div>
+              <div class="text">
+                <strong>Actionable renderer duplication reduced</strong
+                ><span
+                  >Shared render/write helpers were applied to D2, DOT, Mermaid,
+                  and PlantUML paths.</span
+                >
+              </div>
+            </div>
+            <div class="strength">
+              <div class="check">+</div>
+              <div class="text">
+                <strong>Focused verification completed</strong
+                ><span
+                  >D2, graph, PlantUML, and NOM tests passed after their
+                  respective changes.</span
+                >
+              </div>
+            </div>
+            <div class="strength">
+              <div class="check">+</div>
+              <div class="text">
+                <strong>Full workspace verification completed</strong
+                ><span
+                  ><code>nix run .#test</code> passed across root, BDD, all
+                  renderer modules, NOM, TUI, examples, and integration.</span
+                >
+              </div>
+            </div>
+          </div>
+        </section>
+        <section id="partial">
+          <h2><span class="num">02</span>Partially done</h2>
+          <div class="issue issue-important">
+            <span class="severity severity-important"
+              >Incomplete · Medium impact</span
+            >
+            <h3>Deduplication stopped at 19 groups</h3>
+            <div class="where">
+              Final command: art-dupl --type-aware --sort total-tokens -t 2
+            </div>
+            <p>
+              The report fell from 22 to 19 groups, not zero. We removed clear
+              production wrapper duplication, but did not complete a systematic
+              classification and disposition for every remaining group.
+            </p>
+          </div>
+          <div class="issue issue-important">
+            <span class="severity severity-important"
+              >Incomplete · Medium impact</span
+            >
+            <h3>Only test verification, not all quality gates</h3>
+            <div class="where">Verification: nix run .#test</div>
+            <p>
+              Tests passed, but the session did not run the project lint, build,
+              race, vulnerability, or formatting checks after the modifications.
+            </p>
+          </div>
+          <div class="issue issue-important">
+            <span class="severity severity-important"
+              >Incomplete · Medium impact</span
+            >
+            <h3>Feedback was written, but not incorporated into the tool</h3>
+            <div class="where">
+              go-output feedback:
+              docs/feedback/new/2026-07-26-go-output-t3-irreducible-go-idioms.md
+            </div>
+            <p>
+              The report documented three t=3 false-positive patterns, but no
+              corresponding art-dupl implementation, tests, suppression model,
+              or actionability change was made.
+            </p>
+          </div>
+        </section>
+        <section id="broken">
+          <h2><span class="num">03</span>Totally fucked up</h2>
+          <div class="issue issue-critical">
+            <span class="severity severity-critical"
+              >Bug · Fixed during session</span
+            >
+            <h3>
+              Progress-clearing helper initially called itself recursively
+            </h3>
+            <div class="where">nom/activity.go:89-90</div>
+            <p>
+              A bulk replacement changed the new helper body to
+              <code>a.clearProgress()</code> instead of assigning the field. NOM
+              tests crashed with a stack overflow. The failure was diagnosed
+              from the trace, corrected, and the module plus full suite passed
+              afterward.
+            </p>
+            <div class="callout callout-teal">
+              <strong>Recovery</strong> The bug is fixed, but the incident shows
+              that the edit strategy was too broad for a small refactor.
+            </div>
+          </div>
+          <div class="issue issue-critical">
+            <span class="severity severity-critical"
+              >Process failure · Not fixed</span
+            >
+            <h3>The requested report format was not respected</h3>
+            <div class="where">
+              User requested docs/status/&lt;timestamp&gt;.md; status-report
+              skill requires a self-contained HTML dashboard.
+            </div>
+            <p>
+              This session has now created a Markdown status request context but
+              has not yet created the required report artifact. The next action
+              must write the report to the requested path while honoring the
+              project skill procedure.
+            </p>
+          </div>
+          <div class="issue issue-critical">
+            <span class="severity severity-critical"
+              >Verification gap · Open</span
+            >
+            <h3>
+              “All remaining groups are intentional” was asserted too quickly
+            </h3>
+            <div class="where">Final art-dupl output: 19 groups</div>
+            <p>
+              Some groups are obviously idiomatic, but several production groups
+              were not read in this session before the conclusion: examples,
+              serialization, markup, TUI, and adapter paths still need per-group
+              judgment.
+            </p>
+          </div>
+          <div class="issue issue-critical">
+            <span class="severity severity-critical">Scope gap · Open</span>
+            <h3>
+              Existing diagnostics were observed but not resolved or tracked
+            </h3>
+            <div class="where">Project diagnostics reported 49 warnings</div>
+            <p>
+              Warnings included benchmark modernization, unused test helper,
+              Go-version diagnostics around JSON v2 APIs, and other existing
+              issues. They were not caused by this session, but the status
+              outcome should clearly separate pre-existing debt from
+              changed-file failures.
+            </p>
+          </div>
+        </section>
+        <section id="improve">
+          <h2><span class="num">04</span>What we should improve</h2>
+          <p>
+            The biggest improvement is process quality, not another abstraction.
+            Every clone group should be read, classified, and either fixed,
+            accepted with a reason, or excluded through a durable mechanism.
+          </p>
+          <table class="compare">
+            <thead>
+              <tr>
+                <th>Area</th>
+                <th>Current state</th>
+                <th>Better state</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Dedup workflow</td>
+                <td>Change obvious groups, then summarize the rest.</td>
+                <td>Track every group with disposition and evidence.</td>
+              </tr>
+              <tr>
+                <td>Editing</td>
+                <td>One broad replacement caused recursion.</td>
+                <td>
+                  Use symbol-level or narrowly scoped edits, then test
+                  immediately.
+                </td>
+              </tr>
+              <tr>
+                <td>Quality gates</td>
+                <td>Full tests only.</td>
+                <td>Tests, build, lint, race, vuln, and flake checks.</td>
+              </tr>
+              <tr>
+                <td>Tool feedback</td>
+                <td>Markdown feedback only.</td>
+                <td>
+                  Feedback translated into reproducible fixtures and detector
+                  behavior.
+                </td>
+              </tr>
+              <tr>
+                <td>Status reporting</td>
+                <td>Conclusion before complete artifact verification.</td>
+                <td>
+                  Write and inspect the requested report as the final
+                  deliverable.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+        <section id="next">
+          <h2><span class="num">05</span>Up to 50 things to get done next</h2>
+          <table class="compare">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Task</th>
+                <th>Impact</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>Read and classify all 19 remaining clone groups</td>
+                <td class="no">High</td>
+                <td>Open</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>
+                  Separate test idioms from production duplication in the report
+                </td>
+                <td class="no">High</td>
+                <td>Open</td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td>Review all remaining production error-wrapper groups</td>
+                <td class="no">High</td>
+                <td>Open</td>
+              </tr>
+              <tr>
+                <td>4</td>
+                <td>
+                  Review serialization TOML/YAML marshal and unmarshal clones
+                </td>
+                <td class="no">High</td>
+                <td>Open</td>
+              </tr>
+              <tr>
+                <td>5</td>
+                <td>Review markup XML/HTML write and render clones</td>
+                <td class="no">High</td>
+                <td>Open</td>
+              </tr>
+              <tr>
+                <td>6</td>
+                <td>Review TUI workflow-state guard clones</td>
+                <td class="">Medium</td>
+                <td>Open</td>
+              </tr>
+              <tr>
+                <td>7</td>
+                <td>Review examples for reusable shared setup</td>
+                <td class="">Medium</td>
+                <td>Open</td>
+              </tr>
+              <tr>
+                <td>8</td>
+                <td>
+                  Decide whether test idioms need suppression or acceptance
+                  metadata
+                </td>
+                <td class="no">High</td>
+                <td>Open</td>
+              </tr>
+              <tr>
+                <td>9</td>
+                <td>Run type-aware scan at t=3 and compare signal</td>
+                <td class="">Medium</td>
+                <td>Open</td>
+              </tr>
+              <tr>
+                <td>10</td>
+                <td>Run semantic scan at t=4 to verify clean baseline</td>
+                <td class="">Medium</td>
+                <td>Open</td>
+              </tr>
+              <tr>
+                <td>11</td>
+                <td>Run workspace build via nix</td>
+                <td class="no">High</td>
+                <td>Open</td>
+              </tr>
+              <tr>
+                <td>12</td>
+                <td>Run workspace lint via nix</td>
+                <td class="no">High</td>
+                <td>Open</td>
+              </tr>
+              <tr>
+                <td>13</td>
+                <td>Run NOM and TUI race tests</td>
+                <td class="no">High</td>
+                <td>Open</td>
+              </tr>
+              <tr>
+                <td>14</td>
+                <td>Run govulncheck across all modules</td>
+                <td class="no">High</td>
+                <td>Open</td>
+              </tr>
+              <tr>
+                <td>15</td>
+                <td>Run nix flake check</td>
+                <td class="">Medium</td>
+                <td>Open</td>
+              </tr>
+              <tr>
+                <td>16</td>
+                <td>Inspect changed-file diff for unintended edits</td>
+                <td class="no">High</td>
+                <td>Open</td>
+              </tr>
+              <tr>
+                <td>17</td>
+                <td>Confirm no generated or unrelated files changed</td>
+                <td class="no">High</td>
+                <td>Open</td>
+              </tr>
+              <tr>
+                <td>18</td>
+                <td>Add regression tests for shared render/write paths</td>
+                <td class="">Medium</td>
+                <td>Open</td>
+              </tr>
+              <tr>
+                <td>19</td>
+                <td>
+                  Add a test for error-context preservation in helper reuse
+                </td>
+                <td class="">Medium</td>
+                <td>Open</td>
+              </tr>
+              <tr>
+                <td>20</td>
+                <td>Add detector fixture for mutex read-lock idiom</td>
+                <td class="no">High</td>
+                <td>Open</td>
+              </tr>
+              <tr>
+                <td>21</td>
+                <td>Add detector fixture for strings.Builder opener</td>
+                <td class="no">High</td>
+                <td>Open</td>
+              </tr>
+              <tr>
+                <td>22</td>
+                <td>
+                  Add detector fixture for package-local functional options
+                </td>
+                <td class="no">High</td>
+                <td>Open</td>
+              </tr>
+              <tr>
+                <td>23</td>
+                <td>
+                  Add actionability classifications for accepted Go idioms
+                </td>
+                <td class="no">High</td>
+                <td>Open</td>
+              </tr>
+              <tr>
+                <td>24</td>
+                <td>Add report counts for detected versus actionable groups</td>
+                <td class="no">High</td>
+                <td>Open</td>
+              </tr>
+              <tr>
+                <td>25</td>
+                <td>Make HTML suggestions classification-aware</td>
+                <td class="no">High</td>
+                <td>Open</td>
+              </tr>
+              <tr>
+                <td>26</td>
+                <td>Add durable accepted-clone configuration or annotations</td>
+                <td class="no">High</td>
+                <td>Open</td>
+              </tr>
+              <tr>
+                <td>27</td>
+                <td>
+                  Document the recommended threshold for type-aware Go scans
+                </td>
+                <td class="">Medium</td>
+                <td>Open</td>
+              </tr>
+              <tr>
+                <td>28</td>
+                <td>Document why literal zero can be harmful at t=2</td>
+                <td class="">Medium</td>
+                <td>Open</td>
+              </tr>
+              <tr>
+                <td>29</td>
+                <td>Verify helper naming against existing root conventions</td>
+                <td class="">Medium</td>
+                <td>Open</td>
+              </tr>
+              <tr>
+                <td>30</td>
+                <td>Check all helper error prefixes for compatibility</td>
+                <td class="no">High</td>
+                <td>Open</td>
+              </tr>
+              <tr>
+                <td>31</td>
+                <td>
+                  Run integration tests after any further renderer changes
+                </td>
+                <td class="no">High</td>
+                <td>Open</td>
+              </tr>
+              <tr>
+                <td>32</td>
+                <td>Run race tests after any NOM locking change</td>
+                <td class="no">High</td>
+                <td>Open</td>
+              </tr>
+              <tr>
+                <td>33</td>
+                <td>Review existing Go 1.26/1.27 diagnostics separately</td>
+                <td class="">Medium</td>
+                <td>Open</td>
+              </tr>
+              <tr>
+                <td>34</td>
+                <td>Remove or use the unused teatest helper if appropriate</td>
+                <td class="yes">Low</td>
+                <td>Open</td>
+              </tr>
+              <tr>
+                <td>35</td>
+                <td>
+                  Modernize benchmark loops only if project policy allows it
+                </td>
+                <td class="yes">Low</td>
+                <td>Open</td>
+              </tr>
+              <tr>
+                <td>36</td>
+                <td>
+                  Record this session in the appropriate feedback/status index
+                </td>
+                <td class="yes">Low</td>
+                <td>Open</td>
+              </tr>
+              <tr>
+                <td>37</td>
+                <td>Update dedup ADR with type-aware threshold findings</td>
+                <td class="">Medium</td>
+                <td>Open</td>
+              </tr>
+              <tr>
+                <td>38</td>
+                <td>Add CI reporting for actionable clone count</td>
+                <td class="no">High</td>
+                <td>Open</td>
+              </tr>
+              <tr>
+                <td>39</td>
+                <td>
+                  Prevent regressions in shared render helpers with golden tests
+                </td>
+                <td class="">Medium</td>
+                <td>Open</td>
+              </tr>
+              <tr>
+                <td>40</td>
+                <td>Run a final clean-tree status check</td>
+                <td class="no">High</td>
+                <td>Open</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+        <section id="questions">
+          <h2><span class="num">06</span>Questions requiring instruction</h2>
+          <div class="issue issue-important">
+            <span class="severity severity-important">Decision needed</span>
+            <h3>Should accepted idioms be suppressed in art-dupl?</h3>
+            <p>
+              Should the next implementation prioritize literal zero output at
+              aggressive thresholds, or preserve visible accepted findings while
+              reporting actionable count zero?
+            </p>
+          </div>
+          <div class="issue issue-important">
+            <span class="severity severity-important">Decision needed</span>
+            <h3>
+              Should pre-existing diagnostics be included in this cleanup?
+            </h3>
+            <p>
+              The current session observed 49 project diagnostics, including
+              existing Go-version and benchmark warnings. Should they remain out
+              of scope for the dedup task?
+            </p>
+          </div>
+          <div class="issue issue-important">
+            <span class="severity severity-important">Decision needed</span>
+            <h3>
+              Should this status report be HTML or Markdown going forward?
+            </h3>
+            <p>
+              The user explicitly requested a .md path, while the loaded
+              status-report skill mandates a self-contained HTML dashboard. This
+              report records the conflict rather than silently choosing one.
+            </p>
+          </div>
+        </section>
+        <footer class="footer">
+          <p>
+            Generated 2026-07-26 09:04 CEST · Current-session snapshot · No
+            commit or push performed
+          </p>
+        </footer>
+      </main>
+    </div>
+    <script>
+      (function () {
+        if (!("IntersectionObserver" in window)) return;
+        var nav = document.querySelector("[data-nav]");
+        if (!nav) return;
+        var links = nav.querySelectorAll('a[href^="#"]');
+        var sections = Array.from(links)
+          .map(function (l) {
+            return document.getElementById(l.getAttribute("href").slice(1));
+          })
+          .filter(Boolean);
+        var o = new IntersectionObserver(
+          function (es) {
+            es.forEach(function (e) {
+              if (e.isIntersecting)
+                links.forEach(function (l) {
+                  l.classList.toggle(
+                    "active",
+                    l.getAttribute("href") === "#" + e.target.id,
+                  );
+                });
+            });
+          },
+          { rootMargin: "-80px 0px -60% 0px" },
+        );
+        sections.forEach(function (s) {
+          o.observe(s);
+        });
+      })();
+    </script>
+  </body>
 </html>

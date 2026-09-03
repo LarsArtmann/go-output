@@ -65,18 +65,18 @@ Four rounds of work on the `go-output` library:
 
 ### Coverage Table
 
-| Module        | Coverage | Status            |
-| ------------- | -------- | ----------------- |
-| output (root) | 95.9%    | ✅ Above 90%      |
-| delimited     | 90.2%    | ✅ Above 90%      |
-| d2            | 100.0%   | ✅ Perfect        |
-| enum          | 100.0%   | ✅ Perfect        |
-| escape        | 100.0%   | ✅ Perfect        |
-| graph         | 96.0%    | ✅ Above 90%      |
-| markup        | 93.9%    | ✅ Above 90%      |
-| plantuml      | 97.2%    | ✅ Above 90%      |
-| table         | 92.2%    | ✅ Above 90%      |
-| testhelpers   | 91.3%    | ✅ Above 90%      |
+| Module        | Coverage | Status           |
+| ------------- | -------- | ---------------- |
+| output (root) | 95.9%    | ✅ Above 90%     |
+| delimited     | 90.2%    | ✅ Above 90%     |
+| d2            | 100.0%   | ✅ Perfect       |
+| enum          | 100.0%   | ✅ Perfect       |
+| escape        | 100.0%   | ✅ Perfect       |
+| graph         | 96.0%    | ✅ Above 90%     |
+| markup        | 93.9%    | ✅ Above 90%     |
+| plantuml      | 97.2%    | ✅ Above 90%     |
+| table         | 92.2%    | ✅ Above 90%     |
+| testhelpers   | 91.3%    | ✅ Above 90%     |
 | integration   | 82.8%    | ⚠️ Below 90%      |
 | serialization | 89.0%    | ⚠️ Just below 90% |
 | gentest       | 80.8%    | ⚠️ Below 90%      |

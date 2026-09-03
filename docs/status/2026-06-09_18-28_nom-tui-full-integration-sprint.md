@@ -171,33 +171,33 @@ Some modules (d2, graph, serialization, root) have `fuzz_test.go` files.
 
 ## (F) Top #25 Things to Do Next
 
-| #   | Task                                                                       | Priority | Effort | Impact                      |
-| --- | -------------------------------------------------------------------------- | -------- | ------ | --------------------------- |
-| 1   | Fix err113 in nom/types.go — sentinel errors                               | P1       | 10min  | Lint clean                  |
-| 2   | Extract event type constants in nom/subscriber_handlers.go                 | P1       | 10min  | Lint clean, maintainability |
-| 3   | Add doc.go to nom/ and tui/                                                | P2       | 10min  | Consistency                 |
-| 4   | Fix root render_tabledata_test.go bytes import (depguard)                  | P2       | 5min   | Lint clean                  |
-| 5   | Add CHANGELOG.md entry for nom/tui integration                             | P2       | 10min  | Documentation               |
-| 6   | Add benchmarks to nom/ (tree render, timing cache)                         | P2       | 30min  | Performance visibility      |
-| 7   | Add Example\* functions to nom/ and tui/ packages                          | P2       | 20min  | Go doc quality              |
-| 8   | Improve tui/ coverage to 90%+                                              | P2       | 1hr    | Quality                     |
-| 9   | Add tui/ lifecycle tests with mock tea.Program                             | P2       | 2hr    | Coverage                    |
-| 10  | Investigate `go:generate stringer` for 7 hand-rolled enum types (TODO #13) | P3       | 20min  | Maintainability             |
-| 11  | Fix pre-commit `--no-verify` requirement (TODO #11)                        | P3       | 15min  | DX                          |
-| 12  | Add gomod2nix for reproducible Nix sandbox builds (TODO #12)               | P3       | 30min  | CI reliability              |
-| 13  | Community: Post to r/golang, submit to Awesome Go (TODO #14)               | P4       | 30min  | Adoption                    |
-| 14  | Add fuzz tests for nom/ FormatDuration                                     | P3       | 15min  | Robustness                  |
-| 15  | Resolve TableData v1 API decision (TODO #15 — BLOCKED)                     | P0       | —      | Release blocker             |
-| 16  | Review nom/ and tui/ for exported API surface stability                    | P1       | 30min  | API freeze readiness        |
-| 17  | Add integration test for tui/ NOM mode rendering with actual subscriber    | P2       | 1hr    | Cross-module verification   |
-| 18  | Add race condition tests for nom/ subscriber concurrent access             | P2       | 20min  | Thread safety               |
-| 19  | Consider extracting nom/ color vars into constructor pattern               | P3       | 30min  | Lint clean                  |
-| 20  | Add examples/d2/ equivalent for nom/tui interactive demos                  | P3       | 30min  | Documentation               |
-| 21  | Verify nom/ and tui/ work with `go get` from clean slate                   | P2       | 15min  | Distribution readiness      |
-| 22  | Add `go vet ./...` explicitly to CI (already implicit in golangci-lint)    | P3       | 5min   | Explicit safety             |
-| 23  | Review whether nom/ needs `replace` directive for root module              | P2       | 10min  | Dependency hygiene          |
-| 24  | Update README.md with nom/ and tui/ module descriptions                    | P2       | 15min  | User-facing docs            |
-| 25  | Tag next release with nom/ and tui/ module tags                            | P1       | 5min   | Distribution                |
+| #  | Task                                                                       | Priority | Effort | Impact                      |
+| -- | -------------------------------------------------------------------------- | -------- | ------ | --------------------------- |
+| 1  | Fix err113 in nom/types.go — sentinel errors                               | P1       | 10min  | Lint clean                  |
+| 2  | Extract event type constants in nom/subscriber_handlers.go                 | P1       | 10min  | Lint clean, maintainability |
+| 3  | Add doc.go to nom/ and tui/                                                | P2       | 10min  | Consistency                 |
+| 4  | Fix root render_tabledata_test.go bytes import (depguard)                  | P2       | 5min   | Lint clean                  |
+| 5  | Add CHANGELOG.md entry for nom/tui integration                             | P2       | 10min  | Documentation               |
+| 6  | Add benchmarks to nom/ (tree render, timing cache)                         | P2       | 30min  | Performance visibility      |
+| 7  | Add Example\* functions to nom/ and tui/ packages                          | P2       | 20min  | Go doc quality              |
+| 8  | Improve tui/ coverage to 90%+                                              | P2       | 1hr    | Quality                     |
+| 9  | Add tui/ lifecycle tests with mock tea.Program                             | P2       | 2hr    | Coverage                    |
+| 10 | Investigate `go:generate stringer` for 7 hand-rolled enum types (TODO #13) | P3       | 20min  | Maintainability             |
+| 11 | Fix pre-commit `--no-verify` requirement (TODO #11)                        | P3       | 15min  | DX                          |
+| 12 | Add gomod2nix for reproducible Nix sandbox builds (TODO #12)               | P3       | 30min  | CI reliability              |
+| 13 | Community: Post to r/golang, submit to Awesome Go (TODO #14)               | P4       | 30min  | Adoption                    |
+| 14 | Add fuzz tests for nom/ FormatDuration                                     | P3       | 15min  | Robustness                  |
+| 15 | Resolve TableData v1 API decision (TODO #15 — BLOCKED)                     | P0       | —      | Release blocker             |
+| 16 | Review nom/ and tui/ for exported API surface stability                    | P1       | 30min  | API freeze readiness        |
+| 17 | Add integration test for tui/ NOM mode rendering with actual subscriber    | P2       | 1hr    | Cross-module verification   |
+| 18 | Add race condition tests for nom/ subscriber concurrent access             | P2       | 20min  | Thread safety               |
+| 19 | Consider extracting nom/ color vars into constructor pattern               | P3       | 30min  | Lint clean                  |
+| 20 | Add examples/d2/ equivalent for nom/tui interactive demos                  | P3       | 30min  | Documentation               |
+| 21 | Verify nom/ and tui/ work with `go get` from clean slate                   | P2       | 15min  | Distribution readiness      |
+| 22 | Add `go vet ./...` explicitly to CI (already implicit in golangci-lint)    | P3       | 5min   | Explicit safety             |
+| 23 | Review whether nom/ needs `replace` directive for root module              | P2       | 10min  | Dependency hygiene          |
+| 24 | Update README.md with nom/ and tui/ module descriptions                    | P2       | 15min  | User-facing docs            |
+| 25 | Tag next release with nom/ and tui/ module tags                            | P1       | 5min   | Distribution                |
 
 ---
 

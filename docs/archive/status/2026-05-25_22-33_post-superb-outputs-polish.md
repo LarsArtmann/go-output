@@ -124,53 +124,53 @@ No issues found. Zero race conditions. Zero build failures. Zero test failures. 
 
 ### Priority 1: Merge & Release (do first)
 
-| #   | Task                                                                                               | Impact                          | Effort |
-| --- | -------------------------------------------------------------------------------------------------- | ------------------------------- | ------ |
-| 1   | **Merge `feature/superb-outputs` into `master`**                                                   | Unblocks everything             | 5 min  |
-| 2   | **Tag `v0.5.0` release** with CHANGELOG                                                            | Users get ColorMode + clean API | 10 min |
-| 3   | **Update `docs/planning/EXECUTION_PLAN_TODO.md`** — mark superb-outputs done, update to 12 modules | Tracking accuracy               | 10 min |
+| # | Task                                                                                               | Impact                          | Effort |
+| - | -------------------------------------------------------------------------------------------------- | ------------------------------- | ------ |
+| 1 | **Merge `feature/superb-outputs` into `master`**                                                   | Unblocks everything             | 5 min  |
+| 2 | **Tag `v0.5.0` release** with CHANGELOG                                                            | Users get ColorMode + clean API | 10 min |
+| 3 | **Update `docs/planning/EXECUTION_PLAN_TODO.md`** — mark superb-outputs done, update to 12 modules | Tracking accuracy               | 10 min |
 
 ### Priority 2: Coverage (quality gates)
 
-| #   | Task                                                  | Impact       | Effort |
-| --- | ----------------------------------------------------- | ------------ | ------ |
-| 4   | **Add `testhelpers` tests** — bring 61.2% → 90%+      | Quality gate | 20 min |
-| 5   | **Add `internal/gentest` tests** — bring 80.8% → 90%+ | Quality gate | 15 min |
-| 6   | **Add `serialization` tests** — bring 83.3% → 90%+    | Quality gate | 15 min |
-| 7   | **Add `delimited` tests** — bring 84.8% → 90%+        | Quality gate | 15 min |
-| 8   | **Add `markup` tests** — bring 86.8% → 90%+           | Quality gate | 10 min |
-| 9   | **Add root edge-case tests** — bring 89.6% → 90%+     | Quality gate | 10 min |
-| 10  | **Add `integration` tests** — bring 82.8% → 90%+      | Quality gate | 20 min |
+| #  | Task                                                  | Impact       | Effort |
+| -- | ----------------------------------------------------- | ------------ | ------ |
+| 4  | **Add `testhelpers` tests** — bring 61.2% → 90%+      | Quality gate | 20 min |
+| 5  | **Add `internal/gentest` tests** — bring 80.8% → 90%+ | Quality gate | 15 min |
+| 6  | **Add `serialization` tests** — bring 83.3% → 90%+    | Quality gate | 15 min |
+| 7  | **Add `delimited` tests** — bring 84.8% → 90%+        | Quality gate | 15 min |
+| 8  | **Add `markup` tests** — bring 86.8% → 90%+           | Quality gate | 10 min |
+| 9  | **Add root edge-case tests** — bring 89.6% → 90%+     | Quality gate | 10 min |
+| 10 | **Add `integration` tests** — bring 82.8% → 90%+      | Quality gate | 20 min |
 
 ### Priority 3: Developer Experience
 
-| #   | Task                                                                                        | Impact          | Effort |
-| --- | ------------------------------------------------------------------------------------------- | --------------- | ------ |
-| 11  | **Create `examples/color/main.go`** — dedicated ColorMode example for all renderers         | Discoverability | 20 min |
-| 12  | **Add `Example*` testable functions** for `WithColorMode`, `SetColorMode`, `ParseColorMode` | godoc quality   | 20 min |
-| 13  | **Fix pre-commit hook false positives** — investigate `go-structure-linter` config          | DX improvement  | 30 min |
-| 14  | **Add `--color` flag to `examples/d2/`** — parity with `examples/basic/`                    | Consistency     | 10 min |
-| 15  | **Add `go test -race` to CI** — ensure race detection is a gate                             | Correctness     | 5 min  |
+| #  | Task                                                                                        | Impact          | Effort |
+| -- | ------------------------------------------------------------------------------------------- | --------------- | ------ |
+| 11 | **Create `examples/color/main.go`** — dedicated ColorMode example for all renderers         | Discoverability | 20 min |
+| 12 | **Add `Example*` testable functions** for `WithColorMode`, `SetColorMode`, `ParseColorMode` | godoc quality   | 20 min |
+| 13 | **Fix pre-commit hook false positives** — investigate `go-structure-linter` config          | DX improvement  | 30 min |
+| 14 | **Add `--color` flag to `examples/d2/`** — parity with `examples/basic/`                    | Consistency     | 10 min |
+| 15 | **Add `go test -race` to CI** — ensure race detection is a gate                             | Correctness     | 5 min  |
 
 ### Priority 4: Architecture & Polish
 
-| #   | Task                                                                                                    | Impact          | Effort |
-| --- | ------------------------------------------------------------------------------------------------------- | --------------- | ------ |
-| 16  | **ADR 003: ColorMode integration decision** — document why raw ANSI, why not lipgloss for tree/markdown | Decision record | 15 min |
-| 17  | **`FormatSupportsColor()` capability matrix method** — declare which formats produce ANSI output        | Discoverability | 30 min |
-| 18  | **Evaluate lipgloss/v2 for tree/markdown** — unified color system across all terminal renderers         | Consistency     | 60 min |
-| 19  | **Add `SetColorMode` to `TreeOutputRenderer` interface** — standardize across all tree renderers        | API consistency | 20 min |
-| 20  | **Archive stale planning docs** — add archival notes to `docs/modularization/root-split-*.md`           | Clean docs      | 5 min  |
+| #  | Task                                                                                                    | Impact          | Effort |
+| -- | ------------------------------------------------------------------------------------------------------- | --------------- | ------ |
+| 16 | **ADR 003: ColorMode integration decision** — document why raw ANSI, why not lipgloss for tree/markdown | Decision record | 15 min |
+| 17 | **`FormatSupportsColor()` capability matrix method** — declare which formats produce ANSI output        | Discoverability | 30 min |
+| 18 | **Evaluate lipgloss/v2 for tree/markdown** — unified color system across all terminal renderers         | Consistency     | 60 min |
+| 19 | **Add `SetColorMode` to `TreeOutputRenderer` interface** — standardize across all tree renderers        | API consistency | 20 min |
+| 20 | **Archive stale planning docs** — add archival notes to `docs/modularization/root-split-*.md`           | Clean docs      | 5 min  |
 
 ### Priority 5: Future Features
 
-| #   | Task                                                                                   | Impact      | Effort  |
-| --- | -------------------------------------------------------------------------------------- | ----------- | ------- |
-| 21  | **Add TOML format** (new module `toml/`)                                               | New feature | 60 min  |
-| 22  | **Add JSONL format** (new renderer)                                                    | New feature | 30 min  |
-| 23  | **Add PlantUML format** (new module `plantuml/`)                                       | New feature | 60 min  |
-| 24  | **Explore Progressive Enhancement** — color → unicode box-drawing → hyperlinks (OSC 8) | Vision      | 120 min |
-| 25  | **Community posting** — r/golang, Awesome Go, Go newsletter                            | Adoption    | 60 min  |
+| #  | Task                                                                                   | Impact      | Effort  |
+| -- | -------------------------------------------------------------------------------------- | ----------- | ------- |
+| 21 | **Add TOML format** (new module `toml/`)                                               | New feature | 60 min  |
+| 22 | **Add JSONL format** (new renderer)                                                    | New feature | 30 min  |
+| 23 | **Add PlantUML format** (new module `plantuml/`)                                       | New feature | 60 min  |
+| 24 | **Explore Progressive Enhancement** — color → unicode box-drawing → hyperlinks (OSC 8) | Vision      | 120 min |
+| 25 | **Community posting** — r/golang, Awesome Go, Go newsletter                            | Adoption    | 60 min  |
 
 ---
 

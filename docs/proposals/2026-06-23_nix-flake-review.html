@@ -172,8 +172,8 @@
         <div class="eyebrow">NIX FLAKE REVIEW &middot; 2026-06-23</div>
         <h1>go-output — Flake Compliance Check</h1>
         <p class="subtitle">
-          The project is already fully migrated to the standard Nix flake stack. This review
-          confirms compliance and identifies no actionable gaps.
+          The project is already fully migrated to the standard Nix flake stack.
+          This review confirms compliance and identifies no actionable gaps.
         </p>
       </header>
       <div class="sc">
@@ -261,30 +261,33 @@
       <div class="card">
         <h3>runForModules pattern — elegant multi-module support</h3>
         <p>
-          The flake defines a <code>runForModules</code> helper that iterates all 18 modules,
-          <code>cd</code>s into each, and runs the specified Go command. This avoids the complexity
-          of <code>buildGoModule</code> per module and leverages the workspace's replace directives.
-          <code>GOWORK = "off"</code> in devShells ensures flake apps work consistently (go.work is
-          gitignored, generated on demand).
+          The flake defines a <code>runForModules</code> helper that iterates
+          all 18 modules, <code>cd</code>s into each, and runs the specified Go
+          command. This avoids the complexity of <code>buildGoModule</code> per
+          module and leverages the workspace's replace directives.
+          <code>GOWORK = "off"</code> in devShells ensures flake apps work
+          consistently (go.work is gitignored, generated on demand).
         </p>
       </div>
       <div class="card card-w">
         <h3>Intentional design: Go checks not in nix flake check</h3>
         <p>
-          Sandbox blocks <code>go mod download</code>, so Go build/test/lint checks are NOT in
-          <code>nix flake check</code>. They run as Nix apps (<code>nix run .#build</code>,
-          <code>nix run .#test</code>, <code>nix run .#lint</code>) and in CI workflows. This is a
-          deliberate design decision documented in AGENTS.md.
+          Sandbox blocks <code>go mod download</code>, so Go build/test/lint
+          checks are NOT in <code>nix flake check</code>. They run as Nix apps
+          (<code>nix run .#build</code>, <code>nix run .#test</code>,
+          <code>nix run .#lint</code>) and in CI workflows. This is a deliberate
+          design decision documented in AGENTS.md.
         </p>
       </div>
       <h2>Verdict</h2>
       <p>
-        The flake.nix is exemplary. It follows the ecosystem standard stack perfectly, handles the
-        multi-module Go workspace elegantly, and correctly avoids putting Go checks in the sandbox.
-        No changes needed.
+        The flake.nix is exemplary. It follows the ecosystem standard stack
+        perfectly, handles the multi-module Go workspace elegantly, and
+        correctly avoids putting Go checks in the sandbox. No changes needed.
       </p>
       <footer class="footer">
-        Generated 2026-06-23 &middot; nix flake check --no-build: all checks passed
+        Generated 2026-06-23 &middot; nix flake check --no-build: all checks
+        passed
       </footer>
     </div>
   </body>

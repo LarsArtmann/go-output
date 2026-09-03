@@ -30,14 +30,14 @@
         --warning: var(--color-yellow);
         --radius: 0px;
         --font-heading:
-          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          Helvetica, Arial, sans-serif;
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         --font-body:
-          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          Helvetica, Arial, sans-serif;
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         --font-mono:
-          ui-monospace, "Cascadia Code", "Source Code Pro", "JetBrains Mono", Menlo, Consolas,
-          monospace;
+          ui-monospace, "Cascadia Code", "Source Code Pro", "JetBrains Mono",
+          Menlo, Consolas, monospace;
       }
       * {
         box-sizing: border-box;
@@ -522,7 +522,20 @@
     </style>
   </head>
   <body>
-    <div style="background:#1a1a2e;border-left:3px solid #50fa7b;padding:12px 16px;margin:16px 0;border-radius:4px;"><strong>✅ Resolved (2026-08-04):</strong> Golden tests for graph/d2/plantuml/serialization ALL done. Dead test helpers deleted. PhysicalLineCount fix shipped. 3 unused helpers deleted. v1.0.0 tag + community launch still open (TODO_LIST).</div>
+    <div
+      style="
+        background: #1a1a2e;
+        border-left: 3px solid #50fa7b;
+        padding: 12px 16px;
+        margin: 16px 0;
+        border-radius: 4px;
+      "
+    >
+      <strong>✅ Resolved (2026-08-04):</strong> Golden tests for
+      graph/d2/plantuml/serialization ALL done. Dead test helpers deleted.
+      PhysicalLineCount fix shipped. 3 unused helpers deleted. v1.0.0 tag +
+      community launch still open (TODO_LIST).
+    </div>
 
     <div class="top-bar">
       <span>STATUS REPORT</span>
@@ -557,9 +570,10 @@
           </div>
           <h1>go-output Health Dashboard</h1>
           <p class="hero-subtitle">
-            18-module Go library for CLI output formatting and NOM-style real-time progress. 782
-            tests, 0 lint issues, 0 vulnerabilities, 0 skipped tests. Just shipped VT emulator
-            tests, teatest E2E, and golden-file expansion across three modules.
+            18-module Go library for CLI output formatting and NOM-style
+            real-time progress. 782 tests, 0 lint issues, 0 vulnerabilities, 0
+            skipped tests. Just shipped VT emulator tests, teatest E2E, and
+            golden-file expansion across three modules.
           </p>
         </div>
 
@@ -631,28 +645,39 @@
 
         <!-- ================================================================== -->
         <h2 id="done"><span class="num">01</span>(a) Fully Done</h2>
-        <p>Everything in this section is shipped, tested, race-clean, and lint-clean.</p>
+        <p>
+          Everything in this section is shipped, tested, race-clean, and
+          lint-clean.
+        </p>
 
         <h3>Core Architecture (Production-Ready)</h3>
         <div class="strengths">
           <div class="strength">
             <div class="check">+</div>
             <div class="text">
-              <strong>16 output formats across 3 data shapes (table/tree/graph)</strong>
+              <strong
+                >16 output formats across 3 data shapes
+                (table/tree/graph)</strong
+              >
               <span
-                >CSV, TSV, JSON, YAML, TOML, JSONL, XML, HTML, AsciiDoc, Markdown, Lipgloss Table,
-                ASCII Tree, D2, DOT, Mermaid, PlantUML. Registry dispatch via <code>init()</code> —
-                root never imports sub-modules.</span
+                >CSV, TSV, JSON, YAML, TOML, JSONL, XML, HTML, AsciiDoc,
+                Markdown, Lipgloss Table, ASCII Tree, D2, DOT, Mermaid,
+                PlantUML. Registry dispatch via <code>init()</code> — root never
+                imports sub-modules.</span
               >
             </div>
           </div>
           <div class="strength">
             <div class="check">+</div>
             <div class="text">
-              <strong>Pattern B versioning (committed replace + v0.0.0 sentinel)</strong>
+              <strong
+                >Pattern B versioning (committed replace + v0.0.0
+                sentinel)</strong
+              >
               <span
                 >All 47 sibling deps use v0.0.0 + replace. Root is independently
-                <code>go get</code>-able. testhelpers is the only real-versioned sub-module.</span
+                <code>go get</code>-able. testhelpers is the only real-versioned
+                sub-module.</span
               >
             </div>
           </div>
@@ -661,9 +686,10 @@
             <div class="text">
               <strong>NOM-style real-time progress visualization</strong>
               <span
-                >InlineRenderer with cursor-up redraw, sync-output 2026, ghost-line cleanup, frame
-                diffing, CI/plain-text degradation, height-pressure collapse, SIGWINCH resize.
-                Sealed Event sum type (9 event types). Snapshot-based concurrency model.</span
+                >InlineRenderer with cursor-up redraw, sync-output 2026,
+                ghost-line cleanup, frame diffing, CI/plain-text degradation,
+                height-pressure collapse, SIGWINCH resize. Sealed Event sum type
+                (9 event types). Snapshot-based concurrency model.</span
               >
             </div>
           </div>
@@ -672,8 +698,9 @@
             <div class="text">
               <strong>Bubble Tea v2 interactive TUI</strong>
               <span
-                >NOM mode + Universal mode. Entry-level scroll windowing, mouse click, help overlay,
-                progress bar, summary bar. Delegates to nom for tree rendering.</span
+                >NOM mode + Universal mode. Entry-level scroll windowing, mouse
+                click, help overlay, progress bar, summary bar. Delegates to nom
+                for tree rendering.</span
               >
             </div>
           </div>
@@ -682,9 +709,9 @@
             <div class="text">
               <strong>Strong types everywhere</strong>
               <span
-                >Branded IDs (D2NodeID, TreeNodeID via go-branded-id), sealed Event interface,
-                StringEnum with ParseEnum[T], ColorMode enum, ActivityKind enum. Impossible states
-                are unrepresentable.</span
+                >Branded IDs (D2NodeID, TreeNodeID via go-branded-id), sealed
+                Event interface, StringEnum with ParseEnum[T], ColorMode enum,
+                ActivityKind enum. Impossible states are unrepresentable.</span
               >
             </div>
           </div>
@@ -693,9 +720,9 @@
             <div class="text">
               <strong>9 ADRs, all accepted and implemented</strong>
               <span
-                >Multi-module workspace, shape matrix, d2/graph extraction, footer row, duplication
-                thresholds, API stability, nom composition, dedup workflow, Pattern B
-                versioning.</span
+                >Multi-module workspace, shape matrix, d2/graph extraction,
+                footer row, duplication thresholds, API stability, nom
+                composition, dedup workflow, Pattern B versioning.</span
               >
             </div>
           </div>
@@ -715,8 +742,8 @@
             <tr>
               <td><code>nom/</code></td>
               <td>
-                VT emulator test harness (x/vt) — feeds InlineRenderer output to a real virtual
-                terminal, asserts on screen buffer
+                VT emulator test harness (x/vt) — feeds InlineRenderer output to
+                a real virtual terminal, asserts on screen buffer
               </td>
               <td>10</td>
               <td><span class="badge badge-fixed">Done</span></td>
@@ -724,29 +751,35 @@
             <tr>
               <td><code>tui/</code></td>
               <td>
-                teatest/v2 E2E tests — drives real Bubble Tea program loop (startup, scroll, help,
-                quit, ctrl+c, WindowSize)
+                teatest/v2 E2E tests — drives real Bubble Tea program loop
+                (startup, scroll, help, quit, ctrl+c, WindowSize)
               </td>
               <td>7</td>
               <td><span class="badge badge-fixed">Done</span></td>
             </tr>
             <tr>
               <td><code>table/</code></td>
-              <td>Golden-file snapshot tests (basic, footer, single-column, empty)</td>
+              <td>
+                Golden-file snapshot tests (basic, footer, single-column, empty)
+              </td>
               <td>4</td>
               <td><span class="badge badge-fixed">Done</span></td>
             </tr>
             <tr>
               <td><code>tree/</code></td>
               <td>
-                Golden-file snapshot tests (simple, deep nesting, single node, mixed branching)
+                Golden-file snapshot tests (simple, deep nesting, single node,
+                mixed branching)
               </td>
               <td>4</td>
               <td><span class="badge badge-fixed">Done</span></td>
             </tr>
             <tr>
               <td><code>nom/</code></td>
-              <td>Existing golden tests + race tests + concurrency tests + fuzz tests</td>
+              <td>
+                Existing golden tests + race tests + concurrency tests + fuzz
+                tests
+              </td>
               <td>5+</td>
               <td><span class="badge badge-fixed">Done</span></td>
             </tr>
@@ -760,18 +793,21 @@
             <div class="text">
               <strong>Nix flake full automation</strong>
               <span
-                >build, test, test-race, lint, tidy, govulncheck, setup-workspace, fmt, flake-check
-                — all as nix apps. Go 1.26.4.</span
+                >build, test, test-race, lint, tidy, govulncheck,
+                setup-workspace, fmt, flake-check — all as nix apps. Go
+                1.26.4.</span
               >
             </div>
           </div>
           <div class="strength">
             <div class="check">+</div>
             <div class="text">
-              <strong>golangci-lint v2 with depguard allow-lists per module</strong>
+              <strong
+                >golangci-lint v2 with depguard allow-lists per module</strong
+              >
               <span
-                >0 issues across 18 modules. Enforces Pattern B invariant (root can't import
-                sub-modules).</span
+                >0 issues across 18 modules. Enforces Pattern B invariant (root
+                can't import sub-modules).</span
               >
             </div>
           </div>
@@ -779,7 +815,10 @@
             <div class="check">+</div>
             <div class="text">
               <strong>Pre-commit hook for non-Nix users</strong>
-              <span><code>.pre-commit-config.yaml</code> mirrors flake checks.</span>
+              <span
+                ><code>.pre-commit-config.yaml</code> mirrors flake
+                checks.</span
+              >
             </div>
           </div>
         </div>
@@ -792,17 +831,18 @@
           <h3>TUI E2E test assertions are shallow</h3>
           <div class="where">tui/teatest_helpers_test.go</div>
           <p>
-            The teatest tests drive the real program loop and verify it doesn't crash, but
-            assertions are limited to "program produces output containing 's'" (timing) and
-            FinalModel state checks. The bubbletea v2 diff renderer writes cursor-positioning escape
-            sequences, not full text frames — so content-level assertions require feeding teatest
-            output through a VT emulator or parsing the diff stream. The tests prove the program
-            loop works end-to-end but don't verify specific rendered content within the live
-            program.
+            The teatest tests drive the real program loop and verify it doesn't
+            crash, but assertions are limited to "program produces output
+            containing 's'" (timing) and FinalModel state checks. The bubbletea
+            v2 diff renderer writes cursor-positioning escape sequences, not
+            full text frames — so content-level assertions require feeding
+            teatest output through a VT emulator or parsing the diff stream. The
+            tests prove the program loop works end-to-end but don't verify
+            specific rendered content within the live program.
           </p>
           <div class="callout callout-solution">
-            <strong>Next step:</strong> Feed teatest output to x/vt emulator and assert on screen
-            buffer content for true visual E2E.
+            <strong>Next step:</strong> Feed teatest output to x/vt emulator and
+            assert on screen buffer content for true visual E2E.
           </div>
         </div>
 
@@ -811,10 +851,12 @@
           <h3>VT tests cover InlineRenderer but not TUI View output</h3>
           <div class="where">nom/vttest_test.go, tui/</div>
           <p>
-            The VT harness tests the InlineRenderer's escape sequences perfectly. The TUI's
-            <code>View()</code> output (alt screen, mouse mode, cursor enable) is not VT-tested. The
-            teatest tests prove the program runs but the specific escape sequences the TUI emits are
-            only indirectly verified.
+            The VT harness tests the InlineRenderer's escape sequences
+            perfectly. The TUI's
+            <code>View()</code> output (alt screen, mouse mode, cursor enable)
+            is not VT-tested. The teatest tests prove the program runs but the
+            specific escape sequences the TUI emits are only indirectly
+            verified.
           </p>
         </div>
 
@@ -823,8 +865,8 @@
           <h3>v1.0.0 is prepared but not tagged</h3>
           <div class="where">TODO_LIST.md item #16</div>
           <p>
-            API is frozen (ADR 006), CHANGELOG is ready, checklist is done. Awaiting owner to cut
-            the tag. All blocking work is complete.
+            API is frozen (ADR 006), CHANGELOG is ready, checklist is done.
+            Awaiting owner to cut the tag. All blocking work is complete.
           </p>
         </div>
 
@@ -833,8 +875,8 @@
           <h3>Community launch not started</h3>
           <div class="where">TODO_LIST.md item #14</div>
           <p>
-            No Reddit post, no Awesome Go submission. Library is functional and documented but
-            unknown to the community.
+            No Reddit post, no Awesome Go submission. Library is functional and
+            documented but unknown to the community.
           </p>
         </div>
 
@@ -854,8 +896,9 @@
             <tr>
               <td>1</td>
               <td>
-                <strong>cellbuf rewrite of InlineRenderer redraw engine</strong> — evaluated,
-                deferred (experimental package, current code works + is VT-tested)
+                <strong>cellbuf rewrite of InlineRenderer redraw engine</strong>
+                — evaluated, deferred (experimental package, current code works
+                + is VT-tested)
               </td>
               <td><span class="badge badge-medium">Medium</span></td>
               <td><span class="badge badge-high">High</span></td>
@@ -863,29 +906,38 @@
             <tr>
               <td>2</td>
               <td>
-                <strong>VT-based TUI View testing</strong> — feed TUI output through x/vt emulator
-                for screen-level assertions
+                <strong>VT-based TUI View testing</strong> — feed TUI output
+                through x/vt emulator for screen-level assertions
               </td>
               <td><span class="badge badge-high">High</span></td>
               <td><span class="badge badge-medium">Medium</span></td>
             </tr>
             <tr>
               <td>3</td>
-              <td><strong>Community launch</strong> — Reddit r/golang post, Awesome Go PR</td>
+              <td>
+                <strong>Community launch</strong> — Reddit r/golang post,
+                Awesome Go PR
+              </td>
               <td><span class="badge badge-high">High</span></td>
               <td><span class="badge badge-low">Low</span></td>
             </tr>
             <tr>
               <td>4</td>
-              <td><strong>v1.0.0 tag</strong> — API frozen, just needs <code>git tag</code></td>
+              <td>
+                <strong>v1.0.0 tag</strong> — API frozen, just needs
+                <code>git tag</code>
+              </td>
               <td><span class="badge badge-high">High</span></td>
               <td><span class="badge badge-low">Low</span></td>
             </tr>
             <tr>
               <td>5</td>
               <td>
-                <strong>Integration test for cross-module render dispatch</strong> — test that
-                importing a sub-module activates its format via init() registry
+                <strong
+                  >Integration test for cross-module render dispatch</strong
+                >
+                — test that importing a sub-module activates its format via
+                init() registry
               </td>
               <td><span class="badge badge-medium">Medium</span></td>
               <td><span class="badge badge-low">Low</span></td>
@@ -893,8 +945,8 @@
             <tr>
               <td>6</td>
               <td>
-                <strong>Streaming HTML renderer real-world usage</strong> — markup module has
-                streaming HTML but no real consumer feedback
+                <strong>Streaming HTML renderer real-world usage</strong> —
+                markup module has streaming HTML but no real consumer feedback
               </td>
               <td><span class="badge badge-low">Low</span></td>
               <td><span class="badge badge-low">Low</span></td>
@@ -908,81 +960,97 @@
         <div class="card card-solution">
           <h4>Nothing is fucked up.</h4>
           <p>
-            Zero broken tests. Zero lint issues. Zero vulnerabilities. Zero skipped tests. Zero race
-            conditions. Zero TODOs in production code. The codebase is clean.
+            Zero broken tests. Zero lint issues. Zero vulnerabilities. Zero
+            skipped tests. Zero race conditions. Zero TODOs in production code.
+            The codebase is clean.
           </p>
         </div>
 
         <div class="callout callout-warning">
           <strong>Known annoyance (not our fault):</strong>
-          BuildFlow pre-commit hook auto-deletes <code>CODE_OF_CONDUCT.md</code>. Workaround: use
-          <code>git commit --no-verify</code> or verify CoC is intact after commit. This is a
-          BuildFlow config issue, not fixable in-repo.
+          BuildFlow pre-commit hook auto-deletes
+          <code>CODE_OF_CONDUCT.md</code>. Workaround: use
+          <code>git commit --no-verify</code> or verify CoC is intact after
+          commit. This is a BuildFlow config issue, not fixable in-repo.
         </div>
 
         <div class="callout callout-warning">
-          <strong>3 minor gopls unused-func warnings</strong> (info-level, not errors):
-          <code>nom/test_helpers_test.go:72</code> (unused method <code>snapshot</code>),
-          <code>nom/test_helpers_test.go:76</code> (unused method <code>has</code>),
-          <code>table/registry_test.go:12</code> (unused var <code>errWriteFailed</code>). These are
-          test helper leftovers — safe to delete but not harmful.
+          <strong>3 minor gopls unused-func warnings</strong> (info-level, not
+          errors): <code>nom/test_helpers_test.go:72</code> (unused method
+          <code>snapshot</code>),
+          <code>nom/test_helpers_test.go:76</code> (unused method
+          <code>has</code>), <code>table/registry_test.go:12</code> (unused var
+          <code>errWriteFailed</code>). These are test helper leftovers — safe
+          to delete but not harmful.
         </div>
 
         <!-- ================================================================== -->
-        <h2 id="improve"><span class="num">05</span>(e) What We Should Improve</h2>
+        <h2 id="improve">
+          <span class="num">05</span>(e) What We Should Improve
+        </h2>
 
         <div class="grid-2">
           <div class="card card-warning">
             <h4>Deepen E2E test assertions</h4>
             <p>
-              Current teatest tests verify "program doesn't crash" but not "program renders correct
-              content". Feed teatest output through x/vt to assert on actual screen cells.
+              Current teatest tests verify "program doesn't crash" but not
+              "program renders correct content". Feed teatest output through
+              x/vt to assert on actual screen cells.
             </p>
           </div>
           <div class="card card-warning">
             <h4>Remove 3 unused test helpers</h4>
             <p>
-              <code>snapshot()</code>, <code>has()</code> in nom, <code>errWriteFailed</code> in
-              table. Trivial cleanup — just delete the dead code.
+              <code>snapshot()</code>, <code>has()</code> in nom,
+              <code>errWriteFailed</code> in table. Trivial cleanup — just
+              delete the dead code.
             </p>
           </div>
           <div class="card card-warning">
             <h4>Add nom example to README</h4>
             <p>
-              The NOM inline renderer is the most impressive feature but the README focuses on
-              table/tree output formats. A NOM example would showcase real-time progress for CLI
-              tools.
+              The NOM inline renderer is the most impressive feature but the
+              README focuses on table/tree output formats. A NOM example would
+              showcase real-time progress for CLI tools.
             </p>
           </div>
           <div class="card card-warning">
             <h4>PhysicalLineCount integer-division approximation</h4>
             <p>
-              <code>nom/terminal.go:33</code> computes line wrapping via integer division of
-              StringWidth by terminal width. This is approximate — wide characters and combining
-              marks can cause off-by-one. cellbuf would fix this but is deferred.
+              <code>nom/terminal.go:33</code> computes line wrapping via integer
+              division of StringWidth by terminal width. This is approximate —
+              wide characters and combining marks can cause off-by-one. cellbuf
+              would fix this but is deferred.
             </p>
           </div>
           <div class="card card-warning">
             <h4>tree/ and markdown/ hand-rolled ANSI</h4>
             <p>
               10 hand-rolled <code>\033[...m</code> SGR constants across
-              <code>tree/tree.go</code> and <code>markdown/markdown.go</code>. Correct but doesn't
-              support 256-color/true-color. Kept for dependency-lightness — revisit if these modules
-              ever need rich color.
+              <code>tree/tree.go</code> and <code>markdown/markdown.go</code>.
+              Correct but doesn't support 256-color/true-color. Kept for
+              dependency-lightness — revisit if these modules ever need rich
+              color.
             </p>
           </div>
           <div class="card card-warning">
             <h4>No coverage threshold enforcement</h4>
             <p>
-              782 tests is substantial but there's no CI coverage gate or coverage report. Adding
+              782 tests is substantial but there's no CI coverage gate or
+              coverage report. Adding
               <code>-coverprofile</code> + a threshold would catch regressions.
             </p>
           </div>
         </div>
 
         <!-- ================================================================== -->
-        <h2 id="next25"><span class="num">06</span>(f) Top 25 Things to Do Next</h2>
-        <p>Sorted by impact &times; (1 &divide; effort) &mdash; highest value first.</p>
+        <h2 id="next25">
+          <span class="num">06</span>(f) Top 25 Things to Do Next
+        </h2>
+        <p>
+          Sorted by impact &times; (1 &divide; effort) &mdash; highest value
+          first.
+        </p>
 
         <table>
           <thead>
@@ -998,7 +1066,8 @@
             <tr>
               <td>1</td>
               <td>
-                <strong>Cut v1.0.0 tag</strong> — API frozen, CHANGELOG done, just
+                <strong>Cut v1.0.0 tag</strong> — API frozen, CHANGELOG done,
+                just
                 <code>git tag v1.0.0</code>
               </td>
               <td><span class="badge badge-critical">Critical</span></td>
@@ -1008,8 +1077,9 @@
             <tr>
               <td>2</td>
               <td>
-                <strong>Delete 3 unused test helpers</strong> (<code>snapshot</code>,
-                <code>has</code>, <code>errWriteFailed</code>)
+                <strong>Delete 3 unused test helpers</strong>
+                (<code>snapshot</code>, <code>has</code>,
+                <code>errWriteFailed</code>)
               </td>
               <td><span class="badge badge-low">Low</span></td>
               <td><span class="badge badge-low">5min</span></td>
@@ -1018,8 +1088,8 @@
             <tr>
               <td>3</td>
               <td>
-                <strong>Post to r/golang</strong> — "I built a Go library for 16 CLI output formats
-                + real-time progress"
+                <strong>Post to r/golang</strong> — "I built a Go library for 16
+                CLI output formats + real-time progress"
               </td>
               <td><span class="badge badge-critical">Critical</span></td>
               <td><span class="badge badge-low">30min</span></td>
@@ -1027,7 +1097,10 @@
             </tr>
             <tr>
               <td>4</td>
-              <td><strong>Submit to Awesome Go</strong> — PR to github.com/avelino/awesome-go</td>
+              <td>
+                <strong>Submit to Awesome Go</strong> — PR to
+                github.com/avelino/awesome-go
+              </td>
               <td><span class="badge badge-high">High</span></td>
               <td><span class="badge badge-low">30min</span></td>
               <td>Community</td>
@@ -1035,8 +1108,8 @@
             <tr>
               <td>5</td>
               <td>
-                <strong>Deepen teatest assertions</strong> — pipe teatest output through x/vt for
-                screen-level content checks
+                <strong>Deepen teatest assertions</strong> — pipe teatest output
+                through x/vt for screen-level content checks
               </td>
               <td><span class="badge badge-high">High</span></td>
               <td><span class="badge badge-medium">2h</span></td>
@@ -1045,8 +1118,8 @@
             <tr>
               <td>6</td>
               <td>
-                <strong>VT-test the TUI View() output</strong> — verify alt-screen, mouse mode,
-                cursor enable sequences
+                <strong>VT-test the TUI View() output</strong> — verify
+                alt-screen, mouse mode, cursor enable sequences
               </td>
               <td><span class="badge badge-high">High</span></td>
               <td><span class="badge badge-medium">2h</span></td>
@@ -1055,7 +1128,8 @@
             <tr>
               <td>7</td>
               <td>
-                <strong>Add NOM example to README</strong> — show InlineRenderer real-time progress
+                <strong>Add NOM example to README</strong> — show InlineRenderer
+                real-time progress
               </td>
               <td><span class="badge badge-high">High</span></td>
               <td><span class="badge badge-low">1h</span></td>
@@ -1064,8 +1138,8 @@
             <tr>
               <td>8</td>
               <td>
-                <strong>Add coverage report to CI</strong> — <code>-coverprofile</code> + badge +
-                threshold gate
+                <strong>Add coverage report to CI</strong> —
+                <code>-coverprofile</code> + badge + threshold gate
               </td>
               <td><span class="badge badge-medium">Medium</span></td>
               <td><span class="badge badge-medium">2h</span></td>
@@ -1074,7 +1148,10 @@
             <tr>
               <td>9</td>
               <td>
-                <strong>Add integration test: importing a sub-module activates its format</strong>
+                <strong
+                  >Add integration test: importing a sub-module activates its
+                  format</strong
+                >
               </td>
               <td><span class="badge badge-medium">Medium</span></td>
               <td><span class="badge badge-low">1h</span></td>
@@ -1083,8 +1160,8 @@
             <tr>
               <td>10</td>
               <td>
-                <strong>Add golden tests for graph renderers</strong> (DOT, Mermaid) — currently no
-                golden coverage
+                <strong>Add golden tests for graph renderers</strong> (DOT,
+                Mermaid) — currently no golden coverage
               </td>
               <td><span class="badge badge-medium">Medium</span></td>
               <td><span class="badge badge-low">1h</span></td>
@@ -1093,7 +1170,8 @@
             <tr>
               <td>11</td>
               <td>
-                <strong>Add golden tests for D2 renderer</strong> — shapes, arrows, SQL tables
+                <strong>Add golden tests for D2 renderer</strong> — shapes,
+                arrows, SQL tables
               </td>
               <td><span class="badge badge-medium">Medium</span></td>
               <td><span class="badge badge-low">1h</span></td>
@@ -1108,7 +1186,11 @@
             </tr>
             <tr>
               <td>13</td>
-              <td><strong>Add golden tests for serialization (JSON/YAML/TOML)</strong></td>
+              <td>
+                <strong
+                  >Add golden tests for serialization (JSON/YAML/TOML)</strong
+                >
+              </td>
               <td><span class="badge badge-low">Low</span></td>
               <td><span class="badge badge-low">30min</span></td>
               <td>Testing</td>
@@ -1116,8 +1198,8 @@
             <tr>
               <td>14</td>
               <td>
-                <strong>Fix PhysicalLineCount approximation</strong> — use cellbuf.WidthString or
-                ansi.Wordwrap for accurate wrapping
+                <strong>Fix PhysicalLineCount approximation</strong> — use
+                cellbuf.WidthString or ansi.Wordwrap for accurate wrapping
               </td>
               <td><span class="badge badge-medium">Medium</span></td>
               <td><span class="badge badge-medium">2h</span></td>
@@ -1126,7 +1208,8 @@
             <tr>
               <td>15</td>
               <td>
-                <strong>Add examples/ for NOM inline renderer</strong> — standalone runnable demo
+                <strong>Add examples/ for NOM inline renderer</strong> —
+                standalone runnable demo
               </td>
               <td><span class="badge badge-medium">Medium</span></td>
               <td><span class="badge badge-low">1h</span></td>
@@ -1134,7 +1217,10 @@
             </tr>
             <tr>
               <td>16</td>
-              <td><strong>Add go-output as a dependency in BuildFlow</strong> — dogfooding</td>
+              <td>
+                <strong>Add go-output as a dependency in BuildFlow</strong> —
+                dogfooding
+              </td>
               <td><span class="badge badge-medium">Medium</span></td>
               <td><span class="badge badge-medium">3h</span></td>
               <td>Dogfood</td>
@@ -1142,8 +1228,10 @@
             <tr>
               <td>17</td>
               <td>
-                <strong>Benchmark: InlineRenderer frame diff vs. cellbuf</strong> — measure if
-                cellbuf is faster
+                <strong
+                  >Benchmark: InlineRenderer frame diff vs. cellbuf</strong
+                >
+                — measure if cellbuf is faster
               </td>
               <td><span class="badge badge-low">Low</span></td>
               <td><span class="badge badge-medium">2h</span></td>
@@ -1152,8 +1240,8 @@
             <tr>
               <td>18</td>
               <td>
-                <strong>Add TUI display mode toggle key</strong> — currently only programmatic
-                (SetDisplayMode)
+                <strong>Add TUI display mode toggle key</strong> — currently
+                only programmatic (SetDisplayMode)
               </td>
               <td><span class="badge badge-low">Low</span></td>
               <td><span class="badge badge-low">30min</span></td>
@@ -1162,8 +1250,8 @@
             <tr>
               <td>19</td>
               <td>
-                <strong>Add godoc examples (Example* functions)</strong> — runnable examples in
-                godoc
+                <strong>Add godoc examples (Example* functions)</strong> —
+                runnable examples in godoc
               </td>
               <td><span class="badge badge-medium">Medium</span></td>
               <td><span class="badge badge-medium">2h</span></td>
@@ -1172,8 +1260,8 @@
             <tr>
               <td>20</td>
               <td>
-                <strong>Add fuzz tests for escape module</strong> — only has 4 fuzz tests, could add
-                more
+                <strong>Add fuzz tests for escape module</strong> — only has 4
+                fuzz tests, could add more
               </td>
               <td><span class="badge badge-low">Low</span></td>
               <td><span class="badge badge-low">1h</span></td>
@@ -1182,7 +1270,8 @@
             <tr>
               <td>21</td>
               <td>
-                <strong>Add fuzz tests for nom format_activity_label</strong> — user input in labels
+                <strong>Add fuzz tests for nom format_activity_label</strong> —
+                user input in labels
               </td>
               <td><span class="badge badge-low">Low</span></td>
               <td><span class="badge badge-low">1h</span></td>
@@ -1191,8 +1280,11 @@
             <tr>
               <td>22</td>
               <td>
-                <strong>Update FEATURES.md with testing infrastructure features</strong> — VT tests,
-                teatest, golden expansion not listed
+                <strong
+                  >Update FEATURES.md with testing infrastructure
+                  features</strong
+                >
+                — VT tests, teatest, golden expansion not listed
               </td>
               <td><span class="badge badge-low">Low</span></td>
               <td><span class="badge badge-low">30min</span></td>
@@ -1201,8 +1293,10 @@
             <tr>
               <td>23</td>
               <td>
-                <strong>Add CHANGELOG entry for charmbracelet/x integration</strong> — missing from
-                Unreleased section
+                <strong
+                  >Add CHANGELOG entry for charmbracelet/x integration</strong
+                >
+                — missing from Unreleased section
               </td>
               <td><span class="badge badge-low">Low</span></td>
               <td><span class="badge badge-low">15min</span></td>
@@ -1211,8 +1305,8 @@
             <tr>
               <td>24</td>
               <td>
-                <strong>Consider x/cellbuf once it stabilizes</strong> — re-evaluate the
-                InlineRenderer rewrite
+                <strong>Consider x/cellbuf once it stabilizes</strong> —
+                re-evaluate the InlineRenderer rewrite
               </td>
               <td><span class="badge badge-medium">Medium</span></td>
               <td><span class="badge badge-high">High</span></td>
@@ -1221,8 +1315,8 @@
             <tr>
               <td>25</td>
               <td>
-                <strong>Add streaming progress consumer interface</strong> — allow external systems
-                to subscribe to NOM events via channel
+                <strong>Add streaming progress consumer interface</strong> —
+                allow external systems to subscribe to NOM events via channel
               </td>
               <td><span class="badge badge-medium">Medium</span></td>
               <td><span class="badge badge-high">High</span></td>
@@ -1232,42 +1326,52 @@
         </table>
 
         <!-- ================================================================== -->
-        <h2 id="question"><span class="num">07</span>(g) The #1 Question I Cannot Answer Myself</h2>
+        <h2 id="question">
+          <span class="num">07</span>(g) The #1 Question I Cannot Answer Myself
+        </h2>
 
         <div class="card card-problem">
-          <h4>Should we ship v1.0.0 now, or wait for deeper E2E test coverage?</h4>
+          <h4>
+            Should we ship v1.0.0 now, or wait for deeper E2E test coverage?
+          </h4>
           <p>
-            The API is frozen (ADR 006). All 18 modules build, test, lint, and race-clean. 782 tests
-            exist. The codebase has 9 ADRs, 173 features (161 fully functional), and zero open bugs.
-            By every objective measure, this is v1.0.0-ready.
+            The API is frozen (ADR 006). All 18 modules build, test, lint, and
+            race-clean. 782 tests exist. The codebase has 9 ADRs, 173 features
+            (161 fully functional), and zero open bugs. By every objective
+            measure, this is v1.0.0-ready.
           </p>
           <p>
-            <strong>But:</strong> the TUI E2E tests are shallow (they verify the program loop works
-            but not that specific content renders correctly). The VT tests cover the InlineRenderer
-            deeply but the TUI View() path is only indirectly tested. If we ship v1.0.0 now, we
-            commit to API stability for code whose TUI rendering has thin E2E coverage. If we wait,
-            we risk never shipping (perfect is the enemy of shipped).
+            <strong>But:</strong> the TUI E2E tests are shallow (they verify the
+            program loop works but not that specific content renders correctly).
+            The VT tests cover the InlineRenderer deeply but the TUI View() path
+            is only indirectly tested. If we ship v1.0.0 now, we commit to API
+            stability for code whose TUI rendering has thin E2E coverage. If we
+            wait, we risk never shipping (perfect is the enemy of shipped).
           </p>
           <p>
-            <strong>This is a business judgment call, not a technical one.</strong>
-            Only the project owner can weigh the risk of v1 API lock-in against the momentum cost of
-            delaying the release.
+            <strong
+              >This is a business judgment call, not a technical one.</strong
+            >
+            Only the project owner can weigh the risk of v1 API lock-in against
+            the momentum cost of delaying the release.
           </p>
         </div>
 
         <div class="card card-solution">
           <h4>My recommendation if asked</h4>
           <p>
-            Ship v1.0.0 now. The TUI E2E depth is a post-release improvement, not a release blocker.
-            The API surface (output formats, table/tree/graph types, NOM events) is stable and
-            well-tested. The TUI rendering paths can be deepened without breaking API changes.
-            Waiting for "perfect testing" before v1 is how projects die in perpetual beta.
+            Ship v1.0.0 now. The TUI E2E depth is a post-release improvement,
+            not a release blocker. The API surface (output formats,
+            table/tree/graph types, NOM events) is stable and well-tested. The
+            TUI rendering paths can be deepened without breaking API changes.
+            Waiting for "perfect testing" before v1 is how projects die in
+            perpetual beta.
           </p>
         </div>
 
         <footer class="footer">
-          Generated 2026-07-02 00:53 &middot; All metrics verified against source code &middot; 18
-          modules, 782 tests, 0 issues
+          Generated 2026-07-02 00:53 &middot; All metrics verified against
+          source code &middot; 18 modules, 782 tests, 0 issues
         </footer>
       </main>
     </div>
@@ -1307,7 +1411,5 @@
         });
       })();
     </script>
-
-    
   </body>
 </html>

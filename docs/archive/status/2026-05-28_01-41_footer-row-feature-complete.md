@@ -207,21 +207,21 @@ The current decision is to **skip footer in data formats** — but I'm not 100% 
 
 ## Build & Test Matrix
 
-| Module        | Build | Tests                                 | Lint                 |
-| ------------- | ----- | ------------------------------------- | -------------------- |
-| Root (.)      | ✅    | ⚠️ pre-existing `TestBrandedIDFormat` | ✅ 0 issues          |
-| delimited     | ✅    | ✅                                    | ⚠️ pre-existing dupl |
-| d2            | ✅    | ✅                                    | ✅ 0 issues          |
-| enum          | ✅    | ✅                                    | ✅ 0 issues          |
-| escape        | ✅    | ✅                                    | ✅ 0 issues          |
-| graph         | ✅    | ✅                                    | ✅ 0 issues          |
-| markup        | ✅    | ✅                                    | ✅ 0 issues          |
-| plantuml      | ✅    | ✅                                    | ✅ 0 issues          |
-| serialization | ✅    | ✅                                    | ✅ 0 issues          |
-| table         | ✅    | ✅                                    | ✅ 0 issues          |
-| testhelpers   | ✅    | ✅                                    | ✅ 0 issues          |
-| integration   | ✅    | ✅                                    | — (no own go.mod)    |
-| examples      | ✅    | — (no test files)                     | —                    |
+| Module        | Build | Tests                                | Lint                |
+| ------------- | ----- | ------------------------------------ | ------------------- |
+| Root (.)      | ✅    | ⚠️ pre-existing `TestBrandedIDFormat` | ✅ 0 issues         |
+| delimited     | ✅    | ✅                                   | ⚠️ pre-existing dupl |
+| d2            | ✅    | ✅                                   | ✅ 0 issues         |
+| enum          | ✅    | ✅                                   | ✅ 0 issues         |
+| escape        | ✅    | ✅                                   | ✅ 0 issues         |
+| graph         | ✅    | ✅                                   | ✅ 0 issues         |
+| markup        | ✅    | ✅                                   | ✅ 0 issues         |
+| plantuml      | ✅    | ✅                                   | ✅ 0 issues         |
+| serialization | ✅    | ✅                                   | ✅ 0 issues         |
+| table         | ✅    | ✅                                   | ✅ 0 issues         |
+| testhelpers   | ✅    | ✅                                   | ✅ 0 issues         |
+| integration   | ✅    | ✅                                   | — (no own go.mod)   |
+| examples      | ✅    | — (no test files)                    | —                   |
 
 ---
 

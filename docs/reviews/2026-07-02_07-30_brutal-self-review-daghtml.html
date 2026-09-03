@@ -29,14 +29,14 @@
         --solution: var(--color-blue);
         --warning: var(--color-yellow);
         --font-heading:
-          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          Helvetica, Arial, sans-serif;
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         --font-body:
-          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          Helvetica, Arial, sans-serif;
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         --font-mono:
-          ui-monospace, "Cascadia Code", "Source Code Pro", "JetBrains Mono", Menlo, Consolas,
-          monospace;
+          ui-monospace, "Cascadia Code", "Source Code Pro", "JetBrains Mono",
+          Menlo, Consolas, monospace;
       }
       * {
         box-sizing: border-box;
@@ -135,15 +135,27 @@
       }
       .card-problem {
         border-left-color: var(--problem);
-        background: color-mix(in srgb, var(--problem) 8%, var(--surface-raised));
+        background: color-mix(
+          in srgb,
+          var(--problem) 8%,
+          var(--surface-raised)
+        );
       }
       .card-solution {
         border-left-color: var(--solution);
-        background: color-mix(in srgb, var(--solution) 8%, var(--surface-raised));
+        background: color-mix(
+          in srgb,
+          var(--solution) 8%,
+          var(--surface-raised)
+        );
       }
       .card-warning {
         border-left-color: var(--warning);
-        background: color-mix(in srgb, var(--warning) 8%, var(--surface-raised));
+        background: color-mix(
+          in srgb,
+          var(--warning) 8%,
+          var(--surface-raised)
+        );
       }
       .stat-grid {
         display: grid;
@@ -226,11 +238,19 @@
       }
       .issue-critical {
         border-left-color: var(--problem);
-        background: color-mix(in srgb, var(--problem) 8%, var(--surface-raised));
+        background: color-mix(
+          in srgb,
+          var(--problem) 8%,
+          var(--surface-raised)
+        );
       }
       .issue-fixed {
         border-left-color: var(--solution);
-        background: color-mix(in srgb, var(--solution) 8%, var(--surface-raised));
+        background: color-mix(
+          in srgb,
+          var(--solution) 8%,
+          var(--surface-raised)
+        );
       }
       .issue h3 {
         margin-bottom: 0.3rem;
@@ -349,7 +369,19 @@
     </style>
   </head>
   <body>
-    <div style="background:#1a1a2e;border-left:3px solid #50fa7b;padding:12px 16px;margin:16px 0;border-radius:4px;"><strong>✅ Resolved (2026-08-04):</strong> All 6 critical issues fixed. All 8 execution steps done. daghtml shipped in v0.23.0. Tagging/pushing done by owner. Consumer repos refactored.</div>
+    <div
+      style="
+        background: #1a1a2e;
+        border-left: 3px solid #50fa7b;
+        padding: 12px 16px;
+        margin: 16px 0;
+        border-radius: 4px;
+      "
+    >
+      <strong>✅ Resolved (2026-08-04):</strong> All 6 critical issues fixed.
+      All 8 execution steps done. daghtml shipped in v0.23.0. Tagging/pushing
+      done by owner. Consumer repos refactored.
+    </div>
 
     <div class="top-bar">
       <span>BRUTAL SELF-REVIEW</span>
@@ -362,8 +394,9 @@
         <div class="hero-badge">Post-Execution Reflection</div>
         <h1>daghtml SDK Cross-Project Extraction</h1>
         <p class="hero-subtitle">
-          Honest assessment of extracting a shared DAG visualization SDK from two auditlog projects
-          into go-output/daghtml — what was forgotten, what was stupid, and what was fixed.
+          Honest assessment of extracting a shared DAG visualization SDK from
+          two auditlog projects into go-output/daghtml — what was forgotten,
+          what was stupid, and what was fixed.
         </p>
       </div>
 
@@ -397,14 +430,16 @@
         <h3>Zoom buttons broken: JS uses class selectors, HTML had IDs</h3>
         <p class="where">samber-do-auditlog/html.templ:649-651</p>
         <p>
-          The daghtml <code>graph.js</code> queries <code>.graph-zoom-in</code> (class), but the
-          samber-do-auditlog buttons still had <code>id="graph-zoom-in"</code>. The zoom-in,
-          zoom-out, and fit-to-view buttons were <strong>completely non-functional</strong>. This
-          was never caught because the build was broken so no one could click the buttons.
+          The daghtml <code>graph.js</code> queries
+          <code>.graph-zoom-in</code> (class), but the samber-do-auditlog
+          buttons still had <code>id="graph-zoom-in"</code>. The zoom-in,
+          zoom-out, and fit-to-view buttons were
+          <strong>completely non-functional</strong>. This was never caught
+          because the build was broken so no one could click the buttons.
         </p>
         <p>
-          <span class="badge badge-fixed">FIXED</span> Changed <code>id=</code> to
-          <code>class=</code> on all three buttons.
+          <span class="badge badge-fixed">FIXED</span> Changed
+          <code>id=</code> to <code>class=</code> on all three buttons.
         </p>
       </div>
 
@@ -413,13 +448,15 @@
         <h3>go.mod missing daghtml dependency</h3>
         <p class="where">samber-do-auditlog/go.mod</p>
         <p>
-          The adapter file imported <code>daghtml</code> but <code>go.mod</code> was never updated.
-          The build was broken across sessions. This should have been the very first step, not an
+          The adapter file imported <code>daghtml</code> but
+          <code>go.mod</code> was never updated. The build was broken across
+          sessions. This should have been the very first step, not an
           afterthought.
         </p>
         <p>
-          <span class="badge badge-fixed">FIXED</span> Added <code>require</code> +
-          <code>replace</code> + <code>go mod tidy</code>.
+          <span class="badge badge-fixed">FIXED</span> Added
+          <code>require</code> + <code>replace</code> +
+          <code>go mod tidy</code>.
         </p>
       </div>
 
@@ -429,12 +466,13 @@
         <p class="where">samber-do-auditlog/html_templ.go</p>
         <p>
           The generated Go code was stale — it still contained the old 306-line
-          <code>renderGraph()</code> function. <code>templ generate</code> was never executed, so
-          even if the build worked, the old code would have been compiled.
+          <code>renderGraph()</code> function. <code>templ generate</code> was
+          never executed, so even if the build worked, the old code would have
+          been compiled.
         </p>
         <p>
-          <span class="badge badge-fixed">FIXED</span> Ran <code>templ generate</code> to
-          regenerate.
+          <span class="badge badge-fixed">FIXED</span> Ran
+          <code>templ generate</code> to regenerate.
         </p>
       </div>
 
@@ -443,33 +481,37 @@
         <h3>daghtml had 7 lint violations that were never caught</h3>
         <p class="where">daghtml/render.go, assets.go, daghtml_test.go</p>
         <p>
-          The module was created and committed without ever running <code>nix run .#lint</code>.
-          Violations: depguard missing <code>embed</code>/<code>html/template</code>/<code
-            >bytes</code
-          >
-          in allow-lists, gosec G203 on intentional <code>template.CSS/JS</code> injection,
-          gochecknoglobals on compiled templates, wrapcheck on JSON encoder error, and SA9003 empty
-          if-branch in a test.
+          The module was created and committed without ever running
+          <code>nix run .#lint</code>. Violations: depguard missing
+          <code>embed</code>/<code>html/template</code>/<code>bytes</code> in
+          allow-lists, gosec G203 on intentional
+          <code>template.CSS/JS</code> injection, gochecknoglobals on compiled
+          templates, wrapcheck on JSON encoder error, and SA9003 empty if-branch
+          in a test.
         </p>
         <p>
-          <span class="badge badge-fixed">FIXED</span> Added nolint comments, fixed depguard
-          allow-lists, wrapped error, removed empty branch.
+          <span class="badge badge-fixed">FIXED</span> Added nolint comments,
+          fixed depguard allow-lists, wrapped error, removed empty branch.
         </p>
       </div>
 
       <div class="issue issue-critical">
         <span class="severity severity-critical">Missing Golden Tests</span>
-        <h3>daghtml had no golden file tests — inconsistent with 6 other renderer modules</h3>
+        <h3>
+          daghtml had no golden file tests — inconsistent with 6 other renderer
+          modules
+        </h3>
         <p class="where">daghtml/</p>
         <p>
           graph/, d2/, tree/, serialization/, plantuml/, markup/ all have
-          <code>golden_test.go</code> using <code>charmbracelet/x/exp/golden</code>. daghtml had
-          none. Golden tests catch visual regressions in rendered output — critical for an HTML
-          renderer.
+          <code>golden_test.go</code> using
+          <code>charmbracelet/x/exp/golden</code>. daghtml had none. Golden
+          tests catch visual regressions in rendered output — critical for an
+          HTML renderer.
         </p>
         <p>
-          <span class="badge badge-fixed">FIXED</span> Added 4 golden tests (simple DAG, error node,
-          empty DAG, embedded section).
+          <span class="badge badge-fixed">FIXED</span> Added 4 golden tests
+          (simple DAG, error node, empty DAG, embedded section).
         </p>
       </div>
 
@@ -478,13 +520,13 @@
         <h3>AGENTS.md module map never updated for daghtml</h3>
         <p class="where">go-output/AGENTS.md</p>
         <p>
-          The module count said "18 modules" and the table had no daghtml entry. A new module was
-          created, committed, and consumed by two external repos — but the project's own
-          documentation didn't mention it.
+          The module count said "18 modules" and the table had no daghtml entry.
+          A new module was created, committed, and consumed by two external
+          repos — but the project's own documentation didn't mention it.
         </p>
         <p>
-          <span class="badge badge-fixed">FIXED</span> Added daghtml to module map, pattern section,
-          and updated count to 19.
+          <span class="badge badge-fixed">FIXED</span> Added daghtml to module
+          map, pattern section, and updated count to 19.
         </p>
       </div>
 
@@ -493,71 +535,86 @@
       <div class="card card-problem">
         <h3>The <code>strings.Replace</code> marker injection hack</h3>
         <p>
-          samber-do-auditlog's <code>html.go</code> renders HTML to a buffer, then does
+          samber-do-auditlog's <code>html.go</code> renders HTML to a buffer,
+          then does
           <code
-            >strings.Replace(buf.String(), "// DAGHTML_JS_INJECTION_POINT", daghtml.Script(),
-            1)</code
-          >. This is a magic string in a templ file, replaced at runtime. It's fragile: if the
-          marker is accidentally modified or removed, the graph JS silently disappears. This exists
-          because templ v0.3.x doesn't evaluate expressions inside <code>&lt;script&gt;</code> text
-          nodes — but it should be documented better.
+            >strings.Replace(buf.String(), "// DAGHTML_JS_INJECTION_POINT",
+            daghtml.Script(), 1)</code
+          >. This is a magic string in a templ file, replaced at runtime. It's
+          fragile: if the marker is accidentally modified or removed, the graph
+          JS silently disappears. This exists because templ v0.3.x doesn't
+          evaluate expressions inside <code>&lt;script&gt;</code> text nodes —
+          but it should be documented better.
         </p>
       </div>
 
       <div class="card card-problem">
         <h3>Leaving the build broken across sessions</h3>
         <p>
-          The samber-do-auditlog build was broken at the end of a previous session and stayed broken
-          until this session. No partial work should ever be left in a non-compiling state — at
-          minimum, the go.mod should have been updated before stopping.
+          The samber-do-auditlog build was broken at the end of a previous
+          session and stayed broken until this session. No partial work should
+          ever be left in a non-compiling state — at minimum, the go.mod should
+          have been updated before stopping.
         </p>
       </div>
 
-      <h2 id="better"><span class="num">03</span> What Could I Have Done Better?</h2>
+      <h2 id="better">
+        <span class="num">03</span> What Could I Have Done Better?
+      </h2>
 
       <ul>
         <li>
-          <strong>Complete tasks in one pass.</strong> The samber-do-auditlog refactoring should
-          have been finished — go.mod, templ generate, tests, commit — all in the same session.
-          Instead it was left at ~50% (not 70% as claimed).
+          <strong>Complete tasks in one pass.</strong> The samber-do-auditlog
+          refactoring should have been finished — go.mod, templ generate, tests,
+          commit — all in the same session. Instead it was left at ~50% (not 70%
+          as claimed).
         </li>
         <li>
-          <strong>Cross-check selectors.</strong> When extracting shared JS that uses
-          <code>querySelector(".graph-zoom-in")</code>, verify every consumer's HTML uses class= not
-          id=. This is a 30-second check that would have caught the bug.
+          <strong>Cross-check selectors.</strong> When extracting shared JS that
+          uses <code>querySelector(".graph-zoom-in")</code>, verify every
+          consumer's HTML uses class= not id=. This is a 30-second check that
+          would have caught the bug.
         </li>
         <li>
           <strong>Lint immediately.</strong> Any new module should pass
-          <code>nix run .#lint</code> before its first commit. The 7 lint violations should never
-          have existed in a committed module.
+          <code>nix run .#lint</code> before its first commit. The 7 lint
+          violations should never have existed in a committed module.
         </li>
         <li>
-          <strong>Add golden tests as part of module creation.</strong> Not as a follow-up "quality
-          improvement" task weeks later.
+          <strong>Add golden tests as part of module creation.</strong> Not as a
+          follow-up "quality improvement" task weeks later.
         </li>
       </ul>
 
-      <h2 id="improve"><span class="num">04</span> What Could I Still Improve?</h2>
+      <h2 id="improve">
+        <span class="num">04</span> What Could I Still Improve?
+      </h2>
 
       <div class="card card-warning">
         <h3>daghtml <code>Node.Color</code> is a bare <code>string</code></h3>
         <p>
-          The <code>Color</code> field accepts any string — <code>"var(--success)"</code>,
-          <code>"#ff0000"</code>, <code>"red"</code>, or garbage. A <code>Color</code> type with
-          constructors (<code>CSSVar("success")</code>, <code>Hex("#ff0000")</code>) would be more
-          type-safe. <strong>Verdict: YAGNI for now</strong> — the current bare string is
-          intentional simplicity for a zero-dep SDK. Revisit if the pattern causes bugs.
+          The <code>Color</code> field accepts any string —
+          <code>"var(--success)"</code>, <code>"#ff0000"</code>,
+          <code>"red"</code>, or garbage. A <code>Color</code> type with
+          constructors (<code>CSSVar("success")</code>,
+          <code>Hex("#ff0000")</code>) would be more type-safe.
+          <strong>Verdict: YAGNI for now</strong> — the current bare string is
+          intentional simplicity for a zero-dep SDK. Revisit if the pattern
+          causes bugs.
         </p>
       </div>
 
       <div class="card card-warning">
         <h3>Versioning strategy unresolved</h3>
         <p>
-          daghtml is zero-dep (like testhelpers) and independently publishable. But it hasn't been
-          tagged yet. Both consumers use <code>v0.0.0-…</code> + <code>replace</code> for local dev.
-          For releases, daghtml needs its own semver tag.
-          <strong>Recommendation: tag as <code>daghtml/v0.1.0</code> independently</strong>,
-          matching the testhelpers pattern.
+          daghtml is zero-dep (like testhelpers) and independently publishable.
+          But it hasn't been tagged yet. Both consumers use
+          <code>v0.0.0-…</code> + <code>replace</code> for local dev. For
+          releases, daghtml needs its own semver tag.
+          <strong
+            >Recommendation: tag as
+            <code>daghtml/v0.1.0</code> independently</strong
+          >, matching the testhelpers pattern.
         </p>
       </div>
 
@@ -567,30 +624,37 @@
         <h3>Yes — twice.</h3>
         <ul>
           <li>
-            <strong>"~70% DONE" was actually ~50%.</strong> The summary claimed samber-do-auditlog
-            was 70% complete. It had a critical bug (button selectors), a broken build, stale
-            generated code, and uncommitted changes. Realistically it was 50% — the adapter was
-            written but nothing was verified or wired up.
+            <strong>"~70% DONE" was actually ~50%.</strong> The summary claimed
+            samber-do-auditlog was 70% complete. It had a critical bug (button
+            selectors), a broken build, stale generated code, and uncommitted
+            changes. Realistically it was 50% — the adapter was written but
+            nothing was verified or wired up.
           </li>
           <li>
-            <strong>"17/17 tests passing" included an empty test.</strong> One test
-            (<code>TestRender_ContainsGraphJS</code>) had an <code>if</code> branch with only a
-            comment — it asserted nothing about "Sugiyama" or "Kahn" being present. The SA9003
-            empty-branch linter caught this lie. Effectively 16 real tests.
+            <strong>"17/17 tests passing" included an empty test.</strong> One
+            test (<code>TestRender_ContainsGraphJS</code>) had an
+            <code>if</code> branch with only a comment — it asserted nothing
+            about "Sugiyama" or "Kahn" being present. The SA9003 empty-branch
+            linter caught this lie. Effectively 16 real tests.
           </li>
         </ul>
       </div>
 
-      <h2 id="less-stupid"><span class="num">06</span> How Can We Be Less Stupid?</h2>
+      <h2 id="less-stupid">
+        <span class="num">06</span> How Can We Be Less Stupid?
+      </h2>
 
       <ul>
         <li>
-          <strong>Run <code>nix run .#lint</code> on every new module before committing.</strong> No
-          exceptions.
+          <strong
+            >Run <code>nix run .#lint</code> on every new module before
+            committing.</strong
+          >
+          No exceptions.
         </li>
         <li>
-          <strong>Never leave a build broken.</strong> If you stop mid-refactor, the go.mod must
-          compile.
+          <strong>Never leave a build broken.</strong> If you stop mid-refactor,
+          the go.mod must compile.
         </li>
         <li>
           <strong
@@ -599,40 +663,48 @@
           >
         </li>
         <li>
-          <strong>Cross-check HTML selectors against JS querySelector calls.</strong> 30 seconds
-          saves a silent bug.
+          <strong
+            >Cross-check HTML selectors against JS querySelector calls.</strong
+          >
+          30 seconds saves a silent bug.
         </li>
         <li>
-          <strong>Be honest about completion percentage.</strong> "Tests pass" means nothing if a
-          test asserts nothing.
+          <strong>Be honest about completion percentage.</strong> "Tests pass"
+          means nothing if a test asserts nothing.
         </li>
       </ul>
 
       <h2 id="ghosts"><span class="num">07</span> Ghost Systems?</h2>
       <p>
-        <strong>None found.</strong> daghtml is properly integrated and consumed by both auditlog
-        projects. The <code>StyleSheet()</code>, <code>GraphHTML()</code>, and
-        <code>Write()</code> functions are part of the public API for standalone/future use —
-        they're documented and tested, not ghost code.
+        <strong>None found.</strong> daghtml is properly integrated and consumed
+        by both auditlog projects. The <code>StyleSheet()</code>,
+        <code>GraphHTML()</code>, and <code>Write()</code> functions are part of
+        the public API for standalone/future use — they're documented and
+        tested, not ghost code.
       </p>
 
       <h2 id="scope"><span class="num">08</span> Scope Creep?</h2>
       <p>
-        <strong>No.</strong> The daghtml module is well-scoped: render DAGs as interactive SVG in
-        HTML. It doesn't try to be a general graph library, a layout engine, or a template
-        framework. The extraction eliminated genuine duplication (800+ lines of identical JS across
-        two repos).
+        <strong>No.</strong> The daghtml module is well-scoped: render DAGs as
+        interactive SVG in HTML. It doesn't try to be a general graph library, a
+        layout engine, or a template framework. The extraction eliminated
+        genuine duplication (800+ lines of identical JS across two repos).
       </p>
 
-      <h2 id="removed"><span class="num">09</span> Did We Remove Something Useful?</h2>
+      <h2 id="removed">
+        <span class="num">09</span> Did We Remove Something Useful?
+      </h2>
       <p>
-        <strong>No.</strong> The old inline JS was correctly extracted into the SDK. The adapter
-        pattern preserves all domain-specific logic (colors, tooltips, error flags) in the consumer.
-        No functionality was lost.
+        <strong>No.</strong> The old inline JS was correctly extracted into the
+        SDK. The adapter pattern preserves all domain-specific logic (colors,
+        tooltips, error flags) in the consumer. No functionality was lost.
       </p>
 
       <h2 id="split-brains"><span class="num">10</span> Split Brains?</h2>
-      <p><strong>None — but worth monitoring.</strong> Three graph-like data models exist:</p>
+      <p>
+        <strong>None — but worth monitoring.</strong> Three graph-like data
+        models exist:
+      </p>
       <table>
         <thead>
           <tr>
@@ -664,9 +736,11 @@
         </tbody>
       </table>
       <p>
-        These serve genuinely different domains (browser vs text diagrams vs terminal). Forcing them
-        together would violate daghtml's zero-dep constraint and create leaky abstractions. The
-        <code>AGENTS.md</code> module map omission was a documentation split brain — now fixed.
+        These serve genuinely different domains (browser vs text diagrams vs
+        terminal). Forcing them together would violate daghtml's zero-dep
+        constraint and create leaky abstractions. The
+        <code>AGENTS.md</code> module map omission was a documentation split
+        brain — now fixed.
       </p>
 
       <h2 id="tests"><span class="num">11</span> How Are We Doing On Tests?</h2>
@@ -691,9 +765,10 @@
       </div>
       <p>
         Coverage is solid. The XSS fuzz tests in both consumers already had
-        <code>stripJSONScripts()</code> helpers that correctly handle JSON script blocks — no
-        changes were needed there. The golden file tests catch visual regressions. The main gap was
-        the empty if-branch (now fixed) that gave false confidence.
+        <code>stripJSONScripts()</code> helpers that correctly handle JSON
+        script blocks — no changes were needed there. The golden file tests
+        catch visual regressions. The main gap was the empty if-branch (now
+        fixed) that gave false confidence.
       </p>
 
       <h2 id="plan"><span class="num">12</span> Execution Plan Completed</h2>
@@ -701,49 +776,68 @@
       <div class="migration-step">
         <div class="migration-num">1</div>
         <div class="migration-content">
-          <h4>Add daghtml dep to go.mod <span class="badge badge-fixed">DONE</span></h4>
+          <h4>
+            Add daghtml dep to go.mod
+            <span class="badge badge-fixed">DONE</span>
+          </h4>
           <p>require + replace + go mod tidy</p>
         </div>
       </div>
       <div class="migration-step">
         <div class="migration-num">2</div>
         <div class="migration-content">
-          <h4>Fix button IDs → classes <span class="badge badge-fixed">DONE</span></h4>
+          <h4>
+            Fix button IDs → classes <span class="badge badge-fixed">DONE</span>
+          </h4>
           <p>Critical bug: zoom buttons were non-functional</p>
         </div>
       </div>
       <div class="migration-step">
         <div class="migration-num">3</div>
         <div class="migration-content">
-          <h4>Run templ generate + build <span class="badge badge-fixed">DONE</span></h4>
+          <h4>
+            Run templ generate + build
+            <span class="badge badge-fixed">DONE</span>
+          </h4>
           <p>Regenerated html_templ.go, build passes</p>
         </div>
       </div>
       <div class="migration-step">
         <div class="migration-num">4</div>
         <div class="migration-content">
-          <h4>Fix tests + golden file <span class="badge badge-fixed">DONE</span></h4>
+          <h4>
+            Fix tests + golden file <span class="badge badge-fixed">DONE</span>
+          </h4>
           <p>All tests pass, golden file regenerated</p>
         </div>
       </div>
       <div class="migration-step">
         <div class="migration-num">5</div>
         <div class="migration-content">
-          <h4>Commit samber-do-auditlog refactor <span class="badge badge-fixed">DONE</span></h4>
+          <h4>
+            Commit samber-do-auditlog refactor
+            <span class="badge badge-fixed">DONE</span>
+          </h4>
           <p>BuildFlow passed 28/28 checks</p>
         </div>
       </div>
       <div class="migration-step">
         <div class="migration-num">6</div>
         <div class="migration-content">
-          <h4>Update AGENTS.md + CHANGELOG <span class="badge badge-fixed">DONE</span></h4>
+          <h4>
+            Update AGENTS.md + CHANGELOG
+            <span class="badge badge-fixed">DONE</span>
+          </h4>
           <p>Module map, pattern entry, count updated to 19</p>
         </div>
       </div>
       <div class="migration-step">
         <div class="migration-num">7</div>
         <div class="migration-content">
-          <h4>Add golden tests + fix all lint <span class="badge badge-fixed">DONE</span></h4>
+          <h4>
+            Add golden tests + fix all lint
+            <span class="badge badge-fixed">DONE</span>
+          </h4>
           <p>4 golden tests, 7 lint violations fixed</p>
         </div>
       </div>
@@ -751,7 +845,8 @@
         <div class="migration-num">8</div>
         <div class="migration-content">
           <h4>
-            Verify all 19 modules build + test + lint <span class="badge badge-fixed">DONE</span>
+            Verify all 19 modules build + test + lint
+            <span class="badge badge-fixed">DONE</span>
           </h4>
           <p>daghtml: 25/25 tests pass, lint clean</p>
         </div>
@@ -796,10 +891,9 @@
       </table>
 
       <div class="footer">
-        Generated 2026-07-02 · Brutal Self-Review · daghtml SDK Extraction · go-output monorepo
+        Generated 2026-07-02 · Brutal Self-Review · daghtml SDK Extraction ·
+        go-output monorepo
       </div>
     </div>
-
-    
   </body>
 </html>

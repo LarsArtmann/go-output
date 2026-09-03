@@ -23,8 +23,8 @@
 
 ### 2. Golden-File Tests for CQRS Streaming Output (6 formats)
 
-- `serialization/cqrs_golden_test.go` — TestGolden*CQRS*{JSON,YAML,TOML,JSONL}
-- `delimited/cqrs_golden_test.go` — TestGolden*CQRS*{CSV,TSV}
+- `serialization/cqrs_golden_test.go` — TestGolden_CQRS_{JSON,YAML,TOML,JSONL}
+- `delimited/cqrs_golden_test.go` — TestGolden_CQRS_{CSV,TSV}
 - Generated `testdata/TestGolden_CQRS_*.golden` files — lock in exact byte output including trailing `\n` from encoders
 - These make the trailing-newline behavior difference (encoder vs marshal) explicit and regression-proof
 
@@ -199,33 +199,33 @@ The `wsl_v5` warnings on projections.go and tree_builder.go persist in the IDE. 
 
 ## F. TOP 25 THINGS TO DO NEXT 📋
 
-| #   | Task                                                                                             | Impact   | Effort | Deps |
-| --- | ------------------------------------------------------------------------------------------------ | -------- | ------ | ---- |
-| 1   | **COMMIT THE WORK** in logical chunks (golden tests, registry rewire, DOT refactor, tests, docs) | Critical | 5m     | —    |
-| 2   | Add XML golden test + rewire XML registry dispatch to CQRS                                       | High     | 10m    | —    |
-| 3   | Audit direct callers of old renderer structs (JSONTableRenderer, etc.) — are they used?          | High     | 15m    | —    |
-| 4   | Verify CQRS error-path coverage (WriteJSON/WriteCSV error writer tests)                          | High     | 10m    | —    |
-| 5   | Delete `renderTable` helper if old structs are dead                                              | Med      | 5m     | 3    |
-| 6   | Resolve gopls wsl_v5 warnings (restart gopls OR add whitespace)                                  | Low      | 5m     | —    |
-| 7   | Delete old renderer structs (DOTRenderer, MermaidRenderer, etc.) — v0.31.0                       | High     | 30m    | 3    |
-| 8   | Add `tree.RenderMarkdown(root)` / `tree.WriteMarkdown(w, root)` CQRS                             | Med      | 10m    | —    |
-| 9   | Add `daghtml.Render(g)` / `daghtml.Write(w, g)` CQRS                                             | Low      | 10m    | —    |
-| 10  | Add streaming benchmarks (old marshal vs new encoder)                                            | Med      | 15m    | —    |
-| 11  | Add HTML/AsciiDoc golden tests                                                                   | Low      | 10m    | —    |
-| 12  | Update FEATURES.md with complete CQRS API listing                                                | Med      | 10m    | —    |
-| 13  | Add CQRS example to `examples/` directory                                                        | Med      | 10m    | —    |
-| 14  | Consider FrozenTable/FrozenTree types for real immutability (v1.0.0)                             | High     | 30m    | —    |
-| 15  | Unify `RenderOptions` struct → functional options for root dispatch                              | Med      | 15m    | —    |
-| 16  | Tag testhelpers/ v0.30.0 (D4)                                                                    | Low      | 3m     | 1    |
-| 17  | Tag root v0.30.0                                                                                 | Critical | 2m     | 1-14 |
-| 18  | Add `TreeBuilder.AddChildren(parentID, children...)` bulk method                                 | Low      | 5m     | —    |
-| 19  | Add streaming HTML writer (or keep documented as buffered)                                       | Low      | 15m    | —    |
-| 20  | Add streaming AsciiDoc writer (or keep documented as buffered)                                   | Low      | 15m    | —    |
-| 21  | Run `art-dupl -t 24` on new DOT code (renderDOTString etc.)                                      | Low      | 5m     | —    |
-| 22  | Investigate whether any downstream project depends on exact registry output bytes                | High     | 20m    | —    |
-| 23  | Add migration note to README about trailing-newline behavior change                              | Med      | 5m     | —    |
-| 24  | Consider adding a `WithNoTrailingNewline()` option for backward compat                           | Low      | 10m    | —    |
-| 25  | Write v0.31.0 decision record (old struct deletion plan)                                         | Med      | 15m    | 3,7  |
+| #  | Task                                                                                             | Impact   | Effort | Deps |
+| -- | ------------------------------------------------------------------------------------------------ | -------- | ------ | ---- |
+| 1  | **COMMIT THE WORK** in logical chunks (golden tests, registry rewire, DOT refactor, tests, docs) | Critical | 5m     | —    |
+| 2  | Add XML golden test + rewire XML registry dispatch to CQRS                                       | High     | 10m    | —    |
+| 3  | Audit direct callers of old renderer structs (JSONTableRenderer, etc.) — are they used?          | High     | 15m    | —    |
+| 4  | Verify CQRS error-path coverage (WriteJSON/WriteCSV error writer tests)                          | High     | 10m    | —    |
+| 5  | Delete `renderTable` helper if old structs are dead                                              | Med      | 5m     | 3    |
+| 6  | Resolve gopls wsl_v5 warnings (restart gopls OR add whitespace)                                  | Low      | 5m     | —    |
+| 7  | Delete old renderer structs (DOTRenderer, MermaidRenderer, etc.) — v0.31.0                       | High     | 30m    | 3    |
+| 8  | Add `tree.RenderMarkdown(root)` / `tree.WriteMarkdown(w, root)` CQRS                             | Med      | 10m    | —    |
+| 9  | Add `daghtml.Render(g)` / `daghtml.Write(w, g)` CQRS                                             | Low      | 10m    | —    |
+| 10 | Add streaming benchmarks (old marshal vs new encoder)                                            | Med      | 15m    | —    |
+| 11 | Add HTML/AsciiDoc golden tests                                                                   | Low      | 10m    | —    |
+| 12 | Update FEATURES.md with complete CQRS API listing                                                | Med      | 10m    | —    |
+| 13 | Add CQRS example to `examples/` directory                                                        | Med      | 10m    | —    |
+| 14 | Consider FrozenTable/FrozenTree types for real immutability (v1.0.0)                             | High     | 30m    | —    |
+| 15 | Unify `RenderOptions` struct → functional options for root dispatch                              | Med      | 15m    | —    |
+| 16 | Tag testhelpers/ v0.30.0 (D4)                                                                    | Low      | 3m     | 1    |
+| 17 | Tag root v0.30.0                                                                                 | Critical | 2m     | 1-14 |
+| 18 | Add `TreeBuilder.AddChildren(parentID, children...)` bulk method                                 | Low      | 5m     | —    |
+| 19 | Add streaming HTML writer (or keep documented as buffered)                                       | Low      | 15m    | —    |
+| 20 | Add streaming AsciiDoc writer (or keep documented as buffered)                                   | Low      | 15m    | —    |
+| 21 | Run `art-dupl -t 24` on new DOT code (renderDOTString etc.)                                      | Low      | 5m     | —    |
+| 22 | Investigate whether any downstream project depends on exact registry output bytes                | High     | 20m    | —    |
+| 23 | Add migration note to README about trailing-newline behavior change                              | Med      | 5m     | —    |
+| 24 | Consider adding a `WithNoTrailingNewline()` option for backward compat                           | Low      | 10m    | —    |
+| 25 | Write v0.31.0 decision record (old struct deletion plan)                                         | Med      | 15m    | 3,7  |
 
 ---
 

@@ -110,33 +110,33 @@
 
 ## F. TOP 25 THINGS TO DO NEXT
 
-| #   | Task                                                                                       | Impact   | Effort |
-| --- | ------------------------------------------------------------------------------------------ | -------- | ------ |
-| 1   | **Rename `getTableDataMarshaler`→`getTableDataRenderer`** + comments + test name           | Medium   | 5 min  |
-| 2   | **M4: Rename Render→Draw/Format** in nom module + update all callers + remove NOTE markers | Medium   | 20 min |
-| 3   | **Split `integration/roundtrip_test.go`** (528 lines → 2 files)                            | Low      | 10 min |
-| 4   | **Split `nom/subscriber_test.go`** (523 lines → 2 files)                                   | Low      | 10 min |
-| 5   | **Split `tui/event_sequence_test.go`** (497 lines → 2 files)                               | Low      | 10 min |
-| 6   | **Fix nom timing cache test isolation** — use t.TempDir() for cache path                   | Medium   | 10 min |
-| 7   | **Update ADR 006** — regenerate frozen symbol list                                         | Medium   | 15 min |
-| 8   | **Govulncheck** across all modules                                                         | High     | 5 min  |
-| 9   | **Verify BDD module** uses new type names correctly                                        | Low      | 5 min  |
-| 10  | **Refresh examples** to show new API patterns (LineStyle, NodeShape, Direction)            | Medium   | 15 min |
-| 11  | **Update README.md** code examples with new type names                                     | Medium   | 10 min |
-| 12  | **Cut v1.0.0 tag** — after above items done                                                | Critical | 5 min  |
-| 13  | **Draft r/golang show-and-tell post**                                                      | Medium   | 10 min |
-| 14  | **Draft Awesome Go submission**                                                            | Medium   | 10 min |
-| 15  | **Coverage audit** — verify all changed modules still ≥90%                                 | Medium   | 10 min |
-| 16  | **Dependency audit** — verify no new deps added by sprint                                  | Low      | 5 min  |
-| 17  | **GitHub release notes draft** for v1.0.0                                                  | Medium   | 15 min |
-| 18  | **Migration guide** for v0.12→v1.0 users                                                   | Medium   | 20 min |
-| 19  | **Godoc review** — verify all new exported types have proper doc comments                  | Low      | 10 min |
-| 20  | **Integration test for Direction** — verify D2/DOT renderers accept Direction              | Medium   | 15 min |
-| 21  | **Benchmark impact check** — verify renames didn't add allocations                         | Low      | 10 min |
-| 22  | **Update `docs/adr/006-api-stability.md`** — remove GraphID reference, update type list    | Low      | 10 min |
-| 23  | **Review `graph/CHANGELOG.md`** — update stale Marshaler reference                         | Low      | 2 min  |
-| 24  | **Verify `go.work.example`** is up to date with current modules                            | Low      | 2 min  |
-| 25  | **Celebrate** — this is a genuinely excellent codebase                                     | High     | ∞      |
+| #  | Task                                                                                       | Impact   | Effort |
+| -- | ------------------------------------------------------------------------------------------ | -------- | ------ |
+| 1  | **Rename `getTableDataMarshaler`→`getTableDataRenderer`** + comments + test name           | Medium   | 5 min  |
+| 2  | **M4: Rename Render→Draw/Format** in nom module + update all callers + remove NOTE markers | Medium   | 20 min |
+| 3  | **Split `integration/roundtrip_test.go`** (528 lines → 2 files)                            | Low      | 10 min |
+| 4  | **Split `nom/subscriber_test.go`** (523 lines → 2 files)                                   | Low      | 10 min |
+| 5  | **Split `tui/event_sequence_test.go`** (497 lines → 2 files)                               | Low      | 10 min |
+| 6  | **Fix nom timing cache test isolation** — use t.TempDir() for cache path                   | Medium   | 10 min |
+| 7  | **Update ADR 006** — regenerate frozen symbol list                                         | Medium   | 15 min |
+| 8  | **Govulncheck** across all modules                                                         | High     | 5 min  |
+| 9  | **Verify BDD module** uses new type names correctly                                        | Low      | 5 min  |
+| 10 | **Refresh examples** to show new API patterns (LineStyle, NodeShape, Direction)            | Medium   | 15 min |
+| 11 | **Update README.md** code examples with new type names                                     | Medium   | 10 min |
+| 12 | **Cut v1.0.0 tag** — after above items done                                                | Critical | 5 min  |
+| 13 | **Draft r/golang show-and-tell post**                                                      | Medium   | 10 min |
+| 14 | **Draft Awesome Go submission**                                                            | Medium   | 10 min |
+| 15 | **Coverage audit** — verify all changed modules still ≥90%                                 | Medium   | 10 min |
+| 16 | **Dependency audit** — verify no new deps added by sprint                                  | Low      | 5 min  |
+| 17 | **GitHub release notes draft** for v1.0.0                                                  | Medium   | 15 min |
+| 18 | **Migration guide** for v0.12→v1.0 users                                                   | Medium   | 20 min |
+| 19 | **Godoc review** — verify all new exported types have proper doc comments                  | Low      | 10 min |
+| 20 | **Integration test for Direction** — verify D2/DOT renderers accept Direction              | Medium   | 15 min |
+| 21 | **Benchmark impact check** — verify renames didn't add allocations                         | Low      | 10 min |
+| 22 | **Update `docs/adr/006-api-stability.md`** — remove GraphID reference, update type list    | Low      | 10 min |
+| 23 | **Review `graph/CHANGELOG.md`** — update stale Marshaler reference                         | Low      | 2 min  |
+| 24 | **Verify `go.work.example`** is up to date with current modules                            | Low      | 2 min  |
+| 25 | **Celebrate** — this is a genuinely excellent codebase                                     | High     | ∞      |
 
 ---
 

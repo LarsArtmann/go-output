@@ -66,33 +66,33 @@ Nothing. Zero regressions. All tests pass. Zero lint issues across all 16 module
 
 ## F. TOP 25 THINGS TO DO NEXT (sorted by impact/effort)
 
-| #   | Task                                                                                        | Impact   | Effort |
-| --- | ------------------------------------------------------------------------------------------- | -------- | ------ |
-| 1   | **Update docs** — FORMAT_ARCHITECTURE.md, DOMAIN_LANGUAGE.md, README.md with new type names | High     | Low    |
-| 2   | **Update CHANGELOG.md** with v1.0.0 breaking changes section                                | High     | Low    |
-| 3   | **Update FEATURES.md** with new types (Direction, LineStyle, ActivityCounts, NodeShape)     | High     | Low    |
-| 4   | **M4: Rename Render→Draw/Format** in nom module — last split-brain item                     | Medium   | Medium |
-| 5   | **Update AGENTS.md** — reflect new type names, removed fields, new patterns                 | Medium   | Low    |
-| 6   | **Update ADR 006** — regenerate frozen symbol list with new names                           | Medium   | Medium |
-| 7   | **Fix nom timing cache test isolation** — use t.TempDir() for cache path                    | Medium   | Low    |
-| 8   | **Add Direction unit tests** — test ToD2Direction/ToRankDir for all 4 values                | Medium   | Low    |
-| 9   | **Add LineStyle unit tests** — test IsValid/String for all values                           | Low      | Low    |
-| 10  | **Add NodeShape test coverage** — verify ParseNodeShape works after rename                  | Low      | Low    |
-| 11  | **Rename `NOTE(split-brain)` markers** that remain in code (M4 still has one)               | Low      | Low    |
-| 12  | **Coverage check** — verify all changed modules still ≥90%                                  | Medium   | Low    |
-| 13  | **Govulncheck** — run across all modules before v1.0.0                                      | High     | Low    |
-| 14  | **Cut v1.0.0 tag** — after docs updated and ADR refreshed                                   | Critical | Low    |
-| 15  | **Submit to Awesome Go** — draft submission text                                            | Medium   | Low    |
-| 16  | **Post to r/golang** — draft show-and-tell post                                             | Medium   | Low    |
-| 17  | **Add deprecation guide** — migration doc for v0.12→v1.0 users                              | Medium   | Medium |
-| 18  | **Integration test for Direction** — verify D2 and DOT renderers accept Direction           | Medium   | Medium |
-| 19  | **Benchmark impact check** — verify renames didn't introduce allocations                    | Low      | Medium |
-| 20  | **Godoc review** — verify all new exported types have proper doc comments                   | Medium   | Low    |
-| 21  | **Example refresh** — update examples to use new type names (LineStyle, NodeShape, etc.)    | Medium   | Low    |
-| 22  | **BDD test refresh** — verify bdd module uses new type names                                | Low      | Low    |
-| 23  | **Dependency audit** — verify no new deps were added                                        | Low      | Low    |
-| 24  | **README badge update** — coverage %, version                                               | Low      | Low    |
-| 25  | **GitHub release notes** — draft for v1.0.0 tag                                             | Medium   | Low    |
+| #  | Task                                                                                        | Impact   | Effort |
+| -- | ------------------------------------------------------------------------------------------- | -------- | ------ |
+| 1  | **Update docs** — FORMAT_ARCHITECTURE.md, DOMAIN_LANGUAGE.md, README.md with new type names | High     | Low    |
+| 2  | **Update CHANGELOG.md** with v1.0.0 breaking changes section                                | High     | Low    |
+| 3  | **Update FEATURES.md** with new types (Direction, LineStyle, ActivityCounts, NodeShape)     | High     | Low    |
+| 4  | **M4: Rename Render→Draw/Format** in nom module — last split-brain item                     | Medium   | Medium |
+| 5  | **Update AGENTS.md** — reflect new type names, removed fields, new patterns                 | Medium   | Low    |
+| 6  | **Update ADR 006** — regenerate frozen symbol list with new names                           | Medium   | Medium |
+| 7  | **Fix nom timing cache test isolation** — use t.TempDir() for cache path                    | Medium   | Low    |
+| 8  | **Add Direction unit tests** — test ToD2Direction/ToRankDir for all 4 values                | Medium   | Low    |
+| 9  | **Add LineStyle unit tests** — test IsValid/String for all values                           | Low      | Low    |
+| 10 | **Add NodeShape test coverage** — verify ParseNodeShape works after rename                  | Low      | Low    |
+| 11 | **Rename `NOTE(split-brain)` markers** that remain in code (M4 still has one)               | Low      | Low    |
+| 12 | **Coverage check** — verify all changed modules still ≥90%                                  | Medium   | Low    |
+| 13 | **Govulncheck** — run across all modules before v1.0.0                                      | High     | Low    |
+| 14 | **Cut v1.0.0 tag** — after docs updated and ADR refreshed                                   | Critical | Low    |
+| 15 | **Submit to Awesome Go** — draft submission text                                            | Medium   | Low    |
+| 16 | **Post to r/golang** — draft show-and-tell post                                             | Medium   | Low    |
+| 17 | **Add deprecation guide** — migration doc for v0.12→v1.0 users                              | Medium   | Medium |
+| 18 | **Integration test for Direction** — verify D2 and DOT renderers accept Direction           | Medium   | Medium |
+| 19 | **Benchmark impact check** — verify renames didn't introduce allocations                    | Low      | Medium |
+| 20 | **Godoc review** — verify all new exported types have proper doc comments                   | Medium   | Low    |
+| 21 | **Example refresh** — update examples to use new type names (LineStyle, NodeShape, etc.)    | Medium   | Low    |
+| 22 | **BDD test refresh** — verify bdd module uses new type names                                | Low      | Low    |
+| 23 | **Dependency audit** — verify no new deps were added                                        | Low      | Low    |
+| 24 | **README badge update** — coverage %, version                                               | Low      | Low    |
+| 25 | **GitHub release notes** — draft for v1.0.0 tag                                             | Medium   | Low    |
 
 ---
 

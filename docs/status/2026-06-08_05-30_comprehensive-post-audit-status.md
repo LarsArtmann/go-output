@@ -49,7 +49,7 @@ The project is in **excellent shape**. All 14 modules build, test (with race det
 | -------------------------------------------- | ---------------------------- | -------------------------------------------------- | -------------------------------- |
 | `escape.D2` + `escape.MermaidText` optimized | `escape/escape.go` | `strings.NewReplacer` — 1 allocation instead of 4 |
 | `NodesPtr`/`EdgesPtr` removed | `graph.go`, 5 callers, tests | `AddNode`/`AddEdge` + `NodeEdgeAppender` interface |
-| AsciiDoc escaping completed | `markup/asciidoc.go`, tests | Escapes `                                         |`, `\*`, `\_`, `` ` ``, `~`, `^` |
+| AsciiDoc escaping completed | `markup/asciidoc.go`, tests | Escapes `|`, `\*`, `\_`, `` ` ``, `~`, `^` |
 | lipgloss style cached | `table/table.go` | Base style allocated once, reused per-row |
 
 ### Documentation Updates (pending commit)
@@ -154,54 +154,54 @@ Sorted by impact × effort (Pareto):
 
 ### P0 — Do Immediately (30 min total)
 
-| #   | Task                                                    | Effort | Why                                                    |
-| --- | ------------------------------------------------------- | ------ | ------------------------------------------------------ |
-| 1   | Extract `escape.SlugifyID()` and unify all 4 call sites | 15 min | Fixes inconsistent sanitization (latent bug in DOT/D2) |
-| 2   | Add race test for `RegisterTableDataMarshaler`          | 10 min | Proves thread safety of global registry                |
-| 3   | Restore `CODE_OF_CONDUCT.md`                            | 2 min  | Was auto-deleted; should exist for community           |
+| # | Task                                                    | Effort | Why                                                    |
+| - | ------------------------------------------------------- | ------ | ------------------------------------------------------ |
+| 1 | Extract `escape.SlugifyID()` and unify all 4 call sites | 15 min | Fixes inconsistent sanitization (latent bug in DOT/D2) |
+| 2 | Add race test for `RegisterTableDataMarshaler`          | 10 min | Proves thread safety of global registry                |
+| 3 | Restore `CODE_OF_CONDUCT.md`                            | 2 min  | Was auto-deleted; should exist for community           |
 
 ### P1 — Architecture Improvements (2 hours)
 
-| #   | Task                                                      | Effort | Why                                   |
-| --- | --------------------------------------------------------- | ------ | ------------------------------------- |
-| 4   | Invert `formatCapabilities` — sub-modules register shapes | 45 min | Biggest remaining architectural seam  |
-| 5   | Merge HTMLRenderer/StreamingHTMLRenderer generation       | 30 min | Single source of truth for HTML table |
-| 6   | Use `html/template` for HTML generation                   | 30 min | Robust auto-escaping                  |
-| 7   | Inline `marshal.go` wrappers into `serialization/`        | 20 min | Core shouldn't own marshaling         |
+| # | Task                                                      | Effort | Why                                   |
+| - | --------------------------------------------------------- | ------ | ------------------------------------- |
+| 4 | Invert `formatCapabilities` — sub-modules register shapes | 45 min | Biggest remaining architectural seam  |
+| 5 | Merge HTMLRenderer/StreamingHTMLRenderer generation       | 30 min | Single source of truth for HTML table |
+| 6 | Use `html/template` for HTML generation                   | 30 min | Robust auto-escaping                  |
+| 7 | Inline `marshal.go` wrappers into `serialization/`        | 20 min | Core shouldn't own marshaling         |
 
 ### P2 — Naming Cleanup (45 min, breaking changes)
 
-| #   | Task                                               | Effort | Why                               |
-| --- | -------------------------------------------------- | ------ | --------------------------------- |
-| 8   | Rename `TableDataBase` → `TableDataStore`          | 15 min | Current name leaks implementation |
-| 9   | Rename `GraphRendererMixin` → `GraphRendererState` | 15 min | "Mixin" leaks pattern choice      |
-| 10  | Remove `DTO` suffix from serialization types       | 15 min | Java-ism in Go code               |
+| #  | Task                                               | Effort | Why                               |
+| -- | -------------------------------------------------- | ------ | --------------------------------- |
+| 8  | Rename `TableDataBase` → `TableDataStore`          | 15 min | Current name leaks implementation |
+| 9  | Rename `GraphRendererMixin` → `GraphRendererState` | 15 min | "Mixin" leaks pattern choice      |
+| 10 | Remove `DTO` suffix from serialization types       | 15 min | Java-ism in Go code               |
 
 ### P3 — Polish (1 hour)
 
-| #   | Task                                                             | Effort | Why                                     |
-| --- | ---------------------------------------------------------------- | ------ | --------------------------------------- |
-| 11  | Resolve `TableData` field vs getter tension (document decision)  | 10 min | Design debt                             |
-| 12  | Add `gomod2nix` for reproducible Nix builds                      | 30 min | Nix sandbox compatibility               |
-| 13  | Configure BuildFlow to ignore root-package-files false positives | 15 min | Pre-commit passes without `--no-verify` |
-| 14  | Investigate `go:generate stringer` for enums                     | 20 min | Less hand-rolled boilerplate            |
+| #  | Task                                                             | Effort | Why                                     |
+| -- | ---------------------------------------------------------------- | ------ | --------------------------------------- |
+| 11 | Resolve `TableData` field vs getter tension (document decision)  | 10 min | Design debt                             |
+| 12 | Add `gomod2nix` for reproducible Nix builds                      | 30 min | Nix sandbox compatibility               |
+| 13 | Configure BuildFlow to ignore root-package-files false positives | 15 min | Pre-commit passes without `--no-verify` |
+| 14 | Investigate `go:generate stringer` for enums                     | 20 min | Less hand-rolled boilerplate            |
 
 ### P4 — Documentation & Community
 
-| #   | Task                                                 | Effort | Why                              |
-| --- | ---------------------------------------------------- | ------ | -------------------------------- |
-| 15  | Write ADR 007 for NodeEdgeAppender interface         | 15 min | Documents architectural decision |
-| 16  | Write ADR 008 for SlugifyID consolidation            | 10 min | Documents dedup decision         |
-| 17  | Update CHANGELOG.md with v0.7.0 changes              | 15 min | Release preparation              |
-| 18  | Update README with optimization notes                | 10 min | Performance section              |
-| 19  | Add benchmark for escape.D2 before/after NewReplacer | 15 min | Quantify perf improvement        |
-| 20  | Add benchmark for table.buildStyleFunc style caching | 15 min | Quantify perf improvement        |
+| #  | Task                                                 | Effort | Why                              |
+| -- | ---------------------------------------------------- | ------ | -------------------------------- |
+| 15 | Write ADR 007 for NodeEdgeAppender interface         | 15 min | Documents architectural decision |
+| 16 | Write ADR 008 for SlugifyID consolidation            | 10 min | Documents dedup decision         |
+| 17 | Update CHANGELOG.md with v0.7.0 changes              | 15 min | Release preparation              |
+| 18 | Update README with optimization notes                | 10 min | Performance section              |
+| 19 | Add benchmark for escape.D2 before/after NewReplacer | 15 min | Quantify perf improvement        |
+| 20 | Add benchmark for table.buildStyleFunc style caching | 15 min | Quantify perf improvement        |
 
 ### P5 — Future Features (low priority)
 
 | # | Task | Effort | Why |
 | --- | ----------------------------------------- | ----------- | ------------------------- | -------------------------- |
-| 21 | Add `MermaidText` escaping for `         |` character | 5 min | Pipes break Mermaid labels |
+| 21 | Add `MermaidText` escaping for `|` character | 5 min | Pipes break Mermaid labels |
 | 22 | Add streaming CSV/TSV (row-by-row writer) | 30 min | Completes streaming story |
 | 23 | Add `RenderOptions.Indent` for JSON/YAML | 15 min | User-requested feature |
 | 24 | Post to r/golang, submit to Awesome Go | 30 min | Community growth |
@@ -275,16 +275,16 @@ This affects every consumer of the library and can't be decided by me alone. It'
 ## Pending Uncommitted Changes (12 files, +110/-71)
 
 ```
- AGENTS.md               | 14 ++++--
- TODO_LIST.md            | 21 +++++--
- escape/escape.go        | 38 +++++++----
- graph.go                | 36 ++++++-----
- graph/dot.go            |  2 +-
- graph/mermaid.go        |  3 +-
- graph_mixin_test.go     | 33 ++++++-----
- markup/asciidoc.go      | 14 +++++
- markup/asciidoc_test.go |  5 ++
- plantuml/convert.go     |  2 +-
- plantuml/plantuml.go    |  4 +-
- table/table.go          |  9 ++-
+AGENTS.md               | 14 ++++--
+TODO_LIST.md            | 21 +++++--
+escape/escape.go        | 38 +++++++----
+graph.go                | 36 ++++++-----
+graph/dot.go            |  2 +-
+graph/mermaid.go        |  3 +-
+graph_mixin_test.go     | 33 ++++++-----
+markup/asciidoc.go      | 14 +++++
+markup/asciidoc_test.go |  5 ++
+plantuml/convert.go     |  2 +-
+plantuml/plantuml.go    |  4 +-
+table/table.go          |  9 ++-
 ```

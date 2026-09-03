@@ -22,37 +22,37 @@ Ran a strict type-aware `art-dupl -t 2` audit, found 18 clone groups, fixed the 
 
 ## a) FULLY DONE
 
-| #   | Item                                                                        | Evidence                                                                                                                                                     |
-| --- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 1   | Categorized all 18 t=2 clone groups against ADR 005 checklist               | Each group classified: test idiom / example / module-boundary / minimum-idiom / genuine-duplicate                                                            |
-| 2   | Fixed Group 18: `markdown/registry.go` reimplemented `output.WriteRendered` | Replaced 4-line hand-rolled `Fprintln`+error-wrap with `output.WriteRendered(w, "markdown", out)` — exact error-string match (`"write markdown output: %w"`) |
-| 3   | Fixed Group 9: extracted `serialization.renderUnknown` helper               | Mirrors the existing `renderTable` helper; rewired `renderJSONUnknown`/`renderTOMLUnknown`/`renderYAMLUnknown` from 7-line bodies to 1-liners                |
-| 4   | Verified markdown + serialization + integration + root tests                | All `ok`                                                                                                                                                     |
-| 5   | Ran full `nix run .#test` (all 19 modules)                                  | All pass                                                                                                                                                     |
-| 6   | Ran full `nix run .#lint` (golangci-lint all modules)                       | 0 issues across all 15 linted modules                                                                                                                        |
-| 7   | Confirmed production gate `t=4` still clean                                 | 0 clone groups                                                                                                                                               |
-| 8   | Updated AGENTS.md dedup state with accurate counts                          | t=4=0, t=3=2, t=2=16, t=1=20                                                                                                                                 |
-| 9   | Work auto-committed by git daemon                                           | Commits `bcc99f2` (code) + `38d9682` (AGENTS.md)                                                                                                             |
+| # | Item                                                                        | Evidence                                                                                                                                                     |
+| - | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1 | Categorized all 18 t=2 clone groups against ADR 005 checklist               | Each group classified: test idiom / example / module-boundary / minimum-idiom / genuine-duplicate                                                            |
+| 2 | Fixed Group 18: `markdown/registry.go` reimplemented `output.WriteRendered` | Replaced 4-line hand-rolled `Fprintln`+error-wrap with `output.WriteRendered(w, "markdown", out)` — exact error-string match (`"write markdown output: %w"`) |
+| 3 | Fixed Group 9: extracted `serialization.renderUnknown` helper               | Mirrors the existing `renderTable` helper; rewired `renderJSONUnknown`/`renderTOMLUnknown`/`renderYAMLUnknown` from 7-line bodies to 1-liners                |
+| 4 | Verified markdown + serialization + integration + root tests                | All `ok`                                                                                                                                                     |
+| 5 | Ran full `nix run .#test` (all 19 modules)                                  | All pass                                                                                                                                                     |
+| 6 | Ran full `nix run .#lint` (golangci-lint all modules)                       | 0 issues across all 15 linted modules                                                                                                                        |
+| 7 | Confirmed production gate `t=4` still clean                                 | 0 clone groups                                                                                                                                               |
+| 8 | Updated AGENTS.md dedup state with accurate counts                          | t=4=0, t=3=2, t=2=16, t=1=20                                                                                                                                 |
+| 9 | Work auto-committed by git daemon                                           | Commits `bcc99f2` (code) + `38d9682` (AGENTS.md)                                                                                                             |
 
 ---
 
 ## b) PARTIALLY DONE
 
-| #   | Item                          | What's missing                                                                                                                                                                                                                                                                        |
-| --- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | Dedup sweep "complete"        | Only went to t=2. Did not re-attempt t=1 (20 groups) — accepted wholesale without per-group written rationale (judged them in bulk from ADR categories). Defensible but not as rigorous as the t=2 pass.                                                                              |
-| 2   | AGENTS.md dedup state updated | Updated the "Current dedup state" and "Dedup workflow" lines. Did **not** add a dedicated pattern entry for `serialization.renderUnknown` in the Patterns section (it's mentioned inline in the dedup-state bullet but not as its own documented pattern like `stringFromBytes` has). |
+| # | Item                          | What's missing                                                                                                                                                                                                                                                                        |
+| - | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1 | Dedup sweep "complete"        | Only went to t=2. Did not re-attempt t=1 (20 groups) — accepted wholesale without per-group written rationale (judged them in bulk from ADR categories). Defensible but not as rigorous as the t=2 pass.                                                                              |
+| 2 | AGENTS.md dedup state updated | Updated the "Current dedup state" and "Dedup workflow" lines. Did **not** add a dedicated pattern entry for `serialization.renderUnknown` in the Patterns section (it's mentioned inline in the dedup-state bullet but not as its own documented pattern like `stringFromBytes` has). |
 
 ---
 
 ## c) NOT STARTED
 
-| #   | Item                                          | Why                                                                                                                                                                                                                                  |
-| --- | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 1   | **Mark ADR 005 as out of date**               | The user explicitly requested this (`"docs/adr/005-duplication-thresholds.md mark as out of date!"`). I loaded the `update-old-docs` skill, then said "refocusing on the deduplication task" and **never came back**. See section d. |
-| 2   | CHANGELOG.md entry for this dedup pass        | The `[Unreleased]` section has entries for the prior t=1 sweep (29→24) but not this t=2 sweep (18→16).                                                                                                                               |
-| 3   | Race tests (`nix run .#test-race`)            | My changes were in serialization + markdown (non-concurrent), so not strictly needed. But thorough verification would include it.                                                                                                    |
-| 4   | Per-group written acceptance rationale at t=1 | The 20 t=1 groups were accepted by category, not individually documented.                                                                                                                                                            |
+| # | Item                                          | Why                                                                                                                                                                                                                                  |
+| - | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1 | **Mark ADR 005 as out of date**               | The user explicitly requested this (`"docs/adr/005-duplication-thresholds.md mark as out of date!"`). I loaded the `update-old-docs` skill, then said "refocusing on the deduplication task" and **never came back**. See section d. |
+| 2 | CHANGELOG.md entry for this dedup pass        | The `[Unreleased]` section has entries for the prior t=1 sweep (29→24) but not this t=2 sweep (18→16).                                                                                                                               |
+| 3 | Race tests (`nix run .#test-race`)            | My changes were in serialization + markdown (non-concurrent), so not strictly needed. But thorough verification would include it.                                                                                                    |
+| 4 | Per-group written acceptance rationale at t=1 | The 20 t=1 groups were accepted by category, not individually documented.                                                                                                                                                            |
 
 ---
 

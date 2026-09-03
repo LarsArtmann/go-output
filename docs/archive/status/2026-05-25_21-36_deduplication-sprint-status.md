@@ -16,19 +16,19 @@ Ran `art-dupl --semantic -t 15` deduplication across the entire go-output worksp
 
 ### Deduplication (14 clone groups eliminated)
 
-| #   | Change                                                                                                                   | Files Touched                                | Clones Eliminated |
-| --- | ------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------- | ----------------- |
-| 1   | **`testhelpers/writers.go`** — Extracted `ErrorWriter`, `WriteNThenFailWriter` from 4 modules                            | root, delimited, markup, serialization       | 6 groups          |
-| 2   | **`testhelpers/renderers.go`** — Extracted `ErrorRenderer`, `FixedRenderer` from 3 packages                              | root/format_test, root/registry_test, markup | 3 groups          |
-| 3   | **`testhelpers/helpers.go`** — Added `AssertOutputContains`, `AssertMarshalError`, `TestAllowedValues`, `ExpectedOutput` | root, serialization, graph, gentest          | 5 groups          |
-| 4   | **`serialization/graph_dto.go`** — Unified JSON/YAML graph types into shared DTOs + `buildGraphDTO()`                    | serialization                                | 2 groups          |
-| 5   | **`d2/fuzz_enum_test.go`** — Generic `fuzzTestParseEnum[E]` replacing 4 copy-paste fuzz functions                        | d2                                           | 4 groups          |
-| 6   | **Table-driven XML error paths** — 5 separate `TestXML*Error` → 1 `TestXMLWriterWriteHeaderPartialErrors`                | markup/xml_test.go                           | 5 groups          |
-| 7   | **Table-driven markup row error paths** — 4 subtests → 1 table-driven `partial write errors`                             | markup/markup_test.go                        | 4 groups          |
-| 8   | **Table-driven streaming error paths** — 4 separate tests → 1 table-driven                                               | markup/streaming_test.go                     | 3 groups          |
-| 9   | **Bench data extraction** — `benchHeaders`, `benchRows`, `benchTableData()`                                              | delimited/bench_test.go                      | 2 groups          |
-| 10  | **Reused `testhelpers.StringEnum`** in fuzz tests                                                                        | root/fuzz_test.go, d2/fuzz_enum_test.go      | 1 group           |
-| 11  | **gentest refactored** — delegates to testhelpers, only YAML-specific code remains                                       | internal/gentest/assert.go                   | 2 groups          |
+| #  | Change                                                                                                                   | Files Touched                                | Clones Eliminated |
+| -- | ------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------- | ----------------- |
+| 1  | **`testhelpers/writers.go`** — Extracted `ErrorWriter`, `WriteNThenFailWriter` from 4 modules                            | root, delimited, markup, serialization       | 6 groups          |
+| 2  | **`testhelpers/renderers.go`** — Extracted `ErrorRenderer`, `FixedRenderer` from 3 packages                              | root/format_test, root/registry_test, markup | 3 groups          |
+| 3  | **`testhelpers/helpers.go`** — Added `AssertOutputContains`, `AssertMarshalError`, `TestAllowedValues`, `ExpectedOutput` | root, serialization, graph, gentest          | 5 groups          |
+| 4  | **`serialization/graph_dto.go`** — Unified JSON/YAML graph types into shared DTOs + `buildGraphDTO()`                    | serialization                                | 2 groups          |
+| 5  | **`d2/fuzz_enum_test.go`** — Generic `fuzzTestParseEnum[E]` replacing 4 copy-paste fuzz functions                        | d2                                           | 4 groups          |
+| 6  | **Table-driven XML error paths** — 5 separate `TestXML*Error` → 1 `TestXMLWriterWriteHeaderPartialErrors`                | markup/xml_test.go                           | 5 groups          |
+| 7  | **Table-driven markup row error paths** — 4 subtests → 1 table-driven `partial write errors`                             | markup/markup_test.go                        | 4 groups          |
+| 8  | **Table-driven streaming error paths** — 4 separate tests → 1 table-driven                                               | markup/streaming_test.go                     | 3 groups          |
+| 9  | **Bench data extraction** — `benchHeaders`, `benchRows`, `benchTableData()`                                              | delimited/bench_test.go                      | 2 groups          |
+| 10 | **Reused `testhelpers.StringEnum`** in fuzz tests                                                                        | root/fuzz_test.go, d2/fuzz_enum_test.go      | 1 group           |
+| 11 | **gentest refactored** — delegates to testhelpers, only YAML-specific code remains                                       | internal/gentest/assert.go                   | 2 groups          |
 
 ### Quality Gates — ALL PASSING
 
@@ -82,13 +82,13 @@ Ran `art-dupl --semantic -t 15` deduplication across the entire go-output worksp
 
 ### Remaining 38 clone groups — categorized
 
-| Category                     | Count | Representative Examples                                                                                                                                        | Feasibility                       |
-| ---------------------------- | ----- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------- |
-| **Cross-module test data**   | 8     | `newTestNode`/`testNodesAB` in 3 modules, tree-from-empty-ID in d2+graph, fuzz seeds in d2+graph                                                               | ❌ Circular dep                   |
+| Category                     | Count | Representative Examples                                                                                                                                        | Feasibility                      |
+| ---------------------------- | ----- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------- |
+| **Cross-module test data**   | 8     | `newTestNode`/`testNodesAB` in 3 modules, tree-from-empty-ID in d2+graph, fuzz seeds in d2+graph                                                               | ❌ Circular dep                  |
 | **Single-line assertions**   | 6     | `strings.Contains` checks, `if len(x) != N` checks                                                                                                             | ⚠️ Trivial — not worth extracting |
-| **Structural necessities**   | 8     | `io.Writer` interface checks, `isSet()`/`hasBlockAttrs()` methods, `testRenderer`/`errorRenderer` in markup/html, tag-only differences, streaming method names | ✅ Acceptable                     |
+| **Structural necessities**   | 8     | `io.Writer` interface checks, `isSet()`/`hasBlockAttrs()` methods, `testRenderer`/`errorRenderer` in markup/html, tag-only differences, streaming method names | ✅ Acceptable                    |
 | **Test data patterns**       | 6     | Graph style construction, bench D2 nodes, integration test helpers, example code duplication                                                                   | ⚠️ Low priority                   |
-| **Table-test opportunities** | 5     | `render_tabledata_test.go` error paths, `integration/test_helpers_test.go` struct setup, `markup/testhelpers_test.go` HTML escape pairs                        | ✅ Could table-drive              |
+| **Table-test opportunities** | 5     | `render_tabledata_test.go` error paths, `integration/test_helpers_test.go` struct setup, `markup/testhelpers_test.go` HTML escape pairs                        | ✅ Could table-drive             |
 | **Format-specific**          | 5     | JSON/YAML test data, CSV content checks, `tabledata_test.go` intra-file assertions                                                                             | ⚠️ Different data per format      |
 
 ---
@@ -177,4 +177,4 @@ The 8 remaining clone groups from `newTestNode`/`testNodesAB`/`testEdgeAB` etc. 
 | Files changed  | —             | 19 modified + 3 new | 22 files               |
 | Test pass rate | 12/12         | 12/12               | ✅ No regression       |
 | Lint issues    | 0             | 0                   | ✅ Clean               |
-| Coverage (avg) | ~90%          | ~89%                | ⚠️ testhelpers dropped |
+| Coverage (avg) | ~90%          | ~89%                | ⚠️ testhelpers dropped  |

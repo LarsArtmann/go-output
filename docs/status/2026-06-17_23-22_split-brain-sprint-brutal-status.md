@@ -129,33 +129,33 @@ No regression tests for:
 
 Sorted by impact/effort ratio (highest first):
 
-| #   | Task                                                                       | Impact | Effort   | Category       |
-| --- | -------------------------------------------------------------------------- | ------ | -------- | -------------- |
-| 1   | Fix remaining 11 bare event literals in `nom/subscriber_test.go`           | High   | 10min    | Half-assed fix |
-| 2   | Fix TODO typo in `nom/inline_renderer.go:106`                              | Low    | 1min     | Typo           |
-| 3   | Update `AGENTS.md` with all split-brain changes                            | High   | 20min    | Process        |
-| 4   | Update `CHANGELOG.md` `[Unreleased]` with all fixes                        | High   | 15min    | Process        |
-| 5   | Add `WriteFooter` to real `tableDataWriter` interface                      | Med    | 10min    | Half-assed fix |
-| 6   | Add `GetActivityCounts()` to subscriber, delete `activities` field         | High   | 30min    | Type model     |
-| 7   | Delete `dependencyTree` field, use local variable in render                | Med    | 20min    | Type model     |
-| 8   | Add regression test for color detector agreement                           | High   | 20min    | Test gap       |
-| 9   | Make `nom.ColorX` vars immutable (convert to struct or const-equivalent)   | Med    | 15min    | Type model     |
-| 10  | Unify `"No activities to display"` to single source of truth               | Low    | 10min    | Half-assed fix |
-| 11  | Add `detectNoColor` test in nom (currently zero test coverage)             | High   | 15min    | Test gap       |
-| 12  | Add terminal check to nom `detectNoColor()`                                | High   | 10min    | Half-assed fix |
-| 13  | Adopt `charmbracelet/x/term` for shared terminal detection                 | High   | 45min    | Library        |
-| 14  | Create `nom.Theme` struct for color unification                            | Med    | 40min    | Type model     |
-| 15  | Have `tui` consume `nom.Theme` instead of own `terminalColors`             | Med    | 30min    | Type model     |
-| 16  | Add typed events (sealed interface + type switch)                          | High   | 90min    | Type model     |
-| 17  | Add ActivityNode distinctness compile-time test                            | Low    | 5min     | Test gap       |
-| 18  | Add cross-reference comment to `nom/symbols.go` for tui color mirroring    | Low    | 5min     | Process        |
-| 19  | Consider `muesli/termenv` for color profile detection (TrueColor/256/ANSI) | Med    | Research | Library        |
-| 20  | Plan M4: Rename `Render()` methods in next minor version                   | Med    | 60min    | Deferred       |
-| 21  | Plan M5: Rename `ShapeBox` → `NodeShapeBox` in next minor                  | Med    | 60min    | Deferred       |
-| 22  | Plan M6/M7: Introduce canonical `output.Direction` enum                    | Med    | 90min    | Deferred       |
-| 23  | Plan M8: Align style struct field names across root/d2                     | Med    | 45min    | Deferred       |
-| 24  | Update `SPLIT-BRAIN.html` report with resolved status                      | Low    | 15min    | Process        |
-| 25  | Run `brutal-self-review` skill for final quality gate                      | High   | 30min    | Process        |
+| #  | Task                                                                       | Impact | Effort   | Category       |
+| -- | -------------------------------------------------------------------------- | ------ | -------- | -------------- |
+| 1  | Fix remaining 11 bare event literals in `nom/subscriber_test.go`           | High   | 10min    | Half-assed fix |
+| 2  | Fix TODO typo in `nom/inline_renderer.go:106`                              | Low    | 1min     | Typo           |
+| 3  | Update `AGENTS.md` with all split-brain changes                            | High   | 20min    | Process        |
+| 4  | Update `CHANGELOG.md` `[Unreleased]` with all fixes                        | High   | 15min    | Process        |
+| 5  | Add `WriteFooter` to real `tableDataWriter` interface                      | Med    | 10min    | Half-assed fix |
+| 6  | Add `GetActivityCounts()` to subscriber, delete `activities` field         | High   | 30min    | Type model     |
+| 7  | Delete `dependencyTree` field, use local variable in render                | Med    | 20min    | Type model     |
+| 8  | Add regression test for color detector agreement                           | High   | 20min    | Test gap       |
+| 9  | Make `nom.ColorX` vars immutable (convert to struct or const-equivalent)   | Med    | 15min    | Type model     |
+| 10 | Unify `"No activities to display"` to single source of truth               | Low    | 10min    | Half-assed fix |
+| 11 | Add `detectNoColor` test in nom (currently zero test coverage)             | High   | 15min    | Test gap       |
+| 12 | Add terminal check to nom `detectNoColor()`                                | High   | 10min    | Half-assed fix |
+| 13 | Adopt `charmbracelet/x/term` for shared terminal detection                 | High   | 45min    | Library        |
+| 14 | Create `nom.Theme` struct for color unification                            | Med    | 40min    | Type model     |
+| 15 | Have `tui` consume `nom.Theme` instead of own `terminalColors`             | Med    | 30min    | Type model     |
+| 16 | Add typed events (sealed interface + type switch)                          | High   | 90min    | Type model     |
+| 17 | Add ActivityNode distinctness compile-time test                            | Low    | 5min     | Test gap       |
+| 18 | Add cross-reference comment to `nom/symbols.go` for tui color mirroring    | Low    | 5min     | Process        |
+| 19 | Consider `muesli/termenv` for color profile detection (TrueColor/256/ANSI) | Med    | Research | Library        |
+| 20 | Plan M4: Rename `Render()` methods in next minor version                   | Med    | 60min    | Deferred       |
+| 21 | Plan M5: Rename `ShapeBox` → `NodeShapeBox` in next minor                  | Med    | 60min    | Deferred       |
+| 22 | Plan M6/M7: Introduce canonical `output.Direction` enum                    | Med    | 90min    | Deferred       |
+| 23 | Plan M8: Align style struct field names across root/d2                     | Med    | 45min    | Deferred       |
+| 24 | Update `SPLIT-BRAIN.html` report with resolved status                      | Low    | 15min    | Process        |
+| 25 | Run `brutal-self-review` skill for final quality gate                      | High   | 30min    | Process        |
 
 ---
 

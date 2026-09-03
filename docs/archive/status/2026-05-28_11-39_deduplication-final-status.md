@@ -1,7 +1,7 @@
 # Deduplication Sprint — Final Status Report
 
-**Date:** 2026-05-28 11:39  
-**Scope:** Full codebase deduplication across all 13 modules  
+**Date:** 2026-05-28 11:39\
+**Scope:** Full codebase deduplication across all 13 modules\
 **Starting state:** 60 clone groups at t=15, 8 pre-existing lint issues
 
 ---
@@ -26,41 +26,41 @@
 
 ### Production Code (4 fixes)
 
-| #   | File                                              | Change                                                          | Commit    |
-| --- | ------------------------------------------------- | --------------------------------------------------------------- | --------- |
-| 1   | `markup/asciidoc.go`                              | Extracted `writeAsciiDocCells()` — row/footer cell loop deduped | `1df088f` |
-| 2   | `markdown.go`                                     | Extracted `updateMaxWidths()` — rows/footer width calc deduped  | `1df088f` |
-| 3   | `d2/d2.go`                                        | `D2Edge.hasBlockAttrs()` reuses `D2StrokeStyle.isSet()`         | `1df088f` |
-| 4   | `serialization/render.go` + `yaml.go` + `toml.go` | Extracted `renderViaRenderer()` with `dataSetter` interface     | `6b77825` |
+| # | File                                              | Change                                                          | Commit    |
+| - | ------------------------------------------------- | --------------------------------------------------------------- | --------- |
+| 1 | `markup/asciidoc.go`                              | Extracted `writeAsciiDocCells()` — row/footer cell loop deduped | `1df088f` |
+| 2 | `markdown.go`                                     | Extracted `updateMaxWidths()` — rows/footer width calc deduped  | `1df088f` |
+| 3 | `d2/d2.go`                                        | `D2Edge.hasBlockAttrs()` reuses `D2StrokeStyle.isSet()`         | `1df088f` |
+| 4 | `serialization/render.go` + `yaml.go` + `toml.go` | Extracted `renderViaRenderer()` with `dataSetter` interface     | `6b77825` |
 
 ### Test Code (8 fixes)
 
-| #   | File(s)                                                      | Change                                                                        | Commit    |
-| --- | ------------------------------------------------------------ | ----------------------------------------------------------------------------- | --------- |
-| 1   | `delimited/testhelpers_test.go`                              | Replaced local `assertContains` with `testhelpers` alias                      | `1df088f` |
-| 2   | `testing_test.go` + `graph/helpers_test.go`                  | Removed `testParseEnum`/`testEnumString` wrappers, direct `testhelpers` calls | `1df088f` |
-| 3   | `color_test.go`                                              | Direct `testhelpers.*` calls instead of wrappers                              | `1df088f` |
-| 4   | `serialization/toml_renderers_test.go`                       | Uses `testNodesAB()`/`testEdgesAB()`/`newTestNode()` from graphtest           | `1df088f` |
-| 5   | `serialization/error_test.go`                                | Removed 3 duplicate NilData tests (already in format-specific tests)          | `1df088f` |
-| 6   | `d2/fuzz_test.go` + `graph/fuzz_test.go`                     | Extracted `AssertEscape()` to `testhelpers/graphtest`                         | `1df088f` |
-| 7   | `serialization/registry_test.go` + `markup/registry_test.go` | Table-driven NilData/WriterError (18 tests → 4)                               | `56d26b8` |
-| 8   | `delimited/tsv_test.go`                                      | Removed duplicate `TestMarshalTSVUnsupportedType`                             | `b93172f` |
+| # | File(s)                                                      | Change                                                                        | Commit    |
+| - | ------------------------------------------------------------ | ----------------------------------------------------------------------------- | --------- |
+| 1 | `delimited/testhelpers_test.go`                              | Replaced local `assertContains` with `testhelpers` alias                      | `1df088f` |
+| 2 | `testing_test.go` + `graph/helpers_test.go`                  | Removed `testParseEnum`/`testEnumString` wrappers, direct `testhelpers` calls | `1df088f` |
+| 3 | `color_test.go`                                              | Direct `testhelpers.*` calls instead of wrappers                              | `1df088f` |
+| 4 | `serialization/toml_renderers_test.go`                       | Uses `testNodesAB()`/`testEdgesAB()`/`newTestNode()` from graphtest           | `1df088f` |
+| 5 | `serialization/error_test.go`                                | Removed 3 duplicate NilData tests (already in format-specific tests)          | `1df088f` |
+| 6 | `d2/fuzz_test.go` + `graph/fuzz_test.go`                     | Extracted `AssertEscape()` to `testhelpers/graphtest`                         | `1df088f` |
+| 7 | `serialization/registry_test.go` + `markup/registry_test.go` | Table-driven NilData/WriterError (18 tests → 4)                               | `56d26b8` |
+| 8 | `delimited/tsv_test.go`                                      | Removed duplicate `TestMarshalTSVUnsupportedType`                             | `b93172f` |
 
 ### Lint Fixes (3 modules)
 
-| #   | File                          | Fix                                               | Commit    |
-| --- | ----------------------------- | ------------------------------------------------- | --------- |
-| 1   | `serialization/error_test.go` | errchkjson nolint + wsl whitespace                | `8a43623` |
-| 2   | `table/color_test.go`         | staticcheck QF1011 nolint + wsl blank line        | `8a43623` |
-| 3   | `integration/error_test.go`   | `bytes.Contains` → `strings.Contains` + wsl fixes | `8a43623` |
+| # | File                          | Fix                                               | Commit    |
+| - | ----------------------------- | ------------------------------------------------- | --------- |
+| 1 | `serialization/error_test.go` | errchkjson nolint + wsl whitespace                | `8a43623` |
+| 2 | `table/color_test.go`         | staticcheck QF1011 nolint + wsl blank line        | `8a43623` |
+| 3 | `integration/error_test.go`   | `bytes.Contains` → `strings.Contains` + wsl fixes | `8a43623` |
 
 ### Documentation
 
-| #   | Artifact                                 | Content                                                    | Commit    |
-| --- | ---------------------------------------- | ---------------------------------------------------------- | --------- |
-| 1   | `docs/adr/005-duplication-thresholds.md` | Clone categorization policy (B/C/D/E) + threshold guidance | `9fd53bf` |
-| 2   | `AGENTS.md`                              | Code Duplication Policy section                            | `9fd53bf` |
-| 3   | `docs/status/2026-05-28_11-05_*.md`      | Sprint 3 status report                                     | `2318295` |
+| # | Artifact                                 | Content                                                    | Commit    |
+| - | ---------------------------------------- | ---------------------------------------------------------- | --------- |
+| 1 | `docs/adr/005-duplication-thresholds.md` | Clone categorization policy (B/C/D/E) + threshold guidance | `9fd53bf` |
+| 2 | `AGENTS.md`                              | Code Duplication Policy section                            | `9fd53bf` |
+| 3 | `docs/status/2026-05-28_11-05_*.md`      | Sprint 3 status report                                     | `2318295` |
 
 ---
 
@@ -74,19 +74,19 @@ Nothing — all committed work is complete and verified.
 
 These were analyzed and **intentionally not started** with documented rationale:
 
-| #   | Item                                                   | Reason                                                      | Category        |
-| --- | ------------------------------------------------------ | ----------------------------------------------------------- | --------------- |
-| 1   | PlantUML `example_test.go` graphtest adoption          | Examples must show full API to users                        | D (docs)        |
-| 2   | `examples/basic/renderers.go` graphtest adoption       | Examples must show full API to users                        | D (docs)        |
-| 3   | `d2/example_test.go` vs `examples/d2/main.go` dedup    | Different tables, different context                         | D (docs)        |
-| 4   | `d2/d2_convert_test.go` vs `graph/dot_test.go` dedup   | Different modules, can't share helpers                      | C (boundary)    |
-| 5   | `json_test.go` vs `yaml_test.go` unmarshal test dedup  | Already uses shared `testUnmarshalCases`; data must differ  | B (idiom)       |
-| 6   | `testEmptyRendererOutput` cross-module extraction      | Different modules (graph vs markup); adds cross-dep         | C (boundary)    |
-| 7   | `AssertNilDataRendersEmpty` in testhelpers             | testhelpers is zero-dep; can't import `output`              | C (boundary)    |
-| 8   | `AssertLineCount` in testhelpers                       | Same zero-dep constraint                                    | C (boundary)    |
-| 9   | Benchmark helper extraction to graphtest               | Only 2-3 nodes per bench; overkill                          | E (single-line) |
-| 10  | `render*TableData` init() registration unification     | 1-line unique bindings, interface compliance                | E (single-line) |
-| 11  | Streaming HTML `writeHeaders`/`writeRow`/`writeFooter` | Different tags (`<th>` vs `<td>`), different error messages | E (single-line) |
+| #  | Item                                                   | Reason                                                      | Category        |
+| -- | ------------------------------------------------------ | ----------------------------------------------------------- | --------------- |
+| 1  | PlantUML `example_test.go` graphtest adoption          | Examples must show full API to users                        | D (docs)        |
+| 2  | `examples/basic/renderers.go` graphtest adoption       | Examples must show full API to users                        | D (docs)        |
+| 3  | `d2/example_test.go` vs `examples/d2/main.go` dedup    | Different tables, different context                         | D (docs)        |
+| 4  | `d2/d2_convert_test.go` vs `graph/dot_test.go` dedup   | Different modules, can't share helpers                      | C (boundary)    |
+| 5  | `json_test.go` vs `yaml_test.go` unmarshal test dedup  | Already uses shared `testUnmarshalCases`; data must differ  | B (idiom)       |
+| 6  | `testEmptyRendererOutput` cross-module extraction      | Different modules (graph vs markup); adds cross-dep         | C (boundary)    |
+| 7  | `AssertNilDataRendersEmpty` in testhelpers             | testhelpers is zero-dep; can't import `output`              | C (boundary)    |
+| 8  | `AssertLineCount` in testhelpers                       | Same zero-dep constraint                                    | C (boundary)    |
+| 9  | Benchmark helper extraction to graphtest               | Only 2-3 nodes per bench; overkill                          | E (single-line) |
+| 10 | `render*TableData` init() registration unification     | 1-line unique bindings, interface compliance                | E (single-line) |
+| 11 | Streaming HTML `writeHeaders`/`writeRow`/`writeFooter` | Different tags (`<th>` vs `<td>`), different error messages | E (single-line) |
 
 ---
 
@@ -122,43 +122,43 @@ The only learning: wsl_v5 lint rules can be contradictory (wants blank line befo
 
 ### High Impact, Low Effort
 
-| #   | Task                                                           | Effort | Impact    |
-| --- | -------------------------------------------------------------- | ------ | --------- |
-| 1   | Decide on testify vs stdlib — write ADR                        | 15min  | 🔴 High   |
-| 2   | Clean up `coverage.out` from root (go-structure-linter)        | 2min   | 🟡 Medium |
-| 3   | Review go-structure-linter suppressions for root package files | 15min  | 🟡 Medium |
-| 4   | Run full coverage report and identify gaps                     | 5min   | 🟡 Medium |
+| # | Task                                                           | Effort | Impact    |
+| - | -------------------------------------------------------------- | ------ | --------- |
+| 1 | Decide on testify vs stdlib — write ADR                        | 15min  | 🔴 High   |
+| 2 | Clean up `coverage.out` from root (go-structure-linter)        | 2min   | 🟡 Medium |
+| 3 | Review go-structure-linter suppressions for root package files | 15min  | 🟡 Medium |
+| 4 | Run full coverage report and identify gaps                     | 5min   | 🟡 Medium |
 
 ### Medium Impact, Medium Effort
 
-| #   | Task                                                     | Effort | Impact    |
-| --- | -------------------------------------------------------- | ------ | --------- |
-| 5   | Extract `renderMarshalAndWrite` for AsciiDoc/XML pattern | 30min  | 🟡 Medium |
-| 6   | Table-drive delimited NoHeaders tests (CSV + TSV)        | 15min  | 🟡 Medium |
-| 7   | Add `go-error-family` for structured errors              | 1hr    | 🟡 Medium |
-| 8   | Add `govalid` for struct validation                      | 30min  | 🟡 Medium |
-| 9   | Review and update FEATURES.md against current code       | 20min  | 🟡 Medium |
-| 10  | Review and update TODO_LIST.md                           | 20min  | 🟡 Medium |
-| 11  | Check for newer versions of go-faster/yaml, go-toml/v2   | 10min  | 🟢 Low    |
+| #  | Task                                                     | Effort | Impact    |
+| -- | -------------------------------------------------------- | ------ | --------- |
+| 5  | Extract `renderMarshalAndWrite` for AsciiDoc/XML pattern | 30min  | 🟡 Medium |
+| 6  | Table-drive delimited NoHeaders tests (CSV + TSV)        | 15min  | 🟡 Medium |
+| 7  | Add `go-error-family` for structured errors              | 1hr    | 🟡 Medium |
+| 8  | Add `govalid` for struct validation                      | 30min  | 🟡 Medium |
+| 9  | Review and update FEATURES.md against current code       | 20min  | 🟡 Medium |
+| 10 | Review and update TODO_LIST.md                           | 20min  | 🟡 Medium |
+| 11 | Check for newer versions of go-faster/yaml, go-toml/v2   | 10min  | 🟢 Low    |
 
 ### Lower Priority (Backlog)
 
-| #   | Task                                                               | Effort | Impact    |
-| --- | ------------------------------------------------------------------ | ------ | --------- |
-| 12  | Investigate generic `RegisterSimpleMarshaler(format, func)`        | 1hr    | 🟡 Medium |
-| 13  | Unify streaming.go HTML cell writing with templates                | 1hr    | 🟢 Low    |
-| 14  | Consider `go:generate stringer` for enum types                     | 1hr    | 🟢 Low    |
-| 15  | Document `dataSetter` interface pattern                            | 5min   | 🟢 Low    |
-| 16  | Migrate `go.work.example` to auto-generated                        | 30min  | 🟢 Low    |
-| 17  | Add `gomod2nix` for reproducible Nix builds                        | 2hr    | 🟡 Medium |
-| 18  | Review examples/ for consistency                                   | 30min  | 🟢 Low    |
-| 19  | Add integration test for full round-trip (all 16 formats)          | 1hr    | 🟡 Medium |
-| 20  | Consider `cmp.Diff` for richer test assertions                     | 2hr    | 🟡 Medium |
-| 21  | Review D2 `D2NodeStyle.isSet()` vs `D2StrokeStyle.isSet()` overlap | 20min  | 🟢 Low    |
-| 22  | Check if `go-structure-linter` has newer version with fix support  | 5min   | 🟢 Low    |
-| 23  | Add `.editorconfig` for consistent formatting                      | 10min  | 🟢 Low    |
-| 24  | Review graph/fuzz_test.go for completeness                         | 15min  | 🟢 Low    |
-| 25  | Consider enabling `godoclint` in golangci-lint config              | 10min  | 🟢 Low    |
+| #  | Task                                                               | Effort | Impact    |
+| -- | ------------------------------------------------------------------ | ------ | --------- |
+| 12 | Investigate generic `RegisterSimpleMarshaler(format, func)`        | 1hr    | 🟡 Medium |
+| 13 | Unify streaming.go HTML cell writing with templates                | 1hr    | 🟢 Low    |
+| 14 | Consider `go:generate stringer` for enum types                     | 1hr    | 🟢 Low    |
+| 15 | Document `dataSetter` interface pattern                            | 5min   | 🟢 Low    |
+| 16 | Migrate `go.work.example` to auto-generated                        | 30min  | 🟢 Low    |
+| 17 | Add `gomod2nix` for reproducible Nix builds                        | 2hr    | 🟡 Medium |
+| 18 | Review examples/ for consistency                                   | 30min  | 🟢 Low    |
+| 19 | Add integration test for full round-trip (all 16 formats)          | 1hr    | 🟡 Medium |
+| 20 | Consider `cmp.Diff` for richer test assertions                     | 2hr    | 🟡 Medium |
+| 21 | Review D2 `D2NodeStyle.isSet()` vs `D2StrokeStyle.isSet()` overlap | 20min  | 🟢 Low    |
+| 22 | Check if `go-structure-linter` has newer version with fix support  | 5min   | 🟢 Low    |
+| 23 | Add `.editorconfig` for consistent formatting                      | 10min  | 🟢 Low    |
+| 24 | Review graph/fuzz_test.go for completeness                         | 15min  | 🟢 Low    |
+| 25 | Consider enabling `godoclint` in golangci-lint config              | 10min  | 🟢 Low    |
 
 ---
 

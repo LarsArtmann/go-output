@@ -11,44 +11,44 @@
 
 ### 1% → 51% (Blocking bugs, trivial fixes, immediate CI relief)
 
-| ID  | Task                                                         | Why                     |
-| --- | ------------------------------------------------------------ | ----------------------- |
-| A   | Fix 3 goimports failures (color.go, table.go, table_test.go) | Lint is RED — blocks CI |
-| B   | Fix `.golangci.yml` invalid linter `gomodguard_v2`           | Linter silently skipped |
-| C   | Fix `integration/go.mod` d2 pseudo-version                   | go.mod inconsistency    |
+| ID | Task                                                         | Why                     |
+| -- | ------------------------------------------------------------ | ----------------------- |
+| A  | Fix 3 goimports failures (color.go, table.go, table_test.go) | Lint is RED — blocks CI |
+| B  | Fix `.golangci.yml` invalid linter `gomodguard_v2`           | Linter silently skipped |
+| C  | Fix `integration/go.mod` d2 pseudo-version                   | go.mod inconsistency    |
 
 ### 4% → 64% (Remove dead code + fix design smell)
 
-| ID  | Task                                                                        | Why                           |
-| --- | --------------------------------------------------------------------------- | ----------------------------- |
-| D   | Delete `format_deprecated.go` + test (353 LOC)                              | Dead deprecated API           |
-| E   | Delete `sort/` module (only `ByField` remains, trivially replaceable)       | Dead deprecated module        |
-| F   | Delete deprecated `MermaidFlowchartRenderer`/`MermaidTreeRenderer` wrappers | Dead code in graph/           |
-| G   | Rename `output_test_helpers.go` → `_test.go`                                | Production dep on testhelpers |
-| H   | Delete `TestContainsString` (tests stdlib `strings.Contains`)               | Useless test                  |
+| ID | Task                                                                        | Why                           |
+| -- | --------------------------------------------------------------------------- | ----------------------------- |
+| D  | Delete `format_deprecated.go` + test (353 LOC)                              | Dead deprecated API           |
+| E  | Delete `sort/` module (only `ByField` remains, trivially replaceable)       | Dead deprecated module        |
+| F  | Delete deprecated `MermaidFlowchartRenderer`/`MermaidTreeRenderer` wrappers | Dead code in graph/           |
+| G  | Rename `output_test_helpers.go` → `_test.go`                                | Production dep on testhelpers |
+| H  | Delete `TestContainsString` (tests stdlib `strings.Contains`)               | Useless test                  |
 
 ### 20% → 80% (Quality improvements)
 
-| ID  | Task                                                                              | Why                      |
-| --- | --------------------------------------------------------------------------------- | ------------------------ |
-| I   | `JSONGraphRenderer`/`YAMLGraphRenderer` → embed `GraphRendererMixin`              | Eliminate duplication    |
-| J   | Clean `.golangci.yml` dead config (globally-enabled linters immediately excluded) | Config clarity           |
-| K   | Prune stale docs (status/ reports, planning/ files)                               | Noise reduction          |
-| L   | Update `flake.nix` to verify all 10 modules                                       | CI coverage gap          |
-| M   | Standardize error types (sentinel → rich struct)                                  | API consistency          |
-| N   | `go mod tidy` all modules                                                         | Hygiene                  |
-| O   | Consistent re-export pattern for d2/ and graph/ branded IDs                       | Cross-module consistency |
+| ID | Task                                                                              | Why                      |
+| -- | --------------------------------------------------------------------------------- | ------------------------ |
+| I  | `JSONGraphRenderer`/`YAMLGraphRenderer` → embed `GraphRendererMixin`              | Eliminate duplication    |
+| J  | Clean `.golangci.yml` dead config (globally-enabled linters immediately excluded) | Config clarity           |
+| K  | Prune stale docs (status/ reports, planning/ files)                               | Noise reduction          |
+| L  | Update `flake.nix` to verify all 10 modules                                       | CI coverage gap          |
+| M  | Standardize error types (sentinel → rich struct)                                  | API consistency          |
+| N  | `go mod tidy` all modules                                                         | Hygiene                  |
+| O  | Consistent re-export pattern for d2/ and graph/ branded IDs                       | Cross-module consistency |
 
 ### Deferred (80% effort → 20% result)
 
-| ID  | Task                                                                  | Why deferred              |
-| --- | --------------------------------------------------------------------- | ------------------------- |
-| P   | Normalize renderer naming (`MarkdownTable` → `MarkdownTableRenderer`) | Breaking change, cosmetic |
-| Q   | Standardize `FromTableData` naming pattern                            | Breaking change, cosmetic |
-| R   | Add streaming + XML benchmarks                                        | Nice-to-have              |
-| S   | Remove or deprecate registry (zero production usage)                  | Low urgency               |
-| T   | Update `.pre-commit-config.yaml`                                      | Non-nix users only        |
-| U   | Add `EdgeStyle.Style` as defined type                                 | Minor type safety         |
+| ID | Task                                                                  | Why deferred              |
+| -- | --------------------------------------------------------------------- | ------------------------- |
+| P  | Normalize renderer naming (`MarkdownTable` → `MarkdownTableRenderer`) | Breaking change, cosmetic |
+| Q  | Standardize `FromTableData` naming pattern                            | Breaking change, cosmetic |
+| R  | Add streaming + XML benchmarks                                        | Nice-to-have              |
+| S  | Remove or deprecate registry (zero production usage)                  | Low urgency               |
+| T  | Update `.pre-commit-config.yaml`                                      | Non-nix users only        |
+| U  | Add `EdgeStyle.Style` as defined type                                 | Minor type safety         |
 
 ---
 
@@ -114,31 +114,31 @@ graph TD
 
 ## Comprehensive Plan (23 tasks, 30-100min each)
 
-| #   | Task                                                           | Impact          | Effort | Tier  | Depends on |
-| --- | -------------------------------------------------------------- | --------------- | ------ | ----- | ---------- |
-| 1   | Fix 3 goimports failures (color.go, table.go, table_test.go)   | Unblocks CI     | 30min  | 1%    | —          |
-| 2   | Fix `.golangci.yml` (gomodguard name, dead config, allow-list) | Config fix      | 45min  | 1%    | —          |
-| 3   | Fix `integration/go.mod` + `go mod tidy` all modules           | Correctness     | 30min  | 1%    | —          |
-| 4   | Delete `format_deprecated.go` + test (353 LOC)                 | Dead code       | 45min  | 4%    | 1,2,3      |
-| 5   | Delete `sort/` module entirely                                 | Dead module     | 30min  | 4%    | 4          |
-| 6   | Delete deprecated graph wrappers                               | Dead code       | 30min  | 4%    | 4          |
-| 7   | Rename `output_test_helpers.go` → `_test.go`                   | Design fix      | 45min  | 4%    | 4          |
-| 8   | Delete useless tests (`TestContainsString`)                    | Test quality    | 30min  | 4%    | 4          |
-| 9   | JSON/YAML graph → `GraphRendererMixin`                         | Dedup           | 60min  | 20%   | 4          |
-| 10  | Standardize error types (sentinel → rich struct)               | API consistency | 60min  | 20%   | 4          |
-| 11  | Add `UnsupportedFormatError.Unwrap()`                          | Error handling  | 45min  | 20%   | 10         |
-| 12  | Consistent re-export pattern d2/graph                          | Consistency     | 30min  | 20%   | 4          |
-| 13  | Update `flake.nix` for all 10 modules                          | CI coverage     | 45min  | 20%   | 5          |
-| 14  | Prune stale docs/status/                                       | Noise reduction | 15min  | 20%   | —          |
-| 15  | Archive stale docs/planning/                                   | Noise reduction | 15min  | 20%   | —          |
-| 16  | Update `AGENTS.md`                                             | Documentation   | 30min  | 20%   | 4-13       |
-| 17  | Update `CHANGELOG.md`                                          | Documentation   | 30min  | 20%   | 4-13       |
-| 18  | Add missing benchmarks (streaming, XML)                        | Perf coverage   | 45min  | 20%   | 9          |
-| 19  | Update `README.md`                                             | Documentation   | 30min  | 20%   | 4-13       |
-| 20  | Update `.pre-commit-config.yaml`                               | Non-nix users   | 30min  | defer | —          |
-| 21  | Deprecate registry (zero production usage)                     | Dead code       | 45min  | defer | —          |
-| 22  | Final full verification (build/test/lint/vet/coverage/DAG)     | Quality gate    | 30min  | —     | 1-21       |
-| 23  | Git commit + push                                              | Delivery        | 15min  | —     | 22         |
+| #  | Task                                                           | Impact          | Effort | Tier  | Depends on |
+| -- | -------------------------------------------------------------- | --------------- | ------ | ----- | ---------- |
+| 1  | Fix 3 goimports failures (color.go, table.go, table_test.go)   | Unblocks CI     | 30min  | 1%    | —          |
+| 2  | Fix `.golangci.yml` (gomodguard name, dead config, allow-list) | Config fix      | 45min  | 1%    | —          |
+| 3  | Fix `integration/go.mod` + `go mod tidy` all modules           | Correctness     | 30min  | 1%    | —          |
+| 4  | Delete `format_deprecated.go` + test (353 LOC)                 | Dead code       | 45min  | 4%    | 1,2,3      |
+| 5  | Delete `sort/` module entirely                                 | Dead module     | 30min  | 4%    | 4          |
+| 6  | Delete deprecated graph wrappers                               | Dead code       | 30min  | 4%    | 4          |
+| 7  | Rename `output_test_helpers.go` → `_test.go`                   | Design fix      | 45min  | 4%    | 4          |
+| 8  | Delete useless tests (`TestContainsString`)                    | Test quality    | 30min  | 4%    | 4          |
+| 9  | JSON/YAML graph → `GraphRendererMixin`                         | Dedup           | 60min  | 20%   | 4          |
+| 10 | Standardize error types (sentinel → rich struct)               | API consistency | 60min  | 20%   | 4          |
+| 11 | Add `UnsupportedFormatError.Unwrap()`                          | Error handling  | 45min  | 20%   | 10         |
+| 12 | Consistent re-export pattern d2/graph                          | Consistency     | 30min  | 20%   | 4          |
+| 13 | Update `flake.nix` for all 10 modules                          | CI coverage     | 45min  | 20%   | 5          |
+| 14 | Prune stale docs/status/                                       | Noise reduction | 15min  | 20%   | —          |
+| 15 | Archive stale docs/planning/                                   | Noise reduction | 15min  | 20%   | —          |
+| 16 | Update `AGENTS.md`                                             | Documentation   | 30min  | 20%   | 4-13       |
+| 17 | Update `CHANGELOG.md`                                          | Documentation   | 30min  | 20%   | 4-13       |
+| 18 | Add missing benchmarks (streaming, XML)                        | Perf coverage   | 45min  | 20%   | 9          |
+| 19 | Update `README.md`                                             | Documentation   | 30min  | 20%   | 4-13       |
+| 20 | Update `.pre-commit-config.yaml`                               | Non-nix users   | 30min  | defer | —          |
+| 21 | Deprecate registry (zero production usage)                     | Dead code       | 45min  | defer | —          |
+| 22 | Final full verification (build/test/lint/vet/coverage/DAG)     | Quality gate    | 30min  | —     | 1-21       |
+| 23 | Git commit + push                                              | Delivery        | 15min  | —     | 22         |
 
 ---
 

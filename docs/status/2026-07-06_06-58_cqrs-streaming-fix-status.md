@@ -178,33 +178,33 @@ Added `AddRows` method but no dedicated test for it. The existing `TestTableBuil
 
 ## F. TOP 25 THINGS TO DO NEXT 📋
 
-| #   | Task                                                                                | Impact   | Effort | Deps |
-| --- | ----------------------------------------------------------------------------------- | -------- | ------ | ---- |
-| 1   | Add golden-file test for CQRS streaming output (JSON, YAML, CSV)                    | High     | 10m    | —    |
-| 2   | Test `TableBuilder.AddRows` with dedicated unit test                                | Low      | 5m     | —    |
-| 3   | Wire CQRS functions into registry dispatch (`output.RenderTable` calls `WriteJSON`) | High     | 15m    | —    |
-| 4   | Refactor `TableToGraph` variadic labelFunc → functional options                     | Med      | 10m    | —    |
-| 5   | Add exact output equivalence test (CQRS vs registry, byte-for-byte)                 | High     | 10m    | 1    |
-| 6   | Make `graph.RenderDOT` write directly from Graph (no DOTRenderer intermediary)      | High     | 20m    | —    |
-| 7   | Add streaming HTML writer (or document that HTML buffers)                           | Low      | 15m    | —    |
-| 8   | Add streaming AsciiDoc writer (or document that AsciiDoc buffers)                   | Low      | 15m    | —    |
-| 9   | Update AGENTS.md with streaming architecture pattern                                | Med      | 5m     | —    |
-| 10  | Update FEATURES.md with complete CQRS API listing                                   | Med      | 10m    | —    |
-| 11  | Add `tree.RenderMarkdown(root)` CQRS                                                | Low      | 10m    | —    |
-| 12  | Add `daghtml.Render(g)` CQRS                                                        | Low      | 10m    | —    |
-| 13  | Add `GraphToTree` test for disconnected nodes (forest)                              | Low      | 5m     | —    |
-| 14  | Add `TableToGraph` test with custom label function                                  | Low      | 5m     | 4    |
-| 15  | Consider FrozenTable/FrozenTree types for real immutability                         | High     | 30m    | —    |
-| 16  | Delete old renderer structs (DOTRenderer etc.) — v0.31.0                            | High     | 30m    | 6    |
-| 17  | Unify `RenderOptions` struct → functional options for root dispatch                 | Med      | 15m    | 3    |
-| 18  | Tag testhelpers/ v0.30.0                                                            | Low      | 3m     | —    |
-| 19  | Tag root v0.30.0                                                                    | Critical | 2m     | 1-17 |
-| 20  | Add streaming benchmarks (compare old marshal vs new encoder)                       | Med      | 15m    | —    |
-| 21  | Add CQRS example to `examples/` directory                                           | Med      | 10m    | —    |
-| 22  | Add ADR for CQRS streaming decision                                                 | Low      | 10m    | —    |
-| 23  | Add `TreeBuilder.AddChildren(parentID, children...)` bulk method                    | Low      | 5m     | —    |
-| 24  | Investigate stale gopls cache (NodeShapeRect, physicalLines warnings)               | Low      | 10m    | —    |
-| 25  | Add `TableBuilder.SetFooterRow([]string)` alternative API                           | Low      | 5m     | —    |
+| #  | Task                                                                                | Impact   | Effort | Deps |
+| -- | ----------------------------------------------------------------------------------- | -------- | ------ | ---- |
+| 1  | Add golden-file test for CQRS streaming output (JSON, YAML, CSV)                    | High     | 10m    | —    |
+| 2  | Test `TableBuilder.AddRows` with dedicated unit test                                | Low      | 5m     | —    |
+| 3  | Wire CQRS functions into registry dispatch (`output.RenderTable` calls `WriteJSON`) | High     | 15m    | —    |
+| 4  | Refactor `TableToGraph` variadic labelFunc → functional options                     | Med      | 10m    | —    |
+| 5  | Add exact output equivalence test (CQRS vs registry, byte-for-byte)                 | High     | 10m    | 1    |
+| 6  | Make `graph.RenderDOT` write directly from Graph (no DOTRenderer intermediary)      | High     | 20m    | —    |
+| 7  | Add streaming HTML writer (or document that HTML buffers)                           | Low      | 15m    | —    |
+| 8  | Add streaming AsciiDoc writer (or document that AsciiDoc buffers)                   | Low      | 15m    | —    |
+| 9  | Update AGENTS.md with streaming architecture pattern                                | Med      | 5m     | —    |
+| 10 | Update FEATURES.md with complete CQRS API listing                                   | Med      | 10m    | —    |
+| 11 | Add `tree.RenderMarkdown(root)` CQRS                                                | Low      | 10m    | —    |
+| 12 | Add `daghtml.Render(g)` CQRS                                                        | Low      | 10m    | —    |
+| 13 | Add `GraphToTree` test for disconnected nodes (forest)                              | Low      | 5m     | —    |
+| 14 | Add `TableToGraph` test with custom label function                                  | Low      | 5m     | 4    |
+| 15 | Consider FrozenTable/FrozenTree types for real immutability                         | High     | 30m    | —    |
+| 16 | Delete old renderer structs (DOTRenderer etc.) — v0.31.0                            | High     | 30m    | 6    |
+| 17 | Unify `RenderOptions` struct → functional options for root dispatch                 | Med      | 15m    | 3    |
+| 18 | Tag testhelpers/ v0.30.0                                                            | Low      | 3m     | —    |
+| 19 | Tag root v0.30.0                                                                    | Critical | 2m     | 1-17 |
+| 20 | Add streaming benchmarks (compare old marshal vs new encoder)                       | Med      | 15m    | —    |
+| 21 | Add CQRS example to `examples/` directory                                           | Med      | 10m    | —    |
+| 22 | Add ADR for CQRS streaming decision                                                 | Low      | 10m    | —    |
+| 23 | Add `TreeBuilder.AddChildren(parentID, children...)` bulk method                    | Low      | 5m     | —    |
+| 24 | Investigate stale gopls cache (NodeShapeRect, physicalLines warnings)               | Low      | 10m    | —    |
+| 25 | Add `TableBuilder.SetFooterRow([]string)` alternative API                           | Low      | 5m     | —    |
 
 ---
 

@@ -197,33 +197,33 @@ v0.6.1 was tagged before dependency versions were bumped, leaving `v0.0.0` pseud
 
 ## f) Top #25 Things We Should Get Done Next
 
-| #   | Priority | Item                                                                     | Effort | Impact |
-| --- | -------- | ------------------------------------------------------------------------ | ------ | ------ |
-| 1   | P0       | Fix `go-structure-linter` pre-commit hook (configure or remove)          | Small  | High   |
-| 2   | P0       | Update CHANGELOG.md with dedup commits                                   | Small  | Medium |
-| 3   | P0       | Update AGENTS.md coverage table (plantuml 97.2%, serialization 91.6%)    | Small  | Medium |
-| 4   | P1       | Decide on `internal/gentest` vs `testhelpers/gentest` (TODO #20)         | Small  | Medium |
-| 5   | P1       | Update TODO_LIST.md — mark dedup work as done, update dates              | Small  | Medium |
-| 6   | P1       | Add `graphtest.NewTestEdge` to AGENTS.md Key Design Patterns             | Small  | Low    |
-| 7   | P1       | Write ADR 007 for graphtest helper extraction                            | Small  | Medium |
-| 8   | P2       | Deduplicate at t=15: investigate 46 clone groups                         | Large  | Low    |
-| 9   | P2       | Add benchmarks for remaining 14 formats (only d2/plantuml have them)     | Medium | Medium |
-| 10  | P2       | Add fuzz tests for serialization, markup, delimited modules              | Medium | Medium |
-| 11  | P3       | Evaluate `go:generate stringer` for Format/Shape enums (TODO #47)        | Medium | Low    |
-| 12  | P3       | Add `gomod2nix` or alternative for reproducible Nix builds (TODO #49)    | Medium | Medium |
-| 13  | P3       | Write v1.0.0 release criteria / roadmap                                  | Small  | High   |
-| 14  | P3       | Investigate streaming renderer unification across formats                | Medium | High   |
-| 15  | P4       | Post to r/golang with usage examples (TODO #40)                          | Small  | High   |
-| 16  | P4       | Submit to Awesome Go (TODO #40)                                          | Small  | Medium |
-| 17  | P4       | Write a blog post about the multi-module architecture                    | Medium | Medium |
-| 18  | P4       | Add GoDoc examples for d2 D2Column, D2Shape, D2Arrow constants           | Small  | Medium |
-| 19  | P4       | Verify pkg.go.dev renders all 14 module docs correctly                   | Small  | Low    |
-| 20  | P5       | Investigate `go-error-family` adoption (report exists, decision pending) | Small  | Low    |
-| 21  | P5       | Add error wrapping with `%w` consistently across all modules             | Medium | Medium |
-| 22  | P5       | Consider `errors.Join` for multi-error scenarios in renderers            | Small  | Low    |
-| 23  | P5       | Add `io.Writer` benchmarks for streaming renderers                       | Small  | Low    |
-| 24  | P6       | Explore Go 1.27+ iterator support for streaming TableData                | Medium | Low    |
-| 25  | P6       | Consider `slog` integration for debug-level rendering logs               | Small  | Low    |
+| #  | Priority | Item                                                                     | Effort | Impact |
+| -- | -------- | ------------------------------------------------------------------------ | ------ | ------ |
+| 1  | P0       | Fix `go-structure-linter` pre-commit hook (configure or remove)          | Small  | High   |
+| 2  | P0       | Update CHANGELOG.md with dedup commits                                   | Small  | Medium |
+| 3  | P0       | Update AGENTS.md coverage table (plantuml 97.2%, serialization 91.6%)    | Small  | Medium |
+| 4  | P1       | Decide on `internal/gentest` vs `testhelpers/gentest` (TODO #20)         | Small  | Medium |
+| 5  | P1       | Update TODO_LIST.md — mark dedup work as done, update dates              | Small  | Medium |
+| 6  | P1       | Add `graphtest.NewTestEdge` to AGENTS.md Key Design Patterns             | Small  | Low    |
+| 7  | P1       | Write ADR 007 for graphtest helper extraction                            | Small  | Medium |
+| 8  | P2       | Deduplicate at t=15: investigate 46 clone groups                         | Large  | Low    |
+| 9  | P2       | Add benchmarks for remaining 14 formats (only d2/plantuml have them)     | Medium | Medium |
+| 10 | P2       | Add fuzz tests for serialization, markup, delimited modules              | Medium | Medium |
+| 11 | P3       | Evaluate `go:generate stringer` for Format/Shape enums (TODO #47)        | Medium | Low    |
+| 12 | P3       | Add `gomod2nix` or alternative for reproducible Nix builds (TODO #49)    | Medium | Medium |
+| 13 | P3       | Write v1.0.0 release criteria / roadmap                                  | Small  | High   |
+| 14 | P3       | Investigate streaming renderer unification across formats                | Medium | High   |
+| 15 | P4       | Post to r/golang with usage examples (TODO #40)                          | Small  | High   |
+| 16 | P4       | Submit to Awesome Go (TODO #40)                                          | Small  | Medium |
+| 17 | P4       | Write a blog post about the multi-module architecture                    | Medium | Medium |
+| 18 | P4       | Add GoDoc examples for d2 D2Column, D2Shape, D2Arrow constants           | Small  | Medium |
+| 19 | P4       | Verify pkg.go.dev renders all 14 module docs correctly                   | Small  | Low    |
+| 20 | P5       | Investigate `go-error-family` adoption (report exists, decision pending) | Small  | Low    |
+| 21 | P5       | Add error wrapping with `%w` consistently across all modules             | Medium | Medium |
+| 22 | P5       | Consider `errors.Join` for multi-error scenarios in renderers            | Small  | Low    |
+| 23 | P5       | Add `io.Writer` benchmarks for streaming renderers                       | Small  | Low    |
+| 24 | P6       | Explore Go 1.27+ iterator support for streaming TableData                | Medium | Low    |
+| 25 | P6       | Consider `slog` integration for debug-level rendering logs               | Small  | Low    |
 
 ---
 

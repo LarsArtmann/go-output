@@ -179,33 +179,33 @@ Most are error-path branches in `io.Writer` calls that are structurally difficul
 
 Sorted by impact × effort (Pareto):
 
-| #   | Task                                                                               | Impact | Effort | Priority |
-| --- | ---------------------------------------------------------------------------------- | ------ | ------ | -------- |
-| 1   | Update TODO_LIST.md to reflect reality (~20 items done)                            | HIGH   | 20min  | P0       |
-| 2   | Add CHANGELOG.md entry for d2/graph extraction                                     | HIGH   | 10min  | P0       |
-| 3   | Update FORMAT_ARCHITECTURE.md: GetRenderer → Create                                | MEDIUM | 5min   | P1       |
-| 4   | Fix/disable go-structure-linter pre-commit hook                                    | MEDIUM | 15min  | P1       |
-| 5   | Verify flake.nix includes d2/graph in devShell                                     | MEDIUM | 10min  | P1       |
-| 6   | Update DEPENDENCY_GRAPH.md root LOC                                                | LOW    | 15min  | P1       |
-| 7   | Remaining root coverage: streaming writeRow (66.7%), markup writeMarkupRow (66.7%) | MEDIUM | 30min  | P2       |
-| 8   | Graph coverage: attempt mermaid slug fallback (unreachable?)                       | LOW    | 15min  | P2       |
-| 9   | Integration coverage: remaining error paths                                        | LOW    | 20min  | P2       |
-| 10  | Update TODO_LIST.md summary table counts                                           | HIGH   | 5min   | P0       |
-| 11  | Add `renderAndWrite` helper? (considered, decided against — revisit)               | LOW    | 20min  | P3       |
-| 12  | Options struct for `AddTreeNodes` (6 params)                                       | MEDIUM | 25min  | P3       |
-| 13  | Move duplicated test helpers to testhelpers/ (needs Lars decision)                 | MEDIUM | 15min  | P3       |
-| 14  | Consistent re-export pattern: d2 vs graph branded IDs                              | LOW    | 10min  | P3       |
-| 15  | Extract GraphRendererMixin table methods to separate file                          | LOW    | 20min  | P3       |
-| 16  | Shared HTML template builder between html.go and streaming.go                      | MEDIUM | 30min  | P3       |
-| 17  | Generic enum wrapper to reduce Parse\*/sentinel boilerplate                        | MEDIUM | 45min  | P4       |
-| 18  | Add TOML format (new module)                                                       | HIGH   | 2hr    | P6       |
-| 19  | Add JSONL format (new renderer)                                                    | MEDIUM | 1hr    | P6       |
-| 20  | Tag release v0.5.0                                                                 | HIGH   | 15min  | P5       |
-| 21  | Remove deprecated FormatCategory/OutputFormat (breaking change)                    | MEDIUM | 30min  | P6       |
-| 22  | Pre-v1 API audit (all exported symbols)                                            | HIGH   | 2hr    | P5       |
-| 23  | Community: post to r/golang, submit to Awesome Go                                  | MEDIUM | 30min  | P6       |
-| 24  | Add PlantUML format                                                                | LOW    | 2hr    | P6       |
-| 25  | Add AsciiDoc format                                                                | LOW    | 1.5hr  | P6       |
+| #  | Task                                                                               | Impact | Effort | Priority |
+| -- | ---------------------------------------------------------------------------------- | ------ | ------ | -------- |
+| 1  | Update TODO_LIST.md to reflect reality (~20 items done)                            | HIGH   | 20min  | P0       |
+| 2  | Add CHANGELOG.md entry for d2/graph extraction                                     | HIGH   | 10min  | P0       |
+| 3  | Update FORMAT_ARCHITECTURE.md: GetRenderer → Create                                | MEDIUM | 5min   | P1       |
+| 4  | Fix/disable go-structure-linter pre-commit hook                                    | MEDIUM | 15min  | P1       |
+| 5  | Verify flake.nix includes d2/graph in devShell                                     | MEDIUM | 10min  | P1       |
+| 6  | Update DEPENDENCY_GRAPH.md root LOC                                                | LOW    | 15min  | P1       |
+| 7  | Remaining root coverage: streaming writeRow (66.7%), markup writeMarkupRow (66.7%) | MEDIUM | 30min  | P2       |
+| 8  | Graph coverage: attempt mermaid slug fallback (unreachable?)                       | LOW    | 15min  | P2       |
+| 9  | Integration coverage: remaining error paths                                        | LOW    | 20min  | P2       |
+| 10 | Update TODO_LIST.md summary table counts                                           | HIGH   | 5min   | P0       |
+| 11 | Add `renderAndWrite` helper? (considered, decided against — revisit)               | LOW    | 20min  | P3       |
+| 12 | Options struct for `AddTreeNodes` (6 params)                                       | MEDIUM | 25min  | P3       |
+| 13 | Move duplicated test helpers to testhelpers/ (needs Lars decision)                 | MEDIUM | 15min  | P3       |
+| 14 | Consistent re-export pattern: d2 vs graph branded IDs                              | LOW    | 10min  | P3       |
+| 15 | Extract GraphRendererMixin table methods to separate file                          | LOW    | 20min  | P3       |
+| 16 | Shared HTML template builder between html.go and streaming.go                      | MEDIUM | 30min  | P3       |
+| 17 | Generic enum wrapper to reduce Parse\*/sentinel boilerplate                        | MEDIUM | 45min  | P4       |
+| 18 | Add TOML format (new module)                                                       | HIGH   | 2hr    | P6       |
+| 19 | Add JSONL format (new renderer)                                                    | MEDIUM | 1hr    | P6       |
+| 20 | Tag release v0.5.0                                                                 | HIGH   | 15min  | P5       |
+| 21 | Remove deprecated FormatCategory/OutputFormat (breaking change)                    | MEDIUM | 30min  | P6       |
+| 22 | Pre-v1 API audit (all exported symbols)                                            | HIGH   | 2hr    | P5       |
+| 23 | Community: post to r/golang, submit to Awesome Go                                  | MEDIUM | 30min  | P6       |
+| 24 | Add PlantUML format                                                                | LOW    | 2hr    | P6       |
+| 25 | Add AsciiDoc format                                                                | LOW    | 1.5hr  | P6       |
 
 ---
 
@@ -223,19 +223,19 @@ Sorted by impact × effort (Pareto):
 
 ## Module Coverage Summary
 
-| Module             | Coverage  | Status                                 |
-| ------------------ | --------- | -------------------------------------- |
-| root               | **92.2%** | ✅ Above 90% target                    |
-| d2                 | **100%**  | ✅ Complete                            |
-| graph              | **95.2%** | ✅ Above 90% target                    |
-| enum               | **100%**  | ✅ Complete                            |
-| escape             | **100%**  | ✅ Complete                            |
-| sort               | **100%**  | ✅ Complete                            |
-| table              | **100%**  | ✅ Complete                            |
-| testhelpers        | **93.8%** | ✅ Above 90% target                    |
+| Module             | Coverage  | Status                                |
+| ------------------ | --------- | ------------------------------------- |
+| root               | **92.2%** | ✅ Above 90% target                   |
+| d2                 | **100%**  | ✅ Complete                           |
+| graph              | **95.2%** | ✅ Above 90% target                   |
+| enum               | **100%**  | ✅ Complete                           |
+| escape             | **100%**  | ✅ Complete                           |
+| sort               | **100%**  | ✅ Complete                           |
+| table              | **100%**  | ✅ Complete                           |
+| testhelpers        | **93.8%** | ✅ Above 90% target                   |
 | integration        | **82.8%** | ⚠️ Below 90% (unreachable error paths) |
 | gentest (internal) | **87.5%** | ⚠️ Below 90% (Fatalf unreachable)      |
-| examples           | **0%**    | — Expected (main packages)             |
+| examples           | **0%**    | — Expected (main packages)            |
 
 ## Lint Status
 

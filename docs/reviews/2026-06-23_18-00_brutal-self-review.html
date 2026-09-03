@@ -30,14 +30,14 @@
         --warning: var(--color-yellow);
         --radius: 0px;
         --font-heading:
-          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          sans-serif;
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", Roboto, sans-serif;
         --font-body:
-          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          sans-serif;
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", Roboto, sans-serif;
         --font-mono:
-          ui-monospace, "Cascadia Code", "Source Code Pro", "JetBrains Mono", Menlo, Consolas,
-          monospace;
+          ui-monospace, "Cascadia Code", "Source Code Pro", "JetBrains Mono",
+          Menlo, Consolas, monospace;
       }
       * {
         box-sizing: border-box;
@@ -181,15 +181,27 @@
       }
       .card-problem {
         border-left-color: var(--problem);
-        background: color-mix(in srgb, var(--problem) 8%, var(--surface-raised));
+        background: color-mix(
+          in srgb,
+          var(--problem) 8%,
+          var(--surface-raised)
+        );
       }
       .card-solution {
         border-left-color: var(--solution);
-        background: color-mix(in srgb, var(--solution) 8%, var(--surface-raised));
+        background: color-mix(
+          in srgb,
+          var(--solution) 8%,
+          var(--surface-raised)
+        );
       }
       .card-warning {
         border-left-color: var(--warning);
-        background: color-mix(in srgb, var(--warning) 8%, var(--surface-raised));
+        background: color-mix(
+          in srgb,
+          var(--warning) 8%,
+          var(--surface-raised)
+        );
       }
       .stat-grid {
         display: grid;
@@ -342,11 +354,12 @@
           <div class="hero-badge">Round 2 — Deeper Honesty</div>
           <h1>The Injection Gap I Missed, The Tests I Skipped</h1>
           <p class="hero-subtitle">
-            After completing the self-review plan's 3 remaining items, I ran a second self-review
-            pass. I found a 4th unescaped renderer (PlantUML), a missing CODE_OF_CONDUCT.md,
-            injection tests that were half-strength, and a scroll optimization with zero regression
-            coverage. All fixed — but the fact I shipped the first pass without catching them is the
-            real lesson.
+            After completing the self-review plan's 3 remaining items, I ran a
+            second self-review pass. I found a 4th unescaped renderer
+            (PlantUML), a missing CODE_OF_CONDUCT.md, injection tests that were
+            half-strength, and a scroll optimization with zero regression
+            coverage. All fixed — but the fact I shipped the first pass without
+            catching them is the real lesson.
           </p>
         </div>
 
@@ -378,10 +391,12 @@
         <div class="card card-problem">
           <h4>1. PlantUML had the same injection vulnerability</h4>
           <p>
-            I wrote injection regression tests for D2, DOT, and Mermaid — then stopped. PlantUML's
-            <code>plantumlColorSpec()</code> wrote Fill/Stroke/FontColor <strong>raw</strong>,
-            allowing semicolons to inject attributes and newlines to inject arbitrary PlantUML
-            syntax. Same vulnerability class, same fix pattern, same test pattern — and I missed it
+            I wrote injection regression tests for D2, DOT, and Mermaid — then
+            stopped. PlantUML's
+            <code>plantumlColorSpec()</code> wrote Fill/Stroke/FontColor
+            <strong>raw</strong>, allowing semicolons to inject attributes and
+            newlines to inject arbitrary PlantUML syntax. Same vulnerability
+            class, same fix pattern, same test pattern — and I missed it
             entirely. Fixed: added <code>plantumlColorValue()</code> with
             <code>escape.PlantUML()</code> + semicolon replacement.
           </p>
@@ -389,40 +404,46 @@
         <div class="card card-problem">
           <h4>2. CODE_OF_CONDUCT.md was silently deleted</h4>
           <p>
-            The BuildFlow pre-commit hook deleted it in commit <code>622e7dc</code> (before my
-            session). I documented the hook behavior in AGENTS.md but never verified the file still
-            existed. It was gone for 8+ commits. Fixed: restored from <code>622e7dc^</code>.
+            The BuildFlow pre-commit hook deleted it in commit
+            <code>622e7dc</code> (before my session). I documented the hook
+            behavior in AGENTS.md but never verified the file still existed. It
+            was gone for 8+ commits. Fixed: restored from <code>622e7dc^</code>.
           </p>
         </div>
         <div class="card card-problem">
           <h4>3. Injection tests were half-strength</h4>
           <p>
-            My D2/DOT/Mermaid injection tests only verified "raw malicious value doesn't leak" — a
-            negative assertion. They never checked that the
-            <em>correct escaped sequence</em> appeared in the output. An escaper that deletes the
-            value entirely would pass. Fixed: added <code>TestD2NodeStyleEscapeOutput</code>,
+            My D2/DOT/Mermaid injection tests only verified "raw malicious value
+            doesn't leak" — a negative assertion. They never checked that the
+            <em>correct escaped sequence</em> appeared in the output. An escaper
+            that deletes the value entirely would pass. Fixed: added
+            <code>TestD2NodeStyleEscapeOutput</code>,
             <code>TestDOTNodeStyleEscapeOutput</code>,
-            <code>TestMermaidNodeStyleEscapeOutput</code> with positive assertions for exact escape
-            sequences.
+            <code>TestMermaidNodeStyleEscapeOutput</code> with positive
+            assertions for exact escape sequences.
           </p>
         </div>
         <div class="card card-problem">
           <h4>4. Scroll optimization had zero regression tests</h4>
           <p>
-            I replaced the entire NOM scroll rendering pipeline (render-entire-tree-then-clip →
-            entry-level windowing) without a single test verifying scrolling behavior. The existing
-            tests checked scroll <em>offset mechanics</em> but not scroll <em>rendering output</em>.
-            Fixed: <code>TestProgressModel_ScrollRendering_ShowsCorrectWindow</code> verifies
-            offset=0 shows first page, offset=5 shows different window, scrollToBottomSentinel
-            clamps correctly.
+            I replaced the entire NOM scroll rendering pipeline
+            (render-entire-tree-then-clip → entry-level windowing) without a
+            single test verifying scrolling behavior. The existing tests checked
+            scroll <em>offset mechanics</em> but not scroll
+            <em>rendering output</em>. Fixed:
+            <code>TestProgressModel_ScrollRendering_ShowsCorrectWindow</code>
+            verifies offset=0 shows first page, offset=5 shows different window,
+            scrollToBottomSentinel clamps correctly.
           </p>
         </div>
         <div class="card card-problem">
           <h4>5. scrollOffset not reset on display mode switch</h4>
           <p>
-            Switching from NOM (tree-scrolled) to Universal (step-based) carried the stale offset,
-            landing mid-content. The field was shared between modes but never reset. Fixed:
-            <code>SetDisplayMode()</code> now resets <code>scrollOffset = 0</code>.
+            Switching from NOM (tree-scrolled) to Universal (step-based) carried
+            the stale offset, landing mid-content. The field was shared between
+            modes but never reset. Fixed:
+            <code>SetDisplayMode()</code> now resets
+            <code>scrollOffset = 0</code>.
           </p>
         </div>
 
@@ -430,20 +451,25 @@
         <div class="card card-problem">
           <h4>1. I stopped at 3 renderers when there are 4</h4>
           <p>
-            The self-review plan said "D2/DOT/Mermaid" — and I followed it literally without
-            checking "wait, are there other renderers with the same pattern?" There are 4 graph
-            renderers: D2, DOT, Mermaid, PlantUML. PlantUML was the obvious miss. The fix was 3
-            lines of code. The test was 30 lines. I should have searched for ALL
-            <code>plantumlColorSpec</code>/<code>writeNodeAttr</code>/<code>mermaidStyleParts</code>
+            The self-review plan said "D2/DOT/Mermaid" — and I followed it
+            literally without checking "wait, are there other renderers with the
+            same pattern?" There are 4 graph renderers: D2, DOT, Mermaid,
+            PlantUML. PlantUML was the obvious miss. The fix was 3 lines of
+            code. The test was 30 lines. I should have searched for ALL
+            <code>plantumlColorSpec</code>/<code>writeNodeAttr</code>/<code
+              >mermaidStyleParts</code
+            >
             patterns in one sweep, not cherry-picked from the plan.
           </p>
         </div>
         <div class="card card-problem">
           <h4>2. I treated negative assertions as sufficient</h4>
           <p>
-            "Raw value doesn't appear" is necessary but not sufficient. A function that returns
-            <code>""</code> passes. I should have written positive assertions from the start — "the
-            escaped sequence DOES appear" — in the same test. This is Testing 101 and I skipped it.
+            "Raw value doesn't appear" is necessary but not sufficient. A
+            function that returns
+            <code>""</code> passes. I should have written positive assertions
+            from the start — "the escaped sequence DOES appear" — in the same
+            test. This is Testing 101 and I skipped it.
           </p>
         </div>
 
@@ -454,8 +480,9 @@
             <div class="text">
               <strong>PlantUML escaping + injection test</strong
               ><span
-                ><code>plantumlColorValue()</code> applies <code>escape.PlantUML()</code> + replaces
-                <code>;</code> with <code>_</code>. 5 case table-driven test added.</span
+                ><code>plantumlColorValue()</code> applies
+                <code>escape.PlantUML()</code> + replaces <code>;</code> with
+                <code>_</code>. 5 case table-driven test added.</span
               >
             </div>
           </div>
@@ -464,10 +491,8 @@
             <div class="text">
               <strong>CODE_OF_CONDUCT.md restored</strong
               ><span
-                >Restored from pre-deletion commit. BuildFlow hook will re-delete on non-<code
-                  >--no-verify</code
-                >
-                commits.</span
+                >Restored from pre-deletion commit. BuildFlow hook will
+                re-delete on non-<code>--no-verify</code> commits.</span
               >
             </div>
           </div>
@@ -476,8 +501,9 @@
             <div class="text">
               <strong>Positive escape assertions for D2/DOT/Mermaid</strong
               ><span
-                >3 new tests verify exact escaped sequences: <code>\n</code> literal,
-                <code>\"</code>, brackets→parens, etc.</span
+                >3 new tests verify exact escaped sequences:
+                <code>\n</code> literal, <code>\"</code>, brackets→parens,
+                etc.</span
               >
             </div>
           </div>
@@ -486,8 +512,8 @@
             <div class="text">
               <strong>Scroll rendering regression test</strong
               ><span
-                >Verifies entry-level windowing: offset=0, offset=5, scrollToBottomSentinel
-                clamping.</span
+                >Verifies entry-level windowing: offset=0, offset=5,
+                scrollToBottomSentinel clamping.</span
               >
             </div>
           </div>
@@ -496,8 +522,8 @@
             <div class="text">
               <strong>scrollOffset reset on mode switch</strong
               ><span
-                ><code>SetDisplayMode()</code> resets to 0, preventing stale cross-mode scroll
-                positions.</span
+                ><code>SetDisplayMode()</code> resets to 0, preventing stale
+                cross-mode scroll positions.</span
               >
             </div>
           </div>
@@ -506,8 +532,8 @@
             <div class="text">
               <strong>Full makezero lint sweep</strong
               ><span
-                >20+ pre-existing makezero violations fixed across 10 modules. All 18 modules now
-                lint clean.</span
+                >20+ pre-existing makezero violations fixed across 10 modules.
+                All 18 modules now lint clean.</span
               >
             </div>
           </div>
@@ -516,59 +542,70 @@
             <div class="text">
               <strong>yaml.v3 transitive dependency investigated</strong
               ><span
-                >Traced to <code>onsi/gomega</code> (required BDD testing framework). Acceptable
-                transitive — same exception class as gin/huma. No action needed.</span
+                >Traced to <code>onsi/gomega</code> (required BDD testing
+                framework). Acceptable transitive — same exception class as
+                gin/huma. No action needed.</span
               >
             </div>
           </div>
         </div>
 
-        <h2 id="remaining"><span class="num">04</span>What Remains (Not Blocking)</h2>
+        <h2 id="remaining">
+          <span class="num">04</span>What Remains (Not Blocking)
+        </h2>
         <div class="card card-warning">
           <h4>go-branded-id vs go-composable-business-types</h4>
           <p>
-            The how-to-golang skill recommends <code>go-composable-business-types</code> for branded
-            types. The project uses <code>go-branded-id</code> across all 18 modules. This is a
-            large migration with no functional difference today — branded IDs already provide
-            compile-time type safety. Would align with skill guidance but isn't urgent.
+            The how-to-golang skill recommends
+            <code>go-composable-business-types</code> for branded types. The
+            project uses <code>go-branded-id</code> across all 18 modules. This
+            is a large migration with no functional difference today — branded
+            IDs already provide compile-time type safety. Would align with skill
+            guidance but isn't urgent.
           </p>
         </div>
         <div class="card card-warning">
           <h4>RenderWithSnapshots still collects all entries on scroll</h4>
           <p>
-            My scroll optimization improved rendering from O(all) to O(visible), but entry
-            collection is still O(all) —
-            <code>VisibleEntriesWithSnapshots(snapshots, 0)</code> walks the entire tree. A
-            <code>VisibleEntriesRange</code> that skips before offset and stops after height would
-            be truly O(visible), but requires non-trivial tree-walk rework.
+            My scroll optimization improved rendering from O(all) to O(visible),
+            but entry collection is still O(all) —
+            <code>VisibleEntriesWithSnapshots(snapshots, 0)</code> walks the
+            entire tree. A <code>VisibleEntriesRange</code> that skips before
+            offset and stops after height would be truly O(visible), but
+            requires non-trivial tree-walk rework.
           </p>
         </div>
         <div class="card card-warning">
           <h4>chromeLines is a magic number</h4>
           <p>
-            <code>chromeLines = 8</code> is hardcoded but derived from the actual chrome layout
-            (title=2, message=1, summary=1, section gaps=3, treeStart=1). Should be computed or at
-            least documented with the arithmetic.
+            <code>chromeLines = 8</code> is hardcoded but derived from the
+            actual chrome layout (title=2, message=1, summary=1, section gaps=3,
+            treeStart=1). Should be computed or at least documented with the
+            arithmetic.
           </p>
         </div>
         <div class="card card-warning">
           <h4>samber/lo could simplify makezero conversions</h4>
           <p>
-            Many of the <code>make([]T, 0, n) + append</code> patterns I wrote could be
-            <code>lo.Map(src, func(t T, _ int) U { ... })</code>. The project doesn't use samber/lo
-            yet — adopting it would simplify ~15 slice-building sites.
+            Many of the <code>make([]T, 0, n) + append</code> patterns I wrote
+            could be <code>lo.Map(src, func(t T, _ int) U { ... })</code>. The
+            project doesn't use samber/lo yet — adopting it would simplify ~15
+            slice-building sites.
           </p>
         </div>
 
-        <h2 id="plan"><span class="num">05</span>Prioritized Improvement Plan</h2>
+        <h2 id="plan">
+          <span class="num">05</span>Prioritized Improvement Plan
+        </h2>
         <div class="migration-step">
           <div class="migration-num">1</div>
           <div class="migration-content">
             <h4>Sweep all renderers for escaping in one pass</h4>
             <p>
-              <strong>Effort:</strong> Low · <strong>Impact:</strong> Medium. Create a test helper
-              that fuzzes style values across ALL renderers (D2+DOT+Mermaid+PlantUML)
-              simultaneously. Prevents the "fixed 3 of 4" pattern from recurring.
+              <strong>Effort:</strong> Low · <strong>Impact:</strong> Medium.
+              Create a test helper that fuzzes style values across ALL renderers
+              (D2+DOT+Mermaid+PlantUML) simultaneously. Prevents the "fixed 3 of
+              4" pattern from recurring.
             </p>
           </div>
         </div>
@@ -577,9 +614,9 @@
           <div class="migration-content">
             <h4>Document chromeLines derivation</h4>
             <p>
-              <strong>Effort:</strong> Trivial · <strong>Impact:</strong> Low. Add a comment to
-              <code>chromeLines = 8</code> explaining: title(2) + message(1) + summary(1) + 3
-              section gaps + treeStart(1) = 8.
+              <strong>Effort:</strong> Trivial · <strong>Impact:</strong> Low.
+              Add a comment to <code>chromeLines = 8</code> explaining: title(2)
+              + message(1) + summary(1) + 3 section gaps + treeStart(1) = 8.
             </p>
           </div>
         </div>
@@ -588,10 +625,11 @@
           <div class="migration-content">
             <h4>Adopt samber/lo for slice operations</h4>
             <p>
-              <strong>Effort:</strong> Medium · <strong>Impact:</strong> Medium. Add
-              <code>samber/lo</code> to root go.mod. Refactor ~15 <code>make+append</code> loops to
-              <code>lo.Map</code>/<code>lo.Filter</code>. Reduces boilerplate from the makezero
-              sweep.
+              <strong>Effort:</strong> Medium · <strong>Impact:</strong> Medium.
+              Add <code>samber/lo</code> to root go.mod. Refactor ~15
+              <code>make+append</code> loops to
+              <code>lo.Map</code>/<code>lo.Filter</code>. Reduces boilerplate
+              from the makezero sweep.
             </p>
           </div>
         </div>
@@ -600,9 +638,11 @@
           <div class="migration-content">
             <h4>Migrate go-branded-id → go-composable-business-types</h4>
             <p>
-              <strong>Effort:</strong> High · <strong>Impact:</strong> Low (aligns with skill). All
-              18 modules use <code>go-branded-id</code>. The replacement adds JSON/SQL serialization
-              and more domain types. No functional difference today; purely alignment.
+              <strong>Effort:</strong> High · <strong>Impact:</strong> Low
+              (aligns with skill). All 18 modules use
+              <code>go-branded-id</code>. The replacement adds JSON/SQL
+              serialization and more domain types. No functional difference
+              today; purely alignment.
             </p>
           </div>
         </div>
@@ -611,10 +651,11 @@
           <div class="migration-content">
             <h4>VisibleEntriesRange for true O(visible) scroll</h4>
             <p>
-              <strong>Effort:</strong> High · <strong>Impact:</strong> Low (only matters for 1000+
-              node trees). Current scroll collects all entries but renders only visible ones. A
-              range-aware tree walk would skip before-offset and stop after-height — but requires
-              reworking <code>collectVisibleNodes</code> to accept start/end parameters.
+              <strong>Effort:</strong> High · <strong>Impact:</strong> Low (only
+              matters for 1000+ node trees). Current scroll collects all entries
+              but renders only visible ones. A range-aware tree walk would skip
+              before-offset and stop after-height — but requires reworking
+              <code>collectVisibleNodes</code> to accept start/end parameters.
             </p>
           </div>
         </div>
@@ -623,20 +664,25 @@
         <div class="card card-solution">
           <h4>ColorValue branded type</h4>
           <p>
-            The injection vulnerabilities all stem from raw <code>string</code> flowing into style
-            fields. A branded <code>ColorValue</code> type that validates at construction (hex
-            pattern or named color) would make injection impossible at the type level —
-            <code>GraphStyle.Fill</code> would be <code>ColorValue</code>, not <code>string</code>.
-            Callers would construct via <code>NewColorValue("#ff0000")</code> which validates.
+            The injection vulnerabilities all stem from raw
+            <code>string</code> flowing into style fields. A branded
+            <code>ColorValue</code> type that validates at construction (hex
+            pattern or named color) would make injection impossible at the type
+            level — <code>GraphStyle.Fill</code> would be
+            <code>ColorValue</code>, not <code>string</code>. Callers would
+            construct via <code>NewColorValue("#ff0000")</code> which validates.
           </p>
         </div>
         <div class="card card-solution">
           <h4>RendererStyle interface for per-format escaping</h4>
           <p>
             Each renderer already has its own escaping logic. An interface like
-            <code>type StyleEscaper interface { EscapeColorValue(string) string }</code> on the
-            renderer would centralize the escaping per-format and make it testable without rendering
-            a full diagram.
+            <code
+              >type StyleEscaper interface { EscapeColorValue(string) string
+              }</code
+            >
+            on the renderer would centralize the escaping per-format and make it
+            testable without rendering a full diagram.
           </p>
         </div>
 
@@ -645,24 +691,27 @@
           <h4>samber/lo — slice utilities</h4>
           <p>
             Recommended by how-to-golang skill. Would replace 15+ manual
-            <code>make+append</code> loops with <code>lo.Map</code>. Already used in other
-            LarsArtmann projects.
+            <code>make+append</code> loops with <code>lo.Map</code>. Already
+            used in other LarsArtmann projects.
           </p>
         </div>
         <div class="card card-solution">
           <h4>samber/mo — option/either types</h4>
           <p>
-            For <code>GraphStyle.FontSize</code> which uses <code>0</code> as "unset" (can't
-            distinguish 0pt from absent). <code>mo.Option[int]</code> would make "not set" explicit.
-            Same pattern applies to <code>D2NodeStyle.Opacity</code> which was just fixed to allow
-            <code>0.0</code> as a valid value via <code>!= 0</code> instead of <code>> 0</code> —
-            the real fix is an optional type.
+            For <code>GraphStyle.FontSize</code> which uses <code>0</code> as
+            "unset" (can't distinguish 0pt from absent).
+            <code>mo.Option[int]</code> would make "not set" explicit. Same
+            pattern applies to <code>D2NodeStyle.Opacity</code> which was just
+            fixed to allow <code>0.0</code> as a valid value via
+            <code>!= 0</code> instead of <code>> 0</code> — the real fix is an
+            optional type.
           </p>
         </div>
 
         <div class="footer">
-          Generated 2026-06-23 · Round 2 self-review after completing the 3-item plan + discovering
-          5 more issues · All fixed, all tested, all committed.
+          Generated 2026-06-23 · Round 2 self-review after completing the 3-item
+          plan + discovering 5 more issues · All fixed, all tested, all
+          committed.
         </div>
       </main>
     </div>

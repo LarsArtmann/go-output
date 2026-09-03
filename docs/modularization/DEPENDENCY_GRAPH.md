@@ -60,20 +60,20 @@ Level 5 — Consumers
 
 ## Module Dependency Matrix
 
-| ↓ depends on →    | enum | escape | root | d2  | graph | table | delimited | serialization | markup |
-| ----------------- | ---- | ------ | ---- | --- | ----- | ----- | --------- | ------------- | ------ |
-| **enum**          | —    | —      | —    | —   | —     | —     | —         | —             | —      |
-| **escape**        | —    | —      | —    | —   | —     | —     | —         | —             | —      |
-| **testhelpers**   | —    | —      | —    | —   | —     | —     | —         | —             | —      |
-| **root**          | ✅   | —      | —    | —   | —     | —     | —         | —             | —      |
-| **d2**            | —    | ✅     | ✅   | —   | —     | —     | —         | —             | —      |
-| **graph**         | —    | ✅     | ✅   | —   | —     | —     | —         | —             | —      |
-| **table**         | —    | —      | ✅   | —   | —     | —     | —         | —             | —      |
-| **delimited**     | —    | —      | ✅   | —   | —     | —     | —         | —             | —      |
-| **serialization** | —    | —      | ✅   | —   | —     | —     | —         | —             | —      |
-| **markup**        | —    | ✅     | ✅   | —   | —     | —     | —         | —             | —      |
-| **integration**   | —    | —      | ✅   | ✅  | ✅    | ✅    | ✅        | ✅            | ✅     |
-| **examples**      | —    | —      | ✅   | ✅  | ✅    | ✅    | ✅        | ✅            | ✅     |
+| ↓ depends on →    | enum | escape | root | d2 | graph | table | delimited | serialization | markup |
+| ----------------- | ---- | ------ | ---- | -- | ----- | ----- | --------- | ------------- | ------ |
+| **enum**          | —    | —      | —    | —  | —     | —     | —         | —             | —      |
+| **escape**        | —    | —      | —    | —  | —     | —     | —         | —             | —      |
+| **testhelpers**   | —    | —      | —    | —  | —     | —     | —         | —             | —      |
+| **root**          | ✅   | —      | —    | —  | —     | —     | —         | —             | —      |
+| **d2**            | —    | ✅     | ✅   | —  | —     | —     | —         | —             | —      |
+| **graph**         | —    | ✅     | ✅   | —  | —     | —     | —         | —             | —      |
+| **table**         | —    | —      | ✅   | —  | —     | —     | —         | —             | —      |
+| **delimited**     | —    | —      | ✅   | —  | —     | —     | —         | —             | —      |
+| **serialization** | —    | —      | ✅   | —  | —     | —     | —         | —             | —      |
+| **markup**        | —    | ✅     | ✅   | —  | —     | —     | —         | —             | —      |
+| **integration**   | —    | —      | ✅   | ✅ | ✅    | ✅    | ✅        | ✅            | ✅     |
+| **examples**      | —    | —      | ✅   | ✅ | ✅    | ✅    | ✅        | ✅            | ✅     |
 
 **Cycles:** None. All dependencies point downward (higher row → lower column).
 

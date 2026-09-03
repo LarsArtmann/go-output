@@ -114,22 +114,22 @@ All 12 modules pass with `-race` flag — zero data races detected.
 
 ### From TODO_LIST.md (5 open items)
 
-| #   | Item                                                   | Priority | Status                 |
-| --- | ------------------------------------------------------ | -------- | ---------------------- |
-| 20  | Move `internal/gentest` to `testhelpers/gentest`?      | P3       | Needs Decision         |
-| 21  | Duplicated test helpers in graph/ (depends on #20)     | P3       | Blocked                |
-| 24  | Pre-commit: `go-structure-linter` false positives      | P4       | External tool issue    |
-| 26  | flake.nix Go build/test/lint                           | P4       | Blocked by Nix sandbox |
-| 34  | Shape-specific renderer constructors (ADR-002 Phase 2) | P6       | Future                 |
+| #  | Item                                                   | Priority | Status                 |
+| -- | ------------------------------------------------------ | -------- | ---------------------- |
+| 20 | Move `internal/gentest` to `testhelpers/gentest`?      | P3       | Needs Decision         |
+| 21 | Duplicated test helpers in graph/ (depends on #20)     | P3       | Blocked                |
+| 24 | Pre-commit: `go-structure-linter` false positives      | P4       | External tool issue    |
+| 26 | flake.nix Go build/test/lint                           | P4       | Blocked by Nix sandbox |
+| 34 | Shape-specific renderer constructors (ADR-002 Phase 2) | P6       | Future                 |
 
 ### Future Formats (TODO P6)
 
-| #   | Format                         | Estimated Effort |
-| --- | ------------------------------ | ---------------- |
-| 35  | TOML format (new module)       | 2 hr             |
-| 36  | JSONL format (new renderer)    | 1 hr             |
-| 37  | PlantUML format (new module)   | 4 hr             |
-| 38  | AsciiDoc format (new renderer) | 1 hr             |
+| #  | Format                         | Estimated Effort |
+| -- | ------------------------------ | ---------------- |
+| 35 | TOML format (new module)       | 2 hr             |
+| 36 | JSONL format (new renderer)    | 1 hr             |
+| 37 | PlantUML format (new module)   | 4 hr             |
+| 38 | AsciiDoc format (new renderer) | 1 hr             |
 
 ### Other Not Started
 
@@ -196,43 +196,43 @@ All 12 modules pass with `-race` flag — zero data races detected.
 
 ### HIGH IMPACT, LOW EFFORT (do first)
 
-| #   | Task                                                                                                                    | Impact | Effort |
-| --- | ----------------------------------------------------------------------------------------------------------------------- | ------ | ------ |
-| 1   | **Fix testhelpers/ coverage** — Add tests for `ErrorWriter`, `WriteNThenFailWriter` in writers.go (dropped 93.8%→81.1%) | High   | 15 min |
-| 2   | **Tag v0.5.0** — Bundle BREAKING changes, update CHANGELOG date                                                         | High   | 5 min  |
-| 3   | **Add fuzz tests to delimited/, serialization/, markup/** — Copy pattern from root/d2/graph                             | High   | 1 hr   |
-| 4   | **Write ADR-004** — Document delimited/serialization/markup extraction rationale                                        | Med    | 20 min |
-| 5   | **Add JSONL format** — Trivial extension of JSON writer, high demand                                                    | High   | 1 hr   |
-| 6   | **Fix integration/ coverage to 90%+** — Add error path tests                                                            | Med    | 30 min |
-| 7   | **Fix serialization/ coverage to 90%+** — Add graph renderer error tests                                                | Med    | 20 min |
-| 8   | **Fix delimited/ coverage to 90%+** — Add DelimitedWriter error tests                                                   | Med    | 20 min |
-| 9   | **Add coverage threshold to CI** — Fail if any module drops below 80%                                                   | Med    | 15 min |
-| 10  | **Deduplicate serialization/ test helpers** — Use testhelpers.ErrorWriter via type alias                                | Low    | 10 min |
+| #  | Task                                                                                                                    | Impact | Effort |
+| -- | ----------------------------------------------------------------------------------------------------------------------- | ------ | ------ |
+| 1  | **Fix testhelpers/ coverage** — Add tests for `ErrorWriter`, `WriteNThenFailWriter` in writers.go (dropped 93.8%→81.1%) | High   | 15 min |
+| 2  | **Tag v0.5.0** — Bundle BREAKING changes, update CHANGELOG date                                                         | High   | 5 min  |
+| 3  | **Add fuzz tests to delimited/, serialization/, markup/** — Copy pattern from root/d2/graph                             | High   | 1 hr   |
+| 4  | **Write ADR-004** — Document delimited/serialization/markup extraction rationale                                        | Med    | 20 min |
+| 5  | **Add JSONL format** — Trivial extension of JSON writer, high demand                                                    | High   | 1 hr   |
+| 6  | **Fix integration/ coverage to 90%+** — Add error path tests                                                            | Med    | 30 min |
+| 7  | **Fix serialization/ coverage to 90%+** — Add graph renderer error tests                                                | Med    | 20 min |
+| 8  | **Fix delimited/ coverage to 90%+** — Add DelimitedWriter error tests                                                   | Med    | 20 min |
+| 9  | **Add coverage threshold to CI** — Fail if any module drops below 80%                                                   | Med    | 15 min |
+| 10 | **Deduplicate serialization/ test helpers** — Use testhelpers.ErrorWriter via type alias                                | Low    | 10 min |
 
 ### HIGH IMPACT, MEDIUM EFFORT
 
-| #   | Task                                                                                            | Impact | Effort |
-| --- | ----------------------------------------------------------------------------------------------- | ------ | ------ |
-| 11  | **Move internal/gentest to testhelpers/gentest** — Eliminate test helper duplication (TODO #20) | Med    | 30 min |
-| 12  | **Deduplicate graph/ test helpers** — Depends on #11 (TODO #21)                                 | Med    | 15 min |
-| 13  | **Unified error types** — `output.Error` with `Kind` enum                                       | High   | 2 hr   |
-| 14  | **Consistent streaming API** — Common `StreamingWriter` interface                               | High   | 3 hr   |
-| 15  | **Add TOML format** — New module, popular in Go ecosystem                                       | Med    | 2 hr   |
-| 16  | **Pre-v1 API audit** — Review all public APIs for stability                                     | High   | 3 hr   |
-| 17  | **goreleaser config** — Automate releases                                                       | Med    | 1 hr   |
-| 18  | **Move userjourney_test.go to integration/** — Cleaner separation                               | Low    | 15 min |
+| #  | Task                                                                                            | Impact | Effort |
+| -- | ----------------------------------------------------------------------------------------------- | ------ | ------ |
+| 11 | **Move internal/gentest to testhelpers/gentest** — Eliminate test helper duplication (TODO #20) | Med    | 30 min |
+| 12 | **Deduplicate graph/ test helpers** — Depends on #11 (TODO #21)                                 | Med    | 15 min |
+| 13 | **Unified error types** — `output.Error` with `Kind` enum                                       | High   | 2 hr   |
+| 14 | **Consistent streaming API** — Common `StreamingWriter` interface                               | High   | 3 hr   |
+| 15 | **Add TOML format** — New module, popular in Go ecosystem                                       | Med    | 2 hr   |
+| 16 | **Pre-v1 API audit** — Review all public APIs for stability                                     | High   | 3 hr   |
+| 17 | **goreleaser config** — Automate releases                                                       | Med    | 1 hr   |
+| 18 | **Move userjourney_test.go to integration/** — Cleaner separation                               | Low    | 15 min |
 
 ### MEDIUM IMPACT, HIGHER EFFORT
 
-| #   | Task                                                           | Impact    | Effort |
-| --- | -------------------------------------------------------------- | --------- | ------ |
-| 19  | **Add snapshot testing** — Catch unintended output changes     | Med       | 2 hr   |
-| 20  | **Generic TableData[T]** — Type-safe column access             | Very High | 1 day  |
-| 21  | **go-output CLI tool** — Companion CLI for format conversion   | Very High | 2 days |
-| 22  | **Add PlantUML format** — New module with UML diagram types    | Med       | 4 hr   |
-| 23  | **Benchmark regression CI** — Track performance across commits | Med       | 2 hr   |
-| 24  | **Shape-specific renderer constructors** — ADR-002 Phase 2     | Med       | 3 hr   |
-| 25  | **Community posting** — r/golang, Awesome Go                   | High      | 1 hr   |
+| #  | Task                                                           | Impact    | Effort |
+| -- | -------------------------------------------------------------- | --------- | ------ |
+| 19 | **Add snapshot testing** — Catch unintended output changes     | Med       | 2 hr   |
+| 20 | **Generic TableData[T]** — Type-safe column access             | Very High | 1 day  |
+| 21 | **go-output CLI tool** — Companion CLI for format conversion   | Very High | 2 days |
+| 22 | **Add PlantUML format** — New module with UML diagram types    | Med       | 4 hr   |
+| 23 | **Benchmark regression CI** — Track performance across commits | Med       | 2 hr   |
+| 24 | **Shape-specific renderer constructors** — ADR-002 Phase 2     | Med       | 3 hr   |
+| 25 | **Community posting** — r/golang, Awesome Go                   | High      | 1 hr   |
 
 ---
 

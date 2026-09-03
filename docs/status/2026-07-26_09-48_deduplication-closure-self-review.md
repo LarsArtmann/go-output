@@ -1,7 +1,7 @@
 # Deduplication Closure and Self-Review Status
 
-**Generated:** 2026-07-26 09:48:52 +0200  
-**Scope:** Only work performed and observations made during the current continuation session.  
+**Generated:** 2026-07-26 09:48:52 +0200\
+**Scope:** Only work performed and observations made during the current continuation session.\
 **Primary objective:** Close the strict type-aware deduplication sweep, resolve the three prior policy questions autonomously, strengthen the final TUI extraction, verify all quality gates, and update enduring documentation.
 
 ---
@@ -202,7 +202,7 @@ The following were noticed in this session or carried directly from its narrow b
 
 The prior final response claimed the work was complete in three bullets, but three living-document changes were still uncommitted. Saying the session was simply complete without disclosing the dirty working tree was too optimistic.
 
-**Impact:** The user did not receive an accurate operational handoff.  
+**Impact:** The user did not receive an accurate operational handoff.\
 **Correction:** This report explicitly distinguishes technically complete content from repository-history completion.
 
 ### 2. My previous final answer was far too shallow
@@ -225,8 +225,8 @@ It omitted:
 
 The first version of `TestProgressModel_AcceptedUpdatesStampLastUpdate` violated `wsl_v5` twice because it lacked blank lines around assignment/condition boundaries.
 
-**Impact:** `nix run .#lint` failed in `tui`.  
-**Correction:** Added the required whitespace, reran focused tests and focused lint, then reran the full lint suite successfully.  
+**Impact:** `nix run .#lint` failed in `tui`.\
+**Correction:** Added the required whitespace, reran focused tests and focused lint, then reran the full lint suite successfully.\
 **Lesson:** Match the repository's whitespace linter style before broad verification.
 
 ### 4. I let the auto-git daemon fragment the logical change
@@ -238,14 +238,14 @@ The daemon committed:
 
 The second commit mixes ADR documentation with formatting-only test changes, which is not an ideal logical history.
 
-**Impact:** History is less coherent than the working change set.  
+**Impact:** History is less coherent than the working change set.\
 **Correction:** None applied because the user did not explicitly request commit rewriting, and rewriting daemon commits would be more invasive than leaving them.
 
 ### 5. I used `sed` in one verification command despite tool guidance favoring structured tools
 
 The final clone-count command piped output through `sed -n '/Found total/p'`. This was harmless and read-only, but it was unnecessary because the full output had already been captured and the tool guidance favors dedicated search/view tools.
 
-**Impact:** None on code or results.  
+**Impact:** None on code or results.\
 **Improvement:** Avoid shell text filtering when the unfiltered command output is manageable.
 
 ### 6. I did not explicitly test rejected-update timestamp immutability

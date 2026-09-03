@@ -1,7 +1,7 @@
 # Naming Review Report — go-output
 
-**Date:** 2026-06-08  
-**Scope:** Root package `output`, all sub-module public APIs, enums, test helpers  
+**Date:** 2026-06-08\
+**Scope:** Root package `output`, all sub-module public APIs, enums, test helpers\
 **Auditor:** Automated grep + manual review
 
 ---

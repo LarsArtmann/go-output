@@ -26,7 +26,9 @@
         box-sizing: border-box;
       }
       body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial,
+          sans-serif;
         background: var(--bg);
         color: var(--text);
         line-height: 1.6;
@@ -227,7 +229,10 @@
     </style>
   </head>
   <body>
-    <h1>PRO/CONTRA: Adopting <code>go-error-family</code> in <code>go-output</code></h1>
+    <h1>
+      PRO/CONTRA: Adopting <code>go-error-family</code> in
+      <code>go-output</code>
+    </h1>
     <p class="meta">
       Research Report &middot; 2026-06-01 &middot; Evaluating
       <code>github.com/larsartmann/go-error-family v0.3.0</code> for
@@ -241,18 +246,20 @@
     <div class="verdict-box">
       <h3>Verdict: Do Not Adopt (Yet)</h3>
       <p style="color: var(--text); margin-bottom: 0.8rem">
-        <strong>go-error-family is an excellent library</strong> for CLI applications and HTTP
-        services that need structured error classification, retry semantics, and CLI exit codes.
-        However, <strong>go-output is a formatting library, not a CLI application</strong>. Its
-        error surface is 89% I/O context wrappers and 11% validation sentinels &mdash; none of which
-        benefit from Family classification, retry hints, or exit codes. Adoption would add
-        complexity without solving a real problem go-output has.
+        <strong>go-error-family is an excellent library</strong> for CLI
+        applications and HTTP services that need structured error
+        classification, retry semantics, and CLI exit codes. However,
+        <strong>go-output is a formatting library, not a CLI application</strong
+        >. Its error surface is 89% I/O context wrappers and 11% validation
+        sentinels &mdash; none of which benefit from Family classification,
+        retry hints, or exit codes. Adoption would add complexity without
+        solving a real problem go-output has.
       </p>
       <p style="color: var(--text-muted)">
-        <strong>Recommended instead:</strong> Recommend go-error-family to go-output's
-        <em>consumers</em> (CLI apps) via documentation/examples. Consider adopting only if
-        go-output adds CLI boundary features (e.g., an <code>output.Run()</code> entry point with
-        exit codes).
+        <strong>Recommended instead:</strong> Recommend go-error-family to
+        go-output's <em>consumers</em> (CLI apps) via documentation/examples.
+        Consider adopting only if go-output adds CLI boundary features (e.g., an
+        <code>output.Run()</code> entry point with exit codes).
       </p>
     </div>
 
@@ -276,7 +283,8 @@
     <!-- ═══════════════════════════════════════════════════════════════════ -->
 
     <p class="section-intro">
-      Before evaluating the library, here is the current error landscape in go-output.
+      Before evaluating the library, here is the current error landscape in
+      go-output.
     </p>
 
     <table>
@@ -323,10 +331,12 @@
     </table>
 
     <p class="section-intro">
-      <strong>Key insight:</strong> No production caller uses <code>errors.Is</code>,
-      <code>errors.As</code>, or any programmatic error matching against go-output's errors. The
-      entire error surface exists for human-readable debugging output. There are zero retry
-      patterns, zero classification needs, and zero exit code decisions <em>inside</em> the library.
+      <strong>Key insight:</strong> No production caller uses
+      <code>errors.Is</code>, <code>errors.As</code>, or any programmatic error
+      matching against go-output's errors. The entire error surface exists for
+      human-readable debugging output. There are zero retry patterns, zero
+      classification needs, and zero exit code decisions <em>inside</em> the
+      library.
     </p>
 
     <!-- ═══════════════════════════════════════════════════════════════════ -->
@@ -335,57 +345,67 @@
 
     <div class="card pro">
       <h4>
-        1. Standardized Error Construction <span class="tag arch">Architecture</span>
+        1. Standardized Error Construction
+        <span class="tag arch">Architecture</span>
         <span class="impact medium">Medium Impact</span>
       </h4>
       <p>
         go-output has 6 custom error types with inconsistent field structures:
         <code>InvalidFormatError</code> has <code>Allowed []Format</code>;
         <code>InvalidShapeError</code> only has <code>Value string</code>;
-        <code>UnsupportedFormatError</code> uses a typed <code>Format</code> field. go-error-family
-        would provide a uniform construction pattern via <code>New(family, code, msg)</code>
+        <code>UnsupportedFormatError</code> uses a typed
+        <code>Format</code> field. go-error-family would provide a uniform
+        construction pattern via <code>New(family, code, msg)</code>
         and family-specific shortcuts.
       </p>
       <p class="detail">
-        <strong>But:</strong> This benefit is cosmetic. The inconsistency exists because each error
-        type carries domain-specific fields (allowed values, format type). Replacing them with
-        <code>errorfamily.NewRejection("format.invalid", "bad format")</code> would actually
-        <em>lose</em> structured metadata like <code>Allowed []Format</code>.
+        <strong>But:</strong> This benefit is cosmetic. The inconsistency exists
+        because each error type carries domain-specific fields (allowed values,
+        format type). Replacing them with
+        <code>errorfamily.NewRejection("format.invalid", "bad format")</code>
+        would actually <em>lose</em> structured metadata like
+        <code>Allowed []Format</code>.
       </p>
     </div>
 
     <div class="card pro">
       <h4>
-        2. Better Examples / Developer Experience <span class="tag api">API</span>
+        2. Better Examples / Developer Experience
+        <span class="tag api">API</span>
         <span class="impact medium">Medium Impact</span>
       </h4>
       <p>
-        The examples/ directory uses <code>os.Exit(1)</code> for all errors. Showing
-        <code>errorfamily.HandleError(err)</code> in examples would demonstrate how to properly
-        handle go-output errors at the CLI boundary with meaningful exit codes. This is the
-        strongest adoption argument: dogfooding a sibling library.
+        The examples/ directory uses <code>os.Exit(1)</code> for all errors.
+        Showing <code>errorfamily.HandleError(err)</code> in examples would
+        demonstrate how to properly handle go-output errors at the CLI boundary
+        with meaningful exit codes. This is the strongest adoption argument:
+        dogfooding a sibling library.
       </p>
       <p class="detail">
-        <strong>But:</strong> This can be achieved by adding go-error-family as a dependency in the
-        <code>examples/</code> module only, not in the core library. The examples module already has
-        its own <code>go.mod</code> and is not imported by consumers.
+        <strong>But:</strong> This can be achieved by adding go-error-family as
+        a dependency in the <code>examples/</code> module only, not in the core
+        library. The examples module already has its own <code>go.mod</code> and
+        is not imported by consumers.
       </p>
     </div>
 
     <div class="card pro">
       <h4>
-        3. Future-Proofing for CLI Boundary Features <span class="tag scope">Scope</span>
+        3. Future-Proofing for CLI Boundary Features
+        <span class="tag scope">Scope</span>
         <span class="impact low">Low Impact</span>
       </h4>
       <p>
-        If go-output ever adds a <code>output.Run()</code> or <code>output.Main()</code> entry point
-        that combines rendering + error handling + exit codes, go-error-family's
-        <code>HandleError()</code> and <code>ExitCode()</code> would be directly useful.
+        If go-output ever adds a <code>output.Run()</code> or
+        <code>output.Main()</code> entry point that combines rendering + error
+        handling + exit codes, go-error-family's <code>HandleError()</code> and
+        <code>ExitCode()</code> would be directly useful.
       </p>
       <p class="detail">
-        <strong>But:</strong> This is speculative. go-output's stated purpose is "a reusable Go
-        library for CLI applications providing consistent output formatting" &mdash; it formats
-        output, it doesn't run applications. Adding CLI boundary features would be scope creep.
+        <strong>But:</strong> This is speculative. go-output's stated purpose is
+        "a reusable Go library for CLI applications providing consistent output
+        formatting" &mdash; it formats output, it doesn't run applications.
+        Adding CLI boundary features would be scope creep.
       </p>
     </div>
 
@@ -395,31 +415,38 @@
 
     <div class="card contra">
       <h4>
-        1. Domain Mismatch: Library vs. Application <span class="tag scope">Scope</span>
+        1. Domain Mismatch: Library vs. Application
+        <span class="tag scope">Scope</span>
         <span class="impact high">High Impact</span>
       </h4>
       <p>
         go-error-family's core value proposition is
-        <strong>classifying errors into families (Retry, Exit Code, Audience, Tone)</strong>. This
-        classification is meaningful at the <strong>CLI/HTTP boundary</strong> &mdash; where errors
-        leave your program and meet a human.
+        <strong
+          >classifying errors into families (Retry, Exit Code, Audience,
+          Tone)</strong
+        >. This classification is meaningful at the
+        <strong>CLI/HTTP boundary</strong> &mdash; where errors leave your
+        program and meet a human.
       </p>
       <p class="detail">
-        go-output is a <strong>formatting library</strong>. It sits deep in the call stack. Its
-        errors are "write row failed" and "invalid format". Classifying these as
-        <code>Transient</code> vs <code>Infrastructure</code> is meaningless &mdash; the
+        go-output is a <strong>formatting library</strong>. It sits deep in the
+        call stack. Its errors are "write row failed" and "invalid format".
+        Classifying these as <code>Transient</code> vs
+        <code>Infrastructure</code> is meaningless &mdash; the
         <em>caller's</em>
         CLI boundary should make that decision, not the formatting library.
         <br /><br />
-        <strong>Analogy:</strong> Using go-error-family in go-output is like installing a customer
-        support ticketing system in a printer driver. The printer reports "out of paper". The
-        ticketing system belongs at the help desk, not in the driver.
+        <strong>Analogy:</strong> Using go-error-family in go-output is like
+        installing a customer support ticketing system in a printer driver. The
+        printer reports "out of paper". The ticketing system belongs at the help
+        desk, not in the driver.
       </p>
     </div>
 
     <div class="card contra">
       <h4>
-        2. Dependency Philosophy Violation <span class="tag deps">Dependencies</span>
+        2. Dependency Philosophy Violation
+        <span class="tag deps">Dependencies</span>
         <span class="impact high">High Impact</span>
       </h4>
       <p>go-output's architecture document states:</p>
@@ -431,24 +458,31 @@
           color: var(--text);
         "
       >
-        "Root has ZERO sub-module imports" and "go get github.com/larsartmann/go-output pulls ZERO
-        lipgloss deps, ZERO yaml deps..."
+        "Root has ZERO sub-module imports" and "go get
+        github.com/larsartmann/go-output pulls ZERO lipgloss deps, ZERO yaml
+        deps..."
       </blockquote>
       <p class="detail">
-        Adding go-error-family to root's <code>go.mod</code> would introduce a new transitive
-        dependency for every consumer. While the library itself is zero-dep, the principle matters:
-        a formatting library should minimize its dependency footprint. <br /><br />
-        If added only to sub-modules (d2/, delimited/), the error types would be inconsistent across
-        modules. If added to root, it's a philosophy violation. There's no clean placement.
+        Adding go-error-family to root's <code>go.mod</code> would introduce a
+        new transitive dependency for every consumer. While the library itself
+        is zero-dep, the principle matters: a formatting library should minimize
+        its dependency footprint. <br /><br />
+        If added only to sub-modules (d2/, delimited/), the error types would be
+        inconsistent across modules. If added to root, it's a philosophy
+        violation. There's no clean placement.
       </p>
     </div>
 
     <div class="card contra">
       <h4>
-        3. Semantic Mismatch with 89% of Errors <span class="tag arch">Architecture</span>
+        3. Semantic Mismatch with 89% of Errors
+        <span class="tag arch">Architecture</span>
         <span class="impact high">High Impact</span>
       </h4>
-      <p>74 out of ~83 <code>fmt.Errorf</code> calls are pure I/O context wrappers:</p>
+      <p>
+        74 out of ~83 <code>fmt.Errorf</code> calls are pure I/O context
+        wrappers:
+      </p>
       <ul>
         <li><code>"write row: %w"</code></li>
         <li><code>"flush tsv writer: %w"</code></li>
@@ -456,15 +490,21 @@
         <li><code>"render markdown: %w"</code></li>
       </ul>
       <p class="detail">
-        These are <strong>"what was happening when it failed"</strong> context, not error contracts.
-        Wrapping them with <code>errorfamily.NewTransient("io.write", "write row")</code> would add
-        zero value &mdash; the caller still can't retry a half-written CSV. The underlying
-        <code>io.ErrShortWrite</code> is what matters, and it's already available via
-        <code>%w</code>. <br /><br />
-        <strong>Making these into classified errors would actively hurt readability.</strong>
-        Currently: <code>write row: io: read/write on closed pipe</code>. With adoption:
-        <code>[transient:io.write] write row: io: read/write on closed pipe</code>. No one benefits
-        from the prefix.
+        These are <strong>"what was happening when it failed"</strong> context,
+        not error contracts. Wrapping them with
+        <code>errorfamily.NewTransient("io.write", "write row")</code> would add
+        zero value &mdash; the caller still can't retry a half-written CSV. The
+        underlying <code>io.ErrShortWrite</code> is what matters, and it's
+        already available via <code>%w</code>. <br /><br />
+        <strong
+          >Making these into classified errors would actively hurt
+          readability.</strong
+        >
+        Currently: <code>write row: io: read/write on closed pipe</code>. With
+        adoption:
+        <code
+          >[transient:io.write] write row: io: read/write on closed pipe</code
+        >. No one benefits from the prefix.
       </p>
     </div>
 
@@ -474,13 +514,15 @@
         <span class="impact medium">Medium Impact</span>
       </h4>
       <p>
-        go-error-family requires Go 1.26+ (uses <code>errors.AsType[T]()</code>). go-output also
-        targets Go 1.26+, so there's no conflict today.
+        go-error-family requires Go 1.26+ (uses
+        <code>errors.AsType[T]()</code>). go-output also targets Go 1.26+, so
+        there's no conflict today.
       </p>
       <p class="detail">
-        <strong>But:</strong> Adopting it couples go-output's Go version floor to go-error-family's
-        floor. If go-error-family moves to Go 1.27 for future features, go-output would be forced to
-        follow. Currently, go-output only couples its floor to its own needs + enum/x/term.
+        <strong>But:</strong> Adopting it couples go-output's Go version floor
+        to go-error-family's floor. If go-error-family moves to Go 1.27 for
+        future features, go-output would be forced to follow. Currently,
+        go-output only couples its floor to its own needs + enum/x/term.
       </p>
     </div>
 
@@ -492,24 +534,26 @@
       <p>Current error types carry domain-specific structured data:</p>
       <ul>
         <li>
-          <code>InvalidFormatError{Value, Allowed []Format}</code> &mdash; consumer can inspect
-          allowed values
+          <code>InvalidFormatError{Value, Allowed []Format}</code> &mdash;
+          consumer can inspect allowed values
         </li>
         <li>
-          <code>UnsupportedFormatError{Format}</code> &mdash; consumer can inspect the unsupported
-          format
+          <code>UnsupportedFormatError{Format}</code> &mdash; consumer can
+          inspect the unsupported format
         </li>
         <li>
-          <code>TableData.Validate()</code> returns <code>errColumnMismatch</code> with column
-          counts
+          <code>TableData.Validate()</code> returns
+          <code>errColumnMismatch</code> with column counts
         </li>
       </ul>
       <p class="detail">
-        go-error-family's <code>Error</code> struct has <code>Code</code> (string) and
-        <code>Context</code> (map[string]string). To preserve the same metadata, you'd need to stuff
-        everything into <code>WithContext("allowed", "csv, json, ...")</code> &mdash; losing type
-        safety. <code>Allowed []Format</code> becomes <code>"allowed"</code> =&gt;
-        <code>"csv,json"</code>. This is objectively worse for programmatic consumers.
+        go-error-family's <code>Error</code> struct has
+        <code>Code</code> (string) and <code>Context</code> (map[string]string).
+        To preserve the same metadata, you'd need to stuff everything into
+        <code>WithContext("allowed", "csv, json, ...")</code> &mdash; losing
+        type safety. <code>Allowed []Format</code> becomes
+        <code>"allowed"</code> =&gt; <code>"csv,json"</code>. This is
+        objectively worse for programmatic consumers.
       </p>
     </div>
 
@@ -518,39 +562,49 @@
     <!-- ═══════════════════════════════════════════════════════════════════ -->
 
     <div class="card neutral">
-      <h4>6. Zero External Deps (Library Itself) <span class="tag deps">Dependencies</span></h4>
+      <h4>
+        6. Zero External Deps (Library Itself)
+        <span class="tag deps">Dependencies</span>
+      </h4>
       <p>
-        go-error-family has zero external dependencies (pure stdlib). This makes it the lightest
-        possible dependency. No transitive supply chain risk.
+        go-error-family has zero external dependencies (pure stdlib). This makes
+        it the lightest possible dependency. No transitive supply chain risk.
       </p>
       <p class="detail">
-        Neutral because: zero deps is a necessary condition, not a sufficient one. The question
-        isn't "is it cheap?" but "is it useful?"
+        Neutral because: zero deps is a necessary condition, not a sufficient
+        one. The question isn't "is it cheap?" but "is it useful?"
       </p>
     </div>
 
     <div class="card neutral">
       <h4>7. Consistent Error Formatting <span class="tag api">API</span></h4>
       <p>
-        go-error-family's <code>fmt.Formatter</code> gives <code>%v</code> (compact),
-        <code>%+v</code> (verbose with context/timestamp/chain), <code>%s</code> (message only).
-        This is nicer than go-output's current flat strings.
+        go-error-family's <code>fmt.Formatter</code> gives
+        <code>%v</code> (compact), <code>%+v</code> (verbose with
+        context/timestamp/chain), <code>%s</code> (message only). This is nicer
+        than go-output's current flat strings.
       </p>
       <p class="detail">
-        Neutral because: go-output's errors are rarely formatted beyond <code>%v</code> in examples.
-        The verbose format would be useful at CLI boundaries, but that's the caller's job.
+        Neutral because: go-output's errors are rarely formatted beyond
+        <code>%v</code> in examples. The verbose format would be useful at CLI
+        boundaries, but that's the caller's job.
       </p>
     </div>
 
     <div class="card neutral">
-      <h4>8. Same Author / Same Ecosystem <span class="tag maint">Maintenance</span></h4>
+      <h4>
+        8. Same Author / Same Ecosystem
+        <span class="tag maint">Maintenance</span>
+      </h4>
       <p>
-        Both libraries are by the same author (<code>github.com/larsartmann</code>). Cross-module
-        compatibility is guaranteed by design. Breaking changes would be coordinated.
+        Both libraries are by the same author
+        (<code>github.com/larsartmann</code>). Cross-module compatibility is
+        guaranteed by design. Breaking changes would be coordinated.
       </p>
       <p class="detail">
-        Neutral because: same-author dependency is a double-edged sword. It reduces coordination
-        overhead but creates coupling that may bias architectural decisions.
+        Neutral because: same-author dependency is a double-edged sword. It
+        reduces coordination overhead but creates coupling that may bias
+        architectural decisions.
       </p>
     </div>
 
@@ -575,13 +629,17 @@
       <tbody>
         <tr>
           <td><strong>A) Full adoption</strong><br />Add to root go.mod</td>
-          <td>All 6 error types replaced,<br />~83 fmt.Errorf calls reviewed</td>
+          <td>
+            All 6 error types replaced,<br />~83 fmt.Errorf calls reviewed
+          </td>
           <td>+1 for all consumers</td>
           <td>Low &mdash; no one uses the classification</td>
           <td>High &mdash; lost type-safe metadata</td>
         </tr>
         <tr>
-          <td><strong>B) Examples only</strong><br />Add to examples/ go.mod</td>
+          <td>
+            <strong>B) Examples only</strong><br />Add to examples/ go.mod
+          </td>
           <td>examples/shared/HandleError<br />uses HandleError()</td>
           <td>Zero for library consumers</td>
           <td>Medium &mdash; shows best practice</td>
@@ -589,8 +647,8 @@
         </tr>
         <tr>
           <td>
-            <strong>C) Interface alignment</strong><br />Implement errorfamily interfaces on
-            existing types
+            <strong>C) Interface alignment</strong><br />Implement errorfamily
+            interfaces on existing types
           </td>
           <td>6 error types gain interface methods</td>
           <td>+1 for all consumers</td>
@@ -602,7 +660,9 @@
 
     <h3>Error Family Mapping (If Adopted)</h3>
 
-    <p class="section-intro">What go-output's errors would map to in go-error-family's taxonomy:</p>
+    <p class="section-intro">
+      What go-output's errors would map to in go-error-family's taxonomy:
+    </p>
 
     <table>
       <thead>
@@ -653,13 +713,16 @@
 
     <p class="section-intro">
       <strong>The mapping is forced and artificial.</strong> Every error maps to
-      <code>Rejection</code> (bad input) or falls into an awkward category. This confirms the domain
-      mismatch: go-output doesn't have errors that naturally fit the five-family taxonomy.
+      <code>Rejection</code> (bad input) or falls into an awkward category. This
+      confirms the domain mismatch: go-output doesn't have errors that naturally
+      fit the five-family taxonomy.
     </p>
 
     <h3>go-error-family Quality Assessment</h3>
 
-    <p class="section-intro">For reference, the library itself is high quality:</p>
+    <p class="section-intro">
+      For reference, the library itself is high quality:
+    </p>
 
     <table>
       <thead>
@@ -693,7 +756,9 @@
         <tr>
           <td>Performance</td>
           <td>&#9733;&#9733;&#9733;&#9734;&#9734;</td>
-          <td>Map snapshot on every Classify(); maps.Clone on ErrorContext()</td>
+          <td>
+            Map snapshot on every Classify(); maps.Clone on ErrorContext()
+          </td>
         </tr>
         <tr>
           <td>API stability</td>
@@ -715,18 +780,21 @@
     <div class="verdict-box">
       <h3>Do: Strategy B &mdash; Examples Only</h3>
       <p style="color: var(--text); margin-bottom: 1rem">
-        Add <code>go-error-family</code> as a dependency in the <code>examples/</code> module only.
-        Replace <code>shared.HandleError()</code> with <code>errorfamily.HandleError()</code>. This
-        demonstrates best practices to consumers without polluting the core library.
+        Add <code>go-error-family</code> as a dependency in the
+        <code>examples/</code> module only. Replace
+        <code>shared.HandleError()</code> with
+        <code>errorfamily.HandleError()</code>. This demonstrates best practices
+        to consumers without polluting the core library.
       </p>
       <p style="color: var(--text); margin-bottom: 1rem">
-        <strong>Do not</strong> add it to root or any sub-module's <code>go.mod</code>.
-        <strong>Do not</strong> replace existing error types. <strong>Do not</strong> implement
-        errorfamily interfaces on existing structs.
+        <strong>Do not</strong> add it to root or any sub-module's
+        <code>go.mod</code>. <strong>Do not</strong> replace existing error
+        types. <strong>Do not</strong> implement errorfamily interfaces on
+        existing structs.
       </p>
       <p style="color: var(--text-muted)">
-        go-error-family belongs at the CLI boundary. go-output is a formatting library. They are
-        complementary but should not be coupled.
+        go-error-family belongs at the CLI boundary. go-output is a formatting
+        library. They are complementary but should not be coupled.
       </p>
     </div>
 
@@ -747,22 +815,29 @@
       <tbody>
         <tr>
           <td>Inconsistent error struct fields</td>
-          <td>Add <code>Allowed []string</code> to all parse errors for consistency</td>
+          <td>
+            Add <code>Allowed []string</code> to all parse errors for
+            consistency
+          </td>
           <td>Small</td>
         </tr>
         <tr>
           <td>
-            <code>InvalidColorModeError</code> and <code>InvalidGraphShapeError</code> lack allowed
-            values
+            <code>InvalidColorModeError</code> and
+            <code>InvalidGraphShapeError</code> lack allowed values
           </td>
           <td>
-            Include allowed values in the error message (like <code>InvalidFormatError</code> does)
+            Include allowed values in the error message (like
+            <code>InvalidFormatError</code> does)
           </td>
           <td>Small</td>
         </tr>
         <tr>
           <td>d2/ uses sentinels while root uses structs</td>
-          <td>Align d2/ to use struct-based errors like root (or accept the difference)</td>
+          <td>
+            Align d2/ to use struct-based errors like root (or accept the
+            difference)
+          </td>
           <td>Medium</td>
         </tr>
         <tr>
@@ -849,7 +924,8 @@
         font-size: 0.8rem;
       "
     >
-      Generated 2026-06-01 &middot; go-output @ <code>master</code> &middot; go-error-family @
+      Generated 2026-06-01 &middot; go-output @ <code>master</code> &middot;
+      go-error-family @
       <code>v0.3.0</code>
     </footer>
   </body>

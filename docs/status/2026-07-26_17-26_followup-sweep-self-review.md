@@ -23,40 +23,40 @@ Executed all 7 follow-up items from the previous self-review: annotated ADR 005 
 
 ## a) FULLY DONE
 
-| #   | Item                                                             | Evidence                                                                                                                                                                                                                          |
-| --- | ---------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | **ADR 005 marked as out of date** (the dropped user instruction) | Inline-corrected stale opening claim + added threshold-table warning + `## Update (2026-07-26)` appendix with current counts (t=4=0, t=3=2, t=2=16, t=1=20). Non-destructive per `update-old-docs` skill. Passes fresh-open test. |
-| 2   | CHANGELOG `[Unreleased]` entry for t=2 sweep                     | Documents 18→16 reduction, `renderUnknown` extraction, markdown registry rewire                                                                                                                                                   |
-| 3   | AGENTS.md Patterns bullet for `serialization.renderUnknown`      | Dedicated entry mirroring the `stringFromBytes` bullet — documents it mirrors `renderTable` and is shared body of JSON/TOML/YAML unknown renderers                                                                                |
-| 4   | Modernized all `b.N` → `b.Loop()` sites                          | **7 sites across 3 files**: `projections_bench_test.go` (3), `serialization/cqrs_bench_test.go` (3), `nom/format_bench_test.go` (1 — **missed in the previous summary's count of 5**)                                             |
-| 5   | Deleted dead `stripOutput` function                              | Removed from `tui/teatest_helpers_test.go:57` + cleaned up cascading unused `io` import                                                                                                                                           |
-| 6   | Full test suite — all 19 modules pass                            | `nix run .#test` → all `ok`                                                                                                                                                                                                       |
-| 7   | Full lint suite — 0 issues                                       | `nix run .#lint` → 0 issues across all 15 linted modules                                                                                                                                                                          |
-| 8   | Benchmarks verified executable                                   | Ran `-benchtime=1x` on all 3 files — all produce valid output                                                                                                                                                                     |
-| 9   | Committed 2 files with honest message                            | `e81aec2` — accurate, scoped message                                                                                                                                                                                              |
+| # | Item                                                             | Evidence                                                                                                                                                                                                                          |
+| - | ---------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1 | **ADR 005 marked as out of date** (the dropped user instruction) | Inline-corrected stale opening claim + added threshold-table warning + `## Update (2026-07-26)` appendix with current counts (t=4=0, t=3=2, t=2=16, t=1=20). Non-destructive per `update-old-docs` skill. Passes fresh-open test. |
+| 2 | CHANGELOG `[Unreleased]` entry for t=2 sweep                     | Documents 18→16 reduction, `renderUnknown` extraction, markdown registry rewire                                                                                                                                                   |
+| 3 | AGENTS.md Patterns bullet for `serialization.renderUnknown`      | Dedicated entry mirroring the `stringFromBytes` bullet — documents it mirrors `renderTable` and is shared body of JSON/TOML/YAML unknown renderers                                                                                |
+| 4 | Modernized all `b.N` → `b.Loop()` sites                          | **7 sites across 3 files**: `projections_bench_test.go` (3), `serialization/cqrs_bench_test.go` (3), `nom/format_bench_test.go` (1 — **missed in the previous summary's count of 5**)                                             |
+| 5 | Deleted dead `stripOutput` function                              | Removed from `tui/teatest_helpers_test.go:57` + cleaned up cascading unused `io` import                                                                                                                                           |
+| 6 | Full test suite — all 19 modules pass                            | `nix run .#test` → all `ok`                                                                                                                                                                                                       |
+| 7 | Full lint suite — 0 issues                                       | `nix run .#lint` → 0 issues across all 15 linted modules                                                                                                                                                                          |
+| 8 | Benchmarks verified executable                                   | Ran `-benchtime=1x` on all 3 files — all produce valid output                                                                                                                                                                     |
+| 9 | Committed 2 files with honest message                            | `e81aec2` — accurate, scoped message                                                                                                                                                                                              |
 
 ---
 
 ## b) PARTIALLY DONE
 
-| #   | Item                     | What's missing                                                                                                                                                                                                                                                                                                       |
-| --- | ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | Commit hygiene           | Only committed 2 of 7 files myself (`e81aec2`). The daemon grabbed the other 5 as `710b529` with an inflated/wrong message ("add ADR 005 for duplication thresholds with benchmark validation" — I didn't ADD ADR 005, I annotated it; "benchmark validation" is misleading). **Same failure mode as last session.** |
-| 2   | ADR 005 annotation       | The `[Update](#update-2026-07-26)` anchor link was not verified against an actual markdown renderer. GitHub's anchor generation from `## Update (2026-07-26)` should produce `#update-2026-07-26` but I didn't confirm.                                                                                              |
-| 3   | Benchmark modernization  | Proved the benchmarks _run_ with `-benchtime=1x` but did not compare ns/op before/after. `b.Loop()` has different semantics (auto-stopping, allocation reporting) — the numbers may shift. Didn't verify.                                                                                                            |
-| 4   | Prior self-review update | The `2026-07-26_17-14` report has 3 open questions and "NOT STARTED" items I've now resolved. Didn't annotate it with resolution notes (per `update-old-docs` skill).                                                                                                                                                |
+| # | Item                     | What's missing                                                                                                                                                                                                                                                                                                       |
+| - | ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1 | Commit hygiene           | Only committed 2 of 7 files myself (`e81aec2`). The daemon grabbed the other 5 as `710b529` with an inflated/wrong message ("add ADR 005 for duplication thresholds with benchmark validation" — I didn't ADD ADR 005, I annotated it; "benchmark validation" is misleading). **Same failure mode as last session.** |
+| 2 | ADR 005 annotation       | The `[Update](#update-2026-07-26)` anchor link was not verified against an actual markdown renderer. GitHub's anchor generation from `## Update (2026-07-26)` should produce `#update-2026-07-26` but I didn't confirm.                                                                                              |
+| 3 | Benchmark modernization  | Proved the benchmarks _run_ with `-benchtime=1x` but did not compare ns/op before/after. `b.Loop()` has different semantics (auto-stopping, allocation reporting) — the numbers may shift. Didn't verify.                                                                                                            |
+| 4 | Prior self-review update | The `2026-07-26_17-14` report has 3 open questions and "NOT STARTED" items I've now resolved. Didn't annotate it with resolution notes (per `update-old-docs` skill).                                                                                                                                                |
 
 ---
 
 ## c) NOT STARTED
 
-| #   | Item                                                                 | Why                                                                                                                                                                                                                      |
-| --- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 1   | `nix run .#test-race`                                                | I modified nom and tui files. AGENTS.md says nom + tui are concurrency-sensitive and `test-race` is the command for them. My changes were non-concurrent (benchmark + dead code), but thorough verification includes it. |
-| 2   | `nix run .#govulncheck`                                              | Not run this session or the previous one.                                                                                                                                                                                |
-| 3   | `nix flake check`                                                    | Not run this session. Go checks aren't in it (sandbox), but formatting + pre-commit hooks are.                                                                                                                           |
-| 4   | Annotate the prior self-review (`2026-07-26_17-14`) with resolutions | Its 3 "NOT STARTED" items are now done; its Q1 was answered (I chose annotate); Q2/Q3 remain open. Should have `DONE:` annotations per the `update-old-docs` list-item pattern.                                          |
-| 5   | gopls restart                                                        | Stale diagnostics (`stripOutput unusedfunc`, `bloop` at old line numbers) persisted throughout the session. I noticed but never ran `lsp_restart`. This could mask real issues.                                          |
+| # | Item                                                                 | Why                                                                                                                                                                                                                      |
+| - | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1 | `nix run .#test-race`                                                | I modified nom and tui files. AGENTS.md says nom + tui are concurrency-sensitive and `test-race` is the command for them. My changes were non-concurrent (benchmark + dead code), but thorough verification includes it. |
+| 2 | `nix run .#govulncheck`                                              | Not run this session or the previous one.                                                                                                                                                                                |
+| 3 | `nix flake check`                                                    | Not run this session. Go checks aren't in it (sandbox), but formatting + pre-commit hooks are.                                                                                                                           |
+| 4 | Annotate the prior self-review (`2026-07-26_17-14`) with resolutions | Its 3 "NOT STARTED" items are now done; its Q1 was answered (I chose annotate); Q2/Q3 remain open. Should have `DONE:` annotations per the `update-old-docs` list-item pattern.                                          |
+| 5 | gopls restart                                                        | Stale diagnostics (`stripOutput unusedfunc`, `bloop` at old line numbers) persisted throughout the session. I noticed but never ran `lsp_restart`. This could mask real issues.                                          |
 
 ---
 
@@ -116,68 +116,68 @@ Sorted by **impact ÷ effort** (highest first). Grounded in what I noticed this 
 
 ### Verification gaps I created (I owe these)
 
-| #   | Task                                                                   | Impact  | Effort |
-| --- | ---------------------------------------------------------------------- | ------- | ------ |
-| 1   | Run `nix run .#test-race` (nom + tui modified this session)            | HIGH    | VLOW   |
-| 2   | Run `nix run .#govulncheck`                                            | MEDIUM  | VLOW   |
-| 3   | Run `nix flake check` (formatting + pre-commit hooks)                  | MEDIUM  | VLOW   |
-| 4   | Restart gopls + verify 0 stale diagnostics on modified files           | MEDIUM  | VLOW   |
-| 5   | Verify ADR 005 `[Update](#update-2026-07-26)` anchor renders correctly | LOW     | VLOW   |
-| 6   | Compare b.Loop() benchmark output vs prior b.N output (ns/op delta)    | LOW-MED | LOW    |
+| # | Task                                                                   | Impact  | Effort |
+| - | ---------------------------------------------------------------------- | ------- | ------ |
+| 1 | Run `nix run .#test-race` (nom + tui modified this session)            | HIGH    | VLOW   |
+| 2 | Run `nix run .#govulncheck`                                            | MEDIUM  | VLOW   |
+| 3 | Run `nix flake check` (formatting + pre-commit hooks)                  | MEDIUM  | VLOW   |
+| 4 | Restart gopls + verify 0 stale diagnostics on modified files           | MEDIUM  | VLOW   |
+| 5 | Verify ADR 005 `[Update](#update-2026-07-26)` anchor renders correctly | LOW     | VLOW   |
+| 6 | Compare b.Loop() benchmark output vs prior b.N output (ns/op delta)    | LOW-MED | LOW    |
 
 ### Process debt (from both sessions)
 
-| #   | Task                                                                                                                                       | Impact | Effort  |
-| --- | ------------------------------------------------------------------------------------------------------------------------------------------ | ------ | ------- |
-| 7   | **Amend or follow-up-commit the daemon's `710b529` message** (claims "add ADR 005" — wrong; I annotated it)                                | MEDIUM | LOW     |
-| 8   | **Annotate the 17:14 self-review** with `DONE:` markers for resolved items (ADR 005, CHANGELOG, renderUnknown bullet, b.Loop, stripOutput) | MEDIUM | LOW     |
-| 9   | **Answer Q2:** amend daemon commit messages (`bcc99f2`, `38d9682`, `710b529`) or leave as-is? Needs user input.                            | MEDIUM | BLOCKED |
-| 10  | **Answer Q3:** is `85f4a75` "build: bump Go toolchain to 1.26.5" legitimate and complete? Needs user input.                                | MEDIUM | BLOCKED |
+| #  | Task                                                                                                                                       | Impact | Effort  |
+| -- | ------------------------------------------------------------------------------------------------------------------------------------------ | ------ | ------- |
+| 7  | **Amend or follow-up-commit the daemon's `710b529` message** (claims "add ADR 005" — wrong; I annotated it)                                | MEDIUM | LOW     |
+| 8  | **Annotate the 17:14 self-review** with `DONE:` markers for resolved items (ADR 005, CHANGELOG, renderUnknown bullet, b.Loop, stripOutput) | MEDIUM | LOW     |
+| 9  | **Answer Q2:** amend daemon commit messages (`bcc99f2`, `38d9682`, `710b529`) or leave as-is? Needs user input.                            | MEDIUM | BLOCKED |
+| 10 | **Answer Q3:** is `85f4a75` "build: bump Go toolchain to 1.26.5" legitimate and complete? Needs user input.                                | MEDIUM | BLOCKED |
 
 ### Dedup follow-through (carried from prior session)
 
-| #   | Task                                                                                                                  | Impact  | Effort |
-| --- | --------------------------------------------------------------------------------------------------------------------- | ------- | ------ |
-| 11  | Write per-group one-line acceptance rationale for the 20 t=1 groups                                                   | LOW-MED | MEDIUM |
-| 12  | Re-examine `markup.writeBytes` vs `output.WriteRenderedRaw` — consolidate or document why two helpers exist           | LOW-MED | LOW    |
-| 13  | Audit whether `serialization.Marshal{JSON,YAML,TOML}` + `Unmarshal{JSON,YAML,TOML}` wrappers warrant a generic helper | LOW     | MEDIUM |
-| 14  | Consider whether the `var b strings.Builder` t=3 survivor could share a helper (probably not — confirm deliberately)  | LOW     | VLOW   |
-| 15  | Consider a `mustWrite(w, err)` helper in `examples/` for didactic clarity                                             | LOW     | LOW    |
+| #  | Task                                                                                                                  | Impact  | Effort |
+| -- | --------------------------------------------------------------------------------------------------------------------- | ------- | ------ |
+| 11 | Write per-group one-line acceptance rationale for the 20 t=1 groups                                                   | LOW-MED | MEDIUM |
+| 12 | Re-examine `markup.writeBytes` vs `output.WriteRenderedRaw` — consolidate or document why two helpers exist           | LOW-MED | LOW    |
+| 13 | Audit whether `serialization.Marshal{JSON,YAML,TOML}` + `Unmarshal{JSON,YAML,TOML}` wrappers warrant a generic helper | LOW     | MEDIUM |
+| 14 | Consider whether the `var b strings.Builder` t=3 survivor could share a helper (probably not — confirm deliberately)  | LOW     | VLOW   |
+| 15 | Consider a `mustWrite(w, err)` helper in `examples/` for didactic clarity                                             | LOW     | LOW    |
 
 ### Documentation
 
-| #   | Task                                                                                                                            | Impact  | Effort  |
-| --- | ------------------------------------------------------------------------------------------------------------------------------- | ------- | ------- |
-| 16  | Consider an ADR for the serialization "shared marshaling spine" pattern (`renderTable` + `renderUnknown` + `stringFromBytes`)   | LOW-MED | MEDIUM  |
-| 17  | Cross-link ADR 005 ↔ ADR 008 (dedup workflow) — ensure they agree on current numbers                                            | LOW     | VLOW    |
-| 18  | Add a "Removed" section to CHANGELOG for the `stripOutput` deletion                                                             | LOW     | VLOW    |
-| 19  | Consider whether ADR 005's threshold table should eventually be rewritten in-place (living doc) vs staying annotated (snapshot) | LOW     | BLOCKED |
+| #  | Task                                                                                                                            | Impact  | Effort  |
+| -- | ------------------------------------------------------------------------------------------------------------------------------- | ------- | ------- |
+| 16 | Consider an ADR for the serialization "shared marshaling spine" pattern (`renderTable` + `renderUnknown` + `stringFromBytes`)   | LOW-MED | MEDIUM  |
+| 17 | Cross-link ADR 005 ↔ ADR 008 (dedup workflow) — ensure they agree on current numbers                                            | LOW     | VLOW    |
+| 18 | Add a "Removed" section to CHANGELOG for the `stripOutput` deletion                                                             | LOW     | VLOW    |
+| 19 | Consider whether ADR 005's threshold table should eventually be rewritten in-place (living doc) vs staying annotated (snapshot) | LOW     | BLOCKED |
 
 ### Codebase hygiene (noticed, not investigated)
 
-| #   | Task                                                                                                                       | Impact  | Effort |
-| --- | -------------------------------------------------------------------------------------------------------------------------- | ------- | ------ |
-| 20  | Full audit of 47 gopls warnings — confirm all are `stdversion` (expected) or `bloop` (now fixed)                           | LOW-MED | MEDIUM |
-| 21  | Address BuildFlow's 42 findings (36 root-package-files + GH Actions SHA pinning) — all pre-existing, not from this session | LOW     | HIGH   |
-| 22  | Pin GitHub Actions to commit SHAs (BuildFlow `github-actions-pinned` findings in ci.yml + release.yml)                     | MEDIUM  | LOW    |
-| 23  | `go.mod:19` — direct and indirect requires are mixed (BuildFlow `gomod-check` finding)                                     | LOW     | VLOW   |
-| 24  | Move golden test files to `testdata/` (BuildFlow `testdata-directory` findings)                                            | LOW     | LOW    |
+| #  | Task                                                                                                                       | Impact  | Effort |
+| -- | -------------------------------------------------------------------------------------------------------------------------- | ------- | ------ |
+| 20 | Full audit of 47 gopls warnings — confirm all are `stdversion` (expected) or `bloop` (now fixed)                           | LOW-MED | MEDIUM |
+| 21 | Address BuildFlow's 42 findings (36 root-package-files + GH Actions SHA pinning) — all pre-existing, not from this session | LOW     | HIGH   |
+| 22 | Pin GitHub Actions to commit SHAs (BuildFlow `github-actions-pinned` findings in ci.yml + release.yml)                     | MEDIUM  | LOW    |
+| 23 | `go.mod:19` — direct and indirect requires are mixed (BuildFlow `gomod-check` finding)                                     | LOW     | VLOW   |
+| 24 | Move golden test files to `testdata/` (BuildFlow `testdata-directory` findings)                                            | LOW     | LOW    |
 
 ### Commit hygiene improvements
 
-| #   | Task                                                                                | Impact | Effort           |
-| --- | ----------------------------------------------------------------------------------- | ------ | ---------------- |
-| 25  | Establish a session rule: **commit after each logical edit group, not at the end**  | HIGH   | N/A (discipline) |
-| 26  | Consider a pre-commit checklist: test → commit → verify, not test → verify → commit | MEDIUM | N/A              |
+| #  | Task                                                                                | Impact | Effort           |
+| -- | ----------------------------------------------------------------------------------- | ------ | ---------------- |
+| 25 | Establish a session rule: **commit after each logical edit group, not at the end**  | HIGH   | N/A (discipline) |
+| 26 | Consider a pre-commit checklist: test → commit → verify, not test → verify → commit | MEDIUM | N/A              |
 
 ### Stretch / scope-creep (flag, don't do without confirmation)
 
-| #   | Task                                                                                                                  | Impact  | Effort |
-| --- | --------------------------------------------------------------------------------------------------------------------- | ------- | ------ |
-| 27  | Run `art-dupl -t 1` per-group audit with written rationale (close the dedup skill's documentation requirement)        | LOW-MED | HIGH   |
-| 28  | Consider whether `b.Loop()` changes warrant a CHANGELOG note (they're test-only but change reported numbers)          | LOW     | VLOW   |
-| 29  | Audit whether any other test files have the old `for i := 0; i < b.N; i++` pattern (I only checked `*_bench_test.go`) | LOW     | VLOW   |
-| 30  | Consider whether the serialization module deserves its own README documenting the helper spine                        | LOW     | MEDIUM |
+| #  | Task                                                                                                                  | Impact  | Effort |
+| -- | --------------------------------------------------------------------------------------------------------------------- | ------- | ------ |
+| 27 | Run `art-dupl -t 1` per-group audit with written rationale (close the dedup skill's documentation requirement)        | LOW-MED | HIGH   |
+| 28 | Consider whether `b.Loop()` changes warrant a CHANGELOG note (they're test-only but change reported numbers)          | LOW     | VLOW   |
+| 29 | Audit whether any other test files have the old `for i := 0; i < b.N; i++` pattern (I only checked `*_bench_test.go`) | LOW     | VLOW   |
+| 30 | Consider whether the serialization module deserves its own README documenting the helper spine                        | LOW     | MEDIUM |
 
 ---
 

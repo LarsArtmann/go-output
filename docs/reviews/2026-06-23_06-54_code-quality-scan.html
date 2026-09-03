@@ -31,14 +31,14 @@
         --radius: 0px;
         --radius-sm: 0px;
         --font-heading:
-          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          Helvetica, Arial, sans-serif;
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         --font-body:
-          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          Helvetica, Arial, sans-serif;
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         --font-mono:
-          ui-monospace, "Cascadia Code", "Source Code Pro", "JetBrains Mono", Menlo, Consolas,
-          monospace;
+          ui-monospace, "Cascadia Code", "Source Code Pro", "JetBrains Mono",
+          Menlo, Consolas, monospace;
       }
       * {
         box-sizing: border-box;
@@ -197,15 +197,27 @@
       }
       .card-problem {
         border-left-color: var(--problem);
-        background: color-mix(in srgb, var(--problem) 8%, var(--surface-raised));
+        background: color-mix(
+          in srgb,
+          var(--problem) 8%,
+          var(--surface-raised)
+        );
       }
       .card-solution {
         border-left-color: var(--solution);
-        background: color-mix(in srgb, var(--solution) 8%, var(--surface-raised));
+        background: color-mix(
+          in srgb,
+          var(--solution) 8%,
+          var(--surface-raised)
+        );
       }
       .card-warning {
         border-left-color: var(--warning);
-        background: color-mix(in srgb, var(--warning) 8%, var(--surface-raised));
+        background: color-mix(
+          in srgb,
+          var(--warning) 8%,
+          var(--surface-raised)
+        );
       }
       .stat-grid,
       .scorecard {
@@ -408,8 +420,8 @@
           <div class="hero-badge">Code Quality Scan</div>
           <h1>go-output — Clean Bill of Health</h1>
           <p class="hero-subtitle">
-            Build, lint, test, duplication, and security scan across all 18 modules. Zero issues
-            found across the board.
+            Build, lint, test, duplication, and security scan across all 18
+            modules. Zero issues found across the board.
           </p>
         </div>
 
@@ -454,8 +466,9 @@
           <h4>All 18 modules build successfully</h4>
           <p>
             <code>nix run .#build</code> iterates every module and runs
-            <code>go build ./...</code> in each. All 18 modules compiled without errors. Root module
-            has zero imports of any sub-module (Pattern B invariant verified).
+            <code>go build ./...</code> in each. All 18 modules compiled without
+            errors. Root module has zero imports of any sub-module (Pattern B
+            invariant verified).
           </p>
         </div>
         <table>
@@ -545,9 +558,11 @@
         <div class="card card-solution">
           <h4>golangci-lint: 0 issues across all 18 modules</h4>
           <p>
-            <code>nix run .#lint</code> runs <code>golangci-lint run ./...</code> in each module
-            with per-module <code>.golangci.yml</code> configurations that include depguard import
-            restrictions. Every module reported <strong>0 issues</strong>.
+            <code>nix run .#lint</code> runs
+            <code>golangci-lint run ./...</code> in each module with per-module
+            <code>.golangci.yml</code> configurations that include depguard
+            import restrictions. Every module reported
+            <strong>0 issues</strong>.
           </p>
         </div>
 
@@ -555,21 +570,26 @@
         <div class="card card-solution">
           <h4>All tests pass across all 18 modules</h4>
           <p>
-            <code>nix run .#test</code> runs <code>go test ./...</code> in each module. All 18
-            modules pass. The <code>nom</code> module (most complex, concurrency-sensitive) passes
-            in 0.27s. The <code>tui</code> module passes in 0.008s.
+            <code>nix run .#test</code> runs <code>go test ./...</code> in each
+            module. All 18 modules pass. The <code>nom</code> module (most
+            complex, concurrency-sensitive) passes in 0.27s. The
+            <code>tui</code> module passes in 0.008s.
           </p>
         </div>
 
-        <h2 id="duplication"><span class="num">04</span>Duplication Analysis</h2>
+        <h2 id="duplication">
+          <span class="num">04</span>Duplication Analysis
+        </h2>
         <div class="card card-solution">
           <h4>art-dupl: 0 clone groups at t=24 (project standard)</h4>
           <p>
-            Ran <code>art-dupl --semantic --sort total-tokens -t 24</code> excluding
+            Ran
+            <code>art-dupl --semantic --sort total-tokens -t 24</code> excluding
             <code>.git</code>, <code>vendor</code>, <code>docs</code>, and
-            <code>testdata</code> directories. <strong>Zero clone groups found</strong>. Verified at
-            lower thresholds: 0 at t=15 and 0 at t=10 — the codebase is exceptionally clean with no
-            harmful duplication.
+            <code>testdata</code> directories.
+            <strong>Zero clone groups found</strong>. Verified at lower
+            thresholds: 0 at t=15 and 0 at t=10 — the codebase is exceptionally
+            clean with no harmful duplication.
           </p>
         </div>
 
@@ -577,9 +597,10 @@
         <div class="card card-solution">
           <h4>govulncheck: 0 vulnerabilities affecting called code</h4>
           <p>
-            <code>nix run .#govulncheck</code> reports 0 vulnerabilities in code that is actually
-            called. 3 vulnerabilities exist in required modules but are not in code paths that the
-            project calls — these are dependency-level advisories that do not affect the project.
+            <code>nix run .#govulncheck</code> reports 0 vulnerabilities in code
+            that is actually called. 3 vulnerabilities exist in required modules
+            but are not in code paths that the project calls — these are
+            dependency-level advisories that do not affect the project.
           </p>
         </div>
 
@@ -590,8 +611,9 @@
             <div class="text">
               <strong>Exceptionally clean codebase</strong>
               <span
-                >Zero lint issues, zero build errors, zero test failures, zero harmful duplication —
-                across 271 files and 34K lines in 18 modules. This is rare.</span
+                >Zero lint issues, zero build errors, zero test failures, zero
+                harmful duplication — across 271 files and 34K lines in 18
+                modules. This is rare.</span
               >
             </div>
           </div>
@@ -600,8 +622,9 @@
             <div class="text">
               <strong>Pattern B dependency isolation works</strong>
               <span
-                >Root has zero imports of any sub-module. The load-bearing architectural invariant
-                is intact and verified by the clean build.</span
+                >Root has zero imports of any sub-module. The load-bearing
+                architectural invariant is intact and verified by the clean
+                build.</span
               >
             </div>
           </div>
@@ -610,8 +633,9 @@
             <div class="text">
               <strong>Comprehensive test coverage</strong>
               <span
-                >158 test files for 113 production files (1.4:1 test-to-code ratio). Every module
-                has tests. Race tests exist for concurrency-sensitive modules (nom, tui).</span
+                >158 test files for 113 production files (1.4:1 test-to-code
+                ratio). Every module has tests. Race tests exist for
+                concurrency-sensitive modules (nom, tui).</span
               >
             </div>
           </div>
@@ -620,8 +644,9 @@
             <div class="text">
               <strong>Nix-based build system</strong>
               <span
-                >All commands available via flake.nix apps. Build, test, lint, race-test,
-                govulncheck, tidy — all iterate every module automatically.</span
+                >All commands available via flake.nix apps. Build, test, lint,
+                race-test, govulncheck, tidy — all iterate every module
+                automatically.</span
               >
             </div>
           </div>
@@ -630,8 +655,9 @@
             <div class="text">
               <strong>Per-module depguard enforcement</strong>
               <span
-                >Each module has its own .golangci.yml with explicit import allow-lists. This
-                prevents accidental dependency leakage at lint time.</span
+                >Each module has its own .golangci.yml with explicit import
+                allow-lists. This prevents accidental dependency leakage at lint
+                time.</span
               >
             </div>
           </div>
@@ -798,9 +824,10 @@
         </table>
 
         <footer class="footer">
-          Generated 2026-06-23 &middot; All checks verified via <code>nix run .#build</code>,
-          <code>nix run .#lint</code>, <code>nix run .#test</code>,
-          <code>nix run .#govulncheck</code>, <code>art-dupl -t 24</code>
+          Generated 2026-06-23 &middot; All checks verified via
+          <code>nix run .#build</code>, <code>nix run .#lint</code>,
+          <code>nix run .#test</code>, <code>nix run .#govulncheck</code>,
+          <code>art-dupl -t 24</code>
         </footer>
       </main>
     </div>

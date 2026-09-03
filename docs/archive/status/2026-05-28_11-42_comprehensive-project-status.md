@@ -1,7 +1,7 @@
 # go-output — Comprehensive Project Status Report
 
-**Date:** 2026-05-28 11:42  
-**Report type:** Full project status (all work, all modules, all metrics)  
+**Date:** 2026-05-28 11:42\
+**Report type:** Full project status (all work, all modules, all metrics)\
 **Reporter:** Crush (AI Agent)
 
 ---
@@ -139,26 +139,26 @@ Test code fixes: removed 7 wrapper functions, table-driven registry tests (18→
 
 ### From TODO_LIST.md (Open Items)
 
-| #   | Item                                                               | Priority | Status                      |
-| --- | ------------------------------------------------------------------ | -------- | --------------------------- |
-| 20  | Should `internal/gentest` move to `testhelpers/gentest`?           | P3       | ❓ Needs decision from Lars |
-| 24  | Pre-commit hooks: go-structure-linter false positives              | P4       | Open — configure or accept  |
-| 26  | flake.nix: Go checks not in Nix (sandbox blocks `go mod download`) | P4       | Accepted limitation         |
-| 39  | Pre-v1 API stability audit                                         | P6       | Not started                 |
-| 40  | Community: Post to r/golang, submit to Awesome Go                  | P6       | Not started                 |
+| #  | Item                                                               | Priority | Status                      |
+| -- | ------------------------------------------------------------------ | -------- | --------------------------- |
+| 20 | Should `internal/gentest` move to `testhelpers/gentest`?           | P3       | ❓ Needs decision from Lars |
+| 24 | Pre-commit hooks: go-structure-linter false positives              | P4       | Open — configure or accept  |
+| 26 | flake.nix: Go checks not in Nix (sandbox blocks `go mod download`) | P4       | Accepted limitation         |
+| 39 | Pre-v1 API stability audit                                         | P6       | Not started                 |
+| 40 | Community: Post to r/golang, submit to Awesome Go                  | P6       | Not started                 |
 
 ### New Items Not in TODO_LIST
 
-| #   | Item                                              | Priority | Notes                                            |
-| --- | ------------------------------------------------- | -------- | ------------------------------------------------ |
-| 43  | Fix 2 perfsprint warnings in examples/            | P3       | Trivial, 2-minute fix                            |
-| 44  | Stage untracked status report                     | P4       | `docs/status/2026-05-28_11-39_*` not committed   |
-| 45  | Write testify vs stdlib ADR                       | P2       | Key architectural decision                       |
-| 46  | Review 89 nolint directives for necessity         | P5       | Some may be removable                            |
-| 47  | Investigate `go:generate stringer` for enums      | P6       | Code generation vs hand-rolled                   |
-| 48  | Full round-trip integration test (all 16 formats) | P3       | High-value verification                          |
-| 49  | Add `gomod2nix` for reproducible Nix builds       | P4       | Currently Go deps download at build time         |
-| 50  | API stability guarantees documentation            | P3       | Pre-v1 section in README exists, needs expansion |
+| #  | Item                                              | Priority | Notes                                            |
+| -- | ------------------------------------------------- | -------- | ------------------------------------------------ |
+| 43 | Fix 2 perfsprint warnings in examples/            | P3       | Trivial, 2-minute fix                            |
+| 44 | Stage untracked status report                     | P4       | `docs/status/2026-05-28_11-39_*` not committed   |
+| 45 | Write testify vs stdlib ADR                       | P2       | Key architectural decision                       |
+| 46 | Review 89 nolint directives for necessity         | P5       | Some may be removable                            |
+| 47 | Investigate `go:generate stringer` for enums      | P6       | Code generation vs hand-rolled                   |
+| 48 | Full round-trip integration test (all 16 formats) | P3       | High-value verification                          |
+| 49 | Add `gomod2nix` for reproducible Nix builds       | P4       | Currently Go deps download at build time         |
+| 50 | API stability guarantees documentation            | P3       | Pre-v1 section in README exists, needs expansion |
 
 ---
 
@@ -212,43 +212,43 @@ Test code fixes: removed 7 wrapper functions, table-driven registry tests (18→
 
 ### Tier 1: High Impact, Quick Wins (Do First)
 
-| #   | Task                                                          | Effort | Impact    | Why                                                                                                  |
-| --- | ------------------------------------------------------------- | ------ | --------- | ---------------------------------------------------------------------------------------------------- |
-| 1   | **Write testify vs stdlib ADR**                               | 15min  | 🔴 High   | Single highest-impact architectural decision. 40% of t=15 clones disappear with decision documented. |
-| 2   | **Fix 2 perfsprint warnings in examples/**                    | 2min   | 🟡 Medium | Only lint issues in entire project. Trivial `strconv.Itoa` replacement.                              |
-| 3   | **Stage untracked status report from 11:39**                  | 1min   | 🟡 Medium | File exists but not committed. Git hygiene.                                                          |
-| 4   | **Run full coverage report, identify remaining gaps**         | 5min   | 🟡 Medium | Identify which 5-10% is uncovered in each module.                                                    |
-| 5   | **Decide on `internal/gentest` → `testhelpers/gentest` move** | 15min  | 🟡 Medium | Blocks d2/graph from sharing test infrastructure. Needs Lars decision.                               |
+| # | Task                                                          | Effort | Impact    | Why                                                                                                  |
+| - | ------------------------------------------------------------- | ------ | --------- | ---------------------------------------------------------------------------------------------------- |
+| 1 | **Write testify vs stdlib ADR**                               | 15min  | 🔴 High   | Single highest-impact architectural decision. 40% of t=15 clones disappear with decision documented. |
+| 2 | **Fix 2 perfsprint warnings in examples/**                    | 2min   | 🟡 Medium | Only lint issues in entire project. Trivial `strconv.Itoa` replacement.                              |
+| 3 | **Stage untracked status report from 11:39**                  | 1min   | 🟡 Medium | File exists but not committed. Git hygiene.                                                          |
+| 4 | **Run full coverage report, identify remaining gaps**         | 5min   | 🟡 Medium | Identify which 5-10% is uncovered in each module.                                                    |
+| 5 | **Decide on `internal/gentest` → `testhelpers/gentest` move** | 15min  | 🟡 Medium | Blocks d2/graph from sharing test infrastructure. Needs Lars decision.                               |
 
 ### Tier 2: Medium Impact, Medium Effort
 
-| #   | Task                                                       | Effort | Impact    | Why                                                          |
-| --- | ---------------------------------------------------------- | ------ | --------- | ------------------------------------------------------------ |
-| 6   | **Pre-v1 API stability audit**                             | 2hr    | 🔴 High   | Lock in public API before v1.0. Review all exported symbols. |
-| 7   | **Full round-trip integration test (all 16 formats)**      | 1hr    | 🟡 Medium | TableData → render → parse → verify for every format.        |
-| 8   | **Update FEATURES.md against current code**                | 20min  | 🟡 Medium | Ensure no features are missing or incorrectly described.     |
-| 9   | **Update TODO_LIST.md**                                    | 20min  | 🟡 Medium | Add items #43-50 from this report, close completed items.    |
-| 10  | **Configure go-structure-linter suppressions**             | 15min  | 🟡 Medium | Stop pre-commit hook false positives.                        |
-| 11  | **Add `govalid` for struct validation**                    | 30min  | 🟡 Medium | Replace manual validation with structured approach.          |
-| 12  | **Table-drive delimited NoHeaders tests**                  | 15min  | 🟡 Medium | CSV + TSV have similar NoHeaders test patterns.              |
-| 13  | **Check for newer versions of go-faster/yaml, go-toml/v2** | 10min  | 🟢 Low    | Dependency hygiene.                                          |
+| #  | Task                                                       | Effort | Impact    | Why                                                          |
+| -- | ---------------------------------------------------------- | ------ | --------- | ------------------------------------------------------------ |
+| 6  | **Pre-v1 API stability audit**                             | 2hr    | 🔴 High   | Lock in public API before v1.0. Review all exported symbols. |
+| 7  | **Full round-trip integration test (all 16 formats)**      | 1hr    | 🟡 Medium | TableData → render → parse → verify for every format.        |
+| 8  | **Update FEATURES.md against current code**                | 20min  | 🟡 Medium | Ensure no features are missing or incorrectly described.     |
+| 9  | **Update TODO_LIST.md**                                    | 20min  | 🟡 Medium | Add items #43-50 from this report, close completed items.    |
+| 10 | **Configure go-structure-linter suppressions**             | 15min  | 🟡 Medium | Stop pre-commit hook false positives.                        |
+| 11 | **Add `govalid` for struct validation**                    | 30min  | 🟡 Medium | Replace manual validation with structured approach.          |
+| 12 | **Table-drive delimited NoHeaders tests**                  | 15min  | 🟡 Medium | CSV + TSV have similar NoHeaders test patterns.              |
+| 13 | **Check for newer versions of go-faster/yaml, go-toml/v2** | 10min  | 🟢 Low    | Dependency hygiene.                                          |
 
 ### Tier 3: Backlog (Future)
 
-| #   | Task                                                                   | Effort | Impact    | Why                                                          |
-| --- | ---------------------------------------------------------------------- | ------ | --------- | ------------------------------------------------------------ |
-| 14  | **Investigate generic `RegisterSimpleMarshaler(format, func)`**        | 1hr    | 🟡 Medium | Reduce boilerplate in sub-module init() registrations.       |
-| 15  | **Unify streaming HTML cell writing with templates**                   | 1hr    | 🟢 Low    | WriteHeaders/WriteRow/WriteFooter have similar patterns.     |
-| 16  | **Consider `go:generate stringer` for enum types**                     | 1hr    | 🟢 Low    | Auto-generate String() methods instead of hand-rolled.       |
-| 17  | **Document `dataSetter` interface pattern**                            | 5min   | 🟢 Low    | Help future contributors understand serialization internals. |
-| 18  | **Migrate `go.work.example` to auto-generated**                        | 30min  | 🟢 Low    | Keep in sync with actual module list automatically.          |
-| 19  | **Add `gomod2nix` for reproducible Nix builds**                        | 2hr    | 🟡 Medium | Full Nix sandbox compatibility.                              |
-| 20  | **Review examples/ for consistency**                                   | 30min  | 🟢 Low    | Ensure all examples follow same patterns.                    |
-| 21  | **Consider `cmp.Diff` for richer test assertions**                     | 2hr    | 🟡 Medium | Better test failure messages for complex structures.         |
-| 22  | **Review D2 `D2NodeStyle.isSet()` vs `D2StrokeStyle.isSet()` overlap** | 20min  | 🟢 Low    | Verify no redundant field checks remain.                     |
-| 23  | **Add `.editorconfig` for consistent formatting**                      | 10min  | 🟢 Low    | Consistency for non-Nix contributors.                        |
-| 24  | **Review graph/fuzz_test.go for completeness**                         | 15min  | 🟢 Low    | Ensure fuzz targets cover edge cases.                        |
-| 25  | **Community launch: Post to r/golang, submit to Awesome Go**           | 1hr    | 🔴 High   | Project is ready for public visibility.                      |
+| #  | Task                                                                   | Effort | Impact    | Why                                                          |
+| -- | ---------------------------------------------------------------------- | ------ | --------- | ------------------------------------------------------------ |
+| 14 | **Investigate generic `RegisterSimpleMarshaler(format, func)`**        | 1hr    | 🟡 Medium | Reduce boilerplate in sub-module init() registrations.       |
+| 15 | **Unify streaming HTML cell writing with templates**                   | 1hr    | 🟢 Low    | WriteHeaders/WriteRow/WriteFooter have similar patterns.     |
+| 16 | **Consider `go:generate stringer` for enum types**                     | 1hr    | 🟢 Low    | Auto-generate String() methods instead of hand-rolled.       |
+| 17 | **Document `dataSetter` interface pattern**                            | 5min   | 🟢 Low    | Help future contributors understand serialization internals. |
+| 18 | **Migrate `go.work.example` to auto-generated**                        | 30min  | 🟢 Low    | Keep in sync with actual module list automatically.          |
+| 19 | **Add `gomod2nix` for reproducible Nix builds**                        | 2hr    | 🟡 Medium | Full Nix sandbox compatibility.                              |
+| 20 | **Review examples/ for consistency**                                   | 30min  | 🟢 Low    | Ensure all examples follow same patterns.                    |
+| 21 | **Consider `cmp.Diff` for richer test assertions**                     | 2hr    | 🟡 Medium | Better test failure messages for complex structures.         |
+| 22 | **Review D2 `D2NodeStyle.isSet()` vs `D2StrokeStyle.isSet()` overlap** | 20min  | 🟢 Low    | Verify no redundant field checks remain.                     |
+| 23 | **Add `.editorconfig` for consistent formatting**                      | 10min  | 🟢 Low    | Consistency for non-Nix contributors.                        |
+| 24 | **Review graph/fuzz_test.go for completeness**                         | 15min  | 🟢 Low    | Ensure fuzz targets cover edge cases.                        |
+| 25 | **Community launch: Post to r/golang, submit to Awesome Go**           | 1hr    | 🔴 High   | Project is ready for public visibility.                      |
 
 ---
 

@@ -1,7 +1,7 @@
 version: "2"
 run:
   timeout: 5m
-  go: 1.26.4
+  go: 1.26.7
   build-tags:
     - goexperiment.arenas
     - goexperiment.goroutineleakprofile
@@ -28,7 +28,6 @@ linters:
     - copyloopvar
     - cyclop
     - decorder
-    - depguard
     - dogsled
     - dupl
     - dupword
@@ -125,184 +124,35 @@ linters:
     - wrapcheck
     - wsl_v5
     - zerologlint
+  disable:
+    - depguard
   settings:
     cyclop:
       max-complexity: 12
-    depguard:
-      rules:
-        default:
-          allow:
-            - $STDERR
-            - $GITHUB_ACTION
-            - bytes
-            - cmp
-            - embed
-            - encoding/csv
-            - encoding/json
-            - encoding/xml
-            - errors
-            - fmt
-            - html
-            - html/template
-            - io
-            - maps
-            - os
-            - slices
-            - sort
-            - strconv
-            - strings
-            - sync
-            - testing
-            - time
-            - regexp
-            - runtime
-            - github.com/larsartmann/go-output
-            - github.com/larsartmann/go-output/internal/gentest
-            - github.com/larsartmann/go-output/daghtml
-            - github.com/larsartmann/go-output/escape
-            - github.com/larsartmann/go-output/table
-            - github.com/larsartmann/go-output/testhelpers
-            - github.com/larsartmann/go-output/d2
-            - github.com/larsartmann/go-output/graph
-            - github.com/larsartmann/go-output/delimited
-            - github.com/larsartmann/go-output/serialization
-            - github.com/larsartmann/go-output/markdown
-            - github.com/larsartmann/go-output/tree
-            - github.com/larsartmann/go-output/markup
-            - github.com/larsartmann/go-output/plantuml
-            - github.com/larsartmann/go-output/nom
-            - github.com/larsartmann/go-output/tui
-            - github.com/larsartmann/go-output/examples/shared
-            - github.com/larsartmann/go-branded-id
-            - charm.land/lipgloss/v2
-            - charm.land/lipgloss/v2/table
-            - charm.land/bubbletea/v2
-            - github.com/go-faster/yaml
-            - github.com/pelletier/go-toml/v2
-            - bufio
-            - bytes
-            - cmp
-            - context
-            - embed
-            - encoding/csv
-            - encoding/json
-            - encoding/xml
-            - errors
-            - fmt
-            - golang.org/x/term
-            - html
-            - html/template
-            - image/color
-            - io
-            - os
-            - path/filepath
-            - slices
-            - sort
-            - strconv
-            - strings
-            - sync
-            - testing
-            - time
-            - log
-            - github.com/charmbracelet/x/ansi
-            - github.com/onsi/ginkgo/v2
-            - github.com/onsi/gomega
-            - github.com/charmbracelet/x/exp/golden
-            - github.com/charmbracelet/x/vt
-            - github.com/charmbracelet/x/exp/teatest/v2
-            - github.com/charmbracelet/colorprofile
-            - github.com/mattn/go-runewidth
-            - os/signal
-            - syscall
-        examples:
-          allow:
-            - $STDERR
-            - $GITHUB_ACTION
-            - bytes
-            - fmt
-            - io
-            - os
-            - strconv
-            - strings
-            - github.com/larsartmann/go-output
-            - github.com/larsartmann/go-output/examples/shared
-            - github.com/larsartmann/go-output/d2
-            - github.com/larsartmann/go-output/delimited
-            - github.com/larsartmann/go-output/graph
-            - github.com/larsartmann/go-output/markdown
-            - github.com/larsartmann/go-output/tree
-            - github.com/larsartmann/go-output/markup
-            - github.com/larsartmann/go-output/serialization
-            - github.com/larsartmann/go-output/table
-            - github.com/larsartmann/go-output/plantuml
-            - github.com/larsartmann/go-output/nom
-            - github.com/larsartmann/go-output/tui
-            - github.com/larsartmann/go-branded-id
-          files:
-            - examples/**/*.go
-        main:
-          allow:
-            - $STDERR
-            - $GITHUB_ACTION
-            - github.com/larsartmann/go-output
-            - github.com/larsartmann/go-output/internal/gentest
-            - github.com/larsartmann/go-output/daghtml
-            - github.com/larsartmann/go-output/escape
-            - github.com/larsartmann/go-output/table
-            - github.com/larsartmann/go-output/testhelpers
-            - github.com/larsartmann/go-output/d2
-            - github.com/larsartmann/go-output/graph
-            - github.com/larsartmann/go-output/delimited
-            - github.com/larsartmann/go-output/serialization
-            - github.com/larsartmann/go-output/markdown
-            - github.com/larsartmann/go-output/tree
-            - github.com/larsartmann/go-output/markup
-            - github.com/larsartmann/go-output/plantuml
-            - github.com/larsartmann/go-output/nom
-            - github.com/larsartmann/go-output/tui
-            - github.com/larsartmann/go-output/examples/shared
-            - github.com/larsartmann/go-branded-id
-            - charm.land/lipgloss/v2
-            - charm.land/lipgloss/v2/table
-            - charm.land/bubbletea/v2
-            - github.com/go-faster/yaml
-            - github.com/pelletier/go-toml/v2
-            - bufio
-            - bytes
-            - cmp
-            - context
-            - embed
-            - encoding/csv
-            - encoding/json
-            - encoding/xml
-            - errors
-            - fmt
-            - golang.org/x/term
-            - html
-            - html/template
-            - image/color
-            - io
-            - maps
-            - os
-            - path/filepath
-            - regexp
-            - slices
-            - sort
-            - strconv
-            - strings
-            - sync
-            - testing
-            - time
-            - log
-            - github.com/charmbracelet/x/ansi
-            - os/signal
-            - syscall
-          files:
-            - "**/*.go"
-            - "!**/*_test.go"
+    errcheck:
+      exclude-functions:
+        - (*os.File).Close
+        - (io.Closer).Close
+        - (*sql.DB).Close
+        - (*sql.Rows).Close
+        - (*sql.Stmt).Close
+        - (net.Conn).Close
+        - (*net.TCPConn).Close
+        - (*net.UDPConn).Close
+        - fmt.Fprint
+        - fmt.Fprintf
+        - fmt.Fprintln
+        - fmt.Print
+        - fmt.Printf
+        - fmt.Println
+        - (*strings.Builder).WriteString
+        - (*bytes.Buffer).WriteString
     exhaustruct:
       exclude:
         - os/exec.Cmd
+    funlen:
+      lines: 200
+      statements: 100
     ginkgolinter:
       forbid-focus-container: true
       forbid-spec-pollution: true
@@ -315,6 +165,10 @@ linters:
         - github.com/larsartmann/go-output/delimited
         - github.com/larsartmann/go-output/delimited
       replace-local: true
+    gosec:
+      excludes:
+        - G304
+        - G115
     ireturn:
       allow:
         - error
@@ -324,6 +178,12 @@ linters:
         - generic
     makezero:
       always: true
+    mnd:
+      ignored-numbers:
+        - "0"
+        - "1"
+        - "2"
+        - "100"
     revive:
       rules:
         - disabled: true

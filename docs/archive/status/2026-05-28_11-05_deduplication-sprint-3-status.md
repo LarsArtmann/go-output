@@ -1,7 +1,7 @@
 # Deduplication Sprint 3 — Status Report
 
-**Date:** 2026-05-28 11:05  
-**Scope:** Full codebase deduplication at `art-dupl -t 15`  
+**Date:** 2026-05-28 11:05\
+**Scope:** Full codebase deduplication at `art-dupl -t 15`\
 **Result:** 60 → 53 clone groups (net -7, ~12% reduction)
 
 ---
@@ -43,13 +43,13 @@
 
 These items from the plan were analyzed but not executed:
 
-| #   | Item                                                         | Reason                                                                                   |
-| --- | ------------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
-| 1   | `AssertLineCount` helper in testhelpers                      | testhelpers is zero-dep; can't add Format param. Local helpers sufficient.               |
-| 2   | PlantUML bench/example graphtest helpers                     | Would require adding graphtest dep for 2 nodes in bench. Overkill.                       |
-| 3   | `testEmptyRendererOutput` extraction to testhelpers          | In different modules (graph vs markup); can't share without cross-dep.                   |
-| 4   | `render*TableData` init() registration unification           | Each is 1-line unique binding. Category E (single-line).                                 |
-| 5   | Streaming HTML `writeHeaders`/`writeRow`/`writeFooter` dedup | Different tag names (`<th>` vs `<td>`), different error messages. Not worth abstracting. |
+| # | Item                                                         | Reason                                                                                   |
+| - | ------------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
+| 1 | `AssertLineCount` helper in testhelpers                      | testhelpers is zero-dep; can't add Format param. Local helpers sufficient.               |
+| 2 | PlantUML bench/example graphtest helpers                     | Would require adding graphtest dep for 2 nodes in bench. Overkill.                       |
+| 3 | `testEmptyRendererOutput` extraction to testhelpers          | In different modules (graph vs markup); can't share without cross-dep.                   |
+| 4 | `render*TableData` init() registration unification           | Each is 1-line unique binding. Category E (single-line).                                 |
+| 5 | Streaming HTML `writeHeaders`/`writeRow`/`writeFooter` dedup | Different tag names (`<th>` vs `<td>`), different error messages. Not worth abstracting. |
 
 ---
 
@@ -81,43 +81,43 @@ Nothing. All changes compile, pass tests, and pass lint.
 
 ### High Impact, Low Effort (do now)
 
-| #   | Task                                                                             | Effort | Impact |
-| --- | -------------------------------------------------------------------------------- | ------ | ------ |
-| 1   | Update AGENTS.md with dedup learnings (zero-dep testhelpers, threshold guidance) | 5min   | High   |
-| 2   | Add ADR for acceptable clone categories at t=15                                  | 15min  | High   |
-| 3   | Run art-dupl at t=30 to find genuinely actionable clones                         | 2min   | High   |
-| 4   | Fix pre-existing lint issues in serialization/error_test.go (errchkjson, wsl)    | 5min   | Medium |
-| 5   | Fix pre-existing lint issues in table/color_test.go (staticcheck, wsl)           | 5min   | Medium |
+| # | Task                                                                             | Effort | Impact |
+| - | -------------------------------------------------------------------------------- | ------ | ------ |
+| 1 | Update AGENTS.md with dedup learnings (zero-dep testhelpers, threshold guidance) | 5min   | High   |
+| 2 | Add ADR for acceptable clone categories at t=15                                  | 15min  | High   |
+| 3 | Run art-dupl at t=30 to find genuinely actionable clones                         | 2min   | High   |
+| 4 | Fix pre-existing lint issues in serialization/error_test.go (errchkjson, wsl)    | 5min   | Medium |
+| 5 | Fix pre-existing lint issues in table/color_test.go (staticcheck, wsl)           | 5min   | Medium |
 
 ### Medium Impact, Medium Effort (plan for next sprint)
 
-| #   | Task                                                                                       | Effort | Impact |
-| --- | ------------------------------------------------------------------------------------------ | ------ | ------ |
-| 6   | Extract `renderMarshalAndWrite(w, marshalFn, formatName)` for AsciiDoc/XML pattern         | 30min  | Medium |
-| 7   | Table-drive delimited NoHeaders tests (CSV + TSV identical)                                | 15min  | Medium |
-| 8   | Extract shared `testGraphRendererEmpty` helper to graphtest (graph+plantuml+serialization) | 20min  | Medium |
-| 9   | Consolidate `emptyYAML`/`emptyTOML` sentinel constants in serialization                    | 10min  | Low    |
-| 10  | Add `generateBenchmarkNodes(n)` to graphtest (graph+plantuml benches)                      | 20min  | Low    |
+| #  | Task                                                                                       | Effort | Impact |
+| -- | ------------------------------------------------------------------------------------------ | ------ | ------ |
+| 6  | Extract `renderMarshalAndWrite(w, marshalFn, formatName)` for AsciiDoc/XML pattern         | 30min  | Medium |
+| 7  | Table-drive delimited NoHeaders tests (CSV + TSV identical)                                | 15min  | Medium |
+| 8  | Extract shared `testGraphRendererEmpty` helper to graphtest (graph+plantuml+serialization) | 20min  | Medium |
+| 9  | Consolidate `emptyYAML`/`emptyTOML` sentinel constants in serialization                    | 10min  | Low    |
+| 10 | Add `generateBenchmarkNodes(n)` to graphtest (graph+plantuml benches)                      | 20min  | Low    |
 
 ### Lower Priority (backlog)
 
-| #   | Task                                                                           | Effort | Impact |
-| --- | ------------------------------------------------------------------------------ | ------ | ------ |
-| 11  | Investigate generic `RegisterSimpleMarshaler(format, func(data) []byte)`       | 1hr    | Medium |
-| 12  | Unify streaming.go HTML cell writing (`<th>`/`<td>` with templates)            | 1hr    | Low    |
-| 13  | Consider `go-structure-linter` suppressions for root package files             | 15min  | Low    |
-| 14  | Add `go-error-family` dependency for structured errors                         | 1hr    | Medium |
-| 15  | Migrate `go.work.example` to auto-generated from go.mod scan                   | 30min  | Low    |
-| 16  | Review D2 `D2NodeStyle.isSet()` vs `D2StrokeStyle.isSet()` overlap             | 20min  | Low    |
-| 17  | Consider `cmp.Diff` for test assertions instead of manual `strings.Contains`   | 2hr    | Medium |
-| 18  | Add `testify` or stay with stdlib — document decision in ADR                   | 1hr    | High   |
-| 19  | Review examples/ for consistency (some use graphtest, some don't)              | 30min  | Low    |
-| 20  | Run coverage report across all modules                                         | 5min   | Medium |
-| 21  | Check if `go-faster/yaml` or `go-toml/v2` have newer versions                  | 10min  | Low    |
-| 22  | Review `graph/fuzz_test.go` escape predicate vs `escape/escape.go` duplication | 15min  | Low    |
-| 23  | Consider `go:generate stringer` for enum types                                 | 1hr    | Low    |
-| 24  | Document the `dataSetter` interface pattern in serialization/render.go         | 5min   | Low    |
-| 25  | Clean up `coverage.out` in root (go-structure-linter complaint)                | 2min   | Low    |
+| #  | Task                                                                           | Effort | Impact |
+| -- | ------------------------------------------------------------------------------ | ------ | ------ |
+| 11 | Investigate generic `RegisterSimpleMarshaler(format, func(data) []byte)`       | 1hr    | Medium |
+| 12 | Unify streaming.go HTML cell writing (`<th>`/`<td>` with templates)            | 1hr    | Low    |
+| 13 | Consider `go-structure-linter` suppressions for root package files             | 15min  | Low    |
+| 14 | Add `go-error-family` dependency for structured errors                         | 1hr    | Medium |
+| 15 | Migrate `go.work.example` to auto-generated from go.mod scan                   | 30min  | Low    |
+| 16 | Review D2 `D2NodeStyle.isSet()` vs `D2StrokeStyle.isSet()` overlap             | 20min  | Low    |
+| 17 | Consider `cmp.Diff` for test assertions instead of manual `strings.Contains`   | 2hr    | Medium |
+| 18 | Add `testify` or stay with stdlib — document decision in ADR                   | 1hr    | High   |
+| 19 | Review examples/ for consistency (some use graphtest, some don't)              | 30min  | Low    |
+| 20 | Run coverage report across all modules                                         | 5min   | Medium |
+| 21 | Check if `go-faster/yaml` or `go-toml/v2` have newer versions                  | 10min  | Low    |
+| 22 | Review `graph/fuzz_test.go` escape predicate vs `escape/escape.go` duplication | 15min  | Low    |
+| 23 | Consider `go:generate stringer` for enum types                                 | 1hr    | Low    |
+| 24 | Document the `dataSetter` interface pattern in serialization/render.go         | 5min   | Low    |
+| 25 | Clean up `coverage.out` in root (go-structure-linter complaint)                | 2min   | Low    |
 
 ---
 

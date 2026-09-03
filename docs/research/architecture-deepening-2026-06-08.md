@@ -1,7 +1,7 @@
 # Architecture Deepening Report — go-output
 
-**Date:** 2026-06-08  
-**Scope:** Root package, all sub-modules, test infrastructure  
+**Date:** 2026-06-08\
+**Scope:** Root package, all sub-modules, test infrastructure\
 **Method:** Deletion test applied to every module suspected of being shallow
 
 ---

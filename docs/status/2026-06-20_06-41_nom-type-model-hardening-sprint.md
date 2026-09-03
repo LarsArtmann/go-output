@@ -154,48 +154,48 @@ API declared frozen (ADR 006) but still at v0.16.0. The 3 refactors this session
 
 ### Tier 1 — High impact, low work (do first)
 
-| #   | Task                                                                                               | Impact | Work | Why                                                                 |
-| --- | -------------------------------------------------------------------------------------------------- | ------ | ---- | ------------------------------------------------------------------- |
-| 1   | **Update `CHANGELOG.md` `[Unreleased]`** with the 3 refactors                                      | med    | 10m  | Knowledge hygiene; the Unreleased section is empty                  |
-| 2   | **Update `AGENTS.md`** Patterns + Gotchas for ActivityKind/sealed events/decoupled Activity        | med    | 20m  | Prevents the next session from re-discovering what changed          |
-| 3   | **Update `FEATURES.md`** with `ActivityKind`, `NewPhase`, sealed events                            | low    | 15m  | Public feature inventory accuracy                                   |
-| 4   | **Write ADR 009: sealed event sum type**                                                           | med    | 30m  | Anchors the breaking-change reasoning for future contributors       |
-| 5   | **Derive `CurrentElapsed` from `StartTime`** at render time; delete `UpdateRunningActivityElapsed` | high   | 45m  | Eliminates a per-tick write path + a race surface + a public method |
+| # | Task                                                                                               | Impact | Work | Why                                                                 |
+| - | -------------------------------------------------------------------------------------------------- | ------ | ---- | ------------------------------------------------------------------- |
+| 1 | **Update `CHANGELOG.md` `[Unreleased]`** with the 3 refactors                                      | med    | 10m  | Knowledge hygiene; the Unreleased section is empty                  |
+| 2 | **Update `AGENTS.md`** Patterns + Gotchas for ActivityKind/sealed events/decoupled Activity        | med    | 20m  | Prevents the next session from re-discovering what changed          |
+| 3 | **Update `FEATURES.md`** with `ActivityKind`, `NewPhase`, sealed events                            | low    | 15m  | Public feature inventory accuracy                                   |
+| 4 | **Write ADR 009: sealed event sum type**                                                           | med    | 30m  | Anchors the breaking-change reasoning for future contributors       |
+| 5 | **Derive `CurrentElapsed` from `StartTime`** at render time; delete `UpdateRunningActivityElapsed` | high   | 45m  | Eliminates a per-tick write path + a race surface + a public method |
 
 ### Tier 2 — High impact, medium work
 
-| #   | Task                                                                       | Impact | Work | Why                                                                    |
-| --- | -------------------------------------------------------------------------- | ------ | ---- | ---------------------------------------------------------------------- |
-| 6   | **Incremental `ActivityCounts`** via subtree-aggregate monoid              | high   | 2h   | The single scalability ceiling; upstream NOM's real algorithmic edge   |
-| 7   | **Unexport ~15 zero-caller `tui/` symbols**                                | med    | 1h   | Pre-v1 API hygiene; flagged in prior status report                     |
-| 8   | **`ActivityStatus.Interest()` → named `SortOrder` enum**                   | low    | 30m  | Removes magic numbers from the sort path                               |
-| 9   | **Branded type for `TimingCache` key** (currently `string`)                | low    | 30m  | Compile-time safety against mixing ActivityName with arbitrary strings |
-| 10  | **`nom/` internal sub-package split** (`event`, `render`, `tree`, `cache`) | med    | 2h   | The coarsest module (35 files); improves navigability                  |
+| #  | Task                                                                       | Impact | Work | Why                                                                    |
+| -- | -------------------------------------------------------------------------- | ------ | ---- | ---------------------------------------------------------------------- |
+| 6  | **Incremental `ActivityCounts`** via subtree-aggregate monoid              | high   | 2h   | The single scalability ceiling; upstream NOM's real algorithmic edge   |
+| 7  | **Unexport ~15 zero-caller `tui/` symbols**                                | med    | 1h   | Pre-v1 API hygiene; flagged in prior status report                     |
+| 8  | **`ActivityStatus.Interest()` → named `SortOrder` enum**                   | low    | 30m  | Removes magic numbers from the sort path                               |
+| 9  | **Branded type for `TimingCache` key** (currently `string`)                | low    | 30m  | Compile-time safety against mixing ActivityName with arbitrary strings |
+| 10 | **`nom/` internal sub-package split** (`event`, `render`, `tree`, `cache`) | med    | 2h   | The coarsest module (35 files); improves navigability                  |
 
 ### Tier 3 — Medium impact, medium work
 
-| #   | Task                                                                    | Impact | Work           | Why                                                                                                   |
-| --- | ----------------------------------------------------------------------- | ------ | -------------- | ----------------------------------------------------------------------------------------------------- |
-| 11  | **Cut v1.0.0 tag** (or decide to defer)                                 | high   | 30m            | API is frozen per ADR 006; the 3 refactors are the last planned breaking changes to experimental APIs |
-| 12  | **Add `.github/workflows/ci.yml`** running lint+test+race on every push | high   | 1h             | No CI exists; relies entirely on pre-commit hooks and manual runs                                     |
-| 13  | **`TableData` dual API decision** (ADR 006 #15)                         | med    | owner decision | Blocks v1.0.0 API freeze                                                                              |
-| 14  | **`nom.DependencyTree` snapshot-render path documentation**             | low    | 30m            | The snapshot architecture is non-obvious; a diagram or ADR would help                                 |
-| 15  | **Property-based test for sealed event exhaustiveness**                 | low    | 30m            | Guard against a future event type being added without a handler case                                  |
+| #  | Task                                                                    | Impact | Work           | Why                                                                                                   |
+| -- | ----------------------------------------------------------------------- | ------ | -------------- | ----------------------------------------------------------------------------------------------------- |
+| 11 | **Cut v1.0.0 tag** (or decide to defer)                                 | high   | 30m            | API is frozen per ADR 006; the 3 refactors are the last planned breaking changes to experimental APIs |
+| 12 | **Add `.github/workflows/ci.yml`** running lint+test+race on every push | high   | 1h             | No CI exists; relies entirely on pre-commit hooks and manual runs                                     |
+| 13 | **`TableData` dual API decision** (ADR 006 #15)                         | med    | owner decision | Blocks v1.0.0 API freeze                                                                              |
+| 14 | **`nom.DependencyTree` snapshot-render path documentation**             | low    | 30m            | The snapshot architecture is non-obvious; a diagram or ADR would help                                 |
+| 15 | **Property-based test for sealed event exhaustiveness**                 | low    | 30m            | Guard against a future event type being added without a handler case                                  |
 
 ### Tier 4 — Lower impact or higher work
 
-| #   | Task                                                                                      | Impact | Work  | Why                                                                                                                |
-| --- | ----------------------------------------------------------------------------------------- | ------ | ----- | ------------------------------------------------------------------------------------------------------------------ |
-| 16  | **Port upstream's greedy height-bounded node selection** (`derivationsToShow`)            | med    | 3h    | Current `elideCompletedUnderPressure` is simpler but less optimal than upstream's "fill 1/3 of terminal" heuristic |
-| 17  | **Time-weighted timing cache** (decay old samples)                                        | low    | 1h    | With 10 samples it's low-stakes, but stale data dominates if the cap is raised                                     |
-| 18  | **`GetMedian` caching** (compute on Record, invalidate on load)                           | low    | 30m   | Currently allocates+sorts every call                                                                               |
-| 19  | **Narrow `tui/`→`nom/` coupling** (`WithSubscriberRLock` → interface)                     | low    | 1h    | Makes the module boundary explicit                                                                                 |
-| 20  | **`renderNotify` test hook** moved off the production `InlineRenderer` struct             | low    | 20m   | Test-only field on a prod type; should be an option or separate test wrapper                                       |
-| 21  | **CLI demo binary** (`cmd/go-output-demo`) showcasing all 16 formats + NOM                | low    | 2h    | Makes the library tangible; flagged in prior status reports                                                        |
-| 22  | **`bdd/` package has zero nom event references** — verify BDD coverage of new event types | low    | 1h    | The sealed events may have created a coverage gap                                                                  |
-| 23  | **`integration/` test for full workflow → DOT diagram export** with new ActivityKind      | low    | 45m   | Cross-module verification of the decoupled projection                                                              |
-| 24  | **Audit `examples/` for stale patterns** post-refactor                                    | low    | 30m   | The examples were rewritten but may have lost illustrative value                                                   |
-| 25  | **Investigate `nh`-style pipe mode** (`cmd/nom` binary reading `internal-json`)           | low    | 1 day | Scope expansion — only if external integration is ever wanted                                                      |
+| #  | Task                                                                                      | Impact | Work  | Why                                                                                                                |
+| -- | ----------------------------------------------------------------------------------------- | ------ | ----- | ------------------------------------------------------------------------------------------------------------------ |
+| 16 | **Port upstream's greedy height-bounded node selection** (`derivationsToShow`)            | med    | 3h    | Current `elideCompletedUnderPressure` is simpler but less optimal than upstream's "fill 1/3 of terminal" heuristic |
+| 17 | **Time-weighted timing cache** (decay old samples)                                        | low    | 1h    | With 10 samples it's low-stakes, but stale data dominates if the cap is raised                                     |
+| 18 | **`GetMedian` caching** (compute on Record, invalidate on load)                           | low    | 30m   | Currently allocates+sorts every call                                                                               |
+| 19 | **Narrow `tui/`→`nom/` coupling** (`WithSubscriberRLock` → interface)                     | low    | 1h    | Makes the module boundary explicit                                                                                 |
+| 20 | **`renderNotify` test hook** moved off the production `InlineRenderer` struct             | low    | 20m   | Test-only field on a prod type; should be an option or separate test wrapper                                       |
+| 21 | **CLI demo binary** (`cmd/go-output-demo`) showcasing all 16 formats + NOM                | low    | 2h    | Makes the library tangible; flagged in prior status reports                                                        |
+| 22 | **`bdd/` package has zero nom event references** — verify BDD coverage of new event types | low    | 1h    | The sealed events may have created a coverage gap                                                                  |
+| 23 | **`integration/` test for full workflow → DOT diagram export** with new ActivityKind      | low    | 45m   | Cross-module verification of the decoupled projection                                                              |
+| 24 | **Audit `examples/` for stale patterns** post-refactor                                    | low    | 30m   | The examples were rewritten but may have lost illustrative value                                                   |
+| 25 | **Investigate `nh`-style pipe mode** (`cmd/nom` binary reading `internal-json`)           | low    | 1 day | Scope expansion — only if external integration is ever wanted                                                      |
 
 ---
 

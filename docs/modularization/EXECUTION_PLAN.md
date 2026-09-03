@@ -325,15 +325,15 @@ done
 
 ## Final Module Count
 
-| #   | Module                  | Status                                                      |
-| --- | ----------------------- | ----------------------------------------------------------- |
-| 1   | `root` (package output) | Existing, slimmed                                           |
-| 2   | `enum/`                 | Existing, unchanged                                         |
-| 3   | `escape/`               | Existing, unchanged                                         |
-| 4   | `testhelpers/`          | Existing, unchanged                                         |
-| 5   | `sort/`                 | **REMOVED** — deleted in post-modularization polish session |
-| 6   | `table/`                | Existing, unchanged                                         |
-| 7   | `integration/`          | Existing, updated deps                                      |
-| 8   | `examples/`             | Existing, updated deps                                      |
-| 9   | `d2/`                   | **NEW**                                                     |
-| 10  | `graph/`                | **NEW**                                                     |
+| #  | Module                  | Status                                                      |
+| -- | ----------------------- | ----------------------------------------------------------- |
+| 1  | `root` (package output) | Existing, slimmed                                           |
+| 2  | `enum/`                 | Existing, unchanged                                         |
+| 3  | `escape/`               | Existing, unchanged                                         |
+| 4  | `testhelpers/`          | Existing, unchanged                                         |
+| 5  | `sort/`                 | **REMOVED** — deleted in post-modularization polish session |
+| 6  | `table/`                | Existing, unchanged                                         |
+| 7  | `integration/`          | Existing, updated deps                                      |
+| 8  | `examples/`             | Existing, updated deps                                      |
+| 9  | `d2/`                   | **NEW**                                                     |
+| 10 | `graph/`                | **NEW**                                                     |

@@ -1,7 +1,7 @@
 # Comprehensive Plan: nom/ + tui/ Improvements
 
-**Date:** 2026-06-17 09:43  
-**Goal:** Make the generic concurrent-activity progress UI reliable and useful — NOM rendering inspiration only, no nix-specific features.  
+**Date:** 2026-06-17 09:43\
+**Goal:** Make the generic concurrent-activity progress UI reliable and useful — NOM rendering inspiration only, no nix-specific features.\
 **Pareto framing:**
 
 - **1% → 51%:** Priority-ordered visibility (running/failed first).
@@ -108,8 +108,8 @@ StatusTUI -> StatusTests
 |    27 | 6.4 | Run `go test ./...` in `tui` module                            | Verify     | High   | Low    | Must pass                            | 10       |
 |    28 | 6.5 | Run `golangci-lint` on `nom` and `tui`                         | Verify     | High   | Low    | Must pass                            | 10       |
 
-**Total tasks:** 28  
-**Total estimated time:** ~270 minutes (4.5 h)  
+**Total tasks:** 28\
+**Total estimated time:** ~270 minutes (4.5 h)\
 **Max task size:** 12 minutes
 
 ---

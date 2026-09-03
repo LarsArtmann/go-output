@@ -8,23 +8,23 @@
 
 ## a) FULLY DONE — Verified, Build + Tests Green (15/20)
 
-| #   | ID  | Fix                                                                                        | Files Changed                    | Verification         |
-| --- | --- | ------------------------------------------------------------------------------------------ | -------------------------------- | -------------------- |
-| 1   | C1  | `nom.TreeNode` → `nom.ActivityNode` (73 refs)                                              | 12 nom/ + 1 tui/                 | ✅ All modules       |
-| 2   | C2  | `activities` field **eliminated** from `ProgressModel`, delegated to `GetActivityCounts()` | 6 tui/ files                     | ✅ tui + integration |
-| 3   | C3  | `tui.TimingFormat` → `timingFormatWithIcon` (unexported)                                   | 3 tui/ files                     | ✅ tui               |
-| 4   | C4  | Deleted `graphRenderer` redeclaration in serialization tests                               | 1 file                           | ✅ serialization     |
-| 5   | C5  | Deleted `renderer` redeclaration in integration tests                                      | 1 file                           | ✅ integration       |
-| 6   | M1  | Deleted dead `nom.ColorWarning` + introduced `SemanticColors` struct                       | nom/symbols.go                   | ✅ nom               |
-| 7   | M2  | Color detection fully aligned: terminal check + all env vars + `TERM=dumb`                 | color.go, nom/inline_renderer.go | ✅ root + nom        |
-| 8   | M3  | Hardcoded `"No activities to display"` → `MsgNoActivitiesToDisplay`                        | tui/view.go                      | ✅ tui               |
-| 9   | M9  | `WriteFooter` added to real `tableDataWriter` interface                                    | delimited/csv.go                 | ✅ delimited         |
-| 10  | m1  | Cross-reference comments on `"unknown"` sentinels                                          | nom/ + tui/                      | ✅                   |
-| 11  | m2  | **All** bare event literals replaced with `nom.Event*` constants (34 total)                | 4 modules                        | ✅ Zero remaining    |
-| 12  | m4  | Stale `GraphEdge.Style` field added to FORMAT_ARCHITECTURE.md                              | docs/                            | ✅                   |
-| 13  | m5  | `GetWorkflowID()` returns `WorkflowID` not `string`                                        | nom/state_accessors.go           | ✅ nom               |
-| 14  | —   | `SemanticColors` struct replaces 6 mutable `var ColorX` globals                            | nom/symbols.go                   | ✅ nom               |
-| 15  | —   | AGENTS.md + CHANGELOG.md updated with all changes                                          | 2 docs                           | ✅                   |
+| #  | ID | Fix                                                                                        | Files Changed                    | Verification         |
+| -- | -- | ------------------------------------------------------------------------------------------ | -------------------------------- | -------------------- |
+| 1  | C1 | `nom.TreeNode` → `nom.ActivityNode` (73 refs)                                              | 12 nom/ + 1 tui/                 | ✅ All modules       |
+| 2  | C2 | `activities` field **eliminated** from `ProgressModel`, delegated to `GetActivityCounts()` | 6 tui/ files                     | ✅ tui + integration |
+| 3  | C3 | `tui.TimingFormat` → `timingFormatWithIcon` (unexported)                                   | 3 tui/ files                     | ✅ tui               |
+| 4  | C4 | Deleted `graphRenderer` redeclaration in serialization tests                               | 1 file                           | ✅ serialization     |
+| 5  | C5 | Deleted `renderer` redeclaration in integration tests                                      | 1 file                           | ✅ integration       |
+| 6  | M1 | Deleted dead `nom.ColorWarning` + introduced `SemanticColors` struct                       | nom/symbols.go                   | ✅ nom               |
+| 7  | M2 | Color detection fully aligned: terminal check + all env vars + `TERM=dumb`                 | color.go, nom/inline_renderer.go | ✅ root + nom        |
+| 8  | M3 | Hardcoded `"No activities to display"` → `MsgNoActivitiesToDisplay`                        | tui/view.go                      | ✅ tui               |
+| 9  | M9 | `WriteFooter` added to real `tableDataWriter` interface                                    | delimited/csv.go                 | ✅ delimited         |
+| 10 | m1 | Cross-reference comments on `"unknown"` sentinels                                          | nom/ + tui/                      | ✅                   |
+| 11 | m2 | **All** bare event literals replaced with `nom.Event*` constants (34 total)                | 4 modules                        | ✅ Zero remaining    |
+| 12 | m4 | Stale `GraphEdge.Style` field added to FORMAT_ARCHITECTURE.md                              | docs/                            | ✅                   |
+| 13 | m5 | `GetWorkflowID()` returns `WorkflowID` not `string`                                        | nom/state_accessors.go           | ✅ nom               |
+| 14 | —  | `SemanticColors` struct replaces 6 mutable `var ColorX` globals                            | nom/symbols.go                   | ✅ nom               |
+| 15 | —  | AGENTS.md + CHANGELOG.md updated with all changes                                          | 2 docs                           | ✅                   |
 
 **Bonus fixes shipped during this sprint (from full code review):**
 
@@ -98,33 +98,33 @@ The brutal self-review from earlier (`docs/status/2026-06-17_23-22_split-brain-s
 
 Sorted by impact/effort (highest first):
 
-| #   | Task                                                                                         | Impact | Effort   | Category     |
-| --- | -------------------------------------------------------------------------------------------- | ------ | -------- | ------------ |
-| 1   | Add `detectNoColor` test in nom (zero coverage currently)                                    | High   | 15min    | Test gap     |
-| 2   | Add cross-module color agreement test in integration                                         | High   | 20min    | Test gap     |
-| 3   | Replace `dependencyTree` field with local variable                                           | Med    | 20min    | Cleanup      |
-| 4   | Add ActivityNode distinctness compile-time test                                              | Low    | 5min     | Test gap     |
-| 5   | Have tui consume `nom.Colors` instead of own `terminalColors`                                | Med    | 40min    | Type model   |
-| 6   | Typed events (sealed interface + type switch)                                                | High   | 90min    | Type model   |
-| 7   | M4: Rename `Render()` methods in next minor                                                  | Med    | 60min    | Deferred     |
-| 8   | M5: Rename `ShapeBox` → `NodeShapeBox` in next minor                                         | Med    | 60min    | Deferred     |
-| 9   | M6/M7: Introduce canonical `output.Direction` enum                                           | Med    | 90min    | Deferred     |
-| 10  | M8: Align style struct field names in next minor                                             | Med    | 45min    | Deferred     |
-| 11  | m6: Move branded IDs to d2 module                                                            | Low    | 45min    | Deferred     |
-| 12  | Update SPLIT-BRAIN.html with resolved status                                                 | Low    | 15min    | Process      |
-| 13  | Consider `muesli/termenv` for TrueColor/256-color detection                                  | Med    | Research | Library      |
-| 14  | Add `FORCE_COLOR` env var support to color detection                                         | Low    | 10min    | Feature      |
-| 15  | Deprecate `ColorRunning`/`ColorCompleted` etc. aliases → `Colors.X`                          | Low    | 30min    | Cleanup      |
-| 16  | Remove `dependencyTree` field entirely (see #3)                                              | Med    | 20min    | Cleanup      |
-| 17  | Add test that all `nom.Event*` constants are unique                                          | Low    | 5min     | Test gap     |
-| 18  | Add test that `nom.Colors` values match `tui.colors` values                                  | Med    | 15min    | Test gap     |
-| 19  | Unify `"No activities to display"` to single source (nom exports it, tui re-exports)         | Low    | 10min    | Cleanup      |
-| 20  | Document the architecture decision: root keeps hand-rolled detection, nom keeps aligned copy | Low    | 10min    | Process      |
-| 21  | Consider shared `terminal/` zero-dep module for detection logic                              | Med    | 60min    | Architecture |
-| 22  | Add fuzzing test for `FormatDuration` edge cases                                             | Low    | 15min    | Test gap     |
-| 23  | Profile `GetActivityCounts()` vs old `GetActivities()` deep-copy                             | Low    | 15min    | Perf         |
-| 24  | Review if `tui.terminalColors` can become a `nom.Theme` that tui consumes                    | Med    | 45min    | Type model   |
-| 25  | Update planning doc with actual completion times                                             | Low    | 10min    | Process      |
+| #  | Task                                                                                         | Impact | Effort   | Category     |
+| -- | -------------------------------------------------------------------------------------------- | ------ | -------- | ------------ |
+| 1  | Add `detectNoColor` test in nom (zero coverage currently)                                    | High   | 15min    | Test gap     |
+| 2  | Add cross-module color agreement test in integration                                         | High   | 20min    | Test gap     |
+| 3  | Replace `dependencyTree` field with local variable                                           | Med    | 20min    | Cleanup      |
+| 4  | Add ActivityNode distinctness compile-time test                                              | Low    | 5min     | Test gap     |
+| 5  | Have tui consume `nom.Colors` instead of own `terminalColors`                                | Med    | 40min    | Type model   |
+| 6  | Typed events (sealed interface + type switch)                                                | High   | 90min    | Type model   |
+| 7  | M4: Rename `Render()` methods in next minor                                                  | Med    | 60min    | Deferred     |
+| 8  | M5: Rename `ShapeBox` → `NodeShapeBox` in next minor                                         | Med    | 60min    | Deferred     |
+| 9  | M6/M7: Introduce canonical `output.Direction` enum                                           | Med    | 90min    | Deferred     |
+| 10 | M8: Align style struct field names in next minor                                             | Med    | 45min    | Deferred     |
+| 11 | m6: Move branded IDs to d2 module                                                            | Low    | 45min    | Deferred     |
+| 12 | Update SPLIT-BRAIN.html with resolved status                                                 | Low    | 15min    | Process      |
+| 13 | Consider `muesli/termenv` for TrueColor/256-color detection                                  | Med    | Research | Library      |
+| 14 | Add `FORCE_COLOR` env var support to color detection                                         | Low    | 10min    | Feature      |
+| 15 | Deprecate `ColorRunning`/`ColorCompleted` etc. aliases → `Colors.X`                          | Low    | 30min    | Cleanup      |
+| 16 | Remove `dependencyTree` field entirely (see #3)                                              | Med    | 20min    | Cleanup      |
+| 17 | Add test that all `nom.Event*` constants are unique                                          | Low    | 5min     | Test gap     |
+| 18 | Add test that `nom.Colors` values match `tui.colors` values                                  | Med    | 15min    | Test gap     |
+| 19 | Unify `"No activities to display"` to single source (nom exports it, tui re-exports)         | Low    | 10min    | Cleanup      |
+| 20 | Document the architecture decision: root keeps hand-rolled detection, nom keeps aligned copy | Low    | 10min    | Process      |
+| 21 | Consider shared `terminal/` zero-dep module for detection logic                              | Med    | 60min    | Architecture |
+| 22 | Add fuzzing test for `FormatDuration` edge cases                                             | Low    | 15min    | Test gap     |
+| 23 | Profile `GetActivityCounts()` vs old `GetActivities()` deep-copy                             | Low    | 15min    | Perf         |
+| 24 | Review if `tui.terminalColors` can become a `nom.Theme` that tui consumes                    | Med    | 45min    | Type model   |
+| 25 | Update planning doc with actual completion times                                             | Low    | 10min    | Process      |
 
 ---
 

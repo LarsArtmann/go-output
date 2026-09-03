@@ -31,14 +31,14 @@
         --radius: 0px;
         --radius-sm: 0px;
         --font-heading:
-          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          Helvetica, Arial, sans-serif;
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         --font-body:
-          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          Helvetica, Arial, sans-serif;
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         --font-mono:
-          ui-monospace, "Cascadia Code", "Source Code Pro", "JetBrains Mono", Menlo, Consolas,
-          monospace;
+          ui-monospace, "Cascadia Code", "Source Code Pro", "JetBrains Mono",
+          Menlo, Consolas, monospace;
       }
       * {
         box-sizing: border-box;
@@ -230,15 +230,27 @@
       }
       .card-problem {
         border-left-color: var(--problem);
-        background: color-mix(in srgb, var(--problem) 8%, var(--surface-raised));
+        background: color-mix(
+          in srgb,
+          var(--problem) 8%,
+          var(--surface-raised)
+        );
       }
       .card-solution {
         border-left-color: var(--solution);
-        background: color-mix(in srgb, var(--solution) 8%, var(--surface-raised));
+        background: color-mix(
+          in srgb,
+          var(--solution) 8%,
+          var(--surface-raised)
+        );
       }
       .card-warning {
         border-left-color: var(--warning);
-        background: color-mix(in srgb, var(--warning) 8%, var(--surface-raised));
+        background: color-mix(
+          in srgb,
+          var(--warning) 8%,
+          var(--surface-raised)
+        );
       }
       .severity {
         display: inline-block;
@@ -507,9 +519,10 @@
           <div class="hero-badge">Comprehensive Status</div>
           <h1>go-output — Post Pattern B Migration</h1>
           <p class="hero-subtitle">
-            18-module Go library for CLI output formatting (16 formats) and NOM-style real-time
-            progress. Just completed a major architecture migration from stale-real-pins to Pattern
-            B versioning. All gates green. Here is the honest, brutally complete picture.
+            18-module Go library for CLI output formatting (16 formats) and
+            NOM-style real-time progress. Just completed a major architecture
+            migration from stale-real-pins to Pattern B versioning. All gates
+            green. Here is the honest, brutally complete picture.
           </p>
         </div>
 
@@ -567,28 +580,33 @@
         <div class="card card-solution">
           <h4>Pattern B Migration — Complete</h4>
           <p>
-            All 18 modules migrated to <code>v0.0.0-00010101000000-000000000000</code> + committed
-            <code>replace</code>. Sibling version-pin rot is structurally impossible.
-            <code>enum/</code> and <code>envdetect/</code> merged into root. CI workflows,
-            flake.nix, golangci.yml, all docs updated. ADR 009 documents the decision.
+            All 18 modules migrated to
+            <code>v0.0.0-00010101000000-000000000000</code> + committed
+            <code>replace</code>. Sibling version-pin rot is structurally
+            impossible. <code>enum/</code> and <code>envdetect/</code> merged
+            into root. CI workflows, flake.nix, golangci.yml, all docs updated.
+            ADR 009 documents the decision.
           </p>
         </div>
 
         <div class="card card-solution">
           <h4>16 Output Formats — All FULLY_FUNCTIONAL</h4>
           <p>
-            JSON, YAML, TOML, CSV, TSV, Markdown, XML, HTML, AsciiDoc, JSONL, D2, DOT, Mermaid,
-            PlantUML, Terminal Table (lipgloss), ASCII Tree. Plus NOM progress + Bubble Tea TUI.
-            Zero KNOWN_ISSUEs in FEATURES.md.
+            JSON, YAML, TOML, CSV, TSV, Markdown, XML, HTML, AsciiDoc, JSONL,
+            D2, DOT, Mermaid, PlantUML, Terminal Table (lipgloss), ASCII Tree.
+            Plus NOM progress + Bubble Tea TUI. Zero KNOWN_ISSUEs in
+            FEATURES.md.
           </p>
         </div>
 
         <div class="card card-solution">
           <h4>Quality Gates — All Green</h4>
           <p>
-            <strong>Build:</strong> 18/18 modules pass. <strong>Test:</strong> 18/18 pass.
-            <strong>Race:</strong> nom + tui clean under <code>-race</code>. <strong>Lint:</strong>
-            0 issues across all modules (golangci-lint v2.12, ~60 linters enabled).
+            <strong>Build:</strong> 18/18 modules pass.
+            <strong>Test:</strong> 18/18 pass. <strong>Race:</strong> nom + tui
+            clean under <code>-race</code>. <strong>Lint:</strong>
+            0 issues across all modules (golangci-lint v2.12, ~60 linters
+            enabled).
             <strong>TODO/FIXME:</strong> 0 in production source.
           </p>
         </div>
@@ -599,8 +617,8 @@
             <div class="text">
               <strong>Root stays independently go get-able</strong>
               <span
-                >go get github.com/larsartmann/go-output pulls only x/term + branded-id. Zero
-                lipgloss/bubbletea.</span
+                >go get github.com/larsartmann/go-output pulls only x/term +
+                branded-id. Zero lipgloss/bubbletea.</span
               >
             </div>
           </div>
@@ -608,7 +626,10 @@
             <div class="check">+</div>
             <div class="text">
               <strong>Coverage 89.6%–98.6% across all modules</strong>
-              <span>Root: 91%, d2: 96.6%, graph: 95%, table: 98.6%, nom: 90.4%, tui: 89.6%.</span>
+              <span
+                >Root: 91%, d2: 96.6%, graph: 95%, table: 98.6%, nom: 90.4%,
+                tui: 89.6%.</span
+              >
             </div>
           </div>
           <div class="strength">
@@ -616,8 +637,8 @@
             <div class="text">
               <strong>Sealed Event sum type (nom)</strong>
               <span
-                >Compiler-enforced exhaustive type switch. 7 event structs. No string
-                dispatch.</span
+                >Compiler-enforced exhaustive type switch. 7 event structs. No
+                string dispatch.</span
               >
             </div>
           </div>
@@ -632,14 +653,20 @@
             <div class="check">+</div>
             <div class="text">
               <strong>Branded phantom ID types</strong>
-              <span>D2NodeID, TreeNodeID, GraphNodeID — compile-time prevention of ID mixing.</span>
+              <span
+                >D2NodeID, TreeNodeID, GraphNodeID — compile-time prevention of
+                ID mixing.</span
+              >
             </div>
           </div>
           <div class="strength">
             <div class="check">+</div>
             <div class="text">
               <strong>9 ADRs documenting every major decision</strong>
-              <span>From multi-module workspace (001) through Pattern B versioning (009).</span>
+              <span
+                >From multi-module workspace (001) through Pattern B versioning
+                (009).</span
+              >
             </div>
           </div>
           <div class="strength">
@@ -647,8 +674,8 @@
             <div class="text">
               <strong>Nix flake as source of truth</strong>
               <span
-                >build, test, test-race, lint, tidy, govulncheck, setup-workspace — all via
-                nix.</span
+                >build, test, test-race, lint, tidy, govulncheck,
+                setup-workspace — all via nix.</span
               >
             </div>
           </div>
@@ -661,14 +688,19 @@
           <span class="severity severity-important">Needs Action</span>
           <h4>testhelpers stuck at v0.13.0</h4>
           <p>
-            <code>testhelpers/</code> is the only sub-module with real published versions (Pattern B
-            exception). It's pinned at <code>v0.13.0</code> across all 18 <code>go.mod</code> files,
-            but the codebase is at <code>v0.18.0</code>. Needs a
-            <code>testhelpers/v0.18.0</code> tag and all pins updated before the v0.18.0 release.
+            <code>testhelpers/</code> is the only sub-module with real published
+            versions (Pattern B exception). It's pinned at
+            <code>v0.13.0</code> across all 18 <code>go.mod</code> files, but
+            the codebase is at <code>v0.18.0</code>. Needs a
+            <code>testhelpers/v0.18.0</code> tag and all pins updated before the
+            v0.18.0 release.
           </p>
           <div class="callout callout-solution">
             <strong>Fix:</strong> Tag testhelpers/v0.18.0, run
-            <code>go get github.com/larsartmann/go-output/testhelpers@v0.18.0</code> in all modules.
+            <code
+              >go get github.com/larsartmann/go-output/testhelpers@v0.18.0</code
+            >
+            in all modules.
           </div>
         </div>
 
@@ -676,8 +708,9 @@
           <span class="severity severity-important">Technical Debt</span>
           <h4>v0.18.0 not yet tagged</h4>
           <p>
-            CHANGELOG has the v0.18.0 entry, but no git tag exists. The release is code-complete but
-            needs the owner to cut the tag (root + testhelpers + graphtest).
+            CHANGELOG has the v0.18.0 entry, but no git tag exists. The release
+            is code-complete but needs the owner to cut the tag (root +
+            testhelpers + graphtest).
           </p>
         </div>
 
@@ -685,9 +718,10 @@
           <span class="severity severity-nice">Cosmetic</span>
           <h4>gopls stale cache</h4>
           <p>
-            gopls shows phantom warnings about enum/envdetect in go.mod files that were already
-            cleaned. <code>go build</code> proves they're clean. A gopls restart fixes it. This is a
-            tooling artifact, not a code issue.
+            gopls shows phantom warnings about enum/envdetect in go.mod files
+            that were already cleaned. <code>go build</code> proves they're
+            clean. A gopls restart fixes it. This is a tooling artifact, not a
+            code issue.
           </p>
         </div>
 
@@ -709,22 +743,32 @@
               <td><span class="badge badge-low">Awaiting owner tag</span></td>
             </tr>
             <tr>
-              <td><strong>Community submission</strong> — r/golang, Awesome Go</td>
+              <td>
+                <strong>Community submission</strong> — r/golang, Awesome Go
+              </td>
               <td><span class="badge badge-low">Low</span></td>
               <td><span class="badge badge-low">Needs owner account</span></td>
             </tr>
             <tr>
-              <td><strong>CBOR format</strong> (ROADMAP — binary serialization)</td>
+              <td>
+                <strong>CBOR format</strong> (ROADMAP — binary serialization)
+              </td>
               <td><span class="badge badge-medium">Medium</span></td>
               <td><span class="badge badge-low">No demand yet</span></td>
             </tr>
             <tr>
-              <td><strong>GOWORK=off CI smoke test</strong> — verify published state builds</td>
+              <td>
+                <strong>GOWORK=off CI smoke test</strong> — verify published
+                state builds
+              </td>
               <td><span class="badge badge-low">Low</span></td>
               <td><span class="badge badge-low">Not started</span></td>
             </tr>
             <tr>
-              <td><strong>Stale tag cleanup strategy</strong> — 16 enum/envdetect tags</td>
+              <td>
+                <strong>Stale tag cleanup strategy</strong> — 16 enum/envdetect
+                tags
+              </td>
               <td><span class="badge badge-medium">Medium</span></td>
               <td><span class="badge badge-low">Decision needed</span></td>
             </tr>
@@ -737,15 +781,17 @@
         <div class="card card-solution">
           <h4>Nothing is currently broken.</h4>
           <p>
-            All 18 modules build, test, race, and lint clean. Zero KNOWN_ISSUEs. Zero TODOs in
-            source. The Pattern B migration was completed and verified, including all follow-up
-            fixes (CI workflows, dead code, golangci.yml, docs).
+            All 18 modules build, test, race, and lint clean. Zero KNOWN_ISSUEs.
+            Zero TODOs in source. The Pattern B migration was completed and
+            verified, including all follow-up fixes (CI workflows, dead code,
+            golangci.yml, docs).
           </p>
           <div class="callout callout-warning">
-            <strong>Honest caveat:</strong> The v0.18.0 Pattern B migration had 5 issues that were
-            caught only in self-review (broken CI workflows, dead test code, dead lint config, stale
-            doc reference, missing tag). All were fixed in follow-up commits. The lesson: should
-            have grepped ALL references before committing, not just go.mod files.
+            <strong>Honest caveat:</strong> The v0.18.0 Pattern B migration had
+            5 issues that were caught only in self-review (broken CI workflows,
+            dead test code, dead lint config, stale doc reference, missing tag).
+            All were fixed in follow-up commits. The lesson: should have grepped
+            ALL references before committing, not just go.mod files.
           </div>
         </div>
 
@@ -756,55 +802,63 @@
           <h4>1. No GOWORK=off CI test</h4>
           <p>
             Pattern B relies on <code>replace</code> directives. Local
-            <code>nix run .#test</code> passes because go.work resolves everything. But we never
-            test what an external consumer sees. A <code>GOWORK=off go build ./...</code> job in CI
-            would catch any replace-masking issue immediately.
+            <code>nix run .#test</code> passes because go.work resolves
+            everything. But we never test what an external consumer sees. A
+            <code>GOWORK=off go build ./...</code> job in CI would catch any
+            replace-masking issue immediately.
           </p>
         </div>
 
         <div class="card card-warning">
           <h4>2. Stale git tags for deleted modules</h4>
           <p>
-            16 tags exist for <code>enum/</code> and <code>envdetect/</code> (v0.6.1 through
-            v0.17.1). They point to valid historical code that compiles, but the modules no longer
-            exist on master. Consumers who pinned these tags will not break, but new consumers might
-            be confused. Need a strategy: retract, delete, or document-and-leave.
+            16 tags exist for <code>enum/</code> and
+            <code>envdetect/</code> (v0.6.1 through v0.17.1). They point to
+            valid historical code that compiles, but the modules no longer exist
+            on master. Consumers who pinned these tags will not break, but new
+            consumers might be confused. Need a strategy: retract, delete, or
+            document-and-leave.
           </p>
         </div>
 
         <div class="card card-warning">
           <h4>3. testhelpers version lag</h4>
           <p>
-            The ONE real-versioned sub-module is 5 minor versions behind (v0.13.0 vs v0.18.0). If
-            testhelpers gains any breaking change, consumers at v0.13.0 will be stuck. Needs a retag
-            at every release, or reconsider whether it should also go Pattern B.
+            The ONE real-versioned sub-module is 5 minor versions behind
+            (v0.13.0 vs v0.18.0). If testhelpers gains any breaking change,
+            consumers at v0.13.0 will be stuck. Needs a retag at every release,
+            or reconsider whether it should also go Pattern B.
           </p>
         </div>
 
         <div class="card card-warning">
           <h4>4. Missing retract directives</h4>
           <p>
-            No <code>retract</code> directives in any go.mod. If a broken version is ever published,
-            there's no mechanism to warn consumers. Should add retracts for any known-bad historical
-            versions as a safety net.
+            No <code>retract</code> directives in any go.mod. If a broken
+            version is ever published, there's no mechanism to warn consumers.
+            Should add retracts for any known-bad historical versions as a
+            safety net.
           </p>
         </div>
 
         <div class="card card-warning">
           <h4>5. No property-based / fuzz testing beyond MarkdownTable</h4>
           <p>
-            Only <code>FuzzMarkdownTable</code> exists. The escape module (10 functions across 6
-            formats) would benefit from fuzz testing. The nom snapshot model is a prime candidate
-            for property-based testing (invariant: snapshot never races with mutation).
+            Only <code>FuzzMarkdownTable</code> exists. The escape module (10
+            functions across 6 formats) would benefit from fuzz testing. The nom
+            snapshot model is a prime candidate for property-based testing
+            (invariant: snapshot never races with mutation).
           </p>
         </div>
 
         <div class="card card-warning">
-          <h4>6. Integration tests don't cover every format × shape combination</h4>
+          <h4>
+            6. Integration tests don't cover every format × shape combination
+          </h4>
           <p>
-            16 formats × 3 shapes = 48 combinations. Integration tests cover many but not all. A
-            systematic matrix test would catch edge cases in cross-shape conversion
-            (TableData→Graph, Tree→Graph, etc.).
+            16 formats × 3 shapes = 48 combinations. Integration tests cover
+            many but not all. A systematic matrix test would catch edge cases in
+            cross-shape conversion (TableData→Graph, Tree→Graph, etc.).
           </p>
         </div>
 
@@ -824,13 +878,19 @@
           <tbody>
             <tr>
               <td>1</td>
-              <td><strong>Tag v0.18.0</strong> — root + testhelpers/v0.18.0 + graphtest/v0.18.0</td>
+              <td>
+                <strong>Tag v0.18.0</strong> — root + testhelpers/v0.18.0 +
+                graphtest/v0.18.0
+              </td>
               <td><span class="badge badge-critical">Critical</span></td>
               <td><span class="badge badge-low">10min</span></td>
             </tr>
             <tr>
               <td>2</td>
-              <td><strong>Bump testhelpers pins</strong> to v0.18.0 in all 18 go.mod files</td>
+              <td>
+                <strong>Bump testhelpers pins</strong> to v0.18.0 in all 18
+                go.mod files
+              </td>
               <td><span class="badge badge-critical">Critical</span></td>
               <td><span class="badge badge-low">15min</span></td>
             </tr>
@@ -842,35 +902,44 @@
             </tr>
             <tr>
               <td>4</td>
-              <td><strong>Push to remote</strong> — current work is all committed but verify</td>
+              <td>
+                <strong>Push to remote</strong> — current work is all committed
+                but verify
+              </td>
               <td><span class="badge badge-high">High</span></td>
               <td><span class="badge badge-low">2min</span></td>
             </tr>
             <tr>
               <td>5</td>
               <td>
-                <strong>Decide stale tag strategy</strong> for enum/envdetect (retract vs leave)
+                <strong>Decide stale tag strategy</strong> for enum/envdetect
+                (retract vs leave)
               </td>
               <td><span class="badge badge-high">High</span></td>
               <td><span class="badge badge-low">Decision</span></td>
             </tr>
             <tr>
               <td>6</td>
-              <td><strong>Restart gopls</strong> to clear stale cache warnings</td>
+              <td>
+                <strong>Restart gopls</strong> to clear stale cache warnings
+              </td>
               <td><span class="badge badge-medium">Medium</span></td>
               <td><span class="badge badge-low">1min</span></td>
             </tr>
             <tr>
               <td>7</td>
-              <td><strong>Add retract directives</strong> for any known-bad historical versions</td>
+              <td>
+                <strong>Add retract directives</strong> for any known-bad
+                historical versions
+              </td>
               <td><span class="badge badge-medium">Medium</span></td>
               <td><span class="badge badge-low">15min</span></td>
             </tr>
             <tr>
               <td>8</td>
               <td>
-                <strong>Fuzz test escape module</strong> — 10 functions, 6 formats,
-                security-critical
+                <strong>Fuzz test escape module</strong> — 10 functions, 6
+                formats, security-critical
               </td>
               <td><span class="badge badge-high">High</span></td>
               <td><span class="badge badge-medium">1-2h</span></td>
@@ -878,26 +947,35 @@
             <tr>
               <td>9</td>
               <td>
-                <strong>Property-based test nom snapshot model</strong> — invariant: no race ever
+                <strong>Property-based test nom snapshot model</strong> —
+                invariant: no race ever
               </td>
               <td><span class="badge badge-high">High</span></td>
               <td><span class="badge badge-medium">2-3h</span></td>
             </tr>
             <tr>
               <td>10</td>
-              <td><strong>Systematic format×shape matrix test</strong> — 48 combinations</td>
+              <td>
+                <strong>Systematic format×shape matrix test</strong> — 48
+                combinations
+              </td>
               <td><span class="badge badge-medium">Medium</span></td>
               <td><span class="badge badge-medium">2-3h</span></td>
             </tr>
             <tr>
               <td>11</td>
-              <td><strong>Cut v1.0.0</strong> — API frozen per ADR 006, just needs tag</td>
+              <td>
+                <strong>Cut v1.0.0</strong> — API frozen per ADR 006, just needs
+                tag
+              </td>
               <td><span class="badge badge-high">High</span></td>
               <td><span class="badge badge-low">30min</span></td>
             </tr>
             <tr>
               <td>12</td>
-              <td><strong>Submit to Awesome Go</strong> — community visibility</td>
+              <td>
+                <strong>Submit to Awesome Go</strong> — community visibility
+              </td>
               <td><span class="badge badge-medium">Medium</span></td>
               <td><span class="badge badge-low">30min</span></td>
             </tr>
@@ -910,54 +988,70 @@
             <tr>
               <td>14</td>
               <td>
-                <strong>Consolidate nom's two-mutex model</strong> into a documented locking policy
-                doc
+                <strong>Consolidate nom's two-mutex model</strong> into a
+                documented locking policy doc
               </td>
               <td><span class="badge badge-low">Low</span></td>
               <td><span class="badge badge-medium">1h</span></td>
             </tr>
             <tr>
               <td>15</td>
-              <td><strong>Add streaming benchmarks</strong> — CSV/JSONL writer throughput in CI</td>
+              <td>
+                <strong>Add streaming benchmarks</strong> — CSV/JSONL writer
+                throughput in CI
+              </td>
               <td><span class="badge badge-medium">Medium</span></td>
               <td><span class="badge badge-medium">1-2h</span></td>
             </tr>
             <tr>
               <td>16</td>
-              <td><strong>D2 diagram examples in README</strong> — visual gallery</td>
+              <td>
+                <strong>D2 diagram examples in README</strong> — visual gallery
+              </td>
               <td><span class="badge badge-low">Low</span></td>
               <td><span class="badge badge-medium">1h</span></td>
             </tr>
             <tr>
               <td>17</td>
-              <td><strong>Consider encoding/json/v2</strong> migration (Go 1.25+ feature)</td>
+              <td>
+                <strong>Consider encoding/json/v2</strong> migration (Go 1.25+
+                feature)
+              </td>
               <td><span class="badge badge-medium">Medium</span></td>
               <td><span class="badge badge-medium">2-3h</span></td>
             </tr>
             <tr>
               <td>18</td>
               <td>
-                <strong>go work sync</strong> automation — keep go.work.example auto-generated
+                <strong>go work sync</strong> automation — keep go.work.example
+                auto-generated
               </td>
               <td><span class="badge badge-low">Low</span></td>
               <td><span class="badge badge-medium">1h</span></td>
             </tr>
             <tr>
               <td>19</td>
-              <td><strong>NOM timing cache persistence test</strong> — round-trip under load</td>
+              <td>
+                <strong>NOM timing cache persistence test</strong> — round-trip
+                under load
+              </td>
               <td><span class="badge badge-medium">Medium</span></td>
               <td><span class="badge badge-medium">1-2h</span></td>
             </tr>
             <tr>
               <td>20</td>
-              <td><strong>Add CONTRIBUTING.md quick-start</strong> for Pattern B workflow</td>
+              <td>
+                <strong>Add CONTRIBUTING.md quick-start</strong> for Pattern B
+                workflow
+              </td>
               <td><span class="badge badge-low">Low</span></td>
               <td><span class="badge badge-low">30min</span></td>
             </tr>
             <tr>
               <td>21</td>
               <td>
-                <strong>Consider otter/v2 cache</strong> for nom timing cache (if perf matters)
+                <strong>Consider otter/v2 cache</strong> for nom timing cache
+                (if perf matters)
               </td>
               <td><span class="badge badge-low">Low</span></td>
               <td><span class="badge badge-medium">2-3h</span></td>
@@ -965,8 +1059,8 @@
             <tr>
               <td>22</td>
               <td>
-                <strong>TableData validation method</strong> — single entry point for all pre-render
-                checks
+                <strong>TableData validation method</strong> — single entry
+                point for all pre-render checks
               </td>
               <td><span class="badge badge-medium">Medium</span></td>
               <td><span class="badge badge-medium">1-2h</span></td>
@@ -974,8 +1068,8 @@
             <tr>
               <td>23</td>
               <td>
-                <strong>Context-aware rendering</strong> — RenderOptions with context for
-                cancellation
+                <strong>Context-aware rendering</strong> — RenderOptions with
+                context for cancellation
               </td>
               <td><span class="badge badge-low">Low</span></td>
               <td><span class="badge badge-medium">2-3h</span></td>
@@ -983,14 +1077,18 @@
             <tr>
               <td>24</td>
               <td>
-                <strong>Color profile detection</strong> — terminal true-color / 256-color fallback
+                <strong>Color profile detection</strong> — terminal true-color /
+                256-color fallback
               </td>
               <td><span class="badge badge-low">Low</span></td>
               <td><span class="badge badge-medium">2-3h</span></td>
             </tr>
             <tr>
               <td>25</td>
-              <td><strong>CBOR format</strong> — binary serialization (ROADMAP, no demand yet)</td>
+              <td>
+                <strong>CBOR format</strong> — binary serialization (ROADMAP, no
+                demand yet)
+              </td>
               <td><span class="badge badge-low">Low</span></td>
               <td><span class="badge badge-medium">2-3h</span></td>
             </tr>
@@ -998,49 +1096,62 @@
         </table>
 
         <!-- ============ THE BIG QUESTION ============ -->
-        <h2 id="question"><span class="num">07</span>The #1 Question I Cannot Answer Myself</h2>
+        <h2 id="question">
+          <span class="num">07</span>The #1 Question I Cannot Answer Myself
+        </h2>
 
         <div class="card card-problem">
           <span class="severity severity-critical">Needs Owner Decision</span>
           <h3>
-            What do we do with the 16 stale git tags for deleted enum/ and envdetect/ modules?
+            What do we do with the 16 stale git tags for deleted enum/ and
+            envdetect/ modules?
           </h3>
           <p>
-            <code>enum/v0.6.1</code> through <code>enum/v0.17.1</code> (13 tags) and
-            <code>envdetect/v0.13.0</code> through <code>envdetect/v0.17.1</code> (3 tags) still
-            exist on the remote. They point to valid, compilable historical code. The modules
+            <code>enum/v0.6.1</code> through <code>enum/v0.17.1</code> (13 tags)
+            and <code>envdetect/v0.13.0</code> through
+            <code>envdetect/v0.17.1</code> (3 tags) still exist on the remote.
+            They point to valid, compilable historical code. The modules
             themselves were merged into root and deleted from master in v0.18.0.
           </p>
-          <p><strong>Three options, each with tradeoffs I cannot evaluate without you:</strong></p>
+          <p>
+            <strong
+              >Three options, each with tradeoffs I cannot evaluate without
+              you:</strong
+            >
+          </p>
           <ul style="margin: 0.5rem 0 1rem 1.5rem">
             <li>
-              <strong>Leave them</strong> — consumers who pinned <code>enum@v0.17.1</code> still
-              build. But new users who find these tags on pkg.go.dev will be confused (module exists
-              but no longer maintained).
+              <strong>Leave them</strong> — consumers who pinned
+              <code>enum@v0.17.1</code> still build. But new users who find
+              these tags on pkg.go.dev will be confused (module exists but no
+              longer maintained).
             </li>
             <li>
-              <strong>Retract them</strong> — add <code>retract</code> directives. But retract
-              directives must live in the module's own go.mod, and these modules are deleted. We'd
-              need to create a minimal stub go.mod with just the retract, or retract from root
-              (which doesn't work for sub-module paths).
+              <strong>Retract them</strong> — add
+              <code>retract</code> directives. But retract directives must live
+              in the module's own go.mod, and these modules are deleted. We'd
+              need to create a minimal stub go.mod with just the retract, or
+              retract from root (which doesn't work for sub-module paths).
             </li>
             <li>
               <strong>Delete them</strong> — <code>git tag -d</code> +
-              <code>git push --delete</code>. Clean, but breaks any consumer who pinned these tags.
-              Destructive and irreversible.
+              <code>git push --delete</code>. Clean, but breaks any consumer who
+              pinned these tags. Destructive and irreversible.
             </li>
           </ul>
           <div class="callout callout-problem">
-            <strong>My question:</strong> Do you have any external consumers depending on
-            <code>go-output/enum</code> or <code>go-output/envdetect</code> as independent imports?
-            If yes → leave the tags. If no → I recommend deleting them (the proxy cache will still
-            serve them to existing consumers, but new consumers won't find them).
+            <strong>My question:</strong> Do you have any external consumers
+            depending on <code>go-output/enum</code> or
+            <code>go-output/envdetect</code> as independent imports? If yes →
+            leave the tags. If no → I recommend deleting them (the proxy cache
+            will still serve them to existing consumers, but new consumers won't
+            find them).
           </div>
         </div>
 
         <footer class="footer">
-          Generated 2026-06-23 01:45 CET &middot; All claims verified against source code and live
-          test runs
+          Generated 2026-06-23 01:45 CET &middot; All claims verified against
+          source code and live test runs
         </footer>
       </main>
     </div>

@@ -283,11 +283,13 @@
     <div class="container">
       <header class="hero">
         <div class="eyebrow">Status Report &middot; 2026-06-17 21:01 UTC</div>
-        <h1>go-output v0.12.0 release and samber-do-auditlog feedback response</h1>
+        <h1>
+          go-output v0.12.0 release and samber-do-auditlog feedback response
+        </h1>
         <p>
           <strong>Branch:</strong> master &middot;
-          <strong>Commits ahead of origin/master:</strong> 1 &middot; <strong>Release tag:</strong>
-          <code>v0.12.0</code> + 16 submodule tags
+          <strong>Commits ahead of origin/master:</strong> 1 &middot;
+          <strong>Release tag:</strong> <code>v0.12.0</code> + 16 submodule tags
         </p>
       </header>
 
@@ -316,9 +318,10 @@
       <div class="card card-done">
         <h4>1. GraphStyle wired into Mermaid and PlantUML</h4>
         <p>
-          Mermaid emits per-node <code>style &lt;id&gt; fill:#xxx,stroke:#yyy</code>; PlantUML emits
-          inline <code>#[#fill;line:stroke;text:font]</code>. Hardcoded pink Mermaid classDef
-          removed.
+          Mermaid emits per-node
+          <code>style &lt;id&gt; fill:#xxx,stroke:#yyy</code>; PlantUML emits
+          inline <code>#[#fill;line:stroke;text:font]</code>. Hardcoded pink
+          Mermaid classDef removed.
         </p>
       </div>
       <div class="card card-done">
@@ -331,15 +334,15 @@
       <div class="card card-done">
         <h4>3. Mermaid code fence optional</h4>
         <p>
-          <code>graph.NewMermaidRenderer().SetCodeFence(false)</code> produces raw flowchart syntax
-          for .mmd files and CLI tooling.
+          <code>graph.NewMermaidRenderer().SetCodeFence(false)</code> produces
+          raw flowchart syntax for .mmd files and CLI tooling.
         </p>
       </div>
       <div class="card card-done">
         <h4>4. Root go.mod no longer requires serialization</h4>
         <p>
-          Importing graph/plantuml/d2 no longer transitively pulls go-faster/yaml, go-toml/v2,
-          go-faster/jx, or segmentio/asm.
+          Importing graph/plantuml/d2 no longer transitively pulls
+          go-faster/yaml, go-toml/v2, go-faster/jx, or segmentio/asm.
         </p>
       </div>
 
@@ -347,34 +350,44 @@
       <div class="card card-done">
         <h4>5. SlugifyID expansion</h4>
         <p>
-          <code>escape.SlugifyID</code> now handles dots, asterisks, brackets, braces, and
-          parentheses in addition to spaces, hyphens, and slashes.
+          <code>escape.SlugifyID</code> now handles dots, asterisks, brackets,
+          braces, and parentheses in addition to spaces, hyphens, and slashes.
         </p>
       </div>
       <div class="card card-done">
         <h4>6. DOT layout attributes configurable</h4>
         <p>
-          <code>DOTRenderer.SetRankDir(RankDir)</code>, <code>SetSplines(SplineStyle)</code>,
-          <code>SetNodeSep</code>, <code>SetRankSep</code>. Added typed enums for RankDir and
+          <code>DOTRenderer.SetRankDir(RankDir)</code>,
+          <code>SetSplines(SplineStyle)</code>, <code>SetNodeSep</code>,
+          <code>SetRankSep</code>. Added typed enums for RankDir and
           SplineStyle.
         </p>
       </div>
       <div class="card card-done">
         <h4>8. Pre-v1 stability promise</h4>
-        <p>ADR 006 updated with stable/experimental API tiers for diagram renderers.</p>
+        <p>
+          ADR 006 updated with stable/experimental API tiers for diagram
+          renderers.
+        </p>
       </div>
 
       <h3>Release and documentation</h3>
       <ul>
-        <li>Bumped all 16 modules from v0.11.0 to v0.12.0 in their go.mod files.</li>
+        <li>
+          Bumped all 16 modules from v0.11.0 to v0.12.0 in their go.mod files.
+        </li>
         <li>
           Created and pushed 17 annotated git tags: <code>v0.12.0</code> plus
           <code>&lt;module&gt;/v0.12.0</code>.
         </li>
         <li>Updated CHANGELOG with dated v0.12.0 section.</li>
         <li>Updated AGENTS.md with new APIs and corrected dependency claim.</li>
-        <li>Created feedback appendix and linked it from the original HTML report.</li>
-        <li>Updated <code>examples/basic</code> to demonstrate new diagram APIs.</li>
+        <li>
+          Created feedback appendix and linked it from the original HTML report.
+        </li>
+        <li>
+          Updated <code>examples/basic</code> to demonstrate new diagram APIs.
+        </li>
       </ul>
 
       <h3>Verification</h3>
@@ -392,7 +405,10 @@
           </tr>
           <tr>
             <td><code>nix run .#lint</code></td>
-            <td><span class="badge badge-done">Pass</span> — 0 issues across 16 modules</td>
+            <td>
+              <span class="badge badge-done">Pass</span> — 0 issues across 16
+              modules
+            </td>
           </tr>
           <tr>
             <td><code>go test -cover</code> root</td>
@@ -418,31 +434,36 @@
         <h4>io.Writer support for diagram renderers (Issue 7)</h4>
         <p>
           Already possible via <code>output.StreamingRenderer</code> +
-          <code>StreamingRendererFromRenderer()</code> adapter. No new API added. This is correct
-          but not obvious; could be better documented with a diagram-specific example.
+          <code>StreamingRendererFromRenderer()</code> adapter. No new API
+          added. This is correct but not obvious; could be better documented
+          with a diagram-specific example.
         </p>
       </div>
       <div class="card card-partial">
         <h4>Global theme option</h4>
         <p>
           Per-node <code>GraphStyle</code> now works. A higher-level
-          <code>WithTheme(Theme)</code> was not implemented because it would duplicate
-          <code>GraphStyle</code> without adding expressiveness. Could be revisited if a strong use
-          case emerges.
+          <code>WithTheme(Theme)</code> was not implemented because it would
+          duplicate <code>GraphStyle</code> without adding expressiveness. Could
+          be revisited if a strong use case emerges.
         </p>
       </div>
       <div class="card card-partial">
         <h4>Push state</h4>
         <p>
-          The status report commit exists locally but has not been pushed to origin/master yet. The
-          release tags are already pushed.
+          The status report commit exists locally but has not been pushed to
+          origin/master yet. The release tags are already pushed.
         </p>
       </div>
 
       <h2>c) NOT STARTED</h2>
       <ul>
-        <li>GitHub Actions CI workflow (<code>.github/workflows/ci.yml</code>).</li>
-        <li>Update TODO_LIST.md — still references "17 modules" and is stale.</li>
+        <li>
+          GitHub Actions CI workflow (<code>.github/workflows/ci.yml</code>).
+        </li>
+        <li>
+          Update TODO_LIST.md — still references "17 modules" and is stale.
+        </li>
         <li>Community outreach (r/golang, Awesome Go).</li>
         <li>Fuzz tests for width-calculation hot paths.</li>
       </ul>
@@ -451,19 +472,21 @@
       <div class="card card-broken">
         <h4>Nothing is broken right now</h4>
         <p>
-          All tests pass, all lint passes, and the release is tagged. Two mistakes were made and
-          fixed during the work:
+          All tests pass, all lint passes, and the release is tagged. Two
+          mistakes were made and fixed during the work:
         </p>
         <p>
           <strong>1. Over-eager sed.</strong> During the version bump I ran
-          <code>sed 's/v0.11.0/v0.12.0/g'</code> across all go.mod files, which accidentally bumped
-          the external dependency <code>github.com/clipperhouse/displaywidth</code> from v0.11.0 to
-          v0.12.0. That version does not exist, so tests failed immediately. I reverted the external
-          dep and re-ran tests/lint.
+          <code>sed 's/v0.11.0/v0.12.0/g'</code> across all go.mod files, which
+          accidentally bumped the external dependency
+          <code>github.com/clipperhouse/displaywidth</code> from v0.11.0 to
+          v0.12.0. That version does not exist, so tests failed immediately. I
+          reverted the external dep and re-ran tests/lint.
         </p>
         <p>
-          <strong>2. Lint whitespace issues after first pass.</strong> Three wsl_v5/godot issues
-          appeared in new enum/style code. Fixed and re-verified.
+          <strong>2. Lint whitespace issues after first pass.</strong> Three
+          wsl_v5/godot issues appeared in new enum/style code. Fixed and
+          re-verified.
         </p>
       </div>
 
@@ -471,32 +494,36 @@
       <div class="card card-improve">
         <h4>Release automation</h4>
         <p>
-          Manual sed across 16 go.mod files is error-prone. A small release script (or flake app)
-          that bumps versions, tags, and pushes would eliminate this class of mistake.
+          Manual sed across 16 go.mod files is error-prone. A small release
+          script (or flake app) that bumps versions, tags, and pushes would
+          eliminate this class of mistake.
         </p>
       </div>
       <div class="card card-improve">
         <h4>Type models</h4>
         <p>
           <code>RankDir</code> and <code>SplineStyle</code> are typed enums, but
-          <code>nodesep</code>/<code>ranksep</code> are still strings. They could become typed
-          numeric distance values with validation. Also consider whether DOT should support a
-          <code>GraphStyle</code>-like global graph style object.
+          <code>nodesep</code>/<code>ranksep</code> are still strings. They
+          could become typed numeric distance values with validation. Also
+          consider whether DOT should support a <code>GraphStyle</code>-like
+          global graph style object.
         </p>
       </div>
       <div class="card card-improve">
         <h4>Well-established libraries</h4>
         <p>
-          Width/ANSI handling in nom/ already delegates to <code>charmbracelet/x/ansi</code>. For
-          future graph layout concerns, consider whether <code>gonum/graph</code> could power
-          layout/edge routing helpers instead of hand-rolled DOT strings.
+          Width/ANSI handling in nom/ already delegates to
+          <code>charmbracelet/x/ansi</code>. For future graph layout concerns,
+          consider whether <code>gonum/graph</code> could power layout/edge
+          routing helpers instead of hand-rolled DOT strings.
         </p>
       </div>
       <div class="card card-improve">
         <h4>Documentation discoverability</h4>
         <p>
-          The <code>StreamingRenderer</code> adapter pattern is documented in code but not
-          prominent. A "Streaming output" section in AGENTS.md would help consumers like Issue 7.
+          The <code>StreamingRenderer</code> adapter pattern is documented in
+          code but not prominent. A "Streaming output" section in AGENTS.md
+          would help consumers like Issue 7.
         </p>
       </div>
 
@@ -718,20 +745,26 @@
 
       <h2>g) Top #1 question I cannot figure out myself</h2>
       <div class="question-box">
-        <h3>Should we now prioritize v1.0.0 or fill the remaining TODO_LIST gaps first?</h3>
+        <h3>
+          Should we now prioritize v1.0.0 or fill the remaining TODO_LIST gaps
+          first?
+        </h3>
         <p>
-          The API is frozen (ADR 006), all tests/lint/race checks pass, and v0.12.0 is tagged.
-          However, three TODO_LIST items are blocked on breaking changes that would require a v2 if
-          shipped after v1:
+          The API is frozen (ADR 006), all tests/lint/race checks pass, and
+          v0.12.0 is tagged. However, three TODO_LIST items are blocked on
+          breaking changes that would require a v2 if shipped after v1:
         </p>
         <ul>
-          <li><code>Marshaler</code> vs <code>Renderer</code> terminology mismatch.</li>
+          <li>
+            <code>Marshaler</code> vs <code>Renderer</code> terminology
+            mismatch.
+          </li>
           <li><code>RenderOptions.GraphID</code> dead code removal.</li>
           <li><code>TableData</code> field-vs-getter API finalization.</li>
         </ul>
         <p>
-          I don't have the product authority to decide whether to ship v1.0 now with known warts or
-          delay for a cleaner v1. Please instruct.
+          I don't have the product authority to decide whether to ship v1.0 now
+          with known warts or delay for a cleaner v1. Please instruct.
         </p>
       </div>
 
@@ -739,31 +772,43 @@
       <div class="card card-improve">
         <h4>What I forgot / could have done better</h4>
         <p>
-          <strong>1. I didn't commit after every single smallest change.</strong> I grouped
-          logically, which is reasonable, but the user explicitly asked for "after each smallest
-          self-contained change." I should have committed the SlugifyID test update separately, for
-          example.
+          <strong
+            >1. I didn't commit after every single smallest change.</strong
+          >
+          I grouped logically, which is reasonable, but the user explicitly
+          asked for "after each smallest self-contained change." I should have
+          committed the SlugifyID test update separately, for example.
         </p>
         <p>
-          <strong>2. I didn't immediately realize sed would hit external deps.</strong> A safer
-          replacement pattern (scoped to github.com/larsartmann/go-output paths) would have
-          prevented the displaywidth breakage.
+          <strong
+            >2. I didn't immediately realize sed would hit external
+            deps.</strong
+          >
+          A safer replacement pattern (scoped to
+          github.com/larsartmann/go-output paths) would have prevented the
+          displaywidth breakage.
         </p>
         <p>
-          <strong>3. I should have asked about <code>WithTheme(Theme)</code> earlier.</strong> The
-          feedback explicitly requested it; I chose per-node GraphStyle instead. That was a
-          defensible technical decision, but I should have surfaced the tradeoff to the user before
-          implementing.
+          <strong
+            >3. I should have asked about
+            <code>WithTheme(Theme)</code> earlier.</strong
+          >
+          The feedback explicitly requested it; I chose per-node GraphStyle
+          instead. That was a defensible technical decision, but I should have
+          surfaced the tradeoff to the user before implementing.
         </p>
         <p>
-          <strong>4. I didn't run coverage on all modules after the changes.</strong> I spot-checked
-          the affected ones. A full coverage sweep would be more rigorous.
+          <strong
+            >4. I didn't run coverage on all modules after the changes.</strong
+          >
+          I spot-checked the affected ones. A full coverage sweep would be more
+          rigorous.
         </p>
       </div>
 
       <footer>
-        Report generated at 2026-06-17 21:01 UTC by Crush &middot; Working tree clean, 1 commit
-        ahead of origin/master.
+        Report generated at 2026-06-17 21:01 UTC by Crush &middot; Working tree
+        clean, 1 commit ahead of origin/master.
       </footer>
     </div>
   </body>
