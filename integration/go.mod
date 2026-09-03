@@ -6,17 +6,17 @@ require (
 	github.com/go-faster/yaml v0.4.6
 	github.com/larsartmann/go-output v0.37.0
 	github.com/larsartmann/go-output/d2 v0.0.0-00010101000000-000000000000
-	github.com/larsartmann/go-output/delimited v0.0.0-00010101000000-000000000000
-	github.com/larsartmann/go-output/graph v0.0.0-00010101000000-000000000000
+	github.com/larsartmann/go-output/delimited v0.37.0
+	github.com/larsartmann/go-output/graph v0.37.0
 	github.com/larsartmann/go-output/markdown v0.37.0
-	github.com/larsartmann/go-output/markup v0.0.0-00010101000000-000000000000
+	github.com/larsartmann/go-output/markup v0.37.0
 	github.com/larsartmann/go-output/nom v0.37.0
-	github.com/larsartmann/go-output/plantuml v0.0.0-00010101000000-000000000000
+	github.com/larsartmann/go-output/plantuml v0.37.0
 	github.com/larsartmann/go-output/serialization v0.37.0
-	github.com/larsartmann/go-output/table v0.0.0-00010101000000-000000000000
-	github.com/larsartmann/go-output/testhelpers v0.0.0-00010101000000-000000000000
-	github.com/larsartmann/go-output/tree v0.0.0-00010101000000-000000000000
-	github.com/larsartmann/go-output/tui v0.0.0-00010101000000-000000000000
+	github.com/larsartmann/go-output/table v0.37.0
+	github.com/larsartmann/go-output/testhelpers v0.37.0
+	github.com/larsartmann/go-output/tree v0.37.0
+	github.com/larsartmann/go-output/tui v0.37.0
 )
 
 require (
