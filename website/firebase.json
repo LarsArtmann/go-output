@@ -14,26 +14,12 @@
     ],
     "headers": [
       {
-        "source": "**/*.@(css|js|jpg|jpeg|gif|png|svg|ico|webp|avif|woff|woff2)",
-        "headers": [
-          {
-            "key": "Cache-Control",
-            "value": "public, max-age=31536000, immutable"
-          }
-        ]
-      },
-      {
-        "source": "**/*.html",
+        "source": "**",
         "headers": [
           {
             "key": "Cache-Control",
             "value": "public, max-age=0, must-revalidate"
-          }
-        ]
-      },
-      {
-        "source": "**",
-        "headers": [
+          },
           {
             "key": "Strict-Transport-Security",
             "value": "max-age=63072000; includeSubDomains; preload"
@@ -65,6 +51,15 @@
           {
             "key": "Cross-Origin-Opener-Policy",
             "value": "same-origin"
+          }
+        ]
+      },
+      {
+        "source": "**/*.@(css|js|jpg|jpeg|gif|png|svg|ico|webp|avif|woff|woff2)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=31536000, immutable"
           }
         ]
       },
