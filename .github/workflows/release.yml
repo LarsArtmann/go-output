@@ -112,3 +112,15 @@ jobs:
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # Redeploy the website on every root version tag so the live docs,
+  # changelog pages, and examples never drift behind a released version.
+  # Called via workflow_call; the deploy job inside website.yml runs because
+  # the event name is workflow_call (no branch/tag condition needed here).
+  deploy-website:
+    name: Redeploy Website
+    needs: release
+    uses: ./.github/workflows/website.yml
+    secrets: inherit
+    permissions:
+      contents: read

@@ -1,0 +1,112 @@
+name: Website
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - website/**
+      - .github/workflows/website.yml
+  pull_request:
+    branches: [master]
+    paths:
+      - website/**
+      - .github/workflows/website.yml
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: website-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-website:
+    name: Build Website
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: website
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: "24"
+          cache: pnpm
+          cache-dependency-path: website/pnpm-lock.yaml
+
+      # FIRST gate: lockfile must match the manifest. This is the exact
+      # failure mode that caused the 2026-09-03 outage (manifest hand-bumped
+      # without regenerating pnpm-lock.yaml — site was unbuildable for weeks).
+      - name: Install dependencies (frozen lockfile)
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck
+        run: pnpm exec astro check
+
+      - name: Build
+        run: pnpm run build
+
+      - name: HTML Validation
+        run: pnpm exec html-validate --config .htmlvalidate.json "dist/**/*.html"
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: website-dist
+          path: website/dist/
+
+  deploy-website:
+    name: Deploy Website
+    needs: build-website
+    if: >-
+      github.event_name == 'workflow_call' ||
+      (github.event_name == 'push' && github.ref == 'refs/heads/master')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: "24"
+
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: website-dist
+          path: website/dist/
+
+      - name: Deploy to Firebase Hosting
+        working-directory: website
+        run: |
+          pnpm add -g firebase-tools
+          printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > "$GOOGLE_APPLICATION_CREDENTIALS"
+          firebase deploy --only hosting:go-output --project lars-software
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/gcp-key.json
+
+      # Post-deploy smoke test: a deploy that returns success but serves a
+      # 404/Site-Not-Found page must fail CI, not wait for a user report.
+      - name: Smoke test deployed site
+        run: |
+          set -euo pipefail
+          check() {
+            local url="$1" marker="$2"
+            local status body
+            status=$(curl -s -o /tmp/smoke-body -w '%{http_code}' "$url")
+            body=$(cat /tmp/smoke-body)
+            if [ "$status" != "200" ]; then
+              echo "::error::SMOKE FAIL $url — HTTP $status (expected 200)"
+              exit 1
+            fi
+            if ! grep -q "$marker" <<<"$body"; then
+              echo "::error::SMOKE FAIL $url — 200 but content marker '$marker' missing (served stale/wrong release?)"
+              exit 1
+            fi
+            echo "SMOKE OK $url (200 + '$marker')"
+          }
+          check "https://go-output.web.app/" "Write Your Data Once"
+          check "https://go-output.web.app/format-matrix/" "Format Matrix"
+          check "https://go-output.lars.software/" "Write Your Data Once"
+          check "https://go-output.lars.software/format-matrix/" "Format Matrix"

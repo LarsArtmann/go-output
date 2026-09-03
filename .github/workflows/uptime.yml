@@ -1,0 +1,88 @@
+name: Uptime Monitor
+
+# Fleet-level availability monitor for the *.lars.software documentation
+# sites. The 2026-09-03 go-output outage (Firebase "Site Not Found") went
+# unnoticed for ~7 weeks because nothing pinged the live domains. This
+# workflow is the systemic fix: every 30 minutes it checks each site and
+# opens/comments on a single deduplicated GitHub issue on failure, then
+# closes it on recovery.
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+env:
+  SITES: >-
+    https://go-output.lars.software
+    https://gogenfilter.lars.software
+    https://atomicwrite.lars.software
+    https://do-auditlog.lars.software
+    https://go-workflow-auditlog.lars.software
+    https://dynamicmarkdown.lars.software
+    https://branded-id.lars.software
+    https://templcomponents.lars.software
+    https://md-go-validator.lars.software
+    https://art-dupl.lars.software
+    https://cleanwizard.lars.software
+    https://cmdguard.lars.software
+    https://errorfamily.lars.software
+    https://filewatcher.lars.software
+    https://emeet-pixyd.lars.software
+    https://typespec-asyncapi.lars.software
+  ISSUE_TITLE: "[uptime] One or more lars.software sites are down"
+
+jobs:
+  ping:
+    name: Ping all sites
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check site availability
+        id: check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          failed=""
+          for site in $SITES; do
+            status=$(curl -s -o /dev/null -m 20 -w '%{http_code}' "$site/" || echo "000")
+            if [ "$status" != "200" ]; then
+              echo "::warning::$site returned HTTP $status"
+              failed="$failed- \`$site\` — HTTP \`$status\`"$'\n'
+            else
+              echo "OK $site (200)"
+            fi
+          done
+
+          if [ -n "$failed" ]; then
+            echo "status=down" >> "$GITHUB_OUTPUT"
+            {
+              echo "failures<<EOF_MARKER"
+              echo "$failed"
+              echo "EOF_MARKER"
+            } >> "$GITHUB_OUTPUT"
+
+            existing=$(gh issue list --state open --search "in:title \"$ISSUE_TITLE\"" --json number --jq '.[0].number' || true)
+            if [ -n "$existing" ]; then
+              gh issue comment "$existing" --body "Still down as of $(date -u '+%Y-%m-%d %H:%M UTC'):"$'\n\n'"$failed"
+            else
+              gh issue create \
+                --title "$ISSUE_TITLE" \
+                --body "Automated uptime check failed at $(date -u '+%Y-%m-%d %H:%M UTC'):"$'\n\n'"$failed"$'\n\n'"This issue stays open and accumulates comments until a check passes. Investigate Firebase Hosting releases for the affected sites (the go-output 2026-09-03 outage looked exactly like this: \`firebase hosting:releases:list --site <site> --project lars-software\`)."
+            fi
+          else
+            echo "status=up" >> "$GITHUB_OUTPUT"
+            existing=$(gh issue list --state open --search "in:title \"$ISSUE_TITLE\"" --json number --jq '.[0].number' || true)
+            if [ -n "$existing" ]; then
+              gh issue close "$existing" --comment "Recovered as of $(date -u '+%Y-%m-%d %H:%M UTC') — all sites returned 200."
+            fi
+          fi
+
+      - name: Fail the run when sites are down
+        if: steps.check.outputs.status == 'down'
+        run: |
+          echo "::error::Uptime check failed — see the open [uptime] issue for details"
+          exit 1
