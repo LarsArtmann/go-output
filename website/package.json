@@ -31,6 +31,7 @@
     "build": "astro build && node scripts/fix-csp.mjs",
     "preview": "astro preview",
     "typecheck": "astro check",
+    "verify": "pnpm run typecheck && pnpm run build && pnpm exec html-validate --config .htmlvalidate.json \"dist/**/*.html\"",
     "clean": "rm -rf dist .astro node_modules/.cache",
     "astro": "astro"
   },
@@ -47,16 +48,6 @@
     "@astrojs/check": "^0.9.10",
     "html-validate": "^11.12.0",
     "typescript": "6.0.3"
-  },
-  "overrides": {
-    "brace-expansion": "5.0.6",
-    "devalue": "5.8.1",
-    "esbuild": "0.28.1",
-    "yaml": "2.8.3"
-  },
-  "allowScripts": {
-    "esbuild@0.28.1": true,
-    "sharp@0.34.5": true
   },
   "packageManager": "pnpm@11.20.0"
 }

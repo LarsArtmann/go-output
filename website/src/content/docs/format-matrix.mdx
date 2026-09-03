@@ -21,10 +21,10 @@ Every format declares which data shapes (table, tree, graph) it supports via `Re
 | `markdown` |  ✅   |      |       | root          | Auto column widths, alignment        |
 | `table`    |  ✅   |      |       | table         | Lipgloss terminal tables             |
 | `tree`     |       |  ✅  |       | root          | ASCII box-drawing with color cycling |
-| `d2`       |  ✅   |      |  ✅   | d2            | SQL tables, 20 node shapes           |
-| `mermaid`  |  ✅   |      |  ✅   | graph         | Flowcharts with 8 node shapes        |
-| `dot`      |  ✅   |      |  ✅   | graph         | Graphviz directed graphs             |
-| `plantuml` |  ✅   |      |  ✅   | plantuml      | Component diagrams                   |
+| `d2`       |  ✅   |  ✅  |  ✅   | d2            | SQL tables, 20 node shapes           |
+| `mermaid`  |  ✅   |  ✅  |  ✅   | graph         | Flowcharts with 8 node shapes        |
+| `dot`      |  ✅   |  ✅  |  ✅   | graph         | Graphviz directed graphs             |
+| `plantuml` |  ✅   |  ✅  |  ✅   | plantuml      | Component diagrams                   |
 
 ## Runtime Queries
 
@@ -33,7 +33,9 @@ Every format declares which data shapes (table, tree, graph) it supports via `Re
 format, _ := output.ParseFormat("d2")
 format.Supports(output.ShapeTable) // true
 format.Supports(output.ShapeGraph) // true
-format.Supports(output.ShapeTree)  // false
+format.Supports(output.ShapeTree)  // true
+csv, _ := output.ParseFormat("csv")
+csv.Supports(output.ShapeTree)     // false
 
 // Find all formats for a shape
 for _, f := range output.FormatsForShape(output.ShapeGraph) {
@@ -62,6 +64,9 @@ The root module (`github.com/larsartmann/go-output`) contains core types, enums,
 | `tui/`           | Bubble Tea interactive TUI                           |
 | `escape/`        | Format-specific escaping (zero deps)                 |
 | `testhelpers/`   | Shared test assertions (zero deps)                   |
+
+Test-only modules (not part of the public API): `bdd/`, `integration/`,
+`examples/`, `testhelpers/graphtest/`.
 
 ## Registry Dispatch
 
