@@ -3,7 +3,6 @@ package nom
 import (
 	"bytes"
 	"context"
-	"errors"
 	"fmt"
 	"regexp"
 	"strings"

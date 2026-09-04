@@ -674,9 +674,16 @@ type VisibleEntry struct {
 	// When non-empty, Node is nil and this entry renders as one horizontal row.
 	LayerNodes []*ActivityNode
 
-	// LayerHeader is a synthetic layer header or separator line. When non-empty,
-	// Node and LayerNodes are nil.
+	// LayerHeader is a synthetic layer header line. When non-empty,
+	// Node and LayerNodes are nil. Separator lines carry a separate
+	// unexported flag — classify entries via Kind instead of sniffing
+	// the header text for box-drawing runes.
 	LayerHeader string
+
+	// separator marks a synthetic horizontal rule between layers (layered
+	// mode). Unexported because it is set only by the layered collector;
+	// read it through Kind.
+	separator bool
 
 	Prefix    string
 	Connector string
