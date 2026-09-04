@@ -71,9 +71,9 @@ jobs:
   deploy-website:
     name: Deploy Website
     needs: build-website
-    if: >-
-      github.event_name == 'workflow_call' ||
-      (github.event_name == 'push' && github.ref == 'refs/heads/master')
+    # Deploys on master pushes, version-tag releases (workflow_call from
+    # release.yml), and manual dispatches — never on pull requests.
+    if: github.event_name != 'pull_request' && (github.event_name != 'push' || github.ref == 'refs/heads/master')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
