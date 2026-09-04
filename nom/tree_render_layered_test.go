@@ -344,20 +344,24 @@ func TestVisibleEntryKind_Classification(t *testing.T) {
 	entries := dt.collectLayeredEntries(snaps.snaps, 50)
 
 	var sawHeader, sawSeparator, sawRow bool
+
 	for _, entry := range entries {
 		switch entry.Kind() {
 		case KindLayerHeader:
 			sawHeader = true
+
 			if entry.LayerHeader == "" {
 				t.Error("KindLayerHeader entry must carry header text")
 			}
 		case KindSeparator:
 			sawSeparator = true
+
 			if entry.LayerHeader == "" {
 				t.Error("KindSeparator entry must carry the separator line")
 			}
 		case KindLayerRow:
 			sawRow = true
+
 			if len(entry.LayerNodes) == 0 {
 				t.Error("KindLayerRow entry must carry nodes")
 			}
@@ -399,12 +403,15 @@ func TestLayeredSeparator_AlignsWithHeaderPipe(t *testing.T) {
 		header := (&DependencyTree{}).renderLayeredHeader("Layer "+strconv.Itoa(maxDepth), 0)
 		separator := layeredSeparator(maxDepth)
 
-		pipeCol := utf8.RuneCountInString(header[:strings.Index(header, "│")])
-		crossCol := utf8.RuneCountInString(separator[:strings.Index(separator, "┼")])
+		headerLabel, _, foundHeader := strings.Cut(header, "│")
+		sepLabel, _, foundCross := strings.Cut(separator, "┼")
 
-		if pipeCol < 0 || crossCol < 0 {
+		if !foundHeader || !foundCross {
 			t.Fatalf("maxDepth=%d: missing markers header=%q separator=%q", maxDepth, header, separator)
 		}
+
+		pipeCol := utf8.RuneCountInString(headerLabel)
+		crossCol := utf8.RuneCountInString(sepLabel)
 
 		if pipeCol != crossCol {
 			t.Errorf("maxDepth=%d: ┼ at column %d but header │ at column %d\nheader=%q\nseparator=%q",
