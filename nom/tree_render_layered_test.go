@@ -6,6 +6,7 @@ import (
 	"strings"
 	"testing"
 	"time"
+	"unicode/utf8"
 )
 
 func TestLayeredRender_BasicGrouping(t *testing.T) {
@@ -398,8 +399,8 @@ func TestLayeredSeparator_AlignsWithHeaderPipe(t *testing.T) {
 		header := (&DependencyTree{}).renderLayeredHeader("Layer "+strconv.Itoa(maxDepth), 0)
 		separator := layeredSeparator(maxDepth)
 
-		pipeCol := strings.Index(header, "│")
-		crossCol := strings.Index(separator, "┼")
+		pipeCol := utf8.RuneCountInString(header[:strings.Index(header, "│")])
+		crossCol := utf8.RuneCountInString(separator[:strings.Index(separator, "┼")])
 
 		if pipeCol < 0 || crossCol < 0 {
 			t.Fatalf("maxDepth=%d: missing markers header=%q separator=%q", maxDepth, header, separator)
