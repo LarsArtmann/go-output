@@ -11,11 +11,10 @@ An idea listed here is not a commitment. It graduates to `TODO_LIST.md` only whe
 
 ### Website & Docs
 
-| Idea | What | Why interesting | Trigger to promote |
-| ---- | ---- | ---- | ---- |
+| Idea                           | What                                                                                                                                        | Why interesting                                                                                           | Trigger to promote                                                                                                                                                        |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Dependency pin re-widening** | Re-attempt `astro > 7.2.1` / `canvaskit-wasm > 0.41.1` once upstream fixes the emscripten ESM `__dirname` crash in the Node prerender path. | Exact pins unblock us today but freeze security/feature updates; dependabot ignores canvaskit until then. | Upstream canvaskit-wasm release notes declare ESM/Node compatibility; then regenerate lockfile, run `scripts/pre-deploy-check.sh`, deploy. (Source: outage report (f)13.) |
-| **Localized docs** | Starlight supports i18n out of the box. | The library's README/topics already draw international traffic. | Evidence of non-English community interest (issues, newsletters). |
-
+| **Localized docs**             | Starlight supports i18n out of the box.                                                                                                     | The library's README/topics already draw international traffic.                                           | Evidence of non-English community interest (issues, newsletters).                                                                                                         |
 
 ### Output Formats
 

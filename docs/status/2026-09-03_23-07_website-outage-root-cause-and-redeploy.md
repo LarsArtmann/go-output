@@ -127,7 +127,7 @@ _Pareto note: items 1–10 carry most of the value; 11–50 are ROADMAP-fuel bra
 33. Accessibility pass: contrast, focus states, keyboard nav (skip-link exists). _(✅ baseline done 2026-09-04 — lang/skip-link/labels/h1/focus-visible green; deep contrast+keyboard pass in TODO_LIST #2)_
 34. Lighthouse/perf quick pass on the live landing page. _(✅ done 2026-09-04 — Lighthouse: perf 70 (software-render inflation, blur-driven TBT), a11y/BP/SEO 100; follow-up TODO_LIST #3)_
 35. Landing page "1 Stars" widget — decide keep/fix/remove (undersells; see question 2). _(✅ decided 2026-09-04 — live count only at ≥10 stars, else "Star on GitHub" CTA (also fixes the "1 Stars" grammar bug))_
-36. Demo video (§3.11): produce 20–30s HyperFrames video, add ShowcaseSection + `public/demo.mp4`, poster + og:image, README deep-link. _(routed 2026-09-04: TODO_LIST #1 top item — full production spec loaded; deliberate follow-up)_ 
+36. Demo video (§3.11): produce 20–30s HyperFrames video, add ShowcaseSection + `public/demo.mp4`, poster + og:image, README deep-link. _(routed 2026-09-04: TODO_LIST #1 top item — full production spec loaded; deliberate follow-up)_
 37. Verify/refresh GitHub repo metadata: description, homepage → `https://go-output.lars.software`, topics (Phase 6). _(✅ done 2026-09-04 — verified: description, homepage, 20 topics all correct)_
 38. Verify README documentation-link bar matches the template and live URLs (docs drift). _(✅ done 2026-09-04 — README link bar matches template; all 3 URLs live 200)_
 39. Add CHANGELOG entry for the website launch/fix (untouched this session). _(✅ done 2026-09-04 — CHANGELOG Unreleased entries added)_

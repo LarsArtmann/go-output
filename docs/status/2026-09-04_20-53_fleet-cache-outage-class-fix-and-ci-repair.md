@@ -7,13 +7,13 @@
 
 ## Headline result
 
-| Metric | Before session | After session |
-| --- | --- | --- |
-| Fleet sites serving HTML `max-age=3600` (outage bug class) | **13 of 14** | **1 of 14** (atomicwrite — blocked on one owner secret) |
-| Sibling deploy pipelines broken (missing pnpm in CI) | 8 of 9 tested | **0** (all green or blocked on secrets only) |
-| Manifest/lockfile drift (frozen install fails) | 8 repos | **0** (all realigned + verified `--frozen-lockfile` green) |
-| Security-header baseline pass (HSTS/CORP/COOP/nosniff/…) | 14/14 | 14/14 (re-verified) |
-| Red dependabot PRs (stale verdicts) | 6 | 0 open (merged / closed with rationale / awaiting tui-flake fix) |
+| Metric                                                     | Before session | After session                                                    |
+| ---------------------------------------------------------- | -------------- | ---------------------------------------------------------------- |
+| Fleet sites serving HTML `max-age=3600` (outage bug class) | **13 of 14**   | **1 of 14** (atomicwrite — blocked on one owner secret)          |
+| Sibling deploy pipelines broken (missing pnpm in CI)       | 8 of 9 tested  | **0** (all green or blocked on secrets only)                     |
+| Manifest/lockfile drift (frozen install fails)             | 8 repos        | **0** (all realigned + verified `--frozen-lockfile` green)       |
+| Security-header baseline pass (HSTS/CORP/COOP/nosniff/…)   | 14/14          | 14/14 (re-verified)                                              |
+| Red dependabot PRs (stale verdicts)                        | 6              | 0 open (merged / closed with rationale / awaiting tui-flake fix) |
 
 ---
 
@@ -74,7 +74,7 @@
 1. **Kill the copy-paste workflow fleet**: 16 near-identical `website.yml` copies drift independently (this session fixed the SAME 4 bugs in 8 repos). Extract a shared reusable workflow (`workflow_call`) with per-site inputs (target, domain, marker) — one place to fix corepack/auth/node issues forever.
 2. **Fleet CI-health monitor**: sites had broken deploy pipelines for **weeks** (clean-wizard's failures date to 2026-08-14) because nothing watches workflow runs across repos — an `uptime.yml` analog for CI would have caught every one of today's failures in August.
 3. **Find and stop the manifest-only bump automation** (the daemon/bot that hand-edits `package.json` without regenerating lockfiles) — it is the root cause of BOTH the original outage and today's 8-repo drift. It will recreate the drift next week otherwise.
-4. **Deployed-artifact verification over config verification**: "verified identical" must mean *live headers probed*, not *config files diffed*. Today's audit proved the difference.
+4. **Deployed-artifact verification over config verification**: "verified identical" must mean _live headers probed_, not _config files diffed_. Today's audit proved the difference.
 5. **Standard-recipe doc for sibling sites** (the website-launch skill runbook + today's corepack/auth/allowBuilds/canvaskit learnings) so the next launch site doesn't reintroduce any of the 6 failure classes fixed today.
 6. **gogenfilter's Generated-Docs-Freshness gate needs a documented regeneration path** for dependency bumps (script or CI step), or every future dep PR dies the same death as today's five.
 7. **samber-do-auditlog branch hygiene**: reconcile `go1.23-compat` vs `master` (the daemon committed my fix to the former).
@@ -85,6 +85,7 @@
 ## f) Up to 50 things to get done next (value-ordered, grouped)
 
 **Unblocking (this week)**
+
 1. Push `e646a72` (hero gradient fix) + Lighthouse after-measure to close TODO #3 with a real TBT delta.
 2. **f-8: fix the tui teatest VT flake** (CI starvation → 120s timeout) — unblocks ALL go-output PRs.
 3. Owner sets `FIREBASE_SERVICE_ACCOUNT_LARS_SOFTWARE` in go-atomic-write → its deploy goes green → **14/14 fleet sites fixed**.
