@@ -38,7 +38,6 @@ func TestRegistryOutput_SingleTrailingNewline(t *testing.T) {
 	data := output.NewTableWithRow([]string{"Name", "Status"}, "Compile", "done")
 
 	for _, f := range output.AllFormats {
-		f := f
 		t.Run(string(f), func(t *testing.T) {
 			t.Parallel()
 
@@ -67,5 +66,6 @@ func tail(b []byte) string {
 	if len(b) > n {
 		return string(b[len(b)-n:])
 	}
+
 	return string(b)
 }

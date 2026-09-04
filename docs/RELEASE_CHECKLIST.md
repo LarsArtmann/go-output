@@ -37,6 +37,28 @@ git add CHANGELOG.md
 git commit -m "chore(release): prepare vX.Y.Z changelog"
 ```
 
+### 2b. Re-bump sibling pins to the new version
+
+Every module's `go.mod` must pin the NEW released version for all
+`github.com/larsartmann/go-output/*` requires (Pattern B, ADR 009
+amendment). The pins point at the PREVIOUS release right now; after
+tagging they must move to the new one so `go mod tidy` and CI keep
+resolving published artifacts and no sentinel ever reappears.
+
+```bash
+# After the tags exist locally (step 5), bump every sibling pin:
+NEW="vX.Y.Z"
+for f in go.mod */go.mod */*/go.mod; do
+  sed -i -E "s|(github.com/larsartmann/go-output/[a-z/-]+) v[0-9]+\.[0-9]+\.[0-9]+|\1 $NEW|g" "$f"
+  sed -i -E "s|(github.com/larsartmann/go-output) v[0-9]+\.[0-9]+\.[0-9]+|\1 $NEW|g" "$f"
+done
+nix run .#tidy      # must preserve the pins — if any go.mod reverts, investigate
+nix run .#build && nix run .#test
+git add -A && git commit -m "chore(deps): bump internal modules to $NEW"
+```
+
+A `v0.0.0-00010101…` sentinel anywhere is a release blocker.
+
 ### 3. Verify CI is green
 
 Check the latest CI run on the release-prepare commit's branch.

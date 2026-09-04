@@ -31,3 +31,8 @@ updates:
         patterns:
           - "astro"
           - "@astrojs/*"
+    ignore:
+      # canvaskit-wasm >=0.42 ships an emscripten build that breaks Astro's
+      # ESM prerender on /og routes (2026-09-03 outage). Re-widen only after
+      # upstream fixes it; see website/README.md.
+      - dependency-name: "canvaskit-wasm"

@@ -43,6 +43,7 @@ func TestFormatRegistration(t *testing.T) {
 	}
 
 	var missing, unexpected []output.Format
+
 	for _, f := range wantFormats {
 		if !got[f] {
 			missing = append(missing, f)
