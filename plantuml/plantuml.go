@@ -21,7 +21,6 @@ func init() {
 // PlantUMLDiagram renders a PlantUML component/class diagram.
 type PlantUMLDiagram struct {
 	output.GraphBuilder
-
 }
 
 // NewPlantUMLDiagram creates a new PlantUMLDiagram.
