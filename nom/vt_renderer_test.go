@@ -351,7 +351,7 @@ func TestVT_Finish_ShowsCursor(t *testing.T) {
 		t.Fatal("cursor should be hidden during rendering")
 	}
 
-	renderer.Finish(nil)
+	renderer.Finish()
 
 	if harness.cursorHidden {
 		t.Error("cursor should be visible after Finish")

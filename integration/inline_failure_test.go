@@ -58,8 +58,7 @@ func TestInlineRenderer_WorkflowFailureErrorDisplayed(t *testing.T) {
 
 	// Final render — Finish() renders the static tree (no completion line;
 	// the calling application is responsible for the post-run summary).
-	workflowErr := errors.New("step test failed: test suite failed: 3 assertions failed")
-	renderer.Finish(workflowErr)
+	renderer.Finish()
 
 	final := buf.String()
 	if final == "" {

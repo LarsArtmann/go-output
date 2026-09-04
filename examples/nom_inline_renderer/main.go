@@ -95,7 +95,7 @@ func main() {
 	wg.Wait()
 
 	renderer.Stop()
-	renderer.Finish(nil)
+	renderer.Finish()
 
 	counts := subscriber.GetActivityCounts()
 

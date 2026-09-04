@@ -299,7 +299,7 @@ func TestInlineRenderer_Finish_RacingSetters(t *testing.T) {
 			}
 		}()
 
-		renderer.Finish(errors.New("done"))
+		renderer.Finish()
 		close(stop)
 	}
 }

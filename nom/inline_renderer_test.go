@@ -83,7 +83,7 @@ func TestInlineRenderer_Finish_ClearsFrame(t *testing.T) {
 	renderer.Draw()
 	buf.Reset()
 
-	renderer.Finish(nil)
+	renderer.Finish()
 
 	output := buf.String()
 	if !strings.Contains(output, "\033[") {
@@ -111,11 +111,11 @@ func TestInlineRenderer_Finish_WithError(t *testing.T) {
 	renderer.Draw()
 	buf.Reset()
 
-	renderer.Finish(errors.New("test failure"))
+	renderer.Finish()
 
 	output := buf.String()
 	if !strings.Contains(output, "Step 1") {
-		t.Errorf("Finish with error should still render the final tree, got:\n%s", output)
+		t.Errorf("Finish should still render the final tree, got:\n%s", output)
 	}
 }
 
@@ -202,7 +202,7 @@ func TestInlineRenderer_Finish_NilSubscriber(t *testing.T) {
 
 	renderer := NewInlineRenderer(nil, &buf, 10)
 
-	renderer.Finish(nil)
+	renderer.Finish()
 
 	if buf.String() != "" {
 		t.Error("Finish with nil subscriber should produce no output")
@@ -382,7 +382,7 @@ func TestInlineRenderer_EndToEnd_Lifecycle(t *testing.T) {
 	renderer.Stop()
 
 	// Finish the workflow
-	renderer.Finish(nil)
+	renderer.Finish()
 
 	finalOutput := buf.String()
 

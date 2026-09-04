@@ -18,7 +18,7 @@
 //	sub := nom.NewNOMSubscriber()
 //	renderer := nom.NewInlineRenderer(sub, os.Stdout, 20)
 //	renderer.Start(ctx, 100*time.Millisecond)
-//	defer renderer.Finish(nil)
+//	defer renderer.Finish()
 //
 //	sub.OnEvent(ctx, nom.WorkflowStarted{ID: nom.NewWorkflowID("wf"), Name: nom.NewWorkflowName("Build")})
 //	sub.OnEvent(ctx, nom.ActivityStarted{ID: nom.NewActivityID("build"), Name: nom.NewActivityName("Build")})

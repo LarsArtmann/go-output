@@ -71,7 +71,7 @@ func TestInlineRenderer_FullWorkflowLifecycle(t *testing.T) {
 	}
 
 	buf.Reset()
-	renderer.Finish(errDeployFailed)
+	renderer.Finish()
 
 	final := buf.String()
 	if final == "" {

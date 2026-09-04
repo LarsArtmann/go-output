@@ -15,13 +15,12 @@ import (
 // Call this once when the workflow completes. It stops the background
 // refresh loop before rendering to avoid concurrent tree access.
 //
-// workflowErr is accepted for call-site symmetry (most callers hold the
-// workflow's error at the point they finish the renderer) but is
-// intentionally NOT rendered: the failed activity's ⚠ symbol and error
-// annotation in the final tree already visualize failure, and the calling
-// application owns the richer post-run summary. A nil subscriber makes
+// Finish intentionally does NOT take or render the workflow error: the
+// failed activity's ⚠ symbol and error annotation in the final tree
+// already visualize failure, and the calling application owns the richer
+// post-run summary (typically stderr + exit code). A nil subscriber makes
 // Finish a no-op, matching Draw.
-func (r *InlineRenderer) Finish(workflowErr error) {
+func (r *InlineRenderer) Finish() {
 	if r.subscriber == nil {
 		return
 	}
