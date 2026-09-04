@@ -57,8 +57,7 @@ func (r *AsciiDocTableRenderer) Render() (string, error) {
 		b.WriteString("\n\n")
 	}
 
-	b.WriteString("|===
-")
+	b.WriteString("|===\n")
 
 	return b.String(), nil
 }

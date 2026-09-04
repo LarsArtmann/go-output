@@ -66,3 +66,30 @@ Would still require maintaining version pins for leaf modules. The split policy 
 ### D0c (full Pattern B including root)
 
 Would make root itself not independently consumable. This contradicts the library's primary value proposition: `go get github.com/larsartmann/go-output` should work.
+
+## Amendment (2026-09-04): Released pins are the required baseline
+
+`d16650b` (2026-08-07) moved every sibling `require` from the
+`v0.0.0-00010101000000-000000000000` sentinel to the released
+`v0.37.0` pin. The pins are not cosmetic: with real versions in the
+`require` blocks, `go mod tidy` and CI resolve published artifacts, the
+module graph checksums stay stable, and the sentinel — which some tools
+and humans read as "version zero" — never leaks into release automation.
+
+Verified 2026-09-04 (whole-workspace experiment):
+
+- `go mod tidy` across all 19 modules PRESERVES directory-replaced
+  requires at their recorded version. Tidy is not what reverts pins.
+- Despite that, 14 modules (including root's own `testhelpers` require,
+  which `d16650b` missed) had drifted back to sentinels by 2026-09-03.
+  The revert mechanism was never reproduced; treat manual go.mod edits
+  or a go.mod-rewriting tool as the suspect and re-check ALL modules
+  when drift is found in one.
+- All 19 modules now pin `v0.37.0` again, `nix run .#tidy` keeps them,
+  and the full build + test suite passes.
+
+**New rule:** every module's `go.mod` MUST pin real released versions
+for all `github.com/larsartmann/go-output/*` requires at ALL times —
+not just at release time. Each release re-bumps every sibling pin to
+the new version across all `go.mod` files (see RELEASE_CHECKLIST step
+"re-bump sibling pins"). A sentinel in any go.mod is a bug.
