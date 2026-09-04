@@ -124,7 +124,9 @@ jobs:
             fi
             echo "SMOKE OK $url (200 + '$marker')"
           }
+          # Canonical URLs are non-slash (cleanUrls + trailingSlash:false);
+          # the slash forms 301 here by design.
           check "https://go-output.web.app/" "Write Your Data Once"
-          check "https://go-output.web.app/format-matrix/" "Format Matrix"
+          check "https://go-output.web.app/format-matrix" "Format Matrix"
           check "https://go-output.lars.software/" "Write Your Data Once"
-          check "https://go-output.lars.software/format-matrix/" "Format Matrix"
+          check "https://go-output.lars.software/format-matrix" "Format Matrix"
