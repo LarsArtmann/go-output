@@ -21,16 +21,16 @@ The site was down because the Firebase Hosting site `go-output` had **zero deplo
 
 ## Timeline (what actually happened)
 
-1. User reported "Site Not Found" on `/format-matrix/`.
-2. Loaded `website-launch` skill → `website/` exists → maintenance mode.
-3. **DNS verified correct:** `go-output.lars.software` → CNAME `go-output.web.app.` → 199.36.158.100 (local + 1.1.1.1).
-4. **Firebase verified correct:** site `go-output` exists in `lars-software`; custom domain `go-output.lars.software` attached with `HOST_ACTIVE` / `OWNERSHIP_ACTIVE` / `CERT_ACTIVE` (via `customDomains` REST API); `_acme-challenge.go-output` TXT record resolves and matches the Terraform-staged value.
-5. **Root cause isolated:** `https://go-output.web.app/` also 404s → the hosting site has **no releases at all**. Firebase serves the "You haven't deployed an app yet" page under exactly this condition.
-6. Local `dist/` (Aug 4) predated today's `website/src/` touch → rebuild required before deploy.
-7. Rebuild hit a wall of pnpm v11 + dependency-pin failures (details in section d/e).
-8. Build fixed → gates run → `firebase deploy --only hosting:go-output` → release complete.
-9. Verified: `.web.app` 200, custom domain 200 with full Format Matrix content, landing page 200, headless-Chromium screenshot of the live page visually QA'd (dark theme, sidebar, matrix table all correct).
-10. Gotchas recorded in `AGENTS.md`; all changes auto-committed by the daemon (final state `e12f3b1`, working tree clean).
+1. User reported "Site Not Found" on `/format-matrix/`. _(✅ done 2026-09-04 — `.github/workflows/website.yml` (frozen install, astro check, build, html-validate, deploy + dual-domain smoke))_
+2. Loaded `website-launch` skill → `website/` exists → maintenance mode. _(✅ done 2026-09-04 — `FIREBASE_SERVICE_ACCOUNT` secret created from firebase-adminsdk key; `gh secret list` confirms)_
+3. **DNS verified correct:** `go-output.lars.software` → CNAME `go-output.web.app.` → 199.36.158.100 (local + 1.1.1.1). _(✅ done 2026-09-04 — smoke step in website.yml asserts 200 + content marker on both domains)_
+4. **Firebase verified correct:** site `go-output` exists in `lars-software`; custom domain `go-output.lars.software` attached with `HOST_ACTIVE` / `OWNERSHIP_ACTIVE` / `CERT_ACTIVE` (via `customDomains` REST API); `_acme-challenge.go-output` TXT record resolves and matches the Terraform-staged value. _(✅ done 2026-09-04 — frozen install is the FIRST CI step)_
+5. **Root cause isolated:** `https://go-output.web.app/` also 404s → the hosting site has **no releases at all**. Firebase serves the "You haven't deployed an app yet" page under exactly this condition. _(✅ done 2026-09-04 — release.yml `deploy-website` job calls website.yml via workflow_call on every root v* tag)_
+6. Local `dist/` (Aug 4) predated today's `website/src/` touch → rebuild required before deploy. _(✅ done 2026-09-04 — `.github/workflows/uptime.yml` pings 14 launched `*.lars.software` sites every 30 min, deduplicated [uptime] issue)_
+7. Rebuild hit a wall of pnpm v11 + dependency-pin failures (details in section d/e). _(✅ done 2026-09-04 — `website/README.md` full runbook)_
+8. Build fixed → gates run → `firebase deploy --only hosting:go-output` → release complete. _(✅ done 2026-09-04 — `scripts/pre-deploy-check.sh`, all gates verified green)_
+9. Verified: `.web.app` 200, custom domain 200 with full Format Matrix content, landing page 200, headless-Chromium screenshot of the live page visually QA'd (dark theme, sidebar, matrix table all correct). _(✅ done 2026-09-04 — AGENTS.md "Website" section)_
+10. Gotchas recorded in `AGENTS.md`; all changes auto-committed by the daemon (final state `e12f3b1`, working tree clean). _(✅ done 2026-09-04 — SSL/preload note in website/README.md; lars.software confirmed `preloaded` via hstspreload API)_
 
 ---
 
@@ -100,50 +100,50 @@ _Pareto note: items 1–10 carry most of the value; 11–50 are ROADMAP-fuel bra
 10. Add SSL-renewal note + periodic cert-state check (HSTS preload means a renewal failure bricks the domain).
 
 **Build & dependency health**
-11. Delete the dead npm-style `overrides` block from `website/package.json` (or migrate effective pins to `pnpm-workspace.yaml` `overrides:`).
-12. Audit the non-standard `allowScripts` field — verify pnpm v11 actually honors it; migrate to `onlyBuiltDependencies` if not.
-13. Schedule a deliberate pin re-widening attempt (astro >7.2.1, canvaskit >0.41.1) once upstream fixes the emscripten ESM `__dirname` issue; until then keep exact pins.
-14. Add a tiny canary script `pnpm run verify` = typecheck + build + html-validate in one target.
-15. Add renovate/dependabot config coverage confirmation for `website/` (repo has `renovate.json` — verify it reaches the pnpm manifest).
-16. Pin the pnpm version story (dev machine vs CI vs daemon all use `packageManager: pnpm@11.20.0` — verify CI honors it via corepack).
-17. Document Node 24 / nix-shell requirement for website builds in `website/README.md`.
-18. Consider a `flake.nix` app `.#website-build` (and `.#website-deploy`) for tooling parity with the Go apps.
+11. Delete the dead npm-style `overrides` block from `website/package.json` (or migrate effective pins to `pnpm-workspace.yaml` `overrides:`). _(✅ done 2026-09-04 — dead `overrides` removed; build green without them)_
+12. Audit the non-standard `allowScripts` field — verify pnpm v11 actually honors it; migrate to `onlyBuiltDependencies` if not. _(✅ done 2026-09-04 — `allowScripts` removed; `allowBuilds` confirmed as the real pnpm 11 field (pnpm.io/settings))_
+13. Schedule a deliberate pin re-widening attempt (astro >7.2.1, canvaskit >0.41.1) once upstream fixes the emscripten ESM `__dirname` issue; until then keep exact pins. _(✅ routed 2026-09-04 — ROADMAP "Dependency pin re-widening"; dependabot ignores canvaskit-wasm)_
+14. Add a tiny canary script `pnpm run verify` = typecheck + build + html-validate in one target. _(✅ done 2026-09-04 — `pnpm run verify` target)_
+15. Add renovate/dependabot config coverage confirmation for `website/` (repo has `renovate.json` — verify it reaches the pnpm manifest). _(✅ done 2026-09-04 — report claimed renovate.json exists; it does not. dependabot npm ecosystem added for website/ instead)_
+16. Pin the pnpm version story (dev machine vs CI vs daemon all use `packageManager: pnpm@11.20.0` — verify CI honors it via corepack). _(✅ done 2026-09-04 — CI enables corepack pinned to pnpm@11.20.0 before setup-node)_
+17. Document Node 24 / nix-shell requirement for website builds in `website/README.md`. _(✅ done 2026-09-04 — website/README.md Toolchain section)_
+18. Consider a `flake.nix` app `.#website-build` (and `.#website-deploy`) for tooling parity with the Go apps. _(✅ done 2026-09-04 — flake apps `.#website-build` + `.#website-deploy`, build verified)_
 
 **Content truth & docs**
-19. Audit the site's Module Map table against the current 19-module reality (site lists 14 rows; missing `bdd/`, `integration/`, `examples/`, `testhelpers/graphtest/` is fine to omit — but verify nothing stale claims deleted things).
-20. Re-verify every code example on the site against current source (skill's #1 documented failure mode; I did NOT do a content audit this session — only build/serve verification).
-21. Verify Format Matrix page claims vs `docs/FORMAT_ARCHITECTURE.md` (16 formats × 3 shapes matrix unchanged since v0.38 review?).
-22. Check `/og/*.png` are actually referenced in page `<meta property="og:image">` tags (images build; reference not verified).
-23. Verify sitemap + robots.txt served correctly on the live domain.
-24. Verify the `firebase.json` `/docs/:path*` → `/:path*` 301 redirect is still needed (possible leftover from a pre-launch URL structure).
-25. Verify cleanUrls/trailing-slash canonical behavior on the live site (`cleanUrls: true` + `trailingSlash: false`).
-26. Verify cache headers on live assets (immutable for hashed, must-revalidate for HTML) with a header dump.
-27. Test the custom 404 page on the live domain (dist has one; serving behavior unverified).
-28. Link-check all outbound links (pkg.go.dev, GitHub, newsletters).
-29. Smoke-test pagefind search UI on the deployed site (index built; UI unverified).
-30. Mobile-viewport screenshot QA (only 1440×900 dark checked).
-31. Light-theme screenshot QA (dark is default; picker verified in HTML only).
-32. Browser-console CSP violation check on real load (fix-csp patched 15/15; runtime violations unverified).
-33. Accessibility pass: contrast, focus states, keyboard nav (skip-link exists).
-34. Lighthouse/perf quick pass on the live landing page.
-35. Landing page "1 Stars" widget — decide keep/fix/remove (undersells; see question 2).
-36. Demo video (§3.11): produce 20–30s HyperFrames video, add ShowcaseSection + `public/demo.mp4`, poster + og:image, README deep-link.
-37. Verify/refresh GitHub repo metadata: description, homepage → `https://go-output.lars.software`, topics (Phase 6).
-38. Verify README documentation-link bar matches the template and live URLs (docs drift).
-39. Add CHANGELOG entry for the website launch/fix (untouched this session).
-40. HARVEST: route sections (c)/(e)/(f) of this report into `TODO_LIST.md` (bounded tasks) and `ROADMAP.md` (ideas).
+19. Audit the site's Module Map table against the current 19-module reality (site lists 14 rows; missing `bdd/`, `integration/`, `examples/`, `testhelpers/graphtest/` is fine to omit — but verify nothing stale claims deleted things). _(✅ done 2026-09-04 — module map audited: 15 public modules correct, test-only modules annotated)_
+20. Re-verify every code example on the site against current source (skill's #1 documented failure mode; I did NOT do a content audit this session — only build/serve verification). _(✅ done 2026-09-04 — every Go example API-verified vs source; fixed 2× `tree.NewTreeRendererFromTable` → `tree.TreeRendererFromTable` (compile-error drift))_
+21. Verify Format Matrix page claims vs `docs/FORMAT_ARCHITECTURE.md` (16 formats × 3 shapes matrix unchanged since v0.38 review?). _(✅ done 2026-09-04 — matrix was WRONG: d2/mermaid/dot/plantuml DO support tree (shape.go); fixed + example corrected)_
+22. Check `/og/*.png` are actually referenced in page `<meta property="og:image">` tags (images build; reference not verified). _(✅ done 2026-09-04 — og:image meta present; /og/home.png live 200)_
+23. Verify sitemap + robots.txt served correctly on the live domain. _(✅ done 2026-09-04 — sitemap-index.xml, sitemap-0.xml, robots.txt all 200)_
+24. Verify the `firebase.json` `/docs/:path*` → `/:path*` 301 redirect is still needed (possible leftover from a pre-launch URL structure). _(✅ done 2026-09-04 — /docs/* 301 verified working; kept as legacy-bookmark courtesy (zero cost))_
+25. Verify cleanUrls/trailing-slash canonical behavior on the live site (`cleanUrls: true` + `trailingSlash: false`). _(✅ done 2026-09-04 — trailing-slash URLs 301 to canonical non-slash; consistent)_
+26. Verify cache headers on live assets (immutable for hashed, must-revalidate for HTML) with a header dump. _(✅ done 2026-09-04 — BUG fixed: `**/*.html` rule never matched clean URLs (pages cached max-age=3600). Cache-Control moved to catch-all must-revalidate, assets override immutable)_
+27. Test the custom 404 page on the live domain (dist has one; serving behavior unverified). _(✅ done 2026-09-04 — /nonexistent 404 + correct cache header)_
+28. Link-check all outbound links (pkg.go.dev, GitHub, newsletters). _(✅ done 2026-09-04 — all 37 external links fetched OK)_
+29. Smoke-test pagefind search UI on the deployed site (index built; UI unverified). _(✅ done 2026-09-04 — pagefind.js/jsontools live 200; search UI assets verified)_
+30. Mobile-viewport screenshot QA (only 1440×900 dark checked). _(✅ done 2026-09-04 — REAL BUG fixed: hero overflowed horizontally at 390px (flex min-width:auto + wide pre); CDP-verified scrollW=390 after min-w-0 fix)_
+31. Light-theme screenshot QA (dark is default; picker verified in HTML only). _(✅ done 2026-09-04 — light theme screenshot via CDP `html.light`: correct palette, contrast, accent adaptation)_
+32. Browser-console CSP violation check on real load (fix-csp patched 15/15; runtime violations unverified). _(✅ done 2026-09-04 — zero CSP console violations on live site (sole console error is a chrome-extension artifact))_
+33. Accessibility pass: contrast, focus states, keyboard nav (skip-link exists). _(✅ baseline done 2026-09-04 — lang/skip-link/labels/h1/focus-visible green; deep contrast+keyboard pass in TODO_LIST #2)_
+34. Lighthouse/perf quick pass on the live landing page. _(✅ done 2026-09-04 — Lighthouse: perf 70 (software-render inflation, blur-driven TBT), a11y/BP/SEO 100; follow-up TODO_LIST #3)_
+35. Landing page "1 Stars" widget — decide keep/fix/remove (undersells; see question 2). _(✅ decided 2026-09-04 — live count only at ≥10 stars, else "Star on GitHub" CTA (also fixes the "1 Stars" grammar bug))_
+36. Demo video (§3.11): produce 20–30s HyperFrames video, add ShowcaseSection + `public/demo.mp4`, poster + og:image, README deep-link. _(routed 2026-09-04: TODO_LIST #1 top item — full production spec loaded; deliberate follow-up)_ 
+37. Verify/refresh GitHub repo metadata: description, homepage → `https://go-output.lars.software`, topics (Phase 6). _(✅ done 2026-09-04 — verified: description, homepage, 20 topics all correct)_
+38. Verify README documentation-link bar matches the template and live URLs (docs drift). _(✅ done 2026-09-04 — README link bar matches template; all 3 URLs live 200)_
+39. Add CHANGELOG entry for the website launch/fix (untouched this session). _(✅ done 2026-09-04 — CHANGELOG Unreleased entries added)_
+40. HARVEST: route sections (c)/(e)/(f) of this report into `TODO_LIST.md` (bounded tasks) and `ROADMAP.md` (ideas). _(✅ done 2026-09-04 — harvested into TODO_LIST.md (7 items) + ROADMAP.md)_
 
 **Hygiene & follow-through**
-41. Re-start the LSP (stale vtsls phantom errors on `astro.config.mjs` pollute every diagnostics readout).
-42. Confirm the daemon's `e12f3b1` actually contains the og-route fix + AGENTS.md entry (working tree is clean, but verify content, not just cleanliness).
-43. Consider squashing/chore-noting the five heuristic auto-commits from this session if history hygiene matters to you (rewrite risk — likely skip).
-44. gogenfilter parity check: its `astro-og-canvas@0.13.0` + pnpm v10-era node_modules — does gogenfilter still build TODAY? If it shares the fragility, fix both (the pattern is fleet-wide: 6+ sites).
-45. Add a fleet-level note in the website-launch skill (via skill-creator feedback) about canvaskit direct-dependency remedy + pnpm v11 traps, so the next sibling site doesn't repeat this session.
-46. Decide analytics stance (none present today — is that intentional?).
-47. Add `Captures "last deployed at <date> (vX.Y.Z)"` footer stamp to make staleness visible on the page itself.
-48. Verify HSTS preload submission state for `lars.software` (headers include `preload` — is the domain actually submitted? preload is near-irreversible).
-49. Review whether `Strict-Transport-Security`/header config in `firebase.json` matches the gogenfilter hardened baseline (CSP hash injection exists here — good; compare remaining headers).
-50. Post-CI/CD: re-annotate this report (docs-health ANNOTATE) with what landed.
+41. Re-start the LSP (stale vtsls phantom errors on `astro.config.mjs` pollute every diagnostics readout). _(✅ done 2026-09-04 — LSP restarted)_
+42. Confirm the daemon's `e12f3b1` actually contains the og-route fix + AGENTS.md entry (working tree is clean, but verify content, not just cleanliness). _(✅ done 2026-09-04 — verified: e12f3b1 contains og-route fix + AGENTS.md entry)_
+43. Consider squashing/chore-noting the five heuristic auto-commits from this session if history hygiene matters to you (rewrite risk — likely skip). _(✅ decided 2026-09-04 — skip (history-rewrite risk outweighs cosmetic gain, per report’s own lean))_
+44. gogenfilter parity check: its `astro-og-canvas@0.13.0` + pnpm v10-era node_modules — does gogenfilter still build TODAY? If it shares the fragility, fix both (the pattern is fleet-wide: 6+ sites). _(✅ done 2026-09-04 — gogenfilter Go builds; website hardened (direct canvaskit pin + real allowBuilds value), 18 pages build green)_
+45. Add a fleet-level note in the website-launch skill (via skill-creator feedback) about canvaskit direct-dependency remedy + pnpm v11 traps, so the next sibling site doesn't repeat this session. _(✅ done 2026-09-04 — common-pitfalls.md #31/#32 added (canvaskit direct pin, pnpm v11 traps))_
+46. Decide analytics stance (none present today — is that intentional?). _(✅ decided 2026-09-04 — no analytics, intentional; documented in website/README.md)_
+47. Add `Captures "last deployed at <date> (vX.Y.Z)"` footer stamp to make staleness visible on the page itself. _(✅ done 2026-09-04 — footer stamps "Last deployed YYYY-MM-DD" (+ version when GO_OUTPUT_VERSION set))_
+48. Verify HSTS preload submission state for `lars.software` (headers include `preload` — is the domain actually submitted? preload is near-irreversible). _(✅ done 2026-09-04 — hstspreload API: lars.software status "preloaded")_
+49. Review whether `Strict-Transport-Security`/header config in `firebase.json` matches the gogenfilter hardened baseline (CSP hash injection exists here — good; compare remaining headers). _(✅ done 2026-09-04 — headers identical to gogenfilter baseline (HSTS/XFO/CORP/COOP); full fleet audit in TODO_LIST #6)_
+50. Post-CI/CD: re-annotate this report (docs-health ANNOTATE) with what landed. _(✅ done 2026-09-04 — this annotation)_
 
 ## g) QUESTIONS I CANNOT FIGURE OUT MYSELF
 
