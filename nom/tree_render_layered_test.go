@@ -322,3 +322,66 @@ func TestLayeredRender_CategoryCollapse(t *testing.T) {
 		t.Errorf("Compile A should be collapsed:\n%s", stripped)
 	}
 }
+
+func TestVisibleEntryKind_Classification(t *testing.T) {
+	t.Parallel()
+
+	dt := NewDependencyTree()
+
+	_ = dt.AddActivity(ActivityID("root1"), nil)
+	_ = dt.AddActivity(ActivityID("child1"), []ActivityID{"root1"})
+
+	snaps := newSnapshotBuilder()
+	snaps.set(ActivityID("root1"), "Root One", ActivityStatusRunning, 1*time.Second)
+	snaps.set(ActivityID("child1"), "Child One", ActivityStatusPending, 0)
+
+	entries := dt.collectLayeredEntries(snaps.snaps, 50)
+
+	var sawHeader, sawSeparator, sawRow bool
+	for _, entry := range entries {
+		switch entry.Kind() {
+		case KindLayerHeader:
+			sawHeader = true
+			if entry.LayerHeader == "" {
+				t.Error("KindLayerHeader entry must carry header text")
+			}
+		case KindSeparator:
+			sawSeparator = true
+			if entry.LayerHeader == "" {
+				t.Error("KindSeparator entry must carry the separator line")
+			}
+		case KindLayerRow:
+			sawRow = true
+			if len(entry.LayerNodes) == 0 {
+				t.Error("KindLayerRow entry must carry nodes")
+			}
+		case KindEmpty, KindNode, KindCollapsed, KindPhase:
+			t.Errorf("unexpected kind %d in layered collection", entry.Kind())
+		}
+	}
+
+	if !sawHeader || !sawSeparator || !sawRow {
+		t.Errorf("missing kinds: header=%v separator=%v row=%v", sawHeader, sawSeparator, sawRow)
+	}
+}
+
+func TestVisibleEntryKind_ZeroValueAndPayloadKinds(t *testing.T) {
+	t.Parallel()
+
+	if got := (VisibleEntry{}).Kind(); got != KindEmpty {
+		t.Errorf("zero entry: want KindEmpty, got %d", got)
+	}
+
+	node := &ActivityNode{ID: ActivityID("a")}
+	if got := (VisibleEntry{Node: node}).Kind(); got != KindNode {
+		t.Errorf("node entry: want KindNode, got %d", got)
+	}
+
+	if got := (VisibleEntry{CollapsedCompleted: 3}).Kind(); got != KindCollapsed {
+		t.Errorf("collapsed entry: want KindCollapsed, got %d", got)
+	}
+
+	if got := (VisibleEntry{PhaseCounts: &PhaseCounts{}}).Kind(); got != KindPhase {
+		t.Errorf("phase entry: want KindPhase, got %d", got)
+	}
+}

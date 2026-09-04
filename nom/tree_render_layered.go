@@ -105,7 +105,7 @@ func (dt *DependencyTree) collectLayeredEntries(
 
 		// Separator between layers, but not after the last one.
 		if depth < maxDepth && len(entries) < maxHeight {
-			entries = append(entries, VisibleEntry{LayerHeader: layeredSeparator(maxDepth)})
+			entries = append(entries, VisibleEntry{LayerHeader: layeredSeparator(maxDepth), separator: true})
 		}
 	}
 
@@ -338,6 +338,10 @@ func (dt *DependencyTree) renderLayeredLine(
 	snapshots map[ActivityID]ActivitySnapshot,
 	maxWidth int,
 ) string {
+	if entry.Kind() == KindSeparator {
+		return dt.renderLayeredSeparator(entry.LayerHeader, maxWidth)
+	}
+
 	if entry.LayerHeader != "" {
 		return dt.renderLayeredHeader(entry.LayerHeader, maxWidth)
 	}
@@ -367,23 +371,20 @@ func (dt *DependencyTree) renderLayeredLine(
 	return line
 }
 
-func (dt *DependencyTree) renderLayeredHeader(header string, maxWidth int) string {
-	isSeparator := strings.ContainsRune(header, '┼') || strings.ContainsRune(header, '─')
-	if isSeparator {
-		if maxWidth > 0 {
-			return TruncateVisible(header, maxWidth)
-		}
-
-		return header
-	}
-
-	left := fmt.Sprintf("%-*s", layeredHeaderWidth-1, header) + "│"
-
-	line := left
-
+func (dt *DependencyTree) renderLayeredSeparator(line string, maxWidth int) string {
 	if maxWidth > 0 {
-		line = TruncateVisible(line, maxWidth)
+		return TruncateVisible(line, maxWidth)
 	}
 
 	return line
+}
+
+func (dt *DependencyTree) renderLayeredHeader(header string, maxWidth int) string {
+	left := fmt.Sprintf("%-*s", layeredHeaderWidth-1, header) + "│"
+
+	if maxWidth > 0 {
+		return TruncateVisible(left, maxWidth)
+	}
+
+	return left
 }

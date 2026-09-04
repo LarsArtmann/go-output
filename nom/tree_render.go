@@ -711,6 +711,50 @@ type VisibleEntry struct {
 	Convergence bool
 }
 
+// VisibleEntryKind classifies what a VisibleEntry renders, so dispatch sites
+// can switch on a typed kind instead of probing payload fields or — worse —
+// sniffing rendered text for box-drawing runes.
+type VisibleEntryKind uint8
+
+const (
+	// KindEmpty is the zero-payload entry (nothing to render).
+	KindEmpty VisibleEntryKind = iota
+	// KindNode renders a single activity node (tree mode).
+	KindNode
+	// KindLayerRow renders one wrapped horizontal row of activities (layered mode).
+	KindLayerRow
+	// KindLayerHeader renders a synthetic "Layer N" (or category) header line.
+	KindLayerHeader
+	// KindSeparator renders a horizontal rule between layers (layered mode).
+	KindSeparator
+	// KindCollapsed renders the synthetic "⋯ N completed" marker line.
+	KindCollapsed
+	// KindPhase renders a collapsed phase summary.
+	KindPhase
+)
+
+// Kind classifies the entry from its payload fields. The payload fields stay
+// the single source of truth — Kind derives from them, so a construction site
+// cannot desynchronize the two.
+func (entry VisibleEntry) Kind() VisibleEntryKind {
+	switch {
+	case entry.separator:
+		return KindSeparator
+	case entry.LayerHeader != "":
+		return KindLayerHeader
+	case entry.CollapsedCompleted > 0:
+		return KindCollapsed
+	case entry.PhaseCounts != nil:
+		return KindPhase
+	case len(entry.LayerNodes) > 0:
+		return KindLayerRow
+	case entry.Node != nil:
+		return KindNode
+	default:
+		return KindEmpty
+	}
+}
+
 // PhaseCounts holds aggregate status counts for a collapsed phase's children.
 // MaxElapsed tracks the longest child duration (not the sum), since DAG steps
 // run in parallel — summing would over-report wall-clock time.
