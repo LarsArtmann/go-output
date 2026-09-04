@@ -29,11 +29,12 @@ env:
     https://md-go-validator.lars.software
     https://art-dupl.lars.software
     https://cleanwizard.lars.software
-    https://cmdguard.lars.software
     https://errorfamily.lars.software
     https://filewatcher.lars.software
     https://emeet-pixyd.lars.software
-    https://typespec-asyncapi.lars.software
+  # Not yet launched (repos exist, domains never attached — launch before adding):
+  #   https://cmdguard.lars.software        (TLS cert altname invalid — domain not attached in Firebase)
+  #   https://typespec-asyncapi.lars.software (DNS record does not exist)
   ISSUE_TITLE: "[uptime] One or more lars.software sites are down"
 
 jobs:
@@ -48,7 +49,8 @@ jobs:
         run: |
           failed=""
           for site in $SITES; do
-            status=$(curl -s -o /dev/null -m 20 -w '%{http_code}' "$site/" || echo "000")
+            status=$(curl -s -o /dev/null -m 20 -w '%{http_code}' "$site/" 2>/dev/null || true)
+            [ -n "$status" ] || status=000
             if [ "$status" != "200" ]; then
               echo "::warning::$site returned HTTP $status"
               failed="$failed- \`$site\` — HTTP \`$status\`"$'\n'
@@ -65,19 +67,19 @@ jobs:
               echo "EOF_MARKER"
             } >> "$GITHUB_OUTPUT"
 
-            existing=$(gh issue list --state open --search "in:title \"$ISSUE_TITLE\"" --json number --jq '.[0].number' || true)
+            existing=$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --search "in:title \"$ISSUE_TITLE\"" --json number --jq '.[0].number' || true)
             if [ -n "$existing" ]; then
-              gh issue comment "$existing" --body "Still down as of $(date -u '+%Y-%m-%d %H:%M UTC'):"$'\n\n'"$failed"
+              gh issue comment --repo "$GITHUB_REPOSITORY" "$existing" --body "Still down as of $(date -u '+%Y-%m-%d %H:%M UTC'):"$'\n\n'"$failed"
             else
-              gh issue create \
+              gh issue create --repo "$GITHUB_REPOSITORY" \
                 --title "$ISSUE_TITLE" \
                 --body "Automated uptime check failed at $(date -u '+%Y-%m-%d %H:%M UTC'):"$'\n\n'"$failed"$'\n\n'"This issue stays open and accumulates comments until a check passes. Investigate Firebase Hosting releases for the affected sites (the go-output 2026-09-03 outage looked exactly like this: \`firebase hosting:releases:list --site <site> --project lars-software\`)."
             fi
           else
             echo "status=up" >> "$GITHUB_OUTPUT"
-            existing=$(gh issue list --state open --search "in:title \"$ISSUE_TITLE\"" --json number --jq '.[0].number' || true)
+            existing=$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --search "in:title \"$ISSUE_TITLE\"" --json number --jq '.[0].number' || true)
             if [ -n "$existing" ]; then
-              gh issue close "$existing" --comment "Recovered as of $(date -u '+%Y-%m-%d %H:%M UTC') — all sites returned 200."
+              gh issue close --repo "$GITHUB_REPOSITORY" "$existing" --comment "Recovered as of $(date -u '+%Y-%m-%d %H:%M UTC') — all sites returned 200."
             fi
           fi
 
