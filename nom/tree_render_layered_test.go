@@ -2,6 +2,7 @@ package nom
 
 import (
 	"path/filepath"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -335,6 +336,10 @@ func TestVisibleEntryKind_Classification(t *testing.T) {
 	snaps.set(ActivityID("root1"), "Root One", ActivityStatusRunning, 1*time.Second)
 	snaps.set(ActivityID("child1"), "Child One", ActivityStatusPending, 0)
 
+	if err := dt.Build(); err != nil {
+		t.Fatalf("Build: %v", err)
+	}
+
 	entries := dt.collectLayeredEntries(snaps.snaps, 50)
 
 	var sawHeader, sawSeparator, sawRow bool
@@ -383,5 +388,26 @@ func TestVisibleEntryKind_ZeroValueAndPayloadKinds(t *testing.T) {
 
 	if got := (VisibleEntry{PhaseCounts: &PhaseCounts{}}).Kind(); got != KindPhase {
 		t.Errorf("phase entry: want KindPhase, got %d", got)
+	}
+}
+
+func TestLayeredSeparator_AlignsWithHeaderPipe(t *testing.T) {
+	t.Parallel()
+
+	for _, maxDepth := range []int{0, 3, 9, 10, 12, 99, 100, 1234} {
+		header := (&DependencyTree{}).renderLayeredHeader("Layer "+strconv.Itoa(maxDepth), 0)
+		separator := layeredSeparator(maxDepth)
+
+		pipeCol := strings.Index(header, "│")
+		crossCol := strings.Index(separator, "┼")
+
+		if pipeCol < 0 || crossCol < 0 {
+			t.Fatalf("maxDepth=%d: missing markers header=%q separator=%q", maxDepth, header, separator)
+		}
+
+		if pipeCol != crossCol {
+			t.Errorf("maxDepth=%d: ┼ at column %d but header │ at column %d\nheader=%q\nseparator=%q",
+				maxDepth, crossCol, pipeCol, header, separator)
+		}
 	}
 }

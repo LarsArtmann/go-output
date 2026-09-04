@@ -304,12 +304,10 @@ func groupByCategory(
 }
 
 func layeredSeparator(maxDepth int) string {
-	width := layeredHeaderWidth - 1 // "Layer N │" width is header width
-
-	// Extend the separator to account for deeper layer numbers (e.g. "Layer 12").
-	if maxDepth >= 10 {
-		width += len(strconv.Itoa(maxDepth)) - 1
-	}
+	// The ┼ must sit exactly under the header row's │. That column is
+	// max(layeredHeaderWidth-1, len("Layer N")) — Sprintf pads the label to
+	// layeredHeaderWidth-1 but never truncates deeper layer numbers.
+	width := max(layeredHeaderWidth-1, len("Layer "+strconv.Itoa(maxDepth)))
 
 	return strings.Repeat("─", width) + "┼" + strings.Repeat("─", 12)
 }

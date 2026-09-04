@@ -22,14 +22,12 @@ func init() {
 type PlantUMLDiagram struct {
 	output.GraphBuilder
 
-	diagramType string
 }
 
 // NewPlantUMLDiagram creates a new PlantUMLDiagram.
 func NewPlantUMLDiagram() *PlantUMLDiagram {
 	return &PlantUMLDiagram{
 		GraphBuilder: *output.NewGraphBuilder(),
-		diagramType:  "component",
 	}
 }
 

@@ -10,24 +10,16 @@ import (
 type Option func(*Config)
 
 // Config holds PlantUML rendering configuration.
-type Config struct {
-	diagramType string
-}
-
-// WithDiagramType sets the PlantUML diagram type (default "component").
-func WithDiagramType(t string) Option {
-	return func(c *Config) { c.diagramType = t }
-}
+type Config struct{}
 
 // Write writes a Graph as PlantUML to the provided writer.
 func Write(w io.Writer, g output.Graph, opts ...Option) error {
-	cfg := Config{diagramType: "component"}
+	cfg := Config{}
 	for _, opt := range opts {
 		opt(&cfg)
 	}
 
 	d := NewPlantUMLDiagram()
-	d.diagramType = cfg.diagramType
 	d.SetNodes(g.Nodes())
 	d.SetEdges(g.Edges())
 
