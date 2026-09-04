@@ -37,6 +37,7 @@ jobs:
       # the packageManager field (pnpm@11.20.0).
       - name: Enable pnpm via corepack
         run: |
+          mkdir -p "$HOME/.local/bin"
           corepack enable --install-directory "$HOME/.local/bin"
           corepack prepare pnpm@11.20.0 --activate
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
@@ -79,6 +80,7 @@ jobs:
 
       - name: Enable pnpm via corepack
         run: |
+          mkdir -p "$HOME/.local/bin"
           corepack enable --install-directory "$HOME/.local/bin"
           corepack prepare pnpm@11.20.0 --activate
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
