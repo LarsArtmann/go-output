@@ -118,7 +118,7 @@
 
               packages = builtins.attrValues {
                 inherit go;
-                inherit (pkgs) golangci-lint gopls;
+                inherit (pkgs) golangci-lint gopls govulncheck;
               };
 
               GOWORK = "off";
