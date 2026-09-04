@@ -16,5 +16,5 @@ func renderTreeTable(w io.Writer, data *output.Table, opts output.RenderOptions)
 	renderer := TreeRendererFromTable(data)
 	renderer.SetColorMode(opts.ColorMode)
 
-	return output.WriteRenderedFrom(w, renderer.Render, "tree", "render tree")
+	return output.WriteRenderedRawFrom(w, renderer.Render, "tree", "render tree")
 }

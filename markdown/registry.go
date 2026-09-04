@@ -35,5 +35,5 @@ func renderMarkdownTable(w io.Writer, data *output.Table, opts output.RenderOpti
 		return fmt.Errorf("render markdown: %w", err)
 	}
 
-	return output.WriteRendered(w, "markdown", out)
+	return output.WriteRenderedRaw(w, "markdown", out)
 }

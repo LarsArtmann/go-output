@@ -22,7 +22,7 @@ func init() {
 }
 
 func renderDOTTable(w io.Writer, data *output.Table, _ output.RenderOptions) error {
-	return output.WriteRenderedFrom(w, NewDOTFromTable(data).Render, "DOT", "render DOT")
+	return output.WriteRenderedRawFrom(w, NewDOTFromTable(data).Render, "DOT", "render DOT")
 }
 
 // DOTRenderer implements the GraphRenderer interface for DOT/Graphviz output.
