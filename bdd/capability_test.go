@@ -67,8 +67,27 @@ var _ = ginkgo.Describe("format discovery and capabilities", func() {
 			gomega.Expect(output.Format("nonsense").IsValid()).To(gomega.BeFalse())
 		})
 
-		ginkgo.It("exposes all 16 formats via AllowedValues", func() {
-			gomega.Expect(output.AllFormats).To(gomega.HaveLen(16))
+		ginkgo.It("exposes exactly the documented formats via AllowedValues", func() {
+			// Explicit literal (not a magic count) so a registry failure
+			// names the missing or unexpected format.
+			gomega.Expect(output.AllFormats).To(gomega.ConsistOf(
+				output.FormatTable,
+				output.FormatJSON,
+				output.FormatCSV,
+				output.FormatTSV,
+				output.FormatXML,
+				output.FormatMarkdown,
+				output.FormatD2,
+				output.FormatYAML,
+				output.FormatHTML,
+				output.FormatTree,
+				output.FormatMermaid,
+				output.FormatDOT,
+				output.FormatJSONL,
+				output.FormatAsciiDoc,
+				output.FormatTOML,
+				output.FormatPlantUML,
+			))
 		})
 	})
 })

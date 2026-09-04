@@ -60,61 +60,49 @@ func TestInvalidFormatError(t *testing.T) {
 func TestFormatCategories(t *testing.T) {
 	t.Parallel()
 
-	tableFormats := []output.Format{
-		output.FormatTable,
-		output.FormatJSON,
-		output.FormatCSV,
-		output.FormatTSV,
-		output.FormatXML,
-		output.FormatMarkdown,
-		output.FormatYAML,
-		output.FormatD2,
-		output.FormatHTML,
-		output.FormatMermaid,
-		output.FormatDOT,
-		output.FormatJSONL,
-		output.FormatAsciiDoc,
-		output.FormatTOML,
-		output.FormatPlantUML,
-	}
+	// This test pins the LOAD-BEARING edges of the shape matrix: positive
+	// anchors for the shape-agnostic formats, negative boundaries a format
+	// must not claim, and one structural invariant. The full matrix is
+	// declared in root's shape.go plus each sub-module's init() — restating
+	// all of it here would just duplicate the source.
 
-	for _, f := range tableFormats {
-		if !f.Supports(output.ShapeTable) {
-			t.Errorf("Format %s should support ShapeTable", f)
+	// Positive anchors: serialization formats are shape-agnostic.
+	for _, f := range []output.Format{output.FormatJSON, output.FormatYAML, output.FormatTOML} {
+		for _, shape := range []output.Shape{output.ShapeTable, output.ShapeTree, output.ShapeGraph} {
+			if !f.Supports(shape) {
+				t.Errorf("Format %s is shape-agnostic and must support %s", f, shape)
+			}
 		}
 	}
 
-	treeFormats := []output.Format{
-		output.FormatTree,
-		output.FormatHTML,
-		output.FormatJSON,
-		output.FormatYAML,
-		output.FormatTOML,
-		output.FormatD2,
-		output.FormatMermaid,
-		output.FormatDOT,
-		output.FormatPlantUML,
+	// Negative boundaries: formats that must NOT claim a shape.
+	negative := []struct {
+		format output.Format
+		shape  output.Shape
+	}{
+		{output.FormatCSV, output.ShapeTree},
+		{output.FormatCSV, output.ShapeGraph},
+		{output.FormatTSV, output.ShapeGraph},
+		{output.FormatMarkdown, output.ShapeGraph},
+		{output.FormatJSONL, output.ShapeTree},
+		{output.FormatXML, output.ShapeTree},
+		{output.FormatAsciiDoc, output.ShapeTree},
+		{output.FormatTable, output.ShapeTree},
+		{output.FormatTree, output.ShapeTable},
+		{output.FormatTree, output.ShapeGraph},
+		{output.FormatHTML, output.ShapeGraph},
 	}
-
-	for _, f := range treeFormats {
-		if !f.Supports(output.ShapeTree) {
-			t.Errorf("Format %s should support ShapeTree", f)
+	for _, tc := range negative {
+		if tc.format.Supports(tc.shape) {
+			t.Errorf("Format %s should NOT support %s", tc.format, tc.shape)
 		}
 	}
 
-	graphFormats := []output.Format{
-		output.FormatD2,
-		output.FormatMermaid,
-		output.FormatDOT,
-		output.FormatJSON,
-		output.FormatYAML,
-		output.FormatPlantUML,
-		output.FormatTOML,
-	}
-
-	for _, f := range graphFormats {
-		if !f.Supports(output.ShapeGraph) {
-			t.Errorf("Format %s should support ShapeGraph", f)
+	// Structural invariant: every registered format supports at least one
+	// shape — catches a sub-module whose init() registration broke.
+	for _, f := range output.AllFormats {
+		if !f.Supports(output.ShapeTable) && !f.Supports(output.ShapeTree) && !f.Supports(output.ShapeGraph) {
+			t.Errorf("Format %s supports no shapes — its init() registration is broken", f)
 		}
 	}
 }

@@ -27,14 +27,7 @@ var alphaToBetaEdge = output.GraphEdge{
 }
 
 func renderTable(projects []Project) {
-	tbl := table.New(table.WithColorMode(colorMode))
-	tbl.SetHeaders("Name", "Health", "Complexity")
-
-	for _, p := range projects {
-		tbl.AddRow(p.Name, strconv.Itoa(p.Health)+"%", strconv.Itoa(p.Complexity)+"/10")
-	}
-
-	tbl.SetFooter("TOTAL", strconv.Itoa(len(projects)), "-")
+	tbl := table.FromTable(projectsToTable(projects), table.WithColorMode(colorMode))
 
 	shared.RenderAndPrint(tbl)
 }
@@ -49,16 +42,12 @@ func renderJSON(projects []Project) {
 }
 
 func renderMarkdown(projects []Project) {
-	md := markdown.NewMarkdownTable().SetColorMode(colorMode)
-	md.SetHeaders([]string{"Name", "Health", "Complexity"})
-
-	for _, p := range projects {
-		md.AddRow(
-			[]string{p.Name, fmt.Sprintf("%d%%", p.Health), fmt.Sprintf("%d/10", p.Complexity)},
-		)
+	out, err := markdown.Render(projectsToTable(projects), markdown.WithColorMode(colorMode))
+	if err != nil {
+		shared.HandleError(err)
 	}
 
-	shared.RenderAndPrint(md)
+	fmt.Println(out)
 }
 
 func renderCSV(projects []Project) {

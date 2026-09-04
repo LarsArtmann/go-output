@@ -106,18 +106,20 @@ func projectToRow(p Project) []string {
 	}
 }
 
-// projectsToTable creates Table from projects.
+// projectsToTable builds the project table through the canonical CQRS
+// TableBuilder — the single construction story this example teaches. Every
+// renderer (terminal table, markdown, ...) consumes the frozen *output.Table
+// produced here.
 func projectsToTable(projects []Project) *output.Table {
-	data := output.NewTable(projectHeaders)
+	b := output.NewTableBuilder().SetHeaders(projectHeaders...)
+
 	for _, p := range projects {
-		data.AddRow(projectToRow(p))
+		b.AddRow(projectToRow(p)...)
 	}
 
-	data.SetFooter([]string{
+	return b.SetFooter(
 		"TOTAL",
 		fmt.Sprintf("%d projects", len(projects)),
 		"-",
-	})
-
-	return data
+	).Build()
 }

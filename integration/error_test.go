@@ -113,7 +113,11 @@ func TestRenderTable_WithWriter(t *testing.T) {
 	t.Run("nil writer defaults to stdout", func(t *testing.T) {
 		t.Parallel()
 
-		err := output.RenderTable(data, output.FormatMarkdown, output.RenderOptions{})
+		// Deliberately writes one small table to the test's stdout: the
+		// nil-Writer -> os.Stdout defaulting IS the behavior under test,
+		// and os.Stdout cannot be intercepted race-free alongside
+		// t.Parallel. The single-row table keeps the noise minimal.
+		err := output.RenderTable(output.NewTableWithRow([]string{"Name"}, "Alpha"), output.FormatMarkdown, output.RenderOptions{})
 		if err != nil {
 			t.Fatalf("RenderTable with nil writer: %v", err)
 		}

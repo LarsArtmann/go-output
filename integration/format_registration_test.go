@@ -8,6 +8,28 @@ import (
 	"github.com/larsartmann/go-output"
 )
 
+// wantFormats is the explicit, complete list of the library's output formats.
+// Asserting against this literal (instead of a magic count) makes a registry
+// failure name exactly which format is missing or unexpected.
+var wantFormats = []output.Format{
+	output.FormatTable,
+	output.FormatJSON,
+	output.FormatCSV,
+	output.FormatTSV,
+	output.FormatXML,
+	output.FormatMarkdown,
+	output.FormatD2,
+	output.FormatYAML,
+	output.FormatHTML,
+	output.FormatTree,
+	output.FormatMermaid,
+	output.FormatDOT,
+	output.FormatJSONL,
+	output.FormatAsciiDoc,
+	output.FormatTOML,
+	output.FormatPlantUML,
+}
+
 // TestFormatRegistration verifies that importing all sub-modules activates every
 // format's shape capabilities via their init() functions. Without the import,
 // Format constants exist but Supports() returns false (no shapes registered).
@@ -15,8 +37,26 @@ import (
 func TestFormatRegistration(t *testing.T) {
 	t.Parallel()
 
-	if len(output.AllFormats) != 16 {
-		t.Fatalf("expected 16 formats, got %d", len(output.AllFormats))
+	got := map[output.Format]bool{}
+	for _, f := range output.AllFormats {
+		got[f] = true
+	}
+
+	var missing, unexpected []output.Format
+	for _, f := range wantFormats {
+		if !got[f] {
+			missing = append(missing, f)
+		}
+	}
+
+	for f := range got {
+		if !slices.Contains(wantFormats, f) {
+			unexpected = append(unexpected, f)
+		}
+	}
+
+	if len(missing) > 0 || len(unexpected) > 0 {
+		t.Fatalf("format registry drift — missing: %v, unexpected: %v", missing, unexpected)
 	}
 
 	shapes := []output.Shape{
