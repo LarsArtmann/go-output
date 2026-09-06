@@ -1,6 +1,6 @@
 module github.com/larsartmann/go-output/testhelpers
 
-go 1.26.5
+go 1.26
 
 replace github.com/larsartmann/go-output/markdown => ../markdown
 
