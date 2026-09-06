@@ -8,36 +8,39 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
-- **website** — CI/CD pipeline (`website.yml`): frozen-lockfile install → typecheck → build → HTML-validate on every `website/**` change, Firebase deploy + dual-domain smoke test on master; `release.yml` redeploys the site on every root version tag. Requires the `FIREBASE_SERVICE_ACCOUNT` repo secret.
-- **website** — Fleet uptime monitor (`uptime.yml`): 30-minute availability checks across all 16 `*.lars.software` sites with a deduplicated `[uptime]` GitHub issue on failure and auto-close on recovery. The 2026-09-03 go-output outage went unnoticed for ~7 weeks — this is the systemic fix.
-- **website** — `scripts/pre-deploy-check.sh` (frozen install + typecheck + build + html-validate + og-image presence) and `pnpm run verify` (same gates in one target). Full runbook in `website/README.md`.
+- Nothing yet.
 
 ### Fixed
 
-- **website** — go-output.lars.software served Firebase's "Site Not Found" from launch (2026-07-13) until 2026-09-03: a hand-bumped `package.json` broke the lockfile, no rebuild was possible, and the site had zero Hosting releases. Root cause fixed with exact pins (`canvaskit-wasm 0.41.1` as a direct dependency) and the new deploy pipeline; full post-mortem in `docs/status/2026-09-03_23-07_website-outage-root-cause-and-redeploy.md`.
-- **website** — HTML pages were cached `max-age=3600` on the CDN: the `**/*.html` header rule never matched clean URLs. Cache-Control moved to the catch-all rule (must-revalidate), assets override with `immutable` (verified live post-deploy).
-- **website** — Format Matrix page showed `d2`/`mermaid`/`dot`/`plantuml` without tree support and claimed `d2.Supports(ShapeTree) == false`; source (`RegisterFormatShapes`) says all four support tree. Module Map annotated with the test-only modules.
-- **website** — Hero star widget no longer renders "1 Stars": the live count only shows at ≥10 stars, otherwise the neutral "Star on GitHub" CTA. Footer now stamps the build date (`Last deployed YYYY-MM-DD`).
-- **go.mod** — Restored the Pattern B model fleet-wide: all 14 module `go.mod` files that had drifted back to `v0.0.0-…` sentinel requires (after `d16650b` bumped them) now pin `v0.37.0` again; `go mod tidy` across all 19 modules preserves the pins. Root's `testhelpers` pin was never bumped and is included.
-- **tests** — `daghtml` golden file regenerated after the font-stack change in the `30e6331` formatting sweep left `TestGolden_Render_SimpleDAG` failing.
+- Nothing yet.
+
+## [0.38.0] - 2026-09-06
 
 ### Added
 
+- **website** — CI/CD pipeline (`website.yml`): frozen-lockfile install → typecheck → build → HTML-validate on every `website/**` change, Firebase deploy + dual-domain smoke test on master; `release.yml` redeploys the site on every root version tag. Requires the `FIREBASE_SERVICE_ACCOUNT` repo secret.
+- **website** — Fleet uptime monitor (`uptime.yml`): 30-minute availability checks across all 16 `*.lars.software` sites with a deduplicated `[uptime]` GitHub issue on failure and auto-close on recovery. The 2026-09-03 go-output outage went unnoticed for ~7 weeks — this is the systemic fix.
+- **website** — `scripts/pre-deploy-check.sh` (frozen install + typecheck + build + html-validate + og-image presence) and `pnpm run verify` (same gates in one target). Full runbook in `website/README.md`.
 - **ci** — Submodule auto-tagging in `release.yml`: on root `v*` tag push, automatically creates annotated `<module>/v<version>` tags for all 16 submodules (excluding `examples/` and `integration/`). Eliminates the manual submodule-tagging step that was forgotten on v0.36.0 and v0.37.0.
 - **docs** — `docs/RELEASE_CHECKLIST.md`: 8-step release sequence (CHANGELOG → release-prepare commit → pre-tag-check → CI green → tag root + submodules → push → verify GitHub Release → verify `go get`), with tag convention, manual/automated paths, and recovery procedures.
 - **ci** — `scripts/tag-release.sh`: full release wrapper that fetches, verifies a clean tree, runs `pre-tag-check.sh`, tags root + 16 submodules with annotated tags, and verifies tag-family parity.
 - **ci** — Annotated-tag enforcement: `pre-tag-check.sh` now verifies the latest release has all annotated tags (parity check), preventing lightweight tags from shipping.
+- **escape** — New shared helpers (from the 2026-08-16 full code review): `MarkdownCell` (pipe/newline/backslash), `PlantUMLID` (allowlist + `fallbackID`), `MermaidText` HTML-escaping with entity-smuggling guard, DOT graph-ID quoting (`dotGraphID`).
 
 ### Changed (from the 2026-08-16 full code review — see `docs/reviews/2026-08-16_12-15_full-code-review.html`)
 
 - **markup** — BREAKING: `XMLWriter.WriteFooter` now takes the footer row (`WriteFooter(footer []string)`); previously `Table.Footer` was silently dropped by the streaming writer. `MarshalXMLFromTable` delegates to `WriteXML` (byte-identical by construction).
-- **escape** — New shared helpers: `MarkdownCell` (pipe/newline/backslash), `PlantUMLID` (allowlist + `fallbackID`), `MermaidText` HTML-escaping with entity-smuggling guard, DOT graph-ID quoting (`dotGraphID`).
 - **nom** — `ActivityCounts` gains an `Other` bucket: custom statuses registered via `RegisterStatus` now count toward `Total`/`CompletionPercent` instead of vanishing.
 - **nom** — Layered-mode priority sort now shares the tree-mode `Status.Interest()` ordering (failed > running > pending > completed); was inverted so failed nodes sank below pending.
 
-### Fixed (from the 2026-08-16 full code review)
+### Fixed
 
 - **security** — Mermaid label HTML injection + `#60;` entity smuggling; PlantUML dangling labeled edges + `@enduml`/newline ID injection (both convert branches); D2 constraint/style injection + option-mutation of caller diagrams; DOT graph-ID breakout; markdown cell escaping (`|` ended cells, newlines broke rows).
+- **website** — go-output.lars.software served Firebase's "Site Not Found" from launch (2026-07-13) until 2026-09-03: a hand-bumped `package.json` broke the lockfile, no rebuild was possible, and the site had zero Hosting releases. Root cause fixed with exact pins (`canvaskit-wasm 0.41.1` as a direct dependency) and the new deploy pipeline; full post-mortem in `docs/status/2026-09-03_23-07_website-outage-root-cause-and-redeploy.md`.
+- **website** — Restored the exact build pins (astro 7.2.1, astro-og-canvas 0.13.0, canvaskit-wasm 0.41.1, typescript 6.0.3) after a manifest bump without re-locking broke frozen-lockfile installs and left the Website workflow red.
+- **website** — HTML pages were cached `max-age=3600` on the CDN: the `**/*.html` header rule never matched clean URLs. Cache-Control moved to the catch-all rule (must-revalidate), assets override with `immutable` (verified live post-deploy).
+- **website** — Format Matrix page showed `d2`/`mermaid`/`dot`/`plantuml` without tree support and claimed `d2.Supports(ShapeTree) == false`; source (`RegisterFormatShapes`) says all four support tree. Module Map annotated with the test-only modules.
+- **website** — Hero star widget no longer renders "1 Stars": the live count only shows at ≥10 stars, otherwise the neutral "Star on GitHub" CTA. Footer now stamps the build date (`Last deployed YYYY-MM-DD`).
 - **tui** — NOM-mode mouse clicks selected the wrong node: the click formula used a stale chrome-lines constant while the rendered tree starts at a different line. `treeStartLine` is now computed from the actual layout and pinned by `TestNOMStyle_TreeStartLineMatchesRenderedLayout`.
 - **nom** — Data race on `renderMode` (4 render sites read the raw field while the TUI toggles it); `Finish` nil-subscriber panic; duplicate private `formatDuration` drifted from `FormatDuration` at minute/hour boundaries.
 - **serialization** — `MarshalJSON`/`JSONWriter.Encode` now pass `json.Deterministic(true)` (map keys were non-deterministic); `MarshalYAML` recovers encoder panics (chan/func input) into errors.
@@ -46,9 +49,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **tests** — 28 test-quality fixes: 12 integration tests that could not fail (vacuous guards, `t.Logf` assertions, swallowed setup errors, a stdlib-only "journey" test), 6 no-op `MarshalError` tests rewritten as metadata regression guards, blind sleeps replaced with the `renderNotify` determinism hook, content-based footer-bold assertion replacing footerRowIndex-derived expectations, per-test cache isolation.
 - **examples** — Migrated the flagship basic/diagram_export examples from legacy renderer structs to the CQRS API; `tui_progress` now demonstrates the full reporter lifecycle including `Stop()` and a real NOM-mode event feed; `RenderAndPrint` no longer prints a spurious blank line for `\n`-terminated payloads.
 - **docs** — `nom/doc.go` described the deleted shared-pointer concurrency model and pointer event syntax (now the v0.22 snapshot model with sealed value events); daghtml duplicate-ID comment told the opposite of the truth; AGENTS.md/README still documented the v0.0.0-sentinel versioning model abandoned in `d16650b` (now documents released pins + replace).
-
-### Fixed
-
+- **go.mod** — Restored the Pattern B model fleet-wide: all 14 module `go.mod` files that had drifted back to `v0.0.0-…` sentinel requires (after `d16650b` bumped them) now pin `v0.37.0` again; `go mod tidy` across all 19 modules preserves the pins. Root's `testhelpers` pin was never bumped and is included.
+- **tests** — `daghtml` golden file regenerated after the font-stack change in the `30e6331` formatting sweep left `TestGolden_Render_SimpleDAG` failing.
 - **release** — v0.37.0 root tag converted from lightweight to annotated (matching v0.34.0/v0.35.0 convention). 16 missing submodule tags created for v0.37.0 with full parity verification against v0.36.0.
 
 ## [0.37.0] - 2026-08-04
