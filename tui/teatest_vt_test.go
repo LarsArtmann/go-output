@@ -18,12 +18,15 @@ import (
 // called from any context, including teatest polling callbacks.
 func vtScreenFromBytes(raw []byte, width, height int) (string, error) {
 	term := vt.NewEmulator(width, height)
-	defer func() { _ = term.Close() }()
 
-	// The emulator answers terminal query sequences (DA1, DECRQM, DSR) via a
-	// synchronous io.Pipe that blocks until read. Program output captured from
-	// Bubble Tea contains those queries, so the response side must be drained
-	// or Write deadlocks (the 2-minute CI hang in TestTeatest_VTScreen).
+	// The emulator answers terminal queries (DA1, DECRQM, DSR) on an internal
+	// io.Pipe whose writes block until read, and captured Bubble Tea output
+	// contains such queries — without this drain, vt write deadlocks (the
+	// 2-minute CI hang in TestTeatest_VTScreen). All responses are produced
+	// during Write, so once Write returns the pipe is empty and this
+	// goroutine parks on it inertly. Close is deliberately NOT called: its
+	// closed-flag write races this loop's flag reads (Emulator is not
+	// synchronized), and terminating the drain any other way is impossible.
 	go func() {
 		buf := make([]byte, 4096)
 		for {
