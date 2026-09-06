@@ -35,6 +35,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
+- **nom** — Timing-cache writes are now atomic (temp file + rename): separate subscribers default to one shared cache path, and a truncating write tore the CSV under a concurrent reader, failing its parse ("wrong number of fields"). `Flush` is also quiescent — it drains the background saver, so no async write lands after it returns (previously such late writes recreated files after test temp-dir cleanup, flaking `-race` runs).
 - **security** — Mermaid label HTML injection + `#60;` entity smuggling; PlantUML dangling labeled edges + `@enduml`/newline ID injection (both convert branches); D2 constraint/style injection + option-mutation of caller diagrams; DOT graph-ID breakout; markdown cell escaping (`|` ended cells, newlines broke rows).
 - **website** — go-output.lars.software served Firebase's "Site Not Found" from launch (2026-07-13) until 2026-09-03: a hand-bumped `package.json` broke the lockfile, no rebuild was possible, and the site had zero Hosting releases. Root cause fixed with exact pins (`canvaskit-wasm 0.41.1` as a direct dependency) and the new deploy pipeline; full post-mortem in `docs/status/2026-09-03_23-07_website-outage-root-cause-and-redeploy.md`.
 - **website** — Restored the exact build pins (astro 7.2.1, astro-og-canvas 0.13.0, canvaskit-wasm 0.41.1, typescript 6.0.3) after a manifest bump without re-locking broke frozen-lockfile installs and left the Website workflow red.
