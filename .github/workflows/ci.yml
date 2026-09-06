@@ -42,12 +42,16 @@ jobs:
       - name: Check coverage thresholds
         run: |
           MIN_COVERAGE=80
+          # Test-support modules stay exempt: examples are self-contained docs,
+          # bdd is Ginkgo infrastructure, testhelpers/graphtest holds shared
+          # fixtures — consumers' tests exercise them, in-module go test cannot.
+          NO_THRESHOLD=" examples bdd testhelpers/graphtest "
           FAILED=""
           for mod in . delimited serialization markup d2 graph plantuml escape testhelpers testhelpers/graphtest table markdown tree nom tui bdd integration examples; do
             if [ -f "$mod/cover.out" ]; then
               COV=$(cd $mod && go tool cover -func=cover.out | grep total | awk '{print $3}' | sed 's/%//')
               echo "$mod: ${COV}% coverage"
-              if [ "$(echo "$COV < $MIN_COVERAGE" | bc -l)" = "1" ]; then
+              if [[ "$NO_THRESHOLD" != *" $mod "* ]] && [ "$(echo "$COV < $MIN_COVERAGE" | bc -l)" = "1" ]; then
                 FAILED="$FAILED $mod(${COV}%)"
               fi
               rm -f $mod/cover.out

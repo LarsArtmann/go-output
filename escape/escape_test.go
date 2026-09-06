@@ -226,3 +226,42 @@ func TestMermaidText(t *testing.T) {
 	tests = append(tests, mermaidTextTests...)
 	testEscapeFunc(t, "MermaidText", MermaidText, tests)
 }
+
+func plantumlIDTestCases() []escapeTestCase {
+	return []escapeTestCase{
+		{"plain word", "abc", "abc"},
+		{"already clean", "node_1", "node_1"},
+		{"slugified chars", "a b-c/d.e", "a_b_c_d_e"},
+		{"colon semicolon dropped", "a:b;c", "abc"},
+		{"at-sign dropped", "a@b", "ab"},
+		{"newline directive injection", "a\n@enduml", "aenduml"},
+		{"only injection runes", "@@:\n;;", "node"},
+		{"empty falls back", "", "node"},
+		{"unicode dropped", "héllo", "hllo"},
+		{"digits and underscore kept", "x_9y", "x_9y"},
+	}
+}
+
+func TestPlantUMLID(t *testing.T) {
+	t.Parallel()
+
+	testEscapeFunc(t, "PlantUMLID", PlantUMLID, plantumlIDTestCases())
+}
+
+func plantumlTestCases() []escapeTestCase {
+	return []escapeTestCase{
+		{"plain", "hello", "hello"},
+		{"empty", "", ""},
+		{"right bracket", "a]b", `a\]b`},
+		{"newline", "a\nb", `a\nb`},
+		{"backslash", `a\b`, `a\\b`},
+		{"quote", `a"b`, `a\"b`},
+		{"combined", "x\"y]z\nw", `x\"y\]z\nw`},
+	}
+}
+
+func TestPlantUML(t *testing.T) {
+	t.Parallel()
+
+	testEscapeFunc(t, "PlantUML", PlantUML, plantumlTestCases())
+}
