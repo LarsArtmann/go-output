@@ -127,10 +127,19 @@ echo
 info "checking for harmful code duplication (art-dupl -t 4)"
 command -v art-dupl >/dev/null 2>&1 ||
 	fail "art-dupl not found — install: go install github.com/LarsArtmann/art-dupl/cmd/art-dupl@v0.6.2"
-DUP_LINES=$(find . -name '*.go' -not -path './vendor/*' -print0 |
-	xargs -0 art-dupl -t 4 2>/dev/null | wc -l)
-if [ "$DUP_LINES" -gt 0 ]; then
-	fail "found $DUP_LINES lines of duplication at t=4 (production gate per ADR 008). \
+DUP_OUTPUT=$(find . -name '*.go' -not -path './vendor/*' -print0 |
+	xargs -0 art-dupl -t 4 2>/dev/null)
+# art-dupl v0.6.2 prints a "Found total N clone groups." summary even when
+# clean (older versions only printed listings), so parse the count instead of
+# counting output lines.
+DUP_COUNT=$(echo "$DUP_OUTPUT" | grep -oE '[0-9]+ clone groups' | grep -oE '^[0-9]+' || true)
+if [ -n "$DUP_COUNT" ]; then
+	if [ "$DUP_COUNT" -gt 0 ]; then
+		fail "found $DUP_COUNT clone groups at t=4 (production gate per ADR 008). \
+Run 'art-dupl -t 4' to review clone groups."
+	fi
+elif [ -n "$DUP_OUTPUT" ]; then
+	fail "art-dupl reported clone groups at t=4 (production gate per ADR 008). \
 Run 'art-dupl -t 4' to review clone groups."
 fi
 pass "no harmful duplication (t=4 production gate)"
