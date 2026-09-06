@@ -40,7 +40,7 @@
     "@astrojs/starlight": "^0.41.11",
     "@tailwindcss/vite": "^4.3.3",
     "astro": "7.2.1",
-    "astro-og-canvas": "0.13.0",
+    "astro-og-canvas": "0.13.1",
     "canvaskit-wasm": "0.41.1",
     "tailwindcss": "^4.3.3"
   },
