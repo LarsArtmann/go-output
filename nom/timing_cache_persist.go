@@ -99,18 +99,32 @@ func (tc *TimingCache) Save() error {
 }
 
 // writeCacheToFile writes the cache data to the specified file path.
+// The write is atomic (sibling temp file + rename): cache instances default
+// to one shared path, so a plain truncate-and-write would tear the file under
+// concurrent readers and fail their CSV parse. Readers then see either the
+// complete previous file or the complete new one.
 func writeCacheToFile(filePath string, data map[string][]time.Duration) error {
 	cacheDirPath := filepath.Dir(filePath)
 	if err := os.MkdirAll(cacheDirPath, 0o750); err != nil {
 		return fmt.Errorf("failed to create cache directory: %w", err)
 	}
 
-	file, err := os.Create(filePath) //nolint:gosec // G304: path is validated upstream
+	tempFile, err := os.CreateTemp(cacheDirPath, filepath.Base(filePath)+".tmp-*")
 	if err != nil {
-		return fmt.Errorf("failed to create cache file: %w", err)
+		return fmt.Errorf("failed to create temp cache file: %w", err)
 	}
+	tempPath := tempFile.Name()
 
-	writer := csv.NewWriter(file)
+	keepTemp := false
+	defer func() {
+		if keepTemp {
+			return
+		}
+
+		_ = os.Remove(tempPath)
+	}()
+
+	writer := csv.NewWriter(tempFile)
 
 	names := make([]string, 0, len(data))
 	for name := range data {
@@ -126,7 +140,7 @@ func writeCacheToFile(filePath string, data map[string][]time.Duration) error {
 				strconv.FormatInt(duration.Nanoseconds(), 10),
 			}
 			if err := writer.Write(record); err != nil {
-				_ = file.Close()
+				_ = tempFile.Close()
 				return fmt.Errorf("failed to write cache record: %w", err)
 			}
 		}
@@ -135,13 +149,19 @@ func writeCacheToFile(filePath string, data map[string][]time.Duration) error {
 	writer.Flush()
 
 	if err := writer.Error(); err != nil {
-		_ = file.Close()
+		_ = tempFile.Close()
 		return fmt.Errorf("failed to flush CSV writer: %w", err)
 	}
 
-	if err := file.Close(); err != nil {
+	if err := tempFile.Close(); err != nil {
 		return fmt.Errorf("failed to close cache file: %w", err)
 	}
+
+	if err := os.Rename(tempPath, filePath); err != nil {
+		return fmt.Errorf("failed to replace cache file: %w", err)
+	}
+
+	keepTemp = true
 
 	return nil
 }

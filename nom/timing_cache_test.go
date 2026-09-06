@@ -1,6 +1,7 @@
 package nom
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"testing"
@@ -299,4 +300,55 @@ func TestRecord_AsyncSaveFailureDoesNotBlock(t *testing.T) {
 
 	tc.Record("build", 5*time.Second)
 	tc.waitPendingSaves()
+}
+
+// TestTimingCache_ConcurrentInstances_LoadNeverTorn pins the atomic-write
+// contract of the cache file: separate TimingCache instances default to one
+// shared path (and tests run many subscribers in parallel), so a truncating
+// write used to tear the CSV under a concurrent reader and fail its parse.
+// With the temp-file+rename write, every Load must observe a complete file.
+func TestTimingCache_ConcurrentInstances_LoadNeverTorn(t *testing.T) {
+	t.Parallel()
+
+	path := filepath.Join(t.TempDir(), cacheFilename)
+
+	writer := newTestTimingCache(path, true)
+	reader := newTestTimingCache(path, false)
+	t.Cleanup(writer.waitPendingSaves)
+
+	stop := make(chan struct{})
+	saverDone := make(chan struct{})
+
+	go func() {
+		defer close(saverDone)
+
+		for i := 0; ; i++ {
+			select {
+			case <-stop:
+				return
+			default:
+			}
+
+			if err := writer.Record(fmt.Sprintf("activity-%d", i%5), time.Duration(i+1)*time.Millisecond); err != nil {
+				t.Errorf("Record: %v", err)
+				return
+			}
+
+			if err := writer.Flush(); err != nil {
+				t.Errorf("Flush: %v", err)
+				return
+			}
+		}
+	}()
+
+	for i := 0; i < 300; i++ {
+		if err := reader.Load(); err != nil {
+			close(stop)
+			<-saverDone
+			t.Fatalf("Load %d raced a concurrent write: %v", i, err)
+		}
+	}
+
+	close(stop)
+	<-saverDone
 }
