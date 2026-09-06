@@ -84,24 +84,25 @@ jobs:
           VERSION="${TAG#v}"
           COMMIT=$(git rev-parse HEAD)
 
+          # actions/checkout fetches only the one tag being deployed, so check
+          # tag existence against ORIGIN (not the local refs) before creating
+          # anything — the release tooling (scripts/tag-release.sh) normally
+          # pushes all 17 tags together, and a duplicate push of a differently
+          # hashed annotated tag object would be rejected (exit 128).
           created=0
           for mod in $TAGGED_SUBMODULES; do
             SUBTAG="${mod}/v${VERSION}"
-            if git rev-parse -q --verify "refs/tags/${SUBTAG}" >/dev/null; then
-              echo "::warning::Tag ${SUBTAG} already exists, skipping"
-            else
-              git tag -a "${SUBTAG}" -m "${TAG}" "${COMMIT}"
-              echo "Created annotated tag ${SUBTAG} at ${COMMIT}"
-              created=$((created + 1))
+            if git ls-remote --exit-code --tags origin "refs/tags/${SUBTAG}" >/dev/null 2>&1; then
+              echo "::warning::Tag ${SUBTAG} already exists on origin, skipping"
+              continue
             fi
+            git tag -a "${SUBTAG}" -m "${TAG}" "${COMMIT}"
+            echo "Created annotated tag ${SUBTAG} at ${COMMIT}"
+            git push origin "refs/tags/${SUBTAG}"
+            created=$((created + 1))
           done
 
-          if [ "$created" -gt 0 ]; then
-            echo "Pushing $created new submodule tags…"
-            git push origin "refs/tags/*"
-          else
-            echo "All submodule tags already exist — nothing to push"
-          fi
+          echo "Created and pushed ${created} submodule tag(s)"
 
       - name: Create GitHub Release
         if: github.event_name == 'push'
