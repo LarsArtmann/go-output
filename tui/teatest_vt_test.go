@@ -20,6 +20,19 @@ func vtScreenFromBytes(raw []byte, width, height int) (string, error) {
 	term := vt.NewEmulator(width, height)
 	defer func() { _ = term.Close() }()
 
+	// The emulator answers terminal query sequences (DA1, DECRQM, DSR) via a
+	// synchronous io.Pipe that blocks until read. Program output captured from
+	// Bubble Tea contains those queries, so the response side must be drained
+	// or Write deadlocks (the 2-minute CI hang in TestTeatest_VTScreen).
+	go func() {
+		buf := make([]byte, 4096)
+		for {
+			if _, err := term.Read(buf); err != nil {
+				return
+			}
+		}
+	}()
+
 	if _, err := term.Write(raw); err != nil {
 		return "", fmt.Errorf("vt write: %w", err)
 	}
@@ -61,5 +74,30 @@ func TestTeatest_VTScreen_ShowsActivityLabels(t *testing.T) {
 
 	if !strings.Contains(screenSnapshot, "Run Tests") {
 		t.Errorf("VT screen should contain 'Run Tests'\n\nScreen:\n%s", screenSnapshot)
+	}
+}
+
+// TestVTScreen_HandlesQuerySequences regression-guards the response-pipe
+// deadlock: captured program output routinely contains terminal query
+// sequences (DA1, DECRQM) whose emulator answers block until the response
+// side is read. Without the drain goroutine this test hangs to the package
+// timeout, exactly as CI did for 100 consecutive runs.
+func TestVTScreen_HandlesQuerySequences(t *testing.T) {
+	done := make(chan string, 1)
+	go func() {
+		screen, err := vtScreenFromBytes([]byte("\x1b[c\x1b[?2026$pBuild Module"), 50, 10)
+		if err != nil {
+			t.Errorf("vt screen reconstruction: %v", err)
+		}
+		done <- screen
+	}()
+
+	select {
+	case screen := <-done:
+		if !strings.Contains(screen, "Build Module") {
+			t.Errorf("VT screen should contain 'Build Module'\n\nScreen:\n%s", screen)
+		}
+	case <-time.After(5 * time.Second):
+		t.Fatal("vtScreenFromBytes deadlocked on query sequences — response pipe not drained")
 	}
 }
