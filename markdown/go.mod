@@ -3,9 +3,9 @@ module github.com/larsartmann/go-output/markdown
 go 1.26.7
 
 require (
-	github.com/larsartmann/go-output v0.37.0
-	github.com/larsartmann/go-output/escape v0.37.0
-	github.com/larsartmann/go-output/testhelpers v0.37.0
+	github.com/larsartmann/go-output v0.38.0
+	github.com/larsartmann/go-output/escape v0.38.0
+	github.com/larsartmann/go-output/testhelpers v0.38.0
 )
 
 require (

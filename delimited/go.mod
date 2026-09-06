@@ -4,8 +4,8 @@ go 1.26.7
 
 require (
 	github.com/charmbracelet/x/exp/golden v0.0.0-20260705004817-2cc9a8fe1146
-	github.com/larsartmann/go-output v0.37.0
-	github.com/larsartmann/go-output/testhelpers v0.37.0
+	github.com/larsartmann/go-output v0.38.0
+	github.com/larsartmann/go-output/testhelpers v0.38.0
 )
 
 require (
