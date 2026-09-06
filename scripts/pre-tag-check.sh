@@ -129,18 +129,16 @@ command -v art-dupl >/dev/null 2>&1 ||
 	fail "art-dupl not found — install: go install github.com/LarsArtmann/art-dupl/cmd/art-dupl@v0.6.2"
 DUP_OUTPUT=$(find . -name '*.go' -not -path './vendor/*' -print0 |
 	xargs -0 art-dupl -t 4 2>/dev/null)
-# art-dupl v0.6.2 prints a "Found total N clone groups." summary even when
-# clean (older versions only printed listings), so parse the count instead of
-# counting output lines.
-DUP_COUNT=$(echo "$DUP_OUTPUT" | grep -oE '[0-9]+ clone groups' | grep -oE '^[0-9]+' || true)
-if [ -n "$DUP_COUNT" ]; then
-	if [ "$DUP_COUNT" -gt 0 ]; then
-		fail "found $DUP_COUNT clone groups at t=4 (production gate per ADR 008). \
+# Summary formats differ by version: v0.6.1 prints "Detected N clone groups,
+# 0 shown (...)" (only the "shown" count is actionable), v0.6.2 prints
+# "Found total 0 clone groups." — both are clean at zero. Anything else
+# (including bare listings from older versions) is a gate failure.
+if [ -n "$DUP_OUTPUT" ]; then
+	if ! echo "$DUP_OUTPUT" | grep -qE '(^|,) 0 shown|total 0 clone groups'; then
+		echo "$DUP_OUTPUT" | head -20
+		fail "art-dupl reported actionable clones at t=4 (production gate per ADR 008). \
 Run 'art-dupl -t 4' to review clone groups."
 	fi
-elif [ -n "$DUP_OUTPUT" ]; then
-	fail "art-dupl reported clone groups at t=4 (production gate per ADR 008). \
-Run 'art-dupl -t 4' to review clone groups."
 fi
 pass "no harmful duplication (t=4 production gate)"
 
