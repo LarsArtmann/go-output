@@ -41,6 +41,8 @@ replace (
 
 replace github.com/larsartmann/go-output/escape => ../escape
 
+replace github.com/larsartmann/go-output/testhelpers => ../testhelpers
+
 replace github.com/larsartmann/go-output/markdown => ../markdown
 
 replace github.com/larsartmann/go-output/tree => ../tree
