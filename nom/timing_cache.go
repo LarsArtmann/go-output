@@ -181,8 +181,13 @@ func (tc *TimingCache) stopSaver() {
 // Flush ensures all pending data is persisted to disk and returns the last
 // async save error (if any). Safe to call concurrently with Record().
 // The synchronous write serializes with any in-flight async save via saveMu.
+// Flush is quiescent: it drains and stops the background saver, so no async
+// write can land after it returns (until the next Record re-arms one) —
+// callers rely on this to avoid writes racing e.g. temp-dir cleanup.
 func (tc *TimingCache) Flush() error {
 	err := tc.saveSnapshot()
+
+	tc.stopSaver()
 
 	tc.saveMu.Lock()
 	tc.saveErr = nil
