@@ -18,6 +18,9 @@ func TestInlineRenderer_WorkflowFailureErrorDisplayed(t *testing.T) {
 	t.Parallel()
 
 	subscriber := nom.NewNOMSubscriber()
+	// Stop the timing cache's background saver once the test ends so no
+	// late async write lands after the test has finished.
+	t.Cleanup(func() { _ = subscriber.Flush() })
 	ctx := context.Background()
 
 	fireWorkflowStarted(t, subscriber, ctx, "wf-fail", "Failing Pipeline")

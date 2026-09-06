@@ -18,6 +18,9 @@ func TestNOMSubscriber_Integration(t *testing.T) {
 		t.Parallel()
 
 		subscriber := nom.NewNOMSubscriber(nom.WithCachePath(filepath.Join(t.TempDir(), "nom-timing.csv")))
+		// Quiesce the timing cache before the temp dir is removed: cleanup runs
+		// LIFO, so this flush (which stops the background saver) lands first.
+		t.Cleanup(func() { _ = subscriber.Flush() })
 		ctx := context.Background()
 
 		if err := subscriber.OnEvent(ctx, nom.WorkflowStarted{
@@ -200,6 +203,9 @@ func TestNOMSubscriber_RenderNodeVisibleNodes_Integration(t *testing.T) {
 	t.Parallel()
 
 	subscriber := nom.NewNOMSubscriber(nom.WithCachePath(filepath.Join(t.TempDir(), "nom-timing.csv")))
+	// Quiesce the timing cache before the temp dir is removed: cleanup runs
+	// LIFO, so this flush (which stops the background saver) lands first.
+	t.Cleanup(func() { _ = subscriber.Flush() })
 	ctx := context.Background()
 
 	fireWorkflowStarted(t, subscriber, ctx, "w1", "Pipeline")
@@ -348,6 +354,9 @@ func TestNOM_LayeredMode_Integration(t *testing.T) {
 	t.Parallel()
 
 	sub := nom.NewNOMSubscriber(nom.WithCachePath(filepath.Join(t.TempDir(), "nom-timing.csv")))
+	// Quiesce the timing cache before the temp dir is removed: cleanup runs
+	// LIFO, so this flush (which stops the background saver) lands first.
+	t.Cleanup(func() { _ = sub.Flush() })
 	ctx := context.Background()
 
 	fireWorkflowStarted(t, sub, ctx, "wf1", "CI Pipeline")
