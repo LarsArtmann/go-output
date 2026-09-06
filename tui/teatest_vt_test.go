@@ -28,9 +28,9 @@ func vtScreenFromBytes(raw []byte, width, height int) (string, error) {
 	// closed-flag write races this loop's flag reads (Emulator is not
 	// synchronized), and terminating the drain any other way is impossible.
 	go func() {
-		buf := make([]byte, 4096)
+		var buf [4096]byte
 		for {
-			if _, err := term.Read(buf); err != nil {
+			if _, err := term.Read(buf[:]); err != nil {
 				return
 			}
 		}
@@ -87,11 +87,13 @@ func TestTeatest_VTScreen_ShowsActivityLabels(t *testing.T) {
 // timeout, exactly as CI did for 100 consecutive runs.
 func TestVTScreen_HandlesQuerySequences(t *testing.T) {
 	done := make(chan string, 1)
+
 	go func() {
 		screen, err := vtScreenFromBytes([]byte("\x1b[c\x1b[?2026$pBuild Module"), 50, 10)
 		if err != nil {
 			t.Errorf("vt screen reconstruction: %v", err)
 		}
+
 		done <- screen
 	}()
 
