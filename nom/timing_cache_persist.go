@@ -113,9 +113,11 @@ func writeCacheToFile(filePath string, data map[string][]time.Duration) error {
 	if err != nil {
 		return fmt.Errorf("failed to create temp cache file: %w", err)
 	}
+
 	tempPath := tempFile.Name()
 
 	keepTemp := false
+
 	defer func() {
 		if keepTemp {
 			return

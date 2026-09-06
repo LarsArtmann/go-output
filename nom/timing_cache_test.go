@@ -314,6 +314,7 @@ func TestTimingCache_ConcurrentInstances_LoadNeverTorn(t *testing.T) {
 
 	writer := newTestTimingCache(path, true)
 	reader := newTestTimingCache(path, false)
+
 	t.Cleanup(writer.waitPendingSaves)
 
 	stop := make(chan struct{})
@@ -341,7 +342,7 @@ func TestTimingCache_ConcurrentInstances_LoadNeverTorn(t *testing.T) {
 		}
 	}()
 
-	for i := 0; i < 300; i++ {
+	for i := range 300 {
 		if err := reader.Load(); err != nil {
 			close(stop)
 			<-saverDone
