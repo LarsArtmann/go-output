@@ -5,7 +5,7 @@ go 1.26.7
 require (
 	github.com/go-faster/yaml v0.4.6
 	github.com/larsartmann/go-output v0.38.0
-	github.com/larsartmann/go-output/d2 v0.37.0
+	github.com/larsartmann/go-output/d2 v0.38.0
 	github.com/larsartmann/go-output/delimited v0.38.0
 	github.com/larsartmann/go-output/graph v0.38.0
 	github.com/larsartmann/go-output/markdown v0.38.0

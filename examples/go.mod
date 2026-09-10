@@ -4,7 +4,7 @@ go 1.26.7
 
 require (
 	github.com/larsartmann/go-output v0.38.0
-	github.com/larsartmann/go-output/d2 v0.37.0
+	github.com/larsartmann/go-output/d2 v0.38.0
 	github.com/larsartmann/go-output/delimited v0.38.0
 	github.com/larsartmann/go-output/graph v0.38.0
 	github.com/larsartmann/go-output/markup v0.38.0
