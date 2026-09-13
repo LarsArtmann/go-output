@@ -5,21 +5,21 @@ import (
 )
 
 type graphView struct {
-	Nodes []graphNodeView `json:"nodes" toml:"nodes" yaml:"nodes"`
-	Edges []graphEdgeView `json:"edges" toml:"edges" yaml:"edges"`
+	Nodes []graphNodeView `json:"nodes" yaml:"nodes" toml:"nodes"`
+	Edges []graphEdgeView `json:"edges" yaml:"edges" toml:"edges"`
 }
 
 type graphNodeView struct {
-	ID       string            `json:"id"                 toml:"id"                 yaml:"id"`
-	Label    string            `json:"label"              toml:"label"              yaml:"label"`
-	Shape    string            `json:"shape,omitempty"    toml:"shape,omitempty"    yaml:"shape,omitempty"`
-	Metadata map[string]string `json:"metadata,omitempty" toml:"metadata,omitempty" yaml:"metadata,omitempty"`
+	ID       string            `json:"id"                 yaml:"id"                 toml:"id"`
+	Label    string            `json:"label"              yaml:"label"              toml:"label"`
+	Shape    string            `json:"shape,omitempty"    yaml:"shape,omitempty"    toml:"shape,omitempty"`
+	Metadata map[string]string `json:"metadata,omitempty" yaml:"metadata,omitempty" toml:"metadata,omitempty"`
 }
 
 type graphEdgeView struct {
-	From  string `json:"from"            toml:"from"            yaml:"from"`
-	To    string `json:"to"              toml:"to"              yaml:"to"`
-	Label string `json:"label,omitempty" toml:"label,omitempty" yaml:"label,omitempty"`
+	From  string `json:"from"            yaml:"from"            toml:"from"`
+	To    string `json:"to"              yaml:"to"              toml:"to"`
+	Label string `json:"label,omitempty" yaml:"label,omitempty" toml:"label,omitempty"`
 }
 
 func buildGraphView(mixin output.GraphBuilder) graphView {

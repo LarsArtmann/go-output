@@ -154,7 +154,7 @@ func (dt *DependencyTree) sortNodesByPriority(
 
 		pb := lookupSnapshot(snapshots, b.ID).Status.Interest()
 		if pa != pb {
-			return pa - pb // lower interest value = more urgent, first
+			return cmp.Compare(pa, pb) // lower interest value = more urgent, first
 		}
 
 		return cmp.Compare(string(a.ID), string(b.ID))

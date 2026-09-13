@@ -5,7 +5,7 @@ go 1.26.7
 require (
 	github.com/larsartmann/go-branded-id v0.5.1
 	github.com/larsartmann/go-output/testhelpers v0.38.0
-	golang.org/x/term v0.45.0
+	golang.org/x/term v0.46.0
 )
 
 replace (
@@ -16,7 +16,7 @@ replace (
 	github.com/larsartmann/go-output/testhelpers/graphtest => ./testhelpers/graphtest
 )
 
-require golang.org/x/sys v0.47.0 // indirect
+require golang.org/x/sys v0.48.0 // indirect
 
 retract (
 	// Stale tag drift: sibling dep versions were misaligned at tag time; v0.35.0 realigned them the same day.

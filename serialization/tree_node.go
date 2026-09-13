@@ -5,10 +5,10 @@ import (
 )
 
 type treeNode struct {
-	ID       string            `json:"id"                 toml:"id"                 yaml:"id"`
-	Label    string            `json:"label"              toml:"label"              yaml:"label"`
-	Children []treeNode        `json:"children,omitempty" toml:"children,omitempty" yaml:"children,omitempty"`
-	Metadata map[string]string `json:"metadata,omitempty" toml:"metadata,omitempty" yaml:"metadata,omitempty"`
+	ID       string            `json:"id"                 yaml:"id"                 toml:"id"`
+	Label    string            `json:"label"              yaml:"label"              toml:"label"`
+	Children []treeNode        `json:"children,omitempty" yaml:"children,omitempty" toml:"children,omitempty"`
+	Metadata map[string]string `json:"metadata,omitempty" yaml:"metadata,omitempty" toml:"metadata,omitempty"`
 }
 
 func toTreeNode(node *output.TreeNode) treeNode {
