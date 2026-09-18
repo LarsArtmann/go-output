@@ -10,6 +10,7 @@ A reusable Go library for CLI output formatting (16 formats across table/tree/gr
 - Sub-module `go get` resolves to the published release (pins are real); local development still goes through the committed `replace` directives — the local tree always wins over the pin.
 - **Every release must re-bump all sibling pins** to the new version across all `go.mod` files (ADR 009 amendment + RELEASE_CHECKLIST step pending, TODO item 20).
 - `testhelpers/` keeps real published versions and is genuinely independently useful; `daghtml/` and `escape/` are zero/low-dep and independently publishable.
+- Binary version stamps (example mains print `pkg/version.Version`) follow the fleet standard: `../file-and-image-renamer/docs/FLEET-STANDARD-VERSION-STAMPS.md`.
 - Sub-modules are consumed via clone + `go.work` (run `nix run .#setup-workspace`).
 - Never delete the `replace` directives — they are what makes local development hermetic.
 
