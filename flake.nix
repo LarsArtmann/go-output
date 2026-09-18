@@ -148,7 +148,7 @@
 
             test-race = {
               type = "app";
-              program = pkgs.writeShellApplication {
+              program = pkgs.lib.getExe (pkgs.writeShellApplication {
                 name = "go-test-race";
                 runtimeInputs = [ go ];
                 text = ''
@@ -159,12 +159,12 @@
                     ( cd "$mod" && go test -race -count=1 ./... )
                   done
                 '';
-              };
+              });
             };
 
             test-race-all = {
               type = "app";
-              program = pkgs.writeShellApplication {
+              program = pkgs.lib.getExe (pkgs.writeShellApplication {
                 name = "go-test-race-all";
                 runtimeInputs = [ go ];
                 text = ''
@@ -175,7 +175,7 @@
                     ( cd "$mod" && go test -race -count=1 ./... )
                   done
                 '';
-              };
+              });
             };
 
             build = {
@@ -185,7 +185,7 @@
 
             lint = {
               type = "app";
-              program = pkgs.writeShellApplication {
+              program = pkgs.lib.getExe (pkgs.writeShellApplication {
                 name = "go-lint";
                 runtimeInputs = [
                   go
@@ -199,12 +199,12 @@
                     ( cd "$mod" && golangci-lint run ./... )
                   done
                 '';
-              };
+              });
             };
 
             tidy = {
               type = "app";
-              program = pkgs.writeShellApplication {
+              program = pkgs.lib.getExe (pkgs.writeShellApplication {
                 name = "go-mod-tidy";
                 runtimeInputs = [ go ];
                 text = ''
@@ -215,12 +215,12 @@
                     ( cd "$mod" && go mod tidy )
                   done
                 '';
-              };
+              });
             };
 
             govulncheck = {
               type = "app";
-              program = pkgs.writeShellApplication {
+              program = pkgs.lib.getExe (pkgs.writeShellApplication {
                 name = "go-govulncheck";
                 runtimeInputs = [
                   go
@@ -234,12 +234,12 @@
                     ( cd "$mod" && govulncheck ./... )
                   done
                 '';
-              };
+              });
             };
 
             website-build = {
               type = "app";
-              program = pkgs.writeShellApplication {
+              program = pkgs.lib.getExe (pkgs.writeShellApplication {
                 name = "website-build";
                 runtimeInputs = [
                   pkgs.nodejs
@@ -252,12 +252,12 @@
                   pnpm install --frozen-lockfile
                   pnpm run verify
                 '';
-              };
+              });
             };
 
             website-deploy = {
               type = "app";
-              program = pkgs.writeShellApplication {
+              program = pkgs.lib.getExe (pkgs.writeShellApplication {
                 name = "website-deploy";
                 runtimeInputs = [
                   pkgs.nodejs
@@ -272,12 +272,12 @@
                   pnpm run verify
                   firebase deploy --only hosting:go-output --project lars-software
                 '';
-              };
+              });
             };
 
             setup-workspace = {
               type = "app";
-              program = pkgs.writeShellApplication {
+              program = pkgs.lib.getExe (pkgs.writeShellApplication {
                 name = "setup-workspace";
                 text = ''
                   if [ -f go.work ]; then
@@ -291,7 +291,7 @@
                   cp go.work.example go.work
                   echo "Generated go.work from go.work.example"
                 '';
-              };
+              });
             };
           };
         };
