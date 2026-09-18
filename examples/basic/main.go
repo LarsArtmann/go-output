@@ -8,6 +8,7 @@ import (
 
 	"github.com/larsartmann/go-output"
 	"github.com/larsartmann/go-output/examples/shared"
+	"github.com/larsartmann/go-output/pkg/version"
 )
 
 // Project represents a sample data structure for demonstration.
@@ -46,6 +47,8 @@ func getRenderers() map[output.Format]rendererFunc {
 var colorMode output.ColorMode
 
 func main() {
+	fmt.Printf("go-output basic demo (build %s)\n", version.Version)
+
 	projects := []Project{
 		{Name: "Alpha", Health: 90, Complexity: 7},
 		{Name: "Beta", Health: 75, Complexity: 5},
