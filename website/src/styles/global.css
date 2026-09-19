@@ -18,6 +18,7 @@
   --color-accent-hover: #67e8f9;
   --color-accent-dim: rgba(34, 211, 238, 0.1);
   --color-accent-light: #a5f3fc;
+  --color-on-accent: #0c0a09;
 
   --color-amber: #fbbf24;
   --color-violet: #a78bfa;
@@ -56,6 +57,7 @@
   --color-accent-hover: #06b6d4;
   --color-accent-dim: rgba(8, 145, 178, 0.1);
   --color-accent-light: #67e8f9;
+  --color-on-accent: #ffffff;
 
   --color-code-inline-bg: #e7e5e4;
   --color-code-dot: #a8a29e;
