@@ -13,7 +13,7 @@ import SectionHeader from './SectionHeader.astro';
         <div class={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-mono font-bold ${phase.stepColor === 'accent' ? 'bg-accent-dim text-accent' : phase.stepColor === 'amber' ? 'bg-amber/10 text-amber' : 'bg-violet/10 text-violet'}`}>{phase.step}</div>
         <h3 class="font-semibold text-text-primary">{phase.title}</h3>
       </div>
-      <pre class="text-xs text-text-muted mb-3 font-mono bg-code-inline-bg rounded-md p-3 overflow-x-auto leading-relaxed"><code>{phase.code}</code></pre>
+      <pre tabindex="0" class="text-xs text-text-muted mb-3 font-mono bg-code-inline-bg rounded-md p-3 overflow-x-auto leading-relaxed"><code>{phase.code}</code></pre>
       <span class={`inline-flex items-center gap-1.5 text-xs ${phase.hintColor === 'accent' ? 'text-accent' : phase.hintColor === 'amber' ? 'text-amber' : 'text-violet'}`}>
         <Icon name={phase.hintIcon} size={14} />
         {phase.hint}
