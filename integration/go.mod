@@ -1,6 +1,6 @@
 module github.com/larsartmann/go-output/integration
 
-go 1.26.0
+go 1.27.1
 
 require (
 	github.com/go-faster/yaml v0.4.6
@@ -33,10 +33,7 @@ require (
 	github.com/go-faster/errors v0.8.0 // indirect
 	github.com/go-faster/jx v1.2.0 // indirect
 	github.com/larsartmann/go-branded-id v0.6.0 // indirect
-	github.com/larsartmann/go-output/d v0.38.1
 	github.com/larsartmann/go-output/escape v0.38.1 // indirect
-	github.com/larsartmann/go-output/integration v0.38.1
-	github.com/larsartmann/go-output/testhelpers/graphtest v0.38.1
 	github.com/lucasb-eyer/go-colorful v1.4.1 // indirect
 	github.com/mattn/go-runewidth v0.0.30 // indirect
 	github.com/muesli/cancelreader v0.2.2 // indirect

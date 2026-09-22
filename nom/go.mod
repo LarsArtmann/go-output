@@ -1,6 +1,6 @@
 module github.com/larsartmann/go-output/nom
 
-go 1.26.0
+go 1.27.1
 
 require (
 	charm.land/lipgloss/v2 v2.0.6
@@ -26,10 +26,6 @@ require (
 	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/larsartmann/go-branded-id v0.6.0 // indirect
-	github.com/larsartmann/go-output/escape v0.38.1
-	github.com/larsartmann/go-output/markdown v0.38.1
-	github.com/larsartmann/go-output/nom v0.38.1
-	github.com/larsartmann/go-output/tree v0.38.1
 	github.com/lucasb-eyer/go-colorful v1.4.1 // indirect
 	github.com/mattn/go-runewidth v0.0.30 // indirect
 	github.com/muesli/cancelreader v0.2.2 // indirect

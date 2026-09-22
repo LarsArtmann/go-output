@@ -148,34 +148,38 @@
 
             test-race = {
               type = "app";
-              program = pkgs.lib.getExe (pkgs.writeShellApplication {
-                name = "go-test-race";
-                runtimeInputs = [ go ];
-                text = ''
-                  set -euo pipefail
-                  export GOEXPERIMENT=jsonv2
-                  for mod in nom tui; do
-                    echo ":: $mod :: go test -race -count=1 ./..."
-                    ( cd "$mod" && go test -race -count=1 ./... )
-                  done
-                '';
-              });
+              program = pkgs.lib.getExe (
+                pkgs.writeShellApplication {
+                  name = "go-test-race";
+                  runtimeInputs = [ go ];
+                  text = ''
+                    set -euo pipefail
+                    export GOEXPERIMENT=jsonv2
+                    for mod in nom tui; do
+                      echo ":: $mod :: go test -race -count=1 ./..."
+                      ( cd "$mod" && go test -race -count=1 ./... )
+                    done
+                  '';
+                }
+              );
             };
 
             test-race-all = {
               type = "app";
-              program = pkgs.lib.getExe (pkgs.writeShellApplication {
-                name = "go-test-race-all";
-                runtimeInputs = [ go ];
-                text = ''
-                  set -euo pipefail
-                  export GOEXPERIMENT=jsonv2
-                  for mod in ${lib.concatStringsSep " " modules}; do
-                    echo ":: $mod :: go test -race -count=1 ./..."
-                    ( cd "$mod" && go test -race -count=1 ./... )
-                  done
-                '';
-              });
+              program = pkgs.lib.getExe (
+                pkgs.writeShellApplication {
+                  name = "go-test-race-all";
+                  runtimeInputs = [ go ];
+                  text = ''
+                    set -euo pipefail
+                    export GOEXPERIMENT=jsonv2
+                    for mod in ${lib.concatStringsSep " " modules}; do
+                      echo ":: $mod :: go test -race -count=1 ./..."
+                      ( cd "$mod" && go test -race -count=1 ./... )
+                    done
+                  '';
+                }
+              );
             };
 
             build = {
@@ -185,113 +189,125 @@
 
             lint = {
               type = "app";
-              program = pkgs.lib.getExe (pkgs.writeShellApplication {
-                name = "go-lint";
-                runtimeInputs = [
-                  go
-                  pkgs.golangci-lint
-                ];
-                text = ''
-                  set -euo pipefail
-                  export GOEXPERIMENT=jsonv2
-                  for mod in ${lib.concatStringsSep " " modules}; do
-                    echo ":: $mod :: golangci-lint run ./..."
-                    ( cd "$mod" && golangci-lint run ./... )
-                  done
-                '';
-              });
+              program = pkgs.lib.getExe (
+                pkgs.writeShellApplication {
+                  name = "go-lint";
+                  runtimeInputs = [
+                    go
+                    pkgs.golangci-lint
+                  ];
+                  text = ''
+                    set -euo pipefail
+                    export GOEXPERIMENT=jsonv2
+                    for mod in ${lib.concatStringsSep " " modules}; do
+                      echo ":: $mod :: golangci-lint run ./..."
+                      ( cd "$mod" && golangci-lint run ./... )
+                    done
+                  '';
+                }
+              );
             };
 
             tidy = {
               type = "app";
-              program = pkgs.lib.getExe (pkgs.writeShellApplication {
-                name = "go-mod-tidy";
-                runtimeInputs = [ go ];
-                text = ''
-                  set -euo pipefail
-                  export GOEXPERIMENT=jsonv2
-                  for mod in ${lib.concatStringsSep " " modules}; do
-                    echo ":: $mod :: go mod tidy"
-                    ( cd "$mod" && go mod tidy )
-                  done
-                '';
-              });
+              program = pkgs.lib.getExe (
+                pkgs.writeShellApplication {
+                  name = "go-mod-tidy";
+                  runtimeInputs = [ go ];
+                  text = ''
+                    set -euo pipefail
+                    export GOEXPERIMENT=jsonv2
+                    for mod in ${lib.concatStringsSep " " modules}; do
+                      echo ":: $mod :: go mod tidy"
+                      ( cd "$mod" && go mod tidy )
+                    done
+                  '';
+                }
+              );
             };
 
             govulncheck = {
               type = "app";
-              program = pkgs.lib.getExe (pkgs.writeShellApplication {
-                name = "go-govulncheck";
-                runtimeInputs = [
-                  go
-                  pkgs.govulncheck
-                ];
-                text = ''
-                  set -euo pipefail
-                  export GOEXPERIMENT=jsonv2
-                  for mod in ${lib.concatStringsSep " " modules}; do
-                    echo ":: $mod :: govulncheck ./..."
-                    ( cd "$mod" && govulncheck ./... )
-                  done
-                '';
-              });
+              program = pkgs.lib.getExe (
+                pkgs.writeShellApplication {
+                  name = "go-govulncheck";
+                  runtimeInputs = [
+                    go
+                    pkgs.govulncheck
+                  ];
+                  text = ''
+                    set -euo pipefail
+                    export GOEXPERIMENT=jsonv2
+                    for mod in ${lib.concatStringsSep " " modules}; do
+                      echo ":: $mod :: govulncheck ./..."
+                      ( cd "$mod" && govulncheck ./... )
+                    done
+                  '';
+                }
+              );
             };
 
             website-build = {
               type = "app";
-              program = pkgs.lib.getExe (pkgs.writeShellApplication {
-                name = "website-build";
-                runtimeInputs = [
-                  pkgs.nodejs
-                  pkgs.pnpm
-                ];
-                text = ''
-                  set -euo pipefail
-                  export CI=true
-                  cd website
-                  pnpm install --frozen-lockfile
-                  pnpm run verify
-                '';
-              });
+              program = pkgs.lib.getExe (
+                pkgs.writeShellApplication {
+                  name = "website-build";
+                  runtimeInputs = [
+                    pkgs.nodejs
+                    pkgs.pnpm
+                  ];
+                  text = ''
+                    set -euo pipefail
+                    export CI=true
+                    cd website
+                    pnpm install --frozen-lockfile
+                    pnpm run verify
+                  '';
+                }
+              );
             };
 
             website-deploy = {
               type = "app";
-              program = pkgs.lib.getExe (pkgs.writeShellApplication {
-                name = "website-deploy";
-                runtimeInputs = [
-                  pkgs.nodejs
-                  pkgs.pnpm
-                  pkgs.firebase-tools
-                ];
-                text = ''
-                  set -euo pipefail
-                  export CI=true
-                  cd website
-                  pnpm install --frozen-lockfile
-                  pnpm run verify
-                  firebase deploy --only hosting:go-output --project lars-software
-                '';
-              });
+              program = pkgs.lib.getExe (
+                pkgs.writeShellApplication {
+                  name = "website-deploy";
+                  runtimeInputs = [
+                    pkgs.nodejs
+                    pkgs.pnpm
+                    pkgs.firebase-tools
+                  ];
+                  text = ''
+                    set -euo pipefail
+                    export CI=true
+                    cd website
+                    pnpm install --frozen-lockfile
+                    pnpm run verify
+                    firebase deploy --only hosting:go-output --project lars-software
+                  '';
+                }
+              );
             };
 
             setup-workspace = {
               type = "app";
-              program = pkgs.lib.getExe (pkgs.writeShellApplication {
-                name = "setup-workspace";
-                text = ''
-                  if [ -f go.work ]; then
-                    echo "go.work already exists, skipping"
-                    exit 0
-                  fi
-                  if [ ! -f go.work.example ]; then
-                    echo "ERROR: go.work.example not found" >&2
-                    exit 1
-                  fi
-                  cp go.work.example go.work
-                  echo "Generated go.work from go.work.example"
-                '';
-              });
+              program = pkgs.lib.getExe (
+                pkgs.writeShellApplication {
+                  name = "setup-workspace";
+                  text = ''
+                    if [ -f go.work ]; then
+                      echo "go.work already exists, skipping"
+                      exit 0
+                    fi
+                    if [ ! -f go.work.example ]; then
+                      echo "ERROR: go.work.example not found" >&2
+                      exit 1
+                    fi
+                    cp go.work.example go.work
+                    echo "Generated go.work from go.work.example"
+                  '';
+                }
+              );
             };
           };
         };

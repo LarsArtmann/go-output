@@ -1,6 +1,6 @@
 module github.com/larsartmann/go-output/tui
 
-go 1.26.0
+go 1.27.1
 
 require (
 	charm.land/bubbletea/v2 v2.0.9
@@ -24,11 +24,6 @@ require (
 	github.com/clipperhouse/uax29/v2 v2.7.0 // indirect
 	github.com/larsartmann/go-branded-id v0.6.0 // indirect
 	github.com/larsartmann/go-output v0.38.1 // indirect
-	github.com/larsartmann/go-output/escape v0.38.1
-	github.com/larsartmann/go-output/markdown v0.38.1
-	github.com/larsartmann/go-output/testhelpers v0.38.1
-	github.com/larsartmann/go-output/tree v0.38.1
-	github.com/larsartmann/go-output/tui v0.38.1
 	github.com/lucasb-eyer/go-colorful v1.4.1 // indirect
 	github.com/mattn/go-runewidth v0.0.30 // indirect
 	github.com/muesli/cancelreader v0.2.2 // indirect
