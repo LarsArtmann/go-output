@@ -1,10 +1,10 @@
 module github.com/larsartmann/go-output
 
-go 1.26.7
+go 1.26
 
 require (
-	github.com/larsartmann/go-branded-id v0.5.1
-	github.com/larsartmann/go-output/testhelpers v0.38.0
+	github.com/larsartmann/go-branded-id v0.6.0
+	github.com/larsartmann/go-output/testhelpers v0.38.1
 	golang.org/x/term v0.46.0
 )
 
@@ -16,7 +16,16 @@ replace (
 	github.com/larsartmann/go-output/testhelpers/graphtest => ./testhelpers/graphtest
 )
 
-require golang.org/x/sys v0.48.0 // indirect
+require (
+	github.com/larsartmann/go-output v0.38.1
+	github.com/larsartmann/go-output/delimited v0.38.1
+	github.com/larsartmann/go-output/markdown v0.38.1
+	github.com/larsartmann/go-output/markup v0.38.1
+	github.com/larsartmann/go-output/serialization v0.38.1
+	github.com/larsartmann/go-output/testhelpers/graphtest v0.38.1
+	github.com/larsartmann/go-output/tree v0.38.1
+	golang.org/x/sys v0.48.0 // indirect
+)
 
 retract (
 	// Stale tag drift: sibling dep versions were misaligned at tag time; v0.35.0 realigned them the same day.
