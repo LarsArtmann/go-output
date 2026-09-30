@@ -5,7 +5,7 @@ go 1.27
 require (
 	charm.land/lipgloss/v2 v2.0.6
 	github.com/charmbracelet/x/exp/golden v0.0.0-20260705004817-2cc9a8fe1146
-	github.com/larsartmann/go-output v0.38.1
+	github.com/larsartmann/go-output v0.38.2
 	github.com/larsartmann/go-output/testhelpers v0.38.2
 )
 

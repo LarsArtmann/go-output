@@ -38,7 +38,7 @@
         description = "Reusable Go library for CLI output formatting across 16 formats with NOM-style progress visualization";
         goPkgAttr = "go_1_27";
         goExperiment = "jsonv2";
-        vendorHash = "sha256-R5O4GawlGbhk39eTMPRMgNUou69i7r8FWIJ3LeYEcbk=";
+        vendorHash = import ./vendorHash.nix;
         # Library repo: the package exists so the ROOT module actually
         # compiles in CI (the old placeholder never built anything), but
         # tests run via apps.test across all 19 modules, not in checkPhase.
@@ -138,6 +138,42 @@
           );
 
           apps = {
+            update-vendor-hash = {
+              type = "app";
+              program = pkgs.lib.getExe (
+                pkgs.writeShellApplication {
+                  name = "update-vendor-hash";
+                  runtimeInputs = with pkgs; [
+                    nix
+                    git
+                    gnused
+                  ];
+                  text = ''
+                    set -euo pipefail
+                    root="$(git rev-parse --show-toplevel)"
+                    hash_file="$root/vendorHash.nix"
+                    cp "$hash_file" "$hash_file.bak"
+                    restore() { mv "$hash_file.bak" "$hash_file"; }
+                    trap restore ERR
+                    fake="sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+                    printf '"%s"\n' "$fake" > "$hash_file"
+                    out="$(nix build "$root#default" --no-link 2>&1 || true)"
+                    got="$(printf '%s' "$out" | grep -oP 'got:\s+\Ksha256-[A-Za-z0-9+/=]+' | head -1 || true)"
+                    if [ -z "$got" ]; then
+                      echo "ERROR: expected a vendorHash mismatch but none surfaced. Build output:" >&2
+                      printf '%s\n' "$out" >&2
+                      exit 1
+                    fi
+                    printf '"%s"\n' "$got" > "$hash_file"
+                    nix build "$root#default" --no-link
+                    rm -f "$hash_file.bak"
+                    trap - ERR
+                    echo "vendorHash.nix updated to $got and verified with a green build."
+                  '';
+                }
+              );
+            };
+
             test = {
               type = "app";
               program = runForModules "test";
