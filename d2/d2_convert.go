@@ -77,12 +77,10 @@ func nodeShapeToD2(s output.NodeShape) NodeShape {
 
 func graphStyleToD2(s output.NodeStyle) NodeStyle {
 	return NodeStyle{
-		Fill: s.Fill,
-		StrokeStyle: StrokeStyle{
-			Stroke:    s.Stroke,
-			FontSize:  s.FontSize,
-			FontColor: s.FontColor,
-		},
+		Fill:      s.Fill,
+		Stroke:    s.Stroke,
+		FontSize:  s.FontSize,
+		FontColor: s.FontColor,
 	}
 }
 

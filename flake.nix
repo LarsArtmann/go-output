@@ -24,7 +24,6 @@
 
   outputs =
     inputs@{
-      self,
       flake-parts,
       ...
     }:
@@ -44,10 +43,10 @@
         # compiles in CI (the old placeholder never built anything), but
         # tests run via apps.test across all 19 modules, not in checkPhase.
         enableCheck = false;
-        # Old flake had no overlay and no test check — keep the surface
-        # exactly additive otherwise.
+        # Old flake had no test check — keep the surface exactly additive
+        # otherwise. (The generated overlay is a new, useful consumer
+        # surface: exposes the built library package.)
         enableTestCheck = false;
-        enableOverlay = false;
         # Old treefmt ran nixfmt/deadnix/statix only — no Go formatters.
         enableGofumpt = false;
         enableGoimports = false;
@@ -137,8 +136,6 @@
               shellHook = config.pre-commit.shellHook;
             }
           );
-
-          checks.format = config.treefmt.build.check self;
 
           apps = {
             test = {

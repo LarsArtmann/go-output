@@ -200,7 +200,7 @@ func TestD2NodeWithClass(t *testing.T) {
 	d.AddClass("important", NodeStyle{
 		Fill: "red",
 
-		StrokeStyle: StrokeStyle{Stroke: "darkred"},
+		Stroke: "darkred",
 	})
 	d.AddNode(newClassNode("alert", "Alert", "important"))
 

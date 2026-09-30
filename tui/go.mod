@@ -1,6 +1,6 @@
 module github.com/larsartmann/go-output/tui
 
-go 1.27.1
+go 1.27
 
 require (
 	charm.land/bubbletea/v2 v2.0.9

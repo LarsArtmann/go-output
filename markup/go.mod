@@ -1,12 +1,12 @@
 module github.com/larsartmann/go-output/markup
 
-go 1.27.1
+go 1.27
 
 require (
 	github.com/charmbracelet/x/exp/golden v0.0.0-20260705004817-2cc9a8fe1146
-	github.com/larsartmann/go-output v0.38.1
-	github.com/larsartmann/go-output/escape v0.38.1
-	github.com/larsartmann/go-output/testhelpers v0.38.1
+	github.com/larsartmann/go-output v0.38.2
+	github.com/larsartmann/go-output/escape v0.38.2
+	github.com/larsartmann/go-output/testhelpers v0.38.2
 )
 
 require (

@@ -117,8 +117,8 @@ func BenchmarkD2DiagramFullConfig(b *testing.B) {
 			SetLayout("elk")
 
 		d.AddClass("highlight", NodeStyle{
-			Fill:        "#ffcc00",
-			StrokeStyle: StrokeStyle{Stroke: "#ff9900"},
+			Fill:   "#ffcc00",
+			Stroke: "#ff9900",
 		})
 
 		for _, node := range generateBenchmarkD2Nodes(50) {
