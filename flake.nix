@@ -4,15 +4,15 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
-    systems.url = "github:nix-systems/default";
-
     flake-parts = {
       url = "github:hercules-ci/flake-parts";
       inputs.nixpkgs-lib.follows = "nixpkgs";
     };
 
-    treefmt-nix = {
-      url = "github:numtide/treefmt-nix";
+    # go-standard (flakeModules.go-standard) composes treefmt-nix + systems
+    # internally — this repo no longer declares them as direct inputs.
+    go-nix-helpers = {
+      url = "github:LarsArtmann/go-nix-helpers";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -23,14 +23,40 @@
   };
 
   outputs =
-    inputs@{ self, flake-parts, ... }:
+    inputs@{
+      self,
+      flake-parts,
+      ...
+    }:
     flake-parts.lib.mkFlake { inherit inputs; } {
       imports = [
-        inputs.treefmt-nix.flakeModule
+        inputs.go-nix-helpers.flakeModules.go-standard
         inputs.git-hooks.flakeModule
       ];
 
-      systems = import inputs.systems;
+      go-standard = {
+        pname = "go-output";
+        description = "Reusable Go library for CLI output formatting across 16 formats with NOM-style progress visualization";
+        goPkgAttr = "go_1_27";
+        goExperiment = "jsonv2";
+        vendorHash = "sha256-R5O4GawlGbhk39eTMPRMgNUou69i7r8FWIJ3LeYEcbk=";
+        # Library repo: the package exists so the ROOT module actually
+        # compiles in CI (the old placeholder never built anything), but
+        # tests run via apps.test across all 19 modules, not in checkPhase.
+        enableCheck = false;
+        # Old flake had no overlay and no test check — keep the surface
+        # exactly additive otherwise.
+        enableTestCheck = false;
+        enableOverlay = false;
+        # Old treefmt ran nixfmt/deadnix/statix only — no Go formatters.
+        enableGofumpt = false;
+        enableGoimports = false;
+        enableNixfmt = true;
+        extraMeta = {
+          homepage = "https://github.com/larsartmann/go-output";
+          platforms = inputs.nixpkgs.lib.platforms.unix;
+        };
+      };
 
       perSystem =
         {
@@ -40,7 +66,7 @@
         }:
         let
           inherit (pkgs) lib;
-          go = pkgs.go_1_26;
+          go = pkgs.go_1_27;
           modules = [
             "."
             "bdd"
@@ -79,11 +105,9 @@
             };
         in
         {
-          treefmt.config = {
+          treefmt = {
             projectRootFile = "go.mod";
-
             programs = {
-              nixfmt.enable = true;
               deadnix.enable = true;
               statix.enable = true;
             };
@@ -95,25 +119,10 @@
             };
           };
 
-          checks.build = config.packages.default;
-          checks.format = config.treefmt.build.check self;
-
-          packages.default =
-            pkgs.runCommand "go-output"
-              {
-                meta = with lib; {
-                  description = "Reusable Go library for CLI output formatting across 16 formats with NOM-style progress visualization";
-                  homepage = "https://github.com/larsartmann/go-output";
-                  license = licenses.mit;
-                  platforms = platforms.unix;
-                };
-              }
-              ''
-                echo "go-output library — use 'go get github.com/larsartmann/go-output' to install" > $out
-              '';
-
-          devShells = {
-            default = pkgs.mkShellNoCC {
+          # The old hand-rolled shell, now with GOTOOLCHAIN hardening; kept
+          # via mkForce so the pre-commit hook installation composes.
+          devShells.default = lib.mkForce (
+            pkgs.mkShellNoCC {
               name = "go-output";
 
               packages = builtins.attrValues {
@@ -122,23 +131,14 @@
               };
 
               GOWORK = "off";
+              GOTOOLCHAIN = "local";
               GOEXPERIMENT = "jsonv2";
 
               shellHook = config.pre-commit.shellHook;
-            };
+            }
+          );
 
-            ci = pkgs.mkShellNoCC {
-              name = "go-output-ci";
-
-              packages = builtins.attrValues {
-                inherit go;
-                inherit (pkgs) golangci-lint;
-              };
-
-              GOWORK = "off";
-              GOEXPERIMENT = "jsonv2";
-            };
-          };
+          checks.format = config.treefmt.build.check self;
 
           apps = {
             test = {
