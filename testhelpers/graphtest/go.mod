@@ -2,7 +2,7 @@ module github.com/larsartmann/go-output/testhelpers/graphtest
 
 go 1.27
 
-require github.com/larsartmann/go-output v0.38.2
+require github.com/larsartmann/go-output v0.38.3
 
 require (
 	github.com/larsartmann/go-branded-id v0.6.0 // indirect

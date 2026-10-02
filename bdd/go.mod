@@ -1,13 +1,13 @@
 module github.com/larsartmann/go-output/bdd
 
-go 1.27.1
+go 1.27
 
 require (
-	github.com/larsartmann/go-output v0.38.2
-	github.com/larsartmann/go-output/delimited v0.38.2
-	github.com/larsartmann/go-output/markdown v0.38.2
-	github.com/larsartmann/go-output/serialization v0.38.2
-	github.com/larsartmann/go-output/tree v0.38.2
+	github.com/larsartmann/go-output v0.38.3
+	github.com/larsartmann/go-output/delimited v0.38.3
+	github.com/larsartmann/go-output/markdown v0.38.3
+	github.com/larsartmann/go-output/serialization v0.38.3
+	github.com/larsartmann/go-output/tree v0.38.3
 	github.com/onsi/ginkgo/v2 v2.32.0
 	github.com/onsi/gomega v1.42.1
 )
@@ -22,7 +22,7 @@ require (
 	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/google/pprof v0.0.0-20260604005048-7023385849c0 // indirect
 	github.com/larsartmann/go-branded-id v0.6.0 // indirect
-	github.com/larsartmann/go-output/escape v0.38.2 // indirect
+	github.com/larsartmann/go-output/escape v0.38.3 // indirect
 	github.com/pelletier/go-toml/v2 v2.4.3 // indirect
 	github.com/rogpeppe/go-internal v1.15.0 // indirect
 	github.com/segmentio/asm v1.2.1 // indirect
