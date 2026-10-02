@@ -45,75 +45,35 @@ func TestTypedErrors_AsType_ThroughWrapping(t *testing.T) {
 		"InvalidDirectionError from ParseDirection",
 		func() error { _, err := ParseDirection("bogus"); return err },
 		"diagram config",
-		func(t *testing.T, e *InvalidDirectionError) {
-			if e.Value != "bogus" {
-				t.Errorf("Value = %q, want %q", e.Value, "bogus")
-			}
-
-			if len(e.Allowed) != len(directionValues) {
-				t.Errorf("Allowed length = %d, want %d", len(e.Allowed), len(directionValues))
-			}
-		},
+		requireInvalidDirectionError,
 	)
 
 	assertWrappedTypedError[*InvalidNodeShapeError](t,
 		"InvalidNodeShapeError from ParseNodeShape",
 		func() error { _, err := ParseNodeShape("bogus"); return err },
 		"node config",
-		func(t *testing.T, e *InvalidNodeShapeError) {
-			if e.Value != "bogus" {
-				t.Errorf("Value = %q, want %q", e.Value, "bogus")
-			}
-
-			if len(e.Allowed) != len(nodeShapeValues) {
-				t.Errorf("Allowed length = %d, want %d", len(e.Allowed), len(nodeShapeValues))
-			}
-		},
+		requireInvalidNodeShapeError,
 	)
 
 	assertWrappedTypedError[*InvalidArrowTypeError](t,
 		"InvalidArrowTypeError from ParseArrowType",
 		func() error { _, err := ParseArrowType("bogus"); return err },
 		"edge config",
-		func(t *testing.T, e *InvalidArrowTypeError) {
-			if e.Value != "bogus" {
-				t.Errorf("Value = %q, want %q", e.Value, "bogus")
-			}
-
-			if len(e.Allowed) != len(arrowTypeValues) {
-				t.Errorf("Allowed length = %d, want %d", len(e.Allowed), len(arrowTypeValues))
-			}
-		},
+		requireInvalidArrowTypeError,
 	)
 
 	assertWrappedTypedError[*InvalidConstraintError](t,
 		"InvalidConstraintError from ParseConstraint",
 		func() error { _, err := ParseConstraint("bogus"); return err },
 		"layout constraint",
-		func(t *testing.T, e *InvalidConstraintError) {
-			if e.Value != "bogus" {
-				t.Errorf("Value = %q, want %q", e.Value, "bogus")
-			}
-
-			if len(e.Allowed) != len(allConstraints) {
-				t.Errorf("Allowed length = %d, want %d", len(e.Allowed), len(allConstraints))
-			}
-		},
+		requireInvalidConstraintError,
 	)
 
 	assertWrappedTypedError[*InvalidTextTransformError](t,
 		"InvalidTextTransformError from ParseTextTransform",
 		func() error { _, err := ParseTextTransform("bogus"); return err },
 		"label style",
-		func(t *testing.T, e *InvalidTextTransformError) {
-			if e.Value != "bogus" {
-				t.Errorf("Value = %q, want %q", e.Value, "bogus")
-			}
-
-			if len(e.Allowed) != len(textTransformValues) {
-				t.Errorf("Allowed length = %d, want %d", len(e.Allowed), len(textTransformValues))
-			}
-		},
+		requireInvalidTextTransformError,
 	)
 
 	t.Run("typed errors are distinct", func(t *testing.T) {
@@ -144,4 +104,64 @@ func TestTypedErrors_AsType_ThroughWrapping(t *testing.T) {
 			t.Errorf("error message should include the invalid value; got: %s", msg)
 		}
 	})
+}
+
+func requireInvalidDirectionError(t *testing.T, e *InvalidDirectionError) {
+	t.Helper()
+
+	if e.Value != "bogus" {
+		t.Errorf("Value = %q, want %q", e.Value, "bogus")
+	}
+
+	if len(e.Allowed) != len(directionValues) {
+		t.Errorf("Allowed length = %d, want %d", len(e.Allowed), len(directionValues))
+	}
+}
+
+func requireInvalidNodeShapeError(t *testing.T, e *InvalidNodeShapeError) {
+	t.Helper()
+
+	if e.Value != "bogus" {
+		t.Errorf("Value = %q, want %q", e.Value, "bogus")
+	}
+
+	if len(e.Allowed) != len(nodeShapeValues) {
+		t.Errorf("Allowed length = %d, want %d", len(e.Allowed), len(nodeShapeValues))
+	}
+}
+
+func requireInvalidArrowTypeError(t *testing.T, e *InvalidArrowTypeError) {
+	t.Helper()
+
+	if e.Value != "bogus" {
+		t.Errorf("Value = %q, want %q", e.Value, "bogus")
+	}
+
+	if len(e.Allowed) != len(arrowTypeValues) {
+		t.Errorf("Allowed length = %d, want %d", len(e.Allowed), len(arrowTypeValues))
+	}
+}
+
+func requireInvalidConstraintError(t *testing.T, e *InvalidConstraintError) {
+	t.Helper()
+
+	if e.Value != "bogus" {
+		t.Errorf("Value = %q, want %q", e.Value, "bogus")
+	}
+
+	if len(e.Allowed) != len(allConstraints) {
+		t.Errorf("Allowed length = %d, want %d", len(e.Allowed), len(allConstraints))
+	}
+}
+
+func requireInvalidTextTransformError(t *testing.T, e *InvalidTextTransformError) {
+	t.Helper()
+
+	if e.Value != "bogus" {
+		t.Errorf("Value = %q, want %q", e.Value, "bogus")
+	}
+
+	if len(e.Allowed) != len(textTransformValues) {
+		t.Errorf("Allowed length = %d, want %d", len(e.Allowed), len(textTransformValues))
+	}
 }
