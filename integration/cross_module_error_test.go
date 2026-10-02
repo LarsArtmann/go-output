@@ -128,20 +128,7 @@ func TestCrossModule_SubModuleTypedErrors_AsType(t *testing.T) {
 			t.Fatal("expected error from d2.ParseDirection")
 		}
 
-		wrapped := fmt.Errorf("diagram setup: %w", err)
-
-		extracted, ok := errors.AsType[*d2.InvalidDirectionError](wrapped)
-		if !ok {
-			t.Fatalf("errors.AsType[*d2.InvalidDirectionError] failed; err=%v", wrapped)
-		}
-
-		if extracted.Value != "bogus" {
-			t.Errorf("Value = %q, want %q", extracted.Value, "bogus")
-		}
-
-		if len(extracted.Allowed) == 0 {
-			t.Error("Allowed should not be empty")
-		}
+		requireExtractedD2DirectionError(t, fmt.Errorf("diagram setup: %w", err))
 	})
 
 	t.Run("d2.InvalidNodeShapeError extracted from integration", func(t *testing.T) {
@@ -152,16 +139,7 @@ func TestCrossModule_SubModuleTypedErrors_AsType(t *testing.T) {
 			t.Fatal("expected error from d2.ParseNodeShape")
 		}
 
-		wrapped := fmt.Errorf("node config: %w", err)
-
-		extracted, ok := errors.AsType[*d2.InvalidNodeShapeError](wrapped)
-		if !ok {
-			t.Fatalf("errors.AsType[*d2.InvalidNodeShapeError] failed; err=%v", wrapped)
-		}
-
-		if extracted.Value != "bogus" {
-			t.Errorf("Value = %q, want %q", extracted.Value, "bogus")
-		}
+		requireExtractedD2NodeShapeError(t, fmt.Errorf("node config: %w", err))
 	})
 
 	t.Run("graph.InvalidRankDirError extracted from integration", func(t *testing.T) {
@@ -172,20 +150,7 @@ func TestCrossModule_SubModuleTypedErrors_AsType(t *testing.T) {
 			t.Fatal("expected error from graph.ParseRankDir")
 		}
 
-		wrapped := fmt.Errorf("graph layout: %w", err)
-
-		extracted, ok := errors.AsType[*graph.InvalidRankDirError](wrapped)
-		if !ok {
-			t.Fatalf("errors.AsType[*graph.InvalidRankDirError] failed; err=%v", wrapped)
-		}
-
-		if extracted.Value != "bogus" {
-			t.Errorf("Value = %q, want %q", extracted.Value, "bogus")
-		}
-
-		if len(extracted.Allowed) == 0 {
-			t.Error("Allowed should not be empty")
-		}
+		requireExtractedRankDirError(t, fmt.Errorf("graph layout: %w", err))
 	})
 
 	t.Run("graph.InvalidSplineStyleError extracted from integration", func(t *testing.T) {
@@ -196,17 +161,68 @@ func TestCrossModule_SubModuleTypedErrors_AsType(t *testing.T) {
 			t.Fatal("expected error from graph.ParseSplineStyle")
 		}
 
-		wrapped := fmt.Errorf("edge style: %w", err)
-
-		extracted, ok := errors.AsType[*graph.InvalidSplineStyleError](wrapped)
-		if !ok {
-			t.Fatalf("errors.AsType[*graph.InvalidSplineStyleError] failed; err=%v", wrapped)
-		}
-
-		if extracted.Value != "bogus" {
-			t.Errorf("Value = %q, want %q", extracted.Value, "bogus")
-		}
+		requireExtractedSplineStyleError(t, fmt.Errorf("edge style: %w", err))
 	})
+}
+
+func requireExtractedD2DirectionError(t *testing.T, wrapped error) {
+	t.Helper()
+
+	extracted, ok := errors.AsType[*d2.InvalidDirectionError](wrapped)
+	if !ok {
+		t.Fatalf("errors.AsType[*d2.InvalidDirectionError] failed; err=%v", wrapped)
+	}
+
+	if extracted.Value != "bogus" {
+		t.Errorf("Value = %q, want %q", extracted.Value, "bogus")
+	}
+
+	if len(extracted.Allowed) == 0 {
+		t.Error("Allowed should not be empty")
+	}
+}
+
+func requireExtractedD2NodeShapeError(t *testing.T, wrapped error) {
+	t.Helper()
+
+	extracted, ok := errors.AsType[*d2.InvalidNodeShapeError](wrapped)
+	if !ok {
+		t.Fatalf("errors.AsType[*d2.InvalidNodeShapeError] failed; err=%v", wrapped)
+	}
+
+	if extracted.Value != "bogus" {
+		t.Errorf("Value = %q, want %q", extracted.Value, "bogus")
+	}
+}
+
+func requireExtractedRankDirError(t *testing.T, wrapped error) {
+	t.Helper()
+
+	extracted, ok := errors.AsType[*graph.InvalidRankDirError](wrapped)
+	if !ok {
+		t.Fatalf("errors.AsType[*graph.InvalidRankDirError] failed; err=%v", wrapped)
+	}
+
+	if extracted.Value != "bogus" {
+		t.Errorf("Value = %q, want %q", extracted.Value, "bogus")
+	}
+
+	if len(extracted.Allowed) == 0 {
+		t.Error("Allowed should not be empty")
+	}
+}
+
+func requireExtractedSplineStyleError(t *testing.T, wrapped error) {
+	t.Helper()
+
+	extracted, ok := errors.AsType[*graph.InvalidSplineStyleError](wrapped)
+	if !ok {
+		t.Fatalf("errors.AsType[*graph.InvalidSplineStyleError] failed; err=%v", wrapped)
+	}
+
+	if extracted.Value != "bogus" {
+		t.Errorf("Value = %q, want %q", extracted.Value, "bogus")
+	}
 }
 
 func TestCrossModule_ErrorsAreDistinct(t *testing.T) {

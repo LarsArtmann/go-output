@@ -181,101 +181,16 @@ func TestHandleEdgeCases(t *testing.T) {
 // render; the renderer must preserve the caller's row order.
 
 func TestSortingBehavior(t *testing.T) {
-	type Project struct {
-		Name string
-	}
-
-	makeProjects := func(names ...string) []Project {
-		projects := make([]Project, 0, len(names))
-		for _, name := range names {
-			projects = append(projects, Project{Name: name})
-		}
-
-		return projects
-	}
-
-	// renderOrder renders the projects as a markdown table and returns the
-	// line positions of the given names, proving the output preserves input order.
-	renderOrder := func(t *testing.T, projects []Project) map[string]int {
-		t.Helper()
-
-		data := output.NewTable([]string{"Name"})
-		for _, p := range projects {
-			data.AddRow([]string{p.Name})
-		}
-
-		md := markdown.NewMarkdownTableFromTable(data)
-
-		out, err := md.Render()
-		if err != nil {
-			t.Fatalf("markdown render failed: %v", err)
-		}
-
-		lines := strings.Split(out, "\n")
-
-		positions := make(map[string]int, len(projects))
-		for i, line := range lines {
-			for _, p := range projects {
-				if strings.Contains(line, "| "+p.Name+" ") {
-					positions[p.Name] = i
-				}
-			}
-		}
-
-		return positions
-	}
+	t.Parallel()
 
 	t.Run("rendered output preserves sorted order", func(t *testing.T) {
 		t.Parallel()
 
-		type testCase struct {
-			name   string
-			data   []Project
-			desc   bool
-			first  string
-			second string
-			third  string
-		}
-
-		cases := []testCase{
-			{
-				name:   "ascending",
-				data:   makeProjects("zebra", "apple", "banana"),
-				desc:   false,
-				first:  "apple",
-				second: "banana",
-				third:  "zebra",
-			},
-			{
-				name:   "descending",
-				data:   makeProjects("apple", "zebra", "banana"),
-				desc:   true,
-				first:  "zebra",
-				second: "banana",
-				third:  "apple",
-			},
-		}
-
-		for _, tc := range cases {
+		for _, tc := range sortedOrderCases {
 			t.Run(tc.name, func(t *testing.T) {
 				t.Parallel()
 
-				slices.SortStableFunc(tc.data, func(a, b Project) int {
-					if tc.desc {
-						return cmp.Compare(b.Name, a.Name)
-					}
-
-					return cmp.Compare(a.Name, b.Name)
-				})
-
-				positions := renderOrder(t, tc.data)
-
-				if positions[tc.first] >= positions[tc.second] || positions[tc.second] >= positions[tc.third] {
-					t.Errorf(
-						"rendered order = %v, want %s < %s < %s",
-						positions, tc.first, tc.second, tc.third,
-					)
-				}
+				assertSortedRenderOrder(t, tc)
 			})
 		}
 	})
@@ -286,9 +201,107 @@ func TestSortingBehavior(t *testing.T) {
 		data := []Project{{Name: "solo"}}
 		slices.SortStableFunc(data, nil)
 
-		positions := renderOrder(t, data)
+		positions := renderProjectOrder(t, data)
 		if positions["solo"] == 0 {
 			t.Error("expected solo row to appear in rendered output")
 		}
 	})
+}
+
+type Project struct {
+	Name string
+}
+
+func newTestProjects(names ...string) []Project {
+	projects := make([]Project, 0, len(names))
+	for _, name := range names {
+		projects = append(projects, Project{Name: name})
+	}
+
+	return projects
+}
+
+type sortedOrderCase struct {
+	name   string
+	data   []Project
+	desc   bool
+	first  string
+	second string
+	third  string
+}
+
+var sortedOrderCases = []sortedOrderCase{
+	{
+		name:   "ascending",
+		data:   newTestProjects("zebra", "apple", "banana"),
+		desc:   false,
+		first:  "apple",
+		second: "banana",
+		third:  "zebra",
+	},
+	{
+		name:   "descending",
+		data:   newTestProjects("apple", "zebra", "banana"),
+		desc:   true,
+		first:  "zebra",
+		second: "banana",
+		third:  "apple",
+	},
+}
+
+// sortProjects sorts projects by name, descending when desc is set.
+func sortProjects(projects []Project, desc bool) {
+	slices.SortStableFunc(projects, func(a, b Project) int {
+		if desc {
+			return cmp.Compare(b.Name, a.Name)
+		}
+
+		return cmp.Compare(a.Name, b.Name)
+	})
+}
+
+// renderProjectOrder renders the projects as a markdown table and returns the
+// line positions of the given names, proving the output preserves input order.
+func renderProjectOrder(t *testing.T, projects []Project) map[string]int {
+	t.Helper()
+
+	data := output.NewTable([]string{"Name"})
+	for _, p := range projects {
+		data.AddRow([]string{p.Name})
+	}
+
+	md := markdown.NewMarkdownTableFromTable(data)
+
+	out, err := md.Render()
+	if err != nil {
+		t.Fatalf("markdown render failed: %v", err)
+	}
+
+	lines := strings.Split(out, "\n")
+
+	positions := make(map[string]int, len(projects))
+	for i, line := range lines {
+		for _, p := range projects {
+			if strings.Contains(line, "| "+p.Name+" ") {
+				positions[p.Name] = i
+			}
+		}
+	}
+
+	return positions
+}
+
+func assertSortedRenderOrder(t *testing.T, tc sortedOrderCase) {
+	t.Helper()
+
+	sortProjects(tc.data, tc.desc)
+
+	positions := renderProjectOrder(t, tc.data)
+
+	if positions[tc.first] >= positions[tc.second] || positions[tc.second] >= positions[tc.third] {
+		t.Errorf(
+			"rendered order = %v, want %s < %s < %s",
+			positions, tc.first, tc.second, tc.third,
+		)
+	}
 }
