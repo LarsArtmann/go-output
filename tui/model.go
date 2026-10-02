@@ -133,10 +133,11 @@ func (m *ProgressModel) scrollToBottom() {
 
 func (m *ProgressModel) handleMouseWheel(msg tea.MouseWheelMsg) (tea.Model, tea.Cmd) {
 	mouse := msg.Mouse()
-	switch mouse.Button {
-	case ansi.MouseWheelUp:
+	if mouse.Button == ansi.MouseWheelUp {
 		m.scrollUp(3)
-	case ansi.MouseWheelDown:
+	}
+
+	if mouse.Button == ansi.MouseWheelDown {
 		m.scrollDown(3)
 	}
 

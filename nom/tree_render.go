@@ -142,7 +142,7 @@ func (dt *DependencyTree) elideCompletedUnderPressure(
 	return active, collapsedCompleted
 }
 
-func (dt *DependencyTree) walkSubtree( //nolint:cyclop // DFS traversal with phase collapse — inherently branchy
+func (dt *DependencyTree) walkSubtree( //nolint:gocyclo // DFS traversal with phase collapse — inherently branchy
 	node *ActivityNode,
 	prefix string,
 	isLastSibling bool,
