@@ -24,83 +24,93 @@ func TestNOMSubscriber_Integration(t *testing.T) {
 
 		ctx := context.Background()
 
-		if err := subscriber.OnEvent(ctx, nom.WorkflowStarted{
-			ID:   nom.NewWorkflowID("ci-1"),
-			Name: nom.NewWorkflowName("CI Pipeline"),
-		}); err != nil {
-			t.Fatalf("workflow.started: %v", err)
-		}
+		fireWorkflowStarted(t, subscriber, ctx, "ci-1", "CI Pipeline")
+		assertNOMWorkflowRunning(t, subscriber, "CI Pipeline")
 
-		if !subscriber.IsWorkflowRunning() {
-			t.Error("workflow should be running")
-		}
-
-		if subscriber.GetWorkflowName() != "CI Pipeline" {
-			t.Errorf("workflow name = %q, want %q", subscriber.GetWorkflowName(), "CI Pipeline")
-		}
-
-		if err := subscriber.OnEvent(ctx, nom.ActivityStarted{
-			ID:   nom.NewActivityID("build"),
-			Name: nom.NewActivityName("Build Project"),
-		}); err != nil {
-			t.Fatalf("activity.started: %v", err)
-		}
-
-		activity := subscriber.GetActivity(nom.NewActivityID("build"))
-		if activity == nil {
-			t.Fatal("build activity should exist")
-		}
-
-		if !activity.IsRunning() {
-			t.Error("build activity should be running")
-		}
+		startActivity(t, subscriber, ctx, "build", "Build Project")
+		assertNOMActivityRunning(t, subscriber, "build")
 
 		tree := subscriber.DependencyTree()
 		if tree == nil {
 			t.Fatal("dependency tree should exist")
 		}
 
-		if err := subscriber.OnEvent(ctx, nom.ActivityCompleted{
-			ID:       nom.NewActivityID("build"),
-			Name:     nom.NewActivityName("Build Project"),
-			Duration: 5 * time.Second,
-		}); err != nil {
-			t.Fatalf("activity.completed: %v", err)
-		}
-
-		activity = subscriber.GetActivity(nom.NewActivityID("build"))
-		if !activity.IsCompleted() {
-			t.Error("build activity should be completed")
-		}
-
-		counts := subscriber.GetActivityCounts()
-		if counts.Running != 0 {
-			t.Errorf("running = %d, want 0", counts.Running)
-		}
-
-		if counts.Completed != 1 {
-			t.Errorf("completed = %d, want 1", counts.Completed)
-		}
-
-		if counts.Failed != 0 {
-			t.Errorf("failed = %d, want 0", counts.Failed)
-		}
-
-		if counts.Pending != 0 {
-			t.Errorf("pending = %d, want 0", counts.Pending)
-		}
+		completeActivity(t, subscriber, ctx, "build", "Build Project", 5*time.Second)
+		assertNOMActivityCompleted(t, subscriber, "build")
+		assertNOMActivityCounts(t, subscriber)
 
 		rendered := tree.RenderWithSnapshots(nil, 10, 0)
 		if rendered == "" {
 			t.Error("tree render should not be empty")
 		}
 
-		subscriber.Reset()
-
-		if subscriber.IsWorkflowRunning() {
-			t.Error("workflow should not be running after reset")
-		}
+		assertNOMResetClearsWorkflow(t, subscriber)
 	})
+}
+
+func assertNOMWorkflowRunning(t *testing.T, subscriber *nom.NOMSubscriber, wantName string) {
+	t.Helper()
+
+	if !subscriber.IsWorkflowRunning() {
+		t.Error("workflow should be running")
+	}
+
+	if subscriber.GetWorkflowName() != wantName {
+		t.Errorf("workflow name = %q, want %q", subscriber.GetWorkflowName(), wantName)
+	}
+}
+
+func assertNOMActivityRunning(t *testing.T, subscriber *nom.NOMSubscriber, id string) {
+	t.Helper()
+
+	activity := subscriber.GetActivity(nom.NewActivityID(id))
+	if activity == nil {
+		t.Fatalf("%s activity should exist", id)
+	}
+
+	if !activity.IsRunning() {
+		t.Error("activity should be running")
+	}
+}
+
+func assertNOMActivityCompleted(t *testing.T, subscriber *nom.NOMSubscriber, id string) {
+	t.Helper()
+
+	activity := subscriber.GetActivity(nom.NewActivityID(id))
+	if !activity.IsCompleted() {
+		t.Error("activity should be completed")
+	}
+}
+
+func assertNOMActivityCounts(t *testing.T, subscriber *nom.NOMSubscriber) {
+	t.Helper()
+
+	counts := subscriber.GetActivityCounts()
+	if counts.Running != 0 {
+		t.Errorf("running = %d, want 0", counts.Running)
+	}
+
+	if counts.Completed != 1 {
+		t.Errorf("completed = %d, want 1", counts.Completed)
+	}
+
+	if counts.Failed != 0 {
+		t.Errorf("failed = %d, want 0", counts.Failed)
+	}
+
+	if counts.Pending != 0 {
+		t.Errorf("pending = %d, want 0", counts.Pending)
+	}
+}
+
+func assertNOMResetClearsWorkflow(t *testing.T, subscriber *nom.NOMSubscriber) {
+	t.Helper()
+
+	subscriber.Reset()
+
+	if subscriber.IsWorkflowRunning() {
+		t.Error("workflow should not be running after reset")
+	}
 }
 
 func TestNOMDependencyTree_Integration(t *testing.T) {
