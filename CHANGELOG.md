@@ -14,6 +14,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Nothing yet.
 
+## [0.38.3] - 2026-10-02
+
+### Fixed
+
+- **go-directive poisoner remediation** — all 19 modules ship major.minor-only `go` directives again. v0.38.2 regressed to patch-form (`go 1.27.1` across the module family), so every consumer's `go mod tidy` lifted its own directive to `go 1.27.1` (MVS floor propagation; consumer evidence: go-version-auto-configure lifted `go 1.27` → `go 1.27.1` on 2026-09-30). Root was already normalized on master (2026-09-30); this release fixes the last three stragglers (`bdd`, `examples`, `integration`) and publishes the fix.
+- **Sibling pins bumped to v0.38.3 inside the tagged tree** (one-time deviation from the tag-then-bump convention): v0.38.2 pins would have kept the patch-form floor alive in every submodule's dependency graph even after this release.
+
+## [0.38.2] - 2026-09-22
+
+### Changed
+
+- Fleet maintenance sweep: dependency bumps and toolchain normalization across all modules (`go 1.26` → `go 1.27.1` — the latter was accidental and re-introduced the patch-form floor; corrected in 0.38.3).
+
+## [0.38.1] - 2026-09-22
+
+### Changed
+
+- Fleet go-minor campaign re-tag: `go` directive normalized to minor form (`go 1.26`) across the module family so consumer `go mod tidy` stops re-poisoning directives.
+
 ## [0.38.0] - 2026-09-06
 
 ### Added
