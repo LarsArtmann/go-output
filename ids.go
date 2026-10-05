@@ -41,18 +41,31 @@ type GraphNodeLabel = id.ID[GraphNodeLabelBrand, string]
 // d2.D2NodeID is a convenience re-export (type alias), not a second definition.
 type D2NodeIDBrand struct{}
 
+func (D2NodeIDBrand) Name() string { return "D2Node" }
+
 // D2NodeLabelBrand is the brand type for D2 node labels. See D2NodeIDBrand
 // for why brand types live in root rather than d2/.
 type D2NodeLabelBrand struct{}
 
+func (D2NodeLabelBrand) Name() string { return "D2NodeLabel" }
+
 // TreeNodeIDBrand is the brand type for tree node IDs.
 type TreeNodeIDBrand struct{}
+
+func (TreeNodeIDBrand) Name() string { return "TreeNode" }
 
 // TreeNodeLabelBrand is the brand type for tree node labels.
 type TreeNodeLabelBrand struct{}
 
+func (TreeNodeLabelBrand) Name() string { return "TreeNodeLabel" }
+
 // GraphNodeIDBrand is the brand type for graph node IDs.
 type GraphNodeIDBrand struct{}
 
+func (GraphNodeIDBrand) Name() string { return "GraphNode" }
+
 // GraphNodeLabelBrand is the brand type for graph node labels.
 type GraphNodeLabelBrand struct{}
+
+func (GraphNodeLabelBrand) Name() string { return "GraphNodeLabel" }
+
