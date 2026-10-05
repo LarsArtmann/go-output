@@ -5,7 +5,7 @@ go 1.27
 require github.com/larsartmann/go-output v0.38.3
 
 require (
-	github.com/larsartmann/go-branded-id v0.6.0 // indirect
+	github.com/larsartmann/go-branded-id v0.7.0 // indirect
 	golang.org/x/sys v0.48.0 // indirect
 	golang.org/x/term v0.46.0 // indirect
 )
