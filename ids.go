@@ -39,33 +39,35 @@ type GraphNodeLabel = id.ID[GraphNodeLabelBrand, string]
 // type alias D2NodeID is visible to both root and d2/ callers without a
 // circular import. Split-brain finding m6: root is the canonical home;
 // d2.D2NodeID is a convenience re-export (type alias), not a second definition.
+//
+// brandid-lint:ignore(BD001) String() is used directly as map keys and rendered
+// output; a Name() prefix would corrupt both (nom ParallelismStats regression, 2026-10-05)
 type D2NodeIDBrand struct{}
-
-func (D2NodeIDBrand) Name() string { return "D2Node" }
 
 // D2NodeLabelBrand is the brand type for D2 node labels. See D2NodeIDBrand
 // for why brand types live in root rather than d2/.
+//
+// brandid-lint:ignore(BD001) labels are user-facing rendered text; a Name() prefix would corrupt output
 type D2NodeLabelBrand struct{}
 
-func (D2NodeLabelBrand) Name() string { return "D2NodeLabel" }
-
 // TreeNodeIDBrand is the brand type for tree node IDs.
+//
+// brandid-lint:ignore(BD001) String() is used directly as map keys; a Name() prefix would corrupt lookups
 type TreeNodeIDBrand struct{}
 
-func (TreeNodeIDBrand) Name() string { return "TreeNode" }
-
 // TreeNodeLabelBrand is the brand type for tree node labels.
+//
+// brandid-lint:ignore(BD001) labels are user-facing rendered text; a Name() prefix would corrupt output
 type TreeNodeLabelBrand struct{}
 
-func (TreeNodeLabelBrand) Name() string { return "TreeNodeLabel" }
-
 // GraphNodeIDBrand is the brand type for graph node IDs.
+//
+// brandid-lint:ignore(BD001) String() is used directly as map keys (e.g. nom dependency
+// tree lookups); a Name() prefix silently breaks readiness computation
 type GraphNodeIDBrand struct{}
 
-func (GraphNodeIDBrand) Name() string { return "GraphNode" }
-
 // GraphNodeLabelBrand is the brand type for graph node labels.
+//
+// brandid-lint:ignore(BD001) labels are user-facing rendered text; a Name() prefix would corrupt output
 type GraphNodeLabelBrand struct{}
-
-func (GraphNodeLabelBrand) Name() string { return "GraphNodeLabel" }
 
