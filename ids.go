@@ -74,4 +74,3 @@ type GraphNodeIDBrand struct{}
 //
 // brandid-lint:ignore(BD001) labels are user-facing rendered text; a Name() prefix would corrupt output
 type GraphNodeLabelBrand struct{}
-
