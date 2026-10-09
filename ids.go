@@ -40,8 +40,10 @@ type GraphNodeLabel = id.ID[GraphNodeLabelBrand, string]
 // circular import. Split-brain finding m6: root is the canonical home;
 // d2.D2NodeID is a convenience re-export (type alias), not a second definition.
 //
-// brandid-lint:ignore(BD001) String() is used directly as map keys and rendered
-// output; a Name() prefix would corrupt both (nom ParallelismStats regression, 2026-10-05)
+// String() output is used directly as map keys and rendered output; a Name()
+// prefix would corrupt both (nom ParallelismStats regression, 2026-10-05).
+//
+// brandid-lint:ignore(BD001) String() is a map key and rendered output
 type D2NodeIDBrand struct{}
 
 // D2NodeLabelBrand is the brand type for D2 node labels. See D2NodeIDBrand
@@ -62,8 +64,10 @@ type TreeNodeLabelBrand struct{}
 
 // GraphNodeIDBrand is the brand type for graph node IDs.
 //
-// brandid-lint:ignore(BD001) String() is used directly as map keys (e.g. nom dependency
-// tree lookups); a Name() prefix silently breaks readiness computation
+// String() is used directly as map keys (e.g. nom dependency tree lookups); a
+// Name() prefix silently breaks readiness computation.
+//
+// brandid-lint:ignore(BD001) String() is a map key
 type GraphNodeIDBrand struct{}
 
 // GraphNodeLabelBrand is the brand type for graph node labels.
