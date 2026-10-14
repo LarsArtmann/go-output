@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.38.5] - 2026-10-14
+
+### Fixed
+- `d2` module's internal requires now track the same generation as the root
+  tag (were pinned two generations back at v0.38.3, the NX7 WIP). No behavior
+  change; root delta since v0.38.4 is whitespace-only in ids.go.
+
 ### Added
 
 - Nothing yet.
