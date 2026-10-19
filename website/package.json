@@ -2,7 +2,7 @@
   "name": "go-output-website",
   "version": "1.0.0",
   "private": true,
-  "description": "Website and documentation for go-output — write your data once, render it anywhere",
+  "description": "Website and documentation for go-output \u2014 write your data once, render it anywhere",
   "keywords": [
     "astro",
     "cli",
@@ -47,7 +47,7 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
     "html-validate": "^11.16.4",
-    "typescript": "7.0.2"
+    "typescript": "6.0.3"
   },
   "packageManager": "pnpm@11.20.0"
 }
