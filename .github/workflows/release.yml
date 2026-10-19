@@ -85,6 +85,13 @@ jobs:
           VERSION="${TAG#v}"
           COMMIT=$(git rev-parse HEAD)
 
+          # Annotated tags need a tagger identity and a fresh runner has none
+          # configured, so `git tag -a` dies with "empty ident name" (exit 128)
+          # and skips the GitHub Release + website redeploy. That is what hid the
+          # v0.37.0/v0.38.0 releases and cost v0.38.7 a manual recovery.
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
           # actions/checkout fetches only the one tag being deployed, so check
           # tag existence against ORIGIN (not the local refs) before creating
           # anything — the release tooling (scripts/tag-release.sh) normally
