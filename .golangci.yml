@@ -304,13 +304,13 @@ linters:
         text: .*
         linters:
           - gochecknoglobals
-          - exhaustruct
+          - exhaustruct_v5
           - varnamelen
       - path: escape/
         text: .*
         linters:
           - gochecknoglobals
-          - exhaustruct
+          - exhaustruct_v5
           - varnamelen
       - path: nom/symbols\.go
         text: (?:global variable)
@@ -352,7 +352,7 @@ linters:
           - tagliatelle
           - unparam
           - unused
-          - exhaustruct
+          - exhaustruct_v5
           - nolintlint
           - paralleltest
           - thelper
@@ -360,7 +360,7 @@ linters:
           - varnamelen
       - path: _test\.go
         linters:
-          - exhaustruct
+          - exhaustruct_v5
           - testpackage
           - gochecknoglobals
           - funlen
@@ -374,7 +374,6 @@ linters:
           - recvcheck
           - contextcheck
           - exhaustive
-          - exhaustruct_v5
       - path: _test\.go
         text: unused
         linters:

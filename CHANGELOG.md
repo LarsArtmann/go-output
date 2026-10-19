@@ -31,6 +31,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   never ran in Actions. It now reports 81.2% statement coverage, above the 80%
   gate.
 
+### Fixed
+
+- **CI lint is green again** — the workflow pinned golangci-lint v2.12, built
+  with Go 1.26, which refuses the repo's Go 1.27 target ("the Go language
+  version used to build golangci-lint is lower than the targeted Go version"),
+  and the `exhaustruct_v5` migration had renamed only one of the five exclusion
+  lists that still named the retired `exhaustruct` linter, so its suppressions
+  stopped applying. The pin moves to v2.14.0 and every exclusion list now names
+  `exhaustruct_v5`.
+
 ## [0.38.5] - 2026-10-14
 
 ### Fixed
