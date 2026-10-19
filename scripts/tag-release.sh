@@ -157,7 +157,14 @@ echo -e "${GREEN}  $VERSION tag family created ($EXPECTED tags)${NC}"
 echo -e "${GREEN}========================================================${NC}"
 echo
 echo "Tags are LOCAL only. To publish:"
-echo "  git push origin $VERSION"
-echo "  git push origin refs/tags/*$VERSION"
+echo "  1. git push origin master"
+echo "  2. git push origin $VERSION"
+echo "     (the root tag ALONE — this is what fires release.yml, which then creates"
+echo "      and pushes the 16 submodule tags and the GitHub Release)"
+echo "  3. git push origin refs/tags/*$VERSION   # only if release.yml did not run"
+echo
+echo "Never push all $EXPECTED tags in one push: GitHub creates NO tag events when a"
+echo "single push contains more than three tags, so release.yml, the GitHub Release,"
+echo "and the website redeploy would silently never run (v0.38.6 hit this)."
 echo
 echo "Or let the auto-git daemon push them."
