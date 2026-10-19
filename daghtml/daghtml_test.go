@@ -71,6 +71,43 @@ func TestRender_ContainsJSONData(t *testing.T) {
 	}
 }
 
+func TestRender_EdgeLabels(t *testing.T) {
+	dag := DAG{
+		Nodes: []Node{
+			{ID: "person", Label: "Lars", Color: "var(--accent)"},
+			{ID: "org", Label: "Artmann Technologies", Color: "var(--success)"},
+			{ID: "brand", Label: "Nobletary", Color: "var(--warning)"},
+		},
+		Edges: []Edge{
+			{From: "person", To: "org", Label: "founder"},
+			{From: "org", To: "brand"},
+		},
+	}
+
+	html, err := Render(dag)
+	if err != nil {
+		t.Fatalf("Render failed: %v", err)
+	}
+
+	if !strings.Contains(html, `"label":"founder"`) {
+		t.Error("expected the JSON data island to carry the edge label")
+	}
+
+	if strings.Contains(html, `"label":""`) {
+		t.Error("unlabelled edges should omit the label field entirely")
+	}
+}
+
+func TestScript_RendersEdgeLabelTooltip(t *testing.T) {
+	script := Script()
+
+	for _, want := range []string{"e.label", "createElementNS(ns, \"title\")"} {
+		if !strings.Contains(script, want) {
+			t.Errorf("expected the graph script to contain %q", want)
+		}
+	}
+}
+
 func TestRender_ContainsGraphJS(t *testing.T) {
 	html, err := Render(sampleDAG())
 	if err != nil {

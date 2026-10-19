@@ -61,6 +61,30 @@ func TestGolden_Render_EmptyDAG(t *testing.T) {
 	golden.RequireEqual(t, []byte(got))
 }
 
+func TestGolden_Render_LabelledEdges(t *testing.T) {
+	t.Parallel()
+
+	dag := DAG{
+		Nodes: []Node{
+			{ID: "lars", Label: "Lars Artmann", Color: "var(--info)"},
+			{ID: "tech", Label: "Artmann Technologies GmbH", Color: "var(--success)"},
+			{ID: "brand", Label: "Nobletary", Color: "var(--warning)"},
+		},
+		Edges: []Edge{
+			{From: "lars", To: "tech", Label: "founder"},
+			{From: "tech", To: "brand", Label: "brand"},
+			{From: "tech", To: "lars"},
+		},
+	}
+
+	got, err := Render(dag, WithTitle("Company Graph"), WithHeight(500))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	golden.RequireEqual(t, []byte(got))
+}
+
 func TestGolden_GraphHTML_EmbeddedSection(t *testing.T) {
 	t.Parallel()
 

@@ -203,6 +203,9 @@ header h1 .logo-dot {
   stroke: var(--border-active);
   stroke-width: 1.5;
 }
+.graph-edge[data-label] path {
+  cursor: help;
+}
 .graph-edge.highlighted path {
   stroke: var(--accent);
   stroke-width: 2;

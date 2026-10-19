@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+
+- **`daghtml.Edge` carries relationship labels** — the edge model gains an
+  optional `Label` field. The interactive renderer shows the label as the
+  edge's SVG `<title>` tooltip on hover and sets `data-label` on the edge group
+  (so hosts can style labelled edges), which means relationship text such as
+  "founder" or "works for" is discoverable without cluttering the layered
+  layout. Fields that are empty are omitted from the JSON data island, so
+  existing unlabelled DAGs serialize unchanged.
+
 ## [0.38.5] - 2026-10-14
 
 ### Fixed
