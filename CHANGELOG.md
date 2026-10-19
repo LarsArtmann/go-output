@@ -14,6 +14,34 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Nothing yet.
 
+## [0.38.7] - 2026-10-19
+
+### Fixed
+
+- **The `daghtml` coverage gate is satisfied at the tag level** — the `Write`
+  test added after v0.38.6 lifted statement coverage from 77.2% to 87.7%, so this
+  release's own `Build & Test` check is green. v0.38.6's run stays red forever:
+  a tag's workflow file is frozen at the tagged commit, and that commit predates
+  the test.
+- **The website builds and deploys again** — `website/package.json` pinned
+  `typescript 7.0.2`, which `astro check` rejects outright ("does not currently
+  support TypeScript 7.0"), so every `Website` run failed before deploying and no
+  tag could redeploy the site. The documented `6.0.3` pin is restored and the
+  lockfile re-locked; `pnpm run typecheck` (0 errors, 32 files), `pnpm run build`,
+  and the deploy are all green.
+
+### Changed
+
+- **Release documentation carries the tag-push limit** — GitHub creates no tag
+  events when a single push contains more than three tags, so pushing the whole
+  17-tag family silently skips `release.yml`: no GitHub Release, no website
+  redeploy (v0.38.6 hit this). `scripts/tag-release.sh` now prints a
+  root-tag-first sequence, `AGENTS.md` records the limitation and the recovery,
+  and `TODO_LIST.md` gains a release-engineering section for the remaining gaps
+  (coverage/CI-green preconditions, benchmarks, an opt-in `--push`).
+- **`SECURITY.md` names the supported version** — the table still pointed at a
+  v0.38.4 sub-module tag; it now tracks the root release.
+
 ## [0.38.6] - 2026-10-19
 
 ### Added
