@@ -156,7 +156,7 @@ func TestActivityStatus_NodeStyle(t *testing.T) {
 	}
 }
 
-var errTestFailure = &testError{"test failure"}
+var errTestFailure error = &testError{"test failure"}
 
 type testError struct{ msg string }
 

@@ -307,7 +307,7 @@ func TestRetryRendersInTree(t *testing.T) {
 }
 
 // sentinel error for testing.
-var errRetrying = &TransientError{}
+var errRetrying error = &TransientError{}
 
 type TransientError struct{}
 

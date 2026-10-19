@@ -4,17 +4,17 @@ go 1.27
 
 require (
 	github.com/larsartmann/go-output v0.38.5
-	github.com/larsartmann/go-output/d2 v0.38.4
-	github.com/larsartmann/go-output/delimited v0.38.4
-	github.com/larsartmann/go-output/graph v0.38.4
-	github.com/larsartmann/go-output/markdown v0.38.4
-	github.com/larsartmann/go-output/markup v0.38.4
-	github.com/larsartmann/go-output/nom v0.38.4
-	github.com/larsartmann/go-output/plantuml v0.38.4
-	github.com/larsartmann/go-output/serialization v0.38.4
-	github.com/larsartmann/go-output/table v0.38.4
-	github.com/larsartmann/go-output/tree v0.38.4
-	github.com/larsartmann/go-output/tui v0.38.4
+	github.com/larsartmann/go-output/d2 v0.38.5
+	github.com/larsartmann/go-output/delimited v0.38.5
+	github.com/larsartmann/go-output/graph v0.38.5
+	github.com/larsartmann/go-output/markdown v0.38.5
+	github.com/larsartmann/go-output/markup v0.38.5
+	github.com/larsartmann/go-output/nom v0.38.5
+	github.com/larsartmann/go-output/plantuml v0.38.5
+	github.com/larsartmann/go-output/serialization v0.38.5
+	github.com/larsartmann/go-output/table v0.38.5
+	github.com/larsartmann/go-output/tree v0.38.5
+	github.com/larsartmann/go-output/tui v0.38.5
 )
 
 require (

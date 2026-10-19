@@ -4,7 +4,7 @@ go 1.27
 
 require (
 	github.com/larsartmann/go-branded-id v0.7.0
-	github.com/larsartmann/go-output/testhelpers v0.38.3
+	github.com/larsartmann/go-output/testhelpers v0.38.5
 	golang.org/x/term v0.46.0
 )
 

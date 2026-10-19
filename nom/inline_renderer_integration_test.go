@@ -99,7 +99,7 @@ func TestInlineRenderer_FullWorkflowLifecycle(t *testing.T) {
 	}
 }
 
-var errDeployFailed = strError("deploy failed")
+var errDeployFailed error = strError("deploy failed")
 
 type strError string
 
