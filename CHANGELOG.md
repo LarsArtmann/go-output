@@ -40,6 +40,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   lists that still named the retired `exhaustruct` linter, so its suppressions
   stopped applying. The pin moves to v2.14.0 and every exclusion list now names
   `exhaustruct_v5`.
+- **govulncheck runs on the patched toolchain** — the dev shell ships Go 1.27.0,
+  whose `html/template` carries GO-2026-6599 and GO-2026-6600 (both fixed in
+  go1.27.2), and `daghtml` is the module that calls `template.Execute`. CI and
+  the release workflow now pin `GOTOOLCHAIN=go1.27.2`, so the vulnerability scan
+  and the shipped binaries use the fixed standard library.
 
 ## [0.38.5] - 2026-10-14
 

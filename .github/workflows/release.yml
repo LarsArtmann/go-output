@@ -10,6 +10,7 @@ permissions:
 
 env:
   GO_VERSION: "1.27"
+  GOTOOLCHAIN: go1.27.2
   GOLANGCI_LINT_VERSION: v2.14.0
   GOEXPERIMENT: jsonv2
   # All 19 modules (root "." + 18 sub-modules) — keep in sync with scripts/pre-tag-check.sh
