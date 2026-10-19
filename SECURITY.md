@@ -2,9 +2,9 @@
 
 ## Supported Versions
 
-| Version          | Supported  |
-| ---------------- | ---------- |
-| bdd/v0.38.4 | ✅ Current |
+| Version | Supported  |
+| ------- | ---------- |
+| v0.38.6 | ✅ Current |
 
 Only the latest release receives security fixes. Please update to the latest
 version before reporting issues found in older releases.
@@ -12,6 +12,7 @@ version before reporting issues found in older releases.
 ## Reporting a Vulnerability
 
 Please do **not** open public issues for security problems. Report privately instead:
+
 - **GitHub Security Advisory**: https://github.com/LarsArtmann/go-output/security/advisories/new
 
 ### What to include

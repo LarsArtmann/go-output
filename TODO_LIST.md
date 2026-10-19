@@ -1,7 +1,7 @@
 # TODO_LIST.md — go-output
 
-**Last updated:** 2026-09-04
-**Open items:** 7
+**Last updated:** 2026-10-19
+**Open items:** 14
 
 ---
 
@@ -22,3 +22,14 @@
 | # | Task                                       | Effort | Status                     |
 | - | ------------------------------------------ | ------ | -------------------------- |
 | 8 | **Post to r/golang, submit to Awesome Go** | 30 min | Open (needs owner account) |
+
+## Release engineering (from the 2026-10-19 v0.38.6 release)
+
+| #  | Task                                                                                                                                                                                                                                                                                                                                                    | Effort | Source                                     |
+| -- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | ------------------------------------------ |
+| 9  | **Cut `v0.38.7` (patch) so the newest release has a green check** — `v0.38.6` is functionally correct, but its frozen `Build & Test` run reports `daghtml 77.2%` against the 80% gate that predates the `Write` test, and a tag's workflow file cannot be changed. **Owner decision.**                                                                  | 15 min | 2026-10-19 release session                 |
+| 10 | **Replicate CI's coverage step inside `pre-tag-check.sh`** — the one gate not reproduced locally, and exactly why `v0.38.6` was tagged with an unknowable-red check. The same script should refuse to proceed while the latest run on the release ref is red or in progress.                                                                            | 30 min | 2026-10-19 release session                 |
+| 11 | **Add the benchmark pass to `pre-tag-check.sh`** — `release.yml` runs `go test -bench=.` across 19 modules but nothing local does, so that step is always first-run-in-CI.                                                                                                                                                                              | 15 min | `release.yml` "Run benchmarks" step        |
+| 12 | **Let `tag-release.sh` publish correctly** — pushing all 17 tags at once creates **no tag events** (GitHub: "more than three tags pushed at once"), so `release.yml`, the GitHub Release, and the website redeploy silently never ran for `v0.38.6`. Add an opt-in `--push` that pushes the root tag alone first, then submodule tags in batches of ≤3. | 30 min | 2026-10-19 release session                 |
+| 13 | **Clear the website dependency debt** — 17 `pnpm-audit` errors (js-yaml, undici) plus the red Dependabot website PRs (astro group, http-cache-semantics, devalue, html-validate). Re-lock after any manifest change (`--no-frozen-lockfile`) and re-verify build + typecheck.                                                                           | 45 min | `buildflow -s pnpm-audit`; Dependabot runs |
+| 14 | **Report BuildFlow's manifest-only `pnpm-update`** — it bumped `website/package.json` without re-locking, which fails `--frozen-lockfile` before any check runs, and its `--fix` produced a broad diff (flake.lock, every sibling `go.mod` pin, `.golangci.yml` normalization) with no dry run first.                                                   | 20 min | 2026-10-19 release session                 |
