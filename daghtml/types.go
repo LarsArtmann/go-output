@@ -31,6 +31,12 @@ type Edge struct {
 
 	// To is the ID of the target (downstream) node.
 	To string `json:"to"`
+
+	// Label is optional text describing the relationship (for example
+	// "founder" or "works for"). It renders as the edge's SVG <title>
+	// tooltip, so hovering the edge reveals it without cluttering the
+	// layout. Unlabelled edges omit the field.
+	Label string `json:"label,omitempty"`
 }
 
 // DAG is the complete graph data model consumed by the HTML renderer.
