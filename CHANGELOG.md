@@ -8,6 +8,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
+- Nothing yet.
+
+### Fixed
+
+- Nothing yet.
+
+## [0.38.6] - 2026-10-19
+
+### Added
+
 - **`daghtml.Edge` carries relationship labels** — the edge model gains an
   optional `Label` field. The interactive renderer shows the label as the
   edge's SVG `<title>` tooltip on hover and sets `data-label` on the edge group
@@ -16,20 +26,35 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   layout. Fields that are empty are omitted from the JSON data island, so
   existing unlabelled DAGs serialize unchanged.
 
+- **`daghtml` is now covered by CI** — the module was missing from the
+  build/test/coverage/tidy/govulncheck lists, so the renderer's golden tests
+  never ran in Actions. It now reports 81.2% statement coverage, above the 80%
+  gate.
+
 ## [0.38.5] - 2026-10-14
 
 ### Fixed
+
 - `d2` module's internal requires now track the same generation as the root
   tag (were pinned two generations back at v0.38.3, the NX7 WIP). No behavior
   change; root delta since v0.38.4 is whitespace-only in ids.go.
 
-### Added
-
-- Nothing yet.
+## [0.38.4] - 2026-10-05
 
 ### Fixed
 
-- Nothing yet.
+- **Reverted the `Name()` methods a `brandid-lint -fix` pass added to the six
+  ID/label brands** — they silently changed `String()` from the raw value to a
+  `Name:value` prefix, which corrupted nom's `ParallelismStats` (tree nodes are
+  keyed by `ID.String()`) and would have prefixed every rendered label and map
+  key. The deliberate unnamed-brand decision is recorded with
+  `brandid-lint:ignore` directives instead.
+
+### Changed
+
+- `.golangci.yml` moved to Go 1.27 and the `exhaustruct_v5` linter.
+- Sibling module pins bumped across every `go.mod`/`go.sum`; `vendorHash.nix`
+  refreshed.
 
 ## [0.38.3] - 2026-10-02
 
