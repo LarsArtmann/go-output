@@ -28,8 +28,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - **`daghtml` is now covered by CI** — the module was missing from the
   build/test/coverage/tidy/govulncheck lists, so the renderer's golden tests
-  never ran in Actions. It now reports 81.2% statement coverage, above the 80%
-  gate.
+  never ran in Actions. It joins all five lists; a new `Write` test (the only
+  uncovered entry point) takes its statement coverage from 77.2% to 87.7%.
+
+  Note: the `v0.38.6` tag predates that test, and a tag's workflow file is frozen
+  at the tagged commit, so its own `Build & Test` run still reports 77.2% and
+  trips the new 80% gate. `master` is green.
 
 ### Fixed
 

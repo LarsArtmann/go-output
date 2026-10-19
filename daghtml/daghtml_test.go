@@ -1,7 +1,9 @@
 package daghtml
 
 import (
+	"bytes"
 	"encoding/json/v2"
+	"errors"
 	"strings"
 	"testing"
 )
@@ -384,5 +386,26 @@ func TestRender_CSPHeader(t *testing.T) {
 
 	if !strings.Contains(html, "frame-ancestors 'none'") {
 		t.Error("expected frame-ancestors none in CSP")
+	}
+}
+
+// failingWriter fails every write so the Write error path is exercised.
+type failingWriter struct{}
+
+func (failingWriter) Write(_ []byte) (int, error) { return 0, errors.New("write failed") }
+
+func TestWrite(t *testing.T) {
+	var buf bytes.Buffer
+
+	if err := Write(&buf, sampleDAG(), WithTitle("Write Test")); err != nil {
+		t.Fatalf("Write failed: %v", err)
+	}
+
+	if !strings.Contains(buf.String(), "</html>") {
+		t.Error("Write output is not a complete HTML page")
+	}
+
+	if err := Write(failingWriter{}, sampleDAG()); err == nil {
+		t.Error("Write to a failing writer returned no error")
 	}
 }
