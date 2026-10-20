@@ -28,7 +28,7 @@ jobs:
         run: |
           for mod in . delimited serialization markup d2 daghtml graph plantuml escape testhelpers testhelpers/graphtest table markdown tree nom tui bdd integration examples; do
             echo "::group::Build $mod"
-            (cd $mod && go build ./...)
+            (cd "$mod" && go build ./...)
             echo "::endgroup::"
           done
 
@@ -36,7 +36,7 @@ jobs:
         run: |
           for mod in . delimited serialization markup d2 daghtml graph plantuml escape testhelpers testhelpers/graphtest table markdown tree nom tui bdd integration examples; do
             echo "::group::Test $mod"
-            (cd $mod && go test -v -race -timeout 120s -coverprofile=cover.out ./...)
+            (cd "$mod" && go test -v -race -timeout 120s -coverprofile=cover.out ./...)
             echo "::endgroup::"
           done
 
@@ -55,7 +55,7 @@ jobs:
               if [[ "$NO_THRESHOLD" != *" $mod "* ]] && [ "$(echo "$COV < $MIN_COVERAGE" | bc -l)" = "1" ]; then
                 FAILED="$FAILED $mod(${COV}%)"
               fi
-              rm -f $mod/cover.out
+              rm -f "$mod/cover.out"
             fi
           done
           if [ -n "$FAILED" ]; then
@@ -67,11 +67,20 @@ jobs:
         run: |
           for mod in . delimited serialization markup d2 daghtml graph plantuml escape testhelpers testhelpers/graphtest table markdown tree nom tui bdd integration examples; do
             echo "::group::Mod tidy $mod"
-            (cd $mod && cp go.mod go.mod.bak && cp go.sum go.sum.bak 2>/dev/null || true)
-            (cd $mod && go mod tidy)
-            (cd $mod && diff go.mod go.mod.bak || (echo "go.mod is not tidy in $mod" && exit 1))
-            (cd $mod && diff go.sum go.sum.bak 2>/dev/null || true)
-            (cd $mod && rm -f go.mod.bak go.sum.bak)
+            cp "$mod/go.mod" "$mod/go.mod.bak"
+            if [ -f "$mod/go.sum" ]; then
+              cp "$mod/go.sum" "$mod/go.sum.bak"
+            fi
+            (cd "$mod" && go mod tidy)
+            if ! diff -q "$mod/go.mod" "$mod/go.mod.bak" >/dev/null; then
+              echo "::error::go.mod is not tidy in $mod"
+              rm -f "$mod/go.mod.bak" "$mod/go.sum.bak"
+              exit 1
+            fi
+            if [ -f "$mod/go.sum.bak" ] && ! diff -q "$mod/go.sum" "$mod/go.sum.bak" >/dev/null; then
+              echo "::warning::go.sum changed in $mod after go mod tidy"
+            fi
+            rm -f "$mod/go.mod.bak" "$mod/go.sum.bak"
             echo "::endgroup::"
           done
 
@@ -108,7 +117,7 @@ jobs:
           go install golang.org/x/vuln/cmd/govulncheck@latest
           for mod in . delimited serialization markup d2 daghtml graph plantuml escape testhelpers testhelpers/graphtest table markdown tree nom tui bdd integration examples; do
             echo "::group::govulncheck $mod"
-            (cd $mod && govulncheck ./...)
+            (cd "$mod" && govulncheck ./...)
             echo "::endgroup::"
           done
 
@@ -131,9 +140,28 @@ jobs:
           # Threshold t=4: the production dedup gate per ADR 008.
           # The codebase is documented as clean at t=4 (0 groups).
           # If new duplication appears, this surfaces it as a warning for review.
-          RESULT=$(find . -name '*.go' -not -path './vendor/*' | xargs art-dupl -t 4 2>/dev/null | wc -l)
+          RESULT=$(find . -name '*.go' -not -path './vendor/*' -print0 | xargs -0 art-dupl -t 4 2>/dev/null | wc -l)
           if [ "$RESULT" -gt 0 ]; then
             echo "::warning::Found $RESULT lines of duplication (t=4). Review needed — see ADR 008 for accepted patterns."
           else
             echo "No harmful duplication detected (t=4 production gate)."
           fi
+
+  workflows:
+    name: Workflow Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+
+      # actionlint v1.7.12 verified clean on this repo's workflows (2026-10-20).
+      # shellcheck checks run too when the runner image ships shellcheck, which
+      # is why the module loops quote every "$mod".
+      - name: Lint GitHub Actions workflows
+        run: |
+          go install github.com/rhysd/actionlint/cmd/actionlint@v1.7.12
+          "$(go env GOPATH)/bin/actionlint"

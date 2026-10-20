@@ -38,17 +38,19 @@ jobs:
 
       - name: Build all modules
         run: |
-          for mod in $ALL_MODULES; do
+          read -ra MODULES <<< "$ALL_MODULES"
+          for mod in "${MODULES[@]}"; do
             echo "::group::Build $mod"
-            (cd $mod && go build ./...)
+            (cd "$mod" && go build ./...)
             echo "::endgroup::"
           done
 
       - name: Test all modules
         run: |
-          for mod in $ALL_MODULES; do
+          read -ra MODULES <<< "$ALL_MODULES"
+          for mod in "${MODULES[@]}"; do
             echo "::group::Test $mod"
-            (cd $mod && go test -v -race -timeout 120s ./...)
+            (cd "$mod" && go test -v -race -timeout 120s ./...)
             echo "::endgroup::"
           done
 
@@ -61,19 +63,41 @@ jobs:
       - name: Run govulncheck
         run: |
           go install golang.org/x/vuln/cmd/govulncheck@latest
-          for mod in $ALL_MODULES; do
+          read -ra MODULES <<< "$ALL_MODULES"
+          for mod in "${MODULES[@]}"; do
             echo "::group::govulncheck $mod"
-            (cd $mod && govulncheck ./...)
+            (cd "$mod" && govulncheck ./...)
             echo "::endgroup::"
           done
 
       - name: Run benchmarks
         run: |
-          for mod in $ALL_MODULES; do
-            (cd $mod && go test -run=^$ -bench=. -benchmem ./...)
+          read -ra MODULES <<< "$ALL_MODULES"
+          for mod in "${MODULES[@]}"; do
+            (cd "$mod" && go test -run=^$ -bench=. -benchmem ./...)
           done
 
+      # The GitHub Release is created BEFORE the submodule tags on purpose: a
+      # failure in the tag step (git identity, permissions, network) must never
+      # suppress the Release or the website redeploy. That suppression is what
+      # hid the v0.37.0/v0.38.0 releases and cost v0.38.7 a manual recovery.
+      - name: Create GitHub Release
+        if: github.event_name == 'push'
+        uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
+        with:
+          draft: false
+          prerelease: ${{ contains(github.ref, 'alpha') || contains(github.ref, 'beta') || contains(github.ref, 'rc') }}
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Safety net only: scripts/tag-release.sh pushes the full 17-tag family, so
+      # this usually finds every tag already on origin. Non-fatal (continue-on-
+      # error) for the same reason the Release runs first — and confirm the tags
+      # afterwards per docs/RELEASE_FAILURE_MODES.md rather than trusting a green
+      # job.
       - name: Create and push submodule tags
+        continue-on-error: true
         run: |
           TAG="${GITHUB_REF#refs/tags/}"
           # Only process root-level version tags (vX.Y.Z), not submodule tags (module/vX.Y.Z)
@@ -87,16 +111,14 @@ jobs:
 
           # Annotated tags need a tagger identity and a fresh runner has none
           # configured, so `git tag -a` dies with "empty ident name" (exit 128)
-          # and skips the GitHub Release + website redeploy. That is what hid the
-          # v0.37.0/v0.38.0 releases and cost v0.38.7 a manual recovery.
+          # and silently skips everything after it.
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
           # actions/checkout fetches only the one tag being deployed, so check
           # tag existence against ORIGIN (not the local refs) before creating
-          # anything — the release tooling (scripts/tag-release.sh) normally
-          # pushes all 17 tags together, and a duplicate push of a differently
-          # hashed annotated tag object would be rejected (exit 128).
+          # anything — a duplicate push of a differently hashed annotated tag
+          # object is rejected (exit 128).
           created=0
           for mod in $TAGGED_SUBMODULES; do
             SUBTAG="${mod}/v${VERSION}"
@@ -111,16 +133,6 @@ jobs:
           done
 
           echo "Created and pushed ${created} submodule tag(s)"
-
-      - name: Create GitHub Release
-        if: github.event_name == 'push'
-        uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
-        with:
-          draft: false
-          prerelease: ${{ contains(github.ref, 'alpha') || contains(github.ref, 'beta') || contains(github.ref, 'rc') }}
-          generate_release_notes: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   # Redeploy the website on every root version tag so the live docs,
   # changelog pages, and examples never drift behind a released version.

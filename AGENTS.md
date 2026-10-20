@@ -87,7 +87,7 @@ scripts/tag-release.sh vX.Y.Z   # Create root + 16 submodule annotated tags (doe
 scripts/pre-tag-check.sh vX.Y.Z # Build + test + race + lint + govulncheck + art-dupl + golden-freshness + tag-parity
 ```
 
-See `docs/RELEASE_CHECKLIST.md` for the full 8-step release sequence. The `release.yml` workflow auto-creates missing submodule tags when a root `v*` tag is pushed — but always use `scripts/tag-release.sh` as the primary path.
+See `docs/RELEASE_CHECKLIST.md` for the full 8-step release sequence and `docs/RELEASE_FAILURE_MODES.md` for every way a tag push has silently failed to produce a Release (including the >3-tags push rule and the runner git-identity bug) plus the recovery commands. The `release.yml` workflow creates the GitHub Release first and only then auto-creates missing submodule tags when a root `v*` tag is pushed — but always publish the root tag **alone** and use `scripts/tag-release.sh` as the primary path.
 
 ## Patterns
 
