@@ -107,20 +107,26 @@ done
 ### 6. Push tags
 
 ```bash
-git push origin vX.Y.Z
-git push origin "refs/tags/*vX.Y.Z"
+git push origin vX.Y.Z                 # FIRST, ALONE — this is the event that fires release.yml
+git push origin "refs/tags/*vX.Y.Z"    # then the rest (their events are irrelevant)
 ```
 
-Or let the auto-git daemon push them.
+**The two pushes are not interchangeable.** GitHub creates no tag events when a
+single push contains more than three tags, so pushing only the wildcard (or
+letting the auto-git daemon push the whole family at once) silently skips
+`release.yml`: no submodule tags, no GitHub Release, no website redeploy. v0.38.6
+lost its Release exactly this way.
 
-The `release.yml` workflow will trigger on the root `v*` tag, run build/test/lint,
-auto-create any missing submodule tags as a safety net, and create the GitHub Release.
+The `release.yml` workflow triggers on the root `v*` tag, runs
+build/test/lint/govulncheck/benchmarks, **creates the GitHub Release**, and then
+auto-creates any missing submodule tags as a safety net.
 
 ### 7. Verify GitHub Release
 
 - Go to the repository Releases page.
 - Confirm a release for `vX.Y.Z` exists with auto-generated notes.
-- If missing, the `release.yml` step failed — check the Actions tab.
+- If missing, the `release.yml` step failed — check the Actions tab, then follow
+  `RELEASE_FAILURE_MODES.md` (recovery is a `gh release create`, never a re-tag).
 
 ### 8. Verify module resolution
 
@@ -190,3 +196,9 @@ retract vX.Y.Z
 
 Then cut a new version (vX.Y.(Z+1)) that supersedes it. Document the
 retraction in the CHANGELOG.
+
+## See Also
+
+- `RELEASE_FAILURE_MODES.md` — every way a tag push has silently produced no
+  Release (the >3-tags push rule, the runner git-identity bug, frozen workflow
+  files, CI-only gates) with the exact recovery command for each.
