@@ -36,18 +36,18 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/sitemap": "^3.7.4",
+    "@astrojs/sitemap": "^3.7.5",
     "@astrojs/starlight": "^0.42.6",
-    "@tailwindcss/vite": "^4.3.3",
-    "astro": "7.4.0",
-    "astro-og-canvas": "0.13.2",
+    "@tailwindcss/vite": "^4.3.5",
+    "astro": "7.4.12",
+    "astro-og-canvas": "0.13.3",
     "canvaskit-wasm": "0.42.0",
-    "tailwindcss": "^4.3.3"
+    "tailwindcss": "^4.3.5"
   },
   "devDependencies": {
-    "@astrojs/check": "^0.9.10",
-    "html-validate": "^11.16.4",
-    "typescript": "6.0.3"
+    "@astrojs/check": "^0.9.12",
+    "html-validate": "^11.21.1",
+    "typescript": "7.0.2"
   },
   "packageManager": "pnpm@11.20.0"
 }
